@@ -8,7 +8,11 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "jsx": "preserve",
-    "types": ["vite/client", "node", "vitest/globals"]
+    "types": ["vite/client", "node", "vitest/globals"],
+    "paths": {
+      "vite": ["./../../node_modules/vite"],
+      "@vitejs/plugin-vue": ["./../../node_modules/@vitejs/plugin-vue"]
+    }
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "vite.config.ts"]
 }

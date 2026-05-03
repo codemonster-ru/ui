@@ -17,6 +17,12 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    alias: {
+      "@codemonster-ru/vueforge-icons": resolve(
+        rootDir,
+        "src/__tests__/mocks/vueforge-icons.ts",
+      ),
+    },
     server: {
       deps: {
         inline: ["@codemonster-ru/vueforge-icons"],

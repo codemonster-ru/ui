@@ -7,7 +7,14 @@
   "eslint.run": "onType",
   "eslint.quiet": false,
   "eslint.lintTask.enable": true,
-  "typescript.tsserver.maxTsServerMemory": 4096,
+  "stylelint.enable": true,
+  "stylelint.run": "onType",
+  "stylelint.validate": ["css", "scss", "sass", "postcss", "vue", "html"],
+  "markdownlint.run": "onType",
+  "json.validate.enable": true,
+  "yaml.validate": true,
+  "htmlhint.enable": true,
+  "js/ts.tsserver.maxMemory": 4096,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
   },
