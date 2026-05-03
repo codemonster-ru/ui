@@ -64,9 +64,36 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: "./tests/setup.ts",
+    alias: [
+      {
+        find: /^@\//,
+        replacement: `${resolve(__dirname, "../core/src")}/`,
+      },
+      {
+        find: "@codemonster-ru/vueforge-core/foundation",
+        replacement: resolve(__dirname, "../core/src/foundation/index.ts"),
+      },
+      {
+        find: "@codemonster-ru/vueforge-core",
+        replacement: resolve(__dirname, "../core/src/index.ts"),
+      },
+      {
+        find: "@codemonster-ru/vueforge-theme",
+        replacement: resolve(__dirname, "../theme/src/index.ts"),
+      },
+      {
+        find: "@codemonster-ru/vueforge-icons",
+        replacement: resolve(__dirname, "../core/src/test/mocks/vueforge-icons.ts"),
+      },
+    ],
     server: {
       deps: {
-        inline: ["@codemonster-ru/vueforge-core", "@codemonster-ru/vueforge-icons"]
+        inline: [
+          "@codemonster-ru/vueforge-core",
+          "@codemonster-ru/vueforge-core/foundation",
+          "@codemonster-ru/vueforge-theme",
+          "@codemonster-ru/vueforge-icons",
+        ],
       }
     }
   }
