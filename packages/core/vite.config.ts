@@ -53,10 +53,18 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
 
 buildThemeCssArtifacts();
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
+      ...(mode === "test"
+        ? {
+            "@codemonster-ru/vueforge-icons": resolve(
+              rootDir,
+              "src/test/mocks/vueforge-icons.ts",
+            ),
+          }
+        : {}),
     },
   },
   plugins: [
@@ -95,16 +103,10 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: "./src/test/setup.ts",
-    alias: {
-      "@codemonster-ru/vueforge-icons": resolve(
-        rootDir,
-        "src/test/mocks/vueforge-icons.ts",
-      ),
-    },
     server: {
       deps: {
         inline: ["@codemonster-ru/vueforge-icons"],
       },
     },
   },
-});
+}));
