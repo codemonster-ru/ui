@@ -1,5 +1,5 @@
 <template>
-    <main class="showcase" :class="`showcase_${theme}`">
+    <main class="showcase" :class="`showcase--${theme}`">
         <header class="showcase__topbar">
             <div class="showcase__brand">
                 <p class="eyebrow">Local preview</p>
@@ -16,7 +16,7 @@
         </header>
 
         <section class="toolbar">
-            <article class="panel panel_compact">
+            <article class="panel panel--compact">
                 <div class="panel__header">
                     <div>
                         <p class="eyebrow">Usage</p>
@@ -40,7 +40,7 @@
                     <article
                         v-for="entry in nonBrandShowcaseIconEntries"
                         :key="entry.icon"
-                        class="catalog-group catalog-group_tile"
+                        class="catalog-group catalog-group--tile"
                     >
                         <div class="catalog-group__header">
                             <h3>{{ getDisplayIconName(entry.icon) }}</h3>
@@ -73,7 +73,7 @@
                     <article
                         v-for="entry in brandShowcaseIconEntries"
                         :key="entry.icon"
-                        class="catalog-group catalog-group_tile"
+                        class="catalog-group catalog-group--tile"
                     >
                         <div class="catalog-group__header">
                             <h3>{{ getDisplayIconName(entry.icon) }}</h3>
@@ -240,7 +240,7 @@ watch(theme, value => {
 <style lang="scss" scoped>
 :global(body) {
     margin: 0;
-    background: radial-gradient(circle at top, rgba(234, 120, 50, 0.16), transparent 28%),
+    background: radial-gradient(circle at top, rgb(234 120 50 / 16%), transparent 28%),
         linear-gradient(180deg, #f7f1e7 0%, #f1ede3 100%);
     color: #1f2328;
     font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif;
@@ -250,7 +250,7 @@ watch(theme, value => {
 }
 
 :global(:root[data-theme='dark'] body) {
-    background: radial-gradient(circle at top, rgba(108, 137, 255, 0.18), transparent 28%),
+    background: radial-gradient(circle at top, rgb(108 137 255 / 18%), transparent 28%),
         linear-gradient(180deg, #121726 0%, #0b101b 100%);
     color: #edf2ff;
 }
@@ -266,35 +266,35 @@ watch(theme, value => {
 }
 
 .showcase {
-    --surface: rgba(255, 250, 243, 0.88);
-    --surface-strong: rgba(255, 248, 238, 0.96);
-    --border: rgba(50, 42, 30, 0.12);
+    --surface: rgb(255 250 243 / 88%);
+    --surface-strong: rgb(255 248 238 / 96%);
+    --border: rgb(50 42 30 / 12%);
     --accent: #cb5f2e;
     --accent-dark: #8b3b1c;
     --muted: #655b4f;
     --code-surface: #231b18;
     --code-text: #fdf6ee;
-    --tile-surface: rgba(255, 249, 240, 0.72);
-    --shadow: 0 12px 32px rgba(89, 58, 32, 0.08);
-    --soft-shadow: 0 14px 30px rgba(89, 58, 32, 0.07);
+    --tile-surface: rgb(255 249 240 / 72%);
+    --shadow: 0 12px 32px rgb(89 58 32 / 8%);
+    --soft-shadow: 0 14px 30px rgb(89 58 32 / 7%);
 
     width: min(1280px, calc(100% - 32px));
     margin: 0 auto;
     padding: 24px 0 40px;
 }
 
-.showcase_dark {
-    --surface: rgba(17, 24, 39, 0.78);
-    --surface-strong: rgba(14, 21, 35, 0.96);
-    --border: rgba(168, 183, 255, 0.18);
+.showcase--dark {
+    --surface: rgb(17 24 39 / 78%);
+    --surface-strong: rgb(14 21 35 / 96%);
+    --border: rgb(168 183 255 / 18%);
     --accent: #ff9b62;
     --accent-dark: #ffd2a4;
     --muted: #b9c1d9;
     --code-surface: #09101d;
     --code-text: #edf2ff;
-    --tile-surface: rgba(17, 24, 39, 0.68);
-    --shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
-    --soft-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+    --tile-surface: rgb(17 24 39 / 68%);
+    --shadow: 0 14px 34px rgb(0 0 0 / 24%);
+    --soft-shadow: 0 16px 34px rgb(0 0 0 / 20%);
 }
 
 .showcase__topbar {
@@ -336,7 +336,7 @@ watch(theme, value => {
 
 .theme-toggle:hover {
     transform: translateY(-1px);
-    border-color: rgba(203, 95, 46, 0.34);
+    border-color: rgb(203 95 46 / 34%);
 }
 
 .theme-toggle__icon {
@@ -371,10 +371,6 @@ watch(theme, value => {
     gap: 12px;
 }
 
-.catalog-section__header .eyebrow {
-    margin-bottom: 0;
-}
-
 .panel,
 .icon-card {
     border: 1px solid var(--border);
@@ -388,7 +384,7 @@ watch(theme, value => {
     padding: 18px 20px;
 }
 
-.panel_compact {
+.panel--compact {
     max-width: 420px;
 }
 
@@ -399,6 +395,10 @@ watch(theme, value => {
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+}
+
+.catalog-section__header .eyebrow {
+    margin-bottom: 0;
 }
 
 h1,
@@ -430,16 +430,9 @@ h3 {
         box-shadow 180ms ease;
 }
 
-.copy-button:hover,
-.icon-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(203, 95, 46, 0.34);
-    box-shadow: 0 12px 24px rgba(111, 61, 26, 0.12);
-}
-
 code,
 pre {
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    font-family: SFMono-Regular, Consolas, 'Liberation Mono', monospace;
 }
 
 code {
@@ -463,6 +456,12 @@ code {
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
+}
+
+.copy-button:hover {
+    transform: translateY(-2px);
+    border-color: rgb(203 95 46 / 34%);
+    box-shadow: 0 12px 24px rgb(111 61 26 / 12%);
 }
 
 pre {
@@ -489,7 +488,7 @@ pre {
     box-shadow: var(--soft-shadow);
 }
 
-.catalog-group_tile {
+.catalog-group--tile {
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 12px;
@@ -508,6 +507,12 @@ pre {
     cursor: pointer;
 }
 
+.icon-card:hover {
+    transform: translateY(-2px);
+    border-color: rgb(203 95 46 / 34%);
+    box-shadow: 0 12px 24px rgb(111 61 26 / 12%);
+}
+
 .icon-card__preview {
     display: grid;
     place-items: center;
@@ -522,7 +527,7 @@ pre {
     font-size: 0.82rem;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
     .showcase__topbar,
     .panel__header,
     .catalog-group__header {
@@ -531,7 +536,7 @@ pre {
     }
 }
 
-@media (max-width: 640px) {
+@media (width <= 640px) {
     .showcase {
         width: min(100% - 20px, 1200px);
         padding-top: 18px;

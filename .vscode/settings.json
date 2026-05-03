@@ -3,6 +3,11 @@
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
   "eslint.validate": ["vue", "javascript", "typescript"],
+  "eslint.workingDirectories": [{ "pattern": "packages/*" }, { "pattern": "examples/*" }],
+  "eslint.run": "onType",
+  "eslint.quiet": false,
+  "eslint.lintTask.enable": true,
+  "typescript.tsserver.maxTsServerMemory": 4096,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
   },

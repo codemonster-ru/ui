@@ -2,6 +2,10 @@
   "recommendations": [
     "Vue.volar",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "stylelint.vscode-stylelint",
+    "HTMLHint.vscode-htmlhint",
+    "DavidAnson.vscode-markdownlint",
+    "redhat.vscode-yaml"
   ]
 }

@@ -3,7 +3,7 @@
   <section
     ref="rootElement"
     class="vcb"
-    :class="{ vcb_disabled: disabled }"
+    :class="{ 'vcb--disabled': disabled }"
     :data-theme="resolvedTheme"
     :aria-label="ariaLabel"
   >
@@ -35,7 +35,7 @@
       </button>
       <pre
         class="vcb__pre"
-        :class="{ vcb__pre_wrap: wrap }"
+        :class="{ 'vcb__pre--wrap': wrap }"
         :style="preStyle"
       ><code><span
               v-for="(line, index) in lines"
@@ -263,9 +263,9 @@ onBeforeUnmount(() => {
   --vcb-margin-block-start: var(--vcb-margin-block);
   --vcb-margin-block-end: var(--vcb-margin-block);
   --vcb-gap: 0;
-  --vcb-border-color: color-mix(in srgb, rgba(15, 23, 42, 0.12) 92%, #cbd5e1);
+  --vcb-border-color: color-mix(in srgb, rgb(15 23 42 / 12%) 92%, #cbd5e1);
   --vcb-border-radius: 0.625rem;
-  --vcb-background-color: #ffffff;
+  --vcb-background-color: #fff;
   --vcb-text-color: #1f232b;
   --vcb-font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
@@ -275,7 +275,7 @@ onBeforeUnmount(() => {
   --vcb-header-padding: var(--vcb-padding);
   --vcb-header-border-color: color-mix(
     in srgb,
-    rgba(15, 23, 42, 0.12) 78%,
+    rgb(15 23 42 / 12%) 78%,
     transparent
   );
   --vcb-header-background-color: var(--vcb-background-color);
@@ -288,11 +288,11 @@ onBeforeUnmount(() => {
   --vcb-actions-gap: 0.45rem;
   --vcb-action-border-color: color-mix(
     in srgb,
-    rgba(15, 23, 42, 0.12) 80%,
+    rgb(15 23 42 / 12%) 80%,
     transparent
   );
   --vcb-action-border-radius: 0.375rem;
-  --vcb-action-background-color: #ffffff;
+  --vcb-action-background-color: #fff;
   --vcb-action-text-color: #1f232b;
   --vcb-action-font-size: 0.75rem;
   --vcb-action-padding: 0.3rem 0.65rem;
@@ -315,7 +315,7 @@ onBeforeUnmount(() => {
   --vcb-line-gap: 0.7rem;
   --vcb-line-number-color: #616773;
   --vcb-line-number-min-width: 1ch;
-  --vcb-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --vcb-shadow: 0 1px 2px rgb(15 23 42 / 4%);
   --vcb-disabled-opacity: 0.6;
 
   display: grid;
@@ -376,7 +376,6 @@ onBeforeUnmount(() => {
   all: unset;
   box-sizing: border-box;
   appearance: none;
-  -webkit-appearance: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -433,20 +432,20 @@ onBeforeUnmount(() => {
   white-space: pre;
 }
 
+.vcb__copy:hover,
+.vcb .vcb__copy:focus-visible {
+  color: var(--vcb-copy-hover-color);
+}
+
 .vcb .vcb__code-shell:hover .vcb__copy,
 .vcb .vcb__code-shell:focus-within .vcb__copy {
   opacity: var(--vcb-copy-visible-opacity);
   pointer-events: auto;
 }
 
-.vcb__copy:hover,
-.vcb .vcb__copy:focus-visible {
-  color: var(--vcb-copy-hover-color);
-}
-
-.vcb__pre_wrap {
+.vcb__pre--wrap {
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .vcb__line {
@@ -469,6 +468,15 @@ onBeforeUnmount(() => {
 .vcb__line-content {
   min-width: 0;
   white-space: inherit;
+}
+
+/* stylelint-disable no-descending-specificity -- Theme selectors intentionally layer explicit, inherited, and fallback modes. */
+.vcb[data-theme="light"],
+:root:not([data-theme="dark"]) .vcb:not([data-theme="dark"]),
+[data-theme="light"] .vcb,
+[data-vf-theme="light"] .vcb,
+:root:not([data-vf-theme="dark"]) .vcb:not([data-theme="dark"]) {
+  box-shadow: var(--vcb-shadow);
 }
 
 .vcb[data-theme="dark"],
@@ -498,16 +506,9 @@ onBeforeUnmount(() => {
   --vcb-action-text-color: var(--vcb-dark-action-text-color, #d4d4d4);
   --vcb-line-number-color: var(--vcb-dark-line-number-color, #9da0a6);
 }
+/* stylelint-enable no-descending-specificity */
 
-.vcb[data-theme="light"],
-:root:not([data-theme="dark"]) .vcb:not([data-theme="dark"]),
-[data-theme="light"] .vcb,
-[data-vf-theme="light"] .vcb,
-:root:not([data-vf-theme="dark"]) .vcb:not([data-theme="dark"]) {
-  box-shadow: var(--vcb-shadow);
-}
-
-.vcb_disabled {
+.vcb--disabled {
   opacity: var(--vcb-disabled-opacity);
 }
 </style>

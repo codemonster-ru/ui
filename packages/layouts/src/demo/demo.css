@@ -42,7 +42,7 @@ body {
   border: 1px solid var(--vf-color-border);
   text-decoration: none;
   color: var(--vf-color-text);
-  background: var(--vf-color-surface, #ffffff);
+  background: var(--vf-color-surface, #fff);
   font-size: 0.875rem;
 }
 
@@ -163,6 +163,7 @@ body {
   display: none;
 }
 
+/* stylelint-disable no-descending-specificity -- Demo document layout toggles intentionally mirror control combinations. */
 .demo-document-layout--compact-sidebar.vf-document-layout--sidebar-content
   .vf-document-layout__content-grid--sidebar-content,
 .demo-document-layout--compact-sidebar.vf-document-layout--sidebar-content-aside
@@ -174,6 +175,7 @@ body {
 .demo-document-layout--compact-sidebar .vf-document-layout__aside {
   display: none;
 }
+/* stylelint-enable no-descending-specificity */
 
 .demo-document-layout__bar {
   justify-content: space-between;
@@ -260,18 +262,19 @@ body {
   min-height: 30rem;
 }
 
+/* stylelint-disable declaration-block-no-redundant-longhand-properties, no-descending-specificity -- Demo-only layout state combinations intentionally mirror interactive toggle permutations. */
 .demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside
   .vf-app-shell__body-grid {
-  grid-template:
-    "sidebar content" minmax(0, 1fr)
-    / minmax(0, var(--vf-layout-shell-sidebar-width)) minmax(0, 1fr);
+  grid-template-areas: "sidebar content";
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, var(--vf-layout-shell-sidebar-width)) minmax(0, 1fr);
 }
 
 .demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside.vf-app-shell--sidebar-collapsed
   .vf-app-shell__body-grid {
-  grid-template:
-    "sidebar content" minmax(0, 1fr)
-    / minmax(0, var(--vf-layout-shell-sidebar-collapsed-width)) minmax(0, 1fr);
+  grid-template-areas: "sidebar content";
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, var(--vf-layout-shell-sidebar-collapsed-width)) minmax(0, 1fr);
 }
 
 .demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside
@@ -283,15 +286,16 @@ body {
   .vf-app-shell__body-grid,
 .demo-shell-app--compact-sidebar.vf-app-shell--sidebar-content-aside
   .vf-app-shell__body-grid {
-  grid-template:
-    "content" minmax(0, 1fr)
-    / minmax(0, 1fr);
+  grid-template-areas: "content";
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .demo-shell-app--compact-sidebar .vf-sidebar-area,
 .demo-shell-app--compact-sidebar .vf-aside-area {
   display: none;
 }
+/* stylelint-enable declaration-block-no-redundant-longhand-properties, no-descending-specificity */
 
 .demo-shell-content-area {
   background: var(--vf-layout-surface-base);
@@ -358,7 +362,7 @@ body {
   gap: 0.5rem;
 }
 
-@media (max-width: 960px) {
+@media (width <= 960px) {
   .demo-grid--two {
     grid-template-columns: minmax(0, 1fr);
   }

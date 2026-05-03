@@ -294,7 +294,7 @@ function handleHeadlessFileChange(
   --cm-pg-border: var(--vf-color-border);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .showcase-topbar {
     flex-direction: column;
     align-items: flex-start;

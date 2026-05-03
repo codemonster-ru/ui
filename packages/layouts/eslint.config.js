@@ -4,6 +4,7 @@ import { createVueTsConfig } from '../../eslint.base.mjs';
 export default [
   ...createVueTsConfig({
     ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
+    tsconfigRootDir: import.meta.dirname,
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'warn',

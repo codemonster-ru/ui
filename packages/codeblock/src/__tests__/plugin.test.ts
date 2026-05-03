@@ -2,18 +2,18 @@ import { createApp, defineComponent, h } from "vue";
 import { describe, expect, it, vi } from "vitest";
 import VueCodeBlock, { setCodeBlockThemeVars } from "../index";
 
+const TestHostComponent = defineComponent({
+  render() {
+    return h("div");
+  },
+});
+
 describe("VueCodeBlock plugin", () => {
   it("injects runtime theme vars via plugin options", () => {
     const host = document.createElement("div");
     document.body.appendChild(host);
 
-    const app = createApp(
-      defineComponent({
-        render() {
-          return h("div");
-        },
-      }),
-    );
+    const app = createApp(TestHostComponent);
 
     app.use(VueCodeBlock, {
       themeVars: {
@@ -43,13 +43,7 @@ describe("VueCodeBlock plugin", () => {
     const host = document.createElement("div");
     document.body.appendChild(host);
 
-    const app = createApp(
-      defineComponent({
-        render() {
-          return h("div");
-        },
-      }),
-    );
+    const app = createApp(TestHostComponent);
 
     app.use(VueCodeBlock, {
       themeScope: "#docs-app",
@@ -78,13 +72,7 @@ describe("VueCodeBlock plugin", () => {
   it("is safe when document is unavailable", () => {
     vi.stubGlobal("document", undefined);
 
-    const app = createApp(
-      defineComponent({
-        render() {
-          return h("div");
-        },
-      }),
-    );
+    const app = createApp(TestHostComponent);
 
     expect(() => {
       app.use(VueCodeBlock, {
@@ -101,13 +89,7 @@ describe("VueCodeBlock plugin", () => {
     const host = document.createElement("div");
     document.body.appendChild(host);
 
-    const app = createApp(
-      defineComponent({
-        render() {
-          return h("div");
-        },
-      }),
-    );
+    const app = createApp(TestHostComponent);
 
     app.use(VueCodeBlock, {
       styleNonce: "nonce-123",

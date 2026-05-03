@@ -94,6 +94,7 @@
   --vf-menu-bar-current-submenu-active-background: var(
     --vf-menu-bar-submenu-active-background
   );
+
   display: flex;
   width: 100%;
   min-width: 0;
@@ -193,15 +194,14 @@
   white-space: nowrap;
 }
 
-.vf-menu-bar__item--top:hover:not(:disabled):not(.vf-menu-bar__item--active),
+.vf-menu-bar__item--top:hover:not(:disabled, .vf-menu-bar__item--active),
 .vf-menu-bar__item--top.vf-menu-bar__item--open {
   color: var(--vf-menu-bar-current-top-hover-color);
   background: var(--vf-menu-bar-current-top-hover-background);
 }
 
-.vf-menu-bar__item:not(.vf-menu-bar__item--top):hover:not(:disabled):not(
-    .vf-menu-bar__item--active
-  ),
+/* stylelint-disable no-descending-specificity -- Interactive states are grouped consistently (hover/focus/active/disabled) across nav primitives. */
+.vf-menu-bar__item:not(.vf-menu-bar__item--top):hover:not(:disabled, .vf-menu-bar__item--active),
 .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--open {
   color: var(--vf-menu-bar-current-submenu-hover-color);
   background: var(--vf-menu-bar-current-submenu-hover-background);
@@ -340,7 +340,7 @@
   border-bottom-right-radius: 0;
 }
 
-.vf-accordion__trigger:hover:not(:disabled):not([aria-expanded="true"]) {
+.vf-accordion__trigger:hover:not(:disabled, [aria-expanded="true"]) {
   background: transparent;
   color: var(--vf-accordion-trigger-hover-color);
 }
@@ -421,8 +421,7 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto hidden;
 }
 
 .vf-tabs__scroll-button {
@@ -606,7 +605,7 @@
   transition: none;
 }
 
-.vf-tabs__tab:hover:not(:disabled):not([aria-selected="true"]) {
+.vf-tabs__tab:hover:not(:disabled, [aria-selected="true"]) {
   color: var(--vf-tabs-tab-hover-color);
   background: var(--vf-tabs-tab-hover-background);
 }
@@ -628,6 +627,7 @@
   opacity: 0.5;
   color: var(--vf-tabs-tab-disabled-color);
 }
+/* stylelint-enable no-descending-specificity */
 
 .vf-tabs__panel {
   border: 1px solid transparent;
@@ -662,6 +662,7 @@
   --vf-nav-menu-current-item-active-background: var(
     --vf-nav-menu-item-active-background
   );
+
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -678,8 +679,7 @@
     --vf-nav-menu-pills-item-min-height
   );
   --vf-nav-menu-current-group-padding-left: calc(
-    0.75rem + var(--vf-nav-menu-leading-icon-column-size) +
-      var(--vf-nav-menu-item-gap)
+    0.75rem + var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap)
   );
   --vf-nav-menu-current-item-padding: var(--vf-nav-menu-pills-item-padding);
   --vf-nav-menu-current-item-hover-color: var(
@@ -718,6 +718,7 @@
   padding-top: var(--vf-nav-menu-current-collapse-offset-top);
 }
 
+/* stylelint-disable no-descending-specificity -- Nav and TOC state/modifier selectors intentionally preserve component-state reading order. */
 .vf-nav-menu__collapse--level-0 {
   margin-left: var(--vf-nav-menu-collapse-inset-level-0-margin);
   padding-left: var(--vf-nav-menu-collapse-inset-level-0-padding);
@@ -832,12 +833,11 @@
     var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap)
   );
   width: calc(
-    100% - var(--vf-nav-menu-leading-icon-column-size) -
-      var(--vf-nav-menu-item-gap)
+    100% - var(--vf-nav-menu-leading-icon-column-size) - var(--vf-nav-menu-item-gap)
   );
 }
 
-.vf-nav-menu__item:hover:not(:disabled):not(.vf-nav-menu__item--active) {
+.vf-nav-menu__item:hover:not(:disabled, .vf-nav-menu__item--active) {
   color: var(--vf-nav-menu-current-item-hover-color);
   border-color: transparent;
   background: var(--vf-nav-menu-current-item-hover-background);
@@ -939,6 +939,7 @@
   --vf-table-of-contents-current-active-background: var(
     --vf-table-of-contents-active-background
   );
+
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -995,10 +996,7 @@
   text-decoration: none;
   overflow-wrap: anywhere;
 }
-
-.vf-table-of-contents__link--active {
-  color: var(--vf-table-of-contents-current-active-color);
-}
+/* stylelint-enable no-descending-specificity */
 
 .vf-table-of-contents:not(.vf-table-of-contents--ready)
   .vf-table-of-contents__link {

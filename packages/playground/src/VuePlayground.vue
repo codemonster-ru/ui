@@ -358,7 +358,7 @@ defineExpose({
 :root {
   --cm-pg-height: 420px;
   --cm-pg-default-light-font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
-  --cm-pg-default-light-surface: #ffffff;
+  --cm-pg-default-light-surface: #fff;
   --cm-pg-default-light-surface-muted: #f3f3f3;
   --cm-pg-default-light-border: #d9dde3;
   --cm-pg-default-light-text: #1f232b;
@@ -367,17 +367,16 @@ defineExpose({
   --cm-pg-default-light-tab-text: #1f232b;
   --cm-pg-default-light-tab-border: #d9dde3;
   --cm-pg-default-light-tab-active-bg: #0e639c;
-  --cm-pg-default-light-tab-active-text: #ffffff;
+  --cm-pg-default-light-tab-active-text: #fff;
   --cm-pg-default-light-run-bg: #0e639c;
-  --cm-pg-default-light-run-text: #ffffff;
+  --cm-pg-default-light-run-text: #fff;
   --cm-pg-default-light-run-border: #0e639c;
   --cm-pg-default-light-console-bg: #f3f3f3;
   --cm-pg-default-light-console-text: #1f232b;
   --cm-pg-default-light-ssr-hint: #616773;
-  --cm-pg-default-light-iframe-bg: #ffffff;
+  --cm-pg-default-light-iframe-bg: #fff;
   --cm-pg-default-light-radius-md: 10px;
   --cm-pg-default-light-radius-lg: 14px;
-
   --cm-pg-default-dark-font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
   --cm-pg-default-dark-surface: #252526;
   --cm-pg-default-dark-surface-muted: #2d2f33;
@@ -388,17 +387,16 @@ defineExpose({
   --cm-pg-default-dark-tab-text: #f2f3f5;
   --cm-pg-default-dark-tab-border: #3f434a;
   --cm-pg-default-dark-tab-active-bg: #0e639c;
-  --cm-pg-default-dark-tab-active-text: #ffffff;
+  --cm-pg-default-dark-tab-active-text: #fff;
   --cm-pg-default-dark-run-bg: #0e639c;
-  --cm-pg-default-dark-run-text: #ffffff;
+  --cm-pg-default-dark-run-text: #fff;
   --cm-pg-default-dark-run-border: #0e639c;
   --cm-pg-default-dark-console-bg: #1f2023;
-  --cm-pg-default-dark-console-text: #ffffff;
+  --cm-pg-default-dark-console-text: #fff;
   --cm-pg-default-dark-ssr-hint: #b0b6c0;
   --cm-pg-default-dark-iframe-bg: #252526;
   --cm-pg-default-dark-radius-md: 10px;
   --cm-pg-default-dark-radius-lg: 14px;
-
   --cm-pg-light-font-family: var(--vf-font-family-base, var(--cm-pg-default-light-font-family));
   --cm-pg-light-surface: var(--vf-color-surface, var(--cm-pg-default-light-surface));
   --cm-pg-light-surface-muted: var(--vf-color-surface-muted, var(--cm-pg-default-light-surface-muted));
@@ -419,7 +417,6 @@ defineExpose({
   --cm-pg-light-iframe-bg: var(--vf-color-surface, var(--cm-pg-default-light-iframe-bg));
   --cm-pg-light-radius-md: var(--vf-radius-control, var(--cm-pg-default-light-radius-md));
   --cm-pg-light-radius-lg: var(--vf-radius-overlay, var(--cm-pg-default-light-radius-lg));
-
   --cm-pg-dark-font-family: var(--vf-font-family-base, var(--cm-pg-default-dark-font-family));
   --cm-pg-dark-surface: var(--vf-color-surface, var(--cm-pg-default-dark-surface));
   --cm-pg-dark-surface-muted: var(--vf-color-surface-muted, var(--cm-pg-default-dark-surface-muted));
@@ -440,14 +437,13 @@ defineExpose({
   --cm-pg-dark-iframe-bg: var(--vf-color-surface, var(--cm-pg-default-dark-iframe-bg));
   --cm-pg-dark-radius-md: var(--vf-radius-control, var(--cm-pg-default-dark-radius-md));
   --cm-pg-dark-radius-lg: var(--vf-radius-overlay, var(--cm-pg-default-dark-radius-lg));
-
   --cm-pg-control-height-md: var(--vf-control-height-md, 2.25rem);
   --cm-pg-control-font-size-md: var(--vf-control-font-size-md, 1rem);
   --cm-pg-control-font-weight: var(--vf-text-body-font-weight, 400);
   --cm-pg-control-line-height: var(--vf-text-body-line-height, 1.5);
   --cm-pg-control-padding-md: var(--vf-field-padding-md, 0.375rem 0.75rem);
   --cm-pg-focus-ring-width: var(--vf-focus-ring-width, 3px);
-  --cm-pg-focus-ring-color: var(--vf-color-focus-ring, rgba(14, 99, 156, 0.3));
+  --cm-pg-focus-ring-color: var(--vf-color-focus-ring, rgb(14 99 156 / 30%));
 }
 
 .cm-playground {
@@ -588,7 +584,6 @@ defineExpose({
 }
 
 .cm-tab:focus-visible,
-.cm-run:focus-visible,
 .cm-file:focus-visible {
   outline: none;
   box-shadow: 0 0 0 var(--cm-pg-focus-ring-width) var(--cm-pg-focus-ring-color);
@@ -607,13 +602,18 @@ defineExpose({
   border-color: var(--cm-pg-run-border);
 }
 
-.cm-run:hover:not(:disabled) {
-  filter: brightness(1.06);
+.cm-run:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-pg-focus-ring-width) var(--cm-pg-focus-ring-color);
 }
 
 .cm-run:disabled {
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+.cm-run:hover:not(:disabled) {
+  filter: brightness(1.06);
 }
 
 .cm-panel {
@@ -653,6 +653,7 @@ defineExpose({
   margin: 0;
   border: 0;
   border-radius: 0;
+
   --vcb-margin-block: 0;
   --vcb-margin-block-start: 0;
   --vcb-margin-block-end: 0;
@@ -703,7 +704,7 @@ defineExpose({
   color: var(--cm-pg-ssr-hint);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .cm-tabs {
     flex-wrap: wrap;
   }

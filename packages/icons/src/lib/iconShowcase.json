@@ -1,602 +1,602 @@
 [
-    {
-        "icon": "arrowLeft",
-        "status": "in_progress",
-        "note": "Rounded stroke-based left arrow aligned to the current reference direction."
-    },
-    {
-        "icon": "arrowLeftLong",
-        "status": "in_progress",
-        "note": "Extended left arrow using the same head size with a longer horizontal tail."
-    },
-    {
-        "icon": "arrowTurnUpLeft",
-        "status": "in_progress",
-        "note": "Rounded turn-up-left arrow matching the curved return-style silhouette."
-    },
-    {
-        "icon": "arrowTurnUpRight",
-        "status": "in_progress",
-        "note": "Rounded turn-up-right arrow mirrored from the same curved return-style silhouette."
-    },
-    {
-        "icon": "arrowTurnRightUp",
-        "status": "in_progress",
-        "note": "Rounded turn-right-up arrow rotated to keep the same return-style stroke behavior."
-    },
-    {
-        "icon": "arrowTurnLeftDown",
-        "status": "in_progress",
-        "note": "Rounded turn-left-down arrow rotated to complete the directional return-style set."
-    },
-    {
-        "icon": "arrowRight",
-        "status": "in_progress",
-        "note": "Mirrored rounded stroke arrow paired with the current left arrow."
-    },
-    {
-        "icon": "arrowRightLong",
-        "status": "in_progress",
-        "note": "Extended right arrow using the same head size with a longer horizontal tail."
-    },
-    {
-        "icon": "arrowUpLong",
-        "status": "in_progress",
-        "note": "Extended up arrow using the same head size with a longer vertical tail."
-    },
-    {
-        "icon": "arrowUp",
-        "status": "approved",
-        "note": "Vertical arrow aligned to the current stroke-based arrow family."
-    },
-    {
-        "icon": "arrowDown",
-        "status": "approved",
-        "note": "Vertical down arrow matching the same rounded stroke construction."
-    },
-    {
-        "icon": "arrowDownLong",
-        "status": "in_progress",
-        "note": "Extended down arrow using the same head size with a longer vertical tail."
-    },
-    {
-        "icon": "check",
-        "status": "in_progress",
-        "note": "Solid-only check mark being aligned to the current rounded reference."
-    },
-    {
-        "icon": "xmark",
-        "status": "in_progress",
-        "note": "Solid-only rounded x mark aligned to the same stroke-based reference family."
-    },
-    {
-        "icon": "plus",
-        "status": "in_progress",
-        "note": "Rounded plus mark aligned to the current stroke-based control icon family."
-    },
-    {
-        "icon": "minus",
-        "status": "in_progress",
-        "note": "Rounded minus mark aligned to the same control icon reference family."
-    },
-    {
-        "icon": "copy",
-        "status": "in_progress",
-        "note": "Solid copy icon being simplified toward a cleaner stacked document silhouette."
-    },
-    {
-        "icon": "clipboard",
-        "status": "in_progress",
-        "note": "Solid clipboard icon being simplified toward a cleaner board-and-clip silhouette."
-    },
-    {
-        "icon": "magnifyingGlass",
-        "status": "in_progress",
-        "note": "Rounded search icon aligned to the current reference-led stroke family."
-    },
-    {
-        "icon": "chevronDown",
-        "status": "in_progress",
-        "note": "Rounded chevron aligned to the same stroke-based reference family."
-    },
-    {
-        "icon": "chevronUp",
-        "status": "in_progress",
-        "note": "Mirrored rounded chevron paired with the current down chevron."
-    },
-    {
-        "icon": "chevronLeft",
-        "status": "in_progress",
-        "note": "Rounded left chevron aligned to the same stroke-based chevron family."
-    },
-    {
-        "icon": "chevronRight",
-        "status": "in_progress",
-        "note": "Rounded right chevron mirrored from the same family."
-    },
-    {
-        "icon": "bars",
-        "status": "in_progress",
-        "note": "Rounded menu bars aligned to the same stroke-based control family."
-    },
-    {
-        "icon": "calendar",
-        "status": "in_progress",
-        "note": "Solid calendar being simplified toward a cleaner header-and-body silhouette."
-    },
-    {
-        "icon": "user",
-        "status": "in_progress",
-        "note": "Solid user icon being simplified toward a cleaner head-and-shoulders silhouette."
-    },
-    {
-        "icon": "mail",
-        "status": "in_progress",
-        "note": "Solid mail icon being simplified toward a cleaner envelope silhouette."
-    },
-    {
-        "icon": "folder",
-        "status": "in_progress",
-        "note": "Solid folder being simplified toward a cleaner tabbed silhouette."
-    },
-    {
-        "icon": "folderOpen",
-        "status": "in_progress",
-        "note": "Solid open-folder icon being simplified toward a cleaner layered folder silhouette."
-    },
-    {
-        "icon": "file",
-        "status": "in_progress",
-        "note": "Solid file icon being simplified toward a cleaner folded-corner silhouette."
-    },
-    {
-        "icon": "fileText",
-        "status": "in_progress",
-        "note": "Solid file-text icon being simplified toward a cleaner document-with-content silhouette."
-    },
-    {
-        "icon": "house",
-        "status": "in_progress",
-        "note": "Solid house icon being simplified toward a cleaner roof-and-door silhouette."
-    },
-    {
-        "icon": "bookmark",
-        "status": "in_progress",
-        "note": "Solid bookmark icon being simplified toward a cleaner ribbon silhouette."
-    },
-    {
-        "icon": "star",
-        "status": "in_progress",
-        "note": "Solid star icon being simplified toward a cleaner five-point silhouette."
-    },
-    {
-        "icon": "heart",
-        "status": "in_progress",
-        "note": "Solid heart icon being simplified toward a cleaner rounded silhouette."
-    },
-    {
-        "icon": "sun",
-        "status": "in_progress",
-        "note": "Solid sun icon being simplified toward a cleaner ring-and-rays silhouette."
-    },
-    {
-        "icon": "moon",
-        "status": "in_progress",
-        "note": "Solid moon icon being simplified toward a cleaner crescent silhouette."
-    },
-    {
-        "icon": "info",
-        "status": "in_progress",
-        "note": "Solid info icon being simplified toward a cleaner lowercase-i silhouette."
-    },
-    {
-        "icon": "infoCircle",
-        "status": "in_progress",
-        "note": "Solid info-circle icon matching the current filled status-circle construction."
-    },
-    {
-        "icon": "warning",
-        "status": "in_progress",
-        "note": "Solid warning icon being simplified toward a cleaner alert triangle silhouette."
-    },
-    {
-        "icon": "question",
-        "status": "in_progress",
-        "note": "Solid question icon being simplified toward a cleaner standalone question mark silhouette."
-    },
-    {
-        "icon": "questionCircle",
-        "status": "in_progress",
-        "note": "Solid question-circle icon matching the current filled status-circle construction."
-    },
-    {
-        "icon": "checkCircle",
-        "status": "in_progress",
-        "note": "Solid check-circle icon being simplified toward a cleaner confirmed state silhouette."
-    },
-    {
-        "icon": "shield",
-        "status": "in_progress",
-        "note": "Solid shield icon being simplified toward a cleaner monolithic protective silhouette."
-    },
-    {
-        "icon": "eye",
-        "status": "in_progress",
-        "note": "Solid eye icon being simplified toward a cleaner iris-and-highlight silhouette."
-    },
-    {
-        "icon": "eyeSlash",
-        "status": "in_progress",
-        "note": "Solid eye-slash icon being simplified toward a cleaner crossed-out eye silhouette."
-    },
-    {
-        "icon": "bell",
-        "status": "in_progress",
-        "note": "Solid bell being simplified toward a cleaner alert silhouette."
-    },
-    {
-        "icon": "gear",
-        "status": "approved",
-        "note": "Current gear direction is acceptable and stable enough to keep."
-    },
-    {
-        "icon": "message",
-        "status": "in_progress",
-        "note": "Solid message icon being simplified toward a cleaner chat bubble silhouette."
-    },
-    {
-        "icon": "lock",
-        "status": "in_progress",
-        "note": "Solid lock being simplified toward a cleaner shackle-and-body silhouette."
-    },
-    {
-        "icon": "unlock",
-        "status": "in_progress",
-        "note": "Solid unlock being simplified to match the new lock body with an open shackle."
-    },
-    {
-        "icon": "archive",
-        "status": "in_progress",
-        "note": "Solid archive icon being simplified toward a cleaner box-and-lid silhouette."
-    },
-    {
-        "icon": "inbox",
-        "status": "in_progress",
-        "note": "Solid inbox icon being simplified toward a cleaner tray-and-dropzone silhouette."
-    },
-    {
-        "icon": "briefcase",
-        "status": "in_progress",
-        "note": "Solid briefcase icon being simplified toward a cleaner handle-and-latch silhouette."
-    },
-    {
-        "icon": "building",
-        "status": "in_progress",
-        "note": "Solid building icon being simplified toward a cleaner facade-and-door silhouette."
-    },
-    {
-        "icon": "chartBar",
-        "status": "in_progress",
-        "note": "Solid chart-bar icon being simplified toward a cleaner axis-and-horizontal-bars silhouette."
-    },
-    {
-        "icon": "database",
-        "status": "in_progress",
-        "note": "Solid database icon being simplified toward a cleaner stacked-cylinder silhouette."
-    },
-    {
-        "icon": "layers",
-        "status": "in_progress",
-        "note": "Solid layers icon being simplified toward a cleaner three-tier stacked silhouette."
-    },
-    {
-        "icon": "creditCard",
-        "status": "in_progress",
-        "note": "Solid credit-card icon being simplified toward a cleaner stripe-and-details silhouette."
-    },
-    {
-        "icon": "hardDrive",
-        "status": "in_progress",
-        "note": "Solid hard-drive icon being simplified toward a cleaner enclosure-and-indicators silhouette."
-    },
-    {
-        "icon": "globe",
-        "status": "in_progress",
-        "note": "Solid globe icon being simplified toward a cleaner meridian-and-latitude silhouette."
-    },
-    {
-        "icon": "receipt",
-        "status": "in_progress",
-        "note": "Solid receipt icon being simplified toward a cleaner serrated slip silhouette."
-    },
-    {
-        "icon": "server",
-        "status": "in_progress",
-        "note": "Solid server icon being simplified toward a cleaner dual-rack silhouette."
-    },
-    {
-        "icon": "terminal",
-        "status": "in_progress",
-        "note": "Solid terminal icon being simplified toward a cleaner chevron-and-command-line silhouette."
-    },
-    {
-        "icon": "wallet",
-        "status": "in_progress",
-        "note": "Solid wallet icon being simplified toward a cleaner flap-and-button silhouette."
-    },
-    {
-        "icon": "plug",
-        "status": "in_progress",
-        "note": "Solid plug icon being simplified toward a cleaner twin-prong silhouette."
-    },
-    {
-        "icon": "share",
-        "status": "in_progress",
-        "note": "Solid share icon being simplified toward a cleaner tri-node connection silhouette."
-    },
-    {
-        "icon": "code",
-        "status": "in_progress",
-        "note": "Solid code icon being simplified toward a cleaner chevrons-and-slash silhouette."
-    },
-    {
-        "icon": "users",
-        "status": "in_progress",
-        "note": "Solid users icon being simplified toward a cleaner three-person group silhouette."
-    },
-    {
-        "icon": "userPlus",
-        "status": "in_progress",
-        "note": "Solid user-plus icon being simplified toward a cleaner user silhouette with a separate plus action."
-    },
-    {
-        "icon": "userMinus",
-        "status": "in_progress",
-        "note": "Solid user-minus icon being simplified toward a cleaner user silhouette with a separate minus action."
-    },
-    {
-        "icon": "userCheck",
-        "status": "in_progress",
-        "note": "Solid user-check icon being simplified toward a cleaner user silhouette with a separate check action."
-    },
-    {
-        "icon": "clock",
-        "status": "in_progress",
-        "note": "Solid clock icon being simplified toward a cleaner circular face with hour and minute hands."
-    },
-    {
-        "icon": "history",
-        "status": "in_progress",
-        "note": "Solid history icon being simplified toward a cleaner return-arrow clock silhouette."
-    },
-    {
-        "icon": "download",
-        "status": "in_progress",
-        "note": "Solid download icon being simplified toward a cleaner arrow-and-tray silhouette."
-    },
-    {
-        "icon": "upload",
-        "status": "in_progress",
-        "note": "Solid upload icon being simplified toward a cleaner arrow-and-tray silhouette."
-    },
-    {
-        "icon": "externalLink",
-        "status": "in_progress",
-        "note": "Solid external-link icon being simplified toward a cleaner box-and-outbound-arrow silhouette."
-    },
-    {
-        "icon": "link",
-        "status": "in_progress",
-        "note": "Solid link icon being simplified toward a cleaner interlocking-chain silhouette."
-    },
-    {
-        "icon": "refresh",
-        "status": "in_progress",
-        "note": "Solid refresh icon being simplified toward a cleaner two-arrow circular-cycle silhouette."
-    },
-    {
-        "icon": "trash",
-        "status": "in_progress",
-        "note": "Solid trash icon being simplified toward a cleaner lid-and-bin silhouette."
-    },
-    {
-        "icon": "filter",
-        "status": "in_progress",
-        "note": "Solid filter icon being simplified toward a cleaner funnel silhouette."
-    },
-    {
-        "icon": "funnelX",
-        "status": "in_progress",
-        "note": "Solid funnel-x icon being simplified toward a cleaner filter-with-clear action silhouette."
-    },
-    {
-        "icon": "sort",
-        "status": "in_progress",
-        "note": "Solid sort icon being simplified toward a cleaner dual-direction chevron silhouette."
-    },
-    {
-        "icon": "sliders",
-        "status": "in_progress",
-        "note": "Solid sliders icon being simplified toward a cleaner three-track control silhouette."
-    },
-    {
-        "icon": "ellipsis",
-        "status": "in_progress",
-        "note": "Solid ellipsis icon being simplified toward a cleaner three-dot horizontal action silhouette."
-    },
-    {
-        "icon": "send",
-        "status": "in_progress",
-        "note": "Solid send icon being simplified toward a cleaner paper-plane silhouette."
-    },
-    {
-        "icon": "logIn",
-        "status": "in_progress",
-        "note": "Solid log-in icon being simplified toward a cleaner enter-arrow and doorway silhouette."
-    },
-    {
-        "icon": "logOut",
-        "status": "in_progress",
-        "note": "Solid log-out icon being simplified toward a cleaner exit-arrow and doorway silhouette."
-    },
-    {
-        "icon": "pencil",
-        "status": "in_progress",
-        "note": "Solid pencil icon being simplified toward a cleaner edit-tool silhouette."
-    },
-    {
-        "icon": "key",
-        "status": "in_progress",
-        "note": "Solid key icon being simplified toward a cleaner keyhead-and-shaft silhouette."
-    },
-    {
-        "icon": "cloud",
-        "status": "in_progress",
-        "note": "Solid cloud icon being simplified toward a cleaner monolithic cloud silhouette."
-    },
-    {
-        "icon": "phone",
-        "status": "in_progress",
-        "note": "Solid phone icon being simplified toward a cleaner handset-call silhouette."
-    },
-    {
-        "icon": "cpu",
-        "status": "in_progress",
-        "note": "Solid cpu icon being simplified toward a cleaner chip-and-core silhouette."
-    },
-    {
-        "icon": "grid",
-        "status": "in_progress",
-        "note": "Solid grid icon being simplified toward a cleaner four-cell layout silhouette."
-    },
-    {
-        "icon": "columns",
-        "status": "in_progress",
-        "note": "Solid columns icon being simplified toward a cleaner two-column layout silhouette."
-    },
-    {
-        "icon": "collapse",
-        "status": "in_progress",
-        "note": "Solid collapse icon being simplified toward a cleaner inward-diagonal action silhouette."
-    },
-    {
-        "icon": "expand",
-        "status": "in_progress",
-        "note": "Solid expand icon being simplified toward a cleaner outward-diagonal action silhouette."
-    },
-    {
-        "icon": "activity",
-        "status": "in_progress",
-        "note": "Solid activity icon being simplified toward a cleaner heartbeat waveform silhouette."
-    },
-    {
-        "icon": "alertCircle",
-        "status": "in_progress",
-        "note": "Solid alert-circle icon being simplified toward a cleaner warning-in-circle silhouette."
-    },
-    {
-        "icon": "ban",
-        "status": "in_progress",
-        "note": "Solid ban icon being simplified toward a cleaner prohibition-circle silhouette."
-    },
-    {
-        "icon": "caretDown",
-        "status": "in_progress",
-        "note": "Solid caret-down icon being simplified toward a cleaner directional triangle silhouette."
-    },
-    {
-        "icon": "caretLeft",
-        "status": "in_progress",
-        "note": "Solid caret-left icon being simplified toward a cleaner directional triangle silhouette."
-    },
-    {
-        "icon": "caretRight",
-        "status": "in_progress",
-        "note": "Solid caret-right icon being simplified toward a cleaner directional triangle silhouette."
-    },
-    {
-        "icon": "caretUp",
-        "status": "in_progress",
-        "note": "Solid caret-up icon being simplified toward a cleaner directional triangle silhouette."
-    },
-    {
-        "icon": "chevronUp",
-        "status": "in_progress",
-        "note": "Solid chevron-up icon being simplified toward a cleaner directional-angle silhouette."
-    },
-    {
-        "icon": "chevronDown",
-        "status": "in_progress",
-        "note": "Solid chevron-down icon being simplified toward a cleaner directional-angle silhouette."
-    },
-    {
-        "icon": "chevronLeft",
-        "status": "in_progress",
-        "note": "Solid chevron-left icon being simplified toward a cleaner directional-angle silhouette."
-    },
-    {
-        "icon": "chevronRight",
-        "status": "in_progress",
-        "note": "Solid chevron-right icon being simplified toward a cleaner directional-angle silhouette."
-    },
-    {
-        "icon": "circleHalf",
-        "status": "in_progress",
-        "note": "Solid circle-half icon being simplified toward a cleaner split-circle silhouette."
-    },
-    {
-        "icon": "circleNotch",
-        "status": "in_progress",
-        "note": "Solid circle-notch icon being simplified toward a cleaner loading-ring silhouette."
-    },
-    {
-        "icon": "rotateRight",
-        "status": "in_progress",
-        "note": "Solid rotate-right icon being simplified toward a cleaner clockwise-refresh silhouette."
-    },
-    {
-        "icon": "sparkles",
-        "status": "in_progress",
-        "note": "Solid sparkles icon being simplified toward a cleaner multi-star shine silhouette."
-    },
-    {
-        "icon": "xCircle",
-        "status": "in_progress",
-        "note": "Solid x-circle icon being simplified toward a cleaner error-in-circle silhouette."
-    },
-    {
-        "icon": "github",
-        "status": "approved",
-        "note": "Official GitHub mark included as a brand icon with source and trademark guidelines metadata."
-    },
-    {
-        "icon": "telegram",
-        "status": "approved",
-        "note": "Official Telegram mark included as a brand icon with source and trademark metadata."
-    },
-    {
-        "icon": "vk",
-        "status": "approved",
-        "note": "Official VK mark included as a brand icon with source and trademark guidelines metadata."
-    },
-    {
-        "icon": "youtube",
-        "status": "approved",
-        "note": "Official YouTube mark included as a brand icon with source and trademark guidelines metadata."
-    },
-    {
-        "icon": "x",
-        "status": "approved",
-        "note": "Official X mark included as a brand icon with source and trademark guidelines metadata."
-    },
-    {
-        "icon": "facebook",
-        "status": "approved",
-        "note": "Official Facebook mark included as a brand icon with source and trademark guidelines metadata."
-    },
-    {
-        "icon": "instagram",
-        "status": "approved",
-        "note": "Official Instagram mark included as a brand icon with source and trademark guidelines metadata."
-    }
+  {
+    "icon": "arrowLeft",
+    "status": "in_progress",
+    "note": "Rounded stroke-based left arrow aligned to the current reference direction."
+  },
+  {
+    "icon": "arrowLeftLong",
+    "status": "in_progress",
+    "note": "Extended left arrow using the same head size with a longer horizontal tail."
+  },
+  {
+    "icon": "arrowTurnUpLeft",
+    "status": "in_progress",
+    "note": "Rounded turn-up-left arrow matching the curved return-style silhouette."
+  },
+  {
+    "icon": "arrowTurnUpRight",
+    "status": "in_progress",
+    "note": "Rounded turn-up-right arrow mirrored from the same curved return-style silhouette."
+  },
+  {
+    "icon": "arrowTurnRightUp",
+    "status": "in_progress",
+    "note": "Rounded turn-right-up arrow rotated to keep the same return-style stroke behavior."
+  },
+  {
+    "icon": "arrowTurnLeftDown",
+    "status": "in_progress",
+    "note": "Rounded turn-left-down arrow rotated to complete the directional return-style set."
+  },
+  {
+    "icon": "arrowRight",
+    "status": "in_progress",
+    "note": "Mirrored rounded stroke arrow paired with the current left arrow."
+  },
+  {
+    "icon": "arrowRightLong",
+    "status": "in_progress",
+    "note": "Extended right arrow using the same head size with a longer horizontal tail."
+  },
+  {
+    "icon": "arrowUpLong",
+    "status": "in_progress",
+    "note": "Extended up arrow using the same head size with a longer vertical tail."
+  },
+  {
+    "icon": "arrowUp",
+    "status": "approved",
+    "note": "Vertical arrow aligned to the current stroke-based arrow family."
+  },
+  {
+    "icon": "arrowDown",
+    "status": "approved",
+    "note": "Vertical down arrow matching the same rounded stroke construction."
+  },
+  {
+    "icon": "arrowDownLong",
+    "status": "in_progress",
+    "note": "Extended down arrow using the same head size with a longer vertical tail."
+  },
+  {
+    "icon": "check",
+    "status": "in_progress",
+    "note": "Solid-only check mark being aligned to the current rounded reference."
+  },
+  {
+    "icon": "xmark",
+    "status": "in_progress",
+    "note": "Solid-only rounded x mark aligned to the same stroke-based reference family."
+  },
+  {
+    "icon": "plus",
+    "status": "in_progress",
+    "note": "Rounded plus mark aligned to the current stroke-based control icon family."
+  },
+  {
+    "icon": "minus",
+    "status": "in_progress",
+    "note": "Rounded minus mark aligned to the same control icon reference family."
+  },
+  {
+    "icon": "copy",
+    "status": "in_progress",
+    "note": "Solid copy icon being simplified toward a cleaner stacked document silhouette."
+  },
+  {
+    "icon": "clipboard",
+    "status": "in_progress",
+    "note": "Solid clipboard icon being simplified toward a cleaner board-and-clip silhouette."
+  },
+  {
+    "icon": "magnifyingGlass",
+    "status": "in_progress",
+    "note": "Rounded search icon aligned to the current reference-led stroke family."
+  },
+  {
+    "icon": "chevronDown",
+    "status": "in_progress",
+    "note": "Rounded chevron aligned to the same stroke-based reference family."
+  },
+  {
+    "icon": "chevronUp",
+    "status": "in_progress",
+    "note": "Mirrored rounded chevron paired with the current down chevron."
+  },
+  {
+    "icon": "chevronLeft",
+    "status": "in_progress",
+    "note": "Rounded left chevron aligned to the same stroke-based chevron family."
+  },
+  {
+    "icon": "chevronRight",
+    "status": "in_progress",
+    "note": "Rounded right chevron mirrored from the same family."
+  },
+  {
+    "icon": "bars",
+    "status": "in_progress",
+    "note": "Rounded menu bars aligned to the same stroke-based control family."
+  },
+  {
+    "icon": "calendar",
+    "status": "in_progress",
+    "note": "Solid calendar being simplified toward a cleaner header-and-body silhouette."
+  },
+  {
+    "icon": "user",
+    "status": "in_progress",
+    "note": "Solid user icon being simplified toward a cleaner head-and-shoulders silhouette."
+  },
+  {
+    "icon": "mail",
+    "status": "in_progress",
+    "note": "Solid mail icon being simplified toward a cleaner envelope silhouette."
+  },
+  {
+    "icon": "folder",
+    "status": "in_progress",
+    "note": "Solid folder being simplified toward a cleaner tabbed silhouette."
+  },
+  {
+    "icon": "folderOpen",
+    "status": "in_progress",
+    "note": "Solid open-folder icon being simplified toward a cleaner layered folder silhouette."
+  },
+  {
+    "icon": "file",
+    "status": "in_progress",
+    "note": "Solid file icon being simplified toward a cleaner folded-corner silhouette."
+  },
+  {
+    "icon": "fileText",
+    "status": "in_progress",
+    "note": "Solid file-text icon being simplified toward a cleaner document-with-content silhouette."
+  },
+  {
+    "icon": "house",
+    "status": "in_progress",
+    "note": "Solid house icon being simplified toward a cleaner roof-and-door silhouette."
+  },
+  {
+    "icon": "bookmark",
+    "status": "in_progress",
+    "note": "Solid bookmark icon being simplified toward a cleaner ribbon silhouette."
+  },
+  {
+    "icon": "star",
+    "status": "in_progress",
+    "note": "Solid star icon being simplified toward a cleaner five-point silhouette."
+  },
+  {
+    "icon": "heart",
+    "status": "in_progress",
+    "note": "Solid heart icon being simplified toward a cleaner rounded silhouette."
+  },
+  {
+    "icon": "sun",
+    "status": "in_progress",
+    "note": "Solid sun icon being simplified toward a cleaner ring-and-rays silhouette."
+  },
+  {
+    "icon": "moon",
+    "status": "in_progress",
+    "note": "Solid moon icon being simplified toward a cleaner crescent silhouette."
+  },
+  {
+    "icon": "info",
+    "status": "in_progress",
+    "note": "Solid info icon being simplified toward a cleaner lowercase-i silhouette."
+  },
+  {
+    "icon": "infoCircle",
+    "status": "in_progress",
+    "note": "Solid info-circle icon matching the current filled status-circle construction."
+  },
+  {
+    "icon": "warning",
+    "status": "in_progress",
+    "note": "Solid warning icon being simplified toward a cleaner alert triangle silhouette."
+  },
+  {
+    "icon": "question",
+    "status": "in_progress",
+    "note": "Solid question icon being simplified toward a cleaner standalone question mark silhouette."
+  },
+  {
+    "icon": "questionCircle",
+    "status": "in_progress",
+    "note": "Solid question-circle icon matching the current filled status-circle construction."
+  },
+  {
+    "icon": "checkCircle",
+    "status": "in_progress",
+    "note": "Solid check-circle icon being simplified toward a cleaner confirmed state silhouette."
+  },
+  {
+    "icon": "shield",
+    "status": "in_progress",
+    "note": "Solid shield icon being simplified toward a cleaner monolithic protective silhouette."
+  },
+  {
+    "icon": "eye",
+    "status": "in_progress",
+    "note": "Solid eye icon being simplified toward a cleaner iris-and-highlight silhouette."
+  },
+  {
+    "icon": "eyeSlash",
+    "status": "in_progress",
+    "note": "Solid eye-slash icon being simplified toward a cleaner crossed-out eye silhouette."
+  },
+  {
+    "icon": "bell",
+    "status": "in_progress",
+    "note": "Solid bell being simplified toward a cleaner alert silhouette."
+  },
+  {
+    "icon": "gear",
+    "status": "approved",
+    "note": "Current gear direction is acceptable and stable enough to keep."
+  },
+  {
+    "icon": "message",
+    "status": "in_progress",
+    "note": "Solid message icon being simplified toward a cleaner chat bubble silhouette."
+  },
+  {
+    "icon": "lock",
+    "status": "in_progress",
+    "note": "Solid lock being simplified toward a cleaner shackle-and-body silhouette."
+  },
+  {
+    "icon": "unlock",
+    "status": "in_progress",
+    "note": "Solid unlock being simplified to match the new lock body with an open shackle."
+  },
+  {
+    "icon": "archive",
+    "status": "in_progress",
+    "note": "Solid archive icon being simplified toward a cleaner box-and-lid silhouette."
+  },
+  {
+    "icon": "inbox",
+    "status": "in_progress",
+    "note": "Solid inbox icon being simplified toward a cleaner tray-and-dropzone silhouette."
+  },
+  {
+    "icon": "briefcase",
+    "status": "in_progress",
+    "note": "Solid briefcase icon being simplified toward a cleaner handle-and-latch silhouette."
+  },
+  {
+    "icon": "building",
+    "status": "in_progress",
+    "note": "Solid building icon being simplified toward a cleaner facade-and-door silhouette."
+  },
+  {
+    "icon": "chartBar",
+    "status": "in_progress",
+    "note": "Solid chart-bar icon being simplified toward a cleaner axis-and-horizontal-bars silhouette."
+  },
+  {
+    "icon": "database",
+    "status": "in_progress",
+    "note": "Solid database icon being simplified toward a cleaner stacked-cylinder silhouette."
+  },
+  {
+    "icon": "layers",
+    "status": "in_progress",
+    "note": "Solid layers icon being simplified toward a cleaner three-tier stacked silhouette."
+  },
+  {
+    "icon": "creditCard",
+    "status": "in_progress",
+    "note": "Solid credit-card icon being simplified toward a cleaner stripe-and-details silhouette."
+  },
+  {
+    "icon": "hardDrive",
+    "status": "in_progress",
+    "note": "Solid hard-drive icon being simplified toward a cleaner enclosure-and-indicators silhouette."
+  },
+  {
+    "icon": "globe",
+    "status": "in_progress",
+    "note": "Solid globe icon being simplified toward a cleaner meridian-and-latitude silhouette."
+  },
+  {
+    "icon": "receipt",
+    "status": "in_progress",
+    "note": "Solid receipt icon being simplified toward a cleaner serrated slip silhouette."
+  },
+  {
+    "icon": "server",
+    "status": "in_progress",
+    "note": "Solid server icon being simplified toward a cleaner dual-rack silhouette."
+  },
+  {
+    "icon": "terminal",
+    "status": "in_progress",
+    "note": "Solid terminal icon being simplified toward a cleaner chevron-and-command-line silhouette."
+  },
+  {
+    "icon": "wallet",
+    "status": "in_progress",
+    "note": "Solid wallet icon being simplified toward a cleaner flap-and-button silhouette."
+  },
+  {
+    "icon": "plug",
+    "status": "in_progress",
+    "note": "Solid plug icon being simplified toward a cleaner twin-prong silhouette."
+  },
+  {
+    "icon": "share",
+    "status": "in_progress",
+    "note": "Solid share icon being simplified toward a cleaner tri-node connection silhouette."
+  },
+  {
+    "icon": "code",
+    "status": "in_progress",
+    "note": "Solid code icon being simplified toward a cleaner chevrons-and-slash silhouette."
+  },
+  {
+    "icon": "users",
+    "status": "in_progress",
+    "note": "Solid users icon being simplified toward a cleaner three-person group silhouette."
+  },
+  {
+    "icon": "userPlus",
+    "status": "in_progress",
+    "note": "Solid user-plus icon being simplified toward a cleaner user silhouette with a separate plus action."
+  },
+  {
+    "icon": "userMinus",
+    "status": "in_progress",
+    "note": "Solid user-minus icon being simplified toward a cleaner user silhouette with a separate minus action."
+  },
+  {
+    "icon": "userCheck",
+    "status": "in_progress",
+    "note": "Solid user-check icon being simplified toward a cleaner user silhouette with a separate check action."
+  },
+  {
+    "icon": "clock",
+    "status": "in_progress",
+    "note": "Solid clock icon being simplified toward a cleaner circular face with hour and minute hands."
+  },
+  {
+    "icon": "history",
+    "status": "in_progress",
+    "note": "Solid history icon being simplified toward a cleaner return-arrow clock silhouette."
+  },
+  {
+    "icon": "download",
+    "status": "in_progress",
+    "note": "Solid download icon being simplified toward a cleaner arrow-and-tray silhouette."
+  },
+  {
+    "icon": "upload",
+    "status": "in_progress",
+    "note": "Solid upload icon being simplified toward a cleaner arrow-and-tray silhouette."
+  },
+  {
+    "icon": "externalLink",
+    "status": "in_progress",
+    "note": "Solid external-link icon being simplified toward a cleaner box-and-outbound-arrow silhouette."
+  },
+  {
+    "icon": "link",
+    "status": "in_progress",
+    "note": "Solid link icon being simplified toward a cleaner interlocking-chain silhouette."
+  },
+  {
+    "icon": "refresh",
+    "status": "in_progress",
+    "note": "Solid refresh icon being simplified toward a cleaner two-arrow circular-cycle silhouette."
+  },
+  {
+    "icon": "trash",
+    "status": "in_progress",
+    "note": "Solid trash icon being simplified toward a cleaner lid-and-bin silhouette."
+  },
+  {
+    "icon": "filter",
+    "status": "in_progress",
+    "note": "Solid filter icon being simplified toward a cleaner funnel silhouette."
+  },
+  {
+    "icon": "funnelX",
+    "status": "in_progress",
+    "note": "Solid funnel-x icon being simplified toward a cleaner filter-with-clear action silhouette."
+  },
+  {
+    "icon": "sort",
+    "status": "in_progress",
+    "note": "Solid sort icon being simplified toward a cleaner dual-direction chevron silhouette."
+  },
+  {
+    "icon": "sliders",
+    "status": "in_progress",
+    "note": "Solid sliders icon being simplified toward a cleaner three-track control silhouette."
+  },
+  {
+    "icon": "ellipsis",
+    "status": "in_progress",
+    "note": "Solid ellipsis icon being simplified toward a cleaner three-dot horizontal action silhouette."
+  },
+  {
+    "icon": "send",
+    "status": "in_progress",
+    "note": "Solid send icon being simplified toward a cleaner paper-plane silhouette."
+  },
+  {
+    "icon": "logIn",
+    "status": "in_progress",
+    "note": "Solid log-in icon being simplified toward a cleaner enter-arrow and doorway silhouette."
+  },
+  {
+    "icon": "logOut",
+    "status": "in_progress",
+    "note": "Solid log-out icon being simplified toward a cleaner exit-arrow and doorway silhouette."
+  },
+  {
+    "icon": "pencil",
+    "status": "in_progress",
+    "note": "Solid pencil icon being simplified toward a cleaner edit-tool silhouette."
+  },
+  {
+    "icon": "key",
+    "status": "in_progress",
+    "note": "Solid key icon being simplified toward a cleaner keyhead-and-shaft silhouette."
+  },
+  {
+    "icon": "cloud",
+    "status": "in_progress",
+    "note": "Solid cloud icon being simplified toward a cleaner monolithic cloud silhouette."
+  },
+  {
+    "icon": "phone",
+    "status": "in_progress",
+    "note": "Solid phone icon being simplified toward a cleaner handset-call silhouette."
+  },
+  {
+    "icon": "cpu",
+    "status": "in_progress",
+    "note": "Solid cpu icon being simplified toward a cleaner chip-and-core silhouette."
+  },
+  {
+    "icon": "grid",
+    "status": "in_progress",
+    "note": "Solid grid icon being simplified toward a cleaner four-cell layout silhouette."
+  },
+  {
+    "icon": "columns",
+    "status": "in_progress",
+    "note": "Solid columns icon being simplified toward a cleaner two-column layout silhouette."
+  },
+  {
+    "icon": "collapse",
+    "status": "in_progress",
+    "note": "Solid collapse icon being simplified toward a cleaner inward-diagonal action silhouette."
+  },
+  {
+    "icon": "expand",
+    "status": "in_progress",
+    "note": "Solid expand icon being simplified toward a cleaner outward-diagonal action silhouette."
+  },
+  {
+    "icon": "activity",
+    "status": "in_progress",
+    "note": "Solid activity icon being simplified toward a cleaner heartbeat waveform silhouette."
+  },
+  {
+    "icon": "alertCircle",
+    "status": "in_progress",
+    "note": "Solid alert-circle icon being simplified toward a cleaner warning-in-circle silhouette."
+  },
+  {
+    "icon": "ban",
+    "status": "in_progress",
+    "note": "Solid ban icon being simplified toward a cleaner prohibition-circle silhouette."
+  },
+  {
+    "icon": "caretDown",
+    "status": "in_progress",
+    "note": "Solid caret-down icon being simplified toward a cleaner directional triangle silhouette."
+  },
+  {
+    "icon": "caretLeft",
+    "status": "in_progress",
+    "note": "Solid caret-left icon being simplified toward a cleaner directional triangle silhouette."
+  },
+  {
+    "icon": "caretRight",
+    "status": "in_progress",
+    "note": "Solid caret-right icon being simplified toward a cleaner directional triangle silhouette."
+  },
+  {
+    "icon": "caretUp",
+    "status": "in_progress",
+    "note": "Solid caret-up icon being simplified toward a cleaner directional triangle silhouette."
+  },
+  {
+    "icon": "chevronUp",
+    "status": "in_progress",
+    "note": "Solid chevron-up icon being simplified toward a cleaner directional-angle silhouette."
+  },
+  {
+    "icon": "chevronDown",
+    "status": "in_progress",
+    "note": "Solid chevron-down icon being simplified toward a cleaner directional-angle silhouette."
+  },
+  {
+    "icon": "chevronLeft",
+    "status": "in_progress",
+    "note": "Solid chevron-left icon being simplified toward a cleaner directional-angle silhouette."
+  },
+  {
+    "icon": "chevronRight",
+    "status": "in_progress",
+    "note": "Solid chevron-right icon being simplified toward a cleaner directional-angle silhouette."
+  },
+  {
+    "icon": "circleHalf",
+    "status": "in_progress",
+    "note": "Solid circle-half icon being simplified toward a cleaner split-circle silhouette."
+  },
+  {
+    "icon": "circleNotch",
+    "status": "in_progress",
+    "note": "Solid circle-notch icon being simplified toward a cleaner loading-ring silhouette."
+  },
+  {
+    "icon": "rotateRight",
+    "status": "in_progress",
+    "note": "Solid rotate-right icon being simplified toward a cleaner clockwise-refresh silhouette."
+  },
+  {
+    "icon": "sparkles",
+    "status": "in_progress",
+    "note": "Solid sparkles icon being simplified toward a cleaner multi-star shine silhouette."
+  },
+  {
+    "icon": "xCircle",
+    "status": "in_progress",
+    "note": "Solid x-circle icon being simplified toward a cleaner error-in-circle silhouette."
+  },
+  {
+    "icon": "github",
+    "status": "approved",
+    "note": "Official GitHub mark included as a brand icon with source and trademark guidelines metadata."
+  },
+  {
+    "icon": "telegram",
+    "status": "approved",
+    "note": "Official Telegram mark included as a brand icon with source and trademark metadata."
+  },
+  {
+    "icon": "vk",
+    "status": "approved",
+    "note": "Official VK mark included as a brand icon with source and trademark guidelines metadata."
+  },
+  {
+    "icon": "youtube",
+    "status": "approved",
+    "note": "Official YouTube mark included as a brand icon with source and trademark guidelines metadata."
+  },
+  {
+    "icon": "x",
+    "status": "approved",
+    "note": "Official X mark included as a brand icon with source and trademark guidelines metadata."
+  },
+  {
+    "icon": "facebook",
+    "status": "approved",
+    "note": "Official Facebook mark included as a brand icon with source and trademark guidelines metadata."
+  },
+  {
+    "icon": "instagram",
+    "status": "approved",
+    "note": "Official Instagram mark included as a brand icon with source and trademark guidelines metadata."
+  }
 ]

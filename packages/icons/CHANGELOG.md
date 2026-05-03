@@ -14,10 +14,10 @@
 
 - Add a new brand-icon layer and release readiness improvements.
 
-    - Add brand icons: `github`, `telegram`, `vk`, `youtube`, `x`, `facebook`, and `instagram`.
-    - Extend icon catalog metadata with optional `brand` information (`source`, `guidelines`, `license`, `isTrademark`).
-    - Separate the local showcase into dedicated `Core Icons` and `Brand Icons` sections.
-    - Update README with brand/trademark usage guidance.
+  - Add brand icons: `github`, `telegram`, `vk`, `youtube`, `x`, `facebook`, and `instagram`.
+  - Extend icon catalog metadata with optional `brand` information (`source`, `guidelines`, `license`, `isTrademark`).
+  - Separate the local showcase into dedicated `Core Icons` and `Brand Icons` sections.
+  - Update README with brand/trademark usage guidance.
 
 ## 1.2.0
 
@@ -56,7 +56,7 @@
 
 - Release `1.0.0` with a redesigned solid icon pack and stabilized API.
 
-    - redesign and expand the solid icon set with consistent geometry
-    - remove regular icon variants and simplify the package to solid-only rendering
-    - refine the showcase UI for focused icon review
-    - stabilize build, typecheck, lint, and smoke verification workflow
+  - redesign and expand the solid icon set with consistent geometry
+  - remove regular icon variants and simplify the package to solid-only rendering
+  - refine the showcase UI for focused icon review
+  - stabilize build, typecheck, lint, and smoke verification workflow

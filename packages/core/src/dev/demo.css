@@ -115,7 +115,7 @@ body {
   max-width: 20rem;
 }
 
-@media (max-width: 960px) {
+@media (width <= 960px) {
   .demo-grid--two,
   .demo-grid--three {
     grid-template-columns: minmax(0, 1fr);

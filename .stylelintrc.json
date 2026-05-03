@@ -1,0 +1,25 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-config-standard-scss", "stylelint-config-html"],
+  "ignoreFiles": ["**/dist/**", "**/showcase-dist/**", "**/coverage/**", "**/node_modules/**"],
+  "rules": {
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:(?:__|--)[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+      {
+        "message": "Expected class selector to use kebab-case or BEM-style __/-- segments"
+      }
+    ],
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": ["deep", "global", "slotted"]
+      }
+    ],
+    "value-keyword-case": [
+      "lower",
+      {
+        "ignoreKeywords": ["currentColor"],
+        "ignoreProperties": ["font-family", "/font-family$/"]
+      }
+    ]
+  }
+}

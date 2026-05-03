@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity -- Form controls are grouped by component and state; reordering for this rule would make the cascade harder to maintain. */
+
 .vf-input,
 .vf-select-wrap,
 .vf-textarea {
@@ -160,9 +162,7 @@
   text-align: left;
 }
 
-.vf-select:hover:not(:disabled):not(.vf-select--invalid):not(:focus):not(
-    :focus-visible
-  ) {
+.vf-select:hover:not(:disabled, .vf-select--invalid, :focus, :focus-visible) {
   border-color: var(--vf-select-hover-border-color);
 }
 
@@ -193,7 +193,7 @@
   border-color: var(--vf-select-invalid-border-color);
 }
 
-.vf-select--invalid:hover:not(:disabled):not(:focus):not(:focus-visible) {
+.vf-select--invalid:hover:not(:disabled, :focus, :focus-visible) {
   border-color: var(--vf-select-hover-border-color);
 }
 
@@ -274,9 +274,7 @@
   color: var(--vf-select-option-color);
 }
 
-.vf-select__option:hover:not(:disabled):not(.vf-select__option--selected):not(
-    [aria-selected="true"]
-  ) {
+.vf-select__option:hover:not(:disabled, .vf-select__option--selected, [aria-selected="true"]) {
   border-color: transparent;
   background: var(--vf-select-option-hover-background);
   color: var(--vf-select-option-hover-color);
@@ -317,9 +315,7 @@
   color: var(--vf-input-placeholder-color);
 }
 
-.vf-input:hover:not(:disabled):not(.vf-input--invalid):not(:focus):not(
-    :focus-visible
-  ) {
+.vf-input:hover:not(:disabled, .vf-input--invalid, :focus, :focus-visible) {
   border-color: var(--vf-input-hover-border-color);
 }
 
@@ -351,7 +347,7 @@
   border-color: var(--vf-input-invalid-border-color);
 }
 
-.vf-input--invalid:hover:not(:disabled):not(:focus):not(:focus-visible) {
+.vf-input--invalid:hover:not(:disabled, :focus, :focus-visible) {
   border-color: var(--vf-input-hover-border-color);
 }
 
@@ -470,9 +466,7 @@
   color: var(--vf-textarea-placeholder-color);
 }
 
-.vf-textarea:hover:not(:disabled):not(.vf-textarea--invalid):not(:focus):not(
-    :focus-visible
-  ) {
+.vf-textarea:hover:not(:disabled, .vf-textarea--invalid, :focus, :focus-visible) {
   border-color: var(--vf-textarea-hover-border-color);
 }
 
@@ -497,7 +491,7 @@
   border-color: var(--vf-textarea-invalid-border-color);
 }
 
-.vf-textarea--invalid:hover:not(:disabled):not(:focus):not(:focus-visible) {
+.vf-textarea--invalid:hover:not(:disabled, :focus, :focus-visible) {
   border-color: var(--vf-textarea-hover-border-color);
 }
 
@@ -615,7 +609,7 @@
   margin: 0;
   padding: 0;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
   opacity: 0;
@@ -856,10 +850,7 @@
 .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
 .vf-switch--checked .vf-switch__thumb {
   transform: translateX(
-    calc(
-      var(--vf-switch-width-md) - var(--vf-switch-thumb-size-md) -
-        (var(--vf-switch-thumb-inset) * 2) - 2px
-    )
+    calc(var(--vf-switch-width-md) - var(--vf-switch-thumb-size-md) - (var(--vf-switch-thumb-inset) * 2) - 2px)
   );
   border-color: var(--vf-switch-thumb-checked-border-color);
   background: var(--vf-switch-thumb-checked-background);
@@ -960,14 +951,12 @@
 }
 
 html[data-vf-theme="dark"]
-  .vf-switch:not(.vf-switch--static):not(.vf-switch--disabled)
+  .vf-switch:not(.vf-switch--static, .vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
   .vf-switch__thumb,
 html[data-vf-theme="dark"]
-  .vf-switch:not(.vf-switch--static):not(
-    .vf-switch--disabled
-  ).vf-switch--checked
+  .vf-switch:not(.vf-switch--static, .vf-switch--disabled).vf-switch--checked
   .vf-switch__thumb {
   border-color: var(--vf-color-primary-contrast);
   background: var(--vf-color-primary-contrast);
@@ -1028,10 +1017,7 @@ html[data-vf-theme="dark"]
   .vf-switch__thumb,
 .vf-switch--sm.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
-    calc(
-      var(--vf-switch-width-sm) - var(--vf-switch-thumb-size-sm) -
-        (var(--vf-switch-thumb-inset) * 2) - 2px
-    )
+    calc(var(--vf-switch-width-sm) - var(--vf-switch-thumb-size-sm) - (var(--vf-switch-thumb-inset) * 2) - 2px)
   );
 }
 
@@ -1056,10 +1042,7 @@ html[data-vf-theme="dark"]
   .vf-switch__thumb,
 .vf-switch--lg.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
-    calc(
-      var(--vf-switch-width-lg) - var(--vf-switch-thumb-size-lg) -
-        (var(--vf-switch-thumb-inset) * 2) - 2px
-    )
+    calc(var(--vf-switch-width-lg) - var(--vf-switch-thumb-size-lg) - (var(--vf-switch-thumb-inset) * 2) - 2px)
   );
 }
 

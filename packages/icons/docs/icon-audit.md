@@ -64,9 +64,9 @@ This file defines the preferred semantic choices for the current pack so the set
 - New icons do not need to enter the core set automatically.
 - New icons currently ship as `solid` only.
 - A core-set addition should satisfy at least one of these:
-    - solves a repeated SaaS/admin use case
-    - replaces multiple ad hoc icons with one canonical semantic choice
-    - is needed in dashboards, forms, tables, billing, auth, messaging, or infrastructure views
+  - solves a repeated SaaS/admin use case
+  - replaces multiple ad hoc icons with one canonical semantic choice
+  - is needed in dashboards, forms, tables, billing, auth, messaging, or infrastructure views
 
 ## Dual-Style Priority
 

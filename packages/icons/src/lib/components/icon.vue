@@ -82,7 +82,7 @@ const classes = computed(() => {
 const wrapperClasses = computed(() => {
     return {
         'vif-icon-wrapper': true,
-        'vif-icon-wrapper_animations_spin': props.spin,
+        'vif-icon-wrapper--spin': props.spin,
     };
 });
 
@@ -111,7 +111,7 @@ const wrapperStyles = computed(() => {
     transform-origin: center;
 }
 
-.vif-icon-wrapper_animations_spin {
+.vif-icon-wrapper--spin {
     animation-name: vif-spin;
     animation-delay: 0s;
     animation-duration: 2s;
@@ -124,6 +124,7 @@ const wrapperStyles = computed(() => {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }

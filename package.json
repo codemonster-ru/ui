@@ -9,6 +9,11 @@
   "scripts": {
     "build": "npm run build -w @codemonster-ru/vueforge-icons && npm run build -w @codemonster-ru/vueforge-theme && npm run build -w @codemonster-ru/vueforge-core && npm run build -w @codemonster-ru/vueforge-layouts && npm run build -w @codemonster-ru/vueforge-codeblock",
     "lint": "npm run lint --workspaces --if-present",
+    "lint:styles": "stylelint \"**/*.{css,scss,sass,vue}\" --allow-empty-input --formatter unix",
+    "lint:html": "htmlhint \"**/*.html\" --format unix --nocolor",
+    "lint:md": "markdownlint-cli2 \"**/*.md\"",
+    "lint:data": "prettier --check \"**/*.{json,yml,yaml}\"",
+    "lint:all": "npm run lint && npm run lint:styles && npm run lint:html && npm run lint:md && npm run lint:data",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "check": "npm run check --workspaces --if-present",
@@ -16,6 +21,13 @@
     "prepublish:all": "npm run build && npm pack --workspace @codemonster-ru/vueforge-icons --dry-run && npm pack --workspace @codemonster-ru/vueforge-theme --dry-run && npm pack --workspace @codemonster-ru/vueforge-core --dry-run && npm pack --workspace @codemonster-ru/vueforge-layouts --dry-run && npm pack --workspace @codemonster-ru/vueforge-codeblock --dry-run"
   },
   "devDependencies": {
-    "@vue/language-core": "~3.1.8"
+    "@vue/language-core": "~3.1.8",
+    "htmlhint": "^1.7.1",
+    "markdownlint-cli2": "^0.18.1",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.25.0",
+    "stylelint-config-html": "^1.1.0",
+    "stylelint-config-standard": "^39.0.1",
+    "stylelint-config-standard-scss": "^16.0.0"
   }
 }

@@ -21,13 +21,15 @@
   color-scheme: light;
   background-color: var(--vf-color-bg);
   color: var(--vf-color-text);
+
   --vf-prose-color: var(--vf-color-muted);
   --vf-prose-heading-color: var(--vf-color-text);
 }
 
 :root[data-vf-theme="dark"] {
   color-scheme: dark;
-  --vf-prose-heading-color: #ffffff;
+
+  --vf-prose-heading-color: #fff;
 }
 
 button,
@@ -224,7 +226,7 @@ textarea {
   margin: -1px;
   overflow: hidden;
   border: 0;
-  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 
@@ -393,7 +395,6 @@ textarea {
   border-radius: var(--vf-radius-control);
   background: color-mix(in srgb, currentColor 16%, transparent);
   color: var(--vf-color-text);
-  -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   font-family: var(--vf-font-family-mono);
   font-size: var(--vf-prose-inline-code-font-size);

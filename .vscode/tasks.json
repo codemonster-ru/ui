@@ -1,0 +1,114 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "monorepo:typecheck:watch",
+      "type": "shell",
+      "command": "npm run typecheck --workspaces --if-present -- --watch --preserveWatchOutput",
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": false
+      }
+    },
+    {
+      "label": "monorepo:lint:once",
+      "type": "shell",
+      "command": "npm run lint --workspaces --if-present",
+      "isBackground": false,
+      "problemMatcher": "$eslint-stylish",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "monorepo:styles-html:once",
+      "type": "shell",
+      "command": "npm run lint:styles && npm run lint:html",
+      "isBackground": false,
+      "problemMatcher": [
+        {
+          "owner": "style-html",
+          "fileLocation": ["absolute"],
+          "pattern": {
+            "regexp": "^(.+?):(\\d+):(\\d+):\\s+(.*?)\\s+\\[(error|warning)(?:\\/[^\\]]+)?\\]$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4,
+            "severity": 5
+          }
+        }
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "monorepo:md-data:once",
+      "type": "shell",
+      "command": "npm run lint:md && npm run lint:data",
+      "isBackground": false,
+      "problemMatcher": [
+        {
+          "owner": "markdownlint",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+            "regexp": "^(.+?):(\\d+)(?::(\\d+))?\\s+(MD\\d+\\/[^\\s]+)\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "code": 4,
+            "message": 5
+          }
+        },
+        {
+          "owner": "prettier-check",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+            "regexp": "^\\[warn\\]\\s+(.+)$",
+            "file": 1,
+            "message": 1
+          }
+        }
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "monorepo:quality:once",
+      "dependsOrder": "sequence",
+      "dependsOn": ["monorepo:lint:once", "monorepo:styles-html:once", "monorepo:md-data:once"],
+      "problemMatcher": []
+    },
+    {
+      "label": "monorepo:diagnostics:watch",
+      "dependsOrder": "parallel",
+      "dependsOn": ["monorepo:typecheck:watch", "monorepo:quality:once"],
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "monorepo:check:once",
+      "type": "shell",
+      "command": "npm run lint:all && npm run typecheck --workspaces --if-present",
+      "problemMatcher": "$tsc",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    }
+  ]
+}

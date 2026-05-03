@@ -27,7 +27,7 @@ const snippets = {
   vue: [
     '<script setup lang="ts">',
     "const label = 'Save';",
-    "<\/script>",
+    "</scr" + "ipt>",
     "",
     "<template>",
     '  <button>{{ label }}</button>',
@@ -124,11 +124,11 @@ const blocks = [
   width: min(100%, 1320px);
   margin: 0 auto;
   padding: 14px;
-  border: 1px solid var(--vf-color-border, rgba(15, 23, 42, 0.12));
+  border: 1px solid var(--vf-color-border, rgb(15 23 42 / 12%));
   border-radius: 14px;
   background: color-mix(
     in srgb,
-    var(--vf-color-surface, #ffffff) 90%,
+    var(--vf-color-surface, #fff) 90%,
     var(--vf-color-bg, #f6f8fb)
   );
 }

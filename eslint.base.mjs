@@ -5,9 +5,21 @@ import pluginVue from 'eslint-plugin-vue';
 import tseslint from 'typescript-eslint';
 import vueParser from 'vue-eslint-parser';
 
-export function createVueTsConfig({ ignores = ['dist/**', 'coverage/**'], rules = {} } = {}) {
+export function createVueTsConfig({
+  ignores = ['dist/**', 'coverage/**'],
+  rules = {},
+  tsconfigRootDir,
+} = {}) {
   return tseslint.config(
     { ignores },
+    {
+      files: ['**/*.{ts,tsx,cts,mts,js,jsx,cjs,mjs,vue}'],
+      languageOptions: {
+        parserOptions: {
+          tsconfigRootDir,
+        },
+      },
+    },
     js.configs.recommended,
     ...tseslint.configs.recommended,
     ...pluginVue.configs['flat/recommended'],
@@ -25,6 +37,7 @@ export function createVueTsConfig({ ignores = ['dist/**', 'coverage/**'], rules 
           ecmaVersion: 'latest',
           sourceType: 'module',
           extraFileExtensions: ['.vue'],
+          tsconfigRootDir,
         },
       },
       rules,
@@ -32,9 +45,21 @@ export function createVueTsConfig({ ignores = ['dist/**', 'coverage/**'], rules 
   );
 }
 
-export function createTsConfig({ ignores = ['dist/**', 'coverage/**'], rules = {} } = {}) {
+export function createTsConfig({
+  ignores = ['dist/**', 'coverage/**'],
+  rules = {},
+  tsconfigRootDir,
+} = {}) {
   return tseslint.config(
     { ignores },
+    {
+      files: ['**/*.{ts,tsx,cts,mts,js,jsx,cjs,mjs}'],
+      languageOptions: {
+        parserOptions: {
+          tsconfigRootDir,
+        },
+      },
+    },
     js.configs.recommended,
     ...tseslint.configs.recommended,
     prettier,
@@ -49,6 +74,7 @@ export function createTsConfig({ ignores = ['dist/**', 'coverage/**'], rules = {
         parserOptions: {
           ecmaVersion: 'latest',
           sourceType: 'module',
+          tsconfigRootDir,
         },
       },
       rules,

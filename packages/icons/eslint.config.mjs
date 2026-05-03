@@ -4,6 +4,7 @@ import globals from 'globals';
 export default [
   ...createVueTsConfig({
     ignores: ['dist/**', 'node_modules/**', 'showcase-dist/**'],
+    tsconfigRootDir: import.meta.dirname,
     rules: {
       indent: ['error', 4],
       semi: ['error', 'always'],

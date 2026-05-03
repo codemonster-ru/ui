@@ -1,623 +1,623 @@
 {
-    "arrowLeft": {
-        "title": "Arrow Left",
-        "keywords": ["arrow", "left"],
-        "style": "solid"
-    },
-    "arrowRight": {
-        "title": "Arrow Right",
-        "keywords": ["arrow", "right"],
-        "style": "solid"
-    },
-    "arrowRightLong": {
-        "title": "Arrow Right Long",
-        "keywords": ["arrow", "right", "long", "direction", "forward"],
-        "style": "solid"
-    },
-    "bars": {
-        "title": "Bars",
-        "keywords": ["bars"],
-        "style": "solid"
-    },
-    "bell": {
-        "title": "Bell",
-        "keywords": ["bell"],
-        "style": "solid"
-    },
-    "bookmark": {
-        "title": "Bookmark",
-        "keywords": ["bookmark"],
-        "style": "solid"
-    },
-    "calendar": {
-        "title": "Calendar",
-        "keywords": ["calendar"],
-        "style": "solid"
-    },
-    "caretDown": {
-        "title": "Caret Down",
-        "keywords": ["caret", "down"],
-        "style": "solid"
-    },
-    "caretLeft": {
-        "title": "Caret Left",
-        "keywords": ["caret", "left"],
-        "style": "solid"
-    },
-    "caretRight": {
-        "title": "Caret Right",
-        "keywords": ["caret", "right"],
-        "style": "solid"
-    },
-    "caretUp": {
-        "title": "Caret Up",
-        "keywords": ["caret", "up"],
-        "style": "solid"
-    },
-    "check": {
-        "title": "Check",
-        "keywords": ["check"],
-        "style": "solid"
-    },
-    "chevronDown": {
-        "title": "Chevron Down",
-        "keywords": ["chevron", "down"],
-        "style": "solid"
-    },
-    "chevronLeft": {
-        "title": "Chevron Left",
-        "keywords": ["chevron", "left"],
-        "style": "solid"
-    },
-    "chevronRight": {
-        "title": "Chevron Right",
-        "keywords": ["chevron", "right"],
-        "style": "solid"
-    },
-    "chevronUp": {
-        "title": "Chevron Up",
-        "keywords": ["chevron", "up"],
-        "style": "solid"
-    },
-    "circleHalf": {
-        "title": "Circle Half",
-        "keywords": ["circle", "half"],
-        "style": "solid"
-    },
-    "circleNotch": {
-        "title": "Circle Notch",
-        "keywords": ["circle", "notch"],
-        "style": "solid"
-    },
-    "copy": {
-        "title": "Copy",
-        "keywords": ["copy"],
-        "style": "solid"
-    },
-    "download": {
-        "title": "Download",
-        "keywords": ["download"],
-        "style": "solid"
-    },
-    "ellipsis": {
-        "title": "Ellipsis",
-        "keywords": ["ellipsis"],
-        "style": "solid"
-    },
-    "externalLink": {
-        "title": "External Link",
-        "keywords": ["external", "link"],
-        "style": "solid"
-    },
-    "eye": {
-        "title": "Eye",
-        "keywords": ["eye"],
-        "style": "solid"
-    },
-    "eyeSlash": {
-        "title": "Eye Slash",
-        "keywords": ["eye", "slash"],
-        "style": "solid"
-    },
-    "filter": {
-        "title": "Filter",
-        "keywords": ["filter"],
-        "style": "solid"
-    },
-    "folder": {
-        "title": "Folder",
-        "keywords": ["folder"],
-        "style": "solid"
-    },
-    "gear": {
-        "title": "Gear",
-        "keywords": ["gear"],
-        "style": "solid"
-    },
-    "heart": {
-        "title": "Heart",
-        "keywords": ["heart"],
-        "style": "solid"
-    },
-    "house": {
-        "title": "House",
-        "keywords": ["house"],
-        "style": "solid"
-    },
-    "info": {
-        "title": "Info",
-        "keywords": ["info"],
-        "style": "solid"
-    },
-    "infoCircle": {
-        "title": "Info Circle",
-        "keywords": ["info", "circle"],
-        "style": "solid"
-    },
-    "link": {
-        "title": "Link",
-        "keywords": ["link"],
-        "style": "solid"
-    },
-    "lock": {
-        "title": "Lock",
-        "keywords": ["lock"],
-        "style": "solid"
-    },
-    "magnifyingGlass": {
-        "title": "Magnifying Glass",
-        "keywords": ["magnifying", "glass"],
-        "style": "solid"
-    },
-    "minus": {
-        "title": "Minus",
-        "keywords": ["minus"],
-        "style": "solid"
-    },
-    "moon": {
-        "title": "Moon",
-        "keywords": ["moon"],
-        "style": "solid"
-    },
-    "pencil": {
-        "title": "Pencil",
-        "keywords": ["pencil"],
-        "style": "solid"
-    },
-    "plus": {
-        "title": "Plus",
-        "keywords": ["plus"],
-        "style": "solid"
-    },
-    "question": {
-        "title": "Question",
-        "keywords": ["question"],
-        "style": "solid"
-    },
-    "questionCircle": {
-        "title": "Question Circle",
-        "keywords": ["question", "circle"],
-        "style": "solid"
-    },
-    "rotateRight": {
-        "title": "Rotate Right",
-        "keywords": ["rotate", "right"],
-        "style": "solid"
-    },
-    "shield": {
-        "title": "Shield",
-        "keywords": ["shield"],
-        "style": "solid"
-    },
-    "star": {
-        "title": "Star",
-        "keywords": ["star"],
-        "style": "solid"
-    },
-    "sun": {
-        "title": "Sun",
-        "keywords": ["sun"],
-        "style": "solid"
-    },
-    "trash": {
-        "title": "Trash",
-        "keywords": ["trash"],
-        "style": "solid"
-    },
-    "upload": {
-        "title": "Upload",
-        "keywords": ["upload"],
-        "style": "solid"
-    },
-    "user": {
-        "title": "User",
-        "keywords": ["user"],
-        "style": "solid"
-    },
-    "warning": {
-        "title": "Warning",
-        "keywords": ["warning"],
-        "style": "solid"
-    },
-    "xmark": {
-        "title": "Xmark",
-        "keywords": ["xmark"],
-        "style": "solid"
-    },
-    "columns": {
-        "title": "Columns",
-        "keywords": ["columns"],
-        "style": "solid"
-    },
-    "grid": {
-        "title": "Grid",
-        "keywords": ["grid"],
-        "style": "solid"
-    },
-    "logIn": {
-        "title": "Log In",
-        "keywords": ["log", "in"],
-        "style": "solid"
-    },
-    "logOut": {
-        "title": "Log Out",
-        "keywords": ["log", "out"],
-        "style": "solid"
-    },
-    "sliders": {
-        "title": "Sliders",
-        "keywords": ["sliders"],
-        "style": "solid"
-    },
-    "sort": {
-        "title": "Sort",
-        "keywords": ["sort"],
-        "style": "solid"
-    },
-    "chartBar": {
-        "title": "Chart Bar",
-        "keywords": ["chart", "bar"],
-        "style": "solid"
-    },
-    "creditCard": {
-        "title": "Credit Card",
-        "keywords": ["credit", "card"],
-        "style": "solid"
-    },
-    "database": {
-        "title": "Database",
-        "keywords": ["database"],
-        "style": "solid"
-    },
-    "key": {
-        "title": "Key",
-        "keywords": ["key"],
-        "style": "solid"
-    },
-    "mail": {
-        "title": "Mail",
-        "keywords": ["mail"],
-        "style": "solid"
-    },
-    "message": {
-        "title": "Message",
-        "keywords": ["message"],
-        "style": "solid"
-    },
-    "receipt": {
-        "title": "Receipt",
-        "keywords": ["receipt"],
-        "style": "solid"
-    },
-    "users": {
-        "title": "Users",
-        "keywords": ["users"],
-        "style": "solid"
-    },
-    "wallet": {
-        "title": "Wallet",
-        "keywords": ["wallet"],
-        "style": "solid"
-    },
-    "briefcase": {
-        "title": "Briefcase",
-        "keywords": ["briefcase"],
-        "style": "solid"
-    },
-    "cloud": {
-        "title": "Cloud",
-        "keywords": ["cloud"],
-        "style": "solid"
-    },
-    "server": {
-        "title": "Server",
-        "keywords": ["server"],
-        "style": "solid"
-    },
-    "terminal": {
-        "title": "Terminal",
-        "keywords": ["terminal"],
-        "style": "solid"
-    },
-    "code": {
-        "title": "Code",
-        "keywords": ["code"],
-        "style": "solid"
-    },
-    "sparkles": {
-        "title": "Sparkles",
-        "keywords": ["sparkles"],
-        "style": "solid"
-    },
-    "ban": {
-        "title": "Ban",
-        "keywords": ["ban"],
-        "style": "solid"
-    },
-    "funnelX": {
-        "title": "Funnel X",
-        "keywords": ["funnel", "x"],
-        "style": "solid"
-    },
-    "refresh": {
-        "title": "Refresh",
-        "keywords": ["refresh"],
-        "style": "solid"
-    },
-    "activity": {
-        "title": "Activity",
-        "keywords": ["activity"],
-        "style": "solid"
-    },
-    "archive": {
-        "title": "Archive",
-        "keywords": ["archive"],
-        "style": "solid"
-    },
-    "building": {
-        "title": "Building",
-        "keywords": ["building"],
-        "style": "solid"
-    },
-    "clock": {
-        "title": "Clock",
-        "keywords": ["clock"],
-        "style": "solid"
-    },
-    "fileText": {
-        "title": "File Text",
-        "keywords": ["file", "text"],
-        "style": "solid"
-    },
-    "globe": {
-        "title": "Globe",
-        "keywords": ["globe"],
-        "style": "solid"
-    },
-    "history": {
-        "title": "History",
-        "keywords": ["history"],
-        "style": "solid"
-    },
-    "userMinus": {
-        "title": "User Minus",
-        "keywords": ["user", "minus"],
-        "style": "solid"
-    },
-    "userPlus": {
-        "title": "User Plus",
-        "keywords": ["user", "plus"],
-        "style": "solid"
-    },
-    "alertCircle": {
-        "title": "Alert Circle",
-        "keywords": ["alert", "circle"],
-        "style": "solid"
-    },
-    "arrowDown": {
-        "title": "Arrow Down",
-        "keywords": ["arrow", "down"],
-        "style": "solid"
-    },
-    "arrowUp": {
-        "title": "Arrow Up",
-        "keywords": ["arrow", "up"],
-        "style": "solid"
-    },
-    "checkCircle": {
-        "title": "Check Circle",
-        "keywords": ["check", "circle"],
-        "style": "solid"
-    },
-    "collapse": {
-        "title": "Collapse",
-        "keywords": ["collapse"],
-        "style": "solid"
-    },
-    "expand": {
-        "title": "Expand",
-        "keywords": ["expand"],
-        "style": "solid"
-    },
-    "file": {
-        "title": "File",
-        "keywords": ["file"],
-        "style": "solid"
-    },
-    "folderOpen": {
-        "title": "Folder Open",
-        "keywords": ["folder", "open"],
-        "style": "solid"
-    },
-    "xCircle": {
-        "title": "X Circle",
-        "keywords": ["x", "circle"],
-        "style": "solid"
-    },
-    "cpu": {
-        "title": "Cpu",
-        "keywords": ["cpu"],
-        "style": "solid"
-    },
-    "hardDrive": {
-        "title": "Hard Drive",
-        "keywords": ["hard", "drive"],
-        "style": "solid"
-    },
-    "layers": {
-        "title": "Layers",
-        "keywords": ["layers"],
-        "style": "solid"
-    },
-    "share": {
-        "title": "Share",
-        "keywords": ["share"],
-        "style": "solid"
-    },
-    "plug": {
-        "title": "Plug",
-        "keywords": ["plug"],
-        "style": "solid"
-    },
-    "send": {
-        "title": "Send",
-        "keywords": ["send"],
-        "style": "solid"
-    },
-    "inbox": {
-        "title": "Inbox",
-        "keywords": ["inbox"],
-        "style": "solid"
-    },
-    "phone": {
-        "title": "Phone",
-        "keywords": ["phone"],
-        "style": "solid"
-    },
-    "unlock": {
-        "title": "Unlock",
-        "keywords": ["unlock"],
-        "style": "solid"
-    },
-    "userCheck": {
-        "title": "User Check",
-        "keywords": ["user", "check"],
-        "style": "solid"
-    },
-    "clipboard": {
-        "title": "Clipboard",
-        "keywords": ["clipboard"],
-        "style": "solid"
-    },
-    "arrowTurnUpLeft": {
-        "title": "Arrow Turn Up Left",
-        "keywords": ["arrow", "turn", "up", "left", "return", "back"],
-        "style": "solid"
-    },
-    "arrowTurnUpRight": {
-        "title": "Arrow Turn Up Right",
-        "keywords": ["arrow", "turn", "up", "right", "return", "forward"],
-        "style": "solid"
-    },
-    "arrowTurnRightUp": {
-        "title": "Arrow Turn Right Up",
-        "keywords": ["arrow", "turn", "right", "up", "redirect", "upward"],
-        "style": "solid"
-    },
-    "arrowTurnLeftDown": {
-        "title": "Arrow Turn Left Down",
-        "keywords": ["arrow", "turn", "left", "down", "redirect", "downward"],
-        "style": "solid"
-    },
-    "github": {
-        "title": "GitHub",
-        "keywords": ["github", "brand", "logo", "social", "octocat"],
-        "style": "solid",
-        "brand": {
-            "source": "https://github.com/logos",
-            "guidelines": "https://github.com/logos",
-            "license": "Trademark (GitHub, Inc.)",
-            "isTrademark": true
-        }
-    },
-    "telegram": {
-        "title": "Telegram",
-        "keywords": ["telegram", "brand", "logo", "social", "messenger"],
-        "style": "solid",
-        "brand": {
-            "source": "https://telegram.org/tour/screenshots",
-            "license": "Trademark (Telegram FZ-LLC / Telegram Messenger LLP)",
-            "isTrademark": true
-        }
-    },
-    "vk": {
-        "title": "VK",
-        "keywords": ["vk", "vkontakte", "brand", "logo", "social"],
-        "style": "solid",
-        "brand": {
-            "source": "https://vk.com/brand",
-            "guidelines": "https://vk.com/brand",
-            "license": "Trademark (VK Company Limited)",
-            "isTrademark": true
-        }
-    },
-    "x": {
-        "title": "X",
-        "keywords": ["x", "twitter", "brand", "logo", "social"],
-        "style": "solid",
-        "brand": {
-            "source": "https://x.com",
-            "guidelines": "https://about.x.com/en/who-we-are/brand-toolkit",
-            "license": "Trademark (X Corp.)",
-            "isTrademark": true
-        }
-    },
-    "youtube": {
-        "title": "YouTube",
-        "keywords": ["youtube", "brand", "logo", "video", "social"],
-        "style": "solid",
-        "brand": {
-            "source": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors",
-            "guidelines": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors",
-            "license": "Trademark (Google LLC / YouTube)",
-            "isTrademark": true
-        }
-    },
-    "facebook": {
-        "title": "Facebook",
-        "keywords": ["facebook", "brand", "logo", "social", "meta"],
-        "style": "solid",
-        "brand": {
-            "source": "https://about.meta.com/brand/resources/facebook/logo",
-            "guidelines": "https://about.meta.com/brand/resources/facebook/logo",
-            "license": "Trademark (Meta Platforms, Inc.)",
-            "isTrademark": true
-        }
-    },
-    "instagram": {
-        "title": "Instagram",
-        "keywords": ["instagram", "brand", "logo", "social", "meta"],
-        "style": "solid",
-        "brand": {
-            "source": "https://about.meta.com/brand/resources/instagram",
-            "guidelines": "https://about.meta.com/brand/resources/instagram",
-            "license": "Trademark (Meta Platforms, Inc.)",
-            "isTrademark": true
-        }
-    },
-    "arrowDownLong": {
-        "title": "Arrow Down Long",
-        "keywords": ["arrow", "down", "long", "direction"],
-        "style": "solid"
-    },
-    "arrowLeftLong": {
-        "title": "Arrow Left Long",
-        "keywords": ["arrow", "left", "long", "direction", "back"],
-        "style": "solid"
-    },
-    "arrowUpLong": {
-        "title": "Arrow Up Long",
-        "keywords": ["arrow", "up", "long", "direction"],
-        "style": "solid"
+  "arrowLeft": {
+    "title": "Arrow Left",
+    "keywords": ["arrow", "left"],
+    "style": "solid"
+  },
+  "arrowRight": {
+    "title": "Arrow Right",
+    "keywords": ["arrow", "right"],
+    "style": "solid"
+  },
+  "arrowRightLong": {
+    "title": "Arrow Right Long",
+    "keywords": ["arrow", "right", "long", "direction", "forward"],
+    "style": "solid"
+  },
+  "bars": {
+    "title": "Bars",
+    "keywords": ["bars"],
+    "style": "solid"
+  },
+  "bell": {
+    "title": "Bell",
+    "keywords": ["bell"],
+    "style": "solid"
+  },
+  "bookmark": {
+    "title": "Bookmark",
+    "keywords": ["bookmark"],
+    "style": "solid"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "keywords": ["calendar"],
+    "style": "solid"
+  },
+  "caretDown": {
+    "title": "Caret Down",
+    "keywords": ["caret", "down"],
+    "style": "solid"
+  },
+  "caretLeft": {
+    "title": "Caret Left",
+    "keywords": ["caret", "left"],
+    "style": "solid"
+  },
+  "caretRight": {
+    "title": "Caret Right",
+    "keywords": ["caret", "right"],
+    "style": "solid"
+  },
+  "caretUp": {
+    "title": "Caret Up",
+    "keywords": ["caret", "up"],
+    "style": "solid"
+  },
+  "check": {
+    "title": "Check",
+    "keywords": ["check"],
+    "style": "solid"
+  },
+  "chevronDown": {
+    "title": "Chevron Down",
+    "keywords": ["chevron", "down"],
+    "style": "solid"
+  },
+  "chevronLeft": {
+    "title": "Chevron Left",
+    "keywords": ["chevron", "left"],
+    "style": "solid"
+  },
+  "chevronRight": {
+    "title": "Chevron Right",
+    "keywords": ["chevron", "right"],
+    "style": "solid"
+  },
+  "chevronUp": {
+    "title": "Chevron Up",
+    "keywords": ["chevron", "up"],
+    "style": "solid"
+  },
+  "circleHalf": {
+    "title": "Circle Half",
+    "keywords": ["circle", "half"],
+    "style": "solid"
+  },
+  "circleNotch": {
+    "title": "Circle Notch",
+    "keywords": ["circle", "notch"],
+    "style": "solid"
+  },
+  "copy": {
+    "title": "Copy",
+    "keywords": ["copy"],
+    "style": "solid"
+  },
+  "download": {
+    "title": "Download",
+    "keywords": ["download"],
+    "style": "solid"
+  },
+  "ellipsis": {
+    "title": "Ellipsis",
+    "keywords": ["ellipsis"],
+    "style": "solid"
+  },
+  "externalLink": {
+    "title": "External Link",
+    "keywords": ["external", "link"],
+    "style": "solid"
+  },
+  "eye": {
+    "title": "Eye",
+    "keywords": ["eye"],
+    "style": "solid"
+  },
+  "eyeSlash": {
+    "title": "Eye Slash",
+    "keywords": ["eye", "slash"],
+    "style": "solid"
+  },
+  "filter": {
+    "title": "Filter",
+    "keywords": ["filter"],
+    "style": "solid"
+  },
+  "folder": {
+    "title": "Folder",
+    "keywords": ["folder"],
+    "style": "solid"
+  },
+  "gear": {
+    "title": "Gear",
+    "keywords": ["gear"],
+    "style": "solid"
+  },
+  "heart": {
+    "title": "Heart",
+    "keywords": ["heart"],
+    "style": "solid"
+  },
+  "house": {
+    "title": "House",
+    "keywords": ["house"],
+    "style": "solid"
+  },
+  "info": {
+    "title": "Info",
+    "keywords": ["info"],
+    "style": "solid"
+  },
+  "infoCircle": {
+    "title": "Info Circle",
+    "keywords": ["info", "circle"],
+    "style": "solid"
+  },
+  "link": {
+    "title": "Link",
+    "keywords": ["link"],
+    "style": "solid"
+  },
+  "lock": {
+    "title": "Lock",
+    "keywords": ["lock"],
+    "style": "solid"
+  },
+  "magnifyingGlass": {
+    "title": "Magnifying Glass",
+    "keywords": ["magnifying", "glass"],
+    "style": "solid"
+  },
+  "minus": {
+    "title": "Minus",
+    "keywords": ["minus"],
+    "style": "solid"
+  },
+  "moon": {
+    "title": "Moon",
+    "keywords": ["moon"],
+    "style": "solid"
+  },
+  "pencil": {
+    "title": "Pencil",
+    "keywords": ["pencil"],
+    "style": "solid"
+  },
+  "plus": {
+    "title": "Plus",
+    "keywords": ["plus"],
+    "style": "solid"
+  },
+  "question": {
+    "title": "Question",
+    "keywords": ["question"],
+    "style": "solid"
+  },
+  "questionCircle": {
+    "title": "Question Circle",
+    "keywords": ["question", "circle"],
+    "style": "solid"
+  },
+  "rotateRight": {
+    "title": "Rotate Right",
+    "keywords": ["rotate", "right"],
+    "style": "solid"
+  },
+  "shield": {
+    "title": "Shield",
+    "keywords": ["shield"],
+    "style": "solid"
+  },
+  "star": {
+    "title": "Star",
+    "keywords": ["star"],
+    "style": "solid"
+  },
+  "sun": {
+    "title": "Sun",
+    "keywords": ["sun"],
+    "style": "solid"
+  },
+  "trash": {
+    "title": "Trash",
+    "keywords": ["trash"],
+    "style": "solid"
+  },
+  "upload": {
+    "title": "Upload",
+    "keywords": ["upload"],
+    "style": "solid"
+  },
+  "user": {
+    "title": "User",
+    "keywords": ["user"],
+    "style": "solid"
+  },
+  "warning": {
+    "title": "Warning",
+    "keywords": ["warning"],
+    "style": "solid"
+  },
+  "xmark": {
+    "title": "Xmark",
+    "keywords": ["xmark"],
+    "style": "solid"
+  },
+  "columns": {
+    "title": "Columns",
+    "keywords": ["columns"],
+    "style": "solid"
+  },
+  "grid": {
+    "title": "Grid",
+    "keywords": ["grid"],
+    "style": "solid"
+  },
+  "logIn": {
+    "title": "Log In",
+    "keywords": ["log", "in"],
+    "style": "solid"
+  },
+  "logOut": {
+    "title": "Log Out",
+    "keywords": ["log", "out"],
+    "style": "solid"
+  },
+  "sliders": {
+    "title": "Sliders",
+    "keywords": ["sliders"],
+    "style": "solid"
+  },
+  "sort": {
+    "title": "Sort",
+    "keywords": ["sort"],
+    "style": "solid"
+  },
+  "chartBar": {
+    "title": "Chart Bar",
+    "keywords": ["chart", "bar"],
+    "style": "solid"
+  },
+  "creditCard": {
+    "title": "Credit Card",
+    "keywords": ["credit", "card"],
+    "style": "solid"
+  },
+  "database": {
+    "title": "Database",
+    "keywords": ["database"],
+    "style": "solid"
+  },
+  "key": {
+    "title": "Key",
+    "keywords": ["key"],
+    "style": "solid"
+  },
+  "mail": {
+    "title": "Mail",
+    "keywords": ["mail"],
+    "style": "solid"
+  },
+  "message": {
+    "title": "Message",
+    "keywords": ["message"],
+    "style": "solid"
+  },
+  "receipt": {
+    "title": "Receipt",
+    "keywords": ["receipt"],
+    "style": "solid"
+  },
+  "users": {
+    "title": "Users",
+    "keywords": ["users"],
+    "style": "solid"
+  },
+  "wallet": {
+    "title": "Wallet",
+    "keywords": ["wallet"],
+    "style": "solid"
+  },
+  "briefcase": {
+    "title": "Briefcase",
+    "keywords": ["briefcase"],
+    "style": "solid"
+  },
+  "cloud": {
+    "title": "Cloud",
+    "keywords": ["cloud"],
+    "style": "solid"
+  },
+  "server": {
+    "title": "Server",
+    "keywords": ["server"],
+    "style": "solid"
+  },
+  "terminal": {
+    "title": "Terminal",
+    "keywords": ["terminal"],
+    "style": "solid"
+  },
+  "code": {
+    "title": "Code",
+    "keywords": ["code"],
+    "style": "solid"
+  },
+  "sparkles": {
+    "title": "Sparkles",
+    "keywords": ["sparkles"],
+    "style": "solid"
+  },
+  "ban": {
+    "title": "Ban",
+    "keywords": ["ban"],
+    "style": "solid"
+  },
+  "funnelX": {
+    "title": "Funnel X",
+    "keywords": ["funnel", "x"],
+    "style": "solid"
+  },
+  "refresh": {
+    "title": "Refresh",
+    "keywords": ["refresh"],
+    "style": "solid"
+  },
+  "activity": {
+    "title": "Activity",
+    "keywords": ["activity"],
+    "style": "solid"
+  },
+  "archive": {
+    "title": "Archive",
+    "keywords": ["archive"],
+    "style": "solid"
+  },
+  "building": {
+    "title": "Building",
+    "keywords": ["building"],
+    "style": "solid"
+  },
+  "clock": {
+    "title": "Clock",
+    "keywords": ["clock"],
+    "style": "solid"
+  },
+  "fileText": {
+    "title": "File Text",
+    "keywords": ["file", "text"],
+    "style": "solid"
+  },
+  "globe": {
+    "title": "Globe",
+    "keywords": ["globe"],
+    "style": "solid"
+  },
+  "history": {
+    "title": "History",
+    "keywords": ["history"],
+    "style": "solid"
+  },
+  "userMinus": {
+    "title": "User Minus",
+    "keywords": ["user", "minus"],
+    "style": "solid"
+  },
+  "userPlus": {
+    "title": "User Plus",
+    "keywords": ["user", "plus"],
+    "style": "solid"
+  },
+  "alertCircle": {
+    "title": "Alert Circle",
+    "keywords": ["alert", "circle"],
+    "style": "solid"
+  },
+  "arrowDown": {
+    "title": "Arrow Down",
+    "keywords": ["arrow", "down"],
+    "style": "solid"
+  },
+  "arrowUp": {
+    "title": "Arrow Up",
+    "keywords": ["arrow", "up"],
+    "style": "solid"
+  },
+  "checkCircle": {
+    "title": "Check Circle",
+    "keywords": ["check", "circle"],
+    "style": "solid"
+  },
+  "collapse": {
+    "title": "Collapse",
+    "keywords": ["collapse"],
+    "style": "solid"
+  },
+  "expand": {
+    "title": "Expand",
+    "keywords": ["expand"],
+    "style": "solid"
+  },
+  "file": {
+    "title": "File",
+    "keywords": ["file"],
+    "style": "solid"
+  },
+  "folderOpen": {
+    "title": "Folder Open",
+    "keywords": ["folder", "open"],
+    "style": "solid"
+  },
+  "xCircle": {
+    "title": "X Circle",
+    "keywords": ["x", "circle"],
+    "style": "solid"
+  },
+  "cpu": {
+    "title": "Cpu",
+    "keywords": ["cpu"],
+    "style": "solid"
+  },
+  "hardDrive": {
+    "title": "Hard Drive",
+    "keywords": ["hard", "drive"],
+    "style": "solid"
+  },
+  "layers": {
+    "title": "Layers",
+    "keywords": ["layers"],
+    "style": "solid"
+  },
+  "share": {
+    "title": "Share",
+    "keywords": ["share"],
+    "style": "solid"
+  },
+  "plug": {
+    "title": "Plug",
+    "keywords": ["plug"],
+    "style": "solid"
+  },
+  "send": {
+    "title": "Send",
+    "keywords": ["send"],
+    "style": "solid"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "keywords": ["inbox"],
+    "style": "solid"
+  },
+  "phone": {
+    "title": "Phone",
+    "keywords": ["phone"],
+    "style": "solid"
+  },
+  "unlock": {
+    "title": "Unlock",
+    "keywords": ["unlock"],
+    "style": "solid"
+  },
+  "userCheck": {
+    "title": "User Check",
+    "keywords": ["user", "check"],
+    "style": "solid"
+  },
+  "clipboard": {
+    "title": "Clipboard",
+    "keywords": ["clipboard"],
+    "style": "solid"
+  },
+  "arrowTurnUpLeft": {
+    "title": "Arrow Turn Up Left",
+    "keywords": ["arrow", "turn", "up", "left", "return", "back"],
+    "style": "solid"
+  },
+  "arrowTurnUpRight": {
+    "title": "Arrow Turn Up Right",
+    "keywords": ["arrow", "turn", "up", "right", "return", "forward"],
+    "style": "solid"
+  },
+  "arrowTurnRightUp": {
+    "title": "Arrow Turn Right Up",
+    "keywords": ["arrow", "turn", "right", "up", "redirect", "upward"],
+    "style": "solid"
+  },
+  "arrowTurnLeftDown": {
+    "title": "Arrow Turn Left Down",
+    "keywords": ["arrow", "turn", "left", "down", "redirect", "downward"],
+    "style": "solid"
+  },
+  "github": {
+    "title": "GitHub",
+    "keywords": ["github", "brand", "logo", "social", "octocat"],
+    "style": "solid",
+    "brand": {
+      "source": "https://github.com/logos",
+      "guidelines": "https://github.com/logos",
+      "license": "Trademark (GitHub, Inc.)",
+      "isTrademark": true
     }
+  },
+  "telegram": {
+    "title": "Telegram",
+    "keywords": ["telegram", "brand", "logo", "social", "messenger"],
+    "style": "solid",
+    "brand": {
+      "source": "https://telegram.org/tour/screenshots",
+      "license": "Trademark (Telegram FZ-LLC / Telegram Messenger LLP)",
+      "isTrademark": true
+    }
+  },
+  "vk": {
+    "title": "VK",
+    "keywords": ["vk", "vkontakte", "brand", "logo", "social"],
+    "style": "solid",
+    "brand": {
+      "source": "https://vk.com/brand",
+      "guidelines": "https://vk.com/brand",
+      "license": "Trademark (VK Company Limited)",
+      "isTrademark": true
+    }
+  },
+  "x": {
+    "title": "X",
+    "keywords": ["x", "twitter", "brand", "logo", "social"],
+    "style": "solid",
+    "brand": {
+      "source": "https://x.com",
+      "guidelines": "https://about.x.com/en/who-we-are/brand-toolkit",
+      "license": "Trademark (X Corp.)",
+      "isTrademark": true
+    }
+  },
+  "youtube": {
+    "title": "YouTube",
+    "keywords": ["youtube", "brand", "logo", "video", "social"],
+    "style": "solid",
+    "brand": {
+      "source": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors",
+      "guidelines": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors",
+      "license": "Trademark (Google LLC / YouTube)",
+      "isTrademark": true
+    }
+  },
+  "facebook": {
+    "title": "Facebook",
+    "keywords": ["facebook", "brand", "logo", "social", "meta"],
+    "style": "solid",
+    "brand": {
+      "source": "https://about.meta.com/brand/resources/facebook/logo",
+      "guidelines": "https://about.meta.com/brand/resources/facebook/logo",
+      "license": "Trademark (Meta Platforms, Inc.)",
+      "isTrademark": true
+    }
+  },
+  "instagram": {
+    "title": "Instagram",
+    "keywords": ["instagram", "brand", "logo", "social", "meta"],
+    "style": "solid",
+    "brand": {
+      "source": "https://about.meta.com/brand/resources/instagram",
+      "guidelines": "https://about.meta.com/brand/resources/instagram",
+      "license": "Trademark (Meta Platforms, Inc.)",
+      "isTrademark": true
+    }
+  },
+  "arrowDownLong": {
+    "title": "Arrow Down Long",
+    "keywords": ["arrow", "down", "long", "direction"],
+    "style": "solid"
+  },
+  "arrowLeftLong": {
+    "title": "Arrow Left Long",
+    "keywords": ["arrow", "left", "long", "direction", "back"],
+    "style": "solid"
+  },
+  "arrowUpLong": {
+    "title": "Arrow Up Long",
+    "keywords": ["arrow", "up", "long", "direction"],
+    "style": "solid"
+  }
 }

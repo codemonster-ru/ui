@@ -1,0 +1,9 @@
+{
+  "attr-value-double-quotes": false,
+  "doctype-first": false,
+  "head-script-disabled": false,
+  "id-unique": true,
+  "spec-char-escape": false,
+  "tag-pair": true,
+  "title-require": false
+}
