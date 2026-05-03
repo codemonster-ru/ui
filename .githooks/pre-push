@@ -5,4 +5,4 @@ echo "Running workspace typecheck..."
 npm run typecheck --workspaces --if-present
 
 echo "Running workspace tests..."
-npm run test --workspaces --if-present
+npm run test:ci-like
