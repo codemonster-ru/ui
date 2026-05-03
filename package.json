@@ -7,6 +7,8 @@
     "examples/*"
   ],
   "scripts": {
+    "prepare": "npm run hooks:install",
+    "hooks:install": "git config core.hooksPath .githooks",
     "build": "npm run build -w @codemonster-ru/vueforge-icons && npm run build -w @codemonster-ru/vueforge-theme && npm run build -w @codemonster-ru/vueforge-core && npm run build -w @codemonster-ru/vueforge-layouts && npm run build -w @codemonster-ru/vueforge-codeblock",
     "lint": "npm run lint --workspaces --if-present",
     "lint:styles": "stylelint \"**/*.{css,scss,sass,vue}\" --allow-empty-input --formatter unix",
