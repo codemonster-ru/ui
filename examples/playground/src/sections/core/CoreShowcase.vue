@@ -33,12 +33,12 @@ import {
   VfTooltip,
   useTableOfContents,
   useTheme,
-} from "@/index";
+} from "@codemonster-ru/vueforge-core";
 import type {
   VfBreadcrumbItem,
   VfNavMenuItem,
   VfTableOfContentsItem,
-} from "@/index";
+} from "@codemonster-ru/vueforge-core";
 
 const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
 

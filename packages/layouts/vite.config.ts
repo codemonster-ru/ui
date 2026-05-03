@@ -28,7 +28,7 @@ export default defineConfig({
     dts({
       processor: "vue",
       include: ["src"],
-      exclude: ["src/demo/**/*", "tests/**/*"],
+      exclude: ["tests/**/*"],
       insertTypesEntry: true,
       beforeWriteFile(filePath) {
         if (filePath.endsWith(".d.ts.map")) {

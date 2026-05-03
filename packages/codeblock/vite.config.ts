@@ -11,7 +11,7 @@ export default defineConfig({
     vue(),
     dts({
       include: ["src"],
-      exclude: ["src/demo/**/*", "src/**/*.test.ts", "src/**/__tests__/**/*"],
+      exclude: ["src/**/*.test.ts", "src/**/__tests__/**/*"],
     }),
   ],
   test: {

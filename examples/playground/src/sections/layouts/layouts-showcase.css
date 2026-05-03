@@ -27,25 +27,6 @@ body {
   align-items: center;
 }
 
-.demo-links-top {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.demo-links-top a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem 0.7rem;
-  border-radius: 999px;
-  border: 1px solid var(--vf-color-border);
-  text-decoration: none;
-  color: var(--vf-color-text);
-  background: var(--vf-color-surface, #fff);
-  font-size: 0.875rem;
-}
-
 .demo-header h1,
 .demo-block__header h2 {
   margin: 0;

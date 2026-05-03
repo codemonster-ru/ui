@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VfThemeSwitch, useTheme } from "@codemonster-ru/vueforge-core";
-import { CodeBlock } from "../index";
+import { CodeBlock } from "@codemonster-ru/vueforge-codeblock";
 
 const { resolvedTheme } = useTheme();
 const longSnippetLineCount = 1000;

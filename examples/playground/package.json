@@ -11,6 +11,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@codemonster-ru/vueforge-codeblock": "file:../../packages/codeblock",
     "@codemonster-ru/vueforge-playground": "file:../../packages/playground",
     "@codemonster-ru/vueforge-core": "file:../../packages/core",
     "@codemonster-ru/vueforge-layouts": "file:../../packages/layouts",

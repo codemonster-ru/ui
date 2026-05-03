@@ -8,11 +8,6 @@
             <p class="demo-meta">Component catalog</p>
           </div>
           <VfInline class="demo-theme-switch" :wrap="false">
-            <nav class="demo-links-top" aria-label="Standalone demos">
-              <a href="/app-shell.html">AppShell page</a>
-              <a href="/document-layout.html">DocumentLayout page</a>
-              <a href="/not-found.html">NotFound page</a>
-            </nav>
             <VfThemeSwitch label="Dark mode" static thumb-contrast="inverse" />
           </VfInline>
         </header>
@@ -578,8 +573,8 @@ import {
   VfInline,
   VfSection,
   VfStack
-} from "../index";
-import { useCssVarBreakpoints } from "../composables/useCssVarBreakpoints";
+} from "@codemonster-ru/vueforge-layouts";
+import { useCssVarBreakpoints } from "@codemonster-ru/vueforge-layouts/composables/useCssVarBreakpoints";
 
 const resolvedBreakpoints = useCssVarBreakpoints();
 

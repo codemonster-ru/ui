@@ -1,307 +1,300 @@
 <template>
   <VfThemeProvider>
-    <main class="showcase">
-      <VfStack gap="16" align="stretch">
-        <div class="showcase-topbar">
-          <h1 class="showcase-title">@codemonster-ru/vueforge-playground</h1>
-          <VfThemeSwitch variant="button" button-variant="secondary" />
-        </div>
+    <VfAppShell
+      class="showcase-shell"
+      layout="sidebar-content"
+      sticky-header
+      sticky-sidebar
+      sidebar-appearance="plain"
+      content-appearance="plain"
+      :content-padded="false"
+      :show-subheader="false"
+      :show-content-subheader="true"
+    >
+      <template #header>
+        <VfInline class="showcase-header" :wrap="false">
+          <div class="showcase-brand">
+            <span class="showcase-brand__mark" aria-hidden="true">VF</span>
+            <div>
+              <p class="showcase-brand__kicker">VueForge</p>
+              <h1 class="showcase-brand__title">Component Showcase</h1>
+            </div>
+          </div>
 
-        <section class="showcase-block">
-          <h2 class="showcase-subtitle">Single File Example</h2>
-          <VuePlayground
-            :files="singleFileExample"
-            entry="/index.html"
-            framework="html"
-            :autorun="true"
-            :show-code="true"
-            theme="inherit"
-            @run="onRun"
-            @error="onError"
+          <VfInline class="showcase-header__actions" :wrap="false">
+            <VfBadge tone="primary">monorepo</VfBadge>
+            <VfThemeSwitch variant="button" button-variant="secondary" />
+          </VfInline>
+        </VfInline>
+      </template>
+
+      <template #sidebar>
+        <VfStack class="showcase-sidebar" gap="12">
+          <div class="showcase-sidebar__intro">
+            <strong>Packages</strong>
+            <span>Shared development surface</span>
+          </div>
+
+          <VfNavMenu
+            v-model="activeSection"
+            :items="sectionItems"
+            variant="pills"
+            aria-label="Showcase packages"
           />
-        </section>
 
-        <section class="showcase-block">
-          <h2 class="showcase-subtitle">Multi File Example</h2>
-          <VuePlayground
-            :files="multiFileExample"
-            entry="/main.js"
-            framework="vanilla"
-            :autorun="true"
-            :show-code="true"
-            theme="inherit"
-            @run="onRun"
-            @error="onError"
-          />
-        </section>
+          <VfDivider />
 
-        <section class="showcase-block">
-          <h2 class="showcase-subtitle">Headless Layout (VueForge Core)</h2>
-          <VuePlayground
-            class="headless-instance"
-            :files="multiFileExample"
-            entry="/main.js"
-            framework="vanilla"
-            :autorun="true"
-            :show-code="true"
-            theme="inherit"
-            @run="onRun"
-            @error="onError"
-          >
-            <template #layout="pg">
-              <div class="headless-playground">
-                <div class="cm-tabs">
-                  <div class="headless-playground__tabs-control">
-                    <VfTabs
-                      class="headless-tabs"
-                      :items="buildHeadlessTabs(pg.showCode)"
-                      :model-value="pg.activeTab"
-                      @update:model-value="handleHeadlessTabChange(pg.setActiveTab, $event)"
-                    />
-                  </div>
-                </div>
+          <VfStack gap="8" class="showcase-sidebar__meta">
+            <span>Source-first preview</span>
+            <span>Builds against workspace packages</span>
+          </VfStack>
+        </VfStack>
+      </template>
 
-                <div v-if="pg.activeTab === 'code' && pg.showCode" class="cm-panel cm-panel-code">
-                  <div v-if="pg.fileNames.length > 1" class="cm-files">
-                    <VfTabs
-                      class="headless-playground__tabs-control headless-tabs"
-                      size="sm"
-                      :items="buildHeadlessFileTabs(pg.fileNames)"
-                      :model-value="pg.activeFile"
-                      @update:model-value="handleHeadlessFileChange(pg.setActiveFile, $event)"
-                    />
-                  </div>
-                  <div class="cm-codeblock-host">
-                    <CodeBlock
-                      :code="pg.activeFileContent"
-                      :language="pg.codeLanguage"
-                      :show-line-numbers="true"
-                      :theme="pg.codeTheme"
-                    />
-                  </div>
-                </div>
+      <template #content-subheader>
+        <VfInline class="showcase-subheader" :wrap="false">
+          <div>
+            <p class="showcase-subheader__eyebrow">
+              {{ activeSectionMeta.packageName }}
+            </p>
+            <h2 class="showcase-subheader__title">
+              {{ activeSectionMeta.label }}
+            </h2>
+          </div>
+          <VfBadge :tone="activeSectionMeta.tone">
+            {{ activeSectionMeta.badge }}
+          </VfBadge>
+        </VfInline>
+      </template>
 
-                <div v-if="pg.activeTab === 'preview'" class="cm-panel preview">
-                  <iframe :ref="pg.bindPreviewIframe" class="cm-iframe" title="Headless Playground Preview" />
-                  <p v-if="!pg.isClient" class="headless-playground__hint">Preview is available on client side only.</p>
-                </div>
-
-                <div v-if="pg.activeTab === 'console'" class="cm-panel">
-                  <pre class="cm-console">{{ pg.consoleOutput || 'No logs yet.' }}</pre>
-                </div>
-              </div>
-            </template>
-          </VuePlayground>
-        </section>
-      </VfStack>
-    </main>
+      <VfContainer class="showcase-content" fluid>
+        <component :is="activeSectionComponent" />
+      </VfContainer>
+    </VfAppShell>
   </VfThemeProvider>
 </template>
 
 <script setup lang="ts">
-import { VfTabs, VfThemeProvider, VfThemeSwitch, type VfTabItem } from '@codemonster-ru/vueforge-core';
-import { VfStack } from '@codemonster-ru/vueforge-layouts';
-import { CodeBlock } from '@codemonster-ru/vueforge-codeblock';
-import { VuePlayground } from '@codemonster-ru/vueforge-playground';
+import { computed, ref } from "vue";
+import {
+  VfBadge,
+  VfDivider,
+  VfNavMenu,
+  VfThemeProvider,
+  VfThemeSwitch,
+  type VfBadgeTone,
+  type VfNavMenuItem,
+} from "@codemonster-ru/vueforge-core";
+import {
+  VfAppShell,
+  VfContainer,
+  VfInline,
+  VfStack,
+} from "@codemonster-ru/vueforge-layouts";
+import PlaygroundShowcase from "./PlaygroundShowcase.vue";
+import CodeBlockShowcase from "./sections/codeblock/CodeBlockShowcase.vue";
+import CoreShowcase from "./sections/core/CoreShowcase.vue";
+import LayoutsShowcase from "./sections/layouts/LayoutsShowcase.vue";
 
-const singleFileExample = {
-  '/index.html': `<!doctype html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="color-scheme" content="light dark" />
-    <style>
-      body {
-        margin: 0;
-        font-size: 1rem;
-        font-family: system-ui, sans-serif;
-        padding: 20px;
-        background: #ffffff;
-        color: #1f232b;
-      }
-      .badge { color: #0e639c; font-weight: bold; }
-      @media (prefers-color-scheme: dark) {
-        body {
-          background: #252526;
-          color: #f2f3f5;
-        }
-        .badge {
-          color: #61afef;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Playground Preview</h2>
-    <p class="badge">It works.</p>
-    <script>
-      console.log('hello from preview');
-      const root = document.createElement('div');
-      root.textContent = 'Runtime is alive';
-      document.body.appendChild(root);
-    </${'script'}>
-  </body>
-</html>`
-};
+type SectionValue = "core" | "layouts" | "codeblock" | "playground";
 
-const multiFileExample = {
-  '/main.js': `import './styles.css';
-
-const title = document.createElement('h2');
-title.textContent = 'Multi-file Playground';
-
-const line = document.createElement('p');
-line.textContent = 'JS + CSS files are wired together.';
-line.className = 'accent';
-
-console.info('multi-file run');
-document.getElementById('app')?.append(title, line);`,
-  '/styles.css': `body {
-  margin: 0;
-  font-size: 1rem;
-  font-family: Inter, system-ui, sans-serif;
-  padding: 20px;
-  background: #ffffff;
-  color: #1f232b;
+interface SectionMeta {
+  value: SectionValue;
+  label: string;
+  packageName: string;
+  badge: string;
+  tone: VfBadgeTone;
 }
 
-.accent {
-  color: #0e639c;
-  font-weight: 600;
-}
+const sections: SectionMeta[] = [
+  {
+    value: "core",
+    label: "Core Components",
+    packageName: "@codemonster-ru/vueforge-core",
+    badge: "UI",
+    tone: "primary",
+  },
+  {
+    value: "layouts",
+    label: "Layouts",
+    packageName: "@codemonster-ru/vueforge-layouts",
+    badge: "structure",
+    tone: "info",
+  },
+  {
+    value: "codeblock",
+    label: "CodeBlock",
+    packageName: "@codemonster-ru/vueforge-codeblock",
+    badge: "docs",
+    tone: "success",
+  },
+  {
+    value: "playground",
+    label: "Playground",
+    packageName: "@codemonster-ru/vueforge-playground",
+    badge: "runtime",
+    tone: "help",
+  },
+];
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #252526;
-    color: #f2f3f5;
-  }
+const sectionItems: VfNavMenuItem[] = sections.map((section) => ({
+  value: section.value,
+  label: section.label,
+}));
 
-  .accent {
-    color: #61afef;
-  }
-}`
-};
+const sectionComponents = {
+  core: CoreShowcase,
+  layouts: LayoutsShowcase,
+  codeblock: CodeBlockShowcase,
+  playground: PlaygroundShowcase,
+} satisfies Record<SectionValue, unknown>;
 
-function onRun(): void {
-  console.log('playground run');
-}
-
-function onError(error: { message: string }): void {
-  console.error('playground error', error.message);
-}
-
-function buildHeadlessTabs(showCode: boolean): VfTabItem[] {
-  const tabs: VfTabItem[] = [
-    { value: 'preview', label: 'Preview' },
-    { value: 'console', label: 'Console' }
-  ];
-  if (showCode) {
-    return [{ value: 'code', label: 'Code' }, ...tabs];
-  }
-  return tabs;
-}
-
-function handleHeadlessTabChange(
-  setActiveTab: (tab: 'code' | 'preview' | 'console') => void,
-  value: string
-): void {
-  if (value === 'code' || value === 'preview' || value === 'console') {
-    setActiveTab(value);
-  }
-}
-
-function buildHeadlessFileTabs(fileNames: string[]): VfTabItem[] {
-  return fileNames.map((file) => ({ value: file, label: file }));
-}
-
-function handleHeadlessFileChange(
-  setActiveFile: (file: string) => void,
-  value: string
-): void {
-  setActiveFile(value);
-}
+const activeSection = ref<SectionValue>("core");
+const activeSectionMeta = computed(
+  () =>
+    sections.find((section) => section.value === activeSection.value) ??
+    sections[0],
+);
+const activeSectionComponent = computed(
+  () => sectionComponents[activeSection.value],
+);
 </script>
 
 <style scoped>
-.showcase {
-  max-width: 1040px;
-  margin: 24px auto;
-  padding: 0 12px;
+.showcase-shell {
+  min-height: 100vh;
+  background: var(--vf-color-bg);
 }
 
-.showcase-title {
-  margin: 0;
+.showcase-shell :deep(.vf-header-area) {
+  border-bottom: 1px solid var(--vf-color-border);
+  background: color-mix(in srgb, var(--vf-color-surface) 92%, transparent);
+  backdrop-filter: blur(12px);
 }
 
-.showcase-topbar {
+.showcase-shell :deep(.vf-content-subheader-area) {
+  position: sticky;
+  top: var(--vf-sticky-header-offset);
+  z-index: 8;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--vf-color-border);
+  background: color-mix(in srgb, var(--vf-color-bg) 94%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.showcase-shell :deep(.vf-sidebar-area__inner) {
+  padding: 18px 14px;
+}
+
+.showcase-header,
+.showcase-subheader {
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+}
+
+.showcase-header {
+  min-height: 58px;
+}
+
+.showcase-brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
+  min-width: 0;
 }
 
-.showcase-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.showcase-subtitle {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--vf-color-muted);
-}
-
-.headless-playground {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
+.showcase-brand__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--vf-color-border);
+  border-radius: var(--vf-radius-control);
   background: var(--vf-color-surface);
+  color: var(--vf-color-primary);
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.headless-playground__tabs-control {
-  width: 100%;
+.showcase-brand__kicker,
+.showcase-brand__title,
+.showcase-subheader__eyebrow,
+.showcase-subheader__title {
+  margin: 0;
 }
 
-.headless-playground__tabs-control :deep(.vf-tabs) {
-  width: 100%;
-}
-
-.headless-playground__tabs-control :deep(.vf-tabs__list) {
-  width: 100%;
-  z-index: 2;
-}
-
-.headless-playground .cm-tabs,
-.headless-playground .cm-files {
-  padding: 0;
-  border-bottom: 0;
-}
-
-.headless-tabs :deep(.vf-tabs__indicator) {
-  inset-block-end: 0;
-  z-index: 3;
-}
-
-.headless-playground__hint {
-  margin: 8px 12px 0;
+.showcase-brand__kicker,
+.showcase-subheader__eyebrow {
   color: var(--vf-color-muted);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
-.headless-instance {
-  --cm-pg-border: var(--vf-color-border);
+.showcase-brand__title {
+  color: var(--vf-color-text);
+  font-size: 16px;
+  line-height: 1.25;
 }
 
-@media (width <= 768px) {
-  .showcase-topbar {
-    flex-direction: column;
-    align-items: flex-start;
+.showcase-header__actions {
+  margin-left: auto;
+}
+
+.showcase-sidebar__intro {
+  display: grid;
+  gap: 2px;
+  padding: 0 8px;
+}
+
+.showcase-sidebar__intro span,
+.showcase-sidebar__meta {
+  color: var(--vf-color-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.showcase-subheader {
+  align-items: center;
+  gap: 14px;
+}
+
+.showcase-subheader__title {
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.showcase-content {
+  min-width: 0;
+}
+
+@media (width <= 900px) {
+  .showcase-shell :deep(.vf-sidebar-area__inner) {
+    padding: 12px;
   }
 
-  .headless-playground__tabs-with-action {
+  .showcase-sidebar__intro,
+  .showcase-sidebar__meta {
+    display: none;
+  }
+}
+
+@media (width <= 640px) {
+  .showcase-header {
+    flex-wrap: wrap;
+  }
+
+  .showcase-header__actions {
     width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+
+  .showcase-subheader {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 </style>

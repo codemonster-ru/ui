@@ -49,7 +49,6 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "vite --force",
     "build": "vite build",
     "format": "prettier --write .",
     "lint": "eslint .",

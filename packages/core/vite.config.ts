@@ -64,7 +64,7 @@ export default defineConfig({
     ...vueforgeStyleArtifactsPlugin(),
     dts({
       include: ["src"],
-      exclude: ["src/**/*.spec.ts", "src/test/**", "src/dev/**"],
+      exclude: ["src/**/*.spec.ts", "src/test/**"],
       insertTypesEntry: true,
     }),
   ],
