@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Check workspaces
-        run: npm run check --workspaces --if-present
+        run: npm run check --workspaces --if-present --include-workspace-root=false
 
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
