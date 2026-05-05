@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.2.3
+
+### Changed
+
+- republished release from the current monorepo pipeline after previous `1.2.2` tag had already been published on npm
+
 ## 1.2.2
 
 ### Changed
