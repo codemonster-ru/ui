@@ -28,6 +28,7 @@ if (!tagMatch) {
 }
 
 const [, packageName, versionFromTag] = tagMatch;
+const packageSlug = packageName.includes('/') ? packageName.split('/')[1] : packageName;
 const packagesDir = path.join(rootDir, 'packages');
 
 if (!fs.existsSync(packagesDir)) {
@@ -113,7 +114,7 @@ const output = [
   `package_version=${versionFromTag}`,
   `package_dir=${packageDir}`,
   `release_notes_path=${releaseNotesPath}`,
-  `release_name=${packageName}@${versionFromTag}`,
+  `release_name=${packageSlug} v${versionFromTag}`,
 ].join('\n');
 
 fs.appendFileSync(outputFile, `${output}\n`, 'utf8');
