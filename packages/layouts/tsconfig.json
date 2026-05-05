@@ -10,10 +10,9 @@
     "declaration": true,
     "declarationMap": true,
     "paths": {
-      "@codemonster-ru/vueforge-core": ["../core/src/index.ts"],
-      "@codemonster-ru/vueforge-core/foundation": ["../core/src/foundation/index.ts"],
-      "@codemonster-ru/vueforge-theme": ["../theme/src/index.ts"],
-      "@/*": ["../core/src/*"]
+      "@codemonster-ru/vueforge-core": ["./src/types/deps-shim.d.ts"],
+      "@codemonster-ru/vueforge-core/foundation": ["./src/types/deps-shim.d.ts"],
+      "@codemonster-ru/vueforge-theme": ["./src/types/deps-shim.d.ts"]
     },
     "types": ["vitest/globals"]
   },
