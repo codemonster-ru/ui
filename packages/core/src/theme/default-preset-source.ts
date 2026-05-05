@@ -1,5 +1,5 @@
 import breakpoints from '../foundation/breakpoints.json';
-import { vfMotionTokens } from '@codemonster-ru/vueforge-theme';
+import { vfMotionTokens } from '../../../theme/src/motion';
 
 export const breakpointTokens = {
   breakpointXs: `${breakpoints.xs}px`,
