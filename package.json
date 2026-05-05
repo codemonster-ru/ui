@@ -22,7 +22,7 @@
     "test": "npm run test --workspaces --if-present --include-workspace-root=false",
     "test:ci-like": "scripts/ci/test-without-dist.sh",
     "typecheck": "npm run typecheck --workspaces --if-present --include-workspace-root=false",
-    "check": "npm run check --workspaces --if-present --include-workspace-root=false",
+    "check": "npm run check -w @codemonster-ru/vueforge-codeblock && npm run check -w @codemonster-ru/vueforge-core && npm run check -w @codemonster-ru/vueforge-icons && npm run check -w @codemonster-ru/vueforge-layouts && npm run check -w @codemonster-ru/vueforge-playground && npm run check -w @codemonster-ru/vueforge-playground-core && npm run check -w @codemonster-ru/vueforge-theme",
     "format": "npm run format --workspaces --if-present --include-workspace-root=false",
     "prepublish:all": "npm run build && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-icons --dry-run && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-theme --dry-run && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-core --dry-run && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-layouts --dry-run && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-codeblock --dry-run && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-playground-core --dry-run && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-playground --dry-run"
   },
