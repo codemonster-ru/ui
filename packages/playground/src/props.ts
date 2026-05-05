@@ -1,7 +1,7 @@
 import type { Component } from 'vue';
 import type { FrameworkType, PlaygroundFiles } from '@codemonster-ru/vueforge-playground-core';
 
-export interface VuePlaygroundProps {
+export interface VfPlaygroundProps {
   files: PlaygroundFiles;
   entry: string;
   framework?: FrameworkType;

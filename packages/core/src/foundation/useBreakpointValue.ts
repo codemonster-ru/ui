@@ -1,6 +1,6 @@
-import { computed, toValue, type MaybeRefOrGetter } from "vue";
-import { vfBreakpoints, type VfBreakpointName } from "./breakpoints";
-import { useBreakpoints } from "./useBreakpoints";
+import { computed, toValue, type MaybeRefOrGetter } from 'vue';
+import { vfBreakpoints, type VfBreakpointName } from './breakpoints';
+import { useBreakpoints } from './useBreakpoints';
 
 export type VfBreakpointValues<T> = Partial<Record<VfBreakpointName, T>> & {
   base: T;
@@ -8,9 +8,7 @@ export type VfBreakpointValues<T> = Partial<Record<VfBreakpointName, T>> & {
 
 const breakpointOrder = Object.keys(vfBreakpoints) as VfBreakpointName[];
 
-export function useBreakpointValue<T>(
-  values: MaybeRefOrGetter<VfBreakpointValues<T>>,
-) {
+export function useBreakpointValue<T>(values: MaybeRefOrGetter<VfBreakpointValues<T>>) {
   const breakpoints = useBreakpoints();
 
   return computed(() => {

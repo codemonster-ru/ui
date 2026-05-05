@@ -1,39 +1,12 @@
-# @codemonster-ru/vueforge-playground-core
+# VueForge Playground Core
 
-Framework-agnostic core for Codemonster playground sessions.
+![npm version](https://img.shields.io/npm/v/@codemonster-ru/vueforge-playground-core)
+![npm downloads](https://img.shields.io/npm/dm/@codemonster-ru/vueforge-playground-core)
+![publish](https://img.shields.io/github/actions/workflow/status/codemonster-ru/vueforge/publish.yml?label=publish)
+![license](https://img.shields.io/npm/l/@codemonster-ru/vueforge-playground-core)
 
-## Features (MVP)
+A framework-agnostic runtime core for interactive playground sessions in the VueForge ecosystem.
 
-- File model: `files: Record<string, string>` and `entry`
-- Runtime selection: `browser | remote`
-- Browser runtime in sandboxed iframe (`html/css/js` + minimal `ts` transpilation)
-- Session API: `createPlaygroundSession()`, `run()`, `updateFiles()`, `dispose()`
-- Events: `onRun`, `onError`, `onConsole`
+## Documentation
 
-## API
-
-```ts
-import { createPlaygroundSession } from '@codemonster-ru/vueforge-playground-core';
-
-const session = createPlaygroundSession({
-  runtime: 'browser',
-  iframe,
-  files: {
-    '/index.html': '<div id="app"></div>',
-    '/main.js': 'document.getElementById("app").textContent = "Hello";'
-  },
-  entry: '/index.html'
-});
-
-session.onRun(() => console.log('run'));
-session.onError((err) => console.error(err));
-session.onConsole((event) => console.log(event));
-
-session.run();
-```
-
-## Limitations
-
-- TypeScript transpilation is intentionally minimal (single-file transpile).
-- Import graph bundling is not handled in MVP browser runtime.
-- Remote runtime is contract-only for now.
+For full documentation, visit [docs.codemonster.net/vueforge/playground-core](https://docs.codemonster.net/vueforge/playground-core/).

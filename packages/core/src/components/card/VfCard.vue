@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "@/utils/classes";
+import { computed, useAttrs } from 'vue';
+import { cx } from '@/utils/classes';
 
 defineOptions({
   inheritAttrs: false,
@@ -18,9 +18,7 @@ const props = withDefaults(defineProps<VfCardProps>(), {
 
 const attrs = useAttrs();
 
-const classes = computed(() =>
-  cx("vf-card", props.compact && "vf-card--compact"),
-);
+const classes = computed(() => cx('vf-card', props.compact && 'vf-card--compact'));
 </script>
 
 <template>

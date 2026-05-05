@@ -1,11 +1,11 @@
-import { inject } from "vue";
-import { themeContextKey } from "@/providers/themeContext";
+import { inject } from 'vue';
+import { themeContextKey } from '@/providers/themeContext';
 
 export function useTheme() {
   const theme = inject(themeContextKey);
 
   if (!theme) {
-    throw new Error("useTheme must be used inside VfThemeProvider.");
+    throw new Error('useTheme must be used inside VfThemeProvider.');
   }
 
   return {

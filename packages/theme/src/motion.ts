@@ -1,7 +1,7 @@
 export const vfMotionTokens = {
-  durationFast: "220ms",
-  durationNormal: "320ms",
-  easeStandard: "cubic-bezier(0.16, 1, 0.3, 1)",
+  durationFast: '220ms',
+  durationNormal: '320ms',
+  easeStandard: 'cubic-bezier(0.16, 1, 0.3, 1)',
 } as const;
 
 function motionTokenToMs(value: string) {

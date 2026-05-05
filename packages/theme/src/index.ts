@@ -1,10 +1,5 @@
-export { vfMotionTokens, vfMotionDurationsMs } from "./motion.js";
-export {
-  DEFAULT_ATTRIBUTE,
-  DEFAULT_STORAGE_KEY,
-  isThemeMode,
-  resolveTheme,
-} from "./mode.js";
+export { vfMotionTokens, vfMotionDurationsMs } from './motion.js';
+export { DEFAULT_ATTRIBUTE, DEFAULT_STORAGE_KEY, isThemeMode, resolveTheme } from './mode.js';
 export {
   applyThemeConfig,
   applyThemeConfigs,
@@ -15,7 +10,7 @@ export {
   themeConfigsToCssText,
   themePresetToCssText,
   themeTokensToCssVars,
-} from "./runtime.js";
+} from './runtime.js';
 export type {
   VfResolvedTheme,
   VfResolvedThemeConfig,
@@ -26,4 +21,4 @@ export type {
   VfThemePreset,
   VfThemePresetOptions,
   VfThemeTokens,
-} from "./types.js";
+} from './types.js';

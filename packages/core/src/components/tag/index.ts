@@ -1,1 +1,1 @@
-export { default as VfTag } from "./VfTag.vue";
+export { default as VfTag } from './VfTag.vue';

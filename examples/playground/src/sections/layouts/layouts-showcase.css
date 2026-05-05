@@ -1,53 +1,6 @@
-html,
-body,
-#app {
-  min-height: 100%;
-  margin: 0;
-}
-
-body {
-  font-family: Inter, "Segoe UI", sans-serif;
-  color: var(--vf-color-text);
-  background: var(--vf-color-bg, #fcfcfd);
-  line-height: var(--vf-text-line-height, 1.5);
-}
-
-.demo-page {
-  padding: 2rem 0 4rem;
-}
-
-.demo-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.demo-theme-switch {
-  align-items: center;
-}
-
-.demo-header h1,
-.demo-block__header h2 {
-  margin: 0;
-}
-
-.demo-meta {
-  margin: 0;
-  color: var(--vf-color-muted);
-}
-
-.demo-block {
-  display: grid;
-  gap: 1rem;
-}
-
-.demo-block__header {
-  display: grid;
-  gap: 0.35rem;
-}
-
 .demo-container-frame {
+  --demo-preview-height: 34rem;
+
   overflow: hidden;
 }
 
@@ -61,20 +14,20 @@ body {
 }
 
 .demo-document-layout-frame--scroll {
-  block-size: var(--demo-preview-height, 34rem);
+  block-size: var(--demo-preview-height);
   overflow: auto;
 }
 
 .demo-document-layouts {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-document-layouts__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-document-layouts__title {
@@ -83,7 +36,7 @@ body {
 
 .demo-document-card {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-document-card__title {
@@ -163,30 +116,21 @@ body {
   width: 100%;
 }
 
-.demo-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.demo-grid--two {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .demo-shell-layouts {
   display: grid;
-  gap: 1.5rem;
+  gap: var(--vf-layout-space-layout-roomy);
 }
 
 .demo-shell-layout {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-shell-layout__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-shell-layout__title {
@@ -195,15 +139,15 @@ body {
 
 .demo-shell-preview-grid {
   display: grid;
-  gap: 1rem;
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-kv {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 0.55rem;
+  gap: var(--vf-layout-space-layout-base);
+  padding-bottom: calc(var(--vf-layout-space-layout-base) * 0.55);
   border-bottom: 1px solid var(--vf-color-border);
 }
 
@@ -214,7 +158,7 @@ body {
 
 .demo-shell-card {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-shell-card__title {
@@ -231,7 +175,7 @@ body {
 }
 
 .demo-shell-frame--scroll {
-  block-size: var(--demo-preview-height, 34rem);
+  block-size: var(--demo-preview-height);
   overflow: auto;
 }
 
@@ -245,35 +189,54 @@ body {
 
 /* stylelint-disable declaration-block-no-redundant-longhand-properties, no-descending-specificity -- Demo-only layout state combinations intentionally mirror interactive toggle permutations. */
 .demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside
-  .vf-app-shell__body-grid {
+  > .vf-app-shell__body
+  > .vf-app-shell__body-container
+  > .vf-app-shell__body-grid {
   grid-template-areas: "sidebar content";
   grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, var(--vf-layout-shell-sidebar-width)) minmax(0, 1fr);
 }
 
 .demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside.vf-app-shell--sidebar-collapsed
-  .vf-app-shell__body-grid {
+  > .vf-app-shell__body
+  > .vf-app-shell__body-container
+  > .vf-app-shell__body-grid {
   grid-template-areas: "sidebar content";
   grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, var(--vf-layout-shell-sidebar-collapsed-width)) minmax(0, 1fr);
 }
 
 .demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside
-  .vf-aside-area {
+  > .vf-app-shell__body
+  > .vf-app-shell__body-container
+  > .vf-app-shell__body-grid
+  > .vf-aside-area {
   display: none;
 }
 
 .demo-shell-app--compact-sidebar.vf-app-shell--sidebar-content
-  .vf-app-shell__body-grid,
+  > .vf-app-shell__body
+  > .vf-app-shell__body-container
+  > .vf-app-shell__body-grid,
 .demo-shell-app--compact-sidebar.vf-app-shell--sidebar-content-aside
-  .vf-app-shell__body-grid {
+  > .vf-app-shell__body
+  > .vf-app-shell__body-container
+  > .vf-app-shell__body-grid {
   grid-template-areas: "content";
   grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, 1fr);
 }
 
-.demo-shell-app--compact-sidebar .vf-sidebar-area,
-.demo-shell-app--compact-sidebar .vf-aside-area {
+.demo-shell-app--compact-sidebar
+  > .vf-app-shell__body
+  > .vf-app-shell__body-container
+  > .vf-app-shell__body-grid
+  > .vf-sidebar-area,
+.demo-shell-app--compact-sidebar
+  > .vf-app-shell__body
+  > .vf-app-shell__body-container
+  > .vf-app-shell__body-grid
+  > .vf-aside-area {
   display: none;
 }
 /* stylelint-enable declaration-block-no-redundant-longhand-properties, no-descending-specificity */
@@ -287,7 +250,7 @@ body {
 }
 
 .demo-scroll-column {
-  gap: 0.625rem;
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-scroll-copy {
@@ -329,7 +292,7 @@ body {
 .demo-shell-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--vf-layout-space-layout-base);
   width: 100%;
 }
 
@@ -340,11 +303,5 @@ body {
 }
 
 .demo-shell-header__start {
-  gap: 0.5rem;
-}
-
-@media (width <= 960px) {
-  .demo-grid--two {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  gap: var(--vf-layout-space-layout-base);
 }

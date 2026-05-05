@@ -1,5 +1,5 @@
-export type VfThemeMode = "light" | "dark" | "system";
-export type VfResolvedTheme = "light" | "dark";
+export type VfThemeMode = 'light' | 'dark' | 'system';
+export type VfResolvedTheme = 'light' | 'dark';
 
 export interface VfThemeTokens {
   colorBg: string;

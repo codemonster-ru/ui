@@ -1,7 +1,7 @@
-import "./styles/components.css";
+import './styles/components.css';
 
-export { default, VueForgeCore, createVueForgeCore } from "./plugin";
-export { default as VfThemeProvider } from "./providers/VfThemeProvider.vue";
+export { default, VueForgeCore, createVueForgeCore } from './plugin';
+export { default as VfThemeProvider } from './providers/VfThemeProvider.vue';
 export {
   VfAccordion,
   VfAlert,
@@ -32,7 +32,7 @@ export {
   VfTabs,
   VfTextarea,
   VfTooltip,
-} from "./components";
+} from './components';
 export {
   useClickOutside,
   useDisclosure,
@@ -42,7 +42,7 @@ export {
   useId,
   useTableOfContents,
   useTheme,
-} from "./composables";
+} from './composables';
 export {
   vfBreakpoints,
   toMaxWidthQuery,
@@ -51,8 +51,8 @@ export {
   useBreakpoints,
   useBreakpointValue,
   useScrollLock,
-} from "./foundation";
-export { createThemePreset, defaultThemePreset } from "./theme/public";
+} from './foundation';
+export { createThemePreset, defaultThemePreset } from './theme/public';
 export type {
   VfBadgeTone,
   VfBreadcrumbItem,
@@ -70,7 +70,7 @@ export type {
   VfTabItem,
   VfTableOfContentsItem,
   VfTooltipPlacement,
-} from "./types/components";
+} from './types/components';
 export type {
   VfResolvedTheme,
   VfThemeConfig,
@@ -81,11 +81,11 @@ export type {
   VfThemeProviderProps,
   VfThemeTokens,
   VfVueForgeOptions,
-} from "./types/theme";
+} from './types/theme';
 export type {
   UseBreakpointOptions,
   UseScrollLockOptions,
   VfBreakpointName,
   VfBreakpointValue,
   VfBreakpointValues,
-} from "./foundation";
+} from './foundation';

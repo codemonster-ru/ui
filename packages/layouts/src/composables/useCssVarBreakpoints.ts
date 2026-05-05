@@ -1,8 +1,5 @@
-import { onBeforeUnmount, onMounted, ref } from "vue";
-import {
-  vfBreakpoints,
-  type VfBreakpointName
-} from "@codemonster-ru/vueforge-core/foundation";
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { vfBreakpoints, type VfBreakpointName } from '@codemonster-ru/vueforge-core/foundation';
 
 type ResolvedBreakpoints = Record<VfBreakpointName, number>;
 
@@ -19,14 +16,11 @@ function parseCssLength(value: string, rootFontSize: number) {
     return null;
   }
 
-  if (
-    normalizedValue.endsWith("px") ||
-    /^[+-]?\d*\.?\d+$/.test(normalizedValue)
-  ) {
+  if (normalizedValue.endsWith('px') || /^[+-]?\d*\.?\d+$/.test(normalizedValue)) {
     return numericValue;
   }
 
-  if (normalizedValue.endsWith("rem") || normalizedValue.endsWith("em")) {
+  if (normalizedValue.endsWith('rem') || normalizedValue.endsWith('em')) {
     return numericValue * rootFontSize;
   }
 
@@ -38,7 +32,7 @@ function breakpointToCssVarName(name: VfBreakpointName) {
 }
 
 function readResolvedBreakpoints(): ResolvedBreakpoints {
-  if (typeof window === "undefined" || typeof document === "undefined") {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
     return { ...vfBreakpoints };
   }
 
@@ -47,12 +41,10 @@ function readResolvedBreakpoints(): ResolvedBreakpoints {
 
   return Object.fromEntries(
     Object.entries(vfBreakpoints).map(([name, fallbackValue]) => {
-      const cssVarValue = rootStyles.getPropertyValue(
-        breakpointToCssVarName(name as VfBreakpointName)
-      );
+      const cssVarValue = rootStyles.getPropertyValue(breakpointToCssVarName(name as VfBreakpointName));
 
       return [name, parseCssLength(cssVarValue, rootFontSize) ?? fallbackValue];
-    })
+    }),
   ) as ResolvedBreakpoints;
 }
 
@@ -66,7 +58,7 @@ export function useCssVarBreakpoints() {
   };
 
   const scheduleUpdate = () => {
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       updateBreakpoints();
       return;
     }
@@ -82,38 +74,38 @@ export function useCssVarBreakpoints() {
   };
 
   onMounted(() => {
-    if (typeof window === "undefined" || typeof document === "undefined") {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
       return;
     }
 
     updateBreakpoints();
-    window.addEventListener("resize", scheduleUpdate);
+    window.addEventListener('resize', scheduleUpdate);
 
     mutationObserver = new MutationObserver(scheduleUpdate);
     mutationObserver.observe(document.documentElement, {
       attributes: true,
       childList: true,
-      subtree: false
+      subtree: false,
     });
 
     if (document.body) {
       mutationObserver.observe(document.body, {
         attributes: true,
         childList: false,
-        subtree: false
+        subtree: false,
       });
     }
 
     mutationObserver.observe(document.head, {
       childList: true,
       subtree: true,
-      characterData: true
+      characterData: true,
     });
   });
 
   onBeforeUnmount(() => {
-    if (typeof window !== "undefined") {
-      window.removeEventListener("resize", scheduleUpdate);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', scheduleUpdate);
 
       if (rafId !== null) {
         window.cancelAnimationFrame(rafId);

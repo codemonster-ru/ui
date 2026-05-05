@@ -1,1 +1,1 @@
-export { default as VfLink } from "./VfLink.vue";
+export { default as VfLink } from './VfLink.vue';

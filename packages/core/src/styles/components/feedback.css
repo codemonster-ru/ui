@@ -158,6 +158,8 @@
   align-items: center;
   justify-content: center;
   align-self: start;
+  margin-top: 0.125rem;
+  line-height: 1;
   color: var(--vf-alert-primary-icon-color);
 }
 

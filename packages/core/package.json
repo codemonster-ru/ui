@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.17.7",
+  "version": "1.18.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -22,7 +22,8 @@
     "design-system",
     "theme",
     "library",
-    "vueforge"
+    "vueforge",
+    "ecosystem"
   ],
   "publishConfig": {
     "access": "public"
@@ -65,7 +66,7 @@
   "scripts": {
     "build": "vue-tsc --noEmit && vite build",
     "check": "npm run lint && npm run test && npm run build",
-    "format": "prettier --write .",
+    "format": "prettier --ignore-path ../../.prettierignore --write .",
     "lint": "eslint .",
     "prepack": "npm run build",
     "test": "vitest run --config vitest.config.ts",
@@ -97,10 +98,11 @@
   },
   "dependencies": {
     "@codemonster-ru/floater.js": "^1.0.8",
-    "@codemonster-ru/vueforge-theme": "file:../theme",
-    "@codemonster-ru/vueforge-icons": "file:../icons"
+    "@codemonster-ru/vueforge-theme": "^1.2.2",
+    "@codemonster-ru/vueforge-icons": "^1.4.0"
   },
   "overrides": {
     "@microsoft/api-extractor": "^7.58.1"
-  }
+  },
+  "main": "./dist/vueforge-core.js"
 }

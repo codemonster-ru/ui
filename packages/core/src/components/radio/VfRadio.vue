@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, useAttrs, type StyleValue } from "vue";
-import { cx } from "@/utils/classes";
-import type { VfControlSize } from "@/types/components";
+import { computed, useAttrs, type StyleValue } from 'vue';
+import { cx } from '@/utils/classes';
+import type { VfControlSize } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
@@ -20,14 +20,14 @@ interface VfRadioProps {
 
 const props = withDefaults(defineProps<VfRadioProps>(), {
   modelValue: undefined,
-  size: "md",
+  size: 'md',
   invalid: false,
   disabled: false,
   label: undefined,
 });
 
 const emit = defineEmits<{
-  "update:modelValue": [value: VfRadioValue];
+  'update:modelValue': [value: VfRadioValue];
   change: [value: VfRadioValue];
 }>();
 
@@ -36,20 +36,18 @@ const isChecked = computed(() => props.modelValue === props.value);
 
 const rootClasses = computed(() =>
   cx(
-    "vf-radio",
+    'vf-radio',
     `vf-radio--${props.size}`,
-    isChecked.value && "vf-radio--checked",
-    props.invalid && "vf-radio--invalid",
-    props.disabled && "vf-radio--disabled",
+    isChecked.value && 'vf-radio--checked',
+    props.invalid && 'vf-radio--invalid',
+    props.disabled && 'vf-radio--disabled',
     attrs.class as string | undefined,
   ),
 );
 
 const rootStyles = computed<StyleValue>(() => attrs.style as StyleValue);
 const inputAttrs = computed(() =>
-  Object.fromEntries(
-    Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style"),
-  ),
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style')),
 );
 
 function handleChange(event: Event) {
@@ -57,8 +55,8 @@ function handleChange(event: Event) {
     return;
   }
 
-  emit("update:modelValue", props.value);
-  emit("change", props.value);
+  emit('update:modelValue', props.value);
+  emit('change', props.value);
 }
 </script>
 

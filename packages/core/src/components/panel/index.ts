@@ -1,1 +1,1 @@
-export { default as VfPanel } from "./VfPanel.vue";
+export { default as VfPanel } from './VfPanel.vue';

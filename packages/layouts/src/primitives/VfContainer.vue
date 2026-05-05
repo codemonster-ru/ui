@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useAttrs } from "vue";
+import { useAttrs } from 'vue';
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 });
 
-type VfContainerSize = "md" | "lg" | "xl" | "2xl";
+type VfContainerSize = 'md' | 'lg' | 'xl' | '2xl';
 
 const props = withDefaults(
   defineProps<{
@@ -14,10 +14,10 @@ const props = withDefaults(
     fluid?: boolean;
   }>(),
   {
-    as: "div",
+    as: 'div',
     size: undefined,
-    fluid: false
-  }
+    fluid: false,
+  },
 );
 
 const attrs = useAttrs();
@@ -29,7 +29,7 @@ const attrs = useAttrs();
     class="vf-container"
     :class="{
       'vf-container--fluid': props.fluid,
-      [`vf-container--${props.size}`]: props.size
+      [`vf-container--${props.size}`]: props.size,
     }"
     v-bind="attrs"
   >

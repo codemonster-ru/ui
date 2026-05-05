@@ -1,4 +1,4 @@
-import { computed, ref, watch, type MaybeRefOrGetter, toValue } from "vue";
+import { computed, ref, watch, type MaybeRefOrGetter, toValue } from 'vue';
 
 interface UseDisclosureOptions {
   defaultOpen?: boolean;
@@ -9,9 +9,7 @@ interface UseDisclosureOptions {
 export function useDisclosure(options: UseDisclosureOptions = {}) {
   const isControlled = computed(() => toValue(options.open) !== undefined);
   const internalOpen = ref(options.defaultOpen ?? false);
-  const isOpen = computed(() =>
-    isControlled.value ? Boolean(toValue(options.open)) : internalOpen.value,
-  );
+  const isOpen = computed(() => (isControlled.value ? Boolean(toValue(options.open)) : internalOpen.value));
 
   watch(
     () => toValue(options.open),

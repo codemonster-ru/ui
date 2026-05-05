@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "@/utils/classes";
+import { computed, useAttrs } from 'vue';
+import { cx } from '@/utils/classes';
 
 defineOptions({
   inheritAttrs: false,
@@ -17,9 +17,7 @@ const props = withDefaults(defineProps<VfPanelProps>(), {
 });
 
 const attrs = useAttrs();
-const classes = computed(() =>
-  cx("vf-panel", props.subtle && "vf-panel--subtle"),
-);
+const classes = computed(() => cx('vf-panel', props.subtle && 'vf-panel--subtle'));
 </script>
 
 <template>

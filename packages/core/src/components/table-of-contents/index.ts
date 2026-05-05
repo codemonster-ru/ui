@@ -1,1 +1,1 @@
-export { default as VfTableOfContents } from "./VfTableOfContents.vue";
+export { default as VfTableOfContents } from './VfTableOfContents.vue';

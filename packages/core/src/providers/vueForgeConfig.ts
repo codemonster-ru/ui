@@ -1,5 +1,5 @@
-import type { InjectionKey } from "vue";
-import type { VfResolvedThemeConfig, VfThemeMode } from "@/types/theme";
+import type { InjectionKey } from 'vue';
+import type { VfResolvedThemeConfig, VfThemeMode } from '@/types/theme';
 
 export interface VfVueForgeThemeModeDefaults {
   defaultTheme?: VfThemeMode;
@@ -12,5 +12,4 @@ export interface VfVueForgeRuntimeConfig {
   themeMode: VfVueForgeThemeModeDefaults;
 }
 
-export const vueForgeConfigKey: InjectionKey<VfVueForgeRuntimeConfig> =
-  Symbol("VueForgeConfig");
+export const vueForgeConfigKey: InjectionKey<VfVueForgeRuntimeConfig> = Symbol('VueForgeConfig');

@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from "vue";
-import VfMenuBarItemNode from "./VfMenuBarItemNode.vue";
-import { useClickOutside, useEscapeKey } from "@/composables";
-import type { VfNavMenuItem } from "@/types/components";
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import VfMenuBarItemNode from './VfMenuBarItemNode.vue';
+import { useClickOutside, useEscapeKey } from '@/composables';
+import type { VfNavMenuItem } from '@/types/components';
 
 interface VfMenuBarProps {
   items: VfNavMenuItem[];
   modelValue?: string;
   defaultValue?: string;
   ariaLabel?: string;
-  variant?: "default" | "pills";
+  variant?: 'default' | 'pills';
 }
 
 const props = withDefaults(defineProps<VfMenuBarProps>(), {
   modelValue: undefined,
   defaultValue: undefined,
-  ariaLabel: "Menu bar",
-  variant: "default",
+  ariaLabel: 'Menu bar',
+  variant: 'default',
 });
 
 const emit = defineEmits<{
-  "update:modelValue": [value: string];
+  'update:modelValue': [value: string];
   change: [value: string];
   select: [item: VfNavMenuItem];
 }>();
@@ -36,14 +36,14 @@ function setActiveValue(value: string) {
     internalValue.value = value;
   }
 
-  emit("update:modelValue", value);
-  emit("change", value);
+  emit('update:modelValue', value);
+  emit('change', value);
 }
 
 function handleSelect(item: VfNavMenuItem) {
   setActiveValue(item.value);
   openPath.value = [];
-  emit("select", item);
+  emit('select', item);
 }
 
 function handleOpenPathChange(path: string[]) {

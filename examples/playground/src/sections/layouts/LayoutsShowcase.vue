@@ -2,16 +2,6 @@
   <div class="demo-page">
     <VfContainer>
       <VfStack>
-        <header class="demo-header">
-          <div>
-            <h1>Vueforge Layouts</h1>
-            <p class="demo-meta">Component catalog</p>
-          </div>
-          <VfInline class="demo-theme-switch" :wrap="false">
-            <VfThemeSwitch label="Dark mode" static thumb-contrast="inverse" />
-          </VfInline>
-        </header>
-
         <section class="demo-block">
           <div class="demo-block__header">
             <h2>Vf-Container</h2>
@@ -560,8 +550,7 @@ import {
   VfButton,
   VfCard,
   VfSwitch,
-  VfTabs,
-  VfThemeSwitch
+  VfTabs
 } from "@codemonster-ru/vueforge-core";
 import { computed, ref } from "vue";
 import {

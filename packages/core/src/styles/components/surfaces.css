@@ -68,7 +68,7 @@
 
 .vf-table {
   width: 100%;
-  min-width: 36rem;
+  min-width: var(--vf-table-min-width);
   border-collapse: separate;
   border-spacing: 0;
   color: var(--vf-table-color);
@@ -78,13 +78,13 @@
 }
 
 .vf-table__caption {
-  padding: 0.875rem 1rem 0;
+  padding: var(--vf-surface-padding) var(--vf-surface-padding) 0;
   text-align: left;
   color: var(--vf-table-caption-color);
 }
 
 .vf-table :where(th, td) {
-  padding: 0.625rem 0.875rem;
+  padding: var(--vf-field-padding-lg);
   text-align: left;
   vertical-align: top;
 }
@@ -120,7 +120,7 @@
 }
 
 .vf-table--compact :where(th, td) {
-  padding: 0.5rem 0.75rem;
+  padding: var(--vf-field-padding-md);
 }
 
 .vf-table--sticky-header thead th {

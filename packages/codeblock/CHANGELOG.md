@@ -1,6 +1,17 @@
 # Changelog
 
-## [2.2.0] - 2026-05-02
+## 2.3.0
+
+### Changed
+
+- Rebased default CodeBlock visual tokens onto VueForge core variables (`--vf-*`) for tighter design-system alignment out of the box.
+- Updated dark-mode defaults to follow core semantic surface/text/border tokens instead of package-local fallback palette values.
+- Added explicit line-number width token wiring and normalized spacing, typography, radius, and motion defaults through shared tokens.
+- Updated runtime-theme examples/tests and README snippets to recommend token-driven overrides via core variables.
+- Renamed the public component export/registration to `VfCodeBlock` and removed legacy `CodeBlock` / `VueCodeBlock` aliases.
+- Migrated the component CSS API from `vcb*` / `--vcb-*` to `vf-codeblock*` / `--vf-codeblock-*` and switched runtime style tag id to `vf-codeblock-runtime-theme-vars`.
+
+## 2.2.0
 
 ### Added
 
@@ -21,7 +32,7 @@
 - Removed `<pre>` whitespace artifacts around the overlay copy control
 - Ensured Vitest handles `@codemonster-ru/vueforge-icons` CSS side-effects via inline dependency configuration
 
-## [2.1.0] - 2026-05-01
+## 2.1.0
 
 ### Added
 
@@ -39,7 +50,7 @@
 
 - Removed `playground` mode and all related props/types/tests from `vue-codeblock`
 
-## [2.0.1] - 2026-05-01
+## 2.0.1
 
 ### Added
 
@@ -52,7 +63,7 @@
 - Prevented extra top/bottom spacing when `CodeBlock` is first or last child via `:first-child` and `:last-child` margin resets
 - Updated README style API documentation with the new spacing custom properties and defaults
 
-## [2.0.0] - 2026-04-30
+## 2.0.0
 
 ### Added
 
@@ -74,13 +85,13 @@
 
 - Removed the legacy regex token CSS classes and token color custom properties such as `--vcb-token-keyword-color`
 
-## [1.1.2] - 2026-04-28
+## 1.1.2
 
 ### Fixed
 
 - Reset internal `pre` border and radius styles so `CodeBlock` remains stable inside external prose containers
 
-## [1.1.1] - 2026-04-05
+## 1.1.1
 
 ### Changed
 
@@ -88,7 +99,7 @@
 - Expanded the theming docs with the new surface-related CSS custom properties and default styling notes
 - Refreshed the demo to better reflect VueForge-aligned default tokens and presentation
 
-## [1.1.0] - 2026-04-04
+## 1.1.0
 
 ### Added
 
@@ -102,7 +113,7 @@
 - Mapped default `CodeBlock` CSS variables to available `--vf-*` theme tokens with local fallbacks so the component stays fully standalone outside VueForge
 - Documented `theme="inherit"` support for both `data-theme` and `data-vf-theme`
 
-## [1.0.0] - 2026-03-01
+## 1.0.0
 
 ### Added
 

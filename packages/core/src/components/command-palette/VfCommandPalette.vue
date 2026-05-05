@@ -1,20 +1,12 @@
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  ref,
-  useAttrs,
-  watch,
-  type CSSProperties,
-} from "vue";
-import { VueIconify, icons } from "@codemonster-ru/vueforge-icons";
-import VfBadge from "@/components/badge/VfBadge.vue";
-import VfInput from "@/components/input/VfInput.vue";
-import { cx } from "@/utils/classes";
-import { useDisclosure, useEscapeKey, useFocusTrap } from "@/composables";
-import { useBreakpoint, useScrollLock } from "@/foundation";
-import { vfMotionDurationsMs } from "@/theme/motion";
+import { computed, nextTick, onBeforeUnmount, ref, useAttrs, watch, type CSSProperties } from 'vue';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import VfBadge from '@/components/badge/VfBadge.vue';
+import VfInput from '@/components/input/VfInput.vue';
+import { cx } from '@/utils/classes';
+import { useDisclosure, useEscapeKey, useFocusTrap } from '@/composables';
+import { useBreakpoint, useScrollLock } from '@/foundation';
+import { vfMotionDurationsMs } from '@/theme/motion';
 
 defineOptions({
   inheritAttrs: false,
@@ -45,14 +37,14 @@ interface VfCommandPaletteProps {
 const props = withDefaults(defineProps<VfCommandPaletteProps>(), {
   open: undefined,
   defaultOpen: false,
-  title: "Search",
-  placeholder: "Search...",
+  title: 'Search',
+  placeholder: 'Search...',
   modelValue: undefined,
-  defaultValue: "",
+  defaultValue: '',
   items: () => [],
   loading: false,
-  idleText: "Start typing to search",
-  emptyText: "Nothing found",
+  idleText: 'Start typing to search',
+  emptyText: 'Nothing found',
   highlightMatches: true,
   dividers: true,
   closeOnSelect: true,
@@ -65,9 +57,9 @@ const props = withDefaults(defineProps<VfCommandPaletteProps>(), {
 });
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
+  'update:open': [value: boolean];
   openChange: [value: boolean];
-  "update:modelValue": [value: string];
+  'update:modelValue': [value: string];
   queryChange: [value: string];
   select: [item: unknown];
   submit: [query: string];
@@ -83,15 +75,15 @@ const pointerNavigationEnabled = ref(true);
 const pointerResetPending = ref(false);
 const lastPointerClientX = ref<number | null>(null);
 const lastPointerClientY = ref<number | null>(null);
-const isBelowMd = useBreakpoint("md", { direction: "max" });
+const isBelowMd = useBreakpoint('md', { direction: 'max' });
 const uncontrolledQuery = ref(props.defaultValue);
 
 const disclosure = useDisclosure({
   defaultOpen: props.defaultOpen,
   open: computed(() => props.open),
   onOpenChange: (value) => {
-    emit("update:open", value);
-    emit("openChange", value);
+    emit('update:open', value);
+    emit('openChange', value);
   },
 });
 
@@ -100,17 +92,14 @@ const itemsCount = computed(() => props.items.length);
 
 const isQueryControlled = computed(() => props.modelValue !== undefined);
 const query = computed({
-  get: () =>
-    isQueryControlled.value
-      ? (props.modelValue ?? "")
-      : uncontrolledQuery.value,
+  get: () => (isQueryControlled.value ? (props.modelValue ?? '') : uncontrolledQuery.value),
   set: (value: string) => {
     if (!isQueryControlled.value) {
       uncontrolledQuery.value = value;
     }
 
-    emit("update:modelValue", value);
-    emit("queryChange", value);
+    emit('update:modelValue', value);
+    emit('queryChange', value);
   },
 });
 const hasQuery = computed(() => query.value.trim().length > 0);
@@ -121,31 +110,23 @@ const transitionDuration = {
 } as const;
 
 const teleportDisabled = computed(
-  () =>
-    props.disableTeleport ||
-    props.teleportTo === false ||
-    props.teleportTo === null,
+  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
 );
 
 const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === "string") {
+  if (typeof props.teleportTo === 'string') {
     return props.teleportTo;
   }
 
-  if (
-    typeof HTMLElement !== "undefined" &&
-    props.teleportTo instanceof HTMLElement
-  ) {
+  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
     return props.teleportTo;
   }
 
-  return "body";
+  return 'body';
 });
 
-function normalizeCssLength(
-  value: string | number | undefined,
-): string | undefined {
-  if (typeof value === "number") {
+function normalizeCssLength(value: string | number | undefined): string | undefined {
+  if (typeof value === 'number') {
     return `${value}px`;
   }
 
@@ -157,29 +138,24 @@ const contentStyle = computed<CSSProperties>(() => {
   const maxHeight = normalizeCssLength(props.maxHeight);
 
   if (maxHeight != null) {
-    style["--vf-command-palette-max-height"] = maxHeight;
+    style['--vf-command-palette-max-height'] = maxHeight;
   }
 
   return style;
 });
 
 const contentClasses = computed(() =>
-  cx(
-    "vf-command-palette__content",
-    props.dividers && "vf-command-palette__content--dividers",
-  ),
+  cx('vf-command-palette__content', props.dividers && 'vf-command-palette__content--dividers'),
 );
 const rootClasses = computed(() =>
   cx(
-    "vf-command-palette",
-    isBelowMd.value && "vf-command-palette--below-md",
-    !pointerNavigationEnabled.value && "vf-command-palette--keyboard-nav",
+    'vf-command-palette',
+    isBelowMd.value && 'vf-command-palette--below-md',
+    !pointerNavigationEnabled.value && 'vf-command-palette--keyboard-nav',
   ),
 );
 const rootAttrs = computed(() => {
-  return Object.fromEntries(
-    Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style"),
-  );
+  return Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'));
 });
 
 function close() {
@@ -196,7 +172,7 @@ function handleOverlayClick() {
 
 function focusInput() {
   const input = contentRef.value?.querySelector<HTMLInputElement>(
-    ".vf-command-palette__input input, input.vf-command-palette__input",
+    '.vf-command-palette__input input, input.vf-command-palette__input',
   );
   input?.focus();
   input?.select();
@@ -213,12 +189,11 @@ function moveActiveIndex(step: number) {
     return;
   }
 
-  activeIndex.value =
-    (activeIndex.value + step + itemsCount.value) % itemsCount.value;
+  activeIndex.value = (activeIndex.value + step + itemsCount.value) % itemsCount.value;
 }
 
 function handleSelect(item: unknown) {
-  emit("select", item);
+  emit('select', item);
 
   if (props.closeOnSelect) {
     close();
@@ -226,33 +201,30 @@ function handleSelect(item: unknown) {
 }
 
 function handleInputKeydown(event: KeyboardEvent) {
-  if (event.key === "ArrowDown") {
+  if (event.key === 'ArrowDown') {
     pointerNavigationEnabled.value = false;
     event.preventDefault();
     moveActiveIndex(1);
     return;
   }
 
-  if (event.key === "ArrowUp") {
+  if (event.key === 'ArrowUp') {
     pointerNavigationEnabled.value = false;
     event.preventDefault();
     moveActiveIndex(-1);
     return;
   }
 
-  if (event.key === "Enter") {
+  if (event.key === 'Enter') {
     pointerNavigationEnabled.value = false;
     event.preventDefault();
 
-    if (
-      activeIndex.value >= 0 &&
-      props.items[activeIndex.value] !== undefined
-    ) {
+    if (activeIndex.value >= 0 && props.items[activeIndex.value] !== undefined) {
       handleSelect(props.items[activeIndex.value]);
       return;
     }
 
-    emit("submit", query.value);
+    emit('submit', query.value);
   }
 }
 
@@ -276,47 +248,47 @@ function handleItemPointerMove(index: number, event: MouseEvent) {
 }
 
 function getItemLabel(item: unknown): string {
-  if (typeof item === "string") {
+  if (typeof item === 'string') {
     return item;
   }
 
-  if (item != null && typeof item === "object") {
+  if (item != null && typeof item === 'object') {
     const record = item as Record<string, unknown>;
 
-    if (typeof record.label === "string") {
+    if (typeof record.label === 'string') {
       return record.label;
     }
 
-    if (typeof record.title === "string") {
+    if (typeof record.title === 'string') {
       return record.title;
     }
 
-    if (typeof record.value === "string") {
+    if (typeof record.value === 'string') {
       return record.value;
     }
   }
 
-  return String(item ?? "");
+  return String(item ?? '');
 }
 
 function getItemField(item: unknown, keys: string[]): string {
-  if (item == null || typeof item !== "object") {
-    return "";
+  if (item == null || typeof item !== 'object') {
+    return '';
   }
 
   const record = item as Record<string, unknown>;
 
   for (const key of keys) {
-    if (typeof record[key] === "string") {
+    if (typeof record[key] === 'string') {
       return record[key] as string;
     }
   }
 
-  return "";
+  return '';
 }
 
 function getItemTitle(item: unknown): string {
-  const title = getItemField(item, ["title", "label", "value", "name"]);
+  const title = getItemField(item, ['title', 'label', 'value', 'name']);
   if (title) {
     return title;
   }
@@ -325,35 +297,23 @@ function getItemTitle(item: unknown): string {
 }
 
 function getItemBreadcrumb(item: unknown): string {
-  return getItemField(item, [
-    "breadcrumb",
-    "section",
-    "path",
-    "group",
-    "category",
-  ]);
+  return getItemField(item, ['breadcrumb', 'section', 'path', 'group', 'category']);
 }
 
 function getItemSnippet(item: unknown): string {
-  return getItemField(item, [
-    "snippet",
-    "description",
-    "text",
-    "content",
-    "summary",
-  ]);
+  return getItemField(item, ['snippet', 'description', 'text', 'content', 'summary']);
 }
 
 function getHighlightedParts(label: string) {
-  const source = String(label ?? "");
+  const source = String(label ?? '');
   const needle = query.value.trim();
 
   if (!props.highlightMatches || !needle) {
     return [{ text: source, match: false }];
   }
 
-  const escapedNeedle = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const pattern = new RegExp(escapedNeedle, "ig");
+  const escapedNeedle = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp(escapedNeedle, 'ig');
   const parts: Array<{ text: string; match: boolean }> = [];
 
   let lastIndex = 0;
@@ -361,7 +321,7 @@ function getHighlightedParts(label: string) {
 
   while (result != null) {
     const matchIndex = result.index;
-    const matchText = result[0] ?? "";
+    const matchText = result[0] ?? '';
 
     if (matchIndex > lastIndex) {
       parts.push({
@@ -416,15 +376,12 @@ useScrollLock(isOpen);
 watch(
   isOpen,
   async (value, previousValue) => {
-    if (typeof document === "undefined") {
+    if (typeof document === 'undefined') {
       return;
     }
 
     if (value) {
-      lastFocusedElement.value =
-        document.activeElement instanceof HTMLElement
-          ? document.activeElement
-          : null;
+      lastFocusedElement.value = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       activeIndex.value = -1;
       pointerResetPending.value = false;
       lastPointerClientX.value = null;
@@ -433,7 +390,7 @@ watch(
       focusInput();
 
       if (!previousValue) {
-        emit("open");
+        emit('open');
       }
 
       return;
@@ -442,7 +399,7 @@ watch(
     lastFocusedElement.value?.focus();
 
     if (previousValue) {
-      emit("close");
+      emit('close');
     }
   },
   { immediate: true },
@@ -473,17 +430,9 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport :to="teleportTarget" :disabled="teleportDisabled">
-    <Transition
-      name="vf-command-palette-transition"
-      appear
-      :duration="transitionDuration"
-    >
+    <Transition name="vf-command-palette-transition" appear :duration="transitionDuration">
       <div v-if="isOpen" :class="rootClasses">
-        <div
-          class="vf-command-palette__overlay"
-          aria-hidden="true"
-          @click="handleOverlayClick"
-        />
+        <div class="vf-command-palette__overlay" aria-hidden="true" @click="handleOverlayClick" />
 
         <section
           ref="contentRef"
@@ -525,9 +474,7 @@ onBeforeUnmount(() => {
             />
 
             <template v-else>
-              <p v-if="loading" class="vf-command-palette__status">
-                Loading...
-              </p>
+              <p v-if="loading" class="vf-command-palette__status">Loading...</p>
 
               <ul
                 v-else-if="itemsCount > 0"
@@ -535,17 +482,10 @@ onBeforeUnmount(() => {
                 role="listbox"
                 aria-label="Search results"
               >
-                <li
-                  v-for="(item, index) in props.items"
-                  :key="index"
-                  class="vf-command-palette__list-item"
-                >
+                <li v-for="(item, index) in props.items" :key="index" class="vf-command-palette__list-item">
                   <button
                     class="vf-command-palette__item"
-                    :class="
-                      index === activeIndex &&
-                      'vf-command-palette__item--active'
-                    "
+                    :class="index === activeIndex && 'vf-command-palette__item--active'"
                     type="button"
                     role="option"
                     :aria-selected="index === activeIndex"
@@ -562,72 +502,42 @@ onBeforeUnmount(() => {
                     >
                       <span class="vf-command-palette__item-layout">
                         <span class="vf-command-palette__item-content">
-                          <span
-                            v-if="getItemBreadcrumb(item)"
-                            class="vf-command-palette__item-breadcrumb"
-                          >
+                          <span v-if="getItemBreadcrumb(item)" class="vf-command-palette__item-breadcrumb">
                             <span
-                              v-for="(part, partIndex) in getHighlightedParts(
-                                getItemBreadcrumb(item),
-                              )"
+                              v-for="(part, partIndex) in getHighlightedParts(getItemBreadcrumb(item))"
                               :key="`${index}-breadcrumb-${partIndex}`"
-                              :class="
-                                part.match && 'vf-command-palette__item-match'
-                              "
+                              :class="part.match && 'vf-command-palette__item-match'"
                             >
                               {{ part.text }}
                             </span>
                           </span>
 
                           <span class="vf-command-palette__item-title">
-                            <span
-                              class="vf-command-palette__item-leading-icon"
-                              aria-hidden="true"
-                            >
-                              <VueIconify
-                                :icon="icons.file"
-                                size="var(--vf-command-palette-item-icon-size)"
-                              />
+                            <span class="vf-command-palette__item-leading-icon" aria-hidden="true">
+                              <VueIconify :icon="icons.file" size="var(--vf-command-palette-item-icon-size)" />
                             </span>
                             <span
-                              v-for="(part, partIndex) in getHighlightedParts(
-                                getItemTitle(item),
-                              )"
+                              v-for="(part, partIndex) in getHighlightedParts(getItemTitle(item))"
                               :key="`${index}-title-${partIndex}`"
-                              :class="
-                                part.match && 'vf-command-palette__item-match'
-                              "
+                              :class="part.match && 'vf-command-palette__item-match'"
                             >
                               {{ part.text }}
                             </span>
                           </span>
 
-                          <span
-                            v-if="getItemSnippet(item)"
-                            class="vf-command-palette__item-snippet"
-                          >
+                          <span v-if="getItemSnippet(item)" class="vf-command-palette__item-snippet">
                             <span
-                              v-for="(part, partIndex) in getHighlightedParts(
-                                getItemSnippet(item),
-                              )"
+                              v-for="(part, partIndex) in getHighlightedParts(getItemSnippet(item))"
                               :key="`${index}-snippet-${partIndex}`"
-                              :class="
-                                part.match && 'vf-command-palette__item-match'
-                              "
+                              :class="part.match && 'vf-command-palette__item-match'"
                             >
                               {{ part.text }}
                             </span>
                           </span>
                         </span>
 
-                        <span
-                          class="vf-command-palette__item-enter"
-                          aria-hidden="true"
-                        >
-                          <VueIconify
-                            :icon="icons.arrowTurnUpLeft"
-                            size="var(--vf-command-palette-item-icon-size)"
-                          />
+                        <span class="vf-command-palette__item-enter" aria-hidden="true">
+                          <VueIconify :icon="icons.arrowTurnUpLeft" size="var(--vf-command-palette-item-icon-size)" />
                         </span>
                       </span>
                     </slot>
@@ -647,39 +557,16 @@ onBeforeUnmount(() => {
             </template>
           </div>
 
-          <footer
-            v-if="$slots.footer || props.showDefaultFooterHints"
-            class="vf-command-palette__footer"
-          >
-            <slot
-              v-if="$slots.footer"
-              name="footer"
-              :close="close"
-              :query="query"
-              :items="props.items"
-            />
-            <div
-              v-else
-              class="vf-command-palette__hints"
-              aria-label="Keyboard shortcuts"
-            >
+          <footer v-if="$slots.footer || props.showDefaultFooterHints" class="vf-command-palette__footer">
+            <slot v-if="$slots.footer" name="footer" :close="close" :query="query" :items="props.items" />
+            <div v-else class="vf-command-palette__hints" aria-label="Keyboard shortcuts">
               <span class="vf-command-palette__hint">
                 <span class="vf-command-palette__hint-keys" aria-hidden="true">
-                  <VfBadge
-                    class="vf-command-palette__hint-key vf-command-palette__hint-key--icon"
-                  >
-                    <VueIconify
-                      :icon="icons.arrowUp"
-                      size="var(--vf-command-palette-hint-icon-size)"
-                    />
+                  <VfBadge class="vf-command-palette__hint-key vf-command-palette__hint-key--icon">
+                    <VueIconify :icon="icons.arrowUp" size="var(--vf-command-palette-hint-icon-size)" />
                   </VfBadge>
-                  <VfBadge
-                    class="vf-command-palette__hint-key vf-command-palette__hint-key--icon"
-                  >
-                    <VueIconify
-                      :icon="icons.arrowDown"
-                      size="var(--vf-command-palette-hint-icon-size)"
-                    />
+                  <VfBadge class="vf-command-palette__hint-key vf-command-palette__hint-key--icon">
+                    <VueIconify :icon="icons.arrowDown" size="var(--vf-command-palette-hint-icon-size)" />
                   </VfBadge>
                 </span>
                 <span class="vf-command-palette__hint-label">Navigate</span>
@@ -687,13 +574,8 @@ onBeforeUnmount(() => {
 
               <span class="vf-command-palette__hint">
                 <span class="vf-command-palette__hint-keys" aria-hidden="true">
-                  <VfBadge
-                    class="vf-command-palette__hint-key vf-command-palette__hint-key--icon"
-                  >
-                    <VueIconify
-                      :icon="icons.arrowTurnUpLeft"
-                      size="var(--vf-command-palette-hint-icon-size)"
-                    />
+                  <VfBadge class="vf-command-palette__hint-key vf-command-palette__hint-key--icon">
+                    <VueIconify :icon="icons.arrowTurnUpLeft" size="var(--vf-command-palette-hint-icon-size)" />
                   </VfBadge>
                 </span>
                 <span class="vf-command-palette__hint-label">Select</span>

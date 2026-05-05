@@ -5,5 +5,5 @@
     "moduleResolution": "Bundler",
     "noEmit": true
   },
-  "include": ["./test/smoke-consumer.ts"]
+  "include": ["./__tests__/smoke-consumer.ts"]
 }

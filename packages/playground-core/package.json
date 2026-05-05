@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-playground-core",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Framework-agnostic playground core runtime",
   "type": "module",
   "license": "MIT",
@@ -32,12 +32,21 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean",
+    "build": "tsup src/index.ts --format esm --dts --clean --external typescript",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "lint": "eslint .",
+    "prepack": "npm run build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "typescript": "^5.8.2"
   },
   "devDependencies": {
     "tsup": "^8.5.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

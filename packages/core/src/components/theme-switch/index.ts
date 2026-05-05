@@ -1,1 +1,1 @@
-export { default as VfThemeSwitch } from "./VfThemeSwitch.vue";
+export { default as VfThemeSwitch } from './VfThemeSwitch.vue';

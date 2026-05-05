@@ -1,4 +1,4 @@
-import breakpointValues from "./breakpoints.json";
+import breakpointValues from './breakpoints.json';
 
 export const vfBreakpoints = breakpointValues;
 

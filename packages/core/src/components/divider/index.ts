@@ -1,1 +1,1 @@
-export { default as VfDivider } from "./VfDivider.vue";
+export { default as VfDivider } from './VfDivider.vue';

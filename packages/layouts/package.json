@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-layouts",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Layout primitives, shell components, and responsive composables for Vue 3 applications.",
   "type": "module",
   "license": "MIT",
@@ -34,8 +34,8 @@
   "scripts": {
     "build": "vite build",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
+    "format": "prettier --ignore-path ../../.prettierignore . --write",
+    "format:check": "prettier --ignore-path ../../.prettierignore . --check",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepack": "npm run build",
@@ -47,11 +47,11 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@codemonster-ru/vueforge-core": "^1.17.2",
+    "@codemonster-ru/vueforge-core": "^1.18.0",
     "vue": "^3.4.0"
   },
   "dependencies": {
-    "@codemonster-ru/vueforge-theme": "file:../theme"
+    "@codemonster-ru/vueforge-theme": "^1.2.2"
   },
   "devDependencies": {
     "@codemonster-ru/vueforge-core": "file:../core",
@@ -83,7 +83,8 @@
     "responsive",
     "docs",
     "shell",
-    "composables"
+    "composables",
+    "vueforge"
   ],
   "overrides": {
     "flatted": "3.4.2"

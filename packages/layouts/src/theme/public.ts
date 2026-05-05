@@ -1,4 +1,4 @@
-export { defaultLayoutsPreset } from "./default-preset";
+export { defaultLayoutsPreset } from './default-preset';
 export {
   applyLayoutsThemeConfig,
   createLayoutsPreset,
@@ -6,8 +6,8 @@ export {
   layoutsTokensToCssVars,
   resolveLayoutsPreset,
   resolveLayoutsThemeConfig,
-  resolveLayoutsThemeOptions
-} from "./utils";
+  resolveLayoutsThemeOptions,
+} from './utils';
 export type {
   VfLayoutPreset,
   VfLayoutThemeConfig,
@@ -17,5 +17,5 @@ export type {
   VfVueForgeLayoutsThemeOptions,
   VfResolvedLayoutPreset,
   VfResolvedLayoutThemeConfig,
-  VfResolvedLayoutThemeOptions
-} from "./types";
+  VfResolvedLayoutThemeOptions,
+} from './types';

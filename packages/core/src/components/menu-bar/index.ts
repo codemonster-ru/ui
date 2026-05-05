@@ -1,1 +1,1 @@
-export { default as VfMenuBar } from "./VfMenuBar.vue";
+export { default as VfMenuBar } from './VfMenuBar.vue';

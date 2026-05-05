@@ -29,8 +29,11 @@ jobs:
       - name: Lint workspaces
         run: npm run lint --workspaces --if-present
 
+      - name: Check workspaces
+        run: npm run check --workspaces --if-present
+
       - name: Test workspaces
         run: npm run test --workspaces --if-present
 
-      - name: Build workspaces
-        run: npm run build
+      - name: Dry-run publish artifacts
+        run: npm run prepublish:all

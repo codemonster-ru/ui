@@ -1,16 +1,6 @@
-:where([class^="vf-"], [class*=" vf-"], [class^="vif-"], [class*=" vif-"]),
-:where(
-  [class^="vf-"],
-  [class*=" vf-"],
-  [class^="vif-"],
-  [class*=" vif-"]
-)::before,
-:where(
-  [class^="vf-"],
-  [class*=" vf-"],
-  [class^="vif-"],
-  [class*=" vif-"]
-)::after {
+:where([class^='vf-'], [class*=' vf-']),
+:where([class^='vf-'], [class*=' vf-'])::before,
+:where([class^='vf-'], [class*=' vf-'])::after {
   box-sizing: border-box;
   font-size: inherit;
   font-weight: inherit;
@@ -26,10 +16,10 @@
   --vf-prose-heading-color: var(--vf-color-text);
 }
 
-:root[data-vf-theme="dark"] {
+:root[data-vf-theme='dark'] {
   color-scheme: dark;
 
-  --vf-prose-heading-color: #fff;
+  --vf-prose-heading-color: var(--vf-color-text);
 }
 
 button,
@@ -40,8 +30,7 @@ textarea {
   font: inherit;
 }
 
-:root.vf-theme-transitioning
-  :where([class^="vf-"], [class*=" vf-"], [class^="vif-"], [class*=" vif-"]) {
+:root.vf-theme-transitioning :where([class^='vf-'], [class*=' vf-']) {
   transition-property: transform, opacity !important;
   transition-duration: var(--vf-motion-duration-normal) !important;
   transition-timing-function: var(--vf-motion-ease-standard) !important;
@@ -146,14 +135,10 @@ textarea {
   text-decoration-color: transparent;
   text-underline-offset: var(--vf-text-link-underline-offset);
   transition:
-    color var(--vf-text-link-transition-duration)
-      var(--vf-text-link-transition-easing),
-    text-decoration-color var(--vf-text-link-transition-duration)
-      var(--vf-text-link-transition-easing),
-    text-decoration-thickness var(--vf-text-link-transition-duration)
-      var(--vf-text-link-transition-easing),
-    opacity var(--vf-text-link-transition-duration)
-      var(--vf-text-link-transition-easing);
+    color var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    text-decoration-color var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    text-decoration-thickness var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    opacity var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing);
 }
 
 .vf-text-link:hover {
@@ -255,10 +240,9 @@ textarea {
 
 .vf-blockquote {
   margin: 0;
-  padding: var(--vf-blockquote-padding-block) 0
-    var(--vf-blockquote-padding-block) var(--vf-blockquote-padding-inline-start);
-  border-inline-start: var(--vf-blockquote-border-width) solid
-    var(--vf-color-border);
+  padding: var(--vf-blockquote-padding-block) 0 var(--vf-blockquote-padding-block)
+    var(--vf-blockquote-padding-inline-start);
+  border-inline-start: var(--vf-blockquote-border-width) solid var(--vf-color-border);
   color: var(--vf-color-muted);
   font-size: var(--vf-text-body-font-size);
   font-weight: var(--vf-text-body-font-weight);
@@ -337,8 +321,7 @@ textarea {
 .vf-prose blockquote {
   margin: 0;
   padding: 0 0 0 var(--vf-prose-blockquote-padding-inline-start);
-  border-inline-start: var(--vf-prose-blockquote-border-width) solid
-    var(--vf-color-border);
+  border-inline-start: var(--vf-prose-blockquote-border-width) solid var(--vf-color-border);
   color: var(--vf-color-muted);
 }
 
@@ -367,14 +350,10 @@ textarea {
   text-decoration-color: transparent;
   text-underline-offset: var(--vf-text-link-underline-offset);
   transition:
-    color var(--vf-text-link-transition-duration)
-      var(--vf-text-link-transition-easing),
-    text-decoration-color var(--vf-text-link-transition-duration)
-      var(--vf-text-link-transition-easing),
-    text-decoration-thickness var(--vf-text-link-transition-duration)
-      var(--vf-text-link-transition-easing),
-    opacity var(--vf-text-link-transition-duration)
-      var(--vf-text-link-transition-easing);
+    color var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    text-decoration-color var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    text-decoration-thickness var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    opacity var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing);
 }
 
 .vf-prose a:hover {

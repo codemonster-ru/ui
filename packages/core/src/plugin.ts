@@ -1,7 +1,7 @@
-import type { App, Plugin } from "vue";
-import { vueForgeConfigKey } from "@/providers/vueForgeConfig";
-import type { VfVueForgeOptions } from "@/types/theme";
-import { applyThemeConfig, resolveThemeConfig } from "@/theme";
+import type { App, Plugin } from 'vue';
+import { vueForgeConfigKey } from '@/providers/vueForgeConfig';
+import type { VfVueForgeOptions } from '@/types/theme';
+import { applyThemeConfig, resolveThemeConfig } from '@/theme';
 
 export function createVueForgeCore() {
   const plugin: Plugin = {
@@ -17,7 +17,7 @@ export function createVueForgeCore() {
         },
       });
 
-      if (typeof document !== "undefined") {
+      if (typeof document !== 'undefined') {
         applyThemeConfig(theme);
       }
     },

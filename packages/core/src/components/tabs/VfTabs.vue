@@ -1,17 +1,8 @@
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  useSlots,
-  watch,
-  type CSSProperties,
-} from "vue";
-import { VueIconify, icons } from "@codemonster-ru/vueforge-icons";
-import { useId } from "@/composables";
-import type { VfTabItem } from "@/types/components";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch, type CSSProperties } from 'vue';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { useId } from '@/composables';
+import type { VfTabItem } from '@/types/components';
 
 interface VfTabsProps {
   items: VfTabItem[];
@@ -25,12 +16,12 @@ const props = withDefaults(defineProps<VfTabsProps>(), {
 });
 
 const emit = defineEmits<{
-  "update:modelValue": [value: string];
+  'update:modelValue': [value: string];
   change: [value: string];
 }>();
 const slots = useSlots();
 
-const baseId = useId({ prefix: "vf-tabs" });
+const baseId = useId({ prefix: 'vf-tabs' });
 const listRef = ref<HTMLElement | null>(null);
 const tabRefs = ref<Array<HTMLElement | null>>([]);
 const canScrollLeft = ref(false);
@@ -40,19 +31,15 @@ const scrollControlsAnimated = ref(false);
 const isListScrolling = ref(false);
 const indicatorReady = ref(false);
 const indicatorStyle = ref<CSSProperties>({
-  opacity: "0",
-  transform: "translateX(0)",
-  width: "0px",
+  opacity: '0',
+  transform: 'translateX(0)',
+  width: '0px',
 });
 
-const fallbackValue = computed(
-  () => props.items.find((item) => !item.disabled)?.value,
-);
+const fallbackValue = computed(() => props.items.find((item) => !item.disabled)?.value);
 const internalValue = ref(props.defaultValue ?? fallbackValue.value);
 const isControlled = computed(() => props.modelValue !== undefined);
-const activeValue = computed(
-  () => props.modelValue ?? internalValue.value ?? fallbackValue.value,
-);
+const activeValue = computed(() => props.modelValue ?? internalValue.value ?? fallbackValue.value);
 
 let listResizeObserver: ResizeObserver | null = null;
 let scrollStopTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -74,9 +61,7 @@ function updateScrollState() {
 watch(
   () => props.items,
   (items) => {
-    const hasActiveItem = items.some(
-      (item) => item.value === activeValue.value && !item.disabled,
-    );
+    const hasActiveItem = items.some((item) => item.value === activeValue.value && !item.disabled);
 
     if (!hasActiveItem && fallbackValue.value) {
       setActiveValue(fallbackValue.value);
@@ -90,8 +75,8 @@ function setActiveValue(value: string) {
     internalValue.value = value;
   }
 
-  emit("update:modelValue", value);
-  emit("change", value);
+  emit('update:modelValue', value);
+  emit('change', value);
 }
 
 function activateTab(item: VfTabItem) {
@@ -111,15 +96,13 @@ function focusTabByValue(value: string) {
 
 function handleKeydown(event: KeyboardEvent, currentItem: VfTabItem) {
   const enabledItems = getEnabledItems();
-  const currentIndex = enabledItems.findIndex(
-    (item) => item.value === currentItem.value,
-  );
+  const currentIndex = enabledItems.findIndex((item) => item.value === currentItem.value);
 
   if (currentIndex === -1) {
     return;
   }
 
-  if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+  if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
     event.preventDefault();
     const nextItem = enabledItems[(currentIndex + 1) % enabledItems.length];
     activateTab(nextItem);
@@ -127,18 +110,15 @@ function handleKeydown(event: KeyboardEvent, currentItem: VfTabItem) {
     return;
   }
 
-  if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
     event.preventDefault();
-    const nextItem =
-      enabledItems[
-        (currentIndex - 1 + enabledItems.length) % enabledItems.length
-      ];
+    const nextItem = enabledItems[(currentIndex - 1 + enabledItems.length) % enabledItems.length];
     activateTab(nextItem);
     focusTabByValue(nextItem.value);
     return;
   }
 
-  if (event.key === "Home") {
+  if (event.key === 'Home') {
     event.preventDefault();
     const firstItem = enabledItems[0];
     activateTab(firstItem);
@@ -146,7 +126,7 @@ function handleKeydown(event: KeyboardEvent, currentItem: VfTabItem) {
     return;
   }
 
-  if (event.key === "End") {
+  if (event.key === 'End') {
     event.preventDefault();
     const lastItem = enabledItems[enabledItems.length - 1];
     activateTab(lastItem);
@@ -165,16 +145,14 @@ function panelId(value: string) {
 function updateIndicator() {
   const list = listRef.value;
   const listContainer = list?.parentElement;
-  const activeIndex = props.items.findIndex(
-    (item) => item.value === activeValue.value,
-  );
+  const activeIndex = props.items.findIndex((item) => item.value === activeValue.value);
   const activeTab = activeIndex >= 0 ? tabRefs.value[activeIndex] : null;
 
   if (!activeTab || !list) {
     indicatorStyle.value = {
-      opacity: "0",
-      transform: "translateX(0)",
-      width: "0px",
+      opacity: '0',
+      transform: 'translateX(0)',
+      width: '0px',
     };
     return;
   }
@@ -183,15 +161,11 @@ function updateIndicator() {
   const tabEnd = tabStart + activeTab.offsetWidth;
   const leftScrollButton =
     canScrollLeft.value && listContainer
-      ? (listContainer.querySelector(
-          ".vf-tabs__scroll-button--left",
-        ) as HTMLElement | null)
+      ? (listContainer.querySelector('.vf-tabs__scroll-button--left') as HTMLElement | null)
       : null;
   const rightScrollButton =
     canScrollRight.value && listContainer
-      ? (listContainer.querySelector(
-          ".vf-tabs__scroll-button--right",
-        ) as HTMLElement | null)
+      ? (listContainer.querySelector('.vf-tabs__scroll-button--right') as HTMLElement | null)
       : null;
   const visibleInsetStart = leftScrollButton?.offsetWidth ?? 0;
   const visibleInsetEnd = rightScrollButton?.offsetWidth ?? 0;
@@ -201,7 +175,7 @@ function updateIndicator() {
   const isVisible = visibleWidth > 0;
 
   indicatorStyle.value = {
-    opacity: isVisible ? "1" : "0",
+    opacity: isVisible ? '1' : '0',
     transform: `translateX(${visibleStart}px)`,
     width: `${visibleWidth}px`,
   };
@@ -227,7 +201,7 @@ function handleWindowResize() {
   updateIndicator();
 }
 
-function scrollListBy(direction: "left" | "right") {
+function scrollListBy(direction: 'left' | 'right') {
   const list = listRef.value;
 
   if (!list) {
@@ -235,12 +209,11 @@ function scrollListBy(direction: "left" | "right") {
   }
 
   const delta = Math.max(120, Math.round(list.clientWidth * 0.6));
-  const nextScrollLeft =
-    direction === "left" ? list.scrollLeft - delta : list.scrollLeft + delta;
+  const nextScrollLeft = direction === 'left' ? list.scrollLeft - delta : list.scrollLeft + delta;
 
   list.scrollTo({
     left: nextScrollLeft,
-    behavior: "smooth",
+    behavior: 'smooth',
   });
 }
 
@@ -266,7 +239,7 @@ onMounted(async () => {
     });
   });
 
-  if (typeof ResizeObserver !== "undefined" && listRef.value) {
+  if (typeof ResizeObserver !== 'undefined' && listRef.value) {
     listResizeObserver = new ResizeObserver(() => {
       updateIndicator();
       updateScrollState();
@@ -274,8 +247,8 @@ onMounted(async () => {
     listResizeObserver.observe(listRef.value);
   }
 
-  if (typeof window !== "undefined") {
-    window.addEventListener("resize", handleWindowResize);
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', handleWindowResize);
   }
 });
 
@@ -285,8 +258,8 @@ onBeforeUnmount(() => {
     clearTimeout(scrollStopTimeout);
   }
 
-  if (typeof window !== "undefined") {
-    window.removeEventListener("resize", handleWindowResize);
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', handleWindowResize);
   }
 });
 </script>
@@ -316,8 +289,7 @@ onBeforeUnmount(() => {
         :tabindex="scrollControlsReady && canScrollLeft ? 0 : -1"
         class="vf-tabs__scroll-button vf-tabs__scroll-button--left"
         :class="{
-          'vf-tabs__scroll-button--hidden':
-            !scrollControlsReady || !canScrollLeft,
+          'vf-tabs__scroll-button--hidden': !scrollControlsReady || !canScrollLeft,
         }"
         type="button"
         :disabled="!scrollControlsReady || !canScrollLeft"
@@ -326,11 +298,7 @@ onBeforeUnmount(() => {
         <VueIconify :icon="icons.chevronLeft" aria-hidden="true" size="1.25em" />
       </button>
 
-      <div
-        ref="listRef"
-        class="vf-tabs__list-scroller"
-        @scroll="handleListScroll"
-      >
+      <div ref="listRef" class="vf-tabs__list-scroller" @scroll="handleListScroll">
         <button
           v-for="(item, index) in items"
           :id="tabId(item.value)"
@@ -350,10 +318,7 @@ onBeforeUnmount(() => {
           @click="activateTab(item)"
           @keydown="handleKeydown($event, item)"
         >
-          <slot
-            name="tab"
-            v-bind="{ item, isActive: activeValue === item.value, index }"
-          >
+          <slot name="tab" v-bind="{ item, isActive: activeValue === item.value, index }">
             {{ item.label }}
           </slot>
         </button>
@@ -365,8 +330,7 @@ onBeforeUnmount(() => {
         :tabindex="scrollControlsReady && canScrollRight ? 0 : -1"
         class="vf-tabs__scroll-button vf-tabs__scroll-button--right"
         :class="{
-          'vf-tabs__scroll-button--hidden':
-            !scrollControlsReady || !canScrollRight,
+          'vf-tabs__scroll-button--hidden': !scrollControlsReady || !canScrollRight,
         }"
         type="button"
         :disabled="!scrollControlsReady || !canScrollRight"
@@ -380,10 +344,7 @@ onBeforeUnmount(() => {
       <span
         aria-hidden="true"
         class="vf-tabs__indicator"
-        :class="[
-          indicatorReady && 'vf-tabs__indicator--ready',
-          isListScrolling && 'vf-tabs__indicator--no-transition',
-        ]"
+        :class="[indicatorReady && 'vf-tabs__indicator--ready', isListScrolling && 'vf-tabs__indicator--no-transition']"
         :style="indicatorStyle"
       />
     </div>

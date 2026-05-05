@@ -1,16 +1,7 @@
 <script setup lang="ts">
-import {
-  Comment,
-  Fragment,
-  Text,
-  computed,
-  useAttrs,
-  useSlots,
-  type StyleValue,
-  type VNode,
-} from "vue";
-import { cx } from "@/utils/classes";
-import type { VfControlSize, VfSwitchThumbContrast } from "@/types/components";
+import { Comment, Fragment, Text, computed, useAttrs, useSlots, type StyleValue, type VNode } from 'vue';
+import { cx } from '@/utils/classes';
+import type { VfControlSize, VfSwitchThumbContrast } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
@@ -28,16 +19,16 @@ interface VfSwitchProps {
 
 const props = withDefaults(defineProps<VfSwitchProps>(), {
   modelValue: false,
-  size: "md",
+  size: 'md',
   static: false,
-  thumbContrast: "auto",
+  thumbContrast: 'auto',
   invalid: false,
   disabled: false,
   label: undefined,
 });
 
 const emit = defineEmits<{
-  "update:modelValue": [value: boolean];
+  'update:modelValue': [value: boolean];
   change: [value: boolean];
 }>();
 
@@ -46,14 +37,13 @@ const slots = useSlots();
 
 const rootClasses = computed(() =>
   cx(
-    "vf-switch",
+    'vf-switch',
     `vf-switch--${props.size}`,
-    props.static && "vf-switch--static",
-    props.thumbContrast !== "auto" &&
-      `vf-switch--thumb-contrast-${props.thumbContrast}`,
-    props.modelValue && "vf-switch--checked",
-    props.invalid && "vf-switch--invalid",
-    props.disabled && "vf-switch--disabled",
+    props.static && 'vf-switch--static',
+    props.thumbContrast !== 'auto' && `vf-switch--thumb-contrast-${props.thumbContrast}`,
+    props.modelValue && 'vf-switch--checked',
+    props.invalid && 'vf-switch--invalid',
+    props.disabled && 'vf-switch--disabled',
     attrs.class as string | undefined,
   ),
 );
@@ -72,7 +62,7 @@ const hasContent = computed(() => {
     }
 
     if (node.type === Text) {
-      return String(node.children ?? "").trim().length > 0;
+      return String(node.children ?? '').trim().length > 0;
     }
 
     if (node.type === Fragment && Array.isArray(node.children)) {
@@ -85,15 +75,13 @@ const hasContent = computed(() => {
   return nodes.some((node: VNode) => hasRenderableNode(node));
 });
 const inputAttrs = computed(() =>
-  Object.fromEntries(
-    Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style"),
-  ),
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style')),
 );
 
 function handleChange(event: Event) {
   const nextValue = (event.target as HTMLInputElement).checked;
-  emit("update:modelValue", nextValue);
-  emit("change", nextValue);
+  emit('update:modelValue', nextValue);
+  emit('change', nextValue);
 }
 </script>
 

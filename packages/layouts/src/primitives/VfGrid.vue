@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useAttrs } from "vue";
+import { useAttrs } from 'vue';
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 });
 
 const props = withDefaults(defineProps<{ as?: string }>(), {
-  as: "div"
+  as: 'div',
 });
 
 const attrs = useAttrs();

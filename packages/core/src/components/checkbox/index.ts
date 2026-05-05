@@ -1,1 +1,1 @@
-export { default as VfCheckbox } from "./VfCheckbox.vue";
+export { default as VfCheckbox } from './VfCheckbox.vue';

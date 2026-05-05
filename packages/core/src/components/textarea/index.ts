@@ -1,1 +1,1 @@
-export { default as VfTextarea } from "./VfTextarea.vue";
+export { default as VfTextarea } from './VfTextarea.vue';

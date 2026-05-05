@@ -2,13 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.2] - 2026-04-18
+## 1.2.2
 
 ### Changed
 
 - expanded serialization regression tests to cover both `breakpoint2xl` and `fontSize2xl` across `themeTokensToCssVars`, `themePresetToCssText`, and `applyThemeConfig`, including negative checks for legacy non-kebab keys
 
-## [1.2.1] - 2026-04-18
+## 1.2.1
 
 ### Fixed
 
@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 - extended runtime tests to cover positive and negative serialization checks for digit-boundary token names in `themeTokensToCssVars`, `themePresetToCssText`, and `applyThemeConfig`
 
-## [1.2.0] - 2026-03-31
+## 1.2.0
 
 ### Changed
 
@@ -28,7 +28,7 @@ All notable changes to this project will be documented in this file.
 
 - removed `textLineHeight`, `headingLineHeight`, and `tabsLineHeight` from the exported `VfThemeTokens` contract
 
-## [1.1.0] - 2026-03-25
+## 1.1.0
 
 ### Added
 
@@ -41,7 +41,7 @@ All notable changes to this project will be documented in this file.
 - `applyThemeConfig(...)` now uses the shared multi-config apply path internally while keeping the same external API
 - test helpers now centralize partial token casting for compact fixture presets
 
-## [1.0.0] - 2026-03-23
+## 1.0.0
 
 ### Added
 

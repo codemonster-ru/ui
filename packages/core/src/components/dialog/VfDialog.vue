@@ -1,25 +1,12 @@
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  ref,
-  useSlots,
-  watch,
-  type Slots,
-} from "vue";
-import { icons } from "@codemonster-ru/vueforge-icons";
-import VfIconButton from "@/components/icon-button/VfIconButton.vue";
-import { cx } from "@/utils/classes";
-import {
-  useDisclosure,
-  useEscapeKey,
-  useFocusTrap,
-  useId,
-} from "@/composables";
-import { useScrollLock } from "@/foundation";
-import { vfMotionDurationsMs } from "@/theme/motion";
-import type { VfDialogSize } from "@/types/components";
+import { computed, nextTick, onBeforeUnmount, ref, useSlots, watch, type Slots } from 'vue';
+import { icons } from '@codemonster-ru/vueforge-icons';
+import VfIconButton from '@/components/icon-button/VfIconButton.vue';
+import { cx } from '@/utils/classes';
+import { useDisclosure, useEscapeKey, useFocusTrap, useId } from '@/composables';
+import { useScrollLock } from '@/foundation';
+import { vfMotionDurationsMs } from '@/theme/motion';
+import type { VfDialogSize } from '@/types/components';
 
 interface VfDialogProps {
   open?: boolean;
@@ -40,7 +27,7 @@ const props = withDefaults(defineProps<VfDialogProps>(), {
   defaultOpen: false,
   title: undefined,
   description: undefined,
-  size: "md",
+  size: 'md',
   dividers: false,
   teleportTo: undefined,
   disableTeleport: false,
@@ -50,22 +37,22 @@ const props = withDefaults(defineProps<VfDialogProps>(), {
 });
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
+  'update:open': [value: boolean];
   openChange: [value: boolean];
 }>();
 
 const contentRef = ref<HTMLElement | null>(null);
 const lastFocusedElement = ref<HTMLElement | null>(null);
 const dialogSlots = useSlots() as Slots;
-const titleId = useId({ prefix: "vf-dialog-title" });
-const descriptionId = useId({ prefix: "vf-dialog-description" });
+const titleId = useId({ prefix: 'vf-dialog-title' });
+const descriptionId = useId({ prefix: 'vf-dialog-description' });
 
 const disclosure = useDisclosure({
   defaultOpen: props.defaultOpen,
   open: computed(() => props.open),
   onOpenChange: (value) => {
-    emit("update:open", value);
-    emit("openChange", value);
+    emit('update:open', value);
+    emit('openChange', value);
   },
 });
 
@@ -75,43 +62,33 @@ const transitionDuration = {
   leave: vfMotionDurationsMs.fast,
 } as const;
 const teleportDisabled = computed(
-  () =>
-    props.disableTeleport ||
-    props.teleportTo === false ||
-    props.teleportTo === null,
+  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
 );
 const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === "string") {
+  if (typeof props.teleportTo === 'string') {
     return props.teleportTo;
   }
 
-  if (
-    typeof HTMLElement !== "undefined" &&
-    props.teleportTo instanceof HTMLElement
-  ) {
+  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
     return props.teleportTo;
   }
 
-  return "body";
+  return 'body';
 });
 
 const dialogClasses = computed(() =>
   cx(
-    "vf-dialog__content",
-    props.dividers && "vf-dialog__content--dividers",
-    props.size !== "md" && `vf-dialog__content--${props.size}`,
+    'vf-dialog__content',
+    props.dividers && 'vf-dialog__content--dividers',
+    props.size !== 'md' && `vf-dialog__content--${props.size}`,
   ),
 );
 
 const hasHeaderSlot = computed(() => Boolean(dialogSlots.header));
 const hasDescriptionSlot = computed(() => Boolean(dialogSlots.description));
-const labelledBy = computed<string | undefined>(() =>
-  props.title || hasHeaderSlot.value ? titleId.value : undefined,
-);
+const labelledBy = computed<string | undefined>(() => (props.title || hasHeaderSlot.value ? titleId.value : undefined));
 const describedBy = computed<string | undefined>(() =>
-  props.description || hasDescriptionSlot.value
-    ? descriptionId.value
-    : undefined,
+  props.description || hasDescriptionSlot.value ? descriptionId.value : undefined,
 );
 
 function close() {
@@ -133,9 +110,7 @@ function focusDialogContent() {
     return;
   }
 
-  const autoFocusTarget = container.querySelector<HTMLElement>(
-    "[autofocus], [data-autofocus]",
-  );
+  const autoFocusTarget = container.querySelector<HTMLElement>('[autofocus], [data-autofocus]');
 
   if (autoFocusTarget) {
     autoFocusTarget.focus();
@@ -168,15 +143,12 @@ useScrollLock(isOpen);
 watch(
   isOpen,
   async (value) => {
-    if (typeof document === "undefined") {
+    if (typeof document === 'undefined') {
       return;
     }
 
     if (value) {
-      lastFocusedElement.value =
-        document.activeElement instanceof HTMLElement
-          ? document.activeElement
-          : null;
+      lastFocusedElement.value = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       await nextTick();
       focusDialogContent();
       return;
@@ -196,17 +168,9 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport :to="teleportTarget" :disabled="teleportDisabled">
-    <Transition
-      name="vf-dialog-transition"
-      appear
-      :duration="transitionDuration"
-    >
+    <Transition name="vf-dialog-transition" appear :duration="transitionDuration">
       <div v-if="isOpen" class="vf-dialog">
-        <div
-          class="vf-dialog__overlay"
-          aria-hidden="true"
-          @click="handleOverlayClick"
-        />
+        <div class="vf-dialog__overlay" aria-hidden="true" @click="handleOverlayClick" />
 
         <section
           ref="contentRef"
@@ -217,10 +181,7 @@ onBeforeUnmount(() => {
           role="dialog"
           tabindex="-1"
         >
-          <header
-            v-if="title || description || $slots.header || $slots.description"
-            class="vf-dialog__header"
-          >
+          <header v-if="title || description || $slots.header || $slots.description" class="vf-dialog__header">
             <div>
               <slot name="header">
                 <h2 v-if="title" :id="titleId" class="vf-dialog__title">
@@ -229,11 +190,7 @@ onBeforeUnmount(() => {
               </slot>
 
               <slot name="description">
-                <p
-                  v-if="description"
-                  :id="descriptionId"
-                  class="vf-dialog__description"
-                >
+                <p v-if="description" :id="descriptionId" class="vf-dialog__description">
                   {{ description }}
                 </p>
               </slot>

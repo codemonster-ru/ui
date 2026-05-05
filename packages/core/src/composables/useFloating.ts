@@ -4,17 +4,8 @@ import {
   type MiddlewareType,
   type PlacementType,
   type StrategyType,
-} from "@codemonster-ru/floater.js";
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-  type Ref,
-} from "vue";
+} from '@codemonster-ru/floater.js';
+import { computed, nextTick, onBeforeUnmount, ref, toValue, watch, type MaybeRefOrGetter, type Ref } from 'vue';
 
 interface UseFloatingOptions {
   enabled?: MaybeRefOrGetter<boolean>;
@@ -34,7 +25,7 @@ export function useFloating(
 ) {
   const x = ref(0);
   const y = ref(0);
-  const placement = ref<PlacementType>(toValue(options.placement) ?? "bottom");
+  const placement = ref<PlacementType>(toValue(options.placement) ?? 'bottom');
   const middlewareData = ref<FloatingMiddlewareData>({});
   const cleanupAutoUpdate = ref<(() => void) | null>(null);
   let watchRunId = 0;
@@ -49,15 +40,11 @@ export function useFloating(
       return;
     }
 
-    const result = await computePosition(
-      referenceRef.value,
-      floatingRef.value,
-      {
-        placement: toValue(options.placement) ?? placement.value,
-        middleware: toValue(options.middleware),
-        strategy: toValue(options.strategy),
-      },
-    );
+    const result = await computePosition(referenceRef.value, floatingRef.value, {
+      placement: toValue(options.placement) ?? placement.value,
+      middleware: toValue(options.middleware),
+      strategy: toValue(options.strategy),
+    });
 
     x.value = result.x;
     y.value = result.y;

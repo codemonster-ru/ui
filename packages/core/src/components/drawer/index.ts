@@ -1,1 +1,1 @@
-export { default as VfDrawer } from "./VfDrawer.vue";
+export { default as VfDrawer } from './VfDrawer.vue';

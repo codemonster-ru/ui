@@ -1,17 +1,15 @@
-export { default as VuePlayground } from './VuePlayground.vue';
-export type { VuePlaygroundProps } from './props';
+import type { App, Plugin } from 'vue';
+import VfPlaygroundComponent from './VfPlayground.vue';
 
-export {
-  VuePlaygroundPlugin,
-  setVuePlaygroundTheme,
-  vuePlaygroundDefaultDarkTokens,
-  vuePlaygroundDefaultLightTokens
-} from './theme';
+export { default as VfPlayground } from './VfPlayground.vue';
+export type { VfPlaygroundProps } from './props';
 
-export type {
-  ThemeMode,
-  VuePlaygroundPluginOptions,
-  VuePlaygroundThemeConfig,
-  VuePlaygroundThemeTokenName,
-  VuePlaygroundThemeTokens
-} from './theme';
+export interface VfPlaygroundPluginOptions {
+  componentName?: string;
+}
+
+export const VfPlaygroundPlugin: Plugin = {
+  install(app: App, options: VfPlaygroundPluginOptions = {}) {
+    app.component(options.componentName ?? 'VfPlayground', VfPlaygroundComponent);
+  }
+};

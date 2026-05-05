@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "@/utils/classes";
-import type { VfFeedbackTone } from "@/types/components";
+import { computed, useAttrs } from 'vue';
+import { cx } from '@/utils/classes';
+import type { VfFeedbackTone } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
@@ -12,14 +12,12 @@ interface VfTagProps {
 }
 
 const props = withDefaults(defineProps<VfTagProps>(), {
-  tone: "neutral",
+  tone: 'neutral',
 });
 
 const attrs = useAttrs();
 
-const classes = computed(() =>
-  cx("vf-tag", props.tone !== "neutral" && `vf-tag--${props.tone}`),
-);
+const classes = computed(() => cx('vf-tag', props.tone !== 'neutral' && `vf-tag--${props.tone}`));
 </script>
 
 <template>

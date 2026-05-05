@@ -8,54 +8,54 @@ const componentsDir = resolve(rootDir, 'src/lib/components');
 const iconMetaPath = resolve(rootDir, 'src/lib/iconMeta.json');
 const iconCatalogPath = resolve(rootDir, 'src/lib/iconCatalog.json');
 const componentPath = resolve(componentsDir, `${iconName}.vue`);
-const fail = message => {
-    console.error(message);
-    process.exit(1);
+const fail = (message) => {
+  console.error(message);
+  process.exit(1);
 };
 
 if (!iconName || !categoryId) {
-    fail('Usage: npm run create-icon -- <iconName> <categoryId>');
+  fail('Usage: npm run create-icon -- <iconName> <categoryId>');
 }
 
 if (!/^[a-z][A-Za-z0-9]*$/.test(iconName)) {
-    fail('Icon name must be lowerCamelCase, for example: externalLink');
+  fail('Icon name must be lowerCamelCase, for example: externalLink');
 }
 
 if (legacyVariantArg && legacyVariantArg !== 'solid') {
-    fail('New icons are scaffolded as solid-only for now. Omit the variant argument.');
+  fail('New icons are scaffolded as solid-only for now. Omit the variant argument.');
 }
 
 const iconGroups = JSON.parse(readFileSync(iconMetaPath, 'utf8'));
 const iconCatalog = JSON.parse(readFileSync(iconCatalogPath, 'utf8'));
-const targetGroup = iconGroups.find(group => group.id === categoryId);
+const targetGroup = iconGroups.find((group) => group.id === categoryId);
 
 if (!targetGroup) {
-    const availableGroups = iconGroups.map(group => group.id).join(', ');
-    fail(`Unknown category "${categoryId}". Available categories: ${availableGroups}`);
+  const availableGroups = iconGroups.map((group) => group.id).join(', ');
+  fail(`Unknown category "${categoryId}". Available categories: ${availableGroups}`);
 }
 
 if (existsSync(componentPath)) {
-    fail(`Component already exists: src/lib/components/${iconName}.vue`);
+  fail(`Component already exists: src/lib/components/${iconName}.vue`);
 }
 
-const duplicateGroup = iconGroups.find(group => group.icons.includes(iconName));
+const duplicateGroup = iconGroups.find((group) => group.icons.includes(iconName));
 
 if (duplicateGroup) {
-    fail(`Icon "${iconName}" already exists in metadata group "${duplicateGroup.id}".`);
+  fail(`Icon "${iconName}" already exists in metadata group "${duplicateGroup.id}".`);
 }
 
 if (iconCatalog[iconName]) {
-    fail(`Icon "${iconName}" already exists in src/lib/iconCatalog.json.`);
+  fail(`Icon "${iconName}" already exists in src/lib/iconCatalog.json.`);
 }
 
-const toTitleCase = value => value.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/^./, part => part.toUpperCase());
+const toTitleCase = (value) => value.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/^./, (part) => part.toUpperCase());
 
-const toKeywords = value =>
-    value
-        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-        .toLowerCase()
-        .split(' ')
-        .filter(Boolean);
+const toKeywords = (value) =>
+  value
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .toLowerCase()
+    .split(' ')
+    .filter(Boolean);
 
 const componentTemplate = `<template>
     <svg v-bind="iconSvgAttrs" :width="size" :height="size">
@@ -73,24 +73,24 @@ withDefaults(defineProps<IconSizeProps>(), iconSizeDefaults);
 
 writeFileSync(componentPath, componentTemplate);
 
-const nextIconGroups = iconGroups.map(group =>
-    group.id === categoryId
-        ? {
-              ...group,
-              icons: [...group.icons, iconName].sort((left, right) => left.localeCompare(right)),
-          }
-        : group,
+const nextIconGroups = iconGroups.map((group) =>
+  group.id === categoryId
+    ? {
+        ...group,
+        icons: [...group.icons, iconName].sort((left, right) => left.localeCompare(right)),
+      }
+    : group,
 );
 
 writeFileSync(iconMetaPath, `${JSON.stringify(nextIconGroups, null, 4)}\n`);
 
 const nextIconCatalog = {
-    ...iconCatalog,
-    [iconName]: {
-        title: toTitleCase(iconName),
-        keywords: toKeywords(iconName),
-        style: 'solid',
-    },
+  ...iconCatalog,
+  [iconName]: {
+    title: toTitleCase(iconName),
+    keywords: toKeywords(iconName),
+    style: 'solid',
+  },
 };
 
 writeFileSync(iconCatalogPath, `${JSON.stringify(nextIconCatalog, null, 4)}\n`);

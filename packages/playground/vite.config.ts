@@ -11,7 +11,12 @@ export default defineConfig({
       fileName: 'index'
     },
     rollupOptions: {
-      external: ['vue', '@codemonster-ru/vueforge-playground-core', '@codemonster-ru/vueforge-codeblock']
+      external: [
+        'vue',
+        '@codemonster-ru/vueforge-playground-core',
+        '@codemonster-ru/vueforge-codeblock',
+        '@codemonster-ru/vueforge-core'
+      ]
     }
   }
 });

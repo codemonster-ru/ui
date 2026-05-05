@@ -1,22 +1,9 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from "vue";
-import {
-  arrow,
-  flip,
-  offset,
-  shift,
-  type MiddlewareType,
-  type PlacementType,
-} from "@codemonster-ru/floater.js";
-import {
-  useClickOutside,
-  useDisclosure,
-  useEscapeKey,
-  useFloating,
-  useId,
-} from "@/composables";
-import { vfMotionDurationsMs } from "@/theme/motion";
-import type { VfDropdownPlacement } from "@/types/components";
+import { computed, nextTick, ref } from 'vue';
+import { arrow, flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
+import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
+import { vfMotionDurationsMs } from '@/theme/motion';
+import type { VfDropdownPlacement } from '@/types/components';
 
 interface VfPopoverProps {
   open?: boolean;
@@ -31,7 +18,7 @@ interface VfPopoverProps {
 const props = withDefaults(defineProps<VfPopoverProps>(), {
   open: undefined,
   defaultOpen: false,
-  placement: "bottom-start",
+  placement: 'bottom-start',
   teleportTo: undefined,
   disableTeleport: false,
   closeOnOutsideClick: true,
@@ -39,55 +26,47 @@ const props = withDefaults(defineProps<VfPopoverProps>(), {
 });
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
+  'update:open': [value: boolean];
   openChange: [value: boolean];
 }>();
 
 const triggerRef = ref<HTMLElement | null>(null);
 const contentRef = ref<HTMLElement | null>(null);
 const arrowRef = ref<HTMLElement | null>(null);
-const contentId = useId({ prefix: "vf-popover-content" });
-const triggerId = useId({ prefix: "vf-popover-trigger" });
+const contentId = useId({ prefix: 'vf-popover-content' });
+const triggerId = useId({ prefix: 'vf-popover-trigger' });
 const transitionDuration = {
   enter: vfMotionDurationsMs.fast,
   leave: vfMotionDurationsMs.fast,
 } as const;
 const teleportDisabled = computed(
-  () =>
-    props.disableTeleport ||
-    props.teleportTo === false ||
-    props.teleportTo === null,
+  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
 );
 const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === "string") {
+  if (typeof props.teleportTo === 'string') {
     return props.teleportTo;
   }
 
-  if (
-    typeof HTMLElement !== "undefined" &&
-    props.teleportTo instanceof HTMLElement
-  ) {
+  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
     return props.teleportTo;
   }
 
-  return "body";
+  return 'body';
 });
 
 const disclosure = useDisclosure({
   defaultOpen: props.defaultOpen,
   open: computed(() => props.open),
   onOpenChange: (value) => {
-    emit("update:open", value);
-    emit("openChange", value);
+    emit('update:open', value);
+    emit('openChange', value);
   },
 });
 
 const isOpen = disclosure.isOpen;
 
 const allowedPlacements = computed<PlacementType[]>(() =>
-  props.placement === "bottom-end"
-    ? ["bottom-end", "top-end"]
-    : ["bottom-start", "top-start"],
+  props.placement === 'bottom-end' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'],
 );
 
 const {
@@ -97,36 +76,29 @@ const {
 } = useFloating(triggerRef, contentRef, {
   enabled: isOpen,
   placement: computed(() => props.placement),
-  middleware: computed(() =>
-    [
-      offset(10),
-      flip({ placements: allowedPlacements.value }),
-      shift(),
-      ...(arrowRef.value ? [arrow(arrowRef.value)] : []),
-    ] as MiddlewareType[],
+  middleware: computed(
+    () =>
+      [
+        offset(10),
+        flip({ placements: allowedPlacements.value }),
+        shift(),
+        ...(arrowRef.value ? [arrow(arrowRef.value)] : []),
+      ] as MiddlewareType[],
   ),
-  strategy: "fixed",
+  strategy: 'fixed',
 });
 
 const contentClasses = computed(() => [
-  "vf-popover__content",
-  floatingPlacement.value.startsWith("top") && "vf-popover__content--top",
+  'vf-popover__content',
+  floatingPlacement.value.startsWith('top') && 'vf-popover__content--top',
 ]);
 
 const arrowData = computed(() => {
-  const data = middlewareData.value.arrow as
-    | { x?: number; y?: number; baseX?: number; baseY?: number }
-    | undefined;
+  const data = middlewareData.value.arrow as { x?: number; y?: number; baseX?: number; baseY?: number } | undefined;
 
   return {
-    x:
-      data?.x !== undefined && data?.baseX !== undefined
-        ? data.x - data.baseX
-        : 0,
-    y:
-      data?.y !== undefined && data?.baseY !== undefined
-        ? data.y - data.baseY
-        : 0,
+    x: data?.x !== undefined && data?.baseX !== undefined ? data.x - data.baseX : 0,
+    y: data?.y !== undefined && data?.baseY !== undefined ? data.y - data.baseY : 0,
   };
 });
 
@@ -136,18 +108,14 @@ const arrowStyles = computed(() => ({
 }));
 
 const arrowClasses = computed(() => [
-  "vf-popover__arrow",
-  floatingPlacement.value.startsWith("top")
-    ? "vf-popover__arrow--top"
-    : "vf-popover__arrow--bottom",
+  'vf-popover__arrow',
+  floatingPlacement.value.startsWith('top') ? 'vf-popover__arrow--top' : 'vf-popover__arrow--bottom',
 ]);
 
 async function focusContent() {
   await nextTick();
 
-  const autoFocusTarget = contentRef.value?.querySelector<HTMLElement>(
-    "[autofocus], [data-autofocus]",
-  );
+  const autoFocusTarget = contentRef.value?.querySelector<HTMLElement>('[autofocus], [data-autofocus]');
 
   if (autoFocusTarget) {
     autoFocusTarget.focus();
@@ -177,12 +145,12 @@ function togglePopover() {
 }
 
 function onTriggerKeydown(event: KeyboardEvent) {
-  if (event.key === "Enter" || event.key === " ") {
+  if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     togglePopover();
   }
 
-  if (event.key === "ArrowDown") {
+  if (event.key === 'ArrowDown') {
     event.preventDefault();
     openPopover();
   }
@@ -197,7 +165,7 @@ useClickOutside(
   },
   {
     enabled: isOpen,
-    event: "click",
+    event: 'click',
   },
 );
 
@@ -233,11 +201,7 @@ useEscapeKey(
     </div>
 
     <Teleport :to="teleportTarget" :disabled="teleportDisabled">
-      <Transition
-        name="vf-floating-transition"
-        appear
-        :duration="transitionDuration"
-      >
+      <Transition name="vf-floating-transition" appear :duration="transitionDuration">
         <section
           v-if="isOpen"
           :id="contentId"
@@ -248,12 +212,7 @@ useEscapeKey(
           role="dialog"
           tabindex="-1"
         >
-          <span
-            ref="arrowRef"
-            :class="arrowClasses"
-            :style="arrowStyles"
-            aria-hidden="true"
-          />
+          <span ref="arrowRef" :class="arrowClasses" :style="arrowStyles" aria-hidden="true" />
           <slot :open="isOpen" :close="closePopover" />
         </section>
       </Transition>

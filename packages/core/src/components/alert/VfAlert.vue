@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { VueIconify, icons } from "@codemonster-ru/vueforge-icons";
-import { cx } from "@/utils/classes";
-import type { IconName } from "@codemonster-ru/vueforge-icons";
-import type { VfFeedbackTone } from "@/types/components";
+import { computed, useAttrs } from 'vue';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { cx } from '@/utils/classes';
+import type { IconName } from '@codemonster-ru/vueforge-icons';
+import type { VfFeedbackTone } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
@@ -17,7 +17,7 @@ interface VfAlertProps {
 }
 
 const props = withDefaults(defineProps<VfAlertProps>(), {
-  tone: "primary",
+  tone: 'primary',
   title: undefined,
   icon: undefined,
   hideIcon: false,
@@ -25,32 +25,30 @@ const props = withDefaults(defineProps<VfAlertProps>(), {
 
 const attrs = useAttrs();
 
-const classes = computed(() =>
-  cx("vf-alert", props.tone !== "primary" && `vf-alert--${props.tone}`),
-);
+const classes = computed(() => cx('vf-alert', props.tone !== 'primary' && `vf-alert--${props.tone}`));
 
 const defaultIconName = computed(() => {
-  if (props.tone === "success") {
+  if (props.tone === 'success') {
     return icons.checkCircle;
   }
 
-  if (props.tone === "info") {
+  if (props.tone === 'info') {
     return icons.infoCircle;
   }
 
-  if (props.tone === "warn") {
+  if (props.tone === 'warn') {
     return icons.alertCircle;
   }
 
-  if (props.tone === "help") {
+  if (props.tone === 'help') {
     return icons.questionCircle;
   }
 
-  if (props.tone === "danger") {
+  if (props.tone === 'danger') {
     return icons.xCircle;
   }
 
-  if (props.tone === "contrast") {
+  if (props.tone === 'contrast') {
     return icons.infoCircle;
   }
 
@@ -65,7 +63,7 @@ const showsIcon = computed(() => !props.hideIcon);
   <section :class="classes" role="alert" v-bind="attrs">
     <div v-if="showsIcon" class="vf-alert__icon" aria-hidden="true">
       <slot name="icon">
-        <VueIconify :icon="iconName" size="1.5rem" />
+        <VueIconify :icon="iconName" size="var(--vf-icon-size-xl)" />
       </slot>
     </div>
 

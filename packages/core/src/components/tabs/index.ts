@@ -1,1 +1,1 @@
-export { default as VfTabs } from "./VfTabs.vue";
+export { default as VfTabs } from './VfTabs.vue';

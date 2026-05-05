@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, resolveDynamicComponent } from "vue";
-import { VueIconify, icons } from "@codemonster-ru/vueforge-icons";
-import type { VfNavMenuItem } from "@/types/components";
+import { computed, resolveDynamicComponent } from 'vue';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import type { VfNavMenuItem } from '@/types/components';
 
 defineOptions({
-  name: "VfMenuBarItemNode",
+  name: 'VfMenuBarItemNode',
 });
 
 const props = defineProps<{
@@ -22,27 +22,19 @@ const emit = defineEmits<{
 }>();
 
 const currentPath = computed(() => [...props.parentPath, props.item.value]);
-const hasChildren = computed(
-  () => props.item.kind !== "group" && Boolean(props.item.children?.length),
-);
-const isGroup = computed(() => props.item.kind === "group");
-const isLink = computed(
-  () => props.item.href !== undefined || props.item.to !== undefined,
-);
+const hasChildren = computed(() => props.item.kind !== 'group' && Boolean(props.item.children?.length));
+const isGroup = computed(() => props.item.kind === 'group');
+const isLink = computed(() => props.item.href !== undefined || props.item.to !== undefined);
 const isActive = computed(() => props.activeValue === props.item.value);
-const isAncestorActive = computed(
-  () => !isActive.value && hasDescendantValue(props.item, props.activeValue),
-);
-const isOpen = computed(() =>
-  currentPath.value.every((value, index) => props.openPath[index] === value),
-);
+const isAncestorActive = computed(() => !isActive.value && hasDescendantValue(props.item, props.activeValue));
+const isOpen = computed(() => currentPath.value.every((value, index) => props.openPath[index] === value));
 
 const resolvedComponent = computed(() => {
   if (props.item.to !== undefined) {
-    return resolveDynamicComponent("RouterLink");
+    return resolveDynamicComponent('RouterLink');
   }
 
-  return "a";
+  return 'a';
 });
 
 const resolvedRel = computed(() => {
@@ -50,12 +42,10 @@ const resolvedRel = computed(() => {
     return props.item.rel;
   }
 
-  return props.item.target === "_blank" ? "noopener noreferrer" : undefined;
+  return props.item.target === '_blank' ? 'noopener noreferrer' : undefined;
 });
 
-const showsExternalLinkIcon = computed(
-  () => isLink.value && props.item.target === "_blank",
-);
+const showsExternalLinkIcon = computed(() => isLink.value && props.item.target === '_blank');
 
 const linkProps = computed(() => {
   if (props.item.to !== undefined) {
@@ -78,7 +68,7 @@ function openBranch() {
     return;
   }
 
-  emit("openPathChange", currentPath.value);
+  emit('openPathChange', currentPath.value);
 }
 
 function toggleBranch() {
@@ -87,11 +77,11 @@ function toggleBranch() {
   }
 
   if (isOpen.value) {
-    emit("openPathChange", props.parentPath);
+    emit('openPathChange', props.parentPath);
     return;
   }
 
-  emit("openPathChange", currentPath.value);
+  emit('openPathChange', currentPath.value);
 }
 
 function handleLeafClick(event?: MouseEvent) {
@@ -100,21 +90,15 @@ function handleLeafClick(event?: MouseEvent) {
     return;
   }
 
-  emit("select", props.item);
+  emit('select', props.item);
 }
 
-function hasDescendantValue(
-  item: VfNavMenuItem,
-  targetValue?: string,
-): boolean {
+function hasDescendantValue(item: VfNavMenuItem, targetValue?: string): boolean {
   if (!targetValue || !item.children?.length) {
     return false;
   }
 
-  return item.children.some(
-    (child) =>
-      child.value === targetValue || hasDescendantValue(child, targetValue),
-  );
+  return item.children.some((child) => child.value === targetValue || hasDescendantValue(child, targetValue));
 }
 
 function onBranchKeydown(event: KeyboardEvent) {
@@ -123,22 +107,19 @@ function onBranchKeydown(event: KeyboardEvent) {
   }
 
   if (
-    event.key === "Enter" ||
-    event.key === " " ||
-    event.key === "ArrowDown" ||
-    (props.depth > 0 && event.key === "ArrowRight")
+    event.key === 'Enter' ||
+    event.key === ' ' ||
+    event.key === 'ArrowDown' ||
+    (props.depth > 0 && event.key === 'ArrowRight')
   ) {
     event.preventDefault();
     openBranch();
     return;
   }
 
-  if (
-    (event.key === "ArrowLeft" || event.key === "Escape") &&
-    props.depth > 0
-  ) {
+  if ((event.key === 'ArrowLeft' || event.key === 'Escape') && props.depth > 0) {
     event.preventDefault();
-    emit("openPathChange", props.parentPath);
+    emit('openPathChange', props.parentPath);
   }
 }
 
@@ -188,21 +169,15 @@ function onPointerEnter() {
       @keydown="onBranchKeydown"
     >
       <span class="vf-menu-bar__item-content">
-        <span
-          v-if="item.leadingIcon"
-          class="vf-menu-bar__leading-icon"
-          aria-hidden="true"
-        >
-          <VueIconify :icon="item.leadingIcon" size="1rem" />
+        <span v-if="item.leadingIcon" class="vf-menu-bar__leading-icon" aria-hidden="true">
+          <VueIconify :icon="item.leadingIcon" size="var(--vf-icon-size-md)" />
         </span>
         <span class="vf-menu-bar__label">{{ item.label }}</span>
       </span>
       <span class="vf-menu-bar__icon" aria-hidden="true">
         <VueIconify
-          :icon="
-            depth === 0 ? icons.chevronDown : isOpen ? icons.minus : icons.plus
-          "
-          size="0.875rem"
+          :icon="depth === 0 ? icons.chevronDown : isOpen ? icons.minus : icons.plus"
+          size="var(--vf-icon-size-sm)"
         />
       </span>
     </button>
@@ -224,21 +199,13 @@ function onPointerEnter() {
       @click="handleLeafClick"
     >
       <span class="vf-menu-bar__item-content">
-        <span
-          v-if="item.leadingIcon"
-          class="vf-menu-bar__leading-icon"
-          aria-hidden="true"
-        >
-          <VueIconify :icon="item.leadingIcon" size="1rem" />
+        <span v-if="item.leadingIcon" class="vf-menu-bar__leading-icon" aria-hidden="true">
+          <VueIconify :icon="item.leadingIcon" size="var(--vf-icon-size-md)" />
         </span>
         <span class="vf-menu-bar__label">{{ item.label }}</span>
       </span>
-      <span
-        v-if="showsExternalLinkIcon"
-        class="vf-menu-bar__icon vf-menu-bar__icon--external"
-        aria-hidden="true"
-      >
-        <VueIconify :icon="icons.externalLink" size="0.875rem" />
+      <span v-if="showsExternalLinkIcon" class="vf-menu-bar__icon vf-menu-bar__icon--external" aria-hidden="true">
+        <VueIconify :icon="icons.externalLink" size="var(--vf-icon-size-sm)" />
       </span>
     </component>
 
@@ -259,12 +226,8 @@ function onPointerEnter() {
       @click="handleLeafClick()"
     >
       <span class="vf-menu-bar__item-content">
-        <span
-          v-if="item.leadingIcon"
-          class="vf-menu-bar__leading-icon"
-          aria-hidden="true"
-        >
-          <VueIconify :icon="item.leadingIcon" size="1rem" />
+        <span v-if="item.leadingIcon" class="vf-menu-bar__leading-icon" aria-hidden="true">
+          <VueIconify :icon="item.leadingIcon" size="var(--vf-icon-size-md)" />
         </span>
         <span class="vf-menu-bar__label">{{ item.label }}</span>
       </span>
@@ -274,11 +237,7 @@ function onPointerEnter() {
       <div
         v-if="hasChildren && isOpen"
         class="vf-menu-bar__submenu"
-        :class="
-          depth === 0
-            ? 'vf-menu-bar__submenu--root'
-            : 'vf-menu-bar__submenu--nested'
-        "
+        :class="depth === 0 ? 'vf-menu-bar__submenu--root' : 'vf-menu-bar__submenu--nested'"
       >
         <ul class="vf-menu-bar__submenu-list" role="menu">
           <VfMenuBarItemNode

@@ -1,4 +1,4 @@
-import type { VfThemeConfig, VfThemeMode } from "@codemonster-ru/vueforge-core";
+import type { VfThemeConfig, VfThemeMode } from '@codemonster-ru/vueforge-core';
 
 export interface VfLayoutTokens {
   shellSidebarWidth: string;

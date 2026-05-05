@@ -10,19 +10,14 @@ import {
   type CSSProperties,
   type Slots,
   type StyleValue,
-} from "vue";
-import { icons } from "@codemonster-ru/vueforge-icons";
-import VfIconButton from "@/components/icon-button/VfIconButton.vue";
-import { cx } from "@/utils/classes";
-import {
-  useDisclosure,
-  useEscapeKey,
-  useFocusTrap,
-  useId,
-} from "@/composables";
-import { useScrollLock } from "@/foundation";
-import { vfMotionDurationsMs } from "@/theme/motion";
-import type { VfDrawerPlacement, VfDrawerSize } from "@/types/components";
+} from 'vue';
+import { icons } from '@codemonster-ru/vueforge-icons';
+import VfIconButton from '@/components/icon-button/VfIconButton.vue';
+import { cx } from '@/utils/classes';
+import { useDisclosure, useEscapeKey, useFocusTrap, useId } from '@/composables';
+import { useScrollLock } from '@/foundation';
+import { vfMotionDurationsMs } from '@/theme/motion';
+import type { VfDrawerPlacement, VfDrawerSize } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
@@ -50,8 +45,8 @@ const props = withDefaults(defineProps<VfDrawerProps>(), {
   open: undefined,
   defaultOpen: false,
   title: undefined,
-  size: "md",
-  placement: "right",
+  size: 'md',
+  placement: 'right',
   dividers: false,
   rounded: false,
   offsetTop: undefined,
@@ -65,7 +60,7 @@ const props = withDefaults(defineProps<VfDrawerProps>(), {
 });
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
+  'update:open': [value: boolean];
   openChange: [value: boolean];
 }>();
 
@@ -73,14 +68,14 @@ const attrs = useAttrs();
 const contentRef = ref<HTMLElement | null>(null);
 const lastFocusedElement = ref<HTMLElement | null>(null);
 const drawerSlots = useSlots() as Slots;
-const titleId = useId({ prefix: "vf-drawer-title" });
+const titleId = useId({ prefix: 'vf-drawer-title' });
 
 const disclosure = useDisclosure({
   defaultOpen: props.defaultOpen,
   open: computed(() => props.open),
   onOpenChange: (value) => {
-    emit("update:open", value);
-    emit("openChange", value);
+    emit('update:open', value);
+    emit('openChange', value);
   },
 });
 
@@ -90,10 +85,8 @@ const transitionDuration = {
   leave: vfMotionDurationsMs.normal,
 } as const;
 
-function normalizeCssLength(
-  value: string | number | undefined,
-): string | undefined {
-  if (typeof value === "number") {
+function normalizeCssLength(value: string | number | undefined): string | undefined {
+  if (typeof value === 'number') {
     return `${value}px`;
   }
 
@@ -106,11 +99,11 @@ const drawerVariables = computed<CSSProperties>(() => {
   const bodyPadding = normalizeCssLength(props.bodyPadding);
 
   if (offsetTop != null) {
-    variables["--vf-drawer-offset-top"] = offsetTop;
+    variables['--vf-drawer-offset-top'] = offsetTop;
   }
 
   if (bodyPadding != null) {
-    variables["--vf-drawer-body-padding"] = bodyPadding;
+    variables['--vf-drawer-body-padding'] = bodyPadding;
   }
 
   return variables;
@@ -118,27 +111,19 @@ const drawerVariables = computed<CSSProperties>(() => {
 
 const rootClasses = computed(() =>
   cx(
-    "vf-drawer",
+    'vf-drawer',
     `vf-drawer--${props.placement}`,
-    props.dividers && "vf-drawer--dividers",
-    props.rounded && "vf-drawer--rounded",
-    props.offsetTop != null && "vf-drawer--offset-top",
+    props.dividers && 'vf-drawer--dividers',
+    props.rounded && 'vf-drawer--rounded',
+    props.offsetTop != null && 'vf-drawer--offset-top',
   ),
 );
-const rootStyles = computed<StyleValue>(() => [
-  drawerVariables.value,
-  attrs.style as StyleValue,
-]);
+const rootStyles = computed<StyleValue>(() => [drawerVariables.value, attrs.style as StyleValue]);
 const rootAttrs = computed(() => {
-  return Object.fromEntries(
-    Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style"),
-  );
+  return Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'));
 });
 const teleportDisabled = computed(
-  () =>
-    props.disableTeleport ||
-    props.teleportTo === false ||
-    props.teleportTo === null,
+  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
 );
 const resolvedScrollLockTarget = computed(() => {
   if (props.scrollLockTarget === false) {
@@ -148,31 +133,22 @@ const resolvedScrollLockTarget = computed(() => {
   return props.scrollLockTarget;
 });
 const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === "string") {
+  if (typeof props.teleportTo === 'string') {
     return props.teleportTo;
   }
 
-  if (
-    typeof HTMLElement !== "undefined" &&
-    props.teleportTo instanceof HTMLElement
-  ) {
+  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
     return props.teleportTo;
   }
 
-  return "body";
+  return 'body';
 });
 const contentClasses = computed(() =>
-  cx(
-    "vf-drawer__content",
-    `vf-drawer__content--${props.placement}`,
-    `vf-drawer__content--${props.size}`,
-  ),
+  cx('vf-drawer__content', `vf-drawer__content--${props.placement}`, `vf-drawer__content--${props.size}`),
 );
 
 const hasHeaderSlot = computed(() => Boolean(drawerSlots.header));
-const labelledBy = computed<string | undefined>(() =>
-  props.title || hasHeaderSlot.value ? titleId.value : undefined,
-);
+const labelledBy = computed<string | undefined>(() => (props.title || hasHeaderSlot.value ? titleId.value : undefined));
 
 function close() {
   disclosure.close();
@@ -193,9 +169,7 @@ function focusDrawerContent() {
     return;
   }
 
-  const autoFocusTarget = container.querySelector<HTMLElement>(
-    "[autofocus], [data-autofocus]",
-  );
+  const autoFocusTarget = container.querySelector<HTMLElement>('[autofocus], [data-autofocus]');
 
   if (autoFocusTarget) {
     autoFocusTarget.focus();
@@ -230,15 +204,12 @@ useScrollLock(isOpen, {
 watch(
   isOpen,
   async (value) => {
-    if (typeof document === "undefined") {
+    if (typeof document === 'undefined') {
       return;
     }
 
     if (value) {
-      lastFocusedElement.value =
-        document.activeElement instanceof HTMLElement
-          ? document.activeElement
-          : null;
+      lastFocusedElement.value = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       await nextTick();
       focusDrawerContent();
       return;
@@ -258,22 +229,9 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport :to="teleportTarget" :disabled="teleportDisabled">
-    <Transition
-      name="vf-drawer-transition"
-      appear
-      :duration="transitionDuration"
-    >
-      <div
-        v-if="isOpen"
-        :class="[rootClasses, attrs.class]"
-        :style="rootStyles"
-        v-bind="rootAttrs"
-      >
-        <div
-          class="vf-drawer__overlay"
-          aria-hidden="true"
-          @click="handleOverlayClick"
-        />
+    <Transition name="vf-drawer-transition" appear :duration="transitionDuration">
+      <div v-if="isOpen" :class="[rootClasses, attrs.class]" :style="rootStyles" v-bind="rootAttrs">
+        <div class="vf-drawer__overlay" aria-hidden="true" @click="handleOverlayClick" />
 
         <section
           ref="contentRef"

@@ -1,1 +1,1 @@
-export { default as VfCommandPalette } from "./VfCommandPalette.vue";
+export { default as VfCommandPalette } from './VfCommandPalette.vue';

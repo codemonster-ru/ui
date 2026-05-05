@@ -1,7 +1,7 @@
 {
   "name": "@codemonster-ru/vueforge-codeblock",
-  "version": "2.2.0",
-  "description": "Standalone Vue code block component with syntax highlighting and light/dark theming.",
+  "version": "2.3.0",
+  "description": "Standalone Vue 3 code block component for the VueForge ecosystem with syntax highlighting and light/dark theming.",
   "license": "MIT",
   "author": "Kirill Kolesnikov",
   "keywords": [
@@ -10,7 +10,8 @@
     "code-block",
     "syntax-highlighting",
     "code",
-    "documentation"
+    "documentation",
+    "vueforge"
   ],
   "repository": {
     "type": "git",
@@ -50,8 +51,10 @@
   },
   "scripts": {
     "build": "vite build",
-    "format": "prettier --write .",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "format": "prettier --ignore-path ../../.prettierignore --write .",
     "lint": "eslint .",
+    "prepack": "npm run build",
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run"
   },
@@ -76,7 +79,7 @@
     "vue-tsc": "^3.0.7"
   },
   "dependencies": {
-    "@codemonster-ru/vueforge-icons": "file:../icons",
+    "@codemonster-ru/vueforge-icons": "^1.4.0",
     "shiki": "^4.0.2"
   }
 }

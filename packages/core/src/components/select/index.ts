@@ -1,1 +1,1 @@
-export { default as VfSelect } from "./VfSelect.vue";
+export { default as VfSelect } from './VfSelect.vue';

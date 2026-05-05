@@ -1,4 +1,4 @@
-import { onBeforeUnmount, onMounted, ref, watch, type Ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue';
 
 export function useObservedElementHeight(target: Ref<HTMLElement | null>) {
   const height = ref(0);
@@ -6,9 +6,7 @@ export function useObservedElementHeight(target: Ref<HTMLElement | null>) {
   let stopWatch: (() => void) | null = null;
 
   const updateHeight = () => {
-    height.value = target.value
-      ? Math.round(target.value.getBoundingClientRect().height)
-      : 0;
+    height.value = target.value ? Math.round(target.value.getBoundingClientRect().height) : 0;
   };
 
   const reconnect = () => {
@@ -19,7 +17,7 @@ export function useObservedElementHeight(target: Ref<HTMLElement | null>) {
       return;
     }
 
-    if (typeof ResizeObserver === "undefined") {
+    if (typeof ResizeObserver === 'undefined') {
       updateHeight();
       return;
     }
@@ -32,7 +30,7 @@ export function useObservedElementHeight(target: Ref<HTMLElement | null>) {
   onMounted(() => {
     stopWatch = watch(target, reconnect, {
       immediate: true,
-      flush: "post"
+      flush: 'post',
     });
   });
 

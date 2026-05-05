@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "@/utils/classes";
-import type { VfDividerOrientation } from "@/types/components";
+import { computed, useAttrs } from 'vue';
+import { cx } from '@/utils/classes';
+import type { VfDividerOrientation } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
@@ -12,15 +12,13 @@ interface VfDividerProps {
 }
 
 const props = withDefaults(defineProps<VfDividerProps>(), {
-  orientation: "horizontal",
+  orientation: 'horizontal',
 });
 
 const attrs = useAttrs();
 
-const isVertical = computed(() => props.orientation === "vertical");
-const classes = computed(() =>
-  cx("vf-divider", `vf-divider--${props.orientation}`),
-);
+const isVertical = computed(() => props.orientation === 'vertical');
+const classes = computed(() => cx('vf-divider', `vf-divider--${props.orientation}`));
 </script>
 
 <template>

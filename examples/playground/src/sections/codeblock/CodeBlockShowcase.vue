@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { VfThemeSwitch, useTheme } from "@codemonster-ru/vueforge-core";
-import { CodeBlock } from "@codemonster-ru/vueforge-codeblock";
+import { useTheme } from "@codemonster-ru/vueforge-core";
+import { VfContainer, VfSection } from "@codemonster-ru/vueforge-layouts";
+import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock";
 
 const { resolvedTheme } = useTheme();
 const longSnippetLineCount = 1000;
@@ -13,7 +14,7 @@ const longTsSnippet = Array.from({ length: longSnippetLineCount }, (_, index) =>
 const snippets = {
   plain: [
     "Plain text sample",
-    "Path: src/components/CodeBlock.vue",
+    "Path: src/components/VfCodeBlock.vue",
     "URL: https://example.test/docs",
   ].join("\n"),
   js: [
@@ -51,7 +52,7 @@ const blocks = [
     language: "ts",
     filename: "long-1000-lines.ts",
     code: longTsSnippet,
-    maxHeight: "420px",
+    maxHeight: "var(--vf-breakpoint-xs)",
   },
   { language: "plaintext", filename: "plain.txt", code: snippets.plain },
   { language: "text", filename: "note.text", code: snippets.plain },
@@ -73,63 +74,51 @@ const blocks = [
 </script>
 
 <template>
-  <main class="demo-page" :data-theme="resolvedTheme">
-    <div class="demo-toolbar">
-      <VfThemeSwitch variant="button" />
-    </div>
-
-    <div class="demo-surface">
-      <div class="demo-grid">
-        <CodeBlock
-          v-for="block in blocks"
-          :key="block.filename"
-          :language="block.language"
-          :filename="block.filename"
-          :code="block.code"
-          :max-height="block.maxHeight"
-          :theme="resolvedTheme"
-          show-line-numbers
-        />
+  <VfContainer
+    as="main"
+    class="demo-page"
+    size="2xl"
+    :data-theme="resolvedTheme"
+  >
+    <section class="demo-block">
+      <div class="demo-block__header">
+        <h2>VfCodeBlock</h2>
       </div>
-    </div>
-  </main>
+
+      <VfSection class="demo-surface" surface>
+        <div class="demo-grid">
+          <VfCodeBlock
+            v-for="block in blocks"
+            :key="block.filename"
+            :language="block.language"
+            :filename="block.filename"
+            :code="block.code"
+            :max-height="block.maxHeight"
+            :theme="resolvedTheme"
+            show-line-numbers
+          />
+        </div>
+      </VfSection>
+    </section>
+  </VfContainer>
 </template>
 
 <style scoped>
 .demo-page {
   min-height: 100vh;
-  padding: 16px;
-  background: var(--vf-color-bg, #f6f8fb);
-}
-
-.demo-toolbar {
-  width: min(100%, 1320px);
-  margin: 0 auto 12px;
-  display: flex;
-  justify-content: flex-end;
+  background: var(--vf-color-bg);
 }
 
 .demo-grid {
-  display: grid;
-  gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
 }
 
-.demo-grid :deep(.vcb) {
-  --vcb-margin-block-start: 0;
-  --vcb-margin-block-end: 0;
+.demo-grid :deep(.vf-codeblock) {
+  --vf-codeblock-margin-block-start: 0;
+  --vf-codeblock-margin-block-end: 0;
 }
 
 .demo-surface {
-  width: min(100%, 1320px);
-  margin: 0 auto;
-  padding: 14px;
-  border: 1px solid var(--vf-color-border, rgb(15 23 42 / 12%));
-  border-radius: 14px;
-  background: color-mix(
-    in srgb,
-    var(--vf-color-surface, #fff) 90%,
-    var(--vf-color-bg, #f6f8fb)
-  );
+  min-width: 0;
 }
 </style>

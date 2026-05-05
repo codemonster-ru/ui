@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "../utils/classes";
+import { computed, useAttrs } from 'vue';
+import { cx } from '../utils/classes';
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 });
 
 const props = withDefaults(
   defineProps<{
     as?: string;
-    appearance?: "default" | "plain";
+    appearance?: 'default' | 'plain';
   }>(),
   {
-    as: "aside",
-    appearance: "default"
-  }
+    as: 'aside',
+    appearance: 'default',
+  },
 );
 
 const attrs = useAttrs();
-const classes = computed(() =>
-  cx("vf-aside-area", props.appearance === "plain" && "vf-aside-area--plain")
-);
+const classes = computed(() => cx('vf-aside-area', props.appearance === 'plain' && 'vf-aside-area--plain'));
 </script>
 
 <template>

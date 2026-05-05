@@ -1,14 +1,7 @@
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onMounted,
-  ref,
-  useAttrs,
-  type StyleValue,
-} from "vue";
-import { cx } from "@/utils/classes";
-import type { VfTableOfContentsItem } from "@/types/components";
+import { computed, nextTick, onMounted, ref, useAttrs, type StyleValue } from 'vue';
+import { cx } from '@/utils/classes';
+import type { VfTableOfContentsItem } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
@@ -20,15 +13,15 @@ interface VfTableOfContentsProps {
   ariaLabel?: string;
   smooth?: boolean;
   scrollOffset?: number;
-  variant?: "default" | "pills";
+  variant?: 'default' | 'pills';
 }
 
 const props = withDefaults(defineProps<VfTableOfContentsProps>(), {
   activeId: undefined,
-  ariaLabel: "Table of contents",
+  ariaLabel: 'Table of contents',
   smooth: false,
   scrollOffset: 0,
-  variant: "default",
+  variant: 'default',
 });
 
 const attrs = useAttrs();
@@ -36,17 +29,15 @@ const isReady = ref(false);
 
 const rootClasses = computed(() =>
   cx(
-    "vf-table-of-contents",
+    'vf-table-of-contents',
     `vf-table-of-contents--${props.variant}`,
-    isReady.value && "vf-table-of-contents--ready",
+    isReady.value && 'vf-table-of-contents--ready',
     attrs.class as string | undefined,
   ),
 );
 const rootStyles = computed<StyleValue>(() => attrs.style as StyleValue);
 const navAttrs = computed(() =>
-  Object.fromEntries(
-    Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style"),
-  ),
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style')),
 );
 
 function normalizeLevel(level?: number) {
@@ -69,7 +60,7 @@ function scrollToItem(
 ) {
   const href = itemHref(item);
 
-  if (!href.startsWith("#")) {
+  if (!href.startsWith('#')) {
     return;
   }
 
@@ -85,25 +76,22 @@ function scrollToItem(
     return;
   }
 
-  const top = Math.max(
-    0,
-    window.scrollY + target.getBoundingClientRect().top - props.scrollOffset,
-  );
+  const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - props.scrollOffset);
 
   if (options?.updateHistory && window.location.hash !== href) {
-    window.history.pushState(null, "", href);
+    window.history.pushState(null, '', href);
   }
 
   window.scrollTo({
     top,
-    behavior: props.smooth ? "smooth" : "auto",
+    behavior: props.smooth ? 'smooth' : 'auto',
   });
 }
 
 function handleLinkClick(event: MouseEvent, item: VfTableOfContentsItem) {
   const href = itemHref(item);
 
-  if ((!props.smooth && props.scrollOffset <= 0) || !href.startsWith("#")) {
+  if ((!props.smooth && props.scrollOffset <= 0) || !href.startsWith('#')) {
     return;
   }
 
@@ -125,7 +113,7 @@ onMounted(async () => {
     isReady.value = true;
   });
 
-  if (typeof window === "undefined" || !window.location.hash) {
+  if (typeof window === 'undefined' || !window.location.hash) {
     return;
   }
 
@@ -144,12 +132,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <nav
-    :class="rootClasses"
-    :style="rootStyles"
-    :aria-label="props.ariaLabel"
-    v-bind="navAttrs"
-  >
+  <nav :class="rootClasses" :style="rootStyles" :aria-label="props.ariaLabel" v-bind="navAttrs">
     <ol class="vf-table-of-contents__list">
       <li
         v-for="item in props.items"
@@ -159,10 +142,7 @@ onMounted(async () => {
       >
         <a
           :href="itemHref(item)"
-          :class="[
-            'vf-table-of-contents__link',
-            props.activeId === item.id && 'vf-table-of-contents__link--active',
-          ]"
+          :class="['vf-table-of-contents__link', props.activeId === item.id && 'vf-table-of-contents__link--active']"
           :aria-current="props.activeId === item.id ? 'location' : undefined"
           @click="handleLinkClick($event, item)"
         >

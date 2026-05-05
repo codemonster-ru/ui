@@ -6,7 +6,6 @@ export default [
     ignores: ['dist/**', 'node_modules/**', 'showcase-dist/**'],
     tsconfigRootDir: import.meta.dirname,
     rules: {
-      indent: ['error', 4],
       semi: ['error', 'always'],
       'vue/multi-word-component-names': 'off',
     },

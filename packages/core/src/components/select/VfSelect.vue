@@ -1,28 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, useAttrs, useSlots } from "vue";
-import {
-  flip,
-  offset,
-  shift,
-  type MiddlewareType,
-  type PlacementType,
-} from "@codemonster-ru/floater.js";
-import { VueIconify, icons, type IconName } from "@codemonster-ru/vueforge-icons";
-import VfIconButton from "@/components/icon-button/VfIconButton.vue";
-import {
-  useClickOutside,
-  useDisclosure,
-  useEscapeKey,
-  useFloating,
-  useId,
-} from "@/composables";
-import { vfMotionDurationsMs } from "@/theme/motion";
-import { cx } from "@/utils/classes";
-import type {
-  VfControlSize,
-  VfDropdownPlacement,
-  VfSelectOption,
-} from "@/types/components";
+import { computed, nextTick, ref, useAttrs, useSlots } from 'vue';
+import { flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
+import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
+import VfIconButton from '@/components/icon-button/VfIconButton.vue';
+import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
+import { vfMotionDurationsMs } from '@/theme/motion';
+import { cx } from '@/utils/classes';
+import type { VfControlSize, VfDropdownPlacement, VfSelectOption } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
@@ -44,29 +28,29 @@ interface VfSelectProps {
 }
 
 const props = withDefaults(defineProps<VfSelectProps>(), {
-  modelValue: "",
-  size: "md",
+  modelValue: '',
+  size: 'md',
   invalid: false,
   leadingIcon: undefined,
   trailingIcon: undefined,
   clearable: false,
   placeholder: undefined,
   disabled: false,
-  placement: "bottom-start",
+  placement: 'bottom-start',
   teleportTo: undefined,
   disableTeleport: false,
 });
 
 const emit = defineEmits<{
-  "update:modelValue": [value: string];
+  'update:modelValue': [value: string];
 }>();
 
 const attrs = useAttrs();
 const slots = useSlots();
 const triggerRef = ref<HTMLElement | null>(null);
 const menuRef = ref<HTMLElement | null>(null);
-const triggerId = useId({ prefix: "vf-select-trigger" });
-const listboxId = useId({ prefix: "vf-select-listbox" });
+const triggerId = useId({ prefix: 'vf-select-trigger' });
+const listboxId = useId({ prefix: 'vf-select-listbox' });
 const transitionDuration = {
   enter: vfMotionDurationsMs.fast,
   leave: vfMotionDurationsMs.fast,
@@ -75,41 +59,33 @@ const transitionDuration = {
 const disclosure = useDisclosure();
 const isOpen = disclosure.isOpen;
 
-const selectedOption = computed(() =>
-  props.options.find((option) => option.value === props.modelValue),
-);
+const selectedOption = computed(() => props.options.find((option) => option.value === props.modelValue));
 
-const hasValue = computed(() => String(props.modelValue ?? "").length > 0);
-const hasLeadingAdornment = computed(
-  () => Boolean(props.leadingIcon) || Boolean(slots.leading),
-);
-const hasTrailingAdornment = computed(
-  () => Boolean(props.trailingIcon) || Boolean(slots.trailing),
-);
-const hasClearControl = computed(
-  () => Boolean(props.clearable) && hasValue.value && !props.disabled,
-);
+const hasValue = computed(() => String(props.modelValue ?? '').length > 0);
+const hasLeadingAdornment = computed(() => Boolean(props.leadingIcon) || Boolean(slots.leading));
+const hasTrailingAdornment = computed(() => Boolean(props.trailingIcon) || Boolean(slots.trailing));
+const hasClearControl = computed(() => Boolean(props.clearable) && hasValue.value && !props.disabled);
 
 const triggerClasses = computed(() =>
   cx(
-    "vf-select",
-    props.size !== "md" && `vf-select--${props.size}`,
-    props.invalid && "vf-select--invalid",
-    isOpen.value && "vf-select--open",
-    !selectedOption.value && props.placeholder && "vf-select--placeholder",
-    hasLeadingAdornment.value && "vf-select--with-leading",
-    hasTrailingAdornment.value && "vf-select--with-trailing",
-    hasClearControl.value && "vf-select--with-clear",
+    'vf-select',
+    props.size !== 'md' && `vf-select--${props.size}`,
+    props.invalid && 'vf-select--invalid',
+    isOpen.value && 'vf-select--open',
+    !selectedOption.value && props.placeholder && 'vf-select--placeholder',
+    hasLeadingAdornment.value && 'vf-select--with-leading',
+    hasTrailingAdornment.value && 'vf-select--with-trailing',
+    hasClearControl.value && 'vf-select--with-clear',
   ),
 );
 
 const wrapperClasses = computed(() =>
   cx(
-    "vf-select-wrap",
-    props.size !== "md" && `vf-select-wrap--${props.size}`,
-    hasLeadingAdornment.value && "vf-select-wrap--with-leading",
-    hasTrailingAdornment.value && "vf-select-wrap--with-trailing",
-    hasClearControl.value && "vf-select-wrap--with-clear",
+    'vf-select-wrap',
+    props.size !== 'md' && `vf-select-wrap--${props.size}`,
+    hasLeadingAdornment.value && 'vf-select-wrap--with-leading',
+    hasTrailingAdornment.value && 'vf-select-wrap--with-trailing',
+    hasClearControl.value && 'vf-select-wrap--with-clear',
   ),
 );
 
@@ -118,59 +94,40 @@ const displayLabel = computed(() => {
     return selectedOption.value.label;
   }
 
-  return props.placeholder ?? "";
+  return props.placeholder ?? '';
 });
 
 const teleportDisabled = computed(
-  () =>
-    props.disableTeleport ||
-    props.teleportTo === false ||
-    props.teleportTo === null,
+  () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
 );
 
 const teleportTarget = computed(() => {
-  if (typeof props.teleportTo === "string") {
+  if (typeof props.teleportTo === 'string') {
     return props.teleportTo;
   }
 
-  if (
-    typeof HTMLElement !== "undefined" &&
-    props.teleportTo instanceof HTMLElement
-  ) {
+  if (typeof HTMLElement !== 'undefined' && props.teleportTo instanceof HTMLElement) {
     return props.teleportTo;
   }
 
-  return "body";
+  return 'body';
 });
 
 const allowedPlacements = computed<PlacementType[]>(() =>
-  props.placement === "bottom-end"
-    ? ["bottom-end", "top-end"]
-    : ["bottom-start", "top-start"],
+  props.placement === 'bottom-end' ? ['bottom-end', 'top-end'] : ['bottom-start', 'top-start'],
 );
 
-const { placement: floatingPlacement, styles: floatingStyles } = useFloating(
-  triggerRef,
-  menuRef,
-  {
-    enabled: isOpen,
-    placement: computed(() => props.placement),
-    middleware: computed(
-      () =>
-        [
-          offset(2),
-          flip({ placements: allowedPlacements.value }),
-          shift(),
-        ] as MiddlewareType[],
-    ),
-    strategy: "fixed",
-  },
-);
+const { placement: floatingPlacement, styles: floatingStyles } = useFloating(triggerRef, menuRef, {
+  enabled: isOpen,
+  placement: computed(() => props.placement),
+  middleware: computed(() => [offset(2), flip({ placements: allowedPlacements.value }), shift()] as MiddlewareType[]),
+  strategy: 'fixed',
+});
 
 const menuClasses = computed(() => [
-  "vf-dropdown__menu",
-  "vf-select__menu",
-  floatingPlacement.value.startsWith("top") && "vf-dropdown__menu--top",
+  'vf-dropdown__menu',
+  'vf-select__menu',
+  floatingPlacement.value.startsWith('top') && 'vf-dropdown__menu--top',
 ]);
 
 const menuStyles = computed(() => ({
@@ -179,9 +136,7 @@ const menuStyles = computed(() => ({
 }));
 
 function getItems() {
-  return Array.from(
-    menuRef.value?.querySelectorAll<HTMLElement>('[role="option"]') ?? [],
-  );
+  return Array.from(menuRef.value?.querySelectorAll<HTMLElement>('[role="option"]') ?? []);
 }
 
 async function syncSelectedIntoView(options: { focus?: boolean } = {}) {
@@ -191,9 +146,7 @@ async function syncSelectedIntoView(options: { focus?: boolean } = {}) {
   });
 
   const items = getItems();
-  const selectedIndex = props.options.findIndex(
-    (option) => option.value === props.modelValue && !option.disabled,
-  );
+  const selectedIndex = props.options.findIndex((option) => option.value === props.modelValue && !option.disabled);
 
   const targetItem = items[Math.max(selectedIndex, 0)];
 
@@ -213,8 +166,7 @@ async function syncSelectedIntoView(options: { focus?: boolean } = {}) {
     if (itemTop - viewPadding < viewTop) {
       menuElement.scrollTop = Math.max(itemTop - viewPadding, 0);
     } else if (itemBottom + viewPadding > viewBottom) {
-      menuElement.scrollTop =
-        itemBottom - menuElement.clientHeight + viewPadding;
+      menuElement.scrollTop = itemBottom - menuElement.clientHeight + viewPadding;
     }
   }
 
@@ -262,19 +214,16 @@ function clearValue(event: MouseEvent) {
     return;
   }
 
-  emit("update:modelValue", "");
+  emit('update:modelValue', '');
   closeMenu();
 }
 
-function selectOption(
-  option: VfSelectOption,
-  options: { restoreFocus?: boolean } = {},
-) {
+function selectOption(option: VfSelectOption, options: { restoreFocus?: boolean } = {}) {
   if (option.disabled) {
     return;
   }
 
-  emit("update:modelValue", option.value);
+  emit('update:modelValue', option.value);
   closeMenu({ restoreFocus: options.restoreFocus });
 }
 
@@ -283,12 +232,7 @@ function onTriggerKeydown(event: KeyboardEvent) {
     return;
   }
 
-  if (
-    event.key === "ArrowDown" ||
-    event.key === "ArrowUp" ||
-    event.key === "Enter" ||
-    event.key === " "
-  ) {
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     openMenu({ focusSelected: true });
   }
@@ -296,41 +240,39 @@ function onTriggerKeydown(event: KeyboardEvent) {
 
 function onMenuKeydown(event: KeyboardEvent) {
   const items = getItems();
-  const currentIndex = items.findIndex(
-    (item) => item === document.activeElement,
-  );
+  const currentIndex = items.findIndex((item) => item === document.activeElement);
 
-  if (event.key === "ArrowDown") {
+  if (event.key === 'ArrowDown') {
     event.preventDefault();
     items[(currentIndex + 1 + items.length) % items.length]?.focus();
     return;
   }
 
-  if (event.key === "ArrowUp") {
+  if (event.key === 'ArrowUp') {
     event.preventDefault();
     items[(currentIndex - 1 + items.length) % items.length]?.focus();
     return;
   }
 
-  if (event.key === "Home") {
+  if (event.key === 'Home') {
     event.preventDefault();
     items[0]?.focus();
     return;
   }
 
-  if (event.key === "End") {
+  if (event.key === 'End') {
     event.preventDefault();
     items[items.length - 1]?.focus();
     return;
   }
 
-  if (event.key === "Escape") {
+  if (event.key === 'Escape') {
     event.preventDefault();
     closeMenu();
     return;
   }
 
-  if (event.key === "Enter" || event.key === " ") {
+  if (event.key === 'Enter' || event.key === ' ') {
     const option = props.options[currentIndex];
 
     if (!option) {
@@ -351,7 +293,7 @@ useClickOutside(
   },
   {
     enabled: isOpen,
-    event: "click",
+    event: 'click',
   },
 );
 
@@ -372,12 +314,7 @@ useEscapeKey(
 
 <template>
   <div :class="wrapperClasses">
-    <input
-      v-if="typeof attrs.name === 'string'"
-      type="hidden"
-      :name="attrs.name"
-      :value="props.modelValue"
-    />
+    <input v-if="typeof attrs.name === 'string'" type="hidden" :name="attrs.name" :value="props.modelValue" />
 
     <button
       :id="typeof attrs.id === 'string' ? attrs.id : triggerId"
@@ -392,45 +329,22 @@ useEscapeKey(
       @click="toggleMenu"
       @keydown="onTriggerKeydown"
     >
-      <span
-        v-if="hasLeadingAdornment"
-        class="vf-select__icon vf-select__icon--leading"
-        aria-hidden="true"
-      >
+      <span v-if="hasLeadingAdornment" class="vf-select__icon vf-select__icon--leading" aria-hidden="true">
         <slot name="leading">
-          <VueIconify
-            v-if="props.leadingIcon"
-            :icon="props.leadingIcon"
-            size="var(--vf-field-icon-size)"
-          />
+          <VueIconify v-if="props.leadingIcon" :icon="props.leadingIcon" size="var(--vf-field-icon-size)" />
         </slot>
       </span>
 
       <span class="vf-select__value">{{ displayLabel }}</span>
 
-      <span
-        v-if="hasTrailingAdornment"
-        class="vf-select__icon vf-select__icon--trailing"
-        aria-hidden="true"
-      >
+      <span v-if="hasTrailingAdornment" class="vf-select__icon vf-select__icon--trailing" aria-hidden="true">
         <slot name="trailing">
-          <VueIconify
-            v-if="props.trailingIcon"
-            :icon="props.trailingIcon"
-            size="var(--vf-field-icon-size)"
-          />
+          <VueIconify v-if="props.trailingIcon" :icon="props.trailingIcon" size="var(--vf-field-icon-size)" />
         </slot>
       </span>
 
-      <span
-        v-if="!hasClearControl"
-        class="vf-select__icon vf-select__icon--chevron"
-        aria-hidden="true"
-      >
-        <VueIconify
-          :icon="icons.chevronDown"
-          size="var(--vf-field-icon-size)"
-        />
+      <span v-if="!hasClearControl" class="vf-select__icon vf-select__icon--chevron" aria-hidden="true">
+        <VueIconify :icon="icons.chevronDown" size="var(--vf-field-icon-size)" />
       </span>
     </button>
 
@@ -446,11 +360,7 @@ useEscapeKey(
     />
 
     <Teleport :to="teleportTarget" :disabled="teleportDisabled">
-      <Transition
-        name="vf-floating-transition"
-        appear
-        :duration="transitionDuration"
-      >
+      <Transition name="vf-floating-transition" appear :duration="transitionDuration">
         <div
           v-if="isOpen"
           :id="listboxId"
@@ -466,10 +376,7 @@ useEscapeKey(
             :key="option.value"
             type="button"
             class="vf-dropdown__item vf-select__option"
-            :class="[
-              option.value === props.modelValue &&
-                'vf-select__option--selected',
-            ]"
+            :class="[option.value === props.modelValue && 'vf-select__option--selected']"
             role="option"
             :aria-selected="option.value === props.modelValue"
             :disabled="option.disabled"

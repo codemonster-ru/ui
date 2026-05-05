@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "../utils/classes";
+import { computed, useAttrs } from 'vue';
+import { cx } from '../utils/classes';
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 });
 
 const props = withDefaults(
@@ -12,15 +12,13 @@ const props = withDefaults(
     surface?: boolean;
   }>(),
   {
-    as: "section",
-    surface: false
-  }
+    as: 'section',
+    surface: false,
+  },
 );
 
 const attrs = useAttrs();
-const classes = computed(() =>
-  cx("vf-section", props.surface && "vf-section--surface")
-);
+const classes = computed(() => cx('vf-section', props.surface && 'vf-section--surface'));
 </script>
 
 <template>

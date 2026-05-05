@@ -1,3 +1,3 @@
-import type { VfThemeInjectionKey } from "@/types/theme";
+import type { VfThemeInjectionKey } from '@/types/theme';
 
-export const themeContextKey: VfThemeInjectionKey = Symbol("VfThemeContext");
+export const themeContextKey: VfThemeInjectionKey = Symbol('VfThemeContext');

@@ -1,4 +1,4 @@
-export { defaultLayoutsPreset } from "./default-preset";
+export { defaultLayoutsPreset } from './default-preset';
 export {
   applyLayoutsThemeConfig,
   createLayoutsPreset,
@@ -6,5 +6,5 @@ export {
   layoutsTokensToCssVars,
   resolveLayoutsPreset,
   resolveLayoutsThemeConfig,
-  resolveLayoutsThemeOptions
-} from "./utils";
+  resolveLayoutsThemeOptions,
+} from './utils';

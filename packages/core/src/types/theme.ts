@@ -1,4 +1,4 @@
-import type { InjectionKey, Ref } from "vue";
+import type { InjectionKey, Ref } from 'vue';
 import type {
   VfResolvedTheme as BaseVfResolvedTheme,
   VfResolvedThemeConfig as BaseVfResolvedThemeConfig,
@@ -9,7 +9,7 @@ import type {
   VfThemePreset as BaseVfThemePreset,
   VfThemePresetOptions,
   VfThemeTokens as BaseVfThemeTokens,
-} from "@codemonster-ru/vueforge-theme";
+} from '@codemonster-ru/vueforge-theme';
 
 export type VfResolvedTheme = BaseVfResolvedTheme;
 export type VfThemeMode = BaseVfThemeMode;
@@ -17,7 +17,7 @@ export type { VfResolvedThemePresetOptions, VfThemePresetOptions };
 
 type BaseVfThemeTokensWithoutLegacyTypography = Omit<
   BaseVfThemeTokens,
-  "textLineHeight" | "headingLineHeight" | "tabsLineHeight"
+  'textLineHeight' | 'headingLineHeight' | 'tabsLineHeight'
 >;
 
 export interface VfThemeTokens extends BaseVfThemeTokensWithoutLegacyTypography {
@@ -38,6 +38,10 @@ export interface VfThemeTokens extends BaseVfThemeTokensWithoutLegacyTypography 
   lineHeightTight: string;
   lineHeightNormal: string;
   lineHeightRelaxed: string;
+  iconSizeSm: string;
+  iconSizeMd: string;
+  iconSizeLg: string;
+  iconSizeXl: string;
   selectableColor: string;
   selectableHoverColor: string;
   selectableHoverBackground: string;
@@ -404,36 +408,24 @@ export interface VfThemeTokens extends BaseVfThemeTokensWithoutLegacyTypography 
   proseHrMargin: string;
 }
 
-export interface VfThemePreset extends Omit<
-  BaseVfThemePreset,
-  "tokens" | "dark"
-> {
+export interface VfThemePreset extends Omit<BaseVfThemePreset, 'tokens' | 'dark'> {
   tokens: VfThemeTokens;
   dark?: Partial<VfThemeTokens>;
 }
 
-export interface VfResolvedThemePreset extends Omit<
-  BaseVfResolvedThemePreset,
-  "light" | "dark"
-> {
+export interface VfResolvedThemePreset extends Omit<BaseVfResolvedThemePreset, 'light' | 'dark'> {
   light: VfThemeTokens;
   dark: VfThemeTokens;
 }
 
-export interface VfThemeConfig extends Omit<
-  BaseVfThemeConfig,
-  "preset" | "extend" | "light" | "dark"
-> {
+export interface VfThemeConfig extends Omit<BaseVfThemeConfig, 'preset' | 'extend' | 'light' | 'dark'> {
   preset?: VfThemePreset;
   extend?: Partial<VfThemeTokens>;
   light?: Partial<VfThemeTokens>;
   dark?: Partial<VfThemeTokens>;
 }
 
-export interface VfResolvedThemeConfig extends Omit<
-  BaseVfResolvedThemeConfig,
-  "preset"
-> {
+export interface VfResolvedThemeConfig extends Omit<BaseVfResolvedThemeConfig, 'preset'> {
   preset: VfResolvedThemePreset;
 }
 

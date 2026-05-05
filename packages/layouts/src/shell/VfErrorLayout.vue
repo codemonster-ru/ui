@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, useAttrs, useSlots } from "vue";
-import VfContainer from "../primitives/VfContainer.vue";
-import { cx } from "../utils/classes";
+import { computed, useAttrs, useSlots } from 'vue';
+import VfContainer from '../primitives/VfContainer.vue';
+import { cx } from '../utils/classes';
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 });
 
 const props = withDefaults(
@@ -18,14 +18,14 @@ const props = withDefaults(
     surface?: boolean;
   }>(),
   {
-    as: "section",
+    as: 'section',
     code: null,
     title: null,
     description: null,
     fillViewport: true,
     centered: true,
-    surface: true
-  }
+    surface: true,
+  },
 );
 
 const attrs = useAttrs();
@@ -33,26 +33,17 @@ const slots = useSlots();
 
 const classes = computed(() =>
   cx(
-    "vf-error-layout",
-    props.fillViewport && "vf-error-layout--fill-viewport",
-    props.centered && "vf-error-layout--centered"
-  )
+    'vf-error-layout',
+    props.fillViewport && 'vf-error-layout--fill-viewport',
+    props.centered && 'vf-error-layout--centered',
+  ),
 );
 
-const panelClasses = computed(() =>
-  cx(
-    "vf-error-layout__panel",
-    props.surface && "vf-error-layout__panel--surface"
-  )
-);
+const panelClasses = computed(() => cx('vf-error-layout__panel', props.surface && 'vf-error-layout__panel--surface'));
 
-const hasCode = computed(
-  () => Boolean(slots.code) || (props.code !== null && props.code !== undefined)
-);
+const hasCode = computed(() => Boolean(slots.code) || (props.code !== null && props.code !== undefined));
 const hasTitle = computed(() => Boolean(slots.title) || Boolean(props.title));
-const hasDescription = computed(
-  () => Boolean(slots.description) || Boolean(props.description)
-);
+const hasDescription = computed(() => Boolean(slots.description) || Boolean(props.description));
 const hasActions = computed(() => Boolean(slots.actions));
 </script>
 

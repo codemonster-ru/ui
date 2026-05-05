@@ -1,83 +1,77 @@
-import { createApp, defineComponent, h } from "vue";
-import { describe, expect, it, vi } from "vitest";
-import VueCodeBlock, { setCodeBlockThemeVars } from "../index";
+import { createApp, defineComponent, h } from 'vue';
+import { describe, expect, it, vi } from 'vitest';
+import VfCodeBlockPlugin, { setCodeBlockThemeVars } from '../index';
 
 const TestHostComponent = defineComponent({
   render() {
-    return h("div");
+    return h('div');
   },
 });
 
-describe("VueCodeBlock plugin", () => {
-  it("injects runtime theme vars via plugin options", () => {
-    const host = document.createElement("div");
+describe('VfCodeBlockPlugin plugin', () => {
+  it('injects runtime theme vars via plugin options', () => {
+    const host = document.createElement('div');
     document.body.appendChild(host);
 
     const app = createApp(TestHostComponent);
 
-    app.use(VueCodeBlock, {
+    app.use(VfCodeBlockPlugin, {
       themeVars: {
         base: {
-          "--vcb-border-radius": "0.75rem",
-          "--vcb-padding": "1rem",
+          '--vf-codeblock-border-radius': 'var(--vf-radius-surface)',
+          '--vf-codeblock-padding': 'var(--vf-surface-padding)',
         },
         dark: {
-          "--vcb-dark-background-color": "#161a23",
+          '--vf-codeblock-dark-background-color': 'var(--vf-color-surface)',
         },
       },
     });
     app.mount(host);
 
-    const styleElement = document.getElementById("vcb-runtime-theme-vars");
+    const styleElement = document.getElementById('vf-codeblock-runtime-theme-vars');
     expect(styleElement).not.toBeNull();
-    expect(styleElement?.textContent).toContain("--vcb-border-radius: 0.75rem;");
-    expect(styleElement?.textContent).toContain("--vcb-padding: 1rem;");
-    expect(styleElement?.textContent).toContain(
-      '--vcb-dark-background-color: #161a23;',
-    );
+    expect(styleElement?.textContent).toContain('--vf-codeblock-border-radius: var(--vf-radius-surface);');
+    expect(styleElement?.textContent).toContain('--vf-codeblock-padding: var(--vf-surface-padding);');
+    expect(styleElement?.textContent).toContain('--vf-codeblock-dark-background-color: var(--vf-color-surface);');
 
     app.unmount();
   });
 
-  it("uses scoped selectors for light and dark theme vars", () => {
-    const host = document.createElement("div");
+  it('uses scoped selectors for light and dark theme vars', () => {
+    const host = document.createElement('div');
     document.body.appendChild(host);
 
     const app = createApp(TestHostComponent);
 
-    app.use(VueCodeBlock, {
-      themeScope: "#docs-app",
+    app.use(VfCodeBlockPlugin, {
+      themeScope: '#docs-app',
       themeVars: {
         light: {
-          "--vcb-background-color": "#ffffff",
+          '--vf-codeblock-background-color': 'var(--vf-color-surface)',
         },
         dark: {
-          "--vcb-dark-background-color": "#161a23",
+          '--vf-codeblock-dark-background-color': 'var(--vf-color-surface)',
         },
       },
     });
     app.mount(host);
 
-    const styleElement = document.getElementById("vcb-runtime-theme-vars");
-    expect(styleElement?.textContent).toContain(
-      '#docs-app[data-theme="light"], #docs-app[data-vf-theme="light"]',
-    );
-    expect(styleElement?.textContent).toContain(
-      '#docs-app[data-theme="dark"], #docs-app[data-vf-theme="dark"]',
-    );
+    const styleElement = document.getElementById('vf-codeblock-runtime-theme-vars');
+    expect(styleElement?.textContent).toContain('#docs-app[data-theme="light"], #docs-app[data-vf-theme="light"]');
+    expect(styleElement?.textContent).toContain('#docs-app[data-theme="dark"], #docs-app[data-vf-theme="dark"]');
 
     app.unmount();
   });
 
-  it("is safe when document is unavailable", () => {
-    vi.stubGlobal("document", undefined);
+  it('is safe when document is unavailable', () => {
+    vi.stubGlobal('document', undefined);
 
     const app = createApp(TestHostComponent);
 
     expect(() => {
-      app.use(VueCodeBlock, {
+      app.use(VfCodeBlockPlugin, {
         themeVars: {
-          base: { "--vcb-padding": "1rem" },
+          base: { '--vf-codeblock-padding': 'var(--vf-surface-padding)' },
         },
       });
     }).not.toThrow();
@@ -85,34 +79,34 @@ describe("VueCodeBlock plugin", () => {
     vi.unstubAllGlobals();
   });
 
-  it("sets nonce on runtime style tag", () => {
-    const host = document.createElement("div");
+  it('sets nonce on runtime style tag', () => {
+    const host = document.createElement('div');
     document.body.appendChild(host);
 
     const app = createApp(TestHostComponent);
 
-    app.use(VueCodeBlock, {
-      styleNonce: "nonce-123",
+    app.use(VfCodeBlockPlugin, {
+      styleNonce: 'nonce-123',
       themeVars: {
-        base: { "--vcb-padding": "1rem" },
+        base: { '--vf-codeblock-padding': 'var(--vf-surface-padding)' },
       },
     });
     app.mount(host);
 
-    const styleElement = document.getElementById("vcb-runtime-theme-vars");
-    expect(styleElement?.getAttribute("nonce")).toBe("nonce-123");
+    const styleElement = document.getElementById('vf-codeblock-runtime-theme-vars');
+    expect(styleElement?.getAttribute('nonce')).toBe('nonce-123');
 
     app.unmount();
   });
 
-  it("updates runtime theme vars via setCodeBlockThemeVars helper", () => {
+  it('updates runtime theme vars via setCodeBlockThemeVars helper', () => {
     setCodeBlockThemeVars({
       base: {
-        "--vcb-padding": "2rem",
+        '--vf-codeblock-padding': 'calc(var(--vf-surface-padding) * 2)',
       },
     });
 
-    const styleElement = document.getElementById("vcb-runtime-theme-vars");
-    expect(styleElement?.textContent).toContain("--vcb-padding: 2rem;");
+    const styleElement = document.getElementById('vf-codeblock-runtime-theme-vars');
+    expect(styleElement?.textContent).toContain('--vf-codeblock-padding: calc(var(--vf-surface-padding) * 2);');
   });
 });

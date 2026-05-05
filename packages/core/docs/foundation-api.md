@@ -31,7 +31,7 @@ import {
   useBreakpoints,
   useBreakpointValue,
   useScrollLock,
-} from "@codemonster-ru/vueforge-core/foundation";
+} from '@codemonster-ru/vueforge-core/foundation';
 ```
 
 ### `vfBreakpoints`
@@ -62,8 +62,8 @@ toMaxWidthQuery(vfBreakpoints.md);
 ### `useBreakpoint`
 
 ```ts
-const isLgUp = useBreakpoint("lg");
-const isMdDown = useBreakpoint("md", { direction: "max" });
+const isLgUp = useBreakpoint('lg');
+const isMdDown = useBreakpoint('md', { direction: 'max' });
 ```
 
 ### `useBreakpoints`

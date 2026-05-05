@@ -1,40 +1,27 @@
-import {
-  onBeforeUnmount,
-  onMounted,
-  toValue,
-  type MaybeRefOrGetter,
-  type Ref,
-} from "vue";
+import { onBeforeUnmount, onMounted, toValue, type MaybeRefOrGetter, type Ref } from 'vue';
 
 interface UseFocusTrapOptions {
   enabled?: MaybeRefOrGetter<boolean>;
 }
 
 const FOCUSABLE_SELECTOR = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
   '[tabindex]:not([tabindex="-1"])',
-].join(", ");
+].join(', ');
 
 function getFocusableElements(container: HTMLElement) {
-  return Array.from(
-    container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-  ).filter(
-    (element) =>
-      !element.hasAttribute("hidden") &&
-      element.getAttribute("aria-hidden") !== "true",
+  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+    (element) => !element.hasAttribute('hidden') && element.getAttribute('aria-hidden') !== 'true',
   );
 }
 
-export function useFocusTrap(
-  target: Ref<HTMLElement | null>,
-  options: UseFocusTrapOptions = {},
-) {
+export function useFocusTrap(target: Ref<HTMLElement | null>, options: UseFocusTrapOptions = {}) {
   const listener = (event: KeyboardEvent) => {
-    if (event.key !== "Tab" || toValue(options.enabled) === false) {
+    if (event.key !== 'Tab' || toValue(options.enabled) === false) {
       return;
     }
 
@@ -72,10 +59,10 @@ export function useFocusTrap(
   };
 
   onMounted(() => {
-    document.addEventListener("keydown", listener);
+    document.addEventListener('keydown', listener);
   });
 
   onBeforeUnmount(() => {
-    document.removeEventListener("keydown", listener);
+    document.removeEventListener('keydown', listener);
   });
 }

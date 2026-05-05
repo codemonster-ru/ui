@@ -1,1 +1,1 @@
-export { default as VfTooltip } from "./VfTooltip.vue";
+export { default as VfTooltip } from './VfTooltip.vue';

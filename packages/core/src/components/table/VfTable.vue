@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "@/utils/classes";
+import { computed, useAttrs } from 'vue';
+import { cx } from '@/utils/classes';
 
 defineOptions({
   inheritAttrs: false,
@@ -24,10 +24,10 @@ const attrs = useAttrs();
 
 const classes = computed(() =>
   cx(
-    "vf-table",
-    props.compact && "vf-table--compact",
-    props.striped && "vf-table--striped",
-    props.stickyHeader && "vf-table--sticky-header",
+    'vf-table',
+    props.compact && 'vf-table--compact',
+    props.striped && 'vf-table--striped',
+    props.stickyHeader && 'vf-table--sticky-header',
   ),
 );
 </script>
@@ -36,10 +36,7 @@ const classes = computed(() =>
   <div class="vf-table-wrap" v-bind="attrs">
     <div class="vf-table-scroll">
       <table :class="classes">
-        <caption
-          v-if="props.caption || $slots.caption"
-          class="vf-table__caption"
-        >
+        <caption v-if="props.caption || $slots.caption" class="vf-table__caption">
           <slot name="caption">{{ props.caption }}</slot>
         </caption>
 

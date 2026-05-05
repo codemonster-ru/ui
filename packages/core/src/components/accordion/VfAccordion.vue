@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { VueIconify, icons } from "@codemonster-ru/vueforge-icons";
-import { useDisclosure, useId } from "@/composables";
-import { vfMotionDurationsMs } from "@/theme/motion";
+import { computed } from 'vue';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { useDisclosure, useId } from '@/composables';
+import { vfMotionDurationsMs } from '@/theme/motion';
 
 interface VfAccordionProps {
   open?: boolean;
@@ -19,27 +19,27 @@ const props = withDefaults(defineProps<VfAccordionProps>(), {
 });
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
+  'update:open': [value: boolean];
   openChange: [value: boolean];
 }>();
 
-const triggerId = useId({ prefix: "vf-accordion-trigger" });
-const contentId = useId({ prefix: "vf-accordion-content" });
+const triggerId = useId({ prefix: 'vf-accordion-trigger' });
+const contentId = useId({ prefix: 'vf-accordion-content' });
 
 const disclosure = useDisclosure({
   defaultOpen: props.defaultOpen,
   open: computed(() => props.open),
   onOpenChange: (value) => {
-    emit("update:open", value);
-    emit("openChange", value);
+    emit('update:open', value);
+    emit('openChange', value);
   },
 });
 const isOpen = disclosure.isOpen;
 
 const accordionTransition = [
-  "height var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)",
-  "opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)",
-].join(", ");
+  'height var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)',
+  'opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)',
+].join(', ');
 
 function getContentHeight(target: HTMLElement) {
   const inner = target.firstElementChild as HTMLElement | null;
@@ -53,7 +53,7 @@ function toggle() {
 }
 
 function handleKeydown(event: KeyboardEvent) {
-  if (event.key === "Enter" || event.key === " ") {
+  if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     toggle();
   }
@@ -61,9 +61,9 @@ function handleKeydown(event: KeyboardEvent) {
 
 function onBeforeEnter(el: Element) {
   const target = el as HTMLElement;
-  target.style.height = "0px";
-  target.style.opacity = "0";
-  target.style.overflow = "hidden";
+  target.style.height = '0px';
+  target.style.opacity = '0';
+  target.style.overflow = 'hidden';
 }
 
 function onEnter(el: Element, done: () => void) {
@@ -72,7 +72,7 @@ function onEnter(el: Element, done: () => void) {
 
   requestAnimationFrame(() => {
     target.style.height = `${getContentHeight(target)}px`;
-    target.style.opacity = "1";
+    target.style.opacity = '1';
   });
 
   window.setTimeout(done, vfMotionDurationsMs.normal);
@@ -80,35 +80,35 @@ function onEnter(el: Element, done: () => void) {
 
 function onAfterEnter(el: Element) {
   const target = el as HTMLElement;
-  target.style.height = "";
-  target.style.opacity = "";
-  target.style.overflow = "";
-  target.style.transition = "";
+  target.style.height = '';
+  target.style.opacity = '';
+  target.style.overflow = '';
+  target.style.transition = '';
 }
 
 function onBeforeLeave(el: Element) {
   const target = el as HTMLElement;
   target.style.height = `${getContentHeight(target)}px`;
-  target.style.opacity = "1";
-  target.style.overflow = "hidden";
+  target.style.opacity = '1';
+  target.style.overflow = 'hidden';
 }
 
 function onLeave(el: Element, done: () => void) {
   const target = el as HTMLElement;
   target.style.transition = accordionTransition;
   void target.offsetHeight;
-  target.style.height = "0px";
-  target.style.opacity = "0";
+  target.style.height = '0px';
+  target.style.opacity = '0';
 
   window.setTimeout(done, vfMotionDurationsMs.normal);
 }
 
 function onAfterLeave(el: Element) {
   const target = el as HTMLElement;
-  target.style.height = "";
-  target.style.opacity = "";
-  target.style.overflow = "";
-  target.style.transition = "";
+  target.style.height = '';
+  target.style.opacity = '';
+  target.style.overflow = '';
+  target.style.transition = '';
 }
 </script>
 
@@ -128,11 +128,8 @@ function onAfterLeave(el: Element) {
         <span>{{ title }}</span>
       </slot>
 
-      <span
-        aria-hidden="true"
-        :class="['vf-accordion__icon', isOpen && 'vf-accordion__icon--open']"
-      >
-        <VueIconify :icon="icons.chevronDown" size="0.875rem" />
+      <span aria-hidden="true" :class="['vf-accordion__icon', isOpen && 'vf-accordion__icon--open']">
+        <VueIconify :icon="icons.chevronDown" size="var(--vf-icon-size-sm)" />
       </span>
     </button>
 
@@ -145,13 +142,7 @@ function onAfterLeave(el: Element) {
       @leave="onLeave"
       @after-leave="onAfterLeave"
     >
-      <div
-        v-if="isOpen"
-        :id="contentId"
-        :aria-labelledby="triggerId"
-        class="vf-accordion__content"
-        role="region"
-      >
+      <div v-if="isOpen" :id="contentId" :aria-labelledby="triggerId" class="vf-accordion__content" role="region">
         <div class="vf-accordion__content-inner">
           <slot :open="isOpen" />
         </div>

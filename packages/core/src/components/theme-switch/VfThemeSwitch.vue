@@ -1,25 +1,18 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, useAttrs, useSlots, watch } from "vue";
-import { VueIconify, icons } from "@codemonster-ru/vueforge-icons";
-import { useTheme } from "@/composables";
-import VfButton from "@/components/button/VfButton.vue";
-import VfIconButton from "@/components/icon-button/VfIconButton.vue";
-import VfSwitch from "@/components/switch/VfSwitch.vue";
-import type {
-  VfButtonVariant,
-  VfControlSize,
-  VfSwitchThumbContrast,
-} from "@/types/components";
+import { computed, onBeforeUnmount, ref, useAttrs, useSlots, watch } from 'vue';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { useTheme } from '@/composables';
+import VfButton from '@/components/button/VfButton.vue';
+import VfIconButton from '@/components/icon-button/VfIconButton.vue';
+import VfSwitch from '@/components/switch/VfSwitch.vue';
+import type { VfButtonVariant, VfControlSize, VfSwitchThumbContrast } from '@/types/components';
 
 defineOptions({
   inheritAttrs: false,
 });
 
-type VfThemeSwitchVariant = "switch" | "button";
-type VfThemeSwitchButtonVariant = Extract<
-  VfButtonVariant,
-  "secondary" | "ghost"
->;
+type VfThemeSwitchVariant = 'switch' | 'button';
+type VfThemeSwitchButtonVariant = Extract<VfButtonVariant, 'secondary' | 'ghost'>;
 
 interface VfThemeSwitchProps {
   size?: VfControlSize;
@@ -32,13 +25,13 @@ interface VfThemeSwitchProps {
 }
 
 const props = withDefaults(defineProps<VfThemeSwitchProps>(), {
-  size: "md",
+  size: 'md',
   disabled: false,
   label: undefined,
   static: false,
-  thumbContrast: "auto",
-  variant: "switch",
-  buttonVariant: "secondary",
+  thumbContrast: 'auto',
+  variant: 'switch',
+  buttonVariant: 'secondary',
 });
 
 const attrs = useAttrs();
@@ -47,22 +40,20 @@ const { resolvedTheme, setTheme } = useTheme();
 const hasContent = computed(() => Boolean(props.label || slots.default));
 const checked = ref(false);
 const iconName = computed(() => (checked.value ? icons.moon : icons.sun));
-const nextThemeLabel = computed(() =>
-  checked.value ? "Switch to light theme" : "Switch to dark theme",
-);
+const nextThemeLabel = computed(() => (checked.value ? 'Switch to light theme' : 'Switch to dark theme'));
 let pendingThemeFrame: number | null = null;
 
 watch(
   resolvedTheme,
   (value) => {
-    checked.value = value === "dark";
+    checked.value = value === 'dark';
   },
   { immediate: true },
 );
 
 function handleCheckedChange(value: boolean) {
-  if (typeof window === "undefined") {
-    setTheme(value ? "dark" : "light");
+  if (typeof window === 'undefined') {
+    setTheme(value ? 'dark' : 'light');
     return;
   }
 
@@ -71,7 +62,7 @@ function handleCheckedChange(value: boolean) {
   }
 
   pendingThemeFrame = window.requestAnimationFrame(() => {
-    setTheme(value ? "dark" : "light");
+    setTheme(value ? 'dark' : 'light');
     pendingThemeFrame = null;
   });
 }
@@ -81,7 +72,7 @@ function handleButtonClick() {
 }
 
 onBeforeUnmount(() => {
-  if (pendingThemeFrame !== null && typeof window !== "undefined") {
+  if (pendingThemeFrame !== null && typeof window !== 'undefined') {
     window.cancelAnimationFrame(pendingThemeFrame);
   }
 });

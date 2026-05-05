@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "../utils/classes";
+import { computed, useAttrs } from 'vue';
+import { cx } from '../utils/classes';
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 });
 
 const props = withDefaults(
@@ -12,15 +12,13 @@ const props = withDefaults(
     sticky?: boolean;
   }>(),
   {
-    as: "header",
-    sticky: true
-  }
+    as: 'header',
+    sticky: true,
+  },
 );
 
 const attrs = useAttrs();
-const classes = computed(() =>
-  cx("vf-header-area", props.sticky && "vf-header-area--sticky")
-);
+const classes = computed(() => cx('vf-header-area', props.sticky && 'vf-header-area--sticky'));
 </script>
 
 <template>

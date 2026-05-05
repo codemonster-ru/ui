@@ -1,1 +1,1 @@
-export { default as VfCard } from "./VfCard.vue";
+export { default as VfCard } from './VfCard.vue';

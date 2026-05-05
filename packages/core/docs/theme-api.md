@@ -37,8 +37,8 @@ These are fallback defaults for consumers who import the package CSS. Runtime th
 ## Installation
 
 ```ts
-import { createApp } from "vue";
-import VueForgeCore from "@codemonster-ru/vueforge-core";
+import { createApp } from 'vue';
+import VueForgeCore from '@codemonster-ru/vueforge-core';
 
 const app = createApp(App);
 
@@ -61,11 +61,11 @@ app.use(VueForgeCore, {
   theme: {
     preset: defaultThemePreset,
     extend: {
-      colorPrimary: "#ff5a36",
+      colorPrimary: '#ff5a36',
     },
   },
-  defaultTheme: "system",
-  themeStorageKey: "vf-theme",
+  defaultTheme: 'system',
+  themeStorageKey: 'vf-theme',
 });
 ```
 
@@ -94,19 +94,16 @@ app.use(VueForgeCore, {
 Base theme definition. The default workflow in `core` is to start from the built-in preset and extend it inside the same app.
 
 ```ts
-import {
-  createThemePreset,
-  defaultThemePreset,
-} from "@codemonster-ru/vueforge-core";
+import { createThemePreset, defaultThemePreset } from '@codemonster-ru/vueforge-core';
 
 const customPreset = createThemePreset({
-  name: "custom",
+  name: 'custom',
   tokens: {
     ...defaultThemePreset.tokens,
-    colorPrimary: "#0f766e",
+    colorPrimary: '#0f766e',
   },
   dark: {
-    colorPrimary: "#5eead4",
+    colorPrimary: '#5eead4',
   },
 });
 ```
@@ -120,8 +117,8 @@ app.use(VueForgeCore, {
   theme: {
     preset: defaultThemePreset,
     extend: {
-      radius: "0.875rem",
-      controlHeightMd: "2.375rem",
+      radius: '0.875rem',
+      controlHeightMd: '2.375rem',
     },
   },
 });
@@ -136,8 +133,8 @@ app.use(VueForgeCore, {
   theme: {
     preset: defaultThemePreset,
     light: {
-      colorSurface: "#ffffff",
-      colorSurfaceMuted: "#f8fafc",
+      colorSurface: '#ffffff',
+      colorSurfaceMuted: '#f8fafc',
     },
   },
 });
@@ -152,8 +149,8 @@ app.use(VueForgeCore, {
   theme: {
     preset: defaultThemePreset,
     dark: {
-      colorSurface: "#111827",
-      colorBorder: "#334155",
+      colorSurface: '#111827',
+      colorBorder: '#334155',
     },
   },
 });
@@ -168,12 +165,12 @@ app.use(VueForgeCore, {
   theme: {
     preset: defaultThemePreset,
     options: {
-      prefix: "vf",
-      rootSelector: ":root",
+      prefix: 'vf',
+      rootSelector: ':root',
       darkModeSelector: ":root[data-vf-theme='dark']",
-      attribute: "data-vf-theme",
-      storageKey: "vf-theme",
-      styleId: "vf-theme-preset",
+      attribute: 'data-vf-theme',
+      storageKey: 'vf-theme',
+      styleId: 'vf-theme-preset',
     },
   },
 });
@@ -225,9 +222,9 @@ Lower-level engine helpers live in `@codemonster-ru/vueforge-theme`. `vueforge-c
 
 ```ts
 const items = [
-  { id: "getting-started", label: "Getting started", level: 1 },
-  { id: "installation", label: "Installation", level: 2 },
-  { id: "theme-api", label: "Theme API", level: 2 },
+  { id: 'getting-started', label: 'Getting started', level: 1 },
+  { id: 'installation', label: 'Installation', level: 2 },
+  { id: 'theme-api', label: 'Theme API', level: 2 },
 ];
 
 const { activeId } = useTableOfContents({
@@ -238,11 +235,7 @@ const { activeId } = useTableOfContents({
 
 ```vue
 <p>On This Page</p>
-<VfTableOfContents
-  aria-label="Page navigation"
-  :items="items"
-  :active-id="activeId"
-/>
+<VfTableOfContents aria-label="Page navigation" :items="items" :active-id="activeId" />
 
 <article>
   <h2 id="getting-started">Getting started</h2>

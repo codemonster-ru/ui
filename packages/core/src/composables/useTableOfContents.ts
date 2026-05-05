@@ -1,13 +1,5 @@
-import {
-  nextTick,
-  onMounted,
-  onUnmounted,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from "vue";
-import type { VfTableOfContentsItem } from "@/types/components";
+import { nextTick, onMounted, onUnmounted, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
+import type { VfTableOfContentsItem } from '@/types/components';
 
 interface UseTableOfContentsOptions {
   items: MaybeRefOrGetter<VfTableOfContentsItem[]>;
@@ -31,7 +23,7 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
   }
 
   function updateActiveId() {
-    if (typeof window === "undefined" || typeof document === "undefined") {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
       return;
     }
 
@@ -87,22 +79,22 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
   onMounted(async () => {
     await nextTick();
     updateActiveId();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
-    window.addEventListener("hashchange", handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    window.addEventListener('hashchange', handleScroll);
   });
 
   onUnmounted(() => {
-    window.removeEventListener("scroll", handleScroll);
-    window.removeEventListener("resize", handleScroll);
-    window.removeEventListener("hashchange", handleScroll);
+    window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('resize', handleScroll);
+    window.removeEventListener('hashchange', handleScroll);
   });
 
   watch(
     () => [
       resolveItems()
         .map((item) => item.id)
-        .join("|"),
+        .join('|'),
       resolveOffset(),
       isDisabled(),
     ],

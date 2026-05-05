@@ -1,16 +1,16 @@
-import { defineComponent, h } from "vue";
+import { defineComponent, h } from 'vue';
 
 export const VueIconify = defineComponent({
-  name: "VueIconifyMock",
+  name: 'VueIconifyMock',
   props: {
     icon: {
       type: String,
       required: false,
-      default: "",
+      default: '',
     },
   },
   setup(props) {
-    return () => h("span", { "data-icon": props.icon });
+    return () => h('span', { 'data-icon': props.icon });
   },
 });
 

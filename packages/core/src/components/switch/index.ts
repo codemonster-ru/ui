@@ -1,1 +1,1 @@
-export { default as VfSwitch } from "./VfSwitch.vue";
+export { default as VfSwitch } from './VfSwitch.vue';

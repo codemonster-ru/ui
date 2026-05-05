@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
-import { cx } from "../utils/classes";
+import { computed, useAttrs } from 'vue';
+import { cx } from '../utils/classes';
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 });
 
 const props = withDefaults(
@@ -12,15 +12,13 @@ const props = withDefaults(
     wrap?: boolean;
   }>(),
   {
-    as: "div",
-    wrap: true
-  }
+    as: 'div',
+    wrap: true,
+  },
 );
 
 const attrs = useAttrs();
-const classes = computed(() =>
-  cx("vf-inline", !props.wrap && "vf-inline--nowrap")
-);
+const classes = computed(() => cx('vf-inline', !props.wrap && 'vf-inline--nowrap'));
 </script>
 
 <template>

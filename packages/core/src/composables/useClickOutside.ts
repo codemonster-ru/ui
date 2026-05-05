@@ -1,10 +1,4 @@
-import {
-  onBeforeUnmount,
-  onMounted,
-  toValue,
-  type MaybeRefOrGetter,
-  type Ref,
-} from "vue";
+import { onBeforeUnmount, onMounted, toValue, type MaybeRefOrGetter, type Ref } from 'vue';
 
 interface UseClickOutsideOptions {
   enabled?: MaybeRefOrGetter<boolean>;
@@ -16,7 +10,7 @@ export function useClickOutside(
   handler: (event: MouseEvent | PointerEvent) => void,
   options: UseClickOutsideOptions = {},
 ) {
-  const eventName = options.event ?? "pointerdown";
+  const eventName = options.event ?? 'pointerdown';
 
   const listener = (event: Event) => {
     if (toValue(options.enabled) === false) {
@@ -30,17 +24,10 @@ export function useClickOutside(
     }
 
     const elements = Array.isArray(target)
-      ? target
-          .map((item) => item.value)
-          .filter((item): item is HTMLElement => item instanceof HTMLElement)
-      : [target.value].filter(
-          (item): item is HTMLElement => item instanceof HTMLElement,
-        );
+      ? target.map((item) => item.value).filter((item): item is HTMLElement => item instanceof HTMLElement)
+      : [target.value].filter((item): item is HTMLElement => item instanceof HTMLElement);
 
-    if (
-      elements.length === 0 ||
-      elements.some((element) => element.contains(node))
-    ) {
+    if (elements.length === 0 || elements.some((element) => element.contains(node))) {
       return;
     }
 

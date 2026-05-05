@@ -1,4 +1,4 @@
-import { computed, ref, watch, type MaybeRefOrGetter, toValue } from "vue";
+import { computed, ref, watch, type MaybeRefOrGetter, toValue } from 'vue';
 
 export interface UseSidebarStateOptions {
   defaultOpen?: boolean;
@@ -18,7 +18,7 @@ export function useSidebarState(options: UseSidebarStateOptions = {}) {
           isOpen.value = false;
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
   }
 
@@ -57,6 +57,6 @@ export function useSidebarState(options: UseSidebarStateOptions = {}) {
     toggle,
     collapse,
     expand,
-    toggleCollapsed
+    toggleCollapsed,
   };
 }

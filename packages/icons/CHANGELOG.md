@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.0
+
+### Changed
+
+- Align icon default size with VueForge token scale by switching component defaults to `var(--vf-icon-size-md)`.
+- Add explicit icon transform CSS variable defaults to stabilize offset/scale composition in wrapper styles.
+- Update local showcase theme wiring to use VueForge theme attribute conventions and shared foundation token CSS.
+- Refresh showcase styling to consume semantic `--vf-*` design tokens for typography, surfaces, spacing, and controls.
+- Migrate icon CSS API to `vf-icon*` / `--vf-icon-*` only and remove legacy `vif*` aliases.
+- Relax README autogeneration requirements in `generate-icons.mjs`: builds no longer fail when optional `generated-*` marker blocks are absent.
+
 ## 1.3.1
 
 ### Patch Changes
@@ -13,7 +24,6 @@
 ### Minor Changes
 
 - Add a new brand-icon layer and release readiness improvements.
-
   - Add brand icons: `github`, `telegram`, `vk`, `youtube`, `x`, `facebook`, and `instagram`.
   - Extend icon catalog metadata with optional `brand` information (`source`, `guidelines`, `license`, `isTrademark`).
   - Separate the local showcase into dedicated `Core Icons` and `Brand Icons` sections.
@@ -55,7 +65,6 @@
 ### Major Changes
 
 - Release `1.0.0` with a redesigned solid icon pack and stabilized API.
-
   - redesign and expand the solid icon set with consistent geometry
   - remove regular icon variants and simplify the package to solid-only rendering
   - refine the showcase UI for focused icon review

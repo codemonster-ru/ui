@@ -1,26 +1,25 @@
 export const SUPPORTED_CODE_BLOCK_LANGUAGES = [
-  "plaintext",
-  "text",
-  "txt",
-  "js",
-  "javascript",
-  "ts",
-  "typescript",
-  "vue",
-  "html",
-  "json",
-  "bash",
-  "shell",
-  "sh",
-  "css",
-  "scss",
-  "sass",
+  'plaintext',
+  'text',
+  'txt',
+  'js',
+  'javascript',
+  'ts',
+  'typescript',
+  'vue',
+  'html',
+  'json',
+  'bash',
+  'shell',
+  'sh',
+  'css',
+  'scss',
+  'sass',
 ] as const;
 
-export type CodeBlockTheme = "inherit" | "light" | "dark";
+export type CodeBlockTheme = 'inherit' | 'light' | 'dark';
 
-export type SupportedCodeBlockLanguage =
-  (typeof SUPPORTED_CODE_BLOCK_LANGUAGES)[number];
+export type SupportedCodeBlockLanguage = (typeof SUPPORTED_CODE_BLOCK_LANGUAGES)[number];
 
 export type CodeBlockLanguage = SupportedCodeBlockLanguage | (string & {});
 

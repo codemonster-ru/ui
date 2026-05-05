@@ -1,6 +1,13 @@
 # Changelog
 
-## 0.1.0 - 2026-05-03
+## 1.0.0
+
+### Changed
+
+- First stable release of `@codemonster-ru/vueforge-playground-core`.
+- Public runtime API is now treated as stable for `1.x`.
+
+## 0.1.0
 
 ### Added
 

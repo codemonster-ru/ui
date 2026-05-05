@@ -1,13 +1,9 @@
-import type { App, Plugin } from "vue";
-import CodeBlock from "./components/CodeBlock.vue";
-import type { CodeBlockPluginOptions, CodeBlockThemeVarOptions } from "./types";
+import type { App, Plugin } from 'vue';
+import VfCodeBlock from './components/VfCodeBlock.vue';
+import type { CodeBlockPluginOptions, CodeBlockThemeVarOptions } from './types';
 
-export { default as CodeBlock } from "./components/CodeBlock.vue";
-export {
-  escapeCodeHtml,
-  highlightCodeBlock,
-  highlightCodeLine,
-} from "./services/code-highlight";
+export { default as VfCodeBlock } from './components/VfCodeBlock.vue';
+export { escapeCodeHtml, highlightCodeBlock, highlightCodeLine } from './services/code-highlight';
 export {
   SUPPORTED_CODE_BLOCK_LANGUAGES,
   type CodeBlockCopyPayload,
@@ -19,21 +15,20 @@ export {
   type CodeBlockThemeVarOptions,
   type CodeBlockTheme,
   type SupportedCodeBlockLanguage,
-} from "./types";
+} from './types';
 
-const STYLE_ELEMENT_ID = "vcb-runtime-theme-vars";
+const STYLE_ELEMENT_ID = 'vf-codeblock-runtime-theme-vars';
 
-const normalizeVarName = (name: string) =>
-  name.startsWith("--") ? name : `--${name}`;
+const normalizeVarName = (name: string) => (name.startsWith('--') ? name : `--${name}`);
 
-const mapToCssVars = (variables: CodeBlockThemeVarOptions["base"] = {}) =>
+const mapToCssVars = (variables: CodeBlockThemeVarOptions['base'] = {}) =>
   Object.entries(variables)
     .map(([name, value]) => `${normalizeVarName(name)}: ${String(value)};`)
-    .join("\n");
+    .join('\n');
 
 const resolveScope = (scope?: string) => {
   if (!scope || !scope.trim()) {
-    return ":root";
+    return ':root';
   }
 
   return scope.trim();
@@ -45,14 +40,8 @@ const createThemeCss = (themeVars: CodeBlockThemeVarOptions, scope?: string) => 
   const light = mapToCssVars(themeVars.light);
   const dark = mapToCssVars(themeVars.dark);
   const chunks: string[] = [];
-  const lightSelectors = [
-    `${scopeSelector}[data-theme="light"]`,
-    `${scopeSelector}[data-vf-theme="light"]`,
-  ].join(", ");
-  const darkSelectors = [
-    `${scopeSelector}[data-theme="dark"]`,
-    `${scopeSelector}[data-vf-theme="dark"]`,
-  ].join(", ");
+  const lightSelectors = [`${scopeSelector}[data-theme="light"]`, `${scopeSelector}[data-vf-theme="light"]`].join(', ');
+  const darkSelectors = [`${scopeSelector}[data-theme="dark"]`, `${scopeSelector}[data-vf-theme="dark"]`].join(', ');
 
   if (base) {
     chunks.push(`${scopeSelector} {\n${base}\n}`);
@@ -64,30 +53,28 @@ const createThemeCss = (themeVars: CodeBlockThemeVarOptions, scope?: string) => 
     chunks.push(`${darkSelectors} {\n${dark}\n}`);
   }
 
-  return chunks.join("\n");
+  return chunks.join('\n');
 };
 
 const ensureStyleElement = (nonce?: string) => {
-  if (typeof document === "undefined") {
+  if (typeof document === 'undefined') {
     return null;
   }
 
-  let styleElement = document.getElementById(STYLE_ELEMENT_ID) as
-    | HTMLStyleElement
-    | null;
+  let styleElement = document.getElementById(STYLE_ELEMENT_ID) as HTMLStyleElement | null;
 
   if (!styleElement) {
-    styleElement = document.createElement("style");
+    styleElement = document.createElement('style');
     styleElement.id = STYLE_ELEMENT_ID;
     if (nonce) {
-      styleElement.setAttribute("nonce", nonce);
+      styleElement.setAttribute('nonce', nonce);
     }
     document.head.appendChild(styleElement);
     return styleElement;
   }
 
-  if (nonce && !styleElement.getAttribute("nonce")) {
-    styleElement.setAttribute("nonce", nonce);
+  if (nonce && !styleElement.getAttribute('nonce')) {
+    styleElement.setAttribute('nonce', nonce);
   }
 
   return styleElement;
@@ -95,9 +82,9 @@ const ensureStyleElement = (nonce?: string) => {
 
 export const setCodeBlockThemeVars = (
   themeVars: CodeBlockThemeVarOptions,
-  options?: Pick<CodeBlockPluginOptions, "themeScope" | "styleNonce">,
+  options?: Pick<CodeBlockPluginOptions, 'themeScope' | 'styleNonce'>,
 ) => {
-  if (typeof document === "undefined") {
+  if (typeof document === 'undefined') {
     return;
   }
 
@@ -115,7 +102,7 @@ export const setCodeBlockThemeVars = (
 };
 
 const applyRuntimeThemeVars = (options?: CodeBlockPluginOptions) => {
-  if (typeof document === "undefined") {
+  if (typeof document === 'undefined') {
     return;
   }
 
@@ -129,8 +116,7 @@ const applyRuntimeThemeVars = (options?: CodeBlockPluginOptions) => {
 
 const plugin: Plugin = {
   install(app: App, options?: CodeBlockPluginOptions) {
-    app.component("CodeBlock", CodeBlock);
-    app.component("VueCodeBlock", CodeBlock);
+    app.component('VfCodeBlock', VfCodeBlock);
     applyRuntimeThemeVars(options);
   },
 };

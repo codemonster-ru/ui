@@ -1,1 +1,1 @@
-export { default as VfAccordion } from "./VfAccordion.vue";
+export { default as VfAccordion } from './VfAccordion.vue';

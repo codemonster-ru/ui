@@ -32,6 +32,12 @@ jobs:
         id: prep
         run: node scripts/ci/prepare-release-from-tag.mjs
 
+      - name: Check target package
+        run: npm run check -w "${{ steps.prep.outputs.package_name }}" --if-present
+
+      - name: Test target package
+        run: npm run test -w "${{ steps.prep.outputs.package_name }}" --if-present
+
       - name: Build target package
         run: npm run build -w "${{ steps.prep.outputs.package_name }}"
 

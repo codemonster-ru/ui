@@ -1,6 +1,16 @@
 # Changelog
 
-## 1.17.7 - 2026-05-02
+## 1.18.0
+
+### Changed
+
+- Expanded and normalized theme token coverage with reusable size primitives (`iconSizeSm`/`Md`/`Lg`/`Xl`) and broader token-to-token mappings across navigation, overlays, tables, badges, tags, and tooltip sizing.
+- Refined default light/dark semantic palette values (`primary`, `info`, `warn`, `help`, `success`) and focus/overlay color mixing for more consistent contrast behavior.
+- Updated component style internals to consume normalized token aliases in actions, navigation, overlays, surfaces, and feedback layers.
+- Tuned menu and nav item spacing/padding defaults and top-level menu-bar item inline padding for denser, more consistent rhythm.
+- Aligned typography defaults for `headingH6` and prose inline code to shared token scales.
+
+## 1.17.7
 
 ### Changed
 
@@ -18,7 +28,7 @@
 - Updated `VfTabs` showcase examples to remove size variants and reflect the current single-size API.
 - Added regression coverage for overflow scroll controls and removed obsolete size-prop coverage.
 
-## 1.17.6 - 2026-05-02
+## 1.17.6
 
 ### Changed
 
@@ -33,14 +43,14 @@
 - Expanded `VfTabs` showcase examples to demonstrate all supported sizes (`sm`, `md`, `lg`) with overflow scenarios.
 - Added regression coverage for `VfTabs` size class application.
 
-## 1.17.5 - 2026-05-01
+## 1.17.5
 
 ### Changed
 
 - Updated `VfTabs` so the `tabpanel` block is rendered only when the `panel` slot is provided, allowing use as a standalone tab switcher without empty content containers.
 - Added regression coverage to ensure `VfTabs` does not render `role="tabpanel"` when no `panel` slot is passed.
 
-## 1.17.4 - 2026-04-28
+## 1.17.4
 
 ### Changed
 
@@ -48,7 +58,7 @@
 - Aligned `vf-prose` inline and block code treatments with shared mono sizing, text color, radius, and muted color-mix backgrounds.
 - Updated prose code tokens so inline code uses a fixed `0.875rem` font size with balanced padding.
 
-## 1.17.3 - 2026-04-28
+## 1.17.3
 
 ### Changed
 
@@ -60,7 +70,7 @@
 - Expanded `vf-prose` demo coverage with a spacing matrix that exercises common block-to-block transitions for easier visual QA.
 - Updated dependency range for `@codemonster-ru/floater.js` to `^1.0.8`.
 
-## 1.17.2 - 2026-04-18
+## 1.17.2
 
 ### Changed
 
@@ -68,14 +78,14 @@
 - Updated heading utility/prose token references from `--vf-heading-h1-*` … `--vf-heading-h6-*` to `--vf-heading-h-1-*` … `--vf-heading-h-6-*` to match generated token names.
 - Replaced stale `--vf-radius-sm` references in form clear buttons with `--vf-radius-control-tight`.
 
-## 1.17.1 - 2026-04-18
+## 1.17.1
 
 ### Changed
 
 - Updated `@codemonster-ru/vueforge-theme` to `^1.2.2`, which fixes CSS variable serialization for numeric token suffixes (for example, `breakpoint2xl` now serializes to `--vf-breakpoint-2xl`).
 - Added regression coverage in the theme bridge tests to keep `--vf-breakpoint-2xl` serialization stable.
 
-## 1.17.0 - 2026-04-18
+## 1.17.0
 
 ### Added
 
@@ -105,7 +115,7 @@
 - Aligned `vf-input` and `vf-select` demo blocks to the same example order and coverage.
 - Improved select clear/trailing icon layout to avoid right-side icon overlap.
 
-## 1.16.3 - 2026-04-15
+## 1.16.3
 
 ### Added
 
@@ -117,7 +127,7 @@
 - Improved overlay scroll locking by compensating `document.body` right padding for scrollbar width while locked, preventing layout shift on open/close.
 - Expanded drawer demo coverage with separate regular and fullscreen examples, including a fullscreen drawer example that opens from the left.
 
-## 1.16.2 - 2026-04-14
+## 1.16.2
 
 ### Changed
 
@@ -131,7 +141,7 @@
 - Set default `alertBodyColor` to `--vf-color-muted` for more consistent secondary-content tone.
 - Added `selectOptionDisabledColor` token and explicit disabled-option styling for `VfSelect` menu items.
 
-## 1.16.1 - 2026-04-14
+## 1.16.1
 
 ### Changed
 
@@ -146,7 +156,7 @@
   - headings use contrast tone
   - dark theme headings are rendered white
 
-## 1.16.0 - 2026-04-13
+## 1.16.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -165,7 +175,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
 - Moved base color-scheme/form-font defaults into component base styles so default behavior remains stable with single-source theme injection.
 - Added TypeScript module declaration support for side-effect CSS imports (`declare module "*.css"`).
 
-## 1.15.0 - 2026-04-13
+## 1.15.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -189,7 +199,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
   - dialog and drawer divider presentation
   - `VfThemeSwitch` ghost button variants
 
-## 1.14.0 - 2026-04-11
+## 1.14.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -201,7 +211,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
 - Reduced default `VfAlert` icon size for a calmer text-to-icon balance
 - Simplified demo table content so `VfTable` examples use regular text instead of inline code styling
 
-## 1.13.0 - 2026-04-11
+## 1.13.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -224,7 +234,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
 - Improved `VfSwitch` thumb theming with dedicated inverse-thumb tokens for better contrast tuning across light and dark themes
 - Theme-change transitions are now handled more consistently across VueForge components by preventing color-transition interpolation during `vf-theme-transitioning`
 
-## 1.12.0 - 2026-04-11
+## 1.12.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -251,7 +261,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
   - light and dark themes
 - Disabled form states now preserve neutral border colors and rely on muted backgrounds for clearer blocked-state presentation
 
-## 1.11.0 - 2026-04-11
+## 1.11.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -274,7 +284,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
   - custom icon usage
   - text-first alerts without an icon
 
-## 1.10.0 - 2026-04-07
+## 1.10.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -304,7 +314,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
 - `VfMenuBar` top-level items are now more compact, and the `pills` variant now uses filled hover and active states on the top level to better match the rest of the navigation system
 - `VfTableOfContents` `pills` variant now uses a denser item height and padding balance for a less button-like presentation
 
-## 1.9.0 - 2026-04-06
+## 1.9.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -345,7 +355,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
   - form controls with separate cards per component
   - invalid `VfSelect` and `VfTextarea` examples
 
-## 1.8.0 - 2026-04-04
+## 1.8.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -408,7 +418,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
 - Consumers relying on the old typography primitive exports should migrate before upgrading
 - Updated dependency on `@codemonster-ru/vueforge-theme` to `^1.2.0`
 
-## 1.7.0 - 2026-03-29
+## 1.7.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -448,7 +458,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
   - prose/content examples
   - table-of-contents integration with real scrollspy state
 
-## 1.6.0 - 2026-03-29
+## 1.6.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -471,7 +481,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
   - `VfTableOfContents`
   - deeper navigation examples for `VfNavMenu`
 
-## 1.5.0 - 2026-03-29
+## 1.5.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -489,7 +499,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
   - `VfSwitch` thumb slot example with icon content
 - Theme-switching patterns are easier to reuse across VueForge packages without introducing extra theme widget variants
 
-## 1.4.0 - 2026-03-28
+## 1.4.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -504,7 +514,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
 - `VfThemeProvider` now reads plugin-level theme-mode defaults when its own props are omitted
 - README and theme documentation were updated to reflect the new recommended theme setup flow
 
-## 1.3.3 - 2026-03-27
+## 1.3.3
 
 Patch release for `@codemonster-ru/vueforge-core`.
 
@@ -514,7 +524,7 @@ Patch release for `@codemonster-ru/vueforge-core`.
 - Kept the stricter token rhythm visually aligned across the demo in both light and dark themes
 - Finalized the generated theme CSS pipeline around `.generated/theme`
 
-## 1.3.2 - 2026-03-26
+## 1.3.2
 
 Patch release for `@codemonster-ru/vueforge-core`.
 
@@ -525,7 +535,7 @@ Patch release for `@codemonster-ru/vueforge-core`.
 - Kept `tokens.css`, `theme.css`, and breakpoint CSS generation aligned across `dev`, `test`, and `build`
 - Simplified the source tree by removing generated CSS files from versioned source directories
 
-## 1.3.1 - 2026-03-26
+## 1.3.1
 
 Patch release for `@codemonster-ru/vueforge-core`.
 
@@ -535,7 +545,7 @@ Patch release for `@codemonster-ru/vueforge-core`.
 - Refreshed theme architecture documentation to reflect the split between the neutral theme engine and the built-in core preset
 - Stabilized foundation contract tests against formatting-only CSS import changes
 
-## 1.3.0 - 2026-03-23
+## 1.3.0
 
 Minor release for `@codemonster-ru/vueforge-core`.
 
@@ -552,7 +562,7 @@ Minor release for `@codemonster-ru/vueforge-core`.
 - `defaultThemePreset` remains in `vueforge-core` as the built-in opinionated design language
 - Development and release setup were aligned with the published theme package and refreshed dependency trees
 
-## 1.2.0 - 2026-03-22
+## 1.2.0
 
 Feature release for `@codemonster-ru/vueforge-core`.
 
@@ -592,7 +602,7 @@ Feature release for `@codemonster-ru/vueforge-core`.
 - Demo showcase now includes richer navigation comparisons and selection control coverage
 - Selection controls and navigation visuals were polished across light and dark themes
 
-## 1.1.1 - 2026-03-15
+## 1.1.1
 
 Patch release for `@codemonster-ru/vueforge-core`.
 
@@ -602,7 +612,7 @@ Patch release for `@codemonster-ru/vueforge-core`.
 - Foundation and theme subpath exports now point directly at their stable declaration entry files
 - Added `typesVersions` mappings for `foundation` and `theme` to make downstream `tsc` and `vue-tsc` resolution more reliable
 
-## 1.1.0 - 2026-03-15
+## 1.1.0
 
 Foundation-focused minor release for `@codemonster-ru/vueforge-core`.
 
@@ -636,7 +646,7 @@ Foundation-focused minor release for `@codemonster-ru/vueforge-core`.
 - This release is intended to make `@codemonster-ru/vueforge-core` a cleaner dependency for `vueforge-layouts`
 - Public UI and theme APIs remain compatible with `1.0.0`
 
-## 1.0.0 - 2026-03-15
+## 1.0.0
 
 First stable release of `@codemonster-ru/vueforge-core`.
 

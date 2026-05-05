@@ -1,1 +1,1 @@
-export { default as VfDialog } from "./VfDialog.vue";
+export { default as VfDialog } from './VfDialog.vue';

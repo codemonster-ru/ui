@@ -223,8 +223,7 @@
   height: var(--vf-field-icon-size);
   color: var(--vf-select-icon-color);
   pointer-events: none;
-  transition: transform var(--vf-motion-duration-normal)
-    var(--vf-motion-ease-standard);
+  transition: transform var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
 }
 
 .vf-select--open .vf-select__icon--chevron {
@@ -274,7 +273,7 @@
   color: var(--vf-select-option-color);
 }
 
-.vf-select__option:hover:not(:disabled, .vf-select__option--selected, [aria-selected="true"]) {
+.vf-select__option:hover:not(:disabled, .vf-select__option--selected, [aria-selected='true']) {
   border-color: transparent;
   background: var(--vf-select-option-hover-background);
   color: var(--vf-select-option-hover-color);
@@ -289,7 +288,7 @@
 }
 
 .vf-select__option--selected,
-.vf-select__option[aria-selected="true"] {
+.vf-select__option[aria-selected='true'] {
   color: var(--vf-select-option-active-color);
   border-color: transparent;
   background: var(--vf-select-option-active-background);
@@ -297,8 +296,8 @@
 
 .vf-select__option--selected:hover,
 .vf-select__option--selected:focus-visible,
-.vf-select__option[aria-selected="true"]:hover,
-.vf-select__option[aria-selected="true"]:focus-visible {
+.vf-select__option[aria-selected='true']:hover,
+.vf-select__option[aria-selected='true']:focus-visible {
   color: var(--vf-select-option-active-color);
   border-color: transparent;
   background: var(--vf-select-option-active-background);
@@ -376,21 +375,15 @@
 }
 
 .vf-input-wrap--with-trailing-and-clear .vf-input {
-  padding-inline-end: var(
-    --vf-field-input-padding-end-with-trailing-and-clear-md
-  );
+  padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-md);
 }
 
 .vf-input-wrap--sm.vf-input-wrap--with-trailing-and-clear .vf-input {
-  padding-inline-end: var(
-    --vf-field-input-padding-end-with-trailing-and-clear-sm
-  );
+  padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-sm);
 }
 
 .vf-input-wrap--lg.vf-input-wrap--with-trailing-and-clear .vf-input {
-  padding-inline-end: var(
-    --vf-field-input-padding-end-with-trailing-and-clear-lg
-  );
+  padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-lg);
 }
 
 .vf-input-wrap--sm .vf-input-wrap__icon--leading {
@@ -561,10 +554,7 @@
 }
 
 .vf-checkbox--disabled.vf-checkbox--checked .vf-checkbox__mark,
-.vf-checkbox--disabled
-  .vf-checkbox__input:checked
-  + .vf-checkbox__control
-  .vf-checkbox__mark {
+.vf-checkbox--disabled .vf-checkbox__input:checked + .vf-checkbox__control .vf-checkbox__mark {
   border-right-color: var(--vf-checkbox-disabled-mark-color);
   border-bottom-color: var(--vf-checkbox-disabled-mark-color);
 }
@@ -576,10 +566,7 @@
 }
 
 .vf-radio--disabled.vf-radio--checked .vf-radio__dot,
-.vf-radio--disabled
-  .vf-radio__input:checked
-  + .vf-radio__control
-  .vf-radio__dot {
+.vf-radio--disabled .vf-radio__input:checked + .vf-radio__control .vf-radio__dot {
   background: var(--vf-radio-disabled-dot-color);
 }
 
@@ -591,10 +578,7 @@
 
 .vf-switch--disabled .vf-switch__thumb,
 .vf-switch--disabled.vf-switch--checked .vf-switch__thumb,
-.vf-switch--disabled
-  .vf-switch__input:checked
-  + .vf-switch__control
-  .vf-switch__thumb {
+.vf-switch--disabled .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb {
   border-color: var(--vf-switch-thumb-disabled-border-color);
   background: var(--vf-switch-thumb-disabled-background);
   color: var(--vf-switch-thumb-disabled-color);
@@ -626,8 +610,7 @@
   border: 1px solid var(--vf-selection-control-border-color);
   background: var(--vf-selection-control-background);
   transition:
-    background-color var(--vf-motion-duration-normal)
-      var(--vf-motion-ease-standard),
+    background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     border-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     box-shadow var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
@@ -657,8 +640,7 @@
   height: var(--vf-checkbox-mark-height);
   border-right: var(--vf-checkbox-mark-stroke-width) solid transparent;
   border-bottom: var(--vf-checkbox-mark-stroke-width) solid transparent;
-  transform: translateY(var(--vf-checkbox-mark-offset-y)) rotate(45deg)
-    scale(0.8);
+  transform: translateY(var(--vf-checkbox-mark-offset-y)) rotate(45deg) scale(0.8);
   opacity: 0;
   transition:
     opacity var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
@@ -678,9 +660,7 @@
   opacity: 1;
 }
 
-.vf-checkbox:hover:not(.vf-checkbox--disabled)
-  .vf-checkbox__input:not(:checked)
-  + .vf-checkbox__control {
+.vf-checkbox:hover:not(.vf-checkbox--disabled) .vf-checkbox__input:not(:checked) + .vf-checkbox__control {
   border-color: var(--vf-checkbox-hover-border-color);
 }
 
@@ -694,9 +674,7 @@
   border-color: var(--vf-checkbox-invalid-border-color);
 }
 
-.vf-checkbox--invalid:hover:not(.vf-checkbox--disabled)
-  .vf-checkbox__input:not(:checked)
-  + .vf-checkbox__control {
+.vf-checkbox--invalid:hover:not(.vf-checkbox--disabled) .vf-checkbox__input:not(:checked) + .vf-checkbox__control {
   border-color: var(--vf-checkbox-hover-border-color);
 }
 
@@ -747,9 +725,7 @@
   opacity: 1;
 }
 
-.vf-radio:hover:not(.vf-radio--disabled)
-  .vf-radio__input:not(:checked)
-  + .vf-radio__control {
+.vf-radio:hover:not(.vf-radio--disabled) .vf-radio__input:not(:checked) + .vf-radio__control {
   border-color: var(--vf-radio-hover-border-color);
 }
 
@@ -763,9 +739,7 @@
   border-color: var(--vf-radio-invalid-border-color);
 }
 
-.vf-radio--invalid:hover:not(.vf-radio--disabled)
-  .vf-radio__input:not(:checked)
-  + .vf-radio__control {
+.vf-radio--invalid:hover:not(.vf-radio--disabled) .vf-radio__input:not(:checked) + .vf-radio__control {
   border-color: var(--vf-radio-hover-border-color);
 }
 
@@ -812,31 +786,27 @@
   transform: translateX(0);
   transition:
     transform var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
-    background-color var(--vf-motion-duration-normal)
-      var(--vf-motion-ease-standard),
+    background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     border-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     box-shadow var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
 }
 
-.vf-switch__thumb > .vif-icon-wrapper {
+.vf-switch__thumb > .vf-icon-wrapper {
   width: var(--vf-switch-thumb-icon-size);
   height: var(--vf-switch-thumb-icon-size);
 }
 
-.vf-switch__thumb > .vif-icon-wrapper > .vif-icon {
+.vf-switch__thumb > .vf-icon-wrapper > .vf-icon {
   width: var(--vf-switch-thumb-icon-size);
   height: var(--vf-switch-thumb-icon-size);
 }
 
-.vf-switch--thumb-contrast-inverse .vf-switch__thumb > .vif-icon-wrapper {
+.vf-switch--thumb-contrast-inverse .vf-switch__thumb > .vf-icon-wrapper {
   width: 0.6875rem;
   height: 0.6875rem;
 }
 
-.vf-switch--thumb-contrast-inverse
-  .vf-switch__thumb
-  > .vif-icon-wrapper
-  > .vif-icon {
+.vf-switch--thumb-contrast-inverse .vf-switch__thumb > .vf-icon-wrapper > .vf-icon {
   width: 0.6875rem;
   height: 0.6875rem;
 }
@@ -863,9 +833,7 @@
   background: var(--vf-switch-track-background);
 }
 
-.vf-switch:hover:not(.vf-switch--disabled)
-  .vf-switch__input:checked
-  + .vf-switch__control,
+.vf-switch:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
 .vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-checked-hover-border-color);
   background: var(--vf-switch-track-checked-hover-background);
@@ -882,21 +850,15 @@
 }
 
 .vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__control,
-.vf-switch--invalid:hover:not(.vf-switch--disabled)
-  .vf-switch__input:checked
-  + .vf-switch__control,
-.vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled)
-  .vf-switch__control {
+.vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-hover-border-color);
 }
 
 .vf-switch--invalid:not(.vf-switch--static):hover:not(.vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control,
-.vf-switch--invalid:not(.vf-switch--static).vf-switch--checked:hover:not(
-    .vf-switch--disabled
-  )
-  .vf-switch__control {
+.vf-switch--invalid:not(.vf-switch--static).vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-checked-hover-border-color);
 }
 
@@ -912,19 +874,14 @@
 }
 
 .vf-switch--static.vf-switch--invalid .vf-switch__control,
-.vf-switch--static.vf-switch--invalid
-  .vf-switch__input:checked
-  + .vf-switch__control,
+.vf-switch--static.vf-switch--invalid .vf-switch__input:checked + .vf-switch__control,
 .vf-switch--static.vf-switch--invalid.vf-switch--checked .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
 .vf-switch--static:hover:not(.vf-switch--disabled) .vf-switch__control,
-.vf-switch--static:hover:not(.vf-switch--disabled)
-  .vf-switch__input:checked
-  + .vf-switch__control,
-.vf-switch--static.vf-switch--checked:hover:not(.vf-switch--disabled)
-  .vf-switch__control {
+.vf-switch--static:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--static.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-hover-border-color);
   background: var(--vf-switch-track-background);
 }
@@ -934,42 +891,35 @@
   background: var(--vf-switch-track-background);
 }
 
-.vf-switch--static.vf-switch--invalid
-  .vf-switch__input:focus-visible
-  + .vf-switch__control {
+.vf-switch--static.vf-switch--invalid .vf-switch__input:focus-visible + .vf-switch__control {
   border-color: var(--vf-switch-track-focus-border-color);
 }
 
-.vf-switch--static
-  .vf-switch__input:checked
-  + .vf-switch__control
-  .vf-switch__thumb,
+.vf-switch--static .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
 .vf-switch--static.vf-switch--checked .vf-switch__thumb {
   border-color: var(--vf-switch-thumb-background);
   background: var(--vf-switch-thumb-background);
   box-shadow: var(--vf-switch-thumb-shadow);
 }
 
-html[data-vf-theme="dark"]
+html[data-vf-theme='dark']
   .vf-switch:not(.vf-switch--static, .vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
   .vf-switch__thumb,
-html[data-vf-theme="dark"]
+html[data-vf-theme='dark']
   .vf-switch:not(.vf-switch--static, .vf-switch--disabled).vf-switch--checked
   .vf-switch__thumb {
   border-color: var(--vf-color-primary-contrast);
   background: var(--vf-color-primary-contrast);
 }
 
-html[data-vf-theme="dark"]
+html[data-vf-theme='dark']
   .vf-switch--static:not(.vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
   .vf-switch__thumb,
-html[data-vf-theme="dark"]
-  .vf-switch--static:not(.vf-switch--disabled).vf-switch--checked
-  .vf-switch__thumb {
+html[data-vf-theme='dark'] .vf-switch--static:not(.vf-switch--disabled).vf-switch--checked .vf-switch__thumb {
   border-color: var(--vf-color-primary-contrast);
   background: var(--vf-color-primary-contrast);
 }
@@ -979,22 +929,19 @@ html[data-vf-theme="dark"]
   .vf-switch__input:checked
   + .vf-switch__control
   .vf-switch__thumb,
-.vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled).vf-switch--checked
-  .vf-switch__thumb {
+.vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled).vf-switch--checked .vf-switch__thumb {
   border-color: var(--vf-switch-thumb-inverse-border-color);
   background: var(--vf-switch-thumb-inverse-background);
   color: var(--vf-switch-thumb-inverse-color);
 }
 
-html[data-vf-theme="dark"]
+html[data-vf-theme='dark']
   .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
   .vf-switch__thumb,
-html[data-vf-theme="dark"]
-  .vf-switch--thumb-contrast-inverse:not(
-    .vf-switch--disabled
-  ).vf-switch--checked
+html[data-vf-theme='dark']
+  .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled).vf-switch--checked
   .vf-switch__thumb {
   border-color: var(--vf-switch-thumb-inverse-border-color);
   background: var(--vf-switch-thumb-inverse-background);
@@ -1011,10 +958,7 @@ html[data-vf-theme="dark"]
   height: var(--vf-switch-thumb-size-sm);
 }
 
-.vf-switch--sm
-  .vf-switch__input:checked
-  + .vf-switch__control
-  .vf-switch__thumb,
+.vf-switch--sm .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
 .vf-switch--sm.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
     calc(var(--vf-switch-width-sm) - var(--vf-switch-thumb-size-sm) - (var(--vf-switch-thumb-inset) * 2) - 2px)
@@ -1036,10 +980,7 @@ html[data-vf-theme="dark"]
   height: var(--vf-switch-thumb-size-lg);
 }
 
-.vf-switch--lg
-  .vf-switch__input:checked
-  + .vf-switch__control
-  .vf-switch__thumb,
+.vf-switch--lg .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
 .vf-switch--lg.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
     calc(var(--vf-switch-width-lg) - var(--vf-switch-thumb-size-lg) - (var(--vf-switch-thumb-inset) * 2) - 2px)
