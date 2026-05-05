@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
@@ -11,7 +12,9 @@
     "types": ["vite/client", "node", "vitest/globals"],
     "paths": {
       "vite": ["./../../node_modules/vite"],
-      "@vitejs/plugin-vue": ["./../../node_modules/@vitejs/plugin-vue"]
+      "@vitejs/plugin-vue": ["./../../node_modules/@vitejs/plugin-vue"],
+      "@codemonster-ru/vueforge-icons": ["../icons/src/lib/index.ts"],
+      "@/lib/*": ["../icons/src/lib/*"]
     }
   },
   "include": ["src/**/*", "vite.config.ts"]
