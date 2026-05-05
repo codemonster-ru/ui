@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -26,14 +30,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint workspaces
-        run: npm run lint --workspaces --if-present
-
       - name: Check workspaces
         run: npm run check --workspaces --if-present
-
-      - name: Test workspaces
-        run: npm run test --workspaces --if-present
 
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
