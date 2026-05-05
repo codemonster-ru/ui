@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ES2020",
     "useDefineForClassFields": true,
     "jsx": "preserve",
@@ -8,6 +9,12 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "declaration": true,
     "declarationMap": true,
+    "paths": {
+      "@codemonster-ru/vueforge-core": ["../core/src/index.ts"],
+      "@codemonster-ru/vueforge-core/foundation": ["../core/src/foundation/index.ts"],
+      "@codemonster-ru/vueforge-theme": ["../theme/src/index.ts"],
+      "@/*": ["../core/src/*"]
+    },
     "types": ["vitest/globals"]
   },
   "include": ["src/**/*", "__tests__/**/*", "env.d.ts", "index.html"],
