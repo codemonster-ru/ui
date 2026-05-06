@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Fixed
+
+- Fixed broken CSS subpath export: `@codemonster-ru/vueforge-playground/style.css` now resolves to the published `dist/index.css`.
+
 ## 1.0.0
 
 ### Changed
