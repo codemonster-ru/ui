@@ -19,9 +19,14 @@ const tempDir = mkdtempSync(join(tmpdir(), 'vueforge-playground-pack-'));
 try {
   const packedOutput = execFileSync('npm', ['pack', '--json', '--silent'], {
     cwd: packageDir,
-    encoding: 'utf8'
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      npm_config_color: 'false',
+      FORCE_COLOR: '0'
+    }
   });
-  const jsonTail = packedOutput.match(/\[[\s\S]*\]\s*$/);
+  const jsonTail = packedOutput.match(/\[\s*\{[\s\S]*\}\s*\]\s*$/);
   if (!jsonTail) {
     throw new Error('Unable to parse npm pack JSON output.');
   }
