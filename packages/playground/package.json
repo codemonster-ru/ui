@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-playground",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Vue 3 playground UI adapter for the VueForge playground core runtime.",
   "type": "module",
   "license": "MIT",
@@ -28,7 +28,7 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./style.css": "./dist/style.css"
+    "./style.css": "./dist/index.css"
   },
   "files": [
     "dist"
@@ -52,7 +52,8 @@
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "lint": "eslint .",
     "prepack": "npm run build",
-    "test": "vitest run --passWithNoTests",
+    "smoke:css-export": "node ./scripts/smoke-css-export.mjs",
+    "test": "npm run smoke:css-export && vitest run --passWithNoTests",
     "typecheck": "vue-tsc --noEmit"
   },
   "publishConfig": {
