@@ -437,12 +437,12 @@ defineExpose({
   width: 100%;
 }
 
-.vf-playground__tabs-default :deep(.vf-tabs),
-.vf-playground__tabs-default :deep(.vf-tabs__list) {
+.vf-playground__tabs-default .vf-tabs,
+.vf-playground__tabs-default .vf-tabs__list {
   width: 100%;
 }
 
-.vf-playground__tabs-default--files :deep(.vf-tabs__list) {
+.vf-playground__tabs-default--files .vf-tabs__list {
   justify-content: flex-start;
 }
 

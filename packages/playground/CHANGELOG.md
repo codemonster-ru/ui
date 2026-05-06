@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+### Fixed
+
+- Removed raw `:deep(...)` selectors from published CSS so consumer builds with Vite + `lightningcss` no longer emit `'deep' is not recognized as a valid pseudo-class` warnings.
+
 ## 1.0.1
 
 ### Fixed
