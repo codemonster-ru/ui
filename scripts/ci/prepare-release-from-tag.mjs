@@ -101,7 +101,7 @@ for (let i = startIndex + 1; i < lines.length; i += 1) {
   }
 }
 
-const releaseNotes = lines.slice(startIndex, endIndex).join('\n').trim();
+const releaseNotes = lines.slice(startIndex + 1, endIndex).join('\n').trim();
 if (!releaseNotes) {
   fail(`Changelog section for ${versionFromTag} is empty in ${packageDir}/CHANGELOG.md.`);
 }
