@@ -13,6 +13,7 @@
   "dependencies": {
     "@codemonster-ru/vueforge-codeblock": "file:../../packages/codeblock",
     "@codemonster-ru/vueforge-playground": "file:../../packages/playground",
+    "@codemonster-ru/vueforge-playground-vite-plugin": "file:../../packages/playground-vite-plugin",
     "@codemonster-ru/vueforge-core": "file:../../packages/core",
     "@codemonster-ru/vueforge-icons": "file:../../packages/icons",
     "@codemonster-ru/vueforge-layouts": "file:../../packages/layouts",

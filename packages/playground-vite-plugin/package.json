@@ -1,0 +1,54 @@
+{
+  "name": "@codemonster-ru/vueforge-playground-vite-plugin",
+  "version": "0.1.0",
+  "description": "Vite plugin for VueForge playground virtual modules",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/playground-vite-plugin#readme",
+  "bugs": {
+    "url": "https://github.com/codemonster-ru/vueforge/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "directory": "packages/playground-vite-plugin"
+  },
+  "keywords": [
+    "vite",
+    "playground",
+    "vueforge",
+    "plugin"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --external vite",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "lint": "eslint .",
+    "prepare": "npm run build",
+    "prepack": "npm run build",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "peerDependencies": {
+    "vite": "^6.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

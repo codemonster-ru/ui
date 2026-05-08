@@ -17,8 +17,19 @@ declare module '@codemonster-ru/vueforge-codeblock' {
 }
 
 declare module '@codemonster-ru/vueforge-playground-core' {
-  export type FrameworkType = 'vanilla' | 'vue' | (string & {});
+  export type FrameworkType = 'vanilla' | 'vue' | 'html' | (string & {});
   export type PlaygroundFiles = Record<string, string>;
+  export type ImportResolutionKind = 'module' | 'style';
+
+  export interface ImportResolutionContext {
+    fromFile: string;
+    framework?: FrameworkType;
+  }
+
+  export interface ImportResolutionResult {
+    kind: ImportResolutionKind;
+    url: string;
+  }
 
   export interface ConsoleEvent {
     level: string;
@@ -29,6 +40,12 @@ declare module '@codemonster-ru/vueforge-playground-core' {
     message: string;
     source?: string;
     stack?: string;
+    code?: string;
+    details?: {
+      specifier?: string;
+      fromFile?: string;
+      reason?: string;
+    };
   }
 
   export interface PlaygroundSession {
@@ -40,11 +57,15 @@ declare module '@codemonster-ru/vueforge-playground-core' {
     dispose(): void;
   }
 
-  export function createPlaygroundSession(options: {
+  export interface CreatePlaygroundSessionOptions {
     runtime: 'browser' | string;
     framework: FrameworkType;
     iframe: HTMLIFrameElement;
     files: PlaygroundFiles;
     entry: string;
-  }): PlaygroundSession;
+    resolveImport?: (specifier: string, context: ImportResolutionContext) => ImportResolutionResult | null;
+    bootstrapScript?: string;
+  }
+
+  export function createPlaygroundSession(options: CreatePlaygroundSessionOptions): PlaygroundSession;
 }
