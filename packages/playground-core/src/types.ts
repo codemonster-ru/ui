@@ -4,10 +4,32 @@ export type RuntimeType = 'browser' | 'remote';
 
 export type FrameworkType = 'vanilla' | 'vue' | 'html';
 
+export type ImportResolutionKind = 'module' | 'style';
+
+export type ImportResolutionErrorCode = 'unresolved' | 'blocked' | 'mime';
+
+export interface ImportResolutionContext {
+  fromFile: string;
+  framework?: FrameworkType;
+}
+
+export interface ImportResolutionResult {
+  kind: ImportResolutionKind;
+  url: string;
+}
+
+export interface ImportResolutionErrorDetails {
+  specifier?: string;
+  fromFile?: string;
+  reason?: ImportResolutionErrorCode;
+}
+
 export interface PlaygroundError {
   message: string;
   stack?: string;
   source?: 'runtime' | 'transport' | 'internal';
+  code?: ImportResolutionErrorCode;
+  details?: ImportResolutionErrorDetails;
 }
 
 export interface ConsoleEvent {
@@ -46,4 +68,9 @@ export interface CreatePlaygroundSessionOptions {
   entry: string;
   iframe?: HTMLIFrameElement | null;
   remoteExecutor?: RemoteRuntimeExecutor;
+  resolveImport?: (
+    specifier: string,
+    context: ImportResolutionContext
+  ) => ImportResolutionResult | null;
+  bootstrapScript?: string;
 }

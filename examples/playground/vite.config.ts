@@ -1,9 +1,20 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { fileURLToPath, URL } from 'node:url';
+import { vueforgePlaygroundVirtualPlugin } from '@codemonster-ru/vueforge-playground-vite-plugin';
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    vueforgePlaygroundVirtualPlugin({
+      entries: {
+        'vue-runtime-smoke': fileURLToPath(new URL('./src/vitepress-demos/vue-runtime-smoke.ts', import.meta.url)),
+        'custom-resolver-smoke': fileURLToPath(
+          new URL('./src/vitepress-demos/custom-resolver-smoke.ts', import.meta.url)
+        )
+      }
+    })
+  ],
   resolve: {
     dedupe: ['vue'],
     alias: [

@@ -13,6 +13,9 @@ export type {
   ConsoleEvent,
   CreatePlaygroundSessionOptions,
   FrameworkType,
+  ImportResolutionContext,
+  ImportResolutionErrorCode,
+  ImportResolutionResult,
   PlaygroundError,
   PlaygroundFiles,
   PlaygroundSession,
@@ -97,7 +100,12 @@ export function createPlaygroundSession(options: CreatePlaygroundSessionOptions)
       return;
     }
 
-    const rendered = renderBrowserHtml(files, entry);
+    const rendered = renderBrowserHtml(files, entry, {
+      framework: options.framework,
+      resolveImport: options.resolveImport,
+      bootstrapScript: options.bootstrapScript
+    });
+
     if (rendered.error) {
       errorEmitter.emit(rendered.error);
     }

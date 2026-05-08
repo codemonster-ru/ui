@@ -241,12 +241,12 @@ function appendError(error: PlaygroundError): void {
   emit('error', error);
 }
 
-function initSession(): void {
+function initSession(forceRecreate = false): void {
   if (!isClient || !iframeRef.value) {
     return;
   }
 
-  if (session && sessionIframe === iframeRef.value) {
+  if (!forceRecreate && session && sessionIframe === iframeRef.value) {
     return;
   }
 
@@ -264,7 +264,9 @@ function initSession(): void {
     framework: props.framework,
     iframe: iframeRef.value,
     files: props.files,
-    entry: props.entry
+    entry: props.entry,
+    resolveImport: props.resolveImport,
+    bootstrapScript: props.bootstrapScript
   });
 
   unsubscribers = [
@@ -349,6 +351,20 @@ watch(
     }
   },
   { deep: true }
+);
+
+watch(
+  () => [props.framework, props.resolveImport, props.bootstrapScript] as const,
+  async () => {
+    if (!iframeRef.value) {
+      return;
+    }
+
+    initSession(true);
+    if (props.autorun) {
+      await runSession({ keepActiveTab: true });
+    }
+  }
 );
 
 onBeforeUnmount(() => {
