@@ -33,6 +33,20 @@
             @error="onError"
           />
         </section>
+
+        <section class="demo-block">
+          <div class="demo-block__header">
+            <h2>Vue Runtime Smoke Test (Vite-built)</h2>
+          </div>
+          <ViteLikeDemoPreview demo-id="vue-runtime-smoke" :source="vueRuntimeSmokeSource" />
+        </section>
+
+        <section class="demo-block">
+          <div class="demo-block__header">
+            <h2>Custom Resolver Smoke Test (Vite-built)</h2>
+          </div>
+          <ViteLikeDemoPreview demo-id="custom-resolver-smoke" :source="customResolverSmokeSource" />
+        </section>
       </VfStack>
     </VfContainer>
   </VfThemeProvider>
@@ -42,6 +56,9 @@
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import { VfContainer, VfStack } from '@codemonster-ru/vueforge-layouts';
 import { VfPlayground } from '@codemonster-ru/vueforge-playground';
+import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
+import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
+import customResolverSmokeSource from './vitepress-demos/custom-resolver-smoke.ts?raw';
 
 const singleFileExample = {
   '/index.html': `<!doctype html>
@@ -116,7 +133,17 @@ function onRun(): void {
   console.log('playground run');
 }
 
-function onError(error: { message: string }): void {
-  console.error('playground error', error.message);
+function onError(error: {
+  message: string;
+  source?: string;
+  code?: string;
+  details?: { specifier?: string; fromFile?: string; reason?: string };
+}): void {
+  console.error('playground error', {
+    message: error.message,
+    source: error.source,
+    code: error.code,
+    details: error.details
+  });
 }
 </script>

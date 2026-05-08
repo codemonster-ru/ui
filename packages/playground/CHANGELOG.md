@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0
+
+### Added
+
+- Added `resolveImport` prop passthrough to `createPlaygroundSession` for host-controlled dependency resolution.
+- Added `bootstrapScript` prop passthrough to inject host bootstrap logic into browser runtime sessions.
+- Added session reinitialization on `framework`, `resolveImport`, and `bootstrapScript` changes to keep runtime behavior in sync.
+- Expanded local type shims for updated playground-core runtime types and structured error payloads.
+
 ## 1.0.2
 
 ### Fixed

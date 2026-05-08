@@ -1,5 +1,9 @@
 import type { Component } from 'vue';
-import type { FrameworkType, PlaygroundFiles } from '@codemonster-ru/vueforge-playground-core';
+import type {
+  CreatePlaygroundSessionOptions,
+  FrameworkType,
+  PlaygroundFiles
+} from '@codemonster-ru/vueforge-playground-core';
 
 export interface VfPlaygroundProps {
   files: PlaygroundFiles;
@@ -12,4 +16,6 @@ export interface VfPlaygroundProps {
   tabsRenderer?: Component;
   actionsRenderer?: Component;
   filesRenderer?: Component;
+  resolveImport?: CreatePlaygroundSessionOptions['resolveImport'];
+  bootstrapScript?: string;
 }
