@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0
+
+### Added
+
+- Added first-class `component` mode to `VfPlayground` with direct Vue component rendering in Preview (no `iframe/srcdoc`, no sandbox session).
+- Added new props for component demos: `mode`, `component`, `componentPadding`, and `componentMinHeight`.
+- Added optional `componentSource` and `componentSourceLanguage` for rendering source code in the `Code` tab while keeping component-mode preview rendering.
+- Added optional `componentFiles` and `componentEntry` for multi-file read-only code tabs in `component` mode.
+- Added discriminated union typings for `VfPlaygroundProps` to provide compile-time separation between sandbox and component modes.
+- Added unit tests for sandbox regression and component mode behavior.
+
 ## 1.1.0
 
 ### Added
