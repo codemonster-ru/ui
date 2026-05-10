@@ -690,6 +690,7 @@ defineExpose({
 .vf-playground__tabs {
   display: flex;
   align-items: center;
+  min-height: var(--vf-playground-control-height-md);
   gap: 0;
   padding: 0;
   background: var(--vf-playground-surface);
@@ -743,25 +744,17 @@ defineExpose({
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  margin: 0;
-  border: 0;
-  border-radius: 0;
 
   --vf-codeblock-margin-block: 0;
   --vf-codeblock-margin-block-start: 0;
   --vf-codeblock-margin-block-end: 0;
-  --vf-codeblock-border-radius: 0;
   --vf-codeblock-border-color: transparent;
-  --vf-codeblock-background-color: var(--vf-playground-surface);
-  --vf-codeblock-text-color: var(--vf-playground-text);
-  --vf-codeblock-header-background-color: var(--vf-playground-surface);
-  --vf-codeblock-meta-color: var(--vf-playground-text-muted);
-  --vf-codeblock-filename-color: var(--vf-playground-text);
-  --vf-codeblock-action-border-color: var(--vf-playground-tab-border);
-  --vf-codeblock-action-background-color: var(--vf-playground-tab-bg);
-  --vf-codeblock-action-text-color: var(--vf-playground-tab-text);
-  --vf-codeblock-line-number-color: var(--vf-playground-text-muted);
+  --vf-codeblock-border-radius: 0;
+  --vf-codeblock-shadow: none;
   --vf-codeblock-max-height: 100%;
+  --vf-codeblock-header-padding: 0 var(--vf-surface-padding-compact);
+  --vf-codeblock-meta-font-size: var(--vf-text-label-font-size);
+  --vf-codeblock-line-height: var(--vf-playground-control-line-height);
 }
 
 .vf-playground__codeblock-host .vf-codeblock__code-shell {
@@ -779,6 +772,7 @@ defineExpose({
 }
 
 .vf-playground__codeblock-host .vf-codeblock__header {
+  height: var(--vf-playground-control-height-md);
   min-height: var(--vf-playground-control-height-md);
   box-sizing: border-box;
 }
