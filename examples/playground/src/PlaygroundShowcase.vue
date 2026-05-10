@@ -36,6 +36,21 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
+            <h2>Component Mode Example</h2>
+          </div>
+          <VfPlayground
+            mode="component"
+            :component="componentModeDemo"
+            :component-files="componentModeFiles"
+            component-entry="DemoCard.vue"
+            theme="inherit"
+            :component-padding="24"
+            component-min-height="220px"
+          />
+        </section>
+
+        <section class="demo-block">
+          <div class="demo-block__header">
             <h2>Vue Runtime Smoke Test (Vite-built)</h2>
           </div>
           <ViteLikeDemoPreview demo-id="vue-runtime-smoke" :source="vueRuntimeSmokeSource" />
@@ -53,12 +68,46 @@
 </template>
 
 <script setup lang="ts">
+import { defineComponent, h } from 'vue';
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import { VfContainer, VfStack } from '@codemonster-ru/vueforge-layouts';
 import { VfPlayground } from '@codemonster-ru/vueforge-playground';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
 import customResolverSmokeSource from './vitepress-demos/custom-resolver-smoke.ts?raw';
+
+const componentModeDemo = defineComponent({
+  name: 'ComponentModeDemo',
+  setup() {
+    return () =>
+      h('div', { style: 'display:grid;gap:12px;' }, [
+        h('h3', { style: 'margin:0;' }, 'Vue Component Preview'),
+        h(
+          'p',
+          { style: 'margin:0;color:var(--vf-color-muted);' },
+          'This preview is rendered directly as a Vue component without iframe sandbox.'
+        ),
+        h('button', { class: 'vf-button vf-button--secondary', type: 'button' }, 'Action')
+      ]);
+  }
+});
+
+const componentModeFiles = {
+  'Demo.vue': `<template>
+  <DemoCard />
+</template>
+
+<script setup lang="ts">
+import DemoCard from './DemoCard.vue';
+</${'script'}>`,
+  'DemoCard.vue': `<template>
+  <div class="component-mode-demo">
+    <h3>Vue Component Preview</h3>
+    <p>This preview is rendered directly as a Vue component without iframe sandbox.</p>
+    <button class="vf-button vf-button--secondary" type="button">Action</button>
+  </div>
+</template>`
+};
 
 const singleFileExample = {
   '/index.html': `<!doctype html>
