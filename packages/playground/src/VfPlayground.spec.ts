@@ -66,6 +66,16 @@ const testGlobal = {
   }
 } as const;
 
+function findTabsHost(wrapper: ReturnType<typeof mount>) {
+  return wrapper.find('.vf-tabs-stub').exists() ? wrapper.find('.vf-tabs-stub') : wrapper.find('.vf-tabs-shim');
+}
+
+function findCodeHost(wrapper: ReturnType<typeof mount>) {
+  return wrapper.find('.vf-codeblock-stub').exists()
+    ? wrapper.find('.vf-codeblock-stub')
+    : wrapper.find('.vf-codeblock-shim');
+}
+
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -147,9 +157,9 @@ describe('VfPlayground', () => {
 
     expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(true);
     expect(wrapper.find('.vf-tabs-item[data-value="preview"]').exists()).toBe(true);
-    expect(wrapper.find('.vf-tabs-stub').attributes('data-model-value')).toBe('code');
-    expect(wrapper.find('.vf-codeblock-stub').attributes('data-language')).toBe('vue');
-    expect(wrapper.find('.vf-codeblock-stub').text()).toContain('<template><div>preview</div></template>');
+    expect(findTabsHost(wrapper).attributes('data-model-value')).toBe('code');
+    expect(findCodeHost(wrapper).attributes('data-language')).toBe('vue');
+    expect(findCodeHost(wrapper).text()).toContain('<template><div>preview</div></template>');
   });
 
   it('supports multi-file code view in component mode', () => {
@@ -176,7 +186,7 @@ describe('VfPlayground', () => {
     expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(true);
     expect(wrapper.find('.vf-tabs-item[data-value="Demo.vue"]').exists()).toBe(true);
     expect(wrapper.find('.vf-tabs-item[data-value="DemoCard.vue"]').exists()).toBe(true);
-    expect(wrapper.find('.vf-codeblock-stub').text()).toContain('<template><div>Card</div></template>');
+    expect(findCodeHost(wrapper).text()).toContain('<template><div>Card</div></template>');
   });
 
   it('does not provide run action renderer in component mode', () => {
