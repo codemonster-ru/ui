@@ -2,6 +2,8 @@
 /* eslint-disable vue/one-component-per-file */
 import { defineComponent, h, markRaw } from 'vue';
 import { mount } from '@vue/test-utils';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import VfPlayground from './VfPlayground.vue';
@@ -314,5 +316,17 @@ describe('VfPlayground', () => {
     const iframeRoot = iframe.contentDocument?.documentElement;
     expect(iframeRoot?.getAttribute('data-theme')).toBe('dark');
     expect(iframe.contentDocument?.getElementById('vf-playground-theme-sync')).toBeTruthy();
+  });
+
+  it('keeps playground codeblock overrides layout-only', () => {
+    const source = readFileSync(resolve(__dirname, './VfPlayground.vue'), 'utf8');
+
+    expect(source).toContain('--vf-codeblock-max-height: 100%');
+    expect(source).toContain('--vf-codeblock-border-color: transparent;');
+    expect(source).toContain('--vf-codeblock-border-radius: 0;');
+    expect(source).toContain('--vf-codeblock-shadow: none;');
+    expect(source).not.toContain('--vf-codeblock-background-color:');
+    expect(source).not.toContain('--vf-codeblock-header-background-color:');
+    expect(source).not.toContain('--vf-codeblock-action-background-color:');
   });
 });

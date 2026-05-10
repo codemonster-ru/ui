@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.2
+
+### Fixed
+
+- Unified `VfPlayground` code-tab `VfCodeBlock` embedding to avoid double borders/inner rounding artifacts by applying embed-only border/radius/shadow overrides.
+- Aligned code-tab header height with playground tabs for consistent toolbar rhythm.
+- Added regression coverage to keep playground codeblock overrides constrained to embed-safe/layout-focused behavior.
+
 ## 1.2.1
 
 ### Fixed
