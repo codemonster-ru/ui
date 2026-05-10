@@ -11,7 +11,7 @@
             @update:model-value="handleDefaultTabChange"
           />
         </template>
-        <component :is="actionsRenderer" v-if="actionsRenderer" v-bind="actionsRendererProps" />
+        <component :is="actionsRenderer" v-if="actionsRenderer && isSandboxMode" v-bind="actionsRendererProps" />
       </div>
 
       <div v-if="activeTab === 'code' && showCode" class="vf-playground__panel vf-playground__panel--code">
@@ -36,11 +36,19 @@
       </div>
 
       <div v-show="activeTab === 'preview'" class="vf-playground__panel preview">
-        <iframe :ref="bindPreviewIframe" class="vf-playground__iframe" title="Codemonster Playground Preview" />
-        <p v-if="!isClient" class="vf-playground__ssr-hint">Preview is available on client side only.</p>
+        <iframe
+          v-if="isSandboxMode"
+          :ref="bindPreviewIframe"
+          class="vf-playground__iframe"
+          title="Codemonster Playground Preview"
+        />
+        <div v-else class="vf-playground__component-preview" :style="componentPreviewStyle">
+          <component :is="componentToRender" v-if="componentToRender" />
+        </div>
+        <p v-if="isSandboxMode && !isClient" class="vf-playground__ssr-hint">Preview is available on client side only.</p>
       </div>
 
-      <div v-if="activeTab === 'console'" class="vf-playground__panel">
+      <div v-if="isSandboxMode && activeTab === 'console'" class="vf-playground__panel">
         <pre class="vf-playground__console">{{ consoleOutput || 'No logs yet.' }}</pre>
       </div>
     </slot>
@@ -53,13 +61,19 @@ import { VfTabs, type VfTabItem } from '@codemonster-ru/vueforge-core';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
 import { createPlaygroundSession, type ConsoleEvent, type PlaygroundError } from '@codemonster-ru/vueforge-playground-core';
 
-import type { VfPlaygroundProps } from './props';
+import type { VfPlaygroundComponentProps, VfPlaygroundProps, VfPlaygroundSandboxProps } from './props';
 
 const props = withDefaults(defineProps<VfPlaygroundProps>(), {
+  mode: 'sandbox',
   framework: 'vanilla',
   autorun: true,
   showCode: true,
-  theme: 'inherit'
+  theme: 'inherit',
+  files: () => ({}),
+  entry: '',
+  component: undefined,
+  componentSource: '',
+  componentSourceLanguage: 'vue'
 });
 
 const emit = defineEmits<{
@@ -67,25 +81,71 @@ const emit = defineEmits<{
   error: [error: PlaygroundError];
 }>();
 
+type PlaygroundTab = 'code' | 'preview' | 'console';
+
 const isClient = typeof window !== 'undefined';
 const iframeRef = ref<HTMLIFrameElement | null>(null);
-const activeTab = ref(props.showCode ? 'code' : 'preview');
-const activeFile = ref(props.entry);
+const isSandboxMode = computed(() => props.mode !== 'component');
+const sandboxProps = computed(() => (isSandboxMode.value ? (props as VfPlaygroundSandboxProps) : null));
+const componentProps = computed(() => (isSandboxMode.value ? null : (props as VfPlaygroundComponentProps)));
+const showCode = computed(() =>
+  isSandboxMode.value
+    ? sandboxProps.value?.showCode ?? true
+    : Boolean(componentProps.value?.componentSource) ||
+      Boolean(componentProps.value?.componentFiles && Object.keys(componentProps.value.componentFiles).length > 0)
+);
+const theme = computed(() => props.theme ?? 'inherit');
+const activeTab = ref<PlaygroundTab>(showCode.value ? 'code' : 'preview');
+const activeFile = ref(isSandboxMode.value ? sandboxProps.value?.entry ?? '' : '');
 const logs = ref<string[]>([]);
 const isRunning = ref(false);
 const hostIsDark = ref(false);
 
-const fileNames = computed(() => Object.keys(props.files));
-const activeFileContent = computed(() => props.files[activeFile.value] ?? '');
+if (import.meta.env.DEV && !isSandboxMode.value && !componentProps.value?.component) {
+  throw new Error('[VfPlayground] `component` is required when `mode` is "component".');
+}
+
+const componentCodeFiles = computed<Record<string, string>>(() => {
+  if (isSandboxMode.value) {
+    return {};
+  }
+  const files = componentProps.value?.componentFiles;
+  if (files && Object.keys(files).length > 0) {
+    return files;
+  }
+  if (componentProps.value?.componentSource) {
+    return { 'Component.vue': componentProps.value.componentSource };
+  }
+  return {};
+});
+const fileNames = computed(() => {
+  if (sandboxProps.value) {
+    return Object.keys(sandboxProps.value.files);
+  }
+  return Object.keys(componentCodeFiles.value);
+});
+const activeFileContent = computed(() => {
+  if (sandboxProps.value) {
+    return sandboxProps.value.files[activeFile.value] ?? '';
+  }
+  return componentCodeFiles.value[activeFile.value] ?? '';
+});
 const codeLanguage = computed(() => {
+  if (!isSandboxMode.value) {
+    const ext = activeFile.value.split('.').pop() ?? '';
+    if (ext) {
+      return ext === 'ts' ? 'typescript' : ext === 'js' ? 'javascript' : ext;
+    }
+    return componentProps.value?.componentSourceLanguage ?? 'vue';
+  }
   const ext = activeFile.value.split('.').pop() ?? 'txt';
   return ext === 'ts' ? 'typescript' : ext === 'js' ? 'javascript' : ext;
 });
 const resolvedCodeTheme = computed(() => {
-  if (props.theme === 'inherit') {
+  if (theme.value === 'inherit') {
     return hostIsDark.value ? 'dark' : 'light';
   }
-  return props.theme;
+  return theme.value;
 });
 const containerStyle = computed(() => ({
   ...(props.height != null
@@ -96,17 +156,34 @@ const consoleOutput = computed(() => logs.value.join('\n'));
 const tabsRenderer = computed(() => props.tabsRenderer);
 const actionsRenderer = computed(() => props.actionsRenderer);
 const filesRenderer = computed(() => props.filesRenderer);
+const componentToRender = computed(() => componentProps.value?.component ?? null);
+const componentPreviewStyle = computed(() => ({
+  ...(componentProps.value?.componentPadding != null
+    ? { padding: toCssLength(componentProps.value.componentPadding) }
+    : {}),
+  ...(componentProps.value?.componentMinHeight != null
+    ? { minHeight: toCssLength(componentProps.value.componentMinHeight) }
+    : {})
+}));
 const tabsRendererProps = computed(() => ({
   activeTab: activeTab.value,
-  showCode: props.showCode,
+  showCode: showCode.value,
   setActiveTab
 }));
 const defaultTabItems = computed<VfTabItem[]>(() => {
+  if (!isSandboxMode.value) {
+    const tabs: VfTabItem[] = [{ value: 'preview', label: 'Preview' }];
+    if (showCode.value) {
+      return [{ value: 'code', label: 'Code' }, ...tabs];
+    }
+    return tabs;
+  }
+
   const tabs: VfTabItem[] = [
     { value: 'preview', label: 'Preview' },
     { value: 'console', label: 'Console' }
   ];
-  if (props.showCode) {
+  if (showCode.value) {
     return [{ value: 'code', label: 'Code' }, ...tabs];
   }
   return tabs;
@@ -128,7 +205,7 @@ const filesRendererProps = computed(() => ({
 }));
 const layoutSlotProps = computed(() => ({
   activeTab: activeTab.value,
-  showCode: props.showCode,
+  showCode: showCode.value,
   setActiveTab,
   fileNames: fileNames.value,
   activeFile: activeFile.value,
@@ -149,6 +226,10 @@ let themeObserver: MutationObserver | null = null;
 let mediaTheme: MediaQueryList | null = null;
 let onMediaThemeChange: ((event: MediaQueryListEvent) => void) | null = null;
 let sessionIframe: HTMLIFrameElement | null = null;
+
+function toCssLength(value: string | number): string {
+  return typeof value === 'number' ? `${value}px` : value;
+}
 
 function readHostThemeIsDark(): boolean {
   if (typeof window === 'undefined') {
@@ -173,6 +254,10 @@ function readHostThemeIsDark(): boolean {
     return false;
   }
 
+  if (typeof window.matchMedia !== 'function') {
+    return false;
+  }
+
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
@@ -181,7 +266,12 @@ function syncHostTheme(): void {
 }
 
 function setActiveTab(tab: 'code' | 'preview' | 'console'): void {
-  if (tab === 'code' && !props.showCode) {
+  if (!isSandboxMode.value && tab === 'console') {
+    activeTab.value = 'preview';
+    return;
+  }
+
+  if (tab === 'code' && !showCode.value) {
     activeTab.value = 'preview';
     return;
   }
@@ -206,6 +296,11 @@ function handleDefaultFileChange(value: string): void {
 }
 
 function bindPreviewIframe(el: Element | ComponentPublicInstance | null): void {
+  if (!isSandboxMode.value) {
+    iframeRef.value = null;
+    return;
+  }
+
   const nextIframe = el instanceof HTMLIFrameElement ? el : null;
   iframeRef.value = nextIframe;
   if (nextIframe) {
@@ -242,7 +337,7 @@ function appendError(error: PlaygroundError): void {
 }
 
 function initSession(forceRecreate = false): void {
-  if (!isClient || !iframeRef.value) {
+  if (!isSandboxMode.value || !isClient || !iframeRef.value) {
     return;
   }
 
@@ -261,12 +356,12 @@ function initSession(forceRecreate = false): void {
 
   session = createPlaygroundSession({
     runtime: 'browser',
-    framework: props.framework,
+    framework: sandboxProps.value?.framework ?? 'vanilla',
     iframe: iframeRef.value,
-    files: props.files,
-    entry: props.entry,
-    resolveImport: props.resolveImport,
-    bootstrapScript: props.bootstrapScript
+    files: sandboxProps.value?.files ?? {},
+    entry: sandboxProps.value?.entry ?? '',
+    resolveImport: sandboxProps.value?.resolveImport,
+    bootstrapScript: sandboxProps.value?.bootstrapScript
   });
 
   unsubscribers = [
@@ -278,6 +373,10 @@ function initSession(forceRecreate = false): void {
 }
 
 async function runSession(options?: { keepActiveTab?: boolean }): Promise<void> {
+  if (!isSandboxMode.value) {
+    return;
+  }
+
   if (isRunning.value) {
     return;
   }
@@ -318,19 +417,25 @@ onMounted(async () => {
     mediaTheme.addEventListener('change', onMediaThemeChange);
   }
 
-  initSession();
+  if (isSandboxMode.value) {
+    initSession();
+  }
 });
 
 watch(
   iframeRef,
   async (nextIframe) => {
+    if (!isSandboxMode.value) {
+      return;
+    }
+
     if (!nextIframe) {
       return;
     }
 
     initSession();
 
-    if (props.autorun) {
+    if (sandboxProps.value?.autorun ?? true) {
       await runSession({ keepActiveTab: true });
     }
   },
@@ -338,15 +443,22 @@ watch(
 );
 
 watch(
-  () => [props.files, props.entry] as const,
-  async ([files, entry]) => {
+  () => (isSandboxMode.value ? ([sandboxProps.value?.files, sandboxProps.value?.entry] as const) : null),
+  async (payload) => {
+    if (!payload) {
+      return;
+    }
+    const [files, entry] = payload;
+    if (!files || !entry) {
+      return;
+    }
     activeFile.value = entry;
     if (!session) {
       return;
     }
 
     session.updateFiles(files, entry);
-    if (props.autorun) {
+    if (sandboxProps.value?.autorun ?? true) {
       await runSession({ keepActiveTab: true });
     }
   },
@@ -354,17 +466,68 @@ watch(
 );
 
 watch(
-  () => [props.framework, props.resolveImport, props.bootstrapScript] as const,
+  () =>
+    isSandboxMode.value
+      ? ([sandboxProps.value?.framework, sandboxProps.value?.resolveImport, sandboxProps.value?.bootstrapScript] as const)
+      : null,
   async () => {
+    if (!isSandboxMode.value) {
+      return;
+    }
+
     if (!iframeRef.value) {
       return;
     }
 
     initSession(true);
-    if (props.autorun) {
+    if (sandboxProps.value?.autorun ?? true) {
       await runSession({ keepActiveTab: true });
     }
   }
+);
+
+watch(
+  [isSandboxMode, showCode],
+  ([sandbox, nextShowCode]) => {
+    if (!sandbox) {
+      if (activeTab.value === 'console') {
+        activeTab.value = 'preview';
+      }
+      if (!nextShowCode && activeTab.value === 'code') {
+        activeTab.value = 'preview';
+      }
+      if (nextShowCode && activeTab.value === 'preview') {
+        activeTab.value = 'code';
+      }
+      return;
+    }
+    if (activeTab.value === 'code' && !nextShowCode) {
+      activeTab.value = 'preview';
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  [isSandboxMode, fileNames, componentProps],
+  ([sandbox, nextFileNames, nextComponentProps]) => {
+    if (sandbox) {
+      return;
+    }
+    if (!nextFileNames.length) {
+      activeFile.value = '';
+      return;
+    }
+    const componentEntry = nextComponentProps?.componentEntry;
+    if (componentEntry && nextFileNames.includes(componentEntry)) {
+      activeFile.value = componentEntry;
+      return;
+    }
+    if (!nextFileNames.includes(activeFile.value)) {
+      activeFile.value = nextFileNames[0];
+    }
+  },
+  { immediate: true, deep: true }
 );
 
 onBeforeUnmount(() => {
@@ -427,6 +590,8 @@ defineExpose({
   --vf-playground-console-padding: var(--vf-surface-padding);
   --vf-playground-console-font-size: var(--vf-text-label-font-size);
   --vf-playground-console-line-height: var(--vf-text-body-line-height);
+  --vf-playground-component-padding: 0;
+  --vf-playground-component-min-height: 100%;
 }
 
 .vf-playground {
@@ -549,6 +714,15 @@ defineExpose({
   width: 100%;
   height: 100%;
   background: var(--vf-playground-iframe-bg);
+}
+
+.vf-playground__component-preview {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: var(--vf-playground-component-min-height);
+  padding: var(--vf-playground-component-padding);
+  overflow: auto;
 }
 
 .vf-playground__console {
