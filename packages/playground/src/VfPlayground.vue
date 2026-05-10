@@ -226,6 +226,7 @@ let themeObserver: MutationObserver | null = null;
 let mediaTheme: MediaQueryList | null = null;
 let onMediaThemeChange: ((event: MediaQueryListEvent) => void) | null = null;
 let sessionIframe: HTMLIFrameElement | null = null;
+const SANDBOX_THEME_STYLE_ID = 'vf-playground-theme-sync';
 
 function toCssLength(value: string | number): string {
   return typeof value === 'number' ? `${value}px` : value;
@@ -239,10 +240,17 @@ function readHostThemeIsDark(): boolean {
   const root = document.documentElement;
   const dataTheme = root.getAttribute('data-theme');
   const dataVfTheme = root.getAttribute('data-vf-theme');
+  const classList = root.classList;
   if (dataTheme === 'dark' || dataVfTheme === 'dark') {
     return true;
   }
   if (dataTheme === 'light' || dataVfTheme === 'light') {
+    return false;
+  }
+  if (classList.contains('dark') || classList.contains('vf-theme-dark')) {
+    return true;
+  }
+  if (classList.contains('light') || classList.contains('vf-theme-light')) {
     return false;
   }
 
@@ -263,6 +271,61 @@ function readHostThemeIsDark(): boolean {
 
 function syncHostTheme(): void {
   hostIsDark.value = readHostThemeIsDark();
+}
+
+function getResolvedPreviewTheme(): 'light' | 'dark' {
+  if (theme.value === 'inherit') {
+    return hostIsDark.value ? 'dark' : 'light';
+  }
+  return theme.value;
+}
+
+function syncSandboxThemeToIframe(): void {
+  if (!isSandboxMode.value || !iframeRef.value) {
+    return;
+  }
+
+  const iframeDocument = iframeRef.value.contentDocument;
+  if (!iframeDocument) {
+    return;
+  }
+  const iframeRoot = iframeDocument.documentElement;
+  const resolvedTheme = getResolvedPreviewTheme();
+  iframeRoot.setAttribute('data-theme', resolvedTheme);
+  iframeRoot.setAttribute('data-vf-theme', resolvedTheme);
+  iframeRoot.classList.toggle('dark', resolvedTheme === 'dark');
+  iframeRoot.classList.toggle('light', resolvedTheme === 'light');
+  iframeRoot.classList.toggle('vf-theme-dark', resolvedTheme === 'dark');
+  iframeRoot.classList.toggle('vf-theme-light', resolvedTheme === 'light');
+  iframeRoot.style.colorScheme = resolvedTheme;
+
+  const hostStyles = getComputedStyle(document.documentElement);
+  for (let index = 0; index < hostStyles.length; index += 1) {
+    const propertyName = hostStyles.item(index);
+    if (!propertyName.startsWith('--vf-')) {
+      continue;
+    }
+    iframeRoot.style.setProperty(propertyName, hostStyles.getPropertyValue(propertyName));
+  }
+
+  if (iframeDocument.body) {
+    iframeDocument.body.style.backgroundColor = 'var(--vf-color-bg, Canvas)';
+    iframeDocument.body.style.color = 'var(--vf-color-text, CanvasText)';
+  }
+
+  let themeStyle = iframeDocument.getElementById(SANDBOX_THEME_STYLE_ID) as HTMLStyleElement | null;
+  if (!themeStyle) {
+    themeStyle = iframeDocument.createElement('style');
+    themeStyle.id = SANDBOX_THEME_STYLE_ID;
+    iframeDocument.head.append(themeStyle);
+  }
+  themeStyle.textContent = `
+    :root { color-scheme: ${resolvedTheme}; }
+    html, body {
+      background: var(--vf-color-bg, Canvas);
+      color: var(--vf-color-text, CanvasText);
+    }
+  `;
 }
 
 function setActiveTab(tab: 'code' | 'preview' | 'console'): void {
@@ -302,8 +365,12 @@ function bindPreviewIframe(el: Element | ComponentPublicInstance | null): void {
   }
 
   const nextIframe = el instanceof HTMLIFrameElement ? el : null;
+  if (iframeRef.value) {
+    iframeRef.value.removeEventListener('load', syncSandboxThemeToIframe);
+  }
   iframeRef.value = nextIframe;
   if (nextIframe) {
+    nextIframe.addEventListener('load', syncSandboxThemeToIframe);
     initSession();
   }
 }
@@ -399,6 +466,7 @@ async function runSession(options?: { keepActiveTab?: boolean }): Promise<void> 
   logs.value = [];
   try {
     await session.run();
+    syncSandboxThemeToIframe();
   } finally {
     isRunning.value = false;
   }
@@ -419,6 +487,7 @@ onMounted(async () => {
 
   if (isSandboxMode.value) {
     initSession();
+    syncSandboxThemeToIframe();
   }
 });
 
@@ -434,10 +503,19 @@ watch(
     }
 
     initSession();
+    syncSandboxThemeToIframe();
 
     if (sandboxProps.value?.autorun ?? true) {
       await runSession({ keepActiveTab: true });
     }
+  },
+  { immediate: true }
+);
+
+watch(
+  [isSandboxMode, iframeRef, theme, hostIsDark],
+  () => {
+    syncSandboxThemeToIframe();
   },
   { immediate: true }
 );
@@ -537,6 +615,9 @@ onBeforeUnmount(() => {
 
   session?.dispose();
   session = null;
+  if (iframeRef.value) {
+    iframeRef.value.removeEventListener('load', syncSandboxThemeToIframe);
+  }
   sessionIframe = null;
   themeObserver?.disconnect();
   themeObserver = null;

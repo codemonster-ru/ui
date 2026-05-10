@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.1
+
+### Fixed
+
+- Improved runtime theme synchronization in legacy `sandbox` mode: iframe preview now reacts to `theme` prop changes and host theme inheritance updates (`data-theme`, `data-vf-theme`, root classes, and color-scheme fallbacks) without requiring custom parent-window scripts in demo payloads.
+- Added sandbox theme-sync regression coverage (theme prop switches, `inherit` host mutations, and iframe-applied theme assertions).
+
 ## 1.2.0
 
 ### Added
