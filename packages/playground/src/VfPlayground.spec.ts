@@ -6,8 +6,17 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import VfPlayground from './VfPlayground.vue';
 
-const createSessionMock = vi.fn(() => ({
-  run: vi.fn(async () => undefined),
+const createSessionMock = vi.fn((options?: { iframe?: HTMLIFrameElement; files?: Record<string, string>; entry?: string }) => ({
+  run: vi.fn(async () => {
+    const iframe = options?.iframe;
+    const entry = options?.entry ?? '';
+    const html = options?.files?.[entry] ?? '<!doctype html><html><head></head><body></body></html>';
+    if (iframe?.contentDocument) {
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(html);
+      iframe.contentDocument.close();
+    }
+  }),
   dispose: vi.fn(),
   updateFiles: vi.fn(),
   onRun: vi.fn(() => () => undefined),
@@ -16,7 +25,8 @@ const createSessionMock = vi.fn(() => ({
 }));
 
 vi.mock('@codemonster-ru/vueforge-playground-core', () => ({
-  createPlaygroundSession: () => createSessionMock()
+  createPlaygroundSession: (options: { iframe?: HTMLIFrameElement; files?: Record<string, string>; entry?: string }) =>
+    createSessionMock(options)
 }));
 
 const TabsStub = defineComponent({
@@ -51,7 +61,7 @@ const CodeBlockStub = defineComponent({
 
 const baseSandboxProps = {
   files: {
-    '/main.ts': 'console.log("hello")'
+    '/main.ts': '<!doctype html><html><head></head><body><div>Hello</div></body></html>'
   },
   entry: '/main.ts'
 } as const;
@@ -76,6 +86,18 @@ function findCodeHost(wrapper: ReturnType<typeof mount>) {
     : wrapper.find('.vf-codeblock-shim');
 }
 
+function ensureIframeDocument(iframe: HTMLIFrameElement): Document {
+  if (iframe.contentDocument) {
+    return iframe.contentDocument;
+  }
+  const documentStub = window.document.implementation.createHTMLDocument('preview');
+  Object.defineProperty(iframe, 'contentDocument', {
+    configurable: true,
+    value: documentStub
+  });
+  return documentStub;
+}
+
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -91,6 +113,11 @@ beforeAll(() => {
     }))
   });
 });
+
+async function flushThemeSync(): Promise<void> {
+  await Promise.resolve();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
 
 describe('VfPlayground', () => {
   it('keeps sandbox mode behavior and renders iframe preview', () => {
@@ -217,5 +244,75 @@ describe('VfPlayground', () => {
     });
 
     expect(wrapper.find('.actions-spy').exists()).toBe(false);
+  });
+
+  it('syncs sandbox theme when prop changes light -> dark -> light', async () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        ...baseSandboxProps,
+        theme: 'light'
+      },
+      global: testGlobal
+    });
+
+    await flushThemeSync();
+    const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
+    ensureIframeDocument(iframe);
+    iframe.dispatchEvent(new Event('load'));
+    await flushThemeSync();
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('light');
+
+    await wrapper.setProps({ theme: 'dark' });
+    await flushThemeSync();
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(iframe.contentDocument?.documentElement.classList.contains('vf-theme-dark')).toBe(true);
+
+    await wrapper.setProps({ theme: 'light' });
+    await flushThemeSync();
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('light');
+  });
+
+  it('syncs sandbox theme in inherit mode from host root attributes', async () => {
+    document.documentElement.setAttribute('data-theme', 'light');
+    const wrapper = mount(VfPlayground, {
+      props: {
+        ...baseSandboxProps,
+        theme: 'inherit'
+      },
+      global: testGlobal
+    });
+
+    const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
+    ensureIframeDocument(iframe);
+    await flushThemeSync();
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('light');
+
+    document.documentElement.setAttribute('data-theme', 'dark');
+    await flushThemeSync();
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('dark');
+
+    document.documentElement.removeAttribute('data-theme');
+  });
+
+  it('applies sandbox theme without relying on parent access or external script loading', async () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        files: {
+          '/index.html': '<!doctype html><html><head></head><body><script src="/main.js"></script></body></html>'
+        },
+        entry: '/index.html',
+        theme: 'dark'
+      },
+      global: testGlobal
+    });
+
+    await flushThemeSync();
+    const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
+    ensureIframeDocument(iframe);
+    iframe.dispatchEvent(new Event('load'));
+    await flushThemeSync();
+    const iframeRoot = iframe.contentDocument?.documentElement;
+    expect(iframeRoot?.getAttribute('data-theme')).toBe('dark');
+    expect(iframe.contentDocument?.getElementById('vf-playground-theme-sync')).toBeTruthy();
   });
 });
