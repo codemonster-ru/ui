@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.18.1
+
+### Fixed
+
+- Refined `VfMenuBar` popup positioning after horizontal-scroller integration:
+  - stabilized root submenu teleport overlay behavior in constrained containers
+  - fixed nested submenu rendering/placement regressions caused by mixed positioning contexts
+  - improved submenu interaction consistency for hover/click branch navigation
+- Improved `VfTabs`/`VfMenuBar` shared horizontal-scroller behavior and related navigation styles for more stable overflow UX.
+
 ## 1.18.0
 
 ### Changed
