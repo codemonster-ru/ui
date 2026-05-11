@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTheme } from "@codemonster-ru/vueforge-core";
-import { VfContainer, VfSection } from "@codemonster-ru/vueforge-layouts";
+import { VfSection } from "@codemonster-ru/vueforge-layouts";
 import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock";
 
 const { resolvedTheme } = useTheme();
@@ -74,33 +74,30 @@ const blocks = [
 </script>
 
 <template>
-  <VfContainer
-    as="main"
-    class="demo-page"
-    size="2xl"
-    :data-theme="resolvedTheme"
-  >
-    <section class="demo-block">
-      <div class="demo-block__header">
-        <h2>VfCodeBlock</h2>
-      </div>
-
-      <VfSection class="demo-surface" surface>
-        <div class="demo-grid">
-          <VfCodeBlock
-            v-for="block in blocks"
-            :key="block.filename"
-            :language="block.language"
-            :filename="block.filename"
-            :code="block.code"
-            :max-height="block.maxHeight"
-            :theme="resolvedTheme"
-            show-line-numbers
-          />
+  <main class="demo-page" :data-theme="resolvedTheme">
+    <div class="demo-container">
+      <section class="demo-block">
+        <div class="demo-block__header">
+          <h2>VfCodeBlock</h2>
         </div>
-      </VfSection>
-    </section>
-  </VfContainer>
+
+        <VfSection class="demo-surface" surface>
+          <div class="demo-grid">
+            <VfCodeBlock
+              v-for="block in blocks"
+              :key="block.filename"
+              :language="block.language"
+              :filename="block.filename"
+              :code="block.code"
+              :max-height="block.maxHeight"
+              :theme="resolvedTheme"
+              show-line-numbers
+            />
+          </div>
+        </VfSection>
+      </section>
+    </div>
+  </main>
 </template>
 
 <style scoped>

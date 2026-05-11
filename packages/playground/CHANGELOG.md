@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.3
+
+### Fixed
+
+- Synced embedded code-tab `VfCodeBlock` header/meta typography with the updated package default (`0.875rem`), so playground code panels match standalone `VfCodeBlock` sizing.
+- Updated dependency ranges to consume the latest `@codemonster-ru/vueforge-core` and `@codemonster-ru/vueforge-codeblock` patch releases.
+
 ## 1.2.2
 
 ### Fixed

@@ -233,25 +233,26 @@ onBeforeUnmount(() => {
   --vf-codeblock-gap: 0;
   --vf-codeblock-border-color: var(--vf-color-border);
   --vf-codeblock-border-radius: var(--vf-radius-surface);
-  --vf-codeblock-background-color: var(--vf-color-surface);
+  --vf-codeblock-background-color: var(--vf-color-surface-muted);
   --vf-codeblock-text-color: var(--vf-color-text);
   --vf-codeblock-font-family: var(--vf-font-family-mono);
   --vf-codeblock-font-size: var(--vf-text-caption-font-size);
   --vf-codeblock-line-height: var(--vf-text-body-line-height);
   --vf-codeblock-header-gap: var(--vf-surface-gap);
-  --vf-codeblock-header-padding: var(--vf-codeblock-padding);
+  --vf-codeblock-header-padding: 0 var(--vf-codeblock-padding);
+  --vf-codeblock-header-min-height: calc(var(--vf-control-height-md) + var(--vf-tabs-list-padding-bottom));
   --vf-codeblock-header-border-color: var(--vf-color-border);
   --vf-codeblock-header-background-color: var(--vf-codeblock-background-color);
   --vf-codeblock-header-opacity: 0.9;
   --vf-codeblock-meta-gap: var(--vf-surface-gap-compact);
-  --vf-codeblock-meta-color: var(--vf-color-muted);
-  --vf-codeblock-meta-font-size: var(--vf-text-label-font-size);
+  --vf-codeblock-meta-color: var(--vf-tabs-tab-color, var(--vf-color-muted));
+  --vf-codeblock-meta-font-size: 0.875rem;
   --vf-codeblock-filename-color: var(--vf-color-text);
   --vf-codeblock-filename-font-weight: var(--vf-font-weight-semibold);
   --vf-codeblock-actions-gap: var(--vf-surface-gap-compact);
   --vf-codeblock-action-border-color: var(--vf-color-border);
   --vf-codeblock-action-border-radius: var(--vf-radius-control-tight);
-  --vf-codeblock-action-background-color: var(--vf-color-surface);
+  --vf-codeblock-action-background-color: var(--vf-color-surface-muted);
   --vf-codeblock-action-text-color: var(--vf-color-text);
   --vf-codeblock-action-font-size: var(--vf-text-label-font-size);
   --vf-codeblock-action-padding: var(--vf-field-padding-sm);
@@ -305,7 +306,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   gap: var(--vf-codeblock-header-gap);
-  min-height: 0;
+  min-height: var(--vf-codeblock-header-min-height);
   padding: var(--vf-codeblock-header-padding);
   border-bottom: 1px solid var(--vf-codeblock-header-border-color);
   background: var(--vf-codeblock-header-background-color);
@@ -441,7 +442,7 @@ onBeforeUnmount(() => {
 .vf-codeblock[data-theme='dark'],
 :root[data-theme='dark'] .vf-codeblock:not([data-theme='light']),
 [data-theme='dark'] .vf-codeblock:not([data-theme='light']) {
-  --vf-codeblock-background-color: var(--vf-color-surface);
+  --vf-codeblock-background-color: var(--vf-color-surface-muted);
   --vf-codeblock-text-color: var(--vf-color-text);
   --vf-codeblock-border-color: var(--vf-color-border);
   --vf-codeblock-header-border-color: var(--vf-color-border);
@@ -449,7 +450,7 @@ onBeforeUnmount(() => {
   --vf-codeblock-meta-color: var(--vf-color-muted);
   --vf-codeblock-filename-color: var(--vf-color-text);
   --vf-codeblock-action-border-color: var(--vf-color-border);
-  --vf-codeblock-action-background-color: var(--vf-color-surface);
+  --vf-codeblock-action-background-color: var(--vf-color-surface-muted);
   --vf-codeblock-action-text-color: var(--vf-color-text);
   --vf-codeblock-line-number-color: var(--vf-color-muted);
 }

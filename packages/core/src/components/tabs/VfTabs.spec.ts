@@ -189,9 +189,8 @@ describe('VfTabs', () => {
       value: 0,
     });
 
-    await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => resolve());
-    });
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
     await wrapper.get('.vf-tabs__list-scroller').trigger('scroll');
     expect(wrapper.find('.vf-tabs__scroll-button--right').exists()).toBe(true);

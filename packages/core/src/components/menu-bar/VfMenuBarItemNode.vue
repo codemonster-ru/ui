@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, resolveDynamicComponent } from 'vue';
+import { flip, offset, shift, type MiddlewareType } from '@codemonster-ru/floater.js';
+import { computed, ref, resolveDynamicComponent } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { useFloating } from '@/composables';
 import type { VfNavMenuItem } from '@/types/components';
 
 defineOptions({
@@ -14,6 +16,8 @@ const props = defineProps<{
   activeValue?: string;
   openPath: string[];
   hoverEnabled?: boolean;
+  submenuTeleportTarget?: HTMLElement | null;
+  teleportEnabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -28,6 +32,24 @@ const isLink = computed(() => props.item.href !== undefined || props.item.to !==
 const isActive = computed(() => props.activeValue === props.item.value);
 const isAncestorActive = computed(() => !isActive.value && hasDescendantValue(props.item, props.activeValue));
 const isOpen = computed(() => currentPath.value.every((value, index) => props.openPath[index] === value));
+const shouldTeleportRootSubmenu = computed(
+  () => props.teleportEnabled && props.depth === 0 && Boolean(props.submenuTeleportTarget),
+);
+const triggerRef = ref<HTMLElement | null>(null);
+const teleportedSubmenuRef = ref<HTMLElement | null>(null);
+
+const { styles: teleportedRootStyle } = useFloating(triggerRef, teleportedSubmenuRef, {
+  enabled: computed(() => isOpen.value && shouldTeleportRootSubmenu.value),
+  placement: 'bottom-start',
+  middleware: computed(
+    () =>
+      [
+        offset(8),
+        flip({ placements: ['bottom-start', 'top-start'] }),
+        shift(),
+      ] as MiddlewareType[],
+  ),
+});
 
 const resolvedComponent = computed(() => {
   if (props.item.to !== undefined) {
@@ -153,6 +175,7 @@ function onPointerEnter() {
 
     <button
       v-else-if="hasChildren"
+      ref="triggerRef"
       type="button"
       class="vf-menu-bar__item vf-menu-bar__item--branch"
       :class="[
@@ -189,6 +212,7 @@ function onPointerEnter() {
       class="vf-menu-bar__item"
       :class="[
         depth === 0 && 'vf-menu-bar__item--top',
+        showsExternalLinkIcon && 'vf-menu-bar__item--external',
         isActive && 'vf-menu-bar__item--active',
         isAncestorActive && 'vf-menu-bar__item--ancestor-active',
         item.disabled && 'vf-menu-bar__item--disabled',
@@ -233,7 +257,11 @@ function onPointerEnter() {
       </span>
     </button>
 
-    <Transition name="vf-floating-transition" appear>
+    <Transition
+      v-if="hasChildren && !shouldTeleportRootSubmenu"
+      name="vf-floating-transition"
+      appear
+    >
       <div
         v-if="hasChildren && isOpen"
         class="vf-menu-bar__submenu"
@@ -249,11 +277,41 @@ function onPointerEnter() {
             :active-value="activeValue"
             :open-path="openPath"
             :hover-enabled="true"
+            :submenu-teleport-target="submenuTeleportTarget"
+            :teleport-enabled="teleportEnabled"
             @open-path-change="emit('openPathChange', $event)"
             @select="emit('select', $event)"
           />
         </ul>
       </div>
     </Transition>
+
+    <Teleport v-else-if="hasChildren && shouldTeleportRootSubmenu && submenuTeleportTarget" :to="submenuTeleportTarget">
+      <Transition name="vf-floating-transition" appear>
+        <div
+          v-if="hasChildren && isOpen"
+          ref="teleportedSubmenuRef"
+          class="vf-menu-bar__submenu vf-menu-bar__submenu--root vf-menu-bar__submenu--teleported"
+          :style="teleportedRootStyle"
+        >
+          <ul class="vf-menu-bar__submenu-list" role="menu">
+            <VfMenuBarItemNode
+              v-for="child in item.children"
+              :key="child.value"
+              :item="child"
+              :depth="depth + 1"
+              :parent-path="currentPath"
+              :active-value="activeValue"
+              :open-path="openPath"
+              :hover-enabled="true"
+              :submenu-teleport-target="submenuTeleportTarget"
+              :teleport-enabled="teleportEnabled"
+              @open-path-change="emit('openPathChange', $event)"
+              @select="emit('select', $event)"
+            />
+          </ul>
+        </div>
+      </Transition>
+    </Teleport>
   </li>
 </template>
