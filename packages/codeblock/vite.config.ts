@@ -36,11 +36,12 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', '@codemonster-ru/vueforge-icons'],
       output: {
         exports: 'named',
         globals: {
           vue: 'Vue',
+          '@codemonster-ru/vueforge-icons': 'VueforgeIcons',
         },
       },
     },
