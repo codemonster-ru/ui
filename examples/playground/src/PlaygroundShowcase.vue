@@ -1,76 +1,88 @@
 <template>
   <VfThemeProvider>
-    <VfContainer as="main" class="demo-page" size="2xl">
-      <VfStack>
+    <main class="demo-page">
+      <div class="demo-container">
+        <VfStack>
         <section class="demo-block">
           <div class="demo-block__header">
             <h2>Single File Example</h2>
           </div>
-          <VfPlayground
-            :files="singleFileExample"
-            entry="/index.html"
-            framework="html"
-            :autorun="true"
-            :show-code="true"
-            theme="inherit"
-            @run="onRun"
-            @error="onError"
-          />
+          <VfSection class="demo-surface" surface>
+            <VfPlayground
+              :files="singleFileExample"
+              entry="/index.html"
+              framework="html"
+              :autorun="true"
+              :show-code="true"
+              theme="inherit"
+              @run="onRun"
+              @error="onError"
+            />
+          </VfSection>
         </section>
 
         <section class="demo-block">
           <div class="demo-block__header">
             <h2>Multi File Example</h2>
           </div>
-          <VfPlayground
-            :files="multiFileExample"
-            entry="/main.js"
-            framework="vanilla"
-            :autorun="true"
-            :show-code="true"
-            theme="inherit"
-            @run="onRun"
-            @error="onError"
-          />
+          <VfSection class="demo-surface" surface>
+            <VfPlayground
+              :files="multiFileExample"
+              entry="/main.js"
+              framework="vanilla"
+              :autorun="true"
+              :show-code="true"
+              theme="inherit"
+              @run="onRun"
+              @error="onError"
+            />
+          </VfSection>
         </section>
 
         <section class="demo-block">
           <div class="demo-block__header">
             <h2>Component Mode Example</h2>
           </div>
-          <VfPlayground
-            mode="component"
-            :component="componentModeDemo"
-            :component-files="componentModeFiles"
-            component-entry="DemoCard.vue"
-            theme="inherit"
-            :component-padding="24"
-            component-min-height="220px"
-          />
+          <VfSection class="demo-surface" surface>
+            <VfPlayground
+              mode="component"
+              :component="componentModeDemo"
+              :component-files="componentModeFiles"
+              component-entry="DemoCard.vue"
+              theme="inherit"
+              :component-padding="24"
+              component-min-height="220px"
+            />
+          </VfSection>
         </section>
 
         <section class="demo-block">
           <div class="demo-block__header">
             <h2>Vue Runtime Smoke Test (Vite-built)</h2>
           </div>
-          <ViteLikeDemoPreview demo-id="vue-runtime-smoke" :source="vueRuntimeSmokeSource" />
+          <VfSection class="demo-surface" surface>
+            <ViteLikeDemoPreview demo-id="vue-runtime-smoke" :source="vueRuntimeSmokeSource" />
+          </VfSection>
         </section>
 
         <section class="demo-block">
           <div class="demo-block__header">
             <h2>Custom Resolver Smoke Test (Vite-built)</h2>
           </div>
-          <ViteLikeDemoPreview demo-id="custom-resolver-smoke" :source="customResolverSmokeSource" />
+          <VfSection class="demo-surface" surface>
+            <ViteLikeDemoPreview demo-id="custom-resolver-smoke" :source="customResolverSmokeSource" />
+          </VfSection>
         </section>
-      </VfStack>
-    </VfContainer>
+        </VfStack>
+      </div>
+    </main>
   </VfThemeProvider>
 </template>
 
 <script setup lang="ts">
 import { defineComponent, h } from 'vue';
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
-import { VfContainer, VfStack } from '@codemonster-ru/vueforge-layouts';
+import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
 import { VfPlayground } from '@codemonster-ru/vueforge-playground';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
@@ -196,3 +208,9 @@ function onError(error: {
   });
 }
 </script>
+
+<style scoped>
+.demo-surface {
+  min-width: 0;
+}
+</style>

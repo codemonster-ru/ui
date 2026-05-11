@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import VfMenuBarItemNode from './VfMenuBarItemNode.vue';
+import VfHorizontalScroller from '@/components/internal/VfHorizontalScroller.vue';
 import { useClickOutside, useEscapeKey } from '@/composables';
 import type { VfNavMenuItem } from '@/types/components';
 
@@ -26,6 +27,8 @@ const emit = defineEmits<{
 }>();
 
 const rootRef = ref<HTMLElement | null>(null);
+const overlayRef = ref<HTMLElement | null>(null);
+const teleportReady = ref(false);
 const internalValue = ref(props.defaultValue);
 const openPath = ref<string[]>([]);
 const activeValue = computed(() => props.modelValue ?? internalValue.value);
@@ -69,7 +72,7 @@ function cancelCloseMenu() {
 }
 
 useClickOutside(
-  rootRef,
+  [rootRef, overlayRef],
   () => {
     openPath.value = [];
   },
@@ -103,6 +106,11 @@ watch(
 onBeforeUnmount(() => {
   cancelCloseMenu();
 });
+
+onMounted(() => {
+  teleportReady.value = true;
+});
+
 </script>
 
 <template>
@@ -113,19 +121,31 @@ onBeforeUnmount(() => {
     @mouseenter="cancelCloseMenu"
     @mouseleave="scheduleCloseMenu"
   >
-    <ul class="vf-menu-bar__list" role="menubar">
-      <VfMenuBarItemNode
-        v-for="item in items"
-        :key="item.value"
-        :item="item"
-        :depth="0"
-        :parent-path="[]"
-        :active-value="activeValue"
-        :open-path="openPath"
-        :hover-enabled="openPath.length > 0"
-        @open-path-change="handleOpenPathChange"
-        @select="handleSelect"
-      />
-    </ul>
+    <div ref="overlayRef" class="vf-menu-bar__overlay" />
+    <VfHorizontalScroller
+      class="vf-menu-bar__scroller"
+      left-aria-label="Scroll menu left"
+      right-aria-label="Scroll menu right"
+      left-control-class="vf-menu-bar__scroll-button vf-menu-bar__scroll-button--left"
+      right-control-class="vf-menu-bar__scroll-button vf-menu-bar__scroll-button--right"
+      hidden-control-class="vf-menu-bar__scroll-button--hidden"
+    >
+      <ul class="vf-menu-bar__list" role="menubar">
+        <VfMenuBarItemNode
+          v-for="item in items"
+          :key="item.value"
+          :item="item"
+          :depth="0"
+          :parent-path="[]"
+          :active-value="activeValue"
+          :open-path="openPath"
+          :hover-enabled="openPath.length > 0"
+          :submenu-teleport-target="overlayRef"
+          :teleport-enabled="teleportReady"
+          @open-path-change="handleOpenPathChange"
+          @select="handleSelect"
+        />
+      </ul>
+    </VfHorizontalScroller>
   </nav>
 </template>

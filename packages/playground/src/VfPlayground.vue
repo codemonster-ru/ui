@@ -6,6 +6,7 @@
         <template v-else>
           <VfTabs
             class="vf-playground__tabs-default"
+            size="sm"
             :items="defaultTabItems"
             :model-value="activeTab"
             @update:model-value="handleDefaultTabChange"
@@ -14,7 +15,7 @@
         <component :is="actionsRenderer" v-if="actionsRenderer && isSandboxMode" v-bind="actionsRendererProps" />
       </div>
 
-      <div v-if="activeTab === 'code' && showCode" class="vf-playground__panel vf-playground__panel--code">
+      <div v-if="activeTab === 'code' && isCodeVisible" class="vf-playground__panel vf-playground__panel--code">
         <component :is="filesRenderer" v-if="filesRenderer && fileNames.length > 1" v-bind="filesRendererProps" />
         <div v-else-if="fileNames.length > 1" class="vf-playground__files">
           <VfTabs
@@ -63,17 +64,50 @@ import { createPlaygroundSession, type ConsoleEvent, type PlaygroundError } from
 
 import type { VfPlaygroundComponentProps, VfPlaygroundProps, VfPlaygroundSandboxProps } from './props';
 
-const props = withDefaults(defineProps<VfPlaygroundProps>(), {
+type VfPlaygroundRuntimeProps = {
+  mode?: VfPlaygroundProps['mode'];
+  height?: VfPlaygroundProps['height'];
+  theme?: VfPlaygroundProps['theme'];
+  tabsRenderer?: VfPlaygroundProps['tabsRenderer'];
+  actionsRenderer?: VfPlaygroundProps['actionsRenderer'];
+  filesRenderer?: VfPlaygroundProps['filesRenderer'];
+  files?: VfPlaygroundSandboxProps['files'];
+  entry?: VfPlaygroundSandboxProps['entry'];
+  framework?: VfPlaygroundSandboxProps['framework'];
+  autorun?: VfPlaygroundSandboxProps['autorun'];
+  showCode?: VfPlaygroundSandboxProps['showCode'];
+  resolveImport?: VfPlaygroundSandboxProps['resolveImport'];
+  bootstrapScript?: VfPlaygroundSandboxProps['bootstrapScript'];
+  component?: VfPlaygroundComponentProps['component'];
+  componentSource?: VfPlaygroundComponentProps['componentSource'];
+  componentSourceLanguage?: VfPlaygroundComponentProps['componentSourceLanguage'];
+  componentFiles?: VfPlaygroundComponentProps['componentFiles'];
+  componentEntry?: VfPlaygroundComponentProps['componentEntry'];
+  componentPadding?: VfPlaygroundComponentProps['componentPadding'];
+  componentMinHeight?: VfPlaygroundComponentProps['componentMinHeight'];
+};
+
+const props = withDefaults(defineProps<VfPlaygroundRuntimeProps>(), {
   mode: 'sandbox',
+  height: undefined,
+  tabsRenderer: undefined,
+  actionsRenderer: undefined,
+  filesRenderer: undefined,
   framework: 'vanilla',
   autorun: true,
   showCode: true,
+  resolveImport: undefined,
+  bootstrapScript: undefined,
   theme: 'inherit',
   files: () => ({}),
   entry: '',
   component: undefined,
   componentSource: '',
-  componentSourceLanguage: 'vue'
+  componentSourceLanguage: 'vue',
+  componentFiles: undefined,
+  componentEntry: undefined,
+  componentPadding: undefined,
+  componentMinHeight: undefined
 });
 
 const emit = defineEmits<{
@@ -88,14 +122,14 @@ const iframeRef = ref<HTMLIFrameElement | null>(null);
 const isSandboxMode = computed(() => props.mode !== 'component');
 const sandboxProps = computed(() => (isSandboxMode.value ? (props as VfPlaygroundSandboxProps) : null));
 const componentProps = computed(() => (isSandboxMode.value ? null : (props as VfPlaygroundComponentProps)));
-const showCode = computed(() =>
+const isCodeVisible = computed(() =>
   isSandboxMode.value
     ? sandboxProps.value?.showCode ?? true
     : Boolean(componentProps.value?.componentSource) ||
       Boolean(componentProps.value?.componentFiles && Object.keys(componentProps.value.componentFiles).length > 0)
 );
 const theme = computed(() => props.theme ?? 'inherit');
-const activeTab = ref<PlaygroundTab>(showCode.value ? 'code' : 'preview');
+const activeTab = ref<PlaygroundTab>(isCodeVisible.value ? 'code' : 'preview');
 const activeFile = ref(isSandboxMode.value ? sandboxProps.value?.entry ?? '' : '');
 const logs = ref<string[]>([]);
 const isRunning = ref(false);
@@ -103,6 +137,9 @@ const hostIsDark = ref(false);
 
 if (import.meta.env.DEV && !isSandboxMode.value && !componentProps.value?.component) {
   throw new Error('[VfPlayground] `component` is required when `mode` is "component".');
+}
+if (import.meta.env.DEV && isSandboxMode.value && (!sandboxProps.value?.files || !sandboxProps.value?.entry)) {
+  throw new Error('[VfPlayground] `files` and `entry` are required when `mode` is "sandbox".');
 }
 
 const componentCodeFiles = computed<Record<string, string>>(() => {
@@ -167,13 +204,13 @@ const componentPreviewStyle = computed(() => ({
 }));
 const tabsRendererProps = computed(() => ({
   activeTab: activeTab.value,
-  showCode: showCode.value,
+  showCode: isCodeVisible.value,
   setActiveTab
 }));
 const defaultTabItems = computed<VfTabItem[]>(() => {
   if (!isSandboxMode.value) {
     const tabs: VfTabItem[] = [{ value: 'preview', label: 'Preview' }];
-    if (showCode.value) {
+    if (isCodeVisible.value) {
       return [{ value: 'code', label: 'Code' }, ...tabs];
     }
     return tabs;
@@ -183,7 +220,7 @@ const defaultTabItems = computed<VfTabItem[]>(() => {
     { value: 'preview', label: 'Preview' },
     { value: 'console', label: 'Console' }
   ];
-  if (showCode.value) {
+  if (isCodeVisible.value) {
     return [{ value: 'code', label: 'Code' }, ...tabs];
   }
   return tabs;
@@ -205,7 +242,7 @@ const filesRendererProps = computed(() => ({
 }));
 const layoutSlotProps = computed(() => ({
   activeTab: activeTab.value,
-  showCode: showCode.value,
+  showCode: isCodeVisible.value,
   setActiveTab,
   fileNames: fileNames.value,
   activeFile: activeFile.value,
@@ -334,7 +371,7 @@ function setActiveTab(tab: 'code' | 'preview' | 'console'): void {
     return;
   }
 
-  if (tab === 'code' && !showCode.value) {
+  if (tab === 'code' && !isCodeVisible.value) {
     activeTab.value = 'preview';
     return;
   }
@@ -565,7 +602,7 @@ watch(
 );
 
 watch(
-  [isSandboxMode, showCode],
+  [isSandboxMode, isCodeVisible],
   ([sandbox, nextShowCode]) => {
     if (!sandbox) {
       if (activeTab.value === 'console') {
@@ -660,6 +697,7 @@ defineExpose({
   --vf-playground-radius-md: var(--vf-radius-control);
   --vf-playground-radius-lg: var(--vf-radius-overlay);
   --vf-playground-control-height-md: var(--vf-control-height-md);
+  --vf-playground-bar-height: calc(var(--vf-control-height-md) + var(--vf-tabs-list-padding-bottom));
   --vf-playground-control-font-size-md: var(--vf-control-font-size-md);
   --vf-playground-control-font-weight: var(--vf-text-body-font-weight);
   --vf-playground-control-line-height: var(--vf-text-body-line-height);
@@ -690,14 +728,21 @@ defineExpose({
 .vf-playground__tabs {
   display: flex;
   align-items: center;
-  min-height: var(--vf-playground-control-height-md);
+  height: var(--vf-playground-bar-height);
+  min-height: var(--vf-playground-bar-height);
+  max-height: var(--vf-playground-bar-height);
   gap: 0;
   padding: 0;
-  background: var(--vf-playground-surface);
+  background: var(--vf-playground-tab-bg);
 }
 
 .vf-playground__tabs-default {
   width: 100%;
+
+  --vf-tabs-list-background: var(--vf-playground-tab-bg);
+  --vf-tabs-list-border-color: var(--vf-playground-border);
+  --vf-control-height-md: var(--vf-playground-bar-height);
+  --vf-field-padding-md: var(--vf-surface-padding-compact);
 }
 
 .vf-playground__tabs-default .vf-tabs,
@@ -705,8 +750,27 @@ defineExpose({
   width: 100%;
 }
 
+.vf-playground__tabs-default .vf-tabs {
+  gap: 0;
+}
+
+.vf-playground__tabs-default .vf-tabs__list-scroller,
+.vf-playground__tabs-default .vf-tabs__tab {
+  min-height: var(--vf-playground-bar-height);
+}
+
+.vf-playground__tabs-default .vf-tabs__tab {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .vf-playground__tabs-default--files .vf-tabs__list {
   justify-content: flex-start;
+}
+
+.vf-playground__tabs-default--files.vf-tabs,
+.vf-playground__tabs-default--files .vf-tabs__list {
+  background: var(--vf-playground-tab-bg);
 }
 
 .vf-playground__panel {
@@ -752,9 +816,11 @@ defineExpose({
   --vf-codeblock-border-radius: 0;
   --vf-codeblock-shadow: none;
   --vf-codeblock-max-height: 100%;
-  --vf-codeblock-header-padding: 0 var(--vf-surface-padding-compact);
-  --vf-codeblock-meta-font-size: var(--vf-text-label-font-size);
-  --vf-codeblock-line-height: var(--vf-playground-control-line-height);
+  --vf-codeblock-header-min-height: var(--vf-playground-bar-height);
+  --vf-codeblock-header-padding: 0 var(--vf-tabs-tab-padding-inline);
+  --vf-codeblock-meta-font-size: 0.875rem;
+  --vf-codeblock-meta-color: var(--vf-tabs-tab-color);
+  --vf-codeblock-filename-font-weight: var(--vf-font-weight-medium);
 }
 
 .vf-playground__codeblock-host .vf-codeblock__code-shell {
@@ -771,10 +837,8 @@ defineExpose({
   display: none;
 }
 
-.vf-playground__codeblock-host .vf-codeblock__header {
-  height: var(--vf-playground-control-height-md);
-  min-height: var(--vf-playground-control-height-md);
-  box-sizing: border-box;
+.vf-playground__codeblock-host .vf-codeblock__meta {
+  font-weight: var(--vf-font-weight-medium);
 }
 
 .vf-playground__files {
@@ -782,6 +846,7 @@ defineExpose({
   gap: 0;
   padding: 0;
   border-bottom: 0;
+  background: var(--vf-playground-tab-bg);
 }
 
 .vf-playground__iframe {

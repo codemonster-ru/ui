@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch, type CSSProperties } from 'vue';
-import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import VfHorizontalScroller from '@/components/internal/VfHorizontalScroller.vue';
 import { useId } from '@/composables';
 import type { VfTabItem } from '@/types/components';
 
@@ -42,7 +42,6 @@ const isControlled = computed(() => props.modelValue !== undefined);
 const activeValue = computed(() => props.modelValue ?? internalValue.value ?? fallbackValue.value);
 
 let listResizeObserver: ResizeObserver | null = null;
-let scrollStopTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function updateScrollState() {
   const list = listRef.value;
@@ -183,38 +182,32 @@ function updateIndicator() {
   updateScrollState();
 }
 
-function handleListScroll() {
-  isListScrolling.value = true;
-  if (scrollStopTimeout) {
-    clearTimeout(scrollStopTimeout);
-  }
-  scrollStopTimeout = setTimeout(() => {
-    isListScrolling.value = false;
-  }, 120);
-
-  updateScrollState();
-  updateIndicator();
-}
-
 function handleWindowResize() {
   updateScrollState();
   updateIndicator();
 }
 
-function scrollListBy(direction: 'left' | 'right') {
-  const list = listRef.value;
+function handleScrollerState(payload: {
+  canScrollLeft: boolean;
+  canScrollRight: boolean;
+  controlsReady: boolean;
+  controlsAnimated: boolean;
+  isScrolling: boolean;
+}) {
+  canScrollLeft.value = payload.canScrollLeft;
+  canScrollRight.value = payload.canScrollRight;
+  scrollControlsReady.value = payload.controlsReady;
+  scrollControlsAnimated.value = payload.controlsAnimated;
+  isListScrolling.value = payload.isScrolling;
+  updateIndicator();
+}
 
-  if (!list) {
-    return;
+function handleViewportChange(element: HTMLElement | null) {
+  listRef.value = element;
+  if (element) {
+    updateScrollState();
+    updateIndicator();
   }
-
-  const delta = Math.max(120, Math.round(list.clientWidth * 0.6));
-  const nextScrollLeft = direction === 'left' ? list.scrollLeft - delta : list.scrollLeft + delta;
-
-  list.scrollTo({
-    left: nextScrollLeft,
-    behavior: 'smooth',
-  });
 }
 
 watch(
@@ -231,12 +224,8 @@ onMounted(async () => {
   await nextTick();
   updateScrollState();
   updateIndicator();
-  scrollControlsReady.value = true;
   requestAnimationFrame(() => {
     indicatorReady.value = true;
-    requestAnimationFrame(() => {
-      scrollControlsAnimated.value = true;
-    });
   });
 
   if (typeof ResizeObserver !== 'undefined' && listRef.value) {
@@ -254,9 +243,6 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   listResizeObserver?.disconnect();
-  if (scrollStopTimeout) {
-    clearTimeout(scrollStopTimeout);
-  }
 
   if (typeof window !== 'undefined') {
     window.removeEventListener('resize', handleWindowResize);
@@ -272,33 +258,22 @@ onBeforeUnmount(() => {
       'vf-tabs--scroll-controls-animated': scrollControlsAnimated,
     }"
   >
-    <div
+    <VfHorizontalScroller
       class="vf-tabs__list"
-      :class="[
-        {
-          'vf-tabs__list--can-scroll-left': canScrollLeft,
-          'vf-tabs__list--can-scroll-right': canScrollRight,
-        },
-      ]"
-      role="tablist"
-      aria-orientation="horizontal"
+      viewport-class="vf-tabs__list-scroller"
+      left-control-class="vf-tabs__scroll-button vf-tabs__scroll-button--left"
+      right-control-class="vf-tabs__scroll-button vf-tabs__scroll-button--right"
+      hidden-control-class="vf-tabs__scroll-button--hidden"
+      can-scroll-left-class="vf-tabs__list--can-scroll-left"
+      can-scroll-right-class="vf-tabs__list--can-scroll-right"
+      controls-ready-class="vf-tabs--scroll-controls-ready"
+      controls-animated-class="vf-tabs--scroll-controls-animated"
+      left-aria-label="Scroll tabs left"
+      right-aria-label="Scroll tabs right"
+      @viewport-change="handleViewportChange"
+      @state-change="handleScrollerState"
     >
-      <button
-        aria-label="Scroll tabs left"
-        :aria-hidden="!scrollControlsReady || !canScrollLeft"
-        :tabindex="scrollControlsReady && canScrollLeft ? 0 : -1"
-        class="vf-tabs__scroll-button vf-tabs__scroll-button--left"
-        :class="{
-          'vf-tabs__scroll-button--hidden': !scrollControlsReady || !canScrollLeft,
-        }"
-        type="button"
-        :disabled="!scrollControlsReady || !canScrollLeft"
-        @click="scrollListBy('left')"
-      >
-        <VueIconify :icon="icons.chevronLeft" aria-hidden="true" size="1.25em" />
-      </button>
-
-      <div ref="listRef" class="vf-tabs__list-scroller" @scroll="handleListScroll">
+      <div role="tablist" aria-orientation="horizontal">
         <button
           v-for="(item, index) in items"
           :id="tabId(item.value)"
@@ -324,30 +299,17 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
-      <button
-        aria-label="Scroll tabs right"
-        :aria-hidden="!scrollControlsReady || !canScrollRight"
-        :tabindex="scrollControlsReady && canScrollRight ? 0 : -1"
-        class="vf-tabs__scroll-button vf-tabs__scroll-button--right"
-        :class="{
-          'vf-tabs__scroll-button--hidden': !scrollControlsReady || !canScrollRight,
-        }"
-        type="button"
-        :disabled="!scrollControlsReady || !canScrollRight"
-        @click="scrollListBy('right')"
-      >
-        <VueIconify :icon="icons.chevronRight" aria-hidden="true" size="1.25em" />
-      </button>
+      <template #overlay>
+        <span aria-hidden="true" class="vf-tabs__baseline" />
 
-      <span aria-hidden="true" class="vf-tabs__baseline" />
-
-      <span
-        aria-hidden="true"
-        class="vf-tabs__indicator"
-        :class="[indicatorReady && 'vf-tabs__indicator--ready', isListScrolling && 'vf-tabs__indicator--no-transition']"
-        :style="indicatorStyle"
-      />
-    </div>
+        <span
+          aria-hidden="true"
+          class="vf-tabs__indicator"
+          :class="[indicatorReady && 'vf-tabs__indicator--ready', isListScrolling && 'vf-tabs__indicator--no-transition']"
+          :style="indicatorStyle"
+        />
+      </template>
+    </VfHorizontalScroller>
 
     <div
       v-if="activeValue && slots.panel"

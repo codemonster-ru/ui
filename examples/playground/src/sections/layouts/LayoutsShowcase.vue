@@ -1,6 +1,6 @@
 <template>
   <div class="demo-page">
-    <VfContainer>
+    <div class="demo-container">
       <VfStack>
         <section class="demo-block">
           <div class="demo-block__header">
@@ -540,7 +540,7 @@
           </VfTabs>
         </section>
       </VfStack>
-    </VfContainer>
+    </div>
   </div>
 </template>
 
@@ -563,7 +563,7 @@ import {
   VfSection,
   VfStack
 } from "@codemonster-ru/vueforge-layouts";
-import { useCssVarBreakpoints } from "@codemonster-ru/vueforge-layouts/composables/useCssVarBreakpoints";
+import { useCssVarBreakpoints } from "@codemonster-ru/vueforge-layouts";
 
 const resolvedBreakpoints = useCssVarBreakpoints();
 

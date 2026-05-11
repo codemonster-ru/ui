@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.1
+
+### Changed
+
+- Reduced default `VfCodeBlock` header/meta typography size to `0.875rem` (14px) for better visual balance with monospace rendering.
+- Updated default CodeBlock surface tokens to use `--vf-color-surface-muted` so standalone blocks are visually separated from card/section surfaces in both light and dark themes.
+
 ## 2.3.0
 
 ### Changed

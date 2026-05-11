@@ -36,6 +36,8 @@ export type {
   VfResolvedLayoutThemeConfig,
   VfResolvedLayoutThemeOptions,
 } from './theme/public';
+export { useCssVarBreakpoints } from './composables/useCssVarBreakpoints';
+
 export {
   vfBreakpoints,
   toMinWidthQuery,
