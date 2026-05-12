@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.18.2
+
+### Changed
+
+- Added first-class prose escape support for embedded interactive components:
+  - introduced official `.vf-prose-exclude` escape class for prose containers
+  - excluded `.vf-playground` and `.vf-codeblock` descendants from `vf-prose` typography selectors out of the box
+  - preserved prose vertical rhythm between direct children, including escaped blocks and embedded playground/codeblock roots
+- Added prose CSS contract coverage to prevent regressions in exclude behavior and block-spacing flow.
+- Documented the prose escape hatch and auto-excluded component roots in the visual baseline docs.
+
 ## 1.18.1
 
 ### Fixed

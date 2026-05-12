@@ -58,6 +58,27 @@ CSS fallback baseline: [src/styles/tokens.css](../src/styles/tokens.css)
 - Body content uses the body typography layer, typically `--vf-text-body-line-height`.
 - Components should avoid arbitrary line-height values unless there is a clear reason.
 
+### Prose Escape Hatch
+
+`VfPlayground` (`.vf-playground`) and `VfCodeBlock` (`.vf-codeblock`) are excluded automatically.
+Use `.vf-prose-exclude` for any other embedded UI block that should keep its own typography inside a prose stream.
+
+```vue
+<article class="vf-prose">
+  <h2>Install</h2>
+  <p>Use the playground below to validate your setup.</p>
+
+  <div class="vf-prose-exclude">
+    <VfPlayground :files="files" entry="main.ts" />
+  </div>
+
+  <p>After the sandbox works, continue with runtime integration.</p>
+</article>
+```
+
+- Prose typography is skipped for descendants of `.vf-prose-exclude`.
+- Vertical rhythm between neighboring prose blocks is preserved.
+
 ## Semantic Color Contract
 
 - `primary`, `success`, and `danger` use semantic tokens.
