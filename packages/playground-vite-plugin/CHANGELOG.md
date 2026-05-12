@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Changed
+
+- Expanded Vite peer dependency support to include `vite@8` (`^6.0.0 || ^7.0.0 || ^8.0.0`).
+
 ## 0.1.0
 
 ### Added
