@@ -264,7 +264,14 @@ textarea {
   margin-top: var(--vf-prose-flow-gap);
 }
 
-.vf-prose :where(h1, h2, h3, h4, h5, h6) {
+.vf-prose :where(h1, h2, h3, h4, h5, h6):not(
+    .vf-prose-exclude,
+    .vf-prose-exclude *,
+    .vf-playground,
+    .vf-playground *,
+    .vf-codeblock,
+    .vf-codeblock *
+  ) {
   font-family: var(--vf-font-family-heading);
   font-weight: var(--vf-heading-font-weight);
   color: var(--vf-prose-heading-color);
@@ -300,32 +307,32 @@ textarea {
   line-height: var(--vf-heading-h-6-line-height);
 }
 
-.vf-prose :where(ul, ol) {
+.vf-prose :where(ul, ol):not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   margin: 0;
 }
 
-.vf-prose ul {
+.vf-prose ul:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   padding-inline-start: var(--vf-prose-list-padding-inline-start);
   list-style: disc;
 }
 
-.vf-prose ol {
+.vf-prose ol:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   padding-inline-start: var(--vf-prose-list-padding-inline-start);
   list-style: decimal;
 }
 
-.vf-prose :where(ul, ol) li + li {
+.vf-prose :where(ul, ol):not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) li:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) + li:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   margin-top: var(--vf-prose-list-item-spacing);
 }
 
-.vf-prose blockquote {
+.vf-prose blockquote:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   margin: 0;
   padding: 0 0 0 var(--vf-prose-blockquote-padding-inline-start);
   border-inline-start: var(--vf-prose-blockquote-border-width) solid var(--vf-color-border);
   color: var(--vf-color-muted);
 }
 
-.vf-prose hr {
+.vf-prose hr:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   margin: 0;
   border: 0;
   border-top: var(--vf-prose-hr-border-width) solid var(--vf-color-border);
@@ -333,12 +340,12 @@ textarea {
 }
 
 .vf-prose
-  > :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, pre, hr)
-  + :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, pre, hr) {
+  > :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, pre, hr, .vf-prose-exclude, .vf-playground, .vf-codeblock)
+  + :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, pre, hr, .vf-prose-exclude, .vf-playground, .vf-codeblock) {
   margin-top: var(--vf-prose-block-spacing);
 }
 
-.vf-prose a {
+.vf-prose a:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   display: inline-flex;
   width: fit-content;
   max-width: 100%;
@@ -356,18 +363,18 @@ textarea {
     opacity var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing);
 }
 
-.vf-prose a:hover {
+.vf-prose a:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *):hover {
   color: var(--vf-prose-link-hover-color);
 }
 
-.vf-prose a:focus-visible {
+.vf-prose a:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *):focus-visible {
   outline: none;
   border-color: var(--vf-color-primary);
   border-radius: var(--vf-radius-control);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
-.vf-prose :not(pre) > code {
+.vf-prose :not(pre):not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) > code:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   display: inline;
   padding: var(--vf-prose-inline-code-padding);
   border: 0;
@@ -381,7 +388,7 @@ textarea {
   line-height: inherit;
 }
 
-.vf-prose pre {
+.vf-prose pre:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   overflow-x: auto;
   padding: var(--vf-prose-code-block-padding);
   border: 0;
@@ -389,7 +396,7 @@ textarea {
   background: color-mix(in srgb, currentColor 12%, transparent);
 }
 
-.vf-prose pre code {
+.vf-prose pre:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) code:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   font-family: var(--vf-font-family-mono);
   font-size: var(--vf-prose-inline-code-font-size);
   color: var(--vf-color-text);
