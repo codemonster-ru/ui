@@ -68,6 +68,7 @@ type VfPlaygroundRuntimeProps = {
   mode?: VfPlaygroundProps['mode'];
   height?: VfPlaygroundProps['height'];
   theme?: VfPlaygroundProps['theme'];
+  initialTab?: VfPlaygroundProps['initialTab'];
   tabsRenderer?: VfPlaygroundProps['tabsRenderer'];
   actionsRenderer?: VfPlaygroundProps['actionsRenderer'];
   filesRenderer?: VfPlaygroundProps['filesRenderer'];
@@ -99,6 +100,7 @@ const props = withDefaults(defineProps<VfPlaygroundRuntimeProps>(), {
   resolveImport: undefined,
   bootstrapScript: undefined,
   theme: 'inherit',
+  initialTab: undefined,
   files: () => ({}),
   entry: '',
   component: undefined,
@@ -129,7 +131,8 @@ const isCodeVisible = computed(() =>
       Boolean(componentProps.value?.componentFiles && Object.keys(componentProps.value.componentFiles).length > 0)
 );
 const theme = computed(() => props.theme ?? 'inherit');
-const activeTab = ref<PlaygroundTab>(isCodeVisible.value ? 'code' : 'preview');
+const hasInitialTab = props.initialTab !== undefined;
+const activeTab = ref<PlaygroundTab>(resolveInitialTab());
 const activeFile = ref(isSandboxMode.value ? sandboxProps.value?.entry ?? '' : '');
 const logs = ref<string[]>([]);
 const isRunning = ref(false);
@@ -267,6 +270,19 @@ const SANDBOX_THEME_STYLE_ID = 'vf-playground-theme-sync';
 
 function toCssLength(value: string | number): string {
   return typeof value === 'number' ? `${value}px` : value;
+}
+
+function resolveInitialTab(): PlaygroundTab {
+  if (props.initialTab === 'preview') {
+    return 'preview';
+  }
+  if (props.initialTab === 'console') {
+    return isSandboxMode.value ? 'console' : 'preview';
+  }
+  if (props.initialTab === 'code') {
+    return isCodeVisible.value ? 'code' : 'preview';
+  }
+  return isCodeVisible.value ? 'code' : 'preview';
 }
 
 function readHostThemeIsDark(): boolean {
@@ -611,7 +627,7 @@ watch(
       if (!nextShowCode && activeTab.value === 'code') {
         activeTab.value = 'preview';
       }
-      if (nextShowCode && activeTab.value === 'preview') {
+      if (!hasInitialTab && nextShowCode && activeTab.value === 'preview') {
         activeTab.value = 'code';
       }
       return;

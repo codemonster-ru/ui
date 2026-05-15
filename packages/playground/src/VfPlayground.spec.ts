@@ -191,6 +191,78 @@ describe('VfPlayground', () => {
     expect(findCodeHost(wrapper).text()).toContain('<template><div>preview</div></template>');
   });
 
+  it('uses initialTab preview in component mode when code is available', () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        mode: 'component',
+        component: markRaw(
+          defineComponent({
+            name: 'ComponentInitialPreview',
+            setup() {
+              return () => h('div', 'preview');
+            }
+          })
+        ),
+        componentSource: '<template><div>preview</div></template>',
+        initialTab: 'preview'
+      },
+      global: testGlobal
+    });
+
+    expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(true);
+    expect(findTabsHost(wrapper).attributes('data-model-value')).toBe('preview');
+    expect(findCodeHost(wrapper).exists()).toBe(false);
+  });
+
+  it('falls back to preview when initialTab code is not available', () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        ...baseSandboxProps,
+        showCode: false,
+        initialTab: 'code'
+      },
+      global: testGlobal
+    });
+
+    expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(false);
+    expect(findTabsHost(wrapper).attributes('data-model-value')).toBe('preview');
+  });
+
+  it('uses initialTab console in sandbox mode', () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        ...baseSandboxProps,
+        initialTab: 'console'
+      },
+      global: testGlobal
+    });
+
+    expect(wrapper.find('.vf-tabs-item[data-value="console"]').exists()).toBe(true);
+    expect(findTabsHost(wrapper).attributes('data-model-value')).toBe('console');
+  });
+
+  it('falls back to preview when initialTab console is not available', () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        mode: 'component',
+        component: markRaw(
+          defineComponent({
+            name: 'ComponentInitialConsole',
+            setup() {
+              return () => h('div', 'preview');
+            }
+          })
+        ),
+        componentSource: '<template><div>preview</div></template>',
+        initialTab: 'console'
+      },
+      global: testGlobal
+    });
+
+    expect(wrapper.find('.vf-tabs-item[data-value="console"]').exists()).toBe(false);
+    expect(findTabsHost(wrapper).attributes('data-model-value')).toBe('preview');
+  });
+
   it('supports multi-file code view in component mode', () => {
     const wrapper = mount(VfPlayground, {
       props: {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+
+### Added
+
+- Added `initialTab` to `VfPlayground` so demos can choose the default `code`, `preview`, or `console` tab while keeping tab state uncontrolled.
+- Added fallback handling for unavailable initial tabs, including hidden code tabs and component-mode console.
+
 ## 1.2.3
 
 ### Fixed
