@@ -374,7 +374,7 @@ textarea {
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
-.vf-prose :not(pre):not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) > code:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
+.vf-prose :not(pre, .vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) > code:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   display: inline;
   padding: var(--vf-prose-inline-code-padding);
   border: 0;

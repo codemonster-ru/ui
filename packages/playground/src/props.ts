@@ -5,9 +5,12 @@ import type {
   PlaygroundFiles
 } from '@codemonster-ru/vueforge-playground-core';
 
+export type VfPlaygroundTab = 'code' | 'preview' | 'console';
+
 export interface VfPlaygroundSharedProps {
   height?: number | string;
   theme?: 'light' | 'dark' | 'inherit';
+  initialTab?: VfPlaygroundTab;
   tabsRenderer?: Component;
   actionsRenderer?: Component;
   filesRenderer?: Component;

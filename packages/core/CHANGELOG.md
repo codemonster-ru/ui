@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.3
+
+### Fixed
+
+- Updated the `vf-prose` inline-code selector to use complex `:not()` notation for stylelint compatibility without changing prose exclusion behavior.
+
 ## 1.18.2
 
 ### Changed
