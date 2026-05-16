@@ -15,10 +15,5 @@
     },
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*", "env.d.ts", "index.html"],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ]
+  "include": ["src/**/*", "env.d.ts", "index.html"]
 }

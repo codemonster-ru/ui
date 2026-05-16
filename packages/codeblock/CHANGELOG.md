@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.2
+
+### Fixed
+
+- Corrected declaration generation so the published `types` entry resolves to `dist/index.d.ts`.
+
 ## 2.3.1
 
 ### Changed

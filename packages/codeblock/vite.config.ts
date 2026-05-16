@@ -10,8 +10,10 @@ export default defineConfig({
   plugins: [
     vue(),
     dts({
+      entryRoot: 'src',
       include: ['src'],
       exclude: ['src/**/*.test.ts', 'src/**/__tests__/**/*'],
+      insertTypesEntry: true,
     }),
   ],
   test: {
