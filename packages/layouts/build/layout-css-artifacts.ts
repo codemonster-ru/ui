@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +10,7 @@ const currentDir = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(currentDir, '..');
 const generatedStylesDir = resolve(rootDir, '.generated/theme');
 const generatedTokensPath = resolve(generatedStylesDir, 'layout-tokens.css');
+const generatedThemePath = resolve(generatedStylesDir, 'layout-theme.css');
 
 function tokenKeyToCssVar(key: string, prefix = 'vf') {
   const kebabKey = key
@@ -30,7 +33,7 @@ function layoutsTokensToCssVars(tokens: VfLayoutTokens, prefix = 'vf') {
 }
 
 export function buildLayoutCssArtifacts() {
-  const cssVars = layoutsTokensToCssVars(defaultLayoutsPreset.tokens, 'vf');
+  const cssVars = layoutsTokensToCssVars(defaultLayoutsPreset.tokens, 'vf-layout');
   const tokenLines = [
     '/* Generated from src/theme/default-preset.ts. */',
     '/* Fallback baseline layout tokens for package CSS consumers. */',
@@ -39,12 +42,22 @@ export function buildLayoutCssArtifacts() {
     '}',
     '',
   ];
+  const themeLines = [
+    '/* Generated from src/theme/default-preset.ts. */',
+    '/* Fallback mode layout styles for package CSS consumers. */',
+    ":root[data-vf-theme='dark'] {",
+    '  /* Default layout tokens inherit semantic core colors in dark mode. */',
+    '}',
+    '',
+  ];
 
   mkdirSync(generatedStylesDir, { recursive: true });
   writeFileSync(generatedTokensPath, tokenLines.join('\n'));
+  writeFileSync(generatedThemePath, themeLines.join('\n'));
 }
 
 export const layoutCssArtifactPaths = {
+  generatedThemePath,
   generatedStylesDir,
   generatedTokensPath,
   rootDir,

@@ -1,3 +1,6 @@
+@import '../.generated/theme/layout-tokens.css';
+@import '../.generated/theme/layout-theme.css';
+
 *,
 *::before,
 *::after {

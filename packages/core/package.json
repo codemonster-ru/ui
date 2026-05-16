@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.18.3",
+  "version": "1.18.4",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -39,10 +39,10 @@
   "typesVersions": {
     "*": {
       "foundation": [
-        "dist/foundation/index.d.ts"
+        "dist/foundation-api.d.ts"
       ],
       "theme": [
-        "dist/theme/public.d.ts"
+        "dist/theme-api.d.ts"
       ]
     }
   },
@@ -53,13 +53,14 @@
     },
     "./styles.css": "./dist/styles.css",
     "./tokens.css": "./dist/tokens.css",
+    "./theme.css": "./dist/theme.css",
     "./foundation.css": "./dist/foundation.css",
     "./foundation": {
-      "types": "./dist/foundation/index.d.ts",
+      "types": "./dist/foundation-api.d.ts",
       "import": "./dist/foundation-api.js"
     },
     "./theme": {
-      "types": "./dist/theme/public.d.ts",
+      "types": "./dist/theme-api.d.ts",
       "import": "./dist/theme-api.js"
     }
   },

@@ -13,6 +13,7 @@ describe('foundation contract', () => {
     expect(packageJson.exports['./foundation']).toBeTruthy();
     expect(packageJson.exports['./theme']).toBeTruthy();
     expect(packageJson.exports['./tokens.css']).toBe('./dist/tokens.css');
+    expect(packageJson.exports['./theme.css']).toBe('./dist/theme.css');
     expect(packageJson.exports['./foundation.css']).toBe('./dist/foundation.css');
   });
 
