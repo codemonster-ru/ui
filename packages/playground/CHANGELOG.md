@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.1
+
+### Fixed
+
+- Lazy-load the sandbox runtime from `VfPlayground` so component-mode consumers no longer pull the TypeScript compiler into their initial bundle.
+- Kept sandbox execution behavior intact while preventing duplicate session creation during async runtime initialization.
+
 ## 1.3.0
 
 ### Added
