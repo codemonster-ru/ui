@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.18.4
+
+### Fixed
+
+- Corrected published declaration paths for the `./foundation` and `./theme` subpath exports.
+- Added the missing `./theme.css` package export and covered it in the foundation contract test.
+- Ensured bundled component styles include the generated token and theme fallback CSS.
+
 ## 1.18.3
 
 ### Fixed

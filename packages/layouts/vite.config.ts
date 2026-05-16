@@ -1,9 +1,10 @@
 import type { Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'unplugin-dts/vite';
+import { cpSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
-import { buildLayoutCssArtifacts } from './build/layout-css-artifacts';
+import { buildLayoutCssArtifacts, layoutCssArtifactPaths } from './build/layout-css-artifacts';
 
 function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
   return [
@@ -14,6 +15,16 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
       },
       configureServer() {
         buildLayoutCssArtifacts();
+      },
+    },
+    {
+      name: 'vueforge-layouts-copy-css-entries',
+      writeBundle() {
+        const distDir = resolve(__dirname, 'dist');
+
+        mkdirSync(distDir, { recursive: true });
+        cpSync(layoutCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
+        cpSync(layoutCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
       },
     },
   ];

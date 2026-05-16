@@ -1,4 +1,6 @@
 import { mount } from '@vue/test-utils';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, nextTick } from 'vue';
 import { VfThemeProvider, useTheme } from '@codemonster-ru/vueforge-core';
@@ -20,6 +22,8 @@ import {
   useBreakpointValue,
   useBreakpoints,
 } from '../src';
+
+const packageRoot = resolve(__dirname, '..');
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -43,6 +47,24 @@ async function waitForResponsiveUpdate() {
 }
 
 describe('package exports', () => {
+  it('declares style and token subpath exports', () => {
+    const packageJson = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as {
+      exports: Record<string, unknown>;
+    };
+
+    expect(packageJson.exports['./styles.css']).toBe('./dist/styles.css');
+    expect(packageJson.exports['./tokens.css']).toBe('./dist/tokens.css');
+    expect(packageJson.exports['./theme.css']).toBe('./dist/theme.css');
+  });
+
+  it('keeps generated layout tokens aligned with component css variables', () => {
+    const tokensCss = readFileSync(resolve(packageRoot, '.generated/theme/layout-tokens.css'), 'utf8');
+
+    expect(tokensCss).toContain('--vf-layout-shell-sidebar-width: 18rem;');
+    expect(tokensCss).toContain('--vf-layout-viewport-height: 100vh;');
+    expect(tokensCss).not.toContain('--vf-shell-sidebar-width:');
+  });
+
   it('exports the public layout API', () => {
     expect(VueForgeLayouts).toBeTruthy();
     expect(VfAppShell).toBeTruthy();

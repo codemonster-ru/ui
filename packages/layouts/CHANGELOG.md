@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.11.1
+
+### Fixed
+
+- Added published `./tokens.css` and `./theme.css` subpath exports for layout CSS consumers.
+- Generated layout token CSS with the `--vf-layout-*` namespace expected by component styles.
+- Copied generated layout token and theme CSS artifacts into `dist` during package builds.
+- Isolated Node-only build script typing from the browser-facing package TypeScript config.
+
 ## 1.11.0
 
 ### Changed
