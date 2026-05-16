@@ -4,7 +4,7 @@ import { defineComponent, h, markRaw } from 'vue';
 import { mount } from '@vue/test-utils';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import VfPlayground from './VfPlayground.vue';
 
@@ -116,23 +116,29 @@ beforeAll(() => {
   });
 });
 
+beforeEach(() => {
+  createSessionMock.mockClear();
+});
+
 async function flushThemeSync(): Promise<void> {
   await Promise.resolve();
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe('VfPlayground', () => {
-  it('keeps sandbox mode behavior and renders iframe preview', () => {
+  it('keeps sandbox mode behavior and renders iframe preview', async () => {
     const wrapper = mount(VfPlayground, {
       props: baseSandboxProps,
       global: testGlobal
     });
 
+    await flushThemeSync();
+
     expect(wrapper.find('iframe.vf-playground__iframe').exists()).toBe(true);
     expect(createSessionMock).toHaveBeenCalledTimes(1);
   });
 
-  it('renders component mode without iframe and shows demo component', () => {
+  it('renders component mode without iframe and shows demo component', async () => {
     const Demo = defineComponent({
       name: 'DemoComponent',
       setup() {
@@ -148,11 +154,14 @@ describe('VfPlayground', () => {
       global: testGlobal
     });
 
+    await flushThemeSync();
+
     expect(wrapper.find('iframe.vf-playground__iframe').exists()).toBe(false);
     expect(wrapper.find('.demo-content').text()).toBe('Component demo');
     expect(wrapper.find('.vf-tabs-item[data-value="preview"]').exists()).toBe(true);
     expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(false);
     expect(wrapper.find('.vf-tabs-item[data-value="console"]').exists()).toBe(false);
+    expect(createSessionMock).not.toHaveBeenCalled();
   });
 
   it('throws clear dev error when component mode has no component', () => {
@@ -400,5 +409,14 @@ describe('VfPlayground', () => {
     expect(source).not.toContain('--vf-codeblock-background-color:');
     expect(source).not.toContain('--vf-codeblock-header-background-color:');
     expect(source).not.toContain('--vf-codeblock-action-background-color:');
+  });
+
+  it('keeps sandbox runtime behind a dynamic import', () => {
+    const source = readFileSync(resolve(__dirname, './VfPlayground.vue'), 'utf8');
+
+    expect(source).not.toMatch(
+      /import\s+\{[^}]*createPlaygroundSession[^}]*\}\s+from\s+['"]@codemonster-ru\/vueforge-playground-core['"]/
+    );
+    expect(source).toContain("import('@codemonster-ru/vueforge-playground-core')");
   });
 });
