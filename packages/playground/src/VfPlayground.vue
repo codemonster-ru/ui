@@ -60,7 +60,11 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, type ComponentPublicInstance } from 'vue';
 import { VfTabs, type VfTabItem } from '@codemonster-ru/vueforge-core';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
-import { createPlaygroundSession, type ConsoleEvent, type PlaygroundError } from '@codemonster-ru/vueforge-playground-core';
+import type {
+  ConsoleEvent,
+  PlaygroundError,
+  createPlaygroundSession as createPlaygroundSessionFactory
+} from '@codemonster-ru/vueforge-playground-core';
 
 import type { VfPlaygroundComponentProps, VfPlaygroundProps, VfPlaygroundSandboxProps } from './props';
 
@@ -118,6 +122,8 @@ const emit = defineEmits<{
 }>();
 
 type PlaygroundTab = 'code' | 'preview' | 'console';
+type CreatePlaygroundSession = typeof createPlaygroundSessionFactory;
+type PlaygroundSession = ReturnType<CreatePlaygroundSession>;
 
 const isClient = typeof window !== 'undefined';
 const iframeRef = ref<HTMLIFrameElement | null>(null);
@@ -260,13 +266,23 @@ const layoutSlotProps = computed(() => ({
   bindPreviewIframe
 }));
 
-let session: ReturnType<typeof createPlaygroundSession> | null = null;
+let session: PlaygroundSession | null = null;
+let loadCreatePlaygroundSessionPromise: Promise<CreatePlaygroundSession> | null = null;
+let initSessionPromise: Promise<void> | null = null;
+let initSessionRequestId = 0;
 let unsubscribers: Array<() => void> = [];
 let themeObserver: MutationObserver | null = null;
 let mediaTheme: MediaQueryList | null = null;
 let onMediaThemeChange: ((event: MediaQueryListEvent) => void) | null = null;
 let sessionIframe: HTMLIFrameElement | null = null;
 const SANDBOX_THEME_STYLE_ID = 'vf-playground-theme-sync';
+
+function loadCreatePlaygroundSession(): Promise<CreatePlaygroundSession> {
+  loadCreatePlaygroundSessionPromise ??= import('@codemonster-ru/vueforge-playground-core').then(
+    (runtime) => runtime.createPlaygroundSession
+  );
+  return loadCreatePlaygroundSessionPromise;
+}
 
 function toCssLength(value: string | number): string {
   return typeof value === 'number' ? `${value}px` : value;
@@ -424,7 +440,7 @@ function bindPreviewIframe(el: Element | ComponentPublicInstance | null): void {
   iframeRef.value = nextIframe;
   if (nextIframe) {
     nextIframe.addEventListener('load', syncSandboxThemeToIframe);
-    initSession();
+    void initSession();
   }
 }
 
@@ -456,12 +472,38 @@ function appendError(error: PlaygroundError): void {
   emit('error', error);
 }
 
-function initSession(forceRecreate = false): void {
+function initSession(forceRecreate = false): Promise<void> {
+  if (initSessionPromise && !forceRecreate) {
+    return initSessionPromise;
+  }
+
+  const requestId = ++initSessionRequestId;
+  const promise = initSessionInternal(forceRecreate, requestId).finally(() => {
+    if (initSessionPromise === promise) {
+      initSessionPromise = null;
+    }
+  });
+  initSessionPromise = promise;
+  return promise;
+}
+
+async function initSessionInternal(forceRecreate: boolean, requestId: number): Promise<void> {
   if (!isSandboxMode.value || !isClient || !iframeRef.value) {
     return;
   }
 
   if (!forceRecreate && session && sessionIframe === iframeRef.value) {
+    return;
+  }
+
+  const sessionIframeTarget = iframeRef.value;
+  const createPlaygroundSession = await loadCreatePlaygroundSession();
+  if (
+    requestId !== initSessionRequestId ||
+    !isSandboxMode.value ||
+    !iframeRef.value ||
+    iframeRef.value !== sessionIframeTarget
+  ) {
     return;
   }
 
@@ -477,7 +519,7 @@ function initSession(forceRecreate = false): void {
   session = createPlaygroundSession({
     runtime: 'browser',
     framework: sandboxProps.value?.framework ?? 'vanilla',
-    iframe: iframeRef.value,
+    iframe: sessionIframeTarget,
     files: sandboxProps.value?.files ?? {},
     entry: sandboxProps.value?.entry ?? '',
     resolveImport: sandboxProps.value?.resolveImport,
@@ -489,7 +531,7 @@ function initSession(forceRecreate = false): void {
     session.onConsole((event) => appendConsole(event)),
     session.onError((error) => appendError(error))
   ];
-  sessionIframe = iframeRef.value;
+  sessionIframe = sessionIframeTarget;
 }
 
 async function runSession(options?: { keepActiveTab?: boolean }): Promise<void> {
@@ -507,7 +549,7 @@ async function runSession(options?: { keepActiveTab?: boolean }): Promise<void> 
     await nextTick();
   }
 
-  initSession();
+  await initSession();
   if (!session) {
     return;
   }
@@ -539,7 +581,7 @@ onMounted(async () => {
   }
 
   if (isSandboxMode.value) {
-    initSession();
+    await initSession();
     syncSandboxThemeToIframe();
   }
 });
@@ -555,7 +597,7 @@ watch(
       return;
     }
 
-    initSession();
+    await initSession();
     syncSandboxThemeToIframe();
 
     if (sandboxProps.value?.autorun ?? true) {
@@ -610,7 +652,7 @@ watch(
       return;
     }
 
-    initSession(true);
+    await initSession(true);
     if (sandboxProps.value?.autorun ?? true) {
       await runSession({ keepActiveTab: true });
     }
