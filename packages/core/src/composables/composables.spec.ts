@@ -86,6 +86,11 @@ function animationFrame(): Promise<void> {
   });
 }
 
+async function tableOfContentsScheduledUpdate(): Promise<void> {
+  await animationFrame();
+  await animationFrame();
+}
+
 describe('interaction composables', () => {
   it('manages uncontrolled and controlled disclosure state', async () => {
     const onOpenChange = vi.fn();
@@ -289,7 +294,7 @@ describe('interaction composables', () => {
     }
   });
 
-  it('retries the active heading update when items render before heading elements', async () => {
+  it('observes delayed heading elements after scheduled active heading updates miss them', async () => {
     const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
 
     HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
@@ -309,13 +314,13 @@ describe('interaction composables', () => {
       wrapper.vm.setItems([{ id: 'delayed-section', label: 'Delayed section' }]);
       await wrapper.vm.$nextTick();
       await wrapper.vm.$nextTick();
-      await animationFrame();
+      await tableOfContentsScheduledUpdate();
 
       expect(wrapper.vm.activeId).toBeUndefined();
 
       wrapper.vm.setRenderHeadings(true);
       await wrapper.vm.$nextTick();
-      await animationFrame();
+      await Promise.resolve();
 
       expect(wrapper.vm.activeId).toBe('delayed-section');
     } finally {
