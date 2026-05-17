@@ -22,17 +22,23 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
     return Boolean(toValue(options.disabled));
   }
 
-  function updateActiveId() {
+  function updateActiveId(): boolean {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
-      return;
+      return false;
     }
 
     if (isDisabled()) {
       activeId.value = undefined;
-      return;
+      return true;
     }
 
     const items = resolveItems();
+
+    if (!items.length) {
+      activeId.value = undefined;
+      return true;
+    }
+
     const offset = resolveOffset();
     const resolved = items
       .map((item) => ({
@@ -49,8 +55,7 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
       );
 
     if (!resolved.length) {
-      activeId.value = undefined;
-      return;
+      return false;
     }
 
     let nextActiveId = resolved[0]?.id;
@@ -70,14 +75,32 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
     }
 
     activeId.value = nextActiveId;
+    return true;
   }
 
   function handleScroll() {
     updateActiveId();
   }
 
+  function animationFrame() {
+    if (typeof window === 'undefined' || typeof window.requestAnimationFrame === 'undefined') {
+      return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve) => {
+      window.requestAnimationFrame(() => resolve());
+    });
+  }
+
   async function updateActiveIdAfterRender() {
     await nextTick();
+    await animationFrame();
+
+    if (updateActiveId()) {
+      return;
+    }
+
+    await animationFrame();
     updateActiveId();
   }
 

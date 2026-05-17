@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.6
+
+### Fixed
+
+- Added a deferred `requestAnimationFrame` retry to `useTableOfContents()` so async SPA/SSG page headings can become active without requiring the first user scroll.
+
 ## 1.18.5
 
 ### Fixed
