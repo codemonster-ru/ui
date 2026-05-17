@@ -35,6 +35,7 @@ const TableOfContentsProbe = defineComponent({
 const ReactiveTableOfContentsProbe = defineComponent({
   setup() {
     const items = ref<{ id: string; label: string }[]>([]);
+    const renderHeadings = ref(true);
     const offsetValue = ref(0);
     const { activeId } = useTableOfContents({
       items,
@@ -49,12 +50,18 @@ const ReactiveTableOfContentsProbe = defineComponent({
       offsetValue.value = nextOffset;
     }
 
-    return { activeId, items, setItems, setOffset };
+    function setRenderHeadings(nextRenderHeadings: boolean) {
+      renderHeadings.value = nextRenderHeadings;
+    }
+
+    return { activeId, items, renderHeadings, setItems, setOffset, setRenderHeadings };
   },
   render() {
     return h(
       'div',
-      this.items.map((item) => h('section', { id: item.id }, item.label)),
+      this.renderHeadings
+        ? this.items.map((item) => h('section', { id: item.id }, item.label))
+        : undefined,
     );
   },
 });
@@ -71,6 +78,12 @@ function rectWithTop(top: number): DOMRect {
     y: top,
     toJSON: () => ({}),
   } as DOMRect;
+}
+
+function animationFrame(): Promise<void> {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => resolve());
+  });
 }
 
 describe('interaction composables', () => {
@@ -261,14 +274,50 @@ describe('interaction composables', () => {
       ]);
       await wrapper.vm.$nextTick();
       await wrapper.vm.$nextTick();
+      await animationFrame();
 
       expect(wrapper.vm.activeId).toBe('section-1');
 
       wrapper.vm.setOffset(96);
       await wrapper.vm.$nextTick();
       await wrapper.vm.$nextTick();
+      await animationFrame();
 
       expect(wrapper.vm.activeId).toBe('section-2');
+    } finally {
+      HTMLElement.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+    }
+  });
+
+  it('retries the active heading update when items render before heading elements', async () => {
+    const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
+
+    HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
+      if (this.id === 'delayed-section') {
+        return rectWithTop(24);
+      }
+
+      return originalGetBoundingClientRect.call(this);
+    };
+
+    try {
+      const wrapper = mount(ReactiveTableOfContentsProbe, {
+        attachTo: document.body,
+      });
+
+      wrapper.vm.setRenderHeadings(false);
+      wrapper.vm.setItems([{ id: 'delayed-section', label: 'Delayed section' }]);
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.$nextTick();
+      await animationFrame();
+
+      expect(wrapper.vm.activeId).toBeUndefined();
+
+      wrapper.vm.setRenderHeadings(true);
+      await wrapper.vm.$nextTick();
+      await animationFrame();
+
+      expect(wrapper.vm.activeId).toBe('delayed-section');
     } finally {
       HTMLElement.prototype.getBoundingClientRect = originalGetBoundingClientRect;
     }
