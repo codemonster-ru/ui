@@ -76,15 +76,23 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
     updateActiveId();
   }
 
-  onMounted(async () => {
+  async function updateActiveIdAfterRender() {
     await nextTick();
     updateActiveId();
+  }
+
+  onMounted(() => {
+    void updateActiveIdAfterRender();
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleScroll);
     window.addEventListener('hashchange', handleScroll);
   });
 
   onUnmounted(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     window.removeEventListener('scroll', handleScroll);
     window.removeEventListener('resize', handleScroll);
     window.removeEventListener('hashchange', handleScroll);
@@ -98,11 +106,10 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
       resolveOffset(),
       isDisabled(),
     ],
-    async () => {
-      await nextTick();
-      updateActiveId();
+    () => {
+      void updateActiveIdAfterRender();
     },
-    { immediate: true },
+    { flush: 'post', immediate: true },
   );
 
   return {

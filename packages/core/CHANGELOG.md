@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.5
+
+### Fixed
+
+- Recomputed `useTableOfContents()` active heading after mount and after reactive `items`/`offset` changes, so SPA navigation highlights the visible section before any user scroll.
+
 ## 1.18.4
 
 ### Fixed

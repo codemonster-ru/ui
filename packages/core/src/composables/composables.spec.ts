@@ -32,6 +32,47 @@ const TableOfContentsProbe = defineComponent({
   },
 });
 
+const ReactiveTableOfContentsProbe = defineComponent({
+  setup() {
+    const items = ref<{ id: string; label: string }[]>([]);
+    const offsetValue = ref(0);
+    const { activeId } = useTableOfContents({
+      items,
+      offset: offsetValue,
+    });
+
+    function setItems(nextItems: { id: string; label: string }[]) {
+      items.value = nextItems;
+    }
+
+    function setOffset(nextOffset: number) {
+      offsetValue.value = nextOffset;
+    }
+
+    return { activeId, items, setItems, setOffset };
+  },
+  render() {
+    return h(
+      'div',
+      this.items.map((item) => h('section', { id: item.id }, item.label)),
+    );
+  },
+});
+
+function rectWithTop(top: number): DOMRect {
+  return {
+    top,
+    bottom: top + 80,
+    left: 0,
+    right: 0,
+    width: 0,
+    height: 80,
+    x: 0,
+    y: top,
+    toJSON: () => ({}),
+  } as DOMRect;
+}
+
 describe('interaction composables', () => {
   it('manages uncontrolled and controlled disclosure state', async () => {
     const onOpenChange = vi.fn();
@@ -171,18 +212,7 @@ describe('interaction composables', () => {
 
     for (const [index, section] of sections.entries()) {
       const top = positions[index] ?? 0;
-      (section.element as HTMLElement).getBoundingClientRect = () =>
-        ({
-          top,
-          bottom: top + 80,
-          left: 0,
-          right: 0,
-          width: 0,
-          height: 80,
-          x: 0,
-          y: top,
-          toJSON: () => ({}),
-        }) as DOMRect;
+      (section.element as HTMLElement).getBoundingClientRect = () => rectWithTop(top);
     }
 
     window.dispatchEvent(new Event('scroll'));
@@ -191,34 +221,56 @@ describe('interaction composables', () => {
     expect(wrapper.vm.activeId).toBe('section-1');
 
     (sections[0]!.element as HTMLElement).getBoundingClientRect = () =>
-      ({
-        top: -120,
-        bottom: -40,
-        left: 0,
-        right: 0,
-        width: 0,
-        height: 80,
-        x: 0,
-        y: -120,
-        toJSON: () => ({}),
-      }) as DOMRect;
+      rectWithTop(-120);
 
     (sections[1]!.element as HTMLElement).getBoundingClientRect = () =>
-      ({
-        top: 24,
-        bottom: 104,
-        left: 0,
-        right: 0,
-        width: 0,
-        height: 80,
-        x: 0,
-        y: 24,
-        toJSON: () => ({}),
-      }) as DOMRect;
+      rectWithTop(24);
 
     window.dispatchEvent(new Event('scroll'));
     await wrapper.vm.$nextTick();
 
     expect(wrapper.vm.activeId).toBe('section-2');
+  });
+
+  it('recomputes the active heading after items and offset change without scroll', async () => {
+    const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
+
+    HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
+      if (this.id === 'section-1') {
+        return rectWithTop(-120);
+      }
+
+      if (this.id === 'section-2') {
+        return rectWithTop(24);
+      }
+
+      return originalGetBoundingClientRect.call(this);
+    };
+
+    try {
+      const wrapper = mount(ReactiveTableOfContentsProbe, {
+        attachTo: document.body,
+      });
+
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.activeId).toBeUndefined();
+
+      wrapper.vm.setItems([
+        { id: 'section-1', label: 'Section 1' },
+        { id: 'section-2', label: 'Section 2' },
+      ]);
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.vm.activeId).toBe('section-1');
+
+      wrapper.vm.setOffset(96);
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.vm.activeId).toBe('section-2');
+    } finally {
+      HTMLElement.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+    }
   });
 });
