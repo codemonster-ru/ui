@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.7
+
+### Fixed
+
+- Added temporary DOM observation to `useTableOfContents()` so async SPA/SSG page headings that render after scheduled updates still become active without requiring scroll or resize.
+
 ## 1.18.6
 
 ### Fixed

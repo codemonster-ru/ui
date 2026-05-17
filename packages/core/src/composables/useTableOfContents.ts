@@ -9,6 +9,8 @@ interface UseTableOfContentsOptions {
 
 export function useTableOfContents(options: UseTableOfContentsOptions) {
   const activeId = ref<string | undefined>(undefined);
+  let headingsObserver: MutationObserver | undefined;
+  let headingsObserverTimeout: number | undefined;
 
   function resolveItems() {
     return toValue(options.items);
@@ -29,6 +31,7 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
 
     if (isDisabled()) {
       activeId.value = undefined;
+      stopHeadingsObserver();
       return true;
     }
 
@@ -36,6 +39,7 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
 
     if (!items.length) {
       activeId.value = undefined;
+      stopHeadingsObserver();
       return true;
     }
 
@@ -92,16 +96,66 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
     });
   }
 
+  function stopHeadingsObserver() {
+    headingsObserver?.disconnect();
+    headingsObserver = undefined;
+
+    if (headingsObserverTimeout !== undefined) {
+      window.clearTimeout(headingsObserverTimeout);
+      headingsObserverTimeout = undefined;
+    }
+  }
+
+  function startHeadingsObserver() {
+    if (
+      headingsObserver ||
+      typeof window === 'undefined' ||
+      typeof document === 'undefined' ||
+      typeof MutationObserver === 'undefined' ||
+      !document.body ||
+      isDisabled() ||
+      !resolveItems().length
+    ) {
+      return;
+    }
+
+    headingsObserver = new MutationObserver(() => {
+      if (!updateActiveId()) {
+        return;
+      }
+
+      stopHeadingsObserver();
+      void animationFrame().then(() => {
+        updateActiveId();
+      });
+    });
+
+    headingsObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+    headingsObserverTimeout = window.setTimeout(() => {
+      stopHeadingsObserver();
+    }, 5000);
+  }
+
   async function updateActiveIdAfterRender() {
     await nextTick();
     await animationFrame();
 
     if (updateActiveId()) {
+      stopHeadingsObserver();
       return;
     }
 
     await animationFrame();
-    updateActiveId();
+
+    if (updateActiveId()) {
+      stopHeadingsObserver();
+      return;
+    }
+
+    startHeadingsObserver();
   }
 
   onMounted(() => {
@@ -112,6 +166,8 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
   });
 
   onUnmounted(() => {
+    stopHeadingsObserver();
+
     if (typeof window === 'undefined') {
       return;
     }
@@ -130,6 +186,7 @@ export function useTableOfContents(options: UseTableOfContentsOptions) {
       isDisabled(),
     ],
     () => {
+      stopHeadingsObserver();
       void updateActiveIdAfterRender();
     },
     { flush: 'post', immediate: true },
