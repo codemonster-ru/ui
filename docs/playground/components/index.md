@@ -7,4 +7,4 @@ order: 4
 
 # Components
 
-- [VfPlayground](./vf-playground.md)
+- [Playground](./playground/index.md)

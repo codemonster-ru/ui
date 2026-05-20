@@ -1,49 +1,17 @@
 ---
-title: "ComponentName"
+title: "Component Name"
 description: "Component documentation template"
 slug: "/vueforge/package-name/components/component-name"
 order: 1
 ---
 
-# ComponentName
+# Component Name
 
-## Summary
+This file is kept for backward compatibility.
 
-Short summary of what this component does.
+Use folder-based template instead:
 
-## Import
-
-```ts
-import { ComponentName } from '@codemonster-ru/package-name';
-```
-
-## Key Props
-
-- `prop?: string`
-
-## Emits
-
-- `update:modelValue`
-
-## Slots
-
-- `default`
-
-## Usage
-
-````playground-src
-mode: component
-framework: vue
-height: 220
-entry: /App.vue
-
-```vue file=/App.vue
-<template>
-  <ComponentName />
-</template>
-
-<script setup>
-import { ComponentName } from '@codemonster-ru/package-name';
-</script>
-```
-````
+- `docs/_template/components/component-name/index.md`
+- `docs/_template/components/component-name/features.md`
+- `docs/_template/components/component-name/api.md`
+- `docs/_template/components/component-name/theming.md`
