@@ -19,13 +19,47 @@ Renders icons from the VueForge icon set via a unified API.
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 ```
 
-## Key Props
+## Props
 
-- `icon?: IconName | string` (default fallback: `moon`)
-- `size?: number | string` (default: `var(--vf-icon-size-md)`)
-- `spin?: boolean` (default: `false`)
-- `style?: 'solid'` (default: `solid`)
-- `inset?: number` (default: `0`)
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `icon?` | `IconName \| string` | `moon` | Icon name or custom icon identifier. |
+| `size?` | `number \| string` | `var(--vf-icon-size-md)` | Size token for spacing and dimensions. |
+| `spin?` | `boolean` | `false` | Applies continuous rotation animation. |
+| `style?` | `'solid'` | `solid` | Icon visual style variant. |
+| `inset?` | `number` | `0` | Scales icon with optical inset compensation. |
+
+## Emits
+
+| Name | Parameters | ReturnType | Description |
+| --- | --- | --- | --- |
+| `—` | `—` | `void` | No custom emits. |
+
+## Slots
+
+| Name | Parameters | ReturnType | Description |
+| --- | --- | --- | --- |
+| `—` | `—` | `void` | No public slots. |
+
+## Events
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `—` | `—` | No additional native events are documented. |
+
+## Interfaces
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| `—` | `—` | `—` | No dedicated interfaces in this component contract. |
+
+## Types
+
+| Name | Values |
+| --- | --- |
+| `IconName` | `Union of generated icon names.` |
+| `IconCatalogEntry` | `{ title; keywords; style; brand? }` |
+| `IconShowcaseEntry` | `{ icon; status; note }` |
 
 ## Notes
 

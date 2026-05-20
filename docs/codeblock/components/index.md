@@ -7,4 +7,4 @@ order: 4
 
 # Components
 
-- [VfCodeBlock](./vf-code-block.md)
+- [Code Block](./code-block/index.md)
