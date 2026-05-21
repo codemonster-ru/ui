@@ -1,7 +1,6 @@
 ---
 title: "Guides"
 description: "Limitations and related packages for the playground package"
-slug: "/vueforge/playground/guides"
 order: 6
 ---
 

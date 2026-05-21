@@ -1,7 +1,6 @@
 ---
 title: "Checkbox"
 description: "Component documentation for Checkbox"
-slug: "/vueforge/core/components/vf-checkbox"
 order: 7
 ---
 

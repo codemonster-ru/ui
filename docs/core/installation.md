@@ -1,7 +1,6 @@
 ---
 title: "Installation"
 description: "How to install and import the core package"
-slug: "/vueforge/core/installation"
 order: 2
 ---
 

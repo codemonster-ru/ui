@@ -1,7 +1,6 @@
 ---
 title: "Guides"
 description: "Limitations and related packages for the layouts package"
-slug: "/vueforge/layouts/guides"
 order: 6
 ---
 

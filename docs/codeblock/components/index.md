@@ -1,7 +1,6 @@
 ---
 title: "Components"
 description: "Component catalog for the codeblock package"
-slug: "/vueforge/codeblock/components"
 order: 4
 ---
 

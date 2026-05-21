@@ -1,7 +1,6 @@
 ---
 title: "Guides"
 description: "Limitations and related packages for the playground-vite-plugin package"
-slug: "/vueforge/playground-vite-plugin/guides"
 order: 5
 ---
 

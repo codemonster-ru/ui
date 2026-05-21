@@ -1,7 +1,6 @@
 ---
 title: "Divider"
 description: "Component documentation for Divider"
-slug: "/vueforge/core/components/vf-divider"
 order: 22
 ---
 

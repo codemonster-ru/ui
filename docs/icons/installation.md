@@ -1,7 +1,6 @@
 ---
 title: "Installation"
 description: "How to install and import the icons package"
-slug: "/vueforge/icons/installation"
 order: 2
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Installation"
 description: "How to install and import the codeblock package"
-slug: "/vueforge/codeblock/installation"
 order: 2
 ---
 

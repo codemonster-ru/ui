@@ -1,7 +1,6 @@
 ---
 title: "Examples"
 description: "Interactive examples for the layouts package"
-slug: "/vueforge/layouts/examples"
 order: 5
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Switch"
 description: "Component documentation for Switch"
-slug: "/vueforge/core/components/vf-switch"
 order: 33
 ---
 

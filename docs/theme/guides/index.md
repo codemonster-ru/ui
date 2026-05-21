@@ -1,7 +1,6 @@
 ---
 title: "Guides"
 description: "Limitations and related packages for the theme package"
-slug: "/vueforge/theme/guides"
 order: 5
 ---
 

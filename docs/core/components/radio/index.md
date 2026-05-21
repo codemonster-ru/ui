@@ -1,7 +1,6 @@
 ---
 title: "Radio"
 description: "Component documentation for Radio"
-slug: "/vueforge/core/components/vf-radio"
 order: 20
 ---
 

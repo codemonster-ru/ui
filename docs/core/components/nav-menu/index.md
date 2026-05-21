@@ -1,7 +1,6 @@
 ---
 title: "Nav Menu"
 description: "Component documentation for Nav Menu"
-slug: "/vueforge/core/components/vf-nav-menu"
 order: 28
 ---
 

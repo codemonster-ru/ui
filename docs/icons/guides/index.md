@@ -1,7 +1,6 @@
 ---
 title: "Guides"
 description: "Limitations and related packages for the icons package"
-slug: "/vueforge/icons/guides"
 order: 6
 ---
 

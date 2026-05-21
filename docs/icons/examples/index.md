@@ -1,7 +1,6 @@
 ---
 title: "Examples"
 description: "Interactive examples for the icons package"
-slug: "/vueforge/icons/examples"
 order: 5
 ---
 

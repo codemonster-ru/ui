@@ -1,7 +1,6 @@
 ---
 title: "Document Layout"
 description: "Document-oriented layout component"
-slug: "/vueforge/layouts/components/vf-document-layout"
 order: 5
 ---
 

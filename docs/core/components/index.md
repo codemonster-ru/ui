@@ -1,7 +1,6 @@
 ---
 title: "Components"
 description: "Component catalog for the core package"
-slug: "/vueforge/core/components"
 order: 4
 ---
 

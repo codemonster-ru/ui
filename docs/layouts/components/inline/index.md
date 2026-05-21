@@ -1,7 +1,6 @@
 ---
 title: "Inline"
 description: "Component documentation for Inline"
-slug: "/vueforge/layouts/components/vf-inline"
 order: 14
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Components"
 description: "Component catalog for the layouts package"
-slug: "/vueforge/layouts/components"
 order: 4
 ---
 

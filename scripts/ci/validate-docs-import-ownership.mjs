@@ -77,6 +77,8 @@ const issues = [];
 
 for (const filePath of allFiles) {
   const source = readFileSync(filePath, 'utf8');
+  const relativePath = toRelative(filePath);
+
   for (const match of source.matchAll(importPattern)) {
     const symbolsBlock = match[1];
     const packageName = match[2];
@@ -97,7 +99,7 @@ for (const filePath of allFiles) {
       const ownerPackage = Object.entries(exportsByPackage).find(([, symbols]) => symbols.has(symbol))?.[0];
       const line = getLineNumber(source, match.index ?? 0);
       issues.push({
-        file: toRelative(filePath),
+        file: relativePath,
         line,
         packageName,
         symbol,

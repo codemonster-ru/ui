@@ -1,7 +1,6 @@
 ---
 title: "Installation"
 description: "How to install and import the package-name package"
-slug: "/vueforge/package-name/installation"
 order: 2
 ---
 

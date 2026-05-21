@@ -1,7 +1,6 @@
 ---
 title: "API"
 description: "Public API reference for the package-name package"
-slug: "/vueforge/package-name/api"
 order: 3
 ---
 

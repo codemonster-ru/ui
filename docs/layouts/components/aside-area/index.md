@@ -1,7 +1,6 @@
 ---
 title: "Aside Area"
 description: "Component documentation for Aside Area"
-slug: "/vueforge/layouts/components/vf-aside-area"
 order: 23
 ---
 

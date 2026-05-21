@@ -1,7 +1,6 @@
 ---
 title: "API"
 description: "Public API reference for the core package"
-slug: "/vueforge/core/api"
 order: 3
 ---
 

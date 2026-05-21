@@ -1,7 +1,6 @@
 ---
 title: "Select"
 description: "Select/dropdown input component"
-slug: "/vueforge/core/components/vf-select"
 order: 3
 ---
 

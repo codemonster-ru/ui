@@ -1,7 +1,6 @@
 ---
 title: "Table"
 description: "Component documentation for Table"
-slug: "/vueforge/core/components/vf-table"
 order: 23
 ---
 

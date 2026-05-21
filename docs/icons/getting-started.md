@@ -1,7 +1,6 @@
 ---
 title: "Introduction"
 description: "Overview and purpose of the icons package"
-slug: "/vueforge/icons/getting-started"
 order: 1
 ---
 

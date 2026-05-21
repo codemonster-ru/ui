@@ -1,7 +1,6 @@
 ---
 title: "Section"
 description: "Component documentation for Section"
-slug: "/vueforge/layouts/components/vf-section"
 order: 15
 ---
 

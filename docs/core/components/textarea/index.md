@@ -1,7 +1,6 @@
 ---
 title: "Textarea"
 description: "Component documentation for Textarea"
-slug: "/vueforge/core/components/vf-textarea"
 order: 39
 ---
 

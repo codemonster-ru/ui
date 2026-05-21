@@ -1,7 +1,6 @@
 ---
 title: "Panel"
 description: "Component documentation for Panel"
-slug: "/vueforge/core/components/vf-panel"
 order: 29
 ---
 

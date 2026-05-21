@@ -1,7 +1,6 @@
 ---
 title: "Button"
 description: "Action button component"
-slug: "/vueforge/core/components/vf-button"
 order: 1
 ---
 

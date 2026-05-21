@@ -1,7 +1,6 @@
 ---
 title: "API"
 description: "Public API reference for the theme package"
-slug: "/vueforge/theme/api"
 order: 3
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Icon Button"
 description: "Component documentation for Icon Button"
-slug: "/vueforge/core/components/vf-icon-button"
 order: 24
 ---
 

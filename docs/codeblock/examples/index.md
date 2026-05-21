@@ -1,7 +1,6 @@
 ---
 title: "Examples"
 description: "Interactive examples for the codeblock package"
-slug: "/vueforge/codeblock/examples"
 order: 5
 ---
 

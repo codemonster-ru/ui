@@ -1,7 +1,6 @@
 ---
 title: "Breadcrumbs"
 description: "Component documentation for Breadcrumbs"
-slug: "/vueforge/core/components/vf-breadcrumbs"
 order: 15
 ---
 

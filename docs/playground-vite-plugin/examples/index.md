@@ -1,7 +1,6 @@
 ---
 title: "Examples"
 description: "Interactive examples for the playground-vite-plugin package"
-slug: "/vueforge/playground-vite-plugin/examples"
 order: 4
 ---
 

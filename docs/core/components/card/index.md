@@ -1,7 +1,6 @@
 ---
 title: "Card"
 description: "Component documentation for Card"
-slug: "/vueforge/core/components/vf-card"
 order: 6
 ---
 

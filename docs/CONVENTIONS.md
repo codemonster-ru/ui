@@ -12,8 +12,8 @@ Package docs are organized as:
 
 Recommended sections:
 
-- `getting-started/introduction.md`
-- `installation/index.md`
+- `getting-started.md`
+- `installation.md`
 - `api/index.md`
 - `components/index.md` and component pages
 - `guides/index.md`
@@ -26,12 +26,11 @@ Each page should include:
 
 - `title`
 - `description`
-- `slug`
 - `order`
 
 Rules:
 
-- `slug` format: `/vueforge/<package>/<section>[...optional-path]`
+- `slug` must not be used in `docs/<package>/**/*.md`.
 - `order` must be numeric and used for navigation sorting.
 - Keep `title` and first `# Heading` aligned.
 
@@ -75,7 +74,7 @@ Guidelines:
 
 Use consistent top-level sections:
 
-- `installation/index.md`: `Overview`, `Install`, `Import`
+- `installation.md`: `Overview`, `Install`, `Import`
 - `api/index.md`: `Overview` + package-specific API sections
 - `guides/index.md`: `Overview`, practical patterns, `Limitations`, `Related Packages`
 

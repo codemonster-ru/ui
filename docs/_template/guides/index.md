@@ -1,7 +1,6 @@
 ---
 title: "Guides"
 description: "Limitations and related packages for the package-name package"
-slug: "/vueforge/package-name/guides"
 order: 6
 ---
 

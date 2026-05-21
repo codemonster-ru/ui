@@ -17,8 +17,8 @@ This folder is the source-of-truth draft for package documentation in this monor
 
 - Document only public API exported from package entrypoints.
 - Package docs structure is split by sections:
-  - `getting-started/introduction.md`
-  - `installation/index.md`
+  - `getting-started.md`
+  - `installation.md`
   - `api/index.md`
   - `components/index.md` (optional, for UI-component packages)
   - `examples/index.md`
@@ -35,9 +35,9 @@ This folder is the source-of-truth draft for package documentation in this monor
 
 ## Ready For Publish Checklist
 
-- Frontmatter exists on every page: `title`, `description`, `slug`, `order`.
+- Frontmatter exists on every page: `title`, `description`, `order` (no `slug`).
 - Package landing page (if present) contains valid links to section pages.
-- `installation/index.md` includes both install and import snippets.
+- `installation.md` includes both install and import snippets.
 - `api/index.md` documents only public exports from entrypoints.
 - `examples/index.md` includes both `## Basic` and `## Advanced` with `playground-src`.
 - `guides/index.md` includes limitations and related packages.

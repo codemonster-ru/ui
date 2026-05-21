@@ -1,7 +1,6 @@
 ---
 title: "Tooltip"
 description: "Tooltip component"
-slug: "/vueforge/core/components/vf-tooltip"
 order: 5
 ---
 

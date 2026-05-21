@@ -1,7 +1,6 @@
 ---
 title: "Introduction"
 description: "Overview and purpose of the theme package"
-slug: "/vueforge/theme/getting-started"
 order: 1
 ---
 

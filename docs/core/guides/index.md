@@ -1,7 +1,6 @@
 ---
 title: "Guides"
 description: "Limitations and related packages for the core package"
-slug: "/vueforge/core/guides"
 order: 6
 ---
 

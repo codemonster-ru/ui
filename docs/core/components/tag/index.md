@@ -1,7 +1,6 @@
 ---
 title: "Tag"
 description: "Component documentation for Tag"
-slug: "/vueforge/core/components/vf-tag"
 order: 37
 ---
 

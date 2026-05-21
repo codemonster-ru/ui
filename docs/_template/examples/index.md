@@ -1,7 +1,6 @@
 ---
 title: "Examples"
 description: "Interactive examples for the package-name package"
-slug: "/vueforge/package-name/examples"
 order: 5
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Introduction"
 description: "Overview and purpose of the core package"
-slug: "/vueforge/core/getting-started"
 order: 1
 ---
 
