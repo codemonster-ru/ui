@@ -20,7 +20,7 @@ This folder is the source-of-truth draft for package documentation in this monor
   - `getting-started.md`
   - `installation.md`
   - `api/index.md`
-  - `components/index.md` (optional, for UI-component packages)
+  - `components/` pages (optional, for UI-component packages; no overview index)
   - `examples/index.md`
   - `guides/index.md`
 - Prefer short executable examples over abstract prose.

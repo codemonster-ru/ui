@@ -15,7 +15,7 @@ Recommended sections:
 - `getting-started.md`
 - `installation.md`
 - `api/index.md`
-- `components/index.md` and component pages
+- `components/` with component pages
 - `guides/index.md`
 
 For non-UI packages, `components/` may be omitted.
@@ -78,13 +78,13 @@ Use consistent top-level sections:
 - `api/index.md`: `Overview` + package-specific API sections
 - `guides/index.md`: `Overview`, practical patterns, `Limitations`, `Related Packages`
 
-## Index Pages
+## Components Directory
 
-For `components/index.md`:
+For `components/`:
 
-- Include all component pages in that package.
-- Keep link order aligned with each page `order` value.
-- Use relative links (`./vf-*.md`).
+- Do not add an overview `components/index.md`.
+- Keep component docs as separate pages inside dedicated subfolders/files.
+- Keep navigation order aligned with each page `order` value.
 
 ## Quality Checks
 
