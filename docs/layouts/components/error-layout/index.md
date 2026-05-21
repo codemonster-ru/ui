@@ -1,7 +1,6 @@
 ---
 title: "Error Layout"
 description: "Component documentation for Error Layout"
-slug: "/vueforge/layouts/components/vf-error-layout"
 order: 19
 ---
 

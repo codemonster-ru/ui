@@ -1,7 +1,6 @@
 ---
 title: "Accordion"
 description: "Component documentation for Accordion"
-slug: "/vueforge/core/components/vf-accordion"
 order: 12
 ---
 

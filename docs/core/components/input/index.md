@@ -1,7 +1,6 @@
 ---
 title: "Input"
 description: "Text input component"
-slug: "/vueforge/core/components/vf-input"
 order: 2
 ---
 

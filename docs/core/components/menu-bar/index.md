@@ -1,7 +1,6 @@
 ---
 title: "Menu Bar"
 description: "Component documentation for Menu Bar"
-slug: "/vueforge/core/components/vf-menu-bar"
 order: 27
 ---
 

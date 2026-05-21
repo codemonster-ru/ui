@@ -1,7 +1,6 @@
 ---
 title: "Link"
 description: "Component documentation for Link"
-slug: "/vueforge/core/components/vf-link"
 order: 15
 ---
 

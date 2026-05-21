@@ -1,7 +1,6 @@
 ---
 title: "Installation"
 description: "How to install and import the playground-vite-plugin package"
-slug: "/vueforge/playground-vite-plugin/installation"
 order: 2
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Container"
 description: "Content width container primitive"
-slug: "/vueforge/layouts/components/vf-container"
 order: 1
 ---
 

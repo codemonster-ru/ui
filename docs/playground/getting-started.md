@@ -1,7 +1,6 @@
 ---
 title: "Introduction"
 description: "Overview and purpose of the playground package"
-slug: "/vueforge/playground/getting-started"
 order: 1
 ---
 

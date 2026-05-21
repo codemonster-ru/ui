@@ -1,7 +1,6 @@
 ---
 title: "Content Area"
 description: "Component documentation for Content Area"
-slug: "/vueforge/layouts/components/vf-content-area"
 order: 22
 ---
 

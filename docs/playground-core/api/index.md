@@ -1,7 +1,6 @@
 ---
 title: "API"
 description: "Public API reference for the playground-core package"
-slug: "/vueforge/playground-core/api"
 order: 3
 ---
 

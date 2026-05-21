@@ -1,7 +1,6 @@
 ---
 title: "Introduction"
 description: "Overview and purpose of the codeblock package"
-slug: "/vueforge/codeblock/getting-started"
 order: 1
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "VueIconify"
 description: "Universal icon rendering component"
-slug: "/vueforge/icons/components/vue-iconify"
 order: 1
 ---
 

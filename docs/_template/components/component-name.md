@@ -1,7 +1,6 @@
 ---
 title: "Component Name"
 description: "Component documentation template"
-slug: "/vueforge/package-name/components/component-name"
 order: 1
 ---
 

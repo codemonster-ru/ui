@@ -1,7 +1,6 @@
 ---
 title: "Examples"
 description: "Interactive examples for the playground-core package"
-slug: "/vueforge/playground-core/examples"
 order: 4
 ---
 

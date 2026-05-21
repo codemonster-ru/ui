@@ -1,7 +1,6 @@
 ---
 title: 'Examples'
 description: 'Interactive examples for the core package'
-slug: '/vueforge/core/examples'
 order: 5
 ---
 

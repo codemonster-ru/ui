@@ -1,7 +1,6 @@
 ---
 title: "Installation"
 description: "How to install and import the layouts package"
-slug: "/vueforge/layouts/installation"
 order: 2
 ---
 

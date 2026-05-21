@@ -1,7 +1,6 @@
 ---
 title: "Theme Switch"
 description: "Component documentation for Theme Switch"
-slug: "/vueforge/core/components/vf-theme-switch"
 order: 36
 ---
 

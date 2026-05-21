@@ -1,7 +1,6 @@
 ---
 title: "Drawer"
 description: "Component documentation for Drawer"
-slug: "/vueforge/core/components/vf-drawer"
 order: 20
 ---
 

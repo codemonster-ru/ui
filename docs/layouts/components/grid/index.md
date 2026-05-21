@@ -1,7 +1,6 @@
 ---
 title: "Grid"
 description: "Responsive grid primitive"
-slug: "/vueforge/layouts/components/vf-grid"
 order: 3
 ---
 

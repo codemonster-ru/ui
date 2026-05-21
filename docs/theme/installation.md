@@ -1,7 +1,6 @@
 ---
 title: "Installation"
 description: "How to install and import the theme package"
-slug: "/vueforge/theme/installation"
 order: 2
 ---
 
