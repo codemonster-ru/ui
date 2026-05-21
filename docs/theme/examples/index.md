@@ -1,7 +1,6 @@
 ---
 title: "Examples"
 description: "Interactive examples for the theme package"
-slug: "/vueforge/theme/examples"
 order: 4
 ---
 

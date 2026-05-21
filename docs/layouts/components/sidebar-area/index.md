@@ -1,7 +1,6 @@
 ---
 title: "Sidebar Area"
 description: "Component documentation for Sidebar Area"
-slug: "/vueforge/layouts/components/vf-sidebar-area"
 order: 21
 ---
 

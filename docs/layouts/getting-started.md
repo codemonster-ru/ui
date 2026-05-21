@@ -1,7 +1,6 @@
 ---
 title: "Introduction"
 description: "Overview and purpose of the layouts package"
-slug: "/vueforge/layouts/getting-started"
 order: 1
 ---
 

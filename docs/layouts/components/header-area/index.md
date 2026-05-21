@@ -1,7 +1,6 @@
 ---
 title: "Header Area"
 description: "Component documentation for Header Area"
-slug: "/vueforge/layouts/components/vf-header-area"
 order: 20
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Table Of Contents"
 description: "Component documentation for TableOfContents"
-slug: "/vueforge/core/components/vf-table-of-contents"
 order: 35
 ---
 

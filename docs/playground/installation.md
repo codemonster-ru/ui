@@ -1,7 +1,6 @@
 ---
 title: "Installation"
 description: "How to install and import the playground package"
-slug: "/vueforge/playground/installation"
 order: 2
 ---
 

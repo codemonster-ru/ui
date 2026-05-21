@@ -1,7 +1,6 @@
 ---
 title: "API"
 description: "Public API reference for the icons package"
-slug: "/vueforge/icons/api"
 order: 3
 ---
 

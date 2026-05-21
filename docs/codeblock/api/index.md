@@ -1,7 +1,6 @@
 ---
 title: "API"
 description: "Public API reference for the codeblock package"
-slug: "/vueforge/codeblock/api"
 order: 3
 ---
 

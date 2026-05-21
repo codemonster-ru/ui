@@ -1,7 +1,6 @@
 ---
 title: "API"
 description: "Public API reference for the layouts package"
-slug: "/vueforge/layouts/api"
 order: 3
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Guides"
 description: "Limitations and related packages for the codeblock package"
-slug: "/vueforge/codeblock/guides"
 order: 6
 ---
 

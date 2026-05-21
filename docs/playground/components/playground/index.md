@@ -1,7 +1,6 @@
 ---
 title: "Playground"
 description: "Interactive sandbox/component demo container"
-slug: "/vueforge/playground/components/vf-playground"
 order: 1
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: "Introduction"
 description: "Overview and purpose of the package-name package"
-slug: "/vueforge/package-name/getting-started"
 order: 1
 ---
 

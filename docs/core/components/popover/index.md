@@ -1,7 +1,6 @@
 ---
 title: "Popover"
 description: "Component documentation for Popover"
-slug: "/vueforge/core/components/vf-popover"
 order: 19
 ---
 

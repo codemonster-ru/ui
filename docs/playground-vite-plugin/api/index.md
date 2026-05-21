@@ -1,7 +1,6 @@
 ---
 title: "API"
 description: "Public API reference for the playground-vite-plugin package"
-slug: "/vueforge/playground-vite-plugin/api"
 order: 3
 ---
 

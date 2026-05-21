@@ -1,7 +1,6 @@
 ---
 title: "Alert"
 description: "Component documentation for Alert"
-slug: "/vueforge/core/components/vf-alert"
 order: 2
 ---
 

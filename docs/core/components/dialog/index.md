@@ -1,7 +1,6 @@
 ---
 title: "Dialog"
 description: "Modal dialog component"
-slug: "/vueforge/core/components/vf-dialog"
 order: 4
 ---
 
