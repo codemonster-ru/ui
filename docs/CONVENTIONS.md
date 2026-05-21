@@ -12,7 +12,6 @@ Package docs are organized as:
 
 Recommended sections:
 
-- `index.md`
 - `getting-started/introduction.md`
 - `installation/index.md`
 - `api/index.md`

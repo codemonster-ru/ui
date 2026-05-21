@@ -4,14 +4,14 @@ This folder is the source-of-truth draft for package documentation in this monor
 
 ## Packages
 
-- [Core](./core/index.md)
-- [Theme](./theme/index.md)
-- [Layouts](./layouts/index.md)
-- [Icons](./icons/index.md)
-- [CodeBlock](./codeblock/index.md)
-- [Playground](./playground/index.md)
-- [Playground Core](./playground-core/index.md)
-- [Playground Vite Plugin](./playground-vite-plugin/index.md)
+- [Core](./core/)
+- [Theme](./theme/)
+- [Layouts](./layouts/)
+- [Icons](./icons/)
+- [CodeBlock](./codeblock/)
+- [Playground](./playground/)
+- [Playground Core](./playground-core/)
+- [Playground Vite Plugin](./playground-vite-plugin/)
 
 ## Writing Rules
 
@@ -36,7 +36,7 @@ This folder is the source-of-truth draft for package documentation in this monor
 ## Ready For Publish Checklist
 
 - Frontmatter exists on every page: `title`, `description`, `slug`, `order`.
-- Package index contains valid links to section pages.
+- Package landing page (if present) contains valid links to section pages.
 - `installation/index.md` includes both install and import snippets.
 - `api/index.md` documents only public exports from entrypoints.
 - `examples/index.md` includes both `## Basic` and `## Advanced` with `playground-src`.

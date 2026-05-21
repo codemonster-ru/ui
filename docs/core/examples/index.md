@@ -1,7 +1,7 @@
 ---
-title: "Examples"
-description: "Interactive examples for the core package"
-slug: "/vueforge/core/examples"
+title: 'Examples'
+description: 'Interactive examples for the core package'
+slug: '/vueforge/core/examples'
 order: 5
 ---
 
@@ -34,7 +34,8 @@ entry: /App.vue
 </template>
 
 <script setup>
-import { VfAlert, VfButton, VfCard, VfStack, VfThemeProvider } from '@codemonster-ru/vueforge-core';
+import { VfAlert, VfButton, VfCard, VfThemeProvider } from '@codemonster-ru/vueforge-core';
+import { VfStack } from '@codemonster-ru/vueforge-layouts';
 
 const stageStyle = {
   height: '100%',
@@ -78,10 +79,10 @@ import {
   VfCard,
   VfInput,
   VfNavMenu,
-  VfStack,
   VfTableOfContents,
   VfThemeProvider
 } from '@codemonster-ru/vueforge-core';
+import { VfStack } from '@codemonster-ru/vueforge-layouts';
 
 const query = ref('');
 const sourceItems = [
@@ -106,4 +107,3 @@ const cardStyle = {
 </script>
 ```
 ````
-
