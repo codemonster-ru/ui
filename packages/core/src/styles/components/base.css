@@ -345,6 +345,16 @@ textarea {
   margin-top: var(--vf-prose-block-spacing);
 }
 
+.vf-prose > * + :is(h1, h2, h3, h4, h5, h6) {
+  margin-top: var(--vf-prose-heading-margin);
+}
+
+.vf-prose
+  > :is(h1, h2, h3, h4, h5, h6)
+  + :is(p, ul, ol, blockquote, pre, hr, .vf-prose-exclude, .vf-playground, .vf-codeblock) {
+  margin-top: var(--vf-prose-heading-gap);
+}
+
 .vf-prose a:not(.vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock *) {
   display: inline-flex;
   width: fit-content;
