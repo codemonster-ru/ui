@@ -385,7 +385,7 @@ export const defaultThemePresetSource = {
     switchThumbInverseBackground: 'var(--vf-color-surface)',
     switchThumbInverseBorderColor: 'var(--vf-color-border)',
     switchThumbInverseColor: 'var(--vf-color-text)',
-    proseHeadingMargin: '1.625em',
+    proseHeadingMargin: '1.5rem',
     proseHeadingGap: '0.5em',
     proseBlockSpacing: '1em',
     proseListPaddingInlineStart: '1.5em',
