@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2
+
+### Fixed
+
+- Updated component-mode preview default padding in `VfPlayground` to use `--vf-surface-padding` instead of `0`, improving visual consistency with surrounding surface layout.
+
 ## 1.3.1
 
 ### Fixed

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.18.8
+
+### Fixed
+
+- Refined `vf-prose` vertical rhythm by separating heading top spacing from heading-following content spacing, so heading transitions render more consistently across prose blocks.
+- Updated the default `proseHeadingMargin` token value to `1.5rem` for more predictable spacing scale.
+
 ## 1.18.7
 
 ### Fixed
