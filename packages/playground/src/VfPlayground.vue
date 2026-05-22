@@ -767,7 +767,7 @@ defineExpose({
   --vf-playground-console-padding: var(--vf-surface-padding);
   --vf-playground-console-font-size: var(--vf-text-label-font-size);
   --vf-playground-console-line-height: var(--vf-text-body-line-height);
-  --vf-playground-component-padding: 0;
+  --vf-playground-component-padding: var(--vf-surface-padding);
   --vf-playground-component-min-height: 100%;
 }
 

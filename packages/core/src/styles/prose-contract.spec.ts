@@ -26,5 +26,9 @@ describe('prose css contract', () => {
     expect(baseCss).toContain(
       '> :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, pre, hr, .vf-prose-exclude, .vf-playground, .vf-codeblock)',
     );
+    expect(baseCss).toContain('.vf-prose > * + :is(h1, h2, h3, h4, h5, h6)');
+    expect(baseCss).toContain(
+      '> :is(h1, h2, h3, h4, h5, h6)\n  + :is(p, ul, ol, blockquote, pre, hr, .vf-prose-exclude, .vf-playground, .vf-codeblock)',
+    );
   });
 });

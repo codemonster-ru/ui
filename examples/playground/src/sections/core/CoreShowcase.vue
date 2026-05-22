@@ -771,6 +771,41 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <li>Simple sibling item.</li>
               </ul>
             </article>
+
+            <article class="vf-prose">
+              <h3>Heading Scale Matrix (H1-H6)</h3>
+              <p>
+                This block covers all heading levels with common neighboring
+                prose elements for visual rhythm checks.
+              </p>
+
+              <h1>Heading 1 followed by paragraph</h1>
+              <p>Paragraph after H1 should feel visually connected to heading.</p>
+
+              <h2>Heading 2 followed by list</h2>
+              <ul>
+                <li>List item one after H2</li>
+                <li>List item two after H2</li>
+              </ul>
+
+              <h3>Heading 3 followed by code block</h3>
+              <pre><code>const headingLevel = 3;</code></pre>
+
+              <h4>Heading 4 followed by blockquote</h4>
+              <blockquote>
+                Blockquote after heading should keep balanced separation.
+              </blockquote>
+
+              <h5>Heading 5 followed by paragraph</h5>
+              <p>Smaller heading keeps the same typographic rhythm model.</p>
+
+              <h6>Heading 6 followed by paragraph</h6>
+              <p>Lowest heading level remains distinct from body text.</p>
+
+              <p>Paragraph followed by H2 for reverse transition check.</p>
+              <h2>Heading 2 after paragraph</h2>
+              <p>Top heading spacing from body text should feel consistent.</p>
+            </article>
           </div>
         </div>
       </section>
