@@ -2,17 +2,17 @@
 
 Interactive renderer for sandbox files or component demos, powered by `@codemonster-ru/vueforge-playground-core`.
 
-## Summary
-
-Interactive renderer for sandbox files or component demos, powered by `@codemonster-ru/vueforge-playground-core`.
-
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfPlayground } from '@codemonster-ru/vueforge-playground';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -22,14 +22,18 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfPlayground mode="sandbox" :files="files" entry="/App.vue" :height="280" />
+  <VfPlayground mode="component" :component="DemoBlock" :height="280" />
 </template>
 
 <script setup>
+import { h } from 'vue';
 import { VfPlayground } from '@codemonster-ru/vueforge-playground';
 
-const files = {
-  '/App.vue': `<template><button>Playground demo</button></template>`
+const DemoBlock = {
+  render: () => h('div', { style: { display: 'grid', gap: 'var(--vf-surface-gap-compact)' } }, [
+    h('h3', { style: { margin: 0 } }, 'Playground demo'),
+    h('p', { style: { margin: 0 } }, 'Component mode preview without sandbox srcdoc.')
+  ])
 };
 </script>
 ```
@@ -37,12 +41,18 @@ const files = {
 
 ## Notes
 
+Additional implementation notes and caveats:
+
 - In `sandbox` mode, preview is rendered in an iframe.
 - In `component` mode, preview renders the provided Vue component directly.
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Treat playground as a composite interactive region containing tabs, code panel, preview area, and optional console.
 - Provide explicit labels for custom renderers (tabs/actions/files) so control purpose is announced.
@@ -50,10 +60,11 @@ const files = {
 
 ### Keyboard Support
 
+Keyboard interaction follows native semantics of the rendered element or composite widget.
+
 | Key | Function |
 | --- | --- |
 | `Tab` | Moves focus between playground controls (tabs, file picker, action buttons, code/preview/console regions). |
 | `Shift + Tab` | Moves focus backward across playground controls. |
 | `Enter` | Activates focused playground action/control. |
 | `Escape` | Used by nested overlays/components inside playground when they implement close-on-escape. |
-

@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Horizontal menu bar with nested items and keyboard navigation.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfMenuBar } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -44,13 +46,19 @@ const items = [
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Root navigation is exposed as `<nav>` with configurable `aria-label`.
 - Top-level list uses `role="menubar"`; items and submenu entries use `role="menuitem"`.
 - Branch items expose `aria-haspopup="menu"` and `aria-expanded` so submenu state is announced.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

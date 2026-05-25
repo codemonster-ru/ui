@@ -1,5 +1,5 @@
 <template>
-  <div class="vf-playground" :style="containerStyle" :data-theme="theme">
+  <div class="vf-playground" :class="containerClassName" :style="containerStyle" :data-theme="theme">
     <slot name="layout" v-bind="layoutSlotProps">
       <div class="vf-playground__tabs">
         <component :is="tabsRenderer" v-if="tabsRenderer" v-bind="tabsRendererProps" />
@@ -71,6 +71,7 @@ import type { VfPlaygroundComponentProps, VfPlaygroundProps, VfPlaygroundSandbox
 type VfPlaygroundRuntimeProps = {
   mode?: VfPlaygroundProps['mode'];
   height?: VfPlaygroundProps['height'];
+  heightMode?: VfPlaygroundProps['heightMode'];
   theme?: VfPlaygroundProps['theme'];
   initialTab?: VfPlaygroundProps['initialTab'];
   tabsRenderer?: VfPlaygroundProps['tabsRenderer'];
@@ -95,6 +96,7 @@ type VfPlaygroundRuntimeProps = {
 const props = withDefaults(defineProps<VfPlaygroundRuntimeProps>(), {
   mode: 'sandbox',
   height: undefined,
+  heightMode: 'fixed',
   tabsRenderer: undefined,
   actionsRenderer: undefined,
   filesRenderer: undefined,
@@ -197,6 +199,13 @@ const containerStyle = computed(() => ({
   ...(props.height != null
     ? { height: typeof props.height === 'number' ? `${props.height}px` : props.height }
     : {})
+}));
+const isAutoHeightMode = computed(
+  () =>
+    props.heightMode === 'auto' || (props.heightMode === 'auto-preview' && activeTab.value === 'preview')
+);
+const containerClassName = computed(() => ({
+  'vf-playground--auto-height': isAutoHeightMode.value
 }));
 const consoleOutput = computed(() => logs.value.join('\n'));
 const tabsRenderer = computed(() => props.tabsRenderer);
@@ -783,6 +792,10 @@ defineExpose({
   font-family: var(--vf-playground-font-family);
 }
 
+.vf-playground.vf-playground--auto-height {
+  height: auto;
+}
+
 .vf-playground__tabs {
   display: flex;
   align-items: center;
@@ -835,6 +848,11 @@ defineExpose({
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+.vf-playground--auto-height .vf-playground__panel {
+  flex: 0 0 auto;
+  overflow: visible;
 }
 
 .vf-playground__panel--code {
@@ -914,6 +932,10 @@ defineExpose({
   background: var(--vf-playground-iframe-bg);
 }
 
+.vf-playground--auto-height .vf-playground__iframe {
+  height: var(--vf-playground-height);
+}
+
 .vf-playground__component-preview {
   box-sizing: border-box;
   width: 100%;
@@ -921,6 +943,10 @@ defineExpose({
   min-height: var(--vf-playground-component-min-height);
   padding: var(--vf-playground-component-padding);
   overflow: auto;
+}
+
+.vf-playground--auto-height .vf-playground__component-preview {
+  height: auto;
 }
 
 .vf-playground__console {

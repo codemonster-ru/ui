@@ -1,6 +1,10 @@
 # API
 
+Public component contract: props, events, slots, and related types.
+
 ## Props
+
+Component props and their default values.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -29,6 +33,8 @@
 
 ## Emits
 
+Emitted component events and their payload shapes.
+
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
 | `run` | `—` | `void` | Emitted when sandbox run starts. |
@@ -36,17 +42,23 @@
 
 ## Slots
 
+Available slots and their slot props.
+
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
 | `layout` | `[scope: { activeTab: 'code' \| 'preview' \| 'console'; showCode: boolean; setActiveTab: (tab: 'code' \| 'preview' \| 'console') => void; fileNames: string[]; activeFile: string; setActiveFile: (file: string) => void; activeFileContent: string; codeLanguage: string; codeTheme: 'light' \| 'dark'; consoleOutput: string; isRunning: boolean; run: () => Promise<void>; isClient: boolean; bindPreviewIframe: (el: Element \| import('vue').ComponentPublicInstance \| null) => void }]` | `void` | full custom layout slot with runtime state/actions |
 
 ## Events
 
+Native DOM events exposed by the component.
+
 | Name | Type | Description |
 | --- | --- | --- |
 | `—` | `—` | No additional native events are documented. |
 
 ## Interfaces
+
+Exported interfaces related to this component.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -55,6 +67,8 @@
 | `VfPlaygroundComponentProps` | `interface` | `—` | Props contract for `component` mode. |
 
 ## Types
+
+Exported utility and union types.
 
 | Name | Values |
 | --- | --- |

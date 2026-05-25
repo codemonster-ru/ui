@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Boolean switch with label and custom thumb slot support.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfSwitch } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -34,13 +36,19 @@ const enabled = ref(true);
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Exposes binary on/off state and should be labeled as a setting toggle.
 - Provide explicit accessible name via visible label or `aria-label` / `aria-labelledby`.
 - Reflect disabled/unavailable state with native and ARIA state attributes.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

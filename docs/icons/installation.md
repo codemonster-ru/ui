@@ -6,12 +6,12 @@ order: 2
 
 # Installation
 
-## Overview
-
-Install the package and import the public entry points.
+Install the package and import the public entry points for this module.
 
 
 ## Install
+
+Add the package to your project dependencies.
 
 ```bash
 npm i @codemonster-ru/vueforge-icons
@@ -19,7 +19,8 @@ npm i @codemonster-ru/vueforge-icons
 
 ## Import
 
+Import the public API from the package entry point.
+
 ```ts
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 ```
-

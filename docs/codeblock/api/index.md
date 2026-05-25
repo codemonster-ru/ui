@@ -6,11 +6,17 @@ order: 3
 
 # API
 
+Reference for package-level exports and runtime helpers available in `@codemonster-ru/vueforge-codeblock`.
+
 ## Overview
 
 Public API surface of `@codemonster-ru/vueforge-codeblock`.
 
+This page documents the package-level API (plugin entry, exports, helpers, and types), not only the `VfCodeBlock` component tab API.
+
 ## Plugin and Component
+
+The following items are listed in this section:
 
 - `default` (`Plugin`): registers `VfCodeBlock`.
 - `VfCodeBlock`: standalone component.
@@ -24,11 +30,15 @@ app.use(VueForgeCodeBlock, {
 
 ## Highlight Helpers
 
+The following items are listed in this section:
+
 - `escapeCodeHtml(code: string): string`
 - `highlightCodeLine(code: string, language?: string): Promise<string>`
 - `highlightCodeBlock(code: string, language?: string): Promise<string>`
 
 ## Runtime Theme Helper
+
+The code snippet below illustrates this section.
 
 ```ts
 setCodeBlockThemeVars(themeVars, options?)
@@ -43,6 +53,8 @@ Options:
 - `options.styleNonce`: CSP nonce for generated style tag
 
 ## Component Contract (`VfCodeBlock`)
+
+The following items are listed in this section:
 
 - `code?: string`
 - `language?: CodeBlockLanguage`
@@ -61,9 +73,13 @@ Options:
 
 ## Constants
 
+The following items are listed in this section:
+
 - `SUPPORTED_CODE_BLOCK_LANGUAGES`: built-in aliases (`ts`, `vue`, `json`, `bash`, etc.).
 
 ## Types
+
+The following items are listed in this section:
 
 - `CodeBlockCopyPayload`
 - `CodeBlockCssVarMap`
@@ -76,5 +92,7 @@ Options:
 - `SupportedCodeBlockLanguage`
 
 ## CSS Export
+
+The following items are listed in this section:
 
 - `@codemonster-ru/vueforge-codeblock/style.css`

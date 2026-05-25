@@ -6,12 +6,17 @@ order: 6
 
 # Guides
 
+This section provides a quick overview before the detailed subsections below.
+
+
 ## Overview
 
 Practical integration notes, limitations, and related packages for this package.
 
 
 ## Common Integration Patterns
+
+Follow these patterns to keep layout composition consistent across pages and shells.
 
 ### Pair with Core for Full App Shell UX
 
@@ -32,9 +37,14 @@ Use `createLayoutsPreset`/`applyLayoutsThemeConfig` for layout token changes ins
 
 ## Limitations
 
-- Peer dependencies: `vue ^3.4.0`, `@codemonster-ru/vueforge-core ^1.18.0`.
+The following items are listed in this section:
+
+- Peer dependency: `vue ^3.4.0`.
+- Peer dependency: `@codemonster-ru/vueforge-core ^1.18.0`.
 
 ## Related Packages
+
+The following items are listed in this section:
 
 - `@codemonster-ru/vueforge-core`
 - `@codemonster-ru/vueforge-theme`
