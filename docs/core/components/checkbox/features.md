@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Boolean input control with label support.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfCheckbox } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -34,13 +36,19 @@ const agreed = ref(true);
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Uses native checkbox semantics and checked/unchecked state announcement.
 - Ensure the control has an accessible name via visible label or `aria-label` / `aria-labelledby`.
 - Disabled and invalid states should be exposed with native attributes and ARIA where needed.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

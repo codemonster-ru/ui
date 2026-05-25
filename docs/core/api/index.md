@@ -1,16 +1,21 @@
 ---
 title: "API"
-description: "Public API reference for the core package"
+description: "Package-level API reference for the core package"
 order: 3
 ---
 
-# API
+# Package API
+
+Package-level exports and integration surface of `@codemonster-ru/vueforge-core`.
+
 
 ## Overview
 
-Public API surface of `@codemonster-ru/vueforge-core`.
+This page covers package integration APIs and shared utilities. Component-specific contracts live in each component API tab.
 
 ## Plugin
+
+The following items are listed in this section:
 
 - `default` / `VueForgeCore` / `createVueForgeCore`: install VueForge Core components.
 - `VfThemeProvider`: provider component for theme context.
@@ -24,21 +29,43 @@ app.use(VueForgeCore);
 
 ## Components
 
-- `VfAccordion`, `VfAlert`, `VfBadge`, `VfBreadcrumbs`, `VfButton`, `VfCard`, `VfCheckbox`, `VfCommandPalette`, `VfDialog`, `VfDivider`, `VfDrawer`, `VfDropdown`, `VfIconButton`, `VfInput`, `VfLink`, `VfMenuBar`, `VfNavMenu`, `VfPanel`, `VfPopover`, `VfRadio`, `VfSelect`, `VfSwitch`, `VfTable`, `VfTableOfContents`, `VfTabs`, `VfTag`, `VfTextarea`, `VfThemeSwitch`, `VfTooltip`.
+VueForge Core exports a full component set (inputs, navigation, overlays, feedback, layout primitives). Use per-component docs for exact props/events/slots.
 
 ## Composables
 
-- `useClickOutside`, `useDisclosure`, `useEscapeKey`, `useFloating`, `useFocusTrap`, `useId`, `useTableOfContents`, `useTheme`.
+The following items are listed in this section:
+
+- `useClickOutside`
+- `useDisclosure`
+- `useEscapeKey`
+- `useFloating`
+- `useFocusTrap`
+- `useId`
+- `useTableOfContents`
+- `useTheme`
 
 ## Foundation Helpers
 
-- `vfBreakpoints`, `toMaxWidthQuery`, `toMinWidthQuery`, `useBreakpoint`, `useBreakpoints`, `useBreakpointValue`, `useScrollLock`.
+The following items are listed in this section:
+
+- `vfBreakpoints`
+- `toMaxWidthQuery`
+- `toMinWidthQuery`
+- `useBreakpoint`
+- `useBreakpoints`
+- `useBreakpointValue`
+- `useScrollLock`
 
 ## Theme Helpers
 
-- `createThemePreset`, `defaultThemePreset`.
+The following items are listed in this section:
+
+- `createThemePreset`
+- `defaultThemePreset`
 
 ## Usage Example
+
+The code snippet below illustrates this section.
 
 ```ts
 import { useBreakpointValue } from '@codemonster-ru/vueforge-core';
@@ -52,11 +79,27 @@ const size = useBreakpointValue({
 
 ## Types
 
-- Components: `VfBadgeTone`, `VfBreadcrumbItem`, `VfButtonVariant`, `VfControlSize`, `VfDialogSize`, `VfDrawerPlacement`, `VfDrawerSize`, `VfDividerOrientation`, `VfDropdownPlacement`, `VfFeedbackTone`, `VfLinkTone`, `VfNavMenuItem`, `VfSelectOption`, `VfTabItem`, `VfTableOfContentsItem`, `VfTooltipPlacement`.
-- Theme: `VfResolvedTheme`, `VfThemeConfig`, `VfThemeContext`, `VfThemeMode`, `VfThemePreset`, `VfThemePresetOptions`, `VfThemeProviderProps`, `VfThemeTokens`, `VfVueForgeOptions`.
-- Foundation: `UseBreakpointOptions`, `UseScrollLockOptions`, `VfBreakpointName`, `VfBreakpointValue`, `VfBreakpointValues`.
+The following items are listed in this section:
+
+- Component types: component contracts and option unions used by UI primitives.
+- Theme type: `VfResolvedTheme`.
+- Theme type: `VfThemeConfig`.
+- Theme type: `VfThemeContext`.
+- Theme type: `VfThemeMode`.
+- Theme type: `VfThemePreset`.
+- Theme type: `VfThemePresetOptions`.
+- Theme type: `VfThemeProviderProps`.
+- Theme type: `VfThemeTokens`.
+- Theme type: `VfVueForgeOptions`.
+- Foundation type: `UseBreakpointOptions`.
+- Foundation type: `UseScrollLockOptions`.
+- Foundation type: `VfBreakpointName`.
+- Foundation type: `VfBreakpointValue`.
+- Foundation type: `VfBreakpointValues`.
 
 ## CSS Exports
+
+The following items are listed in this section:
 
 - `@codemonster-ru/vueforge-core/styles.css`
 - `@codemonster-ru/vueforge-core/tokens.css`

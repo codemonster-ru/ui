@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Compact label for status, categories, and metadata.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfTag } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -20,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
+  <div style="display:flex;gap:var(--vf-surface-gap-compact);flex-wrap:wrap">
     <VfTag>Default</VfTag>
     <VfTag tone="success">Stable</VfTag>
     <VfTag tone="warning">Beta</VfTag>
@@ -35,13 +37,19 @@ import { VfTag } from '@codemonster-ru/vueforge-core';
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Tags should include readable text labels that describe category/state.
 - For removable/interactive tags, provide explicit action labels for remove buttons.
 - Do not encode semantic meaning by color alone.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |
