@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0
+
+### Added
+
+- Added `heightMode` prop to `VfPlayground` with `fixed` (default), `auto-preview`, and `auto` options.
+- Added auto-height layout behavior for preview panels, including tab-aware `auto-preview` mode.
+
 ## 1.3.2
 
 ### Fixed
