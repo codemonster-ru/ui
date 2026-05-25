@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Footer area for page-level meta and secondary links.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfFooterArea } from '@codemonster-ru/vueforge-layouts';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -20,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfFooterArea style="padding:10px;border:1px solid #e5e7eb;border-radius:10px">
+  <VfFooterArea style="padding:var(--vf-surface-gap);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">
     <small>© 2026 VueForge Docs</small>
   </VfFooterArea>
 </template>
@@ -33,13 +35,19 @@ import { VfFooterArea } from '@codemonster-ru/vueforge-layouts';
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Footer area should contain supporting navigation and metadata in semantic structure.
 - Group related links and label sections where needed.
 - Keep repeated links concise and meaningful out of context.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

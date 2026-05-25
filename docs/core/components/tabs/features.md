@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Tabs component with controlled/uncontrolled active value.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfTabs } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -39,13 +41,19 @@ const items = [
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Tabs use WAI-ARIA tab pattern: tab list with `role="tablist"`, tab buttons with `role="tab"`, and panel with `role="tabpanel"`.
 - Active state is reflected via `aria-selected`; panel is linked to tab via `aria-labelledby`.
 - Provide clear tab labels because they become the primary spoken navigation model.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

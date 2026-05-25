@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Multiline text input with size and validation states.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfTextarea } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -38,13 +40,19 @@ const bio = ref('');
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Uses native `<textarea>` semantics, including multiline editing announcement.
 - Provide associated label or `aria-label` / `aria-labelledby` to announce field purpose.
 - Connect helper/error text via `aria-describedby`; expose invalid state with `aria-invalid`.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

@@ -1,6 +1,10 @@
 # API
 
+Public component contract: props, events, slots, and related types.
+
 ## Props
+
+Component props and their default values.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -11,8 +15,12 @@
 | `items?` | `unknown[]` | `[]` | Collection of items rendered by the component. |
 | `placeholder?` | `string` | `Search...` | Placeholder text when empty. |
 | `closeOnSelect?` | `boolean` | `true` | Closes popup after selecting an item. |
+| `teleportTo?` | `string \| HTMLElement \| null \| false` | — | Teleport target selector/element; `null`/`false` disables teleport resolution. |
+| `disableTeleport?` | `boolean` | `false` | Forces in-place rendering without teleport. |
 
 ## Emits
+
+Emitted component events and their payload shapes.
 
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
@@ -27,6 +35,8 @@
 
 ## Slots
 
+Available slots and their slot props.
+
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
 | `item` | `[scope: { item: unknown; index: number; active: boolean; query: string; select: () => void }]` | `void` | gets `{ item, index, active, query, select }` |
@@ -35,17 +45,23 @@
 
 ## Events
 
+Native DOM events exposed by the component.
+
 | Name | Type | Description |
 | --- | --- | --- |
 | `—` | `—` | No additional native events are documented. |
 
 ## Interfaces
 
+Exported interfaces related to this component.
+
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `—` | `—` | `—` | No dedicated interfaces in this component contract. |
 
 ## Types
+
+Exported utility and union types.
 
 | Name | Values |
 | --- | --- |

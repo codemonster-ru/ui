@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Content container with optional title and custom header slot.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfPanel } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -21,7 +23,7 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <VfPanel title="Recent Activity">
-    <ul style="margin:0;padding-left:18px">
+    <ul style="margin:0;padding-left:var(--vf-surface-padding)">
       <li>Updated docs structure</li>
       <li>Added interactive examples</li>
     </ul>
@@ -36,7 +38,11 @@ import { VfPanel } from '@codemonster-ru/vueforge-core';
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Panel acts as a content region; include meaningful heading/title for context.
 - Preserve semantic structure of content inside panel (headings, lists, forms).
@@ -44,8 +50,9 @@ import { VfPanel } from '@codemonster-ru/vueforge-core';
 
 ### Keyboard Support
 
+Keyboard interaction follows native semantics of the rendered element or composite widget.
+
 | Key | Function |
 | --- | --- |
 | `Tab` | Moves focus through interactive controls inside panel. |
 | `Shift + Tab` | Moves focus backward through panel controls. |
-

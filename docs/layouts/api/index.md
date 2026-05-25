@@ -6,11 +6,16 @@ order: 3
 
 # API
 
+This section provides a quick overview before the detailed subsections below.
+
+
 ## Overview
 
 Public API surface of `@codemonster-ru/vueforge-layouts`.
 
 ## Plugin
+
+The following items are listed in this section:
 
 - `default` / `VueForgeLayouts` / `createVueForgeLayouts`: installs layouts package.
 
@@ -23,33 +28,77 @@ app.use(VueForgeLayouts);
 
 ## Primitives
 
-- `VfContainer`, `VfStack`, `VfInline`, `VfSection`, `VfGrid`.
+The following items are listed in this section:
+
+- `VfContainer`
+- `VfStack`
+- `VfInline`
+- `VfSection`
+- `VfGrid`
 
 ## Shell Components
 
-- `VfAppShell`, `VfDocumentLayout`, `VfErrorLayout`.
-- Areas: `VfHeaderArea`, `VfSidebarArea`, `VfContentArea`, `VfAsideArea`, `VfFooterArea`.
+The following items are listed in this section:
+
+- `VfAppShell`
+- `VfDocumentLayout`
+- `VfErrorLayout`
+- Area: `VfHeaderArea`.
+- Area: `VfSidebarArea`.
+- Area: `VfContentArea`.
+- Area: `VfAsideArea`.
+- Area: `VfFooterArea`.
 
 ## Layout Theme API
 
-- Functions: `applyLayoutsThemeConfig`, `createLayoutsPreset`, `defaultLayoutsPreset`, `layoutsPresetToCssText`, `layoutsTokensToCssVars`, `resolveLayoutsPreset`, `resolveLayoutsThemeConfig`, `resolveLayoutsThemeOptions`.
-- Types: `VfLayoutPreset`, `VfLayoutThemeConfig`, `VfLayoutThemeOptions`, `VfLayoutTokens`, `VfVueForgeLayoutsOptions`, `VfVueForgeLayoutsThemeOptions`, `VfResolvedLayoutPreset`, `VfResolvedLayoutThemeConfig`, `VfResolvedLayoutThemeOptions`.
+The following items are listed in this section:
+
+- Function: `applyLayoutsThemeConfig`.
+- Function: `createLayoutsPreset`.
+- Function: `defaultLayoutsPreset`.
+- Function: `layoutsPresetToCssText`.
+- Function: `layoutsTokensToCssVars`.
+- Function: `resolveLayoutsPreset`.
+- Function: `resolveLayoutsThemeConfig`.
+- Function: `resolveLayoutsThemeOptions`.
+- Type: `VfLayoutPreset`.
+- Type: `VfLayoutThemeConfig`.
+- Type: `VfLayoutThemeOptions`.
+- Type: `VfLayoutTokens`.
+- Type: `VfVueForgeLayoutsOptions`.
+- Type: `VfVueForgeLayoutsThemeOptions`.
+- Type: `VfResolvedLayoutPreset`.
+- Type: `VfResolvedLayoutThemeConfig`.
+- Type: `VfResolvedLayoutThemeOptions`.
 
 ## Composables
+
+The following items are listed in this section:
 
 - `useCssVarBreakpoints`.
 
 ## Re-exported Foundation Helpers
 
-- `vfBreakpoints`, `toMinWidthQuery`, `toMaxWidthQuery`, `useBreakpoint`, `useBreakpoints`, `useBreakpointValue`.
+The following items are listed in this section:
+
+- `vfBreakpoints`
+- `toMinWidthQuery`
+- `toMaxWidthQuery`
+- `useBreakpoint`
+- `useBreakpoints`
+- `useBreakpointValue`
 
 ## Usage Example
+
+The code snippet below illustrates this section.
 
 ```ts
 import { VfAppShell, VfHeaderArea, VfContentArea } from '@codemonster-ru/vueforge-layouts';
 ```
 
 ## CSS Exports
+
+The following items are listed in this section:
 
 - `@codemonster-ru/vueforge-layouts/styles.css`
 - `@codemonster-ru/vueforge-layouts/tokens.css`

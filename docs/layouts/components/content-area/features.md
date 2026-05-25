@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Main content region with optional built-in padding.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfContentArea } from '@codemonster-ru/vueforge-layouts';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -20,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfContentArea style="border:1px solid #e5e7eb;border-radius:10px">
+  <VfContentArea style="border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">
     <p style="margin:0">Article content goes here.</p>
   </VfContentArea>
 </template>
@@ -33,13 +35,19 @@ import { VfContentArea } from '@codemonster-ru/vueforge-layouts';
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Content area should preserve document flow and heading hierarchy for the main reading region.
 - If used as a primary content landmark, label it appropriately in surrounding layout.
 - Keep DOM order aligned with visual order to avoid navigation confusion.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

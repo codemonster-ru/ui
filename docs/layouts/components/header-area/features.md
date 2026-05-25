@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Page header area with optional sticky behavior.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfHeaderArea } from '@codemonster-ru/vueforge-layouts';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -20,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfHeaderArea :sticky="false" style="padding:10px;border:1px solid #e5e7eb;border-radius:10px">
+  <VfHeaderArea :sticky="false" style="padding:var(--vf-surface-gap);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">
     <strong>Docs Header</strong>
   </VfHeaderArea>
 </template>
@@ -33,13 +35,19 @@ import { VfHeaderArea } from '@codemonster-ru/vueforge-layouts';
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Header area should group top-level navigation/branding/actions semantically.
 - Include labeled landmarks in header content when navigation or utility controls are present.
 - Ensure heading/logo link text communicates destination clearly.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

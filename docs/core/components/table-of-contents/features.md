@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Document table of contents with active section highlighting.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfTableOfContents } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -20,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <div style="display:grid;grid-template-columns:220px 1fr;gap:16px">
+  <div style="display:grid;grid-template-columns:220px 1fr;gap:var(--vf-surface-padding)">
     <VfTableOfContents
       :items="items"
       :active-id="activeId"
@@ -29,22 +31,22 @@ entry: /App.vue
       variant="pills"
     />
 
-    <article style="display:grid;gap:14px">
+    <article style="display:grid;gap:var(--vf-surface-padding)">
       <section id="introduction">
         <h3 style="margin:0">Introduction</h3>
-        <p style="margin:6px 0 0">Overview of package goals and design principles.</p>
+        <p style="margin:var(--vf-surface-gap-tight) 0 0">Overview of package goals and design principles.</p>
       </section>
       <section id="installation">
         <h3 style="margin:0">Installation</h3>
-        <p style="margin:6px 0 0">Package manager setup and versioning rules.</p>
+        <p style="margin:var(--vf-surface-gap-tight) 0 0">Package manager setup and versioning rules.</p>
       </section>
       <section id="vite">
         <h3 style="margin:0">Vite</h3>
-        <p style="margin:6px 0 0">Vite-specific notes and plugin integration.</p>
+        <p style="margin:var(--vf-surface-gap-tight) 0 0">Vite-specific notes and plugin integration.</p>
       </section>
       <section id="configuration">
         <h3 style="margin:0">Configuration</h3>
-        <p style="margin:6px 0 0">Runtime options and defaults.</p>
+        <p style="margin:var(--vf-surface-gap-tight) 0 0">Runtime options and defaults.</p>
       </section>
     </article>
   </div>
@@ -67,7 +69,11 @@ const items = [
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Table of contents is rendered as semantic navigation (`<nav>`) with configurable `aria-label`.
 - Active section link is marked with `aria-current="location"`.
@@ -75,10 +81,11 @@ const items = [
 
 ### Keyboard Support
 
+Keyboard interaction follows native semantics of the rendered element or composite widget.
+
 | Key | Function |
 | --- | --- |
 | `Tab` | Moves focus to next table-of-contents link. |
 | `Shift + Tab` | Moves focus to previous table-of-contents link. |
 | `Enter` | Activates focused link and navigates/scrolls to section. |
 | `Space` | Activates focused link in browsers that map Space to link activation behavior. |
-

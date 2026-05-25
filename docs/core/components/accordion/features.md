@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Collapsible section with controlled or uncontrolled open state.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfAccordion } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -33,13 +35,19 @@ import { VfAccordion } from '@codemonster-ru/vueforge-core';
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Trigger button exposes `aria-expanded` and `aria-controls` for expanded/collapsed state announcement.
 - Expanded panel uses `role="region"` and `aria-labelledby` linked to the trigger.
 - Use concise, descriptive trigger titles so screen reader users can understand section purpose quickly.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

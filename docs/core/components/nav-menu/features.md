@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Hierarchical navigation menu with single or multiple expanded branches.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfNavMenu } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -60,13 +62,19 @@ const items = [
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Root navigation is rendered as `<nav>` with configurable `aria-label`.
 - Expandable branch controls expose `aria-expanded` so collapsed/expanded state is announced.
 - Active links/items expose `aria-current="page"` for current-location context.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

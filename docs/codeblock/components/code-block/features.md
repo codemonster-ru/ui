@@ -2,17 +2,17 @@
 
 Standalone code block component with optional header, line numbers, copy action, and theme-aware rendering.
 
-## Summary
-
-Standalone code block component with optional header, line numbers, copy action, and theme-aware rendering.
-
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -26,27 +26,77 @@ entry: /App.vue
     language="ts"
     filename="math.ts"
     :code="code"
+    :theme="theme"
     show-line-numbers
     copyable
   />
 </template>
 
 <script setup>
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
 
-const code = `export const sum = (a: number, b: number) => a + b;`;
+const theme = ref('light');
+let observer = null;
+
+const syncTheme = () => {
+  const htmlTheme = document.documentElement.getAttribute('data-theme');
+  const vfTheme = document.documentElement.getAttribute('data-vf-theme');
+  theme.value = htmlTheme === 'dark' || vfTheme === 'dark' ? 'dark' : 'light';
+};
+
+onMounted(() => {
+  syncTheme();
+
+  if (typeof MutationObserver === 'undefined') {
+    return;
+  }
+
+  observer = new MutationObserver(syncTheme);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme', 'data-vf-theme']
+  });
+});
+
+onBeforeUnmount(() => {
+  observer?.disconnect();
+  observer = null;
+});
+
+const code = `type User = {
+  id: string;
+  name: string;
+  role: 'admin' | 'editor' | 'viewer';
+};
+
+const hasAccess = (user: User, requiredRole: User['role']) => {
+  const order = ['viewer', 'editor', 'admin'] as const;
+  return order.indexOf(user.role) >= order.indexOf(requiredRole);
+};
+
+export const formatGreeting = (user: User) => {
+  const prefix = hasAccess(user, 'editor') ? 'Welcome back' : 'Hello';
+  return prefix + ', ' + user.name;
+};`;
 </script>
 ```
 ````
 
 ## Notes
 
+Additional implementation notes and caveats:
+
 - When `theme="inherit"`, component tracks nearest `data-theme` / `data-vf-theme`.
 - Highlighting is async; plain-code fallback is rendered first for responsiveness.
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Code block should expose readable code text and language/context metadata when available.
 - Copy and action controls must have explicit accessible names (for example, “Copy code”).
@@ -54,10 +104,11 @@ const code = `export const sum = (a: number, b: number) => a + b;`;
 
 ### Keyboard Support
 
+Keyboard interaction follows native semantics of the rendered element or composite widget.
+
 | Key | Function |
 | --- | --- |
 | `Tab` | Moves focus to interactive controls (copy button, toggles) when present. |
 | `Shift + Tab` | Moves focus backward through interactive controls. |
 | `Enter` | Activates focused action control. |
 | `Space` | Activates focused action control. |
-

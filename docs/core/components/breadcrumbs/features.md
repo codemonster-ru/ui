@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Breadcrumb trail for hierarchical navigation.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfBreadcrumbs } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -37,13 +39,19 @@ const items = [
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Breadcrumbs should be wrapped in navigation landmark with an explicit label (for example, “Breadcrumb”).
 - Current page item should be marked with `aria-current="page"`.
 - Keep breadcrumb labels concise and hierarchical.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

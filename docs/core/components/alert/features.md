@@ -1,16 +1,18 @@
 # Features
 
-## Summary
-
 Feedback component for status and contextual messages.
 
 ## Import
+
+Import statement for this component.
 
 ```ts
 import { VfAlert } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
+
+Basic usage example.
 
 ````playground-src
 mode: component
@@ -20,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <div style="display:grid;gap:10px">
+  <div style="display:grid;gap:var(--vf-surface-gap)">
     <VfAlert tone="success" title="Saved">
       Changes were saved successfully.
     </VfAlert>
@@ -38,13 +40,19 @@ import { VfAlert } from '@codemonster-ru/vueforge-core';
 
 ## Accessibility
 
+Accessibility behavior and keyboard interactions.
+
 ### Screen Reader
+
+The following items are listed in this section:
 
 - Alerts should communicate concise status/context and remain text-first.
 - When used for important asynchronous feedback, ensure content is exposed in an appropriate live region strategy in host app.
 - Keep iconography decorative unless it conveys unique meaning not present in text.
 
 ### Keyboard Support
+
+Keyboard interaction follows native semantics of the rendered element or composite widget.
 
 | Key | Function |
 | --- | --- |

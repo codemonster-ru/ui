@@ -1,24 +1,10 @@
----
-title: "VueIconify"
-description: "Universal icon rendering component"
-order: 1
----
+# API
 
-# VueIconify
-
-Renders icons from the VueForge icon set via a unified API.
-
-## Summary
-
-Renders icons from the VueForge icon set via a unified API.
-
-## Import
-
-```ts
-import { VueIconify } from '@codemonster-ru/vueforge-icons';
-```
+Public component contract: props, events, slots, and related types.
 
 ## Props
+
+Component props and their default values.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -30,11 +16,15 @@ import { VueIconify } from '@codemonster-ru/vueforge-icons';
 
 ## Emits
 
+Emitted component events and their payload shapes.
+
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
 | `—` | `—` | `void` | No custom emits. |
 
 ## Slots
+
+Available slots and their slot props.
 
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
@@ -42,11 +32,15 @@ import { VueIconify } from '@codemonster-ru/vueforge-icons';
 
 ## Events
 
+Native DOM events exposed by the component.
+
 | Name | Type | Description |
 | --- | --- | --- |
 | `—` | `—` | No additional native events are documented. |
 
 ## Interfaces
+
+Exported interfaces related to this component.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -54,37 +48,10 @@ import { VueIconify } from '@codemonster-ru/vueforge-icons';
 
 ## Types
 
+Exported utility and union types.
+
 | Name | Values |
 | --- | --- |
 | `IconName` | `Union of generated icon names.` |
 | `IconCatalogEntry` | `{ title; keywords; style; brand? }` |
 | `IconShowcaseEntry` | `{ icon; status; note }` |
-
-## Notes
-
-- Unknown icon names fallback safely to `moon`.
-- Kebab-case icon names are normalized to component file names.
-- `inset` adjusts visual scale and is clamped to a safe range.
-
-## Usage
-
-````playground-src
-mode: component
-framework: vue
-height: 220
-entry: /App.vue
-
-```vue file=/App.vue
-<template>
-  <div style="display:flex;gap:12px;font-size:24px;align-items:center">
-    <VueIconify icon="github" />
-    <VueIconify icon="sparkles" spin />
-    <VueIconify icon="arrowRightLong" />
-  </div>
-</template>
-
-<script setup>
-import { VueIconify } from '@codemonster-ru/vueforge-icons';
-</script>
-```
-````

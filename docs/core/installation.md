@@ -6,18 +6,20 @@ order: 2
 
 # Installation
 
-## Overview
-
-Install the package and import the public entry points.
+Install the package, then register the plugin in your Vue app and import base styles.
 
 
 ## Install
+
+Add the package to your project dependencies.
 
 ```bash
 npm i @codemonster-ru/vueforge-core
 ```
 
 ## Import
+
+Import the public API from the package entry point.
 
 ```ts
 import { createApp } from 'vue';
@@ -27,4 +29,3 @@ import '@codemonster-ru/vueforge-core/styles.css';
 const app = createApp({});
 app.use(VueForgeCore);
 ```
-
