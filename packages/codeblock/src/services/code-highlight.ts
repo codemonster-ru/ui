@@ -1,7 +1,8 @@
 import { createBundledHighlighter } from 'shiki/core';
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
+import { SUPPORTED_CODE_BLOCK_LANGUAGES } from '../types';
 
-const shikiLanguages = {
+const languageLoaders = {
   bash: () => import('@shikijs/langs/bash'),
   css: () => import('@shikijs/langs/css'),
   html: () => import('@shikijs/langs/html'),
@@ -19,7 +20,7 @@ const shikiThemes = {
 };
 
 const createHighlighter = createBundledHighlighter({
-  langs: shikiLanguages,
+  langs: languageLoaders,
   themes: shikiThemes,
   engine: () => createJavaScriptRegexEngine(),
 });
@@ -37,16 +38,24 @@ export const escapeCodeHtml = (value: string): string =>
 
 const escapeAttribute = (value: string): string => escapeCodeHtml(value).replaceAll('"', '&quot;');
 
-type ShikiLanguage = keyof typeof shikiLanguages;
+type FallbackLanguage = 'plaintext' | 'text';
+interface HighlightRuntimeOptions {
+  allowedLanguages?: string[];
+  fallbackLanguage?: FallbackLanguage;
+}
 
-const loadedLanguages = new Set<ShikiLanguage>();
-const loadingLanguages = new Map<ShikiLanguage, Promise<void>>();
+type ShikiLanguageLoader = keyof typeof languageLoaders;
 
-const normalizeLanguage = (language: string): ShikiLanguage | null => {
-  const normalized = language.toLowerCase();
+const loadedLanguages = new Set<ShikiLanguageLoader>();
+const loadingLanguages = new Map<ShikiLanguageLoader, Promise<void>>();
+const warnedDisallowedLanguages = new Set<string>();
+const languageLoadAttempts = new Map<ShikiLanguageLoader, number>();
+
+const normalizeAllowlistLanguage = (language: string): string => {
+  const normalized = language.toLowerCase().trim();
 
   if (normalized === 'plaintext' || normalized === 'text' || normalized === 'txt') {
-    return null;
+    return 'plaintext';
   }
 
   if (normalized === 'shell' || normalized === 'sh') {
@@ -61,8 +70,22 @@ const normalizeLanguage = (language: string): ShikiLanguage | null => {
     return 'typescript';
   }
 
-  if (normalized in shikiLanguages) {
-    return normalized as ShikiLanguage;
+  if (normalized in languageLoaders) {
+    return normalized;
+  }
+
+  return normalized;
+};
+
+const toShikiLanguage = (language: string): ShikiLanguageLoader | null => {
+  const normalized = normalizeAllowlistLanguage(language);
+
+  if (normalized === 'plaintext' || normalized === 'text') {
+    return null;
+  }
+
+  if (normalized in languageLoaders) {
+    return normalized as ShikiLanguageLoader;
   }
 
   return null;
@@ -71,7 +94,7 @@ const normalizeLanguage = (language: string): ShikiLanguage | null => {
 export const renderPlainCodeLines = (code: string): string[] =>
   (code || '').replace(/\r\n/g, '\n').split('\n').map(escapeCodeHtml);
 
-const ensureLanguageLoaded = async (language: ShikiLanguage) => {
+const ensureLanguageLoaded = async (language: ShikiLanguageLoader) => {
   if (loadedLanguages.has(language)) {
     return;
   }
@@ -83,6 +106,7 @@ const ensureLanguageLoaded = async (language: ShikiLanguage) => {
   }
 
   const highlighter = await getHighlighter;
+  languageLoadAttempts.set(language, (languageLoadAttempts.get(language) ?? 0) + 1);
   const request = highlighter.loadLanguage(language).then(() => {
     loadedLanguages.add(language);
     loadingLanguages.delete(language);
@@ -92,11 +116,42 @@ const ensureLanguageLoaded = async (language: ShikiLanguage) => {
   await request;
 };
 
+const resolveAllowlist = (allowedLanguages?: string[]) =>
+  new Set((allowedLanguages ?? [...SUPPORTED_CODE_BLOCK_LANGUAGES]).map(normalizeAllowlistLanguage));
+
+const warnDisallowedLanguage = (language: string, fallbackLanguage: FallbackLanguage) => {
+  if (!import.meta.env?.DEV || warnedDisallowedLanguages.has(language)) {
+    return;
+  }
+
+  warnedDisallowedLanguages.add(language);
+  console.warn(
+    `[vf-codeblock] Language "${language}" is not in allowedLanguages. Falling back to "${fallbackLanguage}".`,
+  );
+};
+
+const resolveLanguageWithAllowlist = (
+  language: string,
+  options?: HighlightRuntimeOptions,
+): string => {
+  const allowlist = resolveAllowlist(options?.allowedLanguages);
+  const requestedLanguage = normalizeAllowlistLanguage(language);
+  const fallbackLanguage = options?.fallbackLanguage ?? 'plaintext';
+
+  if (allowlist.has(requestedLanguage)) {
+    return requestedLanguage;
+  }
+
+  warnDisallowedLanguage(requestedLanguage, fallbackLanguage);
+  return fallbackLanguage;
+};
+
 export const highlightCodeLines = async (
   language: string,
   code: string,
   theme: 'light' | 'dark',
   highlight = true,
+  options?: HighlightRuntimeOptions,
 ): Promise<string[]> => {
   const normalizedCode = (code || '').replace(/\r\n/g, '\n');
 
@@ -104,7 +159,8 @@ export const highlightCodeLines = async (
     return renderPlainCodeLines(normalizedCode);
   }
 
-  const normalizedLanguage = normalizeLanguage(language);
+  const resolvedLanguage = resolveLanguageWithAllowlist(language, options);
+  const normalizedLanguage = toShikiLanguage(resolvedLanguage);
 
   if (!normalizedLanguage) {
     return renderPlainCodeLines(normalizedCode);
@@ -149,11 +205,53 @@ export const highlightCodeBlock = async (
   code: string,
   theme: 'light' | 'dark' = 'light',
   highlight = true,
-): Promise<string> => (await highlightCodeLines(language, code, theme, highlight)).join('\n');
+  options?: HighlightRuntimeOptions,
+): Promise<string> => (await highlightCodeLines(language, code, theme, highlight, options)).join('\n');
 
 export const highlightCodeLine = async (
   language: string,
   line: string,
   theme: 'light' | 'dark' = 'light',
   highlight = true,
-): Promise<string> => (await highlightCodeLines(language, line, theme, highlight))[0] ?? '';
+  options?: HighlightRuntimeOptions,
+): Promise<string> => (await highlightCodeLines(language, line, theme, highlight, options))[0] ?? '';
+
+export const preloadCodeBlockLanguages = async (languages: string[], allowedLanguages?: string[]) => {
+  if (!languages.length) {
+    return;
+  }
+
+  const allowlist = resolveAllowlist(allowedLanguages);
+
+  await Promise.all(
+    languages.map(async (language) => {
+      const normalized = normalizeAllowlistLanguage(language);
+      if (!allowlist.has(normalized)) {
+        return;
+      }
+
+      const shikiLanguage = toShikiLanguage(normalized);
+      if (!shikiLanguage) {
+        return;
+      }
+
+      try {
+        await ensureLanguageLoaded(shikiLanguage);
+      } catch {
+        // Ignore preload errors to keep runtime behavior resilient.
+      }
+    }),
+  );
+};
+
+export const __resetCodeBlockHighlightRuntimeForTests = () => {
+  loadedLanguages.clear();
+  loadingLanguages.clear();
+  warnedDisallowedLanguages.clear();
+  languageLoadAttempts.clear();
+};
+
+export const __getCodeBlockLanguageLoadAttemptsForTests = (language: string) => {
+  const normalized = toShikiLanguage(language);
+  return normalized ? (languageLoadAttempts.get(normalized) ?? 0) : 0;
+};

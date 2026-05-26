@@ -1,5 +1,7 @@
 import type { App, Plugin } from 'vue';
+import { CODE_BLOCK_LANGUAGE_OPTIONS_KEY } from './config';
 import VfCodeBlock from './components/VfCodeBlock.vue';
+import { preloadCodeBlockLanguages } from './services/code-highlight';
 import type { CodeBlockPluginOptions, CodeBlockThemeVarOptions } from './types';
 
 export { default as VfCodeBlock } from './components/VfCodeBlock.vue';
@@ -117,7 +119,14 @@ const applyRuntimeThemeVars = (options?: CodeBlockPluginOptions) => {
 const plugin: Plugin = {
   install(app: App, options?: CodeBlockPluginOptions) {
     app.component('VfCodeBlock', VfCodeBlock);
+    app.provide(CODE_BLOCK_LANGUAGE_OPTIONS_KEY, {
+      allowedLanguages: options?.allowedLanguages,
+    });
     applyRuntimeThemeVars(options);
+
+    if (options?.preloadLanguages?.length) {
+      void preloadCodeBlockLanguages(options.preloadLanguages, options.allowedLanguages);
+    }
   },
 };
 

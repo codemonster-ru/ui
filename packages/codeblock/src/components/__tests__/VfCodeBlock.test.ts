@@ -4,8 +4,13 @@ import { renderToString } from '@vue/server-renderer';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createSSRApp, h, nextTick } from 'vue';
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 import VfCodeBlock from '../VfCodeBlock.vue';
+import {
+  __getCodeBlockLanguageLoadAttemptsForTests,
+  __resetCodeBlockHighlightRuntimeForTests,
+  preloadCodeBlockLanguages,
+} from '../../services/code-highlight';
 
 const flushObserver = async () => {
   await nextTick();
@@ -41,6 +46,10 @@ const mountIntoHost = (props: Record<string, unknown>, hostAttributes: Record<st
 };
 
 describe('VfCodeBlock', () => {
+  beforeEach(() => {
+    __resetCodeBlockHighlightRuntimeForTests();
+  });
+
   it('renders highlighted TypeScript content and line numbers', async () => {
     const wrapper = mount(VfCodeBlock, {
       props: {
@@ -388,5 +397,41 @@ body {
     expect(wrapper.findAll('.vf-codeblock__tab')).toHaveLength(0);
     expect(wrapper.find('.vf-codeblock__pre').exists()).toBe(true);
     expect(wrapper.text()).toContain('Language: ts');
+  });
+
+  it('uses fallback when requested language is not in allowedLanguages', async () => {
+    const wrapper = mount(VfCodeBlock, {
+      props: {
+        language: 'ts',
+        allowedLanguages: ['json'],
+        code: 'const fallback = true;',
+      },
+    });
+
+    await flushHighlight(wrapper);
+
+    expect(wrapper.findAll('.vf-codeblock__shiki-token')).toHaveLength(0);
+    expect(wrapper.text()).toContain('const fallback = true;');
+  });
+
+  it('loads language lazily once and reuses cache for repeated renders', async () => {
+    const wrapper = mount(VfCodeBlock, {
+      props: {
+        language: 'ts',
+        code: 'const value = 1;',
+      },
+    });
+
+    await flushHighlight(wrapper);
+    await wrapper.setProps({ code: 'const value = 2;' });
+    await flushHighlight(wrapper);
+
+    expect(__getCodeBlockLanguageLoadAttemptsForTests('ts')).toBe(1);
+  });
+
+  it('preloads languages ahead of rendering', async () => {
+    await preloadCodeBlockLanguages(['ts', 'bash'], ['ts']);
+    expect(__getCodeBlockLanguageLoadAttemptsForTests('ts')).toBe(1);
+    expect(__getCodeBlockLanguageLoadAttemptsForTests('bash')).toBe(0);
   });
 });
