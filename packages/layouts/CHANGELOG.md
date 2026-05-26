@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.3
+
+### Fixed
+
+- Removed `@custom-media --vf-bp-*` declarations from published `dist/styles.css` while keeping expanded `min-width`/`max-width` media rules, eliminating downstream warnings without changing runtime behavior.
+
 ## 1.11.2
 
 ### Changed
