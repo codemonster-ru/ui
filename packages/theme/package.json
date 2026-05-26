@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-theme",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Shared theme engine, tokens, and preset runtime for the VueForge ecosystem.",
   "type": "module",
   "license": "MIT",

@@ -5,9 +5,36 @@ import { cpSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import { buildLayoutCssArtifacts, layoutCssArtifactPaths } from './build/layout-css-artifacts';
+import { resolveLayoutCustomMedia } from './src/theme/breakpoint-registry';
 
 function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
   return [
+    {
+      name: 'vueforge-layouts-expand-custom-media',
+      enforce: 'pre',
+      transform(code, id) {
+        if (!id.includes('/packages/layouts/src/styles.css')) {
+          return null;
+        }
+
+        const mediaAliasPattern = /@media\s*\(\s*(--vf-bp-[a-z0-9-]+)\s*\)/g;
+        let hasUnknownAlias = false;
+        const transformed = code.replace(mediaAliasPattern, (fullMatch, alias: string) => {
+          const mediaQuery = resolveLayoutCustomMedia(alias);
+          if (!mediaQuery) {
+            hasUnknownAlias = true;
+            return fullMatch;
+          }
+          return `@media ${mediaQuery}`;
+        });
+
+        if (hasUnknownAlias) {
+          this.warn('[vueforge-layouts-expand-custom-media] Unknown custom media alias found in styles.css');
+        }
+
+        return transformed === code ? null : transformed;
+      },
+    },
     {
       name: 'vueforge-layouts-generate-css',
       buildStart() {
@@ -23,6 +50,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
         const distDir = resolve(__dirname, 'dist');
 
         mkdirSync(distDir, { recursive: true });
+        cpSync(layoutCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'breakpoints.css'));
         cpSync(layoutCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
         cpSync(layoutCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
       },

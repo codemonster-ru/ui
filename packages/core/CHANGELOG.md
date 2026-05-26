@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.18.9
+
+### Changed
+
+- Switched foundation breakpoint source to `@codemonster-ru/vueforge-theme` to remove duplicated breakpoint definitions in `@codemonster-ru/vueforge-core`.
+- Updated default theme preset breakpoint token derivation to use the shared `vfBreakpoints` export.
+
 ## 1.18.8
 
 ### Fixed

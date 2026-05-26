@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-layouts",
-  "version": "1.11.1",
+  "version": "1.11.2",
   "description": "Layout primitives, shell components, and responsive composables for Vue 3 applications.",
   "type": "module",
   "license": "MIT",
@@ -29,6 +29,7 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./breakpoints.css": "./dist/breakpoints.css",
     "./styles.css": "./dist/styles.css",
     "./tokens.css": "./dist/tokens.css",
     "./theme.css": "./dist/theme.css"
@@ -53,7 +54,7 @@
     "vue": "^3.4.0"
   },
   "dependencies": {
-    "@codemonster-ru/vueforge-theme": "^1.2.2"
+    "@codemonster-ru/vueforge-theme": "^1.2.4"
   },
   "devDependencies": {
     "@codemonster-ru/vueforge-core": "file:../core",

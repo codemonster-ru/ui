@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.2.4
+
+### Added
+
+- Added canonical `vfBreakpoints` export (`xs` through `2xl`) and related breakpoint types from the public `@codemonster-ru/vueforge-theme` API.
+
+### Changed
+
+- Moved breakpoint source from JSON to a TypeScript constant for stable ESM consumption across workspace package builds.
+
 ## 1.2.3
 
 ### Changed

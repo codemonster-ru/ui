@@ -1,3 +1,4 @@
+@import '../.generated/theme/layout-breakpoints.css';
 @import '../.generated/theme/layout-tokens.css';
 @import '../.generated/theme/layout-theme.css';
 
@@ -152,8 +153,10 @@
   padding-inline: var(--vf-layout-size-zero);
 }
 
-.vf-document-layout__container--padded {
-  padding-inline: calc(var(--vf-layout-container-padding) * 2);
+@media (--vf-bp-md-up) {
+  .vf-document-layout__container {
+    padding-inline: calc(var(--vf-layout-container-padding) * 2);
+  }
 }
 
 .vf-document-layout {
@@ -165,9 +168,11 @@
   border-right: var(--vf-layout-size-zero);
 }
 
-.vf-document-layout__container--padded .vf-document-layout {
-  border-left: var(--vf-layout-border-base);
-  border-right: var(--vf-layout-border-base);
+@media (--vf-bp-md-up) {
+  .vf-document-layout__container .vf-document-layout {
+    border-left: var(--vf-layout-border-base);
+    border-right: var(--vf-layout-border-base);
+  }
 }
 
 .vf-document-layout__header {
@@ -373,40 +378,45 @@
   padding: var(--vf-layout-aside-padding-block) var(--vf-layout-aside-padding-inline);
 }
 
-.vf-document-layout--sidebar-sticky:not(.vf-document-layout--compact-sidebar) .vf-document-layout__sidebar-inner,
-.vf-document-layout--aside-sticky:not(.vf-document-layout--compact-aside) .vf-document-layout__aside-inner {
+.vf-document-layout--sidebar-sticky .vf-document-layout__sidebar-inner,
+.vf-document-layout--aside-sticky .vf-document-layout__aside-inner {
   position: sticky;
   top: var(--vf-layout-size-zero);
   max-height: var(--vf-layout-viewport-height);
   overflow: auto;
 }
 
-.vf-document-layout--header-sticky.vf-document-layout--sidebar-sticky:not(.vf-document-layout--compact-sidebar)
+.vf-document-layout--header-sticky.vf-document-layout--sidebar-sticky
   .vf-document-layout__sidebar-inner,
-.vf-document-layout--header-sticky.vf-document-layout--aside-sticky:not(.vf-document-layout--compact-aside)
+.vf-document-layout--header-sticky.vf-document-layout--aside-sticky
   .vf-document-layout__aside-inner {
   top: var(--vf-sticky-top-offset);
   max-height: calc(var(--vf-layout-viewport-height) - var(--vf-sticky-top-offset));
 }
 
-.vf-document-layout--compact-aside .vf-document-layout__content-grid--sidebar-content-aside {
-  grid-template-columns:
-    minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-width))
-    minmax(var(--vf-layout-size-zero), 1fr);
+@media (--vf-bp-xl-down) {
+  .vf-document-layout--sidebar-content-aside .vf-document-layout__content-grid--sidebar-content-aside {
+    grid-template-columns:
+      minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-width))
+      minmax(var(--vf-layout-size-zero), 1fr);
+  }
+
+  .vf-document-layout--sidebar-content-aside .vf-document-layout__aside {
+    display: none;
+  }
 }
 
-.vf-document-layout--compact-aside .vf-document-layout__aside {
-  display: none;
-}
+@media (--vf-bp-lg-down) {
+  .vf-document-layout--sidebar-content .vf-document-layout__content-grid--sidebar-content,
+  .vf-document-layout--sidebar-content-aside .vf-document-layout__content-grid--sidebar-content-aside {
+    grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
+  }
 
-.vf-document-layout--compact-sidebar .vf-document-layout__content-grid--sidebar-content,
-.vf-document-layout--compact-sidebar .vf-document-layout__content-grid--sidebar-content-aside {
-  grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
-}
-
-.vf-document-layout--compact-sidebar .vf-document-layout__sidebar,
-.vf-document-layout--compact-sidebar .vf-document-layout__aside {
-  display: none;
+  .vf-document-layout--sidebar-content .vf-document-layout__sidebar,
+  .vf-document-layout--sidebar-content-aside .vf-document-layout__sidebar,
+  .vf-document-layout--sidebar-content-aside .vf-document-layout__aside {
+    display: none;
+  }
 }
 
 /* stylelint-disable declaration-block-no-redundant-longhand-properties, no-descending-specificity -- App shell layout states are easier to reason about with explicit grid longhands and grouped state selectors. */
@@ -581,52 +591,58 @@
   grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
 }
 
-.vf-app-shell--compact-aside.vf-app-shell--sidebar-content-aside
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid {
-  grid-template-areas: 'sidebar content';
-  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
-  grid-template-columns:
-    minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-width))
-    minmax(var(--vf-layout-size-zero), 1fr);
+@media (--vf-bp-xl-down) {
+  .vf-app-shell--sidebar-content-aside
+    > .vf-app-shell__body
+    > .vf-app-shell__body-container
+    > .vf-app-shell__body-grid {
+    grid-template-areas: 'sidebar content';
+    grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+    grid-template-columns:
+      minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-width))
+      minmax(var(--vf-layout-size-zero), 1fr);
+  }
+
+  .vf-app-shell--sidebar-content-aside.vf-app-shell--sidebar-collapsed
+    > .vf-app-shell__body
+    > .vf-app-shell__body-container
+    > .vf-app-shell__body-grid {
+    grid-template-areas: 'sidebar content';
+    grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+    grid-template-columns:
+      minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-collapsed-width))
+      minmax(var(--vf-layout-size-zero), 1fr);
+  }
+
+  .vf-app-shell--sidebar-content-aside .vf-aside-area {
+    display: none;
+  }
 }
 
-.vf-app-shell--compact-aside.vf-app-shell--sidebar-content-aside.vf-app-shell--sidebar-collapsed
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid {
-  grid-template-areas: 'sidebar content';
-  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
-  grid-template-columns:
-    minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-collapsed-width))
-    minmax(var(--vf-layout-size-zero), 1fr);
-}
+@media (--vf-bp-lg-down) {
+  .vf-app-shell--sidebar-content
+    > .vf-app-shell__body
+    > .vf-app-shell__body-container
+    > .vf-app-shell__body-grid,
+  .vf-app-shell--sidebar-content-aside
+    > .vf-app-shell__body
+    > .vf-app-shell__body-container
+    > .vf-app-shell__body-grid {
+    grid-template-areas: 'content';
+    grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+    grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
+  }
 
-.vf-app-shell--compact-aside.vf-app-shell--sidebar-content-aside .vf-aside-area {
-  display: none;
-}
+  .vf-app-shell--sidebar-content .vf-content-subheader-area,
+  .vf-app-shell--sidebar-content-aside .vf-content-subheader-area {
+    --vf-layout-content-subheader-padding-inline: var(--vf-layout-shell-area-padding-inline);
+  }
 
-.vf-app-shell--compact-sidebar.vf-app-shell--sidebar-content
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid,
-.vf-app-shell--compact-sidebar.vf-app-shell--sidebar-content-aside
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid {
-  grid-template-areas: 'content';
-  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
-  grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
-}
-
-.vf-app-shell--compact-sidebar .vf-content-subheader-area {
-  --vf-layout-content-subheader-padding-inline: var(--vf-layout-shell-area-padding-inline);
-}
-
-.vf-app-shell--compact-sidebar .vf-sidebar-area,
-.vf-app-shell--compact-sidebar .vf-aside-area {
-  display: none;
+  .vf-app-shell--sidebar-content .vf-sidebar-area,
+  .vf-app-shell--sidebar-content-aside .vf-sidebar-area,
+  .vf-app-shell--sidebar-content-aside .vf-aside-area {
+    display: none;
+  }
 }
 
 .vf-content-area {
@@ -741,21 +757,21 @@
   background: var(--vf-layout-aside-background);
 }
 
-.vf-app-shell--sidebar-sticky:not(.vf-app-shell--compact-sidebar) .vf-sidebar-area,
-.vf-app-shell--aside-sticky:not(.vf-app-shell--compact-aside) .vf-aside-area {
+.vf-app-shell--sidebar-sticky .vf-sidebar-area,
+.vf-app-shell--aside-sticky .vf-aside-area {
   overflow: visible;
 }
 
-.vf-app-shell--sidebar-sticky:not(.vf-app-shell--compact-sidebar) .vf-sidebar-area__inner,
-.vf-app-shell--aside-sticky:not(.vf-app-shell--compact-aside) .vf-aside-area__inner {
+.vf-app-shell--sidebar-sticky .vf-sidebar-area__inner,
+.vf-app-shell--aside-sticky .vf-aside-area__inner {
   position: sticky;
   top: var(--vf-layout-size-zero);
   max-height: var(--vf-layout-viewport-height);
   overflow: auto;
 }
 
-.vf-app-shell--header-sticky.vf-app-shell--sidebar-sticky:not(.vf-app-shell--compact-sidebar) .vf-sidebar-area__inner,
-.vf-app-shell--header-sticky.vf-app-shell--aside-sticky:not(.vf-app-shell--compact-aside) .vf-aside-area__inner {
+.vf-app-shell--header-sticky.vf-app-shell--sidebar-sticky .vf-sidebar-area__inner,
+.vf-app-shell--header-sticky.vf-app-shell--aside-sticky .vf-aside-area__inner {
   top: var(--vf-sticky-top-offset);
   max-height: calc(var(--vf-layout-viewport-height) - var(--vf-sticky-top-offset));
 }

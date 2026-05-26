@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.11.2
+
+### Changed
+
+- Moved responsive shell/document compact behavior to CSS-first media rules to avoid post-mount layout class races on first render.
+- Introduced build-time breakpoint alias registry (`--vf-bp-*`) and media alias expansion in the layouts build pipeline.
+- Added generated `./breakpoints.css` package export with build-time custom media declarations.
+- Switched layout breakpoint sourcing to shared theme breakpoints and removed duplicated local breakpoint values.
+
+### Fixed
+
+- Added SSR-safe sticky offset fallbacks in `VfAppShell` and `VfDocumentLayout` so initial render no longer starts with zeroed sticky offsets.
+
 ## 1.11.1
 
 ### Fixed

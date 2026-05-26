@@ -1,13 +1,13 @@
-import breakpoints from '../foundation/breakpoints.json';
+import { vfBreakpoints } from '@codemonster-ru/vueforge-theme';
 import { vfMotionTokens } from '../../../theme/src/motion';
 
 export const breakpointTokens = {
-  breakpointXs: `${breakpoints.xs}px`,
-  breakpointSm: `${breakpoints.sm}px`,
-  breakpointMd: `${breakpoints.md}px`,
-  breakpointLg: `${breakpoints.lg}px`,
-  breakpointXl: `${breakpoints.xl}px`,
-  breakpoint2xl: `${breakpoints['2xl']}px`,
+  breakpointXs: `${vfBreakpoints.xs}px`,
+  breakpointSm: `${vfBreakpoints.sm}px`,
+  breakpointMd: `${vfBreakpoints.md}px`,
+  breakpointLg: `${vfBreakpoints.lg}px`,
+  breakpointXl: `${vfBreakpoints.xl}px`,
+  breakpoint2xl: `${vfBreakpoints['2xl']}px`,
 };
 
 export const defaultThemePresetSource = {
