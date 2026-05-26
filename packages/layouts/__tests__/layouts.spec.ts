@@ -33,19 +33,6 @@ afterEach(() => {
   document.documentElement.removeAttribute('style');
 });
 
-function setViewportWidth(width: number) {
-  Object.defineProperty(window, 'innerWidth', {
-    configurable: true,
-    writable: true,
-    value: width,
-  });
-}
-
-async function waitForResponsiveUpdate() {
-  await new Promise((resolve) => window.requestAnimationFrame(() => resolve(null)));
-  await nextTick();
-}
-
 describe('package exports', () => {
   it('declares style and token subpath exports', () => {
     const packageJson = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as {
@@ -307,41 +294,6 @@ describe('shell behavior', () => {
     expect(wrapper.classes()).not.toContain('vf-app-shell--sidebar-collapsed');
   });
 
-  it('switches to compact aside below the runtime xl breakpoint token', async () => {
-    setViewportWidth(1200);
-
-    const wrapper = mount(VfAppShell, {
-      props: {
-        layout: 'sidebar-content-aside',
-      },
-      slots: {
-        default: () => 'Shell',
-      },
-    });
-
-    await waitForResponsiveUpdate();
-
-    expect(wrapper.classes()).toContain('vf-app-shell--compact-aside');
-    expect(wrapper.classes()).not.toContain('vf-app-shell--compact-sidebar');
-  });
-
-  it('switches to compact sidebar below the runtime lg breakpoint token', async () => {
-    setViewportWidth(900);
-
-    const wrapper = mount(VfAppShell, {
-      props: {
-        layout: 'sidebar-content-aside',
-      },
-      slots: {
-        default: () => 'Shell',
-      },
-    });
-
-    await waitForResponsiveUpdate();
-
-    expect(wrapper.classes()).toContain('vf-app-shell--compact-aside');
-    expect(wrapper.classes()).toContain('vf-app-shell--compact-sidebar');
-  });
 
   it('supports shell-level sticky header control', () => {
     const wrapper = mount(VfAppShell, {
@@ -462,27 +414,6 @@ describe('shell behavior', () => {
     expect(wrapper.find('.vf-content-subheader-area').exists()).toBe(false);
   });
 
-  it('reacts to runtime breakpoint token changes', async () => {
-    setViewportWidth(1100);
-
-    const wrapper = mount(VfAppShell, {
-      props: {
-        layout: 'sidebar-content-aside',
-      },
-      slots: {
-        default: () => 'Shell',
-      },
-    });
-
-    await waitForResponsiveUpdate();
-    expect(wrapper.classes()).toContain('vf-app-shell--compact-aside');
-    expect(wrapper.classes()).not.toContain('vf-app-shell--compact-sidebar');
-
-    document.documentElement.style.setProperty('--vf-breakpoint-lg', '1200px');
-    await waitForResponsiveUpdate();
-
-    expect(wrapper.classes()).toContain('vf-app-shell--compact-sidebar');
-  });
 });
 
 describe('document layout', () => {
@@ -500,27 +431,6 @@ describe('document layout', () => {
     expect(wrapper.findAll('.vf-container')).toHaveLength(1);
   });
 
-  it('adds document container inset only from md and above', async () => {
-    setViewportWidth(700);
-
-    const wrapper = mount(VfDocumentLayout, {
-      slots: {
-        default: () => 'Content',
-      },
-    });
-
-    await waitForResponsiveUpdate();
-    expect(wrapper.find('.vf-document-layout__container').classes()).not.toContain(
-      'vf-document-layout__container--padded',
-    );
-    expect(wrapper.find('.vf-document-layout').classes()).not.toContain('vf-document-layout__container--padded');
-
-    setViewportWidth(800);
-    window.dispatchEvent(new Event('resize'));
-    await waitForResponsiveUpdate();
-
-    expect(wrapper.find('.vf-document-layout__container').classes()).toContain('vf-document-layout__container--padded');
-  });
 
   it('supports sidebar and aside column layouts', () => {
     const wrapper = mount(VfDocumentLayout, {
@@ -582,43 +492,6 @@ describe('document layout', () => {
     expect(wrapper.find('.vf-document-layout__aside').exists()).toBe(true);
   });
 
-  it('switches document layout to compact aside below the runtime xl breakpoint token', async () => {
-    setViewportWidth(1200);
-
-    const wrapper = mount(VfDocumentLayout, {
-      props: {
-        layout: 'sidebar-content-aside',
-      },
-      slots: {
-        sidebar: () => 'Sidebar',
-        default: () => 'Content',
-        aside: () => 'Aside',
-      },
-    });
-
-    await waitForResponsiveUpdate();
-
-    expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--compact-aside');
-  });
-
-  it('switches document layout to compact sidebar below the runtime lg breakpoint token', async () => {
-    setViewportWidth(900);
-
-    const wrapper = mount(VfDocumentLayout, {
-      props: {
-        layout: 'sidebar-content-aside',
-      },
-      slots: {
-        sidebar: () => 'Sidebar',
-        default: () => 'Content',
-        aside: () => 'Aside',
-      },
-    });
-
-    await waitForResponsiveUpdate();
-
-    expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--compact-sidebar');
-  });
 
   it('supports sticky header control for document layout', () => {
     const wrapper = mount(VfDocumentLayout, {
@@ -742,29 +615,6 @@ describe('document layout', () => {
     expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--aside-sticky');
   });
 
-  it('reacts to runtime document breakpoint token changes', async () => {
-    setViewportWidth(1100);
-
-    const wrapper = mount(VfDocumentLayout, {
-      props: {
-        layout: 'sidebar-content-aside',
-      },
-      slots: {
-        sidebar: () => 'Sidebar',
-        default: () => 'Content',
-        aside: () => 'Aside',
-      },
-    });
-
-    await waitForResponsiveUpdate();
-    expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--compact-aside');
-    expect(wrapper.find('.vf-document-layout').classes()).not.toContain('vf-document-layout--compact-sidebar');
-
-    document.documentElement.style.setProperty('--vf-breakpoint-lg', '1200px');
-    await waitForResponsiveUpdate();
-
-    expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--compact-sidebar');
-  });
 });
 
 describe('error layout', () => {

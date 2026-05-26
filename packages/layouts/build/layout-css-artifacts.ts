@@ -4,11 +4,13 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defaultLayoutsPreset } from '../src/theme/default-preset';
+import { vfLayoutCustomMediaAliases } from '../src/theme/breakpoint-registry';
 import type { VfLayoutTokens } from '../src/theme/types';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(currentDir, '..');
 const generatedStylesDir = resolve(rootDir, '.generated/theme');
+const generatedBreakpointsPath = resolve(generatedStylesDir, 'layout-breakpoints.css');
 const generatedTokensPath = resolve(generatedStylesDir, 'layout-tokens.css');
 const generatedThemePath = resolve(generatedStylesDir, 'layout-theme.css');
 
@@ -34,6 +36,12 @@ function layoutsTokensToCssVars(tokens: VfLayoutTokens, prefix = 'vf') {
 
 export function buildLayoutCssArtifacts() {
   const cssVars = layoutsTokensToCssVars(defaultLayoutsPreset.tokens, 'vf-layout');
+  const mediaLines = [
+    '/* Generated from src/theme/breakpoint-registry.ts. */',
+    '/* Build-time breakpoint aliases consumed in styles.css and expanded by Vite plugin. */',
+    ...Object.entries(vfLayoutCustomMediaAliases).map(([alias, query]) => `@custom-media ${alias} ${query};`),
+    '',
+  ];
   const tokenLines = [
     '/* Generated from src/theme/default-preset.ts. */',
     '/* Fallback baseline layout tokens for package CSS consumers. */',
@@ -52,11 +60,13 @@ export function buildLayoutCssArtifacts() {
   ];
 
   mkdirSync(generatedStylesDir, { recursive: true });
+  writeFileSync(generatedBreakpointsPath, mediaLines.join('\n'));
   writeFileSync(generatedTokensPath, tokenLines.join('\n'));
   writeFileSync(generatedThemePath, themeLines.join('\n'));
 }
 
 export const layoutCssArtifactPaths = {
+  generatedBreakpointsPath,
   generatedThemePath,
   generatedStylesDir,
   generatedTokensPath,
