@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.4.0
+
+### Added
+
+- Added plugin-level language controls: `allowedLanguages?: string[]` and `preloadLanguages?: string[]`.
+- Added component-level language controls: `allowedLanguages?: string[]` and `languageFallback?: 'plaintext' | 'text'` (default: `plaintext`).
+- Added non-blocking language preload on plugin install that respects allowlist constraints.
+- Added regression coverage for allowlist behavior, fallback behavior, language preload, and lazy-load caching.
+
+### Changed
+
+- Added runtime allowlist resolution for highlighting: `props.allowedLanguages ?? plugin.allowedLanguages ?? SUPPORTED_CODE_BLOCK_LANGUAGES`.
+- Improved highlighter runtime resiliency for unknown or disallowed languages by applying fallback-safe rendering without crashes.
+- Updated docs for controlled language loading and bundle-size optimization usage patterns.
+
 ## 2.3.2
 
 ### Fixed
