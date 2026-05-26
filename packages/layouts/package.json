@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-layouts",
-  "version": "1.11.2",
+  "version": "1.11.3",
   "description": "Layout primitives, shell components, and responsive composables for Vue 3 applications.",
   "type": "module",
   "license": "MIT",
