@@ -125,10 +125,14 @@ const headerHeight = useObservedElementHeight(headerRef);
 const subheaderHeight = useObservedElementHeight(subheaderRef);
 const stickyOffsetsStyle = computed<StyleValue>(() => {
   const effectiveHeaderHeight = hasHeader.value
-    ? (headerHeight.value > 0 ? `${headerHeight.value}px` : 'var(--vf-layout-header-height)')
+    ? headerHeight.value > 0
+      ? `${headerHeight.value}px`
+      : 'var(--vf-layout-header-height)'
     : '0px';
   const effectiveSubheaderHeight = hasSubheader.value
-    ? (subheaderHeight.value > 0 ? `${subheaderHeight.value}px` : 'var(--vf-layout-subheader-height)')
+    ? subheaderHeight.value > 0
+      ? `${subheaderHeight.value}px`
+      : 'var(--vf-layout-subheader-height)'
     : '0px';
 
   return {

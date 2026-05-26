@@ -294,7 +294,6 @@ describe('shell behavior', () => {
     expect(wrapper.classes()).not.toContain('vf-app-shell--sidebar-collapsed');
   });
 
-
   it('supports shell-level sticky header control', () => {
     const wrapper = mount(VfAppShell, {
       props: {
@@ -413,7 +412,6 @@ describe('shell behavior', () => {
     expect(wrapper.find('.vf-subheader-area').exists()).toBe(false);
     expect(wrapper.find('.vf-content-subheader-area').exists()).toBe(false);
   });
-
 });
 
 describe('document layout', () => {
@@ -430,7 +428,6 @@ describe('document layout', () => {
     expect(wrapper.find('.vf-document-layout__container').exists()).toBe(true);
     expect(wrapper.findAll('.vf-container')).toHaveLength(1);
   });
-
 
   it('supports sidebar and aside column layouts', () => {
     const wrapper = mount(VfDocumentLayout, {
@@ -491,7 +488,6 @@ describe('document layout', () => {
     expect(wrapper.find('.vf-document-layout__sidebar').exists()).toBe(true);
     expect(wrapper.find('.vf-document-layout__aside').exists()).toBe(true);
   });
-
 
   it('supports sticky header control for document layout', () => {
     const wrapper = mount(VfDocumentLayout, {
@@ -614,7 +610,6 @@ describe('document layout', () => {
     expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--sidebar-sticky');
     expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--aside-sticky');
   });
-
 });
 
 describe('error layout', () => {
