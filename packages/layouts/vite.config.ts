@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'unplugin-dts/vite';
-import { cpSync, mkdirSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import { buildLayoutCssArtifacts, layoutCssArtifactPaths } from './build/layout-css-artifacts';
@@ -53,6 +53,22 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
         cpSync(layoutCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'breakpoints.css'));
         cpSync(layoutCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
         cpSync(layoutCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
+      },
+    },
+    {
+      name: 'vueforge-layouts-strip-custom-media-from-dist',
+      closeBundle() {
+        const distStylesPath = resolve(__dirname, 'dist/styles.css');
+        if (!existsSync(distStylesPath)) {
+          return;
+        }
+
+        const css = readFileSync(distStylesPath, 'utf8');
+        const cleanedCss = css.replace(/@custom-media\s+--vf-bp-[^;]+;/g, '');
+
+        if (cleanedCss !== css) {
+          writeFileSync(distStylesPath, cleanedCss);
+        }
       },
     },
   ];
