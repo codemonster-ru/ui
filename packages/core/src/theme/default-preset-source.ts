@@ -1,4 +1,4 @@
-import { vfBreakpoints } from '@codemonster-ru/vueforge-theme';
+import { vfBreakpoints } from '../../../theme/src/breakpoints';
 import { vfMotionTokens } from '../../../theme/src/motion';
 
 export const breakpointTokens = {
