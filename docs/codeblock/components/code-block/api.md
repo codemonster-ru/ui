@@ -22,6 +22,8 @@ Component props and their default values.
 | `highlight?` | `boolean` | `true` | Enables syntax highlighting. |
 | `maxHeight?` | `string` | `''` | Maximum block height before scrolling. |
 | `ariaLabel?` | `string` | `Code block` | Accessible label for screen readers. |
+| `allowedLanguages?` | `string[]` | `undefined` | Local allowlist override for this component instance. |
+| `languageFallback?` | `'plaintext' \| 'text'` | `plaintext` | Fallback language when requested language is not in allowlist. |
 
 ## Emits
 
@@ -55,7 +57,7 @@ Exported interfaces related to this component.
 | --- | --- | --- | --- |
 | `CodeBlockProps` | `interface` | `—` | Public props contract for `VfCodeBlock`. |
 | `CodeBlockCopyPayload` | `interface` | `—` | Payload emitted by `copy` event. |
-| `CodeBlockPluginOptions` | `interface` | `—` | Plugin options for runtime theme variable injection. |
+| `CodeBlockPluginOptions` | `interface` | `—` | Plugin options for runtime theme vars and language loading policy. |
 | `CodeBlockThemeVarOptions` | `interface` | `—` | Theme vars grouped into `base/light/dark` maps. |
 
 ## Types

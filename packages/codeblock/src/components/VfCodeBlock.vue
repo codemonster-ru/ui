@@ -43,9 +43,11 @@
 
 <script setup lang="ts">
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
-import { computed, onBeforeUnmount, onMounted, onServerPrefetch, ref, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, onServerPrefetch, ref, watch } from 'vue';
+import { CODE_BLOCK_LANGUAGE_OPTIONS_KEY } from '../config';
 import { highlightCodeLines, renderPlainCodeLines } from '../services/code-highlight';
-import type { CodeBlockCopyPayload, CodeBlockProps } from '../types';
+import type { CodeBlockCopyPayload, CodeBlockLanguageRuntimeOptions, CodeBlockProps } from '../types';
+import { SUPPORTED_CODE_BLOCK_LANGUAGES } from '../types';
 
 defineOptions({ name: 'VfCodeBlock' });
 
@@ -66,6 +68,7 @@ const props = withDefaults(defineProps<CodeBlockProps>(), {
   maxHeight: '',
   ariaLabel: 'Code block',
   theme: 'inherit',
+  languageFallback: 'plaintext',
 });
 
 const emits = defineEmits<{
@@ -79,8 +82,12 @@ const renderedLines = ref<string[]>(renderPlainCodeLines(props.code));
 let copiedTimer: ReturnType<typeof setTimeout> | null = null;
 let themeObserver: MutationObserver | null = null;
 let renderRequestId = 0;
+const pluginLanguageOptions = inject<CodeBlockLanguageRuntimeOptions>(CODE_BLOCK_LANGUAGE_OPTIONS_KEY, {});
 
 const normalizedCode = computed(() => props.code.replace(/\r\n/g, '\n'));
+const effectiveAllowedLanguages = computed(
+  () => props.allowedLanguages ?? pluginLanguageOptions.allowedLanguages ?? [...SUPPORTED_CODE_BLOCK_LANGUAGES],
+);
 const lines = computed(() => {
   if (!normalizedCode.value) {
     return [''];
@@ -151,7 +158,10 @@ const renderHighlight = async (
     renderedLines.value = renderPlainCodeLines(code);
   }
 
-  const highlightedLines = await highlightCodeLines(language, code, theme, highlight);
+  const highlightedLines = await highlightCodeLines(language, code, theme, highlight, {
+    allowedLanguages: effectiveAllowedLanguages.value,
+    fallbackLanguage: props.languageFallback,
+  });
 
   if (requestId === renderRequestId) {
     renderedLines.value = highlightedLines;

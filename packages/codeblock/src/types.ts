@@ -40,6 +40,8 @@ export interface CodeBlockPluginOptions {
   themeVars?: CodeBlockThemeVarOptions;
   themeScope?: string;
   styleNonce?: string;
+  allowedLanguages?: string[];
+  preloadLanguages?: string[];
 }
 
 export interface CodeBlockProps {
@@ -59,4 +61,10 @@ export interface CodeBlockProps {
   maxHeight?: string;
   ariaLabel?: string;
   theme?: CodeBlockTheme;
+  allowedLanguages?: string[];
+  languageFallback?: 'plaintext' | 'text';
+}
+
+export interface CodeBlockLanguageRuntimeOptions {
+  allowedLanguages?: string[];
 }

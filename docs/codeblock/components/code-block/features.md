@@ -89,6 +89,21 @@ Additional implementation notes and caveats:
 
 - When `theme="inherit"`, component tracks nearest `data-theme` / `data-vf-theme`.
 - Highlighting is async; plain-code fallback is rendered first for responsiveness.
+- Effective language allowlist is resolved as `props.allowedLanguages ?? plugin.allowedLanguages ?? SUPPORTED_CODE_BLOCK_LANGUAGES`.
+- If language is outside allowlist, component uses `languageFallback` (`plaintext` by default) and stays runtime-safe.
+
+## Controlled Languages
+
+Limit supported grammars to reduce consumer bundle impact.
+
+```ts
+import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock';
+
+app.use(VueForgeCodeBlock, {
+  allowedLanguages: ['ts', 'vue', 'json'],
+  preloadLanguages: ['ts'],
+});
+```
 
 ## Accessibility
 

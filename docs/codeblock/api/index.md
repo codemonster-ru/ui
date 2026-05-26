@@ -24,9 +24,16 @@ The following items are listed in this section:
 ```ts
 import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock';
 app.use(VueForgeCodeBlock, {
-  themeScope: '#docs-root'
+  themeScope: '#docs-root',
+  allowedLanguages: ['ts', 'vue', 'json'],
+  preloadLanguages: ['ts', 'vue']
 });
 ```
+
+Language options:
+
+- `allowedLanguages?: string[]`: global runtime allowlist.
+- `preloadLanguages?: string[]`: preloads selected languages on plugin install (non-blocking, respects allowlist).
 
 ## Highlight Helpers
 
@@ -58,6 +65,8 @@ The following items are listed in this section:
 
 - `code?: string`
 - `language?: CodeBlockLanguage`
+- `allowedLanguages?: string[]`
+- `languageFallback?: 'plaintext' | 'text'`
 - `filename?: string`
 - `showHeader?: boolean`
 - `showLineNumbers?: boolean`

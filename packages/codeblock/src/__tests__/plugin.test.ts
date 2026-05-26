@@ -1,6 +1,7 @@
 import { createApp, defineComponent, h } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
 import VfCodeBlockPlugin, { setCodeBlockThemeVars } from '../index';
+import * as codeHighlightService from '../services/code-highlight';
 
 const TestHostComponent = defineComponent({
   render() {
@@ -108,5 +109,22 @@ describe('VfCodeBlockPlugin plugin', () => {
 
     const styleElement = document.getElementById('vf-codeblock-runtime-theme-vars');
     expect(styleElement?.textContent).toContain('--vf-codeblock-padding: calc(var(--vf-surface-padding) * 2);');
+  });
+
+  it('starts language preload on plugin install', () => {
+    const preloadSpy = vi.spyOn(codeHighlightService, 'preloadCodeBlockLanguages').mockResolvedValue();
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+
+    const app = createApp(TestHostComponent);
+    app.use(VfCodeBlockPlugin, {
+      allowedLanguages: ['ts', 'json'],
+      preloadLanguages: ['ts', 'bash', 'json'],
+    });
+    app.mount(host);
+
+    expect(preloadSpy).toHaveBeenCalledWith(['ts', 'bash', 'json'], ['ts', 'json']);
+    preloadSpy.mockRestore();
+    app.unmount();
   });
 });
