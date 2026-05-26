@@ -1,6 +1,6 @@
-import breakpointValues from './breakpoints.json';
+import { vfBreakpoints } from '@codemonster-ru/vueforge-theme';
 
-export const vfBreakpoints = breakpointValues;
+export { vfBreakpoints };
 
 export type VfBreakpointName = keyof typeof vfBreakpoints;
 export type VfBreakpointValue = (typeof vfBreakpoints)[VfBreakpointName];
