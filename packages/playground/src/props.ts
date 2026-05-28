@@ -10,6 +10,7 @@ export type VfPlaygroundHeightMode = 'fixed' | 'auto-preview' | 'auto';
 
 export interface VfPlaygroundSharedProps {
   height?: number | string;
+  minHeight?: number | string;
   heightMode?: VfPlaygroundHeightMode;
   theme?: 'light' | 'dark' | 'inherit';
   initialTab?: VfPlaygroundTab;

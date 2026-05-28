@@ -399,6 +399,23 @@ body {
     expect(wrapper.text()).toContain('Language: ts');
   });
 
+  it('applies minHeight and maxHeight to pre shell style', async () => {
+    const wrapper = mount(VfCodeBlock, {
+      props: {
+        code: 'const x = 1;',
+        minHeight: '180px',
+        maxHeight: '360px',
+      },
+    });
+
+    await nextTick();
+
+    const preElement = wrapper.find('.vf-codeblock__pre');
+    const styleValue = preElement.attributes('style');
+    expect(styleValue).toContain('min-height: 180px');
+    expect(styleValue).toContain('max-height: 360px');
+  });
+
   it('uses fallback when requested language is not in allowedLanguages', async () => {
     const wrapper = mount(VfCodeBlock, {
       props: {

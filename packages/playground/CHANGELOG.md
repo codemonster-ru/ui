@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0
+
+### Added
+
+- Added shared `minHeight` prop to `VfPlayground` container props (`number | string`) to support minimum-height layouts without forcing fixed height.
+- Added regression coverage for simultaneous `minHeight` and `height` style application on the playground root container.
+
 ## 2.0.0
 
 ### Changed
