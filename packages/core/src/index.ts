@@ -24,6 +24,8 @@ export {
   VfPopover,
   VfRadio,
   VfSelect,
+  VfSkeleton,
+  VfSkeletonGate,
   VfSwitch,
   VfTable,
   VfTableOfContents,

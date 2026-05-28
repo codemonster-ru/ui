@@ -19,6 +19,8 @@ import {
   VfPanel,
   VfRadio,
   VfSelect,
+  VfSkeleton,
+  VfSkeletonGate,
   VfSwitch,
   VfTable,
   VfTableOfContents,
@@ -64,6 +66,40 @@ afterEach(() => {
 });
 
 describe('core primitives', () => {
+  it('renders skeleton primitive with sizing styles', () => {
+    const wrapper = mount(VfSkeleton, {
+      props: {
+        minHeight: 120,
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-skeleton');
+    expect(wrapper.attributes('style')).toContain('min-height: 120px');
+  });
+
+  it('shows skeleton slot until content is ready', async () => {
+    const wrapper = mount(VfSkeletonGate, {
+      props: {
+        ready: false,
+        minHeight: 180,
+      },
+      slots: {
+        default: '<div class="content">Loaded</div>',
+        skeleton: '<div class="skeleton">Loading</div>',
+      },
+    });
+
+    expect(wrapper.find('.skeleton').exists()).toBe(true);
+    expect(wrapper.attributes('style')).toContain('min-height: 180px');
+    expect(wrapper.find('.vf-skeleton-gate__content').classes()).not.toContain('vf-skeleton-gate__content--ready');
+
+    await wrapper.setProps({ ready: true });
+    await nextTick();
+
+    expect(wrapper.find('.skeleton').isVisible()).toBe(false);
+    expect(wrapper.find('.vf-skeleton-gate__content').classes()).toContain('vf-skeleton-gate__content--ready');
+  });
+
   it('renders button variants and respects native attributes', async () => {
     const wrapper = mount(VfButton, {
       props: {
