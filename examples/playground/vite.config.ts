@@ -27,6 +27,10 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../packages/core/src/index.ts', import.meta.url))
       },
       {
+        find: /^@codemonster-ru\/vueforge-core\/styles\.css$/,
+        replacement: fileURLToPath(new URL('../../packages/core/src/styles/components.css', import.meta.url))
+      },
+      {
         find: /^@codemonster-ru\/vueforge-core\/foundation$/,
         replacement: fileURLToPath(new URL('../../packages/core/src/foundation/index.ts', import.meta.url))
       },
@@ -43,12 +47,20 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../packages/layouts/src/composables/useCssVarBreakpoints.ts', import.meta.url))
       },
       {
-        find: /^@codemonster-ru\/vueforge-codeblock$/,
-        replacement: fileURLToPath(new URL('../../packages/codeblock/src/index.ts', import.meta.url))
+        find: /^@codemonster-ru\/vueforge-codeblock\/view$/,
+        replacement: fileURLToPath(new URL('../../packages/codeblock/src/view.ts', import.meta.url))
       },
       {
-        find: /^@codemonster-ru\/vueforge-playground$/,
-        replacement: fileURLToPath(new URL('../../packages/playground/src/index.ts', import.meta.url))
+        find: /^@codemonster-ru\/vueforge-codeblock\/highlight$/,
+        replacement: fileURLToPath(new URL('../../packages/codeblock/src/highlight.ts', import.meta.url))
+      },
+      {
+        find: /^@codemonster-ru\/vueforge-playground\/ui$/,
+        replacement: fileURLToPath(new URL('../../packages/playground/src/ui.ts', import.meta.url))
+      },
+      {
+        find: /^@codemonster-ru\/vueforge-playground\/runtime$/,
+        replacement: fileURLToPath(new URL('../../packages/playground/src/runtime.ts', import.meta.url))
       },
       {
         find: /^@codemonster-ru\/vueforge-playground-core$/,

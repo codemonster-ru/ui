@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-playground-core",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Framework-agnostic playground core runtime",
   "type": "module",
   "license": "MIT",
@@ -48,5 +48,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "sideEffects": false
 }

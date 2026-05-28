@@ -7,7 +7,7 @@ Interactive renderer for sandbox files or component demos, powered by `@codemons
 Import statement for this component.
 
 ```ts
-import { VfPlayground } from '@codemonster-ru/vueforge-playground';
+import { VfPlayground } from '@codemonster-ru/vueforge-playground/ui';
 ```
 
 ## Basic
@@ -27,7 +27,7 @@ entry: /App.vue
 
 <script setup>
 import { h } from 'vue';
-import { VfPlayground } from '@codemonster-ru/vueforge-playground';
+import { VfPlayground } from '@codemonster-ru/vueforge-playground/ui';
 
 const DemoBlock = {
   render: () => h('div', { style: { display: 'grid', gap: 'var(--vf-surface-gap-compact)' } }, [

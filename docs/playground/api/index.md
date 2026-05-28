@@ -13,6 +13,17 @@ This section provides a quick overview before the detailed subsections below.
 
 Public API surface of `@codemonster-ru/vueforge-playground`.
 
+Subpath exports:
+
+- `@codemonster-ru/vueforge-playground/ui` (UI component/plugin surface)
+- `@codemonster-ru/vueforge-playground/runtime` (runtime session factory and runtime types)
+
+Migration note:
+
+- Root entrypoint `@codemonster-ru/vueforge-playground` removed.
+- Use `@codemonster-ru/vueforge-playground/ui` for component/plugin API.
+- Use `@codemonster-ru/vueforge-playground/runtime` for runtime API.
+
 ## Component and Plugin
 
 The following items are listed in this section:

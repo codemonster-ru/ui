@@ -48,4 +48,4 @@ The following items are listed in this section:
 The following items are listed in this section:
 
 - `@codemonster-ru/vueforge-core`
-- `@codemonster-ru/vueforge-codeblock` (uses icons package)
+- `@codemonster-ru/vueforge-codeblock/view` (uses icons package)

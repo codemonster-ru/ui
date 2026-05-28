@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0
+
+### Changed
+
+- Added explicit subpath exports: `@codemonster-ru/vueforge-codeblock/view` and `@codemonster-ru/vueforge-codeblock/highlight`.
+- Removed root import `@codemonster-ru/vueforge-codeblock`; use `@codemonster-ru/vueforge-codeblock/view` for plugin/component API.
+
 ## 2.4.0
 
 ### Added

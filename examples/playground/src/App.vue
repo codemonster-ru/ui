@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import {
   VfMenuBar,
   VfThemeProvider,
@@ -46,11 +46,6 @@ import {
   VfAppShell,
   VfInline,
 } from "@codemonster-ru/vueforge-layouts";
-import PlaygroundShowcase from "./PlaygroundShowcase.vue";
-import CodeBlockShowcase from "./sections/codeblock/CodeBlockShowcase.vue";
-import CoreShowcase from "./sections/core/CoreShowcase.vue";
-import IconsShowcase from "./sections/icons/IconsShowcase.vue";
-import LayoutsShowcase from "./sections/layouts/LayoutsShowcase.vue";
 
 type SectionValue = "core" | "layouts" | "icons" | "codeblock" | "playground";
 
@@ -88,18 +83,19 @@ const sectionItems: VfNavMenuItem[] = sections.map((section) => ({
 }));
 
 const sectionComponents = {
-  core: CoreShowcase,
-  layouts: LayoutsShowcase,
-  icons: IconsShowcase,
-  codeblock: CodeBlockShowcase,
-  playground: PlaygroundShowcase,
+  core: defineAsyncComponent(() => import("./sections/core/CoreShowcase.vue")),
+  layouts: defineAsyncComponent(() => import("./sections/layouts/LayoutsShowcase.vue")),
+  icons: defineAsyncComponent(() => import("./sections/icons/IconsShowcase.vue")),
+  codeblock: defineAsyncComponent(() => import("./sections/codeblock/CodeBlockShowcase.vue")),
+  playground: defineAsyncComponent(() => import("./PlaygroundShowcase.vue")),
 } satisfies Record<SectionValue, unknown>;
 
 const validSections = new Set<SectionValue>(sections.map((section) => section.value));
 
 function resolveSectionFromPath(pathname: string): SectionValue {
   const normalizedPath = pathname.replace(/\/+$/, "");
-  const lastSegment = normalizedPath.split("/").filter(Boolean).at(-1);
+  const segments = normalizedPath.split("/").filter(Boolean);
+  const lastSegment = segments.length > 0 ? segments[segments.length - 1] : undefined;
 
   if (lastSegment && validSections.has(lastSegment as SectionValue)) {
     return lastSegment as SectionValue;

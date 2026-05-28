@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, type ComponentPublicInstance } from 'vue';
 import { VfTabs, type VfTabItem } from '@codemonster-ru/vueforge-core';
-import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
+import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 import type {
   ConsoleEvent,
   PlaygroundError,
