@@ -19,6 +19,8 @@ export { VfPanel } from './panel';
 export { VfPopover } from './popover';
 export { VfRadio } from './radio';
 export { VfSelect } from './select';
+export { VfSkeleton } from './skeleton';
+export { VfSkeletonGate } from './skeleton-gate';
 export { VfSwitch } from './switch';
 export { VfTable } from './table';
 export { VfTableOfContents } from './table-of-contents';
