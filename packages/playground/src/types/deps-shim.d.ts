@@ -10,7 +10,7 @@ declare module '@codemonster-ru/vueforge-core' {
   export const VfTabs: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>;
 }
 
-declare module '@codemonster-ru/vueforge-codeblock' {
+declare module '@codemonster-ru/vueforge-codeblock/view' {
   import type { DefineComponent } from 'vue';
 
   export const VfCodeBlock: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>;

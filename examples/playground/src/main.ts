@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import VueForgeLayouts from '@codemonster-ru/vueforge-layouts';
-import { VfPlaygroundPlugin } from '@codemonster-ru/vueforge-playground';
+import { VfPlaygroundPlugin } from '@codemonster-ru/vueforge-playground/ui';
 
 import '../../../packages/core/src/styles/foundation.css';
 import './sections/core/core-showcase.css';

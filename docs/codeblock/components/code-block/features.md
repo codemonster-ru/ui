@@ -7,7 +7,7 @@ Standalone code block component with optional header, line numbers, copy action,
 Import statement for this component.
 
 ```ts
-import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
+import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 ```
 
 ## Basic
@@ -34,7 +34,7 @@ entry: /App.vue
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
+import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 
 const theme = ref('light');
 let observer = null;
@@ -97,7 +97,7 @@ Additional implementation notes and caveats:
 Limit supported grammars to reduce consumer bundle impact.
 
 ```ts
-import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock';
+import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock/view';
 
 app.use(VueForgeCodeBlock, {
   allowedLanguages: ['ts', 'vue', 'json'],

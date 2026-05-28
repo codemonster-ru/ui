@@ -14,6 +14,17 @@ Public API surface of `@codemonster-ru/vueforge-codeblock`.
 
 This page documents the package-level API (plugin entry, exports, helpers, and types), not only the `VfCodeBlock` component tab API.
 
+Subpath exports:
+
+- `@codemonster-ru/vueforge-codeblock/view` (component/plugin-oriented entry)
+- `@codemonster-ru/vueforge-codeblock/highlight` (highlight helpers)
+
+Migration note:
+
+- Root entrypoint `@codemonster-ru/vueforge-codeblock` removed.
+- Use `@codemonster-ru/vueforge-codeblock/view` for plugin/component API.
+- Use `@codemonster-ru/vueforge-codeblock/highlight` for highlight helpers.
+
 ## Plugin and Component
 
 The following items are listed in this section:
@@ -22,7 +33,7 @@ The following items are listed in this section:
 - `VfCodeBlock`: standalone component.
 
 ```ts
-import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock';
+import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock/view';
 app.use(VueForgeCodeBlock, {
   themeScope: '#docs-root',
   allowedLanguages: ['ts', 'vue', 'json'],

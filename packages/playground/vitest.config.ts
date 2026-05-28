@@ -11,7 +11,7 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('./src/test-shims/vueforge-core.ts', import.meta.url))
       },
       {
-        find: /^@codemonster-ru\/vueforge-codeblock$/,
+        find: /^@codemonster-ru\/vueforge-codeblock\/view$/,
         replacement: fileURLToPath(new URL('./src/test-shims/vueforge-codeblock.ts', import.meta.url))
       },
       {

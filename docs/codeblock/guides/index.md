@@ -23,7 +23,7 @@ Use these patterns as a baseline for stable integration in apps and docs portals
 
 ```ts
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
-import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
+import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 ```
 
 ### Scope Runtime Theme Vars to Docs Area
@@ -31,7 +31,7 @@ import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
 For docs portals, avoid polluting global `:root` and scope variables to a container.
 
 ```ts
-import { setCodeBlockThemeVars } from '@codemonster-ru/vueforge-codeblock';
+import { setCodeBlockThemeVars } from '@codemonster-ru/vueforge-codeblock/highlight';
 
 setCodeBlockThemeVars(
   {

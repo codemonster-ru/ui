@@ -22,5 +22,5 @@ npm i @codemonster-ru/vueforge-playground
 Import the public API from the package entry point.
 
 ```ts
-import { VfPlaygroundPlugin } from '@codemonster-ru/vueforge-playground';
+import { VfPlaygroundPlugin } from '@codemonster-ru/vueforge-playground/ui';
 ```

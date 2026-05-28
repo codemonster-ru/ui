@@ -25,7 +25,7 @@
 import { computed, ref } from 'vue';
 import type { Component } from 'vue';
 import { VfTabs, type VfTabItem } from '@codemonster-ru/vueforge-core';
-import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock';
+import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 
 import VueRuntimeSmokeDemo from 'virtual:vueforge-playground/vue-runtime-smoke';
 import CustomResolverSmokeDemo from 'virtual:vueforge-playground/custom-resolver-smoke';

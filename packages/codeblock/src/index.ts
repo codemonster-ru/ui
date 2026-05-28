@@ -1,11 +1,9 @@
 import type { App, Plugin } from 'vue';
 import { CODE_BLOCK_LANGUAGE_OPTIONS_KEY } from './config';
 import VfCodeBlock from './components/VfCodeBlock.vue';
-import { preloadCodeBlockLanguages } from './services/code-highlight';
 import type { CodeBlockPluginOptions, CodeBlockThemeVarOptions } from './types';
 
 export { default as VfCodeBlock } from './components/VfCodeBlock.vue';
-export { escapeCodeHtml, highlightCodeBlock, highlightCodeLine } from './services/code-highlight';
 export {
   SUPPORTED_CODE_BLOCK_LANGUAGES,
   type CodeBlockCopyPayload,
@@ -125,7 +123,9 @@ const plugin: Plugin = {
     applyRuntimeThemeVars(options);
 
     if (options?.preloadLanguages?.length) {
-      void preloadCodeBlockLanguages(options.preloadLanguages, options.allowedLanguages);
+      void import('./highlight').then(({ preloadCodeBlockLanguages }) =>
+        preloadCodeBlockLanguages(options.preloadLanguages!, options.allowedLanguages),
+      );
     }
   },
 };
