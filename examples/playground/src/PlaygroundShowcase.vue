@@ -83,7 +83,7 @@
 import { defineComponent, h } from 'vue';
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
-import { VfPlayground } from '@codemonster-ru/vueforge-playground';
+import { VfPlayground } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
 import customResolverSmokeSource from './vitepress-demos/custom-resolver-smoke.ts?raw';

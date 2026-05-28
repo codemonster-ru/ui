@@ -45,7 +45,7 @@
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import { computed, inject, onBeforeUnmount, onMounted, onServerPrefetch, ref, watch } from 'vue';
 import { CODE_BLOCK_LANGUAGE_OPTIONS_KEY } from '../config';
-import { highlightCodeLines, renderPlainCodeLines } from '../services/code-highlight';
+import { renderPlainCodeLines } from '../utils/plain-code';
 import type { CodeBlockCopyPayload, CodeBlockLanguageRuntimeOptions, CodeBlockProps } from '../types';
 import { SUPPORTED_CODE_BLOCK_LANGUAGES } from '../types';
 
@@ -82,6 +82,9 @@ const renderedLines = ref<string[]>(renderPlainCodeLines(props.code));
 let copiedTimer: ReturnType<typeof setTimeout> | null = null;
 let themeObserver: MutationObserver | null = null;
 let renderRequestId = 0;
+let highlightRuntimePromise: Promise<
+  typeof import('../highlight')
+> | null = null;
 const pluginLanguageOptions = inject<CodeBlockLanguageRuntimeOptions>(CODE_BLOCK_LANGUAGE_OPTIONS_KEY, {});
 
 const normalizedCode = computed(() => props.code.replace(/\r\n/g, '\n'));
@@ -139,6 +142,11 @@ const copyCurrentCode = async () => {
   }
 };
 
+const loadHighlightRuntime = () => {
+  highlightRuntimePromise ??= import('../highlight');
+  return highlightRuntimePromise;
+};
+
 const renderHighlight = async (
   code = normalizedCode.value,
   language = props.language,
@@ -158,6 +166,7 @@ const renderHighlight = async (
     renderedLines.value = renderPlainCodeLines(code);
   }
 
+  const { highlightCodeLines } = await loadHighlightRuntime();
   const highlightedLines = await highlightCodeLines(language, code, theme, highlight, {
     allowedLanguages: effectiveAllowedLanguages.value,
     fallbackLanguage: props.languageFallback,

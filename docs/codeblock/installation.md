@@ -23,7 +23,7 @@ Import the public API from the package entry point.
 
 ```ts
 import { createApp } from 'vue';
-import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock';
+import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock/view';
 import '@codemonster-ru/vueforge-codeblock/style.css';
 
 createApp({}).use(VueForgeCodeBlock);

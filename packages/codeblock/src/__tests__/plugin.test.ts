@@ -1,7 +1,7 @@
 import { createApp, defineComponent, h } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
 import VfCodeBlockPlugin, { setCodeBlockThemeVars } from '../index';
-import * as codeHighlightService from '../services/code-highlight';
+import { __getCodeBlockLanguageLoadAttemptsForTests } from '../services/code-highlight';
 
 const TestHostComponent = defineComponent({
   render() {
@@ -111,8 +111,7 @@ describe('VfCodeBlockPlugin plugin', () => {
     expect(styleElement?.textContent).toContain('--vf-codeblock-padding: calc(var(--vf-surface-padding) * 2);');
   });
 
-  it('starts language preload on plugin install', () => {
-    const preloadSpy = vi.spyOn(codeHighlightService, 'preloadCodeBlockLanguages').mockResolvedValue();
+  it('starts language preload on plugin install', async () => {
     const host = document.createElement('div');
     document.body.appendChild(host);
 
@@ -122,9 +121,14 @@ describe('VfCodeBlockPlugin plugin', () => {
       preloadLanguages: ['ts', 'bash', 'json'],
     });
     app.mount(host);
+    for (let index = 0; index < 20; index += 1) {
+      if (__getCodeBlockLanguageLoadAttemptsForTests('ts') > 0) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
 
-    expect(preloadSpy).toHaveBeenCalledWith(['ts', 'bash', 'json'], ['ts', 'json']);
-    preloadSpy.mockRestore();
+    expect(__getCodeBlockLanguageLoadAttemptsForTests('ts')).toBeGreaterThan(0);
     app.unmount();
   });
 });

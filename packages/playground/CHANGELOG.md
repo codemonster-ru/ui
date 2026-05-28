@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0
+
+### Changed
+
+- Added explicit subpath exports: `@codemonster-ru/vueforge-playground/ui` and `@codemonster-ru/vueforge-playground/runtime`.
+- Removed root import `@codemonster-ru/vueforge-playground`; use `@codemonster-ru/vueforge-playground/ui` for component/plugin API.
+
 ## 1.4.0
 
 ### Added

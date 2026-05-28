@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+### Changed
+
+- Marked the package as side-effect free via `sideEffects: false` to improve consumer tree-shaking behavior.
+
 ## 1.1.0
 
 ### Added

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTheme } from "@codemonster-ru/vueforge-core";
 import { VfSection } from "@codemonster-ru/vueforge-layouts";
-import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock";
+import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock/view";
 
 const { resolvedTheme } = useTheme();
 const longSnippetLineCount = 1000;
