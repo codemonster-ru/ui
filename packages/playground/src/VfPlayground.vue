@@ -71,6 +71,7 @@ import type { VfPlaygroundComponentProps, VfPlaygroundProps, VfPlaygroundSandbox
 type VfPlaygroundRuntimeProps = {
   mode?: VfPlaygroundProps['mode'];
   height?: VfPlaygroundProps['height'];
+  minHeight?: VfPlaygroundProps['minHeight'];
   heightMode?: VfPlaygroundProps['heightMode'];
   theme?: VfPlaygroundProps['theme'];
   initialTab?: VfPlaygroundProps['initialTab'];
@@ -96,6 +97,7 @@ type VfPlaygroundRuntimeProps = {
 const props = withDefaults(defineProps<VfPlaygroundRuntimeProps>(), {
   mode: 'sandbox',
   height: undefined,
+  minHeight: undefined,
   heightMode: 'fixed',
   tabsRenderer: undefined,
   actionsRenderer: undefined,
@@ -196,6 +198,9 @@ const resolvedCodeTheme = computed(() => {
   return theme.value;
 });
 const containerStyle = computed(() => ({
+  ...(props.minHeight != null
+    ? { minHeight: typeof props.minHeight === 'number' ? `${props.minHeight}px` : props.minHeight }
+    : {}),
   ...(props.height != null
     ? { height: typeof props.height === 'number' ? `${props.height}px` : props.height }
     : {})

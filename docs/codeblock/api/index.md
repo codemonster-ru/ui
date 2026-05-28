@@ -88,6 +88,7 @@ The following items are listed in this section:
 - `theme?: 'inherit' | 'light' | 'dark'`
 - `wrap?: boolean`
 - `highlight?: boolean`
+- `minHeight?: string`
 - `maxHeight?: string`
 - `disabled?: boolean`
 

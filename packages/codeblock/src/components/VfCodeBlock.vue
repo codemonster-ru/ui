@@ -65,6 +65,7 @@ const props = withDefaults(defineProps<CodeBlockProps>(), {
   disabled: false,
   wrap: false,
   highlight: true,
+  minHeight: '',
   maxHeight: '',
   ariaLabel: 'Code block',
   theme: 'inherit',
@@ -114,6 +115,10 @@ const preStyle = computed(() => {
 
   if (props.maxHeight) {
     style.maxHeight = props.maxHeight;
+  }
+
+  if (props.minHeight) {
+    style.minHeight = props.minHeight;
   }
 
   return style;
