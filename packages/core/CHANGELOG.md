@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.19.0
+
+### Added
+
+- Added new loading primitives: `VfSkeleton` and `VfSkeletonGate`.
+- Exported `VfSkeleton` and `VfSkeletonGate` from `@codemonster-ru/vueforge-core` component and package entrypoints.
+- Added component coverage for skeleton sizing and skeleton-gate ready-state behavior.
+
 ## 1.18.9
 
 ### Changed
