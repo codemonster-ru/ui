@@ -20,6 +20,7 @@ Component props and their default values.
 | `theme?` | `'inherit' \| 'light' \| 'dark'` | `inherit` | Theme mode for rendering. |
 | `wrap?` | `boolean` | `false` | Enables long-line wrapping. |
 | `highlight?` | `boolean` | `true` | Enables syntax highlighting. |
+| `minHeight?` | `string` | `''` | Minimum block height for the code area. |
 | `maxHeight?` | `string` | `''` | Maximum block height before scrolling. |
 | `ariaLabel?` | `string` | `Code block` | Accessible label for screen readers. |
 | `allowedLanguages?` | `string[]` | `undefined` | Local allowlist override for this component instance. |

@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.0
+
+### Added
+
+- Added optional `minHeight` prop to `VfCodeBlock` so consumers can set a minimum pre-area height alongside `maxHeight`.
+- Added regression coverage for `minHeight` and `maxHeight` style application on the code pre shell.
+
 ## 3.0.0
 
 ### Changed

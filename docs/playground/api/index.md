@@ -37,7 +37,7 @@ The following items are listed in this section:
 
 The following items are listed in this section:
 
-- Shared props (`VfPlaygroundSharedProps`): `height`, `theme`, `initialTab`, `tabsRenderer`, `actionsRenderer`, `filesRenderer`.
+- Shared props (`VfPlaygroundSharedProps`): `minHeight`, `height`, `theme`, `initialTab`, `tabsRenderer`, `actionsRenderer`, `filesRenderer`.
 - Sandbox mode (`VfPlaygroundSandboxProps`): `mode?: 'sandbox'`, `files`, `entry`, `framework`, `autorun`, `showCode`, `resolveImport`, `bootstrapScript`.
 - Component mode (`VfPlaygroundComponentProps`): `mode: 'component'`, `component`, `componentSource`, `componentSourceLanguage`, `componentFiles`, `componentEntry`, `componentPadding`, `componentMinHeight`.
 - Union type: `VfPlaygroundProps`.

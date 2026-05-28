@@ -126,6 +126,21 @@ async function flushThemeSync(): Promise<void> {
 }
 
 describe('VfPlayground', () => {
+  it('applies minHeight and height to container style', () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        ...baseSandboxProps,
+        minHeight: 260,
+        height: 420
+      },
+      global: testGlobal
+    });
+
+    const styleValue = wrapper.attributes('style');
+    expect(styleValue).toContain('min-height: 260px');
+    expect(styleValue).toContain('height: 420px');
+  });
+
   it('keeps sandbox mode behavior and renders iframe preview', async () => {
     const wrapper = mount(VfPlayground, {
       props: baseSandboxProps,

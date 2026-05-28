@@ -8,6 +8,7 @@ Component props and their default values.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
+| `minHeight?` | `string \| number` | — | Minimum height of playground container (number treated as px). |
 | `height?` | `string \| number` | — | Fixed height of playground container (number treated as px). |
 | `theme?` | `'inherit' \| 'light' \| 'dark'` | `inherit` | Theme mode for rendering. |
 | `initialTab?` | `'code' \| 'preview' \| 'console'` | — | Initial active tab on mount. |
