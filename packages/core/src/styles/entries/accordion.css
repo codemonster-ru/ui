@@ -1,0 +1,84 @@
+.vf-accordion {
+  border: 1px solid var(--vf-accordion-border-color);
+  border-radius: var(--vf-radius-surface);
+  background: var(--vf-accordion-background);
+  color: var(--vf-accordion-color);
+}
+
+.vf-accordion__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vf-spacing);
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: var(--vf-control-height-md);
+  padding: var(--vf-field-padding-md);
+  border: 1px solid transparent;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  font-size: var(--vf-control-font-size-md);
+  font-weight: var(--vf-font-weight-medium);
+  line-height: var(--vf-text-body-line-height);
+  cursor: pointer;
+  text-align: left;
+}
+
+.vf-accordion__trigger[aria-expanded='true'] {
+  color: var(--vf-accordion-trigger-expanded-color);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.vf-accordion__trigger:hover:not(:disabled, [aria-expanded='true']) {
+  background: transparent;
+  color: var(--vf-accordion-trigger-hover-color);
+}
+
+.vf-accordion__trigger:focus-visible {
+  z-index: 2;
+  outline: none;
+  border-color: var(--vf-accordion-trigger-focus-border-color);
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+}
+
+.vf-accordion__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--vf-icon-size-md);
+  height: var(--vf-icon-size-md);
+  line-height: 1;
+  color: var(--vf-accordion-icon-color);
+  transition: transform var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
+}
+
+.vf-accordion__icon .vf-icon {
+  width: var(--vf-icon-size-md);
+  height: var(--vf-icon-size-md);
+}
+
+.vf-accordion__icon--open {
+  transform: rotate(180deg);
+}
+
+.vf-accordion__content {
+  overflow: hidden;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  background: var(--vf-accordion-content-background);
+}
+
+.vf-accordion__content-inner {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--vf-accordion-content-border-color);
+  padding: var(--vf-section-padding);
+  color: var(--vf-accordion-content-color);
+  font-size: var(--vf-text-body-font-size);
+  font-weight: var(--vf-text-body-font-weight);
+  line-height: var(--vf-text-body-line-height);
+}

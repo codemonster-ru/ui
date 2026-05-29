@@ -4,7 +4,7 @@ import { renderToString } from '@vue/server-renderer';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createSSRApp, h, nextTick } from 'vue';
-import { beforeEach, vi } from 'vitest';
+import { afterAll, beforeAll, vi } from 'vitest';
 import VfCodeBlock from '../VfCodeBlock.vue';
 import {
   __getCodeBlockLanguageLoadAttemptsForTests,
@@ -46,7 +46,11 @@ const mountIntoHost = (props: Record<string, unknown>, hostAttributes: Record<st
 };
 
 describe('VfCodeBlock', () => {
-  beforeEach(() => {
+  beforeAll(() => {
+    __resetCodeBlockHighlightRuntimeForTests();
+  });
+
+  afterAll(() => {
     __resetCodeBlockHighlightRuntimeForTests();
   });
 
@@ -258,7 +262,7 @@ body {
   });
 
   it('defines root block margins with spacing CSS variables', () => {
-    const source = readFileSync(resolve(__dirname, '../VfCodeBlock.vue'), 'utf8');
+    const source = readFileSync(resolve(__dirname, '../../codeblock.css'), 'utf8');
 
     expect(source).toContain('margin-block:');
     expect(source).toContain('--vf-codeblock-margin-block-start');
@@ -432,6 +436,8 @@ body {
   });
 
   it('loads language lazily once and reuses cache for repeated renders', async () => {
+    __resetCodeBlockHighlightRuntimeForTests();
+
     const wrapper = mount(VfCodeBlock, {
       props: {
         language: 'ts',
@@ -447,6 +453,8 @@ body {
   });
 
   it('preloads languages ahead of rendering', async () => {
+    __resetCodeBlockHighlightRuntimeForTests();
+
     await preloadCodeBlockLanguages(['ts', 'bash'], ['ts']);
     expect(__getCodeBlockLanguageLoadAttemptsForTests('ts')).toBe(1);
     expect(__getCodeBlockLanguageLoadAttemptsForTests('bash')).toBe(0);

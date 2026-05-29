@@ -1,0 +1,6 @@
+
+.vf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--vf-layout-grid-min-item-width), 1fr));
+  gap: var(--vf-layout-space-layout-base);
+}

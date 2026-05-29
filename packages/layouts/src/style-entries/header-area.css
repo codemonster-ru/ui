@@ -1,0 +1,17 @@
+
+.vf-header-area {
+  grid-area: header;
+  min-height: var(--vf-layout-header-height);
+  display: flex;
+  align-items: center;
+  gap: var(--vf-layout-space-layout-base);
+  padding-block: var(--vf-layout-header-padding-block);
+  background: var(--vf-layout-header-background);
+  border-bottom: var(--vf-layout-header-border);
+  position: relative;
+  top: var(--vf-layout-size-zero);
+  z-index: var(--vf-layout-app-shell-header-sticky-z-index);
+}
+.vf-header-area--sticky {
+  position: sticky;
+}

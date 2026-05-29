@@ -30,7 +30,20 @@
       "require": "./dist/index.cjs"
     },
     "./breakpoints.css": "./dist/breakpoints.css",
-    "./styles.css": "./dist/styles.css",
+    "./base.css": "./dist/base.css",
+    "./container.css": "./dist/container.css",
+    "./stack.css": "./dist/stack.css",
+    "./inline.css": "./dist/inline.css",
+    "./section.css": "./dist/section.css",
+    "./grid.css": "./dist/grid.css",
+    "./app-shell.css": "./dist/app-shell.css",
+    "./document-layout.css": "./dist/document-layout.css",
+    "./error-layout.css": "./dist/error-layout.css",
+    "./header-area.css": "./dist/header-area.css",
+    "./sidebar-area.css": "./dist/sidebar-area.css",
+    "./content-area.css": "./dist/content-area.css",
+    "./aside-area.css": "./dist/aside-area.css",
+    "./footer-area.css": "./dist/footer-area.css",
     "./tokens.css": "./dist/tokens.css",
     "./theme.css": "./dist/theme.css"
   },
@@ -42,9 +55,11 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepack": "npm run build",
-    "test": "vitest run",
+    "test": "npm run check:css-contract && npm run smoke:css-export && vitest run",
     "test:watch": "vitest",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "smoke:css-export": "node ./scripts/smoke-css-export.mjs",
+    "check:css-contract": "node ./scripts/check-css-contract.mjs"
   },
   "publishConfig": {
     "access": "public"

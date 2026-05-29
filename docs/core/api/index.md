@@ -22,7 +22,9 @@ The following items are listed in this section:
 
 ```ts
 import VueForgeCore from '@codemonster-ru/vueforge-core';
-import '@codemonster-ru/vueforge-core/styles.css';
+import '@codemonster-ru/vueforge-core/base.css';
+import '@codemonster-ru/vueforge-core/tokens.css';
+import '@codemonster-ru/vueforge-core/theme.css';
 
 app.use(VueForgeCore);
 ```
@@ -101,7 +103,8 @@ The following items are listed in this section:
 
 The following items are listed in this section:
 
-- `@codemonster-ru/vueforge-core/styles.css`
+- `@codemonster-ru/vueforge-core/base.css`
 - `@codemonster-ru/vueforge-core/tokens.css`
 - `@codemonster-ru/vueforge-core/theme.css`
 - `@codemonster-ru/vueforge-core/foundation.css`
+- Per-component CSS entries (for example `@codemonster-ru/vueforge-core/button.css`, `@codemonster-ru/vueforge-core/dialog.css`).

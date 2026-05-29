@@ -51,7 +51,162 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/vueforge-core.js"
     },
-    "./styles.css": "./dist/styles.css",
+    "./accordion": {
+      "types": "./dist/accordion.d.ts",
+      "import": "./dist/auto/accordion.js"
+    },
+    "./alert": {
+      "types": "./dist/alert.d.ts",
+      "import": "./dist/auto/alert.js"
+    },
+    "./badge": {
+      "types": "./dist/badge.d.ts",
+      "import": "./dist/auto/badge.js"
+    },
+    "./breadcrumbs": {
+      "types": "./dist/breadcrumbs.d.ts",
+      "import": "./dist/auto/breadcrumbs.js"
+    },
+    "./button": {
+      "types": "./dist/button.d.ts",
+      "import": "./dist/auto/button.js"
+    },
+    "./card": {
+      "types": "./dist/card.d.ts",
+      "import": "./dist/auto/card.js"
+    },
+    "./checkbox": {
+      "types": "./dist/checkbox.d.ts",
+      "import": "./dist/auto/checkbox.js"
+    },
+    "./command-palette": {
+      "types": "./dist/command-palette.d.ts",
+      "import": "./dist/auto/command-palette.js"
+    },
+    "./dialog": {
+      "types": "./dist/dialog.d.ts",
+      "import": "./dist/auto/dialog.js"
+    },
+    "./divider": {
+      "types": "./dist/divider.d.ts",
+      "import": "./dist/auto/divider.js"
+    },
+    "./drawer": {
+      "types": "./dist/drawer.d.ts",
+      "import": "./dist/auto/drawer.js"
+    },
+    "./dropdown": {
+      "types": "./dist/dropdown.d.ts",
+      "import": "./dist/auto/dropdown.js"
+    },
+    "./icon-button": {
+      "types": "./dist/icon-button.d.ts",
+      "import": "./dist/auto/icon-button.js"
+    },
+    "./input": {
+      "types": "./dist/input.d.ts",
+      "import": "./dist/auto/input.js"
+    },
+    "./link": {
+      "types": "./dist/link.d.ts",
+      "import": "./dist/auto/link.js"
+    },
+    "./menu-bar": {
+      "types": "./dist/menu-bar.d.ts",
+      "import": "./dist/auto/menu-bar.js"
+    },
+    "./nav-menu": {
+      "types": "./dist/nav-menu.d.ts",
+      "import": "./dist/auto/nav-menu.js"
+    },
+    "./panel": {
+      "types": "./dist/panel.d.ts",
+      "import": "./dist/auto/panel.js"
+    },
+    "./popover": {
+      "types": "./dist/popover.d.ts",
+      "import": "./dist/auto/popover.js"
+    },
+    "./radio": {
+      "types": "./dist/radio.d.ts",
+      "import": "./dist/auto/radio.js"
+    },
+    "./select": {
+      "types": "./dist/select.d.ts",
+      "import": "./dist/auto/select.js"
+    },
+    "./skeleton": {
+      "types": "./dist/skeleton.d.ts",
+      "import": "./dist/auto/skeleton.js"
+    },
+    "./skeleton-gate": {
+      "types": "./dist/skeleton-gate.d.ts",
+      "import": "./dist/auto/skeleton-gate.js"
+    },
+    "./switch": {
+      "types": "./dist/switch.d.ts",
+      "import": "./dist/auto/switch.js"
+    },
+    "./table": {
+      "types": "./dist/table.d.ts",
+      "import": "./dist/auto/table.js"
+    },
+    "./table-of-contents": {
+      "types": "./dist/table-of-contents.d.ts",
+      "import": "./dist/auto/table-of-contents.js"
+    },
+    "./tabs": {
+      "types": "./dist/tabs.d.ts",
+      "import": "./dist/auto/tabs.js"
+    },
+    "./tag": {
+      "types": "./dist/tag.d.ts",
+      "import": "./dist/auto/tag.js"
+    },
+    "./textarea": {
+      "types": "./dist/textarea.d.ts",
+      "import": "./dist/auto/textarea.js"
+    },
+    "./theme-switch": {
+      "types": "./dist/theme-switch.d.ts",
+      "import": "./dist/auto/theme-switch.js"
+    },
+    "./tooltip": {
+      "types": "./dist/tooltip.d.ts",
+      "import": "./dist/auto/tooltip.js"
+    },
+    "./accordion.css": "./dist/accordion.css",
+    "./alert.css": "./dist/alert.css",
+    "./badge.css": "./dist/badge.css",
+    "./breadcrumbs.css": "./dist/breadcrumbs.css",
+    "./button.css": "./dist/button.css",
+    "./card.css": "./dist/card.css",
+    "./checkbox.css": "./dist/checkbox.css",
+    "./command-palette.css": "./dist/command-palette.css",
+    "./dialog.css": "./dist/dialog.css",
+    "./divider.css": "./dist/divider.css",
+    "./drawer.css": "./dist/drawer.css",
+    "./dropdown.css": "./dist/dropdown.css",
+    "./icon-button.css": "./dist/icon-button.css",
+    "./input.css": "./dist/input.css",
+    "./link.css": "./dist/link.css",
+    "./menu-bar.css": "./dist/menu-bar.css",
+    "./nav-menu.css": "./dist/nav-menu.css",
+    "./panel.css": "./dist/panel.css",
+    "./popover.css": "./dist/popover.css",
+    "./radio.css": "./dist/radio.css",
+    "./select.css": "./dist/select.css",
+    "./skeleton.css": "./dist/skeleton.css",
+    "./skeleton-gate.css": "./dist/skeleton-gate.css",
+    "./switch.css": "./dist/switch.css",
+    "./table.css": "./dist/table.css",
+    "./table-of-contents.css": "./dist/table-of-contents.css",
+    "./tabs.css": "./dist/tabs.css",
+    "./tag.css": "./dist/tag.css",
+    "./textarea.css": "./dist/textarea.css",
+    "./theme-switch.css": "./dist/theme-switch.css",
+    "./tooltip.css": "./dist/tooltip.css",
+    "./base.css": "./dist/base.css",
     "./tokens.css": "./dist/tokens.css",
     "./theme.css": "./dist/theme.css",
     "./foundation.css": "./dist/foundation.css",
@@ -70,9 +225,12 @@
     "format": "prettier --ignore-path ../../.prettierignore --write .",
     "lint": "eslint .",
     "prepack": "npm run build",
-    "test": "vitest run --config vitest.config.ts",
+    "test": "npm run check:css-contract && npm run smoke:css-export && npm run smoke:consumer-css && vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "smoke:css-export": "node ./scripts/smoke-css-export.mjs",
+    "smoke:consumer-css": "node ./scripts/smoke-consumer-auto-css.mjs",
+    "check:css-contract": "node ./scripts/check-css-contract.mjs"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
