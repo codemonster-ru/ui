@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'unplugin-dts/vite';
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import { buildLayoutCssArtifacts, layoutCssArtifactPaths } from './build/layout-css-artifacts';
@@ -13,7 +13,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
       name: 'vueforge-layouts-expand-custom-media',
       enforce: 'pre',
       transform(code, id) {
-        if (!id.includes('/packages/layouts/src/styles.css')) {
+        if (!id.includes('/packages/layouts/src/styles.css') && !id.includes('/packages/layouts/src/style-parts/')) {
           return null;
         }
 
@@ -46,13 +46,18 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
     },
     {
       name: 'vueforge-layouts-copy-css-entries',
-      writeBundle() {
+      closeBundle() {
         const distDir = resolve(__dirname, 'dist');
 
         mkdirSync(distDir, { recursive: true });
         cpSync(layoutCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'breakpoints.css'));
         cpSync(layoutCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
         cpSync(layoutCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
+        cpSync(resolve(__dirname, 'src/style-parts/base.css'), resolve(distDir, 'base.css'));
+        const styleEntriesDir = resolve(__dirname, 'src/style-entries');
+        for (const entryFileName of readdirSync(styleEntriesDir).filter((name) => name.endsWith('.css'))) {
+          cpSync(resolve(styleEntriesDir, entryFileName), resolve(distDir, entryFileName));
+        }
       },
     },
     {

@@ -1,0 +1,25 @@
+.vf-codeblock {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--vf-codeblock-border-color, var(--vf-color-border, #2b2b2b));
+  border-radius: var(--vf-codeblock-border-radius, var(--vf-radius-surface, 12px));
+  background: var(--vf-codeblock-background-color, var(--vf-color-surface-muted, #17181b));
+  min-height: var(--vf-codeblock-min-height, 120px);
+}
+
+.vf-codeblock__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+
+.vf-codeblock__code-shell {
+  position: relative;
+  min-height: 76px;
+}
+
+.vf-codeblock__pre {
+  margin: 0;
+  overflow: auto;
+}

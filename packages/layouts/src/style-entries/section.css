@@ -1,0 +1,10 @@
+
+.vf-section {
+  padding: var(--vf-layout-section-inset-default);
+}
+.vf-section--surface {
+  background: var(--vf-layout-surface-base);
+  border: var(--vf-layout-border-base);
+  border-radius: var(--vf-layout-section-radius);
+  box-shadow: var(--vf-layout-section-shadow);
+}

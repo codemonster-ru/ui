@@ -1,0 +1,23 @@
+
+.vf-container {
+  width: var(--vf-layout-size-full);
+  max-width: var(--vf-layout-container-max-width);
+  margin-inline: auto;
+  padding-inline: var(--vf-layout-container-padding);
+}
+.vf-container--md {
+  max-width: var(--vf-breakpoint-md);
+}
+.vf-container--lg {
+  max-width: var(--vf-breakpoint-lg);
+}
+.vf-container--xl {
+  max-width: var(--vf-breakpoint-xl);
+}
+.vf-container--2xl {
+  max-width: var(--vf-breakpoint-2xl);
+}
+.vf-container--fluid {
+  width: var(--vf-layout-size-full);
+  max-width: none;
+}

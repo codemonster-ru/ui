@@ -51,7 +51,9 @@
         "default": "./dist/index.umd.cjs"
       }
     },
-    "./style.css": "./dist/index.css"
+    "./style.css": "./dist/index.css",
+    "./codeblock.css": "./dist/codeblock.css",
+    "./critical.css": "./dist/critical.css"
   },
   "files": [
     "dist"
@@ -66,7 +68,8 @@
     "lint": "eslint .",
     "prepack": "npm run build",
     "typecheck": "vue-tsc --noEmit",
-    "test": "vitest run"
+    "smoke:css-export": "node ./scripts/smoke-css-export.mjs",
+    "test": "npm run smoke:css-export && vitest run"
   },
   "peerDependencies": {
     "vue": "^3.4.0"

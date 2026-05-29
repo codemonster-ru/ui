@@ -1,0 +1,53 @@
+.vf-container {
+  width: var(--vf-layout-size-full);
+  max-width: var(--vf-layout-container-max-width);
+  margin-inline: auto;
+  padding-inline: var(--vf-layout-container-padding);
+}
+.vf-container--md {
+  max-width: var(--vf-breakpoint-md);
+}
+.vf-container--lg {
+  max-width: var(--vf-breakpoint-lg);
+}
+.vf-container--xl {
+  max-width: var(--vf-breakpoint-xl);
+}
+.vf-container--2xl {
+  max-width: var(--vf-breakpoint-2xl);
+}
+.vf-container--fluid {
+  width: var(--vf-layout-size-full);
+  max-width: none;
+}
+.vf-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vf-layout-space-layout-base);
+  align-items: stretch;
+  justify-content: flex-start;
+}
+.vf-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vf-layout-space-layout-base);
+  align-items: center;
+  justify-content: flex-start;
+}
+.vf-inline--nowrap {
+  flex-wrap: nowrap;
+}
+.vf-section {
+  padding: var(--vf-layout-section-inset-default);
+}
+.vf-section--surface {
+  background: var(--vf-layout-surface-base);
+  border: var(--vf-layout-border-base);
+  border-radius: var(--vf-layout-section-radius);
+  box-shadow: var(--vf-layout-section-shadow);
+}
+.vf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--vf-layout-grid-min-item-width), 1fr));
+  gap: var(--vf-layout-space-layout-base);
+}

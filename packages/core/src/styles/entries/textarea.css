@@ -1,0 +1,67 @@
+.vf-textarea {
+  width: 100%;
+}
+
+.vf-textarea:focus-visible {
+  outline: none;
+  border-radius: var(--vf-radius-control);
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+}
+
+.vf-textarea {
+  min-height: var(--vf-textarea-min-height-md);
+  padding: var(--vf-field-padding-md);
+  border: 1px solid var(--vf-textarea-border-color);
+  border-radius: var(--vf-radius-control);
+  background: var(--vf-textarea-background);
+  color: var(--vf-textarea-color);
+  font-size: var(--vf-control-font-size-md);
+  font-weight: var(--vf-text-body-font-weight);
+  line-height: var(--vf-text-body-line-height);
+  resize: vertical;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.vf-textarea::placeholder {
+  color: var(--vf-textarea-placeholder-color);
+}
+
+.vf-textarea:hover:not(:disabled, .vf-textarea--invalid, :focus, :focus-visible) {
+  border-color: var(--vf-textarea-hover-border-color);
+}
+
+.vf-textarea:focus, .vf-textarea:focus-visible {
+  border-color: var(--vf-textarea-focus-border-color);
+}
+
+.vf-textarea--sm {
+  min-height: var(--vf-textarea-min-height-sm);
+  padding: var(--vf-field-padding-sm);
+  font-size: var(--vf-control-font-size-sm);
+}
+
+.vf-textarea--lg {
+  min-height: var(--vf-textarea-min-height-lg);
+  padding: var(--vf-field-padding-lg);
+  font-size: var(--vf-control-font-size-lg);
+}
+
+.vf-textarea--invalid {
+  border-color: var(--vf-textarea-invalid-border-color);
+}
+
+.vf-textarea--invalid:hover:not(:disabled, :focus, :focus-visible) {
+  border-color: var(--vf-textarea-hover-border-color);
+}
+
+.vf-textarea:disabled {
+  cursor: not-allowed;
+}
+
+.vf-textarea:disabled {
+  background: var(--vf-textarea-disabled-background);
+  color: var(--vf-textarea-disabled-color);
+}

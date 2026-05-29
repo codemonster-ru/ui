@@ -1,0 +1,23 @@
+.vf-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vf-surface-gap);
+  padding: var(--vf-surface-padding);
+  border: 1px solid var(--vf-panel-border-color);
+  border-radius: var(--vf-radius-surface);
+  background: var(--vf-panel-background);
+  color: var(--vf-panel-color);
+  line-height: var(--vf-text-body-line-height);
+}
+
+.vf-panel--subtle {
+  background: var(--vf-panel-subtle-background);
+  box-shadow: none;
+}
+
+.vf-panel__title {
+  margin: 0;
+  font-size: var(--vf-panel-title-font-size);
+  font-weight: var(--vf-text-body-font-weight);
+  line-height: var(--vf-text-body-line-height);
+}

@@ -1,0 +1,16 @@
+.vf-divider {
+  margin: 0;
+  border: 0;
+  background: var(--vf-divider-color);
+  flex-shrink: 0;
+}
+
+.vf-divider--horizontal {
+  width: 100%;
+  height: 1px;
+}
+
+.vf-divider--vertical {
+  width: 1px;
+  align-self: stretch;
+}

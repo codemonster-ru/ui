@@ -21,5 +21,22 @@
         "ignoreProperties": ["font-family", "/font-family$/"]
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "packages/core/src/styles/entries/**/*.css",
+        "packages/layouts/src/style-entries/**/*.css",
+        "packages/layouts/src/style-parts/**/*.css"
+      ],
+      "rules": {
+        "no-descending-specificity": null,
+        "no-duplicate-selectors": null,
+        "declaration-block-no-redundant-longhand-properties": null,
+        "rule-empty-line-before": null,
+        "at-rule-empty-line-before": null,
+        "declaration-empty-line-before": null
+      }
+    }
+  ]
 }

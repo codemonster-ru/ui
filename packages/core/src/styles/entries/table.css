@@ -1,0 +1,75 @@
+.vf-table-wrap {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--vf-table-border-color);
+  border-radius: var(--vf-radius-surface);
+  background: var(--vf-table-background);
+  color: var(--vf-table-color);
+  overflow: hidden;
+}
+
+.vf-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.vf-table {
+  width: 100%;
+  min-width: var(--vf-table-min-width);
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--vf-table-color);
+  font-size: var(--vf-text-body-font-size);
+  font-weight: var(--vf-text-body-font-weight);
+  line-height: var(--vf-text-body-line-height);
+}
+
+.vf-table__caption {
+  padding: var(--vf-surface-padding) var(--vf-surface-padding) 0;
+  text-align: left;
+  color: var(--vf-table-caption-color);
+}
+
+.vf-table :where(th, td) {
+  padding: var(--vf-field-padding-lg);
+  text-align: left;
+  vertical-align: top;
+}
+
+.vf-table :where(th) {
+  font-weight: var(--vf-font-weight-medium);
+  color: var(--vf-table-head-color);
+  background: var(--vf-table-head-background);
+}
+
+.vf-table :where(td) {
+  color: var(--vf-table-color);
+}
+
+.vf-table thead th {
+  border-bottom: 1px solid var(--vf-table-border-color);
+}
+
+.vf-table tfoot tr:first-child td, .vf-table tbody tr + tr td {
+  border-top: 1px solid var(--vf-table-border-color);
+}
+
+.vf-table tfoot td {
+  color: var(--vf-table-foot-color);
+  background: var(--vf-table-foot-background);
+}
+
+.vf-table--striped tbody tr:nth-child(even) td {
+  background: var(--vf-table-stripe-background);
+}
+
+.vf-table--compact :where(th, td) {
+  padding: var(--vf-field-padding-md);
+}
+
+.vf-table--sticky-header thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}

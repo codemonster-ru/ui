@@ -1,0 +1,50 @@
+.vf-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--vf-tag-height);
+  padding: var(--vf-tag-padding);
+  border: 1px solid var(--vf-tag-border-color);
+  border-radius: var(--vf-radius-control-tight);
+  background: var(--vf-tag-background);
+  color: var(--vf-tag-color);
+  font-size: var(--vf-tag-font-size);
+  font-weight: var(--vf-font-weight-regular);
+  line-height: var(--vf-tag-line-height);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.vf-tag--primary {
+  border-color: var(--vf-tag-primary-border-color);
+  color: var(--vf-tag-primary-color);
+}
+
+.vf-tag--success {
+  border-color: var(--vf-tag-success-border-color);
+  color: var(--vf-tag-success-color);
+}
+
+.vf-tag--info {
+  border-color: var(--vf-tag-info-border-color);
+  color: var(--vf-tag-info-color);
+}
+
+.vf-tag--warn {
+  border-color: var(--vf-tag-warn-border-color);
+  color: var(--vf-tag-warn-color);
+}
+
+.vf-tag--help {
+  border-color: var(--vf-tag-help-border-color);
+  color: var(--vf-tag-help-color);
+}
+
+.vf-tag--danger {
+  border-color: var(--vf-tag-danger-border-color);
+  color: var(--vf-tag-danger-color);
+}
+
+.vf-tag--contrast {
+  border-color: var(--vf-tag-contrast-border-color);
+  color: var(--vf-tag-contrast-color);
+}
