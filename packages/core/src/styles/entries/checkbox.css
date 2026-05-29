@@ -1,3 +1,9 @@
+/*
+ * NOTE: This file intentionally keeps state rules grouped by behavior (checked/hover/focus/invalid/disabled)
+ * for readability of the interaction matrix. We allow stylelint no-descending-specificity here on purpose.
+ * If you refactor this file, preserve visual behavior first and remove the override only with full state QA.
+ */
+
 .vf-checkbox {
   position: relative;
   display: inline-flex;
@@ -7,29 +13,6 @@
   min-width: 0;
   color: var(--vf-color-text);
   cursor: pointer;
-}
-
-.vf-checkbox--disabled {
-  cursor: not-allowed;
-}
-
-.vf-checkbox--disabled {
-  color: var(--vf-checkbox-disabled-color);
-}
-
-.vf-checkbox--disabled .vf-checkbox__control {
-  border-color: var(--vf-checkbox-disabled-border-color);
-  background: var(--vf-checkbox-disabled-background);
-}
-
-.vf-checkbox--disabled.vf-checkbox--checked .vf-checkbox__control, .vf-checkbox--disabled .vf-checkbox__input:checked + .vf-checkbox__control {
-  border-color: var(--vf-checkbox-disabled-border-color);
-  background: var(--vf-checkbox-disabled-background);
-}
-
-.vf-checkbox--disabled.vf-checkbox--checked .vf-checkbox__mark, .vf-checkbox--disabled .vf-checkbox__input:checked + .vf-checkbox__control .vf-checkbox__mark {
-  border-right-color: var(--vf-checkbox-disabled-mark-color);
-  border-bottom-color: var(--vf-checkbox-disabled-mark-color);
 }
 
 .vf-checkbox__input {
@@ -51,8 +34,11 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid var(--vf-selection-control-border-color);
-  background: var(--vf-selection-control-background);
+  width: var(--vf-checkbox-size-md);
+  height: var(--vf-checkbox-size-md);
+  border: 1px solid var(--vf-checkbox-border-color);
+  border-radius: calc(var(--vf-radius-control-tight) - 0.0625rem);
+  background: var(--vf-checkbox-background);
   transition:
     background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     border-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
@@ -69,14 +55,6 @@
   line-height: var(--vf-text-body-line-height);
 }
 
-.vf-checkbox__control {
-  width: var(--vf-checkbox-size-md);
-  height: var(--vf-checkbox-size-md);
-  border-radius: calc(var(--vf-radius-control-tight) - 0.0625rem);
-  border-color: var(--vf-checkbox-border-color);
-  background: var(--vf-checkbox-background);
-}
-
 .vf-checkbox__mark {
   width: var(--vf-checkbox-mark-width);
   height: var(--vf-checkbox-mark-height);
@@ -90,26 +68,8 @@
     border-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
 }
 
-.vf-checkbox__input:checked + .vf-checkbox__control {
-  border-color: var(--vf-checkbox-checked-border-color);
-  background: var(--vf-checkbox-checked-background);
-}
-
-.vf-checkbox__input:checked + .vf-checkbox__control .vf-checkbox__mark {
-  border-right-color: var(--vf-checkbox-mark-color);
-  border-bottom-color: var(--vf-checkbox-mark-color);
-  transform: translateY(var(--vf-checkbox-mark-offset-y)) rotate(45deg) scale(1);
-  opacity: 1;
-}
-
 .vf-checkbox:hover:not(.vf-checkbox--disabled) .vf-checkbox__input:not(:checked) + .vf-checkbox__control {
   border-color: var(--vf-checkbox-hover-border-color);
-}
-
-.vf-checkbox__input:focus-visible + .vf-checkbox__control {
-  outline: none;
-  border-color: var(--vf-checkbox-focus-border-color);
-  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
 .vf-checkbox--invalid .vf-checkbox__control {
@@ -136,4 +96,44 @@
 
 .vf-checkbox--lg .vf-checkbox__content {
   font-size: var(--vf-control-font-size-lg);
+}
+
+.vf-checkbox--disabled {
+  cursor: not-allowed;
+  color: var(--vf-checkbox-disabled-color);
+}
+
+.vf-checkbox--disabled .vf-checkbox__control {
+  border-color: var(--vf-checkbox-disabled-border-color);
+  background: var(--vf-checkbox-disabled-background);
+}
+
+.vf-checkbox--disabled.vf-checkbox--checked .vf-checkbox__control,
+.vf-checkbox--disabled .vf-checkbox__input:checked + .vf-checkbox__control {
+  border-color: var(--vf-checkbox-disabled-border-color);
+  background: var(--vf-checkbox-disabled-background);
+}
+
+.vf-checkbox--disabled.vf-checkbox--checked .vf-checkbox__mark,
+.vf-checkbox--disabled .vf-checkbox__input:checked + .vf-checkbox__control .vf-checkbox__mark {
+  border-right-color: var(--vf-checkbox-disabled-mark-color);
+  border-bottom-color: var(--vf-checkbox-disabled-mark-color);
+}
+
+.vf-checkbox__input:checked + .vf-checkbox__control {
+  border-color: var(--vf-checkbox-checked-border-color);
+  background: var(--vf-checkbox-checked-background);
+}
+
+.vf-checkbox__input:checked + .vf-checkbox__control .vf-checkbox__mark {
+  border-right-color: var(--vf-checkbox-mark-color);
+  border-bottom-color: var(--vf-checkbox-mark-color);
+  transform: translateY(var(--vf-checkbox-mark-offset-y)) rotate(45deg) scale(1);
+  opacity: 1;
+}
+
+.vf-checkbox__input:focus-visible + .vf-checkbox__control {
+  outline: none;
+  border-color: var(--vf-checkbox-focus-border-color);
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }

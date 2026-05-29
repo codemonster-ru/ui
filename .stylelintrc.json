@@ -25,17 +25,13 @@
   "overrides": [
     {
       "files": [
-        "packages/core/src/styles/entries/**/*.css",
-        "packages/layouts/src/style-entries/**/*.css",
-        "packages/layouts/src/style-parts/**/*.css"
+        "packages/core/src/styles/entries/accordion.css",
+        "packages/core/src/styles/entries/checkbox.css",
+        "packages/core/src/styles/entries/radio.css",
+        "packages/core/src/styles/entries/switch.css"
       ],
       "rules": {
-        "no-descending-specificity": null,
-        "no-duplicate-selectors": null,
-        "declaration-block-no-redundant-longhand-properties": null,
-        "rule-empty-line-before": null,
-        "at-rule-empty-line-before": null,
-        "declaration-empty-line-before": null
+        "no-descending-specificity": null
       }
     }
   ]

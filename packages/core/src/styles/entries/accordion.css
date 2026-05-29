@@ -1,3 +1,9 @@
+/*
+ * NOTE: This file intentionally keeps state rules grouped by behavior (checked/hover/focus/invalid/disabled)
+ * for readability of the interaction matrix. We allow stylelint no-descending-specificity here on purpose.
+ * If you refactor this file, preserve visual behavior first and remove the override only with full state QA.
+ */
+
 .vf-accordion {
   border: 1px solid var(--vf-accordion-border-color);
   border-radius: var(--vf-radius-surface);
@@ -32,16 +38,16 @@
   border-bottom-right-radius: 0;
 }
 
-.vf-accordion__trigger:hover:not(:disabled, [aria-expanded='true']) {
-  background: transparent;
-  color: var(--vf-accordion-trigger-hover-color);
-}
-
 .vf-accordion__trigger:focus-visible {
   z-index: 2;
   outline: none;
   border-color: var(--vf-accordion-trigger-focus-border-color);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+}
+
+.vf-accordion__trigger:hover:not(:disabled, [aria-expanded='true']) {
+  background: transparent;
+  color: var(--vf-accordion-trigger-hover-color);
 }
 
 .vf-accordion__icon {

@@ -1,3 +1,9 @@
+/*
+ * NOTE: This file intentionally keeps state rules grouped by behavior (checked/hover/focus/invalid/disabled)
+ * for readability of the interaction matrix. We allow stylelint no-descending-specificity here on purpose.
+ * If you refactor this file, preserve visual behavior first and remove the override only with full state QA.
+ */
+
 .vf-radio {
   position: relative;
   display: inline-flex;
@@ -7,28 +13,6 @@
   min-width: 0;
   color: var(--vf-color-text);
   cursor: pointer;
-}
-
-.vf-radio--disabled {
-  cursor: not-allowed;
-}
-
-.vf-radio--disabled {
-  color: var(--vf-radio-disabled-color);
-}
-
-.vf-radio--disabled .vf-radio__control {
-  border-color: var(--vf-radio-disabled-border-color);
-  background: var(--vf-radio-disabled-background);
-}
-
-.vf-radio--disabled.vf-radio--checked .vf-radio__control, .vf-radio--disabled .vf-radio__input:checked + .vf-radio__control {
-  border-color: var(--vf-radio-disabled-border-color);
-  background: var(--vf-radio-disabled-background);
-}
-
-.vf-radio--disabled.vf-radio--checked .vf-radio__dot, .vf-radio--disabled .vf-radio__input:checked + .vf-radio__control .vf-radio__dot {
-  background: var(--vf-radio-disabled-dot-color);
 }
 
 .vf-radio__input {
@@ -50,8 +34,11 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid var(--vf-selection-control-border-color);
-  background: var(--vf-selection-control-background);
+  width: var(--vf-checkbox-size-md);
+  height: var(--vf-checkbox-size-md);
+  border: 1px solid var(--vf-radio-border-color);
+  border-radius: 999px;
+  background: var(--vf-radio-control-background);
   transition:
     background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     border-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
@@ -68,14 +55,6 @@
   line-height: var(--vf-text-body-line-height);
 }
 
-.vf-radio__control {
-  width: var(--vf-checkbox-size-md);
-  height: var(--vf-checkbox-size-md);
-  border-radius: 999px;
-  border-color: var(--vf-radio-border-color);
-  background: var(--vf-radio-control-background);
-}
-
 .vf-radio__dot {
   width: var(--vf-radio-dot-size);
   height: var(--vf-radio-dot-size);
@@ -88,23 +67,8 @@
     transform var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
 }
 
-.vf-radio__input:checked + .vf-radio__control {
-  border-color: var(--vf-radio-checked-border-color);
-}
-
-.vf-radio__input:checked + .vf-radio__control .vf-radio__dot {
-  transform: scale(1);
-  opacity: 1;
-}
-
 .vf-radio:hover:not(.vf-radio--disabled) .vf-radio__input:not(:checked) + .vf-radio__control {
   border-color: var(--vf-radio-hover-border-color);
-}
-
-.vf-radio__input:focus-visible + .vf-radio__control {
-  outline: none;
-  border-color: var(--vf-radio-focus-border-color);
-  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
 .vf-radio--invalid .vf-radio__control {
@@ -131,4 +95,40 @@
 
 .vf-radio--lg .vf-radio__content {
   font-size: var(--vf-control-font-size-lg);
+}
+
+.vf-radio--disabled {
+  cursor: not-allowed;
+  color: var(--vf-radio-disabled-color);
+}
+
+.vf-radio--disabled .vf-radio__control {
+  border-color: var(--vf-radio-disabled-border-color);
+  background: var(--vf-radio-disabled-background);
+}
+
+.vf-radio--disabled.vf-radio--checked .vf-radio__control,
+.vf-radio--disabled .vf-radio__input:checked + .vf-radio__control {
+  border-color: var(--vf-radio-disabled-border-color);
+  background: var(--vf-radio-disabled-background);
+}
+
+.vf-radio--disabled.vf-radio--checked .vf-radio__dot,
+.vf-radio--disabled .vf-radio__input:checked + .vf-radio__control .vf-radio__dot {
+  background: var(--vf-radio-disabled-dot-color);
+}
+
+.vf-radio__input:checked + .vf-radio__control {
+  border-color: var(--vf-radio-checked-border-color);
+}
+
+.vf-radio__input:checked + .vf-radio__control .vf-radio__dot {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.vf-radio__input:focus-visible + .vf-radio__control {
+  outline: none;
+  border-color: var(--vf-radio-focus-border-color);
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }

@@ -1,7 +1,7 @@
-
 .vf-section {
   padding: var(--vf-layout-section-inset-default);
 }
+
 .vf-section--surface {
   background: var(--vf-layout-surface-base);
   border: var(--vf-layout-border-base);
