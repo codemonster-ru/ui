@@ -59,6 +59,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--vf-dialog-header-gap);
+  padding: var(--vf-overlay-padding);
 }
 
 .vf-dialog__actions {
@@ -86,14 +87,11 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
+  padding: var(--vf-overlay-padding);
   color: var(--vf-color-text);
   font-size: var(--vf-text-body-font-size);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
-}
-
-.vf-dialog__header, .vf-dialog__footer {
-  padding: var(--vf-overlay-padding);
 }
 
 .vf-dialog__header {
@@ -110,9 +108,6 @@
   inset-inline: var(--vf-overlay-padding);
   inset-block-end: 0;
   border-bottom: var(--vf-overlay-border-width) solid;
-}
-
-.vf-dialog__content--dividers .vf-dialog__header::after {
   border-color: var(--vf-dialog-divider-color);
 }
 
@@ -122,12 +117,5 @@
   inset-inline: var(--vf-overlay-padding);
   inset-block-start: 0;
   border-top: var(--vf-overlay-border-width) solid;
-}
-
-.vf-dialog__content--dividers .vf-dialog__footer::before {
   border-color: var(--vf-dialog-divider-color);
-}
-
-.vf-dialog__body {
-  padding: var(--vf-overlay-padding);
 }

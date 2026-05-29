@@ -31,8 +31,8 @@ try {
     env: {
       ...process.env,
       npm_config_color: 'false',
-      FORCE_COLOR: '0'
-    }
+      FORCE_COLOR: '0',
+    },
   });
 
   const jsonTail = packedOutput.match(/\[\s*\{[\s\S]*\}\s*\]\s*$/);
@@ -48,7 +48,7 @@ try {
   const tarballPath = join(packageDir, packMeta.filename);
   const tarEntries = execFileSync('tar', ['-tf', tarballPath], {
     cwd: packageDir,
-    encoding: 'utf8'
+    encoding: 'utf8',
   })
     .split('\n')
     .filter(Boolean);
@@ -59,7 +59,7 @@ try {
 
     if (!tarEntries.includes(expectedTarPath)) {
       throw new Error(
-        `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`
+        `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`,
       );
     }
   }

@@ -51,13 +51,17 @@
   border-bottom: 1px solid var(--vf-table-border-color);
 }
 
-.vf-table tfoot tr:first-child td, .vf-table tbody tr + tr td {
-  border-top: 1px solid var(--vf-table-border-color);
-}
-
 .vf-table tfoot td {
   color: var(--vf-table-foot-color);
   background: var(--vf-table-foot-background);
+}
+
+.vf-table tbody tr + tr td {
+  border-top: 1px solid var(--vf-table-border-color);
+}
+
+.vf-table tfoot tr:first-child td {
+  border-top: 1px solid var(--vf-table-border-color);
 }
 
 .vf-table--striped tbody tr:nth-child(even) td {

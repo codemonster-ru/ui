@@ -1,4 +1,3 @@
-
 .vf-content-area {
   grid-area: content;
   display: grid;
@@ -8,23 +7,24 @@
   background: var(--vf-layout-content-background);
   padding: var(--vf-layout-content-padding-block) var(--vf-layout-content-padding-inline);
 }
+
 .vf-content-area__body {
   min-width: var(--vf-layout-size-zero);
   min-height: var(--vf-layout-size-zero);
 }
+
 .vf-content-area--padded {
   padding: var(--vf-layout-content-padding-block) var(--vf-layout-content-padding-inline);
 }
+
 .vf-content-area:not(.vf-content-area--padded) {
   padding: var(--vf-layout-size-zero);
 }
+
 .vf-content-area--plain {
   background: transparent;
 }
-.vf-content-area--plain > .vf-content-subheader-area {
-  background: transparent;
-  border-bottom: var(--vf-layout-size-zero);
-}
+
 .vf-content-subheader-area {
   min-height: var(--vf-layout-content-subheader-height);
   display: flex;
@@ -34,6 +34,12 @@
   background: var(--vf-layout-content-subheader-background);
   border-bottom: var(--vf-layout-content-subheader-border);
 }
+
+.vf-content-area--plain > .vf-content-subheader-area {
+  background: transparent;
+  border-bottom: var(--vf-layout-size-zero);
+}
+
 .vf-content-area--padded .vf-content-subheader-area {
   margin-block: calc(-1 * var(--vf-layout-content-padding-block)) var(--vf-layout-content-padding-block);
   margin-inline: calc(-1 * var(--vf-layout-content-padding-inline));

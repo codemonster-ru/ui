@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.12.0
+
+### Changed
+
+- Reworked layout style-entry selector structure and formatting to improve CSS consistency and tooling stability.
+- Finalized explicit CSS dependency-contract behavior for layout style entries and related smoke/contract checks.
+
+### Fixed
+
+- Removed broad stylelint exceptions for layouts by resolving selector-order/duplicate/style-format issues directly in source files.
+
 ## 1.11.3
 
 ### Fixed

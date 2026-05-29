@@ -1,4 +1,3 @@
-
 .vf-header-area {
   grid-area: header;
   min-height: var(--vf-layout-header-height);
@@ -12,6 +11,7 @@
   top: var(--vf-layout-size-zero);
   z-index: var(--vf-layout-app-shell-header-sticky-z-index);
 }
+
 .vf-header-area--sticky {
   position: sticky;
 }

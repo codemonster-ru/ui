@@ -1,4 +1,3 @@
-
 .vf-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(var(--vf-layout-grid-min-item-width), 1fr));
