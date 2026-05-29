@@ -6,14 +6,17 @@ import { execFileSync } from 'node:child_process';
 const packageDir = process.cwd();
 const packageJsonPath = join(packageDir, 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-const cssExportTarget = packageJson?.exports?.['./style.css'];
+const cssExportTargets = [
+  ['./style.css', packageJson?.exports?.['./style.css']],
+  ['./playground.css', packageJson?.exports?.['./playground.css']],
+  ['./critical.css', packageJson?.exports?.['./critical.css']]
+];
 
-if (typeof cssExportTarget !== 'string' || cssExportTarget.length === 0) {
-  throw new Error('Expected exports["./style.css"] to be a non-empty string.');
+for (const [exportKey, exportTarget] of cssExportTargets) {
+  if (typeof exportTarget !== 'string' || exportTarget.length === 0) {
+    throw new Error(`Expected exports["${exportKey}"] to be a non-empty string.`);
+  }
 }
-
-const normalizedTarget = cssExportTarget.replace(/^\.\//, '');
-const expectedTarPath = `package/${normalizedTarget}`;
 const tempDir = mkdtempSync(join(tmpdir(), 'vueforge-playground-pack-'));
 const invalidDeepPattern = /(^|[^\w-])(?:::v-deep|:deep)\s*(?:\(|\b)/m;
 
@@ -49,10 +52,14 @@ try {
     .split('\n')
     .filter(Boolean);
 
-  if (!tarEntries.includes(expectedTarPath)) {
-    throw new Error(
-      `Broken CSS export: exports["./style.css"] points to "${cssExportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`
-    );
+  for (const [exportKey, exportTarget] of cssExportTargets) {
+    const normalizedTarget = exportTarget.replace(/^\.\//, '');
+    const expectedTarPath = `package/${normalizedTarget}`;
+    if (!tarEntries.includes(expectedTarPath)) {
+      throw new Error(
+        `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`
+      );
+    }
   }
 
   const cssEntries = tarEntries.filter((entry) => entry.startsWith('package/dist/') && entry.endsWith('.css'));
@@ -65,9 +72,11 @@ try {
     }
   }
 
-  const consumerImport = `${packageJson.name}/style.css`;
+  const consumerStyleImport = `${packageJson.name}/style.css`;
+  const consumerComponentImport = `${packageJson.name}/playground.css`;
+  const consumerCriticalImport = `${packageJson.name}/critical.css`;
   console.log(
-    `Smoke check passed: "${consumerImport}" maps to "${cssExportTarget}", exists in npm pack tarball, and dist CSS has no raw deep selectors.`
+    `Smoke check passed: "${consumerStyleImport}", "${consumerComponentImport}", and "${consumerCriticalImport}" exports resolve in npm pack tarball, and dist CSS has no raw deep selectors.`
   );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });

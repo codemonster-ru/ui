@@ -25,7 +25,9 @@ Use one app-level bootstrap path for theme provider + core plugin to keep behavi
 ```ts
 import { createApp } from 'vue';
 import VueForgeCore from '@codemonster-ru/vueforge-core';
-import '@codemonster-ru/vueforge-core/styles.css';
+import '@codemonster-ru/vueforge-core/base.css';
+import '@codemonster-ru/vueforge-core/tokens.css';
+import '@codemonster-ru/vueforge-core/theme.css';
 
 createApp(App).use(VueForgeCore);
 ```
@@ -34,9 +36,10 @@ createApp(App).use(VueForgeCore);
 
 The following items are listed in this section:
 
-- `styles.css`: full default bundle for most apps.
+- Component subpath imports (`@codemonster-ru/vueforge-core/button`, `.../dialog`) auto-load matching component CSS.
 - `foundation.css`: foundation-only layer for incremental adoption.
 - `tokens.css` + `theme.css`: when you need token/theme control separately.
+- Component CSS entries (`button.css`, `dialog.css`, `tabs.css`, etc.) for explicit route/page-level imports.
 
 ### Adopt Incrementally
 

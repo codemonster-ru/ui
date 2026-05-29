@@ -1,0 +1,18 @@
+
+.vf-sidebar-area__inner {
+  min-width: var(--vf-layout-size-zero);
+}
+.vf-sidebar-area__inner {
+  padding: var(--vf-layout-sidebar-padding-block) var(--vf-layout-sidebar-padding-inline);
+}
+.vf-sidebar-area {
+  grid-area: sidebar;
+  background: var(--vf-layout-sidebar-background);
+  border-right: var(--vf-layout-sidebar-border);
+  overflow-y: auto;
+  min-width: var(--vf-layout-size-zero);
+}
+.vf-sidebar-area--plain {
+  background: transparent;
+  border-right: var(--vf-layout-size-zero);
+}

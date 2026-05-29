@@ -415,7 +415,7 @@ describe('VfPlayground', () => {
   });
 
   it('keeps playground codeblock overrides layout-only', () => {
-    const source = readFileSync(resolve(__dirname, './VfPlayground.vue'), 'utf8');
+    const source = readFileSync(resolve(__dirname, './playground.css'), 'utf8');
 
     expect(source).toContain('--vf-codeblock-max-height: 100%');
     expect(source).toContain('--vf-codeblock-border-color: transparent;');

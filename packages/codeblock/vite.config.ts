@@ -3,6 +3,7 @@ import dts from 'vite-plugin-dts';
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { cpSync } from 'node:fs';
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 
@@ -15,6 +16,13 @@ export default defineConfig({
       exclude: ['src/**/*.test.ts', 'src/**/__tests__/**/*'],
       insertTypesEntry: true,
     }),
+    {
+      name: 'vueforge-codeblock-copy-critical-css',
+      closeBundle() {
+        cpSync(resolve(rootDir, 'src/codeblock.css'), resolve(rootDir, 'dist/codeblock.css'));
+        cpSync(resolve(rootDir, 'src/critical.css'), resolve(rootDir, 'dist/critical.css'));
+      },
+    },
   ],
   test: {
     environment: 'jsdom',

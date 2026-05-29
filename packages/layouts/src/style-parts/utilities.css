@@ -1,0 +1,6 @@
+.vf-surface {
+  background: var(--vf-layout-surface-base);
+  border: var(--vf-layout-border-base);
+  border-radius: var(--vf-layout-surface-radius);
+  box-shadow: var(--vf-layout-surface-shadow);
+}

@@ -21,7 +21,10 @@ The following items are listed in this section:
 
 ```ts
 import VueForgeLayouts from '@codemonster-ru/vueforge-layouts';
-import '@codemonster-ru/vueforge-layouts/styles.css';
+import '@codemonster-ru/vueforge-layouts/base.css';
+import '@codemonster-ru/vueforge-layouts/tokens.css';
+import '@codemonster-ru/vueforge-layouts/theme.css';
+import '@codemonster-ru/vueforge-layouts/app-shell.css';
 
 app.use(VueForgeLayouts);
 ```
@@ -100,6 +103,22 @@ import { VfAppShell, VfHeaderArea, VfContentArea } from '@codemonster-ru/vueforg
 
 The following items are listed in this section:
 
-- `@codemonster-ru/vueforge-layouts/styles.css`
+- `@codemonster-ru/vueforge-layouts/base.css`
 - `@codemonster-ru/vueforge-layouts/tokens.css`
 - `@codemonster-ru/vueforge-layouts/theme.css`
+
+Per-layout entries:
+
+- `container.css`
+- `stack.css`
+- `inline.css`
+- `section.css`
+- `grid.css`
+- `app-shell.css`
+- `document-layout.css`
+- `error-layout.css`
+- `header-area.css`
+- `sidebar-area.css`
+- `content-area.css`
+- `aside-area.css`
+- `footer-area.css`

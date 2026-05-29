@@ -34,12 +34,15 @@ afterEach(() => {
 });
 
 describe('package exports', () => {
-  it('declares style and token subpath exports', () => {
+  it('declares css subpath exports for component and token entries', () => {
     const packageJson = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8')) as {
       exports: Record<string, unknown>;
     };
 
-    expect(packageJson.exports['./styles.css']).toBe('./dist/styles.css');
+    expect(packageJson.exports['./styles.css']).toBeUndefined();
+    expect(packageJson.exports['./base.css']).toBe('./dist/base.css');
+    expect(packageJson.exports['./app-shell.css']).toBe('./dist/app-shell.css');
+    expect(packageJson.exports['./container.css']).toBe('./dist/container.css');
     expect(packageJson.exports['./tokens.css']).toBe('./dist/tokens.css');
     expect(packageJson.exports['./theme.css']).toBe('./dist/theme.css');
   });
