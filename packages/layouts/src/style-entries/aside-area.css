@@ -1,16 +1,15 @@
-
 .vf-aside-area__inner {
   min-width: var(--vf-layout-size-zero);
-}
-.vf-aside-area__inner {
   padding: var(--vf-layout-aside-padding-block) var(--vf-layout-aside-padding-inline);
 }
+
 .vf-aside-area {
   grid-area: aside;
   min-width: var(--vf-layout-size-zero);
   border-left: var(--vf-layout-aside-border);
   background: var(--vf-layout-aside-background);
 }
+
 .vf-aside-area--plain {
   background: transparent;
   border-left: var(--vf-layout-size-zero);

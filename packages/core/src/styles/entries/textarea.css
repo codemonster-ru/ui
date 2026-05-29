@@ -1,14 +1,5 @@
 .vf-textarea {
   width: 100%;
-}
-
-.vf-textarea:focus-visible {
-  outline: none;
-  border-radius: var(--vf-radius-control);
-  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
-}
-
-.vf-textarea {
   min-height: var(--vf-textarea-min-height-md);
   padding: var(--vf-field-padding-md);
   border: 1px solid var(--vf-textarea-border-color);
@@ -29,12 +20,14 @@
   color: var(--vf-textarea-placeholder-color);
 }
 
-.vf-textarea:hover:not(:disabled, .vf-textarea--invalid, :focus, :focus-visible) {
-  border-color: var(--vf-textarea-hover-border-color);
-}
-
 .vf-textarea:focus, .vf-textarea:focus-visible {
   border-color: var(--vf-textarea-focus-border-color);
+}
+
+.vf-textarea:focus-visible {
+  outline: none;
+  border-radius: var(--vf-radius-control);
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
 .vf-textarea--sm {
@@ -59,9 +52,10 @@
 
 .vf-textarea:disabled {
   cursor: not-allowed;
-}
-
-.vf-textarea:disabled {
   background: var(--vf-textarea-disabled-background);
   color: var(--vf-textarea-disabled-color);
+}
+
+.vf-textarea:hover:not(:disabled, .vf-textarea--invalid, :focus, :focus-visible) {
+  border-color: var(--vf-textarea-hover-border-color);
 }

@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.20.0
+
+### Added
+
+- Added component-level JS entrypoints with automatic CSS side-effect loading (auto-CSS imports) for more ergonomic point usage.
+- Added stable per-component CSS entry consumption flow for selective style imports.
+
+### Changed
+
+- Refined component CSS entry architecture for more predictable per-component style consumption and cleaner dependency flow.
+- Tightened style quality by manually normalizing selector ordering and duplicate blocks across core entries.
+- Kept `no-descending-specificity` override only for interaction-matrix files (`accordion`, `checkbox`, `radio`, `switch`) and documented this as an explicit design choice in-file.
+
+### Fixed
+
+- Updated command-palette line-clamp declarations for better standard + webkit compatibility and cleaner lint behavior.
+- Stabilized consumer-level CSS export smoke coverage for component JS auto-CSS entrypoints.
+
 ## 1.19.0
 
 ### Added

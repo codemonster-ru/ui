@@ -82,16 +82,17 @@
     box-shadow var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
 }
 
+.vf-dropdown__item:focus-visible {
+  outline: none;
+  border-color: var(--vf-dropdown-item-focus-border-color);
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+  color: var(--vf-dropdown-item-focus-color);
+}
+
 .vf-dropdown__item:hover:not(.vf-dropdown__item--active) {
   color: var(--vf-selectable-hover-color);
   border-color: transparent;
   background: var(--vf-selectable-hover-background);
-}
-
-.vf-dropdown__menu--default .vf-dropdown__item:hover:not(.vf-dropdown__item--active) {
-  color: var(--vf-dropdown-item-default-hover-color);
-  border-color: transparent;
-  background: var(--vf-dropdown-item-default-hover-background);
 }
 
 .vf-dropdown__menu--default .vf-dropdown__item--active {
@@ -100,10 +101,10 @@
   background: var(--vf-dropdown-item-default-active-background);
 }
 
-.vf-dropdown__menu--pills .vf-dropdown__item:hover:not(.vf-dropdown__item--active) {
-  color: var(--vf-dropdown-item-pills-hover-color);
+.vf-dropdown__menu--default .vf-dropdown__item:hover:not(.vf-dropdown__item--active) {
+  color: var(--vf-dropdown-item-default-hover-color);
   border-color: transparent;
-  background: var(--vf-dropdown-item-pills-hover-background);
+  background: var(--vf-dropdown-item-default-hover-background);
 }
 
 .vf-dropdown__menu--pills .vf-dropdown__item--active {
@@ -112,9 +113,8 @@
   background: var(--vf-dropdown-item-pills-active-background);
 }
 
-.vf-dropdown__item:focus-visible {
-  outline: none;
-  border-color: var(--vf-dropdown-item-focus-border-color);
-  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
-  color: var(--vf-dropdown-item-focus-color);
+.vf-dropdown__menu--pills .vf-dropdown__item:hover:not(.vf-dropdown__item--active) {
+  color: var(--vf-dropdown-item-pills-hover-color);
+  border-color: transparent;
+  background: var(--vf-dropdown-item-pills-hover-background);
 }

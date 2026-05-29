@@ -1,3 +1,9 @@
+/*
+ * NOTE: This file intentionally keeps state rules grouped by behavior (checked/hover/focus/invalid/disabled)
+ * for readability of the interaction matrix. We allow stylelint no-descending-specificity here on purpose.
+ * If you refactor this file, preserve visual behavior first and remove the override only with full state QA.
+ */
+
 .vf-switch {
   position: relative;
   display: inline-flex;
@@ -7,30 +13,6 @@
   min-width: 0;
   color: var(--vf-color-text);
   cursor: pointer;
-}
-
-.vf-switch--disabled {
-  cursor: not-allowed;
-}
-
-.vf-switch--disabled {
-  color: var(--vf-switch-disabled-color);
-}
-
-.vf-switch--disabled .vf-switch__control {
-  border-color: var(--vf-switch-track-disabled-border-color);
-  background: var(--vf-switch-track-disabled-background);
-}
-
-.vf-switch--disabled.vf-switch--checked .vf-switch__control, .vf-switch--disabled .vf-switch__input:checked + .vf-switch__control {
-  border-color: var(--vf-switch-track-disabled-border-color);
-  background: var(--vf-switch-track-disabled-background);
-}
-
-.vf-switch--disabled .vf-switch__thumb, .vf-switch--disabled.vf-switch--checked .vf-switch__thumb, .vf-switch--disabled .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb {
-  border-color: var(--vf-switch-thumb-disabled-border-color);
-  background: var(--vf-switch-thumb-disabled-background);
-  color: var(--vf-switch-thumb-disabled-color);
 }
 
 .vf-switch__input {
@@ -52,8 +34,11 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid var(--vf-selection-control-border-color);
-  background: var(--vf-selection-control-background);
+  width: var(--vf-switch-width-md);
+  height: var(--vf-switch-height-md);
+  border: 1px solid var(--vf-switch-track-border-color);
+  border-radius: 999px;
+  background: var(--vf-switch-track-background);
   transition:
     background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     border-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
@@ -68,14 +53,6 @@
   font-size: var(--vf-control-font-size-md);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
-}
-
-.vf-switch__control {
-  width: var(--vf-switch-width-md);
-  height: var(--vf-switch-height-md);
-  border: 1px solid var(--vf-switch-track-border-color);
-  border-radius: 999px;
-  background: var(--vf-switch-track-background);
 }
 
 .vf-switch__thumb {
@@ -135,27 +112,30 @@
   color: var(--vf-switch-thumb-checked-color);
 }
 
-.vf-switch:hover:not(.vf-switch--disabled) .vf-switch__control {
-  border-color: var(--vf-switch-track-hover-border-color);
-  background: var(--vf-switch-track-background);
-}
-
-.vf-switch:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control, .vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
-  border-color: var(--vf-switch-track-checked-hover-border-color);
-  background: var(--vf-switch-track-checked-hover-background);
-}
-
 .vf-switch__input:focus-visible + .vf-switch__control {
   outline: none;
   border-color: var(--vf-switch-track-focus-border-color);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
+.vf-switch:hover:not(.vf-switch--disabled) .vf-switch__control {
+  border-color: var(--vf-switch-track-hover-border-color);
+  background: var(--vf-switch-track-background);
+}
+
+.vf-switch:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
+  border-color: var(--vf-switch-track-checked-hover-border-color);
+  background: var(--vf-switch-track-checked-hover-background);
+}
+
 .vf-switch--invalid .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
-.vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__control, .vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control, .vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
+.vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-hover-border-color);
 }
 
@@ -169,16 +149,22 @@
   border-color: var(--vf-switch-track-focus-border-color);
 }
 
-.vf-switch--static .vf-switch__control, .vf-switch--static .vf-switch__input:checked + .vf-switch__control, .vf-switch--static.vf-switch--checked .vf-switch__control {
+.vf-switch--static .vf-switch__control,
+.vf-switch--static .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--static.vf-switch--checked .vf-switch__control {
   border-color: var(--vf-switch-track-static-border-color);
   background: var(--vf-switch-track-background);
 }
 
-.vf-switch--static.vf-switch--invalid .vf-switch__control, .vf-switch--static.vf-switch--invalid .vf-switch__input:checked + .vf-switch__control, .vf-switch--static.vf-switch--invalid.vf-switch--checked .vf-switch__control {
+.vf-switch--static.vf-switch--invalid .vf-switch__control,
+.vf-switch--static.vf-switch--invalid .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--static.vf-switch--invalid.vf-switch--checked .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
-.vf-switch--static:hover:not(.vf-switch--disabled) .vf-switch__control, .vf-switch--static:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control, .vf-switch--static.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
+.vf-switch--static:hover:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--static:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--static.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-hover-border-color);
   background: var(--vf-switch-track-background);
 }
@@ -192,7 +178,8 @@
   border-color: var(--vf-switch-track-focus-border-color);
 }
 
-.vf-switch--static .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb, .vf-switch--static.vf-switch--checked .vf-switch__thumb {
+.vf-switch--static .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
+.vf-switch--static.vf-switch--checked .vf-switch__thumb {
   border-color: var(--vf-switch-thumb-background);
   background: var(--vf-switch-thumb-background);
   box-shadow: var(--vf-switch-thumb-shadow);
@@ -278,4 +265,24 @@ html[data-vf-theme='dark']
 
 .vf-switch--lg .vf-switch__content {
   font-size: var(--vf-control-font-size-lg);
+}
+
+.vf-switch--disabled {
+  cursor: not-allowed;
+  color: var(--vf-switch-disabled-color);
+}
+
+.vf-switch--disabled .vf-switch__control,
+.vf-switch--disabled.vf-switch--checked .vf-switch__control,
+.vf-switch--disabled .vf-switch__input:checked + .vf-switch__control {
+  border-color: var(--vf-switch-track-disabled-border-color);
+  background: var(--vf-switch-track-disabled-background);
+}
+
+.vf-switch--disabled .vf-switch__thumb,
+.vf-switch--disabled.vf-switch--checked .vf-switch__thumb,
+.vf-switch--disabled .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb {
+  border-color: var(--vf-switch-thumb-disabled-border-color);
+  background: var(--vf-switch-thumb-disabled-background);
+  color: var(--vf-switch-thumb-disabled-color);
 }

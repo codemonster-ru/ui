@@ -10,7 +10,16 @@ const ownBases = {
   'inline.css': ['inline'],
   'section.css': ['section'],
   'grid.css': ['grid'],
-  'app-shell.css': ['app-shell', 'header-area', 'subheader-area', 'sidebar-area', 'content-area', 'content-subheader-area', 'aside-area', 'footer-area'],
+  'app-shell.css': [
+    'app-shell',
+    'header-area',
+    'subheader-area',
+    'sidebar-area',
+    'content-area',
+    'content-subheader-area',
+    'aside-area',
+    'footer-area',
+  ],
   'document-layout.css': ['document-layout'],
   'error-layout.css': ['error-layout'],
   'header-area.css': ['header-area'],
@@ -23,13 +32,13 @@ const ownBases = {
 const baseOf = (token) => token.split(/--|__/)[0];
 let failures = 0;
 
-for (const fileName of readdirSync(entriesDir).filter((name) => name.endsWith('.css')).sort()) {
+for (const fileName of readdirSync(entriesDir)
+  .filter((name) => name.endsWith('.css'))
+  .sort()) {
   const css = readFileSync(join(entriesDir, fileName), 'utf8');
   const expected = new Set(ownBases[fileName] ?? [basename(fileName, '.css')]);
 
-  const classBases = new Set(
-    [...css.matchAll(/\.vf-([a-z0-9-]+)/g)].map((m) => baseOf(m[1]))
-  );
+  const classBases = new Set([...css.matchAll(/\.vf-([a-z0-9-]+)/g)].map((m) => baseOf(m[1])));
 
   for (const classBase of classBases) {
     if (!expected.has(classBase)) {

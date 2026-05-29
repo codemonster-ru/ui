@@ -58,14 +58,14 @@
   padding-left: var(--vf-nav-menu-collapse-inset-level-0-padding);
 }
 
-.vf-nav-menu:not(.vf-nav-menu--simple) .vf-nav-menu__collapse--level-0 {
-  margin-left: 0;
-  padding-left: 0;
-}
-
 .vf-nav-menu--simple .vf-nav-menu__collapse--level-0 {
   margin-left: var(--vf-nav-menu-collapse-inset-simple-level-0-margin);
   padding-left: var(--vf-nav-menu-collapse-inset-simple-level-0-padding);
+}
+
+.vf-nav-menu:not(.vf-nav-menu--simple) .vf-nav-menu__collapse--level-0 {
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .vf-nav-menu__collapse:not(.vf-nav-menu__collapse--level-0) {
@@ -130,13 +130,16 @@
   align-items: center;
   width: 100%;
   min-width: 0;
+  min-height: var(--vf-nav-menu-current-item-min-height);
+  justify-content: space-between;
+  padding: var(--vf-nav-menu-current-item-padding);
   border: 1px solid transparent;
-  border-radius: var(--vf-radius-control);
+  border-radius: var(--vf-nav-menu-item-radius);
   background: transparent;
   font-size: var(--vf-control-font-size-md);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
-  color: var(--vf-selectable-color);
+  color: var(--vf-nav-menu-item-color);
   text-align: left;
   text-decoration: none;
   cursor: pointer;
@@ -145,14 +148,6 @@
     color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     border-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
     box-shadow var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
-}
-
-.vf-nav-menu__item {
-  min-height: var(--vf-nav-menu-current-item-min-height);
-  justify-content: space-between;
-  padding: var(--vf-nav-menu-current-item-padding);
-  border-radius: var(--vf-nav-menu-item-radius);
-  color: var(--vf-nav-menu-item-color);
 }
 
 .vf-nav-menu__item--top {
@@ -164,17 +159,17 @@
   width: calc(100% - var(--vf-nav-menu-leading-icon-column-size) - var(--vf-nav-menu-item-gap));
 }
 
-.vf-nav-menu__item:hover:not(:disabled, .vf-nav-menu__item--active) {
-  color: var(--vf-nav-menu-current-item-hover-color);
-  border-color: transparent;
-  background: var(--vf-nav-menu-current-item-hover-background);
-}
-
 .vf-nav-menu__item:focus-visible {
   outline: none;
   color: var(--vf-nav-menu-item-focus-color);
   border-color: var(--vf-nav-menu-item-focus-border-color);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+}
+
+.vf-nav-menu__item:hover:not(:disabled, .vf-nav-menu__item--active) {
+  color: var(--vf-nav-menu-current-item-hover-color);
+  border-color: transparent;
+  background: var(--vf-nav-menu-current-item-hover-background);
 }
 
 .vf-nav-menu__item--active {

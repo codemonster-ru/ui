@@ -1,9 +1,5 @@
 @import './icon-button.css';
 
-.vf-input {
-  width: 100%;
-}
-
 .vf-input-wrap {
   position: relative;
   display: flex;
@@ -11,8 +7,25 @@
   width: 100%;
 }
 
-.vf-input-wrap .vf-input {
+.vf-input {
   width: 100%;
+  min-height: var(--vf-control-height-md);
+  padding: var(--vf-field-padding-md);
+  border: 1px solid var(--vf-input-border-color);
+  border-radius: var(--vf-radius-control);
+  background: var(--vf-input-background);
+  color: var(--vf-input-color);
+  font-size: var(--vf-control-font-size-md);
+  font-weight: var(--vf-text-body-font-weight);
+  line-height: var(--vf-text-body-line-height);
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.vf-input::placeholder {
+  color: var(--vf-input-placeholder-color);
 }
 
 .vf-input-wrap__icon {
@@ -52,31 +65,8 @@
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
-.vf-input {
-  min-height: var(--vf-control-height-md);
-  padding: var(--vf-field-padding-md);
-  border: 1px solid var(--vf-input-border-color);
-  border-radius: var(--vf-radius-control);
-  background: var(--vf-input-background);
-  color: var(--vf-input-color);
-  font-size: var(--vf-control-font-size-md);
-  font-weight: var(--vf-text-body-font-weight);
-  line-height: var(--vf-text-body-line-height);
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
-}
-
-.vf-input::placeholder {
-  color: var(--vf-input-placeholder-color);
-}
-
-.vf-input:hover:not(:disabled, .vf-input--invalid, :focus, :focus-visible) {
-  border-color: var(--vf-input-hover-border-color);
-}
-
-.vf-input:focus, .vf-input:focus-visible {
+.vf-input:focus,
+.vf-input:focus-visible {
   border-color: var(--vf-input-focus-border-color);
 }
 
@@ -84,6 +74,14 @@
   outline: none;
   border-radius: var(--vf-radius-control);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+}
+
+.vf-input--invalid {
+  border-color: var(--vf-input-invalid-border-color);
+}
+
+.vf-input--invalid:hover:not(:disabled, :focus, :focus-visible) {
+  border-color: var(--vf-input-hover-border-color);
 }
 
 .vf-input--sm {
@@ -96,14 +94,6 @@
   min-height: var(--vf-control-height-lg);
   padding: var(--vf-field-padding-lg);
   font-size: var(--vf-control-font-size-lg);
-}
-
-.vf-input--invalid {
-  border-color: var(--vf-input-invalid-border-color);
-}
-
-.vf-input--invalid:hover:not(:disabled, :focus, :focus-visible) {
-  border-color: var(--vf-input-hover-border-color);
 }
 
 .vf-input--with-leading {
@@ -132,6 +122,12 @@
 
 .vf-input-wrap--with-trailing-and-clear .vf-input {
   padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-md);
+}
+
+.vf-input:disabled {
+  cursor: not-allowed;
+  background: var(--vf-input-disabled-background);
+  color: var(--vf-input-disabled-color);
 }
 
 .vf-input-wrap--sm.vf-input-wrap--with-trailing-and-clear .vf-input {
@@ -174,11 +170,6 @@
   inset-inline-end: var(--vf-field-adornment-offset-lg);
 }
 
-.vf-input:disabled {
-  cursor: not-allowed;
-}
-
-.vf-input:disabled {
-  background: var(--vf-input-disabled-background);
-  color: var(--vf-input-disabled-color);
+.vf-input:hover:not(:disabled, .vf-input--invalid, :focus, :focus-visible) {
+  border-color: var(--vf-input-hover-border-color);
 }
