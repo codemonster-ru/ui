@@ -32,6 +32,7 @@ Migration note:
 The following items are listed in this section:
 
 - `VfPlayground`: UI component for sandbox/component demo modes.
+- `VfPlaygroundAsync`: async wrapper with built-in skeleton fallback while the playground chunk is loading.
 - `VfPlaygroundPlugin`: Vue plugin that registers `VfPlayground`.
 - `VfPlaygroundPluginOptions`: plugin options contract.
 - `componentName?`: custom global component name.

@@ -10,6 +10,7 @@ const rootDir = __dirname;
 const stylesDir = resolve(rootDir, 'src/styles');
 const styleEntriesDir = resolve(stylesDir, 'entries');
 const componentJsEntries = [
+  'async',
   'accordion',
   'alert',
   'badge',
@@ -111,6 +112,7 @@ export default defineConfig({
         index: resolve(__dirname, 'src/index.ts'),
         'foundation-api': resolve(__dirname, 'src/foundation/index.ts'),
         'theme-api': resolve(__dirname, 'src/theme/public.ts'),
+        async: resolve(__dirname, 'src/async.ts'),
         accordion: resolve(__dirname, 'src/entries/accordion.ts'),
         alert: resolve(__dirname, 'src/entries/alert.ts'),
         badge: resolve(__dirname, 'src/entries/badge.ts'),

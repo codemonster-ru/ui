@@ -10,6 +10,12 @@ Import statement for this component.
 import { VfPlayground } from '@codemonster-ru/vueforge-playground/ui';
 ```
 
+When the playground chunk is lazy-loaded, you can use the built-in async wrapper:
+
+```ts
+import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
+```
+
 ## Basic
 
 Basic usage example.

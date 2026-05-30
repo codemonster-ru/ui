@@ -4,6 +4,7 @@
     ref="rootElement"
     class="vf-codeblock"
     :class="{ 'vf-codeblock--disabled': disabled }"
+    :style="rootStyle"
     :data-theme="resolvedTheme"
     :aria-label="ariaLabel"
   >
@@ -65,6 +66,7 @@ const props = withDefaults(defineProps<CodeBlockProps>(), {
   disabled: false,
   wrap: false,
   highlight: true,
+  containerMinHeight: '',
   minHeight: '',
   maxHeight: '',
   ariaLabel: 'Code block',
@@ -121,6 +123,16 @@ const preStyle = computed(() => {
 
   if (props.minHeight) {
     style.minHeight = props.minHeight;
+  }
+
+  return style;
+});
+
+const rootStyle = computed(() => {
+  const style: Record<string, string> = {};
+
+  if (props.containerMinHeight) {
+    style.minHeight = props.containerMinHeight;
   }
 
   return style;

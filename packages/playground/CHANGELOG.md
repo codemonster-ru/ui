@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.4.0
+
+### Added
+
+- Added `VfPlaygroundAsync` export in `@codemonster-ru/vueforge-playground/ui` for lazy-loading the playground UI with built-in skeleton fallback.
+
+### Changed
+
+- Updated `@codemonster-ru/vueforge-core` dependency range to `^1.22.0` to consume the new core async utility subpath.
+
+### Docs
+
+- Updated API/features docs to include `VfPlaygroundAsync` usage.
+
 ## 2.3.0
 
 ### Added

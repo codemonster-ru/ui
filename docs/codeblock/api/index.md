@@ -91,6 +91,7 @@ The following items are listed in this section:
 - `theme?: 'inherit' | 'light' | 'dark'`
 - `wrap?: boolean`
 - `highlight?: boolean`
+- `containerMinHeight?: string`
 - `minHeight?: string`
 - `maxHeight?: string`
 - `disabled?: boolean`

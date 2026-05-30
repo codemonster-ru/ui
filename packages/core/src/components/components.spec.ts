@@ -150,6 +150,21 @@ describe('core primitives', () => {
     }
   });
 
+  it('applies normalizeContentSpacing class when enabled', () => {
+    const wrapper = mount(VfSkeletonGate, {
+      props: {
+        normalizeContentSpacing: true,
+      },
+      slots: {
+        default: '<section class="content">Loaded</section>',
+      },
+    });
+
+    expect(wrapper.find('.vf-skeleton-gate__content').classes()).toContain(
+      'vf-skeleton-gate__content--normalize-spacing'
+    );
+  });
+
   it('renders button variants and respects native attributes', async () => {
     const wrapper = mount(VfButton, {
       props: {

@@ -137,6 +137,7 @@ onBeforeUnmount(() => {
               :ready="codeblockReady"
               :min-height="block.skeletonMinHeight"
               :preserve-last-height="true"
+              :normalize-content-spacing="true"
               radius="var(--vf-layout-section-radius)"
             >
               <VfCodeBlock
@@ -145,6 +146,7 @@ onBeforeUnmount(() => {
                 :code="block.code"
                 :max-height="block.maxHeight"
                 :theme="resolvedTheme"
+                :container-min-height="`${block.skeletonMinHeight}px`"
                 show-line-numbers
               />
               <template #skeleton>
@@ -179,8 +181,7 @@ onBeforeUnmount(() => {
 }
 
 .demo-replay-button {
-  justify-self: start;
-  align-self: center;
+  place-self: center start;
   inline-size: auto;
   width: auto;
   min-width: max-content;

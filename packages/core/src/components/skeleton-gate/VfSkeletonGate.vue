@@ -3,7 +3,10 @@
     <div
       ref="contentRef"
       class="vf-skeleton-gate__content"
-      :class="{ 'vf-skeleton-gate__content--ready': ready }"
+      :class="{
+        'vf-skeleton-gate__content--ready': ready,
+        'vf-skeleton-gate__content--normalize-spacing': normalizeContentSpacing,
+      }"
       :style="contentStyle"
     >
       <slot />
@@ -30,6 +33,7 @@ const props = withDefaults(
     minHeight?: string | number;
     reserveHeight?: string | number;
     preserveLastHeight?: boolean;
+    normalizeContentSpacing?: boolean;
     radius?: string;
     fadeDuration?: number;
   }>(),
@@ -38,6 +42,7 @@ const props = withDefaults(
     minHeight: undefined,
     reserveHeight: undefined,
     preserveLastHeight: false,
+    normalizeContentSpacing: false,
     radius: 'var(--vf-radius-overlay)',
     fadeDuration: 220,
   }

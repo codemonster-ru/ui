@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-playground",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Vue 3 playground UI adapter for the VueForge playground core runtime.",
   "type": "module",
   "license": "MIT",
@@ -45,7 +45,7 @@
   "dependencies": {
     "@codemonster-ru/vueforge-playground-core": "^1.1.0",
     "@codemonster-ru/vueforge-codeblock": "^3.0.0",
-    "@codemonster-ru/vueforge-core": "^1.18.1"
+    "@codemonster-ru/vueforge-core": "^1.22.0"
   },
   "devDependencies": {
     "@vue/test-utils": "^2.4.6",
