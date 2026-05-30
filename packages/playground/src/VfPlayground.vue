@@ -123,6 +123,8 @@ const props = withDefaults(defineProps<VfPlaygroundRuntimeProps>(), {
 const emit = defineEmits<{
   run: [];
   error: [error: PlaygroundError];
+  ready: [];
+  'preview-ready': [];
 }>();
 
 type PlaygroundTab = 'code' | 'preview' | 'console';
@@ -289,6 +291,7 @@ let themeObserver: MutationObserver | null = null;
 let mediaTheme: MediaQueryList | null = null;
 let onMediaThemeChange: ((event: MediaQueryListEvent) => void) | null = null;
 let sessionIframe: HTMLIFrameElement | null = null;
+let readyEmitted = false;
 const SANDBOX_THEME_STYLE_ID = 'vf-playground-theme-sync';
 
 function loadCreatePlaygroundSession(): Promise<CreatePlaygroundSession> {
@@ -411,6 +414,19 @@ function syncSandboxThemeToIframe(): void {
   `;
 }
 
+function emitReadyOnce(): void {
+  if (readyEmitted) {
+    return;
+  }
+  readyEmitted = true;
+  emit('ready');
+}
+
+function emitPreviewReady(): void {
+  emit('preview-ready');
+  emitReadyOnce();
+}
+
 function setActiveTab(tab: 'code' | 'preview' | 'console'): void {
   if (!isSandboxMode.value && tab === 'console') {
     activeTab.value = 'preview';
@@ -449,13 +465,18 @@ function bindPreviewIframe(el: Element | ComponentPublicInstance | null): void {
 
   const nextIframe = el instanceof HTMLIFrameElement ? el : null;
   if (iframeRef.value) {
-    iframeRef.value.removeEventListener('load', syncSandboxThemeToIframe);
+    iframeRef.value.removeEventListener('load', handleIframeLoad);
   }
   iframeRef.value = nextIframe;
   if (nextIframe) {
-    nextIframe.addEventListener('load', syncSandboxThemeToIframe);
+    nextIframe.addEventListener('load', handleIframeLoad);
     void initSession();
   }
+}
+
+function handleIframeLoad(): void {
+  syncSandboxThemeToIframe();
+  emitPreviewReady();
 }
 
 function appendConsole(event: ConsoleEvent): void {
@@ -576,6 +597,7 @@ async function runSession(options?: { keepActiveTab?: boolean }): Promise<void> 
   try {
     await session.run();
     syncSandboxThemeToIframe();
+    emitPreviewReady();
   } finally {
     isRunning.value = false;
   }
@@ -597,6 +619,8 @@ onMounted(async () => {
   if (isSandboxMode.value) {
     await initSession();
     syncSandboxThemeToIframe();
+  } else {
+    emitPreviewReady();
   }
 });
 
