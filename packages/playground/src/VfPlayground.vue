@@ -292,6 +292,8 @@ let mediaTheme: MediaQueryList | null = null;
 let onMediaThemeChange: ((event: MediaQueryListEvent) => void) | null = null;
 let sessionIframe: HTMLIFrameElement | null = null;
 let readyEmitted = false;
+let mountedReadyFallbackRaf1: number | null = null;
+let mountedReadyFallbackRaf2: number | null = null;
 const SANDBOX_THEME_STYLE_ID = 'vf-playground-theme-sync';
 
 function loadCreatePlaygroundSession(): Promise<CreatePlaygroundSession> {
@@ -423,8 +425,42 @@ function emitReadyOnce(): void {
 }
 
 function emitPreviewReady(): void {
+  cancelMountedReadyFallback();
   emit('preview-ready');
   emitReadyOnce();
+}
+
+function scheduleMountedReadyFallback(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  // Preserve event semantics: in sandbox mode, ready should come from preview-ready.
+  // Fallback is only for component mode in case preview-ready is never emitted.
+  if (isSandboxMode.value) {
+    return;
+  }
+  cancelMountedReadyFallback();
+  mountedReadyFallbackRaf1 = window.requestAnimationFrame(() => {
+    mountedReadyFallbackRaf1 = null;
+    mountedReadyFallbackRaf2 = window.requestAnimationFrame(() => {
+      mountedReadyFallbackRaf2 = null;
+      emitReadyOnce();
+    });
+  });
+}
+
+function cancelMountedReadyFallback(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  if (mountedReadyFallbackRaf1 !== null) {
+    window.cancelAnimationFrame(mountedReadyFallbackRaf1);
+    mountedReadyFallbackRaf1 = null;
+  }
+  if (mountedReadyFallbackRaf2 !== null) {
+    window.cancelAnimationFrame(mountedReadyFallbackRaf2);
+    mountedReadyFallbackRaf2 = null;
+  }
 }
 
 function setActiveTab(tab: 'code' | 'preview' | 'console'): void {
@@ -622,6 +658,8 @@ onMounted(async () => {
   } else {
     emitPreviewReady();
   }
+
+  scheduleMountedReadyFallback();
 });
 
 watch(
@@ -748,8 +786,9 @@ onBeforeUnmount(() => {
 
   session?.dispose();
   session = null;
+  cancelMountedReadyFallback();
   if (iframeRef.value) {
-    iframeRef.value.removeEventListener('load', syncSandboxThemeToIframe);
+    iframeRef.value.removeEventListener('load', handleIframeLoad);
   }
   sessionIframe = null;
   themeObserver?.disconnect();

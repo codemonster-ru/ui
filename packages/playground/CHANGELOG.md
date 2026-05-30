@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.4.1
+
+### Fixed
+
+- Fixed build-time external resolution for `@codemonster-ru/vueforge-core/*` imports in playground UI entry, so CI/package builds no longer fail on `@codemonster-ru/vueforge-core/async`.
+- Refined `ready` fallback semantics in `VfPlayground`:
+  - `ready` in sandbox mode remains driven by `preview-ready`,
+  - mounted fallback is now component-mode only and deferred by two `requestAnimationFrame` ticks,
+  - fallback is canceled once `preview-ready` is emitted.
+- Fixed iframe load listener cleanup to remove the exact `handleIframeLoad` handler on unmount.
+
+### Tests
+
+- Added regression coverage for component-mode event order (`preview-ready` before `ready`).
+- Added regression coverage to ensure mounted ready fallback frames are not scheduled in sandbox mode.
+
 ## 2.4.0
 
 ### Added
