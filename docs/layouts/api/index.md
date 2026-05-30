@@ -13,6 +13,22 @@ This section provides a quick overview before the detailed subsections below.
 
 Public API surface of `@codemonster-ru/vueforge-layouts`.
 
+JS subpath exports (component entry + auto CSS):
+
+- `@codemonster-ru/vueforge-layouts/container`
+- `@codemonster-ru/vueforge-layouts/stack`
+- `@codemonster-ru/vueforge-layouts/inline`
+- `@codemonster-ru/vueforge-layouts/section`
+- `@codemonster-ru/vueforge-layouts/grid`
+- `@codemonster-ru/vueforge-layouts/app-shell`
+- `@codemonster-ru/vueforge-layouts/document-layout`
+- `@codemonster-ru/vueforge-layouts/error-layout`
+- `@codemonster-ru/vueforge-layouts/header-area`
+- `@codemonster-ru/vueforge-layouts/sidebar-area`
+- `@codemonster-ru/vueforge-layouts/content-area`
+- `@codemonster-ru/vueforge-layouts/aside-area`
+- `@codemonster-ru/vueforge-layouts/footer-area`
+
 ## Plugin
 
 The following items are listed in this section:
@@ -99,6 +115,12 @@ The code snippet below illustrates this section.
 import { VfAppShell, VfHeaderArea, VfContentArea } from '@codemonster-ru/vueforge-layouts';
 ```
 
+```ts
+import VfAppShell from '@codemonster-ru/vueforge-layouts/app-shell';
+import VfHeaderArea from '@codemonster-ru/vueforge-layouts/header-area';
+import VfContentArea from '@codemonster-ru/vueforge-layouts/content-area';
+```
+
 ## CSS Exports
 
 The following items are listed in this section:
@@ -122,3 +144,8 @@ Per-layout entries:
 - `content-area.css`
 - `aside-area.css`
 - `footer-area.css`
+
+Notes:
+
+- JS component subpaths auto-import their matching CSS entry.
+- Root import `@codemonster-ru/vueforge-layouts` keeps manual CSS control.
