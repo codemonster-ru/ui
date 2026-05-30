@@ -125,6 +125,12 @@ async function flushThemeSync(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
+async function flushAnimationFrames(count = 2): Promise<void> {
+  for (let index = 0; index < count; index += 1) {
+    await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
+  }
+}
+
 describe('VfPlayground', () => {
   it('applies minHeight and height to container style', () => {
     const wrapper = mount(VfPlayground, {
@@ -200,6 +206,33 @@ describe('VfPlayground', () => {
     expect(wrapper.emitted('preview-ready')).toBeTruthy();
     expect(wrapper.emitted('ready')).toBeTruthy();
     expect(wrapper.emitted('ready')?.length).toBe(1);
+  });
+
+  it('emits preview-ready before ready in component mode', async () => {
+    const sequence: string[] = [];
+    const Demo = defineComponent({
+      name: 'DemoReadyOrder',
+      setup() {
+        return () => h('div', 'ready-order');
+      }
+    });
+
+    mount(VfPlayground, {
+      props: {
+        mode: 'component',
+        component: markRaw(Demo),
+        onPreviewReady: () => sequence.push('preview-ready'),
+        onReady: () => sequence.push('ready')
+      },
+      global: testGlobal
+    });
+
+    await flushThemeSync();
+    await flushAnimationFrames(2);
+
+    expect(sequence.length).toBeGreaterThan(0);
+    expect(sequence[0]).toBe('preview-ready');
+    expect(sequence).toContain('ready');
   });
 
   it('throws clear dev error when component mode has no component', () => {
@@ -473,5 +506,19 @@ describe('VfPlayground', () => {
     expect(wrapper.emitted('preview-ready')).toBeTruthy();
     expect(wrapper.emitted('ready')).toBeTruthy();
     expect(wrapper.emitted('ready')?.length).toBe(1);
+  });
+
+  it('does not schedule mounted ready fallback frames in sandbox mode', async () => {
+    const rafSpy = vi.spyOn(window, 'requestAnimationFrame');
+    const wrapper = mount(VfPlayground, {
+      props: baseSandboxProps,
+      global: testGlobal
+    });
+
+    await flushThemeSync();
+
+    expect(rafSpy).not.toHaveBeenCalled();
+    wrapper.unmount();
+    rafSpy.mockRestore();
   });
 });
