@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-layouts",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Layout primitives, shell components, and responsive composables for Vue 3 applications.",
   "type": "module",
   "license": "MIT",
@@ -28,6 +28,58 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./container": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/container.js"
+    },
+    "./stack": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/stack.js"
+    },
+    "./inline": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/inline.js"
+    },
+    "./section": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/section.js"
+    },
+    "./grid": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/grid.js"
+    },
+    "./app-shell": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/app-shell.js"
+    },
+    "./document-layout": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/document-layout.js"
+    },
+    "./error-layout": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/error-layout.js"
+    },
+    "./header-area": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/header-area.js"
+    },
+    "./sidebar-area": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/sidebar-area.js"
+    },
+    "./content-area": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/content-area.js"
+    },
+    "./aside-area": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/aside-area.js"
+    },
+    "./footer-area": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/footer-area.js"
     },
     "./breakpoints.css": "./dist/breakpoints.css",
     "./base.css": "./dist/base.css",
