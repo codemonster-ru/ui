@@ -12,6 +12,14 @@
   transition: opacity var(--vf-skeleton-gate-fade-duration) var(--vf-skeleton-gate-fade-easing);
 }
 
+.vf-skeleton-gate__content--normalize-spacing > :first-child {
+  margin-block-start: 0;
+}
+
+.vf-skeleton-gate__content--normalize-spacing > :last-child {
+  margin-block-end: 0;
+}
+
 .vf-skeleton-gate__content--ready {
   opacity: 1;
 }

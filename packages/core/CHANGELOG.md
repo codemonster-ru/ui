@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.22.0
+
+### Added
+
+- Added new async utility export `@codemonster-ru/vueforge-core/async` with `createAsyncWithSkeleton` for reusable lazy-loading wrappers with built-in skeleton fallback.
+- Added `normalizeContentSpacing` prop to `VfSkeletonGate` to normalize outer margins of direct slotted children and reduce skeleton/content height mismatch.
+
+### Changed
+
+- Published `./async` through component-style auto-CSS proxy flow (`dist/auto/async.js`) with dedicated `async.css` entry that imports `skeleton.css`.
+- Extended release smoke coverage so component JS auto-CSS checks also validate the `./async` subpath contract.
+
+### Docs
+
+- Added async loading guide: `SkeletonGate + Async Recipe`.
+- Updated Skeleton Gate docs (API + features) with `normalizeContentSpacing` behavior and usage.
+
 ## 1.21.0
 
 ### Added

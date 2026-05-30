@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-codeblock",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "Standalone Vue 3 code block component for the VueForge ecosystem with syntax highlighting and light/dark theming.",
   "license": "MIT",
   "author": "Kirill Kolesnikov",

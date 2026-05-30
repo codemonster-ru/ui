@@ -58,6 +58,7 @@ export interface CodeBlockProps {
   disabled?: boolean;
   wrap?: boolean;
   highlight?: boolean;
+  containerMinHeight?: string;
   minHeight?: string;
   maxHeight?: string;
   ariaLabel?: string;

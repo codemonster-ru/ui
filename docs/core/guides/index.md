@@ -45,6 +45,12 @@ The following items are listed in this section:
 
 Start with foundation/composables (`useBreakpointValue`, `useScrollLock`), then migrate component by component.
 
+### Async Loading + Ready Gating
+
+For heavy lazy-loaded UI (playgrounds, editors, large demo blocks), use the dedicated recipe:
+
+- [SkeletonGate + Async Recipe](/core/guides/skeleton-gate-async-recipe)
+
 ## Limitations
 
 The following items are listed in this section:

@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.4.0
+
+### Added
+
+- Added optional `containerMinHeight` prop to `VfCodeBlock` for setting minimum height on the outer container (useful for skeleton/content height stability in gated async flows).
+- Added regression coverage for `containerMinHeight` style application on the root container.
+
+### Docs
+
+- Updated CodeBlock API docs to include `containerMinHeight`.
+
 ## 3.3.0
 
 ### Added
