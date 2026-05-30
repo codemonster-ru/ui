@@ -55,6 +55,7 @@ export {
   useScrollLock,
 } from './foundation';
 export { createThemePreset, defaultThemePreset } from './theme/public';
+export { createAsyncWithSkeleton } from './async';
 export type {
   VfBadgeTone,
   VfBreadcrumbItem,
@@ -91,3 +92,4 @@ export type {
   VfBreakpointValue,
   VfBreakpointValues,
 } from './foundation';
+export type { CreateAsyncWithSkeletonOptions } from './async';

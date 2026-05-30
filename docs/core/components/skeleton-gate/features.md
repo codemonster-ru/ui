@@ -10,7 +10,12 @@ The code snippet below illustrates this section.
 
 ```vue
 <template>
-  <VfSkeletonGate :ready="ready" :reserve-height="180" :preserve-last-height="true">
+  <VfSkeletonGate
+    :ready="ready"
+    :reserve-height="180"
+    :preserve-last-height="true"
+    :normalize-content-spacing="true"
+  >
     <template #default>
       <article style="padding: 16px;">Loaded content</article>
     </template>
@@ -28,3 +33,5 @@ import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
 const ready = ref(false);
 </script>
 ```
+
+Use `normalizeContentSpacing` when the gated content has outer margins (for example `VfCodeBlock`) and you need tighter skeleton-to-content height matching.

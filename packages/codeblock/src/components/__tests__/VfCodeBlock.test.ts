@@ -272,6 +272,18 @@ body {
     expect(source).toContain('.vf-codeblock:last-child');
   });
 
+  it('applies containerMinHeight to root container style', () => {
+    const wrapper = mount(VfCodeBlock, {
+      props: {
+        code: 'const value = 1;',
+        language: 'ts',
+        containerMinHeight: '360px',
+      },
+    });
+
+    expect(wrapper.attributes('style')).toContain('min-height: 360px;');
+  });
+
   it('emits copy with raw code payload', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal('navigator', { clipboard: { writeText } });

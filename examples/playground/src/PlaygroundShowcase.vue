@@ -19,9 +19,10 @@
               :ready="playgroundReady"
               :min-height="260"
               :preserve-last-height="true"
+              :normalize-content-spacing="true"
               radius="var(--vf-layout-section-radius)"
             >
-              <VfPlayground
+              <VfPlaygroundAsync
                 :files="singleFileExample"
                 entry="/index.html"
                 framework="html"
@@ -49,9 +50,10 @@
               :ready="playgroundReady"
               :min-height="260"
               :preserve-last-height="true"
+              :normalize-content-spacing="true"
               radius="var(--vf-layout-section-radius)"
             >
-              <VfPlayground
+              <VfPlaygroundAsync
                 :files="multiFileExample"
                 entry="/main.js"
                 framework="vanilla"
@@ -79,9 +81,10 @@
               :ready="playgroundReady"
               :min-height="260"
               :preserve-last-height="true"
+              :normalize-content-spacing="true"
               radius="var(--vf-layout-section-radius)"
             >
-              <VfPlayground
+              <VfPlaygroundAsync
                 mode="component"
                 :component="componentModeDemo"
                 :component-files="componentModeFiles"
@@ -128,7 +131,7 @@ import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import { VfSkeleton } from '@codemonster-ru/vueforge-core/skeleton';
 import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
 import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
-import { VfPlayground } from '@codemonster-ru/vueforge-playground/ui';
+import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
 import customResolverSmokeSource from './vitepress-demos/custom-resolver-smoke.ts?raw';
@@ -302,8 +305,7 @@ function onError(error: {
 }
 
 .demo-replay-button {
-  justify-self: start;
-  align-self: center;
+  place-self: center start;
   inline-size: auto;
   width: auto;
   min-width: max-content;

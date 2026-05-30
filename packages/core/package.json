@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -217,6 +217,10 @@
     "./theme": {
       "types": "./dist/theme-api.d.ts",
       "import": "./dist/theme-api.js"
+    },
+    "./async": {
+      "types": "./dist/async.d.ts",
+      "import": "./dist/auto/async.js"
     }
   },
   "scripts": {
