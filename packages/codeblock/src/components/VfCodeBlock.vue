@@ -174,27 +174,38 @@ const renderHighlight = async (
 ) => {
   const requestId = (renderRequestId += 1);
 
-  if (!highlight) {
-    renderedLines.value = renderPlainCodeLines(code);
-    emitReadyOnce();
-    return;
-  }
+  try {
+    if (!highlight) {
+      renderedLines.value = renderPlainCodeLines(code);
+      return;
+    }
 
-  const hasHighlightedCode = renderedLines.value.some((line) => line.includes('vf-codeblock__shiki-token'));
+    const hasHighlightedCode = renderedLines.value.some((line) => line.includes('vf-codeblock__shiki-token'));
 
-  if (!hasHighlightedCode) {
-    renderedLines.value = renderPlainCodeLines(code);
-  }
+    if (!hasHighlightedCode) {
+      renderedLines.value = renderPlainCodeLines(code);
+    }
 
-  const { highlightCodeLines } = await loadHighlightRuntime();
-  const highlightedLines = await highlightCodeLines(language, code, theme, highlight, {
-    allowedLanguages: effectiveAllowedLanguages.value,
-    fallbackLanguage: props.languageFallback,
-  });
+    const { highlightCodeLines } = await loadHighlightRuntime();
+    const highlightedLines = await highlightCodeLines(language, code, theme, highlight, {
+      allowedLanguages: effectiveAllowedLanguages.value,
+      fallbackLanguage: props.languageFallback,
+    });
 
-  if (requestId === renderRequestId) {
-    renderedLines.value = highlightedLines;
-    emitReadyOnce();
+    if (requestId === renderRequestId) {
+      renderedLines.value = highlightedLines;
+    }
+  } catch (error) {
+    if (requestId === renderRequestId) {
+      renderedLines.value = renderPlainCodeLines(code);
+    }
+    if (import.meta.env.DEV) {
+      console.warn('[VfCodeBlock] Highlight runtime failed, rendering plain code fallback.', error);
+    }
+  } finally {
+    if (requestId === renderRequestId) {
+      emitReadyOnce();
+    }
   }
 };
 

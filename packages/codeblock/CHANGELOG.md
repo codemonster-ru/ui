@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.4.1
+
+### Fixed
+
+- Hardened highlight render flow in `VfCodeBlock`:
+  - added guarded fallback to plain-code rendering when async highlight runtime fails,
+  - preserved one-time `ready` emission via request-id-safe `finally` path,
+  - prevents stuck loading states when highlight module/runtime throws.
+
 ## 3.4.0
 
 ### Added
