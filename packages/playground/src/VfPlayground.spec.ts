@@ -179,6 +179,29 @@ describe('VfPlayground', () => {
     expect(createSessionMock).not.toHaveBeenCalled();
   });
 
+  it('emits ready and preview-ready in component mode', async () => {
+    const Demo = defineComponent({
+      name: 'DemoReadyEvents',
+      setup() {
+        return () => h('div', 'ready');
+      }
+    });
+
+    const wrapper = mount(VfPlayground, {
+      props: {
+        mode: 'component',
+        component: markRaw(Demo)
+      },
+      global: testGlobal
+    });
+
+    await flushThemeSync();
+
+    expect(wrapper.emitted('preview-ready')).toBeTruthy();
+    expect(wrapper.emitted('ready')).toBeTruthy();
+    expect(wrapper.emitted('ready')?.length).toBe(1);
+  });
+
   it('throws clear dev error when component mode has no component', () => {
     expect(() =>
       mount(VfPlayground, {
@@ -433,5 +456,22 @@ describe('VfPlayground', () => {
       /import\s+\{[^}]*createPlaygroundSession[^}]*\}\s+from\s+['"]@codemonster-ru\/vueforge-playground-core['"]/
     );
     expect(source).toContain("import('@codemonster-ru/vueforge-playground-core')");
+  });
+
+  it('emits ready and preview-ready on sandbox iframe load', async () => {
+    const wrapper = mount(VfPlayground, {
+      props: baseSandboxProps,
+      global: testGlobal
+    });
+
+    await flushThemeSync();
+    const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
+    ensureIframeDocument(iframe);
+    iframe.dispatchEvent(new Event('load'));
+    await flushThemeSync();
+
+    expect(wrapper.emitted('preview-ready')).toBeTruthy();
+    expect(wrapper.emitted('ready')).toBeTruthy();
+    expect(wrapper.emitted('ready')?.length).toBe(1);
   });
 });

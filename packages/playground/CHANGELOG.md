@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.0
+
+### Added
+
+- Added new `VfPlayground` emits: `preview-ready` (preview became ready) and `ready` (first ready state reached once).
+- Added regression tests for `ready` / `preview-ready` in both `component` and `sandbox` modes.
+
 ## 2.2.0
 
 ### Added

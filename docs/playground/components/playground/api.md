@@ -40,6 +40,8 @@ Emitted component events and their payload shapes.
 | --- | --- | --- | --- |
 | `run` | `—` | `void` | Emitted when sandbox run starts. |
 | `error` | `PlaygroundError` | `void` | Emitted when runtime error is produced. |
+| `preview-ready` | `—` | `void` | Emitted when preview is ready (component preview mounted or sandbox iframe preview updated). |
+| `ready` | `—` | `void` | Emitted once when playground reaches first ready state. |
 
 ## Slots
 
