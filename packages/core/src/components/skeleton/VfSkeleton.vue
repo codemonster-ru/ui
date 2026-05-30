@@ -1,5 +1,5 @@
 <template>
-  <div class="vf-skeleton" :style="rootStyle" aria-hidden="true" />
+  <div class="vf-skeleton" :class="{ 'vf-skeleton--animated': props.animated }" :style="rootStyle" aria-hidden="true" />
 </template>
 
 <script setup lang="ts">
@@ -31,6 +31,5 @@ const toCssLength = (value: string | number | undefined): string | undefined => 
 const rootStyle = computed(() => ({
   minHeight: toCssLength(props.minHeight),
   borderRadius: props.radius,
-  animation: props.animated ? 'vf-skeleton-shimmer 1.15s linear infinite' : 'none',
 }));
 </script>

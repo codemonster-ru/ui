@@ -1,9 +1,15 @@
 .vf-skeleton-gate {
+  --vf-skeleton-gate-fade-duration: 220ms;
+  --vf-skeleton-gate-fade-easing: ease;
+  --vf-skeleton-gate-overflow: hidden;
+
   position: relative;
+  overflow: var(--vf-skeleton-gate-overflow);
 }
 
 .vf-skeleton-gate__content {
   opacity: 0;
+  transition: opacity var(--vf-skeleton-gate-fade-duration) var(--vf-skeleton-gate-fade-easing);
 }
 
 .vf-skeleton-gate__content--ready {
@@ -14,4 +20,5 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  transition: opacity var(--vf-skeleton-gate-fade-duration) var(--vf-skeleton-gate-fade-easing);
 }

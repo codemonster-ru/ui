@@ -39,6 +39,14 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../packages/core/src/theme/public.ts', import.meta.url))
       },
       {
+        find: /^@codemonster-ru\/vueforge-core\/skeleton$/,
+        replacement: fileURLToPath(new URL('../../packages/core/src/entries/skeleton.ts', import.meta.url))
+      },
+      {
+        find: /^@codemonster-ru\/vueforge-core\/skeleton-gate$/,
+        replacement: fileURLToPath(new URL('../../packages/core/src/entries/skeleton-gate.ts', import.meta.url))
+      },
+      {
         find: /^@codemonster-ru\/vueforge-layouts$/,
         replacement: fileURLToPath(new URL('../../packages/layouts/src/index.ts', import.meta.url))
       },

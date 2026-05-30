@@ -10,7 +10,7 @@ The code snippet below illustrates this section.
 
 ```vue
 <template>
-  <VfSkeletonGate :ready="ready" :min-height="180">
+  <VfSkeletonGate :ready="ready" :reserve-height="180" :preserve-last-height="true">
     <template #default>
       <article style="padding: 16px;">Loaded content</article>
     </template>
