@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.2.0
+
+### Added
+
+- Added explicit CSS exports for point usage: `@codemonster-ru/vueforge-playground/playground.css` and `@codemonster-ru/vueforge-playground/critical.css`.
+- Added smoke coverage to verify CSS export paths resolve in published package artifacts.
+
+### Changed
+
+- Updated package export surface for per-entry usage so consumers can load only required styles.
+
 ## 2.1.0
 
 ### Added

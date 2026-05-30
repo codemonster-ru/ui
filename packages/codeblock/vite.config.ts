@@ -3,7 +3,7 @@ import dts from 'vite-plugin-dts';
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { cpSync } from 'node:fs';
+import { cpSync, mkdirSync, writeFileSync } from 'node:fs';
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 
@@ -21,6 +21,12 @@ export default defineConfig({
       closeBundle() {
         cpSync(resolve(rootDir, 'src/codeblock.css'), resolve(rootDir, 'dist/codeblock.css'));
         cpSync(resolve(rootDir, 'src/critical.css'), resolve(rootDir, 'dist/critical.css'));
+        const autoDir = resolve(rootDir, 'dist/auto');
+        mkdirSync(autoDir, { recursive: true });
+        writeFileSync(
+          resolve(autoDir, 'view.js'),
+          "import '../view.css';\nexport { default } from '../view.js';\nexport * from '../view.js';\n",
+        );
       },
     },
   ],
@@ -40,10 +46,12 @@ export default defineConfig({
     emptyOutDir: true,
     cssCodeSplit: true,
     lib: {
-      entry: resolve(rootDir, 'src/index.ts'),
-      name: 'VfCodeBlock',
-      fileName: (format) => (format === 'es' ? 'index.js' : 'index.umd.cjs'),
-      formats: ['es', 'umd'],
+      entry: {
+        view: resolve(rootDir, 'src/view.ts'),
+        highlight: resolve(rootDir, 'src/highlight.ts'),
+      },
+      fileName: (format, entryName) => (format === 'es' ? `${entryName}.js` : `${entryName}.cjs`),
+      formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: ['vue', '@codemonster-ru/vueforge-icons'],

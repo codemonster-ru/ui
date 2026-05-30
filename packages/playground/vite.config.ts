@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'node:path';
-import { cpSync } from 'node:fs';
+import { cpSync, mkdirSync, writeFileSync } from 'node:fs';
 
 export default defineConfig({
   plugins: [
@@ -11,6 +11,12 @@ export default defineConfig({
       closeBundle() {
         cpSync(resolve(__dirname, 'src/playground.css'), resolve(__dirname, 'dist/playground.css'));
         cpSync(resolve(__dirname, 'src/critical.css'), resolve(__dirname, 'dist/critical.css'));
+        const autoDir = resolve(__dirname, 'dist/auto');
+        mkdirSync(autoDir, { recursive: true });
+        writeFileSync(
+          resolve(autoDir, 'ui.js'),
+          "import '../index.css';\nexport * from '../ui.js';\n",
+        );
       }
     }
   ],

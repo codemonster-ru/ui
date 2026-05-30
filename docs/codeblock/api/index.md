@@ -18,6 +18,9 @@ Subpath exports:
 
 - `@codemonster-ru/vueforge-codeblock/view` (component/plugin-oriented entry)
 - `@codemonster-ru/vueforge-codeblock/highlight` (highlight helpers)
+- `@codemonster-ru/vueforge-codeblock/style.css`
+- `@codemonster-ru/vueforge-codeblock/codeblock.css`
+- `@codemonster-ru/vueforge-codeblock/critical.css`
 
 Migration note:
 
@@ -117,3 +120,10 @@ The following items are listed in this section:
 The following items are listed in this section:
 
 - `@codemonster-ru/vueforge-codeblock/style.css`
+- `@codemonster-ru/vueforge-codeblock/codeblock.css`
+- `@codemonster-ru/vueforge-codeblock/critical.css`
+
+Notes:
+
+- `@codemonster-ru/vueforge-codeblock/view` auto-imports component CSS.
+- `@codemonster-ru/vueforge-codeblock/highlight` does not import UI CSS.

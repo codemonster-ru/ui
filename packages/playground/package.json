@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-playground",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Vue 3 playground UI adapter for the VueForge playground core runtime.",
   "type": "module",
   "license": "MIT",
@@ -26,7 +26,7 @@
   "exports": {
     "./ui": {
       "types": "./dist/ui.d.ts",
-      "import": "./dist/ui.js"
+      "import": "./dist/auto/ui.js"
     },
     "./runtime": {
       "types": "./dist/runtime.d.ts",
@@ -62,7 +62,8 @@
     "lint": "eslint .",
     "prepack": "npm run build",
     "smoke:css-export": "node ./scripts/smoke-css-export.mjs",
-    "test": "npm run smoke:css-export && vitest run --passWithNoTests",
+    "smoke:consumer-auto-css": "node ./scripts/smoke-consumer-auto-css.mjs",
+    "test": "npm run smoke:css-export && npm run smoke:consumer-auto-css && vitest run --passWithNoTests",
     "typecheck": "vue-tsc --noEmit"
   },
   "publishConfig": {

@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-codeblock",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Standalone Vue 3 code block component for the VueForge ecosystem with syntax highlighting and light/dark theming.",
   "license": "MIT",
   "author": "Kirill Kolesnikov",
@@ -23,35 +23,35 @@
     "url": "https://github.com/codemonster-ru/vueforge/issues"
   },
   "type": "module",
-  "main": "./dist/index.umd.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "style": "./dist/index.css",
+  "main": "./dist/view.cjs",
+  "module": "./dist/view.js",
+  "types": "./dist/view.d.ts",
+  "style": "./dist/view.css",
   "sideEffects": [
     "**/*.css"
   ],
   "exports": {
     "./view": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/view.d.ts",
+        "default": "./dist/auto/view.js"
       },
       "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.umd.cjs"
+        "types": "./dist/view.d.ts",
+        "default": "./dist/view.cjs"
       }
     },
     "./highlight": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/highlight.d.ts",
+        "default": "./dist/highlight.js"
       },
       "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.umd.cjs"
+        "types": "./dist/highlight.d.ts",
+        "default": "./dist/highlight.cjs"
       }
     },
-    "./style.css": "./dist/index.css",
+    "./style.css": "./dist/view.css",
     "./codeblock.css": "./dist/codeblock.css",
     "./critical.css": "./dist/critical.css"
   },
@@ -69,7 +69,8 @@
     "prepack": "npm run build",
     "typecheck": "vue-tsc --noEmit",
     "smoke:css-export": "node ./scripts/smoke-css-export.mjs",
-    "test": "npm run smoke:css-export && vitest run"
+    "smoke:consumer-auto-css": "node ./scripts/smoke-consumer-auto-css.mjs",
+    "test": "npm run smoke:css-export && npm run smoke:consumer-auto-css && vitest run"
   },
   "peerDependencies": {
     "vue": "^3.4.0"

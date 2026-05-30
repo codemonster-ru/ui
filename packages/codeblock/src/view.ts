@@ -1,3 +1,6 @@
+import './critical.css';
+import './codeblock.css';
+
 export { default } from './index';
 export { default as VfCodeBlock } from './components/VfCodeBlock.vue';
 export {
