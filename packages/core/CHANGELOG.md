@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.20.1
+
+### Fixed
+
+- Moved `VfSkeleton` and `VfSkeletonGate` styles from local `scoped` blocks into their component CSS entries (`skeleton.css`, `skeleton-gate.css`) so subpath imports keep consistent auto-CSS behavior.
+- Updated Skeleton and Skeleton Gate docs examples to use component JS subpath imports (`@codemonster-ru/vueforge-core/skeleton` and `@codemonster-ru/vueforge-core/skeleton-gate`).
+
 ## 1.20.0
 
 ### Added
