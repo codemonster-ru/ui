@@ -290,6 +290,23 @@ body {
     vi.unstubAllGlobals();
   });
 
+  it('emits ready once after first render cycle', async () => {
+    const wrapper = mount(VfCodeBlock, {
+      props: {
+        code: 'const demo = true;',
+        language: 'ts',
+      },
+    });
+
+    await flushHighlight(wrapper);
+    expect(wrapper.emitted('ready')).toBeTruthy();
+    expect(wrapper.emitted('ready')).toHaveLength(1);
+
+    await wrapper.setProps({ code: 'const changed = true;' });
+    await flushHighlight(wrapper);
+    expect(wrapper.emitted('ready')).toHaveLength(1);
+  });
+
   it('keeps copy action available when header is hidden', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal('navigator', { clipboard: { writeText } });

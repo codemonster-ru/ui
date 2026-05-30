@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.3.0
+
+### Added
+
+- Added new `VfCodeBlock` emit: `ready` (fires once after first completed code render cycle).
+- Added regression coverage to verify `ready` is emitted once and not re-emitted on subsequent updates.
+
 ## 3.2.0
 
 ### Added
