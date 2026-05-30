@@ -1,1 +1,17 @@
-/* VfSkeletonGate uses scoped component styles. Intentionally no global stylesheet. */
+.vf-skeleton-gate {
+  position: relative;
+}
+
+.vf-skeleton-gate__content {
+  opacity: 0;
+}
+
+.vf-skeleton-gate__content--ready {
+  opacity: 1;
+}
+
+.vf-skeleton-gate__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}

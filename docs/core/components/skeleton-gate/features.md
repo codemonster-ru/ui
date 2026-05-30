@@ -22,7 +22,8 @@ The code snippet below illustrates this section.
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { VfSkeleton, VfSkeletonGate } from '@codemonster-ru/vueforge-core';
+import { VfSkeleton } from '@codemonster-ru/vueforge-core/skeleton';
+import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
 
 const ready = ref(false);
 </script>

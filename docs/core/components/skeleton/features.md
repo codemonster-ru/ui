@@ -17,6 +17,6 @@ The code snippet below illustrates this section.
 </template>
 
 <script setup lang="ts">
-import { VfSkeleton } from '@codemonster-ru/vueforge-core';
+import { VfSkeleton } from '@codemonster-ru/vueforge-core/skeleton';
 </script>
 ```
