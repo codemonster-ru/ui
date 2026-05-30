@@ -48,8 +48,10 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
       name: 'vueforge-layouts-copy-css-entries',
       closeBundle() {
         const distDir = resolve(__dirname, 'dist');
+        const autoDir = resolve(distDir, 'auto');
 
         mkdirSync(distDir, { recursive: true });
+        mkdirSync(autoDir, { recursive: true });
         cpSync(layoutCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'breakpoints.css'));
         cpSync(layoutCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
         cpSync(layoutCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
@@ -57,6 +59,29 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
         const styleEntriesDir = resolve(__dirname, 'src/style-entries');
         for (const entryFileName of readdirSync(styleEntriesDir).filter((name) => name.endsWith('.css'))) {
           cpSync(resolve(styleEntriesDir, entryFileName), resolve(distDir, entryFileName));
+        }
+
+        const componentEntries = [
+          ['container', 'VfContainer', 'container.css'],
+          ['stack', 'VfStack', 'stack.css'],
+          ['inline', 'VfInline', 'inline.css'],
+          ['section', 'VfSection', 'section.css'],
+          ['grid', 'VfGrid', 'grid.css'],
+          ['app-shell', 'VfAppShell', 'app-shell.css'],
+          ['document-layout', 'VfDocumentLayout', 'document-layout.css'],
+          ['error-layout', 'VfErrorLayout', 'error-layout.css'],
+          ['header-area', 'VfHeaderArea', 'header-area.css'],
+          ['sidebar-area', 'VfSidebarArea', 'sidebar-area.css'],
+          ['content-area', 'VfContentArea', 'content-area.css'],
+          ['aside-area', 'VfAsideArea', 'aside-area.css'],
+          ['footer-area', 'VfFooterArea', 'footer-area.css'],
+        ];
+
+        for (const [entryName, exportName, cssFile] of componentEntries) {
+          writeFileSync(
+            resolve(autoDir, `${entryName}.js`),
+            `import '../${cssFile}';\nexport { ${exportName} as default, ${exportName} } from '../index.js';\n`,
+          );
         }
       },
     },

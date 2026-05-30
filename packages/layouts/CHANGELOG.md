@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.13.0
+
+### Added
+
+- Added component-level JS subpath exports with automatic matching CSS loading:
+  - `@codemonster-ru/vueforge-layouts/container`
+  - `@codemonster-ru/vueforge-layouts/stack`
+  - `@codemonster-ru/vueforge-layouts/inline`
+  - `@codemonster-ru/vueforge-layouts/section`
+  - `@codemonster-ru/vueforge-layouts/grid`
+  - `@codemonster-ru/vueforge-layouts/app-shell`
+  - `@codemonster-ru/vueforge-layouts/document-layout`
+  - `@codemonster-ru/vueforge-layouts/error-layout`
+  - `@codemonster-ru/vueforge-layouts/header-area`
+  - `@codemonster-ru/vueforge-layouts/sidebar-area`
+  - `@codemonster-ru/vueforge-layouts/content-area`
+  - `@codemonster-ru/vueforge-layouts/aside-area`
+  - `@codemonster-ru/vueforge-layouts/footer-area`
+
+### Changed
+
+- Added publish proxy layer (`dist/auto/*`) for layouts component subpath entries.
+- Extended smoke checks to validate JS subpath export targets and CSS-link behavior.
+- Updated docs for layouts installation/API to reflect JS subpath usage and auto-CSS behavior.
+
 ## 1.12.0
 
 ### Changed

@@ -18,7 +18,7 @@ npm i @codemonster-ru/vueforge-layouts
 
 ## Import
 
-Import the public API from the package entry point and choose explicit style entry files.
+Import the plugin from the package entry point, or import layout components from JS subpaths with auto-CSS.
 
 ```ts
 import { createApp } from 'vue';
@@ -31,7 +31,14 @@ import '@codemonster-ru/vueforge-layouts/app-shell.css';
 createApp({}).use(VueForgeLayouts);
 ```
 
-For smaller payloads, import only required layout entries on the routes/pages where they are used.
+Component-level JS subpaths (auto-import matching component CSS):
+
+```ts
+import VfAppShell from '@codemonster-ru/vueforge-layouts/app-shell';
+import VfContainer from '@codemonster-ru/vueforge-layouts/container';
+```
+
+For full manual control, keep explicit CSS imports and load only required entries on pages where they are used.
 
 Examples:
 
