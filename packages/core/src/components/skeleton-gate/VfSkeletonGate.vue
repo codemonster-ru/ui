@@ -57,23 +57,3 @@ const overlayStyle = computed(() => ({
   transition: `opacity ${props.fadeDuration}ms ease`
 }));
 </script>
-
-<style scoped>
-.vf-skeleton-gate {
-  position: relative;
-}
-
-.vf-skeleton-gate__content {
-  opacity: 0;
-}
-
-.vf-skeleton-gate__content--ready {
-  opacity: 1;
-}
-
-.vf-skeleton-gate__overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-</style>
