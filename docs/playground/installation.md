@@ -20,7 +20,14 @@ npm i @codemonster-ru/vueforge-playground
 ## Import
 
 Import the public API from the package entry point.
+`@codemonster-ru/vueforge-playground/ui` automatically pulls its own CSS.
 
 ```ts
 import { VfPlaygroundPlugin } from '@codemonster-ru/vueforge-playground/ui';
 ```
+
+Optional manual CSS entries:
+
+- `@codemonster-ru/vueforge-playground/style.css`
+- `@codemonster-ru/vueforge-playground/playground.css`
+- `@codemonster-ru/vueforge-playground/critical.css`

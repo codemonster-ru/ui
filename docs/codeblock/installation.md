@@ -20,11 +20,17 @@ npm i @codemonster-ru/vueforge-codeblock
 ## Import
 
 Import the public API from the package entry point.
+`@codemonster-ru/vueforge-codeblock/view` automatically pulls its own CSS.
 
 ```ts
 import { createApp } from 'vue';
 import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock/view';
-import '@codemonster-ru/vueforge-codeblock/style.css';
 
 createApp({}).use(VueForgeCodeBlock);
 ```
+
+Optional manual CSS entries:
+
+- `@codemonster-ru/vueforge-codeblock/style.css`
+- `@codemonster-ru/vueforge-codeblock/codeblock.css`
+- `@codemonster-ru/vueforge-codeblock/critical.css`
