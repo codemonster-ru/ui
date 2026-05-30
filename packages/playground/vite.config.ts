@@ -44,7 +44,7 @@ export default defineConfig({
         'vue',
         '@codemonster-ru/vueforge-playground-core',
         '@codemonster-ru/vueforge-codeblock/view',
-        '@codemonster-ru/vueforge-core'
+        /^@codemonster-ru\/vueforge-core(?:\/.*)?$/
       ]
     }
   }
