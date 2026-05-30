@@ -100,6 +100,56 @@ describe('core primitives', () => {
     expect(wrapper.find('.vf-skeleton-gate__content').classes()).toContain('vf-skeleton-gate__content--ready');
   });
 
+  it('uses reserveHeight as initial placeholder size', () => {
+    const wrapper = mount(VfSkeletonGate, {
+      props: {
+        ready: false,
+        reserveHeight: 240,
+      },
+      slots: {
+        default: '<div>Loaded</div>',
+      },
+    });
+
+    expect(wrapper.attributes('style')).toContain('min-height: 240px');
+  });
+
+  it('preserves last measured height when toggling back to skeleton', async () => {
+    const originalOffsetHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
+    try {
+      Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+        configurable: true,
+        get() {
+          const element = this as HTMLElement;
+          if (element.classList.contains('vf-skeleton-gate__content')) {
+            return 312;
+          }
+          return 0;
+        },
+      });
+
+      const wrapper = mount(VfSkeletonGate, {
+        props: {
+          ready: true,
+          preserveLastHeight: true,
+        },
+        slots: {
+          default: '<div class="content">Loaded</div>',
+        },
+      });
+
+      await nextTick();
+      await wrapper.setProps({ ready: false });
+      await nextTick();
+
+      expect(wrapper.attributes('style')).toContain('min-height: 312px');
+    } finally {
+      if (originalOffsetHeight) {
+        Object.defineProperty(HTMLElement.prototype, 'offsetHeight', originalOffsetHeight);
+      }
+    }
+  });
+
   it('renders button variants and respects native attributes', async () => {
     const wrapper = mount(VfButton, {
       props: {
