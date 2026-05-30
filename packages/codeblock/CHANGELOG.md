@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.2.0
+
+### Added
+
+- Added explicit CSS exports for point usage: `@codemonster-ru/vueforge-codeblock/codeblock.css` and `@codemonster-ru/vueforge-codeblock/critical.css`.
+- Added smoke coverage to verify CSS export paths resolve in published package artifacts.
+
+### Changed
+
+- Updated package export surface for per-entry usage so consumers can load only required styles.
+
 ## 3.1.0
 
 ### Added
