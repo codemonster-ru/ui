@@ -12,7 +12,7 @@ const cssExportTargets = Object.entries(packageJson?.exports ?? {})
   .filter(([exportKey, exportTarget]) => exportKey.endsWith('.css') && typeof exportTarget === 'string')
   .map(([exportKey, exportTarget]) => [exportKey, exportTarget]);
 const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
-  .filter(([exportKey, exportTarget]) => !exportKey.endsWith('.css') && exportKey !== '.')
+  .filter(([exportKey]) => !exportKey.endsWith('.css') && exportKey !== '.')
   .map(([exportKey, exportTarget]) => {
     const importTarget =
       typeof exportTarget === 'string'
@@ -100,7 +100,9 @@ try {
 
   const cssCount = cssExportTargets.length;
   const jsCount = componentJsExportTargets.length;
-  console.log(`Smoke check passed: validated ${cssCount} CSS exports and ${jsCount} component JS exports for ${packageJson.name}.`);
+  console.log(
+    `Smoke check passed: validated ${cssCount} CSS exports and ${jsCount} component JS exports for ${packageJson.name}.`,
+  );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });
   const tarballName = `${packageJson.name.replace('@', '').replace('/', '-')}-${packageJson.version}.tgz`;
