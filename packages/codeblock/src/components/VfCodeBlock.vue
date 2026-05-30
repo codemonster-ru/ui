@@ -74,6 +74,7 @@ const props = withDefaults(defineProps<CodeBlockProps>(), {
 
 const emits = defineEmits<{
   (event: 'copy', payload: CodeBlockCopyPayload): void;
+  (event: 'ready'): void;
 }>();
 
 const copied = ref(false);
@@ -83,6 +84,7 @@ const renderedLines = ref<string[]>(renderPlainCodeLines(props.code));
 let copiedTimer: ReturnType<typeof setTimeout> | null = null;
 let themeObserver: MutationObserver | null = null;
 let renderRequestId = 0;
+let readyEmitted = false;
 let highlightRuntimePromise: Promise<
   typeof import('../highlight')
 > | null = null;
@@ -162,6 +164,7 @@ const renderHighlight = async (
 
   if (!highlight) {
     renderedLines.value = renderPlainCodeLines(code);
+    emitReadyOnce();
     return;
   }
 
@@ -179,7 +182,16 @@ const renderHighlight = async (
 
   if (requestId === renderRequestId) {
     renderedLines.value = highlightedLines;
+    emitReadyOnce();
   }
+};
+
+const emitReadyOnce = () => {
+  if (readyEmitted || typeof window === 'undefined') {
+    return;
+  }
+  readyEmitted = true;
+  emits('ready');
 };
 
 onServerPrefetch(() => renderHighlight());
