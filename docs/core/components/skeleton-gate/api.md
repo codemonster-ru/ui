@@ -10,6 +10,8 @@ Component props and their default values.
 | --- | --- | --- | --- |
 | `ready?` | `boolean` | `false` | Toggles from placeholder overlay to content. |
 | `minHeight?` | `string \| number` | `undefined` | Minimum container height (number treated as px). |
+| `reserveHeight?` | `string \| number` | `undefined` | Fixed estimated height for placeholder state (number treated as px). |
+| `preserveLastHeight?` | `boolean` | `false` | Reuses the last measured content height when switching back to skeleton state. |
 | `radius?` | `string` | `var(--vf-radius-overlay)` | Shared border radius for content and overlay. |
 | `fadeDuration?` | `number` | `220` | Fade transition duration in milliseconds. |
 

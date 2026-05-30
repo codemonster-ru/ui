@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.21.0
+
+### Added
+
+- Added advanced Skeleton Gate height-stability controls: `reserveHeight` and `preserveLastHeight` for smoother loading transitions and reduced layout shift.
+
+### Changed
+
+- Updated `VfSkeleton` shimmer rendering to a softer, tokenized overlay-based animation for cleaner visual output in dark themes.
+- Extended Skeleton theming token surface for shimmer geometry and trajectory control (`inset`, `width`, `rotate`, `start-x`, `end-x`, `blur`).
+- Synced playground example resolver aliases so core skeleton subpath imports are always sourced from current package source during local development.
+
+### Docs
+
+- Updated Skeleton and Skeleton Gate documentation (API/features/theming) to reflect current props, usage patterns, and token set.
+
 ## 1.20.1
 
 ### Fixed

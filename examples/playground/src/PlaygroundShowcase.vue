@@ -5,19 +5,38 @@
         <VfStack>
         <section class="demo-block">
           <div class="demo-block__header">
+            <h2>Skeleton Preview Control</h2>
+            <button class="demo-replay-button" type="button" @click="replayPlaygroundSkeleton">Replay skeleton</button>
+          </div>
+        </section>
+
+        <section class="demo-block">
+          <div class="demo-block__header">
             <h2>Single File Example</h2>
           </div>
           <VfSection class="demo-surface" surface>
-            <VfPlayground
-              :files="singleFileExample"
-              entry="/index.html"
-              framework="html"
-              :autorun="true"
-              :show-code="true"
-              theme="inherit"
-              @run="onRun"
-              @error="onError"
-            />
+            <VfSkeletonGate
+              :ready="playgroundReady"
+              :min-height="260"
+              :preserve-last-height="true"
+              radius="var(--vf-layout-section-radius)"
+            >
+              <VfPlayground
+                :files="singleFileExample"
+                entry="/index.html"
+                framework="html"
+                :autorun="true"
+                :show-code="true"
+                theme="inherit"
+                @ready="onPlaygroundReady"
+                @preview-ready="onPlaygroundReady"
+                @run="onRun"
+                @error="onError"
+              />
+              <template #skeleton>
+                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+              </template>
+            </VfSkeletonGate>
           </VfSection>
         </section>
 
@@ -26,16 +45,28 @@
             <h2>Multi File Example</h2>
           </div>
           <VfSection class="demo-surface" surface>
-            <VfPlayground
-              :files="multiFileExample"
-              entry="/main.js"
-              framework="vanilla"
-              :autorun="true"
-              :show-code="true"
-              theme="inherit"
-              @run="onRun"
-              @error="onError"
-            />
+            <VfSkeletonGate
+              :ready="playgroundReady"
+              :min-height="260"
+              :preserve-last-height="true"
+              radius="var(--vf-layout-section-radius)"
+            >
+              <VfPlayground
+                :files="multiFileExample"
+                entry="/main.js"
+                framework="vanilla"
+                :autorun="true"
+                :show-code="true"
+                theme="inherit"
+                @ready="onPlaygroundReady"
+                @preview-ready="onPlaygroundReady"
+                @run="onRun"
+                @error="onError"
+              />
+              <template #skeleton>
+                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+              </template>
+            </VfSkeletonGate>
           </VfSection>
         </section>
 
@@ -44,15 +75,27 @@
             <h2>Component Mode Example</h2>
           </div>
           <VfSection class="demo-surface" surface>
-            <VfPlayground
-              mode="component"
-              :component="componentModeDemo"
-              :component-files="componentModeFiles"
-              component-entry="DemoCard.vue"
-              theme="inherit"
-              :component-padding="24"
-              component-min-height="220px"
-            />
+            <VfSkeletonGate
+              :ready="playgroundReady"
+              :min-height="260"
+              :preserve-last-height="true"
+              radius="var(--vf-layout-section-radius)"
+            >
+              <VfPlayground
+                mode="component"
+                :component="componentModeDemo"
+                :component-files="componentModeFiles"
+                component-entry="DemoCard.vue"
+                theme="inherit"
+                :component-padding="24"
+                component-min-height="220px"
+                @ready="onPlaygroundReady"
+                @preview-ready="onPlaygroundReady"
+              />
+              <template #skeleton>
+                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+              </template>
+            </VfSkeletonGate>
           </VfSection>
         </section>
 
@@ -80,8 +123,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, h } from 'vue';
+import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
+import { VfSkeleton } from '@codemonster-ru/vueforge-core/skeleton';
+import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
 import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
 import { VfPlayground } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
@@ -185,10 +230,52 @@ document.getElementById('app')?.append(title, line);`,
 
 @media (prefers-color-scheme: dark) {
   body {
-    color-scheme: dark;
+          color-scheme: dark;
   }
 }`
 };
+
+const PLAYGROUND_SKELETON_DELAY_MS = 2500;
+const playgroundReady = ref(false);
+let playgroundReadyTimer: ReturnType<typeof setTimeout> | null = null;
+let ignoreReadyEventsUntil = 0;
+
+function schedulePlaygroundReady(): void {
+  if (playgroundReadyTimer) {
+    clearTimeout(playgroundReadyTimer);
+  }
+
+  playgroundReadyTimer = setTimeout(() => {
+    playgroundReady.value = true;
+    playgroundReadyTimer = null;
+  }, PLAYGROUND_SKELETON_DELAY_MS);
+}
+
+onMounted(() => {
+  ignoreReadyEventsUntil = Date.now() + PLAYGROUND_SKELETON_DELAY_MS;
+  playgroundReady.value = false;
+  schedulePlaygroundReady();
+});
+
+onBeforeUnmount(() => {
+  if (playgroundReadyTimer) {
+    clearTimeout(playgroundReadyTimer);
+    playgroundReadyTimer = null;
+  }
+});
+
+function onPlaygroundReady(): void {
+  if (Date.now() < ignoreReadyEventsUntil) {
+    return;
+  }
+  playgroundReady.value = true;
+}
+
+function replayPlaygroundSkeleton(): void {
+  ignoreReadyEventsUntil = Date.now() + PLAYGROUND_SKELETON_DELAY_MS;
+  playgroundReady.value = false;
+  schedulePlaygroundReady();
+}
 
 function onRun(): void {
   console.log('playground run');
@@ -212,5 +299,23 @@ function onError(error: {
 <style scoped>
 .demo-surface {
   min-width: 0;
+}
+
+.demo-replay-button {
+  justify-self: start;
+  align-self: center;
+  inline-size: auto;
+  width: auto;
+  min-width: max-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--vf-color-border);
+  border-radius: var(--vf-radius-control);
+  background: var(--vf-color-surface);
+  color: var(--vf-color-text);
+  padding: 0.35rem 0.65rem;
+  font: inherit;
+  cursor: pointer;
 }
 </style>

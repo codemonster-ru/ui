@@ -1,22 +1,54 @@
 .vf-skeleton {
+  --vf-skeleton-shimmer-angle: 100deg;
+  --vf-skeleton-shimmer-stop-1: 35%;
+  --vf-skeleton-shimmer-stop-2: 50%;
+  --vf-skeleton-shimmer-stop-3: 65%;
+  --vf-skeleton-shimmer-tone-1: 0%;
+  --vf-skeleton-shimmer-tone-2: 6%;
+  --vf-skeleton-shimmer-tone-3: 0%;
+  --vf-skeleton-shimmer-duration: 1.7s;
+  --vf-skeleton-shimmer-easing: ease-in-out;
+  --vf-skeleton-shimmer-iteration-count: infinite;
+  --vf-skeleton-shimmer-inset: -24% -10%;
+  --vf-skeleton-shimmer-width: 78%;
+  --vf-skeleton-shimmer-rotate: 8deg;
+  --vf-skeleton-shimmer-start-x: -170%;
+  --vf-skeleton-shimmer-end-x: 245%;
+  --vf-skeleton-shimmer-blur: 16px;
+
+  position: relative;
+  overflow: hidden;
   width: 100%;
   height: 100%;
-  background:
-    linear-gradient(
-      110deg,
-      color-mix(in srgb, var(--vf-color-surface-muted) 92%, transparent) 8%,
-      color-mix(in srgb, var(--vf-color-surface-muted) 82%, transparent) 18%,
-      color-mix(in srgb, var(--vf-color-surface-muted) 92%, transparent) 33%
-    );
-  background-size: 220% 100%;
+  background: color-mix(in srgb, var(--vf-color-surface-muted) 92%, transparent);
+}
+
+.vf-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: var(--vf-skeleton-shimmer-inset);
+  width: var(--vf-skeleton-shimmer-width);
+  transform: translateX(var(--vf-skeleton-shimmer-start-x)) rotate(var(--vf-skeleton-shimmer-rotate));
+  background: linear-gradient(
+    var(--vf-skeleton-shimmer-angle),
+    color-mix(in srgb, var(--vf-color-text) var(--vf-skeleton-shimmer-tone-1), transparent)
+      var(--vf-skeleton-shimmer-stop-1),
+    color-mix(in srgb, var(--vf-color-text) var(--vf-skeleton-shimmer-tone-2), transparent)
+      var(--vf-skeleton-shimmer-stop-2),
+    color-mix(in srgb, var(--vf-color-text) var(--vf-skeleton-shimmer-tone-3), transparent)
+      var(--vf-skeleton-shimmer-stop-3)
+  );
+  filter: blur(var(--vf-skeleton-shimmer-blur));
+  will-change: transform;
+}
+
+.vf-skeleton--animated::after {
+  animation: vf-skeleton-shimmer var(--vf-skeleton-shimmer-duration) var(--vf-skeleton-shimmer-easing)
+    var(--vf-skeleton-shimmer-iteration-count);
 }
 
 @keyframes vf-skeleton-shimmer {
-  from {
-    background-position: 100% 0;
-  }
-
   to {
-    background-position: -100% 0;
+    transform: translateX(var(--vf-skeleton-shimmer-end-x)) rotate(var(--vf-skeleton-shimmer-rotate));
   }
 }
