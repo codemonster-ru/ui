@@ -42,6 +42,7 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'vue',
+        '@codemonster-ru/vueforge-playground-core',
         '@codemonster-ru/vueforge-codeblock/view',
         /^@codemonster-ru\/vueforge-core(?:\/.*)?$/
       ]
