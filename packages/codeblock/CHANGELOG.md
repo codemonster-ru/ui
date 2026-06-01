@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.4.2
+
+### Fixed
+
+- Ensured `ready` is emitted from the finalized render path even when a previous highlight request is superseded, preventing stuck loading states in consumers waiting for first-ready semantics.
+
+### Changed
+
+- Marked auto-CSS JS proxy entries (`dist/auto/*.js`) as side effects so CSS loader wrappers are not tree-shaken by consumers.
+
 ## 3.4.1
 
 ### Fixed

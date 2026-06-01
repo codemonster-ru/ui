@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.22.1
+
+### Fixed
+
+- Stabilized `VfThemeSwitch` SSR hydration by deferring `checked` synchronization with `resolvedTheme` until `onMounted`.
+- Improved initial theme resolution in `VfThemeProvider` by reading the current root theme attribute before falling back to `initialTheme`.
+
+### Changed
+
+- Marked auto-CSS JS proxies as side effects (`dist/auto/*.js`) so bundlers retain CSS-loading entry wrappers.
+
 ## 1.22.0
 
 ### Added
