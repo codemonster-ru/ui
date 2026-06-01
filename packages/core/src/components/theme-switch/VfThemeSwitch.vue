@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, useAttrs, useSlots, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import { useTheme } from '@/composables';
 import VfButton from '@/components/button/VfButton.vue';
@@ -38,18 +38,28 @@ const attrs = useAttrs();
 const slots = useSlots();
 const { resolvedTheme, setTheme } = useTheme();
 const hasContent = computed(() => Boolean(props.label || slots.default));
+// Keep SSR and initial hydration markup stable: sync from resolvedTheme after mount.
 const checked = ref(false);
 const iconName = computed(() => (checked.value ? icons.moon : icons.sun));
 const nextThemeLabel = computed(() => (checked.value ? 'Switch to light theme' : 'Switch to dark theme'));
 let pendingThemeFrame: number | null = null;
+const isMounted = ref(false);
 
 watch(
   resolvedTheme,
   (value) => {
+    if (!isMounted.value) {
+      return;
+    }
+
     checked.value = value === 'dark';
   },
-  { immediate: true },
 );
+
+onMounted(() => {
+  isMounted.value = true;
+  checked.value = resolvedTheme.value === 'dark';
+});
 
 function handleCheckedChange(value: boolean) {
   if (typeof window === 'undefined') {

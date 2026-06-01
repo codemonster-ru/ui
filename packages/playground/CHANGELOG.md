@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.4.2
+
+### Fixed
+
+- Updated build externals for the playground package so `@codemonster-ru/vueforge-playground-core` is bundled as an internal dependency path when required by UI/runtime entries.
+
+### Changed
+
+- Marked auto-CSS JS proxy entries (`dist/auto/*.js`) as side effects so UI subpath wrappers keep CSS-loading behavior in consumer builds.
+
 ## 2.4.1
 
 ### Fixed

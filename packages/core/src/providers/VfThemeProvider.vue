@@ -27,6 +27,11 @@ function getInitialMode(): VfThemeMode {
     return storedTheme;
   }
 
+  const domTheme = document.documentElement.getAttribute(attribute.value);
+  if (domTheme === 'light' || domTheme === 'dark') {
+    return domTheme;
+  }
+
   return initialTheme.value;
 }
 

@@ -203,9 +203,7 @@ const renderHighlight = async (
       console.warn('[VfCodeBlock] Highlight runtime failed, rendering plain code fallback.', error);
     }
   } finally {
-    if (requestId === renderRequestId) {
-      emitReadyOnce();
-    }
+    emitReadyOnce();
   }
 };
 

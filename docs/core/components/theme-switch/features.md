@@ -34,6 +34,13 @@ import { VfThemeSwitch } from '@codemonster-ru/vueforge-core';
 ```
 ````
 
+## Notes
+
+Additional implementation notes and caveats:
+
+- `VfThemeSwitch` is SSR-safe: initial checked state is synchronized after mount to keep hydration markup stable.
+- Theme resolution can reuse an already-present root theme attribute (`data-theme` / `data-vf-theme`) before applying fallback defaults.
+
 ## Accessibility
 
 Accessibility behavior and keyboard interactions.
@@ -56,4 +63,3 @@ Keyboard interaction follows native semantics of the rendered element or composi
 | `Shift + Tab` | Moves focus to previous focusable element. |
 | `Enter` | Toggles theme. |
 | `Space` | Toggles theme. |
-

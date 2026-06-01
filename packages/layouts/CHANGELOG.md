@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.13.1
+
+### Changed
+
+- Marked auto-CSS JS proxy entries (`dist/auto/*.js`) as side effects so component subpath wrappers reliably retain their CSS-loading behavior in consumer bundles.
+
 ## 1.13.0
 
 ### Added

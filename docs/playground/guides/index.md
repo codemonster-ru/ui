@@ -19,6 +19,7 @@ Practical integration notes, limitations, and related packages for this package.
 The following items are listed in this section:
 
 - Peer dependency: `vue ^3.4.0`.
+- When wrapping/rebundling `@codemonster-ru/vueforge-playground/ui`, keep its runtime dependency path on `@codemonster-ru/vueforge-playground-core` intact.
 
 ## Related Packages
 

@@ -26,6 +26,8 @@ Import the public API from the package entry point.
 import { VfPlaygroundPlugin } from '@codemonster-ru/vueforge-playground/ui';
 ```
 
+The `/ui` entry wrapper is intentionally side-effectful because it loads matching CSS.
+
 Optional manual CSS entries:
 
 - `@codemonster-ru/vueforge-playground/style.css`

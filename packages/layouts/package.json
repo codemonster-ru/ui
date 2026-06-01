@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-layouts",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "Layout primitives, shell components, and responsive composables for Vue 3 applications.",
   "type": "module",
   "license": "MIT",
@@ -15,7 +15,8 @@
   },
   "author": "Kirill Kolesnikov (https://github.com/kolesnikovKirill)",
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "dist/auto/*.js"
   ],
   "files": [
     "dist"
