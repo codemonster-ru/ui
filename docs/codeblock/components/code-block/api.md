@@ -34,7 +34,7 @@ Emitted component events and their payload shapes.
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
 | `copy` | `{ text: string }` | `void` | Emitted on `copy` interaction. |
-| `ready` | `—` | `void` | Emitted once after the first completed code render cycle. |
+| `ready` | `—` | `void` | Emitted once after the first finalized render attempt (highlighted output or plain-code fallback). |
 
 ## Slots
 

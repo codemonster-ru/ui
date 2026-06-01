@@ -38,6 +38,8 @@ import VfAppShell from '@codemonster-ru/vueforge-layouts/app-shell';
 import VfContainer from '@codemonster-ru/vueforge-layouts/container';
 ```
 
+Subpath wrappers are intentionally side-effectful because they load matching CSS.
+
 For full manual control, keep explicit CSS imports and load only required entries on pages where they are used.
 
 Examples:
