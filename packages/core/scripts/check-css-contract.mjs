@@ -20,7 +20,7 @@ const ownBases = {
   'icon-button.css': ['icon-button'],
   'input.css': ['input', 'input-wrap'],
   'link.css': ['link'],
-  'menu-bar.css': ['menu-bar', 'horizontal-scroller'],
+  'menu-bar.css': ['menu-bar', 'horizontal-scroller', 'floating-transition'],
   'nav-menu.css': ['nav-menu'],
   'panel.css': ['panel'],
   'popover.css': ['popover', 'floating', 'floating-transition'],
@@ -48,7 +48,19 @@ const explicitDeps = {
 };
 
 const globallyAllowed = new Set(['icon', 'icon-wrapper']);
-const baseOf = (token) => token.split(/--|__/)[0];
+const requiredSelectors = {
+  'command-palette.css': ['.vf-command-palette-transition-enter-from'],
+  'dialog.css': ['.vf-dialog-transition-enter-from'],
+  'drawer.css': ['.vf-drawer-transition-enter-from'],
+  'dropdown.css': ['.vf-floating-transition-enter-from.vf-dropdown__menu'],
+  'menu-bar.css': ['.vf-floating-transition-enter-from.vf-menu-bar__submenu'],
+  'popover.css': ['.vf-floating-transition-enter-from.vf-popover__content'],
+  'tooltip.css': ['.vf-floating-transition-enter-from.vf-tooltip__content'],
+};
+const baseOf = (token) =>
+  token
+    .replace(/-transition-(?:enter|leave)-(?:active|from|to)$/, '-transition')
+    .split(/--|__/)[0];
 
 let failures = 0;
 
@@ -62,6 +74,13 @@ for (const fileName of readdirSync(entriesDir).filter((name) => name.endsWith('.
   for (const expected of expectedImports) {
     if (!foundImports.includes(expected)) {
       console.error(`[css-contract] Missing import in ${fileName}: expected ${expected}`);
+      failures += 1;
+    }
+  }
+
+  for (const expected of requiredSelectors[fileName] ?? []) {
+    if (!css.includes(expected)) {
+      console.error(`[css-contract] Missing selector in ${fileName}: expected ${expected}`);
       failures += 1;
     }
   }

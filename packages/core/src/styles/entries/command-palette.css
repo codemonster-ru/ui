@@ -55,6 +55,22 @@
     opacity var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
 }
 
+.vf-command-palette-transition-enter-active,
+.vf-command-palette-transition-leave-active {
+  transition: none;
+}
+
+.vf-command-palette-transition-enter-from .vf-command-palette__overlay,
+.vf-command-palette-transition-leave-to .vf-command-palette__overlay {
+  opacity: 0;
+}
+
+.vf-command-palette-transition-enter-from .vf-command-palette__content,
+.vf-command-palette-transition-leave-to .vf-command-palette__content {
+  opacity: 0;
+  transform: translate3d(0, var(--vf-command-palette-enter-shift), 0);
+}
+
 .vf-command-palette__content:focus-visible {
   outline: none;
   border-color: var(--vf-dialog-content-focus-border-color);

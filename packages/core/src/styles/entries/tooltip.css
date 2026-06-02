@@ -34,6 +34,12 @@
   box-shadow: var(--vf-overlay-float-shadow);
 }
 
+.vf-floating-transition-enter-from.vf-tooltip__content,
+.vf-floating-transition-leave-to.vf-tooltip__content {
+  opacity: 0;
+  transform: translate3d(0, var(--vf-overlay-float-enter-shift), 0) scale(var(--vf-overlay-float-enter-scale));
+}
+
 .vf-tooltip__arrow {
   position: absolute;
   width: var(--vf-floating-arrow-size);

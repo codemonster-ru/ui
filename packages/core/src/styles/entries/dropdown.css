@@ -38,6 +38,12 @@
   will-change: left, top;
 }
 
+.vf-floating-transition-enter-from.vf-dropdown__menu,
+.vf-floating-transition-leave-to.vf-dropdown__menu {
+  opacity: 0;
+  transform: translate3d(0, var(--vf-overlay-float-enter-shift), 0) scale(var(--vf-overlay-float-enter-scale));
+}
+
 .vf-dropdown__arrow {
   position: absolute;
   z-index: 0;

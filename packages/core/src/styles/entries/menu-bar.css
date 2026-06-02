@@ -115,6 +115,12 @@
   min-width: 0;
 }
 
+.vf-floating-transition-enter-from.vf-menu-bar__submenu,
+.vf-floating-transition-leave-to.vf-menu-bar__submenu {
+  opacity: 0;
+  transform: translate3d(0, var(--vf-overlay-float-enter-shift), 0) scale(var(--vf-overlay-float-enter-scale));
+}
+
 .vf-menu-bar__overlay {
   position: fixed;
   inset: 0;

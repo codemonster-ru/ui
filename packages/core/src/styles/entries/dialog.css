@@ -39,6 +39,22 @@
     opacity var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
 }
 
+.vf-dialog-transition-enter-active,
+.vf-dialog-transition-leave-active {
+  transition: none;
+}
+
+.vf-dialog-transition-enter-from .vf-dialog__overlay,
+.vf-dialog-transition-leave-to .vf-dialog__overlay {
+  opacity: 0;
+}
+
+.vf-dialog-transition-enter-from .vf-dialog__content,
+.vf-dialog-transition-leave-to .vf-dialog__content {
+  opacity: 0;
+  transform: translate3d(0, var(--vf-overlay-enter-shift), 0);
+}
+
 .vf-dialog__content:focus-visible {
   outline: none;
   border-color: var(--vf-dialog-content-focus-border-color);

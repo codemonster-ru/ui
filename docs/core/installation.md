@@ -38,4 +38,5 @@ import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfDialog } from '@codemonster-ru/vueforge-core/dialog';
 ```
 
-Each component subpath import pulls matching component CSS automatically.
+Each component subpath import pulls matching component CSS automatically, including
+the transition states required by animated overlays.

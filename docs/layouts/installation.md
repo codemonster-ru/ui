@@ -39,6 +39,9 @@ import VfContainer from '@codemonster-ru/vueforge-layouts/container';
 ```
 
 Subpath wrappers are intentionally side-effectful because they load matching CSS.
+Wrappers also include CSS for components rendered internally. For example,
+`@codemonster-ru/vueforge-layouts/document-layout` loads both `container.css` and
+`document-layout.css`.
 
 For full manual control, keep explicit CSS imports and load only required entries on pages where they are used.
 

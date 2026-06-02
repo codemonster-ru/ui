@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.13.2
+
+### Fixed
+
+- Included `container.css` in the `document-layout` auto-CSS proxy because `VfDocumentLayout` renders `VfContainer` internally.
+- Expanded breakpoint aliases in published component CSS entries so responsive shell and document layout rules work with subpath imports.
+
 ## 1.13.1
 
 ### Changed

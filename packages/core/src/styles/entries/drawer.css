@@ -59,6 +59,21 @@
   transition: transform var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
 }
 
+.vf-drawer-transition-enter-active,
+.vf-drawer-transition-leave-active {
+  transition: none;
+}
+
+.vf-drawer-transition-enter-from .vf-drawer__overlay,
+.vf-drawer-transition-leave-to .vf-drawer__overlay {
+  opacity: 0;
+}
+
+.vf-drawer-transition-enter-from .vf-drawer__content,
+.vf-drawer-transition-leave-to .vf-drawer__content {
+  transform: translate3d(var(--vf-drawer-offset-x), var(--vf-drawer-offset-y), 0);
+}
+
 .vf-drawer__content:focus-visible {
   outline: none;
   border-color: var(--vf-drawer-content-focus-border-color);

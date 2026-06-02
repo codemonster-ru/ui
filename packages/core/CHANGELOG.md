@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.22.2
+
+### Fixed
+
+- Restored overlay and floating transition states in component CSS entries so auto-CSS subpath imports preserve animations.
+
 ## 1.22.1
 
 ### Fixed
