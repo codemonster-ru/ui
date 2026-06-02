@@ -7,6 +7,21 @@ import { defineConfig } from 'vitest/config';
 import { buildLayoutCssArtifacts, layoutCssArtifactPaths } from './build/layout-css-artifacts';
 import { resolveLayoutCustomMedia } from './src/theme/breakpoint-registry';
 
+function expandLayoutCustomMedia(code: string) {
+  const mediaAliasPattern = /@media\s*\(\s*(--vf-bp-[a-z0-9-]+)\s*\)/g;
+  const unknownAliases = new Set<string>();
+  const transformed = code.replace(mediaAliasPattern, (fullMatch, alias: string) => {
+    const mediaQuery = resolveLayoutCustomMedia(alias);
+    if (!mediaQuery) {
+      unknownAliases.add(alias);
+      return fullMatch;
+    }
+    return `@media ${mediaQuery}`;
+  });
+
+  return { transformed, unknownAliases };
+}
+
 function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
   return [
     {
@@ -17,18 +32,9 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
           return null;
         }
 
-        const mediaAliasPattern = /@media\s*\(\s*(--vf-bp-[a-z0-9-]+)\s*\)/g;
-        let hasUnknownAlias = false;
-        const transformed = code.replace(mediaAliasPattern, (fullMatch, alias: string) => {
-          const mediaQuery = resolveLayoutCustomMedia(alias);
-          if (!mediaQuery) {
-            hasUnknownAlias = true;
-            return fullMatch;
-          }
-          return `@media ${mediaQuery}`;
-        });
+        const { transformed, unknownAliases } = expandLayoutCustomMedia(code);
 
-        if (hasUnknownAlias) {
+        if (unknownAliases.size > 0) {
           this.warn('[vueforge-layouts-expand-custom-media] Unknown custom media alias found in styles.css');
         }
 
@@ -58,29 +64,37 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
         cpSync(resolve(__dirname, 'src/style-parts/base.css'), resolve(distDir, 'base.css'));
         const styleEntriesDir = resolve(__dirname, 'src/style-entries');
         for (const entryFileName of readdirSync(styleEntriesDir).filter((name) => name.endsWith('.css'))) {
-          cpSync(resolve(styleEntriesDir, entryFileName), resolve(distDir, entryFileName));
+          const entryCss = readFileSync(resolve(styleEntriesDir, entryFileName), 'utf8');
+          const { transformed, unknownAliases } = expandLayoutCustomMedia(entryCss);
+          if (unknownAliases.size > 0) {
+            throw new Error(
+              `Unknown custom media aliases in ${entryFileName}: ${[...unknownAliases].sort().join(', ')}`,
+            );
+          }
+          writeFileSync(resolve(distDir, entryFileName), transformed);
         }
 
-        const componentEntries = [
-          ['container', 'VfContainer', 'container.css'],
-          ['stack', 'VfStack', 'stack.css'],
-          ['inline', 'VfInline', 'inline.css'],
-          ['section', 'VfSection', 'section.css'],
-          ['grid', 'VfGrid', 'grid.css'],
-          ['app-shell', 'VfAppShell', 'app-shell.css'],
-          ['document-layout', 'VfDocumentLayout', 'document-layout.css'],
-          ['error-layout', 'VfErrorLayout', 'error-layout.css'],
-          ['header-area', 'VfHeaderArea', 'header-area.css'],
-          ['sidebar-area', 'VfSidebarArea', 'sidebar-area.css'],
-          ['content-area', 'VfContentArea', 'content-area.css'],
-          ['aside-area', 'VfAsideArea', 'aside-area.css'],
-          ['footer-area', 'VfFooterArea', 'footer-area.css'],
+        const componentEntries: Array<[string, string, string[]]> = [
+          ['container', 'VfContainer', ['container.css']],
+          ['stack', 'VfStack', ['stack.css']],
+          ['inline', 'VfInline', ['inline.css']],
+          ['section', 'VfSection', ['section.css']],
+          ['grid', 'VfGrid', ['grid.css']],
+          ['app-shell', 'VfAppShell', ['app-shell.css']],
+          ['document-layout', 'VfDocumentLayout', ['container.css', 'document-layout.css']],
+          ['error-layout', 'VfErrorLayout', ['error-layout.css']],
+          ['header-area', 'VfHeaderArea', ['header-area.css']],
+          ['sidebar-area', 'VfSidebarArea', ['sidebar-area.css']],
+          ['content-area', 'VfContentArea', ['content-area.css']],
+          ['aside-area', 'VfAsideArea', ['aside-area.css']],
+          ['footer-area', 'VfFooterArea', ['footer-area.css']],
         ];
 
-        for (const [entryName, exportName, cssFile] of componentEntries) {
+        for (const [entryName, exportName, cssFiles] of componentEntries) {
+          const cssImports = cssFiles.map((cssFile) => `import '../${cssFile}';`).join('\n');
           writeFileSync(
             resolve(autoDir, `${entryName}.js`),
-            `import '../${cssFile}';\nexport { ${exportName} as default, ${exportName} } from '../index.js';\n`,
+            `${cssImports}\nexport { ${exportName} as default, ${exportName} } from '../index.js';\n`,
           );
         }
       },
