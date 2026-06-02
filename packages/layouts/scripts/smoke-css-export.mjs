@@ -23,6 +23,9 @@ const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
     return [exportKey, importTarget];
   })
   .filter(([, importTarget]) => typeof importTarget === 'string');
+const requiredComponentCssImports = {
+  './document-layout': ['../container.css', '../document-layout.css'],
+};
 
 if (!cssExportTargets.length) {
   throw new Error('Expected at least one CSS export in package.json exports.');
@@ -78,6 +81,13 @@ try {
         `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`,
       );
     }
+
+    const css = readFileSync(join(tempDir, expectedTarPath), 'utf8');
+    if (/@media\s*\(\s*--vf-bp-/.test(css)) {
+      throw new Error(
+        `Broken CSS export: exports["${exportKey}"] target "${exportTarget}" contains unresolved custom media aliases.`,
+      );
+    }
   }
 
   for (const [exportKey, exportTarget] of componentJsExportTargets) {
@@ -95,6 +105,14 @@ try {
       throw new Error(
         `Broken JS export: exports["${exportKey}"] target "${exportTarget}" does not reference CSS import.`,
       );
+    }
+
+    for (const cssImport of requiredComponentCssImports[exportKey] ?? []) {
+      if (!proxyCode.includes(`'${cssImport}'`) && !proxyCode.includes(`"${cssImport}"`)) {
+        throw new Error(
+          `Broken JS export: exports["${exportKey}"] target "${exportTarget}" does not reference required CSS import "${cssImport}".`,
+        );
+      }
     }
   }
 

@@ -39,6 +39,12 @@
   box-shadow: var(--vf-overlay-float-shadow);
 }
 
+.vf-floating-transition-enter-from.vf-popover__content,
+.vf-floating-transition-leave-to.vf-popover__content {
+  opacity: 0;
+  transform: translate3d(0, var(--vf-overlay-float-enter-shift), 0) scale(var(--vf-overlay-float-enter-scale));
+}
+
 .vf-popover__arrow {
   position: absolute;
   width: var(--vf-floating-arrow-size);
