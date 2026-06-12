@@ -7,9 +7,11 @@ type ShikiThemeName = keyof typeof shikiThemes;
 const languageLoaders = {
   bash: () => import('@shikijs/langs/bash'),
   css: () => import('@shikijs/langs/css'),
+  dotenv: () => import('@shikijs/langs/dotenv'),
   html: () => import('@shikijs/langs/html'),
   javascript: () => import('@shikijs/langs/javascript'),
   json: () => import('@shikijs/langs/json'),
+  php: () => import('@shikijs/langs/php'),
   sass: () => import('@shikijs/langs/sass'),
   scss: () => import('@shikijs/langs/scss'),
   typescript: () => import('@shikijs/langs/typescript'),
@@ -74,6 +76,14 @@ const normalizeAllowlistLanguage = (language: string): string => {
     return 'bash';
   }
 
+  if (normalized === 'cron' || normalized === 'crontab') {
+    return 'bash';
+  }
+
+  if (normalized === 'env') {
+    return 'dotenv';
+  }
+
   if (normalized === 'js') {
     return 'javascript';
   }
@@ -130,8 +140,7 @@ const ensureLanguageLoaded = async (language: ShikiLanguageLoader) => {
 
 const resolveAllowlist = (allowedLanguages?: string[]) => new Set((allowedLanguages ?? []).map(normalizeAllowlistLanguage));
 
-const getDefaultAllowlist = () =>
-  new Set(['plaintext', 'bash', 'css', 'html', 'javascript', 'json', 'sass', 'scss', 'typescript', 'vue']);
+const getDefaultAllowlist = () => new Set(['plaintext', ...Object.keys(languageLoaders)]);
 
 const warnDisallowedLanguage = (language: string, fallbackLanguage: FallbackLanguage) => {
   if (!import.meta.env?.DEV || warnedDisallowedLanguages.has(language)) {
