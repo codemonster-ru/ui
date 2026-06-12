@@ -9,6 +9,7 @@ import VfCodeBlock from '../VfCodeBlock.vue';
 import {
   __getCodeBlockLanguageLoadAttemptsForTests,
   __resetCodeBlockHighlightRuntimeForTests,
+  highlightCodeBlock,
   preloadCodeBlockLanguages,
 } from '../../services/code-highlight';
 
@@ -92,6 +93,40 @@ describe('VfCodeBlock', () => {
     expect(wrapper.html()).toContain('interface');
     expect(wrapper.findAll('.vf-codeblock__shiki-token').length).toBeGreaterThan(0);
     expect(wrapper.text()).toContain('satisfies');
+  });
+
+  it.each([
+    ['dotenv', 'APP_ENV=production\nAPP_DEBUG=false'],
+    ['php', '<?php\nfinal class User {}\n'],
+    ['cron', '*/5 * * * * php artisan schedule:run'],
+    ['json', '{"enabled": true, "retries": 3}'],
+  ])('highlights %s content', async (language, code) => {
+    const wrapper = mount(VfCodeBlock, {
+      props: {
+        language,
+        code,
+        showHeader: false,
+        copyable: false,
+      },
+    });
+
+    await flushHighlight(wrapper);
+
+    expect(wrapper.findAll('.vf-codeblock__shiki-token').length).toBeGreaterThan(0);
+    expect(wrapper.text()).toContain(code.split('\n')[0]);
+  });
+
+  it('highlights new languages through the default helper allowlist', async () => {
+    const results = await Promise.all([
+      highlightCodeBlock('dotenv', 'APP_ENV=production'),
+      highlightCodeBlock('php', '<?php echo "ready";'),
+      highlightCodeBlock('cron', '*/5 * * * * php artisan schedule:run'),
+      highlightCodeBlock('json', '{"ready": true}'),
+    ]);
+
+    results.forEach((result) => {
+      expect(result).toContain('vf-codeblock__shiki-token');
+    });
   });
 
   it('highlights Vue directives and expressions', async () => {

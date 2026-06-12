@@ -132,6 +132,25 @@ async function flushAnimationFrames(count = 2): Promise<void> {
 }
 
 describe('VfPlayground', () => {
+  it.each([
+    ['/config/.env', 'env'],
+    ['/src/index.php', 'php'],
+    ['/config/jobs.cron', 'cron'],
+    ['/config/app.json', 'json']
+  ])('passes the %s file language to CodeBlock', (entry, language) => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        files: {
+          [entry]: 'content'
+        },
+        entry
+      },
+      global: testGlobal
+    });
+
+    expect(findCodeHost(wrapper).attributes('data-language')).toBe(language);
+  });
+
   it('applies minHeight and height to container style', () => {
     const wrapper = mount(VfPlayground, {
       props: {

@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.5.0 - 2026-06-12
+
+### Added
+
+- Added syntax highlighting support for dotenv, PHP, and cron content; cron uses the Bash grammar for embedded shell commands.
+- Added `env` and `crontab` language aliases.
+
 ## 3.4.2
 
 ### Fixed
