@@ -1,7 +1,7 @@
 ---
 title: "Error Layout"
 description: "Component documentation for Error Layout"
-order: 19
+order: 20
 ---
 
 # Error Layout

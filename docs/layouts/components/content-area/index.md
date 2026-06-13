@@ -1,7 +1,7 @@
 ---
 title: "Content Area"
 description: "Component documentation for Content Area"
-order: 22
+order: 23
 ---
 
 # Content Area

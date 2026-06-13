@@ -24,6 +24,7 @@ const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
   })
   .filter(([, importTarget]) => typeof importTarget === 'string');
 const requiredComponentCssImports = {
+  './auth-layout': ['../container.css', '../auth-layout.css'],
   './document-layout': ['../container.css', '../document-layout.css'],
 };
 

@@ -1,0 +1,95 @@
+.vf-auth-layout {
+  display: flex;
+  min-width: var(--vf-layout-min-width);
+  inline-size: var(--vf-layout-size-full);
+  color: var(--vf-color-text);
+  background: var(--vf-layout-auth-layout-background);
+  padding-block: var(--vf-layout-auth-layout-padding-block);
+}
+
+.vf-auth-layout--fill-viewport {
+  min-height: var(--vf-layout-viewport-height);
+}
+
+.vf-auth-layout__container {
+  min-width: var(--vf-layout-size-zero);
+  display: flex;
+  inline-size: var(--vf-layout-size-full);
+  flex: 1 1 auto;
+}
+
+.vf-auth-layout--centered {
+  justify-content: center;
+}
+
+.vf-auth-layout--centered .vf-auth-layout__container {
+  align-items: center;
+}
+
+.vf-auth-layout__panel {
+  inline-size: var(--vf-layout-size-full);
+  max-inline-size: var(--vf-layout-auth-layout-panel-width);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--vf-layout-auth-layout-panel-gap);
+}
+
+.vf-auth-layout__panel--surface {
+  background: var(--vf-layout-auth-layout-panel-background);
+  border: var(--vf-layout-auth-layout-panel-border);
+  border-radius: var(--vf-layout-surface-radius);
+  box-shadow: var(--vf-layout-surface-shadow);
+  padding: var(--vf-layout-auth-layout-panel-padding);
+}
+
+.vf-auth-layout__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vf-layout-auth-layout-header-gap);
+  text-align: center;
+}
+
+.vf-auth-layout__brand {
+  display: flex;
+  justify-content: center;
+}
+
+.vf-auth-layout__title {
+  margin: var(--vf-layout-size-zero);
+  font-size: var(--vf-layout-auth-layout-title-font-size);
+  line-height: var(--vf-layout-auth-layout-title-line-height);
+}
+
+.vf-auth-layout__description {
+  margin: var(--vf-layout-size-zero);
+  color: var(--vf-layout-auth-layout-description-color);
+  line-height: var(--vf-layout-auth-layout-description-line-height);
+}
+
+.vf-auth-layout__body {
+  min-width: var(--vf-layout-size-zero);
+}
+
+.vf-auth-layout__footer {
+  color: var(--vf-layout-auth-layout-footer-color);
+  line-height: var(--vf-layout-auth-layout-footer-line-height);
+  text-align: center;
+}
+
+@media (--vf-bp-xs-down) {
+  .vf-auth-layout {
+    padding-block: var(--vf-layout-size-zero);
+  }
+
+  .vf-auth-layout__container {
+    padding-inline: var(--vf-layout-size-zero);
+  }
+
+  .vf-auth-layout__panel--surface {
+    border: var(--vf-layout-size-zero);
+    border-radius: var(--vf-layout-size-zero);
+    box-shadow: none;
+    padding: var(--vf-layout-auth-layout-panel-padding-compact);
+  }
+}

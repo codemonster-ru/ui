@@ -8,6 +8,7 @@ import {
   VueForgeLayouts,
   VfAppShell,
   VfAsideArea,
+  VfAuthLayout,
   VfContainer,
   VfDocumentLayout,
   VfErrorLayout,
@@ -42,6 +43,7 @@ describe('package exports', () => {
     expect(packageJson.exports['./styles.css']).toBeUndefined();
     expect(packageJson.exports['./base.css']).toBe('./dist/base.css');
     expect(packageJson.exports['./app-shell.css']).toBe('./dist/app-shell.css');
+    expect(packageJson.exports['./auth-layout.css']).toBe('./dist/auth-layout.css');
     expect(packageJson.exports['./container.css']).toBe('./dist/container.css');
     expect(packageJson.exports['./tokens.css']).toBe('./dist/tokens.css');
     expect(packageJson.exports['./theme.css']).toBe('./dist/theme.css');
@@ -59,6 +61,7 @@ describe('package exports', () => {
     expect(VueForgeLayouts).toBeTruthy();
     expect(VfAppShell).toBeTruthy();
     expect(VfDocumentLayout).toBeTruthy();
+    expect(VfAuthLayout).toBeTruthy();
     expect(VfErrorLayout).toBeTruthy();
     expect(VfHeaderArea).toBeTruthy();
     expect(createLayoutsPreset).toBeTypeOf('function');
@@ -142,6 +145,11 @@ describe('layout theme runtime', () => {
     expect(style.textContent).toContain('--vf-layout-viewport-height: 100vh;');
     expect(style.textContent).toContain('--vf-layout-document-layout-edge-notch-width: 7px;');
     expect(style.textContent).toContain('--vf-layout-app-shell-header-sticky-z-index: 20;');
+    expect(style.textContent).toContain('--vf-layout-auth-layout-panel-width: 28rem;');
+    expect(style.textContent).toContain(
+      '--vf-layout-auth-layout-panel-padding-compact: var(--vf-layout-space-layout-roomy);',
+    );
+    expect(style.textContent).toContain('--vf-layout-auth-layout-description-color: var(--vf-color-muted);');
     expect(style.textContent).toContain('--vf-layout-error-layout-code-font-size: clamp(2.25rem, 8vw, 5.5rem);');
     expect(style.textContent).toContain('--vf-layout-error-layout-description-color: var(--vf-color-muted);');
   });
@@ -612,6 +620,57 @@ describe('document layout', () => {
 
     expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--sidebar-sticky');
     expect(wrapper.find('.vf-document-layout').classes()).toContain('vf-document-layout--aside-sticky');
+  });
+});
+
+describe('auth layout', () => {
+  it('renders auth page structure from props', () => {
+    const wrapper = mount(VfAuthLayout, {
+      props: {
+        title: 'Sign in',
+        description: 'Use your account to continue.',
+      },
+      slots: {
+        default: () => 'Form',
+      },
+    });
+
+    expect(wrapper.element.tagName).toBe('MAIN');
+    expect(wrapper.classes()).toContain('vf-auth-layout');
+    expect(wrapper.classes()).toContain('vf-auth-layout--fill-viewport');
+    expect(wrapper.classes()).toContain('vf-auth-layout--centered');
+    expect(wrapper.find('.vf-auth-layout__panel').classes()).toContain('vf-auth-layout__panel--surface');
+    expect(wrapper.find('.vf-auth-layout__title').text()).toBe('Sign in');
+    expect(wrapper.find('.vf-auth-layout__description').text()).toBe('Use your account to continue.');
+    expect(wrapper.find('.vf-auth-layout__body').text()).toBe('Form');
+  });
+
+  it('supports slot overrides and optional layout flags', () => {
+    const wrapper = mount(VfAuthLayout, {
+      props: {
+        as: 'section',
+        fillViewport: false,
+        centered: false,
+        surface: false,
+      },
+      slots: {
+        brand: () => 'Brand',
+        title: () => 'Create account',
+        description: () => 'Start your workspace.',
+        default: () => 'Registration form',
+        footer: () => 'Already have an account?',
+      },
+    });
+
+    expect(wrapper.element.tagName).toBe('SECTION');
+    expect(wrapper.classes()).not.toContain('vf-auth-layout--fill-viewport');
+    expect(wrapper.classes()).not.toContain('vf-auth-layout--centered');
+    expect(wrapper.find('.vf-auth-layout__panel').classes()).not.toContain('vf-auth-layout__panel--surface');
+    expect(wrapper.find('.vf-auth-layout__brand').text()).toBe('Brand');
+    expect(wrapper.find('.vf-auth-layout__title').text()).toBe('Create account');
+    expect(wrapper.find('.vf-auth-layout__description').text()).toBe('Start your workspace.');
+    expect(wrapper.find('.vf-auth-layout__body').text()).toBe('Registration form');
+    expect(wrapper.find('.vf-auth-layout__footer').text()).toBe('Already have an account?');
   });
 });
 
