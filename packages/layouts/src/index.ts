@@ -9,6 +9,7 @@ export { default as VfGrid } from './primitives/VfGrid.vue';
 
 export { default as VfAppShell } from './shell/VfAppShell.vue';
 export { default as VfDocumentLayout } from './shell/VfDocumentLayout.vue';
+export { default as VfAuthLayout } from './shell/VfAuthLayout.vue';
 export { default as VfErrorLayout } from './shell/VfErrorLayout.vue';
 export { default as VfHeaderArea } from './shell/VfHeaderArea.vue';
 export { default as VfSidebarArea } from './shell/VfSidebarArea.vue';

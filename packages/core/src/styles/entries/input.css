@@ -60,7 +60,20 @@
   z-index: 1;
 }
 
-.vf-input-wrap__clear:focus-visible {
+.vf-input-wrap__password-toggle {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--vf-field-adornment-offset-md);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.vf-input-wrap__password-toggle--before-clear {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-md);
+}
+
+.vf-input-wrap__clear:focus-visible,
+.vf-input-wrap__password-toggle:focus-visible {
   outline: none;
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
@@ -154,6 +167,14 @@
   inset-inline-end: var(--vf-field-adornment-offset-sm);
 }
 
+.vf-input-wrap--sm .vf-input-wrap__password-toggle {
+  inset-inline-end: var(--vf-field-adornment-offset-sm);
+}
+
+.vf-input-wrap--sm .vf-input-wrap__password-toggle--before-clear {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-sm);
+}
+
 .vf-input-wrap--lg .vf-input-wrap__icon--leading {
   inset-inline-start: var(--vf-field-leading-icon-offset-lg);
 }
@@ -168,6 +189,14 @@
 
 .vf-input-wrap--lg .vf-input-wrap__clear {
   inset-inline-end: var(--vf-field-adornment-offset-lg);
+}
+
+.vf-input-wrap--lg .vf-input-wrap__password-toggle {
+  inset-inline-end: var(--vf-field-adornment-offset-lg);
+}
+
+.vf-input-wrap--lg .vf-input-wrap__password-toggle--before-clear {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-lg);
 }
 
 .vf-input:hover:not(:disabled, .vf-input--invalid, :focus, :focus-visible) {

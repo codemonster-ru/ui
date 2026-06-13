@@ -4,6 +4,9 @@ import { fileURLToPath, URL } from 'node:url';
 import { vueforgePlaygroundVirtualPlugin } from '@codemonster-ru/vueforge-playground-vite-plugin';
 
 export default defineConfig({
+  server: {
+    host: '127.0.0.1'
+  },
   plugins: [
     vue(),
     vueforgePlaygroundVirtualPlugin({

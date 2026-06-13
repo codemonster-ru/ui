@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.14.0
+
+### Added
+
+- Added `VfAuthLayout` for centered authentication screens with brand, header, body, and footer slots.
+- Added `@codemonster-ru/vueforge-layouts/auth-layout` and `auth-layout.css` subpath exports.
+- Added theme tokens for authentication layout sizing, spacing, surface, and typography.
+
+### Docs
+
+- Added `VfAuthLayout` documentation and playground examples.
+
 ## 1.13.2
 
 ### Fixed

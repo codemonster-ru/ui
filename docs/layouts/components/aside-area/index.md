@@ -1,7 +1,7 @@
 ---
 title: "Aside Area"
 description: "Component documentation for Aside Area"
-order: 23
+order: 24
 ---
 
 # Aside Area

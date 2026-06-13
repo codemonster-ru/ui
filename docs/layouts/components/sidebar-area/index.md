@@ -1,7 +1,7 @@
 ---
 title: "Sidebar Area"
 description: "Component documentation for Sidebar Area"
-order: 21
+order: 22
 ---
 
 # Sidebar Area
