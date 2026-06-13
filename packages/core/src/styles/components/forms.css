@@ -49,26 +49,43 @@
   z-index: 1;
 }
 
-.vf-input-wrap__clear.vf-icon-button {
+.vf-input-wrap__password-toggle {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--vf-field-adornment-offset-md);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.vf-input-wrap__password-toggle--before-clear {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-md);
+}
+
+.vf-input-wrap__clear.vf-icon-button,
+.vf-input-wrap__password-toggle.vf-icon-button {
   width: var(--vf-field-clear-button-size-md);
   height: var(--vf-field-clear-button-size-md);
   border-radius: var(--vf-radius-control-tight);
   color: var(--vf-color-muted);
 }
 
-.vf-input-wrap__clear.vf-icon-button svg {
+.vf-input-wrap__clear.vf-icon-button svg,
+.vf-input-wrap__password-toggle.vf-icon-button svg {
   width: var(--vf-field-icon-size);
   height: var(--vf-field-icon-size);
 }
 
 .vf-input-wrap__clear.vf-icon-button:hover:not(:disabled),
-.vf-input-wrap__clear.vf-icon-button:active:not(:disabled) {
+.vf-input-wrap__clear.vf-icon-button:active:not(:disabled),
+.vf-input-wrap__password-toggle.vf-icon-button:hover:not(:disabled),
+.vf-input-wrap__password-toggle.vf-icon-button:active:not(:disabled) {
   background: transparent;
   border-color: transparent;
   color: var(--vf-color-text);
 }
 
-.vf-input-wrap__clear:focus-visible {
+.vf-input-wrap__clear:focus-visible,
+.vf-input-wrap__password-toggle:focus-visible {
   outline: none;
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
@@ -402,12 +419,22 @@
   inset-inline-end: var(--vf-field-adornment-offset-sm);
 }
 
-.vf-input-wrap--sm .vf-input-wrap__clear.vf-icon-button {
+.vf-input-wrap--sm .vf-input-wrap__password-toggle {
+  inset-inline-end: var(--vf-field-adornment-offset-sm);
+}
+
+.vf-input-wrap--sm .vf-input-wrap__password-toggle--before-clear {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-sm);
+}
+
+.vf-input-wrap--sm .vf-input-wrap__clear.vf-icon-button,
+.vf-input-wrap--sm .vf-input-wrap__password-toggle.vf-icon-button {
   width: var(--vf-field-clear-button-size-sm);
   height: var(--vf-field-clear-button-size-sm);
 }
 
-.vf-input-wrap--sm .vf-input-wrap__clear.vf-icon-button svg {
+.vf-input-wrap--sm .vf-input-wrap__clear.vf-icon-button svg,
+.vf-input-wrap--sm .vf-input-wrap__password-toggle.vf-icon-button svg {
   width: var(--vf-field-icon-size-sm);
   height: var(--vf-field-icon-size-sm);
 }
@@ -428,12 +455,22 @@
   inset-inline-end: var(--vf-field-adornment-offset-lg);
 }
 
-.vf-input-wrap--lg .vf-input-wrap__clear.vf-icon-button {
+.vf-input-wrap--lg .vf-input-wrap__password-toggle {
+  inset-inline-end: var(--vf-field-adornment-offset-lg);
+}
+
+.vf-input-wrap--lg .vf-input-wrap__password-toggle--before-clear {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-lg);
+}
+
+.vf-input-wrap--lg .vf-input-wrap__clear.vf-icon-button,
+.vf-input-wrap--lg .vf-input-wrap__password-toggle.vf-icon-button {
   width: var(--vf-field-clear-button-size-lg);
   height: var(--vf-field-clear-button-size-lg);
 }
 
-.vf-input-wrap--lg .vf-input-wrap__clear.vf-icon-button svg {
+.vf-input-wrap--lg .vf-input-wrap__clear.vf-icon-button svg,
+.vf-input-wrap--lg .vf-input-wrap__password-toggle.vf-icon-button svg {
   width: var(--vf-field-icon-size-lg);
   height: var(--vf-field-icon-size-lg);
 }

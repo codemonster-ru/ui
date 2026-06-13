@@ -1,7 +1,7 @@
 ---
 title: "Footer Area"
 description: "Component documentation for Footer Area"
-order: 24
+order: 25
 ---
 
 # Footer Area

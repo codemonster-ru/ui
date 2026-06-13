@@ -14,6 +14,7 @@ Component props and their default values.
 | `leadingIcon?` | `IconName \| string` | — | Icon rendered before input text. |
 | `trailingIcon?` | `IconName \| string` | — | Icon rendered after input text. |
 | `clearable?` | `boolean` | `false` | Shows a clear-action control when value is present. |
+| `passwordReveal?` | `boolean` | `false` | Shows a password visibility toggle when `type="password"`. |
 
 ## Emits
 

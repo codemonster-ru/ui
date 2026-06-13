@@ -154,6 +154,93 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
+            <h2>Vf-AuthLayout</h2>
+          </div>
+          <VfTabs
+            v-if="availableAuthBreakpoints.length"
+            v-model="activeAuthBreakpoint"
+            :items="authBreakpointTabs"
+          >
+            <template #panel>
+              <article
+                v-if="activeAuthBreakpointConfig"
+                class="demo-shell-card"
+              >
+                <div class="demo-shell-card__title">
+                  {{ activeAuthBreakpointConfig.name }} ·
+                  {{ activeAuthBreakpointConfig.value }}
+                </div>
+                <div
+                  class="demo-shell-preview"
+                  :class="`demo-shell-preview--${activeAuthBreakpointConfig.name}`"
+                  :style="{ maxWidth: activeAuthBreakpointConfig.value }"
+                >
+                  <VfSection
+                    surface
+                    class="demo-auth-frame"
+                    :class="
+                      activeAuthBreakpointConfig.name === 'min' &&
+                      'demo-auth-frame--min-preview'
+                    "
+                  >
+                    <VfAuthLayout
+                      :class="
+                        activeAuthBreakpointConfig.name === 'min' &&
+                        'demo-auth-layout--min-preview'
+                      "
+                      title="Sign in"
+                      :fill-viewport="false"
+                    >
+                      <template #brand>
+                        <img
+                          class="demo-auth-brand"
+                          :src="vueForgeLogoIcon"
+                          alt="VueForge"
+                        >
+                      </template>
+
+                      <template #description>
+                        Don't have an account?
+                        <VfLink href="/" underline="none">
+                          Click here to sign up
+                        </VfLink>
+                      </template>
+
+                      <form class="demo-auth-form">
+                        <VfInput placeholder="Email" type="email" />
+                        <VfInput
+                          placeholder="Password"
+                          type="password"
+                          password-reveal
+                        />
+                        <div class="demo-auth-options">
+                          <VfCheckbox class="demo-auth-remember">
+                            Remember me
+                          </VfCheckbox>
+                          <VfLink class="demo-auth-forgot" href="/" underline="none">
+                            Forgot password?
+                          </VfLink>
+                        </div>
+                        <VfButton variant="primary" type="submit">
+                          Sign in
+                        </VfButton>
+                        <p class="demo-auth-copyright">
+                          <span>© 2026 VueForge.</span>
+                          <span class="demo-auth-copyright__rights">
+                            All rights reserved.
+                          </span>
+                        </p>
+                      </form>
+                    </VfAuthLayout>
+                  </VfSection>
+                </div>
+              </article>
+            </template>
+          </VfTabs>
+        </section>
+
+        <section class="demo-block">
+          <div class="demo-block__header">
             <h2>Vf-AppShell</h2>
           </div>
 
@@ -549,12 +636,16 @@ import {
   VfBadge,
   VfButton,
   VfCard,
+  VfCheckbox,
+  VfInput,
+  VfLink,
   VfSwitch,
   VfTabs
 } from "@codemonster-ru/vueforge-core";
 import { computed, ref } from "vue";
 import {
   VfAppShell,
+  VfAuthLayout,
   VfContainer,
   VfDocumentLayout,
   VfErrorLayout,
@@ -564,6 +655,7 @@ import {
   VfStack
 } from "@codemonster-ru/vueforge-layouts";
 import { useCssVarBreakpoints } from "@codemonster-ru/vueforge-layouts";
+import vueForgeLogoIcon from "../../assets/vueforge-logo-icon.svg";
 
 const resolvedBreakpoints = useCssVarBreakpoints();
 
@@ -626,6 +718,22 @@ const shellBreakpointTabs = computed(() =>
     value: breakpoint.name
   }))
 );
+const authPreviewSizes = [
+  {
+    name: "min",
+    value: "320px"
+  }
+];
+const availableAuthBreakpoints = computed(() => [
+  ...authPreviewSizes,
+  ...availableShellBreakpoints.value
+]);
+const authBreakpointTabs = computed(() =>
+  availableAuthBreakpoints.value.map((breakpoint) => ({
+    label: breakpoint.name,
+    value: breakpoint.name
+  }))
+);
 
 function isBelowBreakpoint(
   breakpointValue: string | undefined,
@@ -634,7 +742,15 @@ function isBelowBreakpoint(
   return Number.parseInt(breakpointValue ?? "0", 10) < maxWidthExclusive;
 }
 
+const activeAuthBreakpoint = ref<string>("min");
 const activeShellBreakpoint = ref<string>("xs");
+
+const activeAuthBreakpointConfig = computed(
+  () =>
+    availableAuthBreakpoints.value.find(
+      (breakpoint) => breakpoint.name === activeAuthBreakpoint.value
+    ) ?? availableAuthBreakpoints.value[0]
+);
 
 const activeShellBreakpointConfig = computed(
   () =>

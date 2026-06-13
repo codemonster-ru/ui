@@ -1,7 +1,7 @@
 ---
 title: "Header Area"
 description: "Component documentation for Header Area"
-order: 20
+order: 21
 ---
 
 # Header Area

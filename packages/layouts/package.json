@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-layouts",
-  "version": "1.13.2",
+  "version": "1.14.0",
   "description": "Layout primitives, shell components, and responsive composables for Vue 3 applications.",
   "type": "module",
   "license": "MIT",
@@ -58,6 +58,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/auto/document-layout.js"
     },
+    "./auth-layout": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/auto/auth-layout.js"
+    },
     "./error-layout": {
       "types": "./dist/index.d.ts",
       "import": "./dist/auto/error-layout.js"
@@ -91,6 +95,7 @@
     "./grid.css": "./dist/grid.css",
     "./app-shell.css": "./dist/app-shell.css",
     "./document-layout.css": "./dist/document-layout.css",
+    "./auth-layout.css": "./dist/auth-layout.css",
     "./error-layout.css": "./dist/error-layout.css",
     "./header-area.css": "./dist/header-area.css",
     "./sidebar-area.css": "./dist/sidebar-area.css",

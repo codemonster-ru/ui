@@ -30,6 +30,7 @@ const props = withDefaults(defineProps<VfLinkProps>(), {
 
 const attrs = useAttrs();
 const isRouterLink = computed(() => props.to !== undefined);
+const externalClass = computed(() => attrs.class);
 const resolvedComponent = computed(() => {
   if (!isRouterLink.value) {
     return 'a';
@@ -74,7 +75,7 @@ const linkProps = computed(() => {
 const componentProps = computed(() => ({
   ...attrs,
   ...linkProps.value,
-  class: classes.value,
+  class: [classes.value, externalClass.value],
 }));
 </script>
 

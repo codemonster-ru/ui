@@ -28,6 +28,12 @@ entry: /App.vue
     placeholder="Your email"
     clearable
   />
+  <VfInput
+    v-model="password"
+    type="password"
+    placeholder="Password"
+    password-reveal
+  />
 </template>
 
 <script setup>
@@ -36,6 +42,7 @@ import { icons } from '@codemonster-ru/vueforge-icons';
 import { VfInput } from '@codemonster-ru/vueforge-core';
 
 const value = ref('');
+const password = ref('');
 </script>
 ```
 ````
@@ -62,4 +69,3 @@ Keyboard interaction follows native semantics of the rendered element or composi
 | `Shift + Tab` | Moves focus away to previous focusable element. |
 | `Enter` | Triggers form submit in form contexts. |
 | `ArrowLeft` / `ArrowRight` | Moves caret in text. |
-

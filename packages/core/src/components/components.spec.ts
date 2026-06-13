@@ -200,6 +200,23 @@ describe('core primitives', () => {
     expect(wrapper.classes()).toContain('vf-link--underline-always');
   });
 
+  it('preserves external link classes', () => {
+    const wrapper = mount(VfLink, {
+      attrs: {
+        class: 'custom-link',
+      },
+      props: {
+        href: '/',
+      },
+      slots: {
+        default: 'Home',
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-link');
+    expect(wrapper.classes()).toContain('custom-link');
+  });
+
   it('supports router-style links via to prop', () => {
     const wrapper = mount(VfLink, {
       props: {
@@ -352,6 +369,56 @@ describe('core primitives', () => {
     });
     expect(withTrailing.find('.vf-input-wrap__clear').exists()).toBe(true);
     expect(withTrailing.find('.vf-input-wrap__icon--trailing').exists()).toBe(true);
+  });
+
+  it('supports password visibility toggle for password inputs', async () => {
+    const wrapper = mount(VfInput, {
+      props: {
+        modelValue: 'secret',
+        passwordReveal: true,
+      },
+      attrs: {
+        type: 'password',
+      },
+    });
+
+    const input = wrapper.get('input');
+    const toggle = wrapper.get('.vf-input-wrap__password-toggle');
+
+    expect(input.attributes('type')).toBe('password');
+    expect(toggle.attributes('aria-label')).toBe('Show password');
+    expect(toggle.attributes('aria-pressed')).toBe('false');
+
+    await toggle.trigger('click');
+
+    expect(input.attributes('type')).toBe('text');
+    expect(toggle.attributes('aria-label')).toBe('Hide password');
+    expect(toggle.attributes('aria-pressed')).toBe('true');
+
+    await toggle.trigger('click');
+
+    expect(input.attributes('type')).toBe('password');
+    expect(toggle.attributes('aria-label')).toBe('Show password');
+    expect(toggle.attributes('aria-pressed')).toBe('false');
+  });
+
+  it('preserves uncontrolled password value when visibility changes', async () => {
+    const wrapper = mount(VfInput, {
+      props: {
+        passwordReveal: true,
+      },
+      attrs: {
+        type: 'password',
+      },
+    });
+
+    const input = wrapper.get('input');
+
+    await input.setValue('typed-secret');
+    await wrapper.get('.vf-input-wrap__password-toggle').trigger('click');
+
+    expect(input.element.value).toBe('typed-secret');
+    expect(input.attributes('type')).toBe('text');
   });
 
   it('hides clearable control when disabled or readonly attrs are present', () => {

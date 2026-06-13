@@ -21,6 +21,7 @@ const ownBases = {
     'footer-area',
   ],
   'document-layout.css': ['document-layout'],
+  'auth-layout.css': ['auth-layout'],
   'error-layout.css': ['error-layout'],
   'header-area.css': ['header-area'],
   'sidebar-area.css': ['sidebar-area'],

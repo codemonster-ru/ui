@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, useSlots } from 'vue';
+import { computed, ref, useAttrs, useSlots, watch } from 'vue';
 import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import { cx } from '@/utils/classes';
@@ -16,6 +16,7 @@ interface VfInputProps {
   leadingIcon?: IconName | string;
   trailingIcon?: IconName | string;
   clearable?: boolean;
+  passwordReveal?: boolean;
 }
 
 const props = withDefaults(defineProps<VfInputProps>(), {
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<VfInputProps>(), {
   leadingIcon: undefined,
   trailingIcon: undefined,
   clearable: false,
+  passwordReveal: false,
 });
 
 const emit = defineEmits<{
@@ -34,6 +36,15 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 const slots = useSlots();
 const inputRef = ref<HTMLInputElement | null>(null);
+const passwordVisible = ref(false);
+const currentValue = ref(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    currentValue.value = value;
+  },
+);
 
 function isTruthyBooleanAttr(value: unknown): boolean {
   return value === true || value === '' || value === 'true';
@@ -41,21 +52,29 @@ function isTruthyBooleanAttr(value: unknown): boolean {
 
 const isDisabled = computed(() => isTruthyBooleanAttr(attrs.disabled));
 const isReadonly = computed(() => isTruthyBooleanAttr(attrs.readonly));
-const hasValue = computed(() => String(props.modelValue ?? '').length > 0);
+const hasValue = computed(() => String(currentValue.value ?? '').length > 0);
+const inputType = computed(() => (typeof attrs.type === 'string' ? attrs.type : undefined));
+const hasPasswordRevealControl = computed(() => Boolean(props.passwordReveal) && inputType.value === 'password');
+const resolvedInputType = computed(() =>
+  hasPasswordRevealControl.value && passwordVisible.value ? 'text' : inputType.value,
+);
 
 const hasLeadingAdornment = computed(() => Boolean(props.leadingIcon) || Boolean(slots.leading));
 const hasTrailingAdornment = computed(() => Boolean(props.trailingIcon) || Boolean(slots.trailing));
 const hasClearControl = computed(
   () => Boolean(props.clearable) && hasValue.value && !isDisabled.value && !isReadonly.value,
 );
-const hasTrailingControl = computed(() => hasTrailingAdornment.value || hasClearControl.value);
+const hasTrailingActionControl = computed(() => hasPasswordRevealControl.value || hasClearControl.value);
+const hasTrailingControl = computed(() => hasTrailingAdornment.value || hasTrailingActionControl.value);
 const hasAdornments = computed(() => hasLeadingAdornment.value || hasTrailingControl.value);
 
 const externalClass = computed(() => attrs.class);
 const externalStyle = computed(() => attrs.style);
 const forwardedInputAttrs = computed(() =>
-  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style')),
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style' && key !== 'type')),
 );
+const passwordRevealLabel = computed(() => (passwordVisible.value ? 'Hide password' : 'Show password'));
+const passwordRevealIcon = computed(() => (passwordVisible.value ? icons.eyeSlash : icons.eye));
 
 const inputClasses = computed(() =>
   cx(
@@ -74,16 +93,24 @@ const wrapperClasses = computed(() =>
     props.invalid && 'vf-input-wrap--invalid',
     hasLeadingAdornment.value && 'vf-input-wrap--with-leading',
     hasTrailingControl.value && 'vf-input-wrap--with-trailing',
-    hasTrailingAdornment.value && hasClearControl.value && 'vf-input-wrap--with-trailing-and-clear',
+    hasTrailingAdornment.value && hasTrailingActionControl.value && 'vf-input-wrap--with-trailing-and-clear',
   ),
 );
 
 function handleInput(event: Event) {
-  emit('update:modelValue', (event.target as HTMLInputElement).value);
+  const value = (event.target as HTMLInputElement).value;
+  currentValue.value = value;
+  emit('update:modelValue', value);
 }
 
 function handleClear() {
+  currentValue.value = '';
   emit('update:modelValue', '');
+  inputRef.value?.focus();
+}
+
+function togglePasswordVisibility() {
+  passwordVisible.value = !passwordVisible.value;
   inputRef.value?.focus();
 }
 </script>
@@ -99,7 +126,8 @@ function handleClear() {
     <input
       ref="inputRef"
       :class="inputClasses"
-      :value="props.modelValue"
+      :value="currentValue"
+      :type="resolvedInputType"
       :aria-invalid="props.invalid || undefined"
       v-bind="forwardedInputAttrs"
       @input="handleInput"
@@ -117,6 +145,19 @@ function handleClear() {
     </span>
 
     <VfIconButton
+      v-if="hasPasswordRevealControl"
+      class="vf-input-wrap__password-toggle"
+      :class="hasClearControl && 'vf-input-wrap__password-toggle--before-clear'"
+      :icon="passwordRevealIcon"
+      variant="ghost"
+      size="sm"
+      :aria-label="passwordRevealLabel"
+      :aria-pressed="passwordVisible"
+      @mousedown.prevent
+      @click="togglePasswordVisibility"
+    />
+
+    <VfIconButton
       v-if="hasClearControl"
       class="vf-input-wrap__clear"
       :icon="icons.xmark"
@@ -132,7 +173,8 @@ function handleClear() {
     v-else
     ref="inputRef"
     :class="[inputClasses, externalClass]"
-    :value="props.modelValue"
+    :value="currentValue"
+    :type="resolvedInputType"
     :aria-invalid="props.invalid || undefined"
     v-bind="forwardedInputAttrs"
     @input="handleInput"

@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.23.0
+
+### Added
+
+- Added `passwordReveal` support to `VfInput` for password visibility toggles.
+
+### Fixed
+
+- Preserved uncontrolled `VfInput` values when internal UI state changes, including password visibility toggles.
+- Preserved external classes on `VfLink` instead of replacing them with generated link classes.
+
+### Docs
+
+- Documented the `VfInput` password reveal option.
+
 ## 1.22.2
 
 ### Fixed
