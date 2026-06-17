@@ -2,8 +2,8 @@ import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';
-import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { buildThemeCssArtifacts, themeCssArtifactPaths } from './build/theme-css-artifacts';
 
 const rootDir = __dirname;
@@ -45,6 +45,25 @@ const componentJsEntries = [
   'tooltip',
 ] as const;
 
+function inlineCssImports(filePath: string, trace: string[] = []): string {
+  if (trace.includes(filePath)) {
+    throw new Error(`Circular CSS import detected: ${[...trace, filePath].join(' -> ')}`);
+  }
+
+  const source = readFileSync(filePath, 'utf8');
+
+  return source.replace(
+    /^@import\s+['"](.+?)['"];\s*$/gm,
+    (_statement, importPath: string) => {
+      if (!importPath.startsWith('.')) {
+        return `@import '${importPath}';`;
+      }
+
+      return inlineCssImports(resolve(dirname(filePath), importPath), [...trace, filePath]);
+    }
+  );
+}
+
 function vueforgeStyleArtifactsPlugin(): Plugin[] {
   return [
     {
@@ -70,8 +89,11 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
         copyFileSync(themeCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'generated-breakpoints.css'));
         copyFileSync(resolve(stylesDir, 'foundation.css'), resolve(distDir, 'foundation.css'));
         copyFileSync(resolve(stylesDir, 'components/base.css'), resolve(distDir, 'base.css'));
-        for (const entryFileName of readdirSync(styleEntriesDir).filter((name) => name.endsWith('.css'))) {
-          copyFileSync(resolve(styleEntriesDir, entryFileName), resolve(distDir, entryFileName));
+        for (const entryName of componentJsEntries) {
+          writeFileSync(
+            resolve(distDir, `${entryName}.css`),
+            inlineCssImports(resolve(styleEntriesDir, `${entryName}.css`))
+          );
         }
 
         // Keep explicit runtime CSS links for component subpath exports.
