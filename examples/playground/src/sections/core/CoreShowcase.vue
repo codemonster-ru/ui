@@ -23,6 +23,7 @@ import {
   VfPopover,
   VfRadio,
   VfSelect,
+  VfStepper,
   VfSwitch,
   VfTable,
   VfTableOfContents,
@@ -37,6 +38,7 @@ import {
 import type {
   VfBreadcrumbItem,
   VfNavMenuItem,
+  VfStepperItem,
   VfTableOfContentsItem,
 } from "@codemonster-ru/vueforge-core";
 
@@ -65,6 +67,8 @@ const selectTrailingValue = ref("team");
 const selectClearableValue = ref("starter");
 const selectTrailingClearValue = ref("enterprise");
 const activeTab = ref("overview");
+const activeStepper = ref("plan");
+const activeVerticalStepper = ref("billing");
 const activeAccordion = ref<string | null>("section-one");
 const activeMenuValue = ref("");
 const activeSimpleMenuValue = ref("");
@@ -80,6 +84,20 @@ const releaseTabs = [
   { value: "theming", label: "Theming" },
   { value: "accessibility", label: "A11y" },
   { value: "community", label: "Community" },
+];
+
+const compactOnboardingSteps: VfStepperItem[] = [
+  { value: "start", label: "Start", description: "Create account" },
+  { value: "details", label: "Details", description: "Add product info" },
+  { value: "plan", label: "Plan", description: "Choose rollout" },
+  { value: "launch", label: "Launch", description: "Review and publish" },
+];
+
+const onboardingSteps: VfStepperItem[] = [
+  { value: "account", label: "Account", description: "Create workspace owner" },
+  { value: "profile", label: "Profile", description: "Add product and brand details" },
+  { value: "billing", label: "Billing", description: "Choose plan and payment method" },
+  { value: "launch", label: "Launch", description: "Review configuration and publish" },
 ];
 
 interface CommandItem {
@@ -145,6 +163,13 @@ const commandPaletteDataset: CommandItem[] = [
     label: "VfTableOfContents",
     section: "Components / Navigation",
     snippet: "Auto-generated section index with active heading tracking.",
+    type: "Component",
+  },
+  {
+    title: "VfStepper",
+    label: "VfStepper",
+    section: "Components / Navigation",
+    snippet: "Horizontal and vertical step progress for setup and wizard flows.",
     type: "Component",
   },
   {
@@ -272,6 +297,7 @@ const docsMenuItems: VfNavMenuItem[] = [
               { value: "usage-tab", label: "Usage Tab" },
             ],
           },
+          { value: "stepper", label: "Stepper" },
           { value: "accordion", label: "Accordion" },
           { value: "nav-menu", label: "Nav Menu" },
           {
@@ -353,6 +379,7 @@ const docsMenuSimpleItems: VfNavMenuItem[] = [
           { value: "status-tab", label: "Status Tab" },
         ],
       },
+      { value: "stepper", label: "Stepper" },
       { value: "accordion", label: "Accordion" },
       { value: "dialog", label: "Dialog" },
       { value: "drawer", label: "Drawer" },
@@ -1345,6 +1372,51 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-text">{{ tabContent[activeValue] }}</p>
                 </template>
               </VfTabs>
+            </div>
+          </div>
+
+          <div class="demo-item demo-item--stepper">
+            <p class="demo-label">vf-stepper</p>
+            <div class="demo-stack">
+              <div class="demo-stack">
+                <p class="demo-text">Horizontal</p>
+                <VfStepper
+                  v-model="activeStepper"
+                  :items="compactOnboardingSteps"
+                  content-position="above"
+                  aria-label="Onboarding progress above"
+                />
+                <VfDivider />
+                <VfStepper
+                  v-model="activeStepper"
+                  :items="compactOnboardingSteps"
+                  content-position="below"
+                  aria-label="Onboarding progress below"
+                />
+              </div>
+
+              <VfDivider />
+
+              <div class="demo-stack">
+                <p class="demo-text">Vertical</p>
+                <div class="demo-stepper-variants demo-stepper-variants--vertical">
+                  <VfStepper
+                    v-model="activeVerticalStepper"
+                    :items="onboardingSteps"
+                    orientation="vertical"
+                    content-position="start"
+                    aria-label="Vertical onboarding progress start"
+                  />
+                  <VfDivider orientation="vertical" />
+                  <VfStepper
+                    v-model="activeVerticalStepper"
+                    :items="onboardingSteps"
+                    orientation="vertical"
+                    content-position="end"
+                    aria-label="Vertical onboarding progress end"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

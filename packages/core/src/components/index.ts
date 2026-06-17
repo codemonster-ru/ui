@@ -21,6 +21,7 @@ export { VfRadio } from './radio';
 export { VfSelect } from './select';
 export { VfSkeleton } from './skeleton';
 export { VfSkeletonGate } from './skeleton-gate';
+export { VfStepper } from './stepper';
 export { VfSwitch } from './switch';
 export { VfTable } from './table';
 export { VfTableOfContents } from './table-of-contents';

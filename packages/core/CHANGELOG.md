@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.24.0
+
+### Added
+
+- Added new `VfStepper` component for horizontal and vertical multi-step flows with controlled/uncontrolled active value support.
+- Added `contentPosition` support to `VfStepper` for alternate label/description placement across horizontal and vertical layouts.
+- Added root package export for `VfStepperContentPosition`.
+
+### Docs
+
+- Added `VfStepper` documentation (features, API, theming).
+
 ## 1.23.0
 
 ### Added
