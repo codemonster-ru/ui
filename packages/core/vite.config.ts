@@ -2,7 +2,7 @@ import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';
-import { cpSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { buildThemeCssArtifacts, themeCssArtifactPaths } from './build/theme-css-artifacts';
 
@@ -34,6 +34,7 @@ const componentJsEntries = [
   'select',
   'skeleton',
   'skeleton-gate',
+  'stepper',
   'switch',
   'table',
   'table-of-contents',
@@ -64,13 +65,13 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
         mkdirSync(distDir, { recursive: true });
         mkdirSync(autoDir, { recursive: true });
 
-        cpSync(themeCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
-        cpSync(themeCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
-        cpSync(themeCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'generated-breakpoints.css'));
-        cpSync(resolve(stylesDir, 'foundation.css'), resolve(distDir, 'foundation.css'));
-        cpSync(resolve(stylesDir, 'components/base.css'), resolve(distDir, 'base.css'));
+        copyFileSync(themeCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
+        copyFileSync(themeCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
+        copyFileSync(themeCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'generated-breakpoints.css'));
+        copyFileSync(resolve(stylesDir, 'foundation.css'), resolve(distDir, 'foundation.css'));
+        copyFileSync(resolve(stylesDir, 'components/base.css'), resolve(distDir, 'base.css'));
         for (const entryFileName of readdirSync(styleEntriesDir).filter((name) => name.endsWith('.css'))) {
-          cpSync(resolve(styleEntriesDir, entryFileName), resolve(distDir, entryFileName));
+          copyFileSync(resolve(styleEntriesDir, entryFileName), resolve(distDir, entryFileName));
         }
 
         // Keep explicit runtime CSS links for component subpath exports.
@@ -136,6 +137,7 @@ export default defineConfig({
         select: resolve(__dirname, 'src/entries/select.ts'),
         skeleton: resolve(__dirname, 'src/entries/skeleton.ts'),
         'skeleton-gate': resolve(__dirname, 'src/entries/skeleton-gate.ts'),
+        stepper: resolve(__dirname, 'src/entries/stepper.ts'),
         switch: resolve(__dirname, 'src/entries/switch.ts'),
         table: resolve(__dirname, 'src/entries/table.ts'),
         'table-of-contents': resolve(__dirname, 'src/entries/table-of-contents.ts'),
