@@ -11,6 +11,12 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const cssExportTargets = Object.entries(packageJson?.exports ?? {})
   .filter(([exportKey, exportTarget]) => exportKey.endsWith('.css') && typeof exportTarget === 'string')
   .map(([exportKey, exportTarget]) => [exportKey, exportTarget]);
+const foundationalCssExports = new Set([
+  './base.css',
+  './tokens.css',
+  './theme.css',
+  './foundation.css',
+]);
 
 const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
   .filter(([exportKey, exportTarget]) => {
@@ -80,6 +86,13 @@ try {
     if (!tarEntries.includes(expectedTarPath)) {
       throw new Error(
         `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`
+      );
+    }
+
+    const cssSource = readFileSync(join(tempDir, expectedTarPath), 'utf8');
+    if (!foundationalCssExports.has(exportKey) && cssSource.includes("@import '../")) {
+      throw new Error(
+        `Broken CSS export: exports["${exportKey}"] contains an unresolved parent-relative @import in publish artifact.`
       );
     }
   }

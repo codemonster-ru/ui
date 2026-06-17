@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.24.1
+
+### Fixed
+
+- Fixed packaged component CSS exports so entry styles are published with resolved local imports, restoring `@codemonster-ru/vueforge-core/stepper` auto-CSS consumption.
+
 ## 1.24.0
 
 ### Added
