@@ -59,7 +59,12 @@ try {
 
   writeFileSync(
     join(consumerDir, 'main.js'),
-    "import { VfButton } from '@codemonster-ru/vueforge-core/button';\nconsole.log(Boolean(VfButton));\n"
+    [
+      "import { VfButton } from '@codemonster-ru/vueforge-core/button';",
+      "import { VfStepper } from '@codemonster-ru/vueforge-core/stepper';",
+      'console.log(Boolean(VfButton), Boolean(VfStepper));',
+      '',
+    ].join('\n')
   );
 
   await build({
@@ -88,7 +93,11 @@ try {
     throw new Error('Consumer smoke failed: emitted CSS does not contain .vf-button styles.');
   }
 
-  console.log(`Consumer smoke passed: ${packageJson.name}/button import emitted CSS with .vf-button styles.`);
+  if (!cssContent.includes('.vf-stepper')) {
+    throw new Error('Consumer smoke failed: emitted CSS does not contain .vf-stepper styles.');
+  }
+
+  console.log(`Consumer smoke passed: ${packageJson.name}/button and /stepper imports emitted CSS with component styles.`);
 } finally {
   rmSync(tempDir, { recursive: true, force: true });
   const tarballName = `${packageJson.name.replace('@', '').replace('/', '-')}-${packageJson.version}.tgz`;
