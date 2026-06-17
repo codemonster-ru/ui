@@ -21,6 +21,7 @@ import {
   VfSelect,
   VfSkeleton,
   VfSkeletonGate,
+  VfStepper,
   VfSwitch,
   VfTable,
   VfTableOfContents,
@@ -182,6 +183,26 @@ describe('core primitives', () => {
     expect(wrapper.classes()).toContain('vf-button--danger');
     expect(wrapper.classes()).toContain('vf-button--sm');
     expect(wrapper.text()).toBe('Save');
+  });
+
+  it('renders stepper and updates the current step', async () => {
+    const wrapper = mount(VfStepper, {
+      props: {
+        items: [
+          { value: 'account', label: 'Account' },
+          { value: 'profile', label: 'Profile' },
+          { value: 'confirm', label: 'Confirm' },
+        ],
+        defaultValue: 'account',
+      },
+    });
+
+    expect(wrapper.get('.vf-stepper__item--current').text()).toContain('Account');
+
+    await wrapper.findAll('.vf-stepper__trigger')[1].trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('.vf-stepper__item--current').text()).toContain('Profile');
   });
 
   it('adds safe rel defaults for external links', () => {

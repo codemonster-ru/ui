@@ -17,6 +17,8 @@ export type VfLinkUnderline = 'none' | 'hover' | 'always';
 export type VfBadgeTone = 'neutral' | 'primary' | 'success' | 'info' | 'warn' | 'help' | 'danger' | 'contrast';
 export type VfFeedbackTone = 'neutral' | 'primary' | 'success' | 'info' | 'warn' | 'help' | 'danger' | 'contrast';
 export type VfDividerOrientation = 'horizontal' | 'vertical';
+export type VfStepperOrientation = 'horizontal' | 'vertical';
+export type VfStepperContentPosition = 'above' | 'below' | 'start' | 'end';
 export type VfDialogSize = 'sm' | 'md' | 'lg';
 export type VfDrawerSize = VfDialogSize | 'full';
 export type VfDrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
@@ -42,6 +44,13 @@ export interface VfBreadcrumbItem {
 export interface VfTabItem {
   value: string;
   label: string;
+  disabled?: boolean;
+}
+
+export interface VfStepperItem {
+  value: string;
+  label: string;
+  description?: string;
   disabled?: boolean;
 }
 

@@ -1,7 +1,34 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { fileURLToPath, URL } from 'node:url';
 import { vueforgePlaygroundVirtualPlugin } from '@codemonster-ru/vueforge-playground-vite-plugin';
+
+const showcaseSectionPattern = /^\/(core|layouts|icons|codeblock|playground)\/?$/;
+
+function vueforgeShowcaseHistoryFallback(): Plugin {
+  const rewriteShowcaseSection = (
+    req: IncomingMessage,
+    _res: ServerResponse,
+    next: (err?: unknown) => void
+  ) => {
+    if (req.url && showcaseSectionPattern.test(req.url)) {
+      req.url = '/';
+    }
+
+    next();
+  };
+
+  return {
+    name: 'vueforge-showcase-history-fallback',
+    configureServer(server: ViteDevServer) {
+      server.middlewares.use(rewriteShowcaseSection);
+    },
+    configurePreviewServer(server: PreviewServer) {
+      server.middlewares.use(rewriteShowcaseSection);
+    }
+  };
+}
 
 export default defineConfig({
   server: {
@@ -9,6 +36,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    vueforgeShowcaseHistoryFallback(),
     vueforgePlaygroundVirtualPlugin({
       entries: {
         'vue-runtime-smoke': fileURLToPath(new URL('./src/vitepress-demos/vue-runtime-smoke.ts', import.meta.url)),

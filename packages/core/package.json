@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -144,6 +144,10 @@
       "types": "./dist/skeleton-gate.d.ts",
       "import": "./dist/auto/skeleton-gate.js"
     },
+    "./stepper": {
+      "types": "./dist/stepper.d.ts",
+      "import": "./dist/auto/stepper.js"
+    },
     "./switch": {
       "types": "./dist/switch.d.ts",
       "import": "./dist/auto/switch.js"
@@ -199,6 +203,7 @@
     "./select.css": "./dist/select.css",
     "./skeleton.css": "./dist/skeleton.css",
     "./skeleton-gate.css": "./dist/skeleton-gate.css",
+    "./stepper.css": "./dist/stepper.css",
     "./switch.css": "./dist/switch.css",
     "./table.css": "./dist/table.css",
     "./table-of-contents.css": "./dist/table-of-contents.css",

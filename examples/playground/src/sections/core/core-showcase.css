@@ -38,3 +38,24 @@
 .demo-max-w-20 {
   max-width: 20rem;
 }
+
+.demo-item--stepper {
+  grid-column: 1 / -1;
+}
+
+.demo-stepper-variants--vertical {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: var(--vf-layout-space-layout-base);
+  align-items: stretch;
+}
+
+@media (width <= 960px) {
+  .demo-item--stepper {
+    grid-column: auto;
+  }
+
+  .demo-stepper-variants--vertical {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
