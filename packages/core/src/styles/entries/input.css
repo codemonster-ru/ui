@@ -1,13 +1,18 @@
+/* stylelint-disable no-descending-specificity -- Entry CSS mirrors the grouped interaction matrix from forms.css. */
+
+@import './field.css';
 @import './icon-button.css';
 
 .vf-input-wrap {
   position: relative;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   width: 100%;
 }
 
 .vf-input {
+  box-sizing: border-box;
   width: 100%;
   min-height: var(--vf-control-height-md);
   padding: var(--vf-field-padding-md);
@@ -26,6 +31,15 @@
 
 .vf-input::placeholder {
   color: var(--vf-input-placeholder-color);
+}
+
+.vf-input--floating::placeholder {
+  color: transparent;
+}
+
+.vf-input--floating {
+  padding-top: var(--vf-field-floating-control-padding-top-md);
+  padding-bottom: var(--vf-field-floating-control-padding-bottom-md);
 }
 
 .vf-input-wrap__icon {
@@ -78,6 +92,29 @@
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
+.vf-input-wrap__clear.vf-icon-button,
+.vf-input-wrap__password-toggle.vf-icon-button {
+  width: var(--vf-field-clear-button-size-md);
+  height: var(--vf-field-clear-button-size-md);
+  border-radius: var(--vf-radius-control-tight);
+  color: var(--vf-color-muted);
+}
+
+.vf-input-wrap__clear.vf-icon-button svg,
+.vf-input-wrap__password-toggle.vf-icon-button svg {
+  width: var(--vf-field-icon-size);
+  height: var(--vf-field-icon-size);
+}
+
+.vf-input-wrap__clear.vf-icon-button:hover:not(:disabled),
+.vf-input-wrap__clear.vf-icon-button:active:not(:disabled),
+.vf-input-wrap__password-toggle.vf-icon-button:hover:not(:disabled),
+.vf-input-wrap__password-toggle.vf-icon-button:active:not(:disabled) {
+  background: transparent;
+  border-color: transparent;
+  color: var(--vf-color-text);
+}
+
 .vf-input:focus,
 .vf-input:focus-visible {
   border-color: var(--vf-input-focus-border-color);
@@ -94,7 +131,7 @@
 }
 
 .vf-input--invalid:hover:not(:disabled, :focus, :focus-visible) {
-  border-color: var(--vf-input-hover-border-color);
+  border-color: var(--vf-input-invalid-border-color);
 }
 
 .vf-input--sm {
@@ -103,10 +140,20 @@
   font-size: var(--vf-control-font-size-sm);
 }
 
+.vf-input--floating.vf-input--sm {
+  padding-top: var(--vf-field-floating-control-padding-top-sm);
+  padding-bottom: var(--vf-field-floating-control-padding-bottom-sm);
+}
+
 .vf-input--lg {
   min-height: var(--vf-control-height-lg);
   padding: var(--vf-field-padding-lg);
   font-size: var(--vf-control-font-size-lg);
+}
+
+.vf-input--floating.vf-input--lg {
+  padding-top: var(--vf-field-floating-control-padding-top-lg);
+  padding-bottom: var(--vf-field-floating-control-padding-bottom-lg);
 }
 
 .vf-input--with-leading {
@@ -137,6 +184,18 @@
   padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-md);
 }
 
+.vf-input-wrap--with-trailing-password-and-clear .vf-input {
+  padding-inline-end: calc(
+    var(--vf-field-input-padding-end-with-trailing-and-clear-md) + var(--vf-field-clear-button-size-md) + 0.5rem
+  );
+}
+
+.vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
+  inset-inline-end: calc(
+    var(--vf-field-trailing-before-clear-offset-md) + var(--vf-field-clear-button-size-md) + 0.375rem
+  );
+}
+
 .vf-input:disabled {
   cursor: not-allowed;
   background: var(--vf-input-disabled-background);
@@ -147,20 +206,43 @@
   padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-sm);
 }
 
+.vf-input-wrap--sm.vf-input-wrap--with-trailing-password-and-clear .vf-input {
+  padding-inline-end: calc(
+    var(--vf-field-input-padding-end-with-trailing-and-clear-sm) + var(--vf-field-clear-button-size-sm) + 0.5rem
+  );
+}
+
 .vf-input-wrap--lg.vf-input-wrap--with-trailing-and-clear .vf-input {
   padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-lg);
 }
 
+.vf-input-wrap--lg.vf-input-wrap--with-trailing-password-and-clear .vf-input {
+  padding-inline-end: calc(
+    var(--vf-field-input-padding-end-with-trailing-and-clear-lg) + var(--vf-field-clear-button-size-lg) + 0.5rem
+  );
+}
+
 .vf-input-wrap--sm .vf-input-wrap__icon--leading {
+  --vf-field-icon-size: var(--vf-field-icon-size-sm);
+
   inset-inline-start: var(--vf-field-leading-icon-offset-sm);
 }
 
 .vf-input-wrap--sm .vf-input-wrap__icon--trailing {
+  --vf-field-icon-size: var(--vf-field-icon-size-sm);
+
   inset-inline-end: var(--vf-field-leading-icon-offset-sm);
 }
 
 .vf-input-wrap--sm .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: var(--vf-field-trailing-before-clear-offset-sm);
+}
+
+.vf-input-wrap--sm.vf-input-wrap--with-trailing-password-and-clear
+  .vf-input-wrap__icon--trailing-before-clear {
+  inset-inline-end: calc(
+    var(--vf-field-trailing-before-clear-offset-sm) + var(--vf-field-clear-button-size-sm) + 0.375rem
+  );
 }
 
 .vf-input-wrap--sm .vf-input-wrap__clear {
@@ -175,16 +257,80 @@
   inset-inline-end: var(--vf-field-trailing-before-clear-offset-sm);
 }
 
+.vf-input-wrap--sm .vf-input-wrap__clear.vf-icon-button,
+.vf-input-wrap--sm .vf-input-wrap__password-toggle.vf-icon-button {
+  width: var(--vf-field-clear-button-size-sm);
+  height: var(--vf-field-clear-button-size-sm);
+}
+
+.vf-input-wrap--sm .vf-input-wrap__clear.vf-icon-button svg,
+.vf-input-wrap--sm .vf-input-wrap__password-toggle.vf-icon-button svg {
+  width: var(--vf-field-icon-size-sm);
+  height: var(--vf-field-icon-size-sm);
+}
+
 .vf-input-wrap--lg .vf-input-wrap__icon--leading {
+  --vf-field-icon-size: var(--vf-field-icon-size-lg);
+
   inset-inline-start: var(--vf-field-leading-icon-offset-lg);
 }
 
+.vf-input + .vf-field__label--floating,
+.vf-input-wrap + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(0.75rem + 1px);
+}
+
+.vf-input--sm + .vf-field__label--floating,
+.vf-input-wrap--sm + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(0.5rem + 1px);
+}
+
+.vf-field--floating-in .vf-input--sm + .vf-field__label--floating,
+.vf-field--floating-in .vf-input-wrap--sm + .vf-field__label--floating {
+  --vf-field-floating-label-active-offset-block: 0.125rem;
+}
+
+.vf-field--floating-in .vf-input--floating.vf-input--sm {
+  min-height: calc(var(--vf-control-height-sm) + 0.125rem);
+  padding-top: 1.3125rem;
+  padding-bottom: 0.125rem;
+}
+
+.vf-input--lg + .vf-field__label--floating,
+.vf-input-wrap--lg + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(1rem + 1px);
+}
+
+.vf-input--with-leading + .vf-field__label--floating,
+.vf-input-wrap--with-leading + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: var(--vf-field-input-padding-start-with-leading-md);
+}
+
+.vf-input--with-leading.vf-input--sm + .vf-field__label--floating,
+.vf-input-wrap--sm.vf-input-wrap--with-leading + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: var(--vf-field-input-padding-start-with-leading-sm);
+}
+
+.vf-input--with-leading.vf-input--lg + .vf-field__label--floating,
+.vf-input-wrap--lg.vf-input-wrap--with-leading + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: var(--vf-field-input-padding-start-with-leading-lg);
+}
+
 .vf-input-wrap--lg .vf-input-wrap__icon--trailing {
+  --vf-field-icon-size: var(--vf-field-icon-size-lg);
+
   inset-inline-end: var(--vf-field-leading-icon-offset-lg);
 }
 
 .vf-input-wrap--lg .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: var(--vf-field-trailing-before-clear-offset-lg);
+}
+
+.vf-input-wrap--lg.vf-input-wrap--with-trailing-password-and-clear
+  .vf-input-wrap__icon--trailing-before-clear {
+  inset-inline-end: calc(
+    var(--vf-field-trailing-before-clear-offset-lg) + var(--vf-field-clear-button-size-lg) + 0.375rem
+  );
 }
 
 .vf-input-wrap--lg .vf-input-wrap__clear {
@@ -197,6 +343,18 @@
 
 .vf-input-wrap--lg .vf-input-wrap__password-toggle--before-clear {
   inset-inline-end: var(--vf-field-trailing-before-clear-offset-lg);
+}
+
+.vf-input-wrap--lg .vf-input-wrap__clear.vf-icon-button,
+.vf-input-wrap--lg .vf-input-wrap__password-toggle.vf-icon-button {
+  width: var(--vf-field-clear-button-size-lg);
+  height: var(--vf-field-clear-button-size-lg);
+}
+
+.vf-input-wrap--lg .vf-input-wrap__clear.vf-icon-button svg,
+.vf-input-wrap--lg .vf-input-wrap__password-toggle.vf-icon-button svg {
+  width: var(--vf-field-icon-size-lg);
+  height: var(--vf-field-icon-size-lg);
 }
 
 .vf-input:hover:not(:disabled, .vf-input--invalid, :focus, :focus-visible) {

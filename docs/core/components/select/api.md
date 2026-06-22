@@ -11,7 +11,7 @@ Component props and their default values.
 | `modelValue?` | `string` | `''` | Controlled current value. |
 | `options` | `VfSelectOption[]` | — | Required options list. |
 | `size?` | `VfControlSize` | `md` | Size token for spacing and dimensions. |
-| `invalid?` | `boolean` | `false` | Marks control as invalid for visual/error state styling. |
+| `invalid?` | `boolean` | `false` | Marks the control as invalid for visual state and `aria-invalid`; error text should be rendered through `VfField`. |
 | `clearable?` | `boolean` | `false` | Shows a clear-action control when value is present. |
 | `placeholder?` | `string` | — | Placeholder text when empty. |
 | `disabled?` | `boolean` | `false` | Disables user interaction. |

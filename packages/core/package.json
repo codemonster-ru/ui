@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.24.1",
+  "version": "1.25.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -100,6 +100,14 @@
       "types": "./dist/dropdown.d.ts",
       "import": "./dist/auto/dropdown.js"
     },
+    "./field": {
+      "types": "./dist/field.d.ts",
+      "import": "./dist/auto/field.js"
+    },
+    "./fieldset": {
+      "types": "./dist/fieldset.d.ts",
+      "import": "./dist/auto/fieldset.js"
+    },
     "./icon-button": {
       "types": "./dist/icon-button.d.ts",
       "import": "./dist/auto/icon-button.js"
@@ -192,6 +200,8 @@
     "./divider.css": "./dist/divider.css",
     "./drawer.css": "./dist/drawer.css",
     "./dropdown.css": "./dist/dropdown.css",
+    "./field.css": "./dist/field.css",
+    "./fieldset.css": "./dist/fieldset.css",
     "./icon-button.css": "./dist/icon-button.css",
     "./input.css": "./dist/input.css",
     "./link.css": "./dist/link.css",
@@ -235,12 +245,13 @@
     "format": "prettier --ignore-path ../../.prettierignore --write .",
     "lint": "eslint .",
     "prepack": "npm run build",
-    "test": "npm run check:css-contract && npm run smoke:css-export && npm run smoke:consumer-css && vitest run --config vitest.config.ts",
+    "test": "npm run check:css-contract && npm run check:form-geometry && npm run smoke:css-export && npm run smoke:consumer-css && vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",
     "typecheck": "vue-tsc --noEmit",
     "smoke:css-export": "node ./scripts/smoke-css-export.mjs",
     "smoke:consumer-css": "node ./scripts/smoke-consumer-auto-css.mjs",
-    "check:css-contract": "node ./scripts/check-css-contract.mjs"
+    "check:css-contract": "node ./scripts/check-css-contract.mjs",
+    "check:form-geometry": "node ./scripts/check-form-geometry.mjs"
   },
   "peerDependencies": {
     "vue": "^3.5.0"

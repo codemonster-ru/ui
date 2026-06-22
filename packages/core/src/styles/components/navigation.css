@@ -72,9 +72,6 @@
 }
 
 .vf-stepper {
-  --vf-stepper-marker-size: calc(var(--vf-control-height-md) - 0.125rem);
-  --vf-stepper-rail-size: 2px;
-
   display: flex;
   width: 100%;
   min-width: 0;
@@ -708,7 +705,7 @@
 
 .vf-menu-bar__submenu--nested {
   top: 0;
-  left: calc(100% + 12px);
+  left: calc(100% + var(--vf-menu-bar-submenu-offset-inline));
 }
 
 .vf-menu-bar__submenu-list {

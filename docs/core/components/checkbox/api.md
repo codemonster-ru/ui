@@ -10,9 +10,9 @@ Component props and their default values.
 | --- | --- | --- | --- |
 | `modelValue?` | `boolean` | `false` | Controlled current value. |
 | `size?` | `VfControlSize` | `md` | Size token for spacing and dimensions. |
-| `invalid?` | `boolean` | `false` | Marks control as invalid for visual/error state styling. |
+| `invalid?` | `boolean` | `false` | Marks the control as invalid for visual state and `aria-invalid`; error text should be rendered through `VfField`. |
 | `disabled?` | `boolean` | `false` | Disables user interaction. |
-| `label?` | `string` | — | Accessible label text. |
+| `label?` | `string` | — | Visible inline label content for the checkbox. |
 
 ## Emits
 

@@ -337,7 +337,7 @@
 
 .vf-menu-bar__submenu--nested {
   top: 0;
-  left: calc(100% + 12px);
+  left: calc(100% + var(--vf-menu-bar-submenu-offset-inline));
 }
 
 .vf-menu-bar__submenu-list {

@@ -17,6 +17,8 @@ const ownBases = {
   'divider.css': ['divider'],
   'drawer.css': ['drawer', 'drawer-transition'],
   'dropdown.css': ['dropdown', 'floating', 'floating-transition'],
+  'field.css': ['field'],
+  'fieldset.css': ['fieldset'],
   'icon-button.css': ['icon-button'],
   'input.css': ['input', 'input-wrap'],
   'link.css': ['link'],
@@ -42,8 +44,9 @@ const explicitDeps = {
   'command-palette.css': ['./icon-button.css'],
   'dialog.css': ['./icon-button.css'],
   'drawer.css': ['./icon-button.css'],
-  'input.css': ['./icon-button.css'],
-  'select.css': ['./icon-button.css', './dropdown.css'],
+  'input.css': ['./field.css', './icon-button.css'],
+  'select.css': ['./field.css', './icon-button.css', './dropdown.css'],
+  'textarea.css': ['./field.css'],
   'theme-switch.css': ['./button.css', './switch.css'],
 };
 

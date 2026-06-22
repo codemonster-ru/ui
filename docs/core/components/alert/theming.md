@@ -8,7 +8,11 @@ Documented CSS classes and their intended usage.
 
 | Class | Description |
 | --- | --- |
-| `—` | No documented CSS classes yet. |
+| `.vf-alert` | Root feedback container. |
+| `.vf-alert__icon` | Leading decorative status icon. |
+| `.vf-alert__content` | Text content wrapper. |
+| `.vf-alert__title` | Alert title element. |
+| `.vf-alert__body` | Alert body content. |
 
 ## Design Tokens
 
@@ -16,4 +20,7 @@ Available design tokens and corresponding CSS variables.
 
 | Token | CSS Variable | Description |
 | --- | --- | --- |
-| `—` | `—` | No documented design tokens yet. |
+| Alert icon offset | `--vf-alert-icon-offset-y` | Vertical offset that aligns the leading icon with the title first line. |
+| Alert content gap | `--vf-alert-content-gap` | Vertical gap between title and body content. |
+| Alert title font size | `--vf-alert-title-font-size` | Title typography size. |
+| Alert body color | `--vf-alert-body-color` | Muted body text color. |

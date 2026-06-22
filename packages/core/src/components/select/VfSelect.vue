@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, useAttrs, useSlots } from 'vue';
+import { computed, inject, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch, type StyleValue } from 'vue';
 import { flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
 import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
@@ -7,6 +7,7 @@ import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from
 import { vfMotionDurationsMs } from '@/theme/motion';
 import { cx } from '@/utils/classes';
 import type { VfControlSize, VfDropdownPlacement, VfSelectOption } from '@/types/components';
+import { vfFieldContextKey } from '@/components/field/context';
 
 defineOptions({
   inheritAttrs: false,
@@ -49,7 +50,10 @@ const attrs = useAttrs();
 const slots = useSlots();
 const triggerRef = ref<HTMLElement | null>(null);
 const menuRef = ref<HTMLElement | null>(null);
+const fieldContext = inject(vfFieldContextKey, null);
 const triggerId = useId({ prefix: 'vf-select-trigger' });
+
+fieldContext?.setFloatingSupported(true);
 const listboxId = useId({ prefix: 'vf-select-listbox' });
 const transitionDuration = {
   enter: vfMotionDurationsMs.fast,
@@ -65,6 +69,17 @@ const hasValue = computed(() => String(props.modelValue ?? '').length > 0);
 const hasLeadingAdornment = computed(() => Boolean(props.leadingIcon) || Boolean(slots.leading));
 const hasTrailingAdornment = computed(() => Boolean(props.trailingIcon) || Boolean(slots.trailing));
 const hasClearControl = computed(() => Boolean(props.clearable) && hasValue.value && !props.disabled);
+const isFloatingLabel = computed(() => fieldContext?.labelPlacement.value === 'floating');
+const externalClass = computed(() => attrs.class as string | undefined);
+const externalStyle = computed<StyleValue>(() => attrs.style as StyleValue);
+const triggerAttrs = computed(() =>
+  Object.fromEntries(
+    Object.entries(attrs).filter(
+      ([key]) =>
+        key.startsWith('aria-') || key.startsWith('data-') || key === 'title' || key === 'tabindex',
+    ),
+  ),
+);
 
 const triggerClasses = computed(() =>
   cx(
@@ -76,6 +91,7 @@ const triggerClasses = computed(() =>
     hasLeadingAdornment.value && 'vf-select--with-leading',
     hasTrailingAdornment.value && 'vf-select--with-trailing',
     hasClearControl.value && 'vf-select--with-clear',
+    isFloatingLabel.value && 'vf-select--floating',
   ),
 );
 
@@ -86,6 +102,7 @@ const wrapperClasses = computed(() =>
     hasLeadingAdornment.value && 'vf-select-wrap--with-leading',
     hasTrailingAdornment.value && 'vf-select-wrap--with-trailing',
     hasClearControl.value && 'vf-select-wrap--with-clear',
+    isFloatingLabel.value && 'vf-select-wrap--floating',
   ),
 );
 
@@ -94,7 +111,24 @@ const displayLabel = computed(() => {
     return selectedOption.value.label;
   }
 
+  if (isFloatingLabel.value) {
+    return '';
+  }
+
   return props.placeholder ?? '';
+});
+
+watch(
+  [hasValue, isOpen],
+  ([value, open]) => {
+    fieldContext?.setFilled(value || open);
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  fieldContext?.setFloatingSupported(false);
+  fieldContext?.setFilled(false);
 });
 
 const teleportDisabled = computed(
@@ -313,7 +347,7 @@ useEscapeKey(
 </script>
 
 <template>
-  <div :class="wrapperClasses">
+  <div :class="[wrapperClasses, externalClass]" :style="externalStyle">
     <input v-if="typeof attrs.name === 'string'" type="hidden" :name="attrs.name" :value="props.modelValue" />
 
     <button
@@ -321,11 +355,13 @@ useEscapeKey(
       ref="triggerRef"
       type="button"
       :class="triggerClasses"
+      :data-vf-filled="hasValue || undefined"
       :aria-controls="listboxId"
       :aria-expanded="isOpen"
       aria-haspopup="listbox"
       :aria-invalid="props.invalid || undefined"
       :disabled="props.disabled"
+      v-bind="triggerAttrs"
       @click="toggleMenu"
       @keydown="onTriggerKeydown"
     >
