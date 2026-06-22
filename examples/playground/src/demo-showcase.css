@@ -39,6 +39,10 @@ body {
   gap: calc(var(--vf-layout-space-layout-base) * 0.25);
 }
 
+.demo-block__header h2 {
+  scroll-margin-top: calc(var(--vf-layout-space-layout-base) * 4);
+}
+
 .demo-block__header h2,
 .demo-heading {
   margin: 0;

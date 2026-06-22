@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { VueIconify, icons } from "@codemonster-ru/vueforge-icons";
+import { VfStack } from "@codemonster-ru/vueforge-layouts";
 import {
   VfAccordion,
   VfAlert,
@@ -14,6 +15,8 @@ import {
   VfDialog,
   VfDivider,
   VfDropdown,
+  VfField,
+  VfFieldset,
   VfIconButton,
   VfInput,
   VfLink,
@@ -23,6 +26,8 @@ import {
   VfPopover,
   VfRadio,
   VfSelect,
+  VfSkeleton,
+  VfSkeletonGate,
   VfStepper,
   VfSwitch,
   VfTable,
@@ -32,7 +37,6 @@ import {
   VfTabs,
   VfTextarea,
   VfTooltip,
-  useTableOfContents,
   useTheme,
 } from "@codemonster-ru/vueforge-core";
 import type {
@@ -49,29 +53,39 @@ const drawerOpen = ref(false);
 const drawerFullscreenOpen = ref(false);
 const commandPaletteOpen = ref(false);
 const commandPaletteQuery = ref("");
-const dropdownControlled = ref(false);
-const popoverOpen = ref(false);
-const inputValue = ref("");
-const inputLeadingValue = ref("Search docs");
-const inputTrailingValue = ref("Filter query");
-const inputClearableValue = ref("Clearable search");
-const inputTrailingClearValue = ref("Trailing + clear");
-const textareaValue = ref("A compact foundation for the ecosystem.");
-const checkboxValue = ref(true);
-const switchValue = ref(true);
-const iconSwitchValue = ref(true);
-const radioValue = ref("pro");
-const selectValue = ref("");
-const selectLeadingValue = ref("pro");
-const selectTrailingValue = ref("team");
-const selectClearableValue = ref("starter");
-const selectTrailingClearValue = ref("enterprise");
-const activeTab = ref("overview");
-const activeStepper = ref("plan");
-const activeVerticalStepper = ref("billing");
-const activeAccordion = ref<string | null>("section-one");
-const activeMenuValue = ref("");
-const activeSimpleMenuValue = ref("");
+const dialogSize = ref<"sm" | "md" | "lg">("md");
+const drawerPlacement = ref<"left" | "right" | "top" | "bottom">("right");
+const formStackNameValue = ref("");
+const formStackEmailValue = ref("");
+const formStackPlanValue = ref("");
+
+const formGeometrySizes = ["sm", "md", "lg"] as const;
+const formGeometryFloatingVariants = ["in", "on", "over"] as const;
+const actionVariants = [
+  "primary",
+  "secondary",
+  "success",
+  "info",
+  "warn",
+  "help",
+  "danger",
+  "contrast",
+  "ghost",
+] as const;
+const feedbackTones = [
+  "primary",
+  "success",
+  "info",
+  "warn",
+  "help",
+  "danger",
+  "contrast",
+] as const;
+const linkTones = ["default", "muted"] as const;
+const linkUnderlines = ["none", "hover", "always"] as const;
+const overlayPlacements = ["top", "bottom"] as const;
+const dialogSizes = ["sm", "md", "lg"] as const;
+const drawerPlacements = ["left", "right", "top", "bottom"] as const;
 
 const releaseTabs = [
   { value: "overview", label: "Overview" },
@@ -249,104 +263,6 @@ const selectOptions = [
   { value: "custom", label: "Custom" },
 ];
 
-const docsMenuItems: VfNavMenuItem[] = [
-  {
-    value: "getting-started",
-    label: "Getting Started",
-    leadingIcon: "info",
-    children: [
-      { value: "installation", label: "Installation" },
-      { value: "quick-start", label: "Quick Start" },
-      { value: "migration", label: "Migration" },
-      { value: "faq", label: "FAQ" },
-    ],
-  },
-  {
-    value: "components",
-    label: "Components",
-    leadingIcon: "gear",
-    children: [
-      {
-        value: "actions-group",
-        kind: "group",
-        label: "Actions",
-        children: [
-          { value: "button", label: "Button" },
-          { value: "icon-button", label: "Icon Button" },
-          { value: "link", label: "Link" },
-        ],
-      },
-      {
-        value: "navigation-group",
-        kind: "group",
-        label: "Navigation",
-        children: [
-          {
-            value: "tabs",
-            label: "Tabs",
-            children: [
-              {
-                value: "overview-tab",
-                label: "Overview Tab",
-                children: [
-                  { value: "overview-anatomy", label: "Anatomy" },
-                  { value: "overview-accessibility", label: "Accessibility" },
-                ],
-              },
-              { value: "status-tab", label: "Status Tab" },
-              { value: "usage-tab", label: "Usage Tab" },
-            ],
-          },
-          { value: "stepper", label: "Stepper" },
-          { value: "accordion", label: "Accordion" },
-          { value: "nav-menu", label: "Nav Menu" },
-          {
-            value: "storybook-nav",
-            label: "Storybook",
-            href: "https://storybook.js.org",
-            target: "_blank",
-          },
-        ],
-      },
-      {
-        value: "overlay-group",
-        kind: "group",
-        label: "Overlay",
-        children: [
-          { value: "dialog", label: "Dialog" },
-          { value: "drawer", label: "Drawer" },
-          { value: "dropdown", label: "Dropdown" },
-          { value: "popover", label: "Popover" },
-          { value: "tooltip", label: "Tooltip" },
-        ],
-      },
-      {
-        value: "forms-group",
-        kind: "group",
-        label: "Forms",
-        children: [
-          { value: "input", label: "Input" },
-          { value: "textarea", label: "Textarea" },
-          { value: "checkbox", label: "Checkbox" },
-          { value: "radio", label: "Radio" },
-          { value: "switch", label: "Switch" },
-        ],
-      },
-    ],
-  },
-  {
-    value: "foundation",
-    label: "Foundation",
-    leadingIcon: "checkCircle",
-    children: [
-      { value: "tokens", label: "Tokens" },
-      { value: "theme", label: "Theme" },
-      { value: "breakpoints", label: "Breakpoints" },
-      { value: "motion", label: "Motion" },
-    ],
-  },
-];
-
 const docsMenuSimpleItems: VfNavMenuItem[] = [
   {
     value: "getting-started",
@@ -472,13 +388,8 @@ const tocItems: VfTableOfContentsItem[] = [
   { id: "demo-feedback", label: "Feedback", level: 1 },
   { id: "demo-forms", label: "Forms", level: 1 },
   { id: "demo-navigation", label: "Navigation and Disclosure", level: 1 },
-  { id: "demo-dialog", label: "Dialog", level: 1 },
+  { id: "demo-dialog", label: "Modals and Commands", level: 1 },
 ];
-
-const { activeId: activeHeadingId } = useTableOfContents({
-  items: tocItems,
-  offset: 96,
-});
 
 const tabContent = computed<Record<string, string>>(() => ({
   overview: "Overview content.",
@@ -506,7 +417,7 @@ const tabContent = computed<Record<string, string>>(() => ({
         <div class="demo-grid demo-grid--three">
           <div class="demo-example">
             <p class="demo-label">vf-theme-provider</p>
-            <div class="demo-stack">
+            <div class="demo-stack demo-form-stack">
               <div class="demo-inline">
                 <VfButton
                   size="sm"
@@ -536,7 +447,7 @@ const tabContent = computed<Record<string, string>>(() => ({
           </div>
           <div class="demo-example">
             <p class="demo-label">vf-theme-switch</p>
-            <div class="demo-stack">
+            <div class="demo-stack demo-form-stack">
               <div class="demo-inline">
                 <VfThemeSwitch />
                 <VfThemeSwitch static />
@@ -579,7 +490,7 @@ const tabContent = computed<Record<string, string>>(() => ({
         <div class="demo-grid demo-grid--three">
           <div class="demo-example">
             <p class="demo-label">h1-h6 headings</p>
-            <div class="demo-stack">
+            <div class="demo-stack demo-form-stack">
               <h1 class="vf-heading vf-heading-h1">Heading H1</h1>
               <h2 class="vf-heading vf-heading-h2">Heading H2</h2>
               <h3 class="vf-heading vf-heading-h3">Heading H3</h3>
@@ -843,96 +754,91 @@ const tabContent = computed<Record<string, string>>(() => ({
         </div>
 
         <div class="demo-grid demo-grid--three">
-          <div class="demo-example">
-            <p class="demo-label">vf-button</p>
-            <div class="demo-inline">
-              <VfButton>Primary</VfButton>
-              <VfButton variant="secondary">Secondary</VfButton>
-              <VfButton variant="success">Success</VfButton>
-              <VfButton variant="info">Info</VfButton>
-              <VfButton variant="warn">Warn</VfButton>
-              <VfButton variant="help">Help</VfButton>
-              <VfButton variant="danger">Danger</VfButton>
-              <VfButton variant="contrast">Contrast</VfButton>
-              <VfButton variant="ghost">Ghost</VfButton>
-              <VfButton disabled>Disabled</VfButton>
-            </div>
-          </div>
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Actions visual QA matrix</p>
+            <div class="demo-component-matrix" data-test="action-geometry-matrix">
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">Button variants by size</p>
+                <div class="demo-component-matrix__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`button-${size}`"
+                    class="demo-component-matrix__cell"
+                  >
+                    <p class="demo-component-matrix__label">{{ size }}</p>
+                    <div class="demo-inline">
+                      <VfButton
+                        v-for="variant in actionVariants"
+                        :key="`${size}-${variant}`"
+                        :size="size"
+                        :variant="variant"
+                      >
+                        {{ variant }}
+                      </VfButton>
+                      <VfButton :size="size" disabled>disabled</VfButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <div class="demo-example">
-            <p class="demo-label">vf-icon-button</p>
-            <div class="demo-inline">
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Primary settings"
-                variant="primary"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Secondary settings"
-                variant="secondary"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Success settings"
-                variant="success"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Info settings"
-                variant="info"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Warn settings"
-                variant="warn"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Help settings"
-                variant="help"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Danger settings"
-                variant="danger"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Contrast settings"
-                variant="contrast"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Ghost settings"
-                variant="ghost"
-              />
-              <VfIconButton
-                :icon="icons.gear"
-                aria-label="Disabled settings"
-                disabled
-              />
-            </div>
-          </div>
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">Icon button variants by size</p>
+                <div class="demo-component-matrix__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`icon-button-${size}`"
+                    class="demo-component-matrix__cell"
+                  >
+                    <p class="demo-component-matrix__label">{{ size }}</p>
+                    <div class="demo-inline">
+                      <VfIconButton
+                        v-for="variant in actionVariants"
+                        :key="`${size}-${variant}`"
+                        :icon="icons.gear"
+                        :size="size"
+                        :variant="variant"
+                        :aria-label="`${variant} ${size} settings`"
+                      />
+                      <VfIconButton
+                        :icon="icons.gear"
+                        :size="size"
+                        aria-label="Disabled settings"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <div class="demo-example">
-            <p class="demo-label">vf-link</p>
-            <div class="demo-stack">
-              <VfLink href="https://example.com">Quiet Product Link</VfLink>
-              <VfLink href="https://example.com" underline="hover">
-                Hover Underline Link
-              </VfLink>
-              <VfLink
-                href="https://example.com"
-                target="_blank"
-                underline="always"
-              >
-                External Docs Link
-              </VfLink>
-              <p class="demo-text">
-                Supports regular links, new-tab links, and router-style
-                navigation.
-              </p>
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">Link tone and underline states</p>
+                <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                  <div
+                    v-for="tone in linkTones"
+                    :key="`link-${tone}`"
+                    class="demo-component-matrix__cell"
+                  >
+                    <p class="demo-component-matrix__label">{{ tone }}</p>
+                    <VfLink
+                      v-for="underline in linkUnderlines"
+                      :key="`${tone}-${underline}`"
+                      href="#demo-actions"
+                      :tone="tone"
+                      :underline="underline"
+                    >
+                      {{ underline }} underline
+                    </VfLink>
+                    <VfLink
+                      href="https://example.com"
+                      target="_blank"
+                      :tone="tone"
+                      underline="hover"
+                    >
+                      external link
+                    </VfLink>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -944,82 +850,60 @@ const tabContent = computed<Record<string, string>>(() => ({
         </div>
 
         <div class="demo-grid demo-grid--three">
-          <div class="demo-example">
-            <p class="demo-label">vf-tooltip</p>
-            <VfTooltip
-              text="Tooltip is opened by hover and focus."
-              placement="bottom"
-            >
-              <VfButton variant="secondary">Tooltip</VfButton>
-            </VfTooltip>
-          </div>
-
-          <div class="demo-example">
-            <p class="demo-label">vf-dropdown</p>
-            <div class="demo-stack">
-              <div class="demo-stack">
-                <p class="demo-text">Default</p>
-                <VfDropdown v-model:open="dropdownControlled">
-                  <template #trigger="{ open }">
-                    <VfButton tabindex="-1" variant="secondary">{{
-                      open ? "Close menu" : "Open menu"
-                    }}</VfButton>
-                  </template>
-
-                  <button class="vf-dropdown__item" role="menuitem">
-                    Action one
-                  </button>
-                  <button
-                    class="vf-dropdown__item vf-dropdown__item--active"
-                    role="menuitem"
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Overlay visual QA matrix</p>
+            <div class="demo-component-matrix" data-test="overlay-trigger-matrix">
+              <div class="demo-component-matrix__grid">
+                <div
+                  v-for="placement in overlayPlacements"
+                  :key="`tooltip-${placement}`"
+                  class="demo-component-matrix__cell"
+                >
+                  <p class="demo-component-matrix__label">tooltip {{ placement }}</p>
+                  <VfTooltip
+                    :text="`Tooltip placement: ${placement}`"
+                    :placement="placement"
                   >
-                    Action two
-                  </button>
-                </VfDropdown>
-              </div>
+                    <VfButton variant="secondary">{{ placement }}</VfButton>
+                  </VfTooltip>
+                </div>
 
-              <VfDivider />
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">dropdown default</p>
+                  <VfDropdown>
+                    <template #trigger>
+                      <VfButton tabindex="-1" variant="secondary">Open menu</VfButton>
+                    </template>
+                    <button class="vf-dropdown__item" role="menuitem">Action one</button>
+                    <button class="vf-dropdown__item" role="menuitem">Action two</button>
+                  </VfDropdown>
+                </div>
 
-              <div class="demo-stack">
-                <p class="demo-text">Pills</p>
-                <VfDropdown variant="pills">
-                  <template #trigger="{ open }">
-                    <VfButton tabindex="-1" variant="secondary">{{
-                      open ? "Close menu" : "Open menu"
-                    }}</VfButton>
-                  </template>
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">dropdown pills</p>
+                  <VfDropdown variant="pills">
+                    <template #trigger>
+                      <VfButton tabindex="-1" variant="secondary">Open menu</VfButton>
+                    </template>
+                    <button class="vf-dropdown__item" role="menuitem">Action one</button>
+                    <button class="vf-dropdown__item" role="menuitem">Action two</button>
+                  </VfDropdown>
+                </div>
 
-                  <button class="vf-dropdown__item" role="menuitem">
-                    Action one
-                  </button>
-                  <button
-                    class="vf-dropdown__item vf-dropdown__item--active"
-                    role="menuitem"
-                  >
-                    Action two
-                  </button>
-                </VfDropdown>
-              </div>
-            </div>
-          </div>
-
-          <div class="demo-example">
-            <p class="demo-label">vf-popover</p>
-            <VfPopover v-model:open="popoverOpen">
-              <template #trigger="{ open }">
-                <VfButton tabindex="-1" variant="secondary">{{
-                  open ? "Close popover" : "Open popover"
-                }}</VfButton>
-              </template>
-
-              <div class="demo-stack">
-                <p class="demo-text">Popover content.</p>
-                <div class="demo-inline">
-                  <VfButton size="sm">Action</VfButton>
-                  <VfButton size="sm" variant="secondary">Secondary</VfButton>
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">popover content</p>
+                  <VfPopover>
+                    <template #trigger>
+                      <VfButton tabindex="-1" variant="secondary">Open popover</VfButton>
+                    </template>
+                    <div class="demo-stack">
+                      <p class="demo-text">Compact content block.</p>
+                      <VfButton size="sm">Apply</VfButton>
+                    </div>
+                  </VfPopover>
                 </div>
               </div>
-            </VfPopover>
+            </div>
           </div>
         </div>
       </section>
@@ -1030,106 +914,101 @@ const tabContent = computed<Record<string, string>>(() => ({
         </div>
 
         <div class="demo-grid demo-grid--three">
-          <div class="demo-item">
-            <p class="demo-label">vf-card</p>
-            <VfCard title="Release Summary">
-              <p>Card content.</p>
-              <template #footer>
-                <div class="demo-inline">
-                  <VfBadge tone="success">Stable</VfBadge>
-                  <VfBadge tone="primary">Core</VfBadge>
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Surfaces visual QA matrix</p>
+            <div class="demo-component-matrix" data-test="surface-geometry-matrix">
+              <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">card default</p>
+                  <VfCard title="Release Summary">
+                    <p class="demo-m-0">Default card spacing with body and footer.</p>
+                    <template #footer>
+                      <div class="demo-inline">
+                        <VfBadge tone="success">Stable</VfBadge>
+                        <VfBadge tone="primary">Core</VfBadge>
+                      </div>
+                    </template>
+                  </VfCard>
                 </div>
-              </template>
-            </VfCard>
-          </div>
 
-          <div class="demo-item">
-            <p class="demo-label">vf-panel</p>
-            <VfPanel title="Supporting Context">
-              <p>Panel content.</p>
-            </VfPanel>
-          </div>
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">card compact</p>
+                  <VfCard title="Compact Release" compact>
+                    <p class="demo-m-0">Compact card spacing for dense surfaces.</p>
+                    <template #footer>
+                      <VfTag tone="info">Dense</VfTag>
+                    </template>
+                  </VfCard>
+                </div>
 
-          <div class="demo-item">
-            <p class="demo-label">vf-divider</p>
-            <div class="demo-stack">
-              <VfDivider />
-              <div class="demo-inline">
-                <span class="demo-text">Start</span>
-                <VfDivider orientation="vertical" />
-                <span class="demo-text">Middle</span>
-                <VfDivider orientation="vertical" />
-                <span class="demo-text">End</span>
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">panel default</p>
+                  <VfPanel title="Supporting Context">
+                    <p class="demo-m-0">Panel content with regular treatment.</p>
+                  </VfPanel>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">panel subtle</p>
+                  <VfPanel title="Subtle Context" subtle>
+                    <p class="demo-m-0">Subtle panel treatment for quiet grouping.</p>
+                  </VfPanel>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">table default</p>
+                  <VfTable>
+                    <template #header>
+                      <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                      </tr>
+                    </template>
+                    <tr>
+                      <td>Core</td>
+                      <td>Stable</td>
+                    </tr>
+                    <tr>
+                      <td>Forms</td>
+                      <td>Review</td>
+                    </tr>
+                  </VfTable>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">table striped</p>
+                  <VfTable striped>
+                    <template #header>
+                      <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                      </tr>
+                    </template>
+                    <tr>
+                      <td>Navigation</td>
+                      <td>Stable</td>
+                    </tr>
+                    <tr>
+                      <td>Overlay</td>
+                      <td>Review</td>
+                    </tr>
+                  </VfTable>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">divider rhythm</p>
+                  <div class="demo-stack">
+                    <span class="demo-text">Above</span>
+                    <VfDivider />
+                    <div class="demo-inline">
+                      <span class="demo-text">Left</span>
+                      <VfDivider orientation="vertical" />
+                      <span class="demo-text">Right</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-table</p>
-            <VfTable>
-              <template #header>
-                <tr>
-                  <th>Prop</th>
-                  <th>Type</th>
-                  <th>Default</th>
-                </tr>
-              </template>
-
-              <tr>
-                <td>size</td>
-                <td>"sm" | "md" | "lg"</td>
-                <td>"md"</td>
-              </tr>
-              <tr>
-                <td>disabled</td>
-                <td>boolean</td>
-                <td>false</td>
-              </tr>
-              <tr>
-                <td>invalid</td>
-                <td>boolean</td>
-                <td>false</td>
-              </tr>
-              <tr>
-                <td>placeholder</td>
-                <td>string</td>
-                <td>undefined</td>
-              </tr>
-            </VfTable>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-table striped</p>
-            <VfTable striped>
-              <template #header>
-                <tr>
-                  <th>Prop</th>
-                  <th>Type</th>
-                  <th>Default</th>
-                </tr>
-              </template>
-
-              <tr>
-                <td>size</td>
-                <td>"sm" | "md" | "lg"</td>
-                <td>"md"</td>
-              </tr>
-              <tr>
-                <td>disabled</td>
-                <td>boolean</td>
-                <td>false</td>
-              </tr>
-              <tr>
-                <td>invalid</td>
-                <td>boolean</td>
-                <td>false</td>
-              </tr>
-              <tr>
-                <td>placeholder</td>
-                <td>string</td>
-                <td>undefined</td>
-              </tr>
-            </VfTable>
           </div>
         </div>
       </section>
@@ -1140,51 +1019,83 @@ const tabContent = computed<Record<string, string>>(() => ({
         </div>
 
         <div class="demo-grid demo-grid--two">
-          <div class="demo-item">
-            <p class="demo-label">vf-alert</p>
-            <div class="demo-stack">
-              <VfAlert title="Heads up">Alert content.</VfAlert>
-              <VfAlert tone="success" title="Saved">Success content.</VfAlert>
-              <VfAlert tone="info" title="FYI">Info content.</VfAlert>
-              <VfAlert tone="warn" title="Warning">Warn content.</VfAlert>
-              <VfAlert tone="help" title="Need help?">Help content.</VfAlert>
-              <VfAlert tone="danger" title="Error">Danger content.</VfAlert>
-              <VfAlert tone="contrast" title="Contrast"
-                >Contrast content.</VfAlert
-              >
-              <VfDivider />
-              <VfAlert title="Custom icon" icon="gear"
-                >Custom icon content.</VfAlert
-              >
-              <VfAlert title="Without icon" hide-icon
-                >Text-first alert content.</VfAlert
-              >
-            </div>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-badge, vf-tag</p>
-            <div class="demo-stack">
-              <div class="demo-inline">
-                <VfBadge>Neutral</VfBadge>
-                <VfBadge tone="primary">Primary</VfBadge>
-                <VfBadge tone="success">Success</VfBadge>
-                <VfBadge tone="info">Info</VfBadge>
-                <VfBadge tone="warn">Warn</VfBadge>
-                <VfBadge tone="help">Help</VfBadge>
-                <VfBadge tone="danger">Danger</VfBadge>
-                <VfBadge tone="contrast">Contrast</VfBadge>
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Feedback visual QA matrix</p>
+            <div class="demo-component-matrix" data-test="feedback-geometry-matrix">
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">Alert tones</p>
+                <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                  <VfAlert
+                    v-for="tone in feedbackTones"
+                    :key="`alert-${tone}`"
+                    :tone="tone"
+                    :title="`${tone} alert`"
+                  >
+                    Consistent icon, border, and content spacing.
+                  </VfAlert>
+                  <VfAlert title="without icon" hide-icon>
+                    Text-first alert content alignment.
+                  </VfAlert>
+                </div>
               </div>
-              <VfDivider />
-              <div class="demo-inline">
-                <VfTag>Neutral</VfTag>
-                <VfTag tone="primary">Primary</VfTag>
-                <VfTag tone="success">Success</VfTag>
-                <VfTag tone="info">Info</VfTag>
-                <VfTag tone="warn">Warn</VfTag>
-                <VfTag tone="help">Help</VfTag>
-                <VfTag tone="danger">Danger</VfTag>
-                <VfTag tone="contrast">Contrast</VfTag>
+
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">Badges and tags</p>
+                <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">badges</p>
+                    <div class="demo-inline">
+                      <VfBadge>neutral</VfBadge>
+                      <VfBadge
+                        v-for="tone in feedbackTones"
+                        :key="`badge-${tone}`"
+                        :tone="tone"
+                      >
+                        {{ tone }}
+                      </VfBadge>
+                    </div>
+                  </div>
+
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">tags</p>
+                    <div class="demo-inline">
+                      <VfTag>neutral</VfTag>
+                      <VfTag
+                        v-for="tone in feedbackTones"
+                        :key="`tag-${tone}`"
+                        :tone="tone"
+                      >
+                        {{ tone }}
+                      </VfTag>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">Skeleton loading states</p>
+                <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">skeleton sizes</p>
+                    <VfSkeleton min-height="2.5rem" />
+                    <VfSkeleton min-height="4rem" radius="var(--vf-radius-surface)" />
+                    <VfSkeleton min-height="6rem" :animated="false" />
+                  </div>
+
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">skeleton gate</p>
+                    <VfSkeletonGate :ready="false" min-height="6rem" reserve-height="6rem">
+                      <VfPanel title="Loaded panel">
+                        <p class="demo-m-0">Loaded content preserves geometry.</p>
+                      </VfPanel>
+                    </VfSkeletonGate>
+                    <VfSkeletonGate ready min-height="6rem" reserve-height="6rem">
+                      <VfPanel title="Ready panel">
+                        <p class="demo-m-0">Ready content replaces the skeleton.</p>
+                      </VfPanel>
+                    </VfSkeletonGate>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1197,157 +1108,524 @@ const tabContent = computed<Record<string, string>>(() => ({
         </div>
 
         <div class="demo-grid demo-grid--three">
-          <div class="demo-item">
-            <p class="demo-label">vf-input</p>
-            <div class="demo-stack">
-              <VfInput v-model="inputValue" placeholder="Project name" />
-              <VfInput invalid placeholder="Invalid input" />
-              <VfInput disabled placeholder="Disabled input" />
-              <VfDivider />
-              <VfInput
-                v-model="inputLeadingValue"
-                leading-icon="magnifyingGlass"
-                placeholder="Input with leading icon"
-              />
-              <VfInput
-                v-model="inputTrailingValue"
-                trailing-icon="filter"
-                placeholder="Input with trailing icon"
-              />
-              <VfInput
-                v-model="inputClearableValue"
-                leading-icon="magnifyingGlass"
-                clearable
-                placeholder="Input with clear button"
-              />
-              <VfInput
-                v-model="inputTrailingClearValue"
-                trailing-icon="filter"
-                clearable
-                placeholder="Input with trailing + clear"
-              />
-            </div>
-          </div>
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Recommended form stack</p>
+            <VfStack class="demo-form-stack">
+              <p class="demo-text">
+                Use a vertical layout container for form spacing. <code>VfField</code> owns internal label, control,
+                description, and error spacing; the form layout should own the gap between fields.
+              </p>
 
-          <div class="demo-item">
-            <p class="demo-label">vf-textarea</p>
-            <div class="demo-stack">
-              <VfTextarea
-                v-model="textareaValue"
-                placeholder="Describe the release..."
-              />
-              <VfTextarea invalid placeholder="Invalid textarea" />
-              <VfTextarea disabled placeholder="Disabled textarea" />
-            </div>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-select</p>
-            <div class="demo-stack">
-              <VfSelect
-                v-model="selectValue"
-                placeholder="Choose a plan"
-                :options="selectOptions"
-              />
-              <VfSelect
-                invalid
-                placeholder="Invalid select"
-                :options="selectOptions"
-              />
-              <VfSelect
-                disabled
-                placeholder="Disabled select"
-                :options="selectOptions"
-              />
-              <VfDivider />
-              <VfSelect
-                v-model="selectLeadingValue"
-                leading-icon="layers"
-                placeholder="Select with leading icon"
-                :options="selectOptions"
-              />
-              <VfSelect
-                v-model="selectTrailingValue"
-                trailing-icon="filter"
-                placeholder="Select with trailing icon"
-                :options="selectOptions"
-              />
-              <VfSelect
-                v-model="selectClearableValue"
-                leading-icon="layers"
-                clearable
-                placeholder="Select with clear button"
-                :options="selectOptions"
-              />
-              <VfSelect
-                v-model="selectTrailingClearValue"
-                trailing-icon="filter"
-                clearable
-                placeholder="Select with trailing + clear"
-                :options="selectOptions"
-              />
-            </div>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-checkbox</p>
-            <div class="demo-stack">
-              <VfCheckbox v-model="checkboxValue">Accept terms</VfCheckbox>
-              <VfCheckbox invalid>Invalid choice</VfCheckbox>
-              <VfCheckbox :model-value="true" disabled>
-                Disabled active choice
-              </VfCheckbox>
-              <VfCheckbox disabled>Disabled choice</VfCheckbox>
-            </div>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-switch</p>
-            <div class="demo-stack">
-              <VfSwitch v-model="switchValue">Enable notifications</VfSwitch>
-              <VfSwitch static>Static track</VfSwitch>
-              <VfSwitch static thumb-contrast="inverse">
-                Static track inverse thumb
-              </VfSwitch>
-              <VfSwitch v-model="iconSwitchValue">
-                <template #thumb="{ checked }">
-                  <VueIconify :icon="checked ? icons.check : icons.xmark" />
+              <VfField label="Workspace name">
+                <template #default="{ controlId, describedBy, invalid }">
+                  <VfInput
+                    :id="controlId"
+                    v-model="formStackNameValue"
+                    :invalid="invalid"
+                    :aria-describedby="describedBy"
+                    placeholder="Acme Cloud"
+                  />
                 </template>
-                Icon thumb
-              </VfSwitch>
-              <VfSwitch size="sm">Compact toggle</VfSwitch>
-              <VfSwitch static invalid>Invalid static toggle</VfSwitch>
-              <VfSwitch invalid>Invalid toggle</VfSwitch>
-              <VfSwitch :model-value="true" disabled>
-                Disabled active toggle
-              </VfSwitch>
-              <VfSwitch disabled>Disabled toggle</VfSwitch>
-            </div>
+              </VfField>
+
+              <VfField label="Billing email" label-placement="floating">
+                <template #default="{ controlId, describedBy, invalid }">
+                  <VfInput
+                    :id="controlId"
+                    v-model="formStackEmailValue"
+                    :invalid="invalid"
+                    :aria-describedby="describedBy"
+                    placeholder="team@acme.test"
+                  />
+                </template>
+              </VfField>
+
+              <VfField label="Plan" label-placement="floating" floating-variant="over">
+                <template #default="{ controlId, describedBy, invalid }">
+                  <VfSelect
+                    :id="controlId"
+                    v-model="formStackPlanValue"
+                    :invalid="invalid"
+                    :aria-describedby="describedBy"
+                    placeholder="Choose a plan"
+                    :options="selectOptions"
+                  />
+                </template>
+              </VfField>
+            </VfStack>
           </div>
 
-          <div class="demo-item">
-            <p class="demo-label">vf-radio</p>
-            <div class="demo-stack">
-              <VfRadio v-model="radioValue" name="demo-plan" value="free"
-                >Free plan</VfRadio
-              >
-              <VfRadio v-model="radioValue" name="demo-plan" value="pro"
-                >Pro plan</VfRadio
-              >
-              <VfRadio name="demo-invalid-plan" value="enterprise" invalid
-                >Invalid option</VfRadio
-              >
-              <VfRadio
-                :model-value="'team'"
-                name="demo-disabled-active-plan"
-                value="team"
-                disabled
-              >
-                Disabled active option
-              </VfRadio>
-              <VfRadio name="demo-disabled-plan" value="team" disabled
-                >Disabled option</VfRadio
-              >
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Forms visual QA matrix</p>
+            <div class="demo-form-geometry" data-test="form-geometry-matrix">
+              <div class="demo-form-geometry__section">
+                <p class="demo-text">Text controls</p>
+                <div class="demo-form-geometry__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`text-${size}`"
+                    class="demo-form-geometry__cell"
+                  >
+                    <p class="demo-form-geometry__label">{{ size }}</p>
+                    <VfInput
+                      :size="size"
+                      model-value="Search query"
+                      leading-icon="magnifyingGlass"
+                      clearable
+                      placeholder="Search"
+                    />
+                    <VfInput
+                      :size="size"
+                      model-value="Filtered result"
+                      trailing-icon="filter"
+                      clearable
+                      placeholder="Filter"
+                    />
+                    <VfSelect
+                      :size="size"
+                      model-value="pro"
+                      leading-icon="layers"
+                      trailing-icon="filter"
+                      clearable
+                      placeholder="Plan"
+                      :options="selectOptions"
+                    />
+                    <VfTextarea
+                      :size="size"
+                      model-value="A concise multiline value for baseline and padding inspection."
+                      placeholder="Notes"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-form-geometry__section">
+                <p class="demo-text">Text control states</p>
+                <div class="demo-form-geometry__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`text-states-${size}`"
+                    class="demo-form-geometry__cell"
+                  >
+                    <p class="demo-form-geometry__label">{{ size }}</p>
+                    <VfInput :size="size" model-value="Default value" placeholder="Default" />
+                    <VfInput :size="size" model-value="Invalid value" invalid placeholder="Invalid" />
+                    <VfInput :size="size" model-value="Disabled value" disabled placeholder="Disabled" />
+                    <VfInput :size="size" model-value="Readonly value" readonly placeholder="Readonly" />
+                    <VfInput
+                      :size="size"
+                      model-value="secret-value"
+                      type="password"
+                      password-reveal
+                      placeholder="Password"
+                    />
+                    <VfSelect
+                      :size="size"
+                      model-value="pro"
+                      placeholder="Default select"
+                      :options="selectOptions"
+                    />
+                    <VfSelect
+                      :size="size"
+                      model-value=""
+                      invalid
+                      placeholder="Invalid select"
+                      :options="selectOptions"
+                    />
+                    <VfSelect
+                      :size="size"
+                      model-value="team"
+                      disabled
+                      placeholder="Disabled select"
+                      :options="selectOptions"
+                    />
+                    <VfTextarea
+                      :size="size"
+                      model-value="Default textarea value"
+                      placeholder="Default textarea"
+                    />
+                    <VfTextarea
+                      :size="size"
+                      model-value="Invalid textarea value"
+                      invalid
+                      placeholder="Invalid textarea"
+                    />
+                    <VfTextarea
+                      :size="size"
+                      model-value="Disabled textarea value"
+                      disabled
+                      placeholder="Disabled textarea"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-form-geometry__section">
+                <p class="demo-text">Adornments and actions</p>
+                <div class="demo-form-geometry__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`adornments-${size}`"
+                    class="demo-form-geometry__cell"
+                  >
+                    <p class="demo-form-geometry__label">{{ size }}</p>
+                    <VfInput :size="size" model-value="Leading" leading-icon="magnifyingGlass" />
+                    <VfInput :size="size" model-value="Trailing" trailing-icon="filter" />
+                    <VfInput :size="size" model-value="Clear" clearable />
+                    <VfInput :size="size" model-value="Lead clear" leading-icon="magnifyingGlass" clearable />
+                    <VfInput :size="size" model-value="Trail clear" trailing-icon="filter" clearable />
+                    <VfInput
+                      :size="size"
+                      model-value="all-actions"
+                      type="password"
+                      leading-icon="key"
+                      trailing-icon="filter"
+                      password-reveal
+                      clearable
+                    />
+                    <VfSelect
+                      :size="size"
+                      model-value="starter"
+                      leading-icon="layers"
+                      placeholder="Leading"
+                      :options="selectOptions"
+                    />
+                    <VfSelect
+                      :size="size"
+                      model-value="team"
+                      trailing-icon="filter"
+                      placeholder="Trailing"
+                      :options="selectOptions"
+                    />
+                    <VfSelect
+                      :size="size"
+                      model-value="enterprise"
+                      leading-icon="layers"
+                      trailing-icon="filter"
+                      clearable
+                      placeholder="Leading trailing clear"
+                      :options="selectOptions"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-form-geometry__section">
+                <p class="demo-text">Floating labels</p>
+                <div class="demo-form-geometry__grid">
+                  <div
+                    v-for="variant in formGeometryFloatingVariants"
+                    :key="`floating-${variant}`"
+                    class="demo-form-geometry__cell"
+                  >
+                    <p class="demo-form-geometry__label">{{ variant }}</p>
+                    <VfField label="Search" label-placement="floating" :floating-variant="variant">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfInput
+                          :id="controlId"
+                          model-value="Search query"
+                          leading-icon="magnifyingGlass"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Search"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Plan" label-placement="floating" :floating-variant="variant">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfSelect
+                          :id="controlId"
+                          model-value="team"
+                          leading-icon="layers"
+                          trailing-icon="filter"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Plan"
+                          :options="selectOptions"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Notes" label-placement="floating" :floating-variant="variant">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfTextarea
+                          :id="controlId"
+                          model-value="Textarea baseline check"
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Notes"
+                        />
+                      </template>
+                    </VfField>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-form-geometry__section">
+                <p class="demo-text">Floating labels by size and fill state</p>
+                <div class="demo-form-geometry__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`floating-size-${size}`"
+                    class="demo-form-geometry__cell"
+                  >
+                    <p class="demo-form-geometry__label">{{ size }}</p>
+                    <VfField label="Empty input" label-placement="floating">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfInput
+                          :id="controlId"
+                          :size="size"
+                          model-value=""
+                          leading-icon="magnifyingGlass"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Empty"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Filled input" label-placement="floating">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfInput
+                          :id="controlId"
+                          :size="size"
+                          model-value="Filled"
+                          leading-icon="magnifyingGlass"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Filled"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Invalid input" label-placement="floating" error="Invalid">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfInput
+                          :id="controlId"
+                          :size="size"
+                          model-value="Invalid"
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Invalid"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Empty select" label-placement="floating">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfSelect
+                          :id="controlId"
+                          :size="size"
+                          model-value=""
+                          leading-icon="layers"
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Empty"
+                          :options="selectOptions"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Filled select" label-placement="floating">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfSelect
+                          :id="controlId"
+                          :size="size"
+                          model-value="pro"
+                          leading-icon="layers"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Filled"
+                          :options="selectOptions"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Empty textarea" label-placement="floating">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfTextarea
+                          :id="controlId"
+                          :size="size"
+                          model-value=""
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Empty"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Filled textarea" label-placement="floating">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfTextarea
+                          :id="controlId"
+                          :size="size"
+                          model-value="Filled textarea"
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Filled"
+                        />
+                      </template>
+                    </VfField>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-form-geometry__section">
+                <p class="demo-text">Selection controls</p>
+                <div class="demo-form-geometry__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`selection-${size}`"
+                    class="demo-form-geometry__cell"
+                  >
+                    <p class="demo-form-geometry__label">{{ size }}</p>
+                    <div class="demo-selection-list">
+                      <VfCheckbox :size="size" :model-value="true">Checked option</VfCheckbox>
+                      <VfCheckbox :size="size" invalid>Invalid option</VfCheckbox>
+                      <VfRadio :size="size" model-value="active" value="active" :name="`geometry-radio-${size}`">
+                        Active radio
+                      </VfRadio>
+                      <VfSwitch :size="size" :model-value="true">
+                        Active switch
+                      </VfSwitch>
+                      <VfSwitch :size="size" :model-value="true">
+                        <template #thumb="{ checked }">
+                          <VueIconify :icon="checked ? icons.check : icons.xmark" />
+                        </template>
+                        Icon switch
+                      </VfSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-form-geometry__section">
+                <p class="demo-text">Field containers</p>
+                <div class="demo-form-geometry__grid demo-form-geometry__grid--two">
+                  <div class="demo-form-geometry__cell">
+                    <p class="demo-form-geometry__label">field</p>
+                    <VfField label="Default field" description="Description text">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfInput
+                          :id="controlId"
+                          model-value="Field value"
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Default field"
+                        />
+                      </template>
+                    </VfField>
+                    <VfField label="Invalid field" error="Error text">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfInput
+                          :id="controlId"
+                          model-value="Invalid value"
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Invalid field"
+                        />
+                      </template>
+                    </VfField>
+                  </div>
+
+                  <div class="demo-form-geometry__cell">
+                    <p class="demo-form-geometry__label">fieldset</p>
+                    <VfFieldset label="Notification channels" description="Grouped checkbox controls">
+                      <template #default="{ invalid }">
+                        <div class="demo-selection-list">
+                          <VfCheckbox :model-value="true" :invalid="invalid">
+                            Email alerts
+                          </VfCheckbox>
+                          <VfCheckbox :invalid="invalid">Slack alerts</VfCheckbox>
+                        </div>
+                      </template>
+                    </VfFieldset>
+                    <VfFieldset label="Workspace plan" error="Select one option">
+                      <template #default="{ invalid }">
+                        <div class="demo-selection-list">
+                          <VfRadio
+                            model-value="pro"
+                            name="fieldset-plan"
+                            value="starter"
+                            :invalid="invalid"
+                          >
+                            Starter
+                          </VfRadio>
+                          <VfRadio
+                            model-value="pro"
+                            name="fieldset-plan"
+                            value="pro"
+                            :invalid="invalid"
+                          >
+                            Pro
+                          </VfRadio>
+                        </div>
+                      </template>
+                    </VfFieldset>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-form-geometry__section">
+                <p class="demo-text">Selection states and multiline labels</p>
+                <div class="demo-form-geometry__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`selection-states-${size}`"
+                    class="demo-form-geometry__cell"
+                  >
+                    <p class="demo-form-geometry__label">{{ size }}</p>
+                    <div class="demo-selection-list">
+                      <VfCheckbox :size="size">Unchecked checkbox</VfCheckbox>
+                      <VfCheckbox :size="size" :model-value="true">Checked checkbox</VfCheckbox>
+                      <VfCheckbox :size="size" invalid>Invalid checkbox</VfCheckbox>
+                      <VfCheckbox :size="size" disabled>Disabled checkbox</VfCheckbox>
+                      <VfCheckbox :size="size" :model-value="true" disabled>Disabled checked checkbox</VfCheckbox>
+                      <VfCheckbox :size="size">
+                        Multiline checkbox label that wraps to expose control alignment against body copy.
+                      </VfCheckbox>
+                    </div>
+                    <div class="demo-selection-list">
+                      <VfRadio :size="size" value="unchecked" :name="`radio-state-${size}`">
+                        Unchecked radio
+                      </VfRadio>
+                      <VfRadio
+                        :size="size"
+                        model-value="checked"
+                        value="checked"
+                        :name="`radio-state-${size}`"
+                      >
+                        Checked radio
+                      </VfRadio>
+                      <VfRadio :size="size" value="invalid" :name="`radio-invalid-${size}`" invalid>
+                        Invalid radio
+                      </VfRadio>
+                      <VfRadio :size="size" value="disabled" :name="`radio-disabled-${size}`" disabled>
+                        Disabled radio
+                      </VfRadio>
+                      <VfRadio
+                        :size="size"
+                        model-value="disabled-checked"
+                        value="disabled-checked"
+                        :name="`radio-disabled-checked-${size}`"
+                        disabled
+                      >
+                        Disabled checked radio
+                      </VfRadio>
+                      <VfRadio :size="size" value="wrap" :name="`radio-wrap-${size}`">
+                        Multiline radio label that wraps to expose control alignment against body copy.
+                      </VfRadio>
+                    </div>
+                    <div class="demo-selection-list">
+                      <VfSwitch :size="size">Unchecked switch</VfSwitch>
+                      <VfSwitch :size="size" :model-value="true">Checked switch</VfSwitch>
+                      <VfSwitch :size="size" invalid>Invalid switch</VfSwitch>
+                      <VfSwitch :size="size" static>Static switch</VfSwitch>
+                      <VfSwitch :size="size" static thumb-contrast="inverse">Static inverse switch</VfSwitch>
+                      <VfSwitch :size="size" disabled>Disabled switch</VfSwitch>
+                      <VfSwitch :size="size" :model-value="true" disabled>Disabled checked switch</VfSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1359,272 +1637,181 @@ const tabContent = computed<Record<string, string>>(() => ({
         </div>
 
         <div class="demo-grid demo-grid--three">
-          <div class="demo-item">
-            <p class="demo-label">vf-breadcrumbs</p>
-            <VfBreadcrumbs :items="breadcrumbItems" />
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-tabs</p>
-            <div class="demo-stack">
-              <VfTabs v-model="activeTab" :items="releaseTabs">
-                <template #panel="{ activeValue }">
-                  <p class="demo-text">{{ tabContent[activeValue] }}</p>
-                </template>
-              </VfTabs>
-            </div>
-          </div>
-
-          <div class="demo-item demo-item--stepper">
-            <p class="demo-label">vf-stepper</p>
-            <div class="demo-stack">
-              <div class="demo-stack">
-                <p class="demo-text">Horizontal</p>
-                <VfStepper
-                  v-model="activeStepper"
-                  :items="compactOnboardingSteps"
-                  content-position="above"
-                  aria-label="Onboarding progress above"
-                />
-                <VfDivider />
-                <VfStepper
-                  v-model="activeStepper"
-                  :items="compactOnboardingSteps"
-                  content-position="below"
-                  aria-label="Onboarding progress below"
-                />
-              </div>
-
-              <VfDivider />
-
-              <div class="demo-stack">
-                <p class="demo-text">Vertical</p>
-                <div class="demo-stepper-variants demo-stepper-variants--vertical">
-                  <VfStepper
-                    v-model="activeVerticalStepper"
-                    :items="onboardingSteps"
-                    orientation="vertical"
-                    content-position="start"
-                    aria-label="Vertical onboarding progress start"
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Navigation visual QA matrix</p>
+            <div class="demo-component-matrix" data-test="navigation-geometry-matrix">
+              <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">breadcrumbs</p>
+                  <VfBreadcrumbs :items="breadcrumbItems" />
+                  <VfBreadcrumbs
+                    :items="[
+                      { label: 'Docs', href: '#demo-navigation' },
+                      { label: 'Core', href: '#demo-navigation' },
+                      { label: 'Forms', href: '#demo-forms' },
+                      { label: 'Field geometry', current: true },
+                    ]"
                   />
-                  <VfDivider orientation="vertical" />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">tabs</p>
+                  <VfTabs model-value="overview" :items="releaseTabs.slice(0, 4)">
+                    <template #panel="{ activeValue }">
+                      <p class="demo-text">{{ tabContent[activeValue] }}</p>
+                    </template>
+                  </VfTabs>
+                  <VfTabs model-value="status" :items="releaseTabs">
+                    <template #panel="{ activeValue }">
+                      <p class="demo-text">{{ tabContent[activeValue] }}</p>
+                    </template>
+                  </VfTabs>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">stepper horizontal</p>
                   <VfStepper
-                    v-model="activeVerticalStepper"
+                    model-value="details"
+                    :items="compactOnboardingSteps"
+                    content-position="above"
+                    aria-label="Matrix horizontal stepper above"
+                  />
+                  <VfStepper
+                    model-value="plan"
+                    :items="compactOnboardingSteps"
+                    content-position="below"
+                    aria-label="Matrix horizontal stepper below"
+                  />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">stepper vertical</p>
+                  <VfStepper
+                    model-value="billing"
                     :items="onboardingSteps"
                     orientation="vertical"
                     content-position="end"
-                    aria-label="Vertical onboarding progress end"
+                    aria-label="Matrix vertical stepper"
+                  />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">accordion states</p>
+                  <VfAccordion title="Closed section">Closed content.</VfAccordion>
+                  <VfAccordion title="Open section" open>Open content.</VfAccordion>
+                  <VfAccordion title="Disabled section" disabled>
+                    Disabled content.
+                  </VfAccordion>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">menus and toc</p>
+                  <VfNavMenu model-value="components" :items="docsMenuSimpleItems" />
+                  <VfNavMenu
+                    model-value="components"
+                    :items="docsMenuSimpleItems"
+                    variant="pills"
+                  />
+                  <VfMenuBar :items="topMenuItems" />
+                  <VfMenuBar :items="topMenuItems" variant="pills" />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">table of contents</p>
+                  <VfTableOfContents
+                    :items="tocItems.slice(0, 5)"
+                    active-id="demo-actions"
+                  />
+                  <VfTableOfContents
+                    :items="tocItems.slice(0, 5)"
+                    active-id="demo-actions"
+                    variant="pills"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="demo-item">
-            <p class="demo-label">vf-accordion</p>
-            <div class="demo-stack">
-              <VfAccordion
-                title="Section One"
-                :open="activeAccordion === 'section-one'"
-                @update:open="
-                  (open) => {
-                    activeAccordion = open ? 'section-one' : null;
-                  }
-                "
-                >Accordion content.</VfAccordion
-              >
-              <VfAccordion
-                title="Section Two"
-                :open="activeAccordion === 'section-two'"
-                @update:open="
-                  (open) => {
-                    activeAccordion = open ? 'section-two' : null;
-                  }
-                "
-                >Accordion content.</VfAccordion
-              >
-              <VfAccordion
-                title="Section Three"
-                :open="activeAccordion === 'section-three'"
-                @update:open="
-                  (open) => {
-                    activeAccordion = open ? 'section-three' : null;
-                  }
-                "
-                >Accordion content.</VfAccordion
-              >
-            </div>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-nav-menu</p>
-            <div class="demo-stack">
-              <div class="demo-stack">
-                <p class="demo-text">Complex</p>
-                <VfNavMenu v-model="activeMenuValue" :items="docsMenuItems" />
-              </div>
-
-              <VfDivider />
-
-              <div class="demo-stack">
-                <p class="demo-text">Simple</p>
-                <VfNavMenu
-                  v-model="activeSimpleMenuValue"
-                  :items="docsMenuSimpleItems"
-                />
-              </div>
-
-              <VfDivider />
-
-              <div class="demo-stack">
-                <p class="demo-text">Complex Pills</p>
-                <VfNavMenu
-                  v-model="activeMenuValue"
-                  :items="docsMenuItems"
-                  variant="pills"
-                />
-              </div>
-
-              <VfDivider />
-
-              <div class="demo-stack">
-                <p class="demo-text">Simple Pills</p>
-                <VfNavMenu
-                  v-model="activeSimpleMenuValue"
-                  :items="docsMenuSimpleItems"
-                  variant="pills"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-menu-bar</p>
-            <div class="demo-stack">
-              <div class="demo-stack">
-                <p class="demo-text">Default</p>
-                <VfMenuBar :items="topMenuItems" />
-              </div>
-
-              <VfDivider />
-
-              <div class="demo-stack">
-                <p class="demo-text">Pills</p>
-                <VfMenuBar :items="topMenuItems" variant="pills" />
-              </div>
-            </div>
-          </div>
-
-          <div class="demo-item">
-            <p class="demo-label">vf-table-of-contents</p>
-            <div class="demo-stack">
-              <div class="demo-stack">
-                <p class="demo-text">Default</p>
-                <VfTableOfContents
-                  aria-label="Page navigation"
-                  smooth
-                  :scroll-offset="32"
-                  :items="tocItems"
-                  :active-id="activeHeadingId"
-                />
-              </div>
-
-              <VfDivider />
-
-              <div class="demo-stack">
-                <p class="demo-text">Pills</p>
-                <VfTableOfContents
-                  aria-label="Page navigation pills"
-                  smooth
-                  :scroll-offset="32"
-                  :items="tocItems"
-                  :active-id="activeHeadingId"
-                  variant="pills"
-                />
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
       <section class="demo-block">
         <div class="demo-block__header">
-          <h2 id="demo-dialog">Dialog</h2>
+          <h2 id="demo-dialog">Modals and Commands</h2>
         </div>
 
         <div class="demo-grid demo-grid--three">
-          <div class="demo-example">
-            <p class="demo-label">vf-dialog</p>
-            <div class="demo-stack">
-              <p class="demo-text">
-                Modal dialog with focus trap, keyboard support, and semantic
-                actions.
-              </p>
-              <div class="demo-inline">
-                <VfButton data-test="open-dialog" @click="dialogOpen = true"
-                  >Open Dialog</VfButton
-                >
-              </div>
-            </div>
-          </div>
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Modal visual QA matrix</p>
+            <div class="demo-component-matrix" data-test="modal-launcher-matrix">
+              <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">dialog sizes</p>
+                  <div class="demo-inline">
+                    <VfButton
+                      v-for="size in dialogSizes"
+                      :key="`dialog-${size}`"
+                      :size="size"
+                      @click="
+                        dialogSize = size;
+                        dialogOpen = true;
+                      "
+                    >
+                      {{ size }} dialog
+                    </VfButton>
+                  </div>
+                </div>
 
-          <div class="demo-example">
-            <p class="demo-label">vf-drawer</p>
-            <div class="demo-stack">
-              <p class="demo-text">
-                Side sheet for settings, filters, and contextual workflows.
-              </p>
-              <div class="demo-inline">
-                <VfButton
-                  data-test="open-drawer"
-                  variant="secondary"
-                  @click="drawerOpen = true"
-                  >Open Drawer</VfButton
-                >
-              </div>
-            </div>
-          </div>
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">drawer placements</p>
+                  <div class="demo-inline">
+                    <VfButton
+                      v-for="placement in drawerPlacements"
+                      :key="`drawer-${placement}`"
+                      variant="secondary"
+                      @click="
+                        drawerPlacement = placement;
+                        drawerOpen = true;
+                      "
+                    >
+                      {{ placement }}
+                    </VfButton>
+                    <VfButton variant="secondary" @click="drawerFullscreenOpen = true">
+                      fullscreen
+                    </VfButton>
+                  </div>
+                </div>
 
-          <div class="demo-example">
-            <p class="demo-label">vf-drawer (fullscreen)</p>
-            <div class="demo-stack">
-              <p class="demo-text">
-                Fullscreen drawer for immersive flows and mobile-like panels.
-              </p>
-              <div class="demo-inline">
-                <VfButton
-                  data-test="open-drawer-fullscreen"
-                  variant="secondary"
-                  @click="drawerFullscreenOpen = true"
-                  >Open Fullscreen Drawer</VfButton
-                >
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">command palette states</p>
+                  <div class="demo-inline">
+                    <VfButton variant="secondary" @click="commandPaletteOpen = true">
+                      empty query
+                    </VfButton>
+                    <VfButton
+                      variant="secondary"
+                      @click="
+                        commandPaletteQuery = 'theme';
+                        commandPaletteOpen = true;
+                      "
+                    >
+                      matched query
+                    </VfButton>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div class="demo-example">
-            <p class="demo-label">vf-command-palette</p>
-            <div class="demo-stack">
-              <p class="demo-text">
-                Search overlay with keyboard navigation and quick-access
-                shortcut.
-              </p>
-              <div class="demo-inline">
-                <VfButton
-                  data-test="open-command-palette"
-                  variant="secondary"
-                  @click="commandPaletteOpen = true"
-                  >Open Command Palette</VfButton
-                >
-              </div>
-              <p class="demo-text demo-mt-0">Shortcut: Ctrl/Cmd + K</p>
             </div>
           </div>
         </div>
       </section>
     </div>
 
-    <VfDialog v-model:open="dialogOpen" title="Dialog" dividers>
+    <VfDialog
+      v-model:open="dialogOpen"
+      title="Dialog"
+      :size="dialogSize"
+      dividers
+    >
       <template #default>
         <div class="demo-stack">
           <p>Dialog content.</p>
@@ -1640,7 +1827,12 @@ const tabContent = computed<Record<string, string>>(() => ({
       </template>
     </VfDialog>
 
-    <VfDrawer v-model:open="drawerOpen" title="Drawer" dividers>
+    <VfDrawer
+      v-model:open="drawerOpen"
+      title="Drawer"
+      :placement="drawerPlacement"
+      dividers
+    >
       <template #default>
         <div class="demo-stack">
           <p class="demo-mt-0">Drawer content.</p>

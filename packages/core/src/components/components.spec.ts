@@ -1,7 +1,7 @@
 /* eslint-disable vue/one-component-per-file */
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it } from 'vitest';
-import { defineComponent, nextTick } from 'vue';
+import { defineComponent, h, nextTick } from 'vue';
 import {
   VfAlert,
   VfBadge,
@@ -13,6 +13,8 @@ import {
   VfDialog,
   VfDivider,
   VfDrawer,
+  VfField,
+  VfFieldset,
   VfIconButton,
   VfInput,
   VfLink,
@@ -392,6 +394,32 @@ describe('core primitives', () => {
     expect(withTrailing.find('.vf-input-wrap__icon--trailing').exists()).toBe(true);
   });
 
+  it('compacts trailing password geometry after clearing input value', async () => {
+    const wrapper = mount(VfInput, {
+      props: {
+        modelValue: 'secret',
+        clearable: true,
+        passwordReveal: true,
+        trailingIcon: 'filter',
+      },
+      attrs: {
+        type: 'password',
+      },
+    });
+
+    expect(wrapper.find('.vf-input-wrap__clear').exists()).toBe(true);
+    expect(wrapper.find('.vf-input-wrap__icon--trailing-before-clear').exists()).toBe(true);
+    expect(wrapper.find('.vf-input-wrap__password-toggle--before-clear').exists()).toBe(true);
+
+    await wrapper.get('.vf-input-wrap__clear').trigger('click');
+
+    expect(wrapper.find('.vf-input-wrap__clear').exists()).toBe(false);
+    expect(wrapper.find('.vf-input-wrap__icon--trailing-before-clear').exists()).toBe(true);
+    expect(wrapper.find('.vf-input-wrap__password-toggle--before-clear').exists()).toBe(false);
+    expect(wrapper.find('.vf-input-wrap--with-trailing-password-and-clear').exists()).toBe(false);
+    expect(wrapper.find('.vf-input-wrap--with-trailing-and-clear').exists()).toBe(true);
+  });
+
   it('supports password visibility toggle for password inputs', async () => {
     const wrapper = mount(VfInput, {
       props: {
@@ -481,6 +509,172 @@ describe('core primitives', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([['published']]);
   });
 
+  it('connects field label, description, and error metadata to wrapped controls', () => {
+    const wrapper = mount(VfField, {
+      props: {
+        label: 'Project name',
+        description: 'Shown in workspace settings.',
+        error: 'Project name is required.',
+      },
+      slots: {
+        default: ({ controlId, describedBy, invalid }: { controlId: string; describedBy?: string; invalid: boolean }) =>
+          h('input', {
+            id: controlId,
+            'aria-describedby': describedBy,
+            'aria-invalid': String(invalid),
+          }),
+      },
+    });
+
+    const label = wrapper.get('label');
+    const input = wrapper.get('input');
+    const description = wrapper.get('.vf-field__description');
+    const error = wrapper.get('.vf-field__error');
+
+    expect(label.attributes('for')).toBe(input.attributes('id'));
+    expect(input.attributes('aria-describedby')).toBe(`${description.attributes('id')} ${error.attributes('id')}`);
+    expect(input.attributes('aria-invalid')).toBe('true');
+  });
+
+  it('supports floating label layout for text-like controls', async () => {
+    const wrapper = mount(
+      defineComponent({
+        components: {
+          VfField,
+          VfInput,
+        },
+        data() {
+          return {
+            value: 'Acme',
+          };
+        },
+        template: `
+          <VfField label="Workspace name" label-placement="floating">
+            <template #default="{ controlId, describedBy, invalid }">
+              <VfInput
+                :id="controlId"
+                v-model="value"
+                :invalid="invalid"
+                :aria-describedby="describedBy"
+              />
+            </template>
+          </VfField>
+        `,
+      }),
+    );
+
+    await nextTick();
+
+    expect(wrapper.find('.vf-field').classes()).toContain('vf-field--floating');
+    expect(wrapper.find('.vf-field__control').classes()).toContain('vf-field__control--filled');
+    expect(wrapper.find('.vf-field__label--floating').exists()).toBe(true);
+  });
+
+  it('applies the requested floating label variant class', async () => {
+    const wrapper = mount(
+      defineComponent({
+        components: {
+          VfField,
+          VfInput,
+        },
+        data() {
+          return {
+            value: '',
+          };
+        },
+        template: `
+          <VfField label="Workspace name" label-placement="floating" floating-variant="on">
+            <template #default="{ controlId, describedBy, invalid }">
+              <VfInput
+                :id="controlId"
+                v-model="value"
+                :invalid="invalid"
+                :aria-describedby="describedBy"
+              />
+            </template>
+          </VfField>
+        `,
+      }),
+    );
+
+    await nextTick();
+
+    expect(wrapper.find('.vf-field').classes()).toContain('vf-field--floating-on');
+  });
+
+  it('suppresses empty select placeholder text when floating label is active', async () => {
+    const wrapper = mount(
+      defineComponent({
+        components: {
+          VfField,
+          VfSelect,
+        },
+        data() {
+          return {
+            value: '',
+            options: [
+              { value: 'starter', label: 'Starter' },
+              { value: 'pro', label: 'Pro' },
+            ],
+          };
+        },
+        template: `
+          <VfField label="Plan" label-placement="floating">
+            <template #default="{ controlId, describedBy, invalid }">
+              <VfSelect
+                :id="controlId"
+                v-model="value"
+                :options="options"
+                placeholder="Select plan"
+                :invalid="invalid"
+                :aria-describedby="describedBy"
+                disable-teleport
+              />
+            </template>
+          </VfField>
+        `,
+      }),
+    );
+
+    await nextTick();
+
+    expect(wrapper.find('.vf-field').classes()).toContain('vf-field--floating');
+    expect(wrapper.get('.vf-select__value').text()).toBe('');
+  });
+
+  it('connects fieldset legend, description, and error metadata to grouped controls', () => {
+    const wrapper = mount(VfFieldset, {
+      props: {
+        label: 'Plan',
+        description: 'Choose one rollout option.',
+        error: 'Select one plan to continue.',
+      },
+      slots: {
+        default: ({ describedBy, invalid }: { describedBy?: string; invalid: boolean }) =>
+          h(
+            'div',
+            {
+              class: 'grouped-controls',
+              'aria-describedby': describedBy,
+              'data-invalid': String(invalid),
+            },
+            'Grouped controls',
+          ),
+      },
+    });
+
+    const fieldset = wrapper.get('fieldset');
+    const legend = wrapper.get('legend');
+    const group = wrapper.get('.grouped-controls');
+    const description = wrapper.get('.vf-fieldset__description');
+    const error = wrapper.get('.vf-fieldset__error');
+
+    expect(legend.text()).toBe('Plan');
+    expect(fieldset.attributes('aria-describedby')).toBe(`${description.attributes('id')} ${error.attributes('id')}`);
+    expect(group.attributes('aria-describedby')).toBe(`${description.attributes('id')} ${error.attributes('id')}`);
+    expect(group.attributes('data-invalid')).toBe('true');
+  });
+
   it('emits select updates and renders options through dropdown', async () => {
     const wrapper = mount(VfSelect, {
       props: {
@@ -509,6 +703,19 @@ describe('core primitives', () => {
     await nextTick();
 
     expect(wrapper.emitted('update:modelValue')).toEqual([['pro']]);
+  });
+
+  it('forwards descriptive aria attributes to select trigger', () => {
+    const wrapper = mount(VfSelect, {
+      props: {
+        options: [{ value: 'starter', label: 'Starter' }],
+      },
+      attrs: {
+        'aria-describedby': 'select-help',
+      },
+    });
+
+    expect(wrapper.get('button.vf-select').attributes('aria-describedby')).toBe('select-help');
   });
 
   it('emits checkbox and switch updates', async () => {

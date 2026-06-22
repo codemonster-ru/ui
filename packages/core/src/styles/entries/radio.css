@@ -5,14 +5,28 @@
  */
 
 .vf-radio {
+  --vf-selection-control-offset: 0.125rem;
+
   position: relative;
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--vf-selection-gap);
   width: fit-content;
   min-width: 0;
   color: var(--vf-color-text);
   cursor: pointer;
+}
+
+.vf-radio--sm {
+  --vf-selection-control-offset: 0.0938rem;
+
+  gap: var(--vf-surface-gap-compact);
+}
+
+.vf-radio--lg {
+  --vf-selection-control-offset: 0.0625rem;
+
+  gap: var(--vf-selection-gap);
 }
 
 .vf-radio__input {
@@ -34,6 +48,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-sizing: border-box;
+  margin-block-start: var(--vf-selection-control-offset);
   width: var(--vf-checkbox-size-md);
   height: var(--vf-checkbox-size-md);
   border: 1px solid var(--vf-radio-border-color);
@@ -76,12 +92,17 @@
 }
 
 .vf-radio--invalid:hover:not(.vf-radio--disabled) .vf-radio__input:not(:checked) + .vf-radio__control {
-  border-color: var(--vf-radio-hover-border-color);
+  border-color: var(--vf-radio-invalid-border-color);
 }
 
 .vf-radio--sm .vf-radio__control {
   width: var(--vf-checkbox-size-sm);
   height: var(--vf-checkbox-size-sm);
+}
+
+.vf-radio--sm .vf-radio__dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
 }
 
 .vf-radio--sm .vf-radio__content {
@@ -91,6 +112,11 @@
 .vf-radio--lg .vf-radio__control {
   width: var(--vf-checkbox-size-lg);
   height: var(--vf-checkbox-size-lg);
+}
+
+.vf-radio--lg .vf-radio__dot {
+  width: 0.5625rem;
+  height: 0.5625rem;
 }
 
 .vf-radio--lg .vf-radio__content {

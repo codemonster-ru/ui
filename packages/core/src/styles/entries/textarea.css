@@ -1,4 +1,7 @@
+@import './field.css';
+
 .vf-textarea {
+  box-sizing: border-box;
   width: 100%;
   min-height: var(--vf-textarea-min-height-md);
   padding: var(--vf-field-padding-md);
@@ -20,6 +23,14 @@
   color: var(--vf-textarea-placeholder-color);
 }
 
+.vf-textarea--floating::placeholder {
+  color: transparent;
+}
+
+.vf-textarea--floating {
+  padding-top: var(--vf-field-floating-textarea-padding-top-md);
+}
+
 .vf-textarea:focus, .vf-textarea:focus-visible {
   border-color: var(--vf-textarea-focus-border-color);
 }
@@ -36,10 +47,18 @@
   font-size: var(--vf-control-font-size-sm);
 }
 
+.vf-textarea--floating.vf-textarea--sm {
+  padding-top: var(--vf-field-floating-textarea-padding-top-sm);
+}
+
 .vf-textarea--lg {
   min-height: var(--vf-textarea-min-height-lg);
   padding: var(--vf-field-padding-lg);
   font-size: var(--vf-control-font-size-lg);
+}
+
+.vf-textarea--floating.vf-textarea--lg {
+  padding-top: var(--vf-field-floating-textarea-padding-top-lg);
 }
 
 .vf-textarea--invalid {
@@ -47,7 +66,7 @@
 }
 
 .vf-textarea--invalid:hover:not(:disabled, :focus, :focus-visible) {
-  border-color: var(--vf-textarea-hover-border-color);
+  border-color: var(--vf-textarea-invalid-border-color);
 }
 
 .vf-textarea:disabled {
@@ -58,4 +77,41 @@
 
 .vf-textarea:hover:not(:disabled, .vf-textarea--invalid, :focus, :focus-visible) {
   border-color: var(--vf-textarea-hover-border-color);
+}
+
+.vf-textarea + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-md) + 1px);
+  --vf-field-floating-label-offset-block: var(--vf-field-floating-label-resting-offset-block-md);
+  --vf-field-floating-label-translate-y: 0;
+}
+
+.vf-textarea--sm + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-sm) + 1px);
+  --vf-field-floating-label-offset-block: var(--vf-field-floating-label-resting-offset-block-sm);
+  --vf-field-floating-label-translate-y: 0;
+}
+
+.vf-textarea--lg + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);
+  --vf-field-floating-label-offset-block: var(--vf-field-floating-label-resting-offset-block-lg);
+  --vf-field-floating-label-translate-y: 0;
+}
+
+.vf-field__control--filled .vf-textarea + .vf-field__label--floating,
+.vf-field__control--filled .vf-textarea--sm + .vf-field__label--floating,
+.vf-field__control--filled .vf-textarea--lg + .vf-field__label--floating {
+  --vf-field-floating-label-offset-block: var(--vf-field-floating-label-active-offset-block);
+  --vf-field-floating-label-translate-y: var(--vf-field-floating-label-active-translate-y);
+}
+
+.vf-field--floating .vf-textarea + .vf-field__label--floating {
+  --vf-field-floating-label-resting-offset-block-md: calc(var(--vf-field-padding-block-md) + 0.1875rem);
+}
+
+.vf-field--floating .vf-textarea--sm + .vf-field__label--floating {
+  --vf-field-floating-label-resting-offset-block-sm: calc(var(--vf-field-padding-block-sm) + 0.1875rem);
+}
+
+.vf-field--floating .vf-textarea--lg + .vf-field__label--floating {
+  --vf-field-floating-label-resting-offset-block-lg: calc(var(--vf-field-padding-block-lg) + 0.3125rem);
 }

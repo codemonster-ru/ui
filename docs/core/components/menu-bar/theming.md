@@ -16,4 +16,4 @@ Available design tokens and corresponding CSS variables.
 
 | Token | CSS Variable | Description |
 | --- | --- | --- |
-| `—` | `—` | No documented design tokens yet. |
+| Nested submenu offset | `--vf-menu-bar-submenu-offset-inline` | Horizontal offset between a menu item and its nested submenu. |

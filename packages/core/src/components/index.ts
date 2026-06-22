@@ -10,6 +10,8 @@ export { VfDrawer } from './drawer';
 export { VfDialog } from './dialog';
 export { VfDivider } from './divider';
 export { VfDropdown } from './dropdown';
+export { VfField } from './field';
+export { VfFieldset } from './field';
 export { VfIconButton } from './icon-button';
 export { VfInput } from './input';
 export { VfLink } from './link';

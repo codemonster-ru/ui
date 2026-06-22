@@ -98,6 +98,7 @@ export interface VfThemeTokens extends BaseVfThemeTokensWithoutLegacyTypography 
   menuBarPillsTopActiveBackground: string;
   menuBarPillsSubmenuHoverColor: string;
   menuBarPillsSubmenuActiveColor: string;
+  menuBarSubmenuOffsetInline: string;
   tableOfContentsFocusColor: string;
   tableOfContentsFocusBorderColor: string;
   dropdownItemColor: string;
@@ -190,6 +191,7 @@ export interface VfThemeTokens extends BaseVfThemeTokensWithoutLegacyTypography 
   tagContrastColor: string;
   alertColor: string;
   alertBodyColor: string;
+  alertIconOffsetY: string;
   alertPrimaryIconColor: string;
   alertSuccessIconColor: string;
   alertInfoIconColor: string;
@@ -392,6 +394,8 @@ export interface VfThemeTokens extends BaseVfThemeTokensWithoutLegacyTypography 
   switchThumbInverseBackground: string;
   switchThumbInverseBorderColor: string;
   switchThumbInverseColor: string;
+  stepperMarkerSize: string;
+  stepperRailSize: string;
   proseHeadingMargin: string;
   proseHeadingGap: string;
   proseBlockSpacing: string;

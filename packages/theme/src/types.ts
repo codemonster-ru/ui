@@ -62,6 +62,9 @@ export interface VfThemeTokens {
   fieldPaddingSm: string;
   fieldPaddingMd: string;
   fieldPaddingLg: string;
+  fieldPaddingBlockSm: string;
+  fieldPaddingBlockMd: string;
+  fieldPaddingBlockLg: string;
   checkboxSizeSm: string;
   checkboxSizeMd: string;
   checkboxSizeLg: string;

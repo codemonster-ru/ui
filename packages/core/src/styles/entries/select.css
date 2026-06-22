@@ -1,7 +1,11 @@
+/* stylelint-disable no-descending-specificity -- Entry CSS mirrors the grouped interaction matrix from forms.css. */
+
+@import './field.css';
 @import './icon-button.css';
 @import './dropdown.css';
 
 .vf-select-wrap {
+  box-sizing: border-box;
   width: 100%;
   position: relative;
 }
@@ -19,10 +23,30 @@
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
+.vf-select-wrap__clear.vf-icon-button {
+  width: var(--vf-field-clear-button-size-md);
+  height: var(--vf-field-clear-button-size-md);
+  border-radius: var(--vf-radius-control-tight);
+  color: var(--vf-color-muted);
+}
+
+.vf-select-wrap__clear.vf-icon-button svg {
+  width: var(--vf-field-icon-size);
+  height: var(--vf-field-icon-size);
+}
+
+.vf-select-wrap__clear.vf-icon-button:hover:not(:disabled),
+.vf-select-wrap__clear.vf-icon-button:active:not(:disabled) {
+  background: transparent;
+  border-color: transparent;
+  color: var(--vf-color-text);
+}
+
 .vf-select {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
+  box-sizing: border-box;
   gap: var(--vf-button-gap);
   width: 100%;
   min-height: var(--vf-control-height-md);
@@ -54,15 +78,170 @@
 }
 
 .vf-select--sm {
+  --vf-field-icon-size: var(--vf-field-icon-size-sm);
+
   min-height: var(--vf-control-height-sm);
   padding: var(--vf-field-padding-sm);
   font-size: var(--vf-control-font-size-sm);
 }
 
 .vf-select--lg {
+  --vf-field-icon-size: var(--vf-field-icon-size-lg);
+
   min-height: var(--vf-control-height-lg);
   padding: var(--vf-field-padding-lg);
   font-size: var(--vf-control-font-size-lg);
+}
+
+.vf-select--floating {
+  padding-top: var(--vf-field-floating-control-padding-top-md);
+  padding-bottom: var(--vf-field-floating-control-padding-bottom-md);
+}
+
+.vf-select--floating.vf-select--sm {
+  padding-top: var(--vf-field-floating-control-padding-top-sm);
+  padding-bottom: var(--vf-field-floating-control-padding-bottom-sm);
+}
+
+.vf-select--floating.vf-select--lg {
+  padding-top: var(--vf-field-floating-control-padding-top-lg);
+  padding-bottom: var(--vf-field-floating-control-padding-bottom-lg);
+}
+
+.vf-field--floating-in .vf-select--floating {
+  position: relative;
+  align-items: center;
+  padding-top: var(--vf-field-floating-control-padding-top-md);
+  padding-inline-end: calc((var(--vf-field-adornment-offset-md) * 2) + var(--vf-field-icon-size));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--with-leading,
+.vf-field--floating-on .vf-select--floating.vf-select--with-leading {
+  padding-inline-start: calc(var(--vf-field-adornment-offset-md) + var(--vf-field-icon-size) + var(--vf-button-gap));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--with-trailing,
+.vf-field--floating-on .vf-select--floating.vf-select--with-trailing {
+  padding-inline-end: calc((var(--vf-field-adornment-offset-md) * 2) + var(--vf-field-icon-size));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--with-trailing.vf-select--with-clear,
+.vf-field--floating-on .vf-select--floating.vf-select--with-trailing.vf-select--with-clear {
+  padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-md);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--sm {
+  min-height: calc(var(--vf-control-height-sm) + 0.5rem);
+  padding-top: var(--vf-field-floating-control-padding-top-sm);
+  padding-inline-end: calc((var(--vf-field-adornment-offset-sm) * 2) + var(--vf-field-icon-size-sm));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--sm.vf-select--with-leading,
+.vf-field--floating-on .vf-select--floating.vf-select--sm.vf-select--with-leading {
+  padding-inline-start: calc(var(--vf-field-adornment-offset-sm) + var(--vf-field-icon-size-sm) + var(--vf-button-gap));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--sm.vf-select--with-trailing,
+.vf-field--floating-on .vf-select--floating.vf-select--sm.vf-select--with-trailing {
+  padding-inline-end: calc((var(--vf-field-adornment-offset-sm) * 2) + var(--vf-field-icon-size-sm));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--sm.vf-select--with-trailing.vf-select--with-clear,
+.vf-field--floating-on .vf-select--floating.vf-select--sm.vf-select--with-trailing.vf-select--with-clear {
+  padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-sm);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--lg {
+  padding-top: var(--vf-field-floating-control-padding-top-lg);
+  padding-inline-end: calc((var(--vf-field-adornment-offset-lg) * 2) + var(--vf-field-icon-size-lg));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--lg.vf-select--with-leading,
+.vf-field--floating-on .vf-select--floating.vf-select--lg.vf-select--with-leading {
+  padding-inline-start: calc(var(--vf-field-adornment-offset-lg) + var(--vf-field-icon-size-lg) + var(--vf-button-gap));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--lg.vf-select--with-trailing,
+.vf-field--floating-on .vf-select--floating.vf-select--lg.vf-select--with-trailing {
+  padding-inline-end: calc((var(--vf-field-adornment-offset-lg) * 2) + var(--vf-field-icon-size-lg));
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--lg.vf-select--with-trailing.vf-select--with-clear,
+.vf-field--floating-on .vf-select--floating.vf-select--lg.vf-select--with-trailing.vf-select--with-clear {
+  padding-inline-end: var(--vf-field-input-padding-end-with-trailing-and-clear-lg);
+}
+
+.vf-field--floating-in .vf-select--floating .vf-select__icon--leading,
+.vf-field--floating-in .vf-select--floating .vf-select__icon--trailing,
+.vf-field--floating-on .vf-select--floating .vf-select__icon--leading,
+.vf-field--floating-on .vf-select--floating .vf-select__icon--trailing {
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+}
+
+.vf-field--floating-in .vf-select--floating .vf-select__icon--leading,
+.vf-field--floating-on .vf-select--floating .vf-select__icon--leading {
+  inset-inline-start: var(--vf-field-adornment-offset-md);
+}
+
+.vf-field--floating-in .vf-select--floating .vf-select__icon--trailing,
+.vf-field--floating-on .vf-select--floating .vf-select__icon--trailing {
+  inset-inline-end: var(--vf-field-adornment-offset-md);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--with-clear .vf-select__icon--trailing,
+.vf-field--floating-on .vf-select--floating.vf-select--with-clear .vf-select__icon--trailing {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-md);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--sm .vf-select__icon--leading,
+.vf-field--floating-on .vf-select--floating.vf-select--sm .vf-select__icon--leading {
+  inset-inline-start: var(--vf-field-adornment-offset-sm);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--sm .vf-select__icon--trailing,
+.vf-field--floating-on .vf-select--floating.vf-select--sm .vf-select__icon--trailing {
+  inset-inline-end: var(--vf-field-adornment-offset-sm);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--sm.vf-select--with-clear .vf-select__icon--trailing,
+.vf-field--floating-on .vf-select--floating.vf-select--sm.vf-select--with-clear .vf-select__icon--trailing {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-sm);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--lg .vf-select__icon--leading,
+.vf-field--floating-on .vf-select--floating.vf-select--lg .vf-select__icon--leading {
+  inset-inline-start: var(--vf-field-adornment-offset-lg);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--lg .vf-select__icon--trailing,
+.vf-field--floating-on .vf-select--floating.vf-select--lg .vf-select__icon--trailing {
+  inset-inline-end: var(--vf-field-adornment-offset-lg);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--lg.vf-select--with-clear .vf-select__icon--trailing,
+.vf-field--floating-on .vf-select--floating.vf-select--lg.vf-select--with-clear .vf-select__icon--trailing {
+  inset-inline-end: var(--vf-field-trailing-before-clear-offset-lg);
+}
+
+.vf-field--floating-in .vf-select--floating .vf-select__icon--chevron {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--vf-field-adornment-offset-md);
+  transform: translateY(-50%);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--sm .vf-select__icon--chevron {
+  inset-inline-end: var(--vf-field-adornment-offset-sm);
+}
+
+.vf-field--floating-in .vf-select--floating.vf-select--lg .vf-select__icon--chevron {
+  inset-inline-end: var(--vf-field-adornment-offset-lg);
+}
+
+.vf-field--floating-in .vf-select--open .vf-select__icon--chevron {
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .vf-select--invalid {
@@ -70,7 +249,7 @@
 }
 
 .vf-select--invalid:hover:not(:disabled, :focus, :focus-visible) {
-  border-color: var(--vf-select-hover-border-color);
+  border-color: var(--vf-select-invalid-border-color);
 }
 
 .vf-select--open {
@@ -79,11 +258,19 @@
 }
 
 .vf-select__value {
+  display: inline-flex;
+  align-items: center;
   min-width: 0;
+  min-height: var(--vf-field-icon-size);
   flex: 1;
   overflow: hidden;
+  line-height: inherit;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.vf-select__value:empty::before {
+  content: '\00a0';
 }
 
 .vf-select--placeholder .vf-select__value {
@@ -98,8 +285,15 @@
   width: var(--vf-field-icon-size);
   height: var(--vf-field-icon-size);
   color: var(--vf-select-icon-color);
+  line-height: 1;
   pointer-events: none;
   transition: transform var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
+}
+
+.vf-select__icon > .vf-icon-wrapper,
+.vf-select__icon > .vf-icon-wrapper > .vf-icon {
+  width: var(--vf-field-icon-size);
+  height: var(--vf-field-icon-size);
 }
 
 .vf-select--open .vf-select__icon--chevron {
@@ -136,6 +330,34 @@
 
 .vf-select--with-clear.vf-select--lg {
   padding-inline-end: var(--vf-field-select-padding-end-with-clear-lg);
+}
+
+.vf-select-wrap--sm .vf-select-wrap__clear {
+  inset-inline-end: var(--vf-field-adornment-offset-sm);
+}
+
+.vf-select-wrap--sm .vf-select-wrap__clear.vf-icon-button {
+  width: var(--vf-field-clear-button-size-sm);
+  height: var(--vf-field-clear-button-size-sm);
+}
+
+.vf-select-wrap--sm .vf-select-wrap__clear.vf-icon-button svg {
+  width: var(--vf-field-icon-size-sm);
+  height: var(--vf-field-icon-size-sm);
+}
+
+.vf-select-wrap--lg .vf-select-wrap__clear {
+  inset-inline-end: var(--vf-field-adornment-offset-lg);
+}
+
+.vf-select-wrap--lg .vf-select-wrap__clear.vf-icon-button {
+  width: var(--vf-field-clear-button-size-lg);
+  height: var(--vf-field-clear-button-size-lg);
+}
+
+.vf-select-wrap--lg .vf-select-wrap__clear.vf-icon-button svg {
+  width: var(--vf-field-icon-size-lg);
+  height: var(--vf-field-icon-size-lg);
 }
 
 .vf-select__menu {
@@ -176,6 +398,36 @@
   border-color: transparent;
   background: var(--vf-select-option-hover-background);
   color: var(--vf-select-option-hover-color);
+}
+
+.vf-select-wrap + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-md) + 1px);
+}
+
+.vf-select-wrap--sm + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-sm) + 1px);
+}
+
+.vf-select-wrap--lg + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);
+}
+
+.vf-select-wrap--with-leading + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(
+    var(--vf-field-adornment-offset-md) + var(--vf-field-icon-size) + var(--vf-button-gap)
+  );
+}
+
+.vf-select-wrap--sm.vf-select-wrap--with-leading + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(
+    var(--vf-field-adornment-offset-sm) + var(--vf-field-icon-size-sm) + var(--vf-button-gap)
+  );
+}
+
+.vf-select-wrap--lg.vf-select-wrap--with-leading + .vf-field__label--floating {
+  --vf-field-floating-label-offset-inline: calc(
+    var(--vf-field-adornment-offset-lg) + var(--vf-field-icon-size-lg) + var(--vf-button-gap)
+  );
 }
 
 .vf-select:disabled {

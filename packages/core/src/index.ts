@@ -15,6 +15,8 @@ export {
   VfDialog,
   VfDivider,
   VfDropdown,
+  VfField,
+  VfFieldset,
   VfIconButton,
   VfInput,
   VfLink,

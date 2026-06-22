@@ -11,9 +11,9 @@ Component props and their default values.
 | `modelValue?` | `string \| number \| boolean` | — | Controlled current value. |
 | `value` | `string \| number \| boolean` | — | Radio option value emitted on selection. |
 | `size?` | `VfControlSize` | `md` | Size token for spacing and dimensions. |
-| `invalid?` | `boolean` | `false` | Marks control as invalid for visual/error state styling. |
+| `invalid?` | `boolean` | `false` | Marks the control as invalid for visual state and `aria-invalid`; group-level error text should be rendered through `VfFieldset`. |
 | `disabled?` | `boolean` | `false` | Disables user interaction. |
-| `label?` | `string` | — | Accessible label text. |
+| `label?` | `string` | — | Visible inline label content for the radio option. |
 
 ## Emits
 
