@@ -10,7 +10,7 @@ Component props and their default values.
 | --- | --- | --- | --- |
 | `modelValue?` | `string` | `''` | Controlled current value. |
 | `size?` | `VfControlSize` | `md` | Size token for spacing and dimensions. |
-| `invalid?` | `boolean` | `false` | Marks control as invalid for visual/error state styling. |
+| `invalid?` | `boolean` | `false` | Marks the control as invalid for visual state and `aria-invalid`; error text should be rendered through `VfField`. |
 | `leadingIcon?` | `IconName \| string` | — | Icon rendered before input text. |
 | `trailingIcon?` | `IconName \| string` | — | Icon rendered after input text. |
 | `clearable?` | `boolean` | `false` | Shows a clear-action control when value is present. |

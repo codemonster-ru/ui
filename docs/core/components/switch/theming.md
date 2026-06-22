@@ -16,4 +16,4 @@ Available design tokens and corresponding CSS variables.
 
 | Token | CSS Variable | Description |
 | --- | --- | --- |
-| `—` | `—` | No documented design tokens yet. |
+| Switch thumb icon size | `--vf-switch-thumb-icon-size` | Icon size used inside the thumb for icon-based switch variants. |

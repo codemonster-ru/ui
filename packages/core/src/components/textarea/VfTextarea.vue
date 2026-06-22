@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, useAttrs } from 'vue';
+import { computed, inject, onBeforeUnmount, ref, useAttrs, watch } from 'vue';
 import { cx } from '@/utils/classes';
 import type { VfControlSize } from '@/types/components';
+import { vfFieldContextKey } from '@/components/field/context';
 
 defineOptions({
   inheritAttrs: false,
@@ -24,20 +25,54 @@ const emit = defineEmits<{
 }>();
 
 const attrs = useAttrs();
+const fieldContext = inject(vfFieldContextKey, null);
+const currentValue = ref(props.modelValue);
+const hasValue = computed(() => String(currentValue.value ?? '').length > 0);
+const isFloatingLabel = computed(() => fieldContext?.labelPlacement.value === 'floating');
 
-const classes = computed(() =>
-  cx('vf-textarea', props.size !== 'md' && `vf-textarea--${props.size}`, props.invalid && 'vf-textarea--invalid'),
+fieldContext?.setFloatingSupported(true);
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    currentValue.value = value;
+  },
 );
 
+const classes = computed(() =>
+  cx(
+    'vf-textarea',
+    props.size !== 'md' && `vf-textarea--${props.size}`,
+    props.invalid && 'vf-textarea--invalid',
+    isFloatingLabel.value && 'vf-textarea--floating',
+  ),
+);
+
+watch(
+  hasValue,
+  (value) => {
+    fieldContext?.setFilled(value);
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  fieldContext?.setFloatingSupported(false);
+  fieldContext?.setFilled(false);
+});
+
 function handleInput(event: Event) {
-  emit('update:modelValue', (event.target as HTMLTextAreaElement).value);
+  const value = (event.target as HTMLTextAreaElement).value;
+  currentValue.value = value;
+  emit('update:modelValue', value);
 }
 </script>
 
 <template>
   <textarea
     :class="classes"
-    :value="props.modelValue"
+    :value="currentValue"
+    :data-vf-filled="hasValue || undefined"
     :aria-invalid="props.invalid || undefined"
     v-bind="attrs"
     @input="handleInput"

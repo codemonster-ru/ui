@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, useSlots, watch } from 'vue';
+import { computed, inject, onBeforeUnmount, ref, useAttrs, useSlots, watch } from 'vue';
 import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import { cx } from '@/utils/classes';
 import type { VfControlSize } from '@/types/components';
+import { vfFieldContextKey } from '@/components/field/context';
 
 defineOptions({
   inheritAttrs: false,
@@ -38,6 +39,9 @@ const slots = useSlots();
 const inputRef = ref<HTMLInputElement | null>(null);
 const passwordVisible = ref(false);
 const currentValue = ref(props.modelValue);
+const fieldContext = inject(vfFieldContextKey, null);
+
+fieldContext?.setFloatingSupported(true);
 
 watch(
   () => props.modelValue,
@@ -67,6 +71,7 @@ const hasClearControl = computed(
 const hasTrailingActionControl = computed(() => hasPasswordRevealControl.value || hasClearControl.value);
 const hasTrailingControl = computed(() => hasTrailingAdornment.value || hasTrailingActionControl.value);
 const hasAdornments = computed(() => hasLeadingAdornment.value || hasTrailingControl.value);
+const isFloatingLabel = computed(() => fieldContext?.labelPlacement.value === 'floating');
 
 const externalClass = computed(() => attrs.class);
 const externalStyle = computed(() => attrs.style);
@@ -83,6 +88,7 @@ const inputClasses = computed(() =>
     props.invalid && 'vf-input--invalid',
     hasLeadingAdornment.value && 'vf-input--with-leading',
     hasTrailingControl.value && 'vf-input--with-trailing',
+    isFloatingLabel.value && 'vf-input--floating',
   ),
 );
 
@@ -94,8 +100,26 @@ const wrapperClasses = computed(() =>
     hasLeadingAdornment.value && 'vf-input-wrap--with-leading',
     hasTrailingControl.value && 'vf-input-wrap--with-trailing',
     hasTrailingAdornment.value && hasTrailingActionControl.value && 'vf-input-wrap--with-trailing-and-clear',
+    hasTrailingAdornment.value &&
+      hasPasswordRevealControl.value &&
+      hasClearControl.value &&
+      'vf-input-wrap--with-trailing-password-and-clear',
+    isFloatingLabel.value && 'vf-input-wrap--floating',
   ),
 );
+
+watch(
+  hasValue,
+  (value) => {
+    fieldContext?.setFilled(value);
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  fieldContext?.setFloatingSupported(false);
+  fieldContext?.setFilled(false);
+});
 
 function handleInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
@@ -126,6 +150,7 @@ function togglePasswordVisibility() {
     <input
       ref="inputRef"
       :class="inputClasses"
+      :data-vf-filled="hasValue || undefined"
       :value="currentValue"
       :type="resolvedInputType"
       :aria-invalid="props.invalid || undefined"
@@ -136,7 +161,7 @@ function togglePasswordVisibility() {
     <span
       v-if="hasTrailingAdornment"
       class="vf-input-wrap__icon vf-input-wrap__icon--trailing"
-      :class="hasClearControl && 'vf-input-wrap__icon--trailing-before-clear'"
+      :class="(hasPasswordRevealControl || hasClearControl) && 'vf-input-wrap__icon--trailing-before-clear'"
       aria-hidden="true"
     >
       <slot name="trailing">
@@ -173,6 +198,7 @@ function togglePasswordVisibility() {
     v-else
     ref="inputRef"
     :class="[inputClasses, externalClass]"
+    :data-vf-filled="hasValue || undefined"
     :value="currentValue"
     :type="resolvedInputType"
     :aria-invalid="props.invalid || undefined"

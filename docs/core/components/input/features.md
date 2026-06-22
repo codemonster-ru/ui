@@ -7,7 +7,7 @@ Single-line form input with VueForge theming.
 Import statement for this component.
 
 ```ts
-import { VfInput } from '@codemonster-ru/vueforge-core';
+import { VfField, VfInput } from '@codemonster-ru/vueforge-core';
 ```
 
 ## Basic
@@ -47,6 +47,79 @@ const password = ref('');
 ```
 ````
 
+## Error
+
+Recommended pattern for error and helper text rendering.
+
+````playground-src
+mode: component
+framework: vue
+height: 260
+entry: /App.vue
+
+```vue file=/App.vue
+<template>
+  <VfField
+    label="Email"
+    description="We use this address for account notifications."
+    :error="error"
+  >
+    <template #default="{ controlId, describedBy, invalid }">
+      <VfInput
+        :id="controlId"
+        v-model="value"
+        :invalid="invalid"
+        :aria-describedby="describedBy"
+        placeholder="team@example.com"
+      />
+    </template>
+  </VfField>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { VfField, VfInput } from '@codemonster-ru/vueforge-core';
+
+const value = ref('');
+const error = 'Email is required.';
+</script>
+```
+````
+
+## Floating Label
+
+Use `VfField` when you want the label to float inside the control.
+
+````playground-src
+mode: component
+framework: vue
+height: 220
+entry: /App.vue
+
+```vue file=/App.vue
+<template>
+  <VfField label="Email" label-placement="floating">
+    <template #default="{ controlId, describedBy, invalid }">
+      <VfInput
+        :id="controlId"
+        v-model="value"
+        :invalid="invalid"
+        :aria-describedby="describedBy"
+        placeholder="team@example.com"
+      />
+    </template>
+  </VfField>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { VfField, VfInput } from '@codemonster-ru/vueforge-core';
+
+const value = ref('');
+</script>
+```
+````
+
 ## Accessibility
 
 Accessibility behavior and keyboard interactions.
@@ -56,8 +129,9 @@ Accessibility behavior and keyboard interactions.
 The following items are listed in this section:
 
 - Uses native text input semantics for role/value announcement.
-- Associate an external label (or `aria-label` / `aria-labelledby`) so field purpose is announced.
-- Error/help text should be connected with `aria-describedby`; invalid state with `aria-invalid`.
+- Use `VfField` as the default way to associate visible label, helper text, and error text.
+- When used without `VfField`, provide `aria-label` / `aria-labelledby` and connect descriptive text with `aria-describedby`.
+- Invalid state should be exposed with `aria-invalid`.
 
 ### Keyboard Support
 

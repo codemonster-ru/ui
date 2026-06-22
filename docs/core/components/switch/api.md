@@ -12,9 +12,9 @@ Component props and their default values.
 | `size?` | `VfControlSize` | `md` | Size token for spacing and dimensions. |
 | `static?` | `boolean` | `false` | Disables animated thumb translation while keeping state styles. |
 | `thumbContrast?` | `VfSwitchThumbContrast` | `auto` | Thumb contrast strategy against current surface tone. |
-| `invalid?` | `boolean` | `false` | Marks control as invalid for visual/error state styling. |
+| `invalid?` | `boolean` | `false` | Marks the control as invalid for visual state and `aria-invalid`; error text should be rendered through `VfField`. |
 | `disabled?` | `boolean` | `false` | Disables user interaction. |
-| `label?` | `string` | — | Accessible label text. |
+| `label?` | `string` | — | Visible inline label content for the switch. |
 
 ## Emits
 

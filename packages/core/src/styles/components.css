@@ -7,3 +7,5 @@
 @import './components/feedback.css';
 @import './components/overlay.css';
 @import './components/navigation.css';
+@import './entries/skeleton.css';
+@import './entries/skeleton-gate.css';

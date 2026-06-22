@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.25.0
+
+### Added
+
+- Added `VfField` and `VfFieldset` form container components with package, auto-CSS, and standalone CSS exports.
+- Added form wrapper documentation for labels, descriptions, errors, floating labels, and grouped controls.
+- Added form geometry contract coverage for text controls, selection controls, field containers, floating labels, states, adornments, and sizes.
+
+### Changed
+
+- Expanded core playground visual QA matrices across actions, overlays, surfaces, feedback, forms, navigation, and modal launchers.
+- Refined form control geometry for labels, helper/error text, adornments, invalid states, disabled states, and floating label variants.
+- Extended theme typing and default preset tokens for the new field and form geometry surface.
+
+### Fixed
+
+- Included Skeleton Gate styles in the combined core component CSS and async CSS entry so loading overlays render correctly with aggregate style imports.
+- Improved demo anchor scrolling so section headings remain visible beneath the sticky showcase navigation.
+
 ## 1.24.1
 
 ### Fixed
