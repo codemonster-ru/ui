@@ -11,6 +11,7 @@ export { default as VfAppShell } from './shell/VfAppShell.vue';
 export { default as VfDocumentLayout } from './shell/VfDocumentLayout.vue';
 export { default as VfAuthLayout } from './shell/VfAuthLayout.vue';
 export { default as VfErrorLayout } from './shell/VfErrorLayout.vue';
+export { default as VfSetupLayout } from './shell/VfSetupLayout.vue';
 export { default as VfHeaderArea } from './shell/VfHeaderArea.vue';
 export { default as VfSidebarArea } from './shell/VfSidebarArea.vue';
 export { default as VfContentArea } from './shell/VfContentArea.vue';

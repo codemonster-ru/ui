@@ -24,6 +24,8 @@ import {
   VfNavMenu,
   VfPanel,
   VfPopover,
+  VfProgressBar,
+  VfProgressSpinner,
   VfRadio,
   VfSelect,
   VfSkeleton,
@@ -58,6 +60,8 @@ const drawerPlacement = ref<"left" | "right" | "top" | "bottom">("right");
 const formStackNameValue = ref("");
 const formStackEmailValue = ref("");
 const formStackPlanValue = ref("");
+const dynamicProgressValue = ref(0);
+let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 
 const formGeometrySizes = ["sm", "md", "lg"] as const;
 const formGeometryFloatingVariants = ["in", "on", "over"] as const;
@@ -239,10 +243,21 @@ function handleGlobalCommandPaletteShortcut(event: KeyboardEvent) {
 
 onMounted(() => {
   window.addEventListener("keydown", handleGlobalCommandPaletteShortcut);
+
+  dynamicProgressTimer = setInterval(() => {
+    const nextStep = Math.random() * 1.4 + 0.35;
+    dynamicProgressValue.value =
+      dynamicProgressValue.value >= 100 ? 0 : Math.min(dynamicProgressValue.value + nextStep, 100);
+  }, 80);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", handleGlobalCommandPaletteShortcut);
+
+  if (dynamicProgressTimer) {
+    clearInterval(dynamicProgressTimer);
+    dynamicProgressTimer = undefined;
+  }
 });
 
 const selectOptions = [
@@ -1067,6 +1082,33 @@ const tabContent = computed<Record<string, string>>(() => ({
                       >
                         {{ tone }}
                       </VfTag>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">Progress indicators</p>
+                <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">progress bars</p>
+                    <VfProgressBar :value="42" label="Import progress" />
+                    <VfProgressBar :value="7" :max="12" show-value label="Step progress" height="1rem" />
+                    <VfProgressBar
+                      :value="dynamicProgressValue"
+                      show-value
+                      tone="success"
+                      label="Dynamic progress"
+                      height="1rem"
+                    />
+                    <VfProgressBar indeterminate tone="info" label="Background sync progress" />
+                  </div>
+
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">progress spinners</p>
+                    <div class="demo-inline">
+                      <VfProgressSpinner label="Loading preview" />
+                      <VfProgressSpinner label="Loading large preview" tone="warn" size="2.5rem" :stroke-width="3" />
                     </div>
                   </div>
                 </div>

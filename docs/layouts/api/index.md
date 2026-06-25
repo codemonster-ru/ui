@@ -24,6 +24,7 @@ JS subpath exports (component entry + auto CSS):
 - `@codemonster-ru/vueforge-layouts/document-layout`
 - `@codemonster-ru/vueforge-layouts/auth-layout`
 - `@codemonster-ru/vueforge-layouts/error-layout`
+- `@codemonster-ru/vueforge-layouts/setup-layout`
 - `@codemonster-ru/vueforge-layouts/header-area`
 - `@codemonster-ru/vueforge-layouts/sidebar-area`
 - `@codemonster-ru/vueforge-layouts/content-area`
@@ -64,6 +65,7 @@ The following items are listed in this section:
 - `VfDocumentLayout`
 - `VfAuthLayout`
 - `VfErrorLayout`
+- `VfSetupLayout`
 - Area: `VfHeaderArea`.
 - Area: `VfSidebarArea`.
 - Area: `VfContentArea`.
@@ -142,6 +144,7 @@ Per-layout entries:
 - `document-layout.css`
 - `auth-layout.css`
 - `error-layout.css`
+- `setup-layout.css`
 - `header-area.css`
 - `sidebar-area.css`
 - `content-area.css`

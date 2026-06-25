@@ -84,6 +84,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
           ['document-layout', 'VfDocumentLayout', ['container.css', 'document-layout.css']],
           ['auth-layout', 'VfAuthLayout', ['container.css', 'auth-layout.css']],
           ['error-layout', 'VfErrorLayout', ['error-layout.css']],
+          ['setup-layout', 'VfSetupLayout', ['container.css', 'setup-layout.css']],
           ['header-area', 'VfHeaderArea', ['header-area.css']],
           ['sidebar-area', 'VfSidebarArea', ['sidebar-area.css']],
           ['content-area', 'VfContentArea', ['content-area.css']],
@@ -101,7 +102,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
       },
     },
     {
-      name: 'vueforge-layouts-strip-custom-media-from-dist',
+      name: 'vueforge-layouts-finalize-dist-styles',
       closeBundle() {
         const distStylesPath = resolve(__dirname, 'dist/styles.css');
         if (!existsSync(distStylesPath)) {
@@ -109,10 +110,17 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
         }
 
         const css = readFileSync(distStylesPath, 'utf8');
-        const cleanedCss = css.replace(/@custom-media\s+--vf-bp-[^;]+;/g, '');
+        const strippedCss = css.replace(/@custom-media\s+--vf-bp-[^;]+;/g, '');
+        const { transformed, unknownAliases } = expandLayoutCustomMedia(strippedCss);
 
-        if (cleanedCss !== css) {
-          writeFileSync(distStylesPath, cleanedCss);
+        if (unknownAliases.size > 0) {
+          throw new Error(
+            `Unknown custom media aliases in dist/styles.css: ${[...unknownAliases].sort().join(', ')}`,
+          );
+        }
+
+        if (transformed !== css) {
+          writeFileSync(distStylesPath, transformed);
         }
       },
     },

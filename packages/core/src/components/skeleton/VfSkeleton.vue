@@ -15,7 +15,7 @@ const props = withDefaults(
   }>(),
   {
     minHeight: undefined,
-    radius: 'var(--vf-radius-overlay)',
+    radius: 'var(--vf-radius-surface)',
     animated: true,
   }
 );

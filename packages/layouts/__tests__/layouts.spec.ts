@@ -13,6 +13,7 @@ import {
   VfDocumentLayout,
   VfErrorLayout,
   VfHeaderArea,
+  VfSetupLayout,
   VfSidebarArea,
   applyLayoutsThemeConfig,
   createLayoutsPreset,
@@ -63,6 +64,7 @@ describe('package exports', () => {
     expect(VfDocumentLayout).toBeTruthy();
     expect(VfAuthLayout).toBeTruthy();
     expect(VfErrorLayout).toBeTruthy();
+    expect(VfSetupLayout).toBeTruthy();
     expect(VfHeaderArea).toBeTruthy();
     expect(createLayoutsPreset).toBeTypeOf('function');
     expect(useBreakpoints).toBeTypeOf('function');
@@ -96,6 +98,33 @@ describe('container', () => {
     });
 
     expect(wrapper.classes()).toContain('vf-container--fluid');
+  });
+});
+
+describe('setup layout', () => {
+  it('renders installer structure with optional aside and actions', () => {
+    const wrapper = mount(VfSetupLayout, {
+      props: {
+        title: 'Install Annabel',
+        description: 'Configure the CMS environment.',
+        asidePosition: 'right',
+      },
+      slots: {
+        default: () => 'Setup form',
+        aside: () => 'Requirements',
+        toolbar: () => 'Theme',
+        actions: () => 'Continue',
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-setup-layout');
+    expect(wrapper.classes()).toContain('vf-setup-layout--aside-right');
+    expect(wrapper.find('.vf-setup-layout__title').text()).toBe('Install Annabel');
+    expect(wrapper.find('.vf-setup-layout__description').text()).toBe('Configure the CMS environment.');
+    expect(wrapper.find('.vf-setup-layout__main .vf-setup-layout__header').exists()).toBe(false);
+    expect(wrapper.find('.vf-setup-layout__aside').text()).toBe('Requirements');
+    expect(wrapper.find('.vf-setup-layout__toolbar').text()).toBe('Theme');
+    expect(wrapper.find('.vf-setup-layout__actions').text()).toBe('Continue');
   });
 });
 
@@ -146,12 +175,26 @@ describe('layout theme runtime', () => {
     expect(style.textContent).toContain('--vf-layout-document-layout-edge-notch-width: 7px;');
     expect(style.textContent).toContain('--vf-layout-app-shell-header-sticky-z-index: 20;');
     expect(style.textContent).toContain('--vf-layout-auth-layout-panel-width: 28rem;');
+    expect(style.textContent).toContain('--vf-layout-auth-layout-padding-block: var(--vf-layout-content-padding-block);');
     expect(style.textContent).toContain(
       '--vf-layout-auth-layout-panel-padding-compact: var(--vf-layout-space-layout-roomy);',
     );
     expect(style.textContent).toContain('--vf-layout-auth-layout-description-color: var(--vf-color-muted);');
     expect(style.textContent).toContain('--vf-layout-error-layout-code-font-size: clamp(2.25rem, 8vw, 5.5rem);');
     expect(style.textContent).toContain('--vf-layout-error-layout-description-color: var(--vf-color-muted);');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-padding-block: var(--vf-layout-content-padding-block);');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-container-width: var(--vf-breakpoint-lg);');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-aside-width: 16rem;');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-panel-padding: var(--vf-layout-auth-layout-panel-padding);');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-main-gap: var(--vf-layout-space-layout-roomy);');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-header-gap: 0.5rem;');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-title-line-height: var(--vf-heading-h-4-line-height);');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-description-color: var(--vf-color-muted);');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-description-line-height: 1.5;');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-divider-width: 1px;');
+    expect(style.textContent).toContain(
+      '--vf-layout-setup-layout-divider-color: color-mix(in srgb, var(--vf-color-border) 70%, transparent);',
+    );
   });
 
   it('applies theme config through the layouts plugin', () => {

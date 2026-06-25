@@ -1,0 +1,141 @@
+.vf-progress-bar {
+  --vf-progress-bar-height: 0.5rem;
+  --vf-progress-bar-radius: 999px;
+  --vf-progress-bar-label-font-size: 0.625rem;
+  --vf-progress-bar-value-color: var(--vf-color-primary);
+  --vf-progress-bar-label-color: var(--vf-color-primary-contrast);
+  --vf-progress-bar-transition-duration: 160ms;
+  --vf-progress-bar-transition-easing: ease;
+  --vf-progress-bar-indeterminate-duration: 2.1s;
+  --vf-progress-bar-indeterminate-long-easing: cubic-bezier(0.65, 0.815, 0.735, 0.395);
+  --vf-progress-bar-indeterminate-short-easing: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --vf-progress-bar-indeterminate-short-delay: 1.15s;
+  --vf-progress-bar-label-padding-inline: 0.25rem;
+
+  position: relative;
+  overflow: hidden;
+  inline-size: 100%;
+  block-size: var(--vf-progress-bar-height);
+  border-radius: var(--vf-progress-bar-radius);
+  background: color-mix(in srgb, var(--vf-color-surface-muted) 82%, var(--vf-color-border));
+}
+
+.vf-progress-bar__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  inline-size: 0%;
+  border-radius: var(--vf-progress-bar-radius) 0 0 var(--vf-progress-bar-radius);
+  background: var(--vf-progress-bar-value-color);
+  transition: inline-size var(--vf-progress-bar-transition-duration) var(--vf-progress-bar-transition-easing);
+}
+
+.vf-progress-bar--success {
+  --vf-progress-bar-value-color: var(--vf-color-success);
+  --vf-progress-bar-label-color: var(--vf-color-success-contrast);
+}
+
+.vf-progress-bar--neutral {
+  --vf-progress-bar-value-color: var(--vf-color-muted);
+  --vf-progress-bar-label-color: var(--vf-color-bg);
+}
+
+.vf-progress-bar--info {
+  --vf-progress-bar-value-color: var(--vf-color-info);
+  --vf-progress-bar-label-color: var(--vf-color-info-contrast);
+}
+
+.vf-progress-bar--warn {
+  --vf-progress-bar-value-color: var(--vf-color-warn);
+  --vf-progress-bar-label-color: var(--vf-color-warn-contrast);
+}
+
+.vf-progress-bar--help {
+  --vf-progress-bar-value-color: var(--vf-color-help);
+  --vf-progress-bar-label-color: var(--vf-color-help-contrast);
+}
+
+.vf-progress-bar--danger {
+  --vf-progress-bar-value-color: var(--vf-color-danger);
+  --vf-progress-bar-label-color: var(--vf-color-danger-contrast);
+}
+
+.vf-progress-bar--contrast {
+  --vf-progress-bar-value-color: var(--vf-color-contrast);
+  --vf-progress-bar-label-color: var(--vf-color-contrast-contrast);
+}
+
+.vf-progress-bar__label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 100%;
+  padding-inline: var(--vf-progress-bar-label-padding-inline);
+  color: var(--vf-progress-bar-label-color);
+  font-size: var(--vf-progress-bar-label-font-size);
+  font-weight: var(--vf-font-weight-regular);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.vf-progress-bar--indeterminate .vf-progress-bar__value {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: 0;
+  inline-size: 100%;
+  overflow: hidden;
+  background: transparent;
+  transition: none;
+}
+
+.vf-progress-bar--indeterminate .vf-progress-bar__value::before,
+.vf-progress-bar--indeterminate .vf-progress-bar__value::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  border-radius: var(--vf-progress-bar-radius);
+  background: var(--vf-progress-bar-value-color);
+  will-change: inset-inline-start, inset-inline-end;
+}
+
+.vf-progress-bar--indeterminate .vf-progress-bar__value::before {
+  inset-inline: 0 100%;
+  animation: vf-progress-bar-indeterminate var(--vf-progress-bar-indeterminate-duration)
+    var(--vf-progress-bar-indeterminate-long-easing) infinite;
+}
+
+.vf-progress-bar--indeterminate .vf-progress-bar__value::after {
+  inset-inline: 0 100%;
+  animation: vf-progress-bar-indeterminate-short var(--vf-progress-bar-indeterminate-duration)
+    var(--vf-progress-bar-indeterminate-short-easing) infinite;
+  animation-delay: var(--vf-progress-bar-indeterminate-short-delay);
+}
+
+@keyframes vf-progress-bar-indeterminate {
+  0% {
+    inset-inline: -35% 100%;
+  }
+
+  60% {
+    inset-inline: 100% -90%;
+  }
+
+  100% {
+    inset-inline: 100% -90%;
+  }
+}
+
+@keyframes vf-progress-bar-indeterminate-short {
+  0% {
+    inset-inline: -200% 100%;
+  }
+
+  60% {
+    inset-inline: 107% -8%;
+  }
+
+  100% {
+    inset-inline: 107% -8%;
+  }
+}

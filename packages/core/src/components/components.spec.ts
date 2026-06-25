@@ -19,6 +19,8 @@ import {
   VfInput,
   VfLink,
   VfPanel,
+  VfProgressBar,
+  VfProgressSpinner,
   VfRadio,
   VfSelect,
   VfSkeleton,
@@ -117,6 +119,19 @@ describe('core primitives', () => {
     expect(wrapper.attributes('style')).toContain('min-height: 240px');
   });
 
+  it('does not clip ready skeleton gate content with a default radius', () => {
+    const wrapper = mount(VfSkeletonGate, {
+      props: {
+        ready: true,
+      },
+      slots: {
+        default: '<div>Loaded</div>',
+      },
+    });
+
+    expect(wrapper.attributes('style')).not.toContain('border-radius');
+  });
+
   it('preserves last measured height when toggling back to skeleton', async () => {
     const originalOffsetHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
     try {
@@ -185,6 +200,84 @@ describe('core primitives', () => {
     expect(wrapper.classes()).toContain('vf-button--danger');
     expect(wrapper.classes()).toContain('vf-button--sm');
     expect(wrapper.text()).toBe('Save');
+  });
+
+  it('renders determinate progress with bounded aria values', () => {
+    const wrapper = mount(VfProgressBar, {
+      props: {
+        value: 140,
+        max: 120,
+        label: 'Upload progress',
+      },
+    });
+
+    expect(wrapper.attributes('role')).toBe('progressbar');
+    expect(wrapper.attributes('aria-label')).toBe('Upload progress');
+    expect(wrapper.attributes('aria-valuemin')).toBe('0');
+    expect(wrapper.attributes('aria-valuemax')).toBe('120');
+    expect(wrapper.attributes('aria-valuenow')).toBe('120');
+    expect(wrapper.get('.vf-progress-bar__value').attributes('style')).toContain('inline-size: 100%');
+  });
+
+  it('renders indeterminate progress without current value semantics', () => {
+    const wrapper = mount(VfProgressBar, {
+      props: {
+        indeterminate: true,
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-progress-bar--indeterminate');
+    expect(wrapper.attributes('aria-valuenow')).toBeUndefined();
+    expect(wrapper.attributes('aria-valuemax')).toBeUndefined();
+  });
+
+  it('renders determinate progress value label when enabled', () => {
+    const wrapper = mount(VfProgressBar, {
+      props: {
+        value: 7,
+        max: 12,
+        showValue: true,
+      },
+    });
+
+    expect(wrapper.get('.vf-progress-bar__label').text()).toBe('58%');
+  });
+
+  it('renders progress bar tone modifier', () => {
+    const wrapper = mount(VfProgressBar, {
+      props: {
+        value: 50,
+        tone: 'success',
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-progress-bar--success');
+  });
+
+  it('renders progress spinner with accessible label and sizing styles', () => {
+    const wrapper = mount(VfProgressSpinner, {
+      props: {
+        label: 'Loading reports',
+        size: 40,
+        strokeWidth: 3,
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-progress-spinner');
+    expect(wrapper.attributes('role')).toBe('progressbar');
+    expect(wrapper.attributes('aria-label')).toBe('Loading reports');
+    expect(wrapper.attributes('style')).toContain('--vf-progress-spinner-size: 40px');
+    expect(wrapper.get('.vf-progress-spinner__value').attributes('stroke-width')).toBe('3');
+  });
+
+  it('renders progress spinner tone modifier', () => {
+    const wrapper = mount(VfProgressSpinner, {
+      props: {
+        tone: 'danger',
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-progress-spinner--danger');
   });
 
   it('renders stepper and updates the current step', async () => {
