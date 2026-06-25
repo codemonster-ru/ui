@@ -114,9 +114,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
         const { transformed, unknownAliases } = expandLayoutCustomMedia(strippedCss);
 
         if (unknownAliases.size > 0) {
-          throw new Error(
-            `Unknown custom media aliases in dist/styles.css: ${[...unknownAliases].sort().join(', ')}`,
-          );
+          throw new Error(`Unknown custom media aliases in dist/styles.css: ${[...unknownAliases].sort().join(', ')}`);
         }
 
         if (transformed !== css) {
