@@ -175,20 +175,28 @@ describe('layout theme runtime', () => {
     expect(style.textContent).toContain('--vf-layout-document-layout-edge-notch-width: 7px;');
     expect(style.textContent).toContain('--vf-layout-app-shell-header-sticky-z-index: 20;');
     expect(style.textContent).toContain('--vf-layout-auth-layout-panel-width: 28rem;');
-    expect(style.textContent).toContain('--vf-layout-auth-layout-padding-block: var(--vf-layout-content-padding-block);');
+    expect(style.textContent).toContain(
+      '--vf-layout-auth-layout-padding-block: var(--vf-layout-content-padding-block);',
+    );
     expect(style.textContent).toContain(
       '--vf-layout-auth-layout-panel-padding-compact: var(--vf-layout-space-layout-roomy);',
     );
     expect(style.textContent).toContain('--vf-layout-auth-layout-description-color: var(--vf-color-muted);');
     expect(style.textContent).toContain('--vf-layout-error-layout-code-font-size: clamp(2.25rem, 8vw, 5.5rem);');
     expect(style.textContent).toContain('--vf-layout-error-layout-description-color: var(--vf-color-muted);');
-    expect(style.textContent).toContain('--vf-layout-setup-layout-padding-block: var(--vf-layout-content-padding-block);');
+    expect(style.textContent).toContain(
+      '--vf-layout-setup-layout-padding-block: var(--vf-layout-content-padding-block);',
+    );
     expect(style.textContent).toContain('--vf-layout-setup-layout-container-width: var(--vf-breakpoint-lg);');
     expect(style.textContent).toContain('--vf-layout-setup-layout-aside-width: 16rem;');
-    expect(style.textContent).toContain('--vf-layout-setup-layout-panel-padding: var(--vf-layout-auth-layout-panel-padding);');
+    expect(style.textContent).toContain(
+      '--vf-layout-setup-layout-panel-padding: var(--vf-layout-auth-layout-panel-padding);',
+    );
     expect(style.textContent).toContain('--vf-layout-setup-layout-main-gap: var(--vf-layout-space-layout-roomy);');
     expect(style.textContent).toContain('--vf-layout-setup-layout-header-gap: 0.5rem;');
-    expect(style.textContent).toContain('--vf-layout-setup-layout-title-line-height: var(--vf-heading-h-4-line-height);');
+    expect(style.textContent).toContain(
+      '--vf-layout-setup-layout-title-line-height: var(--vf-heading-h-4-line-height);',
+    );
     expect(style.textContent).toContain('--vf-layout-setup-layout-description-color: var(--vf-color-muted);');
     expect(style.textContent).toContain('--vf-layout-setup-layout-description-line-height: 1.5;');
     expect(style.textContent).toContain('--vf-layout-setup-layout-divider-width: 1px;');
