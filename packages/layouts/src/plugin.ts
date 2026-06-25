@@ -117,6 +117,23 @@ const LAYOUT_OUTPUT_TOKENS = [
   '--vf-layout-error-layout-title-line-height',
   '--vf-layout-error-layout-description-color',
   '--vf-layout-error-layout-description-line-height',
+  '--vf-layout-setup-layout-background',
+  '--vf-layout-setup-layout-padding-block',
+  '--vf-layout-setup-layout-panel-padding',
+  '--vf-layout-setup-layout-panel-padding-compact',
+  '--vf-layout-setup-layout-panel-gap',
+  '--vf-layout-setup-layout-panel-background',
+  '--vf-layout-setup-layout-panel-border',
+  '--vf-layout-setup-layout-container-width',
+  '--vf-layout-setup-layout-aside-width',
+  '--vf-layout-setup-layout-main-gap',
+  '--vf-layout-setup-layout-header-gap',
+  '--vf-layout-setup-layout-title-font-size',
+  '--vf-layout-setup-layout-title-line-height',
+  '--vf-layout-setup-layout-description-color',
+  '--vf-layout-setup-layout-description-line-height',
+  '--vf-layout-setup-layout-divider-width',
+  '--vf-layout-setup-layout-divider-color',
 ] as const;
 
 function getMissingCssTokens(tokens: readonly string[]) {

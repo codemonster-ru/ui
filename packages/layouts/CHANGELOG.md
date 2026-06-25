@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.15.0
+
+### Added
+
+- Added `VfSetupLayout` for installer and onboarding flows with brand, toolbar, aside, heading, body, actions, and footer slots.
+- Added `@codemonster-ru/vueforge-layouts/setup-layout` and `setup-layout.css` subpath exports.
+- Added setup layout theme tokens for spacing, surface, typography, container width, aside width, and divider styling.
+- Added `VfSetupLayout` documentation, tests, and playground examples.
+
+### Changed
+
+- Aligned `VfAuthLayout` vertical root padding with the shared layout content padding token.
+- Expanded layout demo breakpoint previews for shell-style layout examples, including `VfErrorLayout`.
+
 ## 1.14.0
 
 ### Added

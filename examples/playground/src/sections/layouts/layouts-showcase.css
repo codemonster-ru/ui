@@ -225,6 +225,144 @@
   display: block;
 }
 
+.demo-setup-brand-stack {
+  display: grid;
+  gap: var(--vf-layout-space-layout-roomy);
+  width: 100%;
+}
+
+.demo-setup-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--vf-layout-space-layout-base) * 0.75);
+  min-width: 0;
+}
+
+.demo-setup-brand__mark {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  display: block;
+  object-fit: contain;
+}
+
+.demo-setup-brand__name {
+  min-width: 0;
+  color: var(--vf-color-text);
+  font-size: var(--vf-heading-h-4-font-size);
+  font-weight: var(--vf-heading-font-weight);
+  line-height: var(--vf-heading-h-4-line-height);
+}
+
+.demo-setup-progress {
+  display: grid;
+  gap: var(--vf-layout-space-layout-base);
+  width: 100%;
+  color: var(--vf-color-muted);
+  font-size: var(--vf-font-size-sm);
+  font-weight: 600;
+  line-height: var(--vf-line-height-sm);
+}
+
+.demo-setup-form {
+  gap: calc(var(--vf-layout-space-layout-roomy) * 0.85);
+}
+
+.demo-shell-preview--min .vf-setup-layout > .vf-container {
+  padding-inline: var(--vf-layout-size-zero);
+  padding-block: var(--vf-layout-size-zero);
+}
+
+.demo-shell-preview--min .vf-setup-layout__panel--surface {
+  border: var(--vf-layout-size-zero);
+  border-radius: var(--vf-layout-size-zero);
+  box-shadow: none;
+  padding: var(--vf-layout-setup-layout-panel-padding-compact);
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .vf-setup-layout--with-aside
+  .vf-setup-layout__panel {
+  position: relative;
+  grid-template-areas:
+    'aside header'
+    'aside main';
+  grid-template-columns:
+    minmax(var(--vf-layout-size-zero), var(--vf-layout-setup-layout-aside-width))
+    minmax(var(--vf-layout-size-zero), 1fr);
+  gap: var(--vf-layout-size-zero);
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .vf-setup-layout--with-aside
+  .vf-setup-layout__panel::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--vf-layout-setup-layout-aside-width);
+  inline-size: var(--vf-layout-setup-layout-divider-width);
+  background: var(--vf-layout-setup-layout-divider-color);
+  pointer-events: none;
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .vf-setup-layout--with-aside
+  .vf-setup-layout__panel--surface {
+  padding: var(--vf-layout-size-zero);
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .vf-setup-layout--with-aside
+  :is(
+    .vf-setup-layout__brand,
+    .vf-setup-layout__toolbar,
+    .vf-setup-layout__header,
+    .vf-setup-layout__aside,
+    .vf-setup-layout__main
+  ) {
+  padding-inline: var(--vf-layout-setup-layout-panel-padding);
+  padding-block-start: var(--vf-layout-setup-layout-panel-padding);
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .vf-setup-layout--with-aside
+  :is(.vf-setup-layout__aside, .vf-setup-layout__main) {
+  padding-block-end: var(--vf-layout-setup-layout-panel-padding);
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .vf-setup-layout--with-aside.vf-setup-layout--with-brand
+  .vf-setup-layout__panel {
+  grid-template-areas:
+    'brand header'
+    'aside main';
+}
+
+.demo-setup-fields {
+  display: grid;
+  align-items: start;
+  gap: calc(var(--vf-layout-space-layout-base) * 0.8);
+}
+
+.demo-setup-fields--split {
+  grid-template-columns: minmax(0, 1fr) minmax(6rem, 8rem);
+}
+
+.demo-setup-fields--even {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.demo-shell-preview--min .demo-setup-fields--split,
+.demo-shell-preview--min .demo-setup-fields--even,
+.demo-shell-preview--xs .demo-setup-fields--split,
+.demo-shell-preview--xs .demo-setup-fields--even {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.demo-setup-action-back {
+  margin-inline-end: auto;
+}
+
 .demo-shell-card {
   display: grid;
   gap: var(--vf-layout-space-layout-base);

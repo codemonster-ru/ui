@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.25.0",
+  "version": "1.26.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -136,6 +136,14 @@
       "types": "./dist/popover.d.ts",
       "import": "./dist/auto/popover.js"
     },
+    "./progress-bar": {
+      "types": "./dist/progress-bar.d.ts",
+      "import": "./dist/auto/progress-bar.js"
+    },
+    "./progress-spinner": {
+      "types": "./dist/progress-spinner.d.ts",
+      "import": "./dist/auto/progress-spinner.js"
+    },
     "./radio": {
       "types": "./dist/radio.d.ts",
       "import": "./dist/auto/radio.js"
@@ -209,6 +217,8 @@
     "./nav-menu.css": "./dist/nav-menu.css",
     "./panel.css": "./dist/panel.css",
     "./popover.css": "./dist/popover.css",
+    "./progress-bar.css": "./dist/progress-bar.css",
+    "./progress-spinner.css": "./dist/progress-spinner.css",
     "./radio.css": "./dist/radio.css",
     "./select.css": "./dist/select.css",
     "./skeleton.css": "./dist/skeleton.css",

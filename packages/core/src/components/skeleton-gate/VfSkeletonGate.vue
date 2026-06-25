@@ -43,7 +43,7 @@ const props = withDefaults(
     reserveHeight: undefined,
     preserveLastHeight: false,
     normalizeContentSpacing: false,
-    radius: 'var(--vf-radius-overlay)',
+    radius: undefined,
     fadeDuration: 220,
   }
 );

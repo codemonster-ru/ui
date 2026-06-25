@@ -1,44 +1,34 @@
 .vf-skeleton {
-  --vf-skeleton-shimmer-angle: 100deg;
-  --vf-skeleton-shimmer-stop-1: 35%;
-  --vf-skeleton-shimmer-stop-2: 50%;
-  --vf-skeleton-shimmer-stop-3: 65%;
-  --vf-skeleton-shimmer-tone-1: 0%;
-  --vf-skeleton-shimmer-tone-2: 6%;
-  --vf-skeleton-shimmer-tone-3: 0%;
-  --vf-skeleton-shimmer-duration: 1.7s;
-  --vf-skeleton-shimmer-easing: ease-in-out;
+  --vf-skeleton-background: color-mix(in srgb, var(--vf-color-surface-muted) 82%, var(--vf-color-border));
+  --vf-skeleton-shimmer-background: color-mix(in srgb, var(--vf-color-text) 6%, transparent);
+  --vf-skeleton-shimmer-duration: 1.2s;
+  --vf-skeleton-shimmer-easing: ease;
   --vf-skeleton-shimmer-iteration-count: infinite;
-  --vf-skeleton-shimmer-inset: -24% -10%;
-  --vf-skeleton-shimmer-width: 78%;
-  --vf-skeleton-shimmer-rotate: 8deg;
-  --vf-skeleton-shimmer-start-x: -170%;
-  --vf-skeleton-shimmer-end-x: 245%;
-  --vf-skeleton-shimmer-blur: 16px;
+  --vf-skeleton-shimmer-start-x: -100%;
+  --vf-skeleton-shimmer-end-x: 100%;
 
   position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
-  background: color-mix(in srgb, var(--vf-color-surface-muted) 92%, transparent);
+  background: var(--vf-skeleton-background);
 }
 
 .vf-skeleton::after {
   content: '';
   position: absolute;
-  inset: var(--vf-skeleton-shimmer-inset);
-  width: var(--vf-skeleton-shimmer-width);
-  transform: translateX(var(--vf-skeleton-shimmer-start-x)) rotate(var(--vf-skeleton-shimmer-rotate));
+  inset-block: 0;
+  inset-inline: 0;
+  z-index: 1;
+  transform: translateX(var(--vf-skeleton-shimmer-start-x));
   background: linear-gradient(
-    var(--vf-skeleton-shimmer-angle),
-    color-mix(in srgb, var(--vf-color-text) var(--vf-skeleton-shimmer-tone-1), transparent)
-      var(--vf-skeleton-shimmer-stop-1),
-    color-mix(in srgb, var(--vf-color-text) var(--vf-skeleton-shimmer-tone-2), transparent)
-      var(--vf-skeleton-shimmer-stop-2),
-    color-mix(in srgb, var(--vf-color-text) var(--vf-skeleton-shimmer-tone-3), transparent)
-      var(--vf-skeleton-shimmer-stop-3)
+    90deg,
+    transparent 0%,
+    transparent 24%,
+    var(--vf-skeleton-shimmer-background) 50%,
+    transparent 76%,
+    transparent 100%
   );
-  filter: blur(var(--vf-skeleton-shimmer-blur));
   will-change: transform;
 }
 
@@ -49,6 +39,20 @@
 
 @keyframes vf-skeleton-shimmer {
   to {
-    transform: translateX(var(--vf-skeleton-shimmer-end-x)) rotate(var(--vf-skeleton-shimmer-rotate));
+    transform: translateX(var(--vf-skeleton-shimmer-end-x));
+  }
+}
+
+[dir='rtl'] .vf-skeleton--animated::after {
+  animation-name: vf-skeleton-shimmer-rtl;
+}
+
+@keyframes vf-skeleton-shimmer-rtl {
+  from {
+    transform: translateX(var(--vf-skeleton-shimmer-end-x));
+  }
+
+  to {
+    transform: translateX(var(--vf-skeleton-shimmer-start-x));
   }
 }
