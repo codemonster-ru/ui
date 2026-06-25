@@ -33,6 +33,16 @@ app.use(VueForgeCore);
 
 VueForge Core exports a full component set (inputs, navigation, overlays, feedback, layout primitives). Use per-component docs for exact props/events/slots.
 
+Feedback indicators include:
+
+- `VfAlert`
+- `VfBadge`
+- `VfProgressBar`
+- `VfProgressSpinner`
+- `VfSkeleton`
+- `VfSkeletonGate`
+- `VfTag`
+
 ## Composables
 
 The following items are listed in this section:
@@ -108,3 +118,4 @@ The following items are listed in this section:
 - `@codemonster-ru/vueforge-core/theme.css`
 - `@codemonster-ru/vueforge-core/foundation.css`
 - Per-component CSS entries (for example `@codemonster-ru/vueforge-core/button.css`, `@codemonster-ru/vueforge-core/dialog.css`).
+- Progress CSS entries: `@codemonster-ru/vueforge-core/progress-bar.css`, `@codemonster-ru/vueforge-core/progress-spinner.css`.

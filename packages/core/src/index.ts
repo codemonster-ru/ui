@@ -24,6 +24,8 @@ export {
   VfNavMenu,
   VfPanel,
   VfPopover,
+  VfProgressBar,
+  VfProgressSpinner,
   VfRadio,
   VfSelect,
   VfSkeleton,

@@ -1,0 +1,86 @@
+.vf-progress-spinner {
+  --vf-progress-spinner-size: 2rem;
+  --vf-progress-spinner-track-color: color-mix(in srgb, var(--vf-color-surface-muted) 82%, var(--vf-color-border));
+  --vf-progress-spinner-value-color: var(--vf-color-primary);
+  --vf-progress-spinner-duration: 1.4s;
+  --vf-progress-spinner-rotate-easing: linear;
+  --vf-progress-spinner-dash-easing: ease-in-out;
+
+  display: inline-flex;
+  inline-size: var(--vf-progress-spinner-size);
+  block-size: var(--vf-progress-spinner-size);
+  color: var(--vf-progress-spinner-value-color);
+  vertical-align: middle;
+}
+
+.vf-progress-spinner__svg {
+  inline-size: 100%;
+  block-size: 100%;
+  animation: vf-progress-spinner-rotate var(--vf-progress-spinner-duration) var(--vf-progress-spinner-rotate-easing)
+    infinite;
+}
+
+.vf-progress-spinner__track {
+  stroke: var(--vf-progress-spinner-track-color);
+}
+
+.vf-progress-spinner--success {
+  --vf-progress-spinner-value-color: var(--vf-color-success);
+}
+
+.vf-progress-spinner--neutral {
+  --vf-progress-spinner-value-color: var(--vf-color-muted);
+}
+
+.vf-progress-spinner--info {
+  --vf-progress-spinner-value-color: var(--vf-color-info);
+}
+
+.vf-progress-spinner--warn {
+  --vf-progress-spinner-value-color: var(--vf-color-warn);
+}
+
+.vf-progress-spinner--help {
+  --vf-progress-spinner-value-color: var(--vf-color-help);
+}
+
+.vf-progress-spinner--danger {
+  --vf-progress-spinner-value-color: var(--vf-color-danger);
+}
+
+.vf-progress-spinner--contrast {
+  --vf-progress-spinner-value-color: var(--vf-color-contrast);
+}
+
+.vf-progress-spinner__value {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-dasharray: 88 200;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: vf-progress-spinner-dash var(--vf-progress-spinner-duration) var(--vf-progress-spinner-dash-easing)
+    infinite;
+}
+
+@keyframes vf-progress-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes vf-progress-spinner-dash {
+  0% {
+    stroke-dasharray: 1 200;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 90 200;
+    stroke-dashoffset: -35;
+  }
+
+  100% {
+    stroke-dasharray: 90 200;
+    stroke-dashoffset: -124;
+  }
+}

@@ -42,6 +42,8 @@ Subpath wrappers are intentionally side-effectful because they load matching CSS
 Wrappers also include CSS for components rendered internally. For example,
 `@codemonster-ru/vueforge-layouts/document-layout` loads both `container.css` and
 `document-layout.css`.
+`@codemonster-ru/vueforge-layouts/setup-layout` follows the same pattern and loads both
+`container.css` and `setup-layout.css`.
 
 For full manual control, keep explicit CSS imports and load only required entries on pages where they are used.
 
@@ -50,3 +52,4 @@ Examples:
 - `@codemonster-ru/vueforge-layouts/container.css`
 - `@codemonster-ru/vueforge-layouts/content-area.css`
 - `@codemonster-ru/vueforge-layouts/document-layout.css`
+- `@codemonster-ru/vueforge-layouts/setup-layout.css`

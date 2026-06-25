@@ -92,6 +92,23 @@ export interface VfLayoutTokens {
   errorLayoutTitleLineHeight: string;
   errorLayoutDescriptionColor: string;
   errorLayoutDescriptionLineHeight: string;
+  setupLayoutBackground: string;
+  setupLayoutPaddingBlock: string;
+  setupLayoutPanelPadding: string;
+  setupLayoutPanelPaddingCompact: string;
+  setupLayoutPanelGap: string;
+  setupLayoutPanelBackground: string;
+  setupLayoutPanelBorder: string;
+  setupLayoutContainerWidth: string;
+  setupLayoutAsideWidth: string;
+  setupLayoutMainGap: string;
+  setupLayoutHeaderGap: string;
+  setupLayoutTitleFontSize: string;
+  setupLayoutTitleLineHeight: string;
+  setupLayoutDescriptionColor: string;
+  setupLayoutDescriptionLineHeight: string;
+  setupLayoutDividerWidth: string;
+  setupLayoutDividerColor: string;
 }
 
 export interface VfLayoutPreset {

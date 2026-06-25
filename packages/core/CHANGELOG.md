@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.26.0
+
+### Added
+
+- Added `VfProgressBar` for determinate and indeterminate progress states with tone, value-label, sizing, auto-CSS, and standalone CSS exports.
+- Added `VfProgressSpinner` for circular loading indicators with tone, sizing, auto-CSS, and standalone CSS exports.
+- Added progress component documentation and playground examples.
+
+### Changed
+
+- Updated `VfSkeleton` default radius to use the shared surface radius token.
+- Tokenized `VfSkeleton` shimmer color through semantic palette tokens and removed the separate dark-theme shimmer override.
+- Updated `VfSkeletonGate` so ready content does not receive a default forced border radius.
+
+### Fixed
+
+- Extended core component coverage for progress components and skeleton gate ready-state radius behavior.
+
 ## 1.25.0
 
 ### Added

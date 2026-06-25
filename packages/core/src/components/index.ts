@@ -19,6 +19,8 @@ export { VfMenuBar } from './menu-bar';
 export { VfNavMenu } from './nav-menu';
 export { VfPanel } from './panel';
 export { VfPopover } from './popover';
+export { VfProgressBar } from './progress-bar';
+export { VfProgressSpinner } from './progress-spinner';
 export { VfRadio } from './radio';
 export { VfSelect } from './select';
 export { VfSkeleton } from './skeleton';

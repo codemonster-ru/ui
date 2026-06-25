@@ -13,7 +13,7 @@ Component props and their default values.
 | `reserveHeight?` | `string \| number` | `undefined` | Fixed estimated height for placeholder state (number treated as px). |
 | `preserveLastHeight?` | `boolean` | `false` | Reuses the last measured content height when switching back to skeleton state. |
 | `normalizeContentSpacing?` | `boolean` | `false` | Removes top/bottom outer spacing on direct children while content is inside gate (helps avoid skeleton/content height jumps). |
-| `radius?` | `string` | `var(--vf-radius-overlay)` | Shared border radius for content and overlay. |
+| `radius?` | `string` | `undefined` | Shared border radius for the gate overlay and default skeleton. Leave unset when loaded content owns its own radius. |
 | `fadeDuration?` | `number` | `220` | Fade transition duration in milliseconds. |
 
 ## Emits

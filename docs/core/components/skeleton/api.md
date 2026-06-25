@@ -9,7 +9,7 @@ Component props and their default values.
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `minHeight?` | `string \| number` | `undefined` | Minimum placeholder height (number treated as px). |
-| `radius?` | `string` | `var(--vf-radius-overlay)` | Border radius of the skeleton block. |
+| `radius?` | `string` | `var(--vf-radius-surface)` | Border radius of the skeleton block. |
 | `animated?` | `boolean` | `true` | Enables shimmer animation. |
 
 ## Emits

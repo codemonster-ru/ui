@@ -26,6 +26,7 @@ const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
 const requiredComponentCssImports = {
   './auth-layout': ['../container.css', '../auth-layout.css'],
   './document-layout': ['../container.css', '../document-layout.css'],
+  './setup-layout': ['../container.css', '../setup-layout.css'],
 };
 
 if (!cssExportTargets.length) {
