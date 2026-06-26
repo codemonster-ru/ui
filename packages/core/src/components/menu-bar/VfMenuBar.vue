@@ -110,7 +110,6 @@ onBeforeUnmount(() => {
 onMounted(() => {
   teleportReady.value = true;
 });
-
 </script>
 
 <template>

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.27.0
+
+### Added
+
+- Added `VfDataTable` for data-driven table rendering with columns, rows, density, mask and skeleton loading, pagination, empty, striped, sticky header, and column divider support.
+- Added `VfTable` `columnDividers` prop for opt-in vertical column separators.
+
+### Fixed
+
+- Aligned `VfTable` caption spacing with table cells so captions no longer appear offset from column content.
+
 ## 1.26.0
 
 ### Added

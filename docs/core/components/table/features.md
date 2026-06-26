@@ -38,6 +38,18 @@ entry: /App.vue
       <td>Bob</td>
       <td>27</td>
     </tr>
+    <tr>
+      <td>Carol</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <td>Diego</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Eve</td>
+      <td>11</td>
+    </tr>
   </VfTable>
 </template>
 
@@ -63,9 +75,8 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus between interactive controls inside table (if present). |
-| `Shift + Tab` | Moves focus backward between interactive controls. |
-| `Arrow keys` | Scrolls page/container in standard browser behavior. |
-
+| Key           | Function                                                            |
+| ------------- | ------------------------------------------------------------------- |
+| `Tab`         | Moves focus between interactive controls inside table (if present). |
+| `Shift + Tab` | Moves focus backward between interactive controls.                  |
+| `Arrow keys`  | Scrolls page/container in standard browser behavior.                |

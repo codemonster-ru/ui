@@ -17,7 +17,7 @@ const props = withDefaults(
     minHeight: undefined,
     radius: 'var(--vf-radius-surface)',
     animated: true,
-  }
+  },
 );
 
 const toCssLength = (value: string | number | undefined): string | undefined => {

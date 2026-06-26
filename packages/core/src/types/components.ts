@@ -24,6 +24,19 @@ export type VfDrawerSize = VfDialogSize | 'full';
 export type VfDrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
 export type VfDropdownPlacement = 'bottom-start' | 'bottom-end';
 export type VfTooltipPlacement = 'top' | 'bottom';
+export type VfDataTableDensity = 'default' | 'compact';
+export type VfDataTableLoadingVariant = 'mask' | 'skeleton';
+export type VfDataTablePaginationMode = 'client' | 'manual';
+export type VfDataTableCellAlign = 'start' | 'center' | 'end';
+
+export type VfDataTableRow = object;
+
+export interface VfDataTableColumn {
+  key: string;
+  header?: string;
+  align?: VfDataTableCellAlign;
+  scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';
+}
 
 export interface VfSelectOption {
   value: string;

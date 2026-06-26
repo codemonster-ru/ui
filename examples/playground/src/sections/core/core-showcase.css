@@ -26,6 +26,11 @@
   margin-top: 0;
 }
 
+.vf-table-wrap.demo-table-scroll-y {
+  max-height: 13rem;
+  overflow: auto;
+}
+
 .demo-max-w-16 {
   max-width: 16rem;
 }

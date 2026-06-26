@@ -99,11 +99,23 @@
   border-color: var(--vf-button-ghost-active-border-color);
 }
 
-.vf-button--primary:hover:not(:disabled), .vf-button--success:hover:not(:disabled), .vf-button--info:hover:not(:disabled), .vf-button--warn:hover:not(:disabled), .vf-button--help:hover:not(:disabled), .vf-button--danger:hover:not(:disabled), .vf-button--contrast:hover:not(:disabled) {
+.vf-button--primary:hover:not(:disabled),
+.vf-button--success:hover:not(:disabled),
+.vf-button--info:hover:not(:disabled),
+.vf-button--warn:hover:not(:disabled),
+.vf-button--help:hover:not(:disabled),
+.vf-button--danger:hover:not(:disabled),
+.vf-button--contrast:hover:not(:disabled) {
   filter: var(--vf-button-solid-hover-filter);
 }
 
-.vf-button--primary:active:not(:disabled), .vf-button--success:active:not(:disabled), .vf-button--info:active:not(:disabled), .vf-button--warn:active:not(:disabled), .vf-button--help:active:not(:disabled), .vf-button--danger:active:not(:disabled), .vf-button--contrast:active:not(:disabled) {
+.vf-button--primary:active:not(:disabled),
+.vf-button--success:active:not(:disabled),
+.vf-button--info:active:not(:disabled),
+.vf-button--warn:active:not(:disabled),
+.vf-button--help:active:not(:disabled),
+.vf-button--danger:active:not(:disabled),
+.vf-button--contrast:active:not(:disabled) {
   filter: var(--vf-button-solid-active-filter);
 }
 

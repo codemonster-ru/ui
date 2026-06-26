@@ -42,7 +42,7 @@ const resolveMinHeightFromAttrs = (attrs: Record<string, unknown>, keys: readonl
 };
 
 export const createAsyncWithSkeleton = <T extends Component = Component>(
-  options: CreateAsyncWithSkeletonOptions<T>
+  options: CreateAsyncWithSkeletonOptions<T>,
 ): T => {
   const {
     loader,

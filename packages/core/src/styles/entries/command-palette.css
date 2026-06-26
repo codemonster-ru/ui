@@ -226,7 +226,8 @@
   transition: opacity var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
 }
 
-.vf-command-palette__item:hover, .vf-command-palette__item--active {
+.vf-command-palette__item:hover,
+.vf-command-palette__item--active {
   background: var(--vf-nav-menu-pills-item-active-background);
   color: var(--vf-nav-menu-pills-item-active-color);
 }
@@ -302,7 +303,8 @@
   text-decoration-color: currentcolor;
 }
 
-.vf-command-palette__status, .vf-command-palette__empty {
+.vf-command-palette__status,
+.vf-command-palette__empty {
   margin: 0;
   color: var(--vf-color-muted);
   padding: 0;

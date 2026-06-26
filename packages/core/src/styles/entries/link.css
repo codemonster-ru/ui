@@ -45,6 +45,7 @@
   text-decoration-color: currentColor;
 }
 
-.vf-link--underline-always:focus-visible, .vf-link--underline-hover:focus-visible {
+.vf-link--underline-always:focus-visible,
+.vf-link--underline-hover:focus-visible {
   text-decoration: none;
 }

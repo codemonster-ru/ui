@@ -45,7 +45,7 @@ const props = withDefaults(
     normalizeContentSpacing: false,
     radius: undefined,
     fadeDuration: 220,
-  }
+  },
 );
 
 const toCssLength = (value: string | number | undefined): string | undefined => {
@@ -76,13 +76,13 @@ const resolvedMinHeight = computed(() => {
 const rootStyle = computed(() => ({
   minHeight: resolvedMinHeight.value,
   borderRadius: props.radius,
-  '--vf-skeleton-gate-fade-duration': `${props.fadeDuration}ms`
+  '--vf-skeleton-gate-fade-duration': `${props.fadeDuration}ms`,
 }));
 
 const contentStyle = computed(() => ({}));
 
 const overlayStyle = computed(() => ({
-  borderRadius: props.radius
+  borderRadius: props.radius,
 }));
 
 const syncMeasuredHeight = () => {

@@ -238,8 +238,7 @@
   inset-inline-end: var(--vf-field-trailing-before-clear-offset-sm);
 }
 
-.vf-input-wrap--sm.vf-input-wrap--with-trailing-password-and-clear
-  .vf-input-wrap__icon--trailing-before-clear {
+.vf-input-wrap--sm.vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: calc(
     var(--vf-field-trailing-before-clear-offset-sm) + var(--vf-field-clear-button-size-sm) + 0.375rem
   );
@@ -326,8 +325,7 @@
   inset-inline-end: var(--vf-field-trailing-before-clear-offset-lg);
 }
 
-.vf-input-wrap--lg.vf-input-wrap--with-trailing-password-and-clear
-  .vf-input-wrap__icon--trailing-before-clear {
+.vf-input-wrap--lg.vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: calc(
     var(--vf-field-trailing-before-clear-offset-lg) + var(--vf-field-clear-button-size-lg) + 0.375rem
   );

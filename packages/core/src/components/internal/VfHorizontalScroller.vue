@@ -65,9 +65,12 @@ const rootClasses = computed(() => ({
   [props.controlsAnimatedClass]: Boolean(props.controlsAnimatedClass) && controlsAnimated.value,
 }));
 
-const viewportStyle = computed<CSSProperties>(() => ({
-  '--vf-horizontal-scroller-scrollbar-width': isScrolling.value ? 'thin' : 'none',
-}) as CSSProperties);
+const viewportStyle = computed<CSSProperties>(
+  () =>
+    ({
+      '--vf-horizontal-scroller-scrollbar-width': isScrolling.value ? 'thin' : 'none',
+    }) as CSSProperties,
+);
 
 function updateScrollState() {
   const viewport = viewportRef.value;

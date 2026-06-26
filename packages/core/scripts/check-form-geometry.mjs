@@ -14,34 +14,28 @@ const files = {
   viteConfig: join(root, 'vite.config.ts'),
 };
 
-const source = Object.fromEntries(
-  Object.entries(files).map(([name, path]) => [name, readFileSync(path, 'utf8')])
-);
+const source = Object.fromEntries(Object.entries(files).map(([name, path]) => [name, readFileSync(path, 'utf8')]));
 
 const checks = [
   {
     file: 'forms',
     label: 'textarea floating label follows field inline padding token',
-    snippet:
-      '--vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);',
+    snippet: '--vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);',
   },
   {
     file: 'textarea',
     label: 'standalone textarea floating label follows field inline padding token',
-    snippet:
-      '--vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);',
+    snippet: '--vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);',
   },
   {
     file: 'forms',
     label: 'select leading floating label accounts for icon and gap',
-    snippet:
-      'var(--vf-field-adornment-offset-md) + var(--vf-field-icon-size) + var(--vf-button-gap)',
+    snippet: 'var(--vf-field-adornment-offset-md) + var(--vf-field-icon-size) + var(--vf-button-gap)',
   },
   {
     file: 'select',
     label: 'standalone select leading floating label accounts for icon and gap',
-    snippet:
-      'var(--vf-field-adornment-offset-md) + var(--vf-field-icon-size) + var(--vf-button-gap)',
+    snippet: 'var(--vf-field-adornment-offset-md) + var(--vf-field-icon-size) + var(--vf-button-gap)',
   },
   {
     file: 'forms',
@@ -104,12 +98,14 @@ const checks = [
   {
     file: 'input',
     label: 'standalone input sm adornment icon uses sm token',
-    snippet: '.vf-input-wrap--sm .vf-input-wrap__icon--leading {\n  --vf-field-icon-size: var(--vf-field-icon-size-sm);',
+    snippet:
+      '.vf-input-wrap--sm .vf-input-wrap__icon--leading {\n  --vf-field-icon-size: var(--vf-field-icon-size-sm);',
   },
   {
     file: 'input',
     label: 'standalone input lg adornment icon uses lg token',
-    snippet: '.vf-input-wrap--lg .vf-input-wrap__icon--leading {\n  --vf-field-icon-size: var(--vf-field-icon-size-lg);',
+    snippet:
+      '.vf-input-wrap--lg .vf-input-wrap__icon--leading {\n  --vf-field-icon-size: var(--vf-field-icon-size-lg);',
   },
   {
     file: 'forms',

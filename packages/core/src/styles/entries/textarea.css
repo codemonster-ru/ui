@@ -31,7 +31,8 @@
   padding-top: var(--vf-field-floating-textarea-padding-top-md);
 }
 
-.vf-textarea:focus, .vf-textarea:focus-visible {
+.vf-textarea:focus,
+.vf-textarea:focus-visible {
   border-color: var(--vf-textarea-focus-border-color);
 }
 

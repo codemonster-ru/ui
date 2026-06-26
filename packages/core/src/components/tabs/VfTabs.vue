@@ -305,7 +305,10 @@ onBeforeUnmount(() => {
         <span
           aria-hidden="true"
           class="vf-tabs__indicator"
-          :class="[indicatorReady && 'vf-tabs__indicator--ready', isListScrolling && 'vf-tabs__indicator--no-transition']"
+          :class="[
+            indicatorReady && 'vf-tabs__indicator--ready',
+            isListScrolling && 'vf-tabs__indicator--no-transition',
+          ]"
           :style="indicatorStyle"
         />
       </template>

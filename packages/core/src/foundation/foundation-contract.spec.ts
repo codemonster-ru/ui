@@ -19,11 +19,15 @@ describe('foundation contract', () => {
 
   it('keeps breakpoint tokens in tokens.css', () => {
     const tokensCss = readFileSync(resolve(root, '.generated/theme/tokens.css'), 'utf8');
-    const generatedBreakpointsCss = readFileSync(resolve(root, '.generated/theme/generated-breakpoints.css'), 'utf8').trim();
+    const generatedBreakpointsCss = readFileSync(
+      resolve(root, '.generated/theme/generated-breakpoints.css'),
+      'utf8',
+    ).trim();
     const distGeneratedBreakpointsCss = readFileSync(resolve(root, 'dist/generated-breakpoints.css'), 'utf8').trim();
 
     expect(tokensCss).toMatch(/@import\s+["']\.\/generated-breakpoints\.css["'];/);
-    const breakpointsSource = generatedBreakpointsCss.length > 0 ? generatedBreakpointsCss : distGeneratedBreakpointsCss;
+    const breakpointsSource =
+      generatedBreakpointsCss.length > 0 ? generatedBreakpointsCss : distGeneratedBreakpointsCss;
     expect(breakpointsSource).toContain('--vf-breakpoint-xs: 480px;');
     expect(breakpointsSource).toContain('--vf-breakpoint-md: 768px;');
     expect(breakpointsSource).toContain('--vf-breakpoint-2xl: 1536px;');

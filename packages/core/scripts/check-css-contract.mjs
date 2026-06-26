@@ -13,6 +13,7 @@ const ownBases = {
   'card.css': ['card'],
   'checkbox.css': ['checkbox'],
   'command-palette.css': ['command-palette', 'command-palette-transition'],
+  'data-table.css': ['data-table', 'data-table-wrap', 'data-table-scroll'],
   'dialog.css': ['dialog', 'dialog-transition'],
   'divider.css': ['divider'],
   'drawer.css': ['drawer', 'drawer-transition'],
@@ -42,6 +43,7 @@ const ownBases = {
 
 const explicitDeps = {
   'command-palette.css': ['./icon-button.css'],
+  'data-table.css': ['./table.css', './icon-button.css', './progress-spinner.css', './select.css', './skeleton.css'],
   'dialog.css': ['./icon-button.css'],
   'drawer.css': ['./icon-button.css'],
   'input.css': ['./field.css', './icon-button.css'],
@@ -61,13 +63,13 @@ const requiredSelectors = {
   'tooltip.css': ['.vf-floating-transition-enter-from.vf-tooltip__content'],
 };
 const baseOf = (token) =>
-  token
-    .replace(/-transition-(?:enter|leave)-(?:active|from|to)$/, '-transition')
-    .split(/--|__/)[0];
+  token.replace(/-transition-(?:enter|leave)-(?:active|from|to)$/, '-transition').split(/--|__/)[0];
 
 let failures = 0;
 
-for (const fileName of readdirSync(entriesDir).filter((name) => name.endsWith('.css')).sort()) {
+for (const fileName of readdirSync(entriesDir)
+  .filter((name) => name.endsWith('.css'))
+  .sort()) {
   const absPath = join(entriesDir, fileName);
   const css = readFileSync(absPath, 'utf8');
 
@@ -93,9 +95,7 @@ for (const fileName of readdirSync(entriesDir).filter((name) => name.endsWith('.
     allowed.add(basename(expected, '.css'));
   }
 
-  const classBases = new Set(
-    [...css.matchAll(/\.vf-([a-z0-9-]+)/g)].map((m) => baseOf(m[1]))
-  );
+  const classBases = new Set([...css.matchAll(/\.vf-([a-z0-9-]+)/g)].map((m) => baseOf(m[1])));
 
   for (const classBase of classBases) {
     if (!allowed.has(classBase)) {
