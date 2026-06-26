@@ -26,9 +26,10 @@
 }
 
 .vf-table__caption {
-  padding: var(--vf-surface-padding) var(--vf-surface-padding) 0;
+  padding: var(--vf-field-padding-lg);
   text-align: left;
   color: var(--vf-table-caption-color);
+  font-weight: var(--vf-font-weight-medium);
 }
 
 .vf-table :where(th, td) {
@@ -62,6 +63,10 @@
 
 .vf-table tfoot tr:first-child td {
   border-top: 1px solid var(--vf-table-border-color);
+}
+
+.vf-table--column-dividers :where(th, td) + :where(th, td) {
+  border-left: 1px solid var(--vf-table-border-color);
 }
 
 .vf-table--striped tbody tr:nth-child(even) td {

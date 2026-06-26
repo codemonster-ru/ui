@@ -78,9 +78,10 @@
 }
 
 .vf-table__caption {
-  padding: var(--vf-surface-padding) var(--vf-surface-padding) 0;
+  padding: var(--vf-field-padding-lg);
   text-align: left;
   color: var(--vf-table-caption-color);
+  font-weight: var(--vf-font-weight-medium);
 }
 
 .vf-table :where(th, td) {
@@ -115,6 +116,10 @@
 }
 /* stylelint-enable no-descending-specificity */
 
+.vf-table--column-dividers :where(th, td) + :where(th, td) {
+  border-left: 1px solid var(--vf-table-border-color);
+}
+
 .vf-table--striped tbody tr:nth-child(even) td {
   background: var(--vf-table-stripe-background);
 }
@@ -127,4 +132,77 @@
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.vf-data-table-wrap {
+  flex-direction: column;
+}
+
+.vf-data-table-scroll {
+  position: relative;
+}
+
+.vf-data-table__cell--center {
+  text-align: center;
+}
+
+.vf-data-table__cell--end {
+  text-align: right;
+}
+
+.vf-data-table__state-cell {
+  color: var(--vf-color-muted);
+  text-align: center;
+}
+
+.vf-data-table__loading {
+  display: inline-flex;
+  gap: var(--vf-surface-gap-compact);
+  align-items: center;
+}
+
+.vf-data-table__loading-spinner {
+  flex: none;
+}
+
+.vf-data-table__loading-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: var(--vf-field-padding-lg);
+  color: var(--vf-table-color);
+  background: color-mix(in srgb, var(--vf-table-background) 72%, transparent);
+}
+
+.vf-data-table__skeleton-cell .vf-skeleton {
+  max-inline-size: 12rem;
+}
+
+.vf-data-table__pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vf-surface-gap);
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  padding: var(--vf-field-padding-md);
+  border-top: 1px solid var(--vf-table-border-color);
+  color: var(--vf-color-muted);
+}
+
+.vf-data-table__pagination-summary {
+  margin-right: auto;
+}
+
+.vf-data-table__page-size,
+.vf-data-table__pagination-actions {
+  display: inline-flex;
+  gap: var(--vf-surface-gap-compact);
+  align-items: center;
+}
+
+.vf-data-table__pagination-page {
+  color: var(--vf-color-text);
 }

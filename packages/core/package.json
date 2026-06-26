@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.26.0",
+  "version": "1.27.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -83,6 +83,10 @@
     "./command-palette": {
       "types": "./dist/command-palette.d.ts",
       "import": "./dist/auto/command-palette.js"
+    },
+    "./data-table": {
+      "types": "./dist/data-table.d.ts",
+      "import": "./dist/auto/data-table.js"
     },
     "./dialog": {
       "types": "./dist/dialog.d.ts",
@@ -204,6 +208,7 @@
     "./card.css": "./dist/card.css",
     "./checkbox.css": "./dist/checkbox.css",
     "./command-palette.css": "./dist/command-palette.css",
+    "./data-table.css": "./dist/data-table.css",
     "./dialog.css": "./dist/dialog.css",
     "./divider.css": "./dist/divider.css",
     "./drawer.css": "./dist/drawer.css",

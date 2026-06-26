@@ -42,12 +42,7 @@ const { styles: teleportedRootStyle } = useFloating(triggerRef, teleportedSubmen
   enabled: computed(() => isOpen.value && shouldTeleportRootSubmenu.value),
   placement: 'bottom-start',
   middleware: computed(
-    () =>
-      [
-        offset(8),
-        flip({ placements: ['bottom-start', 'top-start'] }),
-        shift(),
-      ] as MiddlewareType[],
+    () => [offset(8), flip({ placements: ['bottom-start', 'top-start'] }), shift()] as MiddlewareType[],
   ),
 });
 
@@ -257,11 +252,7 @@ function onPointerEnter() {
       </span>
     </button>
 
-    <Transition
-      v-if="hasChildren && !shouldTeleportRootSubmenu"
-      name="vf-floating-transition"
-      appear
-    >
+    <Transition v-if="hasChildren && !shouldTeleportRootSubmenu" name="vf-floating-transition" appear>
       <div
         v-if="hasChildren && isOpen"
         class="vf-menu-bar__submenu"

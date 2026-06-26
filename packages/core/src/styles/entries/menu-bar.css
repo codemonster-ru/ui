@@ -148,7 +148,8 @@
   --vf-menu-bar-current-submenu-active-background: var(--vf-menu-bar-pills-submenu-active-background);
 }
 
-.vf-menu-bar__list, .vf-menu-bar__submenu-list {
+.vf-menu-bar__list,
+.vf-menu-bar__submenu-list {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -249,12 +250,14 @@
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
-.vf-menu-bar__item--top:hover:not(:disabled, .vf-menu-bar__item--active), .vf-menu-bar__item--top.vf-menu-bar__item--open {
+.vf-menu-bar__item--top:hover:not(:disabled, .vf-menu-bar__item--active),
+.vf-menu-bar__item--top.vf-menu-bar__item--open {
   color: var(--vf-menu-bar-current-top-hover-color);
   background: var(--vf-menu-bar-current-top-hover-background);
 }
 
-.vf-menu-bar__item:not(.vf-menu-bar__item--top):hover:not(:disabled, .vf-menu-bar__item--active), .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--open {
+.vf-menu-bar__item:not(.vf-menu-bar__item--top):hover:not(:disabled, .vf-menu-bar__item--active),
+.vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--open {
   color: var(--vf-menu-bar-current-submenu-hover-color);
   background: var(--vf-menu-bar-current-submenu-hover-background);
 }

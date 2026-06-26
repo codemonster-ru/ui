@@ -11,21 +11,11 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const cssExportTargets = Object.entries(packageJson?.exports ?? {})
   .filter(([exportKey, exportTarget]) => exportKey.endsWith('.css') && typeof exportTarget === 'string')
   .map(([exportKey, exportTarget]) => [exportKey, exportTarget]);
-const foundationalCssExports = new Set([
-  './base.css',
-  './tokens.css',
-  './theme.css',
-  './foundation.css',
-]);
+const foundationalCssExports = new Set(['./base.css', './tokens.css', './theme.css', './foundation.css']);
 
 const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
   .filter(([exportKey, exportTarget]) => {
-    if (
-      exportKey === '.'
-      || exportKey === './foundation'
-      || exportKey === './theme'
-      || exportKey.endsWith('.css')
-    ) {
+    if (exportKey === '.' || exportKey === './foundation' || exportKey === './theme' || exportKey.endsWith('.css')) {
       return false;
     }
 
@@ -52,8 +42,8 @@ try {
     env: {
       ...process.env,
       npm_config_color: 'false',
-      FORCE_COLOR: '0'
-    }
+      FORCE_COLOR: '0',
+    },
   });
 
   const jsonTail = packedOutput.match(/\[\s*\{[\s\S]*\}\s*\]\s*$/);
@@ -69,12 +59,12 @@ try {
   const tarballPath = join(packageDir, packMeta.filename);
   execFileSync('tar', ['-xzf', tarballPath, '-C', tempDir], {
     cwd: packageDir,
-    stdio: 'pipe'
+    stdio: 'pipe',
   });
 
   const tarEntries = execFileSync('tar', ['-tf', tarballPath], {
     cwd: packageDir,
-    encoding: 'utf8'
+    encoding: 'utf8',
   })
     .split('\n')
     .filter(Boolean);
@@ -85,14 +75,14 @@ try {
 
     if (!tarEntries.includes(expectedTarPath)) {
       throw new Error(
-        `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`
+        `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`,
       );
     }
 
     const cssSource = readFileSync(join(tempDir, expectedTarPath), 'utf8');
     if (!foundationalCssExports.has(exportKey) && cssSource.includes("@import '../")) {
       throw new Error(
-        `Broken CSS export: exports["${exportKey}"] contains an unresolved parent-relative @import in publish artifact.`
+        `Broken CSS export: exports["${exportKey}"] contains an unresolved parent-relative @import in publish artifact.`,
       );
     }
   }
@@ -103,22 +93,24 @@ try {
 
     if (!tarEntries.includes(expectedTarPath)) {
       throw new Error(
-        `Broken JS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`
+        `Broken JS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`,
       );
     }
 
     const entryName = exportKey.replace(/^\.\//, '');
     const proxySource = readFileSync(join(tempDir, expectedTarPath), 'utf8');
-      const expectedCssImport = `../${entryName}.css`;
-      if (!proxySource.includes(`import '${expectedCssImport}';`)) {
-        throw new Error(`Broken component CSS auto-link: ${exportKey} does not import ${expectedCssImport} in publish artifact.`);
-      }
+    const expectedCssImport = `../${entryName}.css`;
+    if (!proxySource.includes(`import '${expectedCssImport}';`)) {
+      throw new Error(
+        `Broken component CSS auto-link: ${exportKey} does not import ${expectedCssImport} in publish artifact.`,
+      );
+    }
   }
 
   const cssCount = cssExportTargets.length;
   const componentJsCount = componentJsExportTargets.length;
   console.log(
-    `Smoke check passed: validated ${cssCount} CSS exports and ${componentJsCount} component JS auto-CSS exports for ${packageJson.name}.`
+    `Smoke check passed: validated ${cssCount} CSS exports and ${componentJsCount} component JS auto-CSS exports for ${packageJson.name}.`,
   );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });
