@@ -114,12 +114,14 @@
   height: var(--vf-switch-thumb-icon-size);
 }
 
-.vf-switch__input:checked + .vf-switch__control, .vf-switch--checked .vf-switch__control {
+.vf-switch__input:checked + .vf-switch__control,
+.vf-switch--checked .vf-switch__control {
   border-color: var(--vf-switch-track-checked-border-color);
   background: var(--vf-switch-track-checked-background);
 }
 
-.vf-switch__input:checked + .vf-switch__control .vf-switch__thumb, .vf-switch--checked .vf-switch__thumb {
+.vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
+.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
     calc(var(--vf-switch-width-md) - var(--vf-switch-thumb-size-md) - (var(--vf-switch-thumb-inset) * 2) - 2px)
   );
@@ -158,7 +160,8 @@
 
 .vf-switch--invalid:not(.vf-switch--static):hover:not(.vf-switch--disabled)
   .vf-switch__input:checked
-  + .vf-switch__control, .vf-switch--invalid:not(.vf-switch--static).vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
+  + .vf-switch__control,
+.vf-switch--invalid:not(.vf-switch--static).vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-checked-hover-border-color);
 }
 
@@ -206,7 +209,8 @@ html[data-vf-theme='dark']
   .vf-switch:not(.vf-switch--static, .vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
-  .vf-switch__thumb, html[data-vf-theme='dark']
+  .vf-switch__thumb,
+html[data-vf-theme='dark']
   .vf-switch:not(.vf-switch--static, .vf-switch--disabled).vf-switch--checked
   .vf-switch__thumb {
   border-color: var(--vf-color-primary-contrast);
@@ -217,15 +221,18 @@ html[data-vf-theme='dark']
   .vf-switch--static:not(.vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
-  .vf-switch__thumb, html[data-vf-theme='dark'] .vf-switch--static:not(.vf-switch--disabled).vf-switch--checked .vf-switch__thumb {
+  .vf-switch__thumb,
+html[data-vf-theme='dark'] .vf-switch--static:not(.vf-switch--disabled).vf-switch--checked .vf-switch__thumb {
   border-color: var(--vf-color-primary-contrast);
   background: var(--vf-color-primary-contrast);
 }
 
-.vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled) .vf-switch__thumb, .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled)
+.vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled) .vf-switch__thumb,
+.vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
-  .vf-switch__thumb, .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled).vf-switch--checked .vf-switch__thumb {
+  .vf-switch__thumb,
+.vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled).vf-switch--checked .vf-switch__thumb {
   border-color: var(--vf-switch-thumb-inverse-border-color);
   background: var(--vf-switch-thumb-inverse-background);
   color: var(--vf-switch-thumb-inverse-color);
@@ -235,7 +242,8 @@ html[data-vf-theme='dark']
   .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
-  .vf-switch__thumb, html[data-vf-theme='dark']
+  .vf-switch__thumb,
+html[data-vf-theme='dark']
   .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled).vf-switch--checked
   .vf-switch__thumb {
   border-color: var(--vf-switch-thumb-inverse-border-color);
@@ -255,7 +263,8 @@ html[data-vf-theme='dark']
   height: var(--vf-switch-thumb-size-sm);
 }
 
-.vf-switch--sm .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb, .vf-switch--sm.vf-switch--checked .vf-switch__thumb {
+.vf-switch--sm .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
+.vf-switch--sm.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
     calc(var(--vf-switch-width-sm) - var(--vf-switch-thumb-size-sm) - (var(--vf-switch-thumb-inset) * 2) - 2px)
   );
@@ -278,7 +287,8 @@ html[data-vf-theme='dark']
   height: var(--vf-switch-thumb-size-lg);
 }
 
-.vf-switch--lg .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb, .vf-switch--lg.vf-switch--checked .vf-switch__thumb {
+.vf-switch--lg .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
+.vf-switch--lg.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
     calc(var(--vf-switch-width-lg) - var(--vf-switch-thumb-size-lg) - (var(--vf-switch-thumb-inset) * 2) - 2px)
   );

@@ -75,8 +75,7 @@ const externalStyle = computed<StyleValue>(() => attrs.style as StyleValue);
 const triggerAttrs = computed(() =>
   Object.fromEntries(
     Object.entries(attrs).filter(
-      ([key]) =>
-        key.startsWith('aria-') || key.startsWith('data-') || key === 'title' || key === 'tabindex',
+      ([key]) => key.startsWith('aria-') || key.startsWith('data-') || key === 'title' || key === 'tabindex',
     ),
   ),
 );

@@ -45,16 +45,13 @@ const nextThemeLabel = computed(() => (checked.value ? 'Switch to light theme' :
 let pendingThemeFrame: number | null = null;
 const isMounted = ref(false);
 
-watch(
-  resolvedTheme,
-  (value) => {
-    if (!isMounted.value) {
-      return;
-    }
+watch(resolvedTheme, (value) => {
+  if (!isMounted.value) {
+    return;
+  }
 
-    checked.value = value === 'dark';
-  },
-);
+  checked.value = value === 'dark';
+});
 
 onMounted(() => {
   isMounted.value = true;

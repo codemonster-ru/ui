@@ -21,7 +21,8 @@
   min-width: 0;
 }
 
-.vf-breadcrumbs__link, .vf-breadcrumbs__current {
+.vf-breadcrumbs__link,
+.vf-breadcrumbs__current {
   min-width: 0;
   font-size: var(--vf-text-body-font-size);
   line-height: var(--vf-text-body-line-height);

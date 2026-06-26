@@ -59,9 +59,7 @@ const ReactiveTableOfContentsProbe = defineComponent({
   render() {
     return h(
       'div',
-      this.renderHeadings
-        ? this.items.map((item) => h('section', { id: item.id }, item.label))
-        : undefined,
+      this.renderHeadings ? this.items.map((item) => h('section', { id: item.id }, item.label)) : undefined,
     );
   },
 });
@@ -238,11 +236,9 @@ describe('interaction composables', () => {
 
     expect(wrapper.vm.activeId).toBe('section-1');
 
-    (sections[0]!.element as HTMLElement).getBoundingClientRect = () =>
-      rectWithTop(-120);
+    (sections[0]!.element as HTMLElement).getBoundingClientRect = () => rectWithTop(-120);
 
-    (sections[1]!.element as HTMLElement).getBoundingClientRect = () =>
-      rectWithTop(24);
+    (sections[1]!.element as HTMLElement).getBoundingClientRect = () => rectWithTop(24);
 
     window.dispatchEvent(new Event('scroll'));
     await wrapper.vm.$nextTick();

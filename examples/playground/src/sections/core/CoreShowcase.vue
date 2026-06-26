@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { VueIconify, icons } from "@codemonster-ru/vueforge-icons";
-import { VfStack } from "@codemonster-ru/vueforge-layouts";
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { VfStack } from '@codemonster-ru/vueforge-layouts';
 import {
   VfAccordion,
   VfAlert,
@@ -11,6 +11,7 @@ import {
   VfCard,
   VfCheckbox,
   VfCommandPalette,
+  VfDataTable,
   VfDrawer,
   VfDialog,
   VfDivider,
@@ -40,13 +41,15 @@ import {
   VfTextarea,
   VfTooltip,
   useTheme,
-} from "@codemonster-ru/vueforge-core";
+} from '@codemonster-ru/vueforge-core';
 import type {
   VfBreadcrumbItem,
+  VfDataTableColumn,
+  VfDataTableRow,
   VfNavMenuItem,
   VfStepperItem,
   VfTableOfContentsItem,
-} from "@codemonster-ru/vueforge-core";
+} from '@codemonster-ru/vueforge-core';
 
 const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
 
@@ -54,68 +57,60 @@ const dialogOpen = ref(false);
 const drawerOpen = ref(false);
 const drawerFullscreenOpen = ref(false);
 const commandPaletteOpen = ref(false);
-const commandPaletteQuery = ref("");
-const dialogSize = ref<"sm" | "md" | "lg">("md");
-const drawerPlacement = ref<"left" | "right" | "top" | "bottom">("right");
-const formStackNameValue = ref("");
-const formStackEmailValue = ref("");
-const formStackPlanValue = ref("");
+const commandPaletteQuery = ref('');
+const dialogSize = ref<'sm' | 'md' | 'lg'>('md');
+const drawerPlacement = ref<'left' | 'right' | 'top' | 'bottom'>('right');
+const formStackNameValue = ref('');
+const formStackEmailValue = ref('');
+const formStackPlanValue = ref('');
 const dynamicProgressValue = ref(0);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 
-const formGeometrySizes = ["sm", "md", "lg"] as const;
-const formGeometryFloatingVariants = ["in", "on", "over"] as const;
+const formGeometrySizes = ['sm', 'md', 'lg'] as const;
+const formGeometryFloatingVariants = ['in', 'on', 'over'] as const;
 const actionVariants = [
-  "primary",
-  "secondary",
-  "success",
-  "info",
-  "warn",
-  "help",
-  "danger",
-  "contrast",
-  "ghost",
+  'primary',
+  'secondary',
+  'success',
+  'info',
+  'warn',
+  'help',
+  'danger',
+  'contrast',
+  'ghost',
 ] as const;
-const feedbackTones = [
-  "primary",
-  "success",
-  "info",
-  "warn",
-  "help",
-  "danger",
-  "contrast",
-] as const;
-const linkTones = ["default", "muted"] as const;
-const linkUnderlines = ["none", "hover", "always"] as const;
-const overlayPlacements = ["top", "bottom"] as const;
-const dialogSizes = ["sm", "md", "lg"] as const;
-const drawerPlacements = ["left", "right", "top", "bottom"] as const;
+const feedbackTones = ['primary', 'success', 'info', 'warn', 'help', 'danger', 'contrast'] as const;
+const linkTones = ['default', 'muted'] as const;
+const linkUnderlines = ['none', 'hover', 'always'] as const;
+const overlayPlacements = ['top', 'bottom'] as const;
+const dialogSizes = ['sm', 'md', 'lg'] as const;
+const drawerPlacements = ['left', 'right', 'top', 'bottom'] as const;
 
 const releaseTabs = [
-  { value: "overview", label: "Overview" },
-  { value: "api", label: "API" },
-  { value: "status", label: "Status" },
-  { value: "changelog", label: "Changelog" },
-  { value: "roadmap", label: "Roadmap" },
-  { value: "examples", label: "Examples" },
-  { value: "guides", label: "Guides" },
-  { value: "theming", label: "Theming" },
-  { value: "accessibility", label: "A11y" },
-  { value: "community", label: "Community" },
+  { value: 'overview', label: 'Overview' },
+  { value: 'api', label: 'API' },
+  { value: 'status', label: 'Status' },
+  { value: 'changelog', label: 'Changelog' },
+  { value: 'roadmap', label: 'Roadmap' },
+  { value: 'examples', label: 'Examples' },
+  { value: 'guides', label: 'Guides' },
+  { value: 'theming', label: 'Theming' },
+  { value: 'accessibility', label: 'A11y' },
+  { value: 'community', label: 'Community' },
 ];
 
 const compactOnboardingSteps: VfStepperItem[] = [
-  { value: "start", label: "Start", description: "Create account" },
-  { value: "details", label: "Details", description: "Add product info" },
-  { value: "plan", label: "Plan", description: "Choose rollout" },
-  { value: "launch", label: "Launch", description: "Review and publish" },
+  { value: 'start', label: 'Start', description: 'Create account' },
+  { value: 'details', label: 'Details', description: 'Add product info' },
+  { value: 'plan', label: 'Plan', description: 'Choose rollout' },
+  { value: 'launch', label: 'Launch', description: 'Review and publish' },
 ];
 
 const onboardingSteps: VfStepperItem[] = [
-  { value: "account", label: "Account", description: "Create workspace owner" },
-  { value: "profile", label: "Profile", description: "Add product and brand details" },
-  { value: "billing", label: "Billing", description: "Choose plan and payment method" },
-  { value: "launch", label: "Launch", description: "Review configuration and publish" },
+  { value: 'account', label: 'Account', description: 'Create workspace owner' },
+  { value: 'profile', label: 'Profile', description: 'Add product and brand details' },
+  { value: 'billing', label: 'Billing', description: 'Choose plan and payment method' },
+  { value: 'launch', label: 'Launch', description: 'Review configuration and publish' },
 ];
 
 interface CommandItem {
@@ -128,81 +123,81 @@ interface CommandItem {
 
 const commandPaletteDataset: CommandItem[] = [
   {
-    title: "Getting Started",
-    label: "Getting Started",
-    section: "Guide / Introduction",
-    snippet: "Project setup, quick bootstrap, and base app wiring.",
-    type: "Guide",
+    title: 'Getting Started',
+    label: 'Getting Started',
+    section: 'Guide / Introduction',
+    snippet: 'Project setup, quick bootstrap, and base app wiring.',
+    type: 'Guide',
   },
   {
-    title: "Installation",
-    label: "Installation",
-    section: "Guide / Setup",
-    snippet: "Install package, register styles, and configure entry point.",
-    type: "Guide",
+    title: 'Installation',
+    label: 'Installation',
+    section: 'Guide / Setup',
+    snippet: 'Install package, register styles, and configure entry point.',
+    type: 'Guide',
   },
   {
-    title: "Theme Provider",
-    label: "Theme Provider",
-    section: "Theming / Core",
-    snippet: "Handle system theme sync and manual theme switching.",
-    type: "Guide",
+    title: 'Theme Provider',
+    label: 'Theme Provider',
+    section: 'Theming / Core',
+    snippet: 'Handle system theme sync and manual theme switching.',
+    type: 'Guide',
   },
   {
-    title: "VfDialog",
-    label: "VfDialog",
-    section: "Components / Overlay",
-    snippet: "Modal dialog with header, content, footer, and focus trap.",
-    type: "Component",
+    title: 'VfDialog',
+    label: 'VfDialog',
+    section: 'Components / Overlay',
+    snippet: 'Modal dialog with header, content, footer, and focus trap.',
+    type: 'Component',
   },
   {
-    title: "VfDrawer",
-    label: "VfDrawer",
-    section: "Components / Overlay",
-    snippet: "Side panel with responsive sizes and optional fullscreen mode.",
-    type: "Component",
+    title: 'VfDrawer',
+    label: 'VfDrawer',
+    section: 'Components / Overlay',
+    snippet: 'Side panel with responsive sizes and optional fullscreen mode.',
+    type: 'Component',
   },
   {
-    title: "VfCommandPalette",
-    label: "VfCommandPalette",
-    section: "Components / Overlay",
-    snippet: "Keyboard-first search overlay for docs and command actions.",
-    type: "Component",
+    title: 'VfCommandPalette',
+    label: 'VfCommandPalette',
+    section: 'Components / Overlay',
+    snippet: 'Keyboard-first search overlay for docs and command actions.',
+    type: 'Component',
   },
   {
-    title: "VfNavMenu",
-    label: "VfNavMenu",
-    section: "Components / Navigation",
-    snippet: "Tree and pills variants for compact documentation navigation.",
-    type: "Component",
+    title: 'VfNavMenu',
+    label: 'VfNavMenu',
+    section: 'Components / Navigation',
+    snippet: 'Tree and pills variants for compact documentation navigation.',
+    type: 'Component',
   },
   {
-    title: "VfTableOfContents",
-    label: "VfTableOfContents",
-    section: "Components / Navigation",
-    snippet: "Auto-generated section index with active heading tracking.",
-    type: "Component",
+    title: 'VfTableOfContents',
+    label: 'VfTableOfContents',
+    section: 'Components / Navigation',
+    snippet: 'Auto-generated section index with active heading tracking.',
+    type: 'Component',
   },
   {
-    title: "VfStepper",
-    label: "VfStepper",
-    section: "Components / Navigation",
-    snippet: "Horizontal and vertical step progress for setup and wizard flows.",
-    type: "Component",
+    title: 'VfStepper',
+    label: 'VfStepper',
+    section: 'Components / Navigation',
+    snippet: 'Horizontal and vertical step progress for setup and wizard flows.',
+    type: 'Component',
   },
   {
-    title: "Breakpoints",
-    label: "Breakpoints",
-    section: "Foundation / Layout",
-    snippet: "Design tokens for adaptive component and page layouts.",
-    type: "Foundation",
+    title: 'Breakpoints',
+    label: 'Breakpoints',
+    section: 'Foundation / Layout',
+    snippet: 'Design tokens for adaptive component and page layouts.',
+    type: 'Foundation',
   },
   {
-    title: "Motion",
-    label: "Motion",
-    section: "Foundation / Animation",
-    snippet: "Timing and easing primitives for consistent transitions.",
-    type: "Foundation",
+    title: 'Motion',
+    label: 'Motion',
+    section: 'Foundation / Animation',
+    snippet: 'Timing and easing primitives for consistent transitions.',
+    type: 'Foundation',
   },
 ];
 
@@ -233,7 +228,7 @@ function handleGlobalCommandPaletteShortcut(event: KeyboardEvent) {
     return;
   }
 
-  if (event.key.toLowerCase() !== "k") {
+  if (event.key.toLowerCase() !== 'k') {
     return;
   }
 
@@ -242,7 +237,7 @@ function handleGlobalCommandPaletteShortcut(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-  window.addEventListener("keydown", handleGlobalCommandPaletteShortcut);
+  window.addEventListener('keydown', handleGlobalCommandPaletteShortcut);
 
   dynamicProgressTimer = setInterval(() => {
     const nextStep = Math.random() * 1.4 + 0.35;
@@ -252,7 +247,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("keydown", handleGlobalCommandPaletteShortcut);
+  window.removeEventListener('keydown', handleGlobalCommandPaletteShortcut);
 
   if (dynamicProgressTimer) {
     clearInterval(dynamicProgressTimer);
@@ -261,164 +256,185 @@ onBeforeUnmount(() => {
 });
 
 const selectOptions = [
-  { value: "starter", label: "Starter" },
-  { value: "pro", label: "Pro" },
-  { value: "enterprise", label: "Enterprise" },
-  { value: "team", label: "Team" },
-  { value: "business", label: "Business" },
-  { value: "growth", label: "Growth" },
-  { value: "scale", label: "Scale" },
-  { value: "plus", label: "Plus" },
-  { value: "advanced", label: "Advanced" },
-  { value: "premium", label: "Premium" },
-  { value: "ultimate", label: "Ultimate" },
-  { value: "startup", label: "Startup" },
-  { value: "agency", label: "Agency" },
-  { value: "platform", label: "Platform" },
-  { value: "custom", label: "Custom" },
+  { value: 'starter', label: 'Starter' },
+  { value: 'pro', label: 'Pro' },
+  { value: 'enterprise', label: 'Enterprise' },
+  { value: 'team', label: 'Team' },
+  { value: 'business', label: 'Business' },
+  { value: 'growth', label: 'Growth' },
+  { value: 'scale', label: 'Scale' },
+  { value: 'plus', label: 'Plus' },
+  { value: 'advanced', label: 'Advanced' },
+  { value: 'premium', label: 'Premium' },
+  { value: 'ultimate', label: 'Ultimate' },
+  { value: 'startup', label: 'Startup' },
+  { value: 'agency', label: 'Agency' },
+  { value: 'platform', label: 'Platform' },
+  { value: 'custom', label: 'Custom' },
 ];
 
 const docsMenuSimpleItems: VfNavMenuItem[] = [
   {
-    value: "getting-started",
-    label: "Getting Started",
+    value: 'getting-started',
+    label: 'Getting Started',
     children: [
-      { value: "installation", label: "Installation" },
-      { value: "quick-start", label: "Quick Start" },
-      { value: "migration", label: "Migration" },
-      { value: "faq", label: "FAQ" },
+      { value: 'installation', label: 'Installation' },
+      { value: 'quick-start', label: 'Quick Start' },
+      { value: 'migration', label: 'Migration' },
+      { value: 'faq', label: 'FAQ' },
     ],
   },
   {
-    value: "components",
-    label: "Components",
+    value: 'components',
+    label: 'Components',
     children: [
-      { value: "button", label: "Button" },
-      { value: "icon-button", label: "Icon Button" },
+      { value: 'button', label: 'Button' },
+      { value: 'icon-button', label: 'Icon Button' },
       {
-        value: "tabs",
-        label: "Tabs",
+        value: 'tabs',
+        label: 'Tabs',
         children: [
           {
-            value: "overview-tab",
-            label: "Overview Tab",
+            value: 'overview-tab',
+            label: 'Overview Tab',
             children: [
-              { value: "overview-anatomy", label: "Anatomy" },
-              { value: "overview-accessibility", label: "Accessibility" },
+              { value: 'overview-anatomy', label: 'Anatomy' },
+              { value: 'overview-accessibility', label: 'Accessibility' },
             ],
           },
-          { value: "status-tab", label: "Status Tab" },
+          { value: 'status-tab', label: 'Status Tab' },
         ],
       },
-      { value: "stepper", label: "Stepper" },
-      { value: "accordion", label: "Accordion" },
-      { value: "dialog", label: "Dialog" },
-      { value: "drawer", label: "Drawer" },
-      { value: "popover", label: "Popover" },
-      { value: "tooltip", label: "Tooltip" },
+      { value: 'stepper', label: 'Stepper' },
+      { value: 'accordion', label: 'Accordion' },
+      { value: 'dialog', label: 'Dialog' },
+      { value: 'drawer', label: 'Drawer' },
+      { value: 'popover', label: 'Popover' },
+      { value: 'tooltip', label: 'Tooltip' },
     ],
   },
   {
-    value: "foundation",
-    label: "Foundation",
+    value: 'foundation',
+    label: 'Foundation',
     children: [
-      { value: "tokens", label: "Tokens" },
-      { value: "theme", label: "Theme" },
-      { value: "breakpoints", label: "Breakpoints" },
-      { value: "motion", label: "Motion" },
+      { value: 'tokens', label: 'Tokens' },
+      { value: 'theme', label: 'Theme' },
+      { value: 'breakpoints', label: 'Breakpoints' },
+      { value: 'motion', label: 'Motion' },
     ],
   },
 ];
 
 const topMenuItems: VfNavMenuItem[] = [
   {
-    value: "products",
-    label: "Products",
+    value: 'products',
+    label: 'Products',
     children: [
       {
-        value: "foundations",
-        label: "Foundations",
+        value: 'foundations',
+        label: 'Foundations',
         children: [
-          { value: "tokens", label: "Tokens" },
-          { value: "theme", label: "Theme" },
-          { value: "motion", label: "Motion" },
+          { value: 'tokens', label: 'Tokens' },
+          { value: 'theme', label: 'Theme' },
+          { value: 'motion', label: 'Motion' },
         ],
       },
       {
-        value: "components-suite",
-        label: "Components",
+        value: 'components-suite',
+        label: 'Components',
         children: [
-          { value: "actions", label: "Actions" },
-          { value: "forms-menu", label: "Forms" },
-          { value: "navigation-menu", label: "Navigation" },
+          { value: 'actions', label: 'Actions' },
+          { value: 'forms-menu', label: 'Forms' },
+          { value: 'navigation-menu', label: 'Navigation' },
           {
-            value: "storybook-menu",
-            label: "Storybook",
-            href: "https://storybook.js.org",
-            target: "_blank",
+            value: 'storybook-menu',
+            label: 'Storybook',
+            href: 'https://storybook.js.org',
+            target: '_blank',
           },
         ],
       },
     ],
   },
   {
-    value: "docs-top",
-    label: "Docs",
+    value: 'docs-top',
+    label: 'Docs',
     children: [
-      { value: "getting-started-top", label: "Getting Started" },
-      { value: "api-top", label: "API Reference" },
+      { value: 'getting-started-top', label: 'Getting Started' },
+      { value: 'api-top', label: 'API Reference' },
       {
-        value: "guides-top",
-        label: "Guides",
+        value: 'guides-top',
+        label: 'Guides',
         children: [
-          { value: "theming-guide", label: "Theming" },
-          { value: "composition-guide", label: "Composition" },
+          { value: 'theming-guide', label: 'Theming' },
+          { value: 'composition-guide', label: 'Composition' },
         ],
       },
     ],
   },
-  { value: "pricing", label: "Pricing" },
+  { value: 'pricing', label: 'Pricing' },
   {
-    value: "github",
-    label: "GitHub",
-    href: "https://github.com/codemonster-ru",
-    target: "_blank",
+    value: 'github',
+    label: 'GitHub',
+    href: 'https://github.com/codemonster-ru',
+    target: '_blank',
   },
-  { value: "about", label: "About" },
+  { value: 'about', label: 'About' },
 ];
 
 const breadcrumbItems: VfBreadcrumbItem[] = [
-  { label: "Docs", href: "#demo-navigation" },
-  { label: "Components", href: "#demo-navigation" },
-  { label: "Navigation", href: "#demo-navigation" },
-  { label: "Menu Bar", current: true },
+  { label: 'Docs', href: '#demo-navigation' },
+  { label: 'Components', href: '#demo-navigation' },
+  { label: 'Navigation', href: '#demo-navigation' },
+  { label: 'Menu Bar', current: true },
 ];
 
 const tocItems: VfTableOfContentsItem[] = [
-  { id: "demo-theme", label: "Theme", level: 1 },
-  { id: "demo-typography", label: "Typography", level: 1 },
-  { id: "demo-actions", label: "Actions and Links", level: 1 },
-  { id: "demo-overlay", label: "Overlay", level: 1 },
-  { id: "demo-surfaces", label: "Surface Components", level: 1 },
-  { id: "demo-feedback", label: "Feedback", level: 1 },
-  { id: "demo-forms", label: "Forms", level: 1 },
-  { id: "demo-navigation", label: "Navigation and Disclosure", level: 1 },
-  { id: "demo-dialog", label: "Modals and Commands", level: 1 },
+  { id: 'demo-theme', label: 'Theme', level: 1 },
+  { id: 'demo-typography', label: 'Typography', level: 1 },
+  { id: 'demo-actions', label: 'Actions and Links', level: 1 },
+  { id: 'demo-overlay', label: 'Overlay', level: 1 },
+  { id: 'demo-surfaces', label: 'Surface Components', level: 1 },
+  { id: 'demo-feedback', label: 'Feedback', level: 1 },
+  { id: 'demo-forms', label: 'Forms', level: 1 },
+  { id: 'demo-navigation', label: 'Navigation and Disclosure', level: 1 },
+  { id: 'demo-dialog', label: 'Modals and Commands', level: 1 },
+];
+
+const dataTableColumns: VfDataTableColumn[] = [
+  { key: 'member', header: 'Member' },
+  { key: 'role', header: 'Role' },
+  { key: 'status', header: 'Status' },
+];
+
+const dataTableMetricColumns: VfDataTableColumn[] = [
+  { key: 'member', header: 'Member' },
+  { key: 'status', header: 'Status' },
+  { key: 'tasks', header: 'Tasks', align: 'end' },
+];
+
+const dataTableRows: VfDataTableRow[] = [
+  { id: 1, member: 'Alice', role: 'Design', status: 'Available', tasks: 12 },
+  { id: 2, member: 'Bob', role: 'Platform', status: 'Busy', tasks: 8 },
+  { id: 3, member: 'Carol', role: 'Product', status: 'Available', tasks: 15 },
+  { id: 4, member: 'Diego', role: 'Design', status: 'Away', tasks: 5 },
+  { id: 5, member: 'Eve', role: 'QA', status: 'Offline', tasks: 3 },
+  { id: 6, member: 'Frank', role: 'Support', status: 'Available', tasks: 9 },
+  { id: 7, member: 'Grace', role: 'Platform', status: 'Busy', tasks: 11 },
 ];
 
 const tabContent = computed<Record<string, string>>(() => ({
-  overview: "Overview content.",
-  api: "API content.",
-  status: "Status content.",
-  changelog: "Changelog content.",
-  roadmap: "Roadmap content.",
-  examples: "Examples content.",
-  guides: "Guides content.",
-  theming: "Theming content.",
-  accessibility: "Accessibility content.",
-  community: "Community content.",
+  overview: 'Overview content.',
+  api: 'API content.',
+  status: 'Status content.',
+  changelog: 'Changelog content.',
+  roadmap: 'Roadmap content.',
+  examples: 'Examples content.',
+  guides: 'Guides content.',
+  theming: 'Theming content.',
+  accessibility: 'Accessibility content.',
+  community: 'Community content.',
 }));
-
 </script>
 
 <template>
@@ -434,24 +450,9 @@ const tabContent = computed<Record<string, string>>(() => ({
             <p class="demo-label">vf-theme-provider</p>
             <div class="demo-stack demo-form-stack">
               <div class="demo-inline">
-                <VfButton
-                  size="sm"
-                  variant="secondary"
-                  @click="setTheme('light')"
-                  >Light</VfButton
-                >
-                <VfButton
-                  size="sm"
-                  variant="secondary"
-                  @click="setTheme('dark')"
-                  >Dark</VfButton
-                >
-                <VfButton
-                  size="sm"
-                  variant="secondary"
-                  @click="setTheme('system')"
-                  >System</VfButton
-                >
+                <VfButton size="sm" variant="secondary" @click="setTheme('light')">Light</VfButton>
+                <VfButton size="sm" variant="secondary" @click="setTheme('dark')">Dark</VfButton>
+                <VfButton size="sm" variant="secondary" @click="setTheme('system')">System</VfButton>
                 <VfButton size="sm" @click="toggleTheme">Toggle</VfButton>
               </div>
               <div class="demo-inline">
@@ -471,18 +472,18 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <VfThemeSwitch variant="button" button-variant="ghost" />
                 <VfThemeSwitch variant="button" size="sm" />
                 <VfThemeSwitch variant="button">
-                  {{ resolvedTheme === "dark" ? "Dark" : "Light" }}
+                  {{ resolvedTheme === 'dark' ? 'Dark' : 'Light' }}
                 </VfThemeSwitch>
                 <VfThemeSwitch variant="button" button-variant="ghost">
-                  {{ resolvedTheme === "dark" ? "Dark" : "Light" }}
+                  {{ resolvedTheme === 'dark' ? 'Dark' : 'Light' }}
                 </VfThemeSwitch>
                 <VfThemeSwitch variant="button" size="lg">
-                  {{ resolvedTheme === "dark" ? "Dark" : "Light" }}
+                  {{ resolvedTheme === 'dark' ? 'Dark' : 'Light' }}
                 </VfThemeSwitch>
               </div>
               <p class="demo-text">
-                The switch reflects the resolved theme and turns system mode
-                into an explicit light or dark choice after interaction.
+                The switch reflects the resolved theme and turns system mode into an explicit light or dark choice after
+                interaction.
               </p>
             </div>
           </div>
@@ -490,8 +491,8 @@ const tabContent = computed<Record<string, string>>(() => ({
           <div class="demo-example">
             <p class="demo-label">Theme utilities</p>
             <p class="demo-text">
-              Use the controls above to switch theme mode and verify component
-              contrast in light, dark, and system states.
+              Use the controls above to switch theme mode and verify component contrast in light, dark, and system
+              states.
             </p>
           </div>
         </div>
@@ -521,57 +522,31 @@ const tabContent = computed<Record<string, string>>(() => ({
               <p class="vf-text-body demo-m-0">Body text utility</p>
               <p class="vf-text-label demo-m-0">Label text utility</p>
               <p class="vf-text-caption demo-m-0">Caption text utility</p>
-              <p class="vf-text-body vf-text-muted demo-m-0">
-                Muted body text utility
-              </p>
-              <p class="vf-text-body vf-text-primary demo-m-0">
-                Primary body text utility
-              </p>
-              <p class="vf-text-body vf-text-success demo-m-0">
-                Success body text utility
-              </p>
-              <p class="vf-text-body vf-text-info demo-m-0">
-                Info body text utility
-              </p>
-              <p class="vf-text-body vf-text-warn demo-m-0">
-                Warn body text utility
-              </p>
-              <p class="vf-text-body vf-text-help demo-m-0">
-                Help body text utility
-              </p>
-              <p class="vf-text-body vf-text-danger demo-m-0">
-                Danger body text utility
-              </p>
-              <p class="vf-text-body vf-text-contrast demo-m-0">
-                Contrast body text utility
-              </p>
+              <p class="vf-text-body vf-text-muted demo-m-0">Muted body text utility</p>
+              <p class="vf-text-body vf-text-primary demo-m-0">Primary body text utility</p>
+              <p class="vf-text-body vf-text-success demo-m-0">Success body text utility</p>
+              <p class="vf-text-body vf-text-info demo-m-0">Info body text utility</p>
+              <p class="vf-text-body vf-text-warn demo-m-0">Warn body text utility</p>
+              <p class="vf-text-body vf-text-help demo-m-0">Help body text utility</p>
+              <p class="vf-text-body vf-text-danger demo-m-0">Danger body text utility</p>
+              <p class="vf-text-body vf-text-contrast demo-m-0">Contrast body text utility</p>
               <p class="vf-text-body demo-m-0">
                 Link utility:
-                <a href="#demo-typography" class="vf-text-link"
-                  >Open typography section</a
-                >
+                <a href="#demo-typography" class="vf-text-link">Open typography section</a>
               </p>
               <p class="vf-text-body demo-m-0">
                 Link utility muted:
-                <a
-                  href="#demo-typography"
-                  class="vf-text-link vf-text-link--muted"
-                  >Open typography section</a
-                >
+                <a href="#demo-typography" class="vf-text-link vf-text-link--muted">Open typography section</a>
               </p>
               <p class="vf-text-body demo-m-0">
                 Link utility underline hover:
-                <a
-                  href="#demo-typography"
-                  class="vf-text-link vf-text-link--underline-hover"
+                <a href="#demo-typography" class="vf-text-link vf-text-link--underline-hover"
                   >Open typography section</a
                 >
               </p>
               <p class="vf-text-body demo-m-0">
                 Link utility underline always:
-                <a
-                  href="#demo-typography"
-                  class="vf-text-link vf-text-link--underline-always"
+                <a href="#demo-typography" class="vf-text-link vf-text-link--underline-always"
                   >Open typography section</a
                 >
               </p>
@@ -606,15 +581,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                 Utility-driven content rhythm keeps docs and UI copy consistent.
               </blockquote>
               <p class="vf-text-body vf-text-truncate demo-m-0 demo-max-w-16">
-                This line demonstrates truncation behavior for long text content
-                in constrained UI areas.
+                This line demonstrates truncation behavior for long text content in constrained UI areas.
               </p>
               <p class="vf-text-body vf-text-nowrap demo-m-0">
                 No-wrap utility keeps short status labels on a single line.
               </p>
               <p class="vf-text-body vf-text-balance demo-m-0 demo-max-w-20">
-                Balanced wrapping improves heading and summary rhythm in narrow
-                content columns.
+                Balanced wrapping improves heading and summary rhythm in narrow content columns.
               </p>
               <p class="vf-text-body demo-m-0">
                 <span class="vf-sr-only">Utility text for screen readers.</span>
@@ -627,23 +600,14 @@ const tabContent = computed<Record<string, string>>(() => ({
             <p class="demo-label">vf-prose</p>
             <article class="vf-prose">
               <h3>Baseline Example</h3>
-              <p>
-                Prose container keeps content rhythm consistent for
-                documentation and text-heavy screens.
-              </p>
-              <p>
-                Use <code>vf-prose</code> when regular semantic HTML should look
-                polished by default.
-              </p>
+              <p>Prose container keeps content rhythm consistent for documentation and text-heavy screens.</p>
+              <p>Use <code>vf-prose</code> when regular semantic HTML should look polished by default.</p>
               <ul>
                 <li>Aligned heading scale</li>
                 <li>Stable paragraph rhythm</li>
                 <li>Styled links and inline code</li>
               </ul>
-              <blockquote>
-                Typography should feel intentional without manual per-element
-                styling.
-              </blockquote>
+              <blockquote>Typography should feel intentional without manual per-element styling.</blockquote>
               <p>
                 Read more in
                 <a href="#demo-typography">typography section</a>.
@@ -653,8 +617,8 @@ const tabContent = computed<Record<string, string>>(() => ({
             <article class="vf-prose">
               <h3>Spacing Matrix</h3>
               <p>
-                This matrix intentionally places many neighboring block
-                combinations to reveal where vertical spacing feels too tight.
+                This matrix intentionally places many neighboring block combinations to reveal where vertical spacing
+                feels too tight.
               </p>
 
               <h4>Heading followed by list</h4>
@@ -670,17 +634,13 @@ const tabContent = computed<Record<string, string>>(() => ({
               </ol>
 
               <h4>Heading followed by blockquote</h4>
-              <blockquote>
-                Blockquote directly after heading is a common docs pattern.
-              </blockquote>
+              <blockquote>Blockquote directly after heading is a common docs pattern.</blockquote>
 
               <h4>Heading followed by code block</h4>
               <pre><code>npm install vueforge-core</code></pre>
 
               <h4>Paragraph followed by list</h4>
-              <p>
-                Paragraph text should comfortably separate from the list below.
-              </p>
+              <p>Paragraph text should comfortably separate from the list below.</p>
               <ul>
                 <li>Paragraph to unordered list</li>
                 <li>Second item for rhythm check</li>
@@ -696,14 +656,10 @@ const tabContent = computed<Record<string, string>>(() => ({
 
               <h4>Paragraph followed by blockquote</h4>
               <p>Intro sentence before quote.</p>
-              <blockquote>
-                Quoted content can look cramped without enough top margin.
-              </blockquote>
+              <blockquote>Quoted content can look cramped without enough top margin.</blockquote>
 
               <h4>Blockquote followed by paragraph</h4>
-              <blockquote>
-                Another quote to inspect spacing from quote to regular text.
-              </blockquote>
+              <blockquote>Another quote to inspect spacing from quote to regular text.</blockquote>
               <p>Body text after quote.</p>
 
               <h4>Paragraph followed by horizontal rule</h4>
@@ -717,8 +673,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   Item with nested paragraph to inspect inner flow.
                   <p>
                     Nested paragraph in list item with
-                    <a href="#demo-actions">inline link</a> and
-                    <code>inlineCode()</code>.
+                    <a href="#demo-actions">inline link</a> and <code>inlineCode()</code>.
                   </p>
                 </li>
                 <li>Simple sibling item.</li>
@@ -728,8 +683,7 @@ const tabContent = computed<Record<string, string>>(() => ({
             <article class="vf-prose">
               <h3>Heading Scale Matrix (H1-H6)</h3>
               <p>
-                This block covers all heading levels with common neighboring
-                prose elements for visual rhythm checks.
+                This block covers all heading levels with common neighboring prose elements for visual rhythm checks.
               </p>
 
               <h1>Heading 1 followed by paragraph</h1>
@@ -745,9 +699,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               <pre><code>const headingLevel = 3;</code></pre>
 
               <h4>Heading 4 followed by blockquote</h4>
-              <blockquote>
-                Blockquote after heading should keep balanced separation.
-              </blockquote>
+              <blockquote>Blockquote after heading should keep balanced separation.</blockquote>
 
               <h5>Heading 5 followed by paragraph</h5>
               <p>Smaller heading keeps the same typographic rhythm model.</p>
@@ -775,11 +727,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-component-matrix__section">
                 <p class="demo-text">Button variants by size</p>
                 <div class="demo-component-matrix__grid">
-                  <div
-                    v-for="size in formGeometrySizes"
-                    :key="`button-${size}`"
-                    class="demo-component-matrix__cell"
-                  >
+                  <div v-for="size in formGeometrySizes" :key="`button-${size}`" class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">{{ size }}</p>
                     <div class="demo-inline">
                       <VfButton
@@ -814,12 +762,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                         :variant="variant"
                         :aria-label="`${variant} ${size} settings`"
                       />
-                      <VfIconButton
-                        :icon="icons.gear"
-                        :size="size"
-                        aria-label="Disabled settings"
-                        disabled
-                      />
+                      <VfIconButton :icon="icons.gear" :size="size" aria-label="Disabled settings" disabled />
                     </div>
                   </div>
                 </div>
@@ -828,11 +771,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-component-matrix__section">
                 <p class="demo-text">Link tone and underline states</p>
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
-                  <div
-                    v-for="tone in linkTones"
-                    :key="`link-${tone}`"
-                    class="demo-component-matrix__cell"
-                  >
+                  <div v-for="tone in linkTones" :key="`link-${tone}`" class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">{{ tone }}</p>
                     <VfLink
                       v-for="underline in linkUnderlines"
@@ -843,12 +782,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     >
                       {{ underline }} underline
                     </VfLink>
-                    <VfLink
-                      href="https://example.com"
-                      target="_blank"
-                      :tone="tone"
-                      underline="hover"
-                    >
+                    <VfLink href="https://example.com" target="_blank" :tone="tone" underline="hover">
                       external link
                     </VfLink>
                   </div>
@@ -875,10 +809,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   class="demo-component-matrix__cell"
                 >
                   <p class="demo-component-matrix__label">tooltip {{ placement }}</p>
-                  <VfTooltip
-                    :text="`Tooltip placement: ${placement}`"
-                    :placement="placement"
-                  >
+                  <VfTooltip :text="`Tooltip placement: ${placement}`" :placement="placement">
                     <VfButton variant="secondary">{{ placement }}</VfButton>
                   </VfTooltip>
                 </div>
@@ -971,22 +902,39 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">table default</p>
-                  <VfTable>
+                  <p class="demo-component-matrix__label">table caption and footer</p>
+                  <VfTable caption="Team availability">
                     <template #header>
                       <tr>
-                        <th>Name</th>
+                        <th>Member</th>
                         <th>Status</th>
                       </tr>
                     </template>
                     <tr>
-                      <td>Core</td>
-                      <td>Stable</td>
+                      <td>Alice</td>
+                      <td>Available</td>
                     </tr>
                     <tr>
-                      <td>Forms</td>
-                      <td>Review</td>
+                      <td>Bob</td>
+                      <td>Busy</td>
                     </tr>
+                    <tr>
+                      <td>Carol</td>
+                      <td>Available</td>
+                    </tr>
+                    <tr>
+                      <td>Diego</td>
+                      <td>Away</td>
+                    </tr>
+                    <tr>
+                      <td>Eve</td>
+                      <td>Offline</td>
+                    </tr>
+                    <template #footer>
+                      <tr>
+                        <td colspan="2">Total: 5 members</td>
+                      </tr>
+                    </template>
                   </VfTable>
                 </div>
 
@@ -1007,7 +955,208 @@ const tabContent = computed<Record<string, string>>(() => ({
                       <td>Overlay</td>
                       <td>Review</td>
                     </tr>
+                    <tr>
+                      <td>Forms</td>
+                      <td>Stable</td>
+                    </tr>
+                    <tr>
+                      <td>Feedback</td>
+                      <td>Testing</td>
+                    </tr>
+                    <tr>
+                      <td>Surfaces</td>
+                      <td>Planned</td>
+                    </tr>
                   </VfTable>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">table compact</p>
+                  <VfTable compact>
+                    <template #header>
+                      <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                      </tr>
+                    </template>
+                    <tr>
+                      <td>Core</td>
+                      <td>Stable</td>
+                    </tr>
+                    <tr>
+                      <td>Forms</td>
+                      <td>Review</td>
+                    </tr>
+                    <tr>
+                      <td>Navigation</td>
+                      <td>Stable</td>
+                    </tr>
+                    <tr>
+                      <td>Overlay</td>
+                      <td>Testing</td>
+                    </tr>
+                    <tr>
+                      <td>Feedback</td>
+                      <td>Planned</td>
+                    </tr>
+                  </VfTable>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">table column dividers</p>
+                  <VfTable column-dividers>
+                    <template #header>
+                      <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Owner</th>
+                      </tr>
+                    </template>
+                    <tr>
+                      <td>Core</td>
+                      <td>Stable</td>
+                      <td>Design</td>
+                    </tr>
+                    <tr>
+                      <td>Forms</td>
+                      <td>Review</td>
+                      <td>Product</td>
+                    </tr>
+                    <tr>
+                      <td>Navigation</td>
+                      <td>Stable</td>
+                      <td>Platform</td>
+                    </tr>
+                    <tr>
+                      <td>Overlay</td>
+                      <td>Testing</td>
+                      <td>Design</td>
+                    </tr>
+                    <tr>
+                      <td>Feedback</td>
+                      <td>Planned</td>
+                      <td>Product</td>
+                    </tr>
+                  </VfTable>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">table sticky header</p>
+                  <VfTable class="demo-table-scroll-y" sticky-header>
+                    <template #header>
+                      <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                      </tr>
+                    </template>
+                    <tr>
+                      <td>Core</td>
+                      <td>Stable</td>
+                    </tr>
+                    <tr>
+                      <td>Forms</td>
+                      <td>Review</td>
+                    </tr>
+                    <tr>
+                      <td>Navigation</td>
+                      <td>Stable</td>
+                    </tr>
+                    <tr>
+                      <td>Overlay</td>
+                      <td>Testing</td>
+                    </tr>
+                    <tr>
+                      <td>Feedback</td>
+                      <td>Planned</td>
+                    </tr>
+                    <tr>
+                      <td>Surfaces</td>
+                      <td>Stable</td>
+                    </tr>
+                    <tr>
+                      <td>Progress</td>
+                      <td>Review</td>
+                    </tr>
+                  </VfTable>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table</p>
+                  <VfDataTable
+                    caption="Team roster"
+                    :columns="dataTableColumns"
+                    :rows="dataTableRows"
+                    row-key="id"
+                    striped
+                    column-dividers
+                  />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table compact aligned</p>
+                  <VfDataTable
+                    :columns="dataTableMetricColumns"
+                    :rows="dataTableRows"
+                    row-key="id"
+                    density="compact"
+                    striped
+                    column-dividers
+                  />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table slots and footer</p>
+                  <VfDataTable :columns="dataTableMetricColumns" :rows="dataTableRows.slice(0, 5)" row-key="id">
+                    <template #header-tasks="{ column }"> {{ column.header }} open </template>
+                    <template #cell-status="{ value }">
+                      <VfBadge :tone="value === 'Available' ? 'success' : value === 'Busy' ? 'warn' : 'neutral'">
+                        {{ value }}
+                      </VfBadge>
+                    </template>
+                    <template #footer>
+                      <tr>
+                        <td colspan="3">Total: 43 open tasks</td>
+                      </tr>
+                    </template>
+                  </VfDataTable>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table sticky header</p>
+                  <VfDataTable
+                    class="demo-table-scroll-y"
+                    :columns="dataTableColumns"
+                    :rows="dataTableRows"
+                    row-key="id"
+                    sticky-header
+                  />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table loading</p>
+                  <VfDataTable :columns="dataTableColumns" :rows="dataTableRows.slice(0, 5)" row-key="id" loading />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table skeleton</p>
+                  <VfDataTable :columns="dataTableMetricColumns" loading loading-variant="skeleton" :loading-rows="4" />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table pagination</p>
+                  <VfDataTable
+                    :columns="dataTableMetricColumns"
+                    :rows="dataTableRows"
+                    row-key="id"
+                    pagination
+                    :default-page-size="3"
+                    :page-size-options="[3, 5, 10]"
+                  />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table empty</p>
+                  <VfDataTable :columns="dataTableColumns" empty-text="No team members found" />
                 </div>
 
                 <div class="demo-component-matrix__cell">
@@ -1040,17 +1189,10 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-component-matrix__section">
                 <p class="demo-text">Alert tones</p>
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
-                  <VfAlert
-                    v-for="tone in feedbackTones"
-                    :key="`alert-${tone}`"
-                    :tone="tone"
-                    :title="`${tone} alert`"
-                  >
+                  <VfAlert v-for="tone in feedbackTones" :key="`alert-${tone}`" :tone="tone" :title="`${tone} alert`">
                     Consistent icon, border, and content spacing.
                   </VfAlert>
-                  <VfAlert title="without icon" hide-icon>
-                    Text-first alert content alignment.
-                  </VfAlert>
+                  <VfAlert title="without icon" hide-icon> Text-first alert content alignment. </VfAlert>
                 </div>
               </div>
 
@@ -1061,11 +1203,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">badges</p>
                     <div class="demo-inline">
                       <VfBadge>neutral</VfBadge>
-                      <VfBadge
-                        v-for="tone in feedbackTones"
-                        :key="`badge-${tone}`"
-                        :tone="tone"
-                      >
+                      <VfBadge v-for="tone in feedbackTones" :key="`badge-${tone}`" :tone="tone">
                         {{ tone }}
                       </VfBadge>
                     </div>
@@ -1075,11 +1213,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">tags</p>
                     <div class="demo-inline">
                       <VfTag>neutral</VfTag>
-                      <VfTag
-                        v-for="tone in feedbackTones"
-                        :key="`tag-${tone}`"
-                        :tone="tone"
-                      >
+                      <VfTag v-for="tone in feedbackTones" :key="`tag-${tone}`" :tone="tone">
                         {{ tone }}
                       </VfTag>
                     </div>
@@ -1203,11 +1337,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-form-geometry__section">
                 <p class="demo-text">Text controls</p>
                 <div class="demo-form-geometry__grid">
-                  <div
-                    v-for="size in formGeometrySizes"
-                    :key="`text-${size}`"
-                    class="demo-form-geometry__cell"
-                  >
+                  <div v-for="size in formGeometrySizes" :key="`text-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
                     <VfInput
                       :size="size"
@@ -1244,11 +1374,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-form-geometry__section">
                 <p class="demo-text">Text control states</p>
                 <div class="demo-form-geometry__grid">
-                  <div
-                    v-for="size in formGeometrySizes"
-                    :key="`text-states-${size}`"
-                    class="demo-form-geometry__cell"
-                  >
+                  <div v-for="size in formGeometrySizes" :key="`text-states-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
                     <VfInput :size="size" model-value="Default value" placeholder="Default" />
                     <VfInput :size="size" model-value="Invalid value" invalid placeholder="Invalid" />
@@ -1261,12 +1387,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       password-reveal
                       placeholder="Password"
                     />
-                    <VfSelect
-                      :size="size"
-                      model-value="pro"
-                      placeholder="Default select"
-                      :options="selectOptions"
-                    />
+                    <VfSelect :size="size" model-value="pro" placeholder="Default select" :options="selectOptions" />
                     <VfSelect
                       :size="size"
                       model-value=""
@@ -1281,11 +1402,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       placeholder="Disabled select"
                       :options="selectOptions"
                     />
-                    <VfTextarea
-                      :size="size"
-                      model-value="Default textarea value"
-                      placeholder="Default textarea"
-                    />
+                    <VfTextarea :size="size" model-value="Default textarea value" placeholder="Default textarea" />
                     <VfTextarea
                       :size="size"
                       model-value="Invalid textarea value"
@@ -1305,11 +1422,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-form-geometry__section">
                 <p class="demo-text">Adornments and actions</p>
                 <div class="demo-form-geometry__grid">
-                  <div
-                    v-for="size in formGeometrySizes"
-                    :key="`adornments-${size}`"
-                    class="demo-form-geometry__cell"
-                  >
+                  <div v-for="size in formGeometrySizes" :key="`adornments-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
                     <VfInput :size="size" model-value="Leading" leading-icon="magnifyingGlass" />
                     <VfInput :size="size" model-value="Trailing" trailing-icon="filter" />
@@ -1513,11 +1626,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-form-geometry__section">
                 <p class="demo-text">Selection controls</p>
                 <div class="demo-form-geometry__grid">
-                  <div
-                    v-for="size in formGeometrySizes"
-                    :key="`selection-${size}`"
-                    class="demo-form-geometry__cell"
-                  >
+                  <div v-for="size in formGeometrySizes" :key="`selection-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
                     <div class="demo-selection-list">
                       <VfCheckbox :size="size" :model-value="true">Checked option</VfCheckbox>
@@ -1525,9 +1634,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       <VfRadio :size="size" model-value="active" value="active" :name="`geometry-radio-${size}`">
                         Active radio
                       </VfRadio>
-                      <VfSwitch :size="size" :model-value="true">
-                        Active switch
-                      </VfSwitch>
+                      <VfSwitch :size="size" :model-value="true"> Active switch </VfSwitch>
                       <VfSwitch :size="size" :model-value="true">
                         <template #thumb="{ checked }">
                           <VueIconify :icon="checked ? icons.check : icons.xmark" />
@@ -1573,9 +1680,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <VfFieldset label="Notification channels" description="Grouped checkbox controls">
                       <template #default="{ invalid }">
                         <div class="demo-selection-list">
-                          <VfCheckbox :model-value="true" :invalid="invalid">
-                            Email alerts
-                          </VfCheckbox>
+                          <VfCheckbox :model-value="true" :invalid="invalid"> Email alerts </VfCheckbox>
                           <VfCheckbox :invalid="invalid">Slack alerts</VfCheckbox>
                         </div>
                       </template>
@@ -1583,22 +1688,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <VfFieldset label="Workspace plan" error="Select one option">
                       <template #default="{ invalid }">
                         <div class="demo-selection-list">
-                          <VfRadio
-                            model-value="pro"
-                            name="fieldset-plan"
-                            value="starter"
-                            :invalid="invalid"
-                          >
+                          <VfRadio model-value="pro" name="fieldset-plan" value="starter" :invalid="invalid">
                             Starter
                           </VfRadio>
-                          <VfRadio
-                            model-value="pro"
-                            name="fieldset-plan"
-                            value="pro"
-                            :invalid="invalid"
-                          >
-                            Pro
-                          </VfRadio>
+                          <VfRadio model-value="pro" name="fieldset-plan" value="pro" :invalid="invalid"> Pro </VfRadio>
                         </div>
                       </template>
                     </VfFieldset>
@@ -1626,15 +1719,8 @@ const tabContent = computed<Record<string, string>>(() => ({
                       </VfCheckbox>
                     </div>
                     <div class="demo-selection-list">
-                      <VfRadio :size="size" value="unchecked" :name="`radio-state-${size}`">
-                        Unchecked radio
-                      </VfRadio>
-                      <VfRadio
-                        :size="size"
-                        model-value="checked"
-                        value="checked"
-                        :name="`radio-state-${size}`"
-                      >
+                      <VfRadio :size="size" value="unchecked" :name="`radio-state-${size}`"> Unchecked radio </VfRadio>
+                      <VfRadio :size="size" model-value="checked" value="checked" :name="`radio-state-${size}`">
                         Checked radio
                       </VfRadio>
                       <VfRadio :size="size" value="invalid" :name="`radio-invalid-${size}`" invalid>
@@ -1741,39 +1827,25 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">accordion states</p>
                   <VfAccordion title="Closed section">Closed content.</VfAccordion>
                   <VfAccordion title="Open section" open>Open content.</VfAccordion>
-                  <VfAccordion title="Disabled section" disabled>
-                    Disabled content.
-                  </VfAccordion>
+                  <VfAccordion title="Disabled section" disabled> Disabled content. </VfAccordion>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">menus and toc</p>
                   <VfNavMenu model-value="components" :items="docsMenuSimpleItems" />
-                  <VfNavMenu
-                    model-value="components"
-                    :items="docsMenuSimpleItems"
-                    variant="pills"
-                  />
+                  <VfNavMenu model-value="components" :items="docsMenuSimpleItems" variant="pills" />
                   <VfMenuBar :items="topMenuItems" />
                   <VfMenuBar :items="topMenuItems" variant="pills" />
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">table of contents</p>
-                  <VfTableOfContents
-                    :items="tocItems.slice(0, 5)"
-                    active-id="demo-actions"
-                  />
-                  <VfTableOfContents
-                    :items="tocItems.slice(0, 5)"
-                    active-id="demo-actions"
-                    variant="pills"
-                  />
+                  <VfTableOfContents :items="tocItems.slice(0, 5)" active-id="demo-actions" />
+                  <VfTableOfContents :items="tocItems.slice(0, 5)" active-id="demo-actions" variant="pills" />
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -1818,18 +1890,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                     >
                       {{ placement }}
                     </VfButton>
-                    <VfButton variant="secondary" @click="drawerFullscreenOpen = true">
-                      fullscreen
-                    </VfButton>
+                    <VfButton variant="secondary" @click="drawerFullscreenOpen = true"> fullscreen </VfButton>
                   </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">command palette states</p>
                   <div class="demo-inline">
-                    <VfButton variant="secondary" @click="commandPaletteOpen = true">
-                      empty query
-                    </VfButton>
+                    <VfButton variant="secondary" @click="commandPaletteOpen = true"> empty query </VfButton>
                     <VfButton
                       variant="secondary"
                       @click="
@@ -1848,12 +1916,7 @@ const tabContent = computed<Record<string, string>>(() => ({
       </section>
     </div>
 
-    <VfDialog
-      v-model:open="dialogOpen"
-      title="Dialog"
-      :size="dialogSize"
-      dividers
-    >
+    <VfDialog v-model:open="dialogOpen" title="Dialog" :size="dialogSize" dividers>
       <template #default>
         <div class="demo-stack">
           <p>Dialog content.</p>
@@ -1862,19 +1925,12 @@ const tabContent = computed<Record<string, string>>(() => ({
       <template #footer="{ close }">
         <div class="demo-inline">
           <VfButton data-autofocus @click="close">Looks good</VfButton>
-          <VfButton variant="secondary" @click="dialogOpen = false"
-            >Close</VfButton
-          >
+          <VfButton variant="secondary" @click="dialogOpen = false">Close</VfButton>
         </div>
       </template>
     </VfDialog>
 
-    <VfDrawer
-      v-model:open="drawerOpen"
-      title="Drawer"
-      :placement="drawerPlacement"
-      dividers
-    >
+    <VfDrawer v-model:open="drawerOpen" title="Drawer" :placement="drawerPlacement" dividers>
       <template #default>
         <div class="demo-stack">
           <p class="demo-mt-0">Drawer content.</p>
@@ -1884,20 +1940,12 @@ const tabContent = computed<Record<string, string>>(() => ({
       <template #footer="{ close }">
         <div class="demo-inline">
           <VfButton data-autofocus @click="close">Apply</VfButton>
-          <VfButton variant="secondary" @click="drawerOpen = false"
-            >Close</VfButton
-          >
+          <VfButton variant="secondary" @click="drawerOpen = false">Close</VfButton>
         </div>
       </template>
     </VfDrawer>
 
-    <VfDrawer
-      v-model:open="drawerFullscreenOpen"
-      title="Fullscreen Drawer"
-      size="full"
-      placement="left"
-      dividers
-    >
+    <VfDrawer v-model:open="drawerFullscreenOpen" title="Fullscreen Drawer" size="full" placement="left" dividers>
       <template #default>
         <div class="demo-stack">
           <p class="demo-mt-0">Fullscreen drawer content.</p>
@@ -1907,9 +1955,7 @@ const tabContent = computed<Record<string, string>>(() => ({
       <template #footer="{ close }">
         <div class="demo-inline">
           <VfButton data-autofocus @click="close">Apply</VfButton>
-          <VfButton variant="secondary" @click="drawerFullscreenOpen = false"
-            >Close</VfButton
-          >
+          <VfButton variant="secondary" @click="drawerFullscreenOpen = false">Close</VfButton>
         </div>
       </template>
     </VfDrawer>

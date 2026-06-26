@@ -69,7 +69,8 @@
   width: min(100%, var(--vf-dialog-width-lg));
 }
 
-.vf-dialog__header, .vf-dialog__footer {
+.vf-dialog__header,
+.vf-dialog__footer {
   position: relative;
   display: flex;
   align-items: center;

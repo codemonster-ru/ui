@@ -23,7 +23,10 @@
   --vf-nav-menu-current-nested-gap: var(--vf-nav-menu-pills-nested-gap);
   --vf-nav-menu-current-collapse-offset-top: var(--vf-nav-menu-pills-collapse-offset-top);
   --vf-nav-menu-current-item-min-height: var(--vf-nav-menu-pills-item-min-height);
-  --vf-nav-menu-current-group-padding-left: calc(var(--vf-field-input-padding-start-with-leading-md) + var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap));
+  --vf-nav-menu-current-group-padding-left: calc(
+    var(--vf-field-input-padding-start-with-leading-md) + var(--vf-nav-menu-leading-icon-column-size) +
+      var(--vf-nav-menu-item-gap)
+  );
   --vf-nav-menu-current-item-padding: var(--vf-nav-menu-pills-item-padding);
   --vf-nav-menu-current-item-hover-color: var(--vf-nav-menu-pills-item-hover-color);
   --vf-nav-menu-current-item-hover-background: var(--vf-nav-menu-pills-item-hover-background);

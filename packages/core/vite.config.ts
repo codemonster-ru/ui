@@ -19,6 +19,7 @@ const componentJsEntries = [
   'card',
   'checkbox',
   'command-palette',
+  'data-table',
   'dialog',
   'divider',
   'drawer',
@@ -56,16 +57,13 @@ function inlineCssImports(filePath: string, trace: string[] = []): string {
 
   const source = readFileSync(filePath, 'utf8');
 
-  return source.replace(
-    /^@import\s+['"](.+?)['"];\s*$/gm,
-    (_statement, importPath: string) => {
-      if (!importPath.startsWith('.')) {
-        return `@import '${importPath}';`;
-      }
-
-      return inlineCssImports(resolve(dirname(filePath), importPath), [...trace, filePath]);
+  return source.replace(/^@import\s+['"](.+?)['"];\s*$/gm, (_statement, importPath: string) => {
+    if (!importPath.startsWith('.')) {
+      return `@import '${importPath}';`;
     }
-  );
+
+    return inlineCssImports(resolve(dirname(filePath), importPath), [...trace, filePath]);
+  });
 }
 
 function vueforgeStyleArtifactsPlugin(): Plugin[] {
@@ -96,7 +94,7 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
         for (const entryName of componentJsEntries) {
           writeFileSync(
             resolve(distDir, `${entryName}.css`),
-            inlineCssImports(resolve(styleEntriesDir, `${entryName}.css`))
+            inlineCssImports(resolve(styleEntriesDir, `${entryName}.css`)),
           );
         }
 
@@ -108,7 +106,7 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
         for (const entryName of componentJsEntries) {
           writeFileSync(
             resolve(autoDir, `${entryName}.js`),
-            `import '../${entryName}.css';\nexport * from '../${entryName}.js';\n`
+            `import '../${entryName}.css';\nexport * from '../${entryName}.js';\n`,
           );
         }
       },
@@ -148,6 +146,7 @@ export default defineConfig({
         card: resolve(__dirname, 'src/entries/card.ts'),
         checkbox: resolve(__dirname, 'src/entries/checkbox.ts'),
         'command-palette': resolve(__dirname, 'src/entries/command-palette.ts'),
+        'data-table': resolve(__dirname, 'src/entries/data-table.ts'),
         dialog: resolve(__dirname, 'src/entries/dialog.ts'),
         divider: resolve(__dirname, 'src/entries/divider.ts'),
         drawer: resolve(__dirname, 'src/entries/drawer.ts'),

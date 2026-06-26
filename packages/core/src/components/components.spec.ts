@@ -10,6 +10,7 @@ import {
   VfCard,
   VfCheckbox,
   VfCommandPalette,
+  VfDataTable,
   VfDialog,
   VfDivider,
   VfDrawer,
@@ -179,7 +180,7 @@ describe('core primitives', () => {
     });
 
     expect(wrapper.find('.vf-skeleton-gate__content').classes()).toContain(
-      'vf-skeleton-gate__content--normalize-spacing'
+      'vf-skeleton-gate__content--normalize-spacing',
     );
   });
 
@@ -393,6 +394,7 @@ describe('core primitives', () => {
     const wrapper = mount(VfTable, {
       props: {
         caption: 'API surface',
+        columnDividers: true,
         striped: true,
       },
       slots: {
@@ -420,8 +422,101 @@ describe('core primitives', () => {
     expect(wrapper.find('caption').text()).toBe('API surface');
     expect(wrapper.findAll('thead th')).toHaveLength(2);
     expect(wrapper.find('tbody td').text()).toBe('size');
+    expect(wrapper.find('.vf-table').classes()).toContain('vf-table--column-dividers');
     expect(wrapper.find('.vf-table').classes()).toContain('vf-table--striped');
     expect(wrapper.find('tfoot td').text()).toBe('End');
+  });
+
+  it('renders data table columns, rows, cell slots, and empty state', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        caption: 'Team availability',
+        columns: [
+          { key: 'member', header: 'Member' },
+          { key: 'status', header: 'Status' },
+          { key: 'meta.score', header: 'Score', align: 'end' },
+        ],
+        rows: [
+          { id: 1, member: 'Alice', status: 'available', meta: { score: 42 } },
+          { id: 2, member: 'Bob', status: 'busy', meta: { score: 27 } },
+        ],
+        rowKey: 'id',
+        density: 'compact',
+        columnDividers: true,
+        striped: true,
+      },
+      slots: {
+        'cell-status': '<template #default="{ value }">{{ String(value).toUpperCase() }}</template>',
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-data-table-wrap');
+    expect(wrapper.find('caption').text()).toBe('Team availability');
+    expect(wrapper.findAll('thead th')).toHaveLength(3);
+    expect(wrapper.findAll('tbody tr')).toHaveLength(2);
+    expect(wrapper.text()).toContain('AVAILABLE');
+    expect(wrapper.text()).toContain('42');
+    expect(wrapper.find('.vf-table').classes()).toContain('vf-table--compact');
+    expect(wrapper.find('.vf-table').classes()).toContain('vf-table--column-dividers');
+    expect(wrapper.find('tbody td:last-child').classes()).toContain('vf-data-table__cell--end');
+
+    const empty = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Name' }],
+      },
+    });
+
+    expect(empty.find('.vf-data-table__state-cell').text()).toBe('No data');
+
+    const loading = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Name' }],
+        rows: [{ id: 1, name: 'Alice' }],
+        rowKey: 'id',
+        loading: true,
+        loadingText: 'Loading members...',
+      },
+    });
+
+    expect(loading.findAll('tbody tr')).toHaveLength(1);
+    expect(loading.find('.vf-data-table__loading-mask').text()).toBe('');
+    expect(loading.find('.vf-data-table__loading-mask').attributes('aria-label')).toBe('Loading members...');
+    expect(loading.find('.vf-data-table__loading-mask .vf-progress-spinner').exists()).toBe(true);
+
+    const skeleton = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name' },
+          { key: 'status', header: 'Status' },
+        ],
+        loading: true,
+        loadingVariant: 'skeleton',
+        loadingRows: 2,
+      },
+    });
+
+    expect(skeleton.findAll('.vf-data-table__skeleton-row')).toHaveLength(2);
+    expect(skeleton.findAll('.vf-skeleton')).toHaveLength(4);
+
+    const paginated = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Name' }],
+        rows: [{ name: 'Alice' }, { name: 'Bob' }, { name: 'Carol' }],
+        pagination: true,
+        defaultPageSize: 2,
+        pageSizeOptions: [2, 3],
+      },
+    });
+
+    expect(paginated.findAll('tbody tr')).toHaveLength(2);
+    expect(paginated.text()).toContain('1-2 of 3');
+    expect(paginated.text()).toContain('Page 1 of 2');
+
+    await paginated.find('[aria-label="Next page"]').trigger('click');
+
+    expect(paginated.emitted('update:page')).toEqual([[2]]);
+    expect(paginated.findAll('tbody tr')).toHaveLength(1);
+    expect(paginated.text()).toContain('3-3 of 3');
   });
 
   it('emits input updates and invalid state', async () => {

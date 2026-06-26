@@ -53,8 +53,8 @@ try {
         type: 'module',
       },
       null,
-      2
-    ) + '\n'
+      2,
+    ) + '\n',
   );
 
   writeFileSync(
@@ -64,7 +64,7 @@ try {
       "import { VfStepper } from '@codemonster-ru/vueforge-core/stepper';",
       'console.log(Boolean(VfButton), Boolean(VfStepper));',
       '',
-    ].join('\n')
+    ].join('\n'),
   );
 
   await build({
@@ -85,7 +85,9 @@ try {
     .filter(Boolean);
 
   if (!cssFiles.length) {
-    throw new Error('Consumer smoke failed: no CSS assets were emitted for @codemonster-ru/vueforge-core/button import.');
+    throw new Error(
+      'Consumer smoke failed: no CSS assets were emitted for @codemonster-ru/vueforge-core/button import.',
+    );
   }
 
   const cssContent = readFileSync(cssFiles[0], 'utf8');
@@ -97,7 +99,9 @@ try {
     throw new Error('Consumer smoke failed: emitted CSS does not contain .vf-stepper styles.');
   }
 
-  console.log(`Consumer smoke passed: ${packageJson.name}/button and /stepper imports emitted CSS with component styles.`);
+  console.log(
+    `Consumer smoke passed: ${packageJson.name}/button and /stepper imports emitted CSS with component styles.`,
+  );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });
   const tarballName = `${packageJson.name.replace('@', '').replace('/', '-')}-${packageJson.version}.tgz`;

@@ -8,6 +8,7 @@ defineOptions({
 
 interface VfTableProps {
   caption?: string;
+  columnDividers?: boolean;
   compact?: boolean;
   striped?: boolean;
   stickyHeader?: boolean;
@@ -15,6 +16,7 @@ interface VfTableProps {
 
 const props = withDefaults(defineProps<VfTableProps>(), {
   caption: undefined,
+  columnDividers: false,
   compact: false,
   striped: false,
   stickyHeader: false,
@@ -25,6 +27,7 @@ const attrs = useAttrs();
 const classes = computed(() =>
   cx(
     'vf-table',
+    props.columnDividers && 'vf-table--column-dividers',
     props.compact && 'vf-table--compact',
     props.striped && 'vf-table--striped',
     props.stickyHeader && 'vf-table--sticky-header',
