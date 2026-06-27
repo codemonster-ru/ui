@@ -166,6 +166,15 @@ describe('setup layout', () => {
     expect(wrapper.classes()).not.toContain('vf-setup-layout--with-aside');
     expect(wrapper.find('.vf-setup-layout__aside').exists()).toBe(false);
   });
+
+  it('pins actions to the panel bottom only when aside layout is inactive', () => {
+    const setupLayoutCss = readFileSync(resolve(packageRoot, 'src/style-entries/setup-layout.css'), 'utf8');
+
+    expect(setupLayoutCss).toContain('.vf-setup-layout:not(.vf-setup-layout--with-aside) .vf-setup-layout__main');
+    expect(setupLayoutCss).toContain('align-self: stretch;');
+    expect(setupLayoutCss).toContain('.vf-setup-layout:not(.vf-setup-layout--with-aside) .vf-setup-layout__actions');
+    expect(setupLayoutCss).toContain('margin-block-start: auto;');
+  });
 });
 
 describe('layout theme runtime', () => {

@@ -116,6 +116,10 @@
   gap: var(--vf-layout-setup-layout-main-gap);
 }
 
+.vf-setup-layout:not(.vf-setup-layout--with-aside) .vf-setup-layout__main {
+  align-self: stretch;
+}
+
 .vf-setup-layout__header {
   grid-area: header;
   align-self: start;
@@ -159,6 +163,10 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--vf-layout-space-layout-base);
+}
+
+.vf-setup-layout:not(.vf-setup-layout--with-aside) .vf-setup-layout__actions {
+  margin-block-start: auto;
 }
 
 .vf-setup-layout__footer {
