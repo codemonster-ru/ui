@@ -5,7 +5,7 @@
  */
 
 .vf-radio {
-  --vf-selection-control-offset: 0.125rem;
+  --vf-selection-control-offset: var(--vf-radio-control-offset-md);
 
   position: relative;
   display: inline-flex;
@@ -18,13 +18,13 @@
 }
 
 .vf-radio--sm {
-  --vf-selection-control-offset: 0.0938rem;
+  --vf-selection-control-offset: var(--vf-radio-control-offset-sm);
 
   gap: var(--vf-surface-gap-compact);
 }
 
 .vf-radio--lg {
-  --vf-selection-control-offset: 0.0625rem;
+  --vf-selection-control-offset: var(--vf-radio-control-offset-lg);
 
   gap: var(--vf-selection-gap);
 }

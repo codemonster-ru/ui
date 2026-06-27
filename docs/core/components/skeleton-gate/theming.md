@@ -14,5 +14,8 @@ order: 3
   - `--vf-skeleton-gate-fade-duration`
   - `--vf-skeleton-gate-fade-easing`
   - `--vf-skeleton-gate-overflow`
+  - `--vf-skeleton-gate-fade-duration-default`
+  - `--vf-skeleton-gate-fade-easing-default`
+  - `--vf-skeleton-gate-overflow-default`
 
 For palette changes, adjust shared core tokens (for example `--vf-color-surface-muted`) so both gate and skeleton stay visually consistent.

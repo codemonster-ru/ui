@@ -1,22 +1,24 @@
+@import './tokens.css';
+
 .vf-codeblock {
   display: block;
   overflow: hidden;
-  border: 1px solid var(--vf-codeblock-border-color, var(--vf-color-border, #2b2b2b));
-  border-radius: var(--vf-codeblock-border-radius, var(--vf-radius-surface, 12px));
-  background: var(--vf-codeblock-background-color, var(--vf-color-surface-muted, #17181b));
-  min-height: var(--vf-codeblock-min-height, 120px);
+  border: 1px solid var(--vf-codeblock-border-color);
+  border-radius: var(--vf-codeblock-border-radius);
+  background: var(--vf-codeblock-background-color);
+  min-height: var(--vf-codeblock-min-height, var(--vf-codeblock-critical-min-height));
 }
 
 .vf-codeblock__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 44px;
+  min-height: var(--vf-codeblock-critical-header-min-height);
 }
 
 .vf-codeblock__code-shell {
   position: relative;
-  min-height: 76px;
+  min-height: var(--vf-codeblock-critical-code-min-height);
 }
 
 .vf-codeblock__pre {

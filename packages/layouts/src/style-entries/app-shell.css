@@ -13,7 +13,7 @@
 
 .vf-app-shell {
   --vf-sticky-header-offset: var(--vf-layout-header-height);
-  --vf-sticky-subheader-offset: calc(var(--vf-layout-space-layout-base) * var(--vf-layout-size-zero));
+  --vf-sticky-subheader-offset: var(--vf-layout-sticky-subheader-offset-default);
   --vf-sticky-top-offset: var(--vf-sticky-header-offset);
 
   display: grid;
@@ -266,7 +266,7 @@
 
 .vf-app-shell--header-sticky:has(> .vf-subheader-area) {
   --vf-sticky-subheader-offset: var(--vf-layout-subheader-height);
-  --vf-sticky-top-offset: calc(var(--vf-sticky-header-offset) + var(--vf-sticky-subheader-offset));
+  --vf-sticky-top-offset: var(--vf-layout-sticky-top-offset-with-subheader);
 }
 
 .vf-app-shell--header-sticky

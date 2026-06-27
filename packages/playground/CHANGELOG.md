@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.5.0
+
+### Added
+
+- Added a published `tokens.css` subpath export for Playground CSS token defaults.
+
+### Changed
+
+- Moved Playground CSS variable defaults from component CSS into `tokens.css`, including critical preview and embedded CodeBlock override defaults.
+- Updated automatic UI CSS loading so package token defaults load before critical and component styles.
+- Updated dependency ranges to consume the tokenized `@codemonster-ru/vueforge-core` and `@codemonster-ru/vueforge-codeblock` releases.
+
 ## 2.4.2
 
 ### Fixed

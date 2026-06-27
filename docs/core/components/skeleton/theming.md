@@ -12,7 +12,7 @@ order: 3
 - `--vf-color-text`
 - `--vf-radius-surface`
 
-Skeleton shimmer behavior is also tokenized and can be tuned via CSS custom properties:
+Skeleton shimmer behavior is also tokenized and can be tuned via preset-backed CSS custom properties:
 
 - `--vf-skeleton-background`
 - `--vf-skeleton-shimmer-background`

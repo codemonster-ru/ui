@@ -26,12 +26,15 @@ entry: /App.vue
     <VfField
       label="Project name"
       description="This name is visible to workspace members."
+      required
       :error="nameError"
     >
-      <template #default="{ controlId, describedBy, invalid }">
+      <template #default="{ controlId, describedBy, invalid, required }">
         <VfInput
           :id="controlId"
           v-model="name"
+          required
+          :aria-required="required ? 'true' : undefined"
           :invalid="invalid"
           :aria-describedby="describedBy"
           placeholder="Acme Platform"
@@ -78,11 +81,13 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfField label="Workspace name" label-placement="floating" :error="error">
-    <template #default="{ controlId, describedBy, invalid }">
+  <VfField label="Workspace name" label-placement="floating" required :error="error">
+    <template #default="{ controlId, describedBy, invalid, required }">
       <VfInput
         :id="controlId"
         v-model="name"
+        required
+        :aria-required="required ? 'true' : undefined"
         :invalid="invalid"
         :aria-describedby="describedBy"
         placeholder="Workspace name"
@@ -174,6 +179,7 @@ The following items are listed in this section:
 - Generates a control id so the visible label can associate through `for`.
 - Composes helper text and error ids into one `aria-describedby` value.
 - Treats `error` as invalid state automatically and also supports explicit `invalid`.
+- Renders the `required` marker as visual-only text and exposes `required` to the default slot so the wrapped control can receive native `required` and `aria-required` explicitly.
 - `labelPlacement="floating"` is intended for `VfInput`, `VfTextarea`, and `VfSelect`; selection controls continue to use the default stacked label layout.
 
 ### Keyboard Support

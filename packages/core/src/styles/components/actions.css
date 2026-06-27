@@ -204,8 +204,8 @@
 }
 
 .vf-button .vf-button__spinner {
-  --vf-progress-spinner-track-color: color-mix(in srgb, currentColor 30%, transparent);
-  --vf-progress-spinner-value-color: currentColor;
+  --vf-progress-spinner-track-color: var(--vf-progress-spinner-inline-track-color);
+  --vf-progress-spinner-value-color: var(--vf-progress-spinner-inline-value-color);
 
   flex-shrink: 0;
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, provide, ref, toRef, useSlots } from 'vue';
+import { computed, provide, ref, toRef } from 'vue';
 import { useId } from '@/composables';
 import { cx } from '@/utils/classes';
 import { vfFieldContextKey, type VfFieldFloatingVariant, type VfFieldLabelPlacement } from './context';
@@ -9,8 +9,16 @@ interface VfFieldProps {
   description?: string;
   error?: string;
   invalid?: boolean;
+  required?: boolean;
   labelPlacement?: VfFieldLabelPlacement;
   floatingVariant?: VfFieldFloatingVariant;
+}
+
+interface VfFieldDefaultSlotScope {
+  controlId: string;
+  describedBy?: string;
+  invalid: boolean;
+  required: boolean;
 }
 
 const props = withDefaults(defineProps<VfFieldProps>(), {
@@ -18,11 +26,17 @@ const props = withDefaults(defineProps<VfFieldProps>(), {
   description: undefined,
   error: undefined,
   invalid: false,
+  required: false,
   labelPlacement: 'top',
   floatingVariant: 'in',
 });
 
-const slots = useSlots();
+const slots = defineSlots<{
+  default?: (scope: VfFieldDefaultSlotScope) => unknown;
+  label?: () => unknown;
+  description?: () => unknown;
+  error?: () => unknown;
+}>();
 const controlId = useId({ prefix: 'vf-field-control' });
 const descriptionId = useId({ prefix: 'vf-field-description' });
 const errorId = useId({ prefix: 'vf-field-error' });
@@ -74,14 +88,14 @@ provide(vfFieldContextKey, {
 <template>
   <div :class="rootClasses">
     <label v-if="hasLabel && !isFloatingLabel" :for="controlId" class="vf-field__label">
-      <slot name="label">{{ props.label }}</slot>
+      <slot name="label">{{ props.label }}</slot><span v-if="props.required" class="vf-field__required-mark" aria-hidden="true">*</span>
     </label>
 
     <div :class="controlClasses">
-      <slot :control-id="controlId" :described-by="describedBy" :invalid="isInvalid" />
+      <slot :control-id="controlId" :described-by="describedBy" :invalid="isInvalid" :required="props.required" />
 
       <label v-if="hasLabel && isFloatingLabel" :for="controlId" class="vf-field__label vf-field__label--floating">
-        <slot name="label">{{ props.label }}</slot>
+        <slot name="label">{{ props.label }}</slot><span v-if="props.required" class="vf-field__required-mark" aria-hidden="true">*</span>
       </label>
     </div>
 

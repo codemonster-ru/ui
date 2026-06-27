@@ -26,8 +26,28 @@ function tokenKeyToCssVar(key: string, prefix = 'vf') {
 
 function cssVarsToText(cssVars: Record<string, string>) {
   return Object.entries(cssVars)
-    .map(([key, value]) => `  ${key}: ${value};`)
+    .map(([key, value]) => `  ${key}: ${formatCssVarValue(key, value)};`)
     .join('\n');
+}
+
+function formatCssVarValue(key: string, value: string) {
+  const calcMatch = /^calc\((.+ [+-] .+)\)$/.exec(value);
+  const varPairMatch = /^(var\([^)]+\)) (var\([^)]+\))$/.exec(value);
+  const declarationLength = `  ${key}: ${value};`.length;
+
+  if (declarationLength <= 120) {
+    return value;
+  }
+
+  if (calcMatch) {
+    return `calc(\n    ${calcMatch[1]}\n  )`;
+  }
+
+  if (varPairMatch) {
+    return `${varPairMatch[1]}\n    ${varPairMatch[2]}`;
+  }
+
+  return value;
 }
 
 function layoutsTokensToCssVars(tokens: VfLayoutTokens, prefix = 'vf') {

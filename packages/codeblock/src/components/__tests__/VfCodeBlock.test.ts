@@ -297,14 +297,15 @@ body {
   });
 
   it('defines root block margins with spacing CSS variables', () => {
-    const source = readFileSync(resolve(__dirname, '../../codeblock.css'), 'utf8');
+    const tokensSource = readFileSync(resolve(__dirname, '../../tokens.css'), 'utf8');
+    const componentSource = readFileSync(resolve(__dirname, '../../codeblock.css'), 'utf8');
 
-    expect(source).toContain('margin-block:');
-    expect(source).toContain('--vf-codeblock-margin-block-start');
-    expect(source).toContain('--vf-codeblock-margin-block-end');
-    expect(source).toContain('--vf-codeblock-margin-block: var(--vf-surface-padding)');
-    expect(source).toContain('.vf-codeblock:first-child');
-    expect(source).toContain('.vf-codeblock:last-child');
+    expect(tokensSource).toContain('--vf-codeblock-margin-block-start');
+    expect(tokensSource).toContain('--vf-codeblock-margin-block-end');
+    expect(tokensSource).toContain('--vf-codeblock-margin-block: var(--vf-surface-padding)');
+    expect(componentSource).toContain('margin-block:');
+    expect(componentSource).toContain('.vf-codeblock:first-child');
+    expect(componentSource).toContain('.vf-codeblock:last-child');
   });
 
   it('applies containerMinHeight to root container style', () => {

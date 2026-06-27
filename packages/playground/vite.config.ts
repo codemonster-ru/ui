@@ -9,6 +9,7 @@ export default defineConfig({
     {
       name: 'vueforge-playground-copy-critical-css',
       closeBundle() {
+        cpSync(resolve(__dirname, 'src/tokens.css'), resolve(__dirname, 'dist/tokens.css'));
         cpSync(resolve(__dirname, 'src/playground.css'), resolve(__dirname, 'dist/playground.css'));
         cpSync(resolve(__dirname, 'src/critical.css'), resolve(__dirname, 'dist/critical.css'));
         const autoDir = resolve(__dirname, 'dist/auto');

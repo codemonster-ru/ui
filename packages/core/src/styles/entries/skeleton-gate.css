@@ -1,7 +1,7 @@
 .vf-skeleton-gate {
-  --vf-skeleton-gate-fade-duration: 220ms;
-  --vf-skeleton-gate-fade-easing: ease;
-  --vf-skeleton-gate-overflow: hidden;
+  --vf-skeleton-gate-fade-duration: var(--vf-skeleton-gate-fade-duration-default);
+  --vf-skeleton-gate-fade-easing: var(--vf-skeleton-gate-fade-easing-default);
+  --vf-skeleton-gate-overflow: var(--vf-skeleton-gate-overflow-default);
 
   position: relative;
   overflow: var(--vf-skeleton-gate-overflow);

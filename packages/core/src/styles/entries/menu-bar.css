@@ -1,7 +1,7 @@
 .vf-horizontal-scroller {
   --vf-horizontal-scroller-control-width: var(--vf-tabs-scroll-button-width);
   --vf-horizontal-scroller-fade-width: var(--vf-tabs-fade-width);
-  --vf-horizontal-scroller-icon-size: 1em;
+  --vf-horizontal-scroller-icon-size: var(--vf-horizontal-scroller-icon-size-default);
   --vf-horizontal-scroller-control-color: var(--vf-color-muted);
   --vf-horizontal-scroller-control-hover-color: var(--vf-color-text);
   --vf-horizontal-scroller-control-bg: var(--vf-color-surface);
@@ -99,7 +99,7 @@
 }
 
 .vf-menu-bar {
-  --vf-menu-bar-current-list-gap: 0;
+  --vf-menu-bar-current-list-gap: var(--vf-menu-bar-current-list-gap-default);
   --vf-menu-bar-current-top-hover-color: var(--vf-menu-bar-top-hover-color);
   --vf-menu-bar-current-top-hover-background: var(--vf-menu-bar-top-hover-background);
   --vf-menu-bar-current-top-active-color: var(--vf-menu-bar-top-active-color);

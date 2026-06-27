@@ -406,15 +406,15 @@
 }
 
 .vf-select-wrap + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-md) + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-md);
 }
 
 .vf-select-wrap--sm + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-sm) + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-sm);
 }
 
 .vf-select-wrap--lg + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-lg);
 }
 
 .vf-select-wrap--with-leading + .vf-field__label--floating {

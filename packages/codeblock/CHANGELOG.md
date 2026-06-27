@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.6.0
+
+### Added
+
+- Added a published `tokens.css` subpath export for CodeBlock CSS token defaults.
+
+### Changed
+
+- Moved CodeBlock CSS variable defaults from component CSS into `tokens.css`, including critical rendering dimensions.
+- Updated automatic view CSS loading so package token defaults load before critical and component styles.
+
 ## 3.5.0 - 2026-06-12
 
 ### Added

@@ -7,32 +7,32 @@
   z-index: var(--vf-z-drawer);
   display: flex;
 
-  --vf-drawer-offset-x: 0;
-  --vf-drawer-offset-y: 0;
+  --vf-drawer-offset-x: var(--vf-drawer-offset-x-rest);
+  --vf-drawer-offset-y: var(--vf-drawer-offset-y-rest);
 }
 
 .vf-drawer--left {
   justify-content: flex-start;
 
-  --vf-drawer-offset-x: -100%;
+  --vf-drawer-offset-x: var(--vf-drawer-offset-x-left);
 }
 
 .vf-drawer--right {
   justify-content: flex-end;
 
-  --vf-drawer-offset-x: 100%;
+  --vf-drawer-offset-x: var(--vf-drawer-offset-x-right);
 }
 
 .vf-drawer--top {
   align-items: flex-start;
 
-  --vf-drawer-offset-y: -100%;
+  --vf-drawer-offset-y: var(--vf-drawer-offset-y-top);
 }
 
 .vf-drawer--bottom {
   align-items: flex-end;
 
-  --vf-drawer-offset-y: 100%;
+  --vf-drawer-offset-y: var(--vf-drawer-offset-y-bottom);
 }
 
 .vf-drawer__overlay {

@@ -1,11 +1,4 @@
 .vf-progress-spinner {
-  --vf-progress-spinner-size: 2rem;
-  --vf-progress-spinner-track-color: color-mix(in srgb, var(--vf-color-surface-muted) 82%, var(--vf-color-border));
-  --vf-progress-spinner-value-color: var(--vf-color-primary);
-  --vf-progress-spinner-duration: 1.4s;
-  --vf-progress-spinner-rotate-easing: linear;
-  --vf-progress-spinner-dash-easing: ease-in-out;
-
   display: inline-flex;
   inline-size: var(--vf-progress-spinner-size);
   block-size: var(--vf-progress-spinner-size);

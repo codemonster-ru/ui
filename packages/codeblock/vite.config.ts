@@ -19,6 +19,7 @@ export default defineConfig({
     {
       name: 'vueforge-codeblock-copy-critical-css',
       closeBundle() {
+        cpSync(resolve(rootDir, 'src/tokens.css'), resolve(rootDir, 'dist/tokens.css'));
         cpSync(resolve(rootDir, 'src/codeblock.css'), resolve(rootDir, 'dist/codeblock.css'));
         cpSync(resolve(rootDir, 'src/critical.css'), resolve(rootDir, 'dist/critical.css'));
         const autoDir = resolve(rootDir, 'dist/auto');

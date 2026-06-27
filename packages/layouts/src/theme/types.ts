@@ -38,6 +38,8 @@ export interface VfLayoutTokens {
   subheaderHeight: string;
   subheaderPaddingBlock: string;
   subheaderPaddingInline: string;
+  stickySubheaderOffsetDefault: string;
+  stickyTopOffsetWithSubheader: string;
   sidebarBackground: string;
   sidebarBorder: string;
   sidebarPaddingBlock: string;

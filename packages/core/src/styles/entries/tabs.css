@@ -1,7 +1,7 @@
 .vf-horizontal-scroller {
   --vf-horizontal-scroller-control-width: var(--vf-tabs-scroll-button-width);
   --vf-horizontal-scroller-fade-width: var(--vf-tabs-fade-width);
-  --vf-horizontal-scroller-icon-size: 1em;
+  --vf-horizontal-scroller-icon-size: var(--vf-horizontal-scroller-icon-size-default);
   --vf-horizontal-scroller-control-color: var(--vf-color-muted);
   --vf-horizontal-scroller-control-hover-color: var(--vf-color-text);
   --vf-horizontal-scroller-control-bg: var(--vf-color-surface);

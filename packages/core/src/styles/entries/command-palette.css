@@ -4,19 +4,19 @@
   position: fixed;
   inset: 0;
 
-  --vf-command-palette-offset-top: calc(var(--vf-overlay-viewport-padding) + var(--vf-control-height-sm));
+  --vf-command-palette-offset-top: var(--vf-command-palette-offset-top-default);
   --vf-command-palette-content-width: var(--vf-dialog-width-lg);
   --vf-command-palette-content-max-height: var(--vf-dialog-max-height);
-  --vf-command-palette-enter-shift: calc(var(--vf-dialog-actions-gap) * -1);
+  --vf-command-palette-enter-shift: var(--vf-command-palette-enter-shift-default);
   --vf-command-palette-list-gap: var(--vf-nav-menu-list-gap);
-  --vf-command-palette-item-content-gap: calc(var(--vf-nav-menu-list-gap) * 0.75);
+  --vf-command-palette-item-content-gap: var(--vf-command-palette-item-content-gap-default);
   --vf-command-palette-item-layout-gap: var(--vf-nav-menu-list-gap);
   --vf-command-palette-leading-icon-gap: var(--vf-nav-menu-list-gap);
-  --vf-command-palette-item-title-icon-offset-y: calc(var(--vf-focus-ring-width) / -3);
+  --vf-command-palette-item-title-icon-offset-y: var(--vf-command-palette-item-title-icon-offset-y-default);
   --vf-command-palette-hints-gap: var(--vf-section-gap);
-  --vf-command-palette-hint-gap: calc(var(--vf-nav-menu-item-gap) * 0.75);
+  --vf-command-palette-hint-gap: var(--vf-command-palette-hint-gap-default);
   --vf-command-palette-hint-keys-gap: var(--vf-nav-menu-list-gap);
-  --vf-command-palette-hint-icon-padding-inline: calc(var(--vf-nav-menu-list-gap) / 2);
+  --vf-command-palette-hint-icon-padding-inline: var(--vf-command-palette-hint-icon-padding-inline-default);
 
   z-index: var(--vf-z-overlay);
   display: flex;

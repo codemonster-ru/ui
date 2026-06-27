@@ -109,25 +109,12 @@
 }
 
 .vf-progress-bar {
-  --vf-progress-bar-height: 0.5rem;
-  --vf-progress-bar-radius: 999px;
-  --vf-progress-bar-label-font-size: 0.625rem;
-  --vf-progress-bar-value-color: var(--vf-color-primary);
-  --vf-progress-bar-label-color: var(--vf-color-primary-contrast);
-  --vf-progress-bar-transition-duration: 160ms;
-  --vf-progress-bar-transition-easing: ease;
-  --vf-progress-bar-indeterminate-duration: 2.1s;
-  --vf-progress-bar-indeterminate-long-easing: cubic-bezier(0.65, 0.815, 0.735, 0.395);
-  --vf-progress-bar-indeterminate-short-easing: cubic-bezier(0.165, 0.84, 0.44, 1);
-  --vf-progress-bar-indeterminate-short-delay: 1.15s;
-  --vf-progress-bar-label-padding-inline: 0.25rem;
-
   position: relative;
   overflow: hidden;
   inline-size: 100%;
   block-size: var(--vf-progress-bar-height);
   border-radius: var(--vf-progress-bar-radius);
-  background: color-mix(in srgb, var(--vf-color-surface-muted) 82%, var(--vf-color-border));
+  background: var(--vf-progress-bar-track-background);
 }
 
 .vf-progress-bar__value {
@@ -251,13 +238,6 @@
 }
 
 .vf-progress-spinner {
-  --vf-progress-spinner-size: 2rem;
-  --vf-progress-spinner-track-color: color-mix(in srgb, var(--vf-color-surface-muted) 82%, var(--vf-color-border));
-  --vf-progress-spinner-value-color: var(--vf-color-primary);
-  --vf-progress-spinner-duration: 1.4s;
-  --vf-progress-spinner-rotate-easing: linear;
-  --vf-progress-spinner-dash-easing: ease-in-out;
-
   display: inline-flex;
   inline-size: var(--vf-progress-spinner-size);
   block-size: var(--vf-progress-spinner-size);
