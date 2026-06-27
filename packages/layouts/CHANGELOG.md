@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.15.3
+
+### Fixed
+
+- Fixed `VfSetupLayout` action alignment when aside layout is active.
+
 ## 1.15.2
 
 ### Fixed
