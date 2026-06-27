@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type StyleValue, useAttrs, useSlots } from 'vue';
+import { Comment, Fragment, Text, computed, type StyleValue, type VNode, useAttrs, useSlots } from 'vue';
 import VfContainer from '../primitives/VfContainer.vue';
 import { cx } from '../utils/classes';
 
@@ -29,25 +29,71 @@ const props = withDefaults(
 const attrs = useAttrs();
 const slots = useSlots();
 
-const hasBrand = computed(() => Boolean(slots.brand));
-const hasToolbar = computed(() => Boolean(slots.toolbar));
-const hasTitle = computed(() => Boolean(slots.title) || Boolean(props.title));
-const hasDescription = computed(() => Boolean(slots.description) || Boolean(props.description));
-const hasHeader = computed(() => hasTitle.value || hasDescription.value);
-const hasAside = computed(() => Boolean(slots.aside));
-const hasActions = computed(() => Boolean(slots.actions));
-const hasFooter = computed(() => Boolean(slots.footer));
+function hasSlotContent(name: 'brand' | 'toolbar' | 'title' | 'description' | 'aside' | 'actions' | 'footer') {
+  const slot = slots[name];
 
-const classes = computed(() =>
-  cx(
+  if (!slot) return false;
+
+  const nodes = slot();
+
+  function hasMeaningfulNode(node: VNode): boolean {
+    if (node.type === Comment) return false;
+    if (node.type === Text) {
+      return String(node.children ?? '').trim().length > 0;
+    }
+    if (node.type === Fragment) {
+      const children = Array.isArray(node.children) ? node.children : [];
+      return children.some((child) => hasMeaningfulNode(child as VNode));
+    }
+
+    return true;
+  }
+
+  return nodes.some((node) => hasMeaningfulNode(node));
+}
+
+function hasBrand() {
+  return hasSlotContent('brand');
+}
+
+function hasToolbar() {
+  return hasSlotContent('toolbar');
+}
+
+function hasTitle() {
+  return hasSlotContent('title') || Boolean(props.title);
+}
+
+function hasDescription() {
+  return hasSlotContent('description') || Boolean(props.description);
+}
+
+function hasHeader() {
+  return hasTitle() || hasDescription();
+}
+
+function hasAside() {
+  return hasSlotContent('aside');
+}
+
+function hasActions() {
+  return hasSlotContent('actions');
+}
+
+function hasFooter() {
+  return hasSlotContent('footer');
+}
+
+function classes() {
+  return cx(
     'vf-setup-layout',
     `vf-setup-layout--aside-${props.asidePosition}`,
     props.fillViewport && 'vf-setup-layout--fill-viewport',
-    hasBrand.value && 'vf-setup-layout--with-brand',
-    hasToolbar.value && 'vf-setup-layout--with-toolbar',
-    hasAside.value && 'vf-setup-layout--with-aside',
-  ),
-);
+    hasBrand() && 'vf-setup-layout--with-brand',
+    hasToolbar() && 'vf-setup-layout--with-toolbar',
+    hasAside() && 'vf-setup-layout--with-aside',
+  );
+}
 
 const panelClasses = computed(() => cx('vf-setup-layout__panel', props.surface && 'vf-setup-layout__panel--surface'));
 const containerStyle = computed<StyleValue>(() => ({
@@ -56,27 +102,27 @@ const containerStyle = computed<StyleValue>(() => ({
 </script>
 
 <template>
-  <component :is="props.as" :class="classes" v-bind="attrs">
+  <component :is="props.as" :class="classes()" v-bind="attrs">
     <VfContainer :style="containerStyle">
       <div :class="panelClasses">
-        <div v-if="hasBrand" class="vf-setup-layout__brand">
+        <div v-if="hasBrand()" class="vf-setup-layout__brand">
           <slot name="brand" />
         </div>
 
-        <div v-if="hasToolbar" class="vf-setup-layout__toolbar">
+        <div v-if="hasToolbar()" class="vf-setup-layout__toolbar">
           <slot name="toolbar" />
         </div>
 
-        <aside v-if="hasAside" class="vf-setup-layout__aside">
+        <aside v-if="hasAside()" class="vf-setup-layout__aside">
           <slot name="aside" />
         </aside>
 
-        <header v-if="hasHeader" class="vf-setup-layout__header">
-          <div v-if="hasTitle || hasDescription" class="vf-setup-layout__heading">
-            <h1 v-if="hasTitle" class="vf-setup-layout__title">
+        <header v-if="hasHeader()" class="vf-setup-layout__header">
+          <div v-if="hasTitle() || hasDescription()" class="vf-setup-layout__heading">
+            <h1 v-if="hasTitle()" class="vf-setup-layout__title">
               <slot name="title">{{ props.title }}</slot>
             </h1>
-            <p v-if="hasDescription" class="vf-setup-layout__description">
+            <p v-if="hasDescription()" class="vf-setup-layout__description">
               <slot name="description">{{ props.description }}</slot>
             </p>
           </div>
@@ -87,13 +133,13 @@ const containerStyle = computed<StyleValue>(() => ({
             <slot />
           </div>
 
-          <div v-if="hasActions" class="vf-setup-layout__actions">
+          <div v-if="hasActions()" class="vf-setup-layout__actions">
             <slot name="actions" />
           </div>
         </section>
       </div>
 
-      <footer v-if="hasFooter" class="vf-setup-layout__footer">
+      <footer v-if="hasFooter()" class="vf-setup-layout__footer">
         <slot name="footer" />
       </footer>
     </VfContainer>
