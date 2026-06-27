@@ -26,9 +26,11 @@ Available design tokens and corresponding CSS variables.
 
 | Token | CSS Variable | Description |
 | --- | --- | --- |
-| `—` | `--vf-progress-spinner-size` | Local CSS variable controlling spinner size. |
-| `—` | `--vf-progress-spinner-track-color` | Local CSS variable controlling track color. |
-| `—` | `--vf-progress-spinner-value-color` | Local CSS variable controlling animated stroke color. |
-| `—` | `--vf-progress-spinner-duration` | Local CSS variable controlling animation duration. |
-| `—` | `--vf-progress-spinner-rotate-easing` | Local CSS variable controlling spinner rotation easing. |
-| `—` | `--vf-progress-spinner-dash-easing` | Local CSS variable controlling spinner dash easing. |
+| Progress spinner size | `--vf-progress-spinner-size` | Spinner size. |
+| Progress spinner track color | `--vf-progress-spinner-track-color` | Track color. |
+| Progress spinner value color | `--vf-progress-spinner-value-color` | Animated stroke color. |
+| Progress spinner duration | `--vf-progress-spinner-duration` | Animation duration. |
+| Progress spinner rotate easing | `--vf-progress-spinner-rotate-easing` | Spinner rotation easing. |
+| Progress spinner dash easing | `--vf-progress-spinner-dash-easing` | Spinner dash easing. |
+| Inline spinner track color | `--vf-progress-spinner-inline-track-color` | Track color used when the spinner is embedded in controls such as `VfButton`. |
+| Inline spinner value color | `--vf-progress-spinner-inline-value-color` | Value color used when the spinner is embedded in controls such as `VfButton`. |

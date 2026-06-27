@@ -43,3 +43,5 @@ Available design tokens and corresponding CSS variables.
 | `buttonGhostActiveBorderColor` | `--vf-button-ghost-active-border-color` | Active border color for `ghost` variant. |
 | `buttonSolidHoverFilter` | `--vf-button-solid-hover-filter` | Hover filter for solid semantic variants. |
 | `buttonSolidActiveFilter` | `--vf-button-solid-active-filter` | Active filter for solid semantic variants. |
+| `progressSpinnerInlineTrackColor` | `--vf-progress-spinner-inline-track-color` | Spinner track color when a spinner is rendered inside a button. |
+| `progressSpinnerInlineValueColor` | `--vf-progress-spinner-inline-value-color` | Spinner value color when a spinner is rendered inside a button. |

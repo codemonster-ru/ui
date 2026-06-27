@@ -20,12 +20,12 @@ const checks = [
   {
     file: 'forms',
     label: 'textarea floating label follows field inline padding token',
-    snippet: '--vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);',
+    snippet: '--vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-lg);',
   },
   {
     file: 'textarea',
     label: 'standalone textarea floating label follows field inline padding token',
-    snippet: '--vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);',
+    snippet: '--vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-lg);',
   },
   {
     file: 'forms',
@@ -61,7 +61,7 @@ const checks = [
     file: 'forms',
     label: 'floating on control padding stays vertically centered',
     snippet:
-      '.vf-field--floating-on {\n  --vf-field-floating-control-padding-top-sm: var(--vf-field-padding-block-sm);',
+      '.vf-field--floating-on {\n  --vf-field-floating-control-padding-top-sm: var(--vf-field-floating-on-control-padding-top-sm);',
   },
   {
     file: 'forms',
@@ -170,12 +170,12 @@ const checks = [
   {
     file: 'switch',
     label: 'standalone switch sm thumb icon scales',
-    snippet: '.vf-switch--sm .vf-switch__control {\n  --vf-switch-thumb-icon-size: 0.625rem;',
+    snippet: '.vf-switch--sm .vf-switch__control {\n  --vf-switch-thumb-icon-size: var(--vf-switch-thumb-icon-size-sm);',
   },
   {
     file: 'switch',
     label: 'standalone switch lg thumb icon scales',
-    snippet: '.vf-switch--lg .vf-switch__control {\n  --vf-switch-thumb-icon-size: 0.875rem;',
+    snippet: '.vf-switch--lg .vf-switch__control {\n  --vf-switch-thumb-icon-size: var(--vf-switch-thumb-icon-size-lg);',
   },
   {
     file: 'forms',

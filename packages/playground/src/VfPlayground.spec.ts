@@ -490,15 +490,17 @@ describe('VfPlayground', () => {
   });
 
   it('keeps playground codeblock overrides layout-only', () => {
-    const source = readFileSync(resolve(__dirname, './playground.css'), 'utf8');
+    const tokensSource = readFileSync(resolve(__dirname, './tokens.css'), 'utf8');
+    const componentSource = readFileSync(resolve(__dirname, './playground.css'), 'utf8');
 
-    expect(source).toContain('--vf-codeblock-max-height: 100%');
-    expect(source).toContain('--vf-codeblock-border-color: transparent;');
-    expect(source).toContain('--vf-codeblock-border-radius: 0;');
-    expect(source).toContain('--vf-codeblock-shadow: none;');
-    expect(source).not.toContain('--vf-codeblock-background-color:');
-    expect(source).not.toContain('--vf-codeblock-header-background-color:');
-    expect(source).not.toContain('--vf-codeblock-action-background-color:');
+    expect(tokensSource).toContain('--vf-playground-codeblock-max-height: 100%');
+    expect(tokensSource).toContain('--vf-playground-codeblock-border-color: transparent;');
+    expect(tokensSource).toContain('--vf-playground-codeblock-border-radius: 0;');
+    expect(tokensSource).toContain('--vf-playground-codeblock-shadow: none;');
+    expect(componentSource).toContain('--vf-codeblock-max-height: var(--vf-playground-codeblock-max-height)');
+    expect(componentSource).not.toContain('--vf-codeblock-background-color:');
+    expect(componentSource).not.toContain('--vf-codeblock-header-background-color:');
+    expect(componentSource).not.toContain('--vf-codeblock-action-background-color:');
   });
 
   it('keeps sandbox runtime behind a dynamic import', () => {

@@ -5,7 +5,7 @@
  */
 
 .vf-checkbox {
-  --vf-selection-control-offset: 0.125rem;
+  --vf-selection-control-offset: var(--vf-checkbox-control-offset-md);
 
   position: relative;
   display: inline-flex;
@@ -18,13 +18,13 @@
 }
 
 .vf-checkbox--sm {
-  --vf-selection-control-offset: 0.0938rem;
+  --vf-selection-control-offset: var(--vf-checkbox-control-offset-sm);
 
   gap: var(--vf-surface-gap-compact);
 }
 
 .vf-checkbox--lg {
-  --vf-selection-control-offset: 0.0625rem;
+  --vf-selection-control-offset: var(--vf-checkbox-control-offset-lg);
 
   gap: var(--vf-selection-gap);
 }

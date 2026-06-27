@@ -2,13 +2,13 @@
   --vf-overlay-border-width: var(--vf-text-link-border-width);
   --vf-overlay-enter-shift: var(--vf-overlay-gap);
   --vf-overlay-float-enter-shift: var(--vf-menu-gap);
-  --vf-overlay-float-enter-scale: 0.97;
+  --vf-overlay-float-enter-scale: var(--vf-overlay-float-enter-scale-default);
   --vf-overlay-float-shadow:
     0 var(--vf-menu-gap) calc(var(--vf-overlay-padding) * 0.625) color-mix(in srgb, black 16%, transparent),
     0 var(--vf-overlay-border-width) calc(var(--vf-menu-gap) / 2) color-mix(in srgb, black 10%, transparent);
-  --vf-overlay-arrow-overlap-offset: calc(var(--vf-overlay-border-width) * -1);
+  --vf-overlay-arrow-overlap-offset: var(--vf-overlay-arrow-overlap-offset-default);
   --vf-overlay-arrow-separated-offset: var(--vf-overlay-border-width);
-  --vf-overlay-viewport-block-size: 100dvh;
+  --vf-overlay-viewport-block-size: var(--vf-overlay-viewport-block-size-default);
 }
 
 .vf-dialog {
@@ -28,27 +28,27 @@
   z-index: var(--vf-z-drawer);
   display: flex;
 
-  --vf-drawer-offset-x: 0;
-  --vf-drawer-offset-y: 0;
+  --vf-drawer-offset-x: var(--vf-drawer-offset-x-rest);
+  --vf-drawer-offset-y: var(--vf-drawer-offset-y-rest);
 }
 
 .vf-command-palette {
   position: fixed;
   inset: 0;
 
-  --vf-command-palette-offset-top: calc(var(--vf-overlay-viewport-padding) + var(--vf-control-height-sm));
+  --vf-command-palette-offset-top: var(--vf-command-palette-offset-top-default);
   --vf-command-palette-content-width: var(--vf-dialog-width-lg);
   --vf-command-palette-content-max-height: var(--vf-dialog-max-height);
-  --vf-command-palette-enter-shift: calc(var(--vf-dialog-actions-gap) * -1);
+  --vf-command-palette-enter-shift: var(--vf-command-palette-enter-shift-default);
   --vf-command-palette-list-gap: var(--vf-nav-menu-list-gap);
-  --vf-command-palette-item-content-gap: calc(var(--vf-nav-menu-list-gap) * 0.75);
+  --vf-command-palette-item-content-gap: var(--vf-command-palette-item-content-gap-default);
   --vf-command-palette-item-layout-gap: var(--vf-nav-menu-list-gap);
   --vf-command-palette-leading-icon-gap: var(--vf-nav-menu-list-gap);
-  --vf-command-palette-item-title-icon-offset-y: calc(var(--vf-focus-ring-width) / -3);
+  --vf-command-palette-item-title-icon-offset-y: var(--vf-command-palette-item-title-icon-offset-y-default);
   --vf-command-palette-hints-gap: var(--vf-section-gap);
-  --vf-command-palette-hint-gap: calc(var(--vf-nav-menu-item-gap) * 0.75);
+  --vf-command-palette-hint-gap: var(--vf-command-palette-hint-gap-default);
   --vf-command-palette-hint-keys-gap: var(--vf-nav-menu-list-gap);
-  --vf-command-palette-hint-icon-padding-inline: calc(var(--vf-nav-menu-list-gap) / 2);
+  --vf-command-palette-hint-icon-padding-inline: var(--vf-command-palette-hint-icon-padding-inline-default);
 
   z-index: var(--vf-z-overlay);
   display: flex;
@@ -61,25 +61,25 @@
 .vf-drawer--left {
   justify-content: flex-start;
 
-  --vf-drawer-offset-x: -100%;
+  --vf-drawer-offset-x: var(--vf-drawer-offset-x-left);
 }
 
 .vf-drawer--right {
   justify-content: flex-end;
 
-  --vf-drawer-offset-x: 100%;
+  --vf-drawer-offset-x: var(--vf-drawer-offset-x-right);
 }
 
 .vf-drawer--top {
   align-items: flex-start;
 
-  --vf-drawer-offset-y: -100%;
+  --vf-drawer-offset-y: var(--vf-drawer-offset-y-top);
 }
 
 .vf-drawer--bottom {
   align-items: flex-end;
 
-  --vf-drawer-offset-y: 100%;
+  --vf-drawer-offset-y: var(--vf-drawer-offset-y-bottom);
 }
 
 .vf-dialog__overlay {

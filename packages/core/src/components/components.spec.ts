@@ -741,6 +741,38 @@ describe('core primitives', () => {
     expect(input.attributes('aria-invalid')).toBe('true');
   });
 
+  it('marks required field labels and exposes required state to wrapped controls', () => {
+    const wrapper = mount(VfField, {
+      props: {
+        label: 'Email',
+        required: true,
+      },
+      slots: {
+        default: ({
+          controlId,
+          required,
+        }: {
+          controlId: string;
+          describedBy?: string;
+          invalid: boolean;
+          required: boolean;
+        }) =>
+          h('input', {
+            id: controlId,
+            'aria-required': required ? 'true' : undefined,
+          }),
+      },
+    });
+
+    const marker = wrapper.get('.vf-field__required-mark');
+    const input = wrapper.get('input');
+
+    expect(marker.text()).toBe('*');
+    expect(marker.attributes('aria-hidden')).toBe('true');
+    expect(input.attributes('required')).toBeUndefined();
+    expect(input.attributes('aria-required')).toBe('true');
+  });
+
   it('supports floating label layout for text-like controls', async () => {
     const wrapper = mount(
       defineComponent({
@@ -773,6 +805,43 @@ describe('core primitives', () => {
     expect(wrapper.find('.vf-field').classes()).toContain('vf-field--floating');
     expect(wrapper.find('.vf-field__control').classes()).toContain('vf-field__control--filled');
     expect(wrapper.find('.vf-field__label--floating').exists()).toBe(true);
+  });
+
+  it('marks required floating labels', async () => {
+    const wrapper = mount(
+      defineComponent({
+        components: {
+          VfField,
+          VfInput,
+        },
+        data() {
+          return {
+            value: '',
+          };
+        },
+        template: `
+          <VfField label="Workspace name" label-placement="floating" required>
+            <template #default="{ controlId, describedBy, invalid, required }">
+              <VfInput
+                :id="controlId"
+                v-model="value"
+                :invalid="invalid"
+                :aria-describedby="describedBy"
+                :aria-required="required ? 'true' : undefined"
+              />
+            </template>
+          </VfField>
+        `,
+      }),
+    );
+
+    await nextTick();
+
+    const marker = wrapper.get('.vf-field__label--floating .vf-field__required-mark');
+
+    expect(marker.text()).toBe('*');
+    expect(marker.attributes('aria-hidden')).toBe('true');
+    expect(wrapper.get('input').attributes('aria-required')).toBe('true');
   });
 
   it('applies the requested floating label variant class', async () => {

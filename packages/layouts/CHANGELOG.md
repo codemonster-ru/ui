@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.16.0
+
+### Added
+
+- Added layout sticky offset tokens for shared app shell and document layout sticky-header calculations.
+
+### Changed
+
+- Moved remaining layout sticky CSS variable literal defaults into the layouts preset.
+- Expanded app shell and document layout theming documentation for sticky offset tokens.
+
 ## 1.15.3
 
 ### Fixed

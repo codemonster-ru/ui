@@ -276,17 +276,17 @@
 
 .vf-input + .vf-field__label--floating,
 .vf-input-wrap + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(0.75rem + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-input-offset-inline-md);
 }
 
 .vf-input--sm + .vf-field__label--floating,
 .vf-input-wrap--sm + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(0.5rem + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-input-offset-inline-sm);
 }
 
 .vf-field--floating-in .vf-input--sm + .vf-field__label--floating,
 .vf-field--floating-in .vf-input-wrap--sm + .vf-field__label--floating {
-  --vf-field-floating-label-active-offset-block: 0.125rem;
+  --vf-field-floating-label-active-offset-block: var(--vf-field-floating-input-sm-active-offset-block);
 }
 
 .vf-field--floating-in .vf-input--floating.vf-input--sm {
@@ -297,7 +297,7 @@
 
 .vf-input--lg + .vf-field__label--floating,
 .vf-input-wrap--lg + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(1rem + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-input-offset-inline-lg);
 }
 
 .vf-input--with-leading + .vf-field__label--floating,

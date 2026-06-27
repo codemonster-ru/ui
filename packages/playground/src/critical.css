@@ -1,19 +1,21 @@
+@import './tokens.css';
+
 .vf-playground {
   display: flex;
   flex-direction: column;
-  min-height: var(--vf-playground-height, 320px);
-  border: 1px solid var(--vf-playground-border, var(--vf-color-border, #2b2b2b));
-  border-radius: var(--vf-playground-radius-lg, var(--vf-radius-overlay, 12px));
+  min-height: var(--vf-playground-height);
+  border: 1px solid var(--vf-playground-border);
+  border-radius: var(--vf-playground-radius-lg);
   overflow: hidden;
-  background: var(--vf-playground-surface, var(--vf-color-surface, #111216));
-  color: var(--vf-playground-text, var(--vf-color-text, #f2f3f5));
+  background: var(--vf-playground-surface);
+  color: var(--vf-playground-text);
 }
 
 .vf-playground__tabs {
   display: flex;
   align-items: center;
-  min-height: var(--vf-playground-bar-height, 42px);
-  border-bottom: 1px solid var(--vf-playground-border, var(--vf-color-border, #2b2b2b));
+  min-height: var(--vf-playground-bar-height);
+  border-bottom: 1px solid var(--vf-playground-border);
 }
 
 .vf-playground__panel {
@@ -24,7 +26,7 @@
 .vf-playground__iframe,
 .vf-playground__component-preview {
   width: 100%;
-  min-height: 220px;
+  min-height: var(--vf-playground-critical-preview-min-height);
   border: 0;
-  background: var(--vf-playground-iframe-bg, var(--vf-color-surface, #111216));
+  background: var(--vf-playground-iframe-bg);
 }

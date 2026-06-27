@@ -1316,11 +1316,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                 description, and error spacing; the form layout should own the gap between fields.
               </p>
 
-              <VfField label="Workspace name">
-                <template #default="{ controlId, describedBy, invalid }">
+              <VfField label="Workspace name" required>
+                <template #default="{ controlId, describedBy, invalid, required }">
                   <VfInput
                     :id="controlId"
                     v-model="formStackNameValue"
+                    required
+                    :aria-required="required ? 'true' : undefined"
                     :invalid="invalid"
                     :aria-describedby="describedBy"
                     placeholder="Acme Cloud"
@@ -1328,11 +1330,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </template>
               </VfField>
 
-              <VfField label="Billing email" label-placement="floating">
-                <template #default="{ controlId, describedBy, invalid }">
+              <VfField label="Billing email" label-placement="floating" required>
+                <template #default="{ controlId, describedBy, invalid, required }">
                   <VfInput
                     :id="controlId"
                     v-model="formStackEmailValue"
+                    required
+                    :aria-required="required ? 'true' : undefined"
                     :invalid="invalid"
                     :aria-describedby="describedBy"
                     placeholder="team@acme.test"
@@ -1498,11 +1502,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                     class="demo-form-geometry__cell"
                   >
                     <p class="demo-form-geometry__label">{{ variant }}</p>
-                    <VfField label="Search" label-placement="floating" :floating-variant="variant">
-                      <template #default="{ controlId, describedBy, invalid }">
+                    <VfField label="Search" label-placement="floating" :floating-variant="variant" required>
+                      <template #default="{ controlId, describedBy, invalid, required }">
                         <VfInput
                           :id="controlId"
                           model-value="Search query"
+                          required
+                          :aria-required="required ? 'true' : undefined"
                           leading-icon="magnifyingGlass"
                           clearable
                           :invalid="invalid"
@@ -1675,11 +1681,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-form-geometry__grid demo-form-geometry__grid--two">
                   <div class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">field</p>
-                    <VfField label="Default field" description="Description text">
-                      <template #default="{ controlId, describedBy, invalid }">
+                    <VfField label="Default field" description="Description text" required>
+                      <template #default="{ controlId, describedBy, invalid, required }">
                         <VfInput
                           :id="controlId"
                           model-value="Field value"
+                          required
+                          :aria-required="required ? 'true' : undefined"
                           :invalid="invalid"
                           :aria-describedby="describedBy"
                           placeholder="Default field"

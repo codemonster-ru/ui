@@ -1,12 +1,4 @@
 .vf-skeleton {
-  --vf-skeleton-background: color-mix(in srgb, var(--vf-color-surface-muted) 82%, var(--vf-color-border));
-  --vf-skeleton-shimmer-background: color-mix(in srgb, var(--vf-color-text) 6%, transparent);
-  --vf-skeleton-shimmer-duration: 1.2s;
-  --vf-skeleton-shimmer-easing: ease;
-  --vf-skeleton-shimmer-iteration-count: infinite;
-  --vf-skeleton-shimmer-start-x: -100%;
-  --vf-skeleton-shimmer-end-x: 100%;
-
   position: relative;
   overflow: hidden;
   width: 100%;
