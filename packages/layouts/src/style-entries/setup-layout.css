@@ -201,6 +201,14 @@
     padding: var(--vf-layout-size-zero);
   }
 
+  .vf-setup-layout--with-aside .vf-setup-layout__main {
+    align-self: stretch;
+  }
+
+  .vf-setup-layout--with-aside .vf-setup-layout__actions {
+    margin-block-start: auto;
+  }
+
   .vf-setup-layout--with-aside .vf-setup-layout__brand,
   .vf-setup-layout--with-aside .vf-setup-layout__toolbar,
   .vf-setup-layout--with-aside .vf-setup-layout__header,
