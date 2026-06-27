@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.15.1
+
+### Fixed
+
+- Fixed `VfSetupLayout` so conditionally empty structural slots no longer reserve grid areas.
+
 ## 1.15.0
 
 ### Added
