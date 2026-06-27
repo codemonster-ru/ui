@@ -32,5 +32,8 @@ createApp({}).use(VueForgeCodeBlock);
 Optional manual CSS entries:
 
 - `@codemonster-ru/vueforge-codeblock/style.css`
+- `@codemonster-ru/vueforge-codeblock/tokens.css`
 - `@codemonster-ru/vueforge-codeblock/codeblock.css`
 - `@codemonster-ru/vueforge-codeblock/critical.css`
+
+When importing granular CSS manually, load `tokens.css` before `critical.css` or `codeblock.css`.

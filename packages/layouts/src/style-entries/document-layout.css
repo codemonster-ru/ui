@@ -151,13 +151,13 @@
 
 .vf-document-layout--header-sticky {
   --vf-sticky-header-offset: var(--vf-layout-header-height);
-  --vf-sticky-subheader-offset: calc(var(--vf-layout-space-layout-base) * var(--vf-layout-size-zero));
+  --vf-sticky-subheader-offset: var(--vf-layout-sticky-subheader-offset-default);
   --vf-sticky-top-offset: var(--vf-sticky-header-offset);
 }
 
 .vf-document-layout--header-sticky:has(.vf-document-layout__subheader) {
   --vf-sticky-subheader-offset: var(--vf-layout-subheader-height);
-  --vf-sticky-top-offset: calc(var(--vf-sticky-header-offset) + var(--vf-sticky-subheader-offset));
+  --vf-sticky-top-offset: var(--vf-layout-sticky-top-offset-with-subheader);
 }
 
 .vf-document-layout--header-sticky .vf-document-layout__subheader {

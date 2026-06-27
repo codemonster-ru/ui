@@ -40,6 +40,8 @@ export const defaultLayoutsPreset: VfLayoutPreset = {
     subheaderHeight: '2.75rem',
     subheaderPaddingBlock: '0.375rem',
     subheaderPaddingInline: 'var(--vf-layout-shell-area-padding-inline)',
+    stickySubheaderOffsetDefault: 'calc(var(--vf-layout-space-layout-base) * var(--vf-layout-size-zero))',
+    stickyTopOffsetWithSubheader: 'calc(var(--vf-sticky-header-offset) + var(--vf-sticky-subheader-offset))',
     sidebarBackground: 'var(--vf-layout-surface-base)',
     sidebarBorder: 'var(--vf-layout-border-base)',
     sidebarPaddingBlock: 'var(--vf-layout-shell-area-padding-block)',

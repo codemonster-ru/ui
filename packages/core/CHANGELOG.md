@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.29.0
+
+### Added
+
+- Added `VfField` `required` support with an aria-hidden required marker for regular and floating labels.
+- Exposed `required` in the `VfField` default slot context so consumers can forward required semantics to the rendered control.
+- Added theme tokens for floating field geometry, selection-control offsets, overlay motion defaults, inline spinner colors, skeleton gate defaults, and navigation current-state defaults.
+
+### Changed
+
+- Moved remaining core component CSS variable literal defaults into the default theme preset so component CSS consumes tokenized values consistently.
+- Expanded component theming documentation for the newly tokenized core surfaces.
+
+### Fixed
+
+- Preserved `VfField` responsibility boundaries by not applying native `required` automatically to unknown slotted controls.
+
 ## 1.28.0
 
 ### Added

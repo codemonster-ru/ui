@@ -44,7 +44,7 @@
 }
 
 .vf-table-of-contents {
-  --vf-table-of-contents-current-list-gap: 0;
+  --vf-table-of-contents-current-list-gap: var(--vf-table-of-contents-current-list-gap-default);
   --vf-table-of-contents-current-item-padding: var(--vf-table-of-contents-item-padding);
   --vf-table-of-contents-current-item-min-height: var(--vf-control-height-sm);
   --vf-table-of-contents-current-hover-color: var(--vf-table-of-contents-hover-color);

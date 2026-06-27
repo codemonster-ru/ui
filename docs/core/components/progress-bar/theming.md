@@ -25,15 +25,16 @@ Available design tokens and corresponding CSS variables.
 
 | Token | CSS Variable | Description |
 | --- | --- | --- |
-| `—` | `--vf-progress-bar-height` | Local CSS variable controlling track height. |
-| `—` | `--vf-progress-bar-radius` | Local CSS variable controlling track and value radius. |
-| `—` | `--vf-progress-bar-label-font-size` | Local CSS variable controlling percentage label size. |
-| `—` | `--vf-progress-bar-value-color` | Local CSS variable controlling filled value color. |
-| `—` | `--vf-progress-bar-label-color` | Local CSS variable controlling percentage label color. |
-| `—` | `--vf-progress-bar-transition-duration` | Local CSS variable controlling determinate value transition duration. |
-| `—` | `--vf-progress-bar-transition-easing` | Local CSS variable controlling determinate value transition easing. |
-| `—` | `--vf-progress-bar-indeterminate-duration` | Local CSS variable controlling indeterminate animation duration. |
-| `—` | `--vf-progress-bar-indeterminate-long-easing` | Local CSS variable controlling the long indeterminate segment easing. |
-| `—` | `--vf-progress-bar-indeterminate-short-easing` | Local CSS variable controlling the short indeterminate segment easing. |
-| `—` | `--vf-progress-bar-indeterminate-short-delay` | Local CSS variable controlling the short indeterminate segment delay. |
-| `—` | `--vf-progress-bar-label-padding-inline` | Local CSS variable controlling percentage label inline padding. |
+| Progress bar height | `--vf-progress-bar-height` | Track height. |
+| Progress bar radius | `--vf-progress-bar-radius` | Track and value radius. |
+| Progress bar track background | `--vf-progress-bar-track-background` | Track background. |
+| Progress bar label font size | `--vf-progress-bar-label-font-size` | Percentage label size. |
+| Progress bar value color | `--vf-progress-bar-value-color` | Filled value color. |
+| Progress bar label color | `--vf-progress-bar-label-color` | Percentage label color. |
+| Progress bar transition duration | `--vf-progress-bar-transition-duration` | Determinate value transition duration. |
+| Progress bar transition easing | `--vf-progress-bar-transition-easing` | Determinate value transition easing. |
+| Progress bar indeterminate duration | `--vf-progress-bar-indeterminate-duration` | Indeterminate animation duration. |
+| Progress bar indeterminate long easing | `--vf-progress-bar-indeterminate-long-easing` | Long indeterminate segment easing. |
+| Progress bar indeterminate short easing | `--vf-progress-bar-indeterminate-short-easing` | Short indeterminate segment easing. |
+| Progress bar indeterminate short delay | `--vf-progress-bar-indeterminate-short-delay` | Short indeterminate segment delay. |
+| Progress bar label padding | `--vf-progress-bar-label-padding-inline` | Percentage label inline padding. |

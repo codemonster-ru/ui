@@ -15,6 +15,12 @@
   color: var(--vf-color-text);
 }
 
+.vf-field__required-mark {
+  flex-shrink: 0;
+  margin-inline-start: calc(var(--vf-surface-gap-compact) * 0.5);
+  color: var(--vf-color-danger);
+}
+
 .vf-field__control {
   display: grid;
   min-width: 0;
@@ -42,13 +48,13 @@
 
 .vf-field__label--floating {
   --vf-field-floating-label-offset-inline: var(--vf-field-adornment-offset-md);
-  --vf-field-floating-label-offset-block: 50%;
-  --vf-field-floating-label-translate-y: -50%;
-  --vf-field-floating-label-resting-offset-block-sm: 50%;
-  --vf-field-floating-label-resting-offset-block-md: 50%;
-  --vf-field-floating-label-resting-offset-block-lg: 50%;
-  --vf-field-floating-label-active-offset-block: 0.25rem;
-  --vf-field-floating-label-active-translate-y: 0;
+  --vf-field-floating-label-offset-block: var(--vf-field-floating-label-offset-block-default);
+  --vf-field-floating-label-translate-y: var(--vf-field-floating-label-translate-y-default);
+  --vf-field-floating-label-resting-offset-block-sm: var(--vf-field-floating-label-resting-offset-block-sm-default);
+  --vf-field-floating-label-resting-offset-block-md: var(--vf-field-floating-label-resting-offset-block-md-default);
+  --vf-field-floating-label-resting-offset-block-lg: var(--vf-field-floating-label-resting-offset-block-lg-default);
+  --vf-field-floating-label-active-offset-block: var(--vf-field-floating-label-active-offset-block-default);
+  --vf-field-floating-label-active-translate-y: var(--vf-field-floating-label-active-translate-y-default);
   --vf-field-floating-label-background: var(--vf-color-surface);
 
   position: absolute;
@@ -82,21 +88,21 @@
 }
 
 .vf-field--floating-in .vf-field__label--floating {
-  --vf-field-floating-label-active-offset-block: 0.25rem;
-  --vf-field-floating-label-active-translate-y: 0;
-  --vf-field-floating-label-background: transparent;
+  --vf-field-floating-label-active-offset-block: var(--vf-field-floating-in-label-active-offset-block);
+  --vf-field-floating-label-active-translate-y: var(--vf-field-floating-in-label-active-translate-y);
+  --vf-field-floating-label-background: var(--vf-field-floating-in-label-background);
 }
 
 .vf-field--floating-in {
-  --vf-field-floating-control-padding-top-sm: 1rem;
-  --vf-field-floating-control-padding-bottom-sm: 0.125rem;
-  --vf-field-floating-control-padding-top-md: 1.3125rem;
-  --vf-field-floating-control-padding-bottom-md: 0.1875rem;
-  --vf-field-floating-control-padding-top-lg: 1.625rem;
-  --vf-field-floating-control-padding-bottom-lg: 0.375rem;
-  --vf-field-floating-textarea-padding-top-sm: 1.5rem;
-  --vf-field-floating-textarea-padding-top-md: 1.625rem;
-  --vf-field-floating-textarea-padding-top-lg: 1.625rem;
+  --vf-field-floating-control-padding-top-sm: var(--vf-field-floating-in-control-padding-top-sm);
+  --vf-field-floating-control-padding-bottom-sm: var(--vf-field-floating-in-control-padding-bottom-sm);
+  --vf-field-floating-control-padding-top-md: var(--vf-field-floating-in-control-padding-top-md);
+  --vf-field-floating-control-padding-bottom-md: var(--vf-field-floating-in-control-padding-bottom-md);
+  --vf-field-floating-control-padding-top-lg: var(--vf-field-floating-in-control-padding-top-lg);
+  --vf-field-floating-control-padding-bottom-lg: var(--vf-field-floating-in-control-padding-bottom-lg);
+  --vf-field-floating-textarea-padding-top-sm: var(--vf-field-floating-in-textarea-padding-top-sm);
+  --vf-field-floating-textarea-padding-top-md: var(--vf-field-floating-in-textarea-padding-top-md);
+  --vf-field-floating-textarea-padding-top-lg: var(--vf-field-floating-in-textarea-padding-top-lg);
 }
 
 .vf-field__control--floating:focus-within .vf-field__label--floating,
@@ -110,49 +116,49 @@
 }
 
 .vf-field--floating-on .vf-field__label--floating {
-  --vf-field-floating-label-active-offset-block: 0;
-  --vf-field-floating-label-active-translate-y: -50%;
+  --vf-field-floating-label-active-offset-block: var(--vf-field-floating-on-label-active-offset-block);
+  --vf-field-floating-label-active-translate-y: var(--vf-field-floating-on-label-active-translate-y);
   --vf-field-floating-label-background: var(--vf-color-surface);
 }
 
 .vf-field--floating-on {
-  --vf-field-floating-control-padding-top-sm: var(--vf-field-padding-block-sm);
-  --vf-field-floating-control-padding-bottom-sm: var(--vf-field-padding-block-sm);
-  --vf-field-floating-control-padding-top-md: var(--vf-field-padding-block-md);
-  --vf-field-floating-control-padding-bottom-md: var(--vf-field-padding-block-md);
-  --vf-field-floating-control-padding-top-lg: var(--vf-field-padding-block-lg);
-  --vf-field-floating-control-padding-bottom-lg: var(--vf-field-padding-block-lg);
-  --vf-field-floating-textarea-padding-top-sm: calc(var(--vf-field-padding-block-sm) + 0.125rem);
-  --vf-field-floating-textarea-padding-top-md: calc(var(--vf-field-padding-block-md) + 0.125rem);
-  --vf-field-floating-textarea-padding-top-lg: calc(var(--vf-field-padding-block-lg) + 0.125rem);
+  --vf-field-floating-control-padding-top-sm: var(--vf-field-floating-on-control-padding-top-sm);
+  --vf-field-floating-control-padding-bottom-sm: var(--vf-field-floating-on-control-padding-bottom-sm);
+  --vf-field-floating-control-padding-top-md: var(--vf-field-floating-on-control-padding-top-md);
+  --vf-field-floating-control-padding-bottom-md: var(--vf-field-floating-on-control-padding-bottom-md);
+  --vf-field-floating-control-padding-top-lg: var(--vf-field-floating-on-control-padding-top-lg);
+  --vf-field-floating-control-padding-bottom-lg: var(--vf-field-floating-on-control-padding-bottom-lg);
+  --vf-field-floating-textarea-padding-top-sm: var(--vf-field-floating-on-textarea-padding-top-sm);
+  --vf-field-floating-textarea-padding-top-md: var(--vf-field-floating-on-textarea-padding-top-md);
+  --vf-field-floating-textarea-padding-top-lg: var(--vf-field-floating-on-textarea-padding-top-lg);
 
-  padding-top: 0.375rem;
+  padding-top: var(--vf-field-floating-on-padding-top);
 }
 
 .vf-field--floating-over .vf-field__label--floating {
-  --vf-field-floating-label-active-offset-block: -0.0625rem;
-  --vf-field-floating-label-active-translate-y: -100%;
-  --vf-field-floating-label-background: transparent;
+  --vf-field-floating-label-active-offset-block: var(--vf-field-floating-over-label-active-offset-block);
+  --vf-field-floating-label-active-translate-y: var(--vf-field-floating-over-label-active-translate-y);
+  --vf-field-floating-label-background: var(--vf-field-floating-over-label-background);
 }
 
 .vf-field--floating-over {
-  --vf-field-floating-control-padding-top-sm: var(--vf-field-padding-block-sm);
-  --vf-field-floating-control-padding-bottom-sm: var(--vf-field-padding-block-sm);
-  --vf-field-floating-control-padding-top-md: var(--vf-field-padding-block-md);
-  --vf-field-floating-control-padding-bottom-md: var(--vf-field-padding-block-md);
-  --vf-field-floating-control-padding-top-lg: var(--vf-field-padding-block-lg);
-  --vf-field-floating-control-padding-bottom-lg: var(--vf-field-padding-block-lg);
-  --vf-field-floating-textarea-padding-top-sm: var(--vf-field-padding-block-sm);
-  --vf-field-floating-textarea-padding-top-md: var(--vf-field-padding-block-md);
-  --vf-field-floating-textarea-padding-top-lg: var(--vf-field-padding-block-lg);
+  --vf-field-floating-control-padding-top-sm: var(--vf-field-floating-over-control-padding-top-sm);
+  --vf-field-floating-control-padding-bottom-sm: var(--vf-field-floating-over-control-padding-bottom-sm);
+  --vf-field-floating-control-padding-top-md: var(--vf-field-floating-over-control-padding-top-md);
+  --vf-field-floating-control-padding-bottom-md: var(--vf-field-floating-over-control-padding-bottom-md);
+  --vf-field-floating-control-padding-top-lg: var(--vf-field-floating-over-control-padding-top-lg);
+  --vf-field-floating-control-padding-bottom-lg: var(--vf-field-floating-over-control-padding-bottom-lg);
+  --vf-field-floating-textarea-padding-top-sm: var(--vf-field-floating-over-textarea-padding-top-sm);
+  --vf-field-floating-textarea-padding-top-md: var(--vf-field-floating-over-textarea-padding-top-md);
+  --vf-field-floating-textarea-padding-top-lg: var(--vf-field-floating-over-textarea-padding-top-lg);
 
-  padding-top: 0.6875rem;
+  padding-top: var(--vf-field-floating-over-padding-top);
 }
 
 .vf-field--floating-on .vf-field__control--floating:focus-within .vf-field__label--floating,
 .vf-field--floating-on .vf-field__control--filled .vf-field__label--floating {
   border-radius: var(--vf-radius-control-tight);
-  padding-inline: 0.25rem;
+  padding-inline: var(--vf-field-floating-on-active-padding-inline);
 }
 
 .vf-field:not(.vf-field--invalid) .vf-field__control--floating:focus-within .vf-field__label--floating {

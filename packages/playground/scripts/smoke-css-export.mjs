@@ -8,6 +8,7 @@ const packageJsonPath = join(packageDir, 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const cssExportTargets = [
   ['./style.css', packageJson?.exports?.['./style.css']],
+  ['./tokens.css', packageJson?.exports?.['./tokens.css']],
   ['./playground.css', packageJson?.exports?.['./playground.css']],
   ['./critical.css', packageJson?.exports?.['./critical.css']]
 ];
@@ -73,10 +74,11 @@ try {
   }
 
   const consumerStyleImport = `${packageJson.name}/style.css`;
+  const consumerTokensImport = `${packageJson.name}/tokens.css`;
   const consumerComponentImport = `${packageJson.name}/playground.css`;
   const consumerCriticalImport = `${packageJson.name}/critical.css`;
   console.log(
-    `Smoke check passed: "${consumerStyleImport}", "${consumerComponentImport}", and "${consumerCriticalImport}" exports resolve in npm pack tarball, and dist CSS has no raw deep selectors.`
+    `Smoke check passed: "${consumerStyleImport}", "${consumerTokensImport}", "${consumerComponentImport}", and "${consumerCriticalImport}" exports resolve in npm pack tarball, and dist CSS has no raw deep selectors.`
   );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });

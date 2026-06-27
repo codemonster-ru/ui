@@ -81,21 +81,21 @@
 }
 
 .vf-textarea + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-md) + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-md);
   --vf-field-floating-label-offset-block: var(--vf-field-floating-label-resting-offset-block-md);
-  --vf-field-floating-label-translate-y: 0;
+  --vf-field-floating-label-translate-y: var(--vf-field-floating-textarea-translate-y);
 }
 
 .vf-textarea--sm + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-sm) + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-sm);
   --vf-field-floating-label-offset-block: var(--vf-field-floating-label-resting-offset-block-sm);
-  --vf-field-floating-label-translate-y: 0;
+  --vf-field-floating-label-translate-y: var(--vf-field-floating-textarea-translate-y);
 }
 
 .vf-textarea--lg + .vf-field__label--floating {
-  --vf-field-floating-label-offset-inline: calc(var(--vf-field-padding-inline-lg) + 1px);
+  --vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-lg);
   --vf-field-floating-label-offset-block: var(--vf-field-floating-label-resting-offset-block-lg);
-  --vf-field-floating-label-translate-y: 0;
+  --vf-field-floating-label-translate-y: var(--vf-field-floating-textarea-translate-y);
 }
 
 .vf-field__control--filled .vf-textarea + .vf-field__label--floating,
@@ -106,13 +106,13 @@
 }
 
 .vf-field--floating .vf-textarea + .vf-field__label--floating {
-  --vf-field-floating-label-resting-offset-block-md: calc(var(--vf-field-padding-block-md) + 0.1875rem);
+  --vf-field-floating-label-resting-offset-block-md: var(--vf-field-floating-textarea-resting-offset-block-md);
 }
 
 .vf-field--floating .vf-textarea--sm + .vf-field__label--floating {
-  --vf-field-floating-label-resting-offset-block-sm: calc(var(--vf-field-padding-block-sm) + 0.1875rem);
+  --vf-field-floating-label-resting-offset-block-sm: var(--vf-field-floating-textarea-resting-offset-block-sm);
 }
 
 .vf-field--floating .vf-textarea--lg + .vf-field__label--floating {
-  --vf-field-floating-label-resting-offset-block-lg: calc(var(--vf-field-padding-block-lg) + 0.3125rem);
+  --vf-field-floating-label-resting-offset-block-lg: var(--vf-field-floating-textarea-resting-offset-block-lg);
 }

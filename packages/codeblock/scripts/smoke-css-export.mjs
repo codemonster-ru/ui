@@ -9,6 +9,7 @@ const packageJsonPath = join(packageDir, 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const cssExportTargets = [
   ['./style.css', packageJson?.exports?.['./style.css']],
+  ['./tokens.css', packageJson?.exports?.['./tokens.css']],
   ['./codeblock.css', packageJson?.exports?.['./codeblock.css']],
   ['./critical.css', packageJson?.exports?.['./critical.css']]
 ];
@@ -75,7 +76,7 @@ try {
   }
 
   console.log(
-    `Smoke check passed: "${packageJson.name}/style.css", "${packageJson.name}/codeblock.css", and "${packageJson.name}/critical.css" exports resolve to publish artifacts.`
+    `Smoke check passed: "${packageJson.name}/style.css", "${packageJson.name}/tokens.css", "${packageJson.name}/codeblock.css", and "${packageJson.name}/critical.css" exports resolve to publish artifacts.`
   );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });

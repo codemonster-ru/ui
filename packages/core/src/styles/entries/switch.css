@@ -5,7 +5,7 @@
  */
 
 .vf-switch {
-  --vf-selection-control-offset: 0.0625rem;
+  --vf-selection-control-offset: var(--vf-switch-control-offset-md);
 
   position: relative;
   display: inline-flex;
@@ -18,13 +18,13 @@
 }
 
 .vf-switch--sm {
-  --vf-selection-control-offset: 0.0313rem;
+  --vf-selection-control-offset: var(--vf-switch-control-offset-sm);
 
   gap: var(--vf-surface-gap-compact);
 }
 
 .vf-switch--lg {
-  --vf-selection-control-offset: 0;
+  --vf-selection-control-offset: var(--vf-switch-control-offset-lg);
 
   gap: var(--vf-selection-gap);
 }
@@ -251,7 +251,7 @@ html[data-vf-theme='dark']
 }
 
 .vf-switch--sm .vf-switch__control {
-  --vf-switch-thumb-icon-size: 0.625rem;
+  --vf-switch-thumb-icon-size: var(--vf-switch-thumb-icon-size-sm);
 
   width: var(--vf-switch-width-sm);
   height: var(--vf-switch-height-sm);
@@ -275,7 +275,7 @@ html[data-vf-theme='dark']
 }
 
 .vf-switch--lg .vf-switch__control {
-  --vf-switch-thumb-icon-size: 0.875rem;
+  --vf-switch-thumb-icon-size: var(--vf-switch-thumb-icon-size-lg);
 
   width: var(--vf-switch-width-lg);
   height: var(--vf-switch-height-lg);

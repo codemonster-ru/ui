@@ -18,6 +18,7 @@ Subpath exports:
 - `@codemonster-ru/vueforge-playground/ui` (UI component/plugin surface)
 - `@codemonster-ru/vueforge-playground/runtime` (runtime session factory and runtime types)
 - `@codemonster-ru/vueforge-playground/style.css`
+- `@codemonster-ru/vueforge-playground/tokens.css`
 - `@codemonster-ru/vueforge-playground/playground.css`
 - `@codemonster-ru/vueforge-playground/critical.css`
 
@@ -51,6 +52,7 @@ The following items are listed in this section:
 The following items are listed in this section:
 
 - `@codemonster-ru/vueforge-playground/style.css`
+- `@codemonster-ru/vueforge-playground/tokens.css`
 - `@codemonster-ru/vueforge-playground/playground.css`
 - `@codemonster-ru/vueforge-playground/critical.css`
 
@@ -58,3 +60,4 @@ Notes:
 
 - `@codemonster-ru/vueforge-playground/ui` auto-imports UI CSS.
 - `@codemonster-ru/vueforge-playground/runtime` does not import UI CSS.
+- Load `tokens.css` before `critical.css` or `playground.css` when using granular CSS imports.
