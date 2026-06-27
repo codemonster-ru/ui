@@ -745,6 +745,30 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-component-matrix__section">
+                <p class="demo-text">Button loading variants by size</p>
+                <div class="demo-component-matrix__grid">
+                  <div
+                    v-for="size in formGeometrySizes"
+                    :key="`button-loading-${size}`"
+                    class="demo-component-matrix__cell"
+                  >
+                    <p class="demo-component-matrix__label">{{ size }}</p>
+                    <div class="demo-inline">
+                      <VfButton
+                        v-for="variant in actionVariants"
+                        :key="`${size}-${variant}-loading`"
+                        :size="size"
+                        :variant="variant"
+                        loading
+                      >
+                        {{ variant }}
+                      </VfButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-component-matrix__section">
                 <p class="demo-text">Icon button variants by size</p>
                 <div class="demo-component-matrix__grid">
                   <div

@@ -203,6 +203,13 @@
   width: 100%;
 }
 
+.vf-button .vf-button__spinner {
+  --vf-progress-spinner-track-color: color-mix(in srgb, currentColor 30%, transparent);
+  --vf-progress-spinner-value-color: currentColor;
+
+  flex-shrink: 0;
+}
+
 .vf-link {
   display: inline-flex;
   width: fit-content;

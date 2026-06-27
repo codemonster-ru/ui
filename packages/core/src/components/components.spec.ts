@@ -203,6 +203,23 @@ describe('core primitives', () => {
     expect(wrapper.text()).toBe('Save');
   });
 
+  it('renders button loading state', () => {
+    const wrapper = mount(VfButton, {
+      props: {
+        loading: true,
+      },
+      slots: {
+        default: 'Save',
+      },
+    });
+
+    expect(wrapper.attributes('disabled')).toBeDefined();
+    expect(wrapper.attributes('aria-busy')).toBe('true');
+    expect(wrapper.classes()).toContain('vf-button--loading');
+    expect(wrapper.find('.vf-button__spinner').exists()).toBe(true);
+    expect(wrapper.text()).toBe('Save');
+  });
+
   it('renders determinate progress with bounded aria values', () => {
     const wrapper = mount(VfProgressBar, {
       props: {
