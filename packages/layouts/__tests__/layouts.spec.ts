@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { defineComponent, nextTick } from 'vue';
+import { createCommentVNode, defineComponent, nextTick, ref } from 'vue';
 import { VfThemeProvider, useTheme } from '@codemonster-ru/vueforge-core';
 import {
   VueForgeLayouts,
@@ -125,6 +125,46 @@ describe('setup layout', () => {
     expect(wrapper.find('.vf-setup-layout__aside').text()).toBe('Requirements');
     expect(wrapper.find('.vf-setup-layout__toolbar').text()).toBe('Theme');
     expect(wrapper.find('.vf-setup-layout__actions').text()).toBe('Continue');
+  });
+
+  it('does not reserve an aside row for an empty conditional aside slot', () => {
+    const wrapper = mount(VfSetupLayout, {
+      props: {
+        title: 'Install Annabel',
+      },
+      slots: {
+        default: () => 'Setup form',
+        aside: () => [createCommentVNode('v-if', true)],
+        actions: () => 'Continue',
+      },
+    });
+
+    expect(wrapper.classes()).not.toContain('vf-setup-layout--with-aside');
+    expect(wrapper.find('.vf-setup-layout__aside').exists()).toBe(false);
+    expect(wrapper.find('.vf-setup-layout__actions').text()).toBe('Continue');
+  });
+
+  it('updates aside layout when a conditional aside slot becomes empty', async () => {
+    const showAside = ref(true);
+    const wrapper = mount(VfSetupLayout, {
+      props: {
+        title: 'Install Annabel',
+      },
+      slots: {
+        default: () => 'Setup form',
+        aside: () => (showAside.value ? 'Requirements' : [createCommentVNode('v-if', true)]),
+        actions: () => 'Continue',
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-setup-layout--with-aside');
+    expect(wrapper.find('.vf-setup-layout__aside').exists()).toBe(true);
+
+    showAside.value = false;
+    await nextTick();
+
+    expect(wrapper.classes()).not.toContain('vf-setup-layout--with-aside');
+    expect(wrapper.find('.vf-setup-layout__aside').exists()).toBe(false);
   });
 });
 
