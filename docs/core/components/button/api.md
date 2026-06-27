@@ -11,6 +11,7 @@ Component props and their default values.
 | `variant?` | `VfButtonVariant` | `primary` | Visual variant for component appearance. |
 | `size?` | `VfControlSize` | `md` | Size token for spacing and dimensions. |
 | `block?` | `boolean` | `false` | Makes component fill available inline width. |
+| `loading?` | `boolean` | `false` | Shows an inline spinner and disables the button while work is pending. |
 | `type?` | `'button' \| 'submit' \| 'reset'` | `button` | Native HTML `type` forwarded to underlying control. |
 
 ## Emits
