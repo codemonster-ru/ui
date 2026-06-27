@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.28.0
+
+### Added
+
+- Added `VfButton` `loading` prop with an inline spinner, native disabled state, and `aria-busy` semantics.
+- Added button loading coverage to the core playground visual QA matrix and documented the new prop.
+
+### Fixed
+
+- Included progress spinner styles in the `button.css` entry so `@codemonster-ru/vueforge-core/button` loading buttons render correctly with auto-CSS imports.
+- Scoped button loading spinner colors to the button text color so each visual variant keeps appropriate contrast.
+
 ## 1.27.0
 
 ### Added
