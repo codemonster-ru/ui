@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.15.2
+
+### Fixed
+
+- Fixed `VfSetupLayout` action alignment so actions can sit at the panel bottom when aside layout is inactive.
+
 ## 1.15.1
 
 ### Fixed
