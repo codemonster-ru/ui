@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createCommentVNode, defineComponent, nextTick, ref } from 'vue';
+import { createCommentVNode, defineComponent, h, nextTick, ref } from 'vue';
 import { VfThemeProvider, useTheme } from '@codemonster-ru/vueforge-core';
 import {
   VueForgeLayouts,
@@ -165,6 +165,62 @@ describe('setup layout', () => {
 
     expect(wrapper.classes()).not.toContain('vf-setup-layout--with-aside');
     expect(wrapper.find('.vf-setup-layout__aside').exists()).toBe(false);
+  });
+
+  it('emits setup navigation events from keyboard input', async () => {
+    const wrapper = mount(VfSetupLayout, {
+      props: {
+        title: 'Install Annabel',
+      },
+      slots: {
+        default: () => h('input', { 'aria-label': 'Host' }),
+      },
+    });
+
+    await wrapper.get('input').trigger('keydown', { key: 'Enter' });
+    await wrapper.get('input').trigger('keydown', { key: 'Escape' });
+
+    expect(wrapper.emitted('next')).toHaveLength(1);
+    expect(wrapper.emitted('back')).toHaveLength(1);
+  });
+
+  it('does not emit setup next for conflicting keyboard targets', async () => {
+    const wrapper = mount(VfSetupLayout, {
+      props: {
+        title: 'Install Annabel',
+      },
+      slots: {
+        default: () => [
+          h('textarea', { 'aria-label': 'Notes' }),
+          h('input', { type: 'checkbox', 'aria-label': 'Accept' }),
+          h('input', { 'aria-label': 'Host' }),
+        ],
+      },
+    });
+
+    await wrapper.get('textarea').trigger('keydown', { key: 'Enter' });
+    await wrapper.get('input[type="checkbox"]').trigger('keydown', { key: 'Enter' });
+    await wrapper.get('input[aria-label="Host"]').trigger('keydown', { key: 'Enter', shiftKey: true });
+
+    expect(wrapper.emitted('next')).toBeUndefined();
+  });
+
+  it('can disable setup keyboard navigation', async () => {
+    const wrapper = mount(VfSetupLayout, {
+      props: {
+        title: 'Install Annabel',
+        keyboardNavigation: false,
+      },
+      slots: {
+        default: () => h('input', { 'aria-label': 'Host' }),
+      },
+    });
+
+    await wrapper.get('input').trigger('keydown', { key: 'Enter' });
+    await wrapper.get('input').trigger('keydown', { key: 'Escape' });
+
+    expect(wrapper.emitted('next')).toBeUndefined();
+    expect(wrapper.emitted('back')).toBeUndefined();
   });
 
   it('pins actions to the panel bottom without forcing panel height', () => {

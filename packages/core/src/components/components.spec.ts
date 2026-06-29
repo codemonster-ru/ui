@@ -272,6 +272,26 @@ describe('core primitives', () => {
     expect(wrapper.classes()).toContain('vf-progress-bar--success');
   });
 
+  it('renders striped progress bar modifiers', () => {
+    const striped = mount(VfProgressBar, {
+      props: {
+        value: 50,
+        striped: true,
+        animated: true,
+      },
+    });
+    const animatedOnly = mount(VfProgressBar, {
+      props: {
+        value: 50,
+        animated: true,
+      },
+    });
+
+    expect(striped.classes()).toContain('vf-progress-bar--striped');
+    expect(striped.classes()).toContain('vf-progress-bar--animated');
+    expect(animatedOnly.classes()).not.toContain('vf-progress-bar--animated');
+  });
+
   it('renders progress spinner with accessible label and sizing styles', () => {
     const wrapper = mount(VfProgressSpinner, {
       props: {
@@ -673,6 +693,38 @@ describe('core primitives', () => {
 
     expect(input.element.value).toBe('typed-secret');
     expect(input.attributes('type')).toBe('text');
+  });
+
+  it('preserves password cursor position when visibility changes', async () => {
+    const wrapper = mount(VfInput, {
+      props: {
+        modelValue: 'typed-secret',
+        passwordReveal: true,
+      },
+      attrs: {
+        type: 'password',
+      },
+    });
+
+    const input = wrapper.get('input');
+    const toggle = wrapper.get('.vf-input-wrap__password-toggle');
+
+    input.element.focus();
+    input.element.setSelectionRange(6, 6);
+
+    await toggle.trigger('click');
+
+    expect(input.attributes('type')).toBe('text');
+    expect(input.element.selectionStart).toBe(6);
+    expect(input.element.selectionEnd).toBe(6);
+
+    input.element.setSelectionRange(12, 12);
+
+    await toggle.trigger('click');
+
+    expect(input.attributes('type')).toBe('password');
+    expect(input.element.selectionStart).toBe(12);
+    expect(input.element.selectionEnd).toBe(12);
   });
 
   it('hides clearable control when disabled or readonly attrs are present', () => {

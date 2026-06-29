@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.17.0
+
+### Added
+
+- Added `VfSetupLayout` keyboard navigation emits for setup flows: `next` on Enter and `back` on Escape.
+- Added `keyboardNavigation` support to disable setup layout keyboard shortcuts when consumers need fully custom behavior.
+
 ## 1.16.0
 
 ### Added
