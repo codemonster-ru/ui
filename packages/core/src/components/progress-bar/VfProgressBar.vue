@@ -15,6 +15,8 @@ interface VfProgressBarProps {
   height?: string | number;
   showValue?: boolean;
   tone?: VfFeedbackTone;
+  striped?: boolean;
+  animated?: boolean;
 }
 
 const props = withDefaults(defineProps<VfProgressBarProps>(), {
@@ -25,6 +27,8 @@ const props = withDefaults(defineProps<VfProgressBarProps>(), {
   height: undefined,
   showValue: false,
   tone: 'primary',
+  striped: false,
+  animated: false,
 });
 
 const normalizedMax = computed(() => (Number.isFinite(props.max) && props.max > 0 ? props.max : 100));
@@ -37,7 +41,14 @@ const normalizedValue = computed(() => {
 });
 const percentage = computed(() => `${(normalizedValue.value / normalizedMax.value) * 100}%`);
 const valueLabel = computed(() => `${Math.round((normalizedValue.value / normalizedMax.value) * 100)}%`);
-const classes = computed(() => cx('vf-progress-bar', props.tone !== 'primary' && `vf-progress-bar--${props.tone}`));
+const classes = computed(() =>
+  cx(
+    'vf-progress-bar',
+    props.tone !== 'primary' && `vf-progress-bar--${props.tone}`,
+    props.striped && 'vf-progress-bar--striped',
+    props.striped && props.animated && 'vf-progress-bar--animated',
+  ),
+);
 const rootStyle = computed(() => ({
   '--vf-progress-bar-height': toCssLength(props.height),
 }));

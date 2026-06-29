@@ -87,9 +87,7 @@ let copiedTimer: ReturnType<typeof setTimeout> | null = null;
 let themeObserver: MutationObserver | null = null;
 let renderRequestId = 0;
 let readyEmitted = false;
-let highlightRuntimePromise: Promise<
-  typeof import('../highlight')
-> | null = null;
+let highlightRuntimePromise: Promise<typeof import('../highlight')> | null = null;
 const pluginLanguageOptions = inject<CodeBlockLanguageRuntimeOptions>(CODE_BLOCK_LANGUAGE_OPTIONS_KEY, {});
 
 const normalizedCode = computed(() => props.code.replace(/\r\n/g, '\n'));

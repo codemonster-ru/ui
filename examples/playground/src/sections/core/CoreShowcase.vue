@@ -1259,6 +1259,24 @@ const tabContent = computed<Record<string, string>>(() => ({
                       label="Dynamic progress"
                       height="1rem"
                     />
+                    <VfProgressBar :value="64" striped tone="info" label="Striped progress" height="1rem" />
+                    <VfProgressBar
+                      :value="64"
+                      striped
+                      animated
+                      tone="info"
+                      label="Animated striped progress"
+                      height="1rem"
+                    />
+                    <VfProgressBar
+                      :value="dynamicProgressValue"
+                      striped
+                      animated
+                      show-value
+                      tone="info"
+                      label="Installing module progress"
+                      height="1rem"
+                    />
                     <VfProgressBar indeterminate tone="info" label="Background sync progress" />
                   </div>
 

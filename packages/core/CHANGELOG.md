@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.30.0
+
+### Added
+
+- Added `striped` and `animated` variants to `VfProgressBar` for active determinate progress states.
+- Added progress bar striped pattern theme tokens.
+- Added progress bar documentation and playground examples for static striped, animated striped, and dynamic animated striped states.
+
+### Fixed
+
+- Preserved `VfInput` password cursor position when toggling password visibility.
+
 ## 1.29.0
 
 ### Added

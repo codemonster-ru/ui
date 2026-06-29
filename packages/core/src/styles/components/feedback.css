@@ -128,6 +128,19 @@
   transition: inline-size var(--vf-progress-bar-transition-duration) var(--vf-progress-bar-transition-easing);
 }
 
+.vf-progress-bar--striped .vf-progress-bar__value {
+  background-image: repeating-linear-gradient(
+    var(--vf-progress-bar-striped-angle),
+    var(--vf-progress-bar-value-color) 0,
+    var(--vf-progress-bar-value-color) var(--vf-progress-bar-striped-segment-size),
+    color-mix(in srgb, var(--vf-progress-bar-value-color) var(--vf-progress-bar-striped-tint-ratio), var(--vf-color-bg))
+      var(--vf-progress-bar-striped-segment-size),
+    color-mix(in srgb, var(--vf-progress-bar-value-color) var(--vf-progress-bar-striped-tint-ratio), var(--vf-color-bg))
+      calc(var(--vf-progress-bar-striped-segment-size) * 2)
+  );
+  background-size: var(--vf-progress-bar-striped-size) var(--vf-progress-bar-striped-size);
+}
+
 .vf-progress-bar--success {
   --vf-progress-bar-value-color: var(--vf-color-success);
   --vf-progress-bar-label-color: var(--vf-color-success-contrast);
@@ -209,6 +222,10 @@
   animation-delay: var(--vf-progress-bar-indeterminate-short-delay);
 }
 
+.vf-progress-bar--striped.vf-progress-bar--animated .vf-progress-bar__value {
+  animation: vf-progress-bar-stripes var(--vf-progress-bar-striped-animation-duration) linear infinite;
+}
+
 @keyframes vf-progress-bar-indeterminate {
   0% {
     inset-inline: -35% 100%;
@@ -234,6 +251,22 @@
 
   100% {
     inset-inline: 107% -8%;
+  }
+}
+
+@keyframes vf-progress-bar-stripes {
+  0% {
+    background-position-x: 0;
+  }
+
+  100% {
+    background-position-x: calc(-1 * var(--vf-progress-bar-striped-size));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vf-progress-bar--striped.vf-progress-bar--animated .vf-progress-bar__value {
+    animation: none;
   }
 }
 

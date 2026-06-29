@@ -26,6 +26,7 @@ entry: /App.vue
     <VfProgressBar :value="42" label="Import progress" />
     <VfProgressBar :value="7" :max="12" show-value label="Step progress" />
     <VfProgressBar :value="64" tone="success" label="Validation progress" />
+    <VfProgressBar :value="64" striped animated tone="info" label="Install progress" />
     <VfProgressBar indeterminate label="Sync in progress" />
   </div>
 </template>
@@ -52,6 +53,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                  |
+| ----- | ------------------------- |
 | `Tab` | Not focusable by default. |

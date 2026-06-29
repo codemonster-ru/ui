@@ -15,12 +15,12 @@ const languageLoaders = {
   sass: () => import('@shikijs/langs/sass'),
   scss: () => import('@shikijs/langs/scss'),
   typescript: () => import('@shikijs/langs/typescript'),
-  vue: () => import('@shikijs/langs/vue')
+  vue: () => import('@shikijs/langs/vue'),
 };
 
 const shikiThemes = {
   'github-dark': () => import('@shikijs/themes/github-dark'),
-  'github-light': () => import('@shikijs/themes/github-light')
+  'github-light': () => import('@shikijs/themes/github-light'),
 };
 
 export const SHIKI_LIGHT_THEME = 'github-light';
@@ -46,18 +46,18 @@ async function loadHighlighter() {
     getHighlighterPromise = (async () => {
       const [{ createBundledHighlighter }, { createJavaScriptRegexEngine }] = await Promise.all([
         import('shiki/core'),
-        import('shiki/engine/javascript')
+        import('shiki/engine/javascript'),
       ]);
 
       const createHighlighter = createBundledHighlighter({
         langs: languageLoaders,
         themes: shikiThemes,
-        engine: () => createJavaScriptRegexEngine()
+        engine: () => createJavaScriptRegexEngine(),
       });
 
       return createHighlighter({
         langs: [],
-        themes: Object.keys(shikiThemes) as ShikiThemeName[]
+        themes: Object.keys(shikiThemes) as ShikiThemeName[],
       });
     })();
   }
@@ -138,7 +138,8 @@ const ensureLanguageLoaded = async (language: ShikiLanguageLoader) => {
   await request;
 };
 
-const resolveAllowlist = (allowedLanguages?: string[]) => new Set((allowedLanguages ?? []).map(normalizeAllowlistLanguage));
+const resolveAllowlist = (allowedLanguages?: string[]) =>
+  new Set((allowedLanguages ?? []).map(normalizeAllowlistLanguage));
 
 const getDefaultAllowlist = () => new Set(['plaintext', ...Object.keys(languageLoaders)]);
 
@@ -148,7 +149,9 @@ const warnDisallowedLanguage = (language: string, fallbackLanguage: FallbackLang
   }
 
   warnedDisallowedLanguages.add(language);
-  console.warn(`[vf-codeblock] Language "${language}" is not in allowedLanguages. Falling back to "${fallbackLanguage}".`);
+  console.warn(
+    `[vf-codeblock] Language "${language}" is not in allowedLanguages. Falling back to "${fallbackLanguage}".`,
+  );
 };
 
 const resolveLanguageWithAllowlist = (language: string, options?: HighlightRuntimeOptions): string => {
@@ -169,7 +172,7 @@ export const highlightCodeLines = async (
   code: string,
   theme: 'light' | 'dark',
   highlight = true,
-  options?: HighlightRuntimeOptions
+  options?: HighlightRuntimeOptions,
 ): Promise<string[]> => {
   const normalizedCode = (code || '').replace(/\r\n/g, '\n');
 
@@ -192,7 +195,7 @@ export const highlightCodeLines = async (
     }
     const result = highlighter.codeToTokens(normalizedCode, {
       lang: normalizedLanguage,
-      theme: theme === 'dark' ? SHIKI_DARK_THEME : SHIKI_LIGHT_THEME
+      theme: theme === 'dark' ? SHIKI_DARK_THEME : SHIKI_LIGHT_THEME,
     });
 
     return result.tokens.map((lineTokens) =>
@@ -214,7 +217,7 @@ export const highlightCodeLines = async (
 
           return `<span class="vf-codeblock__shiki-token vf-codeblock__shiki-token" style="${escapeAttribute(styles.join('; '))}">${escapeCodeHtml(token.content)}</span>`;
         })
-        .join('')
+        .join(''),
     );
   } catch {
     return renderPlainCodeLines(normalizedCode);
@@ -226,7 +229,7 @@ export const highlightCodeBlock = async (
   code: string,
   theme: 'light' | 'dark' = 'light',
   highlight = true,
-  options?: HighlightRuntimeOptions
+  options?: HighlightRuntimeOptions,
 ): Promise<string> => (await highlightCodeLines(language, code, theme, highlight, options)).join('\n');
 
 export const highlightCodeLine = async (
@@ -234,7 +237,7 @@ export const highlightCodeLine = async (
   line: string,
   theme: 'light' | 'dark' = 'light',
   highlight = true,
-  options?: HighlightRuntimeOptions
+  options?: HighlightRuntimeOptions,
 ): Promise<string> => (await highlightCodeLines(language, line, theme, highlight, options))[0] ?? '';
 
 export const preloadCodeBlockLanguages = async (languages: string[], allowedLanguages?: string[]) => {
@@ -261,7 +264,7 @@ export const preloadCodeBlockLanguages = async (languages: string[], allowedLang
       } catch {
         // Ignore preload errors to keep runtime behavior resilient.
       }
-    })
+    }),
   );
 };
 

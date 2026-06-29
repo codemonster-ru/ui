@@ -32,6 +32,8 @@ entry: /App.vue
     title="Database"
     description="Configure storage before creating the administrator account."
     :fill-viewport="false"
+    @next="goNext"
+    @back="goBack"
   >
     <template #brand>
       <strong>Annabel CMS</strong>
@@ -46,15 +48,15 @@ entry: /App.vue
       />
     </template>
 
-    <div style="display:grid;gap:var(--vf-layout-space-layout-base)">
+    <form id="setup-form" style="display:grid;gap:var(--vf-layout-space-layout-base)">
       <VfInput value="127.0.0.1" aria-label="Host" />
       <VfInput value="annabel" aria-label="Database name" />
       <VfInput value="annabel_user" aria-label="Database user" />
-    </div>
+    </form>
 
     <template #actions>
       <VfButton variant="secondary" type="button">Back</VfButton>
-      <VfButton type="button">Continue</VfButton>
+      <VfButton type="submit" form="setup-form">Continue</VfButton>
     </template>
   </VfSetupLayout>
 </template>
@@ -69,6 +71,9 @@ const steps = [
   { value: 'admin', label: 'Admin' },
   { value: 'finish', label: 'Finish' },
 ];
+
+function goNext() {}
+function goBack() {}
 </script>
 ```
 ````
@@ -94,9 +99,10 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of rendered controls and navigation components.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus through step navigation, form controls, and actions. |
-| `Shift + Tab` | Moves focus backward through interactive elements. |
-| `Enter` | Submits a focused submit button or activates a focused button. |
-| `Space` | Activates focused buttons. |
+| Key           | Function                                                               |
+| ------------- | ---------------------------------------------------------------------- |
+| `Tab`         | Moves focus through step navigation, form controls, and actions.       |
+| `Shift + Tab` | Moves focus backward through interactive elements.                     |
+| `Enter`       | Emits `next` from text-like inputs and non-conflicting layout content. |
+| `Escape`      | Emits `back` from layout content.                                      |
+| `Space`       | Activates focused buttons.                                             |

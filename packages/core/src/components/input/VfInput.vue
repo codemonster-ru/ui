@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, ref, useAttrs, useSlots, watch } from 'vue';
+import { computed, inject, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch } from 'vue';
 import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import { cx } from '@/utils/classes';
@@ -39,6 +39,11 @@ const slots = useSlots();
 const inputRef = ref<HTMLInputElement | null>(null);
 const passwordVisible = ref(false);
 const currentValue = ref(props.modelValue);
+const inputSelection = ref<{
+  start: number;
+  end: number;
+  direction: 'forward' | 'backward' | 'none';
+} | null>(null);
 const fieldContext = inject(vfFieldContextKey, null);
 
 fieldContext?.setFloatingSupported(true);
@@ -122,8 +127,10 @@ onBeforeUnmount(() => {
 });
 
 function handleInput(event: Event) {
-  const value = (event.target as HTMLInputElement).value;
+  const input = event.target as HTMLInputElement;
+  const value = input.value;
   currentValue.value = value;
+  saveInputSelection(input);
   emit('update:modelValue', value);
 }
 
@@ -133,9 +140,50 @@ function handleClear() {
   inputRef.value?.focus();
 }
 
-function togglePasswordVisibility() {
+function saveInputSelection(input = inputRef.value) {
+  if (!input || input.selectionStart === null || input.selectionEnd === null) {
+    return;
+  }
+
+  inputSelection.value = {
+    start: input.selectionStart,
+    end: input.selectionEnd,
+    direction: input.selectionDirection ?? 'none',
+  };
+}
+
+function waitForSelectionFrame() {
+  return new Promise<void>((resolve) => {
+    window.requestAnimationFrame(() => resolve());
+  });
+}
+
+function restoreInputSelection(selection: NonNullable<typeof inputSelection.value>) {
+  const input = inputRef.value;
+
+  if (!input) {
+    return;
+  }
+
+  input.focus();
+  input.setSelectionRange(selection.start, selection.end, selection.direction);
+}
+
+async function togglePasswordVisibility() {
+  saveInputSelection();
+  const selection = inputSelection.value;
+
   passwordVisible.value = !passwordVisible.value;
-  inputRef.value?.focus();
+
+  await nextTick();
+
+  if (selection) {
+    restoreInputSelection(selection);
+    await waitForSelectionFrame();
+    restoreInputSelection(selection);
+  } else {
+    inputRef.value?.focus();
+  }
 }
 </script>
 
@@ -156,6 +204,9 @@ function togglePasswordVisibility() {
       :aria-invalid="props.invalid || undefined"
       v-bind="forwardedInputAttrs"
       @input="handleInput"
+      @click="saveInputSelection()"
+      @keyup="saveInputSelection()"
+      @select="saveInputSelection()"
     />
 
     <span
@@ -178,6 +229,7 @@ function togglePasswordVisibility() {
       size="sm"
       :aria-label="passwordRevealLabel"
       :aria-pressed="passwordVisible"
+      @pointerdown.prevent="saveInputSelection()"
       @mousedown.prevent
       @click="togglePasswordVisibility"
     />
@@ -204,5 +256,8 @@ function togglePasswordVisibility() {
     :aria-invalid="props.invalid || undefined"
     v-bind="forwardedInputAttrs"
     @input="handleInput"
+    @click="saveInputSelection()"
+    @keyup="saveInputSelection()"
+    @select="saveInputSelection()"
   />
 </template>
