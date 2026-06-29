@@ -170,12 +170,14 @@ const checks = [
   {
     file: 'switch',
     label: 'standalone switch sm thumb icon scales',
-    snippet: '.vf-switch--sm .vf-switch__control {\n  --vf-switch-thumb-icon-size: var(--vf-switch-thumb-icon-size-sm);',
+    snippet:
+      '.vf-switch--sm .vf-switch__control {\n  --vf-switch-thumb-icon-size: var(--vf-switch-thumb-icon-size-sm);',
   },
   {
     file: 'switch',
     label: 'standalone switch lg thumb icon scales',
-    snippet: '.vf-switch--lg .vf-switch__control {\n  --vf-switch-thumb-icon-size: var(--vf-switch-thumb-icon-size-lg);',
+    snippet:
+      '.vf-switch--lg .vf-switch__control {\n  --vf-switch-thumb-icon-size: var(--vf-switch-thumb-icon-size-lg);',
   },
   {
     file: 'forms',

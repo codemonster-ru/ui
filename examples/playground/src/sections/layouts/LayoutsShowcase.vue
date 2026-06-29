@@ -235,10 +235,12 @@
                 >
                   <VfSection surface class="demo-shell-frame">
                     <VfSetupLayout
-                      title="Database"
+                      :title="activeSetupStepConfig.label"
                       description="Configure the CMS environment before the first administrator account is created."
                       :fill-viewport="false"
                       aside-position="left"
+                      @next="goToNextSetupStep"
+                      @back="goToPreviousSetupStep"
                     >
                       <template #brand>
                         <div class="demo-setup-brand-stack">
@@ -246,9 +248,18 @@
                             <img class="demo-setup-brand__mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
                             <span class="demo-setup-brand__name">Annabel CMS</span>
                           </div>
-                          <div v-if="activeSetupBreakpointHidesAside" class="demo-setup-progress" aria-label="Step 2 of 4">
-                            <span>Step 2 of 4</span>
-                            <VfProgressBar :value="2" :max="4" label="Setup progress" height="0.25rem" />
+                          <div
+                            v-if="activeSetupBreakpointHidesAside"
+                            class="demo-setup-progress"
+                            :aria-label="`Step ${activeSetupStepNumber} of ${setupSteps.length}`"
+                          >
+                            <span>Step {{ activeSetupStepNumber }} of {{ setupSteps.length }}</span>
+                            <VfProgressBar
+                              :value="activeSetupStepNumber"
+                              :max="setupSteps.length"
+                              label="Setup progress"
+                              height="0.25rem"
+                            />
                           </div>
                         </div>
                       </template>
@@ -256,13 +267,13 @@
                       <template v-if="!activeSetupBreakpointHidesAside" #aside>
                         <VfStepper
                           :items="setupSteps"
-                          model-value="database"
+                          :model-value="activeSetupStep"
                           orientation="vertical"
                           aria-label="Installation steps"
                         />
                       </template>
 
-                      <VfStack as="form" class="demo-setup-form">
+                      <VfStack :id="setupFormId" as="form" class="demo-setup-form" @submit.prevent="goToNextSetupStep">
                         <div class="demo-setup-fields demo-setup-fields--split">
                           <VfField label="Host" description="Hostname, socket, or private address.">
                             <template #default="{ controlId, describedBy, invalid }">
@@ -330,10 +341,18 @@
                       </VfStack>
 
                       <template #actions>
-                        <VfButton class="demo-setup-action-back" variant="secondary" type="button">
+                        <VfButton
+                          class="demo-setup-action-back"
+                          variant="secondary"
+                          type="button"
+                          :disabled="isFirstSetupStep"
+                          @click="goToPreviousSetupStep"
+                        >
                           Back
                         </VfButton>
-                        <VfButton variant="primary" type="button"> Continue </VfButton>
+                        <VfButton variant="primary" type="submit" :form="setupFormId">
+                          {{ isLastSetupStep ? 'Finish' : 'Continue' }}
+                        </VfButton>
                       </template>
                     </VfSetupLayout>
                   </VfSection>
@@ -761,6 +780,18 @@ const setupSteps = [
     description: 'Review setup',
   },
 ];
+const setupFormId = 'demo-setup-form';
+const activeSetupStep = ref('database');
+const activeSetupStepIndex = computed(() =>
+  Math.max(
+    setupSteps.findIndex((step) => step.value === activeSetupStep.value),
+    0,
+  ),
+);
+const activeSetupStepNumber = computed(() => activeSetupStepIndex.value + 1);
+const activeSetupStepConfig = computed(() => setupSteps[activeSetupStepIndex.value] ?? setupSteps[0]);
+const isFirstSetupStep = computed(() => activeSetupStepIndex.value === 0);
+const isLastSetupStep = computed(() => activeSetupStepIndex.value === setupSteps.length - 1);
 const availableAuthBreakpoints = computed(() => [...authPreviewSizes, ...availableShellBreakpoints.value]);
 const authBreakpointTabs = computed(() =>
   availableAuthBreakpoints.value.map((breakpoint) => ({
@@ -777,15 +808,28 @@ function isBelowBreakpoint(breakpointValue: string | undefined, maxWidthExclusiv
   return Number.parseInt(breakpointValue ?? '0', 10) < maxWidthExclusive;
 }
 
-function getPreferredBreakpointName(
-  breakpoints: Array<{ name: string; value: string }>,
-  preferredName = 'xl',
-) {
+function getPreferredBreakpointName(breakpoints: Array<{ name: string; value: string }>, preferredName = 'xl') {
   return (
     breakpoints.find((breakpoint) => breakpoint.name === preferredName)?.name ??
     breakpoints[breakpoints.length - 1]?.name ??
     ''
   );
+}
+
+function setSetupStep(index: number) {
+  const nextStep = setupSteps[Math.min(Math.max(index, 0), setupSteps.length - 1)];
+
+  if (nextStep) {
+    activeSetupStep.value = nextStep.value;
+  }
+}
+
+function goToNextSetupStep() {
+  setSetupStep(activeSetupStepIndex.value + 1);
+}
+
+function goToPreviousSetupStep() {
+  setSetupStep(activeSetupStepIndex.value - 1);
 }
 
 const activeAuthBreakpoint = ref<string>(getPreferredBreakpointName(availableAuthBreakpoints.value));
@@ -796,7 +840,9 @@ const activeShellBreakpoint = ref<string>(getPreferredBreakpointName(availableSh
 const activeAuthBreakpointConfig = computed(
   () =>
     availableAuthBreakpoints.value.find((breakpoint) => breakpoint.name === activeAuthBreakpoint.value) ??
-    availableAuthBreakpoints.value.find((breakpoint) => breakpoint.name === getPreferredBreakpointName(availableAuthBreakpoints.value)) ??
+    availableAuthBreakpoints.value.find(
+      (breakpoint) => breakpoint.name === getPreferredBreakpointName(availableAuthBreakpoints.value),
+    ) ??
     availableAuthBreakpoints.value[0],
 );
 
@@ -825,7 +871,9 @@ const activeSetupBreakpointHidesAside = computed(() =>
 const activeShellBreakpointConfig = computed(
   () =>
     availableShellBreakpoints.value.find((breakpoint) => breakpoint.name === activeShellBreakpoint.value) ??
-    availableShellBreakpoints.value.find((breakpoint) => breakpoint.name === getPreferredBreakpointName(availableShellBreakpoints.value)) ??
+    availableShellBreakpoints.value.find(
+      (breakpoint) => breakpoint.name === getPreferredBreakpointName(availableShellBreakpoints.value),
+    ) ??
     availableShellBreakpoints.value[0],
 );
 

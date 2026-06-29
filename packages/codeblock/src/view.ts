@@ -14,5 +14,5 @@ export {
   type CodeBlockProps,
   type CodeBlockThemeVarOptions,
   type CodeBlockTheme,
-  type SupportedCodeBlockLanguage
+  type SupportedCodeBlockLanguage,
 } from './types';

@@ -4,6 +4,6 @@ export {
   highlightCodeBlock,
   highlightCodeLine,
   highlightCodeLines,
-  preloadCodeBlockLanguages
+  preloadCodeBlockLanguages,
 } from './services/code-highlight';
 export { escapeCodeHtml, renderPlainCodeLines } from './utils/plain-code';

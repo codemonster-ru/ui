@@ -11,7 +11,7 @@ const cssExportTargets = [
   ['./style.css', packageJson?.exports?.['./style.css']],
   ['./tokens.css', packageJson?.exports?.['./tokens.css']],
   ['./codeblock.css', packageJson?.exports?.['./codeblock.css']],
-  ['./critical.css', packageJson?.exports?.['./critical.css']]
+  ['./critical.css', packageJson?.exports?.['./critical.css']],
 ];
 
 for (const [exportKey, exportTarget] of cssExportTargets) {
@@ -30,8 +30,8 @@ try {
     env: {
       ...process.env,
       npm_config_color: 'false',
-      FORCE_COLOR: '0'
-    }
+      FORCE_COLOR: '0',
+    },
   });
   const jsonTail = packedOutput.match(/\[\s*\{[\s\S]*\}\s*\]\s*$/);
   if (!jsonTail) {
@@ -46,11 +46,11 @@ try {
   const tarballPath = join(packageDir, packMeta.filename);
   execFileSync('tar', ['-xzf', tarballPath, '-C', tempDir], {
     cwd: packageDir,
-    stdio: 'pipe'
+    stdio: 'pipe',
   });
   const tarEntries = execFileSync('tar', ['-tf', tarballPath], {
     cwd: packageDir,
-    encoding: 'utf8'
+    encoding: 'utf8',
   })
     .split('\n')
     .filter(Boolean);
@@ -60,7 +60,7 @@ try {
     const expectedTarPath = `package/${normalizedTarget}`;
     if (!tarEntries.includes(expectedTarPath)) {
       throw new Error(
-        `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`
+        `Broken CSS export: exports["${exportKey}"] points to "${exportTarget}", but "${expectedTarPath}" is missing in npm pack archive.`,
       );
     }
   }
@@ -69,14 +69,12 @@ try {
   for (const cssEntry of cssEntries) {
     const cssContent = readFileSync(join(tempDir, cssEntry), 'utf8');
     if (invalidDeepPattern.test(cssContent)) {
-      throw new Error(
-        `Invalid CSS selector leaked to publish artifact: found deep selector syntax in "${cssEntry}".`
-      );
+      throw new Error(`Invalid CSS selector leaked to publish artifact: found deep selector syntax in "${cssEntry}".`);
     }
   }
 
   console.log(
-    `Smoke check passed: "${packageJson.name}/style.css", "${packageJson.name}/tokens.css", "${packageJson.name}/codeblock.css", and "${packageJson.name}/critical.css" exports resolve to publish artifacts.`
+    `Smoke check passed: "${packageJson.name}/style.css", "${packageJson.name}/tokens.css", "${packageJson.name}/codeblock.css", and "${packageJson.name}/critical.css" exports resolve to publish artifacts.`,
   );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });

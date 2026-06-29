@@ -6,58 +6,60 @@ Public component contract: props, events, slots, and related types.
 
 Component props and their default values.
 
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `as?` | `string` | `main` | Underlying HTML tag name used for rendering. |
-| `title?` | `string \| null` | `null` | Text title shown in the setup header area. |
-| `description?` | `string \| null` | `null` | Fallback description value displayed when `description` slot is absent. |
-| `fillViewport?` | `boolean` | `true` | Expands layout to viewport height. |
-| `surface?` | `boolean` | `true` | Applies panel surface styling. |
-| `asidePosition?` | `'left' \| 'right'` | `left` | Places the aside column on medium and wider viewports. |
+| Name                  | Type                | Default | Description                                                             |
+| --------------------- | ------------------- | ------- | ----------------------------------------------------------------------- |
+| `as?`                 | `string`            | `main`  | Underlying HTML tag name used for rendering.                            |
+| `title?`              | `string \| null`    | `null`  | Text title shown in the setup header area.                              |
+| `description?`        | `string \| null`    | `null`  | Fallback description value displayed when `description` slot is absent. |
+| `fillViewport?`       | `boolean`           | `true`  | Expands layout to viewport height.                                      |
+| `surface?`            | `boolean`           | `true`  | Applies panel surface styling.                                          |
+| `asidePosition?`      | `'left' \| 'right'` | `left`  | Places the aside column on medium and wider viewports.                  |
+| `keyboardNavigation?` | `boolean`           | `true`  | Emits setup navigation events from keyboard shortcuts.                  |
 
 ## Emits
 
 Emitted component events and their payload shapes.
 
-| Name | Parameters | ReturnType | Description |
-| --- | --- | --- | --- |
-| `—` | `—` | `void` | No custom emits. |
+| Name   | Parameters             | ReturnType | Description                                                        |
+| ------ | ---------------------- | ---------- | ------------------------------------------------------------------ |
+| `next` | `event: KeyboardEvent` | `void`     | Emitted when setup keyboard navigation requests the next step.     |
+| `back` | `event: KeyboardEvent` | `void`     | Emitted when setup keyboard navigation requests the previous step. |
 
 ## Slots
 
 Available slots and their slot props.
 
-| Name | Parameters | ReturnType | Description |
-| --- | --- | --- | --- |
-| `brand` | `—` | `void` | Logo, product mark, or setup product identity. |
-| `toolbar` | `—` | `void` | Secondary header controls or compact progress content. |
-| `title` | `—` | `void` | Slot for `title` content. Keep content phrasing-level because it is rendered inside the heading element. |
-| `description` | `—` | `void` | Slot for `description` content. |
-| `aside` | `—` | `void` | Step navigation, requirements, or contextual setup content. |
-| `default` | `—` | `void` | Primary setup step content. |
-| `actions` | `—` | `void` | Back, continue, or submit controls. |
-| `footer` | `—` | `void` | Secondary legal/help content outside the setup panel. |
+| Name          | Parameters | ReturnType | Description                                                                                              |
+| ------------- | ---------- | ---------- | -------------------------------------------------------------------------------------------------------- |
+| `brand`       | `—`        | `void`     | Logo, product mark, or setup product identity.                                                           |
+| `toolbar`     | `—`        | `void`     | Secondary header controls or compact progress content.                                                   |
+| `title`       | `—`        | `void`     | Slot for `title` content. Keep content phrasing-level because it is rendered inside the heading element. |
+| `description` | `—`        | `void`     | Slot for `description` content.                                                                          |
+| `aside`       | `—`        | `void`     | Step navigation, requirements, or contextual setup content.                                              |
+| `default`     | `—`        | `void`     | Primary setup step content.                                                                              |
+| `actions`     | `—`        | `void`     | Back, continue, or submit controls.                                                                      |
+| `footer`      | `—`        | `void`     | Secondary legal/help content outside the setup panel.                                                    |
 
 ## Events
 
 Native DOM events exposed by the component.
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `—` | `—` | No additional native events are documented. |
+| Name | Type | Description                                 |
+| ---- | ---- | ------------------------------------------- |
+| `—`  | `—`  | No additional native events are documented. |
 
 ## Interfaces
 
 Exported interfaces related to this component.
 
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| `—` | `—` | `—` | No dedicated interfaces in this component contract. |
+| Name | Type | Default | Description                                         |
+| ---- | ---- | ------- | --------------------------------------------------- |
+| `—`  | `—`  | `—`     | No dedicated interfaces in this component contract. |
 
 ## Types
 
 Exported utility and union types.
 
 | Name | Values |
-| --- | --- |
-| `—` | `—` |
+| ---- | ------ |
+| `—`  | `—`    |

@@ -220,6 +220,11 @@ export interface VfThemeTokens extends BaseVfThemeTokensWithoutLegacyTypography 
   progressBarIndeterminateShortEasing: string;
   progressBarIndeterminateShortDelay: string;
   progressBarLabelPaddingInline: string;
+  progressBarStripedAngle: string;
+  progressBarStripedSegmentSize: string;
+  progressBarStripedSize: string;
+  progressBarStripedTintRatio: string;
+  progressBarStripedAnimationDuration: string;
   progressSpinnerSize: string;
   progressSpinnerTrackColor: string;
   progressSpinnerValueColor: string;

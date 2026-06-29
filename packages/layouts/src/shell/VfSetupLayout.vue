@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import { Comment, Fragment, Text, computed, type StyleValue, type VNode, useAttrs, useSlots } from 'vue';
+import {
+  Comment,
+  Fragment,
+  Text,
+  computed,
+  getCurrentInstance,
+  type StyleValue,
+  type VNode,
+  useAttrs,
+  useSlots,
+} from 'vue';
 import VfContainer from '../primitives/VfContainer.vue';
 import { cx } from '../utils/classes';
 
@@ -15,6 +25,7 @@ const props = withDefaults(
     fillViewport?: boolean;
     surface?: boolean;
     asidePosition?: 'left' | 'right';
+    keyboardNavigation?: boolean;
   }>(),
   {
     as: 'main',
@@ -23,11 +34,18 @@ const props = withDefaults(
     fillViewport: true,
     surface: true,
     asidePosition: 'left',
+    keyboardNavigation: true,
   },
 );
 
+const emit = defineEmits<{
+  next: [event: KeyboardEvent];
+  back: [event: KeyboardEvent];
+}>();
+
 const attrs = useAttrs();
 const slots = useSlots();
+const instance = getCurrentInstance();
 
 function hasSlotContent(name: 'brand' | 'toolbar' | 'title' | 'description' | 'aside' | 'actions' | 'footer') {
   const slot = slots[name];
@@ -99,10 +117,67 @@ const panelClasses = computed(() => cx('vf-setup-layout__panel', props.surface &
 const containerStyle = computed<StyleValue>(() => ({
   '--vf-layout-container-max-width': 'var(--vf-layout-setup-layout-container-width)',
 }));
+
+function hasEmitListener(name: 'next' | 'back') {
+  const listenerName = name === 'next' ? 'onNext' : 'onBack';
+
+  return Boolean(instance?.vnode.props?.[listenerName]);
+}
+
+function isTextInput(target: HTMLInputElement) {
+  const ignoredTypes = new Set(['button', 'checkbox', 'color', 'file', 'radio', 'range', 'reset', 'submit']);
+
+  return !ignoredTypes.has(target.type);
+}
+
+function shouldIgnoreEnterTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  if (target.isContentEditable || target.closest('[contenteditable="true"]')) {
+    return true;
+  }
+
+  if (target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) {
+    return true;
+  }
+
+  if (target instanceof HTMLInputElement) {
+    return !isTextInput(target);
+  }
+
+  return Boolean(target.closest('button,a,[role="button"],[role="link"]'));
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (!props.keyboardNavigation || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
+    return;
+  }
+
+  if (event.key === 'Escape') {
+    if (hasEmitListener('back')) {
+      event.preventDefault();
+    }
+
+    emit('back', event);
+    return;
+  }
+
+  if (event.key !== 'Enter' || event.shiftKey || shouldIgnoreEnterTarget(event.target)) {
+    return;
+  }
+
+  if (hasEmitListener('next')) {
+    event.preventDefault();
+  }
+
+  emit('next', event);
+}
 </script>
 
 <template>
-  <component :is="props.as" :class="classes()" v-bind="attrs">
+  <component :is="props.as" :class="classes()" v-bind="attrs" @keydown="handleKeydown">
     <VfContainer :style="containerStyle">
       <div :class="panelClasses">
         <div v-if="hasBrand()" class="vf-setup-layout__brand">
