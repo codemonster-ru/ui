@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+echo "Checking clean dependency installation..."
+npm run check:clean-install
+
 echo "Running workspace typecheck..."
 npm run typecheck --workspaces --if-present
 
