@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -59,6 +59,10 @@
     "./alert": {
       "types": "./dist/alert.d.ts",
       "import": "./dist/auto/alert.js"
+    },
+    "./avatar": {
+      "types": "./dist/avatar.d.ts",
+      "import": "./dist/auto/avatar.js"
     },
     "./badge": {
       "types": "./dist/badge.d.ts",
@@ -202,6 +206,7 @@
     },
     "./accordion.css": "./dist/accordion.css",
     "./alert.css": "./dist/alert.css",
+    "./avatar.css": "./dist/avatar.css",
     "./badge.css": "./dist/badge.css",
     "./breadcrumbs.css": "./dist/breadcrumbs.css",
     "./button.css": "./dist/button.css",

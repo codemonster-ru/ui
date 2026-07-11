@@ -20,6 +20,9 @@ describe('theme bridge', () => {
     expect(config.preset.light.colorPrimary).toBe('color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text))');
     expect(config.preset.light.controlHeightMd).toBe(defaultThemePreset.tokens.controlHeightMd);
     expect(defaultThemePreset.tokens.selectableColor).toBe('var(--vf-color-muted)');
+    expect(defaultThemePreset.tokens.avatarSizeMd).toBe('2rem');
+    expect(defaultThemePreset.tokens.avatarBackground).toBe('var(--vf-color-surface-muted)');
+    expect(defaultThemePreset.tokens.avatarFontSizeLg).toBe('var(--vf-font-size-3xl)');
     expect(defaultThemePreset.tokens.navMenuItemColor).toBe('var(--vf-selectable-color)');
     expect(defaultThemePreset.tokens.navMenuTopItemFontWeight).toBe('var(--vf-text-label-font-weight)');
     expect(defaultThemePreset.tokens.navMenuBranchColor).toBe('var(--vf-selectable-color)');

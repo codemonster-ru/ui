@@ -57,9 +57,9 @@
 
 ## Release Decision
 
-- If theme API or visual tokens are still changing: release `rc`
-- If API and visual baseline are stable in real usage: release `1.7.0`
-- Current repository target: `1.7.0`
+- Use a minor release for a new public component or theme-token surface.
+- Use a patch release for fixes that do not add public API.
+- Use a prerelease only when the API or visual baseline is intentionally unstable.
 
 ## Publish Flow
 
@@ -69,7 +69,7 @@
   - after that, tag-based releases can publish automatically from GitHub Actions
 - Update `package.json` version
 - Add matching section to [CHANGELOG.md](../CHANGELOG.md)
-- Create and push tag in the format `vX.Y.Z`
+- Create and push the scoped package tag, for example `@codemonster-ru/vueforge-core@1.31.0`.
 - GitHub Actions will:
   - validate that the tag version matches `package.json`
   - run `lint`, `test`, and `build`

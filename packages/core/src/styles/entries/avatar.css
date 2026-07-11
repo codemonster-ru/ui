@@ -1,0 +1,51 @@
+.vf-avatar {
+  --vf-avatar-current-size: var(--vf-avatar-size-md);
+  --vf-avatar-current-font-size: var(--vf-avatar-font-size-md);
+
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--vf-avatar-current-size);
+  block-size: var(--vf-avatar-current-size);
+  overflow: hidden;
+  border-radius: var(--vf-avatar-radius);
+  background: var(--vf-avatar-background);
+  color: var(--vf-avatar-color);
+  font-size: var(--vf-avatar-current-font-size);
+  font-weight: var(--vf-font-weight-medium);
+  line-height: 1;
+}
+
+.vf-avatar--sm {
+  --vf-avatar-current-size: var(--vf-avatar-size-sm);
+  --vf-avatar-current-font-size: var(--vf-avatar-font-size-sm);
+}
+
+.vf-avatar--lg {
+  --vf-avatar-current-size: var(--vf-avatar-size-lg);
+  --vf-avatar-current-font-size: var(--vf-avatar-font-size-lg);
+}
+
+.vf-avatar--circle {
+  border-radius: 50%;
+}
+
+.vf-avatar__image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.vf-avatar__label {
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vf-avatar__icon {
+  inline-size: 1em;
+  block-size: 1em;
+}
