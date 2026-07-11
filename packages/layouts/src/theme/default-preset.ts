@@ -35,7 +35,7 @@ export const defaultLayoutsPreset: VfLayoutPreset = {
     headerBackground: 'var(--vf-layout-surface-base)',
     headerBorder: 'var(--vf-layout-border-base)',
     headerHeight: 'var(--vf-layout-shell-header-height)',
-    headerPaddingBlock: 'var(--vf-layout-shell-area-padding-block)',
+    headerPaddingBlock: '0.75rem',
     headerPaddingInline: 'var(--vf-layout-shell-area-padding-inline)',
     subheaderHeight: '2.75rem',
     subheaderPaddingBlock: '0.375rem',

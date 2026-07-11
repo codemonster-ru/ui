@@ -26,12 +26,15 @@
 }
 
 .vf-document-layout__header {
+  box-sizing: border-box;
+  block-size: var(--vf-layout-header-height);
   background: var(--vf-layout-header-background);
   border-bottom: var(--vf-layout-header-border);
 }
 
 .vf-document-layout__subheader {
-  min-height: var(--vf-layout-subheader-height);
+  box-sizing: border-box;
+  block-size: var(--vf-layout-subheader-height);
   display: flex;
   align-items: center;
   position: relative;
@@ -89,7 +92,6 @@
 
 .vf-document-layout__header,
 .vf-document-layout__footer {
-  min-height: var(--vf-layout-header-height);
   display: flex;
   align-items: center;
   position: relative;

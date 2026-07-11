@@ -5,7 +5,6 @@
       layout="content"
       sticky-header
       content-appearance="plain"
-      :content-padded="false"
       :show-subheader="false"
       :show-content-subheader="false"
     >
