@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { defineComponent, h, nextTick } from 'vue';
 import {
   VfAlert,
+  VfAvatar,
   VfBadge,
   VfBreadcrumbs,
   VfButton,
@@ -1497,6 +1498,32 @@ describe('core primitives', () => {
     expect(alert.find('.vf-icon').exists()).toBe(true);
     expect(tag.classes()).toContain('vf-tag--contrast');
     expect(tag.text()).toBe('Preview');
+  });
+
+  it('renders avatar image, fallback content, and size variants', async () => {
+    const avatar = mount(VfAvatar, {
+      props: {
+        image: '/profile.png',
+        imageAlt: 'Ada Lovelace',
+        label: 'AL',
+        icon: 'user',
+        size: 'lg',
+        shape: 'circle',
+      },
+    });
+
+    expect(avatar.classes()).toContain('vf-avatar');
+    expect(avatar.classes()).toContain('vf-avatar--lg');
+    expect(avatar.classes()).toContain('vf-avatar--circle');
+    expect(avatar.find('img').attributes()).toMatchObject({ src: '/profile.png', alt: 'Ada Lovelace' });
+    expect(avatar.text()).not.toContain('AL');
+
+    await avatar.setProps({ image: undefined, label: 'AL' });
+    expect(avatar.find('img').exists()).toBe(false);
+    expect(avatar.find('.vf-avatar__label').text()).toBe('AL');
+
+    await avatar.setProps({ label: undefined });
+    expect(avatar.find('.vf-avatar__icon').exists()).toBe(true);
   });
 
   it('supports custom and hidden alert icons', () => {

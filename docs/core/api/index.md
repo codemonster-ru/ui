@@ -36,6 +36,7 @@ VueForge Core exports a full component set (inputs, navigation, overlays, feedba
 Feedback indicators include:
 
 - `VfAlert`
+- `VfAvatar`
 - `VfBadge`
 - `VfProgressBar`
 - `VfProgressSpinner`

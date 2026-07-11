@@ -156,6 +156,15 @@ export interface VfThemeTokens extends BaseVfThemeTokensWithoutLegacyTypography 
   tabsPanelColor: string;
   tabsPanelFocusBorderColor: string;
   horizontalScrollerIconSizeDefault: string;
+  avatarBackground: string;
+  avatarColor: string;
+  avatarRadius: string;
+  avatarSizeSm: string;
+  avatarSizeMd: string;
+  avatarSizeLg: string;
+  avatarFontSizeSm: string;
+  avatarFontSizeMd: string;
+  avatarFontSizeLg: string;
   badgeBackground: string;
   badgeBorderColor: string;
   badgeColor: string;
