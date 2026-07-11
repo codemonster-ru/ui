@@ -6,7 +6,7 @@ The component does not include a logo, navigation items, buttons, or page conten
 
 ## Built-in structure
 
-- The `brand` slot occupies the top of the aside and matches the header height.
+- The `brand` slot occupies the top of the aside and exactly matches the header height through `--vf-layout-header-height`; padding and borders are included in that shared size.
 - When both `brand` and `aside` are present, a divider separates the brand from navigation.
 - The aside has a border on its right edge; the header and footer have horizontal borders.
 - The `aside` and `header` remain fixed while the page content scrolls.

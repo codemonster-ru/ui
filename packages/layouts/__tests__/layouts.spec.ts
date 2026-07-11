@@ -55,6 +55,8 @@ describe('package exports', () => {
     const tokensCss = readFileSync(resolve(packageRoot, '.generated/theme/layout-tokens.css'), 'utf8');
 
     expect(tokensCss).toContain('--vf-layout-shell-sidebar-width: 18rem;');
+    expect(tokensCss).toContain('--vf-layout-shell-header-height: 4rem;');
+    expect(tokensCss).toContain('--vf-layout-header-padding-block: 0.75rem;');
     expect(tokensCss).toContain('--vf-layout-viewport-height: 100vh;');
     expect(tokensCss).not.toContain('--vf-shell-sidebar-width:');
   });
@@ -109,11 +111,37 @@ describe('admin layout', () => {
     expect(adminLayoutCss).toMatch(
       /\.vf-admin-layout__content\s*\{[^}]*background: var\(--vf-layout-setup-layout-background\);/,
     );
-    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__brand\s*\{[^}]*min-height: var\(--vf-layout-header-height\);/);
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout__brand\s*\{[^}]*box-sizing: border-box;[^}]*block-size: var\(--vf-layout-header-height\);/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout__header\s*\{[^}]*box-sizing: border-box;[^}]*block-size: var\(--vf-layout-header-height\);/,
+    );
     expect(adminLayoutCss).toMatch(
       /\.vf-admin-layout--with-brand-divider .vf-admin-layout__brand\s*\{[^}]*border-block-end:/,
     );
     expect(adminLayoutCss).toMatch(/\.vf-admin-layout__footer\s*\{[^}]*margin-top: auto;/);
+  });
+});
+
+describe('layout header dimensions', () => {
+  it('uses boxed token heights for headers that reserve sticky offsets', () => {
+    const headerAreaCss = readFileSync(resolve(packageRoot, 'src/style-entries/header-area.css'), 'utf8');
+    const appShellCss = readFileSync(resolve(packageRoot, 'src/style-entries/app-shell.css'), 'utf8');
+    const documentLayoutCss = readFileSync(resolve(packageRoot, 'src/style-entries/document-layout.css'), 'utf8');
+
+    expect(headerAreaCss).toMatch(
+      /\.vf-header-area\s*\{[^}]*box-sizing: border-box;[^}]*block-size: var\(--vf-layout-header-height\);/,
+    );
+    expect(appShellCss).toMatch(
+      /\.vf-subheader-area\s*\{[^}]*box-sizing: border-box;[^}]*block-size: var\(--vf-layout-subheader-height\);/,
+    );
+    expect(documentLayoutCss).toMatch(
+      /\.vf-document-layout__header\s*\{[^}]*box-sizing: border-box;[^}]*block-size: var\(--vf-layout-header-height\);/,
+    );
+    expect(documentLayoutCss).toMatch(
+      /\.vf-document-layout__subheader\s*\{[^}]*box-sizing: border-box;[^}]*block-size: var\(--vf-layout-subheader-height\);/,
+    );
   });
 });
 

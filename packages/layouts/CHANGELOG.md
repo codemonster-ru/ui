@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.18.1
+
+### Fixed
+
+- Fixed shell headers and subheaders to use boxed token heights, keeping sticky offsets and the `VfAdminLayout` brand row aligned with their corresponding headers.
+- Fixed the playground showcase content gutter so its body aligns with the header container.
+
+### Docs
+
+- Documented the shared header sizing tokens and their use in fixed shell headers.
+
 ## 1.18.0
 
 ### Added
