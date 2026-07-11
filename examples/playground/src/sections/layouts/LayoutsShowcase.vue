@@ -143,7 +143,7 @@
                   :class="`demo-shell-preview--${activeErrorBreakpointConfig.name}`"
                   :style="{ maxWidth: activeErrorBreakpointConfig.value }"
                 >
-                  <VfSection surface class="demo-shell-frame">
+                  <div class="demo-shell-frame">
                     <VfErrorLayout
                       code="404"
                       title="Page not found"
@@ -154,7 +154,7 @@
                         <VfButton variant="primary" type="button"> Go to home page </VfButton>
                       </template>
                     </VfErrorLayout>
-                  </VfSection>
+                  </div>
                 </div>
               </article>
             </template>
@@ -177,8 +177,7 @@
                   :class="`demo-shell-preview--${activeAuthBreakpointConfig.name}`"
                   :style="{ maxWidth: activeAuthBreakpointConfig.value }"
                 >
-                  <VfSection
-                    surface
+                  <div
                     class="demo-auth-frame"
                     :class="activeAuthBreakpointConfig.name === 'min' && 'demo-auth-frame--min-preview'"
                   >
@@ -210,7 +209,7 @@
                         </p>
                       </form>
                     </VfAuthLayout>
-                  </VfSection>
+                  </div>
                 </div>
               </article>
             </template>
@@ -233,7 +232,7 @@
                   :class="`demo-shell-preview--${activeSetupBreakpointConfig.name}`"
                   :style="{ maxWidth: activeSetupBreakpointConfig.value }"
                 >
-                  <VfSection surface class="demo-shell-frame">
+                  <div class="demo-shell-frame">
                     <VfSetupLayout
                       :title="activeSetupStepConfig.label"
                       description="Configure the CMS environment before the first administrator account is created."
@@ -355,7 +354,7 @@
                         </VfButton>
                       </template>
                     </VfSetupLayout>
-                  </VfSection>
+                  </div>
                 </div>
               </article>
             </template>
@@ -404,8 +403,7 @@
                         class="demo-shell-preview"
                         :class="`demo-shell-preview--${activeShellBreakpointConfig.name}`"
                       >
-                        <VfSection
-                          surface
+                        <div
                           class="demo-shell-frame"
                           :class="{
                             'demo-shell-frame--scroll': true,
@@ -508,7 +506,7 @@
                               <strong>Footer</strong>
                             </template>
                           </VfAppShell>
-                        </VfSection>
+                        </div>
                       </div>
                     </article>
                   </template>
@@ -520,14 +518,82 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
+            <h2>Vf-AdminLayout</h2>
+          </div>
+
+          <VfTabs v-if="availableShellBreakpoints.length" v-model="activeAdminBreakpoint" :items="shellBreakpointTabs">
+            <template #panel>
+              <article v-if="activeAdminBreakpointConfig" class="demo-shell-card">
+                <div class="demo-shell-card__title">
+                  {{ activeAdminBreakpointConfig.name }} · {{ activeAdminBreakpointConfig.value }}
+                </div>
+                <div
+                  class="demo-shell-preview"
+                  :class="`demo-shell-preview--${activeAdminBreakpointConfig.name}`"
+                  :style="{ maxWidth: activeAdminBreakpointConfig.value }"
+                >
+                  <div class="demo-shell-frame demo-shell-frame--scroll demo-shell-frame--fixed-preview">
+                    <VfAdminLayout class="demo-admin-layout">
+                      <template #brand>
+                        <div class="demo-admin-layout__brand">
+                          <img
+                            class="demo-admin-layout__brand-mark"
+                            :src="annabelLogoIcon"
+                            alt=""
+                            aria-hidden="true"
+                          />
+                          <strong>Annabel CMS</strong>
+                        </div>
+                      </template>
+
+                      <template #header>
+                        <VfInline class="demo-admin-layout__header" :wrap="false">
+                          <strong>Header</strong>
+                        </VfInline>
+                      </template>
+
+                      <template #aside>
+                        <VfNavMenu
+                          v-model="activeAdminNavigation"
+                          :items="adminNavigationItems"
+                          variant="pills"
+                          aria-label="Admin navigation"
+                        />
+                      </template>
+
+                      <VfStack class="demo-admin-layout__content">
+                        <VfInline class="demo-admin-layout__content-header" :wrap="false">
+                          <strong>Dashboard</strong>
+                          <VfButton variant="primary" size="sm"> Create post </VfButton>
+                        </VfInline>
+                        <VfGrid>
+                          <VfCard>Published: 24</VfCard>
+                          <VfCard>Drafts: 8</VfCard>
+                          <VfCard>Views: 12,480</VfCard>
+                        </VfGrid>
+                      </VfStack>
+
+                      <template #footer>
+                        <span class="demo-admin-layout__footer">© {{ currentYear }} VueForge. All rights reserved.</span>
+                      </template>
+                    </VfAdminLayout>
+                  </div>
+                </div>
+              </article>
+            </template>
+          </VfTabs>
+        </section>
+
+        <section class="demo-block">
+          <div class="demo-block__header">
             <h2>Vf-DocumentLayout</h2>
           </div>
           <VfTabs v-model="activeDocumentLayout" :items="documentLayoutTabs">
             <template #panel>
               <section v-if="activeDocumentLayoutConfig" class="demo-document-layouts">
-                <div class="demo-document-layouts__header">
-                  <div class="demo-document-layouts__title">layout: {{ activeDocumentLayoutConfig.name }}</div>
-                  <VfInline>
+                  <div class="demo-document-layouts__header">
+                    <div class="demo-document-layouts__title">layout: {{ activeDocumentLayoutConfig.name }}</div>
+                    <VfInline>
                     <VfSwitch v-model="plainDocumentColumns"> Plain columns </VfSwitch>
                     <VfSwitch v-model="showDocumentSubheader"> Show subheader </VfSwitch>
                     <VfSwitch v-model="showDocumentContentSubheader"> Show content subheader </VfSwitch>
@@ -564,8 +630,7 @@
                             'demo-document-preview--compact-container': activeDocumentBreakpointHidesContainerInset,
                           }"
                         >
-                          <VfSection
-                            surface
+                          <div
                             class="demo-document-layout-frame"
                             :class="{
                               'demo-document-layout-frame--scroll': true,
@@ -650,7 +715,7 @@
                                 </VfInline>
                               </template>
                             </VfDocumentLayout>
-                          </VfSection>
+                          </div>
                         </div>
                       </div>
                     </article>
@@ -674,6 +739,7 @@ import {
   VfField,
   VfInput,
   VfLink,
+  VfNavMenu,
   VfProgressBar,
   VfStepper,
   VfSwitch,
@@ -682,6 +748,7 @@ import {
 import { computed, ref } from 'vue';
 import {
   VfAppShell,
+  VfAdminLayout,
   VfAuthLayout,
   VfContainer,
   VfDocumentLayout,
@@ -697,6 +764,7 @@ import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
 
 const resolvedBreakpoints = useCssVarBreakpoints();
+const currentYear = new Date().getFullYear();
 
 function getViewportWidth() {
   return typeof window === 'undefined' ? 0 : window.innerWidth;
@@ -836,6 +904,13 @@ const activeAuthBreakpoint = ref<string>(getPreferredBreakpointName(availableAut
 const activeErrorBreakpoint = ref<string>(getPreferredBreakpointName(availableErrorBreakpoints.value));
 const activeSetupBreakpoint = ref<string>(getPreferredBreakpointName(availableSetupBreakpoints.value));
 const activeShellBreakpoint = ref<string>(getPreferredBreakpointName(availableShellBreakpoints.value));
+const activeAdminBreakpoint = ref<string>(getPreferredBreakpointName(availableShellBreakpoints.value));
+const activeAdminNavigation = ref('dashboard');
+const adminNavigationItems = [
+  { value: 'dashboard', label: 'Dashboard', leadingIcon: 'grid' },
+  { value: 'posts', label: 'Posts', leadingIcon: 'file' },
+  { value: 'settings', label: 'Settings', leadingIcon: 'gear' },
+];
 
 const activeAuthBreakpointConfig = computed(
   () =>
@@ -871,6 +946,15 @@ const activeSetupBreakpointHidesAside = computed(() =>
 const activeShellBreakpointConfig = computed(
   () =>
     availableShellBreakpoints.value.find((breakpoint) => breakpoint.name === activeShellBreakpoint.value) ??
+    availableShellBreakpoints.value.find(
+      (breakpoint) => breakpoint.name === getPreferredBreakpointName(availableShellBreakpoints.value),
+    ) ??
+    availableShellBreakpoints.value[0],
+);
+
+const activeAdminBreakpointConfig = computed(
+  () =>
+    availableShellBreakpoints.value.find((breakpoint) => breakpoint.name === activeAdminBreakpoint.value) ??
     availableShellBreakpoints.value.find(
       (breakpoint) => breakpoint.name === getPreferredBreakpointName(availableShellBreakpoints.value),
     ) ??

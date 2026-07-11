@@ -21,6 +21,7 @@ JS subpath exports (component entry + auto CSS):
 - `@codemonster-ru/vueforge-layouts/section`
 - `@codemonster-ru/vueforge-layouts/grid`
 - `@codemonster-ru/vueforge-layouts/app-shell`
+- `@codemonster-ru/vueforge-layouts/admin-layout`
 - `@codemonster-ru/vueforge-layouts/document-layout`
 - `@codemonster-ru/vueforge-layouts/auth-layout`
 - `@codemonster-ru/vueforge-layouts/error-layout`
@@ -62,6 +63,7 @@ The following items are listed in this section:
 The following items are listed in this section:
 
 - `VfAppShell`
+- `VfAdminLayout`
 - `VfDocumentLayout`
 - `VfAuthLayout`
 - `VfErrorLayout`
@@ -141,6 +143,7 @@ Per-layout entries:
 - `section.css`
 - `grid.css`
 - `app-shell.css`
+- `admin-layout.css`
 - `document-layout.css`
 - `auth-layout.css`
 - `error-layout.css`

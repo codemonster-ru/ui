@@ -4,4 +4,5 @@
 @import './style-parts/base.css';
 @import './style-parts/primitives.css';
 @import './style-parts/shell.css';
+@import './style-entries/admin-layout.css';
 @import './style-parts/utilities.css';

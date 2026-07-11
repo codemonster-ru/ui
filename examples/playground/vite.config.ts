@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { fileURLToPath, URL } from 'node:url';
 import { vueforgePlaygroundVirtualPlugin } from '@codemonster-ru/vueforge-playground-vite-plugin';
+import { resolveLayoutCustomMedia } from '../../packages/layouts/src/theme/breakpoint-registry';
 
 const showcaseSectionPattern = /^\/(core|layouts|icons|codeblock|playground)\/?$/;
 
@@ -30,11 +31,31 @@ function vueforgeShowcaseHistoryFallback(): Plugin {
   };
 }
 
+function vueforgeLayoutsCustomMediaPlugin(): Plugin {
+  const mediaAliasPattern = /@media\s*\(\s*(--vf-bp-[a-z0-9-]+)\s*\)/g;
+
+  return {
+    name: 'vueforge-showcase-expand-layout-custom-media',
+    transform(code, id) {
+      if (!id.includes('/packages/layouts/src/')) {
+        return null;
+      }
+
+      const transformed = code.replace(mediaAliasPattern, (fullMatch, alias: string) => {
+        return resolveLayoutCustomMedia(alias) ? `@media ${resolveLayoutCustomMedia(alias)}` : fullMatch;
+      });
+
+      return transformed === code ? null : transformed;
+    }
+  };
+}
+
 export default defineConfig({
   server: {
     host: '127.0.0.1'
   },
   plugins: [
+    vueforgeLayoutsCustomMediaPlugin(),
     vue(),
     vueforgeShowcaseHistoryFallback(),
     vueforgePlaygroundVirtualPlugin({
