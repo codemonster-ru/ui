@@ -5,7 +5,7 @@
   width: 100%;
   min-height: var(--vf-textarea-min-height-md);
   padding: var(--vf-field-padding-md);
-  border: 1px solid var(--vf-textarea-border-color);
+  border: var(--vf-border-width) solid var(--vf-textarea-border-color);
   border-radius: var(--vf-radius-control);
   background: var(--vf-textarea-background);
   color: var(--vf-textarea-color);

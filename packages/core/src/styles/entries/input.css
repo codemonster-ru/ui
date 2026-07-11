@@ -16,13 +16,13 @@
   width: 100%;
   min-height: var(--vf-control-height-md);
   padding: var(--vf-field-padding-md);
-  border: 1px solid var(--vf-input-border-color);
+  border: var(--vf-border-width) solid var(--vf-input-border-color);
   border-radius: var(--vf-radius-control);
   background: var(--vf-input-background);
   color: var(--vf-input-color);
   font-size: var(--vf-control-font-size-md);
   font-weight: var(--vf-text-body-font-weight);
-  line-height: var(--vf-text-body-line-height);
+  line-height: var(--vf-control-line-height);
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
@@ -186,13 +186,13 @@
 
 .vf-input-wrap--with-trailing-password-and-clear .vf-input {
   padding-inline-end: calc(
-    var(--vf-field-input-padding-end-with-trailing-and-clear-md) + var(--vf-field-clear-button-size-md) + 0.5rem
+    var(--vf-field-input-padding-end-with-trailing-and-clear-md) + var(--vf-field-clear-button-size-md) + var(--vf-field-password-toggle-clear-gap)
   );
 }
 
 .vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: calc(
-    var(--vf-field-trailing-before-clear-offset-md) + var(--vf-field-clear-button-size-md) + 0.375rem
+    var(--vf-field-trailing-before-clear-offset-md) + var(--vf-field-clear-button-size-md) + var(--vf-field-password-toggle-before-clear-gap)
   );
 }
 
@@ -208,7 +208,7 @@
 
 .vf-input-wrap--sm.vf-input-wrap--with-trailing-password-and-clear .vf-input {
   padding-inline-end: calc(
-    var(--vf-field-input-padding-end-with-trailing-and-clear-sm) + var(--vf-field-clear-button-size-sm) + 0.5rem
+    var(--vf-field-input-padding-end-with-trailing-and-clear-sm) + var(--vf-field-clear-button-size-sm) + var(--vf-field-password-toggle-clear-gap)
   );
 }
 
@@ -218,7 +218,7 @@
 
 .vf-input-wrap--lg.vf-input-wrap--with-trailing-password-and-clear .vf-input {
   padding-inline-end: calc(
-    var(--vf-field-input-padding-end-with-trailing-and-clear-lg) + var(--vf-field-clear-button-size-lg) + 0.5rem
+    var(--vf-field-input-padding-end-with-trailing-and-clear-lg) + var(--vf-field-clear-button-size-lg) + var(--vf-field-password-toggle-clear-gap)
   );
 }
 
@@ -240,7 +240,7 @@
 
 .vf-input-wrap--sm.vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: calc(
-    var(--vf-field-trailing-before-clear-offset-sm) + var(--vf-field-clear-button-size-sm) + 0.375rem
+    var(--vf-field-trailing-before-clear-offset-sm) + var(--vf-field-clear-button-size-sm) + var(--vf-field-password-toggle-before-clear-gap)
   );
 }
 
@@ -290,9 +290,9 @@
 }
 
 .vf-field--floating-in .vf-input--floating.vf-input--sm {
-  min-height: calc(var(--vf-control-height-sm) + 0.125rem);
-  padding-top: 1.3125rem;
-  padding-bottom: 0.125rem;
+  min-height: var(--vf-field-floating-input-sm-min-height);
+  padding-top: var(--vf-field-floating-input-sm-padding-top);
+  padding-bottom: var(--vf-field-floating-input-sm-padding-bottom);
 }
 
 .vf-input--lg + .vf-field__label--floating,
@@ -327,7 +327,7 @@
 
 .vf-input-wrap--lg.vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: calc(
-    var(--vf-field-trailing-before-clear-offset-lg) + var(--vf-field-clear-button-size-lg) + 0.375rem
+    var(--vf-field-trailing-before-clear-offset-lg) + var(--vf-field-clear-button-size-lg) + var(--vf-field-password-toggle-before-clear-gap)
   );
 }
 

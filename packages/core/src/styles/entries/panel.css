@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--vf-surface-gap);
   padding: var(--vf-surface-padding);
-  border: 1px solid var(--vf-panel-border-color);
+  border: var(--vf-border-width) solid var(--vf-panel-border-color);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-panel-background);
   color: var(--vf-panel-color);

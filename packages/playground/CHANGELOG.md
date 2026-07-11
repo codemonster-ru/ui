@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.1
+
+### Changed
+
+- Tokenized Playground border width with a local fallback and updated internal core and CodeBlock dependency ranges.
+
 ## 2.5.0
 
 ### Added

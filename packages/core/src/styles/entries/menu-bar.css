@@ -183,7 +183,7 @@
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--vf-menu-bar-group-letter-spacing);
   text-transform: uppercase;
   color: color-mix(in srgb, var(--vf-color-muted) 90%, var(--vf-color-text));
   cursor: default;
@@ -198,7 +198,7 @@
   min-width: 0;
   min-height: var(--vf-control-height-md);
   padding: var(--vf-field-padding-md);
-  border: 1px solid transparent;
+  border: var(--vf-border-width) solid transparent;
   border-radius: var(--vf-radius-control);
   background: transparent;
   color: var(--vf-menu-bar-item-color);
@@ -304,7 +304,7 @@
 
 .vf-menu-bar__icon--external {
   margin-inline-start: 0;
-  transform: translateY(-0.02em);
+  transform: translateY(var(--vf-menu-bar-external-icon-offset-y));
   opacity: 1;
   transition: none;
 }
@@ -348,7 +348,7 @@
   gap: var(--vf-menu-bar-current-list-gap);
   min-width: calc(var(--vf-menu-min-width) + var(--vf-surface-padding) * 2);
   padding: var(--vf-surface-gap-compact);
-  border: 1px solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border);
   border-radius: var(--vf-radius-overlay);
   background: var(--vf-color-surface);
   box-shadow: var(--vf-overlay-float-shadow);

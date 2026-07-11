@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--vf-surface-gap);
   padding: var(--vf-surface-padding);
-  border: 1px solid var(--vf-card-border-color);
+  border: var(--vf-border-width) solid var(--vf-card-border-color);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-card-background);
   color: var(--vf-card-color);
@@ -31,7 +31,7 @@
   flex-direction: column;
   gap: var(--vf-surface-gap);
   padding: var(--vf-surface-padding);
-  border: 1px solid var(--vf-panel-border-color);
+  border: var(--vf-border-width) solid var(--vf-panel-border-color);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-panel-background);
   color: var(--vf-panel-color);
@@ -54,7 +54,7 @@
   display: flex;
   width: 100%;
   min-width: 0;
-  border: 1px solid var(--vf-table-border-color);
+  border: var(--vf-border-width) solid var(--vf-table-border-color);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-table-background);
   color: var(--vf-table-color);
@@ -101,13 +101,13 @@
 }
 
 .vf-table thead th {
-  border-bottom: 1px solid var(--vf-table-border-color);
+  border-bottom: var(--vf-border-width) solid var(--vf-table-border-color);
 }
 
 /* stylelint-disable no-descending-specificity -- Table section border cascade intentionally handles tbody/tfoot intersections. */
 .vf-table tfoot tr:first-child td,
 .vf-table tbody tr + tr td {
-  border-top: 1px solid var(--vf-table-border-color);
+  border-top: var(--vf-border-width) solid var(--vf-table-border-color);
 }
 
 .vf-table tfoot td {
@@ -117,7 +117,7 @@
 /* stylelint-enable no-descending-specificity */
 
 .vf-table--column-dividers :where(th, td) + :where(th, td) {
-  border-left: 1px solid var(--vf-table-border-color);
+  border-left: var(--vf-border-width) solid var(--vf-table-border-color);
 }
 
 .vf-table--striped tbody tr:nth-child(even) td {
@@ -177,7 +177,7 @@
 }
 
 .vf-data-table__skeleton-cell .vf-skeleton {
-  max-inline-size: 12rem;
+  max-inline-size: var(--vf-data-table-skeleton-cell-max-inline-size);
 }
 
 .vf-data-table__pagination {
@@ -188,7 +188,7 @@
   justify-content: flex-end;
   width: 100%;
   padding: var(--vf-field-padding-md);
-  border-top: 1px solid var(--vf-table-border-color);
+  border-top: var(--vf-border-width) solid var(--vf-table-border-color);
   color: var(--vf-color-muted);
 }
 

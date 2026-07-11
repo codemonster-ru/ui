@@ -51,13 +51,13 @@
   width: 100%;
   min-height: var(--vf-control-height-md);
   padding: var(--vf-field-padding-md);
-  border: 1px solid var(--vf-select-border-color);
+  border: var(--vf-border-width) solid var(--vf-select-border-color);
   border-radius: var(--vf-radius-control);
   background: var(--vf-select-background);
   color: var(--vf-select-color);
   font-size: var(--vf-control-font-size-md);
   font-weight: var(--vf-text-body-font-weight);
-  line-height: var(--vf-text-body-line-height);
+  line-height: var(--vf-control-line-height);
   appearance: none;
   cursor: pointer;
   transition:
@@ -132,7 +132,7 @@
 }
 
 .vf-field--floating-in .vf-select--floating.vf-select--sm {
-  min-height: calc(var(--vf-control-height-sm) + 0.5rem);
+  min-height: var(--vf-select-filter-min-height-sm);
   padding-top: var(--vf-field-floating-control-padding-top-sm);
   padding-inline-end: calc((var(--vf-field-adornment-offset-sm) * 2) + var(--vf-field-icon-size-sm));
 }

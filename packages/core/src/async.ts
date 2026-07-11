@@ -16,7 +16,7 @@ export interface CreateAsyncWithSkeletonOptions<T extends Component = Component>
   minHeightPropKeys?: string[];
 }
 
-const DEFAULT_MIN_HEIGHT = '120px';
+const DEFAULT_MIN_HEIGHT = 'var(--vf-async-skeleton-min-height)';
 
 const toCssLength = (value: unknown): string | undefined => {
   if (value == null || value === '') {

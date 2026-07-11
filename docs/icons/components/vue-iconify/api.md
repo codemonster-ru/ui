@@ -9,7 +9,7 @@ Component props and their default values.
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | `icon?` | `IconName \| string` | `moon` | Icon name or custom icon identifier. |
-| `size?` | `number \| string` | `var(--vf-icon-size-md)` | Size token for spacing and dimensions. |
+| `size?` | `number \| string` | `var(--vf-icon-current-size, var(--vf-icon-size-md))` | Explicit size, or the contextual icon size with the medium icon token as fallback. |
 | `spin?` | `boolean` | `false` | Applies continuous rotation animation. |
 | `style?` | `'solid'` | `solid` | Icon visual style variant. |
 | `inset?` | `number` | `0` | Scales icon with optical inset compensation. |

@@ -18,8 +18,8 @@ Component styling surface: available classes and design tokens.
 | `avatarBackground` | `--vf-avatar-background` | Background for label, icon, and slot avatars. |
 | `avatarColor` | `--vf-avatar-color` | Foreground color for label, icon, and slot avatars. |
 | `avatarRadius` | `--vf-avatar-radius` | Border radius of the square avatar. |
-| `avatarSizeSm` | `--vf-avatar-size-sm` | `24px` size for `sm`. |
-| `avatarSizeMd` | `--vf-avatar-size-md` | `32px` size for `md`. |
+| `avatarSizeSm` | `--vf-avatar-size-sm` | `28px` size for `sm`. |
+| `avatarSizeMd` | `--vf-avatar-size-md` | `36px` size for `md`. |
 | `avatarSizeLg` | `--vf-avatar-size-lg` | `40px` size for `lg`. |
 | `avatarFontSizeSm` | `--vf-avatar-font-size-sm` | `12px` font size for `sm` label and icon avatars. |
 | `avatarFontSizeMd` | `--vf-avatar-font-size-md` | `16px` font size for `md` label and icon avatars. |

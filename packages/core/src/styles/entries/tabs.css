@@ -206,7 +206,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 1px;
+  height: var(--vf-visually-hidden-size);
   background: var(--vf-tabs-list-border-color);
   z-index: 1;
   pointer-events: none;
@@ -250,7 +250,7 @@
   inset-block-end: 0;
   display: block;
   z-index: 2;
-  height: 3px;
+  height: var(--vf-tabs-indicator-height);
   background: var(--vf-tabs-indicator-color);
   pointer-events: none;
 }
@@ -290,7 +290,7 @@
 }
 
 .vf-tabs__panel {
-  border: 1px solid transparent;
+  border: var(--vf-border-width) solid transparent;
   border-radius: var(--vf-radius-control);
   padding: var(--vf-tabs-panel-padding-top) 0 0;
   color: var(--vf-tabs-panel-color);

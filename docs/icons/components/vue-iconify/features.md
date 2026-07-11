@@ -42,3 +42,4 @@ The following items are listed in this section:
 - Unknown icon names fallback safely to `moon`.
 - Kebab-case icon names are normalized to component file names.
 - `inset` adjusts visual scale and is clamped to a safe range.
+- When `size` is omitted, an icon uses `--vf-icon-current-size` when supplied by its parent, then falls back to `--vf-icon-size-md`. An explicit `size` always wins.

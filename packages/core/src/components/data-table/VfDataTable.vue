@@ -226,7 +226,7 @@ function setPageSize(value: string) {
                   column.align && `vf-data-table__cell--${column.align}`,
                 ]"
               >
-                <VfSkeleton min-height="1rem" radius="var(--vf-radius-control)" />
+                <VfSkeleton min-height="var(--vf-icon-size-md)" radius="var(--vf-radius-control)" />
               </td>
             </tr>
           </template>
@@ -271,7 +271,11 @@ function setPageSize(value: string) {
       >
         <slot name="loading">
           <span class="vf-data-table__loading">
-            <VfProgressSpinner class="vf-data-table__loading-spinner" :label="props.loadingText" size="2rem" />
+            <VfProgressSpinner
+              class="vf-data-table__loading-spinner"
+              :label="props.loadingText"
+              size="var(--vf-data-table-loading-spinner-size)"
+            />
           </span>
         </slot>
       </div>

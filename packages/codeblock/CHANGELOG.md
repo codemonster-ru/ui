@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.6.1
+
+### Changed
+
+- Tokenized CodeBlock border width with a local fallback to preserve standalone CSS rendering.
+
 ## 3.6.0
 
 ### Added

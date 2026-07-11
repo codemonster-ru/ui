@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--vf-surface-gap);
   padding: var(--vf-surface-padding);
-  border: 1px solid var(--vf-card-border-color);
+  border: var(--vf-border-width) solid var(--vf-card-border-color);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-card-background);
   color: var(--vf-card-color);

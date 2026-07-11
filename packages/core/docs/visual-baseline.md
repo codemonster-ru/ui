@@ -16,9 +16,12 @@ Primary source: [src/theme/default-preset.ts](../src/theme/default-preset.ts)
 CSS fallback baseline: [src/styles/tokens.css](../src/styles/tokens.css)
 
 - Control heights
-  - `sm`: `--vf-control-height-sm`
-  - `md`: `--vf-control-height-md`
-  - `lg`: `--vf-control-height-lg`
+  - `sm`: `--vf-control-height-sm` (`28px`)
+  - `md`: `--vf-control-height-md` (`36px`)
+  - `lg`: `--vf-control-height-lg` (`40px`)
+- Control typography
+  - `sm` / `md` / `lg`: `14px` / `16px` / `18px`
+  - Single-line controls use `--vf-control-line-height` so content fits the control-height scale.
 - Radius levels
   - `control`: `--vf-radius-control`
   - `control-tight`: `--vf-radius-control-tight`
@@ -33,7 +36,7 @@ CSS fallback baseline: [src/styles/tokens.css](../src/styles/tokens.css)
 
 ## Component Scale
 
-- `VfButton`, `VfIconButton`, `VfInput`, `VfTabs` tabs use the control scale.
+- `VfButton`, `VfIconButton`, `VfInput`, `VfSelect`, and `VfAvatar` use the `28px` / `36px` / `40px` control scale.
 - `VfBadge` and `VfTag` use a smaller label scale and should remain visually lighter than controls.
 - `VfCard`, `VfPanel`, `VfAlert`, `VfDialog`, `VfPopover`, `VfDropdown` use the surface or overlay scale.
 

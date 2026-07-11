@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.2
+
+### Changed
+
+- Normalized zero-length sticky offset values and updated the theme dependency range.
+
 ## 1.18.1
 
 ### Fixed

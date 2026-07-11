@@ -96,7 +96,7 @@
   font-size: var(--vf-nav-menu-group-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--vf-nav-menu-group-label-letter-spacing);
   text-transform: uppercase;
   color: var(--vf-nav-menu-group-label-color);
 }
@@ -131,7 +131,7 @@
   min-height: var(--vf-nav-menu-current-item-min-height);
   justify-content: space-between;
   padding: var(--vf-nav-menu-current-item-padding);
-  border: 1px solid transparent;
+  border: var(--vf-border-width) solid transparent;
   border-radius: var(--vf-nav-menu-item-radius);
   background: transparent;
   font-size: var(--vf-control-font-size-md);

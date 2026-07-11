@@ -8,10 +8,10 @@
   font-size: var(--vf-badge-font-size);
   font-weight: var(--vf-font-weight-regular);
   line-height: var(--vf-badge-line-height);
-  letter-spacing: 0.01em;
+  letter-spacing: var(--vf-badge-letter-spacing);
   white-space: nowrap;
   background: var(--vf-badge-background);
-  border: 1px solid var(--vf-badge-border-color);
+  border: var(--vf-border-width) solid var(--vf-badge-border-color);
   color: var(--vf-badge-color);
 }
 
@@ -62,14 +62,14 @@
   align-items: center;
   min-height: var(--vf-tag-height);
   padding: var(--vf-tag-padding);
-  border: 1px solid var(--vf-tag-border-color);
+  border: var(--vf-border-width) solid var(--vf-tag-border-color);
   border-radius: var(--vf-radius-control-tight);
   background: var(--vf-tag-background);
   color: var(--vf-tag-color);
   font-size: var(--vf-tag-font-size);
   font-weight: var(--vf-font-weight-regular);
   line-height: var(--vf-tag-line-height);
-  letter-spacing: 0.01em;
+  letter-spacing: var(--vf-tag-letter-spacing);
   white-space: nowrap;
 }
 
@@ -356,13 +356,13 @@
   grid-template-columns: auto 1fr;
   gap: var(--vf-section-gap);
   padding: var(--vf-section-padding);
-  border: 1px solid var(--vf-alert-primary-border-soft);
+  border: var(--vf-border-width) solid var(--vf-alert-primary-border-soft);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-alert-primary-soft);
   color: var(--vf-alert-color);
   line-height: var(--vf-text-body-line-height);
   overflow: hidden;
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--vf-color-text) 4%, transparent);
+  box-shadow: var(--vf-alert-box-shadow);
 }
 
 .vf-alert--success {
@@ -445,7 +445,7 @@
 .vf-alert__body {
   color: var(--vf-alert-body-color);
   line-height: var(--vf-text-body-line-height);
-  max-width: 68ch;
+  max-width: var(--vf-alert-content-max-width);
 }
 
 .vf-divider {
@@ -457,10 +457,10 @@
 
 .vf-divider--horizontal {
   width: 100%;
-  height: 1px;
+  height: var(--vf-border-width);
 }
 
 .vf-divider--vertical {
-  width: 1px;
+  width: var(--vf-border-width);
   align-self: stretch;
 }

@@ -4,7 +4,7 @@
   min-width: 0;
   min-height: var(--vf-table-of-contents-current-item-min-height);
   padding: var(--vf-table-of-contents-current-item-padding);
-  border: 1px solid transparent;
+  border: var(--vf-border-width) solid transparent;
   border-radius: var(--vf-radius-control);
   background: transparent;
   font-weight: var(--vf-text-body-font-weight);

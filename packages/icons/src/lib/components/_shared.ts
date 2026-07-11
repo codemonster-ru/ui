@@ -3,7 +3,7 @@ export type IconSizeProps = {
 };
 
 export const iconSizeDefaults = {
-  size: 'var(--vf-icon-size-md)',
+  size: 'var(--vf-icon-current-size, var(--vf-icon-size-md))',
 } satisfies Required<IconSizeProps>;
 
 export const iconSvgAttrs = {

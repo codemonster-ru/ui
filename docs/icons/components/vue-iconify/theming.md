@@ -16,4 +16,5 @@ Available design tokens and corresponding CSS variables.
 
 | Token | CSS Variable | Description |
 | --- | --- | --- |
-| `icon size md` | `--vf-icon-size-md` | Default icon size token for medium glyph rendering. |
+| Contextual icon size | `--vf-icon-current-size` | Optional parent-provided default for icons without an explicit `size`. |
+| Icon size md | `--vf-icon-size-md` | Fallback default icon size when no contextual size is supplied. |

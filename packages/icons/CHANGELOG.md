@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.0
+
+### Added
+
+- Added optional contextual icon sizing through `--vf-icon-current-size` for icons without an explicit `size` prop.
+
+### Changed
+
+- Icons rendered inside size-aware controls, such as `VfButton`, now inherit the control icon scale by default while explicit `size` values remain unchanged.
+
 ## 1.4.0
 
 ### Changed

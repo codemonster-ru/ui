@@ -33,6 +33,10 @@ Available design tokens and corresponding CSS variables.
 | `buttonPaddingSm` | `--vf-button-padding-sm` | Inline and block padding for `sm` size. |
 | `buttonPaddingMd` | `--vf-button-padding-md` | Inline and block padding for `md` size. |
 | `buttonPaddingLg` | `--vf-button-padding-lg` | Inline and block padding for `lg` size. |
+| `buttonIconSizeSm` | `--vf-button-icon-size-sm` | Default icon and loading spinner size for `sm` buttons. |
+| `buttonIconSizeMd` | `--vf-button-icon-size-md` | Default icon and loading spinner size for `md` buttons. |
+| `buttonIconSizeLg` | `--vf-button-icon-size-lg` | Default icon and loading spinner size for `lg` buttons. |
+| `controlLineHeight` | `--vf-control-line-height` | Line height used by single-line controls to preserve the control-height scale. |
 | `buttonSecondaryHoverBackground` | `--vf-button-secondary-hover-background` | Hover background for `secondary` variant. |
 | `buttonSecondaryHoverBorderColor` | `--vf-button-secondary-hover-border-color` | Hover border color for `secondary` variant. |
 | `buttonSecondaryActiveBackground` | `--vf-button-secondary-active-background` | Active background for `secondary` variant. |

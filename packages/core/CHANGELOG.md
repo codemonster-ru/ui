@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.32.0
+
+### Added
+
+- Added foundation tokens for border width, round radius, visually hidden geometry, and configurable control line height.
+- Added component tokens for button icon scale, loading spinner size, selection-control geometry, stepper, data table, alert, tabs, drawer, and form-control sizing details.
+
+### Changed
+
+- Aligned `sm`, `md`, and `lg` `VfAvatar`, `VfButton`, `VfIconButton`, `VfInput`, and `VfSelect` geometry to the shared `28px` / `36px` / `40px` control scale.
+- Updated large control typography and button icon/loading-spinner sizes to `18px`; small and medium sizes remain `14px` and `16px`.
+- Made default icons inside `VfButton` inherit its size context while preserving an explicitly supplied icon `size`.
+- Moved remaining configurable core component geometry and visual values to theme tokens.
+
+### Fixed
+
+- Prevented button and field content line boxes from expanding controls beyond their configured control heights.
+- Fixed `VfDataTable` loading spinner sizing by using a non-cyclic token alias.
+
 ## 1.31.0
 
 ### Added

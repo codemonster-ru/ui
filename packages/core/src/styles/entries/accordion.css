@@ -5,7 +5,7 @@
  */
 
 .vf-accordion {
-  border: 1px solid var(--vf-accordion-border-color);
+  border: var(--vf-border-width) solid var(--vf-accordion-border-color);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-accordion-background);
   color: var(--vf-accordion-color);
@@ -21,7 +21,7 @@
   width: 100%;
   min-height: var(--vf-control-height-md);
   padding: var(--vf-field-padding-md);
-  border: 1px solid transparent;
+  border: var(--vf-border-width) solid transparent;
   border-radius: inherit;
   background: transparent;
   color: inherit;
@@ -81,7 +81,7 @@
 .vf-accordion__content-inner {
   position: relative;
   z-index: 1;
-  border-top: 1px solid var(--vf-accordion-content-border-color);
+  border-top: var(--vf-border-width) solid var(--vf-accordion-content-border-color);
   padding: var(--vf-section-padding);
   color: var(--vf-accordion-content-color);
   font-size: var(--vf-text-body-font-size);

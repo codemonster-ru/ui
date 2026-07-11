@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.3.0
+
+### Added
+
+- Added `controlLineHeight` to the public `VfThemeTokens` contract for single-line control geometry.
+
 ## 1.2.4
 
 ### Added

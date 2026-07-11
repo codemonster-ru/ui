@@ -48,6 +48,8 @@ Supported size options.
 Use `size` to match control rhythm.
 `sm | md | lg`.
 
+The rendered control heights are `28px`, `36px`, and `40px`; default text and icon sizes follow `14px`, `16px`, and `18px` respectively.
+
 ## Slots
 
 Supported slots and their usage:

@@ -86,12 +86,12 @@ const stickyOffsetsStyle = computed<StyleValue>(() => {
     ? headerHeight.value > 0
       ? `${headerHeight.value}px`
       : 'var(--vf-layout-header-height)'
-    : '0px';
+    : '0';
   const effectiveSubheaderHeight = hasSubheader.value
     ? subheaderHeight.value > 0
       ? `${subheaderHeight.value}px`
       : 'var(--vf-layout-subheader-height)'
-    : '0px';
+    : '0';
 
   return {
     '--vf-sticky-header-offset': effectiveHeaderHeight,

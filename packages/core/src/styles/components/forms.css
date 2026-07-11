@@ -473,13 +473,13 @@
   box-sizing: border-box;
   min-height: var(--vf-control-height-md);
   padding: var(--vf-field-padding-md);
-  border: 1px solid var(--vf-input-border-color);
+  border: var(--vf-border-width) solid var(--vf-input-border-color);
   border-radius: var(--vf-radius-control);
   background: var(--vf-input-background);
   color: var(--vf-input-color);
   font-size: var(--vf-control-font-size-md);
   font-weight: var(--vf-text-body-font-weight);
-  line-height: var(--vf-text-body-line-height);
+  line-height: var(--vf-control-line-height);
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
@@ -495,13 +495,13 @@
   width: 100%;
   min-height: var(--vf-control-height-md);
   padding: var(--vf-field-padding-md);
-  border: 1px solid var(--vf-select-border-color);
+  border: var(--vf-border-width) solid var(--vf-select-border-color);
   border-radius: var(--vf-radius-control);
   background: var(--vf-select-background);
   color: var(--vf-select-color);
   font-size: var(--vf-control-font-size-md);
   font-weight: var(--vf-text-body-font-weight);
-  line-height: var(--vf-text-body-line-height);
+  line-height: var(--vf-control-line-height);
   appearance: none;
   cursor: pointer;
   transition:
@@ -579,7 +579,7 @@
 }
 
 .vf-field--floating-in .vf-select--floating.vf-select--sm {
-  padding-top: calc(var(--vf-field-floating-control-padding-top-sm) + 0.0625rem);
+  padding-top: calc(var(--vf-field-floating-control-padding-top-sm) + var(--vf-field-floating-select-padding-adjustment-sm));
   padding-inline-end: calc((var(--vf-field-adornment-offset-sm) * 2) + var(--vf-field-icon-size-sm));
 }
 
@@ -599,8 +599,8 @@
 }
 
 .vf-field--floating-in .vf-select--floating.vf-select--lg {
-  padding-top: calc(var(--vf-field-floating-control-padding-top-lg) - 0.0625rem);
-  padding-bottom: calc(var(--vf-field-floating-control-padding-bottom-lg) - 0.0625rem);
+  padding-top: calc(var(--vf-field-floating-control-padding-top-lg) - var(--vf-field-floating-select-padding-adjustment-lg));
+  padding-bottom: calc(var(--vf-field-floating-control-padding-bottom-lg) - var(--vf-field-floating-select-padding-adjustment-lg));
   padding-inline-end: calc((var(--vf-field-adornment-offset-lg) * 2) + var(--vf-field-icon-size-lg));
 }
 
@@ -869,9 +869,9 @@
 }
 
 .vf-field--floating-in .vf-input--floating.vf-input--sm {
-  min-height: calc(var(--vf-control-height-sm) + 0.125rem);
-  padding-top: 1.3125rem;
-  padding-bottom: 0.125rem;
+  min-height: var(--vf-field-floating-input-sm-min-height);
+  padding-top: var(--vf-field-floating-input-sm-padding-top);
+  padding-bottom: var(--vf-field-floating-input-sm-padding-bottom);
 }
 
 .vf-input--lg {
@@ -923,13 +923,13 @@
 
 .vf-input-wrap--with-trailing-password-and-clear .vf-input {
   padding-inline-end: calc(
-    var(--vf-field-input-padding-end-with-trailing-and-clear-md) + var(--vf-field-clear-button-size-md) + 0.5rem
+    var(--vf-field-input-padding-end-with-trailing-and-clear-md) + var(--vf-field-clear-button-size-md) + var(--vf-field-password-toggle-clear-gap)
   );
 }
 
 .vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: calc(
-    var(--vf-field-trailing-before-clear-offset-md) + var(--vf-field-clear-button-size-md) + 0.375rem
+    var(--vf-field-trailing-before-clear-offset-md) + var(--vf-field-clear-button-size-md) + var(--vf-field-password-toggle-before-clear-gap)
   );
 }
 
@@ -939,7 +939,7 @@
 
 .vf-input-wrap--sm.vf-input-wrap--with-trailing-password-and-clear .vf-input {
   padding-inline-end: calc(
-    var(--vf-field-input-padding-end-with-trailing-and-clear-sm) + var(--vf-field-clear-button-size-sm) + 0.5rem
+    var(--vf-field-input-padding-end-with-trailing-and-clear-sm) + var(--vf-field-clear-button-size-sm) + var(--vf-field-password-toggle-clear-gap)
   );
 }
 
@@ -949,7 +949,7 @@
 
 .vf-input-wrap--lg.vf-input-wrap--with-trailing-password-and-clear .vf-input {
   padding-inline-end: calc(
-    var(--vf-field-input-padding-end-with-trailing-and-clear-lg) + var(--vf-field-clear-button-size-lg) + 0.5rem
+    var(--vf-field-input-padding-end-with-trailing-and-clear-lg) + var(--vf-field-clear-button-size-lg) + var(--vf-field-password-toggle-clear-gap)
   );
 }
 
@@ -971,7 +971,7 @@
 
 .vf-input-wrap--sm.vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: calc(
-    var(--vf-field-trailing-before-clear-offset-sm) + var(--vf-field-clear-button-size-sm) + 0.375rem
+    var(--vf-field-trailing-before-clear-offset-sm) + var(--vf-field-clear-button-size-sm) + var(--vf-field-password-toggle-before-clear-gap)
   );
 }
 
@@ -1017,7 +1017,7 @@
 
 .vf-input-wrap--lg.vf-input-wrap--with-trailing-password-and-clear .vf-input-wrap__icon--trailing-before-clear {
   inset-inline-end: calc(
-    var(--vf-field-trailing-before-clear-offset-lg) + var(--vf-field-clear-button-size-lg) + 0.375rem
+    var(--vf-field-trailing-before-clear-offset-lg) + var(--vf-field-clear-button-size-lg) + var(--vf-field-password-toggle-before-clear-gap)
   );
 }
 
@@ -1050,7 +1050,7 @@
   box-sizing: border-box;
   min-height: var(--vf-textarea-min-height-md);
   padding: var(--vf-field-padding-md);
-  border: 1px solid var(--vf-textarea-border-color);
+  border: var(--vf-border-width) solid var(--vf-textarea-border-color);
   border-radius: var(--vf-radius-control);
   background: var(--vf-textarea-background);
   color: var(--vf-textarea-color);
@@ -1213,8 +1213,8 @@
 .vf-switch__input,
 .vf-radio__input {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: var(--vf-visually-hidden-size);
+  height: var(--vf-visually-hidden-size);
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -1234,7 +1234,7 @@
   flex-shrink: 0;
   box-sizing: border-box;
   margin-block-start: var(--vf-selection-control-offset);
-  border: 1px solid var(--vf-selection-control-border-color);
+  border: var(--vf-border-width) solid var(--vf-selection-control-border-color);
   background: var(--vf-selection-control-background);
   transition:
     background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
@@ -1257,7 +1257,7 @@
 .vf-checkbox__control {
   width: var(--vf-checkbox-size-md);
   height: var(--vf-checkbox-size-md);
-  border-radius: calc(var(--vf-radius-control-tight) - 0.0625rem);
+  border-radius: calc(var(--vf-radius-control-tight) - var(--vf-checkbox-radius-adjustment));
   border-color: var(--vf-checkbox-border-color);
   background: var(--vf-checkbox-background);
 }
@@ -1311,8 +1311,8 @@
 }
 
 .vf-checkbox--sm .vf-checkbox__mark {
-  width: 0.2188rem;
-  height: 0.4375rem;
+  width: var(--vf-checkbox-mark-width-sm);
+  height: var(--vf-checkbox-mark-height-sm);
 }
 
 .vf-checkbox--sm .vf-checkbox__content {
@@ -1325,8 +1325,8 @@
 }
 
 .vf-checkbox--lg .vf-checkbox__mark {
-  width: 0.3125rem;
-  height: 0.625rem;
+  width: var(--vf-checkbox-mark-width-lg);
+  height: var(--vf-checkbox-mark-height-lg);
 }
 
 .vf-checkbox--lg .vf-checkbox__content {
@@ -1336,7 +1336,7 @@
 .vf-radio__control {
   width: var(--vf-checkbox-size-md);
   height: var(--vf-checkbox-size-md);
-  border-radius: 999px;
+  border-radius: var(--vf-radius-round);
   border-color: var(--vf-radio-border-color);
   background: var(--vf-radio-control-background);
 }
@@ -1344,7 +1344,7 @@
 .vf-radio__dot {
   width: var(--vf-radio-dot-size);
   height: var(--vf-radio-dot-size);
-  border-radius: 999px;
+  border-radius: var(--vf-radius-round);
   background: var(--vf-radio-dot-color);
   transform: scale(0.35);
   opacity: 0;
@@ -1386,8 +1386,8 @@
 }
 
 .vf-radio--sm .vf-radio__dot {
-  width: 0.4375rem;
-  height: 0.4375rem;
+  width: var(--vf-radio-dot-size-sm);
+  height: var(--vf-radio-dot-size-sm);
 }
 
 .vf-radio--sm .vf-radio__content {
@@ -1400,8 +1400,8 @@
 }
 
 .vf-radio--lg .vf-radio__dot {
-  width: 0.5625rem;
-  height: 0.5625rem;
+  width: var(--vf-radio-dot-size-lg);
+  height: var(--vf-radio-dot-size-lg);
 }
 
 .vf-radio--lg .vf-radio__content {
@@ -1411,8 +1411,8 @@
 .vf-switch__control {
   width: var(--vf-switch-width-md);
   height: var(--vf-switch-height-md);
-  border: 1px solid var(--vf-switch-track-border-color);
-  border-radius: 999px;
+  border: var(--vf-border-width) solid var(--vf-switch-track-border-color);
+  border-radius: var(--vf-radius-round);
   background: var(--vf-switch-track-background);
 }
 
@@ -1425,8 +1425,8 @@
   box-sizing: border-box;
   width: var(--vf-switch-thumb-size-md);
   height: var(--vf-switch-thumb-size-md);
-  border-radius: 999px;
-  border: 1px solid var(--vf-switch-thumb-border-color);
+  border-radius: var(--vf-radius-round);
+  border: var(--vf-border-width) solid var(--vf-switch-thumb-border-color);
   background: var(--vf-switch-thumb-background);
   box-shadow: var(--vf-switch-thumb-shadow);
   color: var(--vf-switch-thumb-color);
@@ -1468,7 +1468,7 @@
 .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
 .vf-switch--checked .vf-switch__thumb {
   transform: translateX(
-    calc(var(--vf-switch-width-md) - var(--vf-switch-thumb-size-md) - (var(--vf-switch-thumb-inset) * 2) - 2px)
+    calc(var(--vf-switch-width-md) - var(--vf-switch-thumb-size-md) - (var(--vf-switch-thumb-inset) * 2) - (var(--vf-border-width) * 2))
   );
   border-color: var(--vf-switch-thumb-checked-border-color);
   background: var(--vf-switch-thumb-checked-background);
@@ -1611,7 +1611,7 @@ html[data-vf-theme='dark']
 .vf-switch--sm .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
 .vf-switch--sm.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
-    calc(var(--vf-switch-width-sm) - var(--vf-switch-thumb-size-sm) - (var(--vf-switch-thumb-inset) * 2) - 2px)
+    calc(var(--vf-switch-width-sm) - var(--vf-switch-thumb-size-sm) - (var(--vf-switch-thumb-inset) * 2) - (var(--vf-border-width) * 2))
   );
 }
 
@@ -1635,7 +1635,7 @@ html[data-vf-theme='dark']
 .vf-switch--lg .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
 .vf-switch--lg.vf-switch--checked .vf-switch__thumb {
   transform: translateX(
-    calc(var(--vf-switch-width-lg) - var(--vf-switch-thumb-size-lg) - (var(--vf-switch-thumb-inset) * 2) - 2px)
+    calc(var(--vf-switch-width-lg) - var(--vf-switch-thumb-size-lg) - (var(--vf-switch-thumb-inset) * 2) - (var(--vf-border-width) * 2))
   );
 }
 
