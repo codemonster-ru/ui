@@ -2,9 +2,11 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import { VfStack } from '@codemonster-ru/vueforge-layouts';
+import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
 import {
   VfAccordion,
   VfAlert,
+  VfAvatar,
   VfBadge,
   VfBreadcrumbs,
   VfButton,
@@ -1217,6 +1219,90 @@ const tabContent = computed<Record<string, string>>(() => ({
                     Consistent icon, border, and content spacing.
                   </VfAlert>
                   <VfAlert title="without icon" hide-icon> Text-first alert content alignment. </VfAlert>
+                </div>
+              </div>
+
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">Avatars</p>
+                <div class="demo-avatar-showcase">
+                  <section class="demo-avatar-panel" aria-label="Team member avatars">
+                    <div class="demo-avatar-panel__header">
+                      <div>
+                        <p class="demo-avatar-panel__eyebrow">Project team</p>
+                        <p class="demo-avatar-panel__title">Reviewers</p>
+                      </div>
+                      <VfBadge tone="success">3 online</VfBadge>
+                    </div>
+
+                    <div class="demo-avatar-team">
+                      <div class="demo-avatar-person">
+                        <VfAvatar
+                          :image="mayaChenAvatar"
+                          image-alt="Maya Chen"
+                          shape="circle"
+                        />
+                        <div class="demo-avatar-person__details">
+                          <span class="demo-avatar-person__name">Maya Chen</span>
+                          <span class="demo-avatar-person__role">Product design</span>
+                        </div>
+                        <span class="demo-avatar-person__presence demo-avatar-person__presence--online" aria-label="Online" />
+                      </div>
+
+                      <div class="demo-avatar-person">
+                        <VfAvatar class="demo-avatar--amber" label="JD" shape="circle" aria-label="Jordan Davis" />
+                        <div class="demo-avatar-person__details">
+                          <span class="demo-avatar-person__name">Jordan Davis</span>
+                          <span class="demo-avatar-person__role">Frontend engineering</span>
+                        </div>
+                        <span class="demo-avatar-person__presence demo-avatar-person__presence--online" aria-label="Online" />
+                      </div>
+
+                      <div class="demo-avatar-person">
+                        <VfAvatar class="demo-avatar--teal" label="SR" shape="circle" aria-label="Sam Rivera" />
+                        <div class="demo-avatar-person__details">
+                          <span class="demo-avatar-person__name">Sam Rivera</span>
+                          <span class="demo-avatar-person__role">Quality assurance</span>
+                        </div>
+                        <span class="demo-avatar-person__presence" aria-label="Away" />
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="demo-avatar-panel" aria-label="Avatar content variants">
+                    <div class="demo-avatar-panel__header">
+                      <div>
+                        <p class="demo-avatar-panel__eyebrow">Content variants</p>
+                        <p class="demo-avatar-panel__title">Flexible fallbacks</p>
+                      </div>
+                    </div>
+
+                    <div class="demo-avatar-variants">
+                      <div class="demo-avatar-variant">
+                        <VfAvatar
+                          :image="mayaChenAvatar"
+                          image-alt="Maya Chen"
+                          size="lg"
+                          shape="circle"
+                        />
+                        <span>Image</span>
+                      </div>
+                      <div class="demo-avatar-variant">
+                        <VfAvatar class="demo-avatar--slate" icon="user" size="lg" shape="circle" aria-label="User" />
+                        <span>Icon</span>
+                      </div>
+                      <div class="demo-avatar-variant">
+                        <VfAvatar class="demo-avatar--rose" size="lg" shape="circle" aria-label="Unknown user">?</VfAvatar>
+                        <span>Slot</span>
+                      </div>
+                    </div>
+
+                    <div class="demo-avatar-size-scale" aria-label="Avatar sizes">
+                      <VfAvatar class="demo-avatar--violet" label="MC" size="sm" shape="circle" aria-label="Maya Chen" />
+                      <VfAvatar class="demo-avatar--violet" label="MC" size="md" shape="circle" aria-label="Maya Chen" />
+                      <VfAvatar class="demo-avatar--violet" label="MC" size="lg" shape="circle" aria-label="Maya Chen" />
+                      <span>sm · md · lg</span>
+                    </div>
+                  </section>
                 </div>
               </div>
 

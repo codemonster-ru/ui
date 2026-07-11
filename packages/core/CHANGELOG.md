@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.31.0
+
+### Added
+
+- Added `VfAvatar` for image, initials, icon, and custom fallback content with square and circle shapes.
+- Added `sm`, `md`, and `lg` avatar sizes, root and subpath component exports, auto-loaded CSS, and standalone `avatar.css`.
+- Added avatar theme tokens for colors, radius, sizes, and label/icon typography.
+- Added `VfAvatar` documentation and core playground coverage with image, label, icon, and slot examples.
+
+### Changed
+
+- Defined avatar sizing independently from form control heights: `24px`, `32px`, and `40px` containers with matching `12px`, `16px`, and `20px` label/icon scales.
+
 ## 1.30.0
 
 ### Added

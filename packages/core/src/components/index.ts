@@ -1,5 +1,6 @@
 export { VfAccordion } from './accordion';
 export { VfAlert } from './alert';
+export { VfAvatar } from './avatar';
 export { VfBadge } from './badge';
 export { VfBreadcrumbs } from './breadcrumbs';
 export { VfButton } from './button';

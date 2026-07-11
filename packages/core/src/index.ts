@@ -5,6 +5,7 @@ export { default as VfThemeProvider } from './providers/VfThemeProvider.vue';
 export {
   VfAccordion,
   VfAlert,
+  VfAvatar,
   VfBadge,
   VfBreadcrumbs,
   VfButton,
@@ -64,6 +65,7 @@ export { createThemePreset, defaultThemePreset } from './theme/public';
 export { createAsyncWithSkeleton } from './async';
 export type {
   VfBadgeTone,
+  VfAvatarShape,
   VfBreadcrumbItem,
   VfButtonVariant,
   VfControlSize,

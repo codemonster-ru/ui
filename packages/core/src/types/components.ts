@@ -11,6 +11,7 @@ export type VfButtonVariant =
   | 'contrast'
   | 'ghost';
 export type VfControlSize = 'sm' | 'md' | 'lg';
+export type VfAvatarShape = 'square' | 'circle';
 export type VfSwitchThumbContrast = 'auto' | 'inverse';
 export type VfLinkTone = 'default' | 'muted';
 export type VfLinkUnderline = 'none' | 'hover' | 'always';
