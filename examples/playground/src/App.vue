@@ -141,21 +141,8 @@ watch(activeSection, (nextSection) => {
 
 <style scoped>
 .showcase-shell {
-  --vf-layout-header-height: var(--vf-layout-subheader-height);
-  --vf-layout-header-padding-block: var(--vf-layout-subheader-padding-block);
-
   min-height: 100vh;
   background: var(--vf-color-bg);
-}
-
-.showcase-shell :deep(.vf-header-area) {
-  border-bottom: 1px solid var(--vf-color-border);
-  background: color-mix(in srgb, var(--vf-color-surface) 92%, transparent);
-  backdrop-filter: blur(12px);
-}
-
-.showcase-shell :deep(.vf-app-shell__body-container) {
-  padding-inline: var(--vf-layout-container-padding);
 }
 
 .showcase-header {
@@ -178,10 +165,6 @@ watch(activeSection, (nextSection) => {
   flex: 1 1 auto;
   margin-left: var(--vf-layout-space-layout-base);
   min-width: 0;
-}
-
-.showcase-navigation :deep(.vf-menu-bar__list) {
-  justify-content: flex-start;
 }
 
 .showcase-header__actions {

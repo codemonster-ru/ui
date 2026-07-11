@@ -6,6 +6,7 @@ import { createCommentVNode, defineComponent, h, nextTick, ref } from 'vue';
 import { VfThemeProvider, useTheme } from '@codemonster-ru/vueforge-core';
 import {
   VueForgeLayouts,
+  VfAdminLayout,
   VfAppShell,
   VfAsideArea,
   VfAuthLayout,
@@ -61,6 +62,7 @@ describe('package exports', () => {
   it('exports the public layout API', () => {
     expect(VueForgeLayouts).toBeTruthy();
     expect(VfAppShell).toBeTruthy();
+    expect(VfAdminLayout).toBeTruthy();
     expect(VfDocumentLayout).toBeTruthy();
     expect(VfAuthLayout).toBeTruthy();
     expect(VfErrorLayout).toBeTruthy();
@@ -69,6 +71,49 @@ describe('package exports', () => {
     expect(createLayoutsPreset).toBeTypeOf('function');
     expect(useBreakpoints).toBeTypeOf('function');
     expect(useBreakpointValue).toBeTypeOf('function');
+  });
+});
+
+describe('admin layout', () => {
+  it('renders a left aside, sticky header, and footer within the main column', () => {
+    const wrapper = mount(VfAdminLayout, {
+      slots: {
+        brand: () => 'Annabel CMS',
+        header: () => 'Admin header',
+        aside: () => 'Navigation',
+        default: () => 'Dashboard',
+        footer: () => 'Footer',
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-admin-layout--fill-viewport');
+    expect(wrapper.classes()).toContain('vf-admin-layout--with-aside');
+    expect(wrapper.classes()).toContain('vf-admin-layout--with-brand');
+    expect(wrapper.classes()).toContain('vf-admin-layout--with-brand-divider');
+    expect(wrapper.classes()).toContain('vf-admin-layout--with-header');
+    expect(wrapper.find('.vf-admin-layout__brand').text()).toBe('Annabel CMS');
+    expect(wrapper.find('.vf-admin-layout__aside-content').text()).toBe('Navigation');
+    expect(wrapper.find('.vf-admin-layout__header').text()).toBe('Admin header');
+    expect(wrapper.find('.vf-admin-layout__content').text()).toBe('Dashboard');
+    expect(wrapper.find('.vf-admin-layout__footer').text()).toBe('Footer');
+  });
+
+  it('keeps the aside and header fixed across the full viewport while the main column owns the footer', () => {
+    const adminLayoutCss = readFileSync(resolve(packageRoot, 'src/style-entries/admin-layout.css'), 'utf8');
+
+    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__aside\s*\{[^}]*position: fixed;/);
+    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__aside\s*\{[^}]*inset-block: var\(--vf-layout-size-zero\);/);
+    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__header\s*\{[^}]*position: fixed;/);
+    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__aside\s*\{[^}]*border-inline-end:/);
+    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__header\s*\{[^}]*border-bottom:/);
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout__content\s*\{[^}]*background: var\(--vf-layout-setup-layout-background\);/,
+    );
+    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__brand\s*\{[^}]*min-height: var\(--vf-layout-header-height\);/);
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout--with-brand-divider .vf-admin-layout__brand\s*\{[^}]*border-block-end:/,
+    );
+    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__footer\s*\{[^}]*margin-top: auto;/);
   });
 });
 

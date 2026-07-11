@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.18.0
+
+### Added
+
+- Added `VfAdminLayout` for administrative interfaces with a fixed full-height aside, fixed header, main content, and footer.
+- Added `brand`, `aside`, `header`, default, and `footer` slots so applications can supply their own navigation and content.
+- Added `@codemonster-ru/vueforge-layouts/admin-layout` and `admin-layout.css` subpath exports.
+
+### Docs
+
+- Added `VfAdminLayout` documentation and a playground showcase with branded navigation, icons, and responsive previews.
+
 ## 1.17.0
 
 ### Added
