@@ -218,6 +218,9 @@ describe('core primitives', () => {
     expect(wrapper.attributes('aria-busy')).toBe('true');
     expect(wrapper.classes()).toContain('vf-button--loading');
     expect(wrapper.find('.vf-button__spinner').exists()).toBe(true);
+    expect(wrapper.find('.vf-button__spinner').attributes('style')).toContain(
+      '--vf-progress-spinner-size: var(--vf-icon-current-size)',
+    );
     expect(wrapper.text()).toBe('Save');
   });
 
@@ -520,6 +523,9 @@ describe('core primitives', () => {
     expect(loading.find('.vf-data-table__loading-mask').text()).toBe('');
     expect(loading.find('.vf-data-table__loading-mask').attributes('aria-label')).toBe('Loading members...');
     expect(loading.find('.vf-data-table__loading-mask .vf-progress-spinner').exists()).toBe(true);
+    expect(loading.find('.vf-data-table__loading-mask .vf-progress-spinner').attributes('style')).toContain(
+      '--vf-progress-spinner-size: var(--vf-data-table-loading-spinner-size)',
+    );
 
     const skeleton = mount(VfDataTable, {
       props: {

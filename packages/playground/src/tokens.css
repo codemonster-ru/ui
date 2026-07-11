@@ -1,5 +1,6 @@
 :root {
   --vf-playground-height: var(--vf-breakpoint-xs);
+  --vf-playground-border-width: var(--vf-border-width, 1px);
   --vf-playground-font-family: var(--vf-font-family-base);
   --vf-playground-surface: var(--vf-color-surface);
   --vf-playground-surface-muted: var(--vf-color-surface-muted);

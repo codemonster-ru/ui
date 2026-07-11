@@ -3,6 +3,7 @@
   --vf-codeblock-margin-block-start: var(--vf-codeblock-margin-block);
   --vf-codeblock-margin-block-end: var(--vf-codeblock-margin-block);
   --vf-codeblock-gap: 0;
+  --vf-codeblock-border-width: var(--vf-border-width, 1px);
   --vf-codeblock-border-color: var(--vf-color-border);
   --vf-codeblock-border-radius: var(--vf-radius-surface);
   --vf-codeblock-background-color: var(--vf-color-surface-muted);

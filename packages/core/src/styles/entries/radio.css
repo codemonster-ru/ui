@@ -31,8 +31,8 @@
 
 .vf-radio__input {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: var(--vf-visually-hidden-size);
+  height: var(--vf-visually-hidden-size);
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -52,8 +52,8 @@
   margin-block-start: var(--vf-selection-control-offset);
   width: var(--vf-checkbox-size-md);
   height: var(--vf-checkbox-size-md);
-  border: 1px solid var(--vf-radio-border-color);
-  border-radius: 999px;
+  border: var(--vf-border-width) solid var(--vf-radio-border-color);
+  border-radius: var(--vf-radius-round);
   background: var(--vf-radio-control-background);
   transition:
     background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
@@ -74,7 +74,7 @@
 .vf-radio__dot {
   width: var(--vf-radio-dot-size);
   height: var(--vf-radio-dot-size);
-  border-radius: 999px;
+  border-radius: var(--vf-radius-round);
   background: var(--vf-radio-dot-color);
   transform: scale(0.35);
   opacity: 0;
@@ -101,8 +101,8 @@
 }
 
 .vf-radio--sm .vf-radio__dot {
-  width: 0.4375rem;
-  height: 0.4375rem;
+  width: var(--vf-radio-dot-size-sm);
+  height: var(--vf-radio-dot-size-sm);
 }
 
 .vf-radio--sm .vf-radio__content {
@@ -115,8 +115,8 @@
 }
 
 .vf-radio--lg .vf-radio__dot {
-  width: 0.5625rem;
-  height: 0.5625rem;
+  width: var(--vf-radio-dot-size-lg);
+  height: var(--vf-radio-dot-size-lg);
 }
 
 .vf-radio--lg .vf-radio__content {

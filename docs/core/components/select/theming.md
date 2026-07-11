@@ -21,4 +21,5 @@ Available design tokens and corresponding CSS variables.
 | Select disabled state | `--vf-select-disabled-background`, `--vf-select-disabled-color` | Disabled select surface and text color. |
 | Select icon | `--vf-select-icon-color`, `--vf-select-disabled-icon-color` | Icon color for enabled and disabled states. |
 | Select options | `--vf-select-option-*` | Option colors for hover, focus, active, and disabled states. |
+| Control line height | `--vf-control-line-height` | Shared line height that keeps single-line select sizes within the control-height scale. |
 | Floating label offsets | `--vf-field-floating-control-offset-inline-sm`, `--vf-field-floating-control-offset-inline-md`, `--vf-field-floating-control-offset-inline-lg` | Inline offsets used when `VfSelect` is rendered in a floating `VfField`. |

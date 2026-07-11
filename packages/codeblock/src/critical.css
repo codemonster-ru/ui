@@ -3,7 +3,7 @@
 .vf-codeblock {
   display: block;
   overflow: hidden;
-  border: 1px solid var(--vf-codeblock-border-color);
+  border: var(--vf-codeblock-border-width) solid var(--vf-codeblock-border-color);
   border-radius: var(--vf-codeblock-border-radius);
   background: var(--vf-codeblock-background-color);
   min-height: var(--vf-codeblock-min-height, var(--vf-codeblock-critical-min-height));

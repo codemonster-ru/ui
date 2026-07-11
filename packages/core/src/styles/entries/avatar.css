@@ -46,6 +46,6 @@
 }
 
 .vf-avatar__icon {
-  inline-size: 1em;
-  block-size: 1em;
+  inline-size: var(--vf-avatar-icon-size);
+  block-size: var(--vf-avatar-icon-size);
 }

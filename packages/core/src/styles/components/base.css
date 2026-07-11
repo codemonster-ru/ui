@@ -205,10 +205,10 @@ textarea {
 
 .vf-sr-only {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: var(--vf-visually-hidden-size);
+  height: var(--vf-visually-hidden-size);
   padding: 0;
-  margin: -1px;
+  margin: var(--vf-visually-hidden-margin);
   overflow: hidden;
   border: 0;
   clip-path: inset(50%);

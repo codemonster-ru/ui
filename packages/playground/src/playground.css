@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: var(--vf-playground-height);
-  border: 1px solid var(--vf-playground-border);
+  border: var(--vf-playground-border-width) solid var(--vf-playground-border);
   border-radius: var(--vf-playground-radius-lg);
   overflow: hidden;
   background: var(--vf-playground-surface);

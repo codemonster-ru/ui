@@ -3,7 +3,7 @@
   grid-template-rows: auto minmax(0, 1fr);
   margin-block: var(--vf-codeblock-margin-block-start) var(--vf-codeblock-margin-block-end);
   gap: var(--vf-codeblock-gap);
-  border: 1px solid var(--vf-codeblock-border-color);
+  border: var(--vf-codeblock-border-width) solid var(--vf-codeblock-border-color);
   border-radius: var(--vf-codeblock-border-radius);
   background: var(--vf-codeblock-background-color);
   color: var(--vf-codeblock-text-color);
@@ -28,7 +28,7 @@
   gap: var(--vf-codeblock-header-gap);
   min-height: var(--vf-codeblock-header-min-height);
   padding: var(--vf-codeblock-header-padding);
-  border-bottom: 1px solid var(--vf-codeblock-header-border-color);
+  border-bottom: var(--vf-codeblock-border-width) solid var(--vf-codeblock-header-border-color);
   background: var(--vf-codeblock-header-background-color);
   opacity: var(--vf-codeblock-header-opacity);
 }
@@ -71,7 +71,7 @@
   top: var(--vf-codeblock-copy-offset);
   right: var(--vf-codeblock-copy-offset);
   z-index: var(--vf-codeblock-copy-z-index);
-  border: 1px solid var(--vf-codeblock-action-border-color);
+  border: var(--vf-codeblock-border-width) solid var(--vf-codeblock-action-border-color);
   border-radius: var(--vf-codeblock-action-border-radius);
   background: var(--vf-codeblock-action-background-color);
   color: var(--vf-codeblock-copy-color);

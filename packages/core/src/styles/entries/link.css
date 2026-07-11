@@ -3,16 +3,16 @@
   width: fit-content;
   max-width: 100%;
   align-self: flex-start;
-  border: 1px solid transparent;
+  border: var(--vf-border-width) solid transparent;
   color: var(--vf-color-primary);
   font-size: var(--vf-text-body-font-size);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
   cursor: pointer;
   text-decoration: none;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: var(--vf-text-link-underline-thickness);
   text-decoration-color: transparent;
-  text-underline-offset: 0.2em;
+  text-underline-offset: var(--vf-text-link-underline-offset);
   transition:
     color 0.18s ease,
     text-decoration-color 0.18s ease,

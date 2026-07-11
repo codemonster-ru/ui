@@ -3,14 +3,14 @@
   align-items: center;
   min-height: var(--vf-tag-height);
   padding: var(--vf-tag-padding);
-  border: 1px solid var(--vf-tag-border-color);
+  border: var(--vf-border-width) solid var(--vf-tag-border-color);
   border-radius: var(--vf-radius-control-tight);
   background: var(--vf-tag-background);
   color: var(--vf-tag-color);
   font-size: var(--vf-tag-font-size);
   font-weight: var(--vf-font-weight-regular);
   line-height: var(--vf-tag-line-height);
-  letter-spacing: 0.01em;
+  letter-spacing: var(--vf-tag-letter-spacing);
   white-space: nowrap;
 }
 

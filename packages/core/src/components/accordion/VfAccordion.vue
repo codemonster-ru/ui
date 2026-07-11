@@ -61,7 +61,7 @@ function handleKeydown(event: KeyboardEvent) {
 
 function onBeforeEnter(el: Element) {
   const target = el as HTMLElement;
-  target.style.height = '0px';
+  target.style.height = '0';
   target.style.opacity = '0';
   target.style.overflow = 'hidden';
 }
@@ -97,7 +97,7 @@ function onLeave(el: Element, done: () => void) {
   const target = el as HTMLElement;
   target.style.transition = accordionTransition;
   void target.offsetHeight;
-  target.style.height = '0px';
+  target.style.height = '0';
   target.style.opacity = '0';
 
   window.setTimeout(done, vfMotionDurationsMs.normal);

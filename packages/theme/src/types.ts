@@ -55,6 +55,7 @@ export interface VfThemeTokens {
   controlFontSizeSm: string;
   controlFontSizeMd: string;
   controlFontSizeLg: string;
+  controlLineHeight: string;
   buttonPaddingSm: string;
   buttonPaddingMd: string;
   buttonPaddingLg: string;
