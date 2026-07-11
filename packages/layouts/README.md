@@ -5,7 +5,7 @@
 ![publish](https://img.shields.io/github/actions/workflow/status/codemonster-ru/vueforge/publish.yml?label=publish)
 ![license](https://img.shields.io/npm/l/@codemonster-ru/vueforge-layouts)
 
-Responsive app-shell and document layout primitives for VueForge-based Vue 3 applications.
+Responsive layout primitives and application shells for VueForge-based Vue 3 applications.
 
 ## Documentation
 

@@ -8,6 +8,7 @@ export { default as VfSection } from './primitives/VfSection.vue';
 export { default as VfGrid } from './primitives/VfGrid.vue';
 
 export { default as VfAppShell } from './shell/VfAppShell.vue';
+export { default as VfAdminLayout } from './shell/VfAdminLayout.vue';
 export { default as VfDocumentLayout } from './shell/VfDocumentLayout.vue';
 export { default as VfAuthLayout } from './shell/VfAuthLayout.vue';
 export { default as VfErrorLayout } from './shell/VfErrorLayout.vue';
