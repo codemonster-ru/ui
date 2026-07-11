@@ -7,10 +7,10 @@
 
 .vf-divider--horizontal {
   width: 100%;
-  height: 1px;
+  height: var(--vf-border-width);
 }
 
 .vf-divider--vertical {
-  width: 1px;
+  width: var(--vf-border-width);
   align-self: stretch;
 }

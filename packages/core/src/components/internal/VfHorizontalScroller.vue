@@ -184,7 +184,7 @@ onBeforeUnmount(() => {
       :disabled="!controlsReady || !canScrollLeft"
       @click="scrollBy('left')"
     >
-      <VueIconify :icon="icons.chevronLeft" aria-hidden="true" size="1.25em" />
+      <VueIconify :icon="icons.chevronLeft" aria-hidden="true" size="var(--vf-horizontal-scroller-control-icon-size)" />
     </button>
 
     <div
@@ -223,7 +223,7 @@ onBeforeUnmount(() => {
       :disabled="!controlsReady || !canScrollRight"
       @click="scrollBy('right')"
     >
-      <VueIconify :icon="icons.chevronRight" aria-hidden="true" size="1.25em" />
+      <VueIconify :icon="icons.chevronRight" aria-hidden="true" size="var(--vf-horizontal-scroller-control-icon-size)" />
     </button>
 
     <slot name="overlay" />

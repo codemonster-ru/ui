@@ -4,13 +4,13 @@
   grid-template-columns: auto 1fr;
   gap: var(--vf-section-gap);
   padding: var(--vf-section-padding);
-  border: 1px solid var(--vf-alert-primary-border-soft);
+  border: var(--vf-border-width) solid var(--vf-alert-primary-border-soft);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-alert-primary-soft);
   color: var(--vf-alert-color);
   line-height: var(--vf-text-body-line-height);
   overflow: hidden;
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--vf-color-text) 4%, transparent);
+  box-shadow: var(--vf-alert-box-shadow);
 }
 
 .vf-alert--success {
@@ -93,5 +93,5 @@
 .vf-alert__body {
   color: var(--vf-alert-body-color);
   line-height: var(--vf-text-body-line-height);
-  max-width: 68ch;
+  max-width: var(--vf-alert-content-max-width);
 }

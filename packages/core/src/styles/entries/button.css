@@ -1,19 +1,21 @@
 @import './progress-spinner.css';
 
 .vf-button {
+  --vf-icon-current-size: var(--vf-button-icon-size-md);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--vf-button-gap);
   min-height: var(--vf-control-height-md);
   padding: var(--vf-button-padding-md);
-  border: 1px solid transparent;
+  border: var(--vf-border-width) solid transparent;
   border-radius: var(--vf-radius-control);
   background: var(--vf-color-primary);
   color: var(--vf-color-primary-contrast);
   font-size: var(--vf-control-font-size-md);
   font-weight: var(--vf-text-body-font-weight);
-  line-height: var(--vf-text-body-line-height);
+  line-height: var(--vf-control-line-height);
   cursor: pointer;
   text-decoration: none;
   transition:
@@ -122,12 +124,16 @@
 }
 
 .vf-button--sm {
+  --vf-icon-current-size: var(--vf-button-icon-size-sm);
+
   min-height: var(--vf-control-height-sm);
   padding: var(--vf-button-padding-sm);
   font-size: var(--vf-control-font-size-sm);
 }
 
 .vf-button--lg {
+  --vf-icon-current-size: var(--vf-button-icon-size-lg);
+
   min-height: var(--vf-control-height-lg);
   padding: var(--vf-button-padding-lg);
   font-size: var(--vf-control-font-size-lg);

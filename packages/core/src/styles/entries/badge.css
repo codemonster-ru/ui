@@ -8,10 +8,10 @@
   font-size: var(--vf-badge-font-size);
   font-weight: var(--vf-font-weight-regular);
   line-height: var(--vf-badge-line-height);
-  letter-spacing: 0.01em;
+  letter-spacing: var(--vf-badge-letter-spacing);
   white-space: nowrap;
   background: var(--vf-badge-background);
-  border: 1px solid var(--vf-badge-border-color);
+  border: var(--vf-border-width) solid var(--vf-badge-border-color);
   color: var(--vf-badge-color);
 }
 

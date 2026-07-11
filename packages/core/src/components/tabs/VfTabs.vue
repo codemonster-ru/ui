@@ -33,7 +33,7 @@ const indicatorReady = ref(false);
 const indicatorStyle = ref<CSSProperties>({
   opacity: '0',
   transform: 'translateX(0)',
-  width: '0px',
+  width: '0',
 });
 
 const fallbackValue = computed(() => props.items.find((item) => !item.disabled)?.value);
@@ -151,7 +151,7 @@ function updateIndicator() {
     indicatorStyle.value = {
       opacity: '0',
       transform: 'translateX(0)',
-      width: '0px',
+      width: '0',
     };
     return;
   }

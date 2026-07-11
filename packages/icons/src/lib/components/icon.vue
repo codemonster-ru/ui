@@ -34,7 +34,7 @@ const props = withDefaults(
   {
     icon: FALLBACK_ICON,
     spin: false,
-    size: 'var(--vf-icon-size-md)',
+    size: 'var(--vf-icon-current-size, var(--vf-icon-size-md))',
     style: 'solid',
     inset: 0,
   },

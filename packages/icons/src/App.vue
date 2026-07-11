@@ -9,7 +9,11 @@
 
       <button class="theme-toggle" type="button" @click="toggleTheme">
         <span class="theme-toggle__icon">
-          <VueIconify :icon="theme === 'dark' ? icons.sun : icons.moon" :size="18" :inset="demoIconInset" />
+          <VueIconify
+            :icon="theme === 'dark' ? icons.sun : icons.moon"
+            size="var(--vf-icons-showcase-toggle-icon-size)"
+            :inset="demoIconInset"
+          />
         </span>
         <span>{{ theme === 'dark' ? 'Light theme' : 'Dark theme' }}</span>
       </button>
@@ -48,7 +52,11 @@
 
             <button class="icon-card" type="button" @click="copySnippet(getIconSnippet(entry.icon), entry.icon)">
               <span class="icon-card__preview">
-                <VueIconify :icon="getIconToken(entry.icon)" :size="44" :inset="getDemoIconInset(entry.icon)" />
+                <VueIconify
+                  :icon="getIconToken(entry.icon)"
+                  size="var(--vf-icons-showcase-preview-icon-size)"
+                  :inset="getDemoIconInset(entry.icon)"
+                />
               </span>
               <span class="icon-card__meta">{{ copyLabel(entry.icon) }}</span>
             </button>
@@ -73,7 +81,11 @@
 
             <button class="icon-card" type="button" @click="copySnippet(getIconSnippet(entry.icon), entry.icon)">
               <span class="icon-card__preview">
-                <VueIconify :icon="getIconToken(entry.icon)" :size="44" :inset="getDemoIconInset(entry.icon)" />
+                <VueIconify
+                  :icon="getIconToken(entry.icon)"
+                  size="var(--vf-icons-showcase-preview-icon-size)"
+                  :inset="getDemoIconInset(entry.icon)"
+                />
               </span>
               <span class="icon-card__meta">{{ copyLabel(entry.icon) }}</span>
             </button>
@@ -234,6 +246,12 @@ watch(theme, (value) => {
 }
 
 .showcase {
+  --vf-icons-showcase-card-min-height: 8rem;
+  --vf-icons-showcase-panel-max-width: 26rem;
+  --vf-icons-showcase-preview-size: 4.5rem;
+  --vf-icons-showcase-toggle-icon-size: var(--vf-icon-size-lg);
+  --vf-icons-showcase-preview-icon-size: 2.75rem;
+
   width: min(var(--vf-breakpoint-2xl), calc(100% - (var(--vf-layout-container-padding) * 2)));
   margin: 0 auto;
   padding: var(--vf-layout-space-layout-base) 0 calc(var(--vf-layout-space-layout-base) * 2);
@@ -278,7 +296,7 @@ watch(theme, (value) => {
   gap: var(--vf-button-gap);
   min-height: var(--vf-control-height-md);
   padding: var(--vf-button-padding-md);
-  border: 1px solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border);
   border-radius: var(--vf-radius-control);
   background: var(--vf-color-surface-muted);
   color: var(--vf-color-text);
@@ -291,9 +309,9 @@ watch(theme, (value) => {
 .icon-card {
   justify-items: center;
   width: 100%;
-  min-height: 8rem;
+  min-height: var(--vf-icons-showcase-card-min-height);
   padding: var(--vf-surface-padding-compact);
-  border: 1px solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-color-surface);
   color: var(--vf-color-text);
@@ -330,14 +348,14 @@ watch(theme, (value) => {
 .panel,
 .catalog-group {
   padding: var(--vf-surface-padding);
-  border: 1px solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-color-surface);
   color: var(--vf-color-text);
 }
 
 .panel--compact {
-  max-width: 26rem;
+  max-width: var(--vf-icons-showcase-panel-max-width);
 }
 
 .eyebrow {
@@ -385,7 +403,7 @@ pre {
   overflow: auto;
   margin: var(--vf-surface-gap) 0 0;
   padding: var(--vf-surface-padding-compact);
-  border: 1px solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border);
   border-radius: var(--vf-radius-surface);
   background: var(--vf-color-surface-muted);
   color: var(--vf-color-text);
@@ -399,8 +417,8 @@ pre {
 }
 
 .icon-card__preview {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: var(--vf-icons-showcase-preview-size);
+  height: var(--vf-icons-showcase-preview-size);
 }
 
 .icon-card__meta {

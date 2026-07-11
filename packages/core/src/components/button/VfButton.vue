@@ -47,7 +47,7 @@ const classes = computed(() =>
     :disabled="isDisabled"
     :aria-busy="props.loading ? 'true' : undefined"
   >
-    <VfProgressSpinner v-if="props.loading" class="vf-button__spinner" size="1em" :stroke-width="5" />
+    <VfProgressSpinner v-if="props.loading" class="vf-button__spinner" size="var(--vf-icon-current-size)" :stroke-width="5" />
     <slot />
   </button>
 </template>

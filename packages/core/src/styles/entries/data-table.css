@@ -47,7 +47,7 @@
 }
 
 .vf-data-table__skeleton-cell .vf-skeleton {
-  max-inline-size: 12rem;
+  max-inline-size: var(--vf-data-table-skeleton-cell-max-inline-size);
 }
 
 .vf-data-table__pagination {
@@ -58,7 +58,7 @@
   justify-content: flex-end;
   width: 100%;
   padding: var(--vf-field-padding-md);
-  border-top: 1px solid var(--vf-table-border-color);
+  border-top: var(--vf-border-width) solid var(--vf-table-border-color);
   color: var(--vf-color-muted);
 }
 
