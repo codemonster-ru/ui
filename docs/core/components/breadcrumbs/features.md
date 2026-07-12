@@ -37,6 +37,18 @@ const items = [
 ```
 ````
 
+## Custom separator
+
+Use the `separator` slot to replace the default chevron. The slot receives the preceding `item` and its `index`.
+
+```vue
+<VfBreadcrumbs :items="items">
+  <template #separator>
+    <span>›</span>
+  </template>
+</VfBreadcrumbs>
+```
+
 ## Accessibility
 
 Accessibility behavior and keyboard interactions.
@@ -58,4 +70,3 @@ Keyboard interaction follows native semantics of the rendered element or composi
 | `Tab` | Moves focus across breadcrumb links in order. |
 | `Shift + Tab` | Moves focus backward across breadcrumb links. |
 | `Enter` | Activates focused breadcrumb link. |
-
