@@ -18,14 +18,12 @@ npm i @codemonster-ru/vueforge-core
 
 ## Import
 
-Plugin setup with global foundation styles:
+Plugin setup with the complete core stylesheet:
 
 ```ts
 import { createApp } from 'vue';
 import VueForgeCore from '@codemonster-ru/vueforge-core';
-import '@codemonster-ru/vueforge-core/base.css';
-import '@codemonster-ru/vueforge-core/tokens.css';
-import '@codemonster-ru/vueforge-core/theme.css';
+import '@codemonster-ru/vueforge-core/styles.css';
 
 const app = createApp({});
 app.use(VueForgeCore);
@@ -40,3 +38,5 @@ import { VfDialog } from '@codemonster-ru/vueforge-core/dialog';
 
 Each component subpath import pulls matching component CSS automatically, including
 the transition states required by animated overlays.
+
+Use either `styles.css` for the complete baseline or component subpaths for a granular bundle. For manual control, import `base.css`, `tokens.css`, `theme.css`, and individual component CSS entries explicitly.

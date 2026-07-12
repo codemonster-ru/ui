@@ -1,3 +1,5 @@
+@import '../components/overlay-primitives.css';
+
 .vf-dropdown {
   position: relative;
   display: inline-flex;

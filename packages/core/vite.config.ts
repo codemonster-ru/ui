@@ -90,7 +90,8 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
         copyFileSync(themeCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
         copyFileSync(themeCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
         copyFileSync(themeCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'generated-breakpoints.css'));
-        copyFileSync(resolve(stylesDir, 'foundation.css'), resolve(distDir, 'foundation.css'));
+        writeFileSync(resolve(distDir, 'foundation.css'), inlineCssImports(resolve(stylesDir, 'foundation.css')));
+        writeFileSync(resolve(distDir, 'styles.css'), inlineCssImports(resolve(stylesDir, 'styles.css')));
         copyFileSync(resolve(stylesDir, 'components/base.css'), resolve(distDir, 'base.css'));
         for (const entryName of componentJsEntries) {
           writeFileSync(
