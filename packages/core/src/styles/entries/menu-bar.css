@@ -1,3 +1,5 @@
+@import '../components/overlay-primitives.css';
+
 .vf-horizontal-scroller {
   --vf-horizontal-scroller-control-width: var(--vf-tabs-scroll-button-width);
   --vf-horizontal-scroller-fade-width: var(--vf-tabs-fade-width);

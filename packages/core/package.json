@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.32.0",
+  "version": "1.33.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -246,6 +246,7 @@
     "./tokens.css": "./dist/tokens.css",
     "./theme.css": "./dist/theme.css",
     "./foundation.css": "./dist/foundation.css",
+    "./styles.css": "./dist/styles.css",
     "./foundation": {
       "types": "./dist/foundation-api.d.ts",
       "import": "./dist/foundation-api.js"

@@ -15,6 +15,7 @@ describe('foundation contract', () => {
     expect(packageJson.exports['./tokens.css']).toBe('./dist/tokens.css');
     expect(packageJson.exports['./theme.css']).toBe('./dist/theme.css');
     expect(packageJson.exports['./foundation.css']).toBe('./dist/foundation.css');
+    expect(packageJson.exports['./styles.css']).toBe('./dist/styles.css');
   });
 
   it('keeps breakpoint tokens in tokens.css', () => {
@@ -39,5 +40,11 @@ describe('foundation contract', () => {
     expect(foundationCss).toMatch(/@import\s+["']\.\.\/\.\.\/\.generated\/theme\/tokens\.css["'];/);
     expect(foundationCss).toMatch(/@import\s+["']\.\.\/\.\.\/\.generated\/theme\/theme\.css["'];/);
     expect(foundationCss).not.toContain('components/');
+  });
+
+  it('keeps styles.css as the explicit full CSS entry point', () => {
+    const stylesCss = readFileSync(resolve(root, 'src/styles/styles.css'), 'utf8');
+
+    expect(stylesCss).toMatch(/@import\s+["']\.\/components\.css["'];/);
   });
 });

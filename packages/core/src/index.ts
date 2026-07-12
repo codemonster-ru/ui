@@ -1,5 +1,3 @@
-import './styles/components.css';
-
 export { default, VueForgeCore, createVueForgeCore } from './plugin';
 export { default as VfThemeProvider } from './providers/VfThemeProvider.vue';
 export {
