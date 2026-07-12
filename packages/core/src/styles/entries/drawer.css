@@ -1,4 +1,5 @@
 @import './icon-button.css';
+@import '../components/overlay-primitives.css';
 
 .vf-drawer {
   position: fixed;

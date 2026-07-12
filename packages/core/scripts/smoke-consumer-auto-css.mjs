@@ -62,6 +62,7 @@ try {
     [
       "import { VfButton } from '@codemonster-ru/vueforge-core/button';",
       "import { VfStepper } from '@codemonster-ru/vueforge-core/stepper';",
+      "import '@codemonster-ru/vueforge-core/styles.css';",
       'console.log(Boolean(VfButton), Boolean(VfStepper));',
       '',
     ].join('\n'),
@@ -99,8 +100,12 @@ try {
     throw new Error('Consumer smoke failed: emitted CSS does not contain .vf-stepper styles.');
   }
 
+  if (!cssContent.includes('.vf-prose')) {
+    throw new Error('Consumer smoke failed: styles.css does not contain the global prose baseline.');
+  }
+
   console.log(
-    `Consumer smoke passed: ${packageJson.name}/button and /stepper imports emitted CSS with component styles.`,
+    `Consumer smoke passed: component subpaths and ${packageJson.name}/styles.css emitted their expected CSS.`,
   );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });

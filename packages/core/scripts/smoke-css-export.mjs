@@ -11,7 +11,27 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const cssExportTargets = Object.entries(packageJson?.exports ?? {})
   .filter(([exportKey, exportTarget]) => exportKey.endsWith('.css') && typeof exportTarget === 'string')
   .map(([exportKey, exportTarget]) => [exportKey, exportTarget]);
-const foundationalCssExports = new Set(['./base.css', './tokens.css', './theme.css', './foundation.css']);
+const foundationalCssExports = new Set(['./base.css', './tokens.css', './theme.css', './foundation.css', './styles.css']);
+const overlayDependentCssExports = new Set([
+  './command-palette.css',
+  './dialog.css',
+  './drawer.css',
+  './dropdown.css',
+  './menu-bar.css',
+  './popover.css',
+  './stepper.css',
+  './tooltip.css',
+]);
+const overlayPrimitiveDeclarations = [
+  '--vf-overlay-border-width:',
+  '--vf-overlay-enter-shift:',
+  '--vf-overlay-float-enter-shift:',
+  '--vf-overlay-float-enter-scale:',
+  '--vf-overlay-float-shadow:',
+  '--vf-overlay-arrow-overlap-offset:',
+  '--vf-overlay-arrow-separated-offset:',
+  '--vf-overlay-viewport-block-size:',
+];
 
 const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
   .filter(([exportKey, exportTarget]) => {
@@ -84,6 +104,20 @@ try {
       throw new Error(
         `Broken CSS export: exports["${exportKey}"] contains an unresolved parent-relative @import in publish artifact.`,
       );
+    }
+
+    if (exportKey !== './tokens.css' && cssSource.includes('@import')) {
+      throw new Error(`Broken CSS export: ${exportKey} contains an unresolved @import in the publish artifact.`);
+    }
+
+    if (overlayDependentCssExports.has(exportKey)) {
+      for (const declaration of overlayPrimitiveDeclarations) {
+        if (!cssSource.includes(declaration)) {
+          throw new Error(
+            `Broken overlay CSS export: ${exportKey} is missing the shared ${declaration} declaration.`,
+          );
+        }
+      }
     }
   }
 

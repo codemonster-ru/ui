@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.33.0
+
+### Added
+
+- Added `@codemonster-ru/vueforge-core/styles.css` as an explicit, self-contained full CSS bundle for applications that opt into all core styles.
+
+### Fixed
+
+- Made standalone overlay CSS entries self-contained, restoring dropdown, popover, tooltip, menu bar, dialog, drawer, command palette, and stepper overlay primitives when their component subpaths are imported individually.
+- Made the published `foundation.css` self-contained by resolving its generated token and theme imports during the build.
+
 ## 1.32.0
 
 ### Added
