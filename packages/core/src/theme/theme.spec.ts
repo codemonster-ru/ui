@@ -29,7 +29,7 @@ describe('theme bridge', () => {
     expect(defaultThemePreset.tokens.navMenuTopItemFontWeight).toBe('var(--vf-text-label-font-weight)');
     expect(defaultThemePreset.tokens.navMenuBranchColor).toBe('var(--vf-selectable-color)');
     expect(defaultThemePreset.tokens.menuBarTopItemFontWeight).toBe('var(--vf-text-label-font-weight)');
-    expect(defaultThemePreset.tokens.breadcrumbsCurrentColor).toBe('var(--vf-selectable-active-color)');
+    expect(defaultThemePreset.tokens.breadcrumbsCurrentColor).toBe('var(--vf-selectable-color)');
     expect(defaultThemePreset.tokens.selectOptionColor).toBe('var(--vf-selectable-color)');
     expect(defaultThemePreset.tokens.selectOptionActiveColor).toBe('var(--vf-selectable-active-color)');
     expect(defaultThemePreset.tokens.tableOfContentsPillsActiveBackground).toBe(

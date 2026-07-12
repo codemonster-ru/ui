@@ -15,7 +15,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--vf-surface-gap-compact);
+  gap: calc(var(--vf-surface-gap-compact) * 0.75);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -24,7 +24,7 @@
 .vf-breadcrumbs__item {
   display: inline-flex;
   align-items: center;
-  gap: var(--vf-surface-gap-compact);
+  gap: calc(var(--vf-surface-gap-compact) * 0.75);
   min-width: 0;
 }
 
@@ -53,7 +53,6 @@
 
 .vf-breadcrumbs__current {
   color: var(--vf-breadcrumbs-current-color);
-  font-weight: var(--vf-font-weight-medium);
 }
 
 .vf-breadcrumbs__current--disabled {

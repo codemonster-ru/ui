@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.34.0
+
+### Added
+
+- Added the `separator` slot to `VfBreadcrumbs` for rendering custom breadcrumb separators; it receives the preceding item and its index.
+
+### Changed
+
+- Made the current `VfBreadcrumbs` item match the color and font weight of preceding items by default while preserving `aria-current="page"` semantics.
+- Reduced default `VfBreadcrumbs` spacing around separators from `8px` to `6px`.
+
 ## 1.33.0
 
 ### Added
