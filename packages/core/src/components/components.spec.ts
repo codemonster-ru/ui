@@ -431,6 +431,22 @@ describe('core primitives', () => {
     expect(wrapper.find('[aria-current="page"]').text()).toBe('Breadcrumbs');
   });
 
+  it('renders a custom breadcrumbs separator slot', () => {
+    const wrapper = mount(VfBreadcrumbs, {
+      props: {
+        items: [
+          { label: 'Docs', href: '/docs' },
+          { label: 'Breadcrumbs', current: true },
+        ],
+      },
+      slots: {
+        separator: ({ index }: { index: number }) => `Separator ${index}`,
+      },
+    });
+
+    expect(wrapper.find('.vf-breadcrumbs__separator').text()).toBe('Separator 0');
+  });
+
   it('renders table structure with caption, head, body, and footer', () => {
     const wrapper = mount(VfTable, {
       props: {

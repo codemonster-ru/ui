@@ -124,7 +124,7 @@ export const defaultThemePresetSource = {
     breadcrumbsLinkColor: 'var(--vf-selectable-color)',
     breadcrumbsLinkHoverColor: 'var(--vf-selectable-hover-color)',
     breadcrumbsLinkFocusColor: 'var(--vf-color-primary)',
-    breadcrumbsCurrentColor: 'var(--vf-selectable-active-color)',
+    breadcrumbsCurrentColor: 'var(--vf-selectable-color)',
     breadcrumbsDisabledColor: 'var(--vf-selectable-color)',
     breadcrumbsSeparatorColor: 'var(--vf-selectable-color)',
     accordionBorderColor: 'var(--vf-color-border)',

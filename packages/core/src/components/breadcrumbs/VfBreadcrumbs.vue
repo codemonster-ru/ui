@@ -91,7 +91,9 @@ function itemProps(item: VfBreadcrumbItem) {
         </span>
 
         <span v-if="index < props.items.length - 1" class="vf-breadcrumbs__separator" aria-hidden="true">
-          <VueIconify :icon="icons.chevronRight" size="var(--vf-icon-size-sm)" />
+          <slot name="separator" :item="item" :index="index">
+            <VueIconify :icon="icons.chevronRight" size="var(--vf-icon-size-sm)" />
+          </slot>
         </span>
       </li>
     </ol>

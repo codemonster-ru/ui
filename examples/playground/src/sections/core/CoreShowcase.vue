@@ -1916,6 +1916,9 @@ const tabContent = computed<Record<string, string>>(() => ({
                       { label: 'Field geometry', current: true },
                     ]"
                   />
+                  <VfBreadcrumbs :items="breadcrumbItems">
+                    <template #separator>/</template>
+                  </VfBreadcrumbs>
                 </div>
 
                 <div class="demo-component-matrix__cell">

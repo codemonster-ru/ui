@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import VueForgeLayouts from '@codemonster-ru/vueforge-layouts';
 import { VfPlaygroundPlugin } from '@codemonster-ru/vueforge-playground/ui';
 
-import '../../../packages/core/src/styles/foundation.css';
+import '@codemonster-ru/vueforge-core/styles.css';
 import './sections/core/core-showcase.css';
 import './sections/layouts/layouts-showcase.css';
 import './demo-showcase.css';
