@@ -71,6 +71,7 @@ const LAYOUT_OUTPUT_TOKENS = [
   '--vf-layout-admin-shell-body-radius',
   '--vf-layout-admin-shell-sidebar-width',
   '--vf-layout-admin-shell-sidebar-background',
+  '--vf-layout-admin-shell-workspace-background',
   '--vf-layout-admin-shell-sidebar-padding-block',
   '--vf-layout-admin-shell-sidebar-padding-inline',
   '--vf-layout-admin-shell-content-padding-block',
