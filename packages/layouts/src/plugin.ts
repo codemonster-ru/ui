@@ -23,6 +23,8 @@ const CORE_DEPENDENCY_TOKENS = [
   '--vf-color-surface-muted',
   '--vf-shadow',
   '--vf-color-text',
+  '--vf-border-width',
+  '--vf-divider-color',
 ] as const;
 
 const LAYOUT_OUTPUT_TOKENS = [
@@ -61,6 +63,19 @@ const LAYOUT_OUTPUT_TOKENS = [
   '--vf-layout-document-layout-header-sticky-z-index',
   '--vf-layout-document-layout-subheader-sticky-z-index',
   '--vf-layout-document-layout-content-subheader-sticky-z-index',
+  '--vf-layout-admin-shell-header-background',
+  '--vf-layout-admin-shell-header-color',
+  '--vf-layout-admin-shell-header-height',
+  '--vf-layout-admin-shell-header-padding-block',
+  '--vf-layout-admin-shell-header-padding-inline',
+  '--vf-layout-admin-shell-body-radius',
+  '--vf-layout-admin-shell-sidebar-width',
+  '--vf-layout-admin-shell-sidebar-background',
+  '--vf-layout-admin-shell-sidebar-padding-block',
+  '--vf-layout-admin-shell-sidebar-padding-inline',
+  '--vf-layout-admin-shell-content-padding-block',
+  '--vf-layout-admin-shell-content-padding-inline',
+  '--vf-layout-admin-shell-sticky-z-index',
   '--vf-layout-section-radius',
   '--vf-layout-section-shadow',
   '--vf-layout-radius-base',

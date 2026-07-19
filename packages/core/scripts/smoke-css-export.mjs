@@ -27,7 +27,6 @@ const overlayPrimitiveDeclarations = [
   '--vf-overlay-enter-shift:',
   '--vf-overlay-float-enter-shift:',
   '--vf-overlay-float-enter-scale:',
-  '--vf-overlay-float-shadow:',
   '--vf-overlay-arrow-overlap-offset:',
   '--vf-overlay-arrow-separated-offset:',
   '--vf-overlay-viewport-block-size:',

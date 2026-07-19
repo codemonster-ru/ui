@@ -17,7 +17,7 @@ Available design tokens and corresponding CSS variables.
 | Token | CSS Variable | Description |
 | --- | --- | --- |
 | Input palette | `--vf-input-background`, `--vf-input-border-color`, `--vf-input-color` | Base input surface, border, and text colors. |
-| Input states | `--vf-input-hover-border-color`, `--vf-input-focus-border-color`, `--vf-input-invalid-border-color` | Border colors for hover, focus, and invalid states. |
+| Input states | `--vf-input-hover-border-color`, `--vf-input-focus-border-color`, `--vf-input-invalid-border-color` | Neutral hover plus semantic focus and invalid border colors. |
 | Input disabled state | `--vf-input-disabled-background`, `--vf-input-disabled-color` | Disabled input surface and text color. |
 | Input placeholder | `--vf-input-placeholder-color` | Placeholder text color. |
 | Control line height | `--vf-control-line-height` | Shared line height that keeps single-line input sizes within the control-height scale. |

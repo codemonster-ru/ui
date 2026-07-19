@@ -232,14 +232,14 @@
   text-decoration-color: transparent;
   text-underline-offset: var(--vf-text-link-underline-offset);
   transition:
-    color 0.18s ease,
-    text-decoration-color 0.18s ease,
-    text-decoration-thickness 0.18s ease,
-    opacity 0.18s ease;
+    color var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    text-decoration-color var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    text-decoration-thickness var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing),
+    opacity var(--vf-text-link-transition-duration) var(--vf-text-link-transition-easing);
 }
 
 .vf-link:hover {
-  color: color-mix(in srgb, var(--vf-color-primary) 72%, black);
+  color: var(--vf-text-link-hover-color);
 }
 
 .vf-link--underline-hover:hover {

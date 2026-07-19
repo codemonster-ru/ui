@@ -21,3 +21,5 @@ Available design tokens and corresponding CSS variables.
 | Palette layout | `--vf-command-palette-item-content-gap-default`, `--vf-command-palette-item-title-icon-offset-y-default` | Item content gap and title icon offset. |
 | Palette hints | `--vf-command-palette-hint-gap-default`, `--vf-command-palette-hint-icon-padding-inline-default` | Hint spacing and key icon padding defaults. |
 | Palette icons | `--vf-command-palette-item-icon-size`, `--vf-command-palette-hint-icon-size` | Icon sizes for items and hints. |
+| Palette focus | `--vf-command-palette-focus-ring-color` | Focus ring color for the palette and its items. |
+| Palette foregrounds | `--vf-command-palette-action-color`, `--vf-command-palette-muted-color`, `--vf-command-palette-item-text-color` | Action, secondary, and item text colors. |

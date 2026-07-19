@@ -9,7 +9,7 @@ interface VfNavMenuProps {
   defaultValue?: string;
   ariaLabel?: string;
   expandMode?: 'multiple' | 'single';
-  variant?: 'default' | 'pills';
+  variant?: 'default' | 'pills' | 'sidebar';
 }
 
 const props = withDefaults(defineProps<VfNavMenuProps>(), {

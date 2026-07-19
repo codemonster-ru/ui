@@ -1,5 +1,7 @@
-import { defineComponent, h, nextTick, ref } from 'vue';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
+import { defineComponent, h, nextTick, ref } from 'vue';
 import { describe, expect, it } from 'vitest';
 import VfStepper from './VfStepper.vue';
 import type { VfStepperItem } from '@/types/components';
@@ -11,6 +13,18 @@ const items: VfStepperItem[] = [
 ];
 
 describe('VfStepper', () => {
+  it('keeps its palette behind component tokens', () => {
+    const navigationCss = readFileSync(resolve(process.cwd(), 'src/styles/components/navigation.css'), 'utf8');
+    const stepperCss = navigationCss.slice(
+      navigationCss.indexOf('.vf-stepper {'),
+      navigationCss.indexOf('.vf-horizontal-scroller {'),
+    );
+
+    expect(stepperCss).not.toMatch(/var\(--vf-color-/);
+    expect(stepperCss).toContain('var(--vf-stepper-rail-color)');
+    expect(stepperCss).toContain('var(--vf-stepper-focus-ring-color)');
+  });
+
   it('renders current and completed steps from uncontrolled state', async () => {
     const wrapper = mount(VfStepper, {
       props: {

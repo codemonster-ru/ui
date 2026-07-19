@@ -102,6 +102,7 @@ describe('VfMenuBar', () => {
 
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['forms']);
     expect(wrapper.find('.vf-menu-bar__submenu').exists()).toBe(false);
+    expect(wrapper.get('[data-vf-menu-value="products"]').attributes('tabindex')).toBe('0');
   });
 
   it('closes open menus after pointer leaves the menu bar', async () => {
@@ -266,5 +267,111 @@ describe('VfMenuBar', () => {
 
     expect(ancestorBranch?.classes()).toContain('vf-menu-bar__item--ancestor-active');
     expect(ancestorBranch?.classes()).not.toContain('vf-menu-bar__item--active');
+  });
+
+  it('uses roving tabindex and moves between top-level items with arrow keys', async () => {
+    const wrapper = mount(VfMenuBar, {
+      attachTo: document.body,
+      props: { items },
+    });
+
+    const menuItems = wrapper.findAll('[role="menuitem"]');
+    expect(menuItems[0]?.attributes('tabindex')).toBe('0');
+    expect(menuItems[1]?.attributes('tabindex')).toBe('-1');
+
+    (menuItems[0]?.element as HTMLElement | undefined)?.focus();
+    await menuItems[0]?.trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+
+    expect(document.activeElement?.textContent).toContain('Pricing');
+    expect(menuItems[1]?.attributes('tabindex')).toBe('0');
+
+    wrapper.unmount();
+  });
+
+  it('opens submenus, moves within them, and restores focus with the keyboard', async () => {
+    const wrapper = mount(VfMenuBar, {
+      attachTo: document.body,
+      props: { items },
+    });
+
+    const products = wrapper.get('[data-vf-menu-value="products"]');
+    (products.element as HTMLElement).focus();
+    await products.trigger('keydown', { key: 'ArrowDown' });
+    await nextTick();
+
+    expect(document.activeElement?.getAttribute('data-vf-menu-value')).toBe('tokens');
+
+    const tokens = wrapper.get('[data-vf-menu-value="tokens"]');
+    await tokens.trigger('keydown', { key: 'ArrowDown' });
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-vf-menu-value')).toBe('components');
+
+    const components = wrapper.get('[data-vf-menu-value="components"]');
+    await components.trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-vf-menu-value')).toBe('forms');
+
+    const forms = wrapper.get('[data-vf-menu-value="forms"]');
+    await forms.trigger('keydown', { key: 'ArrowLeft' });
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-vf-menu-value')).toBe('components');
+
+    await components.trigger('keydown', { key: 'Escape' });
+    await nextTick();
+    expect(wrapper.find('.vf-menu-bar__submenu').exists()).toBe(false);
+    expect(document.activeElement?.getAttribute('data-vf-menu-value')).toBe('products');
+
+    wrapper.unmount();
+  });
+
+  it('renders grouped submenu items and includes them in keyboard navigation', async () => {
+    const wrapper = mount(VfMenuBar, {
+      attachTo: document.body,
+      props: {
+        items: [
+          {
+            value: 'products',
+            label: 'Products',
+            children: [
+              {
+                value: 'libraries',
+                label: 'Libraries',
+                kind: 'group',
+                children: [{ value: 'core', label: 'Core' }],
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    const products = wrapper.get('[data-vf-menu-value="products"]');
+    (products.element as HTMLElement).focus();
+    await products.trigger('keydown', { key: 'ArrowDown' });
+    await nextTick();
+
+    expect(wrapper.get('[role="group"]').attributes('aria-label')).toBe('Libraries');
+    expect(document.activeElement?.getAttribute('data-vf-menu-value')).toBe('core');
+
+    wrapper.unmount();
+  });
+
+  it('exposes disabled links without leaving them in the tab order', () => {
+    const wrapper = mount(VfMenuBar, {
+      props: {
+        items: [
+          { value: 'disabled', label: 'Disabled', href: '/disabled', disabled: true },
+          { value: 'enabled', label: 'Enabled', href: '/enabled' },
+        ],
+      },
+    });
+
+    const disabledLink = wrapper.get('[href="/disabled"]');
+    const enabledLink = wrapper.get('[href="/enabled"]');
+
+    expect(disabledLink.attributes('aria-disabled')).toBe('true');
+    expect(disabledLink.attributes('tabindex')).toBe('-1');
+    expect(enabledLink.attributes('tabindex')).toBe('0');
   });
 });

@@ -24,3 +24,4 @@ Available design tokens and corresponding CSS variables.
 | Alert content gap | `--vf-alert-content-gap` | Vertical gap between title and body content. |
 | Alert title font size | `--vf-alert-title-font-size` | Title typography size. |
 | Alert body color | `--vf-alert-body-color` | Muted body text color. |
+| Alert variant surfaces | `--vf-alert-*-background`, `--vf-alert-*-border-color` | Background and border colors for semantic variants. |
