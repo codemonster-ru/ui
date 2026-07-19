@@ -57,6 +57,7 @@ describe('package exports', () => {
 
     expect(tokensCss).toContain('--vf-layout-shell-sidebar-width: 18rem;');
     expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-width: 18rem;');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-workspace-background: var(--vf-color-bg);');
     expect(tokensCss).toContain('--vf-layout-shell-header-height: 4rem;');
     expect(tokensCss).toContain('--vf-layout-header-padding-block: 0.75rem;');
     expect(tokensCss).toContain('--vf-layout-viewport-height: 100vh;');
@@ -168,7 +169,7 @@ describe('admin shell', () => {
       /\.vf-admin-shell__body::before\s*\{[^}]*block-size: var\(--vf-layout-admin-shell-body-radius\);[^}]*border: var\(--vf-layout-border-base\);[^}]*border-block-end: var\(--vf-layout-size-zero\);[^}]*border-start-start-radius: var\(--vf-layout-admin-shell-body-radius\);[^}]*border-start-end-radius: var\(--vf-layout-admin-shell-body-radius\);/,
     );
     expect(adminShellCss).toMatch(
-      /\.vf-admin-shell__workspace\s*\{[^}]*position: relative;[^}]*background: var\(--vf-layout-admin-shell-sidebar-background\);/,
+      /\.vf-admin-shell__workspace\s*\{[^}]*position: relative;[^}]*background: var\(--vf-layout-admin-shell-workspace-background\);/,
     );
     expect(adminShellCss).toMatch(
       /\.vf-admin-shell--with-sidebar \.vf-admin-shell__workspace::before\s*\{[^}]*inset-block: var\(--vf-layout-space-layout-base\);[^}]*inline-size: var\(--vf-border-width\);[^}]*background: var\(--vf-divider-color\);/,

@@ -105,7 +105,7 @@
   min-width: var(--vf-layout-size-zero);
   display: flex;
   flex-direction: column;
-  background: var(--vf-layout-admin-shell-sidebar-background);
+  background: var(--vf-layout-admin-shell-workspace-background);
 }
 
 .vf-admin-shell--with-sidebar .vf-admin-shell__workspace::before {
