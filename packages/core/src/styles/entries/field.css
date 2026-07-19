@@ -55,7 +55,7 @@
   --vf-field-floating-label-resting-offset-block-lg: var(--vf-field-floating-label-resting-offset-block-lg-default);
   --vf-field-floating-label-active-offset-block: var(--vf-field-floating-label-active-offset-block-default);
   --vf-field-floating-label-active-translate-y: var(--vf-field-floating-label-active-translate-y-default);
-  --vf-field-floating-label-background: var(--vf-color-surface);
+  --vf-field-floating-label-background: var(--vf-field-background);
 
   position: absolute;
   inset-block-start: var(--vf-field-floating-label-offset-block);
@@ -118,7 +118,7 @@
 .vf-field--floating-on .vf-field__label--floating {
   --vf-field-floating-label-active-offset-block: var(--vf-field-floating-on-label-active-offset-block);
   --vf-field-floating-label-active-translate-y: var(--vf-field-floating-on-label-active-translate-y);
-  --vf-field-floating-label-background: var(--vf-color-surface);
+  --vf-field-floating-label-background: var(--vf-field-background);
 }
 
 .vf-field--floating-on {

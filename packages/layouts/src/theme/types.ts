@@ -77,6 +77,7 @@ export interface VfLayoutTokens {
   adminShellBodyRadius: string;
   adminShellSidebarWidth: string;
   adminShellSidebarBackground: string;
+  adminShellWorkspaceBackground: string;
   adminShellSidebarPaddingBlock: string;
   adminShellSidebarPaddingInline: string;
   adminShellContentPaddingBlock: string;

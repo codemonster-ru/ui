@@ -19,6 +19,11 @@ describe('theme bridge', () => {
     expect(config.preset.name).toBe(defaultThemePreset.name);
     expect(config.preset.light.colorPrimary).toBe('color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text))');
     expect(config.preset.light.controlHeightMd).toBe(defaultThemePreset.tokens.controlHeightMd);
+    expect(config.preset.dark.colorBg).toBe('#17191e');
+    expect(config.preset.dark.colorSurface).toBe('#20232a');
+    expect(config.preset.dark.colorSurfaceMuted).toBe('#272b33');
+    expect(config.preset.dark.colorBorder).toBe('#363b46');
+    expect(config.preset.dark.fieldBackground).toBe('var(--vf-color-bg)');
     expect(defaultThemePreset.tokens.selectableColor).toBe('var(--vf-color-muted)');
     expect(defaultThemePreset.tokens.avatarSizeMd).toBe('2.25rem');
     expect(defaultThemePreset.tokens.controlFontSizeLg).toBe('var(--vf-font-size-2xl)');
