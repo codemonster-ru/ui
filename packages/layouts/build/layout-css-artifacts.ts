@@ -50,12 +50,13 @@ function formatCssVarValue(key: string, value: string) {
   return value;
 }
 
-function layoutsTokensToCssVars(tokens: VfLayoutTokens, prefix = 'vf') {
+function layoutsTokensToCssVars(tokens: Partial<VfLayoutTokens>, prefix = 'vf') {
   return Object.fromEntries(Object.entries(tokens).map(([key, value]) => [tokenKeyToCssVar(key, prefix), value]));
 }
 
 export function buildLayoutCssArtifacts() {
   const cssVars = layoutsTokensToCssVars(defaultLayoutsPreset.tokens, 'vf-layout');
+  const darkCssVars = layoutsTokensToCssVars(defaultLayoutsPreset.dark ?? {}, 'vf-layout');
   const mediaLines = [
     '/* Generated from src/theme/breakpoint-registry.ts. */',
     '/* Build-time breakpoint aliases consumed in styles.css and expanded by Vite plugin. */',
@@ -74,7 +75,7 @@ export function buildLayoutCssArtifacts() {
     '/* Generated from src/theme/default-preset.ts. */',
     '/* Fallback mode layout styles for package CSS consumers. */',
     ":root[data-vf-theme='dark'] {",
-    '  /* Default layout tokens inherit semantic core colors in dark mode. */',
+    cssVarsToText(darkCssVars),
     '}',
     '',
   ];

@@ -54,10 +54,20 @@ describe('package exports', () => {
 
   it('keeps generated layout tokens aligned with component css variables', () => {
     const tokensCss = readFileSync(resolve(packageRoot, '.generated/theme/layout-tokens.css'), 'utf8');
+    const themeCss = readFileSync(resolve(packageRoot, '.generated/theme/layout-theme.css'), 'utf8');
 
     expect(tokensCss).toContain('--vf-layout-shell-sidebar-width: 18rem;');
     expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-width: 18rem;');
-    expect(tokensCss).toContain('--vf-layout-admin-shell-workspace-background: var(--vf-color-bg);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-header-background: var(--vf-color-text);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-surface);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-background: var(--vf-layout-sidebar-background);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-workspace-background: var(--vf-layout-app-background);');
+    expect(themeCss).toContain(
+      '--vf-layout-admin-shell-header-background: color-mix(in srgb, var(--vf-color-bg) 75%, black);',
+    );
+    expect(themeCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-text);');
+    expect(themeCss).not.toContain('--vf-layout-admin-shell-sidebar-background:');
+    expect(themeCss).not.toContain('--vf-layout-admin-shell-workspace-background:');
     expect(tokensCss).toContain('--vf-layout-shell-header-height: 4rem;');
     expect(tokensCss).toContain('--vf-layout-header-padding-block: 0.75rem;');
     expect(tokensCss).toContain('--vf-layout-viewport-height: 100vh;');
@@ -169,13 +179,11 @@ describe('admin shell', () => {
       /\.vf-admin-shell__body::before\s*\{[^}]*block-size: var\(--vf-layout-admin-shell-body-radius\);[^}]*border: var\(--vf-layout-border-base\);[^}]*border-block-end: var\(--vf-layout-size-zero\);[^}]*border-start-start-radius: var\(--vf-layout-admin-shell-body-radius\);[^}]*border-start-end-radius: var\(--vf-layout-admin-shell-body-radius\);/,
     );
     expect(adminShellCss).toMatch(
-      /\.vf-admin-shell__workspace\s*\{[^}]*position: relative;[^}]*background: var\(--vf-layout-admin-shell-workspace-background\);/,
+      /\.vf-admin-shell__workspace\s*\{[^}]*margin-block: var\(--vf-layout-space-layout-base\);[^}]*margin-inline-end: var\(--vf-layout-space-layout-base\);[^}]*overflow: hidden;[^}]*background: var\(--vf-layout-admin-shell-workspace-background\);[^}]*border: var\(--vf-layout-border-base\);[^}]*border-radius: var\(--vf-layout-surface-radius\);/,
     );
+    expect(adminShellCss).not.toContain('.vf-admin-shell__workspace::before');
     expect(adminShellCss).toMatch(
-      /\.vf-admin-shell--with-sidebar \.vf-admin-shell__workspace::before\s*\{[^}]*inset-block: var\(--vf-layout-space-layout-base\);[^}]*inline-size: var\(--vf-border-width\);[^}]*background: var\(--vf-divider-color\);/,
-    );
-    expect(adminShellCss).toMatch(
-      /\.vf-admin-shell--with-sidebar \.vf-admin-shell__workspace::before\s*\{\s*display: none;/,
+      /\.vf-admin-shell__workspace\s*\{\s*margin-inline-start: var\(--vf-layout-space-layout-base\);/,
     );
     expect(adminShellCss).toMatch(
       /\.vf-admin-shell__sidebar-content\s*\{[^}]*position: sticky;[^}]*inset-block-start: var\(--vf-layout-size-zero\);/,

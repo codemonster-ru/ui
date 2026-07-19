@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.35.1
+
+### Changed
+
+- Refined the default dark neutral background, surface, muted surface, and border colors to provide a clearer and more cohesive elevation hierarchy.
+- Made dark form fields use the application background so controls remain distinct from surface-based containers.
+
+### Fixed
+
+- Made floating field labels inherit their field background, preventing the label cutout from exposing a mismatched surface color.
+
 ## 1.35.0
 
 ### Added

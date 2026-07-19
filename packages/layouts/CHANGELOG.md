@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.20.0
+
+### Added
+
+- Added the public `adminShellWorkspaceBackground` layout token and its `--vf-layout-admin-shell-workspace-background` CSS variable for independent workspace theming.
+
+### Changed
+
+- Refined `VfAdminShell` around a contrast topbar and the standard VueForge sidebar/application surface hierarchy in both color modes.
+- Presented the workspace as an inset, rounded, system-bordered surface and removed the explicit sidebar divider.
+- Preserved balanced workspace insets when the sidebar is hidden at responsive breakpoints.
+- Included mode-specific layout token overrides in the generated static theme CSS used by direct CSS consumers.
+
+### Docs
+
+- Updated the `VfAdminShell` feature and theming documentation for the new surface hierarchy and workspace treatment.
+
 ## 1.19.0
 
 ### Added

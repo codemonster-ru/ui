@@ -1,6 +1,7 @@
 # Theming
 
 `VfAdminShell` uses the regular VueForge color and surface system through dedicated layout tokens.
+By default, the shell keeps its contrast topbar while sharing the same surface hierarchy as `VfAdminLayout`: the sidebar uses the standard sidebar surface and the workspace uses the application background. Surface-based components therefore remain visually elevated without receiving layout-specific palette overrides. The semantic surfaces adapt to both color modes, while the dark theme only deepens the contrast topbar.
 
 | Token                                          | Purpose                       |
 | ---------------------------------------------- | ----------------------------- |
