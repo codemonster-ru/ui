@@ -60,13 +60,14 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Enter` | Opens focused branch submenu; on leaf activates selected item. |
-| `Space` | Opens focused branch submenu. |
-| `ArrowDown` | Opens focused branch submenu. |
-| `ArrowRight` | In nested submenu, opens child branch submenu. |
-| `ArrowLeft` | In nested submenu, closes current branch and returns to parent level. |
-| `Escape` | Closes open submenu tree. |
-| `Tab` | Moves focus out of menubar using normal document tab order. |
-
+| Key            | Function                                                                          |
+| -------------- | --------------------------------------------------------------------------------- |
+| `Enter`        | Opens focused branch submenu; on leaf activates selected item.                    |
+| `Space`        | Opens focused branch submenu.                                                     |
+| `ArrowDown`    | Opens a top-level submenu or moves to the next item in an open submenu.           |
+| `ArrowUp`      | Opens a top-level submenu at its last item or moves to the previous submenu item. |
+| `ArrowRight`   | Moves between top-level items or opens a nested child submenu.                    |
+| `ArrowLeft`    | Moves between top-level items or closes a nested submenu and focuses its parent.  |
+| `Home` / `End` | Moves focus to the first or last item at the current menu level.                  |
+| `Escape`       | Closes the submenu tree and restores focus to its top-level trigger.              |
+| `Tab`          | Moves focus out of menubar using normal document tab order.                       |

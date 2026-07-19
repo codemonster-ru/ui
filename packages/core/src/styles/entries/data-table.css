@@ -21,7 +21,7 @@
 }
 
 .vf-data-table__state-cell {
-  color: var(--vf-color-muted);
+  color: var(--vf-data-table-state-color);
   text-align: center;
 }
 
@@ -59,7 +59,7 @@
   width: 100%;
   padding: var(--vf-field-padding-md);
   border-top: var(--vf-border-width) solid var(--vf-table-border-color);
-  color: var(--vf-color-muted);
+  color: var(--vf-data-table-pagination-color);
 }
 
 .vf-data-table__pagination-summary {
@@ -74,5 +74,5 @@
 }
 
 .vf-data-table__pagination-page {
-  color: var(--vf-color-text);
+  color: var(--vf-data-table-pagination-page-color);
 }

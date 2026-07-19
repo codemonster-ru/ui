@@ -40,11 +40,13 @@
 }
 
 .vf-breadcrumbs__link:focus-visible {
-  outline: none;
+  outline: var(--vf-focus-ring-width) solid var(--vf-color-focus-ring);
+  outline-offset: var(--vf-focus-ring-width);
   color: var(--vf-breadcrumbs-link-focus-color);
 }
 
 .vf-breadcrumbs__current {
+  font-weight: var(--vf-text-label-font-weight);
   color: var(--vf-breadcrumbs-current-color);
 }
 

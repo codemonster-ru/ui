@@ -82,6 +82,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
           ['grid', 'VfGrid', ['grid.css']],
           ['app-shell', 'VfAppShell', ['app-shell.css']],
           ['admin-layout', 'VfAdminLayout', ['admin-layout.css']],
+          ['admin-shell', 'VfAdminShell', ['admin-shell.css']],
           ['document-layout', 'VfDocumentLayout', ['container.css', 'document-layout.css']],
           ['auth-layout', 'VfAuthLayout', ['container.css', 'auth-layout.css']],
           ['error-layout', 'VfErrorLayout', ['error-layout.css']],

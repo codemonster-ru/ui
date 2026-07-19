@@ -245,7 +245,7 @@
                         <div class="demo-setup-brand-stack">
                           <div class="demo-setup-brand">
                             <img class="demo-setup-brand__mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
-                            <span class="demo-setup-brand__name">Annabel CMS</span>
+                            <span class="demo-setup-brand__name">Annabel</span>
                           </div>
                           <div
                             v-if="activeSetupBreakpointHidesAside"
@@ -264,10 +264,10 @@
                       </template>
 
                       <template v-if="!activeSetupBreakpointHidesAside" #aside>
-                        <VfStepper
+                        <VfNavMenu
+                          v-model="activeSetupStep"
                           :items="setupSteps"
-                          :model-value="activeSetupStep"
-                          orientation="vertical"
+                          variant="pills"
                           aria-label="Installation steps"
                         />
                       </template>
@@ -536,13 +536,8 @@
                     <VfAdminLayout class="demo-admin-layout">
                       <template #brand>
                         <div class="demo-admin-layout__brand">
-                          <img
-                            class="demo-admin-layout__brand-mark"
-                            :src="annabelLogoIcon"
-                            alt=""
-                            aria-hidden="true"
-                          />
-                          <strong>Annabel CMS</strong>
+                          <img class="demo-admin-layout__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
+                          <strong>Annabel</strong>
                         </div>
                       </template>
 
@@ -556,7 +551,7 @@
                         <VfNavMenu
                           v-model="activeAdminNavigation"
                           :items="adminNavigationItems"
-                          variant="pills"
+                          variant="sidebar"
                           aria-label="Admin navigation"
                         />
                       </template>
@@ -571,12 +566,123 @@
                           <VfCard>Drafts: 8</VfCard>
                           <VfCard>Views: 12,480</VfCard>
                         </VfGrid>
+
+                        <VfCard v-for="panel in adminLayoutPanels" :key="panel.title">
+                          <template #header>
+                            <VfInline class="demo-admin-layout__content-header" :wrap="false">
+                              <strong>{{ panel.title }}</strong>
+                              <VfButton size="sm" variant="secondary">{{ panel.action }}</VfButton>
+                            </VfInline>
+                          </template>
+                          <VfStack>
+                            <span v-for="item in panel.items" :key="item">{{ item }}</span>
+                          </VfStack>
+                        </VfCard>
                       </VfStack>
 
                       <template #footer>
-                        <span class="demo-admin-layout__footer">© {{ currentYear }} VueForge. All rights reserved.</span>
+                        <span class="demo-admin-layout__footer"
+                          >© {{ currentYear }} VueForge. All rights reserved.</span
+                        >
                       </template>
                     </VfAdminLayout>
+                  </div>
+                </div>
+              </article>
+            </template>
+          </VfTabs>
+        </section>
+
+        <section class="demo-block">
+          <div class="demo-block__header">
+            <h2>Vf-AdminShell</h2>
+          </div>
+
+          <VfTabs
+            v-if="availableShellBreakpoints.length"
+            v-model="activeAdminShellBreakpoint"
+            :items="shellBreakpointTabs"
+          >
+            <template #panel>
+              <article v-if="activeAdminShellBreakpointConfig" class="demo-shell-card">
+                <div class="demo-shell-card__title">
+                  {{ activeAdminShellBreakpointConfig.name }} · {{ activeAdminShellBreakpointConfig.value }}
+                </div>
+                <div
+                  class="demo-shell-preview"
+                  :class="`demo-shell-preview--${activeAdminShellBreakpointConfig.name}`"
+                  :style="{ maxWidth: activeAdminShellBreakpointConfig.value }"
+                >
+                  <div class="demo-shell-frame demo-shell-frame--scroll demo-shell-frame--fixed-preview">
+                    <VfAdminShell
+                      class="demo-admin-shell"
+                      :class="{
+                        'demo-admin-shell--sidebar-hidden': activeAdminShellBreakpointHidesSidebar,
+                      }"
+                    >
+                      <template #brand>
+                        <VfIconButton
+                          v-if="activeAdminShellBreakpointHidesSidebar"
+                          class="demo-admin-shell__sidebar-toggle"
+                          icon="bars"
+                          variant="ghost"
+                          aria-label="Open navigation"
+                          @click="adminShellDrawerOpen = true"
+                        />
+                        <VfInline class="demo-admin-shell__brand-identity" :wrap="false">
+                          <img class="demo-admin-shell__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
+                          <strong>Annabel</strong>
+                        </VfInline>
+                      </template>
+
+                      <template #header-actions>
+                        <VfAvatar label="AK" shape="circle" aria-label="User profile" />
+                      </template>
+
+                      <template #sidebar>
+                        <VfNavMenu
+                          v-model="activeAdminNavigation"
+                          :items="adminNavigationItems"
+                          variant="sidebar"
+                          aria-label="Admin shell navigation"
+                        />
+                      </template>
+
+                      <VfStack>
+                        <h3 class="demo-admin-shell__page-title">Warehouse availability</h3>
+                        <VfGrid>
+                          <VfCard v-for="panel in adminShellPanels" :key="panel.title">
+                            <template #header>
+                              <VfInline class="demo-admin-shell__panel-title" :wrap="false">
+                                <strong>{{ panel.title }}</strong>
+                                <VfButton size="sm" variant="secondary">{{ panel.action }}</VfButton>
+                              </VfInline>
+                            </template>
+                            <VfStack class="demo-admin-shell__panel-body">
+                              <span v-for="item in panel.items" :key="item">{{ item }}</span>
+                            </VfStack>
+                          </VfCard>
+                        </VfGrid>
+                      </VfStack>
+                    </VfAdminShell>
+
+                    <VfDrawer
+                      v-model:open="adminShellDrawerOpen"
+                      title="Navigation"
+                      placement="left"
+                      size="sm"
+                      dividers
+                      :disable-teleport="true"
+                      :scroll-lock-target="false"
+                    >
+                      <VfNavMenu
+                        v-model="activeAdminNavigation"
+                        :items="adminNavigationItems"
+                        variant="sidebar"
+                        aria-label="Mobile admin navigation"
+                        @select="adminShellDrawerOpen = false"
+                      />
+                    </VfDrawer>
                   </div>
                 </div>
               </article>
@@ -591,9 +697,9 @@
           <VfTabs v-model="activeDocumentLayout" :items="documentLayoutTabs">
             <template #panel>
               <section v-if="activeDocumentLayoutConfig" class="demo-document-layouts">
-                  <div class="demo-document-layouts__header">
-                    <div class="demo-document-layouts__title">layout: {{ activeDocumentLayoutConfig.name }}</div>
-                    <VfInline>
+                <div class="demo-document-layouts__header">
+                  <div class="demo-document-layouts__title">layout: {{ activeDocumentLayoutConfig.name }}</div>
+                  <VfInline>
                     <VfSwitch v-model="plainDocumentColumns"> Plain columns </VfSwitch>
                     <VfSwitch v-model="showDocumentSubheader"> Show subheader </VfSwitch>
                     <VfSwitch v-model="showDocumentContentSubheader"> Show content subheader </VfSwitch>
@@ -732,23 +838,26 @@
 
 <script setup lang="ts">
 import {
+  VfAvatar,
   VfBadge,
   VfButton,
   VfCard,
   VfCheckbox,
+  VfDrawer,
   VfField,
+  VfIconButton,
   VfInput,
   VfLink,
   VfNavMenu,
   VfProgressBar,
-  VfStepper,
   VfSwitch,
   VfTabs,
 } from '@codemonster-ru/vueforge-core';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
   VfAppShell,
   VfAdminLayout,
+  VfAdminShell,
   VfAuthLayout,
   VfContainer,
   VfDocumentLayout,
@@ -831,21 +940,25 @@ const setupSteps = [
     value: 'license',
     label: 'License',
     description: 'Accept terms',
+    leadingIcon: 'fileText',
   },
   {
     value: 'database',
     label: 'Database',
     description: 'Connect storage',
+    leadingIcon: 'database',
   },
   {
     value: 'admin',
     label: 'Admin',
     description: 'Create account',
+    leadingIcon: 'user',
   },
   {
     value: 'finish',
     label: 'Finish',
     description: 'Review setup',
+    leadingIcon: 'checkCircle',
   },
 ];
 const setupFormId = 'demo-setup-form';
@@ -905,11 +1018,63 @@ const activeErrorBreakpoint = ref<string>(getPreferredBreakpointName(availableEr
 const activeSetupBreakpoint = ref<string>(getPreferredBreakpointName(availableSetupBreakpoints.value));
 const activeShellBreakpoint = ref<string>(getPreferredBreakpointName(availableShellBreakpoints.value));
 const activeAdminBreakpoint = ref<string>(getPreferredBreakpointName(availableShellBreakpoints.value));
-const activeAdminNavigation = ref('dashboard');
+const activeAdminShellBreakpoint = ref<string>(getPreferredBreakpointName(availableShellBreakpoints.value));
+const activeAdminNavigation = ref('warehouse-availability');
+const adminShellDrawerOpen = ref(false);
 const adminNavigationItems = [
   { value: 'dashboard', label: 'Dashboard', leadingIcon: 'grid' },
-  { value: 'posts', label: 'Posts', leadingIcon: 'file' },
+  {
+    value: 'commerce',
+    label: 'Commerce',
+    leadingIcon: 'file',
+    children: [
+      {
+        value: 'product-catalog',
+        label: 'Product catalog',
+      },
+      {
+        value: 'inventory-management',
+        label: 'Inventory management',
+      },
+      {
+        value: 'warehouse-availability',
+        label: 'Warehouse availability',
+      },
+    ],
+  },
   { value: 'settings', label: 'Settings', leadingIcon: 'gear' },
+];
+const adminLayoutPanels = [
+  {
+    title: 'Recent inventory changes',
+    action: 'View history',
+    items: [
+      'Warehouse A · 24 items received',
+      'Warehouse B · 8 items reserved',
+      'Warehouse C · 3 items returned',
+      'Online stock · 12 items sold',
+    ],
+  },
+  {
+    title: 'Stock alerts',
+    action: 'Review alerts',
+    items: [
+      'Wireless keyboard · 2 items remaining',
+      'USB-C dock · out of stock',
+      'Studio monitor · reorder threshold reached',
+      'Laptop stand · delivery expected tomorrow',
+    ],
+  },
+];
+const adminShellPanels = [
+  {
+    title: 'Recent entries',
+    action: 'Create entry',
+    items: ['Getting started with Annabel', 'Design system notes', 'Summer release'],
+  },
+  { title: 'Pages', action: 'View all', items: ['Home', 'About', 'Contact'] },
+  { title: 'Updates', action: 'Check', items: ['Everything is up to date'] },
+  { title: 'Activity', action: 'View all', items: ['Content published', 'Settings updated', 'Asset uploaded'] },
 ];
 
 const activeAuthBreakpointConfig = computed(
@@ -960,6 +1125,23 @@ const activeAdminBreakpointConfig = computed(
     ) ??
     availableShellBreakpoints.value[0],
 );
+const activeAdminShellBreakpointConfig = computed(
+  () =>
+    availableShellBreakpoints.value.find((breakpoint) => breakpoint.name === activeAdminShellBreakpoint.value) ??
+    availableShellBreakpoints.value.find(
+      (breakpoint) => breakpoint.name === getPreferredBreakpointName(availableShellBreakpoints.value),
+    ) ??
+    availableShellBreakpoints.value[0],
+);
+const activeAdminShellBreakpointHidesSidebar = computed(() =>
+  isBelowBreakpoint(activeAdminShellBreakpointConfig.value?.value, resolvedBreakpoints.value.lg),
+);
+
+watch(activeAdminShellBreakpointHidesSidebar, (sidebarHidden) => {
+  if (!sidebarHidden) {
+    adminShellDrawerOpen.value = false;
+  }
+});
 
 const availableDocumentBreakpoints = computed(() => availableShellBreakpoints.value);
 const documentBreakpointTabs = computed(() => shellBreakpointTabs.value);

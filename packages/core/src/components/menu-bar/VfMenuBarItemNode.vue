@@ -15,6 +15,7 @@ const props = defineProps<{
   parentPath: string[];
   activeValue?: string;
   openPath: string[];
+  tabbableValue?: string;
   hoverEnabled?: boolean;
   submenuTeleportTarget?: HTMLElement | null;
   teleportEnabled?: boolean;
@@ -31,6 +32,7 @@ const isGroup = computed(() => props.item.kind === 'group');
 const isLink = computed(() => props.item.href !== undefined || props.item.to !== undefined);
 const isActive = computed(() => props.activeValue === props.item.value);
 const isAncestorActive = computed(() => !isActive.value && hasDescendantValue(props.item, props.activeValue));
+const isTabbable = computed(() => props.tabbableValue === props.item.value && !props.item.disabled);
 const isOpen = computed(() => currentPath.value.every((value, index) => props.openPath[index] === value));
 const shouldTeleportRootSubmenu = computed(
   () => props.teleportEnabled && props.depth === 0 && Boolean(props.submenuTeleportTarget),
@@ -118,28 +120,6 @@ function hasDescendantValue(item: VfNavMenuItem, targetValue?: string): boolean 
   return item.children.some((child) => child.value === targetValue || hasDescendantValue(child, targetValue));
 }
 
-function onBranchKeydown(event: KeyboardEvent) {
-  if (!hasChildren.value) {
-    return;
-  }
-
-  if (
-    event.key === 'Enter' ||
-    event.key === ' ' ||
-    event.key === 'ArrowDown' ||
-    (props.depth > 0 && event.key === 'ArrowRight')
-  ) {
-    event.preventDefault();
-    openBranch();
-    return;
-  }
-
-  if ((event.key === 'ArrowLeft' || event.key === 'Escape') && props.depth > 0) {
-    event.preventDefault();
-    emit('openPathChange', props.parentPath);
-  }
-}
-
 function onPointerEnter() {
   if (!props.hoverEnabled) {
     return;
@@ -152,6 +132,7 @@ function onPointerEnter() {
 <template>
   <li
     class="vf-menu-bar__node"
+    role="none"
     :class="[
       `vf-menu-bar__node--depth-${depth}`,
       hasChildren && 'vf-menu-bar__node--branch',
@@ -182,9 +163,10 @@ function onPointerEnter() {
       :aria-expanded="isOpen"
       :aria-haspopup="'menu'"
       role="menuitem"
+      :tabindex="isTabbable ? 0 : -1"
+      :data-vf-menu-value="item.value"
       :disabled="item.disabled"
       @click="toggleBranch"
-      @keydown="onBranchKeydown"
     >
       <span class="vf-menu-bar__item-content">
         <span v-if="item.leadingIcon" class="vf-menu-bar__leading-icon" aria-hidden="true">
@@ -214,7 +196,10 @@ function onPointerEnter() {
       ]"
       :style="{ '--vf-menu-bar-depth': String(depth) }"
       :aria-current="isActive ? 'page' : undefined"
+      :aria-disabled="item.disabled || undefined"
       role="menuitem"
+      :tabindex="isTabbable ? 0 : -1"
+      :data-vf-menu-value="item.value"
       @click="handleLeafClick"
     >
       <span class="vf-menu-bar__item-content">
@@ -241,6 +226,8 @@ function onPointerEnter() {
       :style="{ '--vf-menu-bar-depth': String(depth) }"
       :aria-current="isActive ? 'page' : undefined"
       role="menuitem"
+      :tabindex="isTabbable ? 0 : -1"
+      :data-vf-menu-value="item.value"
       :disabled="item.disabled"
       @click="handleLeafClick()"
     >
@@ -251,6 +238,24 @@ function onPointerEnter() {
         <span class="vf-menu-bar__label">{{ item.label }}</span>
       </span>
     </button>
+
+    <ul v-if="isGroup && item.children?.length" class="vf-menu-bar__group-list" role="group" :aria-label="item.label">
+      <VfMenuBarItemNode
+        v-for="child in item.children"
+        :key="child.value"
+        :item="child"
+        :depth="depth"
+        :parent-path="parentPath"
+        :active-value="activeValue"
+        :open-path="openPath"
+        :tabbable-value="tabbableValue"
+        :hover-enabled="hoverEnabled"
+        :submenu-teleport-target="submenuTeleportTarget"
+        :teleport-enabled="teleportEnabled"
+        @open-path-change="emit('openPathChange', $event)"
+        @select="emit('select', $event)"
+      />
+    </ul>
 
     <Transition v-if="hasChildren && !shouldTeleportRootSubmenu" name="vf-floating-transition" appear>
       <div
@@ -267,6 +272,7 @@ function onPointerEnter() {
             :parent-path="currentPath"
             :active-value="activeValue"
             :open-path="openPath"
+            :tabbable-value="tabbableValue"
             :hover-enabled="true"
             :submenu-teleport-target="submenuTeleportTarget"
             :teleport-enabled="teleportEnabled"
@@ -294,6 +300,7 @@ function onPointerEnter() {
               :parent-path="currentPath"
               :active-value="activeValue"
               :open-path="openPath"
+              :tabbable-value="tabbableValue"
               :hover-enabled="true"
               :submenu-teleport-target="submenuTeleportTarget"
               :teleport-enabled="teleportEnabled"

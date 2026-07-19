@@ -22,5 +22,6 @@ Available design tokens and corresponding CSS variables.
 | Fieldset legend typography | `--vf-text-label-*` | Legend font size, weight, and line height. |
 | Fieldset helper typography | `--vf-text-caption-*` | Description and error text typography. |
 | Fieldset spacing | `--vf-surface-gap-tight` | Vertical gap between fieldset parts. |
-| Helper text color | `--vf-color-muted` | Neutral helper text tone. |
-| Error text color | `--vf-color-danger` | Error text tone. |
+| Fieldset legend color | `--vf-fieldset-legend-color` | Legend text color. |
+| Helper text color | `--vf-fieldset-description-color` | Neutral helper text tone. |
+| Error text color | `--vf-fieldset-error-color` | Error text tone. |

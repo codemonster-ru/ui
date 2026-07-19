@@ -66,6 +66,12 @@ const formStackNameValue = ref('');
 const formStackEmailValue = ref('');
 const formStackPlanValue = ref('');
 const dynamicProgressValue = ref(0);
+const navMenuDefaultValue = ref('installation');
+const navMenuPillsValue = ref('quick-start');
+const navMenuSidebarValue = ref('quick-start');
+const navMenuSidebarNoIconsValue = ref('no-icons-accessibility');
+const menuBarDefaultValue = ref('pricing');
+const menuBarPillsValue = ref('about');
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 
 const formGeometrySizes = ['sm', 'md', 'lg'] as const;
@@ -323,6 +329,49 @@ const docsMenuSimpleItems: VfNavMenuItem[] = [
       { value: 'theme', label: 'Theme' },
       { value: 'breakpoints', label: 'Breakpoints' },
       { value: 'motion', label: 'Motion' },
+    ],
+  },
+];
+
+const docsMenuSidebarItems: VfNavMenuItem[] = docsMenuSimpleItems.map((item, index) => ({
+  ...item,
+  leadingIcon: ['folderOpen', 'grid', 'layers'][index],
+}));
+
+const docsMenuSidebarNoIconItems: VfNavMenuItem[] = [
+  {
+    value: 'no-icons-getting-started',
+    label: 'Getting started with workspace configuration',
+    children: [
+      { value: 'no-icons-installation', label: 'Installation and initial project configuration' },
+      { value: 'no-icons-quick-start', label: 'Quick start for new application contributors' },
+    ],
+  },
+  {
+    value: 'no-icons-components',
+    label: 'Components and reusable interface patterns',
+    children: [
+      { value: 'no-icons-button', label: 'Button and action control guidelines' },
+      {
+        value: 'no-icons-navigation',
+        label: 'Navigation for complex application structures',
+        children: [
+          { value: 'no-icons-anatomy', label: 'Anatomy and visual hierarchy of nested navigation items' },
+          {
+            value: 'no-icons-accessibility',
+            label: 'Keyboard and screen reader accessibility',
+          },
+        ],
+      },
+      { value: 'no-icons-overlays', label: 'Dialogs, drawers, popovers, and contextual overlays' },
+    ],
+  },
+  {
+    value: 'no-icons-foundation',
+    label: 'Foundation tokens and responsive design principles',
+    children: [
+      { value: 'no-icons-theme', label: 'Theme configuration and semantic color tokens' },
+      { value: 'no-icons-motion', label: 'Motion preferences and reduced animation behavior' },
     ],
   },
 ];
@@ -1236,16 +1285,15 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                     <div class="demo-avatar-team">
                       <div class="demo-avatar-person">
-                        <VfAvatar
-                          :image="mayaChenAvatar"
-                          image-alt="Maya Chen"
-                          shape="circle"
-                        />
+                        <VfAvatar :image="mayaChenAvatar" image-alt="Maya Chen" shape="circle" />
                         <div class="demo-avatar-person__details">
                           <span class="demo-avatar-person__name">Maya Chen</span>
                           <span class="demo-avatar-person__role">Product design</span>
                         </div>
-                        <span class="demo-avatar-person__presence demo-avatar-person__presence--online" aria-label="Online" />
+                        <span
+                          class="demo-avatar-person__presence demo-avatar-person__presence--online"
+                          aria-label="Online"
+                        />
                       </div>
 
                       <div class="demo-avatar-person">
@@ -1254,7 +1302,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                           <span class="demo-avatar-person__name">Jordan Davis</span>
                           <span class="demo-avatar-person__role">Frontend engineering</span>
                         </div>
-                        <span class="demo-avatar-person__presence demo-avatar-person__presence--online" aria-label="Online" />
+                        <span
+                          class="demo-avatar-person__presence demo-avatar-person__presence--online"
+                          aria-label="Online"
+                        />
                       </div>
 
                       <div class="demo-avatar-person">
@@ -1278,12 +1329,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                     <div class="demo-avatar-variants">
                       <div class="demo-avatar-variant">
-                        <VfAvatar
-                          :image="mayaChenAvatar"
-                          image-alt="Maya Chen"
-                          size="lg"
-                          shape="circle"
-                        />
+                        <VfAvatar :image="mayaChenAvatar" image-alt="Maya Chen" size="lg" shape="circle" />
                         <span>Image</span>
                       </div>
                       <div class="demo-avatar-variant">
@@ -1291,15 +1337,35 @@ const tabContent = computed<Record<string, string>>(() => ({
                         <span>Icon</span>
                       </div>
                       <div class="demo-avatar-variant">
-                        <VfAvatar class="demo-avatar--rose" size="lg" shape="circle" aria-label="Unknown user">?</VfAvatar>
+                        <VfAvatar class="demo-avatar--rose" size="lg" shape="circle" aria-label="Unknown user"
+                          >?</VfAvatar
+                        >
                         <span>Slot</span>
                       </div>
                     </div>
 
                     <div class="demo-avatar-size-scale" aria-label="Avatar sizes">
-                      <VfAvatar class="demo-avatar--violet" label="MC" size="sm" shape="circle" aria-label="Maya Chen" />
-                      <VfAvatar class="demo-avatar--violet" label="MC" size="md" shape="circle" aria-label="Maya Chen" />
-                      <VfAvatar class="demo-avatar--violet" label="MC" size="lg" shape="circle" aria-label="Maya Chen" />
+                      <VfAvatar
+                        class="demo-avatar--violet"
+                        label="MC"
+                        size="sm"
+                        shape="circle"
+                        aria-label="Maya Chen"
+                      />
+                      <VfAvatar
+                        class="demo-avatar--violet"
+                        label="MC"
+                        size="md"
+                        shape="circle"
+                        aria-label="Maya Chen"
+                      />
+                      <VfAvatar
+                        class="demo-avatar--violet"
+                        label="MC"
+                        size="lg"
+                        shape="circle"
+                        aria-label="Maya Chen"
+                      />
                       <span>sm · md · lg</span>
                     </div>
                   </section>
@@ -1971,10 +2037,24 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">menus and toc</p>
-                  <VfNavMenu model-value="components" :items="docsMenuSimpleItems" />
-                  <VfNavMenu model-value="components" :items="docsMenuSimpleItems" variant="pills" />
-                  <VfMenuBar :items="topMenuItems" />
-                  <VfMenuBar :items="topMenuItems" variant="pills" />
+                  <VfNavMenu v-model="navMenuDefaultValue" :items="docsMenuSimpleItems" />
+                  <VfNavMenu v-model="navMenuPillsValue" :items="docsMenuSimpleItems" variant="pills" />
+                  <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                    <div class="demo-component-matrix__cell">
+                      <p class="demo-component-matrix__label">sidebar with icons</p>
+                      <VfNavMenu v-model="navMenuSidebarValue" :items="docsMenuSidebarItems" variant="sidebar" />
+                    </div>
+                    <div class="demo-component-matrix__cell">
+                      <p class="demo-component-matrix__label">sidebar without icons and wrapping labels</p>
+                      <VfNavMenu
+                        v-model="navMenuSidebarNoIconsValue"
+                        :items="docsMenuSidebarNoIconItems"
+                        variant="sidebar"
+                      />
+                    </div>
+                  </div>
+                  <VfMenuBar v-model="menuBarDefaultValue" :items="topMenuItems" />
+                  <VfMenuBar v-model="menuBarPillsValue" :items="topMenuItems" variant="pills" />
                 </div>
 
                 <div class="demo-component-matrix__cell">

@@ -77,6 +77,38 @@ describe('VfNavMenu', () => {
     expect(wrapper.find('.vf-nav-menu').classes()).not.toContain('vf-nav-menu--default');
   });
 
+  it('uses sidebar variant for level-aware navigation states', () => {
+    const wrapper = mount(VfNavMenu, {
+      props: {
+        items,
+        defaultValue: 'quick-start',
+        variant: 'sidebar',
+      },
+    });
+
+    expect(wrapper.find('.vf-nav-menu').classes()).toContain('vf-nav-menu--sidebar');
+    expect(wrapper.get('[aria-current="page"]').text()).toBe('Quick Start');
+    expect(wrapper.get('.vf-nav-menu__item--ancestor-active').text()).toContain('Getting Started');
+    expect(wrapper.get('.vf-nav-menu__node--level-0').classes()).toContain('vf-nav-menu__node--expanded');
+    expect(wrapper.get('.vf-nav-menu__node--ancestor-active').text()).toContain('Getting Started');
+    expect(wrapper.get('.vf-nav-menu__node--active').text()).toBe('Quick Start');
+  });
+
+  it('limits sidebar ancestor pills to the top level', () => {
+    const wrapper = mount(VfNavMenu, {
+      props: {
+        items: groupedItems,
+        defaultValue: 'overview-tab',
+        variant: 'sidebar',
+      },
+    });
+
+    const ancestors = wrapper.findAll('.vf-nav-menu__item--ancestor-active');
+    expect(ancestors).toHaveLength(2);
+    expect(ancestors[0]?.classes()).toContain('vf-nav-menu__item--top');
+    expect(ancestors[1]?.classes()).not.toContain('vf-nav-menu__item--top');
+  });
+
   it('marks ancestor branches when a descendant is active', () => {
     const wrapper = mount(VfNavMenu, {
       props: {
@@ -322,5 +354,17 @@ describe('VfNavMenu', () => {
 
     expect(withIcon?.classes()).not.toContain('vf-nav-menu__item--icon-offset');
     expect(withoutIcon?.classes()).toContain('vf-nav-menu__item--icon-offset');
+  });
+
+  it('exposes disabled links without leaving them in the tab order', () => {
+    const wrapper = mount(VfNavMenu, {
+      props: {
+        items: [{ value: 'disabled', label: 'Disabled', href: '/disabled', disabled: true }],
+      },
+    });
+
+    const disabledLink = wrapper.get('[href="/disabled"]');
+    expect(disabledLink.attributes('aria-disabled')).toBe('true');
+    expect(disabledLink.attributes('tabindex')).toBe('-1');
   });
 });

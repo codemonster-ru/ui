@@ -409,6 +409,68 @@
   color: var(--vf-color-muted);
 }
 
+.demo-admin-shell {
+  min-height: var(--demo-preview-height);
+}
+
+.demo-admin-shell--sidebar-hidden.vf-admin-shell--with-brand .vf-admin-shell__topbar {
+  grid-template-columns: auto auto minmax(var(--vf-layout-size-zero), 1fr) auto;
+}
+
+.demo-admin-shell--sidebar-hidden .vf-admin-shell__brand {
+  display: contents;
+}
+
+.demo-admin-shell--sidebar-hidden .demo-admin-shell__sidebar-toggle {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.demo-admin-shell--sidebar-hidden .demo-admin-shell__brand-identity {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.demo-admin-shell--sidebar-hidden .vf-admin-shell__header {
+  grid-column: 3;
+}
+
+.demo-admin-shell--sidebar-hidden .vf-admin-shell__header-actions {
+  grid-column: 4;
+}
+
+.demo-admin-shell--sidebar-hidden.vf-admin-shell--with-sidebar .vf-admin-shell__body {
+  grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
+}
+
+.demo-admin-shell--sidebar-hidden .vf-admin-shell__sidebar {
+  display: none;
+}
+
+.demo-admin-shell--sidebar-hidden .vf-admin-shell__workspace::before {
+  display: none;
+}
+
+.demo-admin-shell__brand-mark {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: block;
+}
+
+.demo-admin-shell__page-title {
+  margin: 0;
+}
+
+.demo-admin-shell__panel-title {
+  justify-content: space-between;
+  padding-bottom: var(--vf-layout-space-layout-base);
+  border-bottom: var(--vf-layout-border-base);
+}
+
+.demo-admin-shell__panel-body {
+  color: var(--vf-color-muted);
+}
+
 .demo-shell-card .vf-app-shell {
   min-height: 30rem;
 }
@@ -418,7 +480,7 @@
   > .vf-app-shell__body
   > .vf-app-shell__body-container
   > .vf-app-shell__body-grid {
-  grid-template-areas: "sidebar content";
+  grid-template-areas: 'sidebar content';
   grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, var(--vf-layout-shell-sidebar-width)) minmax(0, 1fr);
 }
@@ -427,7 +489,7 @@
   > .vf-app-shell__body
   > .vf-app-shell__body-container
   > .vf-app-shell__body-grid {
-  grid-template-areas: "sidebar content";
+  grid-template-areas: 'sidebar content';
   grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, var(--vf-layout-shell-sidebar-collapsed-width)) minmax(0, 1fr);
 }
@@ -448,7 +510,7 @@
   > .vf-app-shell__body
   > .vf-app-shell__body-container
   > .vf-app-shell__body-grid {
-  grid-template-areas: "content";
+  grid-template-areas: 'content';
   grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, 1fr);
 }
