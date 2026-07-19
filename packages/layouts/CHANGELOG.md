@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.19.0
+
+### Added
+
+- Added `VfAdminShell` with a global topbar, sticky 18rem administrative sidebar, body layer with rounded top corners, responsive behavior, theme tokens, component and CSS subpath exports.
+- Aligned the `VfAdminShell` workspace background with its sidebar to form a continuous administrative surface.
+- Added an inset system divider between the `VfAdminShell` sidebar and workspace.
+- Added a system border along the rounded top edge of the `VfAdminShell` body layer.
+
+### Docs
+
+- Added `VfAdminShell` documentation and a responsive Annabel CMS showcase.
+
 ## 1.18.2
 
 ### Changed

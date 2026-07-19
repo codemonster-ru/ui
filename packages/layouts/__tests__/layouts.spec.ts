@@ -7,6 +7,7 @@ import { VfThemeProvider, useTheme } from '@codemonster-ru/vueforge-core';
 import {
   VueForgeLayouts,
   VfAdminLayout,
+  VfAdminShell,
   VfAppShell,
   VfAsideArea,
   VfAuthLayout,
@@ -55,6 +56,7 @@ describe('package exports', () => {
     const tokensCss = readFileSync(resolve(packageRoot, '.generated/theme/layout-tokens.css'), 'utf8');
 
     expect(tokensCss).toContain('--vf-layout-shell-sidebar-width: 18rem;');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-width: 18rem;');
     expect(tokensCss).toContain('--vf-layout-shell-header-height: 4rem;');
     expect(tokensCss).toContain('--vf-layout-header-padding-block: 0.75rem;');
     expect(tokensCss).toContain('--vf-layout-viewport-height: 100vh;');
@@ -65,6 +67,7 @@ describe('package exports', () => {
     expect(VueForgeLayouts).toBeTruthy();
     expect(VfAppShell).toBeTruthy();
     expect(VfAdminLayout).toBeTruthy();
+    expect(VfAdminShell).toBeTruthy();
     expect(VfDocumentLayout).toBeTruthy();
     expect(VfAuthLayout).toBeTruthy();
     expect(VfErrorLayout).toBeTruthy();
@@ -121,6 +124,61 @@ describe('admin layout', () => {
       /\.vf-admin-layout--with-brand-divider .vf-admin-layout__brand\s*\{[^}]*border-block-end:/,
     );
     expect(adminLayoutCss).toMatch(/\.vf-admin-layout__footer\s*\{[^}]*margin-top: auto;/);
+  });
+});
+
+describe('admin shell', () => {
+  it('renders a global topbar above the sidebar and workspace', () => {
+    const wrapper = mount(VfAdminShell, {
+      slots: {
+        brand: () => 'Annabel CMS',
+        header: () => 'Dashboard',
+        'header-actions': () => 'Profile',
+        sidebar: () => 'Navigation',
+        default: () => 'Dashboard content',
+        footer: () => 'Footer',
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-admin-shell--fill-viewport');
+    expect(wrapper.classes()).toContain('vf-admin-shell--with-brand');
+    expect(wrapper.classes()).toContain('vf-admin-shell--with-sidebar');
+    expect(wrapper.find('.vf-admin-shell__brand').text()).toBe('Annabel CMS');
+    expect(wrapper.find('.vf-admin-shell__header').text()).toBe('Dashboard');
+    expect(wrapper.find('.vf-admin-shell__header-actions').text()).toBe('Profile');
+    expect(wrapper.find('.vf-admin-shell__sidebar-content').text()).toBe('Navigation');
+    expect(wrapper.find('.vf-admin-shell__content').text()).toBe('Dashboard content');
+    expect(wrapper.find('.vf-admin-shell__footer').text()).toBe('Footer');
+  });
+
+  it('uses a full-width sticky topbar and a body layer with rounded top corners', () => {
+    const adminShellCss = readFileSync(resolve(packageRoot, 'src/style-entries/admin-shell.css'), 'utf8');
+
+    expect(adminShellCss).toMatch(/\.vf-admin-shell__topbar\s*\{[^}]*position: sticky;/);
+    expect(adminShellCss).toMatch(
+      /\.vf-admin-shell--with-brand \.vf-admin-shell__topbar\s*\{[^}]*grid-template-columns:\s*calc\(var\(--vf-layout-admin-shell-sidebar-width\) - var\(--vf-layout-admin-shell-header-padding-inline\)\)/,
+    );
+    expect(adminShellCss).toMatch(
+      /\.vf-admin-shell--with-sidebar \.vf-admin-shell__body\s*\{[^}]*grid-template-columns: var\(--vf-layout-admin-shell-sidebar-width\)/,
+    );
+    expect(adminShellCss).toMatch(
+      /\.vf-admin-shell__body\s*\{[^}]*position: relative;[^}]*overflow: hidden;[^}]*border-start-start-radius: var\(--vf-layout-admin-shell-body-radius\);[^}]*border-start-end-radius: var\(--vf-layout-admin-shell-body-radius\);/,
+    );
+    expect(adminShellCss).toMatch(
+      /\.vf-admin-shell__body::before\s*\{[^}]*block-size: var\(--vf-layout-admin-shell-body-radius\);[^}]*border: var\(--vf-layout-border-base\);[^}]*border-block-end: var\(--vf-layout-size-zero\);[^}]*border-start-start-radius: var\(--vf-layout-admin-shell-body-radius\);[^}]*border-start-end-radius: var\(--vf-layout-admin-shell-body-radius\);/,
+    );
+    expect(adminShellCss).toMatch(
+      /\.vf-admin-shell__workspace\s*\{[^}]*position: relative;[^}]*background: var\(--vf-layout-admin-shell-sidebar-background\);/,
+    );
+    expect(adminShellCss).toMatch(
+      /\.vf-admin-shell--with-sidebar \.vf-admin-shell__workspace::before\s*\{[^}]*inset-block: var\(--vf-layout-space-layout-base\);[^}]*inline-size: var\(--vf-border-width\);[^}]*background: var\(--vf-divider-color\);/,
+    );
+    expect(adminShellCss).toMatch(
+      /\.vf-admin-shell--with-sidebar \.vf-admin-shell__workspace::before\s*\{\s*display: none;/,
+    );
+    expect(adminShellCss).toMatch(
+      /\.vf-admin-shell__sidebar-content\s*\{[^}]*position: sticky;[^}]*inset-block-start: var\(--vf-layout-size-zero\);/,
+    );
   });
 });
 

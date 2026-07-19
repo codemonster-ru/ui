@@ -60,6 +60,14 @@ const items = [
 ```
 ````
 
+## Sidebar
+
+Use the `sidebar` variant for application navigation where the active top-level ancestor uses a neutral pill and the current nested page uses an active rail.
+
+```vue
+<VfNavMenu v-model="active" :items="items" variant="sidebar" />
+```
+
 ## Accessibility
 
 Accessibility behavior and keyboard interactions.
@@ -76,10 +84,9 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to next interactive item in the menu order. |
-| `Shift + Tab` | Moves focus to previous interactive item in the menu order. |
-| `Enter` | Activates focused link/item, or toggles focused branch button. |
-| `Space` | Toggles focused branch button. |
-
+| Key           | Function                                                       |
+| ------------- | -------------------------------------------------------------- |
+| `Tab`         | Moves focus to next interactive item in the menu order.        |
+| `Shift + Tab` | Moves focus to previous interactive item in the menu order.    |
+| `Enter`       | Activates focused link/item, or toggles focused branch button. |
+| `Space`       | Toggles focused branch button.                                 |

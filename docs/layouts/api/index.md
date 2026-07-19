@@ -1,13 +1,12 @@
 ---
-title: "API"
-description: "Public API reference for the layouts package"
+title: 'API'
+description: 'Public API reference for the layouts package'
 order: 3
 ---
 
 # API
 
 This section provides a quick overview before the detailed subsections below.
-
 
 ## Overview
 
@@ -22,6 +21,7 @@ JS subpath exports (component entry + auto CSS):
 - `@codemonster-ru/vueforge-layouts/grid`
 - `@codemonster-ru/vueforge-layouts/app-shell`
 - `@codemonster-ru/vueforge-layouts/admin-layout`
+- `@codemonster-ru/vueforge-layouts/admin-shell`
 - `@codemonster-ru/vueforge-layouts/document-layout`
 - `@codemonster-ru/vueforge-layouts/auth-layout`
 - `@codemonster-ru/vueforge-layouts/error-layout`
@@ -144,6 +144,7 @@ Per-layout entries:
 - `grid.css`
 - `app-shell.css`
 - `admin-layout.css`
+- `admin-shell.css`
 - `document-layout.css`
 - `auth-layout.css`
 - `error-layout.css`

@@ -38,6 +38,7 @@
 }
 
 .vf-table-of-contents__link.vf-table-of-contents__link--active {
+  font-weight: var(--vf-text-label-font-weight);
   color: var(--vf-table-of-contents-current-active-color);
   border-color: transparent;
   background: var(--vf-table-of-contents-current-active-background);

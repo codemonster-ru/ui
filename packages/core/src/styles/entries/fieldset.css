@@ -15,7 +15,7 @@
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
-  color: var(--vf-color-text);
+  color: var(--vf-fieldset-legend-color);
 }
 
 .vf-fieldset__control {
@@ -32,9 +32,9 @@
 }
 
 .vf-fieldset__description {
-  color: var(--vf-color-muted);
+  color: var(--vf-fieldset-description-color);
 }
 
 .vf-fieldset__error {
-  color: var(--vf-color-danger);
+  color: var(--vf-fieldset-error-color);
 }

@@ -145,7 +145,15 @@ function onNestedListAfterLeave(element: Element) {
 </script>
 
 <template>
-  <li class="vf-nav-menu__node">
+  <li
+    :class="[
+      'vf-nav-menu__node',
+      `vf-nav-menu__node--level-${level}`,
+      isExpanded && 'vf-nav-menu__node--expanded',
+      isActive && 'vf-nav-menu__node--active',
+      isAncestorActive && 'vf-nav-menu__node--ancestor-active',
+    ]"
+  >
     <div
       v-if="isGroup"
       :class="['vf-nav-menu__group', `vf-nav-menu__group--level-${level}`]"
@@ -197,6 +205,8 @@ function onNestedListAfterLeave(element: Element) {
       ]"
       :style="{ '--vf-nav-menu-level': String(level) }"
       :aria-current="isActive ? 'page' : undefined"
+      :aria-disabled="item.disabled || undefined"
+      :tabindex="item.disabled ? -1 : undefined"
       @click="onLeafClick"
     >
       <span class="vf-nav-menu__item-content">

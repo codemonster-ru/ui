@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.35.0
+
+### Added
+
+- Added the `sidebar` variant to `VfNavMenu` with neutral top-level states, nested active rails, and dedicated theme tokens.
+- Added complete roving-focus keyboard navigation to `VfMenuBar`, including arrow, Home, End, Escape, Enter, Space, and Tab behavior across nested menus.
+- Added component-level palette tokens for alerts, command palette, data table, fieldset, links, overlays, and every `VfStepper` state.
+
+### Changed
+
+- Refined navigation, tabs, breadcrumbs, accordion, selection controls, ghost buttons, and table-of-contents interaction colors around a neutral text-based palette while preserving primary accents for focus and progress.
+- Made active navigation and table-of-contents items use label font weight and exposed open-state colors for pills menu bars.
+- Moved the floating overlay shadow into the public theme token surface so applications can customize it through the theme preset.
+
+### Fixed
+
+- Rendered grouped `VfMenuBar` items with correct menu semantics and included them in keyboard navigation.
+- Marked disabled navigation links with `aria-disabled` and removed them from the tab order.
+
+### Docs
+
+- Expanded component theming documentation for the new palette tokens, menu behavior, and `VfNavMenu` sidebar variant.
+
 ## 1.34.0
 
 ### Added

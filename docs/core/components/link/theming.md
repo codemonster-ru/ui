@@ -16,4 +16,6 @@ Available design tokens and corresponding CSS variables.
 
 | Token | CSS Variable | Description |
 | --- | --- | --- |
-| `—` | `—` | No documented design tokens yet. |
+| Hover color | `--vf-text-link-hover-color` | Theme-aware primary hover color. |
+| Underline | `--vf-text-link-underline-thickness`, `--vf-text-link-underline-offset` | Link underline geometry. |
+| Motion | `--vf-text-link-transition-duration`, `--vf-text-link-transition-easing` | Link interaction timing. |

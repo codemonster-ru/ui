@@ -106,10 +106,15 @@
   --vf-menu-bar-current-top-hover-background: var(--vf-menu-bar-top-hover-background);
   --vf-menu-bar-current-top-active-color: var(--vf-menu-bar-top-active-color);
   --vf-menu-bar-current-top-active-background: var(--vf-menu-bar-top-active-background);
+  --vf-menu-bar-current-top-open-color: var(--vf-menu-bar-top-hover-color);
+  --vf-menu-bar-current-top-open-background: var(--vf-menu-bar-top-hover-background);
   --vf-menu-bar-current-submenu-hover-color: var(--vf-menu-bar-submenu-hover-color);
   --vf-menu-bar-current-submenu-hover-background: var(--vf-menu-bar-submenu-hover-background);
   --vf-menu-bar-current-submenu-active-color: var(--vf-menu-bar-submenu-active-color);
   --vf-menu-bar-current-submenu-active-background: var(--vf-menu-bar-submenu-active-background);
+  --vf-menu-bar-current-submenu-open-color: var(--vf-menu-bar-submenu-hover-color);
+  --vf-menu-bar-current-submenu-open-background: var(--vf-menu-bar-submenu-hover-background);
+  --vf-menu-bar-current-item-ancestor-active-color: var(--vf-menu-bar-item-ancestor-active-color);
 
   display: flex;
   position: relative;
@@ -144,14 +149,20 @@
   --vf-menu-bar-current-top-hover-background: var(--vf-menu-bar-pills-top-hover-background);
   --vf-menu-bar-current-top-active-color: var(--vf-menu-bar-pills-top-active-color);
   --vf-menu-bar-current-top-active-background: var(--vf-menu-bar-pills-top-active-background);
+  --vf-menu-bar-current-top-open-color: var(--vf-menu-bar-pills-top-open-color);
+  --vf-menu-bar-current-top-open-background: var(--vf-menu-bar-pills-top-open-background);
   --vf-menu-bar-current-submenu-hover-color: var(--vf-menu-bar-pills-submenu-hover-color);
   --vf-menu-bar-current-submenu-hover-background: var(--vf-menu-bar-pills-submenu-hover-background);
   --vf-menu-bar-current-submenu-active-color: var(--vf-menu-bar-pills-submenu-active-color);
   --vf-menu-bar-current-submenu-active-background: var(--vf-menu-bar-pills-submenu-active-background);
+  --vf-menu-bar-current-submenu-open-color: var(--vf-menu-bar-pills-submenu-open-color);
+  --vf-menu-bar-current-submenu-open-background: var(--vf-menu-bar-pills-submenu-open-background);
+  --vf-menu-bar-current-item-ancestor-active-color: var(--vf-nav-menu-pills-item-ancestor-active-color);
 }
 
 .vf-menu-bar__list,
-.vf-menu-bar__submenu-list {
+.vf-menu-bar__submenu-list,
+.vf-menu-bar__group-list {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -178,6 +189,15 @@
 
 .vf-menu-bar__submenu-list > .vf-menu-bar__node {
   width: 100%;
+}
+
+.vf-menu-bar__group-list > .vf-menu-bar__node {
+  width: 100%;
+}
+
+.vf-menu-bar__group-list {
+  display: grid;
+  gap: var(--vf-menu-bar-current-list-gap);
 }
 
 .vf-menu-bar__group {
@@ -236,12 +256,13 @@
 }
 
 .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active {
+  font-weight: var(--vf-text-label-font-weight);
   color: var(--vf-menu-bar-current-submenu-active-color);
   background: var(--vf-menu-bar-current-submenu-active-background);
 }
 
 .vf-menu-bar__item--ancestor-active {
-  color: var(--vf-menu-bar-item-ancestor-active-color);
+  color: var(--vf-menu-bar-current-item-ancestor-active-color);
   background: transparent;
 }
 
@@ -252,16 +273,28 @@
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
-.vf-menu-bar__item--top:hover:not(:disabled, .vf-menu-bar__item--active),
-.vf-menu-bar__item--top.vf-menu-bar__item--open {
+.vf-menu-bar__item--top:hover:not(:disabled, .vf-menu-bar__item--active, .vf-menu-bar__item--open) {
   color: var(--vf-menu-bar-current-top-hover-color);
   background: var(--vf-menu-bar-current-top-hover-background);
 }
 
-.vf-menu-bar__item:not(.vf-menu-bar__item--top):hover:not(:disabled, .vf-menu-bar__item--active),
-.vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--open {
+.vf-menu-bar__item--top.vf-menu-bar__item--open {
+  color: var(--vf-menu-bar-current-top-open-color);
+  background: var(--vf-menu-bar-current-top-open-background);
+}
+
+.vf-menu-bar__item:not(.vf-menu-bar__item--top):hover:not(
+    :disabled,
+    .vf-menu-bar__item--active,
+    .vf-menu-bar__item--open
+  ) {
   color: var(--vf-menu-bar-current-submenu-hover-color);
   background: var(--vf-menu-bar-current-submenu-hover-background);
+}
+
+.vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--open {
+  color: var(--vf-menu-bar-current-submenu-open-color);
+  background: var(--vf-menu-bar-current-submenu-open-background);
 }
 
 .vf-menu-bar__item--disabled {

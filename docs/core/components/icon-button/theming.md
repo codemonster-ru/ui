@@ -16,4 +16,6 @@ Available design tokens and corresponding CSS variables.
 
 | Token | CSS Variable | Description |
 | --- | --- | --- |
-| `—` | `—` | No documented design tokens yet. |
+| Ghost states | `--vf-button-ghost-hover-background`, `--vf-button-ghost-active-background` | Shared neutral hover and active backgrounds for the ghost variant. |
+| Secondary states | `--vf-button-secondary-hover-*`, `--vf-button-secondary-active-*` | Shared hover and active surfaces for the secondary variant. |
+| Solid states | `--vf-button-solid-hover-filter`, `--vf-button-solid-active-filter` | Shared interaction filters for solid semantic variants. |

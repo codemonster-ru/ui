@@ -41,9 +41,9 @@ Available design tokens and corresponding CSS variables.
 | `buttonSecondaryHoverBorderColor` | `--vf-button-secondary-hover-border-color` | Hover border color for `secondary` variant. |
 | `buttonSecondaryActiveBackground` | `--vf-button-secondary-active-background` | Active background for `secondary` variant. |
 | `buttonSecondaryActiveBorderColor` | `--vf-button-secondary-active-border-color` | Active border color for `secondary` variant. |
-| `buttonGhostHoverBackground` | `--vf-button-ghost-hover-background` | Hover background for `ghost` variant. |
+| `buttonGhostHoverBackground` | `--vf-button-ghost-hover-background` | Neutral hover background for `ghost` variant. |
 | `buttonGhostHoverBorderColor` | `--vf-button-ghost-hover-border-color` | Hover border color for `ghost` variant. |
-| `buttonGhostActiveBackground` | `--vf-button-ghost-active-background` | Active background for `ghost` variant. |
+| `buttonGhostActiveBackground` | `--vf-button-ghost-active-background` | Neutral active background for `ghost` variant. |
 | `buttonGhostActiveBorderColor` | `--vf-button-ghost-active-border-color` | Active border color for `ghost` variant. |
 | `buttonSolidHoverFilter` | `--vf-button-solid-hover-filter` | Hover filter for solid semantic variants. |
 | `buttonSolidActiveFilter` | `--vf-button-solid-active-filter` | Active filter for solid semantic variants. |

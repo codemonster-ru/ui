@@ -3,9 +3,6 @@
   --vf-overlay-enter-shift: var(--vf-overlay-gap);
   --vf-overlay-float-enter-shift: var(--vf-menu-gap);
   --vf-overlay-float-enter-scale: var(--vf-overlay-float-enter-scale-default);
-  --vf-overlay-float-shadow:
-    0 var(--vf-menu-gap) calc(var(--vf-overlay-padding) * 0.625) color-mix(in srgb, black 16%, transparent),
-    0 var(--vf-overlay-border-width) calc(var(--vf-menu-gap) / 2) color-mix(in srgb, black 10%, transparent);
   --vf-overlay-arrow-overlap-offset: var(--vf-overlay-arrow-overlap-offset-default);
   --vf-overlay-arrow-separated-offset: var(--vf-overlay-border-width);
   --vf-overlay-viewport-block-size: var(--vf-overlay-viewport-block-size-default);

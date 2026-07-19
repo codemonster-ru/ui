@@ -1,6 +1,6 @@
 ---
-title: "Installation"
-description: "How to install and import the layouts package"
+title: 'Installation'
+description: 'How to install and import the layouts package'
 order: 2
 ---
 
@@ -36,6 +36,7 @@ Component-level JS subpaths (auto-import matching component CSS):
 ```ts
 import VfAppShell from '@codemonster-ru/vueforge-layouts/app-shell';
 import VfAdminLayout from '@codemonster-ru/vueforge-layouts/admin-layout';
+import VfAdminShell from '@codemonster-ru/vueforge-layouts/admin-shell';
 import VfContainer from '@codemonster-ru/vueforge-layouts/container';
 ```
 
@@ -46,6 +47,7 @@ Wrappers also include CSS for components rendered internally. For example,
 `@codemonster-ru/vueforge-layouts/setup-layout` follows the same pattern and loads both
 `container.css` and `setup-layout.css`.
 `@codemonster-ru/vueforge-layouts/admin-layout` loads `admin-layout.css`.
+`@codemonster-ru/vueforge-layouts/admin-shell` loads `admin-shell.css`.
 
 For full manual control, keep explicit CSS imports and load only required entries on pages where they are used.
 
@@ -53,6 +55,7 @@ Examples:
 
 - `@codemonster-ru/vueforge-layouts/container.css`
 - `@codemonster-ru/vueforge-layouts/admin-layout.css`
+- `@codemonster-ru/vueforge-layouts/admin-shell.css`
 - `@codemonster-ru/vueforge-layouts/content-area.css`
 - `@codemonster-ru/vueforge-layouts/document-layout.css`
 - `@codemonster-ru/vueforge-layouts/setup-layout.css`
