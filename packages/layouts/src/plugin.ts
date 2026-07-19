@@ -18,6 +18,7 @@ const CORE_DEPENDENCY_TOKENS = [
   '--vf-breakpoint-2xl',
   '--vf-surface-padding',
   '--vf-radius-surface',
+  '--vf-color-bg',
   '--vf-color-border',
   '--vf-color-surface',
   '--vf-color-surface-muted',
