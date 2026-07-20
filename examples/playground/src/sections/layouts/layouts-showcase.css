@@ -461,16 +461,6 @@
   margin: 0;
 }
 
-.demo-admin-shell__panel-title {
-  justify-content: space-between;
-  padding-bottom: var(--vf-layout-space-layout-base);
-  border-bottom: var(--vf-layout-border-base);
-}
-
-.demo-admin-shell__panel-body {
-  color: var(--vf-color-muted);
-}
-
 .demo-shell-card .vf-app-shell {
   min-height: 30rem;
 }

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.21.0
+
+### Changed
+
+- Refined the default `VfAdminShell` palette into a clear elevation hierarchy: a contrast topbar, recessed sidebar canvas, and elevated workspace surface in both color modes.
+- Kept surface-based workspace content visually structured while preserving the public header, sidebar, and workspace background tokens for application overrides.
+- Made generated layout theme CSS omit empty mode blocks when a custom preset has no mode-specific overrides.
+
+### Docs
+
+- Updated the `VfAdminShell` feature and theming documentation to describe the new semantic surface hierarchy.
+- Replaced the card grid in the responsive `VfAdminShell` showcase with a paginated warehouse data table for realistic visual verification.
+
 ## 1.20.0
 
 ### Added
