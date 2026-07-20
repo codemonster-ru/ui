@@ -650,19 +650,15 @@
 
                       <VfStack>
                         <h3 class="demo-admin-shell__page-title">Warehouse availability</h3>
-                        <VfGrid>
-                          <VfCard v-for="panel in adminShellPanels" :key="panel.title">
-                            <template #header>
-                              <VfInline class="demo-admin-shell__panel-title" :wrap="false">
-                                <strong>{{ panel.title }}</strong>
-                                <VfButton size="sm" variant="secondary">{{ panel.action }}</VfButton>
-                              </VfInline>
-                            </template>
-                            <VfStack class="demo-admin-shell__panel-body">
-                              <span v-for="item in panel.items" :key="item">{{ item }}</span>
-                            </VfStack>
-                          </VfCard>
-                        </VfGrid>
+                        <VfDataTable
+                          :columns="adminShellTableColumns"
+                          :rows="adminShellTableRows"
+                          row-key="id"
+                          column-dividers
+                          pagination
+                          :default-page-size="5"
+                          :page-size-options="[5, 10]"
+                        />
                       </VfStack>
                     </VfAdminShell>
 
@@ -843,6 +839,7 @@ import {
   VfButton,
   VfCard,
   VfCheckbox,
+  VfDataTable,
   VfDrawer,
   VfField,
   VfIconButton,
@@ -853,6 +850,7 @@ import {
   VfSwitch,
   VfTabs,
 } from '@codemonster-ru/vueforge-core';
+import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
 import { computed, ref, watch } from 'vue';
 import {
   VfAppShell,
@@ -1066,15 +1064,21 @@ const adminLayoutPanels = [
     ],
   },
 ];
-const adminShellPanels = [
-  {
-    title: 'Recent entries',
-    action: 'Create entry',
-    items: ['Getting started with Annabel', 'Design system notes', 'Summer release'],
-  },
-  { title: 'Pages', action: 'View all', items: ['Home', 'About', 'Contact'] },
-  { title: 'Updates', action: 'Check', items: ['Everything is up to date'] },
-  { title: 'Activity', action: 'View all', items: ['Content published', 'Settings updated', 'Asset uploaded'] },
+const adminShellTableColumns: VfDataTableColumn[] = [
+  { key: 'product', header: 'Product' },
+  { key: 'sku', header: 'SKU' },
+  { key: 'warehouse', header: 'Warehouse' },
+  { key: 'available', header: 'Available', align: 'end' },
+  { key: 'status', header: 'Status' },
+];
+const adminShellTableRows: VfDataTableRow[] = [
+  { id: 1, product: 'Wireless keyboard', sku: 'KB-1042', warehouse: 'North', available: 24, status: 'Available' },
+  { id: 2, product: 'USB-C dock', sku: 'DK-2208', warehouse: 'Central', available: 0, status: 'Out of stock' },
+  { id: 3, product: 'Studio monitor', sku: 'MN-3410', warehouse: 'North', available: 7, status: 'Low stock' },
+  { id: 4, product: 'Laptop stand', sku: 'ST-1184', warehouse: 'West', available: 31, status: 'Available' },
+  { id: 5, product: 'Web camera', sku: 'CM-4421', warehouse: 'Central', available: 16, status: 'Available' },
+  { id: 6, product: 'Mechanical mouse', sku: 'MS-3097', warehouse: 'West', available: 4, status: 'Low stock' },
+  { id: 7, product: 'Desk microphone', sku: 'MC-8073', warehouse: 'North', available: 12, status: 'Available' },
 ];
 
 const activeAuthBreakpointConfig = computed(
