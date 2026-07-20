@@ -74,9 +74,7 @@ export function buildLayoutCssArtifacts() {
   const themeLines = [
     '/* Generated from src/theme/default-preset.ts. */',
     '/* Fallback mode layout styles for package CSS consumers. */',
-    ":root[data-vf-theme='dark'] {",
-    cssVarsToText(darkCssVars),
-    '}',
+    ...(Object.keys(darkCssVars).length > 0 ? [":root[data-vf-theme='dark'] {", cssVarsToText(darkCssVars), '}'] : []),
     '',
   ];
 

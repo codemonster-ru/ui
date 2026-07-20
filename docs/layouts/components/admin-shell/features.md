@@ -6,7 +6,7 @@
 - The sidebar begins below the topbar and keeps its navigation visible while the page scrolls.
 - The sidebar provides the body background while the workspace sits above it as an inset rounded surface with a system border.
 - A system border along the rounded top edge separates the body layer from the global topbar.
-- The sidebar and workspace map to the standard sidebar and application surfaces to establish hierarchy without an explicit divider.
+- The contrast topbar and elevated workspace direct attention toward main content, while the sidebar recedes onto the application canvas in both themes.
 - The footer remains inside the workspace and is pushed to its bottom when content is short.
 - At the `lg` breakpoint and below, the sidebar is hidden and the workspace keeps balanced inline insets.
 - At the `sm` breakpoint and below, the center header content is hidden to preserve room for brand and actions.

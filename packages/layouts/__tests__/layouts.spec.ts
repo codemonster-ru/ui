@@ -60,8 +60,8 @@ describe('package exports', () => {
     expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-width: 18rem;');
     expect(tokensCss).toContain('--vf-layout-admin-shell-header-background: var(--vf-color-text);');
     expect(tokensCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-surface);');
-    expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-background: var(--vf-layout-sidebar-background);');
-    expect(tokensCss).toContain('--vf-layout-admin-shell-workspace-background: var(--vf-layout-app-background);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-background: var(--vf-color-bg);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-workspace-background: var(--vf-layout-surface-base);');
     expect(themeCss).toContain(
       '--vf-layout-admin-shell-header-background: color-mix(in srgb, var(--vf-color-bg) 75%, black);',
     );
