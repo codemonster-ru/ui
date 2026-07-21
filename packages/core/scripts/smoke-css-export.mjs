@@ -19,9 +19,9 @@ const overlayDependentCssExports = new Set([
   './dropdown.css',
   './menu-bar.css',
   './popover.css',
-  './stepper.css',
   './tooltip.css',
 ]);
+const transitionGuardExcludedCssExports = new Set(['./tokens.css', './theme.css', './foundation.css']);
 const overlayPrimitiveDeclarations = [
   '--vf-overlay-border-width:',
   '--vf-overlay-enter-shift:',
@@ -117,6 +117,55 @@ try {
           );
         }
       }
+    }
+
+    if (!transitionGuardExcludedCssExports.has(exportKey)) {
+      const guardOccurrences =
+        cssSource.match(/:root\.vf-theme-transitioning :where\(\[class\^='vf-'\]/g) ?? [];
+      if (guardOccurrences.length !== 1) {
+        throw new Error(
+          `Broken theme-transition fallback: ${exportKey} must contain the shared guard exactly once.`,
+        );
+      }
+    }
+
+    if (exportKey === './stepper.css') {
+      for (const foreignSelector of ['.vf-nav-menu', '.vf-menu-bar', '.vf-tabs', '.vf-accordion']) {
+        if (cssSource.includes(foreignSelector)) {
+          throw new Error(`Broken Stepper CSS export: standalone artifact contains ${foreignSelector}.`);
+        }
+      }
+      for (const declaration of overlayPrimitiveDeclarations) {
+        if (cssSource.includes(declaration)) {
+          throw new Error(`Broken Stepper CSS export: standalone artifact contains unused ${declaration}.`);
+        }
+      }
+    }
+
+    const requiredSnippets = {
+      './input.css': ['display: block;', 'var(--vf-field-floating-input-offset-inline-lg)'],
+      './textarea.css': ['display: block;'],
+      './select.css': [
+        'var(--vf-field-floating-select-padding-adjustment-sm)',
+        'var(--vf-field-floating-select-padding-adjustment-lg)',
+        '.vf-dropdown__item.vf-select__option',
+      ],
+      './nav-menu.css': ['var(--vf-nav-menu-group-label-letter-spacing)'],
+      './command-palette.css': ['line-clamp: 3;', 'line-clamp: 2;'],
+      './dialog.css': ['.vf-dialog__actions .vf-icon-button .vf-icon'],
+      './drawer.css': ['.vf-drawer__actions .vf-icon-button .vf-icon'],
+      './menu-bar.css': ['.vf-horizontal-scroller {'],
+      './tabs.css': ['.vf-horizontal-scroller {'],
+    }[exportKey] ?? [];
+
+    for (const snippet of requiredSnippets) {
+      if (!cssSource.includes(snippet)) {
+        throw new Error(`Broken reconciled CSS export: ${exportKey} is missing ${snippet}.`);
+      }
+    }
+
+    if (exportKey === './select.css' && cssSource.includes('min-height: var(--vf-select-filter-min-height-sm)')) {
+      throw new Error('Broken Select CSS export: floating geometry still uses the legacy filter min-height token.');
     }
   }
 

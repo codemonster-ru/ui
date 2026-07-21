@@ -215,6 +215,15 @@
   gap: var(--vf-dialog-actions-gap);
 }
 
+.vf-drawer__actions .vf-icon-button {
+  color: var(--vf-color-muted);
+}
+
+.vf-drawer__actions .vf-icon-button .vf-icon {
+  width: var(--vf-nav-menu-leading-icon-size);
+  height: var(--vf-nav-menu-leading-icon-size);
+}
+
 .vf-drawer__title {
   margin: 0;
   font-size: var(--vf-dialog-title-font-size);

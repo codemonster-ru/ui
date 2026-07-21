@@ -158,22 +158,6 @@
 :root:not([data-vf-theme='dark']) .vf-codeblock:not([data-theme='dark']) {
   box-shadow: var(--vf-codeblock-shadow);
 }
-
-.vf-codeblock[data-theme='dark'],
-:root[data-theme='dark'] .vf-codeblock:not([data-theme='light']),
-[data-theme='dark'] .vf-codeblock:not([data-theme='light']) {
-  --vf-codeblock-background-color: var(--vf-color-surface-muted);
-  --vf-codeblock-text-color: var(--vf-color-text);
-  --vf-codeblock-border-color: var(--vf-color-border);
-  --vf-codeblock-header-border-color: var(--vf-color-border);
-  --vf-codeblock-header-background-color: var(--vf-codeblock-background-color);
-  --vf-codeblock-meta-color: var(--vf-color-muted);
-  --vf-codeblock-filename-color: var(--vf-color-text);
-  --vf-codeblock-action-border-color: var(--vf-color-border);
-  --vf-codeblock-action-background-color: var(--vf-color-surface-muted);
-  --vf-codeblock-action-text-color: var(--vf-color-text);
-  --vf-codeblock-line-number-color: var(--vf-color-muted);
-}
 /* stylelint-enable no-descending-specificity */
 
 .vf-codeblock--disabled {

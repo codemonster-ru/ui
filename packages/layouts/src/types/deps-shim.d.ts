@@ -55,6 +55,6 @@ declare module '@codemonster-ru/vueforge-theme' {
   export function resolveThemePreset(config: VfThemeConfig): VfThemePreset;
   export function resolveThemePresetOptions(options?: Record<string, unknown>): Record<string, unknown>;
   export function themePresetToCssText(config: unknown): string;
-  export function themeTokensToCssVars(tokens: Partial<VfThemeTokens>, prefix?: string): string;
-  export function applyThemeConfig(config: unknown, targetDocument?: Document): void;
+  export function themeTokensToCssVars(tokens: Partial<VfThemeTokens>, prefix?: string): Record<string, string>;
+  export function applyThemeConfig(config: unknown, targetDocument?: Document): HTMLElement;
 }

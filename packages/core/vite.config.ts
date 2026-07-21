@@ -2,13 +2,15 @@ import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { inlineCssFiles, inlineCssImports } from './build/css-imports';
 import { buildThemeCssArtifacts, themeCssArtifactPaths } from './build/theme-css-artifacts';
 
 const rootDir = __dirname;
 const stylesDir = resolve(rootDir, 'src/styles');
 const styleEntriesDir = resolve(stylesDir, 'entries');
+const themeTransitionGuardPath = resolve(stylesDir, 'components/theme-transition-guard.css');
 const componentJsEntries = [
   'async',
   'accordion',
@@ -51,22 +53,6 @@ const componentJsEntries = [
   'tooltip',
 ] as const;
 
-function inlineCssImports(filePath: string, trace: string[] = []): string {
-  if (trace.includes(filePath)) {
-    throw new Error(`Circular CSS import detected: ${[...trace, filePath].join(' -> ')}`);
-  }
-
-  const source = readFileSync(filePath, 'utf8');
-
-  return source.replace(/^@import\s+['"](.+?)['"];\s*$/gm, (_statement, importPath: string) => {
-    if (!importPath.startsWith('.')) {
-      return `@import '${importPath}';`;
-    }
-
-    return inlineCssImports(resolve(dirname(filePath), importPath), [...trace, filePath]);
-  });
-}
-
 function vueforgeStyleArtifactsPlugin(): Plugin[] {
   return [
     {
@@ -92,11 +78,11 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
         copyFileSync(themeCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'generated-breakpoints.css'));
         writeFileSync(resolve(distDir, 'foundation.css'), inlineCssImports(resolve(stylesDir, 'foundation.css')));
         writeFileSync(resolve(distDir, 'styles.css'), inlineCssImports(resolve(stylesDir, 'styles.css')));
-        copyFileSync(resolve(stylesDir, 'components/base.css'), resolve(distDir, 'base.css'));
+        writeFileSync(resolve(distDir, 'base.css'), inlineCssImports(resolve(stylesDir, 'components/base.css')));
         for (const entryName of componentJsEntries) {
           writeFileSync(
             resolve(distDir, `${entryName}.css`),
-            inlineCssImports(resolve(styleEntriesDir, `${entryName}.css`)),
+            inlineCssFiles([themeTransitionGuardPath, resolve(styleEntriesDir, `${entryName}.css`)]),
           );
         }
 

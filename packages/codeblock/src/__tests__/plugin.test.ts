@@ -1,5 +1,7 @@
 import { createApp, defineComponent, h } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import VfCodeBlockPlugin, { setCodeBlockThemeVars } from '../index';
 import { __getCodeBlockLanguageLoadAttemptsForTests } from '../services/code-highlight';
 
@@ -58,10 +60,129 @@ describe('VfCodeBlockPlugin plugin', () => {
     app.mount(host);
 
     const styleElement = document.getElementById('vf-codeblock-runtime-theme-vars');
-    expect(styleElement?.textContent).toContain('#docs-app[data-theme="light"], #docs-app[data-vf-theme="light"]');
-    expect(styleElement?.textContent).toContain('#docs-app[data-theme="dark"], #docs-app[data-vf-theme="dark"]');
+    expect(styleElement?.textContent).toContain(':is(#docs-app):where([data-theme="light"], [data-vf-theme="light"])');
+    expect(styleElement?.textContent).toContain(':is(#docs-app):where([data-theme="dark"], [data-vf-theme="dark"])');
+    expect(styleElement?.textContent).toContain(':where([data-theme="light"], [data-vf-theme="light"]) :is(#docs-app)');
+    expect(styleElement?.textContent).toContain(':where([data-theme="dark"], [data-vf-theme="dark"]) :is(#docs-app)');
+    expect(styleElement?.textContent).toContain(
+      ':where(#docs-app) :where([data-theme="light"], [data-vf-theme="light"])',
+    );
+    expect(styleElement?.textContent).toContain(
+      ':where(#docs-app) :where([data-theme="dark"], [data-vf-theme="dark"])',
+    );
 
     app.unmount();
+  });
+
+  it('supports selector-list scopes while preserving component-local variable overrides', () => {
+    const lightScope = document.createElement('div');
+    lightScope.id = 'docs-light';
+    lightScope.setAttribute('data-theme', 'light');
+    const localCodeBlock = document.createElement('div');
+    localCodeBlock.className = 'vf-codeblock';
+    localCodeBlock.setAttribute('data-theme', 'light');
+    lightScope.appendChild(localCodeBlock);
+
+    const darkBoundary = document.createElement('div');
+    darkBoundary.setAttribute('data-vf-theme', 'dark');
+    const darkScope = document.createElement('div');
+    darkScope.id = 'docs-dark';
+    darkBoundary.appendChild(darkScope);
+    document.body.append(lightScope, darkBoundary);
+
+    setCodeBlockThemeVars(
+      {
+        base: { '--vf-codeblock-cascade-probe': 'base' },
+        light: { '--vf-codeblock-cascade-probe': 'light' },
+        dark: { '--vf-codeblock-cascade-probe': 'dark' },
+      },
+      { themeScope: '#docs-light, #docs-dark' },
+    );
+
+    const localOverrides = document.createElement('style');
+    localOverrides.textContent = '.vf-codeblock { --vf-codeblock-cascade-probe: local; }';
+    document.head.appendChild(localOverrides);
+
+    const styleElement = document.getElementById('vf-codeblock-runtime-theme-vars');
+    expect(styleElement?.textContent).toContain(':is(#docs-light, #docs-dark)');
+    expect(getComputedStyle(lightScope).getPropertyValue('--vf-codeblock-cascade-probe').trim()).toBe('light');
+    expect(getComputedStyle(darkScope).getPropertyValue('--vf-codeblock-cascade-probe').trim()).toBe('dark');
+    expect(getComputedStyle(localCodeBlock).getPropertyValue('--vf-codeblock-cascade-probe').trim()).toBe('local');
+
+    localOverrides.remove();
+    lightScope.remove();
+    darkBoundary.remove();
+  });
+
+  it('reapplies base-only theme vars on local mode boundaries without defeating local overrides', () => {
+    document.getElementById('vf-codeblock-runtime-theme-vars')?.remove();
+
+    const tokenDefaults = document.createElement('style');
+    tokenDefaults.textContent = readFileSync(resolve(__dirname, '../tokens.css'), 'utf8');
+    document.head.appendChild(tokenDefaults);
+
+    const scope = document.createElement('div');
+    scope.id = 'base-only-scope';
+    scope.style.setProperty('--vf-color-surface-muted', 'token-default');
+    const codeBlock = document.createElement('div');
+    codeBlock.className = 'vf-codeblock';
+    codeBlock.setAttribute('data-theme', 'light');
+    scope.appendChild(codeBlock);
+    document.body.appendChild(scope);
+
+    setCodeBlockThemeVars(
+      { base: { '--vf-codeblock-background-color': 'plugin-base' } },
+      { themeScope: '#base-only-scope' },
+    );
+
+    const styleElement = document.getElementById('vf-codeblock-runtime-theme-vars');
+    expect(styleElement?.textContent?.match(/--vf-codeblock-background-color: plugin-base;/g)).toHaveLength(3);
+    expect(getComputedStyle(codeBlock).getPropertyValue('--vf-codeblock-background-color').trim()).toBe('plugin-base');
+
+    codeBlock.setAttribute('data-theme', 'dark');
+    expect(getComputedStyle(codeBlock).getPropertyValue('--vf-codeblock-background-color').trim()).toBe('plugin-base');
+
+    const localOverrides = document.createElement('style');
+    localOverrides.textContent = '.vf-codeblock { --vf-codeblock-background-color: local; }';
+    document.head.appendChild(localOverrides);
+    expect(getComputedStyle(codeBlock).getPropertyValue('--vf-codeblock-background-color').trim()).toBe('local');
+
+    localOverrides.remove();
+    tokenDefaults.remove();
+    styleElement?.remove();
+    scope.remove();
+  });
+
+  it('preserves inherited public token overrides for inherit-mode components', () => {
+    const tokenDefaults = document.createElement('style');
+    tokenDefaults.textContent = readFileSync(resolve(__dirname, '../tokens.css'), 'utf8');
+    document.head.appendChild(tokenDefaults);
+
+    const scope = document.createElement('div');
+    scope.className = 'brand-scope';
+    const codeBlock = document.createElement('div');
+    codeBlock.className = 'vf-codeblock';
+    codeBlock.setAttribute('data-theme', 'inherit');
+    codeBlock.setAttribute('data-vf-theme', 'inherit');
+    scope.appendChild(codeBlock);
+    document.body.appendChild(scope);
+
+    expect(tokenDefaults.textContent).not.toContain('.vf-codeblock[data-theme=');
+    expect(
+      codeBlock.matches(
+        ":where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark'])",
+      ),
+    ).toBe(false);
+    expect(codeBlock.getAttribute('data-theme')).toBe('inherit');
+    expect(scope.matches('.brand-scope')).toBe(true);
+
+    scope.style.setProperty('--vf-codeblock-background-color', 'inherited-brand');
+    expect(scope.style.getPropertyValue('--vf-codeblock-background-color')).toBe(
+      'inherited-brand',
+    );
+
+    scope.remove();
+    tokenDefaults.remove();
   });
 
   it('is safe when document is unavailable', () => {

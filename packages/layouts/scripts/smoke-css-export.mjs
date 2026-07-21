@@ -28,6 +28,7 @@ const requiredComponentCssImports = {
   './document-layout': ['../container.css', '../document-layout.css'],
   './setup-layout': ['../container.css', '../setup-layout.css'],
 };
+const themeUtilsTypesTarPath = 'package/dist/layouts/src/theme/utils.d.ts';
 
 if (!cssExportTargets.length) {
   throw new Error('Expected at least one CSS export in package.json exports.');
@@ -73,6 +74,18 @@ try {
   })
     .split('\n')
     .filter(Boolean);
+
+  if (!tarEntries.includes(themeUtilsTypesTarPath)) {
+    throw new Error(`Broken type export: "${themeUtilsTypesTarPath}" is missing in npm pack archive.`);
+  }
+
+  const themeUtilsTypes = readFileSync(join(tempDir, themeUtilsTypesTarPath), 'utf8');
+  if (!/export declare function layoutsTokensToCssVars\([\s\S]*?\): Record<string, string>;/.test(themeUtilsTypes)) {
+    throw new Error('Broken type export: layoutsTokensToCssVars must return Record<string, string>.');
+  }
+  if (!/export declare function applyLayoutsThemeConfig\([\s\S]*?\): HTMLElement;/.test(themeUtilsTypes)) {
+    throw new Error('Broken type export: applyLayoutsThemeConfig must return HTMLElement.');
+  }
 
   for (const [exportKey, exportTarget] of cssExportTargets) {
     const normalizedTarget = exportTarget.replace(/^\.\//, '');

@@ -155,4 +155,22 @@ describe('theme bridge', () => {
     expect(cssVars['--vf-breakpoint-2xl']).toBe('1536px');
     expect(cssVars['--vf-breakpoint2xl']).toBeUndefined();
   });
+
+  it('bridges a custom runtime prefix back to the canonical component namespace', () => {
+    const style = applyThemeConfig(
+      resolveThemeConfig({
+        extend: {
+          colorPrimary: '#123456',
+        },
+        options: {
+          prefix: 'brand',
+          styleId: 'vf-test-theme',
+        },
+      }),
+    );
+
+    expect(style.textContent).toContain('--brand-color-primary: #123456;');
+    expect(style.textContent).toContain('--vf-color-primary: var(--brand-color-primary);');
+    expect(style.textContent).toContain('--vf-selectable-color: var(--brand-selectable-color);');
+  });
 });

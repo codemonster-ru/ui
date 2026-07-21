@@ -112,7 +112,6 @@
 .vf-field--floating-in .vf-select--floating {
   position: relative;
   align-items: center;
-  padding-top: var(--vf-field-floating-control-padding-top-md);
   padding-inline-end: calc((var(--vf-field-adornment-offset-md) * 2) + var(--vf-field-icon-size));
 }
 
@@ -132,8 +131,7 @@
 }
 
 .vf-field--floating-in .vf-select--floating.vf-select--sm {
-  min-height: var(--vf-select-filter-min-height-sm);
-  padding-top: var(--vf-field-floating-control-padding-top-sm);
+  padding-top: calc(var(--vf-field-floating-control-padding-top-sm) + var(--vf-field-floating-select-padding-adjustment-sm));
   padding-inline-end: calc((var(--vf-field-adornment-offset-sm) * 2) + var(--vf-field-icon-size-sm));
 }
 
@@ -153,7 +151,10 @@
 }
 
 .vf-field--floating-in .vf-select--floating.vf-select--lg {
-  padding-top: var(--vf-field-floating-control-padding-top-lg);
+  padding-top: calc(var(--vf-field-floating-control-padding-top-lg) - var(--vf-field-floating-select-padding-adjustment-lg));
+  padding-bottom: calc(
+    var(--vf-field-floating-control-padding-bottom-lg) - var(--vf-field-floating-select-padding-adjustment-lg)
+  );
   padding-inline-end: calc((var(--vf-field-adornment-offset-lg) * 2) + var(--vf-field-icon-size-lg));
 }
 
@@ -366,6 +367,10 @@
   max-height: var(--vf-select-menu-max-height);
   overflow: auto;
   overscroll-behavior: contain;
+}
+
+.vf-dropdown__item.vf-select__option {
+  color: var(--vf-select-option-color);
 }
 
 .vf-select__option:focus-visible {

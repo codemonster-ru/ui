@@ -1,41 +1,44 @@
 // @vitest-environment jsdom
 /* eslint-disable vue/one-component-per-file */
-import { defineComponent, h, markRaw } from 'vue';
+import { createSSRApp, defineComponent, h, markRaw } from 'vue';
 import { mount } from '@vue/test-utils';
+import { renderToString } from '@vue/server-renderer';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import VfPlayground from './VfPlayground.vue';
 
-const createSessionMock = vi.fn((options?: { iframe?: HTMLIFrameElement; files?: Record<string, string>; entry?: string }) => ({
-  run: vi.fn(async () => {
-    const iframe = options?.iframe;
-    const entry = options?.entry ?? '';
-    const html = options?.files?.[entry] ?? '<!doctype html><html><head></head><body></body></html>';
-    if (iframe?.contentDocument) {
-      iframe.contentDocument.open();
-      iframe.contentDocument.write(html);
-      iframe.contentDocument.close();
-    }
+const createSessionMock = vi.fn(
+  (options?: { iframe?: HTMLIFrameElement; files?: Record<string, string>; entry?: string }) => ({
+    run: vi.fn(async () => {
+      const iframe = options?.iframe;
+      const entry = options?.entry ?? '';
+      const html = options?.files?.[entry] ?? '<!doctype html><html><head></head><body></body></html>';
+      if (iframe?.contentDocument) {
+        iframe.contentDocument.open();
+        iframe.contentDocument.write(html);
+        iframe.contentDocument.close();
+      }
+    }),
+    dispose: vi.fn(),
+    updateFiles: vi.fn(),
+    onRun: vi.fn(() => () => undefined),
+    onConsole: vi.fn(() => () => undefined),
+    onError: vi.fn(() => () => undefined),
   }),
-  dispose: vi.fn(),
-  updateFiles: vi.fn(),
-  onRun: vi.fn(() => () => undefined),
-  onConsole: vi.fn(() => () => undefined),
-  onError: vi.fn(() => () => undefined)
-}));
+);
 
 vi.mock('@codemonster-ru/vueforge-playground-core', () => ({
   createPlaygroundSession: (options: { iframe?: HTMLIFrameElement; files?: Record<string, string>; entry?: string }) =>
-    createSessionMock(options)
+    createSessionMock(options),
 }));
 
 const TabsStub = defineComponent({
   name: 'VfTabs',
   props: {
     items: { type: Array, default: () => [] },
-    modelValue: { type: String, default: '' }
+    modelValue: { type: String, default: '' },
   },
   emits: ['update:model-value'],
   setup(props) {
@@ -44,38 +47,45 @@ const TabsStub = defineComponent({
         'div',
         { class: 'vf-tabs-stub', 'data-model-value': props.modelValue },
         (props.items as Array<{ value: string; label: string }>).map((item) =>
-          h('button', { key: item.value, class: 'vf-tabs-item', 'data-value': item.value }, item.label)
-        )
+          h('button', { key: item.value, class: 'vf-tabs-item', 'data-value': item.value }, item.label),
+        ),
       );
-  }
+  },
 });
 
 const CodeBlockStub = defineComponent({
   name: 'VfCodeBlock',
   props: {
     code: { type: String, default: '' },
-    language: { type: String, default: '' }
+    language: { type: String, default: '' },
+    theme: { type: String, default: 'inherit' },
   },
-  setup(props: { code: string; language: string }) {
-    return () => h('pre', { class: 'vf-codeblock-stub', 'data-language': props.language }, props.code);
-  }
+  setup(props: { code: string; language: string; theme: string }) {
+    return () =>
+      h(
+        'pre',
+        { class: 'vf-codeblock-stub', 'data-language': props.language, 'data-code-theme': props.theme },
+        props.code,
+      );
+  },
 });
 
 const baseSandboxProps = {
   files: {
-    '/main.ts': '<!doctype html><html><head></head><body><div>Hello</div></body></html>'
+    '/main.ts': '<!doctype html><html><head></head><body><div>Hello</div></body></html>',
   },
-  entry: '/main.ts'
+  entry: '/main.ts',
 } as const;
 
 const testGlobal = {
   stubs: {
     VfTabs: TabsStub,
-    VfCodeBlock: CodeBlockStub
+    VfCodeBlock: CodeBlockStub,
+    VfCodeBlockShim: CodeBlockStub,
   },
   config: {
-    warnHandler: () => undefined
-  }
+    warnHandler: () => undefined,
+  },
 } as const;
 
 function findTabsHost(wrapper: ReturnType<typeof mount>) {
@@ -95,7 +105,7 @@ function ensureIframeDocument(iframe: HTMLIFrameElement): Document {
   const documentStub = window.document.implementation.createHTMLDocument('preview');
   Object.defineProperty(iframe, 'contentDocument', {
     configurable: true,
-    value: documentStub
+    value: documentStub,
   });
   return documentStub;
 }
@@ -111,8 +121,8 @@ beforeAll(() => {
       removeEventListener: vi.fn(),
       addListener: vi.fn(),
       removeListener: vi.fn(),
-      dispatchEvent: vi.fn()
-    }))
+      dispatchEvent: vi.fn(),
+    })),
   });
 });
 
@@ -136,16 +146,16 @@ describe('VfPlayground', () => {
     ['/config/.env', 'env'],
     ['/src/index.php', 'php'],
     ['/config/jobs.cron', 'cron'],
-    ['/config/app.json', 'json']
+    ['/config/app.json', 'json'],
   ])('passes the %s file language to CodeBlock', (entry, language) => {
     const wrapper = mount(VfPlayground, {
       props: {
         files: {
-          [entry]: 'content'
+          [entry]: 'content',
         },
-        entry
+        entry,
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     expect(findCodeHost(wrapper).attributes('data-language')).toBe(language);
@@ -156,9 +166,9 @@ describe('VfPlayground', () => {
       props: {
         ...baseSandboxProps,
         minHeight: 260,
-        height: 420
+        height: 420,
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     const styleValue = wrapper.attributes('style');
@@ -169,7 +179,7 @@ describe('VfPlayground', () => {
   it('keeps sandbox mode behavior and renders iframe preview', async () => {
     const wrapper = mount(VfPlayground, {
       props: baseSandboxProps,
-      global: testGlobal
+      global: testGlobal,
     });
 
     await flushThemeSync();
@@ -183,15 +193,15 @@ describe('VfPlayground', () => {
       name: 'DemoComponent',
       setup() {
         return () => h('div', { class: 'demo-content' }, 'Component demo');
-      }
+      },
     });
 
     const wrapper = mount(VfPlayground, {
       props: {
         mode: 'component',
-        component: markRaw(Demo)
+        component: markRaw(Demo),
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     await flushThemeSync();
@@ -209,15 +219,15 @@ describe('VfPlayground', () => {
       name: 'DemoReadyEvents',
       setup() {
         return () => h('div', 'ready');
-      }
+      },
     });
 
     const wrapper = mount(VfPlayground, {
       props: {
         mode: 'component',
-        component: markRaw(Demo)
+        component: markRaw(Demo),
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     await flushThemeSync();
@@ -233,7 +243,7 @@ describe('VfPlayground', () => {
       name: 'DemoReadyOrder',
       setup() {
         return () => h('div', 'ready-order');
-      }
+      },
     });
 
     mount(VfPlayground, {
@@ -241,9 +251,9 @@ describe('VfPlayground', () => {
         mode: 'component',
         component: markRaw(Demo),
         onPreviewReady: () => sequence.push('preview-ready'),
-        onReady: () => sequence.push('ready')
+        onReady: () => sequence.push('ready'),
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     await flushThemeSync();
@@ -258,10 +268,10 @@ describe('VfPlayground', () => {
     expect(() =>
       mount(VfPlayground, {
         props: {
-          mode: 'component'
+          mode: 'component',
         } as never,
-        global: testGlobal
-      })
+        global: testGlobal,
+      }),
     ).toThrow('[VfPlayground] `component` is required when `mode` is "component".');
   });
 
@@ -274,13 +284,13 @@ describe('VfPlayground', () => {
             name: 'ComponentWithSource',
             setup() {
               return () => h('div', 'preview');
-            }
-          })
+            },
+          }),
         ),
         componentSource: '<template><div>preview</div></template>',
-        componentSourceLanguage: 'vue'
+        componentSourceLanguage: 'vue',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(true);
@@ -299,13 +309,13 @@ describe('VfPlayground', () => {
             name: 'ComponentInitialPreview',
             setup() {
               return () => h('div', 'preview');
-            }
-          })
+            },
+          }),
         ),
         componentSource: '<template><div>preview</div></template>',
-        initialTab: 'preview'
+        initialTab: 'preview',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(true);
@@ -318,9 +328,9 @@ describe('VfPlayground', () => {
       props: {
         ...baseSandboxProps,
         showCode: false,
-        initialTab: 'code'
+        initialTab: 'code',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(false);
@@ -331,9 +341,9 @@ describe('VfPlayground', () => {
     const wrapper = mount(VfPlayground, {
       props: {
         ...baseSandboxProps,
-        initialTab: 'console'
+        initialTab: 'console',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     expect(wrapper.find('.vf-tabs-item[data-value="console"]').exists()).toBe(true);
@@ -349,13 +359,13 @@ describe('VfPlayground', () => {
             name: 'ComponentInitialConsole',
             setup() {
               return () => h('div', 'preview');
-            }
-          })
+            },
+          }),
         ),
         componentSource: '<template><div>preview</div></template>',
-        initialTab: 'console'
+        initialTab: 'console',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     expect(wrapper.find('.vf-tabs-item[data-value="console"]').exists()).toBe(false);
@@ -371,16 +381,16 @@ describe('VfPlayground', () => {
             name: 'ComponentMultiFile',
             setup() {
               return () => h('div', 'preview');
-            }
-          })
+            },
+          }),
         ),
         componentFiles: {
           'Demo.vue': '<template><DemoCard /></template>',
-          'DemoCard.vue': '<template><div>Card</div></template>'
+          'DemoCard.vue': '<template><div>Card</div></template>',
         },
-        componentEntry: 'DemoCard.vue'
+        componentEntry: 'DemoCard.vue',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(true);
@@ -393,11 +403,11 @@ describe('VfPlayground', () => {
     const ActionsSpy = defineComponent({
       name: 'ActionsSpy',
       props: {
-        run: { type: Function, default: undefined }
+        run: { type: Function, default: undefined },
       },
       setup(props) {
         return () => h('div', { class: 'actions-spy', 'data-has-run': String(typeof props.run === 'function') });
-      }
+      },
     });
 
     const wrapper = mount(VfPlayground, {
@@ -405,15 +415,15 @@ describe('VfPlayground', () => {
         mode: 'component',
         component: markRaw(
           defineComponent({
-          name: 'MinimalDemo',
-          setup() {
-            return () => h('div', 'x');
-          }
-          })
+            name: 'MinimalDemo',
+            setup() {
+              return () => h('div', 'x');
+            },
+          }),
         ),
-        actionsRenderer: ActionsSpy
+        actionsRenderer: ActionsSpy,
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     expect(wrapper.find('.actions-spy').exists()).toBe(false);
@@ -423,9 +433,9 @@ describe('VfPlayground', () => {
     const wrapper = mount(VfPlayground, {
       props: {
         ...baseSandboxProps,
-        theme: 'light'
+        theme: 'light',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     await flushThemeSync();
@@ -445,14 +455,23 @@ describe('VfPlayground', () => {
     expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('light');
   });
 
+  it('keeps inherit as a non-boundary marker while exposing the SSR fallback', async () => {
+    const app = createSSRApp(() => h(VfPlayground, { ...baseSandboxProps, theme: 'inherit' }));
+    const html = await renderToString(app);
+
+    expect(html).toContain('data-theme="inherit"');
+    expect(html).toContain('data-vf-theme="inherit"');
+    expect(html).toContain('data-vf-resolved-theme="light"');
+  });
+
   it('syncs sandbox theme in inherit mode from host root attributes', async () => {
     document.documentElement.setAttribute('data-theme', 'light');
     const wrapper = mount(VfPlayground, {
       props: {
         ...baseSandboxProps,
-        theme: 'inherit'
+        theme: 'inherit',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
@@ -467,16 +486,184 @@ describe('VfPlayground', () => {
     document.documentElement.removeAttribute('data-theme');
   });
 
+  it('resolves inherit mode from the nearest valid mixed-attribute boundary', async () => {
+    const outer = document.createElement('div');
+    outer.setAttribute('data-theme', 'light');
+    const host = document.createElement('div');
+    host.setAttribute('data-vf-theme', 'dark');
+    outer.appendChild(host);
+    document.body.appendChild(outer);
+
+    const wrapper = mount(VfPlayground, {
+      attachTo: host,
+      props: {
+        ...baseSandboxProps,
+        theme: 'inherit',
+      },
+      global: testGlobal,
+    });
+
+    await flushThemeSync();
+
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('dark');
+    expect(findCodeHost(wrapper).attributes('data-code-theme')).toBe('dark');
+
+    wrapper.unmount();
+    outer.remove();
+  });
+
+  it('resyncs inherit mode after reparenting between theme boundaries', async () => {
+    const lightBoundary = document.createElement('div');
+    lightBoundary.setAttribute('data-vf-theme', 'light');
+    const darkBoundary = document.createElement('div');
+    darkBoundary.setAttribute('data-vf-theme', 'dark');
+    const host = document.createElement('div');
+    lightBoundary.appendChild(host);
+    document.body.append(lightBoundary, darkBoundary);
+
+    const wrapper = mount(VfPlayground, {
+      attachTo: host,
+      props: {
+        ...baseSandboxProps,
+        autorun: false,
+        theme: 'inherit',
+      },
+      global: testGlobal,
+    });
+
+    const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
+    ensureIframeDocument(iframe);
+    await flushThemeSync();
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('light');
+
+    darkBoundary.appendChild(host);
+    await flushThemeSync();
+    await flushThemeSync();
+
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('dark');
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('dark');
+
+    wrapper.unmount();
+    lightBoundary.remove();
+    darkBoundary.remove();
+  });
+
+  it('copies scoped host variables and posts them through the sandbox bridge', async () => {
+    const wrapper = mount(VfPlayground, {
+      attrs: {
+        style: '--vf-phase-0-probe: scoped-value; --vf-color-bg: rgb(12, 34, 56);',
+      },
+      props: {
+        ...baseSandboxProps,
+        theme: 'dark',
+      },
+      global: testGlobal,
+    });
+
+    await flushThemeSync();
+    const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
+    const iframeDocument = ensureIframeDocument(iframe);
+    const postMessage = vi.fn();
+    const iframeWindow = iframe.contentWindow;
+    const postMessageSpy = iframeWindow ? vi.spyOn(iframeWindow, 'postMessage').mockImplementation(postMessage) : null;
+    if (!iframeWindow) {
+      Object.defineProperty(iframe, 'contentWindow', {
+        configurable: true,
+        value: { postMessage },
+      });
+    }
+    iframe.dispatchEvent(new Event('load'));
+    await flushThemeSync();
+
+    expect(iframeDocument.documentElement.style.getPropertyValue('--vf-phase-0-probe').trim()).toBe('scoped-value');
+    expect(postMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        __cm_playground: true,
+        type: 'theme',
+        payload: expect.objectContaining({
+          theme: 'dark',
+          variables: expect.objectContaining({
+            '--vf-phase-0-probe': 'scoped-value',
+          }),
+        }),
+      }),
+      '*',
+    );
+
+    postMessageSpy?.mockRestore();
+  });
+
+  it('ignores unrelated document mutations while reacting to ancestor theme changes', async () => {
+    const themeBoundary = document.createElement('div');
+    themeBoundary.setAttribute('data-vf-theme', 'light');
+    const host = document.createElement('div');
+    themeBoundary.appendChild(host);
+    document.body.appendChild(themeBoundary);
+
+    const wrapper = mount(VfPlayground, {
+      attachTo: host,
+      props: {
+        ...baseSandboxProps,
+        autorun: false,
+        theme: 'inherit',
+      },
+      global: testGlobal,
+    });
+
+    await flushThemeSync();
+    await flushThemeSync();
+    const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
+    const postMessage = vi.fn();
+    const iframeWindow = iframe.contentWindow;
+    const postMessageSpy = iframeWindow ? vi.spyOn(iframeWindow, 'postMessage').mockImplementation(postMessage) : null;
+    if (!iframeWindow) {
+      Object.defineProperty(iframe, 'contentWindow', {
+        configurable: true,
+        value: { postMessage },
+      });
+    }
+
+    const unrelated = document.createElement('div');
+    document.body.appendChild(unrelated);
+    unrelated.classList.add('unrelated-state-change');
+    unrelated.style.setProperty('--unrelated-state', 'changed');
+    await flushThemeSync();
+
+    expect(postMessage).not.toHaveBeenCalled();
+
+    themeBoundary.setAttribute('data-vf-theme', 'dark');
+    await flushThemeSync();
+
+    expect(postMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        __cm_playground: true,
+        type: 'theme',
+        payload: expect.objectContaining({ theme: 'dark' }),
+      }),
+      '*',
+    );
+
+    postMessageSpy?.mockRestore();
+    wrapper.unmount();
+    unrelated.remove();
+    themeBoundary.remove();
+  });
+
   it('applies sandbox theme without relying on parent access or external script loading', async () => {
     const wrapper = mount(VfPlayground, {
       props: {
         files: {
-          '/index.html': '<!doctype html><html><head></head><body><script src="/main.js"></script></body></html>'
+          '/index.html': '<!doctype html><html><head></head><body><script src="/main.js"></script></body></html>',
         },
         entry: '/index.html',
-        theme: 'dark'
+        theme: 'dark',
       },
-      global: testGlobal
+      global: testGlobal,
     });
 
     await flushThemeSync();
@@ -489,10 +676,68 @@ describe('VfPlayground', () => {
     expect(iframe.contentDocument?.getElementById('vf-playground-theme-sync')).toBeTruthy();
   });
 
-  it('keeps playground codeblock overrides layout-only', () => {
+  it('keeps exact scoped tokens and playground codeblock overrides layout-only', () => {
     const tokensSource = readFileSync(resolve(__dirname, './tokens.css'), 'utf8');
     const componentSource = readFileSync(resolve(__dirname, './playground.css'), 'utf8');
+    const tokenNames = [...tokensSource.matchAll(/^\s*(--vf-playground-[a-z0-9-]+):/gm)].map((match) => match[1]);
 
+    expect(tokensSource).toContain(
+      `:root,
+:where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark']) {`,
+    );
+    expect(tokensSource).not.toContain('.vf-playground[data-theme=');
+    expect(tokensSource).not.toContain('.vf-playground[data-vf-theme=');
+    expect(tokenNames).toHaveLength(48);
+    expect([...new Set(tokenNames)].sort()).toEqual([
+      '--vf-playground-bar-height',
+      '--vf-playground-border',
+      '--vf-playground-border-width',
+      '--vf-playground-codeblock-border-color',
+      '--vf-playground-codeblock-border-radius',
+      '--vf-playground-codeblock-filename-font-weight',
+      '--vf-playground-codeblock-header-padding',
+      '--vf-playground-codeblock-margin-block',
+      '--vf-playground-codeblock-max-height',
+      '--vf-playground-codeblock-meta-color',
+      '--vf-playground-codeblock-meta-font-size',
+      '--vf-playground-codeblock-shadow',
+      '--vf-playground-component-min-height',
+      '--vf-playground-component-padding',
+      '--vf-playground-console-bg',
+      '--vf-playground-console-font-size',
+      '--vf-playground-console-line-height',
+      '--vf-playground-console-padding',
+      '--vf-playground-console-text',
+      '--vf-playground-control-font-size-md',
+      '--vf-playground-control-font-weight',
+      '--vf-playground-control-height-md',
+      '--vf-playground-control-line-height',
+      '--vf-playground-control-padding-md',
+      '--vf-playground-critical-preview-min-height',
+      '--vf-playground-focus-ring-color',
+      '--vf-playground-focus-ring-width',
+      '--vf-playground-font-family',
+      '--vf-playground-height',
+      '--vf-playground-iframe-bg',
+      '--vf-playground-radius-lg',
+      '--vf-playground-radius-md',
+      '--vf-playground-run-bg',
+      '--vf-playground-run-border',
+      '--vf-playground-run-text',
+      '--vf-playground-ssr-hint',
+      '--vf-playground-surface',
+      '--vf-playground-surface-muted',
+      '--vf-playground-tab-active-bg',
+      '--vf-playground-tab-active-border',
+      '--vf-playground-tab-active-text',
+      '--vf-playground-tab-bg',
+      '--vf-playground-tab-border',
+      '--vf-playground-tab-text',
+      '--vf-playground-text',
+      '--vf-playground-text-muted',
+      '--vf-playground-toolbar-gap',
+      '--vf-playground-toolbar-padding',
+    ]);
     expect(tokensSource).toContain('--vf-playground-codeblock-max-height: 100%');
     expect(tokensSource).toContain('--vf-playground-codeblock-border-color: transparent;');
     expect(tokensSource).toContain('--vf-playground-codeblock-border-radius: 0;');
@@ -503,11 +748,49 @@ describe('VfPlayground', () => {
     expect(componentSource).not.toContain('--vf-codeblock-action-background-color:');
   });
 
+  it('preserves inherited public token overrides in inherit mode', async () => {
+    const tokenDefaults = document.createElement('style');
+    tokenDefaults.textContent = readFileSync(resolve(__dirname, './tokens.css'), 'utf8');
+    document.head.appendChild(tokenDefaults);
+
+    const host = document.createElement('div');
+    host.className = 'brand-scope';
+    document.body.appendChild(host);
+
+    const wrapper = mount(VfPlayground, {
+      attachTo: host,
+      props: {
+        ...baseSandboxProps,
+        autorun: false,
+        theme: 'inherit',
+      },
+      global: testGlobal,
+    });
+
+    await flushThemeSync();
+
+    host.style.setProperty('--vf-playground-surface', 'inherited-brand');
+    expect(tokenDefaults.textContent).not.toContain('.vf-playground[data-theme=');
+    expect(
+      wrapper.element.matches(
+        ":where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark'])",
+      ),
+    ).toBe(false);
+    expect(host.style.getPropertyValue('--vf-playground-surface')).toBe(
+      'inherited-brand',
+    );
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+
+    wrapper.unmount();
+    host.remove();
+    tokenDefaults.remove();
+  });
+
   it('keeps sandbox runtime behind a dynamic import', () => {
     const source = readFileSync(resolve(__dirname, './VfPlayground.vue'), 'utf8');
 
     expect(source).not.toMatch(
-      /import\s+\{[^}]*createPlaygroundSession[^}]*\}\s+from\s+['"]@codemonster-ru\/vueforge-playground-core['"]/
+      /import\s+\{[^}]*createPlaygroundSession[^}]*\}\s+from\s+['"]@codemonster-ru\/vueforge-playground-core['"]/,
     );
     expect(source).toContain("import('@codemonster-ru/vueforge-playground-core')");
   });
@@ -515,7 +798,7 @@ describe('VfPlayground', () => {
   it('emits ready and preview-ready on sandbox iframe load', async () => {
     const wrapper = mount(VfPlayground, {
       props: baseSandboxProps,
-      global: testGlobal
+      global: testGlobal,
     });
 
     await flushThemeSync();
@@ -533,7 +816,7 @@ describe('VfPlayground', () => {
     const rafSpy = vi.spyOn(window, 'requestAnimationFrame');
     const wrapper = mount(VfPlayground, {
       props: baseSandboxProps,
-      global: testGlobal
+      global: testGlobal,
     });
 
     await flushThemeSync();

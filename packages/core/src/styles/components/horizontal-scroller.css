@@ -1,0 +1,99 @@
+.vf-horizontal-scroller {
+  --vf-horizontal-scroller-control-width: var(--vf-tabs-scroll-button-width);
+  --vf-horizontal-scroller-fade-width: var(--vf-tabs-fade-width);
+  --vf-horizontal-scroller-icon-size: var(--vf-horizontal-scroller-icon-size-default);
+  --vf-horizontal-scroller-control-color: var(--vf-color-muted);
+  --vf-horizontal-scroller-control-hover-color: var(--vf-color-text);
+  --vf-horizontal-scroller-control-bg: var(--vf-color-surface);
+  --vf-horizontal-scroller-focus-ring-color: var(--vf-tabs-focus-ring-color);
+
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.vf-horizontal-scroller__viewport {
+  overflow: auto visible;
+  scrollbar-width: var(--vf-horizontal-scroller-scrollbar-width, none);
+  -ms-overflow-style: none;
+}
+
+.vf-horizontal-scroller__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.vf-horizontal-scroller__control {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--vf-horizontal-scroller-control-width);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: var(--vf-horizontal-scroller-control-bg);
+  color: var(--vf-horizontal-scroller-control-color);
+  font-size: var(--vf-control-font-size-md);
+  line-height: 0;
+  cursor: pointer;
+  transition:
+    background-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
+}
+
+.vf-horizontal-scroller__control--left {
+  left: 0;
+}
+
+.vf-horizontal-scroller__control--right {
+  right: 0;
+}
+
+.vf-horizontal-scroller__control--hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.vf-horizontal-scroller__control:hover {
+  color: var(--vf-horizontal-scroller-control-hover-color);
+}
+
+.vf-horizontal-scroller__control:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-horizontal-scroller-focus-ring-color);
+}
+
+.vf-horizontal-scroller:not(.vf-horizontal-scroller--controls-ready) .vf-horizontal-scroller__control {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.vf-horizontal-scroller__control .vf-icon.vf-icon {
+  display: block;
+  width: var(--vf-horizontal-scroller-icon-size);
+  height: var(--vf-horizontal-scroller-icon-size);
+}
+
+.vf-horizontal-scroller__fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--vf-horizontal-scroller-fade-width);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.vf-horizontal-scroller__fade--left {
+  left: var(--vf-horizontal-scroller-control-width);
+  background: linear-gradient(to right, var(--vf-horizontal-scroller-control-bg), transparent);
+}
+
+.vf-horizontal-scroller__fade--right {
+  right: var(--vf-horizontal-scroller-control-width);
+  background: linear-gradient(to left, var(--vf-horizontal-scroller-control-bg), transparent);
+}

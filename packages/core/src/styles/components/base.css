@@ -1,3 +1,5 @@
+@import './theme-transition-guard.css';
+
 :where([class^='vf-'], [class*=' vf-']),
 :where([class^='vf-'], [class*=' vf-'])::before,
 :where([class^='vf-'], [class*=' vf-'])::after {
@@ -16,7 +18,7 @@
   --vf-prose-heading-color: var(--vf-color-text);
 }
 
-:root[data-vf-theme='dark'] {
+:root:where([data-theme='dark'], [data-vf-theme='dark']) {
   color-scheme: dark;
 
   --vf-prose-heading-color: var(--vf-color-text);
@@ -28,12 +30,6 @@ optgroup,
 select,
 textarea {
   font: inherit;
-}
-
-:root.vf-theme-transitioning :where([class^='vf-'], [class*=' vf-']) {
-  transition-property: transform, opacity !important;
-  transition-duration: var(--vf-motion-duration-normal) !important;
-  transition-timing-function: var(--vf-motion-ease-standard) !important;
 }
 
 .vf-heading {

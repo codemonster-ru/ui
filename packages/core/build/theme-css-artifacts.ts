@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createScopedThemeModeSelector, serializeThemeTokensToCssVars } from '../../theme/src/css-vars';
 import { defaultThemePresetSource } from '../src/theme/default-preset-source';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
@@ -9,24 +10,12 @@ const generatedStylesDir = resolve(rootDir, '.generated/theme');
 const generatedBreakpointsPath = resolve(generatedStylesDir, 'generated-breakpoints.css');
 const generatedTokensPath = resolve(generatedStylesDir, 'tokens.css');
 const generatedThemePath = resolve(generatedStylesDir, 'theme.css');
+const fallbackThemeAttribute = 'data-vf-theme';
 
 function cssVarsToText(cssVars: Record<string, string>) {
   return Object.entries(cssVars)
     .map(([key, value]) => `  ${key}: ${value};`)
     .join('\n');
-}
-
-function tokenKeyToCssVar(key: string, prefix = 'vf') {
-  const kebabKey = key
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([a-zA-Z])(\d)/g, '$1-$2')
-    .toLowerCase();
-
-  return `--${prefix}-${kebabKey}`;
-}
-
-function themeTokensToCssVars(tokens: Record<string, string>, prefix = 'vf') {
-  return Object.fromEntries(Object.entries(tokens).map(([key, value]) => [tokenKeyToCssVar(key, prefix), value]));
 }
 
 function splitBreakpointCssVars(cssVars: Record<string, string>) {
@@ -45,7 +34,9 @@ function splitBreakpointCssVars(cssVars: Record<string, string>) {
 }
 
 function buildBreakpointCss() {
-  const { breakpointCssVars } = splitBreakpointCssVars(themeTokensToCssVars(defaultThemePresetSource.tokens, 'vf'));
+  const { breakpointCssVars } = splitBreakpointCssVars(
+    serializeThemeTokensToCssVars(defaultThemePresetSource.tokens, 'vf'),
+  );
   const lines = [
     '/* Generated from src/theme/default-preset-source.ts */',
     ':root {',
@@ -59,7 +50,7 @@ function buildBreakpointCss() {
 }
 
 function buildTokensCss() {
-  const { tokenCssVars } = splitBreakpointCssVars(themeTokensToCssVars(defaultThemePresetSource.tokens, 'vf'));
+  const { tokenCssVars } = splitBreakpointCssVars(serializeThemeTokensToCssVars(defaultThemePresetSource.tokens, 'vf'));
   const lines = [
     '/* Generated from src/theme/default-preset-source.ts. */',
     '/* Fallback baseline tokens for package CSS consumers. */',
@@ -76,7 +67,14 @@ function buildTokensCss() {
 }
 
 function buildThemeCss() {
-  const darkCssVars = cssVarsToText(themeTokensToCssVars(defaultThemePresetSource.dark ?? {}, 'vf'));
+  const lightTokens = defaultThemePresetSource.tokens;
+  const darkOverrides = defaultThemePresetSource.dark ?? {};
+  const resolvedDarkTokens = { ...lightTokens, ...darkOverrides };
+  const darkCssVars = cssVarsToText(serializeThemeTokensToCssVars(darkOverrides, 'vf'));
+  const scopedLightCssVars = cssVarsToText(serializeThemeTokensToCssVars(lightTokens, 'vf'));
+  const scopedDarkCssVars = cssVarsToText(serializeThemeTokensToCssVars(resolvedDarkTokens, 'vf'));
+  const lightScopeSelector = createScopedThemeModeSelector(':root', fallbackThemeAttribute, 'light');
+  const darkScopeSelector = createScopedThemeModeSelector(':root', fallbackThemeAttribute, 'dark');
   const lines = [
     '/* Generated from src/theme/default-preset-source.ts. */',
     '/* Fallback mode styles for package CSS consumers. */',
@@ -84,6 +82,11 @@ function buildThemeCss() {
     '  color-scheme: light;',
     '  background-color: var(--vf-color-bg);',
     '  color: var(--vf-color-text);',
+    '}',
+    '',
+    `${lightScopeSelector} {`,
+    '  color-scheme: light;',
+    scopedLightCssVars,
     '}',
     '',
     'button,',
@@ -97,6 +100,11 @@ function buildThemeCss() {
     ':root[data-vf-theme="dark"] {',
     '  color-scheme: dark;',
     darkCssVars,
+    '}',
+    '',
+    `${darkScopeSelector} {`,
+    '  color-scheme: dark;',
+    scopedDarkCssVars,
     '}',
     '',
     ':root.vf-theme-transitioning,',

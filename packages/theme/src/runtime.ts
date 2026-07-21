@@ -1,4 +1,5 @@
 import { DEFAULT_ATTRIBUTE, DEFAULT_STORAGE_KEY } from './mode.js';
+import { createScopedThemeModeSelector, serializeThemeTokensToCssVars } from './css-vars.js';
 import type {
   VfResolvedThemeConfig,
   VfResolvedThemePreset,
@@ -12,10 +13,6 @@ import type {
 const DEFAULT_THEME_PREFIX = 'vf';
 const DEFAULT_THEME_STYLE_ID = 'vf-theme-preset';
 const DEFAULT_THEME_ROOT_SELECTOR = ':root';
-
-function camelToKebab(value: string) {
-  return value.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`).replace(/([a-z])(\d)/g, '$1-$2');
-}
 
 function mergeThemeTokens(...layers: Array<Partial<VfThemeTokens> | undefined>) {
   return Object.assign({}, ...layers) as VfThemeTokens;
@@ -66,7 +63,7 @@ export function resolveThemeConfig(config: VfThemeConfig = {}): VfResolvedThemeC
 }
 
 export function themeTokensToCssVars(tokens: Partial<VfThemeTokens>, prefix = DEFAULT_THEME_PREFIX) {
-  return Object.fromEntries(Object.entries(tokens).map(([key, value]) => [`--${prefix}-${camelToKebab(key)}`, value]));
+  return serializeThemeTokensToCssVars(tokens, prefix);
 }
 
 function cssVarsToText(cssVars: Record<string, string>) {
@@ -79,10 +76,15 @@ export function themePresetToCssText(config: VfResolvedThemeConfig) {
   const { preset, options } = config;
   const lightCssVars = cssVarsToText(themeTokensToCssVars(preset.light, options.prefix));
   const darkCssVars = cssVarsToText(themeTokensToCssVars(preset.dark, options.prefix));
+  const scopedLightSelector = createScopedThemeModeSelector(options.rootSelector, options.attribute, 'light');
+  const scopedDarkSelector = createScopedThemeModeSelector(options.rootSelector, options.attribute, 'dark');
 
-  return [`${options.rootSelector} {\n${lightCssVars}\n}`, `${options.darkModeSelector} {\n${darkCssVars}\n}`].join(
-    '\n\n',
-  );
+  return [
+    `${options.rootSelector} {\n  color-scheme: light;\n${lightCssVars}\n}`,
+    `${options.darkModeSelector} {\n  color-scheme: dark;\n${darkCssVars}\n}`,
+    `${scopedLightSelector} {\n  color-scheme: light;\n${lightCssVars}\n}`,
+    `${scopedDarkSelector} {\n  color-scheme: dark;\n${darkCssVars}\n}`,
+  ].join('\n\n');
 }
 
 export function themeConfigsToCssText(configs: VfResolvedThemeConfig[]) {

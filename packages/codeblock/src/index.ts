@@ -40,17 +40,28 @@ const createThemeCss = (themeVars: CodeBlockThemeVarOptions, scope?: string) => 
   const light = mapToCssVars(themeVars.light);
   const dark = mapToCssVars(themeVars.dark);
   const chunks: string[] = [];
-  const lightSelectors = [`${scopeSelector}[data-theme="light"]`, `${scopeSelector}[data-vf-theme="light"]`].join(', ');
-  const darkSelectors = [`${scopeSelector}[data-theme="dark"]`, `${scopeSelector}[data-vf-theme="dark"]`].join(', ');
+  const modeSelectors = (mode: 'light' | 'dark') => {
+    const boundarySelector = `:where([data-theme="${mode}"], [data-vf-theme="${mode}"])`;
+
+    return [
+      `:is(${scopeSelector}):where([data-theme="${mode}"], [data-vf-theme="${mode}"])`,
+      `${boundarySelector} :is(${scopeSelector})`,
+      `:where(${scopeSelector}) ${boundarySelector}`,
+    ].join(', ');
+  };
+  const lightSelectors = modeSelectors('light');
+  const darkSelectors = modeSelectors('dark');
+  const lightDeclarations = [base, light].filter(Boolean).join('\n');
+  const darkDeclarations = [base, dark].filter(Boolean).join('\n');
 
   if (base) {
     chunks.push(`${scopeSelector} {\n${base}\n}`);
   }
-  if (light) {
-    chunks.push(`${lightSelectors} {\n${light}\n}`);
+  if (lightDeclarations) {
+    chunks.push(`${lightSelectors} {\n${lightDeclarations}\n}`);
   }
-  if (dark) {
-    chunks.push(`${darkSelectors} {\n${dark}\n}`);
+  if (darkDeclarations) {
+    chunks.push(`${darkSelectors} {\n${darkDeclarations}\n}`);
   }
 
   return chunks.join('\n');

@@ -205,24 +205,26 @@
   box-shadow: var(--vf-switch-thumb-shadow);
 }
 
-html[data-vf-theme='dark']
+html:where([data-theme='dark'], [data-vf-theme='dark'])
   .vf-switch:not(.vf-switch--static, .vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
   .vf-switch__thumb,
-html[data-vf-theme='dark']
+html:where([data-theme='dark'], [data-vf-theme='dark'])
   .vf-switch:not(.vf-switch--static, .vf-switch--disabled).vf-switch--checked
   .vf-switch__thumb {
   border-color: var(--vf-color-primary-contrast);
   background: var(--vf-color-primary-contrast);
 }
 
-html[data-vf-theme='dark']
+html:where([data-theme='dark'], [data-vf-theme='dark'])
   .vf-switch--static:not(.vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
   .vf-switch__thumb,
-html[data-vf-theme='dark'] .vf-switch--static:not(.vf-switch--disabled).vf-switch--checked .vf-switch__thumb {
+html:where([data-theme='dark'], [data-vf-theme='dark'])
+  .vf-switch--static:not(.vf-switch--disabled).vf-switch--checked
+  .vf-switch__thumb {
   border-color: var(--vf-color-primary-contrast);
   background: var(--vf-color-primary-contrast);
 }
@@ -238,12 +240,12 @@ html[data-vf-theme='dark'] .vf-switch--static:not(.vf-switch--disabled).vf-switc
   color: var(--vf-switch-thumb-inverse-color);
 }
 
-html[data-vf-theme='dark']
+html:where([data-theme='dark'], [data-vf-theme='dark'])
   .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled)
   .vf-switch__input:checked
   + .vf-switch__control
   .vf-switch__thumb,
-html[data-vf-theme='dark']
+html:where([data-theme='dark'], [data-vf-theme='dark'])
   .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled).vf-switch--checked
   .vf-switch__thumb {
   border-color: var(--vf-switch-thumb-inverse-border-color);

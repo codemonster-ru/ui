@@ -65,6 +65,15 @@ try {
     }
   }
 
+  const viewTypesTarget = packageJson.exports?.['./view']?.import?.types;
+  if (typeof viewTypesTarget !== 'string') {
+    throw new Error('Expected exports["./view"].import.types to resolve a declaration artifact.');
+  }
+  const viewTypes = readFileSync(join(tempDir, 'package', viewTypesTarget.replace(/^\.\//, '')), 'utf8');
+  if (!viewTypes.includes('setCodeBlockThemeVars')) {
+    throw new Error('Broken view API: setCodeBlockThemeVars is missing from the published declaration entry.');
+  }
+
   const cssEntries = tarEntries.filter((entry) => entry.startsWith('package/dist/') && entry.endsWith('.css'));
   for (const cssEntry of cssEntries) {
     const cssContent = readFileSync(join(tempDir, cssEntry), 'utf8');

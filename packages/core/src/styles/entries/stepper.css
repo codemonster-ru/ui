@@ -1,2 +1,292 @@
-@import '../components/overlay-primitives.css';
-@import '../components/navigation.css';
+.vf-stepper {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
+.vf-stepper__list {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vf-stepper--horizontal .vf-stepper__list {
+  align-items: flex-start;
+}
+
+.vf-stepper--vertical .vf-stepper__list {
+  position: relative;
+  flex-direction: column;
+  row-gap: var(--vf-surface-gap);
+}
+
+.vf-stepper--vertical .vf-stepper__list::before,
+.vf-stepper--vertical .vf-stepper__list::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--vf-stepper-marker-size) / 2);
+  bottom: calc(var(--vf-stepper-marker-size) / 2);
+  width: var(--vf-stepper-rail-size);
+  border-radius: var(--vf-radius-round);
+  pointer-events: none;
+}
+
+.vf-stepper--vertical .vf-stepper__list::before {
+  background: var(--vf-stepper-rail-color);
+}
+
+.vf-stepper--vertical .vf-stepper__list::after {
+  background: var(--vf-stepper-progress-color);
+  transform-origin: top center;
+  transform: scaleY(var(--vf-stepper-progress-factor, 0));
+  transition: transform var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
+}
+
+.vf-stepper--vertical.vf-stepper--content-end .vf-stepper__list::before,
+.vf-stepper--vertical.vf-stepper--content-end .vf-stepper__list::after {
+  left: calc((var(--vf-stepper-marker-size) - var(--vf-stepper-rail-size)) / 2);
+}
+
+.vf-stepper--vertical.vf-stepper--content-start .vf-stepper__list::before,
+.vf-stepper--vertical.vf-stepper--content-start .vf-stepper__list::after {
+  right: calc((var(--vf-stepper-marker-size) - var(--vf-stepper-rail-size)) / 2);
+}
+
+.vf-stepper__item {
+  display: flex;
+  position: relative;
+  min-width: 0;
+}
+
+.vf-stepper--horizontal .vf-stepper__item {
+  flex: 1 1 0;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.vf-stepper--vertical .vf-stepper__item {
+  align-items: stretch;
+  z-index: 1;
+}
+
+.vf-stepper__trigger {
+  display: grid;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--vf-stepper-trigger-color);
+  text-align: left;
+  cursor: pointer;
+}
+
+.vf-stepper--horizontal .vf-stepper__trigger {
+  width: 100%;
+  grid-template-areas:
+    'rail'
+    'content';
+  justify-items: center;
+  row-gap: var(--vf-stepper-horizontal-trigger-row-gap);
+}
+
+.vf-stepper--vertical .vf-stepper__trigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--vf-surface-gap);
+  min-height: var(--vf-stepper-marker-size);
+}
+
+.vf-stepper__rail {
+  min-width: 0;
+}
+
+.vf-stepper--horizontal .vf-stepper__rail {
+  grid-area: rail;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--vf-stepper-marker-size) minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+}
+
+.vf-stepper--vertical .vf-stepper__rail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex: 0 0 var(--vf-stepper-marker-size);
+  width: var(--vf-stepper-marker-size);
+  height: var(--vf-stepper-marker-size);
+}
+
+.vf-stepper--vertical .vf-stepper__rail::before,
+.vf-stepper--vertical .vf-stepper__rail::after {
+  content: none;
+}
+
+.vf-stepper__connector {
+  border-radius: var(--vf-radius-round);
+  background: var(--vf-stepper-rail-color);
+  transition:
+    background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
+    opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
+}
+
+.vf-stepper--horizontal .vf-stepper__connector {
+  width: 100%;
+  height: var(--vf-stepper-rail-size);
+}
+
+.vf-stepper--vertical .vf-stepper__connector {
+  display: none;
+}
+
+.vf-stepper__trigger:disabled {
+  cursor: not-allowed;
+}
+
+.vf-stepper__marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  width: var(--vf-stepper-marker-size);
+  height: var(--vf-stepper-marker-size);
+  border: var(--vf-border-width) solid var(--vf-stepper-marker-border-color);
+  border-radius: var(--vf-radius-round);
+  background: var(--vf-stepper-marker-background);
+  color: var(--vf-stepper-marker-color);
+  font-size: var(--vf-text-caption-font-size);
+  font-weight: var(--vf-font-weight-semibold);
+  line-height: 1;
+  transition:
+    border-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    background-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    box-shadow var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    transform var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
+}
+
+.vf-stepper__content {
+  grid-area: content;
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-top: var(--vf-stepper-content-padding-top);
+  gap: var(--vf-stepper-content-gap);
+}
+
+.vf-stepper--horizontal .vf-stepper__content {
+  align-items: center;
+  padding-top: 0;
+  text-align: center;
+}
+
+.vf-stepper--vertical .vf-stepper__content {
+  align-items: flex-start;
+  padding-top: 0;
+  align-self: center;
+  justify-content: center;
+  flex: 1 1 auto;
+}
+
+.vf-stepper--vertical.vf-stepper--content-start .vf-stepper__content {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.vf-stepper__label {
+  font-size: var(--vf-text-body-font-size);
+  line-height: var(--vf-text-body-line-height);
+  font-weight: var(--vf-font-weight-medium);
+  color: var(--vf-stepper-label-color);
+  transition: color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
+}
+
+.vf-stepper__description {
+  font-size: var(--vf-text-caption-font-size);
+  line-height: var(--vf-text-caption-line-height);
+  color: var(--vf-stepper-description-color);
+  transition:
+    color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    opacity var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
+}
+
+.vf-stepper__item--complete .vf-stepper__marker {
+  border-color: var(--vf-stepper-complete-marker-border-color);
+  background: var(--vf-stepper-complete-marker-background);
+  color: var(--vf-stepper-complete-marker-color);
+}
+
+.vf-stepper__item--current .vf-stepper__marker {
+  border-color: var(--vf-stepper-current-marker-border-color);
+  color: var(--vf-stepper-current-marker-color);
+  background: var(--vf-stepper-current-marker-background);
+  box-shadow: var(--vf-stepper-current-marker-box-shadow);
+}
+
+.vf-stepper__item--complete .vf-stepper__connector,
+.vf-stepper__item--current .vf-stepper__connector--before {
+  background: var(--vf-stepper-progress-color);
+}
+
+.vf-stepper__item--current .vf-stepper__label {
+  color: var(--vf-stepper-current-label-color);
+}
+
+.vf-stepper__item--current .vf-stepper__description {
+  color: var(--vf-stepper-current-description-color);
+}
+
+.vf-stepper__item--complete .vf-stepper__label {
+  color: var(--vf-stepper-complete-label-color);
+}
+
+.vf-stepper__item--complete .vf-stepper__description {
+  color: var(--vf-stepper-complete-description-color);
+}
+
+.vf-stepper__item--upcoming .vf-stepper__label {
+  color: var(--vf-stepper-upcoming-label-color);
+}
+
+.vf-stepper__item--upcoming .vf-stepper__description {
+  color: var(--vf-stepper-upcoming-description-color);
+}
+
+.vf-stepper__item:first-child .vf-stepper__connector--before,
+.vf-stepper__item:last-child .vf-stepper__connector--after {
+  opacity: 0;
+}
+
+.vf-stepper__item--disabled .vf-stepper__trigger,
+.vf-stepper__item--disabled .vf-stepper__connector,
+.vf-stepper__item--disabled .vf-stepper__marker,
+.vf-stepper__item--disabled .vf-stepper__label,
+.vf-stepper__item--disabled .vf-stepper__description {
+  color: var(--vf-stepper-disabled-color);
+  opacity: 0.55;
+}
+
+.vf-stepper__trigger:focus-visible {
+  outline: none;
+}
+
+.vf-stepper__trigger:focus-visible .vf-stepper__marker {
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-stepper-focus-ring-color);
+}
+
+.vf-stepper--horizontal.vf-stepper--content-above .vf-stepper__trigger {
+  grid-template-areas:
+    'content'
+    'rail';
+}
+
+.vf-stepper--vertical.vf-stepper--content-start .vf-stepper__trigger {
+  flex-direction: row-reverse;
+}
