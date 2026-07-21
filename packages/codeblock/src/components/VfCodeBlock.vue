@@ -5,7 +5,9 @@
     class="vf-codeblock"
     :class="{ 'vf-codeblock--disabled': disabled }"
     :style="rootStyle"
-    :data-theme="resolvedTheme"
+    :data-theme="themeAttribute"
+    :data-vf-theme="themeAttribute"
+    :data-vf-resolved-theme="resolvedTheme"
     :aria-label="ariaLabel"
   >
     <header v-if="showHeader || $slots.actions" class="vf-codeblock__header">
@@ -109,6 +111,7 @@ const lineNumberWidth = computed(() => {
 });
 
 const resolvedTheme = computed(() => (props.theme === 'inherit' ? inheritedTheme.value : props.theme));
+const themeAttribute = computed(() => (props.theme === 'inherit' ? 'inherit' : resolvedTheme.value));
 
 const preStyle = computed(() => {
   const style: Record<string, string> = {};
@@ -221,14 +224,22 @@ watch(
   { immediate: true },
 );
 
-const normalizeThemeValue = (value: string | null) => (value === 'dark' ? 'dark' : 'light');
+const normalizeThemeValue = (value: string | null): 'light' | 'dark' | null => {
+  return value === 'light' || value === 'dark' ? value : null;
+};
 
-const findClosestThemeValue = (element: HTMLElement | null, attributeName: 'data-theme' | 'data-vf-theme') => {
+const findClosestThemeValue = (element: HTMLElement | null) => {
   let currentElement = element?.parentElement ?? null;
 
   while (currentElement) {
-    if (currentElement.hasAttribute(attributeName)) {
-      return normalizeThemeValue(currentElement.getAttribute(attributeName));
+    const dataTheme = normalizeThemeValue(currentElement.getAttribute('data-theme'));
+    if (dataTheme) {
+      return dataTheme;
+    }
+
+    const dataVfTheme = normalizeThemeValue(currentElement.getAttribute('data-vf-theme'));
+    if (dataVfTheme) {
+      return dataVfTheme;
     }
 
     currentElement = currentElement.parentElement;
@@ -242,11 +253,17 @@ const syncInheritedTheme = () => {
     return;
   }
 
-  inheritedTheme.value =
-    findClosestThemeValue(rootElement.value, 'data-theme') ??
-    findClosestThemeValue(rootElement.value, 'data-vf-theme') ??
-    'light';
+  inheritedTheme.value = findClosestThemeValue(rootElement.value) ?? 'light';
 };
+
+watch(
+  () => props.theme,
+  (theme) => {
+    if (theme === 'inherit') {
+      syncInheritedTheme();
+    }
+  },
+);
 
 onMounted(() => {
   syncInheritedTheme();

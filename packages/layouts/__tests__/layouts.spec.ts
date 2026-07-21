@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createCommentVNode, defineComponent, h, nextTick, ref } from 'vue';
 import { VfThemeProvider, useTheme } from '@codemonster-ru/vueforge-core';
+import { buildLayoutCssArtifacts, layoutCssArtifactPaths } from '../build/layout-css-artifacts';
 import {
   VueForgeLayouts,
   VfAdminLayout,
@@ -20,6 +21,8 @@ import {
   applyLayoutsThemeConfig,
   createLayoutsPreset,
   defaultLayoutsPreset,
+  layoutsPresetToCssText,
+  layoutsTokensToCssVars,
   resolveLayoutsThemeConfig,
   vfBreakpoints,
   useBreakpoint,
@@ -28,6 +31,60 @@ import {
 } from '../src';
 
 const packageRoot = resolve(__dirname, '..');
+const scopedLightSelector = [
+  ":is(:root):where([data-vf-theme='light'], [data-theme='light'])",
+  ":where(:root) :where([data-vf-theme='light'], [data-theme='light'])",
+].join(',\n');
+const scopedDarkSelector = [
+  ":is(:root):where([data-vf-theme='dark'], [data-theme='dark'])",
+  ":where(:root) :where([data-vf-theme='dark'], [data-theme='dark'])",
+].join(',\n');
+
+function parseCssVariableDeclarations(css: string) {
+  return Object.fromEntries(
+    [...css.matchAll(/(--[a-z0-9-]+):\s*([^;]+);/g)].map((match) => [match[1], match[2].trim()]),
+  );
+}
+
+function extractCssRule(css: string, selector: string) {
+  const marker = `${selector} {`;
+  const ruleStart = css.indexOf(marker);
+
+  if (ruleStart < 0) {
+    throw new Error(`Missing CSS rule: ${selector}`);
+  }
+
+  const bodyStart = ruleStart + marker.length;
+  const bodyEnd = css.indexOf('\n}', bodyStart);
+
+  if (bodyEnd < 0) {
+    throw new Error(`Unterminated CSS rule: ${selector}`);
+  }
+
+  return css.slice(bodyStart, bodyEnd);
+}
+
+function sortEntries(record: Record<string, string>) {
+  return Object.entries(record)
+    .map(([key, value]) => [key, value.replace(/\s+/g, ' ').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')').trim()])
+    .sort(([left], [right]) => left.localeCompare(right));
+}
+
+function resolveCssVariable(variables: Record<string, string>, name: string, seen = new Set<string>()): string {
+  if (seen.has(name)) {
+    throw new Error(`Circular CSS variable reference: ${name}`);
+  }
+
+  const value = variables[name];
+  if (value === undefined) {
+    throw new Error(`Missing CSS variable: ${name}`);
+  }
+
+  const nextSeen = new Set(seen).add(name);
+  return value.replace(/var\((--[a-z0-9-]+)\)/g, (_match, dependency: string) =>
+    resolveCssVariable(variables, dependency, nextSeen),
+  );
+}
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -35,6 +92,9 @@ afterEach(() => {
   document.getElementById('vf-layouts-theme-preset')?.remove();
   document.getElementById('vf-theme-preset')?.remove();
   document.documentElement.removeAttribute('style');
+  document.documentElement.removeAttribute('data-theme');
+  document.documentElement.removeAttribute('data-vf-theme');
+  document.documentElement.removeAttribute('data-test-theme');
 });
 
 describe('package exports', () => {
@@ -66,12 +126,84 @@ describe('package exports', () => {
       '--vf-layout-admin-shell-header-background: color-mix(in srgb, var(--vf-color-bg) 75%, black);',
     );
     expect(themeCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-text);');
-    expect(themeCss).not.toContain('--vf-layout-admin-shell-sidebar-background:');
-    expect(themeCss).not.toContain('--vf-layout-admin-shell-workspace-background:');
+    const rootDarkRule = extractCssRule(themeCss, ":root[data-vf-theme='dark']");
+    expect(rootDarkRule).not.toContain('--vf-layout-admin-shell-sidebar-background:');
+    expect(rootDarkRule).not.toContain('--vf-layout-admin-shell-workspace-background:');
     expect(tokensCss).toContain('--vf-layout-shell-header-height: 4rem;');
     expect(tokensCss).toContain('--vf-layout-header-padding-block: 0.75rem;');
     expect(tokensCss).toContain('--vf-layout-viewport-height: 100vh;');
     expect(tokensCss).not.toContain('--vf-shell-sidebar-width:');
+  });
+
+  it('keeps static layout variables equivalent to runtime serialization', () => {
+    buildLayoutCssArtifacts();
+
+    const tokensCss = readFileSync(layoutCssArtifactPaths.generatedTokensPath, 'utf8');
+    const themeCss = readFileSync(layoutCssArtifactPaths.generatedThemePath, 'utf8');
+    const staticLight = parseCssVariableDeclarations(extractCssRule(tokensCss, ':root'));
+    const staticDarkOverrides = parseCssVariableDeclarations(extractCssRule(themeCss, ":root[data-vf-theme='dark']"));
+    const scopedLightVariables = parseCssVariableDeclarations(extractCssRule(themeCss, scopedLightSelector));
+    const scopedDarkVariables = parseCssVariableDeclarations(extractCssRule(themeCss, scopedDarkSelector));
+    const runtimeLight = layoutsTokensToCssVars(defaultLayoutsPreset.tokens, 'vf-layout');
+    const runtimeDarkOverrides = layoutsTokensToCssVars(defaultLayoutsPreset.dark ?? {}, 'vf-layout');
+    const effectiveStaticDark = { ...staticLight, ...staticDarkOverrides };
+    const effectiveRuntimeDark = layoutsTokensToCssVars(resolveLayoutsThemeConfig().preset.dark, 'vf-layout');
+
+    expect(sortEntries(staticLight)).toEqual(sortEntries(runtimeLight));
+    expect(Object.keys(staticLight)).toHaveLength(124);
+    expect(sortEntries(staticDarkOverrides)).toEqual(sortEntries(runtimeDarkOverrides));
+    expect(Object.keys(staticDarkOverrides)).toHaveLength(2);
+    expect(sortEntries(effectiveStaticDark)).toEqual(sortEntries(effectiveRuntimeDark));
+    expect(sortEntries(scopedLightVariables)).toEqual(sortEntries(runtimeLight));
+    expect(Object.keys(scopedLightVariables)).toHaveLength(124);
+    expect(sortEntries(scopedDarkVariables)).toEqual(sortEntries(effectiveRuntimeDark));
+    expect(Object.keys(scopedDarkVariables)).toHaveLength(124);
+    expect(staticLight).toHaveProperty('--vf-layout-app-shell-header-sticky-z-index', '20');
+    expect(staticLight).not.toHaveProperty('--vf-layout-app-shell-header-sticky-zindex');
+  });
+
+  it('keeps root layout fallback behavior and emits complete reversible scoped modes', () => {
+    buildLayoutCssArtifacts();
+
+    const tokensCss = readFileSync(layoutCssArtifactPaths.generatedTokensPath, 'utf8');
+    const themeCss = readFileSync(layoutCssArtifactPaths.generatedThemePath, 'utf8');
+
+    expect(tokensCss).not.toContain("[data-theme='light']");
+    expect(tokensCss).not.toContain("[data-vf-theme='light']");
+    expect(themeCss).toContain(":root[data-vf-theme='dark']");
+    expect(themeCss).toContain(scopedLightSelector);
+    expect(themeCss).toContain(scopedDarkSelector);
+    expect(extractCssRule(themeCss, ':root')).toContain('color-scheme: light;');
+    expect(extractCssRule(themeCss, ":root[data-vf-theme='dark']")).toContain('color-scheme: dark;');
+    expect(extractCssRule(themeCss, scopedLightSelector)).toContain('color-scheme: light;');
+    expect(extractCssRule(themeCss, scopedDarkSelector)).toContain('color-scheme: dark;');
+    expect(themeCss.match(/--vf-layout-admin-shell-header-background: var\(--vf-color-text\);/g)).toHaveLength(1);
+    expect(
+      themeCss.match(
+        /--vf-layout-admin-shell-header-background: color-mix\(in srgb, var\(--vf-color-bg\) 75%, black\);/g,
+      ),
+    ).toHaveLength(2);
+    expect(extractCssRule(themeCss, scopedLightSelector)).toContain(
+      '--vf-layout-header-background: var(--vf-layout-surface-base);',
+    );
+    expect(extractCssRule(themeCss, scopedDarkSelector)).toContain(
+      '--vf-layout-header-background: var(--vf-layout-surface-base);',
+    );
+  });
+
+  it('computes scoped layout aliases against the matching core mode tokens', () => {
+    buildLayoutCssArtifacts();
+
+    const themeCss = readFileSync(layoutCssArtifactPaths.generatedThemePath, 'utf8');
+    const scopedLightVariables = parseCssVariableDeclarations(extractCssRule(themeCss, scopedLightSelector));
+    const scopedDarkVariables = parseCssVariableDeclarations(extractCssRule(themeCss, scopedDarkSelector));
+
+    expect(
+      resolveCssVariable({ '--vf-color-surface': '#ffffff', ...scopedLightVariables }, '--vf-layout-header-background'),
+    ).toBe('#ffffff');
+    expect(
+      resolveCssVariable({ '--vf-color-surface': '#20232a', ...scopedDarkVariables }, '--vf-layout-header-background'),
+    ).toBe('#20232a');
   });
 
   it('exports the public layout API', () => {
@@ -454,6 +586,55 @@ describe('layout theme runtime', () => {
     );
   });
 
+  it('scopes reversible layout modes to configured and compatible attributes', () => {
+    const cssText = layoutsPresetToCssText(
+      resolveLayoutsThemeConfig({
+        options: {
+          rootSelector: '#layout-theme-root',
+          attribute: 'data-layout-theme',
+        },
+      }),
+    );
+
+    expect(cssText).toContain(
+      ":is(#layout-theme-root):where([data-layout-theme='light'], [data-theme='light'], [data-vf-theme='light'])",
+    );
+    expect(cssText).toContain(
+      ":where(#layout-theme-root) :where([data-layout-theme='light'], [data-theme='light'], [data-vf-theme='light'])",
+    );
+    expect(cssText).toContain(
+      ":is(#layout-theme-root):where([data-layout-theme='dark'], [data-theme='dark'], [data-vf-theme='dark'])",
+    );
+    expect(cssText).toContain(
+      ":where(#layout-theme-root) :where([data-layout-theme='dark'], [data-theme='dark'], [data-vf-theme='dark'])",
+    );
+    expect(cssText.match(/--vf-layout-admin-shell-header-background: var\(--vf-color-text\);/g)).toHaveLength(2);
+    expect(
+      cssText.match(
+        /--vf-layout-admin-shell-header-background: color-mix\(in srgb, var\(--vf-color-bg\) 75%, black\);/g,
+      ),
+    ).toHaveLength(2);
+    expect(cssText.match(/--vf-layout-shell-sidebar-width: 18rem;/g)).toHaveLength(4);
+    expect(cssText.match(/color-scheme: light;/g)).toHaveLength(2);
+    expect(cssText.match(/color-scheme: dark;/g)).toHaveLength(2);
+  });
+
+  it('uses the layout namespace by default and bridges custom prefixes for component CSS', () => {
+    expect(layoutsTokensToCssVars({ shellSidebarWidth: '18rem' })).toEqual({
+      '--vf-layout-shell-sidebar-width': '18rem',
+    });
+
+    const cssText = layoutsPresetToCssText(
+      resolveLayoutsThemeConfig({
+        extend: { shellSidebarWidth: '21rem' },
+        options: { prefix: 'brand-layout' },
+      }),
+    );
+
+    expect(cssText).toContain('--brand-layout-shell-sidebar-width: 21rem;');
+    expect(cssText).toContain('--vf-layout-shell-sidebar-width: var(--brand-layout-shell-sidebar-width);');
+  });
+
   it('applies theme config through the layouts plugin', () => {
     const Probe = defineComponent({
       template: `<div>probe</div>`,
@@ -582,6 +763,8 @@ describe('layout theme runtime', () => {
     expect(wrapper.get('[data-test="theme"]').text()).toBe('dark');
     expect(wrapper.get('[data-test="resolved"]').text()).toBe('dark');
     expect(document.documentElement.getAttribute('data-test-theme')).toBe('dark');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(document.documentElement.getAttribute('data-vf-theme')).toBe('dark');
   });
 });
 

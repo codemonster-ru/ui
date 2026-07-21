@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
                 :filename="block.filename"
                 :code="block.code"
                 :max-height="block.maxHeight"
-                :theme="resolvedTheme"
+                theme="inherit"
                 :container-min-height="`${block.skeletonMinHeight}px`"
                 show-line-numbers
               />

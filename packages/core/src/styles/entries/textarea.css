@@ -1,6 +1,7 @@
 @import './field.css';
 
 .vf-textarea {
+  display: block;
   box-sizing: border-box;
   width: 100%;
   min-height: var(--vf-textarea-min-height-md);

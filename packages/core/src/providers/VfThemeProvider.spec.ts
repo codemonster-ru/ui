@@ -46,6 +46,21 @@ describe('VfThemeProvider', () => {
     expect(document.documentElement.getAttribute('data-vf-theme')).toBe('dark');
   });
 
+  it('preserves an initial mode declared through the compatible data-theme attribute', () => {
+    document.documentElement.setAttribute('data-theme', 'dark');
+
+    const wrapper = mount(VfThemeProvider, {
+      slots: {
+        default: ThemeConsumer,
+      },
+    });
+
+    expect(wrapper.find('[data-test="theme"]').text()).toBe('dark');
+    expect(wrapper.find('[data-test="resolved"]').text()).toBe('dark');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(document.documentElement.getAttribute('data-vf-theme')).toBe('dark');
+  });
+
   it('toggles between resolved light and dark themes', async () => {
     const wrapper = mount(VfThemeProvider, {
       props: {
@@ -153,5 +168,191 @@ describe('VfThemeProvider', () => {
     expect(window.localStorage.getItem('vf-local-theme')).toBe('dark');
     expect(window.localStorage.getItem('vf-plugin-theme')).toBeNull();
     expect(document.documentElement.getAttribute('data-local-theme')).toBe('dark');
+  });
+
+  it('writes the resolved mode to the configured theme root selector', () => {
+    const themeRoot = document.createElement('div');
+    themeRoot.id = 'theme-root';
+    document.body.appendChild(themeRoot);
+
+    const wrapper = mount(VfThemeProvider, {
+      attachTo: themeRoot,
+      global: {
+        plugins: [
+          [
+            VueForgeCore,
+            {
+              defaultTheme: 'dark',
+              theme: {
+                preset: defaultThemePreset,
+                options: {
+                  rootSelector: '#theme-root',
+                  attribute: 'data-engine-theme',
+                },
+              },
+            },
+          ],
+        ],
+      },
+      slots: {
+        default: ThemeConsumer,
+      },
+    });
+
+    expect(themeRoot.getAttribute('data-engine-theme')).toBe('dark');
+    expect(document.documentElement.hasAttribute('data-engine-theme')).toBe(false);
+
+    wrapper.unmount();
+    themeRoot.remove();
+  });
+
+  it('mirrors a legacy attribute override without disconnecting the generated selector', () => {
+    const themeRoot = document.createElement('div');
+    themeRoot.id = 'theme-alias-root';
+    document.body.appendChild(themeRoot);
+
+    const wrapper = mount(VfThemeProvider, {
+      attachTo: themeRoot,
+      global: {
+        plugins: [
+          [
+            VueForgeCore,
+            {
+              defaultTheme: 'dark',
+              themeAttribute: 'data-shell-theme',
+              theme: {
+                preset: defaultThemePreset,
+                options: {
+                  rootSelector: '#theme-alias-root',
+                  attribute: 'data-engine-theme',
+                },
+              },
+            },
+          ],
+        ],
+      },
+      slots: {
+        default: ThemeConsumer,
+      },
+    });
+
+    expect(themeRoot.getAttribute('data-shell-theme')).toBe('dark');
+    expect(themeRoot.getAttribute('data-engine-theme')).toBe('dark');
+
+    wrapper.unmount();
+    themeRoot.remove();
+  });
+
+  it('normalizes compatible attributes so provider state and CSS selectors cannot conflict', () => {
+    const themeRoot = document.createElement('div');
+    themeRoot.id = 'theme-conflict-root';
+    themeRoot.setAttribute('data-theme', 'dark');
+    themeRoot.setAttribute('data-vf-theme', 'light');
+    document.body.appendChild(themeRoot);
+
+    const wrapper = mount(VfThemeProvider, {
+      attachTo: themeRoot,
+      global: {
+        plugins: [
+          [
+            VueForgeCore,
+            {
+              themeStorageKey: 'vf-conflict-theme',
+              theme: {
+                preset: defaultThemePreset,
+                options: {
+                  rootSelector: '#theme-conflict-root',
+                },
+              },
+            },
+          ],
+        ],
+      },
+      slots: {
+        default: ThemeConsumer,
+      },
+    });
+
+    expect(wrapper.find('[data-test="resolved"]').text()).toBe('light');
+    expect(themeRoot.getAttribute('data-theme')).toBe('light');
+    expect(themeRoot.getAttribute('data-vf-theme')).toBe('light');
+
+    wrapper.unmount();
+    themeRoot.remove();
+    window.localStorage.removeItem('vf-conflict-theme');
+  });
+
+  it('ignores an invalid legacy attribute value when the engine attribute is valid', () => {
+    const themeRoot = document.createElement('div');
+    themeRoot.id = 'theme-initial-root';
+    themeRoot.setAttribute('data-shell-theme', 'inherit');
+    themeRoot.setAttribute('data-engine-theme', 'dark');
+    document.body.appendChild(themeRoot);
+
+    const wrapper = mount(VfThemeProvider, {
+      attachTo: themeRoot,
+      global: {
+        plugins: [
+          [
+            VueForgeCore,
+            {
+              defaultTheme: 'light',
+              themeAttribute: 'data-shell-theme',
+              theme: {
+                preset: defaultThemePreset,
+                options: {
+                  rootSelector: '#theme-initial-root',
+                  attribute: 'data-engine-theme',
+                },
+              },
+            },
+          ],
+        ],
+      },
+      slots: {
+        default: ThemeConsumer,
+      },
+    });
+
+    expect(wrapper.find('[data-test="theme"]').text()).toBe('dark');
+    expect(themeRoot.getAttribute('data-shell-theme')).toBe('dark');
+    expect(themeRoot.getAttribute('data-engine-theme')).toBe('dark');
+
+    wrapper.unmount();
+    themeRoot.remove();
+  });
+
+  it('falls back to the document root when the configured theme selector is invalid', () => {
+    let wrapper: ReturnType<typeof mount> | undefined;
+
+    expect(() => {
+      wrapper = mount(VfThemeProvider, {
+        global: {
+          plugins: [
+            [
+              VueForgeCore,
+              {
+                defaultTheme: 'dark',
+                theme: {
+                  preset: defaultThemePreset,
+                  options: {
+                    rootSelector: '[invalid',
+                  },
+                },
+              },
+            ],
+          ],
+        },
+        slots: {
+          default: ThemeConsumer,
+        },
+      });
+    }).not.toThrow();
+
+    expect(wrapper?.find('[data-test="resolved"]').text()).toBe('dark');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(document.documentElement.getAttribute('data-vf-theme')).toBe('dark');
+    expect(document.getElementById('vf-theme-preset')?.textContent).not.toContain('[invalid');
+    wrapper?.unmount();
   });
 });

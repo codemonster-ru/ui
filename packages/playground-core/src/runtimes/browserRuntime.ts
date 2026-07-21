@@ -13,6 +13,7 @@ const CONSOLE_BRIDGE_SCRIPT = `
 <script>
 (function(){
   var levels = ['log','info','warn','error','debug'];
+  var themeVariableNames = [];
   levels.forEach(function(level){
     var original = console[level];
     console[level] = function(){
@@ -51,6 +52,47 @@ const CONSOLE_BRIDGE_SCRIPT = `
         source: 'runtime'
       }
     }, '*');
+  });
+
+  window.addEventListener('message', function(event){
+    var message = event.data;
+    if (event.source !== parent || !message || message.__cm_playground !== true || message.type !== 'theme') {
+      return;
+    }
+
+    var payload = message.payload || {};
+    var theme = payload.theme;
+    var variables = payload.variables;
+    if ((theme !== 'light' && theme !== 'dark') || !variables || typeof variables !== 'object') {
+      return;
+    }
+
+    var root = document.documentElement;
+    root.setAttribute('data-theme', theme);
+    root.setAttribute('data-vf-theme', theme);
+    root.classList.toggle('dark', theme === 'dark');
+    root.classList.toggle('light', theme === 'light');
+    root.classList.toggle('vf-theme-dark', theme === 'dark');
+    root.classList.toggle('vf-theme-light', theme === 'light');
+    root.style.colorScheme = theme;
+
+    themeVariableNames.forEach(function(propertyName){
+      root.style.removeProperty(propertyName);
+    });
+    themeVariableNames = [];
+
+    Object.keys(variables).forEach(function(propertyName){
+      if (!propertyName.startsWith('--vf-') || typeof variables[propertyName] !== 'string') {
+        return;
+      }
+      root.style.setProperty(propertyName, variables[propertyName]);
+      themeVariableNames.push(propertyName);
+    });
+
+    if (document.body) {
+      document.body.style.backgroundColor = 'var(--vf-color-bg, Canvas)';
+      document.body.style.color = 'var(--vf-color-text, CanvasText)';
+    }
   });
 })();
 </script>

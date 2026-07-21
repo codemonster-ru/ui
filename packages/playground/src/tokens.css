@@ -1,4 +1,5 @@
-:root {
+:root,
+:where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark']) {
   --vf-playground-height: var(--vf-breakpoint-xs);
   --vf-playground-border-width: var(--vf-border-width, 1px);
   --vf-playground-font-family: var(--vf-font-family-base);

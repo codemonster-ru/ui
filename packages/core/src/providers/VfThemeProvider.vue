@@ -15,6 +15,21 @@ const storageKey = computed(
 const attribute = computed(
   () => props.attribute ?? config?.themeMode.attribute ?? config?.theme.options.attribute ?? DEFAULT_ATTRIBUTE,
 );
+const engineAttribute = computed(() => config?.theme.options.attribute ?? DEFAULT_ATTRIBUTE);
+const rootSelector = computed(() => config?.theme.options.rootSelector ?? ':root');
+const compatibleAttributes = ['data-theme', 'data-vf-theme'] as const;
+
+function getThemeRoots(): Element[] {
+  if (typeof document === 'undefined') {
+    return [];
+  }
+
+  try {
+    return Array.from(document.querySelectorAll(rootSelector.value));
+  } catch {
+    return [];
+  }
+}
 
 function getInitialMode(): VfThemeMode {
   if (typeof window === 'undefined') {
@@ -27,9 +42,15 @@ function getInitialMode(): VfThemeMode {
     return storedTheme;
   }
 
-  const domTheme = document.documentElement.getAttribute(attribute.value);
-  if (domTheme === 'light' || domTheme === 'dark') {
-    return domTheme;
+  const attributes = new Set([attribute.value, engineAttribute.value, ...compatibleAttributes]);
+
+  for (const root of getThemeRoots()) {
+    for (const name of attributes) {
+      const rootTheme = root.getAttribute(name);
+      if (rootTheme === 'light' || rootTheme === 'dark') {
+        return rootTheme;
+      }
+    }
   }
 
   return initialTheme.value;
@@ -63,18 +84,24 @@ function updateDocumentTheme(theme: VfResolvedTheme, options: { animate?: boolea
     return;
   }
 
-  const root = document.documentElement;
+  const roots = getThemeRoots();
 
   if (options.animate) {
     clearThemeTransitionTimeout();
-    root.classList.add('vf-theme-transitioning');
+    document.documentElement.classList.add('vf-theme-transitioning');
   }
 
-  root.setAttribute(attribute.value, theme);
+  const attributes = new Set([engineAttribute.value, attribute.value, ...compatibleAttributes]);
+
+  for (const root of roots) {
+    for (const name of attributes) {
+      root.setAttribute(name, theme);
+    }
+  }
 
   if (options.animate) {
     themeTransitionTimeout = window.setTimeout(() => {
-      root.classList.remove('vf-theme-transitioning');
+      document.documentElement.classList.remove('vf-theme-transitioning');
       themeTransitionTimeout = null;
     }, 320);
   }
@@ -115,6 +142,7 @@ watch(
 );
 
 onMounted(() => {
+  updateDocumentTheme(resolvedTheme.value);
   mediaQuery.value = window.matchMedia('(prefers-color-scheme: dark)');
   handleSystemThemeChange();
   mediaQuery.value.addEventListener('change', handleSystemThemeChange);
