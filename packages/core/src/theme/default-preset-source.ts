@@ -1,5 +1,11 @@
 import { vfBreakpoints } from '../../../theme/src/breakpoints';
 import { vfMotionTokens } from '../../../theme/src/motion';
+import type { VfThemePreset, VfThemeTokens } from '@/types/theme';
+
+type CompleteDefaultThemePreset = Omit<VfThemePreset, 'tokens' | 'dark'> & {
+  tokens: Required<VfThemeTokens>;
+  dark?: Partial<Required<VfThemeTokens>>;
+};
 
 export const breakpointTokens = {
   breakpointXs: `${vfBreakpoints.xs}px`,
@@ -69,8 +75,7 @@ export const defaultThemePresetSource = {
       'calc(var(--vf-nav-menu-collapse-inset-level-0-margin) + var(--vf-surface-gap-compact) * 2)',
     navMenuSidebarIconAlignedLevel0Margin:
       'calc(var(--vf-border-width) + var(--vf-field-padding-inline-md) + var(--vf-nav-menu-leading-icon-column-size) * 0.5)',
-    navMenuSidebarLevelStep:
-      'calc(var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap) * 0.5)',
+    navMenuSidebarLevelStep: 'calc(var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap) * 0.5)',
     navMenuSidebarNestedItemOffset: 'var(--vf-surface-gap-compact)',
     navMenuSidebarConnectorOffsetTop: 'calc(var(--vf-border-width) + var(--vf-field-padding-block-md) + 0.75rem)',
     navMenuGroupLabelColor: 'var(--vf-color-text)',
@@ -918,4 +923,4 @@ export const defaultThemePresetSource = {
     zTooltip: '950',
     shadow: 'none',
   },
-};
+} satisfies CompleteDefaultThemePreset;

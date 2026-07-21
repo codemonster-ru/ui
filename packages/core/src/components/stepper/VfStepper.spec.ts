@@ -14,11 +14,7 @@ const items: VfStepperItem[] = [
 
 describe('VfStepper', () => {
   it('keeps its palette behind component tokens', () => {
-    const navigationCss = readFileSync(resolve(process.cwd(), 'src/styles/components/navigation.css'), 'utf8');
-    const stepperCss = navigationCss.slice(
-      navigationCss.indexOf('.vf-stepper {'),
-      navigationCss.indexOf('.vf-horizontal-scroller {'),
-    );
+    const stepperCss = readFileSync(resolve(process.cwd(), 'src/styles/entries/stepper.css'), 'utf8');
 
     expect(stepperCss).not.toMatch(/var\(--vf-color-/);
     expect(stepperCss).toContain('var(--vf-stepper-rail-color)');

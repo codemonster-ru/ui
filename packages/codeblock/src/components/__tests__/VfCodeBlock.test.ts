@@ -294,18 +294,106 @@ body {
     expect(html).toContain('vf-codeblock__shiki-token');
     expect(html).toContain('const');
     expect(html).toContain('value');
+    expect(html).toContain('data-theme="dark"');
+    expect(html).toContain('data-vf-theme="dark"');
   });
 
-  it('defines root block margins with spacing CSS variables', () => {
+  it('keeps inherit as a non-boundary marker while exposing the SSR fallback', async () => {
+    const app = createSSRApp(() =>
+      h(VfCodeBlock, {
+        code: 'const value = 42;',
+        language: 'ts',
+        theme: 'inherit',
+        highlight: false,
+        showHeader: false,
+        copyable: false,
+      }),
+    );
+    const html = await renderToString(app);
+
+    expect(html).toContain('data-theme="inherit"');
+    expect(html).toContain('data-vf-theme="inherit"');
+    expect(html).toContain('data-vf-resolved-theme="light"');
+  });
+
+  it('keeps the exact scoped token contract and root block margins', () => {
     const tokensSource = readFileSync(resolve(__dirname, '../../tokens.css'), 'utf8');
     const componentSource = readFileSync(resolve(__dirname, '../../codeblock.css'), 'utf8');
+    const tokenNames = [...tokensSource.matchAll(/^\s*(--vf-codeblock-[a-z0-9-]+):/gm)].map((match) => match[1]);
 
+    expect(tokensSource).toContain(
+      `:root,
+:where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark']) {`,
+    );
+    expect(tokensSource).not.toContain('.vf-codeblock[data-theme=');
+    expect(tokensSource).not.toContain('.vf-codeblock[data-vf-theme=');
+    expect(tokenNames).toHaveLength(55);
+    expect([...new Set(tokenNames)].sort()).toEqual([
+      '--vf-codeblock-action-background-color',
+      '--vf-codeblock-action-border-color',
+      '--vf-codeblock-action-border-radius',
+      '--vf-codeblock-action-font-size',
+      '--vf-codeblock-action-font-weight',
+      '--vf-codeblock-action-opacity',
+      '--vf-codeblock-action-padding',
+      '--vf-codeblock-action-text-color',
+      '--vf-codeblock-actions-gap',
+      '--vf-codeblock-background-color',
+      '--vf-codeblock-border-color',
+      '--vf-codeblock-border-radius',
+      '--vf-codeblock-border-width',
+      '--vf-codeblock-code-background-color',
+      '--vf-codeblock-copy-color',
+      '--vf-codeblock-copy-color-transition-duration',
+      '--vf-codeblock-copy-hidden-opacity',
+      '--vf-codeblock-copy-hover-color',
+      '--vf-codeblock-copy-icon-size',
+      '--vf-codeblock-copy-line-height',
+      '--vf-codeblock-copy-offset',
+      '--vf-codeblock-copy-transition-duration',
+      '--vf-codeblock-copy-transition-easing',
+      '--vf-codeblock-copy-visible-opacity',
+      '--vf-codeblock-copy-z-index',
+      '--vf-codeblock-critical-code-min-height',
+      '--vf-codeblock-critical-header-min-height',
+      '--vf-codeblock-critical-min-height',
+      '--vf-codeblock-disabled-opacity',
+      '--vf-codeblock-filename-color',
+      '--vf-codeblock-filename-font-weight',
+      '--vf-codeblock-font-family',
+      '--vf-codeblock-font-size',
+      '--vf-codeblock-gap',
+      '--vf-codeblock-header-background-color',
+      '--vf-codeblock-header-border-color',
+      '--vf-codeblock-header-gap',
+      '--vf-codeblock-header-min-height',
+      '--vf-codeblock-header-opacity',
+      '--vf-codeblock-header-padding',
+      '--vf-codeblock-line-gap',
+      '--vf-codeblock-line-height',
+      '--vf-codeblock-line-number-color',
+      '--vf-codeblock-line-number-min-width',
+      '--vf-codeblock-line-number-width',
+      '--vf-codeblock-margin-block',
+      '--vf-codeblock-margin-block-end',
+      '--vf-codeblock-margin-block-start',
+      '--vf-codeblock-max-height',
+      '--vf-codeblock-meta-color',
+      '--vf-codeblock-meta-font-size',
+      '--vf-codeblock-meta-gap',
+      '--vf-codeblock-padding',
+      '--vf-codeblock-shadow',
+      '--vf-codeblock-text-color',
+    ]);
     expect(tokensSource).toContain('--vf-codeblock-margin-block-start');
     expect(tokensSource).toContain('--vf-codeblock-margin-block-end');
     expect(tokensSource).toContain('--vf-codeblock-margin-block: var(--vf-surface-padding)');
     expect(componentSource).toContain('margin-block:');
     expect(componentSource).toContain('.vf-codeblock:first-child');
     expect(componentSource).toContain('.vf-codeblock:last-child');
+    expect(componentSource).toContain(":root:not([data-theme='dark']) .vf-codeblock:not([data-theme='dark'])");
+    expect(componentSource).toContain("[data-vf-theme='light'] .vf-codeblock");
+    expect(componentSource).not.toContain('  --vf-codeblock-background-color:');
   });
 
   it('applies containerMinHeight to root container style', () => {
@@ -385,7 +473,8 @@ body {
 
     await flushObserver();
 
-    expect(wrapper.attributes('data-theme')).toBe('dark');
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('dark');
     wrapper.unmount();
   });
 
@@ -400,7 +489,8 @@ body {
 
     await flushObserver();
 
-    expect(wrapper.attributes('data-theme')).toBe('dark');
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('dark');
     wrapper.unmount();
   });
 
@@ -412,7 +502,8 @@ body {
 
     await flushObserver();
 
-    expect(wrapper.attributes('data-theme')).toBe('light');
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('light');
     wrapper.unmount();
   });
 
@@ -428,6 +519,27 @@ body {
     await flushObserver();
 
     expect(wrapper.attributes('data-theme')).toBe(theme);
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe(theme);
+    wrapper.unmount();
+  });
+
+  it('resolves the closest boundary when an explicit theme changes to inherit', async () => {
+    const { wrapper } = mountIntoHost(
+      {
+        code: 'const demo = true;',
+        theme: 'light',
+      },
+      { 'data-vf-theme': 'dark' },
+    );
+
+    expect(wrapper.attributes('data-theme')).toBe('light');
+
+    await wrapper.setProps({ theme: 'inherit' });
+    await flushObserver();
+
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('dark');
     wrapper.unmount();
   });
 
@@ -449,7 +561,56 @@ body {
 
     await flushObserver();
 
-    expect(wrapper.attributes('data-theme')).toBe('light');
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('light');
+    wrapper.unmount();
+  });
+
+  it('uses the nearest valid boundary across both supported theme attributes', async () => {
+    const outer = document.createElement('div');
+    outer.setAttribute('data-theme', 'dark');
+    const host = document.createElement('div');
+    host.setAttribute('data-vf-theme', 'light');
+    outer.appendChild(host);
+    document.body.appendChild(outer);
+
+    const wrapper = mount(VfCodeBlock, {
+      attachTo: host,
+      props: {
+        code: 'const demo = true;',
+        theme: 'inherit',
+      },
+    });
+
+    await flushObserver();
+
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('light');
+    wrapper.unmount();
+  });
+
+  it('skips invalid inner markers when resolving the inherited theme', async () => {
+    const outer = document.createElement('div');
+    outer.setAttribute('data-vf-theme', 'dark');
+    const host = document.createElement('div');
+    host.setAttribute('data-theme', 'inherit');
+    outer.appendChild(host);
+    document.body.appendChild(outer);
+
+    const wrapper = mount(VfCodeBlock, {
+      attachTo: host,
+      props: {
+        code: 'const demo = true;',
+        theme: 'inherit',
+      },
+    });
+
+    await flushObserver();
+
+    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('dark');
     wrapper.unmount();
   });
 

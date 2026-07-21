@@ -1,4 +1,5 @@
-:root {
+:root,
+:where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark']) {
   --vf-codeblock-margin-block: var(--vf-surface-padding);
   --vf-codeblock-margin-block-start: var(--vf-codeblock-margin-block);
   --vf-codeblock-margin-block-end: var(--vf-codeblock-margin-block);

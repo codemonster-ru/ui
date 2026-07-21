@@ -1,5 +1,13 @@
 <template>
-  <div class="vf-playground" :class="containerClassName" :style="containerStyle" :data-theme="theme">
+  <div
+    ref="rootElement"
+    class="vf-playground"
+    :class="containerClassName"
+    :style="containerStyle"
+    :data-theme="themeAttribute"
+    :data-vf-theme="themeAttribute"
+    :data-vf-resolved-theme="resolvedTheme"
+  >
     <slot name="layout" v-bind="layoutSlotProps">
       <div class="vf-playground__tabs">
         <component :is="tabsRenderer" v-if="tabsRenderer" v-bind="tabsRendererProps" />
@@ -46,7 +54,9 @@
         <div v-else class="vf-playground__component-preview" :style="componentPreviewStyle">
           <component :is="componentToRender" v-if="componentToRender" />
         </div>
-        <p v-if="isSandboxMode && !isClient" class="vf-playground__ssr-hint">Preview is available on client side only.</p>
+        <p v-if="isSandboxMode && !isClient" class="vf-playground__ssr-hint">
+          Preview is available on client side only.
+        </p>
       </div>
 
       <div v-if="isSandboxMode && activeTab === 'console'" class="vf-playground__panel">
@@ -63,7 +73,7 @@ import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 import type {
   ConsoleEvent,
   PlaygroundError,
-  createPlaygroundSession as createPlaygroundSessionFactory
+  createPlaygroundSession as createPlaygroundSessionFactory,
 } from '@codemonster-ru/vueforge-playground-core';
 
 import type { VfPlaygroundComponentProps, VfPlaygroundProps, VfPlaygroundSandboxProps } from './props';
@@ -117,7 +127,7 @@ const props = withDefaults(defineProps<VfPlaygroundRuntimeProps>(), {
   componentFiles: undefined,
   componentEntry: undefined,
   componentPadding: undefined,
-  componentMinHeight: undefined
+  componentMinHeight: undefined,
 });
 
 const emit = defineEmits<{
@@ -132,20 +142,21 @@ type CreatePlaygroundSession = typeof createPlaygroundSessionFactory;
 type PlaygroundSession = ReturnType<CreatePlaygroundSession>;
 
 const isClient = typeof window !== 'undefined';
+const rootElement = ref<HTMLElement | null>(null);
 const iframeRef = ref<HTMLIFrameElement | null>(null);
 const isSandboxMode = computed(() => props.mode !== 'component');
 const sandboxProps = computed(() => (isSandboxMode.value ? (props as VfPlaygroundSandboxProps) : null));
 const componentProps = computed(() => (isSandboxMode.value ? null : (props as VfPlaygroundComponentProps)));
 const isCodeVisible = computed(() =>
   isSandboxMode.value
-    ? sandboxProps.value?.showCode ?? true
+    ? (sandboxProps.value?.showCode ?? true)
     : Boolean(componentProps.value?.componentSource) ||
-      Boolean(componentProps.value?.componentFiles && Object.keys(componentProps.value.componentFiles).length > 0)
+      Boolean(componentProps.value?.componentFiles && Object.keys(componentProps.value.componentFiles).length > 0),
 );
 const theme = computed(() => props.theme ?? 'inherit');
 const hasInitialTab = props.initialTab !== undefined;
 const activeTab = ref<PlaygroundTab>(resolveInitialTab());
-const activeFile = ref(isSandboxMode.value ? sandboxProps.value?.entry ?? '' : '');
+const activeFile = ref(isSandboxMode.value ? (sandboxProps.value?.entry ?? '') : '');
 const logs = ref<string[]>([]);
 const isRunning = ref(false);
 const hostIsDark = ref(false);
@@ -193,26 +204,22 @@ const codeLanguage = computed(() => {
   const ext = activeFile.value.split('.').pop() ?? 'txt';
   return ext === 'ts' ? 'typescript' : ext === 'js' ? 'javascript' : ext;
 });
-const resolvedCodeTheme = computed(() => {
-  if (theme.value === 'inherit') {
-    return hostIsDark.value ? 'dark' : 'light';
-  }
-  return theme.value;
-});
+const resolvedTheme = computed<'light' | 'dark'>(() =>
+  theme.value === 'inherit' ? (hostIsDark.value ? 'dark' : 'light') : theme.value,
+);
+const themeAttribute = computed(() => (theme.value === 'inherit' ? 'inherit' : resolvedTheme.value));
+const resolvedCodeTheme = computed(() => resolvedTheme.value);
 const containerStyle = computed(() => ({
   ...(props.minHeight != null
     ? { minHeight: typeof props.minHeight === 'number' ? `${props.minHeight}px` : props.minHeight }
     : {}),
-  ...(props.height != null
-    ? { height: typeof props.height === 'number' ? `${props.height}px` : props.height }
-    : {})
+  ...(props.height != null ? { height: typeof props.height === 'number' ? `${props.height}px` : props.height } : {}),
 }));
 const isAutoHeightMode = computed(
-  () =>
-    props.heightMode === 'auto' || (props.heightMode === 'auto-preview' && activeTab.value === 'preview')
+  () => props.heightMode === 'auto' || (props.heightMode === 'auto-preview' && activeTab.value === 'preview'),
 );
 const containerClassName = computed(() => ({
-  'vf-playground--auto-height': isAutoHeightMode.value
+  'vf-playground--auto-height': isAutoHeightMode.value,
 }));
 const consoleOutput = computed(() => logs.value.join('\n'));
 const tabsRenderer = computed(() => props.tabsRenderer);
@@ -225,12 +232,12 @@ const componentPreviewStyle = computed(() => ({
     : {}),
   ...(componentProps.value?.componentMinHeight != null
     ? { minHeight: toCssLength(componentProps.value.componentMinHeight) }
-    : {})
+    : {}),
 }));
 const tabsRendererProps = computed(() => ({
   activeTab: activeTab.value,
   showCode: isCodeVisible.value,
-  setActiveTab
+  setActiveTab,
 }));
 const defaultTabItems = computed<VfTabItem[]>(() => {
   if (!isSandboxMode.value) {
@@ -243,7 +250,7 @@ const defaultTabItems = computed<VfTabItem[]>(() => {
 
   const tabs: VfTabItem[] = [
     { value: 'preview', label: 'Preview' },
-    { value: 'console', label: 'Console' }
+    { value: 'console', label: 'Console' },
   ];
   if (isCodeVisible.value) {
     return [{ value: 'code', label: 'Code' }, ...tabs];
@@ -253,17 +260,17 @@ const defaultTabItems = computed<VfTabItem[]>(() => {
 const defaultFileTabItems = computed<VfTabItem[]>(() =>
   fileNames.value.map((file) => ({
     value: file,
-    label: file
-  }))
+    label: file,
+  })),
 );
 const actionsRendererProps = computed(() => ({
   isRunning: isRunning.value,
-  run: runSession
+  run: runSession,
 }));
 const filesRendererProps = computed(() => ({
   files: fileNames.value,
   activeFile: activeFile.value,
-  setActiveFile
+  setActiveFile,
 }));
 const layoutSlotProps = computed(() => ({
   activeTab: activeTab.value,
@@ -279,7 +286,7 @@ const layoutSlotProps = computed(() => ({
   isRunning: isRunning.value,
   run: runSession,
   isClient,
-  bindPreviewIframe
+  bindPreviewIframe,
 }));
 
 let session: PlaygroundSession | null = null;
@@ -294,11 +301,12 @@ let sessionIframe: HTMLIFrameElement | null = null;
 let readyEmitted = false;
 let mountedReadyFallbackRaf1: number | null = null;
 let mountedReadyFallbackRaf2: number | null = null;
+let sandboxThemeVariableNames = new Set<string>();
 const SANDBOX_THEME_STYLE_ID = 'vf-playground-theme-sync';
 
 function loadCreatePlaygroundSession(): Promise<CreatePlaygroundSession> {
   loadCreatePlaygroundSessionPromise ??= import('@codemonster-ru/vueforge-playground-core').then(
-    (runtime) => runtime.createPlaygroundSession
+    (runtime) => runtime.createPlaygroundSession,
   );
   return loadCreatePlaygroundSessionPromise;
 }
@@ -325,24 +333,45 @@ function readHostThemeIsDark(): boolean {
     return false;
   }
 
-  const root = document.documentElement;
-  const dataTheme = root.getAttribute('data-theme');
-  const dataVfTheme = root.getAttribute('data-vf-theme');
-  const classList = root.classList;
-  if (dataTheme === 'dark' || dataVfTheme === 'dark') {
-    return true;
-  }
-  if (dataTheme === 'light' || dataVfTheme === 'light') {
-    return false;
-  }
-  if (classList.contains('dark') || classList.contains('vf-theme-dark')) {
-    return true;
-  }
-  if (classList.contains('light') || classList.contains('vf-theme-light')) {
-    return false;
+  const readBoundary = (element: HTMLElement): boolean | null => {
+    const dataTheme = element.getAttribute('data-theme');
+    if (dataTheme === 'dark' || dataTheme === 'light') {
+      return dataTheme === 'dark';
+    }
+
+    const dataVfTheme = element.getAttribute('data-vf-theme');
+    if (dataVfTheme === 'dark' || dataVfTheme === 'light') {
+      return dataVfTheme === 'dark';
+    }
+
+    const classList = element.classList;
+    if (classList.contains('dark') || classList.contains('vf-theme-dark')) {
+      return true;
+    }
+    if (classList.contains('light') || classList.contains('vf-theme-light')) {
+      return false;
+    }
+
+    return null;
+  };
+
+  let currentElement: HTMLElement | null = rootElement.value?.parentElement ?? document.documentElement;
+
+  while (currentElement) {
+    const boundary = readBoundary(currentElement);
+    if (boundary !== null) {
+      return boundary;
+    }
+
+    currentElement = currentElement.parentElement;
   }
 
-  const colorScheme = getComputedStyle(root).colorScheme;
+  const documentBoundary = readBoundary(document.documentElement);
+  if (documentBoundary !== null) {
+    return documentBoundary;
+  }
+
+  const colorScheme = getComputedStyle(rootElement.value ?? document.documentElement).colorScheme;
   if (colorScheme.includes('dark')) {
     return true;
   }
@@ -361,11 +390,42 @@ function syncHostTheme(): void {
   hostIsDark.value = readHostThemeIsDark();
 }
 
-function getResolvedPreviewTheme(): 'light' | 'dark' {
-  if (theme.value === 'inherit') {
-    return hostIsDark.value ? 'dark' : 'light';
+function mutationAffectsHostTheme(record: MutationRecord): boolean {
+  const host = rootElement.value;
+  const target = record.target;
+
+  if (!host) {
+    return false;
   }
-  return theme.value;
+
+  if (record.type === 'childList') {
+    return [...record.addedNodes, ...record.removedNodes].some(
+      (node) => node === host || (node.nodeType === 1 && (node as Element).contains(host)),
+    );
+  }
+
+  return Boolean(
+    target.nodeType === 1 &&
+    (target === document.documentElement || target === host || (target as Element).contains(host)),
+  );
+}
+
+function readHostThemeVariables(): Record<string, string> {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
+  const hostStyles = getComputedStyle(rootElement.value ?? document.documentElement);
+  const variables: Record<string, string> = {};
+
+  for (let index = 0; index < hostStyles.length; index += 1) {
+    const propertyName = hostStyles.item(index);
+    if (propertyName.startsWith('--vf-')) {
+      variables[propertyName] = hostStyles.getPropertyValue(propertyName);
+    }
+  }
+
+  return variables;
 }
 
 function syncSandboxThemeToIframe(): void {
@@ -373,47 +433,67 @@ function syncSandboxThemeToIframe(): void {
     return;
   }
 
-  const iframeDocument = iframeRef.value.contentDocument;
-  if (!iframeDocument) {
-    return;
-  }
-  const iframeRoot = iframeDocument.documentElement;
-  const resolvedTheme = getResolvedPreviewTheme();
-  iframeRoot.setAttribute('data-theme', resolvedTheme);
-  iframeRoot.setAttribute('data-vf-theme', resolvedTheme);
-  iframeRoot.classList.toggle('dark', resolvedTheme === 'dark');
-  iframeRoot.classList.toggle('light', resolvedTheme === 'light');
-  iframeRoot.classList.toggle('vf-theme-dark', resolvedTheme === 'dark');
-  iframeRoot.classList.toggle('vf-theme-light', resolvedTheme === 'light');
-  iframeRoot.style.colorScheme = resolvedTheme;
+  const iframe = iframeRef.value;
+  const nextTheme = resolvedTheme.value;
+  const variables = readHostThemeVariables();
+  let iframeDocument: Document | null = null;
 
-  const hostStyles = getComputedStyle(document.documentElement);
-  for (let index = 0; index < hostStyles.length; index += 1) {
-    const propertyName = hostStyles.item(index);
-    if (!propertyName.startsWith('--vf-')) {
-      continue;
+  try {
+    iframeDocument = iframe.contentDocument;
+  } catch {
+    // Sandboxed srcdoc previews have an opaque origin; the message bridge below is authoritative.
+  }
+
+  if (iframeDocument) {
+    const iframeRoot = iframeDocument.documentElement;
+    iframeRoot.setAttribute('data-theme', nextTheme);
+    iframeRoot.setAttribute('data-vf-theme', nextTheme);
+    iframeRoot.classList.toggle('dark', nextTheme === 'dark');
+    iframeRoot.classList.toggle('light', nextTheme === 'light');
+    iframeRoot.classList.toggle('vf-theme-dark', nextTheme === 'dark');
+    iframeRoot.classList.toggle('vf-theme-light', nextTheme === 'light');
+    iframeRoot.style.colorScheme = nextTheme;
+
+    for (const propertyName of sandboxThemeVariableNames) {
+      iframeRoot.style.removeProperty(propertyName);
     }
-    iframeRoot.style.setProperty(propertyName, hostStyles.getPropertyValue(propertyName));
-  }
-
-  if (iframeDocument.body) {
-    iframeDocument.body.style.backgroundColor = 'var(--vf-color-bg, Canvas)';
-    iframeDocument.body.style.color = 'var(--vf-color-text, CanvasText)';
-  }
-
-  let themeStyle = iframeDocument.getElementById(SANDBOX_THEME_STYLE_ID) as HTMLStyleElement | null;
-  if (!themeStyle) {
-    themeStyle = iframeDocument.createElement('style');
-    themeStyle.id = SANDBOX_THEME_STYLE_ID;
-    iframeDocument.head.append(themeStyle);
-  }
-  themeStyle.textContent = `
-    :root { color-scheme: ${resolvedTheme}; }
-    html, body {
-      background: var(--vf-color-bg, Canvas);
-      color: var(--vf-color-text, CanvasText);
+    sandboxThemeVariableNames = new Set(Object.keys(variables));
+    for (const [propertyName, value] of Object.entries(variables)) {
+      iframeRoot.style.setProperty(propertyName, value);
     }
-  `;
+
+    if (iframeDocument.body) {
+      iframeDocument.body.style.backgroundColor = 'var(--vf-color-bg, Canvas)';
+      iframeDocument.body.style.color = 'var(--vf-color-text, CanvasText)';
+    }
+
+    let themeStyle = iframeDocument.getElementById(SANDBOX_THEME_STYLE_ID) as HTMLStyleElement | null;
+    if (!themeStyle) {
+      themeStyle = iframeDocument.createElement('style');
+      themeStyle.id = SANDBOX_THEME_STYLE_ID;
+      iframeDocument.head.append(themeStyle);
+    }
+    themeStyle.textContent = `
+      :root { color-scheme: ${nextTheme}; }
+      html, body {
+        background: var(--vf-color-bg, Canvas);
+        color: var(--vf-color-text, CanvasText);
+      }
+    `;
+  }
+
+  try {
+    iframe.contentWindow?.postMessage(
+      {
+        __cm_playground: true,
+        type: 'theme',
+        payload: { theme: nextTheme, variables },
+      },
+      '*',
+    );
+  } catch {
+    // The direct path above remains useful in same-origin test and integration environments.
+  }
 }
 
 function emitReadyOnce(): void {
@@ -594,13 +674,13 @@ async function initSessionInternal(forceRecreate: boolean, requestId: number): P
     files: sandboxProps.value?.files ?? {},
     entry: sandboxProps.value?.entry ?? '',
     resolveImport: sandboxProps.value?.resolveImport,
-    bootstrapScript: sandboxProps.value?.bootstrapScript
+    bootstrapScript: sandboxProps.value?.bootstrapScript,
   });
 
   unsubscribers = [
     session.onRun(() => emit('run')),
     session.onConsole((event) => appendConsole(event)),
-    session.onError((error) => appendError(error))
+    session.onError((error) => appendError(error)),
   ];
   sessionIframe = sessionIframeTarget;
 }
@@ -642,10 +722,19 @@ async function runSession(options?: { keepActiveTab?: boolean }): Promise<void> 
 onMounted(async () => {
   syncHostTheme();
   if (typeof window !== 'undefined') {
-    themeObserver = new MutationObserver(() => syncHostTheme());
+    themeObserver = new MutationObserver((records) => {
+      if (!records.some(mutationAffectsHostTheme)) {
+        return;
+      }
+
+      syncHostTheme();
+      syncSandboxThemeToIframe();
+    });
     themeObserver.observe(document.documentElement, {
+      subtree: true,
+      childList: true,
       attributes: true,
-      attributeFilter: ['data-theme', 'data-vf-theme', 'class', 'style']
+      attributeFilter: ['data-theme', 'data-vf-theme', 'class', 'style'],
     });
     mediaTheme = window.matchMedia('(prefers-color-scheme: dark)');
     onMediaThemeChange = () => syncHostTheme();
@@ -680,7 +769,7 @@ watch(
       await runSession({ keepActiveTab: true });
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -688,7 +777,7 @@ watch(
   () => {
     syncSandboxThemeToIframe();
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -711,13 +800,17 @@ watch(
       await runSession({ keepActiveTab: true });
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 watch(
   () =>
     isSandboxMode.value
-      ? ([sandboxProps.value?.framework, sandboxProps.value?.resolveImport, sandboxProps.value?.bootstrapScript] as const)
+      ? ([
+          sandboxProps.value?.framework,
+          sandboxProps.value?.resolveImport,
+          sandboxProps.value?.bootstrapScript,
+        ] as const)
       : null,
   async () => {
     if (!isSandboxMode.value) {
@@ -732,7 +825,7 @@ watch(
     if (sandboxProps.value?.autorun ?? true) {
       await runSession({ keepActiveTab: true });
     }
-  }
+  },
 );
 
 watch(
@@ -754,7 +847,7 @@ watch(
       activeTab.value = 'preview';
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -776,7 +869,7 @@ watch(
       activeFile.value = nextFileNames[0];
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 );
 
 onBeforeUnmount(() => {
@@ -803,7 +896,7 @@ onBeforeUnmount(() => {
 defineExpose({
   setActiveFile,
   setActiveTab,
-  run: runSession
+  run: runSession,
 });
 </script>
 

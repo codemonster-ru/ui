@@ -57,55 +57,54 @@ try {
     ) + '\n',
   );
 
-  writeFileSync(
-    join(consumerDir, 'main.js'),
-    [
-      "import { VfButton } from '@codemonster-ru/vueforge-core/button';",
-      "import { VfStepper } from '@codemonster-ru/vueforge-core/stepper';",
-      "import '@codemonster-ru/vueforge-core/styles.css';",
-      'console.log(Boolean(VfButton), Boolean(VfStepper));',
-      '',
-    ].join('\n'),
-  );
+  const buildEntry = async (entryName, source) => {
+    const entryPath = join(consumerDir, `${entryName}.js`);
+    const outdir = join(consumerDir, `${entryName}-dist`);
+    writeFileSync(entryPath, `${source.join('\n')}\n`);
 
-  await build({
-    entryPoints: [join(consumerDir, 'main.js')],
-    bundle: true,
-    format: 'esm',
-    outdir: join(consumerDir, 'dist'),
-    write: true,
-    external: ['vue'],
-    logLevel: 'silent',
-  });
+    await build({
+      entryPoints: [entryPath],
+      bundle: true,
+      format: 'esm',
+      outdir,
+      write: true,
+      external: ['vue'],
+      logLevel: 'silent',
+    });
 
-  const distDir = join(consumerDir, 'dist');
-  const cssFiles = execFileSync('find', [distDir, '-type', 'f', '-name', '*.css'], {
-    encoding: 'utf8',
-  })
-    .split('\n')
-    .filter(Boolean);
+    const cssFiles = execFileSync('find', [outdir, '-type', 'f', '-name', '*.css'], {
+      encoding: 'utf8',
+    })
+      .split('\n')
+      .filter(Boolean);
 
-  if (!cssFiles.length) {
-    throw new Error(
-      'Consumer smoke failed: no CSS assets were emitted for @codemonster-ru/vueforge-core/button import.',
-    );
+    if (cssFiles.length !== 1) {
+      throw new Error(`Consumer smoke failed: expected one CSS asset for ${entryName}, received ${cssFiles.length}.`);
+    }
+
+    return readFileSync(cssFiles[0], 'utf8');
+  };
+
+  const componentCss = await buildEntry('components', [
+    "import { VfButton } from '@codemonster-ru/vueforge-core/button';",
+    "import { VfStepper } from '@codemonster-ru/vueforge-core/stepper';",
+    'console.log(Boolean(VfButton), Boolean(VfStepper));',
+  ]);
+
+  if (!componentCss.includes('.vf-button') || !componentCss.includes('.vf-stepper')) {
+    throw new Error('Consumer smoke failed: component subpaths did not emit Button and Stepper CSS.');
+  }
+  if (componentCss.includes('.vf-prose') || componentCss.includes('.vf-nav-menu')) {
+    throw new Error('Consumer smoke failed: component-only CSS contains full/global or unrelated navigation rules.');
   }
 
-  const cssContent = readFileSync(cssFiles[0], 'utf8');
-  if (!cssContent.includes('.vf-button')) {
-    throw new Error('Consumer smoke failed: emitted CSS does not contain .vf-button styles.');
-  }
-
-  if (!cssContent.includes('.vf-stepper')) {
-    throw new Error('Consumer smoke failed: emitted CSS does not contain .vf-stepper styles.');
-  }
-
-  if (!cssContent.includes('.vf-prose')) {
-    throw new Error('Consumer smoke failed: styles.css does not contain the global prose baseline.');
+  const fullCss = await buildEntry('full', ["import '@codemonster-ru/vueforge-core/styles.css';"]);
+  if (!fullCss.includes('.vf-prose') || !fullCss.includes('.vf-button') || !fullCss.includes('.vf-stepper')) {
+    throw new Error('Consumer smoke failed: styles.css is missing global, Button, or Stepper CSS.');
   }
 
   console.log(
-    `Consumer smoke passed: component subpaths and ${packageJson.name}/styles.css emitted their expected CSS.`,
+    `Consumer smoke passed: isolated component subpaths and ${packageJson.name}/styles.css emitted their expected CSS.`,
   );
 } finally {
   rmSync(tempDir, { recursive: true, force: true });

@@ -1,0 +1,5 @@
+:root.vf-theme-transitioning :where([class^='vf-'], [class*=' vf-']) {
+  transition-property: transform, opacity !important;
+  transition-duration: var(--vf-motion-duration-normal) !important;
+  transition-timing-function: var(--vf-motion-ease-standard) !important;
+}

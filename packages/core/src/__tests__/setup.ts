@@ -15,6 +15,7 @@ vi.mock('@codemonster-ru/vueforge-icons', () => ({
 
 beforeEach(() => {
   window.localStorage.clear();
+  document.documentElement.removeAttribute('data-theme');
   document.documentElement.removeAttribute('data-vf-theme');
 
   vi.stubGlobal(
