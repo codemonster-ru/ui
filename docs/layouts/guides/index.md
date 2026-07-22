@@ -23,9 +23,15 @@ Follow these patterns to keep layout composition consistent across pages and she
 Use layouts for structure and `@codemonster-ru/vueforge-core` for interactive primitives inside shell areas.
 
 ```ts
-import { VfAppShell, VfHeaderArea, VfContentArea } from '@codemonster-ru/vueforge-layouts';
-import { VfCard, VfButton } from '@codemonster-ru/vueforge-core';
+import VfAppShell from '@codemonster-ru/vueforge-layouts/app-shell';
+import VfHeaderArea from '@codemonster-ru/vueforge-layouts/header-area';
+import { VfButton } from '@codemonster-ru/vueforge-core/button';
 ```
+
+Use root imports plus Core/Layout full stylesheets for an application-wide setup. For a granular
+setup, import the shared Core and Layouts token/theme/base entries once, then use component subpaths
+for browser auto CSS. Those subpaths do not include the shared foundation. Node ESM subpaths are
+CSS-free for SSR; fully manual browser delivery uses named root imports plus explicit component CSS.
 
 ### Keep Breakpoints Consistent
 
@@ -39,8 +45,10 @@ Use `createLayoutsPreset`/`applyLayoutsThemeConfig` for layout token changes ins
 
 The following items are listed in this section:
 
-- Peer dependency: `vue ^3.4.0`.
-- Peer dependency: `@codemonster-ru/vueforge-core ^1.18.0`.
+- Peer dependency: `vue ^3.5.0`.
+- Peer dependency: `@codemonster-ru/vueforge-core ^1.36.0`.
+- Consumer tooling and SSR require Node.js 18 or newer.
+- The plugin configures themes but does not globally register layout components.
 
 ## Related Packages
 

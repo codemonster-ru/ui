@@ -28,6 +28,14 @@ export default defineConfig({
           resolve(autoDir, 'view.js'),
           "import '../view.css';\nexport { default } from '../view.js';\nexport * from '../view.js';\n",
         );
+        writeFileSync(
+          resolve(rootDir, 'dist/view.d.cts'),
+          "declare const moduleExports: typeof import('./view.js');\nexport = moduleExports;\n",
+        );
+        writeFileSync(
+          resolve(rootDir, 'dist/highlight.d.cts'),
+          "declare const moduleExports: typeof import('./highlight.js');\nexport = moduleExports;\n",
+        );
       },
     },
   ],

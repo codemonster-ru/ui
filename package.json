@@ -27,33 +27,43 @@
     "test": "npm run test --workspaces --if-present --include-workspace-root=false",
     "test:ci-like": "scripts/ci/test-without-dist.sh",
     "typecheck": "npm run typecheck --workspaces --if-present --include-workspace-root=false",
+    "audit:release": "npm audit --omit=dev && npm audit --audit-level=high",
     "check": "npm run lint:docs-imports && npm run check -w @codemonster-ru/vueforge-codeblock && npm run check -w @codemonster-ru/vueforge-core && npm run check -w @codemonster-ru/vueforge-icons && npm run check -w @codemonster-ru/vueforge-layouts && npm run check -w @codemonster-ru/vueforge-playground && npm run check -w @codemonster-ru/vueforge-playground-core && npm run check -w @codemonster-ru/vueforge-playground-vite-plugin && npm run check -w @codemonster-ru/vueforge-theme",
     "check:clean-install": "node ./scripts/ci/check-clean-install.mjs",
+    "check:package-contracts": "node ./scripts/ci/check-package-contracts.mjs",
+    "check:packed-consumer": "node ./scripts/ci/check-packed-consumer.mjs --manager=npm",
+    "check:packed-consumers": "npm run check:packed-consumer && npx --yes --package=pnpm@10.34.5 -- node ./scripts/ci/check-packed-consumer.mjs --manager=pnpm && npx --yes --package=yarn@1.22.22 -- node ./scripts/ci/check-packed-consumer.mjs --manager=yarn",
     "visual:phase2": "node ./scripts/visual/phase-2-color-smoke.mjs",
-    "verify": "npm run check:clean-install && npm run lint:all && npm run check && npm run test:ci-like && npm run build && npm run check:consumer-tree-shaking && npm run check:deferred-budgets",
+    "verify": "npm run check:clean-install && npm run audit:release && npm run lint:all && npm run check && npm run test:ci-like && npm run build && npm run test:release-prep && npm run check:package-contracts && npm run check:packed-consumers && npm run check:consumer-tree-shaking && npm run check:deferred-budgets",
     "format": "npm run format --workspaces --if-present --include-workspace-root=false",
     "prepublish:all": "npm run build && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-icons --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-theme --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-core --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-layouts --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-codeblock --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-playground-core --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-playground --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-playground-vite-plugin --dry-run --ignore-scripts",
     "check:deferred-budgets": "npm run build -w @codemonster-ru/vueforge-playground-example -- --manifest && node ./scripts/ci/check-deferred-runtime-budgets.mjs",
-    "check:consumer-tree-shaking": "node ./scripts/ci/check-consumer-tree-shaking.mjs"
+    "check:consumer-tree-shaking": "node ./scripts/ci/check-consumer-tree-shaking.mjs",
+    "test:release-prep": "node --test ./scripts/ci/prepare-release-from-tag.test.mjs"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@vue/language-core": "~3.1.8",
+    "esbuild": "^0.25.12",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.9.0",
+    "globals": "^16.5.0",
     "htmlhint": "^1.7.1",
-    "markdownlint-cli2": "^0.22.1",
+    "markdownlint-cli2": "^0.23.1",
     "prettier": "^3.6.2",
     "stylelint": "^16.25.0",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-standard": "^39.0.1",
-    "stylelint-config-standard-scss": "^16.0.0"
+    "stylelint-config-standard-scss": "^16.0.0",
+    "typescript-eslint": "^8.59.1",
+    "vue-eslint-parser": "^10.4.0"
   },
   "overrides": {
     "@vitejs/plugin-vue": "5.2.4",
     "vite": "6.4.3",
-    "js-yaml": "4.2.0",
-    "markdown-it": "14.2.0",
     "ws": "8.21.0",
     "vue": "3.5.35",
-    "@vue/server-renderer": "3.5.35",
-    "vue-router": "5.1.0"
+    "@vue/server-renderer": "3.5.35"
   }
 }

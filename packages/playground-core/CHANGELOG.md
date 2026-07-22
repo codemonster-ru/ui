@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.2.0
+
+### Added
+
+- Added deterministic circular-import diagnostics and stricter import resolution coverage.
+- Added structural validation for console and runtime error messages received from the configured
+  preview iframe.
+
+### Changed
+
+- Scoped theme transfer now accepts only validated VueForge variables and works with opaque-origin
+  sandbox frames.
+- Declared Node.js 18 support and included all build, lint, and test tooling needed by a clean package
+  checkout.
+
+### Fixed
+
+- Rejected messages from unrelated windows and malformed runtime payloads.
+- Prevented direct and indirect import cycles from recursing until a stack failure.
+
+### Breaking changes
+
+- None in the documented public API. Invalid transport payloads that were never part of the public
+  contract are now ignored.
+
 ## 1.1.1
 
 ### Changed
