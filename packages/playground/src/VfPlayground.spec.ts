@@ -556,7 +556,8 @@ describe('VfPlayground', () => {
   it('copies scoped host variables and posts them through the sandbox bridge', async () => {
     const wrapper = mount(VfPlayground, {
       attrs: {
-        style: '--vf-phase-0-probe: scoped-value; --vf-color-bg: rgb(12, 34, 56);',
+        style:
+          '--vf-phase-0-probe: var(--brand-phase-2-probe); --brand-phase-2-probe: var(--brand-phase-2-base); --brand-phase-2-base: scoped-value; --vf-color-bg: rgb(12, 34, 56);',
       },
       props: {
         ...baseSandboxProps,
@@ -580,7 +581,13 @@ describe('VfPlayground', () => {
     iframe.dispatchEvent(new Event('load'));
     await flushThemeSync();
 
-    expect(iframeDocument.documentElement.style.getPropertyValue('--vf-phase-0-probe').trim()).toBe('scoped-value');
+    expect(iframeDocument.documentElement.style.getPropertyValue('--vf-phase-0-probe').trim()).toBe(
+      'var(--brand-phase-2-probe)',
+    );
+    expect(iframeDocument.documentElement.style.getPropertyValue('--brand-phase-2-probe').trim()).toBe(
+      'var(--brand-phase-2-base)',
+    );
+    expect(iframeDocument.documentElement.style.getPropertyValue('--brand-phase-2-base').trim()).toBe('scoped-value');
     expect(postMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         __cm_playground: true,
@@ -588,7 +595,9 @@ describe('VfPlayground', () => {
         payload: expect.objectContaining({
           theme: 'dark',
           variables: expect.objectContaining({
-            '--vf-phase-0-probe': 'scoped-value',
+            '--vf-phase-0-probe': 'var(--brand-phase-2-probe)',
+            '--brand-phase-2-probe': 'var(--brand-phase-2-base)',
+            '--brand-phase-2-base': 'scoped-value',
           }),
         }),
       }),
@@ -674,6 +683,12 @@ describe('VfPlayground', () => {
     const iframeRoot = iframe.contentDocument?.documentElement;
     expect(iframeRoot?.getAttribute('data-theme')).toBe('dark');
     expect(iframe.contentDocument?.getElementById('vf-playground-theme-sync')).toBeTruthy();
+    expect(iframe.contentDocument?.body.style.backgroundColor).toBe(
+      'var(--vf-color-background-canvas, var(--vf-color-bg, Canvas))',
+    );
+    expect(iframe.contentDocument?.body.style.color).toBe(
+      'var(--vf-color-text-primary, var(--vf-color-text, CanvasText))',
+    );
   });
 
   it('keeps exact scoped tokens and playground codeblock overrides layout-only', () => {
@@ -742,10 +757,23 @@ describe('VfPlayground', () => {
     expect(tokensSource).toContain('--vf-playground-codeblock-border-color: transparent;');
     expect(tokensSource).toContain('--vf-playground-codeblock-border-radius: 0;');
     expect(tokensSource).toContain('--vf-playground-codeblock-shadow: none;');
+    expect(tokensSource).toContain(
+      '--vf-playground-surface: var(--vf-color-background-surface, var(--vf-color-surface));',
+    );
+    expect(tokensSource).toContain(
+      '--vf-playground-iframe-bg: var(--vf-color-background-canvas, var(--vf-color-bg, var(--vf-color-surface)));',
+    );
     expect(componentSource).toContain('--vf-codeblock-max-height: var(--vf-playground-codeblock-max-height)');
     expect(componentSource).not.toContain('--vf-codeblock-background-color:');
     expect(componentSource).not.toContain('--vf-codeblock-header-background-color:');
     expect(componentSource).not.toContain('--vf-codeblock-action-background-color:');
+    expect(componentSource).toContain('--vf-tabs-list-border-color: var(--vf-playground-tab-border)');
+    expect(componentSource).toContain('--vf-tabs-tab-background: var(--vf-playground-tab-bg)');
+    expect(componentSource).toContain('--vf-tabs-tab-color: var(--vf-playground-tab-text)');
+    expect(componentSource).toContain('--vf-tabs-tab-active-background: var(--vf-playground-tab-active-bg)');
+    expect(componentSource).toContain('--vf-tabs-tab-active-color: var(--vf-playground-tab-active-text)');
+    expect(componentSource).toContain('--vf-tabs-indicator-color: var(--vf-playground-tab-active-border)');
+    expect(componentSource).toContain('--vf-tabs-focus-ring-color: var(--vf-playground-focus-ring-color)');
   });
 
   it('preserves inherited public token overrides in inherit mode', async () => {
@@ -776,9 +804,7 @@ describe('VfPlayground', () => {
         ":where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark'])",
       ),
     ).toBe(false);
-    expect(host.style.getPropertyValue('--vf-playground-surface')).toBe(
-      'inherited-brand',
-    );
+    expect(host.style.getPropertyValue('--vf-playground-surface')).toBe('inherited-brand');
     expect(wrapper.attributes('data-theme')).toBe('inherit');
 
     wrapper.unmount();

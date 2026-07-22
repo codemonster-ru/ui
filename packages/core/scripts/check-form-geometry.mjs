@@ -20,15 +20,16 @@ function inlineCssImports(filePath, seen = new Set()) {
   }
 
   seen.add(filePath);
-  return readFileSync(filePath, 'utf8').replace(
-    /^@import\s+['"](.+?)['"];\s*$/gm,
-    (_statement, importPath) =>
-      importPath.startsWith('.') ? inlineCssImports(resolve(dirname(filePath), importPath), seen) : _statement,
+  return readFileSync(filePath, 'utf8').replace(/^@import\s+['"](.+?)['"];\s*$/gm, (_statement, importPath) =>
+    importPath.startsWith('.') ? inlineCssImports(resolve(dirname(filePath), importPath), seen) : _statement,
   );
 }
 
 const source = Object.fromEntries(
-  Object.entries(files).map(([name, path]) => [name, name === 'forms' ? inlineCssImports(path) : readFileSync(path, 'utf8')]),
+  Object.entries(files).map(([name, path]) => [
+    name,
+    name === 'forms' ? inlineCssImports(path) : readFileSync(path, 'utf8'),
+  ]),
 );
 
 const checks = [
@@ -93,13 +94,13 @@ const checks = [
     file: 'forms',
     label: 'floating sm select applies its dedicated padding adjustment',
     snippet:
-      'padding-top: calc(var(--vf-field-floating-control-padding-top-sm) + var(--vf-field-floating-select-padding-adjustment-sm));',
+      'padding-top: calc(\n    var(--vf-field-floating-control-padding-top-sm) + var(--vf-field-floating-select-padding-adjustment-sm)\n  );',
   },
   {
     file: 'select',
     label: 'standalone floating sm select applies its dedicated padding adjustment',
     snippet:
-      'padding-top: calc(var(--vf-field-floating-control-padding-top-sm) + var(--vf-field-floating-select-padding-adjustment-sm));',
+      'padding-top: calc(\n    var(--vf-field-floating-control-padding-top-sm) + var(--vf-field-floating-select-padding-adjustment-sm)\n  );',
   },
   {
     file: 'forms',

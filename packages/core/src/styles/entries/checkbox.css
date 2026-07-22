@@ -13,7 +13,7 @@
   gap: var(--vf-selection-gap);
   width: fit-content;
   min-width: 0;
-  color: var(--vf-color-text);
+  color: var(--vf-color-text-primary, var(--vf-color-text));
   cursor: pointer;
 }
 
@@ -88,14 +88,6 @@
   border-color: var(--vf-checkbox-hover-border-color);
 }
 
-.vf-checkbox--invalid .vf-checkbox__control {
-  border-color: var(--vf-checkbox-invalid-border-color);
-}
-
-.vf-checkbox--invalid:hover:not(.vf-checkbox--disabled) .vf-checkbox__input:not(:checked) + .vf-checkbox__control {
-  border-color: var(--vf-checkbox-invalid-border-color);
-}
-
 .vf-checkbox--sm .vf-checkbox__control {
   width: var(--vf-checkbox-size-sm);
   height: var(--vf-checkbox-size-sm);
@@ -162,4 +154,10 @@
   outline: none;
   border-color: var(--vf-checkbox-focus-border-color);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+}
+
+.vf-checkbox--invalid:not(.vf-checkbox--disabled) .vf-checkbox__control,
+.vf-checkbox--invalid:not(.vf-checkbox--disabled) .vf-checkbox__input:checked + .vf-checkbox__control,
+.vf-checkbox--invalid:hover:not(.vf-checkbox--disabled) .vf-checkbox__input + .vf-checkbox__control {
+  border-color: var(--vf-checkbox-invalid-border-color);
 }

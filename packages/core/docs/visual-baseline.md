@@ -1,5 +1,9 @@
 # VueForge Core Visual Baseline 1.0
 
+> **Historical 1.0 baseline.** Phase 2 намеренно меняет только color contract; её palette, contrast и visual
+> verification описаны в [Phase 2 report](../../../docs/design-audit/phase-2-report.md). Geometry, spacing и typography
+> правила ниже остаются исторической 1.0 baseline.
+
 This document defines the visual contract for `@codemonster-ru/vueforge-core` `1.0`.
 
 ## Principles

@@ -159,7 +159,6 @@ const requiredFullSnippets = [
   'line-clamp: 2;',
   '.vf-dialog__actions .vf-icon-button',
   '.vf-drawer__actions .vf-icon-button',
-  "html:where([data-theme='dark'], [data-vf-theme='dark'])",
 ];
 for (const snippet of requiredFullSnippets) {
   if (!fullCss.includes(snippet)) {
@@ -171,7 +170,10 @@ if (fullCss.includes('min-height: var(--vf-select-filter-min-height-sm)')) {
   fail('Full stylesheet still uses the legacy select-filter min-height as floating Select geometry.');
 }
 
-if (fullCss.includes("html[data-vf-theme='dark']")) {
+if (
+  fullCss.includes("html:where([data-theme='dark'], [data-vf-theme='dark'])") ||
+  fullCss.includes("html[data-vf-theme='dark']")
+) {
   fail('Full stylesheet still contains a root-only dark-mode component selector.');
 }
 

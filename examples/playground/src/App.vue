@@ -10,9 +10,7 @@
     >
       <template #header>
         <VfInline class="showcase-header" :wrap="false">
-          <div class="showcase-brand">
-            VueForge
-          </div>
+          <div class="showcase-brand">VueForge</div>
 
           <VfMenuBar
             v-model="activeSection"
@@ -34,19 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import {
-  VfMenuBar,
-  VfThemeProvider,
-  VfThemeSwitch,
-  type VfNavMenuItem,
-} from "@codemonster-ru/vueforge-core";
-import {
-  VfAppShell,
-  VfInline,
-} from "@codemonster-ru/vueforge-layouts";
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { VfMenuBar, VfThemeProvider, VfThemeSwitch, type VfNavMenuItem } from '@codemonster-ru/vueforge-core';
+import { VfAppShell, VfInline } from '@codemonster-ru/vueforge-layouts';
 
-type SectionValue = "core" | "layouts" | "icons" | "codeblock" | "playground";
+type SectionValue = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
 
 interface SectionMeta {
   value: SectionValue;
@@ -55,24 +45,28 @@ interface SectionMeta {
 
 const sections: SectionMeta[] = [
   {
-    value: "core",
-    label: "Core",
+    value: 'colors',
+    label: 'Colors',
   },
   {
-    value: "layouts",
-    label: "Layouts",
+    value: 'core',
+    label: 'Core',
   },
   {
-    value: "icons",
-    label: "Icons",
+    value: 'layouts',
+    label: 'Layouts',
   },
   {
-    value: "codeblock",
-    label: "CodeBlock",
+    value: 'icons',
+    label: 'Icons',
   },
   {
-    value: "playground",
-    label: "Playground",
+    value: 'codeblock',
+    label: 'CodeBlock',
+  },
+  {
+    value: 'playground',
+    label: 'Playground',
   },
 ];
 
@@ -82,58 +76,55 @@ const sectionItems: VfNavMenuItem[] = sections.map((section) => ({
 }));
 
 const sectionComponents = {
-  core: defineAsyncComponent(() => import("./sections/core/CoreShowcase.vue")),
-  layouts: defineAsyncComponent(() => import("./sections/layouts/LayoutsShowcase.vue")),
-  icons: defineAsyncComponent(() => import("./sections/icons/IconsShowcase.vue")),
-  codeblock: defineAsyncComponent(() => import("./sections/codeblock/CodeBlockShowcase.vue")),
-  playground: defineAsyncComponent(() => import("./PlaygroundShowcase.vue")),
+  colors: defineAsyncComponent(() => import('./sections/colors/ColorSystemShowcase.vue')),
+  core: defineAsyncComponent(() => import('./sections/core/CoreShowcase.vue')),
+  layouts: defineAsyncComponent(() => import('./sections/layouts/LayoutsShowcase.vue')),
+  icons: defineAsyncComponent(() => import('./sections/icons/IconsShowcase.vue')),
+  codeblock: defineAsyncComponent(() => import('./sections/codeblock/CodeBlockShowcase.vue')),
+  playground: defineAsyncComponent(() => import('./PlaygroundShowcase.vue')),
 } satisfies Record<SectionValue, unknown>;
 
 const validSections = new Set<SectionValue>(sections.map((section) => section.value));
 
 function resolveSectionFromPath(pathname: string): SectionValue {
-  const normalizedPath = pathname.replace(/\/+$/, "");
-  const segments = normalizedPath.split("/").filter(Boolean);
+  const normalizedPath = pathname.replace(/\/+$/, '');
+  const segments = normalizedPath.split('/').filter(Boolean);
   const lastSegment = segments.length > 0 ? segments[segments.length - 1] : undefined;
 
   if (lastSegment && validSections.has(lastSegment as SectionValue)) {
     return lastSegment as SectionValue;
   }
 
-  return "core";
+  return 'core';
 }
 
 function buildPathForSection(section: SectionValue): string {
   return `/${section}`;
 }
 
-const activeSection = ref<SectionValue>(
-  resolveSectionFromPath(window.location.pathname),
-);
-const activeSectionComponent = computed(
-  () => sectionComponents[activeSection.value],
-);
+const activeSection = ref<SectionValue>(resolveSectionFromPath(window.location.pathname));
+const activeSectionComponent = computed(() => sectionComponents[activeSection.value]);
 
 function syncSectionFromLocation() {
   activeSection.value = resolveSectionFromPath(window.location.pathname);
 }
 
 onMounted(() => {
-  window.addEventListener("popstate", syncSectionFromLocation);
+  window.addEventListener('popstate', syncSectionFromLocation);
 
-  if (window.location.pathname === "/" || window.location.pathname === "") {
-    window.history.replaceState(null, "", buildPathForSection(activeSection.value));
+  if (window.location.pathname === '/' || window.location.pathname === '') {
+    window.history.replaceState(null, '', buildPathForSection(activeSection.value));
   }
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("popstate", syncSectionFromLocation);
+  window.removeEventListener('popstate', syncSectionFromLocation);
 });
 
 watch(activeSection, (nextSection) => {
   const nextPath = buildPathForSection(nextSection);
   if (window.location.pathname !== nextPath) {
-    window.history.pushState(null, "", nextPath);
+    window.history.pushState(null, '', nextPath);
   }
 });
 </script>

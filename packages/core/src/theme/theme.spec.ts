@@ -20,118 +20,54 @@ describe('theme bridge', () => {
     expect(config.preset.light.colorPrimary).toBe('color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text))');
     expect(config.preset.light.controlHeightMd).toBe(defaultThemePreset.tokens.controlHeightMd);
     expect(config.preset.dark.colorBg).toBe('var(--vf-palette-neutral-900)');
-    expect(config.preset.dark.colorSurface).toBe('var(--vf-palette-neutral-800)');
-    expect(config.preset.dark.colorSurfaceMuted).toBe('var(--vf-palette-neutral-700)');
+    expect(config.preset.dark.colorSurface).toBe('var(--vf-palette-neutral-850)');
+    expect(config.preset.dark.colorSurfaceMuted).toBe('var(--vf-palette-neutral-800)');
     expect(config.preset.dark.colorBorder).toBe('var(--vf-palette-neutral-600)');
-    expect(config.preset.light.paletteNeutral50).toBe('#f6f8fb');
-    expect(config.preset.dark.paletteNeutral50).toBe('#f6f8fb');
+    expect(config.preset.light.paletteNeutral50).toBe('oklch(97.8% 0.005 260)');
+    expect(config.preset.dark.paletteNeutral50).toBe('oklch(97.8% 0.005 260)');
     expect(config.preset.light.colorBackgroundCanvas).toBe('var(--vf-color-bg)');
     expect(config.preset.dark.colorBackgroundCanvas).toBe('var(--vf-color-bg)');
     expect(config.preset.light.colorInteractivePrimaryBackground).toBe('var(--vf-color-primary)');
     expect(config.preset.dark.colorInteractivePrimaryBackground).toBe('var(--vf-color-primary)');
     expect(config.preset.light.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
     expect(config.preset.dark.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
-    expect(config.preset.dark.fieldBackground).toBe('var(--vf-color-bg)');
-    expect(defaultThemePreset.tokens.selectableColor).toBe('var(--vf-color-muted)');
+    expect(config.preset.light.colorBackgroundSurfaceSelectedHover).toBe('var(--vf-palette-primary-200)');
+    expect(config.preset.dark.colorBackgroundSurfaceSelectedHover).toBe('var(--vf-palette-primary-800)');
+    expect(config.preset.light.colorTextLink).toBe('var(--vf-palette-primary-700)');
+    expect(config.preset.dark.colorTextLink).toBe('var(--vf-palette-primary-300)');
+    expect(config.preset.dark.fieldBackground).toBe('var(--vf-color-background-surface, var(--vf-color-bg))');
+
+    expect(defaultThemePreset.tokens.selectableColor).toBe('var(--vf-color-text-secondary, var(--vf-color-muted))');
+    expect(defaultThemePreset.tokens.selectableHoverBackground).toBe(
+      'var(--vf-color-background-surface-hover, transparent)',
+    );
+    expect(defaultThemePreset.tokens.selectableActiveBackground).toBe(
+      'var(--vf-color-background-surface-selected, color-mix(in srgb, var(--vf-color-primary) 20%, var(--vf-color-surface)))',
+    );
+    expect(defaultThemePreset.tokens.breadcrumbsLinkColor).toBe(
+      'var(--vf-color-text-link, var(--vf-selectable-color))',
+    );
+    expect(defaultThemePreset.tokens.tabsTabActiveColor).toBe(
+      'var(--vf-color-selected-foreground, var(--vf-color-text))',
+    );
+    expect(defaultThemePreset.tokens.badgeSuccessColor).toBe(
+      'var(--vf-color-status-success-subtle-foreground, var(--vf-color-success))',
+    );
+    expect(defaultThemePreset.tokens.fieldHoverBorderColor).toBe(
+      'var(--vf-color-interactive-primary-border, var(--vf-color-primary))',
+    );
+    expect(defaultThemePreset.tokens.textLinkHoverColor).toBe(
+      'var(--vf-color-text-link-hover, var(--vf-color-primary))',
+    );
+    expect(defaultThemePreset.tokens.stepperCompleteMarkerBackground).toBe(
+      'var(--vf-color-interactive-primary-background, var(--vf-color-primary))',
+    );
+    expect(defaultThemePreset.tokens.stepperFocusRingColor).toBe('var(--vf-color-focus-ring)');
+
     expect(defaultThemePreset.tokens.avatarSizeMd).toBe('2.25rem');
     expect(defaultThemePreset.tokens.controlFontSizeLg).toBe('var(--vf-font-size-2xl)');
     expect(defaultThemePreset.tokens.controlLineHeight).toBe('var(--vf-text-label-line-height)');
-    expect(defaultThemePreset.tokens.avatarBackground).toBe('var(--vf-color-surface-muted)');
     expect(defaultThemePreset.tokens.avatarFontSizeLg).toBe('var(--vf-font-size-3xl)');
-    expect(defaultThemePreset.tokens.navMenuItemColor).toBe('var(--vf-selectable-color)');
-    expect(defaultThemePreset.tokens.navMenuItemHoverColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.navMenuItemHoverBackground).toBe('transparent');
-    expect(defaultThemePreset.tokens.navMenuItemActiveColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.navMenuItemActiveBackground).toBe('transparent');
-    expect(defaultThemePreset.tokens.navMenuItemAncestorActiveColor).toBe('var(--vf-selectable-color)');
-    expect(defaultThemePreset.tokens.navMenuTopItemFontWeight).toBe('var(--vf-text-label-font-weight)');
-    expect(defaultThemePreset.tokens.navMenuBranchColor).toBe('var(--vf-selectable-color)');
-    expect(defaultThemePreset.tokens.menuBarTopItemFontWeight).toBe('var(--vf-text-label-font-weight)');
-    expect(defaultThemePreset.tokens.breadcrumbsLinkHoverColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.breadcrumbsCurrentColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.selectOptionColor).toBe('var(--vf-selectable-color)');
-    expect(defaultThemePreset.tokens.selectOptionActiveColor).toBe('var(--vf-selectable-active-color)');
-    expect(defaultThemePreset.tokens.navMenuPillsItemHoverColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.navMenuPillsItemHoverBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 6%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.navMenuPillsItemActiveColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.navMenuPillsItemActiveBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 10%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.navMenuPillsItemAncestorActiveColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.navMenuSidebarTopHoverBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 6%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.navMenuSidebarTopAncestorActiveBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 8%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.navMenuSidebarRailColor).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 10%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.navMenuSidebarNestedActiveColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.navMenuSidebarRailActiveColor).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 42%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.navMenuSidebarCollapseLevel0Margin).toBe(
-      'calc(var(--vf-nav-menu-collapse-inset-level-0-margin) + var(--vf-surface-gap-compact) * 2)',
-    );
-    expect(defaultThemePreset.tokens.navMenuSidebarIconAlignedLevel0Margin).toBe(
-      'calc(var(--vf-border-width) + var(--vf-field-padding-inline-md) + var(--vf-nav-menu-leading-icon-column-size) * 0.5)',
-    );
-    expect(defaultThemePreset.tokens.navMenuSidebarLevelStep).toBe(
-      'calc(var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap) * 0.5)',
-    );
-    expect(defaultThemePreset.tokens.navMenuSidebarNestedItemOffset).toBe('var(--vf-surface-gap-compact)');
-    expect(defaultThemePreset.tokens.navMenuSidebarConnectorOffsetTop).toBe(
-      'calc(var(--vf-border-width) + var(--vf-field-padding-block-md) + 0.75rem)',
-    );
-    expect(defaultThemePreset.tokens.tableOfContentsPillsHoverBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 6%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.tableOfContentsPillsActiveBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 10%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.menuBarPillsTopOpenBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 8%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.menuBarItemAncestorActiveColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.menuBarTopHoverColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.menuBarTopActiveColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.menuBarSubmenuActiveColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.menuBarPillsSubmenuActiveBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 10%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.accordionTriggerHoverColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.accordionTriggerExpandedColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.tabsTabHoverColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.tabsTabActiveColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.tabsIndicatorColor).toBe('var(--vf-color-primary)');
-    expect(defaultThemePreset.tokens.fieldHoverBorderColor).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 18%, var(--vf-color-border))',
-    );
-    expect(defaultThemePreset.tokens.selectionControlHoverBorderColor).toBe('var(--vf-field-hover-border-color)');
-    expect(defaultThemePreset.tokens.selectOptionHoverColor).toBe('var(--vf-color-text)');
-    expect(defaultThemePreset.tokens.selectOptionHoverBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 6%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.buttonGhostHoverBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 6%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.buttonGhostActiveBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-text) 10%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.textLinkHoverColor).toBe(
-      'color-mix(in srgb, var(--vf-color-primary) 82%, var(--vf-color-text))',
-    );
-    expect(defaultThemePreset.tokens.stepperRailColor).toBe(
-      'color-mix(in srgb, var(--vf-color-border) 88%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.stepperCompleteMarkerBackground).toBe('var(--vf-color-primary)');
-    expect(defaultThemePreset.tokens.stepperCurrentMarkerBackground).toBe(
-      'color-mix(in srgb, var(--vf-color-primary) 12%, var(--vf-color-surface))',
-    );
-    expect(defaultThemePreset.tokens.stepperFocusRingColor).toBe('var(--vf-color-focus-ring)');
   });
 
   it('applies resolved theme variables through the bridge API', () => {

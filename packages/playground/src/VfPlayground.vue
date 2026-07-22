@@ -303,6 +303,9 @@ let mountedReadyFallbackRaf1: number | null = null;
 let mountedReadyFallbackRaf2: number | null = null;
 let sandboxThemeVariableNames = new Set<string>();
 const SANDBOX_THEME_STYLE_ID = 'vf-playground-theme-sync';
+const SANDBOX_CANVAS_COLOR = 'var(--vf-color-background-canvas, var(--vf-color-bg, Canvas))';
+const SANDBOX_TEXT_COLOR = 'var(--vf-color-text-primary, var(--vf-color-text, CanvasText))';
+const MAX_SANDBOX_THEME_VARIABLES = 8192;
 
 function loadCreatePlaygroundSession(): Promise<CreatePlaygroundSession> {
   loadCreatePlaygroundSessionPromise ??= import('@codemonster-ru/vueforge-playground-core').then(
@@ -416,12 +419,38 @@ function readHostThemeVariables(): Record<string, string> {
   }
 
   const hostStyles = getComputedStyle(rootElement.value ?? document.documentElement);
+  const availableVariables = new Map<string, string>();
   const variables: Record<string, string> = {};
 
   for (let index = 0; index < hostStyles.length; index += 1) {
     const propertyName = hostStyles.item(index);
-    if (propertyName.startsWith('--vf-')) {
-      variables[propertyName] = hostStyles.getPropertyValue(propertyName);
+    if (propertyName.startsWith('--')) {
+      availableVariables.set(propertyName, hostStyles.getPropertyValue(propertyName));
+    }
+  }
+
+  const pendingNames = [...availableVariables.keys()].filter((propertyName) => propertyName.startsWith('--vf-'));
+  const visitedNames = new Set<string>();
+
+  while (pendingNames.length > 0 && visitedNames.size < MAX_SANDBOX_THEME_VARIABLES) {
+    const propertyName = pendingNames.pop();
+    if (!propertyName || visitedNames.has(propertyName)) {
+      continue;
+    }
+
+    const value = availableVariables.get(propertyName) ?? hostStyles.getPropertyValue(propertyName);
+    if (!value.trim()) {
+      continue;
+    }
+
+    visitedNames.add(propertyName);
+    variables[propertyName] = value;
+
+    for (const match of value.matchAll(/var\(\s*(--[-_a-zA-Z0-9]+)/g)) {
+      const dependencyName = match[1];
+      if (!visitedNames.has(dependencyName)) {
+        pendingNames.push(dependencyName);
+      }
     }
   }
 
@@ -463,8 +492,8 @@ function syncSandboxThemeToIframe(): void {
     }
 
     if (iframeDocument.body) {
-      iframeDocument.body.style.backgroundColor = 'var(--vf-color-bg, Canvas)';
-      iframeDocument.body.style.color = 'var(--vf-color-text, CanvasText)';
+      iframeDocument.body.style.backgroundColor = SANDBOX_CANVAS_COLOR;
+      iframeDocument.body.style.color = SANDBOX_TEXT_COLOR;
     }
 
     let themeStyle = iframeDocument.getElementById(SANDBOX_THEME_STYLE_ID) as HTMLStyleElement | null;
@@ -476,8 +505,8 @@ function syncSandboxThemeToIframe(): void {
     themeStyle.textContent = `
       :root { color-scheme: ${nextTheme}; }
       html, body {
-        background: var(--vf-color-bg, Canvas);
-        color: var(--vf-color-text, CanvasText);
+        background: ${SANDBOX_CANVAS_COLOR};
+        color: ${SANDBOX_TEXT_COLOR};
       }
     `;
   }

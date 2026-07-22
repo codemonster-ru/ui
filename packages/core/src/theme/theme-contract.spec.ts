@@ -6,8 +6,8 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import { vfPrimitiveColorTokenNames, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-theme';
 import type { VfThemeTokens } from '@/types/theme';
 import {
+  COMPLETE_DARK_OVERRIDE_COUNT,
   COMPLETE_THEME_TOKEN_COUNT,
-  LEGACY_DARK_OVERRIDE_COUNT,
   LEGACY_THEME_TOKEN_COUNT,
   PRIMITIVE_COLOR_TOKEN_COUNT,
   SEMANTIC_COLOR_TOKEN_COUNT,
@@ -159,11 +159,15 @@ describe('core theme contract', () => {
 
     expect(sortEntries(staticVariables)).toEqual(sortEntries(runtimeVariables));
     expect(Object.keys(staticVariables)).toHaveLength(COMPLETE_THEME_TOKEN_COUNT);
-    expect(resolveCssVariable(staticVariables, '--vf-color-background-canvas')).toBe('#f6f8fb');
-    expect(resolveCssVariable(staticVariables, '--vf-color-text-primary')).toBe('#1f232b');
-    expect(resolveCssVariable(staticVariables, '--vf-color-border-default')).toBe('#d9dde3');
-    expect(resolveCssVariable(staticVariables, '--vf-color-interactive-primary-background')).toBe('#0e639c');
-    expect(resolveCssVariable(staticVariables, '--vf-color-status-success-solid-background')).toBe('#2e7d32');
+    expect(resolveCssVariable(staticVariables, '--vf-color-background-canvas')).toBe('oklch(97.8% 0.005 260)');
+    expect(resolveCssVariable(staticVariables, '--vf-color-text-primary')).toBe('oklch(25.6% 0.014 260)');
+    expect(resolveCssVariable(staticVariables, '--vf-color-border-default')).toBe('oklch(84% 0.016 260)');
+    expect(resolveCssVariable(staticVariables, '--vf-color-interactive-primary-background')).toBe(
+      'oklch(50% 0.130 247)',
+    );
+    expect(resolveCssVariable(staticVariables, '--vf-color-status-success-solid-background')).toBe(
+      'oklch(51.5% 0.115 148)',
+    );
   });
 
   it('keeps fallback dark overrides equivalent to the source and effective runtime theme', () => {
@@ -182,29 +186,28 @@ describe('core theme contract', () => {
     };
 
     expect(sortEntries(staticDarkOverrides)).toEqual(sortEntries(runtimeDarkOverrides));
-    expect(Object.keys(staticDarkOverrides)).toHaveLength(LEGACY_DARK_OVERRIDE_COUNT);
-    expect(Object.keys(defaultThemePresetSource.dark ?? {})).toHaveLength(LEGACY_DARK_OVERRIDE_COUNT);
+    expect(Object.keys(staticDarkOverrides)).toHaveLength(COMPLETE_DARK_OVERRIDE_COUNT);
+    expect(Object.keys(defaultThemePresetSource.dark ?? {})).toHaveLength(COMPLETE_DARK_OVERRIDE_COUNT);
     expect(sortEntries(effectiveStaticDark)).toEqual(sortEntries(runtimeDark));
     expect(sortEntries(scopedLightVariables)).toEqual(sortEntries(runtimeLight));
     expect(Object.keys(scopedLightVariables)).toHaveLength(COMPLETE_THEME_TOKEN_COUNT);
     expect(sortEntries(scopedDarkVariables)).toEqual(sortEntries(runtimeDark));
     expect(Object.keys(scopedDarkVariables)).toHaveLength(COMPLETE_THEME_TOKEN_COUNT);
     const resolvedModePairs = [
-      ['--vf-selectable-color', '#616773', '#9da0a6'],
-      ['--vf-color-background-canvas', '#f6f8fb', '#17191e'],
-      ['--vf-color-background-surface', '#ffffff', '#20232a'],
-      ['--vf-color-text-primary', '#1f232b', '#d4d4d4'],
-      ['--vf-color-text-inverse', '#ffffff', '#111827'],
-      ['--vf-color-border-default', '#d9dde3', '#363b46'],
-      ['--vf-color-border-interactive', '#d9dde3', '#363b46'],
-      ['--vf-color-border-focus', '#0e639c', '#276cb5'],
-      ['--vf-color-interactive-primary-background', '#0e639c', '#276cb5'],
-      ['--vf-color-status-success-solid-background', '#2e7d32', '#37783e'],
-      ['--vf-color-status-info-solid-background', '#0077a3', '#1a739f'],
-      ['--vf-color-status-warning-solid-background', '#a1841f', '#b79a63'],
-      ['--vf-color-status-warning-solid-foreground', '#1f1300', '#1f1300'],
-      ['--vf-color-status-danger-solid-background', '#c72e39', '#bf3f3f'],
-      ['--vf-color-status-help-solid-background', '#6e43a2', '#7b4c96'],
+      ['--vf-color-background-canvas', 'oklch(97.8% 0.005 260)', 'oklch(21.4% 0.010 260)'],
+      ['--vf-color-background-surface', 'oklch(99.5% 0.002 260)', 'oklch(25.6% 0.014 260)'],
+      ['--vf-color-text-primary', 'oklch(25.6% 0.014 260)', 'oklch(90% 0.012 260)'],
+      ['--vf-color-text-inverse', 'oklch(99.5% 0.002 260)', 'oklch(16.5% 0.008 260)'],
+      ['--vf-color-border-default', 'oklch(84% 0.016 260)', 'oklch(48.8% 0.030 260)'],
+      ['--vf-color-border-interactive', 'oklch(65% 0.026 260)', 'oklch(55% 0.032 260)'],
+      ['--vf-color-border-focus', 'oklch(50% 0.130 247)', 'oklch(76% 0.110 247)'],
+      ['--vf-color-interactive-primary-background', 'oklch(50% 0.130 247)', 'oklch(55.7% 0.144 247)'],
+      ['--vf-color-status-success-solid-background', 'oklch(51.5% 0.115 148)', 'oklch(59% 0.135 148)'],
+      ['--vf-color-status-info-solid-background', 'oklch(52.5% 0.103 230)', 'oklch(60% 0.118 230)'],
+      ['--vf-color-status-warning-solid-background', 'oklch(76% 0.130 88)', 'oklch(68.5% 0.125 88)'],
+      ['--vf-color-status-warning-solid-foreground', 'oklch(21.5% 0.043 88)', 'oklch(21.5% 0.043 88)'],
+      ['--vf-color-status-danger-solid-background', 'oklch(53.5% 0.170 20)', 'oklch(60.5% 0.180 20)'],
+      ['--vf-color-status-help-solid-background', 'oklch(52% 0.130 307)', 'oklch(60% 0.150 307)'],
     ] as const;
 
     for (const [name, lightValue, darkValue] of resolvedModePairs) {
@@ -246,8 +249,12 @@ describe('core theme contract', () => {
     expect(themeCss.match(/--vf-z-overlay: 1000;/g)).toHaveLength(3);
     expect(extractCssRule(themeCss, scopedLightSelector)).toContain('color-scheme: light;');
     expect(extractCssRule(themeCss, scopedDarkSelector)).toContain('color-scheme: dark;');
-    expect(extractCssRule(themeCss, scopedLightSelector)).toContain('--vf-selectable-color: var(--vf-color-muted);');
-    expect(extractCssRule(themeCss, scopedDarkSelector)).toContain('--vf-selectable-color: var(--vf-color-muted);');
+    expect(extractCssRule(themeCss, scopedLightSelector)).toContain(
+      '--vf-selectable-color: var(--vf-color-text-secondary, var(--vf-color-muted));',
+    );
+    expect(extractCssRule(themeCss, scopedDarkSelector)).toContain(
+      '--vf-selectable-color: var(--vf-color-text-secondary, var(--vf-color-muted));',
+    );
   });
 
   it('resolves fallback root-self and nested inverse mode boundaries in the cascade', () => {
@@ -275,20 +282,22 @@ describe('core theme contract', () => {
 
     document.documentElement.dataset.theme = 'dark';
 
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('#276cb5');
-    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-primary')).toBe('#276cb5');
-    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-primary')).toBe('#0e639c');
-    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-primary')).toBe('#276cb5');
-    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-muted')).toBe('#9da0a6');
-    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-muted')).toBe('#616773');
-    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-muted')).toBe('#9da0a6');
-    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-background-canvas')).toBe('#17191e');
-    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-background-canvas')).toBe('#f6f8fb');
-    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-background-canvas')).toBe('#17191e');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
+    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
+    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-primary')).toBe('oklch(50% 0.130 247)');
+    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
+    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-muted')).toBe('oklch(65% 0.026 260)');
+    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-muted')).toBe('oklch(55% 0.032 260)');
+    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-muted')).toBe('oklch(65% 0.026 260)');
+    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-background-canvas')).toBe('oklch(21.4% 0.010 260)');
+    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-background-canvas')).toBe('oklch(97.8% 0.005 260)');
+    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-background-canvas')).toBe(
+      'oklch(21.4% 0.010 260)',
+    );
 
     document.documentElement.dataset.theme = 'light';
 
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('#0e639c');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('oklch(50% 0.130 247)');
 
     delete document.documentElement.dataset.theme;
     darkBoundary.remove();
@@ -304,15 +313,19 @@ describe('core theme contract', () => {
 
     document.documentElement.dataset.theme = 'dark';
 
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('#276cb5');
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-background-canvas')).toBe('#17191e');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-background-canvas')).toBe(
+      'oklch(21.4% 0.010 260)',
+    );
     expect(getComputedStyle(document.documentElement).colorScheme).toBe('dark');
 
     delete document.documentElement.dataset.theme;
     document.documentElement.dataset.vfTheme = 'dark';
 
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('#276cb5');
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-background-canvas')).toBe('#17191e');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-background-canvas')).toBe(
+      'oklch(21.4% 0.010 260)',
+    );
     expect(getComputedStyle(document.documentElement).colorScheme).toBe('dark');
 
     delete document.documentElement.dataset.vfTheme;

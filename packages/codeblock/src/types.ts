@@ -12,6 +12,7 @@ export const SUPPORTED_CODE_BLOCK_LANGUAGES = [
   'json',
   'dotenv',
   'env',
+  'diff',
   'cron',
   'crontab',
   'bash',

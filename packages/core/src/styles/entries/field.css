@@ -12,13 +12,13 @@
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
-  color: var(--vf-color-text);
+  color: var(--vf-color-text-primary, var(--vf-color-text));
 }
 
 .vf-field__required-mark {
   flex-shrink: 0;
   margin-inline-start: calc(var(--vf-surface-gap-compact) * 0.5);
-  color: var(--vf-color-danger);
+  color: var(--vf-color-status-danger-subtle-foreground, var(--vf-color-danger));
 }
 
 .vf-field__control {
@@ -39,11 +39,11 @@
 }
 
 .vf-field__description {
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-secondary, var(--vf-color-muted));
 }
 
 .vf-field__error {
-  color: var(--vf-color-danger);
+  color: var(--vf-color-status-danger-subtle-foreground, var(--vf-color-danger));
 }
 
 .vf-field__label--floating {
@@ -69,7 +69,7 @@
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-placeholder, var(--vf-color-muted));
   text-overflow: ellipsis;
   white-space: nowrap;
   pointer-events: auto;
@@ -84,7 +84,7 @@
 }
 
 .vf-field--invalid .vf-field__label--floating {
-  color: var(--vf-color-danger);
+  color: var(--vf-color-status-danger-subtle-foreground, var(--vf-color-danger));
 }
 
 .vf-field--floating-in .vf-field__label--floating {
@@ -162,5 +162,5 @@
 }
 
 .vf-field:not(.vf-field--invalid) .vf-field__control--floating:focus-within .vf-field__label--floating {
-  color: var(--vf-color-primary);
+  color: var(--vf-color-interactive-primary-subtle-foreground, var(--vf-color-primary));
 }

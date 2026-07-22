@@ -1,5 +1,8 @@
 # VueForge: инвентаризация цветовой системы
 
+> **Historical baseline.** Этот документ сохраняет состояние после Phase 1 и не переписывается задним числом.
+> Целевая OKLCH-палитра и component migration описаны в [отчёте Phase 2](./phase-2-report.md).
+
 Дата обновления: 2026-07-22. Статус: **Phase 1 завершена; primitive/semantic architecture добавлена без изменения palette values**.
 
 Документ фиксирует legacy color/effect inventory и добавленную в Phase 1 архитектуру. Все прежние material values и 847 legacy keys сохранены. Технические результаты приведены в [отчёте Phase 0](./phase-0-report.md) и [отчёте Phase 1](./phase-1-report.md).

@@ -8,9 +8,9 @@ describe('renderBrowserHtml', () => {
     const rendered = renderBrowserHtml(
       {
         '/main.js': "import './styles.css'; console.log('ok');",
-        '/styles.css': '.app{color:red;}'
+        '/styles.css': '.app{color:red;}',
       },
-      '/main.js'
+      '/main.js',
     );
 
     expect(rendered.error).toBeUndefined();
@@ -20,9 +20,9 @@ describe('renderBrowserHtml', () => {
   it('handles external css imports as stylesheet links', () => {
     const rendered = renderBrowserHtml(
       {
-        '/main.js': "import 'https://cdn.example.com/theme.css'; console.log('ok');"
+        '/main.js': "import 'https://cdn.example.com/theme.css'; console.log('ok');",
       },
-      '/main.js'
+      '/main.js',
     );
 
     expect(rendered.error).toBeUndefined();
@@ -32,10 +32,10 @@ describe('renderBrowserHtml', () => {
   it('resolves bare imports for vue framework via default resolver', () => {
     const rendered = renderBrowserHtml(
       {
-        '/main.js': "import { createApp } from 'vue'; console.log(createApp);"
+        '/main.js': "import { createApp } from 'vue'; console.log(createApp);",
       },
       '/main.js',
-      { framework: 'vue' }
+      { framework: 'vue' },
     );
 
     expect(rendered.error).toBeUndefined();
@@ -45,7 +45,7 @@ describe('renderBrowserHtml', () => {
   it('uses custom resolveImport hook', () => {
     const rendered = renderBrowserHtml(
       {
-        '/main.js': "import { x } from 'my-lib'; import 'my-lib/styles.css'; console.log(x);"
+        '/main.js': "import { x } from 'my-lib'; import 'my-lib/styles.css'; console.log(x);",
       },
       '/main.js',
       {
@@ -57,8 +57,8 @@ describe('renderBrowserHtml', () => {
             return { kind: 'style', url: 'https://cdn.example.com/my-lib.css' };
           }
           return null;
-        }
-      }
+        },
+      },
     );
 
     expect(rendered.error).toBeUndefined();
@@ -69,37 +69,38 @@ describe('renderBrowserHtml', () => {
   it('renders entry module inline', () => {
     const rendered = renderBrowserHtml(
       {
-        '/main.js': "console.log('ok');"
+        '/main.js': "console.log('ok');",
       },
-      '/main.js'
+      '/main.js',
     );
 
-    expect(rendered.html).toContain("<script type=\"module\">console.log('ok');</script>");
+    expect(rendered.html).toContain('<script type="module">console.log(\'ok\');</script>');
   });
 
   it('injects a theme bridge for opaque sandbox previews', () => {
     const rendered = renderBrowserHtml(
       {
-        '/index.html': '<!doctype html><html><head></head><body></body></html>'
+        '/index.html': '<!doctype html><html><head></head><body></body></html>',
       },
-      '/index.html'
+      '/index.html',
     );
 
     expect(rendered.html).toContain("message.type !== 'theme'");
     expect(rendered.html).toContain("root.setAttribute('data-theme', theme)");
     expect(rendered.html).toContain("root.setAttribute('data-vf-theme', theme)");
     expect(rendered.html).toContain('event.source !== parent');
-    expect(rendered.html).toContain("!propertyName.startsWith('--vf-')");
+    expect(rendered.html).toContain("propertyName.startsWith('--vf-')");
+    expect(rendered.html).toContain('collectThemeVariable(propertyName, variables, acceptedVariables)');
     expect(rendered.html).toContain('root.style.removeProperty(propertyName)');
-    expect(rendered.html).toContain('root.style.setProperty(propertyName, variables[propertyName])');
+    expect(rendered.html).toContain('root.style.setProperty(propertyName, acceptedVariables[propertyName])');
   });
 
   it('applies sandbox theme messages and removes stale variables', () => {
     const rendered = renderBrowserHtml(
       {
-        '/index.html': '<!doctype html><html><head></head><body></body></html>'
+        '/index.html': '<!doctype html><html><head></head><body></body></html>',
       },
-      '/index.html'
+      '/index.html',
     );
     const bridgeScript = rendered.html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
     expect(bridgeScript).toBeTruthy();
@@ -117,7 +118,7 @@ describe('renderBrowserHtml', () => {
       },
       setProperty(propertyName: string, value: string) {
         variables.set(propertyName, value);
-      }
+      },
     };
     const root = {
       classList: {
@@ -127,12 +128,12 @@ describe('renderBrowserHtml', () => {
           } else {
             classes.delete(className);
           }
-        }
+        },
       },
       setAttribute(name: string, value: string) {
         attributes.set(name, value);
       },
-      style: rootStyle
+      style: rootStyle,
     };
     const bodyStyle = { backgroundColor: '', color: '' };
     const windowStub = {
@@ -140,7 +141,7 @@ describe('renderBrowserHtml', () => {
         if (type === 'message') {
           handleMessage = listener;
         }
-      }
+      },
     };
     const consoleStub = Object.fromEntries(['log', 'info', 'warn', 'error', 'debug'].map((level) => [level, vi.fn()]));
 
@@ -148,7 +149,7 @@ describe('renderBrowserHtml', () => {
       console: consoleStub,
       document: { body: { style: bodyStyle }, documentElement: root },
       parent: parentWindow,
-      window: windowStub
+      window: windowStub,
     });
 
     expect(handleMessage).toBeTypeOf('function');
@@ -157,8 +158,8 @@ describe('renderBrowserHtml', () => {
       data: {
         __cm_playground: true,
         type: 'theme',
-        payload: { theme: 'dark', variables: { '--vf-rejected': 'wrong-source' } }
-      }
+        payload: { theme: 'dark', variables: { '--vf-rejected': 'wrong-source' } },
+      },
     });
     expect(attributes.size).toBe(0);
 
@@ -169,9 +170,14 @@ describe('renderBrowserHtml', () => {
         type: 'theme',
         payload: {
           theme: 'light',
-          variables: { '--vf-first': 'first-value', '--not-vf': 'ignored' }
-        }
-      }
+          variables: {
+            '--vf-first': 'var(--brand-first)',
+            '--brand-first': 'var(--brand-base)',
+            '--brand-base': 'first-value',
+            '--not-vf': 'ignored',
+          },
+        },
+      },
     });
 
     expect(attributes.get('data-theme')).toBe('light');
@@ -179,18 +185,20 @@ describe('renderBrowserHtml', () => {
     expect(classes.has('light')).toBe(true);
     expect(classes.has('dark')).toBe(false);
     expect(rootStyle.colorScheme).toBe('light');
-    expect(variables.get('--vf-first')).toBe('first-value');
+    expect(variables.get('--vf-first')).toBe('var(--brand-first)');
+    expect(variables.get('--brand-first')).toBe('var(--brand-base)');
+    expect(variables.get('--brand-base')).toBe('first-value');
     expect(variables.has('--not-vf')).toBe(false);
-    expect(bodyStyle.backgroundColor).toBe('var(--vf-color-bg, Canvas)');
-    expect(bodyStyle.color).toBe('var(--vf-color-text, CanvasText)');
+    expect(bodyStyle.backgroundColor).toBe('var(--vf-color-background-canvas, var(--vf-color-bg, Canvas))');
+    expect(bodyStyle.color).toBe('var(--vf-color-text-primary, var(--vf-color-text, CanvasText))');
 
     handleMessage?.({
       source: parentWindow,
       data: {
         __cm_playground: true,
         type: 'theme',
-        payload: { theme: 'dark', variables: { '--vf-second': 'second-value' } }
-      }
+        payload: { theme: 'dark', variables: { '--vf-second': 'second-value' } },
+      },
     });
 
     expect(attributes.get('data-theme')).toBe('dark');
@@ -198,6 +206,8 @@ describe('renderBrowserHtml', () => {
     expect(classes.has('light')).toBe(false);
     expect(rootStyle.colorScheme).toBe('dark');
     expect(variables.has('--vf-first')).toBe(false);
+    expect(variables.has('--brand-first')).toBe(false);
+    expect(variables.has('--brand-base')).toBe(false);
     expect(variables.get('--vf-second')).toBe('second-value');
   });
 
@@ -213,10 +223,10 @@ describe('renderBrowserHtml', () => {
   it('returns clear unresolved import error', () => {
     const rendered = renderBrowserHtml(
       {
-        '/main.js': "import { x } from 'unknown-lib'; console.log(x);"
+        '/main.js': "import { x } from 'unknown-lib'; console.log(x);",
       },
       '/main.js',
-      { framework: 'vanilla' }
+      { framework: 'vanilla' },
     );
 
     expect(rendered.error).toBeDefined();

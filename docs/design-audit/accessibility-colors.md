@@ -1,5 +1,8 @@
 # VueForge: аудит цветовой доступности
 
+> **Historical baseline.** Ratios и findings ниже относятся к палитре до Phase 2 и сохранены для before/after
+> сравнения. Текущая remediation matrix приведена в [отчёте Phase 2](./phase-2-report.md).
+
 Дата аудита: 2026-07-21. Статус: **contrast baseline сохранён; Phase 0 не меняла палитру**.
 
 Этот документ фиксирует результаты read-only проверки исходного пресета VueForge. Phase 0 устранила transport/scoping/fallback drift, но не изменила ни одного значения palette token, Shiki theme или contrast recipe. Поэтому все численные результаты и accessibility-находки ниже остаются актуальными и открытыми. Технические результаты приведены в [отчёте Phase 0](./phase-0-report.md).

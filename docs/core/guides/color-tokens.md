@@ -1,128 +1,139 @@
 ---
 title: 'Color Tokens'
-description: 'Primitive, semantic, and legacy-compatible color theming'
+description: 'OKLCH primitives, semantic color roles, accessibility pairings, and VueForge 1.x compatibility'
 order: 2
 ---
 
 # Color Tokens
 
-VueForge separates color decisions into three layers while keeping the complete VueForge 1.x token surface available. During the 1.x transition, current components and the new semantic contract meet at the compatibility roots:
+VueForge separates material values from interface decisions:
 
 ```text
-current 1.x component aliases ───────────┐
-                                        ├─→ legacy color roots ─→ 29 primitives
-77 new semantic roles ──────────────────┘
-
-Phase 2 target: component decisions ─→ semantic roles
+OKLCH primitive material
+  └─ semantic role (background, text, border, interaction, status)
+       └─ VueForge 1.x component compatibility token
+            └─ component CSS
 ```
 
-The built-in preset contains 952 keys: all 847 existing keys, 29 new primitives, and 76 new semantic keys. `colorFocusRing` already belonged to the 1.x contract and is also one of the 77 semantic roles.
+Semantic roles are the supported interface between components and the color system. Primitive variables are for theme
+construction, documentation, and explicitly documented adapters such as syntax highlighting. Legacy roots and component
+tokens remain available throughout VueForge 1.x so existing presets and local overrides do not silently stop working.
 
-Phase 1 changes the architecture, not the visual palette. Existing HEX values, color-mix recipes, component styles, and public component APIs are preserved. Core components continue to consume their 1.x aliases until their deliberate state migration in Phase 2.
+The built-in preset has 997 keys: 847 legacy keys, 66 primitive colors, and 84 additive semantic keys.
+`colorFocusRing` already belonged to the 1.x surface and is also one of the 85 semantic roles.
 
-## Naming Convention
+## Naming
 
-- Primitive material: `palette{Family}{Step}`, for example `paletteNeutral500` / `--vf-palette-neutral-500`.
-- Shared semantic role: `color{Category}{Role}`, for example `colorTextSecondary` / `--vf-color-text-secondary`.
-- Status role: `colorStatus{Tone}{Role}`, for example `colorStatusDangerSubtleBackground`.
-- Component exception: `{component}{Role}`, for example `alertPrimarySoft`.
-- Names describe purpose. Do not add `blue`, `darkGray`, or another material name to the semantic layer.
-- Use `Warning` in new semantic names. The legacy `Warn` spelling remains supported for VueForge 1.x.
+- Primitive: `palette{Family}{Step}`, for example `palettePrimary600` / `--vf-palette-primary-600`.
+- Shared role: `color{Category}{Role}`, for example `colorTextSecondary` / `--vf-color-text-secondary`.
+- Status role: `colorStatus{Tone}{Role}`, for example `colorStatusDangerSubtleForeground`.
+- Component adapter exception: a scoped CSS role such as `--vf-codeblock-syntax-token-comment`.
+- New names use `Warning`; the public VueForge 1.x `Warn` spelling remains supported.
 
-## Primitive Palette
+Names describe purpose rather than hue. Components must not select `palettePrimary600` directly because the appropriate
+material changes by role and mode.
 
-The primitive layer contains only material values that the current themes actually use. Sparse steps are intentional: Phase 1 does not invent interpolation stops or replace the palette with OKLCH values.
+## Primitive palette
 
-| Family  | Tokens and current sRGB values                                                                                                                                                                                                               |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Neutral | `0 #ffffff`, `50 #f6f8fb`, `100 #f3f3f3`, `200 #d9dde3`, `250 #d7d7d7`, `300 #d4d4d4`, `400 #9da0a6`, `500 #616773`, `600 #363b46`, `700 #272b33`, `750 #252526`, `800 #20232a`, `850 #1f232b`, `900 #17191e`, `950 #111827`, `1000 #000000` |
-| Primary | `500 #276cb5`, `600 #0e639c`                                                                                                                                                                                                                 |
-| Success | `500 #2e7d32`, `600 #37783e`                                                                                                                                                                                                                 |
-| Info    | `500 #0077a3`, `600 #1a739f`                                                                                                                                                                                                                 |
-| Warning | `400 #b79a63`, `500 #a1841f`, `950 #1f1300`                                                                                                                                                                                                  |
-| Danger  | `500 #bf3f3f`, `600 #c72e39`                                                                                                                                                                                                                 |
-| Help    | `500 #7b4c96`, `600 #6e43a2`                                                                                                                                                                                                                 |
+OKLCH is the authoring format. The sRGB values below are reference conversions for review and diagnostics; the CSS tokens
+retain their OKLCH definitions. All shipped colors are inside the sRGB gamut.
 
-The Phase 1 material policy is deliberately conservative:
+### Neutral
 
-- lightness: higher neutral steps are darker; chromatic step numbers preserve the approximate ordering of the existing pair, not a newly interpolated scale;
-- chroma: existing sRGB chroma is frozen, with no normalization or invented intermediate stops;
-- hue: each existing family hue is retained exactly; Phase 1 does not rotate or mathematically regularize hues;
-- modes: primitives are mode-independent materials, while legacy/semantic mappings select the appropriate material for light or dark.
+Neutral uses hue `260` with deliberately restrained chroma. It provides depth without pure white, pure black, or a visibly
+blue cast.
 
-The current mode selection is explicit:
+| Step | OKLCH                    | sRGB reference | Main use                                       |
+| ---: | ------------------------ | -------------- | ---------------------------------------------- |
+|    0 | `oklch(99.5% 0.002 260)` | `#fdfdff`      | light surface, light on-solid                  |
+|   50 | `oklch(97.8% 0.005 260)` | `#f6f8fb`      | light canvas                                   |
+|  100 | `oklch(95.8% 0.007 260)` | `#eef1f6`      | light subtle, hover, disabled                  |
+|  200 | `oklch(90% 0.012 260)`   | `#d9dee6`      | light subtle border/divider, dark primary text |
+|  250 | `oklch(84% 0.016 260)`   | `#c5cbd5`      | light default border                           |
+|  300 | `oklch(74.5% 0.020 260)` | `#a5adb9`      | dark secondary text                            |
+|  400 | `oklch(65% 0.026 260)`   | `#86909f`      | light interactive border, dark muted text      |
+|  500 | `oklch(55% 0.032 260)`   | `#677285`      | light muted text, dark interactive border      |
+|  600 | `oklch(48.8% 0.030 260)` | `#566071`      | light secondary text, dark default border      |
+|  700 | `oklch(40.5% 0.025 260)` | `#414957`      | dark subtle border/divider                     |
+|  750 | `oklch(33% 0.020 260)`   | `#2f3640`      | dark elevated/active surface                   |
+|  800 | `oklch(29% 0.018 260)`   | `#262c34`      | dark subtle/hover surface                      |
+|  850 | `oklch(25.6% 0.014 260)` | `#1f232a`      | light primary text, dark surface               |
+|  900 | `oklch(21.4% 0.010 260)` | `#17191e`      | dark canvas                                    |
+|  950 | `oklch(16.5% 0.008 260)` | `#0c0e12`      | dark on-bright/inverse text                    |
+| 1000 | `oklch(11.5% 0.006 260)` | `#040507`      | backdrop and shadow material                   |
 
-| Family  | Light mapping                                                                                | Dark mapping                                                                                    |
-| ------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Neutral | `50` canvas, `0` surface, `100` subtle, `200` border, `500` muted, `850` text, `750` inverse | `900` canvas, `800` surface, `700` subtle, `600` border, `400` muted, `300` text, `250` inverse |
-| Primary | `600`                                                                                        | `500`                                                                                           |
-| Success | `500`                                                                                        | `600`                                                                                           |
-| Info    | `500`                                                                                        | `600`                                                                                           |
-| Warning | `500`; `950` on-solid foreground                                                             | `400`; `950` on-solid foreground                                                                |
-| Danger  | `600`                                                                                        | `500`                                                                                           |
-| Help    | `600`                                                                                        | `500`                                                                                           |
+### Chromatic scales
 
-Neutral `0` remains the white contrast material, neutral `1000` remains the black/backdrop material, and neutral `950` remains the dark inverse foreground. Intermediate neutral stops exist only where the baseline themes already use them.
+The progression is manually tuned: chroma rises through the useful middle steps, then falls at both ends so subtle and
+deep surfaces do not look fluorescent or dirty.
 
-`help` remains separate from `info`: it is a public violet tone used by Button, IconButton, Badge, Tag, Alert, ProgressBar, ProgressSpinner, and the text utility. Aliasing it to `info` would change both meaning and appearance.
+| Family  | Hue | Steps (`lightness/chroma`)                                                                                                                        |
+| ------- | --: | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primary | 247 | `100 95.5/.020`, `200 89/.050`, `300 76/.110`, `400 65/.140`, `500 55.7/.144`, `600 50/.130`, `700 45/.115`, `800 38.5/.090`, `900 30.5/.055`     |
+| Success | 148 | `100 95.5/.020`, `300 79/.125`, `400 68/.145`, `500 59/.135`, `600 51.5/.115`, `700 45.5/.105`, `800 38.5/.080`, `900 30.5/.040`                  |
+| Info    | 230 | `100 95.5/.018`, `300 78.5/.105`, `400 68/.130`, `500 60/.118`, `600 52.5/.103`, `700 46.5/.091`, `800 39.5/.075`, `900 30.5/.038`                |
+| Warning |  88 | `100 96/.035`, `300 81.5/.115`, `400 76/.130`, `500 68.5/.125`, `600 61.5/.115`, `700 54/.105`, `800 47.5/.095`, `900 31.5/.035`, `950 21.5/.043` |
+| Danger  |  20 | `100 95.5/.020`, `300 76/.142`, `400 66.5/.180`, `500 60.5/.180`, `600 53.5/.170`, `700 47.5/.150`, `800 40.5/.120`, `900 30/.050`                |
+| Help    | 307 | `100 95.5/.020`, `300 77/.115`, `400 67/.145`, `500 60/.150`, `600 52/.130`, `700 44.5/.115`, `800 38/.090`, `900 29.5/.045`                      |
 
-## Semantic Roles
+`help` stays distinct from `info`: it is a public violet tone used for contextual assistance across actions, feedback, and
+progress components. Removing or aliasing it would be a breaking visual and semantic change.
 
-### Background
+## Semantic roles
 
-| Token                            | Current compatibility source   |
-| -------------------------------- | ------------------------------ |
-| `colorBackgroundCanvas`          | `colorBg`                      |
-| `colorBackgroundSurface`         | `colorSurface`                 |
-| `colorBackgroundSurfaceSubtle`   | `colorSurfaceMuted`            |
-| `colorBackgroundSurfaceElevated` | `colorSurface`                 |
-| `colorBackgroundSurfaceHover`    | text 6% mixed into surface     |
-| `colorBackgroundSurfaceActive`   | text 10% mixed into surface    |
-| `colorBackgroundSurfaceSelected` | primary 20% mixed into surface |
-| `colorBackgroundSurfaceDisabled` | `colorSurfaceMuted`            |
-| `colorBackgroundInverse`         | `colorContrast`                |
-| `colorBackgroundInverseSubtle`   | `colorContrastSoft`            |
-| `colorBackgroundBackdrop`        | `overlayBackdrop`              |
+### Surfaces
 
-### Text and Icons
+| Role                   | Light             | Dark              |
+| ---------------------- | ----------------- | ----------------- |
+| canvas                 | Neutral 50        | Neutral 900       |
+| surface                | Neutral 0         | Neutral 850       |
+| surface subtle         | Neutral 100       | Neutral 800       |
+| surface elevated       | Neutral 0         | Neutral 750       |
+| hover                  | Neutral 100       | Neutral 800       |
+| active                 | Neutral 200       | Neutral 750       |
+| selected               | Primary 100       | Primary 900       |
+| selected + hover       | Primary 200       | Primary 800       |
+| selected + active      | Primary 300       | Primary 700       |
+| disabled               | Neutral 100       | Neutral 800       |
+| inverse                | Neutral 850       | Neutral 200       |
+| inverse hover / active | Neutral 800 / 750 | Neutral 300 / 400 |
 
-| Token group                                                                         | Current compatibility source |
-| ----------------------------------------------------------------------------------- | ---------------------------- |
-| `colorTextPrimary`                                                                  | `colorText`                  |
-| `colorTextSecondary`, `colorTextMuted`, `colorTextDisabled`, `colorTextPlaceholder` | `colorMuted`                 |
-| `colorTextInverse`                                                                  | `colorContrastContrast`      |
-| `colorIconPrimary`                                                                  | `colorText`                  |
-| `colorIconSecondary`, `colorIconDisabled`                                           | `colorMuted`                 |
-| `colorIconInverse`                                                                  | `colorContrastContrast`      |
+Hover, active, and selected colors are opaque materials. Their result does not change when a component moves between
+canvas, surface, and elevated containers. Backdrop and shadow remain transparent because their purpose is composition.
 
-The roles intentionally remain separate even when they resolve to the same current value. A future palette may tune disabled, placeholder, secondary, and muted independently without changing their public names.
+### Text, icons, and borders
 
-### Borders
+| Role group                          | Light              | Dark               |
+| ----------------------------------- | ------------------ | ------------------ |
+| text primary / secondary / muted    | N850 / N600 / N500 | N200 / N300 / N400 |
+| text disabled / placeholder         | N400 / N500        | N500 / N400        |
+| icon primary / secondary / disabled | N850 / N600 / N400 | N200 / N300 / N500 |
+| border subtle / default             | N200 / N250        | N700 / N600        |
+| border strong / interactive         | N400 / N400        | N500 / N500        |
+| border disabled / divider           | N200 / N200        | N700 / N700        |
+| focus border / ring                 | P600 / P600        | P300 / P300        |
+| link default / hover / active       | P700 / P800 / P900 | P300 / P200 / P400 |
 
-| Token                                                                                                                                 | Current compatibility source |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
-| `colorBorderSubtle`, `colorBorderDefault`, `colorBorderStrong`, `colorBorderInteractive`, `colorBorderDisabled`, `colorBorderDivider` | `colorBorder`                |
-| `colorBorderFocus`                                                                                                                    | `colorPrimary`               |
-| `colorBorderInverse`                                                                                                                  | `colorContrastBorderSoft`    |
+Decorative borders are intentionally quieter than interactive control boundaries. Do not use `colorBorderSubtle` for an
+input, checkbox, or another control whose boundary is the only indication of affordance.
 
-### Interactive
+### Primary interaction
 
-| Token                                     | Current compatibility source    |
-| ----------------------------------------- | ------------------------------- |
-| `colorInteractivePrimaryBackground`       | `colorPrimary`                  |
-| `colorInteractivePrimaryHoverBackground`  | `colorPrimary`                  |
-| `colorInteractivePrimaryActiveBackground` | `colorPrimary`                  |
-| `colorInteractivePrimarySubtleBackground` | `colorPrimarySoft`              |
-| `colorInteractivePrimaryForeground`       | `colorPrimaryContrast`          |
-| `colorInteractivePrimaryBorder`           | `colorPrimaryBorderSoft`        |
-| `colorFocusRing`                          | existing `colorFocusRing` token |
-| `colorSelectedForeground`                 | `colorPrimary`                  |
+| Role                   | Light              | Dark               |
+| ---------------------- | ------------------ | ------------------ |
+| solid / hover / active | P600 / P700 / P800 | P500 / P600 / P700 |
+| solid foreground       | N0                 | N0                 |
+| subtle background      | P100               | P900               |
+| subtle foreground      | P700               | P300               |
+| border                 | P500               | P400               |
+| selected foreground    | P800               | P200               |
 
-Hover and active colors intentionally equal the current solid material in Phase 1. Existing components still apply their established hover/active filter effects. Separate roles now exist so those states can receive independently designed values in Phase 2.
+The dark solid starts one step lighter so its boundary reaches 3:1 against the dark surface while its white label remains
+above 4.5:1.
 
-### Status
+### Status model
 
-Each of `Success`, `Warning`, `Danger`, `Info`, and `Help` has the same eight-role contract:
+Every `Success`, `Warning`, `Danger`, `Info`, and `Help` family has eight independent roles:
 
 ```text
 colorStatus{Tone}SolidBackground
@@ -135,66 +146,180 @@ colorStatus{Tone}HoverBackground
 colorStatus{Tone}ActiveBackground
 ```
 
-The compatibility mapping is consistent for every tone:
+| Material                   | Light                        | Dark                     |
+| -------------------------- | ---------------------------- | ------------------------ |
+| solid                      | 600; warning 400             | 500                      |
+| on-solid                   | Neutral 0; warning 950       | Neutral 950; warning 950 |
+| hover / active             | 700 / 800; warning 500 / 600 | 400 / 300                |
+| subtle                     | 100                          | 900                      |
+| subtle foreground and icon | 700; warning 800             | 300                      |
+| border                     | 500; warning 700             | 400                      |
 
-| Semantic role           | Legacy source                                             |
-| ----------------------- | --------------------------------------------------------- |
-| Solid background        | base status color, such as `colorDanger`                  |
-| Solid foreground        | contrast status color, such as `colorDangerContrast`      |
-| Subtle background       | soft status color, such as `colorDangerSoft`              |
-| Subtle foreground       | base status color                                         |
-| Border                  | border-soft status color, such as `colorDangerBorderSoft` |
-| Icon                    | base status color                                         |
-| Hover/active background | base status color in Phase 1                              |
+Warning deliberately uses separate solid and subtle foreground materials. One status token must never serve as both a
+solid background and subtle text merely because both belong to the same hue family.
 
-A single semantic token must never serve as both foreground and solid background, even when two roles temporarily resolve to the same primitive value.
+## Supported contrast pairings
 
-## Compatibility Bridge
+CI validates the combinations components are allowed to render. It does not test a Cartesian product of unrelated colors.
 
-The built-in preset uses a one-way, acyclic bridge. Phase 1 does not insert the semantic layer into existing component chains:
+| Pairing                                        | Light |  Dark | Requirement |
+| ---------------------------------------------- | ----: | ----: | ----------: |
+| primary text / surface                         | 15.50 | 11.67 |         4.5 |
+| secondary text / surface                       |  6.23 |  6.94 |         4.5 |
+| muted text / canvas                            |  4.55 |  5.43 |         4.5 |
+| interactive border / surface                   |  3.19 |  3.24 |         3.0 |
+| interactive border / canvas                    |  3.03 |  3.62 |         3.0 |
+| focus ring / surface                           |  5.89 |  7.39 |         3.0 |
+| primary solid / on-solid                       |  5.89 |  4.62 |         4.5 |
+| primary solid / surface                        |  5.89 |  3.35 |         3.0 |
+| selected foreground / strongest selected state |  4.59 |  5.35 |         4.5 |
+| status solid / on-solid, minimum               |  5.19 |  4.55 |         4.5 |
+| status subtle foreground / background, minimum |  5.98 |  6.10 |         4.5 |
+| status border / subtle background, minimum     |  3.38 |  4.19 |         3.0 |
 
-```text
-new semantic role ──────────┐
-                           ├─→ legacy root → primitive material
-current component alias ───┘
+The complete machine-supported matrix is intentionally finite. “Chromatic subtle” below means the primary subtle surface,
+all five status subtle surfaces, and the inverse-subtle surface used by Alert/Badge variants.
 
-Phase 2 component migration: component decision → semantic role
+| Foreground or indicator role         | Allowed background/material roles                                                         |
+| ------------------------------------ | ----------------------------------------------------------------------------------------- |
+| primary text                         | canvas, surface, elevated, neutral/chromatic subtle, and CodeBlock selected-active        |
+| secondary text                       | canvas, surface, elevated, and neutral/chromatic subtle                                   |
+| muted text                           | canvas and surface                                                                        |
+| placeholder text                     | surface                                                                                   |
+| inverse text                         | inverse, inverse hover, and inverse active                                                |
+| link default, hover, or active       | canvas and surface; default link also on CodeBlock neutral-subtle                         |
+| primary solid foreground             | primary solid, hover, and active                                                          |
+| primary subtle foreground            | primary subtle and neutral-subtle                                                         |
+| selected foreground                  | selected, selected hover, and selected active                                             |
+| primary icon                         | canvas, surface, elevated, neutral/inverse subtle, and the disabled progress track        |
+| secondary icon                       | surface, elevated, and the disabled progress track                                        |
+| inverse icon                         | inverse, inverse hover, and inverse active                                                |
+| strong or focus border               | surface; focus border also on canvas                                                      |
+| interactive border                   | canvas and surface                                                                        |
+| primary interactive border           | canvas, surface, neutral-subtle, and primary subtle                                       |
+| focus ring                           | canvas, surface, and neutral-subtle                                                       |
+| inverse border                       | inverse-subtle and neutral-subtle                                                         |
+| primary solid or inverse background  | disabled progress track; primary solid also on canvas and surface                         |
+| each status solid foreground         | the same status solid, hover, and active                                                  |
+| each status subtle foreground        | the same status subtle and neutral-subtle; danger also on canvas/surface field containers |
+| each status icon                     | the same status subtle and disabled progress track                                        |
+| each status border                   | the same status subtle and neutral-subtle; danger also on canvas/surface field containers |
+| neutral ProgressBar label            | inverse text against the secondary-icon value material                                    |
+| CodeBlock selected-active background | neutral-subtle editor surface at `1.5:1`; primary selection text at `4.5:1`               |
+
+Using a role outside this matrix is not automatically inaccessible, but it is not a supported pairing until its real
+component scenario, minimum ratio, both modes, and regression coverage are added together.
+
+Disabled controls are exempt from the WCAG contrast success criteria, but VueForge still assigns an explicit disabled text,
+surface, border, and cursor treatment. Do not apply a second opacity reduction to already-disabled semantic colors.
+
+### Interactive state precedence
+
+State color is resolved in this order:
+
+1. disabled suppresses hover and active styling and uses dedicated disabled roles;
+2. invalid adds the danger boundary above checked/open styling; binary controls retain their checkmark and selected fill,
+   while Select suppresses its normal open border, and focus remains visible as an added ring;
+3. selected or checked establishes the base material;
+4. selected + hover and selected + active use their dedicated opaque roles;
+5. hover and active apply only when no higher-priority compound state replaces them;
+6. focus-visible adds the focus ring without erasing selected, checked, open, or invalid meaning;
+7. read-only uses the subtle surface treatment, except that invalid remains visually invalid.
+
+`VfSwitch static` is an interactive visual variant, not a disabled or read-only state. It keeps hover and focus cues while
+holding the track on its static background recipe.
+
+This is why selected materials are independent values rather than opacity overlays. The same state produces a stable color
+on canvas, surface, and elevated containers.
+
+## Component policy
+
+Use the narrowest shared semantic role that describes the decision:
+
+```css
+.product-card {
+  color: var(--vf-color-text-primary);
+  background: var(--vf-color-background-surface);
+  border-color: var(--vf-color-border-default);
+}
+
+.product-card:hover {
+  background: var(--vf-color-background-surface-hover);
+}
 ```
 
-This direction is deliberate. An existing VueForge 1.x override such as `colorPrimary` continues to affect semantic aliases that depend on it. Primitive and semantic keys are optional additions to the public preset type, so an existing complete custom preset remains source-compatible.
+Primitive use inside component CSS is prohibited. A component-specific token is appropriate only when shared semantics
+cannot express the decision. CodeBlock syntax roles and a composited overlay shadow are valid examples; a mechanical
+`buttonLabelColor → colorTextPrimary` alias is not a reason to expand the public API.
 
-Do not create the reverse alias for the same pair. For example, defining both `colorPrimary → colorInteractivePrimaryBackground` and `colorInteractivePrimaryBackground → colorPrimary` creates a CSS-variable cycle.
+The hardcoded-color contract scans component CSS under every workspace package `src` directory. HEX, functional color
+literals, and named colors are rejected. Its general allowlist is limited to `transparent` and `currentColor`, whose values
+depend on composition or inheritance rather than a palette choice. The only literal-value allowlist contains six exact
+OKLCH fallbacks in `packages/codeblock/src/tokens.css`; they keep standalone CodeBlock readable before Core CSS loads.
+Authoritative OKLCH literals live in the theme schema, while CodeBlock theme tests require the matching lazy Shiki
+fallbacks to stay in gamut, above the supported contrast minimum, and aligned with the editor surface. Playground's
+sandbox bridge separately permits the platform colors `Canvas` and `CanvasText` only as the final fallback inside generated
+iframe HTML; custom-prefix and sandbox tests pin those two exceptions. The component-mapping primitive allowlist contains
+one composited recipe: `overlayFloatShadow` may use Neutral 1000 at two documented alpha levels. A contract asserts that no
+other component mapping references a primitive directly.
 
-During the migration period:
+During VueForge 1.x, existing component tokens remain the customization boundary:
 
-- override a legacy token when current 1.x components must change together;
-- override a semantic token when targeting the new role contract;
-- override a component token only for a genuine local exception;
-- old custom presets remain valid; components migrated in Phase 2 must provide a legacy fallback until the next major release.
+```text
+component CSS → --vf-input-border-color
+--vf-input-border-color → --vf-color-border-interactive → legacy fallback
+```
 
-Custom prefixes, runtime generation, static CSS, full stylesheets, scoped themes, and fallback CSS expose the same 952-key built-in contract. Selective static consumers receive that contract through `foundation.css + component entry`; a component entry alone stays isolated and relies on runtime theme injection, as it did before Phase 1.
+This keeps an existing `extend: { inputBorderColor: ... }` or manual `--vf-input-border-color` override effective while the
+built-in default is governed by the semantic layer. Simple compatibility aliases are candidates for removal only in
+VueForge 2.
 
-## Adding Tokens
+One-token component overrides continue to control their base state, but they cannot define the new compound-state model.
+For example, `--vf-tabs-tab-active-background` remains the selected fallback, while selected + hover and selected + active
+use their dedicated semantic roles. A custom theme that changes the entire selected recipe must override all three roles;
+otherwise the built-in compound states intentionally remain accessible and mode-aware.
 
-Add a primitive only when a semantic role needs a material value that does not already exist. Do not fill numeric gaps merely to make a scale look complete.
+## Custom theme migration
 
-Add a semantic token when:
+Primitive and semantic fields remain optional additions to `VfThemeTokens`, so a complete VueForge 1.x preset without them
+continues to type-check. Migrated CSS includes a legacy fallback for that case.
 
-- the role is shared by multiple components;
-- light and dark themes may need different material mappings;
-- the role has a distinct contrast or interaction requirement;
-- reusing another role would conflate foreground, background, border, or state meaning.
+For new or updated themes:
 
-Add a component token only when shared semantics cannot express the decision. Valid examples include Alert's distinct primary subtle recipe, overlay composition, and CodeBlock syntax adaptation. A mechanical `buttonText → colorTextPrimary` alias is not a reason to expand the public API.
+1. Override semantic roles for decisions, not primitives in component CSS.
+2. Override `colorInteractivePrimaryBackground` separately from `colorSelectedForeground`.
+3. Supply independent status solid, subtle foreground, border, hover, and active roles.
+4. Test both root and nested scoped light/dark themes.
+5. If a custom prefix is used, generate CSS through the VueForge runtime or static builder so canonical `--vf-*` aliases are
+   emitted.
 
-Every addition must update the canonical name tuple, public type, built-in preset, runtime/static parity fixtures, alias graph validation, custom-prefix/scoped-theme contracts, and this guide.
+The public `buttonSolidHoverFilter` and `buttonSolidActiveFilter` hooks remain available for VueForge 1.x compatibility,
+but their built-in values are now `none`. A copied 1.x theme that still supplies `brightness(...)` will apply that filter on
+top of the new independent semantic hover or active material. Set both filters to `none` when adopting the Phase 2 state
+roles, or keep them deliberately and review the compounded result.
 
-## Migration and Deprecation
+The unavoidable VueForge 1.x behavior change is the removal of overloaded legacy meaning. Previously, changing only
+`colorDanger` also changed danger subtle text, icon, hover, and active because all roles pointed to one root. It now controls
+the compatible solid material; override the corresponding semantic roles when the whole danger scale is customized.
 
-No legacy token is removed or renamed in VueForge 1.x. Confirmed VueForge 2 cleanup candidates include the unused `switchTrackHoverBackground` and `tableOfContentsTitleColor`, plus the compatibility-only `shadow` after Layouts and CodeBlock migrate. The previously unreachable `colorPrimaryBorderSoft` now supplies `colorInteractivePrimaryBorder`, but remains part of the broader flat-root migration candidate set.
+Legacy tokens are not removed or renamed. `colorWarn*` remains available even though new semantic names use `Warning`.
 
-The complete flat `color*` legacy family is a documented v2 migration candidate after core components consume semantic roles. `colorMuted`, `colorBorder`, base status colors, `colorWarn*`, and `colorContrast*` are especially ambiguous. Deprecation is documentary in Phase 1; there are no runtime warnings or mass TypeScript `@deprecated` annotations.
+## Browser support
 
-## What Phase 2 Owns
+The built-in palette uses `oklch()` and the compatibility layer already uses `color-mix()`. Consumers must target browsers
+that support modern CSS Color syntax. VueForge does not emit a second sRGB declaration for every runtime-generated custom
+property because doing so would make runtime, static, scoped, and custom-prefix serialization diverge. The reference sRGB
+values above can be used by custom presets that intentionally support an older browser matrix.
 
-Phase 2 will migrate component state recipes to the semantic layer, assign independently designed hover/active/foreground values, address control and focus contrast, resolve state precedence, and perform the associated visual/accessibility review. Phase 1 does not introduce the target OKLCH palette or alter current component colors.
+## Adding a color token
+
+Add a primitive only when a real semantic scenario cannot use an existing step. Add a semantic role only when it is shared,
+mode-aware, and has a distinct contrast or state requirement. Every addition must update:
+
+- the canonical Theme name tuple and public type;
+- the built-in light and dark maps;
+- runtime/static/scoped/custom-prefix parity fixtures;
+- alias graph and cycle validation;
+- supported contrast pairings;
+- component-entry/full stylesheet contracts;
+- this guide and the color-system showcase.

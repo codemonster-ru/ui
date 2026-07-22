@@ -3,24 +3,27 @@
   --vf-playground-height: var(--vf-breakpoint-xs);
   --vf-playground-border-width: var(--vf-border-width, 1px);
   --vf-playground-font-family: var(--vf-font-family-base);
-  --vf-playground-surface: var(--vf-color-surface);
-  --vf-playground-surface-muted: var(--vf-color-surface-muted);
-  --vf-playground-border: var(--vf-color-border);
-  --vf-playground-text: var(--vf-color-text);
-  --vf-playground-text-muted: var(--vf-color-muted);
-  --vf-playground-tab-bg: var(--vf-color-surface-muted);
-  --vf-playground-tab-text: var(--vf-color-text);
-  --vf-playground-tab-border: var(--vf-color-border);
-  --vf-playground-tab-active-bg: transparent;
-  --vf-playground-tab-active-text: var(--vf-color-primary);
-  --vf-playground-tab-active-border: var(--vf-color-primary);
+  --vf-playground-surface: var(--vf-color-background-surface, var(--vf-color-surface));
+  --vf-playground-surface-muted: var(--vf-color-background-surface-subtle, var(--vf-color-surface-muted));
+  --vf-playground-border: var(--vf-color-border-default, var(--vf-color-border));
+  --vf-playground-text: var(--vf-color-text-primary, var(--vf-color-text));
+  --vf-playground-text-muted: var(--vf-color-text-secondary, var(--vf-color-muted));
+  --vf-playground-tab-bg: var(--vf-color-background-surface-subtle, var(--vf-color-surface-muted));
+  --vf-playground-tab-text: var(--vf-color-text-primary, var(--vf-color-text));
+  --vf-playground-tab-border: var(--vf-color-border-default, var(--vf-color-border));
+  --vf-playground-tab-active-bg: var(
+    --vf-color-background-surface-selected,
+    color-mix(in srgb, var(--vf-color-primary) 20%, var(--vf-color-surface))
+  );
+  --vf-playground-tab-active-text: var(--vf-color-selected-foreground, var(--vf-color-primary));
+  --vf-playground-tab-active-border: var(--vf-color-border-focus, var(--vf-color-primary));
   --vf-playground-run-bg: transparent;
-  --vf-playground-run-text: var(--vf-color-muted);
+  --vf-playground-run-text: var(--vf-color-text-secondary, var(--vf-color-muted));
   --vf-playground-run-border: transparent;
-  --vf-playground-console-bg: var(--vf-color-surface-muted);
-  --vf-playground-console-text: var(--vf-color-text);
-  --vf-playground-ssr-hint: var(--vf-color-muted);
-  --vf-playground-iframe-bg: var(--vf-color-surface);
+  --vf-playground-console-bg: var(--vf-color-background-surface-subtle, var(--vf-color-surface-muted));
+  --vf-playground-console-text: var(--vf-color-text-primary, var(--vf-color-text));
+  --vf-playground-ssr-hint: var(--vf-color-text-secondary, var(--vf-color-muted));
+  --vf-playground-iframe-bg: var(--vf-color-background-canvas, var(--vf-color-bg, var(--vf-color-surface)));
   --vf-playground-radius-md: var(--vf-radius-control);
   --vf-playground-radius-lg: var(--vf-radius-overlay);
   --vf-playground-control-height-md: var(--vf-control-height-md);
@@ -30,7 +33,7 @@
   --vf-playground-control-line-height: var(--vf-text-body-line-height);
   --vf-playground-control-padding-md: var(--vf-field-padding-md);
   --vf-playground-focus-ring-width: var(--vf-focus-ring-width);
-  --vf-playground-focus-ring-color: var(--vf-color-focus-ring);
+  --vf-playground-focus-ring-color: var(--vf-color-focus-ring, var(--vf-color-primary));
   --vf-playground-toolbar-gap: var(--vf-nav-menu-list-gap);
   --vf-playground-toolbar-padding: var(--vf-surface-padding-compact);
   --vf-playground-console-padding: var(--vf-surface-padding);

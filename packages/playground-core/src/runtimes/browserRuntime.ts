@@ -6,7 +6,7 @@ import type {
   ImportResolutionContext,
   ImportResolutionResult,
   PlaygroundError,
-  PlaygroundFiles
+  PlaygroundFiles,
 } from '../types';
 
 const CONSOLE_BRIDGE_SCRIPT = `
@@ -14,6 +14,22 @@ const CONSOLE_BRIDGE_SCRIPT = `
 (function(){
   var levels = ['log','info','warn','error','debug'];
   var themeVariableNames = [];
+  function collectThemeVariable(propertyName, source, collected) {
+    if (Object.prototype.hasOwnProperty.call(collected, propertyName)) {
+      return;
+    }
+    if (!/^--[-_a-zA-Z0-9]+$/.test(propertyName) || typeof source[propertyName] !== 'string') {
+      return;
+    }
+
+    var value = source[propertyName];
+    collected[propertyName] = value;
+    var referencePattern = /var\\(\\s*(--[-_a-zA-Z0-9]+)/g;
+    var match;
+    while ((match = referencePattern.exec(value)) !== null) {
+      collectThemeVariable(match[1], source, collected);
+    }
+  }
   levels.forEach(function(level){
     var original = console[level];
     console[level] = function(){
@@ -67,6 +83,13 @@ const CONSOLE_BRIDGE_SCRIPT = `
       return;
     }
 
+    var acceptedVariables = {};
+    Object.keys(variables).forEach(function(propertyName){
+      if (propertyName.startsWith('--vf-')) {
+        collectThemeVariable(propertyName, variables, acceptedVariables);
+      }
+    });
+
     var root = document.documentElement;
     root.setAttribute('data-theme', theme);
     root.setAttribute('data-vf-theme', theme);
@@ -81,17 +104,14 @@ const CONSOLE_BRIDGE_SCRIPT = `
     });
     themeVariableNames = [];
 
-    Object.keys(variables).forEach(function(propertyName){
-      if (!propertyName.startsWith('--vf-') || typeof variables[propertyName] !== 'string') {
-        return;
-      }
-      root.style.setProperty(propertyName, variables[propertyName]);
+    Object.keys(acceptedVariables).forEach(function(propertyName){
+      root.style.setProperty(propertyName, acceptedVariables[propertyName]);
       themeVariableNames.push(propertyName);
     });
 
     if (document.body) {
-      document.body.style.backgroundColor = 'var(--vf-color-bg, Canvas)';
-      document.body.style.color = 'var(--vf-color-text, CanvasText)';
+      document.body.style.backgroundColor = 'var(--vf-color-background-canvas, var(--vf-color-bg, Canvas))';
+      document.body.style.color = 'var(--vf-color-text-primary, var(--vf-color-text, CanvasText))';
     }
   });
 })();
@@ -121,15 +141,15 @@ function transpileTs(content: string): string {
   return ts.transpileModule(content, {
     compilerOptions: {
       target: ts.ScriptTarget.ES2020,
-      module: ts.ModuleKind.ESNext
-    }
+      module: ts.ModuleKind.ESNext,
+    },
   }).outputText;
 }
 
 function replaceInlineTsScripts(html: string): string {
   return html.replace(
     /<script\s+type=["']text\/typescript["']\s*>([\s\S]*?)<\/script>/gi,
-    (_, content: string) => `<script>${transpileTs(content)}</script>`
+    (_, content: string) => `<script>${transpileTs(content)}</script>`,
   );
 }
 
@@ -177,14 +197,14 @@ function defaultResolveImport(specifier: string, context: ImportResolutionContex
   if (isExternalUrl(specifier)) {
     return {
       kind: isCssPath(specifier) ? 'style' : 'module',
-      url: specifier
+      url: specifier,
     };
   }
 
   if (context.framework === 'vue' && isBareImport(specifier)) {
     return {
       kind: isCssPath(specifier) ? 'style' : 'module',
-      url: `https://esm.sh/${specifier}`
+      url: `https://esm.sh/${specifier}`,
     };
   }
 
@@ -198,12 +218,14 @@ function escapeJsString(value: string): string {
 function toBase64(value: string): string {
   if (typeof btoa === 'function') {
     const encoded = encodeURIComponent(value).replace(/%([0-9A-F]{2})/g, (_, p1: string) =>
-      String.fromCharCode(Number.parseInt(p1, 16))
+      String.fromCharCode(Number.parseInt(p1, 16)),
     );
     return btoa(encoded);
   }
 
-  const nodeBuffer = (globalThis as { Buffer?: { from: (input: string, encoding: string) => { toString: (encoding: string) => string } } }).Buffer;
+  const nodeBuffer = (
+    globalThis as { Buffer?: { from: (input: string, encoding: string) => { toString: (encoding: string) => string } } }
+  ).Buffer;
   if (nodeBuffer) {
     return nodeBuffer.from(value, 'utf8').toString('base64');
   }
@@ -226,13 +248,14 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
   const moduleUrls = new Map<string, string>();
   const errors: PlaygroundError[] = [];
 
-  const importRegex = /(import\s+(?:[^"'()]+?\s+from\s+)?["']([^"']+)["']\s*;?)|(export\s+[^"']+?\s+from\s+["']([^"']+)["']\s*;?)/g;
+  const importRegex =
+    /(import\s+(?:[^"'()]+?\s+from\s+)?["']([^"']+)["']\s*;?)|(export\s+[^"']+?\s+from\s+["']([^"']+)["']\s*;?)/g;
 
   function makeError(
     message: string,
     reason: PlaygroundError['code'],
     specifier: string,
-    fromFile: string
+    fromFile: string,
   ): PlaygroundError {
     return {
       message,
@@ -241,8 +264,8 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
       details: {
         specifier,
         fromFile,
-        reason
-      }
+        reason,
+      },
     };
   }
 
@@ -272,9 +295,7 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
 
     const source = files[filePath];
     if (typeof source !== 'string') {
-      errors.push(
-        makeError(`Entry file not found: ${filePath}`, 'unresolved', filePath, filePath)
-      );
+      errors.push(makeError(`Entry file not found: ${filePath}`, 'unresolved', filePath, filePath));
       const empty = `throw new Error(${escapeJsString(`Entry file not found: ${filePath}`)});`;
       visited.set(filePath, empty);
       return empty;
@@ -297,10 +318,11 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
           return `__cmInjectStyle(${escapeJsString(files[resolvedLocal])}, ${escapeJsString(resolvedLocal)});`;
         }
 
-        const resolved = options.resolveImport?.(specifier, {
-          fromFile: filePath,
-          framework: options.framework
-        }) ?? defaultResolveImport(specifier, { fromFile: filePath, framework: options.framework });
+        const resolved =
+          options.resolveImport?.(specifier, {
+            fromFile: filePath,
+            framework: options.framework,
+          }) ?? defaultResolveImport(specifier, { fromFile: filePath, framework: options.framework });
 
         if (!resolved || resolved.kind !== 'style') {
           errors.push(
@@ -308,11 +330,11 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
               `Unable to resolve style import "${specifier}" from "${filePath}"`,
               'unresolved',
               specifier,
-              filePath
-            )
+              filePath,
+            ),
           );
           return `throw new Error(${escapeJsString(
-            `Unable to resolve style import "${specifier}" from "${filePath}"`
+            `Unable to resolve style import "${specifier}" from "${filePath}"`,
           )});`;
         }
 
@@ -330,16 +352,9 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
 
         if (!localModulePath) {
           errors.push(
-            makeError(
-              `Unable to resolve import "${specifier}" from "${filePath}"`,
-              'unresolved',
-              specifier,
-              filePath
-            )
+            makeError(`Unable to resolve import "${specifier}" from "${filePath}"`, 'unresolved', specifier, filePath),
           );
-          return `throw new Error(${escapeJsString(
-            `Unable to resolve import "${specifier}" from "${filePath}"`
-          )});`;
+          return `throw new Error(${escapeJsString(`Unable to resolve import "${specifier}" from "${filePath}"`)});`;
         }
 
         const compiled = compileModule(localModulePath);
@@ -351,23 +366,17 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
         return full.replace(specifier, moduleUrl);
       }
 
-      const resolved = options.resolveImport?.(specifier, {
-        fromFile: filePath,
-        framework: options.framework
-      }) ?? defaultResolveImport(specifier, { fromFile: filePath, framework: options.framework });
+      const resolved =
+        options.resolveImport?.(specifier, {
+          fromFile: filePath,
+          framework: options.framework,
+        }) ?? defaultResolveImport(specifier, { fromFile: filePath, framework: options.framework });
 
       if (!resolved || resolved.kind !== 'module') {
         errors.push(
-          makeError(
-            `Unable to resolve import "${specifier}" from "${filePath}"`,
-            'unresolved',
-            specifier,
-            filePath
-          )
+          makeError(`Unable to resolve import "${specifier}" from "${filePath}"`, 'unresolved', specifier, filePath),
         );
-        return `throw new Error(${escapeJsString(
-          `Unable to resolve import "${specifier}" from "${filePath}"`
-        )});`;
+        return `throw new Error(${escapeJsString(`Unable to resolve import "${specifier}" from "${filePath}"`)});`;
       }
 
       return full.replace(specifier, resolved.url);
@@ -392,14 +401,14 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
   const entryCode = compileModule(entry);
   return {
     code: entryCode,
-    errors
+    errors,
   };
 }
 
 export function renderBrowserHtml(
   files: PlaygroundFiles,
   entry: string,
-  options: Pick<CreatePlaygroundSessionOptions, 'framework' | 'resolveImport' | 'bootstrapScript'> = {}
+  options: Pick<CreatePlaygroundSessionOptions, 'framework' | 'resolveImport' | 'bootstrapScript'> = {},
 ): { html: string; error?: PlaygroundError } {
   const source = files[entry];
 
@@ -410,8 +419,8 @@ export function renderBrowserHtml(
         message: `Entry file not found: ${entry}`,
         source: 'internal',
         code: 'unresolved',
-        details: { specifier: entry, fromFile: entry, reason: 'unresolved' }
-      }
+        details: { specifier: entry, fromFile: entry, reason: 'unresolved' },
+      },
     };
   }
 
@@ -421,16 +430,14 @@ export function renderBrowserHtml(
   if (!entry.endsWith('.html')) {
     const built = buildEntryModule(files, entry, {
       framework: options.framework,
-      resolveImport: options.resolveImport
+      resolveImport: options.resolveImport,
     });
 
     if (built.errors.length > 0) {
       primaryError = built.errors[0];
     }
 
-    const bootstrapScript = options.bootstrapScript
-      ? `<script>${options.bootstrapScript}</script>`
-      : '';
+    const bootstrapScript = options.bootstrapScript ? `<script>${options.bootstrapScript}</script>` : '';
 
     html = `<!doctype html>
 <html>
@@ -451,20 +458,20 @@ export function renderBrowserHtml(
   if (withTs.includes('</head>')) {
     return {
       html: withTs.replace('</head>', `${bridge}</head>`),
-      error: primaryError
+      error: primaryError,
     };
   }
 
   if (withTs.includes('</body>')) {
     return {
       html: withTs.replace('</body>', `${bridge}</body>`),
-      error: primaryError
+      error: primaryError,
     };
   }
 
   return {
     html: `${withTs}${bridge}`,
-    error: primaryError
+    error: primaryError,
   };
 }
 

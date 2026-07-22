@@ -52,7 +52,6 @@
 
 .vf-breadcrumbs__current--disabled {
   color: var(--vf-breadcrumbs-disabled-color);
-  opacity: 0.65;
 }
 
 .vf-breadcrumbs__separator {

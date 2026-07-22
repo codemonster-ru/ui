@@ -13,7 +13,7 @@
   gap: var(--vf-selection-gap);
   width: fit-content;
   min-width: 0;
-  color: var(--vf-color-text);
+  color: var(--vf-color-text-primary, var(--vf-color-text));
   cursor: pointer;
 }
 
@@ -131,15 +131,9 @@
   color: var(--vf-switch-thumb-checked-color);
 }
 
-.vf-switch__input:focus-visible + .vf-switch__control {
-  outline: none;
-  border-color: var(--vf-switch-track-focus-border-color);
-  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
-}
-
 .vf-switch:hover:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-hover-border-color);
-  background: var(--vf-switch-track-background);
+  background: var(--vf-switch-track-hover-background);
 }
 
 .vf-switch:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
@@ -148,7 +142,15 @@
   background: var(--vf-switch-track-checked-hover-background);
 }
 
-.vf-switch--invalid .vf-switch__control {
+.vf-switch__input:focus-visible + .vf-switch__control {
+  outline: none;
+  border-color: var(--vf-switch-track-focus-border-color);
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+}
+
+.vf-switch--invalid .vf-switch__control,
+.vf-switch--invalid .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--invalid.vf-switch--checked .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
@@ -158,15 +160,8 @@
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
-.vf-switch--invalid:not(.vf-switch--static):hover:not(.vf-switch--disabled)
-  .vf-switch__input:checked
-  + .vf-switch__control,
-.vf-switch--invalid:not(.vf-switch--static).vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
-  border-color: var(--vf-switch-track-checked-hover-border-color);
-}
-
 .vf-switch--invalid .vf-switch__input:focus-visible + .vf-switch__control {
-  border-color: var(--vf-switch-track-focus-border-color);
+  border-color: var(--vf-switch-track-invalid-border-color);
 }
 
 .vf-switch--static .vf-switch__control,
@@ -189,13 +184,19 @@
   background: var(--vf-switch-track-background);
 }
 
+.vf-switch--static.vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--static.vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--static.vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
+  border-color: var(--vf-switch-track-invalid-border-color);
+}
+
 .vf-switch--static .vf-switch__input:focus-visible + .vf-switch__control {
   border-color: var(--vf-switch-track-focus-border-color);
   background: var(--vf-switch-track-background);
 }
 
 .vf-switch--static.vf-switch--invalid .vf-switch__input:focus-visible + .vf-switch__control {
-  border-color: var(--vf-switch-track-focus-border-color);
+  border-color: var(--vf-switch-track-invalid-border-color);
 }
 
 .vf-switch--static .vf-switch__input:checked + .vf-switch__control .vf-switch__thumb,
@@ -203,30 +204,6 @@
   border-color: var(--vf-switch-thumb-background);
   background: var(--vf-switch-thumb-background);
   box-shadow: var(--vf-switch-thumb-shadow);
-}
-
-html:where([data-theme='dark'], [data-vf-theme='dark'])
-  .vf-switch:not(.vf-switch--static, .vf-switch--disabled)
-  .vf-switch__input:checked
-  + .vf-switch__control
-  .vf-switch__thumb,
-html:where([data-theme='dark'], [data-vf-theme='dark'])
-  .vf-switch:not(.vf-switch--static, .vf-switch--disabled).vf-switch--checked
-  .vf-switch__thumb {
-  border-color: var(--vf-color-primary-contrast);
-  background: var(--vf-color-primary-contrast);
-}
-
-html:where([data-theme='dark'], [data-vf-theme='dark'])
-  .vf-switch--static:not(.vf-switch--disabled)
-  .vf-switch__input:checked
-  + .vf-switch__control
-  .vf-switch__thumb,
-html:where([data-theme='dark'], [data-vf-theme='dark'])
-  .vf-switch--static:not(.vf-switch--disabled).vf-switch--checked
-  .vf-switch__thumb {
-  border-color: var(--vf-color-primary-contrast);
-  background: var(--vf-color-primary-contrast);
 }
 
 .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled) .vf-switch__thumb,
@@ -238,18 +215,6 @@ html:where([data-theme='dark'], [data-vf-theme='dark'])
   border-color: var(--vf-switch-thumb-inverse-border-color);
   background: var(--vf-switch-thumb-inverse-background);
   color: var(--vf-switch-thumb-inverse-color);
-}
-
-html:where([data-theme='dark'], [data-vf-theme='dark'])
-  .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled)
-  .vf-switch__input:checked
-  + .vf-switch__control
-  .vf-switch__thumb,
-html:where([data-theme='dark'], [data-vf-theme='dark'])
-  .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled).vf-switch--checked
-  .vf-switch__thumb {
-  border-color: var(--vf-switch-thumb-inverse-border-color);
-  background: var(--vf-switch-thumb-inverse-background);
 }
 
 .vf-switch--sm .vf-switch__control {

@@ -13,12 +13,15 @@ const items: VfStepperItem[] = [
 ];
 
 describe('VfStepper', () => {
-  it('keeps its palette behind component tokens', () => {
+  it('keeps its palette semantic-first without bypassing existing component tokens', () => {
     const stepperCss = readFileSync(resolve(process.cwd(), 'src/styles/entries/stepper.css'), 'utf8');
 
-    expect(stepperCss).not.toMatch(/var\(--vf-color-/);
+    expect(stepperCss).not.toContain('var(--vf-palette-');
     expect(stepperCss).toContain('var(--vf-stepper-rail-color)');
     expect(stepperCss).toContain('var(--vf-stepper-focus-ring-color)');
+    expect(stepperCss).toContain('var(--vf-color-border-disabled, var(--vf-stepper-rail-color))');
+    expect(stepperCss).toContain('var(--vf-color-background-surface-disabled, var(--vf-stepper-marker-background))');
+    expect(stepperCss).toContain('color: var(--vf-stepper-disabled-color);');
   });
 
   it('renders current and completed steps from uncontrolled state', async () => {
