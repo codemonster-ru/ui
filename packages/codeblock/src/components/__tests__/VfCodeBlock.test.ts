@@ -312,6 +312,76 @@ body {
     expect(html).toContain('data-vf-theme="dark"');
   });
 
+  it('hydrates server-highlighted code without replacing the Shiki output or reporting a mismatch', async () => {
+    const props = {
+      code: 'const hydrated = true;',
+      language: 'ts',
+      theme: 'dark' as const,
+      showHeader: false,
+      copyable: false,
+    };
+    const html = await renderToString(createSSRApp(VfCodeBlock, props));
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    document.body.appendChild(host);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const app = createSSRApp(VfCodeBlock, props);
+
+    try {
+      app.mount(host);
+
+      expect(host.querySelector('.vf-codeblock__shiki-token')).not.toBeNull();
+      expect(host.querySelector('.vf-codeblock__line-content')?.getAttribute('data-allow-mismatch')).toBe('children');
+      await nextTick();
+      expect(host.querySelector('.vf-codeblock__shiki-token')).not.toBeNull();
+
+      const hydrationMessages = [...warn.mock.calls, ...error.mock.calls]
+        .flat()
+        .map(String)
+        .filter((message) => message.toLowerCase().includes('hydration'));
+      expect(hydrationMessages).toEqual([]);
+    } finally {
+      app.unmount();
+      host.remove();
+      warn.mockRestore();
+      error.mockRestore();
+    }
+  });
+
+  it('keeps the expected highlight mismatch allowance scoped away from component classes', async () => {
+    const props = {
+      code: 'const hydrated = true;',
+      language: 'ts',
+      showHeader: false,
+      copyable: false,
+    };
+    const html = (await renderToString(createSSRApp(VfCodeBlock, props))).replace(
+      'class="vf-codeblock"',
+      'class="vf-codeblock server-only"',
+    );
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    document.body.appendChild(host);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const app = createSSRApp(VfCodeBlock, props);
+
+    try {
+      app.mount(host);
+
+      const hydrationMessages = [...warn.mock.calls, ...error.mock.calls].flat().map(String).join('\n');
+      expect(hydrationMessages).toContain('Hydration class mismatch');
+      expect(host.querySelector('.vf-codeblock__line-content')?.getAttribute('data-allow-mismatch')).toBe('children');
+      expect(host.querySelector('.vf-codeblock')?.hasAttribute('data-allow-mismatch')).toBe(false);
+    } finally {
+      app.unmount();
+      host.remove();
+      warn.mockRestore();
+      error.mockRestore();
+    }
+  });
+
   it('keeps inherit as a non-boundary marker while exposing the SSR fallback', async () => {
     const app = createSSRApp(() =>
       h(VfCodeBlock, {
@@ -341,7 +411,8 @@ body {
     );
     expect(tokensSource).not.toContain('.vf-codeblock[data-theme=');
     expect(tokensSource).not.toContain('.vf-codeblock[data-vf-theme=');
-    expect(tokenNames).toHaveLength(64);
+    expect(tokensSource).toContain(":root:is([data-theme='dark'], [data-vf-theme='dark'])");
+    expect(tokenNames).toHaveLength(74);
     expect([...new Set(tokenNames)].sort()).toEqual([
       '--vf-codeblock-action-background-color',
       '--vf-codeblock-action-border-color',
@@ -407,7 +478,7 @@ body {
     ]);
     expect(tokensSource).toContain('--vf-codeblock-margin-block-start');
     expect(tokensSource).toContain('--vf-codeblock-margin-block-end');
-    expect(tokensSource).toContain('--vf-codeblock-margin-block: var(--vf-surface-padding)');
+    expect(tokensSource).toContain('--vf-codeblock-margin-block: var(--vf-surface-padding, 1rem)');
     expect(tokensSource).toContain('--vf-codeblock-disabled-opacity: 1');
     expect(tokensSource).toContain('--vf-codeblock-syntax-background: var(--vf-codeblock-background-color)');
     expect(tokensSource).toContain('--vf-codeblock-code-background-color: var(--vf-codeblock-syntax-background)');
@@ -429,6 +500,16 @@ body {
     expect(componentSource).toContain('opacity: var(--vf-codeblock-disabled-opacity)');
     expect(componentSource).toContain('.vf-codeblock__copy:hover:not(:disabled)');
     expect(componentSource).toContain('.vf-codeblock__copy:not(:disabled)');
+    expect(tokensSource.match(/var\(--vf-(?!codeblock-)[a-z0-9-]+\)/g) ?? []).toEqual([]);
+    expect(tokensSource).toContain('--vf-font-family-mono,');
+    expect(tokensSource).toContain('var(--vf-motion-duration-fast, 220ms)');
+    expect(tokensSource).toContain('var(--vf-breakpoint-sm, 640px)');
+    expect(tokensSource).toContain('var(--vf-color-text, oklch(25.6% 0.014 260))');
+    expect(tokensSource).toContain('var(--vf-color-text, oklch(90% 0.012 260))');
+    expect(componentSource).toContain('@media (hover: none), (pointer: coarse)');
+    expect(componentSource).toContain('min-height: 2.75rem');
+    expect(componentSource).toContain('@media (prefers-reduced-motion: reduce)');
+    expect(componentSource).toContain('transition: none');
   });
 
   it('applies containerMinHeight to root container style', () => {

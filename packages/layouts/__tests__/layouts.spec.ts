@@ -769,23 +769,55 @@ describe('layout theme runtime', () => {
 });
 
 describe('shell behavior', () => {
-  it('supports controlled sidebar collapsed state', async () => {
+  it('keeps controlled sidebar state owned by the parent and emits requested changes', async () => {
     const wrapper = mount(VfAppShell, {
       props: {
         sidebarCollapsed: true,
       },
       slots: {
-        default: () => 'Shell',
+        default: ({ toggleSidebarCollapsed }: { toggleSidebarCollapsed: () => void }) =>
+          h('button', { 'data-test': 'toggle-sidebar', onClick: toggleSidebarCollapsed }, 'Toggle sidebar'),
       },
     });
 
     expect(wrapper.classes()).toContain('vf-app-shell--sidebar-collapsed');
+    expect(wrapper.emitted('update:sidebarCollapsed')).toBeUndefined();
+
+    await wrapper.get('[data-test="toggle-sidebar"]').trigger('click');
+
+    expect(wrapper.classes()).toContain('vf-app-shell--sidebar-collapsed');
+    expect(wrapper.emitted('update:sidebarCollapsed')).toEqual([[false]]);
 
     await wrapper.setProps({
       sidebarCollapsed: false,
     });
 
     expect(wrapper.classes()).not.toContain('vf-app-shell--sidebar-collapsed');
+  });
+
+  it('updates uncontrolled sidebar state from its default and emits each change', async () => {
+    const wrapper = mount(VfAppShell, {
+      props: {
+        defaultSidebarCollapsed: true,
+      },
+      slots: {
+        default: ({ toggleSidebarCollapsed }: { toggleSidebarCollapsed: () => void }) =>
+          h('button', { 'data-test': 'toggle-sidebar', onClick: toggleSidebarCollapsed }, 'Toggle sidebar'),
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-app-shell--sidebar-collapsed');
+    expect(wrapper.emitted('update:sidebarCollapsed')).toBeUndefined();
+
+    await wrapper.get('[data-test="toggle-sidebar"]').trigger('click');
+
+    expect(wrapper.classes()).not.toContain('vf-app-shell--sidebar-collapsed');
+    expect(wrapper.emitted('update:sidebarCollapsed')).toEqual([[false]]);
+
+    await wrapper.get('[data-test="toggle-sidebar"]').trigger('click');
+
+    expect(wrapper.classes()).toContain('vf-app-shell--sidebar-collapsed');
+    expect(wrapper.emitted('update:sidebarCollapsed')).toEqual([[false], [true]]);
   });
 
   it('supports shell-level sticky header control', () => {

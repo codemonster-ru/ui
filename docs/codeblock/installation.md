@@ -37,3 +37,4 @@ Optional manual CSS entries:
 - `@codemonster-ru/vueforge-codeblock/critical.css`
 
 When importing granular CSS manually, load `tokens.css` before `critical.css` or `codeblock.css`.
+The package token entry contains standalone fallbacks, so Core CSS is optional and does not need to be loaded first.

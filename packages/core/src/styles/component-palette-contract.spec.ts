@@ -27,17 +27,24 @@ const packageSourceRoots = readdirSync(packagesRoot, { withFileTypes: true })
   .map((entry) => resolve(packagesRoot, entry.name, 'src'))
   .filter(existsSync);
 const colorStyleFiles = packageSourceRoots.flatMap(collectCssFiles);
-const rawColorLiteralAllowlist = new Map<string, readonly string[]>([
+const rawColorLiteralAllowlist = new Map<string, Readonly<Record<string, number>>>([
   [
     resolve(packagesRoot, 'codeblock/src/tokens.css'),
-    [
-      'oklch(95.8% 0.007 260)',
-      'oklch(76% 0.11 247)',
-      'oklch(25.6% 0.014 260)',
-      'oklch(29% 0.018 260)',
-      'oklch(45% 0.115 247)',
-      'oklch(90% 0.012 260)',
-    ],
+    {
+      'oklch(25.6% 0.014 260)': 5,
+      'oklch(29% 0.018 260)': 1,
+      'oklch(45% 0.115 247)': 1,
+      'oklch(48.8% 0.03 260)': 4,
+      'oklch(50% 0.13 247)': 1,
+      'oklch(55% 0.032 260)': 1,
+      'oklch(65% 0.026 260)': 1,
+      'oklch(74.5% 0.02 260)': 2,
+      'oklch(76% 0.11 247)': 2,
+      'oklch(84% 0.016 260)': 2,
+      'oklch(90% 0.012 260)': 4,
+      'oklch(95.8% 0.007 260)': 1,
+      'oklch(99.5% 0.002 260)': 1,
+    },
   ],
 ]);
 const legacyFallbackRecipeAllowlist = new Map<string, readonly string[]>([
@@ -232,9 +239,9 @@ describe('component palette contract', () => {
       const css = readFileSync(file, 'utf8');
       let cssWithoutAllowlist = css;
 
-      for (const allowedLiteral of rawColorLiteralAllowlist.get(file) ?? []) {
-        expect(css, file).toContain(allowedLiteral);
-        cssWithoutAllowlist = cssWithoutAllowlist.replace(allowedLiteral, '');
+      for (const [allowedLiteral, expectedCount] of Object.entries(rawColorLiteralAllowlist.get(file) ?? {})) {
+        expect(css.split(allowedLiteral).length - 1, `${file}: ${allowedLiteral}`).toBe(expectedCount);
+        cssWithoutAllowlist = cssWithoutAllowlist.split(allowedLiteral).join('');
       }
 
       expect(cssWithoutAllowlist, file).not.toMatch(rawColorLiteral);

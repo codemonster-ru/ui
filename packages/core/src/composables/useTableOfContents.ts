@@ -1,7 +1,7 @@
 import { nextTick, onMounted, onUnmounted, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
 import type { VfTableOfContentsItem } from '@/types/components';
 
-interface UseTableOfContentsOptions {
+export interface UseTableOfContentsOptions {
   items: MaybeRefOrGetter<VfTableOfContentsItem[]>;
   offset?: MaybeRefOrGetter<number | undefined>;
   disabled?: MaybeRefOrGetter<boolean | undefined>;

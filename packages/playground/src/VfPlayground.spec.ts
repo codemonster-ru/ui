@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /* eslint-disable vue/one-component-per-file */
-import { createSSRApp, defineComponent, h, markRaw } from 'vue';
+import { createSSRApp, defineComponent, h, markRaw, nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import { renderToString } from '@vue/server-renderer';
 import { readFileSync } from 'node:fs';
@@ -9,8 +9,21 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import VfPlayground from './VfPlayground.vue';
 
+type ConsoleHandler = (event: {
+  level: 'log' | 'warn' | 'error' | 'info' | 'debug';
+  args: unknown[];
+  timestamp: number;
+}) => void;
+
+let latestConsoleHandler: ConsoleHandler | null = null;
+
 const createSessionMock = vi.fn(
-  (options?: { iframe?: HTMLIFrameElement; files?: Record<string, string>; entry?: string }) => ({
+  (options?: {
+    iframe?: HTMLIFrameElement;
+    files?: Record<string, string>;
+    entry?: string;
+    resolveImport?: unknown;
+  }) => ({
     run: vi.fn(async () => {
       const iframe = options?.iframe;
       const entry = options?.entry ?? '';
@@ -24,13 +37,21 @@ const createSessionMock = vi.fn(
     dispose: vi.fn(),
     updateFiles: vi.fn(),
     onRun: vi.fn(() => () => undefined),
-    onConsole: vi.fn(() => () => undefined),
+    onConsole: vi.fn((handler: ConsoleHandler) => {
+      latestConsoleHandler = handler;
+      return () => undefined;
+    }),
     onError: vi.fn(() => () => undefined),
   }),
 );
 
 vi.mock('@codemonster-ru/vueforge-playground-core', () => ({
-  createPlaygroundSession: (options: { iframe?: HTMLIFrameElement; files?: Record<string, string>; entry?: string }) =>
+  createPlaygroundSession: (options: {
+    iframe?: HTMLIFrameElement;
+    files?: Record<string, string>;
+    entry?: string;
+    resolveImport?: unknown;
+  }) =>
     createSessionMock(options),
 }));
 
@@ -128,6 +149,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   createSessionMock.mockClear();
+  latestConsoleHandler = null;
 });
 
 async function flushThemeSync(): Promise<void> {
@@ -174,6 +196,42 @@ describe('VfPlayground', () => {
     const styleValue = wrapper.attributes('style');
     expect(styleValue).toContain('min-height: 260px');
     expect(styleValue).toContain('height: 420px');
+  });
+
+  it('applies the documented auto height modes', () => {
+    const auto = mount(VfPlayground, {
+      props: { ...baseSandboxProps, autorun: false, heightMode: 'auto' },
+      global: testGlobal,
+    });
+    const fixedCode = mount(VfPlayground, {
+      props: { ...baseSandboxProps, autorun: false, heightMode: 'auto-preview', initialTab: 'code' },
+      global: testGlobal,
+    });
+    const autoPreview = mount(VfPlayground, {
+      props: { ...baseSandboxProps, autorun: false, heightMode: 'auto-preview', initialTab: 'preview' },
+      global: testGlobal,
+    });
+
+    expect(auto.classes()).toContain('vf-playground--auto-height');
+    expect(fixedCode.classes()).not.toContain('vf-playground--auto-height');
+    expect(autoPreview.classes()).toContain('vf-playground--auto-height');
+
+    auto.unmount();
+    fixedCode.unmount();
+    autoPreview.unmount();
+  });
+
+  it('forwards the documented synchronous import resolver to the runtime', async () => {
+    const resolveImport = vi.fn(() => ({ kind: 'module' as const, url: 'https://cdn.example.com/demo.js' }));
+    const wrapper = mount(VfPlayground, {
+      props: { ...baseSandboxProps, autorun: false, resolveImport },
+      global: testGlobal,
+    });
+
+    await vi.waitFor(() => expect(createSessionMock).toHaveBeenCalled());
+    expect(createSessionMock).toHaveBeenCalledWith(expect.objectContaining({ resolveImport }));
+
+    wrapper.unmount();
   });
 
   it('keeps sandbox mode behavior and renders iframe preview', async () => {
@@ -399,6 +457,60 @@ describe('VfPlayground', () => {
     expect(findCodeHost(wrapper).text()).toContain('<template><div>Card</div></template>');
   });
 
+  it('wires real main and file tabs to stable external tabpanels', async () => {
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const wrapper = mount(VfPlayground, {
+      attachTo: host,
+      props: {
+        files: {
+          '/main.ts': "import './feature.ts';",
+          '/feature.ts': "export const feature = 'ready';",
+        },
+        entry: '/main.ts',
+        autorun: false,
+        initialTab: 'code',
+      },
+    });
+
+    try {
+      await nextTick();
+
+      const expectValidTabPanelRelations = (expectedCount: number) => {
+        const tabs = wrapper.findAll('[role="tab"]');
+        const panels = wrapper.findAll('[role="tabpanel"]');
+        expect(tabs).toHaveLength(expectedCount);
+        expect(panels).toHaveLength(expectedCount);
+
+        for (const tab of tabs) {
+          const tabId = tab.attributes('id');
+          const controlledId = tab.attributes('aria-controls');
+          const controlledPanel = panels.find((panel) => panel.attributes('id') === controlledId);
+
+          expect(tabId).toBeTruthy();
+          expect(controlledId).toBeTruthy();
+          expect(controlledPanel, `Missing panel controlled by ${tabId}`).toBeDefined();
+          expect(controlledPanel?.attributes('aria-labelledby')).toBe(tabId);
+        }
+
+        const ids = wrapper.findAll('[id]').map((node) => node.attributes('id'));
+        expect(new Set(ids).size).toBe(ids.length);
+      };
+
+      expectValidTabPanelRelations(5);
+
+      const previewTab = wrapper.findAll('[role="tab"]').find((tab) => tab.text() === 'Preview');
+      expect(previewTab).toBeDefined();
+      await previewTab?.trigger('click');
+      await nextTick();
+
+      expectValidTabPanelRelations(3);
+    } finally {
+      wrapper.unmount();
+      host.remove();
+    }
+  });
+
   it('does not provide run action renderer in component mode', () => {
     const ActionsSpy = defineComponent({
       name: 'ActionsSpy',
@@ -462,6 +574,72 @@ describe('VfPlayground', () => {
     expect(html).toContain('data-theme="inherit"');
     expect(html).toContain('data-vf-theme="inherit"');
     expect(html).toContain('data-vf-resolved-theme="light"');
+  });
+
+  it('hydrates the client-only preview hint without a markup mismatch', async () => {
+    const props = { ...baseSandboxProps, autorun: false, initialTab: 'preview' as const };
+    const serverApp = createSSRApp(() => h(VfPlayground, props));
+    const html = await renderToString(serverApp);
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    document.body.appendChild(container);
+
+    expect(container.querySelector('.vf-playground__ssr-hint')).not.toBeNull();
+
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const clientApp = createSSRApp(() => h(VfPlayground, props));
+
+    try {
+      clientApp.mount(container);
+      await nextTick();
+
+      expect(container.querySelector('.vf-playground__ssr-hint')).toBeNull();
+      expect(warn.mock.calls.flat().join(' ')).not.toMatch(/hydration/i);
+      expect(error.mock.calls.flat().join(' ')).not.toMatch(/hydration/i);
+    } finally {
+      clientApp.unmount();
+      warn.mockRestore();
+      error.mockRestore();
+      container.remove();
+    }
+  });
+
+  it('bounds console output while preserving the newest entries', async () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        ...baseSandboxProps,
+        autorun: false,
+        initialTab: 'console',
+      },
+      global: testGlobal,
+    });
+
+    await flushThemeSync();
+    await vi.waitFor(() => expect(latestConsoleHandler).not.toBeNull());
+
+    for (let index = 0; index < 505; index += 1) {
+      latestConsoleHandler?.({
+        level: 'log',
+        args: [`message-${String(index).padStart(3, '0')}`],
+        timestamp: index,
+      });
+    }
+    await nextTick();
+
+    const lines = wrapper.get('.vf-playground__console').element.textContent?.split('\n') ?? [];
+    expect(lines).toHaveLength(500);
+    expect(lines[0]).toBe('[log] message-005');
+    expect(lines[lines.length - 1]).toBe('[log] message-504');
+
+    latestConsoleHandler?.({ level: 'log', args: ['x'.repeat(20_000)], timestamp: 505 });
+    await nextTick();
+    const boundedLines = wrapper.get('.vf-playground__console').element.textContent?.split('\n') ?? [];
+    expect(boundedLines).toHaveLength(500);
+    expect(boundedLines[boundedLines.length - 1]).toHaveLength(16_385);
+    expect(boundedLines[boundedLines.length - 1]?.endsWith('…')).toBe(true);
+
+    wrapper.unmount();
   });
 
   it('syncs sandbox theme in inherit mode from host root attributes', async () => {

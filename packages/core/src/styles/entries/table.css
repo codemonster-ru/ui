@@ -27,14 +27,14 @@
 
 .vf-table__caption {
   padding: var(--vf-field-padding-lg);
-  text-align: left;
+  text-align: start;
   color: var(--vf-table-caption-color);
   font-weight: var(--vf-font-weight-medium);
 }
 
 .vf-table :where(th, td) {
   padding: var(--vf-field-padding-lg);
-  text-align: left;
+  text-align: start;
   vertical-align: top;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .vf-table--column-dividers :where(th, td) + :where(th, td) {
-  border-left: var(--vf-border-width) solid var(--vf-table-border-color);
+  border-inline-start: var(--vf-border-width) solid var(--vf-table-border-color);
 }
 
 .vf-table--striped tbody tr:nth-child(even) td {

@@ -1,5 +1,5 @@
 <template>
-  <div class="vf-skeleton-gate" :style="rootStyle">
+  <div class="vf-skeleton-gate" :style="rootStyle" :aria-busy="!ready || undefined">
     <div
       ref="contentRef"
       class="vf-skeleton-gate__content"
@@ -8,6 +8,8 @@
         'vf-skeleton-gate__content--normalize-spacing': normalizeContentSpacing,
       }"
       :style="contentStyle"
+      :aria-hidden="!ready || undefined"
+      :inert="!ready ? true : undefined"
     >
       <slot />
     </div>

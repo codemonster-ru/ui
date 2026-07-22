@@ -81,7 +81,7 @@
   font-size: var(--vf-text-body-font-size);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   transition:
     background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),

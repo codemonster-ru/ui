@@ -234,4 +234,46 @@ describe('renderBrowserHtml', () => {
     expect(rendered.error?.details?.specifier).toBe('unknown-lib');
     expect(rendered.error?.details?.fromFile).toBe('/main.js');
   });
+
+  it('returns a deterministic error for a direct circular import', () => {
+    const rendered = renderBrowserHtml(
+      {
+        '/main.js': "import './main.js'; console.log('unreachable');",
+      },
+      '/main.js',
+    );
+
+    expect(rendered.error).toEqual({
+      message: 'Circular import detected: /main.js -> /main.js',
+      source: 'runtime',
+      code: 'circular',
+      details: {
+        specifier: '/main.js',
+        fromFile: '/main.js',
+        reason: 'circular',
+      },
+    });
+  });
+
+  it('returns a deterministic error for an indirect circular import', () => {
+    const files = {
+      '/main.js': "import './feature.js'; console.log('main');",
+      '/feature.js': "import './main.js'; console.log('feature');",
+    };
+
+    const first = renderBrowserHtml(files, '/main.js');
+    const second = renderBrowserHtml(files, '/main.js');
+
+    expect(first.error).toEqual({
+      message: 'Circular import detected: /main.js -> /feature.js -> /main.js',
+      source: 'runtime',
+      code: 'circular',
+      details: {
+        specifier: '/main.js',
+        fromFile: '/feature.js',
+        reason: 'circular',
+      },
+    });
+    expect(second.error).toEqual(first.error);
+  });
 });

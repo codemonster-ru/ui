@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, useAttrs, watch, type CSSProperties } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch, type CSSProperties } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import VfBadge from '@/components/badge/VfBadge.vue';
 import VfInput from '@/components/input/VfInput.vue';
 import { cx } from '@/utils/classes';
-import { useDisclosure, useEscapeKey, useFocusTrap } from '@/composables';
+import { useDisclosure, useEscapeKey, useFocusTrap, useId } from '@/composables';
 import { useBreakpoint, useScrollLock } from '@/foundation';
 import { vfMotionDurationsMs } from '@/theme/motion';
 
@@ -68,6 +68,7 @@ const emit = defineEmits<{
 }>();
 
 const attrs = useAttrs();
+const slots = useSlots();
 const contentRef = ref<HTMLElement | null>(null);
 const lastFocusedElement = ref<HTMLElement | null>(null);
 const activeIndex = ref(-1);
@@ -77,6 +78,7 @@ const lastPointerClientX = ref<number | null>(null);
 const lastPointerClientY = ref<number | null>(null);
 const isBelowMd = useBreakpoint('md', { direction: 'max' });
 const uncontrolledQuery = ref(props.defaultValue);
+const listboxId = useId({ prefix: 'vf-command-palette-listbox' });
 
 const disclosure = useDisclosure({
   defaultOpen: props.defaultOpen,
@@ -89,6 +91,10 @@ const disclosure = useDisclosure({
 
 const isOpen = disclosure.isOpen;
 const itemsCount = computed(() => props.items.length);
+const rendersDefaultList = computed(() => !slots.default && !props.loading && itemsCount.value > 0);
+const activeOptionId = computed(() =>
+  rendersDefaultList.value && activeIndex.value >= 0 ? `${listboxId.value}-option-${activeIndex.value}` : undefined,
+);
 
 const isQueryControlled = computed(() => props.modelValue !== undefined);
 const query = computed({
@@ -452,7 +458,13 @@ onBeforeUnmount(() => {
               clearable
               class="vf-command-palette__input"
               :spellcheck="false"
+              role="combobox"
               autocomplete="off"
+              aria-autocomplete="list"
+              :aria-expanded="isOpen"
+              :aria-controls="rendersDefaultList ? listboxId : undefined"
+              :aria-activedescendant="activeOptionId"
+              :aria-busy="loading || undefined"
               @update:model-value="query = $event"
               @keydown="handleInputKeydown"
             />
@@ -474,20 +486,28 @@ onBeforeUnmount(() => {
             />
 
             <template v-else>
-              <p v-if="loading" class="vf-command-palette__status">Loading...</p>
+              <p v-if="loading" class="vf-command-palette__status" role="status" aria-live="polite">Loading...</p>
 
               <ul
                 v-else-if="itemsCount > 0"
+                :id="listboxId"
                 class="vf-command-palette__list"
                 role="listbox"
                 aria-label="Search results"
               >
-                <li v-for="(item, index) in props.items" :key="index" class="vf-command-palette__list-item">
+                <li
+                  v-for="(item, index) in props.items"
+                  :key="index"
+                  class="vf-command-palette__list-item"
+                  role="presentation"
+                >
                   <button
+                    :id="`${listboxId}-option-${index}`"
                     class="vf-command-palette__item"
                     :class="index === activeIndex && 'vf-command-palette__item--active'"
                     type="button"
                     role="option"
+                    tabindex="-1"
                     :aria-selected="index === activeIndex"
                     @mousemove="handleItemPointerMove(index, $event)"
                     @click="handleSelect(item)"
@@ -545,13 +565,13 @@ onBeforeUnmount(() => {
                 </li>
               </ul>
 
-              <div v-else-if="hasQuery" class="vf-command-palette__empty">
+              <div v-else-if="hasQuery" class="vf-command-palette__empty" role="status" aria-live="polite">
                 <slot name="empty" :query="query">
                   {{ emptyText }}
                 </slot>
               </div>
 
-              <p v-else class="vf-command-palette__status">
+              <p v-else class="vf-command-palette__status" role="status" aria-live="polite">
                 {{ idleText }}
               </p>
             </template>

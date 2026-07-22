@@ -17,7 +17,7 @@
 }
 
 .vf-data-table__cell--end {
-  text-align: right;
+  text-align: end;
 }
 
 .vf-data-table__state-cell {
@@ -63,7 +63,7 @@
 }
 
 .vf-data-table__pagination-summary {
-  margin-right: auto;
+  margin-inline-end: auto;
 }
 
 .vf-data-table__page-size,

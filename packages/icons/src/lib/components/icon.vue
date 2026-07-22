@@ -124,6 +124,12 @@ const wrapperStyles = computed(() => {
   animation-timing-function: linear;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .vf-icon-wrapper--spin {
+    animation: none;
+  }
+}
+
 @keyframes vf-icon-spin {
   0% {
     transform: rotate(0deg);

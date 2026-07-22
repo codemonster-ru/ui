@@ -42,6 +42,9 @@ describe('VfCommandPalette', () => {
     expect(dialog?.getAttribute('aria-modal')).toBe('true');
     expect(input).not.toBeNull();
     expect(document.activeElement).toBe(input);
+    expect(input?.getAttribute('role')).toBe('combobox');
+    expect(input?.getAttribute('aria-expanded')).toBe('true');
+    expect(input?.getAttribute('aria-autocomplete')).toBe('list');
   });
 
   it('emits query updates on input', async () => {
@@ -86,6 +89,12 @@ describe('VfCommandPalette', () => {
     expect(input).not.toBeNull();
 
     input?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    await nextTick();
+    const listbox = document.body.querySelector('[role="listbox"]');
+    const activeOption = document.body.querySelector('[role="option"][aria-selected="true"]');
+    expect(input?.getAttribute('aria-controls')).toBe(listbox?.id ?? null);
+    expect(input?.getAttribute('aria-activedescendant')).toBe(activeOption?.id ?? null);
+    expect(activeOption?.getAttribute('tabindex')).toBe('-1');
     input?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
 
     expect(wrapper.emitted('select')?.[0]).toEqual([{ label: 'VfDrawer' }]);

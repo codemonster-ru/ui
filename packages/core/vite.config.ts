@@ -2,7 +2,7 @@ import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';
-import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { inlineCssFiles, inlineCssImports } from './build/css-imports';
 import { buildThemeCssArtifacts, themeCssArtifactPaths } from './build/theme-css-artifacts';
@@ -11,6 +11,7 @@ const rootDir = __dirname;
 const stylesDir = resolve(rootDir, 'src/styles');
 const styleEntriesDir = resolve(stylesDir, 'entries');
 const themeTransitionGuardPath = resolve(stylesDir, 'components/theme-transition-guard.css');
+const accessibilityPreferencesPath = resolve(stylesDir, 'components/accessibility-preferences.css');
 const componentJsEntries = [
   'async',
   'accordion',
@@ -82,7 +83,11 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
         for (const entryName of componentJsEntries) {
           writeFileSync(
             resolve(distDir, `${entryName}.css`),
-            inlineCssFiles([themeTransitionGuardPath, resolve(styleEntriesDir, `${entryName}.css`)]),
+            inlineCssFiles([
+              themeTransitionGuardPath,
+              accessibilityPreferencesPath,
+              resolve(styleEntriesDir, `${entryName}.css`),
+            ]),
           );
         }
 
@@ -102,27 +107,29 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
   ];
 }
 
+function vueforgeCjsArtifactsPlugin(): Plugin {
+  return {
+    name: 'vueforge-remove-cjs-only-css',
+    closeBundle() {
+      const cjsCssPath = resolve(rootDir, 'dist/cjs-ssr.css');
+      if (existsSync(cjsCssPath)) {
+        rmSync(cjsCssPath);
+      }
+    },
+  };
+}
+
 buildThemeCssArtifacts();
 
-export default defineConfig({
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src'),
-    },
-  },
-  plugins: [
-    vue(),
-    ...vueforgeStyleArtifactsPlugin(),
-    dts({
-      include: ['src'],
-      exclude: ['src/**/*.spec.ts', 'src/__tests__/**'],
-      insertTypesEntry: true,
-      aliasesExclude: ['@codemonster-ru/vueforge-theme'],
-    }),
-  ],
-  build: {
-    lib: {
-      entry: {
+export default defineConfig(({ mode }) => {
+  const isCjsBuild = mode === 'cjs';
+  const buildEntries: Record<string, string> = isCjsBuild
+    ? {
+        index: resolve(__dirname, 'src/index.ts'),
+        'foundation-api': resolve(__dirname, 'src/foundation/index.ts'),
+        'theme-api': resolve(__dirname, 'src/theme/public.ts'),
+      }
+    : {
         index: resolve(__dirname, 'src/index.ts'),
         'foundation-api': resolve(__dirname, 'src/foundation/index.ts'),
         'theme-api': resolve(__dirname, 'src/theme/public.ts'),
@@ -165,30 +172,55 @@ export default defineConfig({
         textarea: resolve(__dirname, 'src/entries/textarea.ts'),
         'theme-switch': resolve(__dirname, 'src/entries/theme-switch.ts'),
         tooltip: resolve(__dirname, 'src/entries/tooltip.ts'),
-      },
-      name: 'VueforgeCore',
-      cssFileName: 'styles',
-      fileName: (_format, entryName) => `${entryName === 'index' ? 'vueforge-core' : entryName}.js`,
-      formats: ['es'],
-    },
-    rollupOptions: {
-      external: [
-        'vue',
-        '@codemonster-ru/vueforge-icons',
-        '@codemonster-ru/floater.js',
-        '@codemonster-ru/vueforge-theme',
-      ],
-      output: {},
-    },
-  },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: './src/__tests__/setup.ts',
-    server: {
-      deps: {
-        inline: ['@codemonster-ru/vueforge-icons'],
+      };
+
+  return {
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, 'src'),
+        ...(isCjsBuild ? { '@codemonster-ru/vueforge-theme': resolve(__dirname, '../theme/src/index.ts') } : {}),
       },
     },
-  },
+    plugins: [
+      vue(),
+      ...(isCjsBuild
+        ? [vueforgeCjsArtifactsPlugin()]
+        : [
+            ...vueforgeStyleArtifactsPlugin(),
+            dts({
+              include: ['src'],
+              exclude: ['src/**/*.spec.ts', 'src/__tests__/**'],
+              insertTypesEntry: true,
+              aliasesExclude: ['@codemonster-ru/vueforge-theme'],
+            }),
+          ]),
+    ],
+    build: {
+      emptyOutDir: !isCjsBuild,
+      lib: {
+        entry: buildEntries,
+        name: 'VueforgeCore',
+        cssFileName: isCjsBuild ? 'cjs-ssr' : 'styles',
+        fileName: (_format, entryName) =>
+          `${entryName === 'index' ? 'vueforge-core' : entryName}.${isCjsBuild ? 'cjs' : 'js'}`,
+        formats: [isCjsBuild ? 'cjs' : 'es'],
+      },
+      rollupOptions: {
+        external: isCjsBuild
+          ? ['vue', '@codemonster-ru/vueforge-icons', '@codemonster-ru/floater.js']
+          : ['vue', '@codemonster-ru/vueforge-icons', '@codemonster-ru/floater.js', '@codemonster-ru/vueforge-theme'],
+        output: isCjsBuild ? { exports: 'named' } : {},
+      },
+    },
+    test: {
+      environment: 'jsdom',
+      globals: true,
+      setupFiles: './src/__tests__/setup.ts',
+      server: {
+        deps: {
+          inline: ['@codemonster-ru/vueforge-icons'],
+        },
+      },
+    },
+  };
 });

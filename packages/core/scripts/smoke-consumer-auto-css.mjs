@@ -176,7 +176,16 @@ import {
   type VfPrimitiveColorTokens,
   type VfSemanticColorTokenName,
   type VfSemanticColorTokens,
+  type VfLinkUnderline,
+  type VfSwitchThumbContrast,
   type VfThemeTokens,
+  type UseClickOutsideOptions,
+  type UseDisclosureOptions,
+  type UseEscapeKeyOptions,
+  type UseFloatingOptions,
+  type UseFocusTrapOptions,
+  type UseIdOptions,
+  type UseTableOfContentsOptions,
 } from '@codemonster-ru/vueforge-core';
 import {
   vfPrimitiveColorTokenNames as primitiveNamesFromThemeEntry,
@@ -195,6 +204,17 @@ const primitiveTokensAreOptional: PrimitiveTokensStayOptional = true;
 const semanticTokensAreOptional: SemanticTokensStayOptional = true;
 const overrides: Partial<VfThemeTokens> = { ...primitiveTokens, ...semanticTokens };
 const presetName = defaultThemePreset.name;
+const linkUnderline: VfLinkUnderline = 'hover';
+const switchThumbContrast: VfSwitchThumbContrast = 'inverse';
+const composableOptions: [
+  UseClickOutsideOptions,
+  UseDisclosureOptions,
+  UseEscapeKeyOptions,
+  UseFloatingOptions,
+  UseFocusTrapOptions,
+  UseIdOptions,
+  UseTableOfContentsOptions,
+] = [{ event: 'click' }, { defaultOpen: true }, {}, {}, {}, { prefix: 'consumer' }, { items: [] }];
 
 const invalidOverrides: Partial<VfThemeTokens> = {
   // @ts-expect-error unknown token names must remain rejected
@@ -213,6 +233,9 @@ console.log(
   overrides,
   invalidOverrides,
   presetName,
+  linkUnderline,
+  switchThumbContrast,
+  composableOptions,
 );
 `.trimStart(),
   );

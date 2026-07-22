@@ -247,6 +247,9 @@ describe('core theme contract', () => {
     expect(themeCss.match(/--vf-color-bg: var\(--vf-palette-neutral-50\);/g)).toHaveLength(1);
     expect(themeCss.match(/--vf-color-bg: var\(--vf-palette-neutral-900\);/g)).toHaveLength(2);
     expect(themeCss.match(/--vf-z-overlay: 1000;/g)).toHaveLength(3);
+    expect(themeCss.match(/--vf-z-dropdown: 1100;/g)).toHaveLength(3);
+    expect(themeCss.match(/--vf-z-popover: 1125;/g)).toHaveLength(3);
+    expect(themeCss.match(/--vf-z-tooltip: 1150;/g)).toHaveLength(3);
     expect(extractCssRule(themeCss, scopedLightSelector)).toContain('color-scheme: light;');
     expect(extractCssRule(themeCss, scopedDarkSelector)).toContain('color-scheme: dark;');
     expect(extractCssRule(themeCss, scopedLightSelector)).toContain(

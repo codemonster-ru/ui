@@ -73,6 +73,27 @@ try {
   if (!viewTypes.includes('setCodeBlockThemeVars')) {
     throw new Error('Broken view API: setCodeBlockThemeVars is missing from the published declaration entry.');
   }
+  if (!viewTypes.includes('CodeBlockHighlightOptions') || !viewTypes.includes('CodeBlockFallbackLanguage')) {
+    throw new Error('Broken view API: public highlight option types are missing from the declaration entry.');
+  }
+
+  const highlightTypesTarget = packageJson.exports?.['./highlight']?.import?.types;
+  if (typeof highlightTypesTarget !== 'string') {
+    throw new Error('Expected exports["./highlight"].import.types to resolve a declaration artifact.');
+  }
+  const highlightTypes = readFileSync(join(tempDir, 'package', highlightTypesTarget.replace(/^\.\//, '')), 'utf8');
+  for (const exportName of [
+    'highlightCodeBlock',
+    'highlightCodeLine',
+    'highlightCodeLines',
+    'preloadCodeBlockLanguages',
+    'CodeBlockHighlightOptions',
+    'CodeBlockFallbackLanguage',
+  ]) {
+    if (!highlightTypes.includes(exportName)) {
+      throw new Error(`Broken highlight API: ${exportName} is missing from the published declaration entry.`);
+    }
+  }
 
   const cssEntries = tarEntries.filter((entry) => entry.startsWith('package/dist/') && entry.endsWith('.css'));
   for (const cssEntry of cssEntries) {

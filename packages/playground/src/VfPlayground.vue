@@ -23,28 +23,66 @@
         <component :is="actionsRenderer" v-if="actionsRenderer && isSandboxMode" v-bind="actionsRendererProps" />
       </div>
 
-      <div v-if="activeTab === 'code' && isCodeVisible" class="vf-playground__panel vf-playground__panel--code">
-        <component :is="filesRenderer" v-if="filesRenderer && fileNames.length > 1" v-bind="filesRendererProps" />
-        <div v-else-if="fileNames.length > 1" class="vf-playground__files">
-          <VfTabs
-            class="vf-playground__tabs-default vf-playground__tabs-default--files"
-            size="sm"
-            :items="defaultFileTabItems"
-            :model-value="activeFile"
-            @update:model-value="handleDefaultFileChange"
-          />
-        </div>
-        <div class="vf-playground__codeblock-host">
-          <VfCodeBlock
-            :code="activeFileContent"
-            :language="codeLanguage"
-            :show-line-numbers="true"
-            :theme="resolvedCodeTheme"
-          />
-        </div>
+      <div
+        v-if="isCodeVisible"
+        v-show="activeTab === 'code'"
+        :id="tabsRenderer ? undefined : mainPanelId('code')"
+        class="vf-playground__panel vf-playground__panel--code"
+        :aria-labelledby="tabsRenderer ? undefined : mainTabId('code')"
+        :role="tabsRenderer ? undefined : 'tabpanel'"
+        :tabindex="tabsRenderer ? undefined : 0"
+      >
+        <template v-if="activeTab === 'code'">
+          <component :is="filesRenderer" v-if="filesRenderer && fileNames.length > 1" v-bind="filesRendererProps" />
+          <div v-else-if="fileNames.length > 1" class="vf-playground__files">
+            <VfTabs
+              class="vf-playground__tabs-default vf-playground__tabs-default--files"
+              size="sm"
+              :items="defaultFileTabItems"
+              :model-value="activeFile"
+              @update:model-value="handleDefaultFileChange"
+            />
+          </div>
+
+          <template v-if="!filesRenderer && fileNames.length > 1">
+            <div
+              v-for="(file, index) in fileNames"
+              v-show="file === activeFile"
+              :id="filePanelId(index)"
+              :key="file"
+              class="vf-playground__codeblock-host"
+              :aria-labelledby="fileTabId(index)"
+              role="tabpanel"
+              tabindex="0"
+            >
+              <VfCodeBlock
+                v-if="file === activeFile"
+                :code="activeFileContent"
+                :language="codeLanguage"
+                :show-line-numbers="true"
+                :theme="resolvedCodeTheme"
+              />
+            </div>
+          </template>
+          <div v-else class="vf-playground__codeblock-host">
+            <VfCodeBlock
+              :code="activeFileContent"
+              :language="codeLanguage"
+              :show-line-numbers="true"
+              :theme="resolvedCodeTheme"
+            />
+          </div>
+        </template>
       </div>
 
-      <div v-show="activeTab === 'preview'" class="vf-playground__panel preview">
+      <div
+        v-show="activeTab === 'preview'"
+        :id="tabsRenderer ? undefined : mainPanelId('preview')"
+        class="vf-playground__panel preview"
+        :aria-labelledby="tabsRenderer ? undefined : mainTabId('preview')"
+        :role="tabsRenderer ? undefined : 'tabpanel'"
+        :tabindex="tabsRenderer ? undefined : 0"
+      >
         <iframe
           v-if="isSandboxMode"
           :ref="bindPreviewIframe"
@@ -59,8 +97,16 @@
         </p>
       </div>
 
-      <div v-if="isSandboxMode && activeTab === 'console'" class="vf-playground__panel">
-        <pre class="vf-playground__console">{{ consoleOutput || 'No logs yet.' }}</pre>
+      <div
+        v-if="isSandboxMode"
+        v-show="activeTab === 'console'"
+        :id="tabsRenderer ? undefined : mainPanelId('console')"
+        class="vf-playground__panel"
+        :aria-labelledby="tabsRenderer ? undefined : mainTabId('console')"
+        :role="tabsRenderer ? undefined : 'tabpanel'"
+        :tabindex="tabsRenderer ? undefined : 0"
+      >
+        <pre v-if="activeTab === 'console'" class="vf-playground__console">{{ consoleOutput || 'No logs yet.' }}</pre>
       </div>
     </slot>
   </div>
@@ -68,7 +114,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, type ComponentPublicInstance } from 'vue';
-import { VfTabs, type VfTabItem } from '@codemonster-ru/vueforge-core';
+import { VfTabs, useId, type VfTabItem } from '@codemonster-ru/vueforge-core';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 import type {
   ConsoleEvent,
@@ -141,9 +187,11 @@ type PlaygroundTab = 'code' | 'preview' | 'console';
 type CreatePlaygroundSession = typeof createPlaygroundSessionFactory;
 type PlaygroundSession = ReturnType<CreatePlaygroundSession>;
 
-const isClient = typeof window !== 'undefined';
+const isClient = ref(false);
 const rootElement = ref<HTMLElement | null>(null);
 const iframeRef = ref<HTMLIFrameElement | null>(null);
+const mainTabsId = useId({ prefix: 'vf-playground-tabs' });
+const fileTabsId = useId({ prefix: 'vf-playground-files' });
 const isSandboxMode = computed(() => props.mode !== 'component');
 const sandboxProps = computed(() => (isSandboxMode.value ? (props as VfPlaygroundSandboxProps) : null));
 const componentProps = computed(() => (isSandboxMode.value ? null : (props as VfPlaygroundComponentProps)));
@@ -160,6 +208,8 @@ const activeFile = ref(isSandboxMode.value ? (sandboxProps.value?.entry ?? '') :
 const logs = ref<string[]>([]);
 const isRunning = ref(false);
 const hostIsDark = ref(false);
+const MAX_CONSOLE_ENTRIES = 500;
+const MAX_CONSOLE_ENTRY_LENGTH = 16_384;
 
 if (import.meta.env.DEV && !isSandboxMode.value && !componentProps.value?.component) {
   throw new Error('[VfPlayground] `component` is required when `mode` is "component".');
@@ -234,6 +284,10 @@ const componentPreviewStyle = computed(() => ({
     ? { minHeight: toCssLength(componentProps.value.componentMinHeight) }
     : {}),
 }));
+const mainTabId = (tab: PlaygroundTab) => `${mainTabsId.value}-tab-${tab}`;
+const mainPanelId = (tab: PlaygroundTab) => `${mainTabsId.value}-panel-${tab}`;
+const fileTabId = (index: number) => `${fileTabsId.value}-tab-${index}`;
+const filePanelId = (index: number) => `${fileTabsId.value}-panel-${index}`;
 const tabsRendererProps = computed(() => ({
   activeTab: activeTab.value,
   showCode: isCodeVisible.value,
@@ -241,26 +295,51 @@ const tabsRendererProps = computed(() => ({
 }));
 const defaultTabItems = computed<VfTabItem[]>(() => {
   if (!isSandboxMode.value) {
-    const tabs: VfTabItem[] = [{ value: 'preview', label: 'Preview' }];
+    const tabs: VfTabItem[] = [
+      {
+        value: 'preview',
+        label: 'Preview',
+        tabId: mainTabId('preview'),
+        panelId: mainPanelId('preview'),
+      },
+    ];
     if (isCodeVisible.value) {
-      return [{ value: 'code', label: 'Code' }, ...tabs];
+      return [
+        { value: 'code', label: 'Code', tabId: mainTabId('code'), panelId: mainPanelId('code') },
+        ...tabs,
+      ];
     }
     return tabs;
   }
 
   const tabs: VfTabItem[] = [
-    { value: 'preview', label: 'Preview' },
-    { value: 'console', label: 'Console' },
+    {
+      value: 'preview',
+      label: 'Preview',
+      tabId: mainTabId('preview'),
+      panelId: mainPanelId('preview'),
+    },
+    {
+      value: 'console',
+      label: 'Console',
+      tabId: mainTabId('console'),
+      panelId: mainPanelId('console'),
+    },
   ];
   if (isCodeVisible.value) {
-    return [{ value: 'code', label: 'Code' }, ...tabs];
+    return [
+      { value: 'code', label: 'Code', tabId: mainTabId('code'), panelId: mainPanelId('code') },
+      ...tabs,
+    ];
   }
   return tabs;
 });
 const defaultFileTabItems = computed<VfTabItem[]>(() =>
-  fileNames.value.map((file) => ({
+  fileNames.value.map((file, index) => ({
     value: file,
     label: file,
+    tabId: fileTabId(index),
+    panelId: filePanelId(index),
   })),
 );
 const actionsRendererProps = computed(() => ({
@@ -285,7 +364,7 @@ const layoutSlotProps = computed(() => ({
   consoleOutput: consoleOutput.value,
   isRunning: isRunning.value,
   run: runSession,
-  isClient,
+  isClient: isClient.value,
   bindPreviewIframe,
 }));
 
@@ -636,7 +715,7 @@ function appendConsole(event: ConsoleEvent): void {
     }
   });
 
-  logs.value.push(`[${event.level}] ${serialized.join(' ')}`);
+  appendLog(`[${event.level}] ${serialized.join(' ')}`);
 }
 
 function appendError(error: PlaygroundError): void {
@@ -647,12 +726,27 @@ function appendError(error: PlaygroundError): void {
   if (error.stack) {
     chunks.push(error.stack);
   }
-  logs.value.push(chunks.join('\n'));
+  appendLog(chunks.join('\n'));
   activeTab.value = 'console';
   emit('error', error);
 }
 
+function appendLog(entry: string): void {
+  const boundedEntry =
+    entry.length > MAX_CONSOLE_ENTRY_LENGTH ? `${entry.slice(0, MAX_CONSOLE_ENTRY_LENGTH)}…` : entry;
+  logs.value.push(boundedEntry);
+
+  const overflow = logs.value.length - MAX_CONSOLE_ENTRIES;
+  if (overflow > 0) {
+    logs.value.splice(0, overflow);
+  }
+}
+
 function initSession(forceRecreate = false): Promise<void> {
+  if (!isSandboxMode.value || !isClient.value || !iframeRef.value) {
+    return Promise.resolve();
+  }
+
   if (initSessionPromise && !forceRecreate) {
     return initSessionPromise;
   }
@@ -668,7 +762,7 @@ function initSession(forceRecreate = false): Promise<void> {
 }
 
 async function initSessionInternal(forceRecreate: boolean, requestId: number): Promise<void> {
-  if (!isSandboxMode.value || !isClient || !iframeRef.value) {
+  if (!isSandboxMode.value || !isClient.value || !iframeRef.value) {
     return;
   }
 
@@ -749,6 +843,7 @@ async function runSession(options?: { keepActiveTab?: boolean }): Promise<void> 
 }
 
 onMounted(async () => {
+  isClient.value = true;
   syncHostTheme();
   if (typeof window !== 'undefined') {
     themeObserver = new MutationObserver((records) => {

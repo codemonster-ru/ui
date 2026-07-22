@@ -36,11 +36,14 @@ try {
   });
 
   const uiTarget = packageJson.exports['./ui']?.import;
+  const uiTypesTarget = packageJson.exports['./ui']?.types;
   const runtimeTarget = packageJson.exports['./runtime']?.import;
-  if (typeof uiTarget !== 'string' || typeof runtimeTarget !== 'string') {
+  if (typeof uiTarget !== 'string' || typeof uiTypesTarget !== 'string' || typeof runtimeTarget !== 'string') {
     throw new Error('Consumer smoke failed: invalid ./ui or ./runtime export target.');
   }
   const uiJs = readFileSync(join(tempDir, 'package', uiTarget.replace(/^\.\//, '')), 'utf8');
+  const uiTypes = readFileSync(join(tempDir, 'package', uiTypesTarget.replace(/^\.\//, '')), 'utf8');
+  const indexTypes = readFileSync(join(tempDir, 'package', 'dist/index.d.ts'), 'utf8');
   const runtimeJs = readFileSync(join(tempDir, 'package', runtimeTarget.replace(/^\.\//, '')), 'utf8');
 
   if (!uiJs.includes('.css')) {
@@ -51,7 +54,25 @@ try {
     throw new Error('Consumer smoke failed: ./runtime export target unexpectedly references CSS import.');
   }
 
-  console.log('Consumer smoke passed: /ui references CSS, while /runtime is CSS-free.');
+  if (!uiTypes.includes("export * from './index'")) {
+    throw new Error('Consumer smoke failed: ./ui declarations do not re-export the public index.');
+  }
+
+  const publicPropTypes = [
+    'VfPlaygroundComponentProps',
+    'VfPlaygroundHeightMode',
+    'VfPlaygroundProps',
+    'VfPlaygroundSandboxProps',
+    'VfPlaygroundSharedProps',
+    'VfPlaygroundTab',
+  ];
+  for (const typeName of publicPropTypes) {
+    if (!indexTypes.includes(typeName)) {
+      throw new Error(`Consumer smoke failed: ./ui declarations do not export ${typeName}.`);
+    }
+  }
+
+  console.log('Consumer smoke passed: /ui references CSS and public prop types, while /runtime is CSS-free.');
 } finally {
   rmSync(tempDir, { recursive: true, force: true });
   const tarballName = `${packageJson.name.replace('@', '').replace('/', '-')}-${packageJson.version}.tgz`;

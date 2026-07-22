@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted, toValue, type MaybeRefOrGetter, type Ref } from 'vue';
 
-interface UseClickOutsideOptions {
+export interface UseClickOutsideOptions {
   enabled?: MaybeRefOrGetter<boolean>;
   event?: keyof DocumentEventMap;
 }

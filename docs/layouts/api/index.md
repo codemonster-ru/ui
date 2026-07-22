@@ -64,6 +64,7 @@ The following items are listed in this section:
 
 - `VfAppShell`
 - `VfAdminLayout`
+- `VfAdminShell`
 - `VfDocumentLayout`
 - `VfAuthLayout`
 - `VfErrorLayout`
@@ -132,6 +133,7 @@ import VfContentArea from '@codemonster-ru/vueforge-layouts/content-area';
 The following items are listed in this section:
 
 - `@codemonster-ru/vueforge-layouts/base.css`
+- `@codemonster-ru/vueforge-layouts/breakpoints.css`
 - `@codemonster-ru/vueforge-layouts/tokens.css`
 - `@codemonster-ru/vueforge-layouts/theme.css`
 

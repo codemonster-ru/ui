@@ -20,6 +20,9 @@ interface VfDialogProps {
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
   closable?: boolean;
+  ariaLabel?: string;
+  ariaLabelledby?: string;
+  ariaDescribedby?: string;
 }
 
 const props = withDefaults(defineProps<VfDialogProps>(), {
@@ -34,6 +37,9 @@ const props = withDefaults(defineProps<VfDialogProps>(), {
   closeOnOverlayClick: true,
   closeOnEscape: true,
   closable: true,
+  ariaLabel: undefined,
+  ariaLabelledby: undefined,
+  ariaDescribedby: undefined,
 });
 
 const emit = defineEmits<{
@@ -86,9 +92,11 @@ const dialogClasses = computed(() =>
 
 const hasHeaderSlot = computed(() => Boolean(dialogSlots.header));
 const hasDescriptionSlot = computed(() => Boolean(dialogSlots.description));
-const labelledBy = computed<string | undefined>(() => (props.title || hasHeaderSlot.value ? titleId.value : undefined));
+const labelledBy = computed<string | undefined>(() =>
+  props.ariaLabelledby ?? (!props.ariaLabel && (props.title || hasHeaderSlot.value) ? titleId.value : undefined),
+);
 const describedBy = computed<string | undefined>(() =>
-  props.description || hasDescriptionSlot.value ? descriptionId.value : undefined,
+  props.ariaDescribedby ?? (props.description || hasDescriptionSlot.value ? descriptionId.value : undefined),
 );
 
 function close() {
@@ -175,6 +183,7 @@ onBeforeUnmount(() => {
         <section
           ref="contentRef"
           :class="dialogClasses"
+          :aria-label="props.ariaLabel"
           :aria-describedby="describedBy"
           :aria-labelledby="labelledBy"
           aria-modal="true"
@@ -183,17 +192,23 @@ onBeforeUnmount(() => {
         >
           <header v-if="title || description || $slots.header || $slots.description" class="vf-dialog__header">
             <div>
-              <slot name="header">
+              <div v-if="hasHeaderSlot" :id="titleId">
+                <slot name="header" :title-id="titleId" />
+              </div>
+              <template v-else>
                 <h2 v-if="title" :id="titleId" class="vf-dialog__title">
                   {{ title }}
                 </h2>
-              </slot>
+              </template>
 
-              <slot name="description">
+              <div v-if="hasDescriptionSlot" :id="descriptionId">
+                <slot name="description" :description-id="descriptionId" />
+              </div>
+              <template v-else>
                 <p v-if="description" :id="descriptionId" class="vf-dialog__description">
                   {{ description }}
                 </p>
-              </slot>
+              </template>
             </div>
 
             <div class="vf-dialog__actions">

@@ -10,7 +10,7 @@
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
   color: var(--vf-table-of-contents-color);
-  text-align: left;
+  text-align: start;
   text-decoration: none;
   overflow-wrap: anywhere;
   cursor: pointer;
@@ -88,7 +88,7 @@
 .vf-table-of-contents__item {
   display: block;
   min-width: 0;
-  padding-left: calc((var(--vf-toc-level) - 1) * var(--vf-table-of-contents-level-step));
+  padding-inline-start: calc((var(--vf-toc-level) - 1) * var(--vf-table-of-contents-level-step));
 }
 
 .vf-table-of-contents:not(.vf-table-of-contents--ready) .vf-table-of-contents__link {

@@ -7,14 +7,14 @@ import {
 } from '@codemonster-ru/floater.js';
 import { computed, nextTick, onBeforeUnmount, ref, toValue, watch, type MaybeRefOrGetter, type Ref } from 'vue';
 
-interface UseFloatingOptions {
+export interface UseFloatingOptions {
   enabled?: MaybeRefOrGetter<boolean>;
   placement?: MaybeRefOrGetter<PlacementType>;
   middleware?: MaybeRefOrGetter<MiddlewareType[] | undefined>;
   strategy?: MaybeRefOrGetter<StrategyType | undefined>;
 }
 
-interface FloatingMiddlewareData {
+export interface FloatingMiddlewareData {
   [key: string]: unknown;
 }
 

@@ -1,6 +1,6 @@
 import { computed, ref, watch, type MaybeRefOrGetter, toValue } from 'vue';
 
-interface UseDisclosureOptions {
+export interface UseDisclosureOptions {
   defaultOpen?: boolean;
   open?: MaybeRefOrGetter<boolean | undefined>;
   onOpenChange?: (open: boolean) => void;

@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, vi } from 'vitest';
+import { enableAutoUnmount } from '@vue/test-utils';
 import { buildThemeCssArtifacts } from '../../build/theme-css-artifacts';
 
 buildThemeCssArtifacts();
+enableAutoUnmount(afterEach);
 
 vi.mock('@codemonster-ru/vueforge-icons', () => ({
   VueIconify: {

@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import VfMenuBarItemNode from './VfMenuBarItemNode.vue';
 import VfHorizontalScroller from '@/components/internal/VfHorizontalScroller.vue';
 import { useClickOutside, useEscapeKey } from '@/composables';
+import { useFocusScopeBranch } from '@/composables/useFocusTrap';
 import type { VfNavMenuItem } from '@/types/components';
 
 interface VfMenuBarProps {
@@ -33,6 +34,9 @@ const internalValue = ref(props.defaultValue);
 const openPath = ref<string[]>([]);
 const tabbableValue = ref(getFocusableItems(props.items)[0]?.value);
 const activeValue = computed(() => props.modelValue ?? internalValue.value);
+const hasOpenMenu = computed(() => openPath.value.length > 0);
+
+useFocusScopeBranch(overlayRef, hasOpenMenu);
 let closeMenuTimer: ReturnType<typeof setTimeout> | undefined;
 
 interface MenuItemContext {
@@ -222,6 +226,12 @@ function handleKeydown(event: KeyboardEvent) {
 
   const parent = getFocusableParent(context);
   const isTopLevel = !parent;
+  const directionHost = target.closest('[dir]');
+  const isRtl =
+    directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' ||
+    (!directionHost && document.documentElement.getAttribute('dir')?.toLowerCase() === 'rtl');
+  const openSubmenuKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
+  const closeSubmenuKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
 
   if (event.key === 'Tab') {
     const topLevelValue = getTopLevelContext(context).item.value;
@@ -258,20 +268,20 @@ function handleKeydown(event: KeyboardEvent) {
     return;
   }
 
-  if (event.key === 'ArrowRight') {
+  if (event.key === openSubmenuKey) {
     event.preventDefault();
     if (!isTopLevel && isBranch(context.item)) {
       openAndFocusChild(context);
     } else {
-      moveToTopLevel(context, 1);
+      moveToTopLevel(context, isRtl ? -1 : 1);
     }
     return;
   }
 
-  if (event.key === 'ArrowLeft') {
+  if (event.key === closeSubmenuKey) {
     event.preventDefault();
     if (isTopLevel) {
-      moveToTopLevel(context, -1);
+      moveToTopLevel(context, isRtl ? 1 : -1);
     } else {
       closeAndFocusParent(context);
     }

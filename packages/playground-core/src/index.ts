@@ -3,11 +3,69 @@ import { renderBrowserHtml, runInIframe } from './runtimes/browserRuntime';
 import type {
   ConsoleEvent,
   CreatePlaygroundSessionOptions,
+  ImportResolutionErrorCode,
   PlaygroundError,
   PlaygroundFiles,
   PlaygroundSession,
   RunEvent
 } from './types';
+
+const consoleLevels = new Set<ConsoleEvent['level']>(['log', 'warn', 'error', 'info', 'debug']);
+const errorSources = new Set<NonNullable<PlaygroundError['source']>>(['runtime', 'transport', 'internal']);
+const errorCodes = new Set<ImportResolutionErrorCode>(['unresolved', 'blocked', 'mime', 'circular']);
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isConsoleEvent(value: unknown): value is ConsoleEvent {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.level === 'string' &&
+    consoleLevels.has(value.level as ConsoleEvent['level']) &&
+    Array.isArray(value.args) &&
+    typeof value.timestamp === 'number' &&
+    Number.isFinite(value.timestamp)
+  );
+}
+
+function isPlaygroundError(value: unknown): value is PlaygroundError {
+  if (!isRecord(value) || typeof value.message !== 'string') {
+    return false;
+  }
+
+  if (value.stack !== undefined && typeof value.stack !== 'string') {
+    return false;
+  }
+  if (
+    value.source !== undefined &&
+    (typeof value.source !== 'string' || !errorSources.has(value.source as NonNullable<PlaygroundError['source']>))
+  ) {
+    return false;
+  }
+  if (
+    value.code !== undefined &&
+    (typeof value.code !== 'string' || !errorCodes.has(value.code as ImportResolutionErrorCode))
+  ) {
+    return false;
+  }
+  if (value.details === undefined) {
+    return true;
+  }
+  if (!isRecord(value.details)) {
+    return false;
+  }
+
+  return (
+    (value.details.specifier === undefined || typeof value.details.specifier === 'string') &&
+    (value.details.fromFile === undefined || typeof value.details.fromFile === 'string') &&
+    (value.details.reason === undefined ||
+      (typeof value.details.reason === 'string' && errorCodes.has(value.details.reason as ImportResolutionErrorCode)))
+  );
+}
 
 export type {
   ConsoleEvent,
@@ -36,18 +94,23 @@ export function createPlaygroundSession(options: CreatePlaygroundSessionOptions)
   const runtime = options.runtime ?? 'browser';
 
   const onMessage = (event: MessageEvent) => {
+    const iframeWindow = options.iframe?.contentWindow;
+    if (!iframeWindow || event.source !== iframeWindow) {
+      return;
+    }
+
     const payload = event.data;
-    if (!payload || payload.__cm_playground !== true) {
+    if (!isRecord(payload) || payload.__cm_playground !== true) {
       return;
     }
 
-    if (payload.type === 'console') {
-      consoleEmitter.emit(payload.payload as ConsoleEvent);
+    if (payload.type === 'console' && isConsoleEvent(payload.payload)) {
+      consoleEmitter.emit(payload.payload);
       return;
     }
 
-    if (payload.type === 'error') {
-      errorEmitter.emit(payload.payload as PlaygroundError);
+    if (payload.type === 'error' && isPlaygroundError(payload.payload)) {
+      errorEmitter.emit(payload.payload);
     }
   };
 

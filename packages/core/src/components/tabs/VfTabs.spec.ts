@@ -1,6 +1,6 @@
 import { defineComponent, h, nextTick, ref } from 'vue';
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import VfTabs from './VfTabs.vue';
 
 const items = [
@@ -58,6 +58,17 @@ describe('VfTabs', () => {
     expect(wrapper.get('[role="tab"][aria-selected="true"]').text()).toBe('Overview');
   });
 
+  it('mirrors horizontal tab navigation in rtl', async () => {
+    const wrapper = mount(VfTabs, {
+      attrs: { dir: 'rtl' },
+      props: { items, defaultValue: 'overview' },
+    });
+
+    await wrapper.findAll('[role="tab"]')[0].trigger('keydown', { key: 'ArrowLeft' });
+    await nextTick();
+    expect(wrapper.get('[role="tab"][aria-selected="true"]').text()).toBe('Settings');
+  });
+
   it('supports controlled mode through v-model updates', async () => {
     const wrapper = mount(
       defineComponent({
@@ -103,6 +114,26 @@ describe('VfTabs', () => {
     });
 
     expect(wrapper.find('[role="tabpanel"]').exists()).toBe(false);
+    expect(wrapper.get('[role="tab"]').attributes('aria-controls')).toBeUndefined();
+  });
+
+  it('supports stable ids for externally rendered panels', () => {
+    const wrapper = mount(VfTabs, {
+      props: {
+        items: [
+          {
+            value: 'preview',
+            label: 'Preview',
+            tabId: 'playground-preview-tab',
+            panelId: 'playground-preview-panel',
+          },
+        ],
+      },
+    });
+
+    const tab = wrapper.get('[role="tab"]');
+    expect(tab.attributes('id')).toBe('playground-preview-tab');
+    expect(tab.attributes('aria-controls')).toBe('playground-preview-panel');
   });
 
   it('renders a moving indicator for the active tab', async () => {
@@ -199,5 +230,62 @@ describe('VfTabs', () => {
     list.scrollLeft = 40;
     await wrapper.get('.vf-tabs__list-scroller').trigger('scroll');
     expect(wrapper.get('.vf-tabs__scroll-button--left').classes('vf-tabs__scroll-button--hidden')).toBe(false);
+  });
+
+  it('disables smooth scrolling when reduced motion is requested', async () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockReturnValue({
+        matches: true,
+        media: '(prefers-reduced-motion: reduce)',
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
+    );
+
+    const wrapper = mount(VfTabs, {
+      props: {
+        items: [...items, { value: 'docs', label: 'Docs' }],
+      },
+    });
+    const list = wrapper.get('.vf-tabs__list-scroller').element as HTMLElement;
+    const scrollTo = vi.fn();
+    Object.defineProperties(list, {
+      clientWidth: { configurable: true, value: 120 },
+      scrollWidth: { configurable: true, value: 480 },
+      scrollLeft: { configurable: true, writable: true, value: 0 },
+      scrollTo: { configurable: true, value: scrollTo },
+    });
+
+    await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    await wrapper.get('.vf-tabs__list-scroller').trigger('scroll');
+    await wrapper.get('.vf-tabs__scroll-button--right').trigger('click');
+
+    expect(scrollTo).toHaveBeenCalledWith({ left: 120, behavior: 'auto' });
+  });
+
+  it('mirrors horizontal overflow controls in rtl', async () => {
+    const wrapper = mount(VfTabs, {
+      attrs: { dir: 'rtl' },
+      props: {
+        items: [...items, { value: 'docs', label: 'Docs' }],
+      },
+    });
+    const list = wrapper.get('.vf-tabs__list-scroller').element as HTMLElement;
+    list.style.direction = 'rtl';
+    Object.defineProperties(list, {
+      clientWidth: { configurable: true, value: 120 },
+      scrollWidth: { configurable: true, value: 480 },
+      scrollLeft: { configurable: true, writable: true, value: 0 },
+    });
+
+    await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    await wrapper.get('.vf-tabs__list-scroller').trigger('scroll');
+    expect(wrapper.get('.vf-tabs__scroll-button--left').attributes('disabled')).toBeUndefined();
+    expect(wrapper.get('.vf-tabs__scroll-button--right').attributes('disabled')).toBeDefined();
+
+    list.scrollLeft = -40;
+    await wrapper.get('.vf-tabs__list-scroller').trigger('scroll');
+    expect(wrapper.get('.vf-tabs__scroll-button--right').attributes('disabled')).toBeUndefined();
   });
 });

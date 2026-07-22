@@ -13,9 +13,19 @@ Component props and their default values.
 | `title?` | `string` | — | Text title shown in the component header area. |
 | `size?` | `VfDrawerSize` | `md` | Size token for spacing and dimensions. |
 | `placement?` | `VfDrawerPlacement` | `right` | Controls floating panel placement relative to trigger. |
+| `dividers?` | `boolean` | `false` | Shows separators between header/body/footer regions. |
+| `rounded?` | `boolean` | `false` | Enables rounded outer corners. |
+| `offsetTop?` | `string \| number` | — | Sets the shell-oriented top offset CSS variable. |
+| `bodyPadding?` | `string \| number` | — | Overrides body padding through the component CSS variable. |
+| `teleportTo?` | `string \| HTMLElement \| null \| false` | — | Teleport target; `null`/`false` disables teleport resolution. |
+| `disableTeleport?` | `boolean` | `false` | Forces in-place rendering. |
+| `scrollLockTarget?` | `HTMLElement \| null \| false` | — | Custom lock target; `false` explicitly disables scroll locking. |
 | `closeOnOverlayClick?` | `boolean` | `true` | Closes component when overlay/backdrop is clicked. |
 | `closeOnEscape?` | `boolean` | `true` | Closes component when `Escape` key is pressed. |
 | `closable?` | `boolean` | `true` | Shows close control and allows explicit dismiss action. |
+| `ariaLabel?` | `string` | — | Explicit accessible name; takes precedence over the generated title relationship. |
+| `ariaLabelledby?` | `string` | — | Explicit ID reference for the accessible name. |
+| `ariaDescribedby?` | `string` | — | Explicit ID reference for the accessible description. |
 
 ## Emits
 
@@ -32,7 +42,7 @@ Available slots and their slot props.
 
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
-| `header` | `—` | `void` | Slot for `header` content. |
+| `header` | `[scope: { titleId: string }]` | `void` | Custom heading, wrapped by the generated title ID. |
 | `actions` | `[scope: { close: () => void }]` | `void` | gets `{ close }` |
 | `default` | `[scope: { close: () => void }]` | `void` | body |
 | `footer` | `[scope: { close: () => void }]` | `void` | gets `{ close }` |

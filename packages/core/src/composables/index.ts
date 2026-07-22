@@ -1,8 +1,15 @@
 export { useClickOutside } from './useClickOutside';
+export type { UseClickOutsideOptions } from './useClickOutside';
 export { useDisclosure } from './useDisclosure';
+export type { UseDisclosureOptions } from './useDisclosure';
 export { useEscapeKey } from './useEscapeKey';
+export type { UseEscapeKeyOptions } from './useEscapeKey';
 export { useFloating } from './useFloating';
+export type { FloatingMiddlewareData, UseFloatingOptions } from './useFloating';
 export { useFocusTrap } from './useFocusTrap';
+export type { UseFocusTrapOptions } from './useFocusTrap';
 export { useId } from './useId';
+export type { UseIdOptions } from './useId';
 export { useTableOfContents } from './useTableOfContents';
+export type { UseTableOfContentsOptions } from './useTableOfContents';
 export { useTheme } from './useTheme';

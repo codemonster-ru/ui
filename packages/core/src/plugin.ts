@@ -26,6 +26,6 @@ export function createVueForgeCore() {
   return plugin;
 }
 
-export const VueForgeCore = createVueForgeCore();
+export const VueForgeCore = /* @__PURE__ */ createVueForgeCore();
 
 export default VueForgeCore;

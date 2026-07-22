@@ -77,52 +77,52 @@
 }
 
 .vf-nav-menu__collapse--level-0 {
-  margin-left: var(--vf-nav-menu-collapse-inset-level-0-margin);
-  padding-left: var(--vf-nav-menu-collapse-inset-level-0-padding);
+  margin-inline-start: var(--vf-nav-menu-collapse-inset-level-0-margin);
+  padding-inline-start: var(--vf-nav-menu-collapse-inset-level-0-padding);
 }
 
 .vf-nav-menu--simple .vf-nav-menu__collapse--level-0 {
   --vf-nav-menu-sidebar-current-inset-padding: var(--vf-nav-menu-collapse-inset-simple-level-0-padding);
 
-  margin-left: var(--vf-nav-menu-collapse-inset-simple-level-0-margin);
-  padding-left: var(--vf-nav-menu-collapse-inset-simple-level-0-padding);
+  margin-inline-start: var(--vf-nav-menu-collapse-inset-simple-level-0-margin);
+  padding-inline-start: var(--vf-nav-menu-collapse-inset-simple-level-0-padding);
 }
 
 .vf-nav-menu:not(.vf-nav-menu--simple) .vf-nav-menu__collapse--level-0 {
-  margin-left: 0;
-  padding-left: 0;
+  margin-inline-start: 0;
+  padding-inline-start: 0;
 }
 
 .vf-nav-menu.vf-nav-menu--sidebar .vf-nav-menu__collapse--level-0 {
   --vf-nav-menu-sidebar-current-inset-padding: 0px;
 
-  margin-left: var(--vf-nav-menu-sidebar-collapse-level-0-margin);
-  padding-left: 0;
+  margin-inline-start: var(--vf-nav-menu-sidebar-collapse-level-0-margin);
+  padding-inline-start: 0;
 }
 
 .vf-nav-menu.vf-nav-menu--sidebar:not(.vf-nav-menu--simple) .vf-nav-menu__collapse--level-0 {
-  margin-left: var(--vf-nav-menu-sidebar-icon-aligned-level-0-margin);
+  margin-inline-start: var(--vf-nav-menu-sidebar-icon-aligned-level-0-margin);
 }
 
 .vf-nav-menu__collapse:not(.vf-nav-menu__collapse--level-0) {
   --vf-nav-menu-sidebar-current-inset-padding: var(--vf-nav-menu-collapse-inset-deep-padding);
 
-  margin-left: var(--vf-nav-menu-collapse-inset-deep-margin);
-  padding-left: var(--vf-nav-menu-collapse-inset-deep-padding);
+  margin-inline-start: var(--vf-nav-menu-collapse-inset-deep-margin);
+  padding-inline-start: var(--vf-nav-menu-collapse-inset-deep-padding);
 }
 
 .vf-nav-menu--simple .vf-nav-menu__collapse:not(.vf-nav-menu__collapse--level-0) {
   --vf-nav-menu-sidebar-current-inset-padding: var(--vf-nav-menu-collapse-inset-simple-deep-padding);
 
-  margin-left: var(--vf-nav-menu-collapse-inset-simple-deep-margin);
-  padding-left: var(--vf-nav-menu-collapse-inset-simple-deep-padding);
+  margin-inline-start: var(--vf-nav-menu-collapse-inset-simple-deep-margin);
+  padding-inline-start: var(--vf-nav-menu-collapse-inset-simple-deep-padding);
 }
 
 .vf-nav-menu--sidebar .vf-nav-menu__collapse:not(.vf-nav-menu__collapse--level-0) {
   --vf-nav-menu-sidebar-current-inset-padding: 0px;
 
-  margin-left: var(--vf-nav-menu-sidebar-level-step);
-  padding-left: 0;
+  margin-inline-start: var(--vf-nav-menu-sidebar-level-step);
+  padding-inline-start: 0;
   overflow: visible;
 }
 
@@ -224,7 +224,7 @@
 }
 
 .vf-nav-menu:not(.vf-nav-menu--simple) .vf-nav-menu__group {
-  padding-left: var(--vf-nav-menu-current-group-padding-left);
+  padding-inline-start: var(--vf-nav-menu-current-group-padding-left);
 }
 
 .vf-nav-menu__group-label {
@@ -275,7 +275,7 @@
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
   color: var(--vf-nav-menu-item-color);
-  text-align: left;
+  text-align: start;
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -294,7 +294,7 @@
     var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap)
   );
 
-  margin-left: calc(var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap));
+  margin-inline-start: calc(var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap));
   width: calc(100% - var(--vf-nav-menu-leading-icon-column-size) - var(--vf-nav-menu-item-gap));
 }
 
@@ -353,7 +353,7 @@
 .vf-nav-menu--sidebar .vf-nav-menu__item:not(.vf-nav-menu__item--top) {
   --vf-nav-menu-sidebar-current-icon-offset: var(--vf-nav-menu-sidebar-nested-item-offset);
 
-  margin-left: var(--vf-nav-menu-sidebar-nested-item-offset);
+  margin-inline-start: var(--vf-nav-menu-sidebar-nested-item-offset);
   width: calc(100% - var(--vf-nav-menu-sidebar-nested-item-offset));
 }
 

@@ -12,10 +12,10 @@
   color: var(--vf-color-icon-primary, var(--vf-color-text));
   cursor: pointer;
   transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease,
-    filter 0.12s ease;
+    background-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    border-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    filter var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
 }
 
 .vf-icon-button:focus-visible {

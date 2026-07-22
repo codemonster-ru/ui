@@ -634,7 +634,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               <p class="vf-text-body vf-text-truncate demo-m-0 demo-max-w-16">
                 This line demonstrates truncation behavior for long text content in constrained UI areas.
               </p>
-              <p class="vf-text-body vf-text-nowrap demo-m-0">
+              <p class="vf-text-body vf-text-nowrap demo-m-0 demo-nowrap-preview">
                 No-wrap utility keeps short status labels on a single line.
               </p>
               <p class="vf-text-body vf-text-balance demo-m-0 demo-max-w-20">

@@ -9,6 +9,8 @@ export {
   type CodeBlockCopyPayload,
   type CodeBlockCssVarMap,
   type CodeBlockCssVarValue,
+  type CodeBlockFallbackLanguage,
+  type CodeBlockHighlightOptions,
   type CodeBlockLanguage,
   type CodeBlockPluginOptions,
   type CodeBlockProps,

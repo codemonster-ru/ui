@@ -1,6 +1,8 @@
-import { defineComponent } from 'vue';
+/* eslint-disable vue/one-component-per-file */
+import { createSSRApp, defineComponent, h, nextTick } from 'vue';
+import { renderToString } from '@vue/server-renderer';
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { VueForgeCore, defaultThemePreset } from '@/index';
 import { useTheme } from '@/composables/useTheme';
 import VfThemeProvider from './VfThemeProvider.vue';
@@ -27,6 +29,67 @@ const ThemeConsumer = defineComponent({
 });
 
 describe('VfThemeProvider', () => {
+  it('keeps the first client render hydration-stable before applying stored browser state', async () => {
+    const HydrationConsumer = defineComponent({
+      setup() {
+        const { theme, resolvedTheme } = useTheme();
+        return () =>
+          h('div', [
+            h('span', { 'data-test': 'theme' }, theme.value),
+            h('span', { 'data-test': 'resolved' }, resolvedTheme.value),
+          ]);
+      },
+    });
+    const Root = defineComponent({
+      setup() {
+        return () => h('div', [h(VfThemeProvider, null, { default: () => h(HydrationConsumer) })]);
+      },
+    });
+    const html = await renderToString(createSSRApp(Root));
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    document.body.appendChild(container);
+    window.localStorage.setItem('vf-theme', 'dark');
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const app = createSSRApp(Root);
+
+    app.mount(container);
+    await nextTick();
+
+    expect(warning.mock.calls.flat().join(' ')).not.toContain('Hydration');
+    expect(container.querySelector('[data-test="theme"]')?.textContent).toBe('dark');
+    expect(container.querySelector('[data-test="resolved"]')?.textContent).toBe('dark');
+
+    app.unmount();
+    warning.mockRestore();
+    container.remove();
+  });
+
+  it('falls back safely when storage and matchMedia are unavailable', async () => {
+    const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new DOMException('Blocked', 'SecurityError');
+    });
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Blocked', 'SecurityError');
+    });
+    vi.stubGlobal('matchMedia', undefined);
+
+    let wrapper: ReturnType<typeof mount> | undefined;
+    expect(() => {
+      wrapper = mount(VfThemeProvider, {
+        props: { defaultTheme: 'light' },
+        slots: { default: ThemeConsumer },
+      });
+    }).not.toThrow();
+
+    expect(wrapper?.find('[data-test="resolved"]').text()).toBe('light');
+    await expect(wrapper?.find('[data-test="set-dark"]').trigger('click')).resolves.toBeUndefined();
+
+    wrapper?.unmount();
+    getItem.mockRestore();
+    setItem.mockRestore();
+  });
+
   it('provides the default system theme and persists changes', async () => {
     const wrapper = mount(VfThemeProvider, {
       slots: {
@@ -46,7 +109,7 @@ describe('VfThemeProvider', () => {
     expect(document.documentElement.getAttribute('data-vf-theme')).toBe('dark');
   });
 
-  it('preserves an initial mode declared through the compatible data-theme attribute', () => {
+  it('preserves an initial mode declared through the compatible data-theme attribute', async () => {
     document.documentElement.setAttribute('data-theme', 'dark');
 
     const wrapper = mount(VfThemeProvider, {
@@ -54,6 +117,8 @@ describe('VfThemeProvider', () => {
         default: ThemeConsumer,
       },
     });
+
+    await wrapper.vm.$nextTick();
 
     expect(wrapper.find('[data-test="theme"]').text()).toBe('dark');
     expect(wrapper.find('[data-test="resolved"]').text()).toBe('dark');
@@ -329,7 +394,7 @@ describe('VfThemeProvider', () => {
     window.localStorage.removeItem('vf-conflict-theme');
   });
 
-  it('ignores an invalid legacy attribute value when the engine attribute is valid', () => {
+  it('ignores an invalid legacy attribute value when the engine attribute is valid', async () => {
     const themeRoot = document.createElement('div');
     themeRoot.id = 'theme-initial-root';
     themeRoot.setAttribute('data-shell-theme', 'inherit');
@@ -360,6 +425,8 @@ describe('VfThemeProvider', () => {
         default: ThemeConsumer,
       },
     });
+
+    await wrapper.vm.$nextTick();
 
     expect(wrapper.find('[data-test="theme"]').text()).toBe('dark');
     expect(themeRoot.getAttribute('data-shell-theme')).toBe('dark');

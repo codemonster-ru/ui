@@ -37,16 +37,14 @@ entry: /App.vue
       @select="handleSelect"
       @submit="handleSubmit"
     >
-      <template #item="{ item, active, select }">
-        <VfButton
-          variant="ghost"
+      <template #item="{ item, active }">
+        <span
           style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:var(--vf-surface-gap-compact) var(--vf-surface-gap);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control);background:var(--vf-color-surface);cursor:pointer"
           :style="active ? 'border-color:var(--vf-color-border);background:var(--vf-color-surface)' : ''"
-          @click="select(item)"
         >
           <span>{{ item }}</span>
           <span style="font-size:var(--vf-text-label-font-size);color:var(--vf-color-muted)">Enter</span>
-        </VfButton>
+        </span>
       </template>
 
       <template #footer>
@@ -61,34 +59,19 @@ entry: /App.vue
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { VfButton, VfCommandPalette } from '@codemonster-ru/vueforge-core';
 
 const open = ref(true);
 const query = ref('');
 const selected = ref('');
-const items: string[] = [];
+const items = ['Button', 'Dialog', 'Drawer', 'Tabs'];
 
 const filteredItems = computed(() => {
   const q = query.value.trim().toLowerCase();
   if (!q) return items;
   return items.filter((item) => item.toLowerCase().includes(q));
 });
-
-const unlockPageScroll = () => {
-  if (typeof document === 'undefined') return;
-  document.body.style.overflow = '';
-  document.body.style.paddingRight = '';
-};
-
-watch(
-  open,
-  (value) => {
-    if (!value) return;
-    requestAnimationFrame(unlockPageScroll);
-  },
-  { immediate: true }
-);
 
 function handleSelect(item: unknown) {
   selected.value = String(item);

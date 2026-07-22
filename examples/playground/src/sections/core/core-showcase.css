@@ -39,6 +39,11 @@
   max-width: 20rem;
 }
 
+.demo-nowrap-preview {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .demo-item--full {
   grid-column: 1 / -1;
 }

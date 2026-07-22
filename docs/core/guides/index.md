@@ -16,9 +16,10 @@ Practical integration notes, limitations, and related packages for this package.
 
 These practices help keep setup predictable across application and package boundaries.
 
-### Bootstrap Theme at App Root
+### Configure Theme at App Root
 
-Use one app-level bootstrap path for theme provider + core plugin to keep behavior deterministic.
+Install the Core plugin once when the application needs theme configuration or shared defaults
+for `VfThemeProvider`.
 
 ```ts
 import { createApp } from 'vue';
@@ -27,6 +28,9 @@ import '@codemonster-ru/vueforge-core/styles.css';
 
 createApp(App).use(VueForgeCore);
 ```
+
+The plugin configures the theme runtime; it does not register components. Import components
+directly from the package root or from their component subpaths.
 
 ### Choose CSS Entry by Scope
 

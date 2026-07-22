@@ -37,8 +37,9 @@
               :key="index"
               class="vf-codeblock__line"
           ><span v-if="showLineNumbers" class="vf-codeblock__line-number">{{ index + 1 }}</span><span
-                  class="vf-codeblock__line-content"
-                  v-html="renderedLines[index] ?? ''"
+              class="vf-codeblock__line-content"
+              data-allow-mismatch="children"
+              v-html="renderedLines[index] ?? ''"
               /></span></code></pre>
     </div>
   </section>
@@ -256,6 +257,21 @@ const syncInheritedTheme = () => {
   inheritedTheme.value = findClosestThemeValue(rootElement.value) ?? 'light';
 };
 
+const syncServerRenderedHighlight = () => {
+  const root = rootElement.value;
+  if (!root?.querySelector('.vf-codeblock__line-content > .vf-codeblock__shiki-token')) {
+    return;
+  }
+
+  const serverRenderedLines = Array.from(root.querySelectorAll<HTMLElement>('.vf-codeblock__line-content')).map(
+    (line) => line.innerHTML,
+  );
+
+  if (serverRenderedLines.length === lines.value.length) {
+    renderedLines.value = serverRenderedLines;
+  }
+};
+
 watch(
   () => props.theme,
   (theme) => {
@@ -266,6 +282,9 @@ watch(
 );
 
 onMounted(() => {
+  // Hydration starts with the lightweight client fallback while SSR can already contain Shiki output.
+  // Reconcile the reactive state with that narrowly-scoped server output before subsequent updates.
+  syncServerRenderedHighlight();
   syncInheritedTheme();
 
   if (typeof MutationObserver === 'undefined' || !rootElement.value) {

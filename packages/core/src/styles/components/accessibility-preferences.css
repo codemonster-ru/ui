@@ -1,0 +1,52 @@
+@media (prefers-reduced-motion: reduce) {
+  :where([class^='vf-'], [class*=' vf-']),
+  :where([class^='vf-'], [class*=' vf-'])::before,
+  :where([class^='vf-'], [class*=' vf-'])::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(
+      button[class^='vf-'],
+      button[class*=' vf-'],
+      input[class^='vf-'],
+      input[class*=' vf-'],
+      textarea[class^='vf-'],
+      textarea[class*=' vf-'],
+      a[class^='vf-'],
+      a[class*=' vf-']
+    ):focus-visible,
+  :where(input[class^='vf-'], input[class*=' vf-']):focus-visible + :where([class^='vf-'], [class*=' vf-']) {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px;
+    box-shadow: none !important;
+  }
+
+  :where(input[type='checkbox'][class^='vf-'], input[type='checkbox'][class*=' vf-'], input[type='radio'][class^='vf-'], input[type='radio'][class*=' vf-'])
+    + :where([class^='vf-'], [class*=' vf-']) {
+    border-color: ButtonText !important;
+    background: Canvas !important;
+  }
+
+  :where(input[type='checkbox'][class^='vf-'], input[type='checkbox'][class*=' vf-'], input[type='radio'][class^='vf-'], input[type='radio'][class*=' vf-']):checked
+    + :where([class^='vf-'], [class*=' vf-']) {
+    border-color: Highlight !important;
+    background: Highlight !important;
+  }
+
+  :where(input[type='checkbox'][class^='vf-'], input[type='checkbox'][class*=' vf-'], input[type='radio'][class^='vf-'], input[type='radio'][class*=' vf-']):checked
+    + :where([class^='vf-'], [class*=' vf-'])
+    > :where([class^='vf-'], [class*=' vf-']) {
+    border-color: HighlightText !important;
+    background: HighlightText !important;
+    color: Highlight !important;
+  }
+
+  :where(label[class^='vf-'], label[class*=' vf-']):has(input:disabled) {
+    color: GrayText !important;
+  }
+}

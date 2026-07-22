@@ -7,6 +7,7 @@ const stylesDir = join(root, 'src/styles');
 const entriesDir = join(stylesDir, 'entries');
 const componentsDir = join(stylesDir, 'components');
 const transitionGuardPath = join(componentsDir, 'theme-transition-guard.css');
+const accessibilityPreferencesPath = join(componentsDir, 'accessibility-preferences.css');
 
 const groupedManifests = {
   'actions.css': ['button.css', 'icon-button.css', 'link.css'],
@@ -103,12 +104,17 @@ for (const fileName of entryNames) {
     fail(`${fileName} own CSS must occur exactly once in the full stylesheet.`);
   }
 
-  const standaloneCss = inlineCssFiles([transitionGuardPath, entryPath]);
+  const standaloneCss = inlineCssFiles([transitionGuardPath, accessibilityPreferencesPath, entryPath]);
   if ((standaloneCss.match(/:root\.vf-theme-transitioning :where\(\[class\^='vf-'\]/g) ?? []).length !== 1) {
     fail(`${fileName} standalone artifact must contain the theme transition guard exactly once.`);
   }
   if (standaloneCss.includes('@import')) {
     fail(`${fileName} standalone artifact contains an unresolved import.`);
+  }
+  for (const mediaQuery of ['@media (prefers-reduced-motion: reduce)', '@media (forced-colors: active)']) {
+    if (!standaloneCss.includes(mediaQuery)) {
+      fail(`${fileName} standalone artifact is missing ${mediaQuery}.`);
+    }
   }
 }
 
@@ -144,6 +150,15 @@ for (const fileName of ['menu-bar.css', 'tabs.css']) {
   }
   if (stripImportsAndComments(source).includes('.vf-horizontal-scroller {')) {
     fail(`${fileName} duplicates the shared horizontal scroller rules.`);
+  }
+}
+
+const commandPaletteSource = readFileSync(join(entriesDir, 'command-palette.css'), 'utf8');
+for (const viewportUnit of ['vh', 'dvh']) {
+  const viewportBound =
+    `calc(100${viewportUnit} - var(--vf-command-palette-offset-top) - var(--vf-overlay-viewport-padding))`;
+  if (!commandPaletteSource.includes(viewportBound)) {
+    fail(`Command Palette max-height must remain bounded by the ${viewportUnit} viewport.`);
   }
 }
 

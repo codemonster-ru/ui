@@ -55,8 +55,14 @@ Language options:
 The following items are listed in this section:
 
 - `escapeCodeHtml(code: string): string`
-- `highlightCodeLine(code: string, language?: string): Promise<string>`
-- `highlightCodeBlock(code: string, language?: string): Promise<string>`
+- `renderPlainCodeLines(code: string): string[]`
+- `highlightCodeLine(language: string, line: string, theme?: 'light' | 'dark', highlight?: boolean, options?: CodeBlockHighlightOptions): Promise<string>`
+- `highlightCodeLines(language: string, code: string, theme: 'light' | 'dark', highlight?: boolean, options?: CodeBlockHighlightOptions): Promise<string[]>`
+- `highlightCodeBlock(language: string, code: string, theme?: 'light' | 'dark', highlight?: boolean, options?: CodeBlockHighlightOptions): Promise<string>`
+- `preloadCodeBlockLanguages(languages: string[], allowedLanguages?: string[]): Promise<void>`
+
+`CodeBlockHighlightOptions` accepts `allowedLanguages?: string[]` and
+`fallbackLanguage?: 'plaintext' | 'text'`.
 
 ## Runtime Theme Helper
 
@@ -89,12 +95,14 @@ The following items are listed in this section:
 - `copyLabel?: string`
 - `copiedLabel?: string`
 - `copiedDuration?: number`
+- `languageLabel?: string`
 - `theme?: 'inherit' | 'light' | 'dark'`
 - `wrap?: boolean`
 - `highlight?: boolean`
 - `containerMinHeight?: string`
 - `minHeight?: string`
 - `maxHeight?: string`
+- `ariaLabel?: string`
 - `disabled?: boolean`
 
 ## Constants
@@ -110,6 +118,8 @@ The following items are listed in this section:
 - `CodeBlockCopyPayload`
 - `CodeBlockCssVarMap`
 - `CodeBlockCssVarValue`
+- `CodeBlockFallbackLanguage`
+- `CodeBlockHighlightOptions`
 - `CodeBlockLanguage`
 - `CodeBlockPluginOptions`
 - `CodeBlockProps`

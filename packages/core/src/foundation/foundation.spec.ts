@@ -170,4 +170,43 @@ describe('foundation', () => {
       value: originalClientWidth,
     });
   });
+
+  it('keeps a shared target locked until every owner releases it', async () => {
+    document.body.style.overflow = 'auto';
+
+    const LockOwner = defineComponent({
+      setup() {
+        useScrollLock(true);
+        return () => h('span');
+      },
+    });
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          const first = ref(true);
+          const second = ref(true);
+          return { first, second };
+        },
+        render() {
+          return h('div', [
+            this.first ? h(LockOwner, { key: 'first' }) : null,
+            this.second ? h(LockOwner, { key: 'second' }) : null,
+          ]);
+        },
+      }),
+    );
+
+    await wrapper.vm.$nextTick();
+    expect(document.body.style.overflow).toBe('hidden');
+
+    wrapper.vm.first = false;
+    await wrapper.vm.$nextTick();
+    expect(document.body.style.overflow).toBe('hidden');
+
+    wrapper.vm.second = false;
+    await wrapper.vm.$nextTick();
+    expect(document.body.style.overflow).toBe('auto');
+
+    wrapper.unmount();
+  });
 });

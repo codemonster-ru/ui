@@ -62,22 +62,26 @@ describe('component entry CSS parity', () => {
 
   it('composes the theme transition guard into every standalone component artifact', () => {
     const guardPath = resolve(componentsDir, 'theme-transition-guard.css');
+    const accessibilityPath = resolve(componentsDir, 'accessibility-preferences.css');
 
     for (const fileName of readdirSync(entriesDir).filter((name) => name.endsWith('.css'))) {
-      const artifactCss = inlineCssFiles([guardPath, resolve(entriesDir, fileName)]);
+      const artifactCss = inlineCssFiles([guardPath, accessibilityPath, resolve(entriesDir, fileName)]);
 
       expect(artifactCss, fileName).toContain(':root.vf-theme-transitioning');
       expect(artifactCss.match(/:root\.vf-theme-transitioning :where\(\[class\^='vf-'\]/g), fileName).toHaveLength(1);
+      expect(artifactCss, fileName).toContain('@media (prefers-reduced-motion: reduce)');
+      expect(artifactCss, fileName).toContain('@media (forced-colors: active)');
     }
   });
 
   it('keeps selective fallback consumption equivalent through foundation plus a component entry', () => {
     const guardPath = resolve(componentsDir, 'theme-transition-guard.css');
+    const accessibilityPath = resolve(componentsDir, 'accessibility-preferences.css');
     const buttonPath = resolve(entriesDir, 'button.css');
     const foundationCss = inlineCssImports(foundationPath);
     const fullCss = inlineCssImports(resolve(stylesDir, 'styles.css'));
-    const standaloneButtonCss = inlineCssFiles([guardPath, buttonPath]);
-    const fallbackButtonCss = inlineCssFiles([foundationPath, guardPath, buttonPath]);
+    const standaloneButtonCss = inlineCssFiles([guardPath, accessibilityPath, buttonPath]);
+    const fallbackButtonCss = inlineCssFiles([foundationPath, guardPath, accessibilityPath, buttonPath]);
 
     for (const variableName of architectureVariableNames) {
       expect(foundationCss, variableName).toContain(`${variableName}:`);

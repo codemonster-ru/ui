@@ -98,6 +98,9 @@ describe('core primitives', () => {
 
     expect(wrapper.find('.skeleton').exists()).toBe(true);
     expect(wrapper.attributes('style')).toContain('min-height: 180px');
+    expect(wrapper.attributes('aria-busy')).toBe('true');
+    expect(wrapper.find('.vf-skeleton-gate__content').attributes('aria-hidden')).toBe('true');
+    expect(wrapper.find('.vf-skeleton-gate__content').attributes('inert')).toBe('true');
     expect(wrapper.find('.vf-skeleton-gate__content').classes()).not.toContain('vf-skeleton-gate__content--ready');
 
     await wrapper.setProps({ ready: true });
@@ -105,6 +108,9 @@ describe('core primitives', () => {
 
     expect(wrapper.find('.skeleton').isVisible()).toBe(false);
     expect(wrapper.find('.vf-skeleton-gate__content').classes()).toContain('vf-skeleton-gate__content--ready');
+    expect(wrapper.attributes('aria-busy')).toBeUndefined();
+    expect(wrapper.find('.vf-skeleton-gate__content').attributes('aria-hidden')).toBeUndefined();
+    expect(wrapper.find('.vf-skeleton-gate__content').attributes('inert')).toBeUndefined();
   });
 
   it('uses reserveHeight as initial placeholder size', () => {
@@ -1067,6 +1073,37 @@ describe('core primitives', () => {
     expect(wrapper.get('button.vf-select').attributes('aria-describedby')).toBe('select-help');
   });
 
+  it('skips disabled select options during keyboard navigation and form submission', async () => {
+    const wrapper = mount(VfSelect, {
+      props: {
+        modelValue: 'starter',
+        disabled: true,
+        options: [
+          { value: 'starter', label: 'Starter' },
+          { value: 'legacy', label: 'Legacy', disabled: true },
+          { value: 'pro', label: 'Pro' },
+        ],
+      },
+      attrs: { name: 'plan' },
+    });
+
+    expect(wrapper.get('input[type="hidden"]').attributes('disabled')).toBeDefined();
+
+    await wrapper.setProps({ disabled: false });
+    await wrapper.get('button.vf-select').trigger('click');
+    await nextTick();
+
+    const options = Array.from(document.body.querySelectorAll<HTMLButtonElement>('.vf-select__option'));
+    options[0]?.focus();
+    options[0]?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    expect(document.activeElement?.textContent).toBe('Pro');
+
+    (document.activeElement as HTMLElement | null)?.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+    );
+    expect(wrapper.emitted('update:modelValue')).toEqual([['pro']]);
+  });
+
   it('emits checkbox and switch updates', async () => {
     const checkbox = mount(VfCheckbox, {
       props: {
@@ -1219,6 +1256,7 @@ describe('core primitives', () => {
     const wrapper = mount(ThemeSwitchProbe);
 
     expect(wrapper.find('.vf-switch__content').exists()).toBe(false);
+    expect(wrapper.get('.vf-switch__input').attributes('aria-label')).toBe('Switch to dark theme');
   });
 
   it('supports button variant for theme switch', async () => {

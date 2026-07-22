@@ -17,6 +17,9 @@ Component props and their default values.
 | `closeOnOverlayClick?` | `boolean` | `true` | Closes component when overlay/backdrop is clicked. |
 | `closeOnEscape?` | `boolean` | `true` | Closes component when `Escape` key is pressed. |
 | `closable?` | `boolean` | `true` | Shows close control and allows explicit dismiss action. |
+| `ariaLabel?` | `string` | — | Explicit accessible name; takes precedence over the generated title relationship. |
+| `ariaLabelledby?` | `string` | — | Explicit ID reference for the accessible name. |
+| `ariaDescribedby?` | `string` | — | Explicit ID reference for the accessible description. |
 | `teleportTo?` | `string \| HTMLElement \| null \| false` | — | Teleport target selector/element; `null`/`false` disables teleport resolution. |
 | `disableTeleport?` | `boolean` | `false` | Forces in-place rendering without teleport. |
 
@@ -36,8 +39,8 @@ Available slots and their slot props.
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
 | `default` | `[scope: { close: () => void }]` | `void` | dialog body (`{ close }` slot prop available) |
-| `header` | `—` | `void` | Slot for `header` content. |
-| `description` | `—` | `void` | Slot for `description` content. |
+| `header` | `[scope: { titleId: string }]` | `void` | Custom heading, wrapped by the generated title ID. |
+| `description` | `[scope: { descriptionId: string }]` | `void` | Custom description, wrapped by the generated description ID. |
 | `actions` | `[scope: { close: () => void }]` | `void` | (`{ close }` slot prop available) |
 | `footer` | `[scope: { close: () => void }]` | `void` | (`{ close }` slot prop available) |
 

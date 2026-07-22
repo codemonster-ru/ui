@@ -173,3 +173,18 @@
 .vf-codeblock--disabled {
   opacity: var(--vf-codeblock-disabled-opacity);
 }
+
+@media (hover: none), (pointer: coarse) {
+  .vf-codeblock .vf-codeblock__copy:not(:disabled) {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    opacity: var(--vf-codeblock-copy-visible-opacity);
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vf-codeblock__copy {
+    transition: none;
+  }
+}

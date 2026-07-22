@@ -2,7 +2,14 @@ import type { App, Plugin } from 'vue';
 import VfPlaygroundComponent from './VfPlayground.vue';
 
 export { default as VfPlayground } from './VfPlayground.vue';
-export type { VfPlaygroundProps } from './props';
+export type {
+  VfPlaygroundComponentProps,
+  VfPlaygroundHeightMode,
+  VfPlaygroundProps,
+  VfPlaygroundSandboxProps,
+  VfPlaygroundSharedProps,
+  VfPlaygroundTab,
+} from './props';
 
 export interface VfPlaygroundPluginOptions {
   componentName?: string;

@@ -120,6 +120,7 @@ onBeforeUnmount(() => {
     :size="props.size"
     :disabled="props.disabled"
     :label="props.label"
+    :aria-label="hasContent ? undefined : nextThemeLabel"
     :static="props.static"
     :thumb-contrast="props.thumbContrast"
     @update:model-value="handleCheckedChange"

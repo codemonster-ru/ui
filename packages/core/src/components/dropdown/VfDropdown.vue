@@ -2,6 +2,7 @@
 import { nextTick, ref, computed } from 'vue';
 import { arrow, flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
 import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
+import { useFocusScopeBranch } from '@/composables/useFocusTrap';
 import { vfMotionDurationsMs } from '@/theme/motion';
 import type { VfDropdownPlacement } from '@/types/components';
 
@@ -64,6 +65,8 @@ const disclosure = useDisclosure({
 });
 
 const isOpen = disclosure.isOpen;
+
+useFocusScopeBranch(menuRef, isOpen);
 
 const menuClasses = computed(() => [
   'vf-dropdown__menu',

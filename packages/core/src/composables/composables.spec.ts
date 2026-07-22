@@ -1,5 +1,6 @@
 /* eslint-disable vue/one-component-per-file */
-import { defineComponent, h, ref } from 'vue';
+import { createSSRApp, defineComponent, h, ref } from 'vue';
+import { renderToString } from '@vue/server-renderer';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
 import { offset } from '@codemonster-ru/floater.js';
@@ -118,13 +119,27 @@ describe('interaction composables', () => {
     expect(controlled.isOpen.value).toBe(true);
   });
 
-  it('generates stable ids and respects provided ids', () => {
-    const generated = useId({ prefix: 'dialog' });
-    const provided = useId({ prefix: 'dialog', providedId: 'custom-id' });
+  it('generates request-stable SSR ids and respects provided ids', async () => {
+    const IdProbe = defineComponent({
+      props: {
+        providedId: {
+          type: String,
+          default: undefined,
+        },
+      },
+      setup(props) {
+        const id = useId({ prefix: 'dialog', providedId: () => props.providedId });
+        return () => h('div', { id: id.value });
+      },
+    });
 
-    expect(generated.value).toMatch(/^dialog-\d+$/);
-    expect(generated.value).toBe(generated.value);
-    expect(provided.value).toBe('custom-id');
+    const firstRequest = await renderToString(createSSRApp(IdProbe));
+    const secondRequest = await renderToString(createSSRApp(IdProbe));
+    const provided = await renderToString(createSSRApp(IdProbe, { providedId: 'custom-id' }));
+
+    expect(firstRequest).toMatch(/id="dialog-v-[^"]+"/);
+    expect(secondRequest).toBe(firstRequest);
+    expect(provided).toContain('id="custom-id"');
   });
 
   it('fires click outside only for clicks outside the target', async () => {
@@ -163,7 +178,7 @@ describe('interaction composables', () => {
   it('fires escape handler only for Escape key presses', async () => {
     const onEscape = vi.fn();
 
-    mount(
+    const wrapper = mount(
       defineComponent({
         setup() {
           useEscapeKey(onEscape);
@@ -177,6 +192,40 @@ describe('interaction composables', () => {
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(onEscape).toHaveBeenCalledTimes(1);
+
+    wrapper.unmount();
+  });
+
+  it('dispatches Escape only to the most recently activated handler', async () => {
+    const parentEscape = vi.fn((event: KeyboardEvent) => event.preventDefault());
+    const childEscape = vi.fn((event: KeyboardEvent) => event.preventDefault());
+
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          const childEnabled = ref(true);
+          useEscapeKey(parentEscape, { enabled: true });
+          useEscapeKey(childEscape, { enabled: childEnabled });
+
+          return () =>
+            h('button', {
+              onClick: () => {
+                childEnabled.value = false;
+              },
+            });
+        },
+      }),
+    );
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }));
+    expect(childEscape).toHaveBeenCalledTimes(1);
+    expect(parentEscape).not.toHaveBeenCalled();
+
+    await wrapper.get('button').trigger('click');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }));
+    expect(parentEscape).toHaveBeenCalledTimes(1);
+
+    wrapper.unmount();
   });
 
   it('computes floating styles when enabled', async () => {
