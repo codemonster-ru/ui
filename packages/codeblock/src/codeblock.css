@@ -112,13 +112,18 @@
   white-space: pre;
 }
 
-.vf-codeblock__copy:hover,
+.vf-codeblock__copy:hover:not(:disabled),
 .vf-codeblock .vf-codeblock__copy:focus-visible {
   color: var(--vf-codeblock-copy-hover-color);
 }
 
-.vf-codeblock .vf-codeblock__code-shell:hover .vf-codeblock__copy,
-.vf-codeblock .vf-codeblock__code-shell:focus-within .vf-codeblock__copy {
+.vf-codeblock .vf-codeblock__copy:focus-visible {
+  outline: var(--vf-codeblock-copy-focus-ring-width) solid var(--vf-codeblock-copy-focus-ring-color);
+  outline-offset: var(--vf-codeblock-copy-focus-ring-offset);
+}
+
+.vf-codeblock .vf-codeblock__code-shell:hover .vf-codeblock__copy:not(:disabled),
+.vf-codeblock .vf-codeblock__code-shell:focus-within .vf-codeblock__copy:not(:disabled) {
   opacity: var(--vf-codeblock-copy-visible-opacity);
   pointer-events: auto;
 }
@@ -148,6 +153,11 @@
 .vf-codeblock__line-content {
   min-width: 0;
   white-space: inherit;
+}
+
+.vf-codeblock ::selection {
+  background: var(--vf-codeblock-selection-background-color);
+  color: var(--vf-codeblock-selection-text-color);
 }
 
 /* stylelint-disable no-descending-specificity -- Theme selectors intentionally layer explicit, inherited, and fallback modes. */

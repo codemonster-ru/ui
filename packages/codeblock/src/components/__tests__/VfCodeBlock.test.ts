@@ -9,9 +9,12 @@ import VfCodeBlock from '../VfCodeBlock.vue';
 import {
   __getCodeBlockLanguageLoadAttemptsForTests,
   __resetCodeBlockHighlightRuntimeForTests,
+  SHIKI_DARK_THEME,
+  SHIKI_LIGHT_THEME,
   highlightCodeBlock,
   preloadCodeBlockLanguages,
 } from '../../services/code-highlight';
+import { VUEFORGE_CODE_SELECTION_FALLBACKS } from '../../themes/vueforge';
 
 const flushObserver = async () => {
   await nextTick();
@@ -51,6 +54,11 @@ describe('VfCodeBlock', () => {
     __resetCodeBlockHighlightRuntimeForTests();
   });
 
+  it('preserves the public VueForge 1.x Shiki name constants', () => {
+    expect(SHIKI_LIGHT_THEME).toBe('github-light');
+    expect(SHIKI_DARK_THEME).toBe('github-dark');
+  });
+
   afterAll(() => {
     __resetCodeBlockHighlightRuntimeForTests();
   });
@@ -69,6 +77,8 @@ describe('VfCodeBlock', () => {
     expect(wrapper.findAll('.vf-codeblock__line-number')).toHaveLength(2);
     expect(wrapper.findAll('.vf-codeblock__shiki-token').length).toBeGreaterThan(0);
     expect(wrapper.html()).toContain('style=');
+    expect(wrapper.html()).toContain('var(--vf-codeblock-syntax-');
+    expect(wrapper.html()).not.toContain('github-light');
     expect(wrapper.text()).toContain('const value = 42;');
   });
 
@@ -97,6 +107,7 @@ describe('VfCodeBlock', () => {
 
   it.each([
     ['dotenv', 'APP_ENV=production\nAPP_DEBUG=false'],
+    ['diff', '-const before = true;\n+const after = true;'],
     ['php', '<?php\nfinal class User {}\n'],
     ['cron', '*/5 * * * * php artisan schedule:run'],
     ['json', '{"enabled": true, "retries": 3}'],
@@ -119,6 +130,7 @@ describe('VfCodeBlock', () => {
   it('highlights new languages through the default helper allowlist', async () => {
     const results = await Promise.all([
       highlightCodeBlock('dotenv', 'APP_ENV=production'),
+      highlightCodeBlock('diff', '-const before = true;\n+const after = true;'),
       highlightCodeBlock('php', '<?php echo "ready";'),
       highlightCodeBlock('cron', '*/5 * * * * php artisan schedule:run'),
       highlightCodeBlock('json', '{"ready": true}'),
@@ -127,6 +139,8 @@ describe('VfCodeBlock', () => {
     results.forEach((result) => {
       expect(result).toContain('vf-codeblock__shiki-token');
     });
+    expect(results[1]).toContain('var(--vf-codeblock-syntax-token-deleted,');
+    expect(results[1]).toContain('var(--vf-codeblock-syntax-token-inserted,');
   });
 
   it('highlights Vue directives and expressions', async () => {
@@ -327,7 +341,7 @@ body {
     );
     expect(tokensSource).not.toContain('.vf-codeblock[data-theme=');
     expect(tokensSource).not.toContain('.vf-codeblock[data-vf-theme=');
-    expect(tokenNames).toHaveLength(55);
+    expect(tokenNames).toHaveLength(64);
     expect([...new Set(tokenNames)].sort()).toEqual([
       '--vf-codeblock-action-background-color',
       '--vf-codeblock-action-border-color',
@@ -345,6 +359,9 @@ body {
       '--vf-codeblock-code-background-color',
       '--vf-codeblock-copy-color',
       '--vf-codeblock-copy-color-transition-duration',
+      '--vf-codeblock-copy-focus-ring-color',
+      '--vf-codeblock-copy-focus-ring-offset',
+      '--vf-codeblock-copy-focus-ring-width',
       '--vf-codeblock-copy-hidden-opacity',
       '--vf-codeblock-copy-hover-color',
       '--vf-codeblock-copy-icon-size',
@@ -382,18 +399,36 @@ body {
       '--vf-codeblock-meta-font-size',
       '--vf-codeblock-meta-gap',
       '--vf-codeblock-padding',
+      '--vf-codeblock-selection-background-color',
+      '--vf-codeblock-selection-text-color',
       '--vf-codeblock-shadow',
+      '--vf-codeblock-syntax-background',
       '--vf-codeblock-text-color',
     ]);
     expect(tokensSource).toContain('--vf-codeblock-margin-block-start');
     expect(tokensSource).toContain('--vf-codeblock-margin-block-end');
     expect(tokensSource).toContain('--vf-codeblock-margin-block: var(--vf-surface-padding)');
+    expect(tokensSource).toContain('--vf-codeblock-disabled-opacity: 1');
+    expect(tokensSource).toContain('--vf-codeblock-syntax-background: var(--vf-codeblock-background-color)');
+    expect(tokensSource).toContain('--vf-codeblock-code-background-color: var(--vf-codeblock-syntax-background)');
+    expect(tokensSource).not.toContain('--vf-codeblock-background-color: var(--vf-codeblock-syntax-background)');
+    Object.values(VUEFORGE_CODE_SELECTION_FALLBACKS).forEach(({ background, foreground }) => {
+      expect(tokensSource).toContain(background);
+      expect(tokensSource).toContain(foreground);
+    });
     expect(componentSource).toContain('margin-block:');
     expect(componentSource).toContain('.vf-codeblock:first-child');
     expect(componentSource).toContain('.vf-codeblock:last-child');
     expect(componentSource).toContain(":root:not([data-theme='dark']) .vf-codeblock:not([data-theme='dark'])");
     expect(componentSource).toContain("[data-vf-theme='light'] .vf-codeblock");
     expect(componentSource).not.toContain('  --vf-codeblock-background-color:');
+    expect(componentSource).toContain('.vf-codeblock .vf-codeblock__copy:focus-visible');
+    expect(componentSource).toContain('outline: var(--vf-codeblock-copy-focus-ring-width)');
+    expect(componentSource).toContain('.vf-codeblock ::selection');
+    expect(componentSource).toContain('.vf-codeblock--disabled');
+    expect(componentSource).toContain('opacity: var(--vf-codeblock-disabled-opacity)');
+    expect(componentSource).toContain('.vf-codeblock__copy:hover:not(:disabled)');
+    expect(componentSource).toContain('.vf-codeblock__copy:not(:disabled)');
   });
 
   it('applies containerMinHeight to root container style', () => {

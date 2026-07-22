@@ -1,3 +1,4 @@
+/* stylelint-disable hue-degree-notation -- Keep standalone fallbacks byte-aligned with runtime and Shiki OKLCH values. */
 :root,
 :where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark']) {
   --vf-codeblock-margin-block: var(--vf-surface-padding);
@@ -5,35 +6,42 @@
   --vf-codeblock-margin-block-end: var(--vf-codeblock-margin-block);
   --vf-codeblock-gap: 0;
   --vf-codeblock-border-width: var(--vf-border-width, 1px);
-  --vf-codeblock-border-color: var(--vf-color-border);
+  --vf-codeblock-border-color: var(--vf-color-border-default, var(--vf-color-border));
   --vf-codeblock-border-radius: var(--vf-radius-surface);
-  --vf-codeblock-background-color: var(--vf-color-surface-muted);
-  --vf-codeblock-text-color: var(--vf-color-text);
+  --vf-codeblock-background-color: var(
+    --vf-color-background-surface-subtle,
+    var(--vf-color-surface-muted, oklch(95.8% 0.007 260))
+  );
+  --vf-codeblock-syntax-background: var(--vf-codeblock-background-color);
+  --vf-codeblock-text-color: var(--vf-color-text-primary, var(--vf-color-text));
   --vf-codeblock-font-family: var(--vf-font-family-mono);
   --vf-codeblock-font-size: var(--vf-text-caption-font-size);
   --vf-codeblock-line-height: var(--vf-text-body-line-height);
   --vf-codeblock-header-gap: var(--vf-surface-gap);
   --vf-codeblock-header-padding: 0 var(--vf-codeblock-padding);
   --vf-codeblock-header-min-height: calc(var(--vf-control-height-md) + var(--vf-tabs-list-padding-bottom));
-  --vf-codeblock-header-border-color: var(--vf-color-border);
+  --vf-codeblock-header-border-color: var(--vf-color-border-default, var(--vf-color-border));
   --vf-codeblock-header-background-color: var(--vf-codeblock-background-color);
-  --vf-codeblock-header-opacity: 0.9;
+  --vf-codeblock-header-opacity: 1;
   --vf-codeblock-meta-gap: var(--vf-surface-gap-compact);
-  --vf-codeblock-meta-color: var(--vf-tabs-tab-color, var(--vf-color-muted));
+  --vf-codeblock-meta-color: var(--vf-tabs-tab-color, var(--vf-color-text-secondary, var(--vf-color-muted)));
   --vf-codeblock-meta-font-size: 0.875rem;
-  --vf-codeblock-filename-color: var(--vf-color-text);
+  --vf-codeblock-filename-color: var(--vf-color-text-primary, var(--vf-color-text));
   --vf-codeblock-filename-font-weight: var(--vf-font-weight-semibold);
   --vf-codeblock-actions-gap: var(--vf-surface-gap-compact);
-  --vf-codeblock-action-border-color: var(--vf-color-border);
+  --vf-codeblock-action-border-color: var(--vf-color-border-interactive, var(--vf-color-border));
   --vf-codeblock-action-border-radius: var(--vf-radius-control-tight);
-  --vf-codeblock-action-background-color: var(--vf-color-surface-muted);
-  --vf-codeblock-action-text-color: var(--vf-color-text);
+  --vf-codeblock-action-background-color: var(--vf-color-background-surface, var(--vf-color-surface));
+  --vf-codeblock-action-text-color: var(--vf-color-text-primary, var(--vf-color-text));
   --vf-codeblock-action-font-size: var(--vf-text-label-font-size);
   --vf-codeblock-action-padding: var(--vf-field-padding-sm);
   --vf-codeblock-action-font-weight: var(--vf-text-body-font-weight);
-  --vf-codeblock-action-opacity: 0.88;
+  --vf-codeblock-action-opacity: 1;
   --vf-codeblock-copy-color: var(--vf-codeblock-line-number-color);
   --vf-codeblock-copy-hover-color: var(--vf-codeblock-action-text-color);
+  --vf-codeblock-copy-focus-ring-color: var(--vf-color-focus-ring, var(--vf-color-primary));
+  --vf-codeblock-copy-focus-ring-width: var(--vf-focus-ring-width, 2px);
+  --vf-codeblock-copy-focus-ring-offset: var(--vf-focus-ring-offset, 2px);
   --vf-codeblock-copy-offset: var(--vf-surface-padding-compact);
   --vf-codeblock-copy-z-index: 1;
   --vf-codeblock-copy-line-height: var(--vf-line-height-tight);
@@ -45,14 +53,26 @@
   --vf-codeblock-copy-transition-easing: var(--vf-motion-ease-standard);
   --vf-codeblock-padding: var(--vf-surface-padding-compact);
   --vf-codeblock-max-height: min(60vh, var(--vf-breakpoint-sm));
-  --vf-codeblock-code-background-color: transparent;
+  --vf-codeblock-code-background-color: var(--vf-codeblock-syntax-background);
   --vf-codeblock-line-gap: var(--vf-surface-gap);
-  --vf-codeblock-line-number-color: var(--vf-color-muted);
+  --vf-codeblock-line-number-color: var(--vf-color-text-secondary, var(--vf-color-muted));
   --vf-codeblock-line-number-min-width: 1ch;
   --vf-codeblock-line-number-width: var(--vf-codeblock-line-number-min-width);
+  --vf-codeblock-selection-background-color: var(--vf-color-background-surface-selected-active, oklch(76% 0.11 247));
+  --vf-codeblock-selection-text-color: var(--vf-color-text-primary, var(--vf-color-text, oklch(25.6% 0.014 260)));
   --vf-codeblock-shadow: var(--vf-shadow);
-  --vf-codeblock-disabled-opacity: 0.6;
+  --vf-codeblock-disabled-opacity: 1;
   --vf-codeblock-critical-min-height: 120px;
   --vf-codeblock-critical-header-min-height: 44px;
   --vf-codeblock-critical-code-min-height: 76px;
 }
+
+:where([data-theme='dark'], [data-vf-theme='dark']) {
+  --vf-codeblock-background-color: var(
+    --vf-color-background-surface-subtle,
+    var(--vf-color-surface-muted, oklch(29% 0.018 260))
+  );
+  --vf-codeblock-selection-background-color: var(--vf-color-background-surface-selected-active, oklch(45% 0.115 247));
+  --vf-codeblock-selection-text-color: var(--vf-color-text-primary, var(--vf-color-text, oklch(90% 0.012 260)));
+}
+/* stylelint-enable hue-degree-notation */

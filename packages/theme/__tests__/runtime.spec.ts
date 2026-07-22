@@ -56,15 +56,19 @@ describe('theme runtime', () => {
   });
 
   it('exports the complete primitive and semantic color token contracts', () => {
-    expect(vfPrimitiveColorTokenNames).toHaveLength(29);
-    expect(new Set(vfPrimitiveColorTokenNames)).toHaveProperty('size', 29);
+    expect(vfPrimitiveColorTokenNames).toHaveLength(66);
+    expect(new Set(vfPrimitiveColorTokenNames)).toHaveProperty('size', 66);
     expect(vfPrimitiveColorTokenNames).toContain('paletteNeutral1000');
+    expect(vfPrimitiveColorTokenNames).toContain('palettePrimary100');
     expect(vfPrimitiveColorTokenNames).toContain('paletteWarning950');
+    expect(vfPrimitiveColorTokenNames).toContain('paletteHelp900');
 
-    expect(vfSemanticColorTokenNames).toHaveLength(77);
-    expect(new Set(vfSemanticColorTokenNames)).toHaveProperty('size', 77);
+    expect(vfSemanticColorTokenNames).toHaveLength(85);
+    expect(new Set(vfSemanticColorTokenNames)).toHaveProperty('size', 85);
     expect(vfSemanticColorTokenNames).toContain('colorFocusRing');
-    expect(vfSemanticColorTokenNames).toContain('colorBackgroundSurfaceSelected');
+    expect(vfSemanticColorTokenNames).toContain('colorBackgroundSurfaceSelectedHover');
+    expect(vfSemanticColorTokenNames).toContain('colorTextLinkActive');
+    expect(vfSemanticColorTokenNames).toContain('colorInteractivePrimarySubtleForeground');
     expect(vfSemanticColorTokenNames).toContain('colorStatusHelpActiveBackground');
   });
 

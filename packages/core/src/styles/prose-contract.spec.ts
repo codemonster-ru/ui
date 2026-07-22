@@ -32,4 +32,15 @@ describe('prose css contract', () => {
       '> :is(h1, h2, h3, h4, h5, h6) + :is(p, ul, ol, blockquote, pre, hr, .vf-prose-exclude, .vf-playground, .vf-codeblock)',
     );
   });
+
+  it('uses the semantic link roles without leaking into excluded component subtrees', () => {
+    const baseCss = normalizeCss(readFileSync(baseCssPath, 'utf8'));
+
+    expect(baseCss).toContain('color: var(--vf-color-text-link, var(--vf-color-primary));');
+    expect(baseCss).toContain('color: var(--vf-color-text-link-active, var(--vf-color-primary));');
+    expect(baseCss).toContain('border-color: var(--vf-color-border-focus, var(--vf-color-primary));');
+    expect(baseCss).toContain(
+      'a:not( .vf-prose-exclude, .vf-prose-exclude *, .vf-playground, .vf-playground *, .vf-codeblock, .vf-codeblock * ):active',
+    );
+  });
 });

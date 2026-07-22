@@ -46,7 +46,7 @@
 .vf-input-wrap__icon {
   position: absolute;
   inset-block-start: 50%;
-  color: var(--vf-color-muted);
+  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -98,7 +98,7 @@
   width: var(--vf-field-clear-button-size-md);
   height: var(--vf-field-clear-button-size-md);
   border-radius: var(--vf-radius-control-tight);
-  color: var(--vf-color-muted);
+  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
 }
 
 .vf-input-wrap__clear.vf-icon-button svg,
@@ -113,7 +113,7 @@
 .vf-input-wrap__password-toggle.vf-icon-button:active:not(:disabled) {
   background: transparent;
   border-color: transparent;
-  color: var(--vf-color-text);
+  color: var(--vf-color-icon-primary, var(--vf-color-text));
 }
 
 .vf-input:focus,
@@ -128,6 +128,11 @@
 }
 
 .vf-input--invalid {
+  border-color: var(--vf-input-invalid-border-color);
+}
+
+.vf-input--invalid:focus,
+.vf-input--invalid:focus-visible {
   border-color: var(--vf-input-invalid-border-color);
 }
 
@@ -199,6 +204,7 @@
 
 .vf-input:disabled {
   cursor: not-allowed;
+  border-color: var(--vf-color-border-disabled, var(--vf-input-border-color));
   background: var(--vf-input-disabled-background);
   color: var(--vf-input-disabled-color);
 }
@@ -358,4 +364,15 @@
 
 .vf-input:hover:not(:disabled, .vf-input--invalid, :focus, :focus-visible) {
   border-color: var(--vf-input-hover-border-color);
+}
+
+.vf-input:read-only:not(:disabled, .vf-input--invalid) {
+  cursor: default;
+  border-color: var(--vf-color-border-default, var(--vf-color-border));
+  background: var(--vf-color-background-surface-subtle, var(--vf-color-surface-muted));
+  color: var(--vf-color-text-secondary, var(--vf-color-muted));
+}
+
+.vf-input:read-only:not(:disabled, .vf-input--invalid)::placeholder {
+  color: var(--vf-color-text-secondary, var(--vf-color-muted));
 }

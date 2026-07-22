@@ -6,6 +6,7 @@ import {
 } from '@codemonster-ru/vueforge-theme';
 import {
   ADDITIVE_SEMANTIC_COLOR_TOKEN_COUNT,
+  COMPLETE_DARK_OVERRIDE_COUNT,
   COMPLETE_THEME_TOKEN_COUNT,
   LEGACY_DARK_OVERRIDE_COUNT,
   LEGACY_THEME_TOKEN_COUNT,
@@ -18,7 +19,8 @@ import {
   legacyDarkColorTokens,
   legacyLightColorTokens,
   primitiveColorTokens,
-  semanticColorTokens,
+  semanticDarkColorTokens,
+  semanticLightColorTokens,
   validateColorTokenGraph,
   validateCssVariableGraph,
 } from './color-token-schema';
@@ -42,11 +44,13 @@ describe('color token schema', () => {
     const semanticLegacyOverlap = vfSemanticColorTokenNames.filter((name) => legacyNames.has(name));
 
     expect(Object.keys(primitiveColorTokens)).toEqual([...vfPrimitiveColorTokenNames]);
-    expect(Object.keys(semanticColorTokens)).toEqual([...vfSemanticColorTokenNames]);
+    expect(Object.keys(semanticLightColorTokens)).toEqual([...vfSemanticColorTokenNames]);
+    expect(Object.keys(semanticDarkColorTokens)).toEqual([...vfSemanticColorTokenNames]);
     expect(primitiveNames).toHaveProperty('size', PRIMITIVE_COLOR_TOKEN_COUNT);
     expect(semanticNames).toHaveProperty('size', SEMANTIC_COLOR_TOKEN_COUNT);
     expect(legacyNames).toHaveProperty('size', LEGACY_THEME_TOKEN_COUNT);
     expect(Object.keys(legacyDefaultThemePresetSource.dark ?? {})).toHaveLength(LEGACY_DARK_OVERRIDE_COUNT);
+    expect(Object.keys(defaultThemePresetSource.dark ?? {})).toHaveLength(COMPLETE_DARK_OVERRIDE_COUNT);
     expect(semanticLegacyOverlap).toEqual(['colorFocusRing']);
     expect(SEMANTIC_COLOR_TOKEN_COUNT - semanticLegacyOverlap.length).toBe(ADDITIVE_SEMANTIC_COLOR_TOKEN_COUNT);
     expect(Object.keys(defaultThemePresetSource.tokens)).toHaveLength(COMPLETE_THEME_TOKEN_COUNT);
@@ -55,37 +59,74 @@ describe('color token schema', () => {
     );
   });
 
-  it('uses the current palette values as mode-independent primitives', () => {
+  it('uses the target OKLCH palette values as mode-independent primitives', () => {
     expect(primitiveColorTokens).toEqual({
-      paletteNeutral0: '#ffffff',
-      paletteNeutral50: '#f6f8fb',
-      paletteNeutral100: '#f3f3f3',
-      paletteNeutral200: '#d9dde3',
-      paletteNeutral250: '#d7d7d7',
-      paletteNeutral300: '#d4d4d4',
-      paletteNeutral400: '#9da0a6',
-      paletteNeutral500: '#616773',
-      paletteNeutral600: '#363b46',
-      paletteNeutral700: '#272b33',
-      paletteNeutral750: '#252526',
-      paletteNeutral800: '#20232a',
-      paletteNeutral850: '#1f232b',
-      paletteNeutral900: '#17191e',
-      paletteNeutral950: '#111827',
-      paletteNeutral1000: '#000000',
-      palettePrimary500: '#276cb5',
-      palettePrimary600: '#0e639c',
-      paletteSuccess500: '#2e7d32',
-      paletteSuccess600: '#37783e',
-      paletteInfo500: '#0077a3',
-      paletteInfo600: '#1a739f',
-      paletteWarning400: '#b79a63',
-      paletteWarning500: '#a1841f',
-      paletteWarning950: '#1f1300',
-      paletteDanger500: '#bf3f3f',
-      paletteDanger600: '#c72e39',
-      paletteHelp500: '#7b4c96',
-      paletteHelp600: '#6e43a2',
+      paletteNeutral0: 'oklch(99.5% 0.002 260)',
+      paletteNeutral50: 'oklch(97.8% 0.005 260)',
+      paletteNeutral100: 'oklch(95.8% 0.007 260)',
+      paletteNeutral200: 'oklch(90% 0.012 260)',
+      paletteNeutral250: 'oklch(84% 0.016 260)',
+      paletteNeutral300: 'oklch(74.5% 0.020 260)',
+      paletteNeutral400: 'oklch(65% 0.026 260)',
+      paletteNeutral500: 'oklch(55% 0.032 260)',
+      paletteNeutral600: 'oklch(48.8% 0.030 260)',
+      paletteNeutral700: 'oklch(40.5% 0.025 260)',
+      paletteNeutral750: 'oklch(33% 0.020 260)',
+      paletteNeutral800: 'oklch(29% 0.018 260)',
+      paletteNeutral850: 'oklch(25.6% 0.014 260)',
+      paletteNeutral900: 'oklch(21.4% 0.010 260)',
+      paletteNeutral950: 'oklch(16.5% 0.008 260)',
+      paletteNeutral1000: 'oklch(11.5% 0.006 260)',
+      palettePrimary100: 'oklch(95.5% 0.020 247)',
+      palettePrimary200: 'oklch(89% 0.050 247)',
+      palettePrimary300: 'oklch(76% 0.110 247)',
+      palettePrimary400: 'oklch(65% 0.140 247)',
+      palettePrimary500: 'oklch(55.7% 0.144 247)',
+      palettePrimary600: 'oklch(50% 0.130 247)',
+      palettePrimary700: 'oklch(45% 0.115 247)',
+      palettePrimary800: 'oklch(38.5% 0.090 247)',
+      palettePrimary900: 'oklch(30.5% 0.055 247)',
+      paletteSuccess100: 'oklch(95.5% 0.020 148)',
+      paletteSuccess300: 'oklch(79% 0.125 148)',
+      paletteSuccess400: 'oklch(68% 0.145 148)',
+      paletteSuccess500: 'oklch(59% 0.135 148)',
+      paletteSuccess600: 'oklch(51.5% 0.115 148)',
+      paletteSuccess700: 'oklch(45.5% 0.105 148)',
+      paletteSuccess800: 'oklch(38.5% 0.080 148)',
+      paletteSuccess900: 'oklch(30.5% 0.040 148)',
+      paletteInfo100: 'oklch(95.5% 0.018 230)',
+      paletteInfo300: 'oklch(78.5% 0.105 230)',
+      paletteInfo400: 'oklch(68% 0.130 230)',
+      paletteInfo500: 'oklch(60% 0.118 230)',
+      paletteInfo600: 'oklch(52.5% 0.103 230)',
+      paletteInfo700: 'oklch(46.5% 0.091 230)',
+      paletteInfo800: 'oklch(39.5% 0.075 230)',
+      paletteInfo900: 'oklch(30.5% 0.038 230)',
+      paletteWarning100: 'oklch(96% 0.035 88)',
+      paletteWarning300: 'oklch(81.5% 0.115 88)',
+      paletteWarning400: 'oklch(76% 0.130 88)',
+      paletteWarning500: 'oklch(68.5% 0.125 88)',
+      paletteWarning600: 'oklch(61.5% 0.115 88)',
+      paletteWarning700: 'oklch(54% 0.105 88)',
+      paletteWarning800: 'oklch(47.5% 0.095 88)',
+      paletteWarning900: 'oklch(31.5% 0.035 88)',
+      paletteWarning950: 'oklch(21.5% 0.043 88)',
+      paletteDanger100: 'oklch(95.5% 0.020 20)',
+      paletteDanger300: 'oklch(76% 0.142 20)',
+      paletteDanger400: 'oklch(66.5% 0.180 20)',
+      paletteDanger500: 'oklch(60.5% 0.180 20)',
+      paletteDanger600: 'oklch(53.5% 0.170 20)',
+      paletteDanger700: 'oklch(47.5% 0.150 20)',
+      paletteDanger800: 'oklch(40.5% 0.120 20)',
+      paletteDanger900: 'oklch(30% 0.050 20)',
+      paletteHelp100: 'oklch(95.5% 0.020 307)',
+      paletteHelp300: 'oklch(77% 0.115 307)',
+      paletteHelp400: 'oklch(67% 0.145 307)',
+      paletteHelp500: 'oklch(60% 0.150 307)',
+      paletteHelp600: 'oklch(52% 0.130 307)',
+      paletteHelp700: 'oklch(44.5% 0.115 307)',
+      paletteHelp800: 'oklch(38% 0.090 307)',
+      paletteHelp900: 'oklch(29.5% 0.045 307)',
     });
 
     for (const name of vfPrimitiveColorTokenNames) {
@@ -115,10 +156,17 @@ describe('color token schema', () => {
       }
     }
 
-    expect(semanticColorTokens.colorStatusSuccessSolidBackground).toBe('var(--vf-color-success)');
-    expect(semanticColorTokens.colorStatusSuccessSolidForeground).toBe('var(--vf-color-success-contrast)');
-    expect(semanticColorTokens.colorStatusWarningSolidBackground).toBe('var(--vf-color-warn)');
-    expect(semanticColorTokens.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
+    expect(semanticLightColorTokens.colorStatusSuccessSolidBackground).toBe('var(--vf-color-success)');
+    expect(semanticLightColorTokens.colorStatusSuccessSubtleForeground).toBe('var(--vf-palette-success-700)');
+    expect(semanticDarkColorTokens.colorStatusSuccessSolidBackground).toBe('var(--vf-color-success)');
+    expect(semanticDarkColorTokens.colorStatusSuccessSubtleForeground).toBe('var(--vf-palette-success-300)');
+    expect(semanticLightColorTokens.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
+    expect(semanticDarkColorTokens.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
+
+    expect(semanticLightColorTokens.colorBackgroundSurfaceSelectedHover).toBe('var(--vf-palette-primary-200)');
+    expect(semanticDarkColorTokens.colorBackgroundSurfaceSelectedHover).toBe('var(--vf-palette-primary-800)');
+    expect(semanticLightColorTokens.colorTextLink).toBe('var(--vf-palette-primary-700)');
+    expect(semanticDarkColorTokens.colorTextLink).toBe('var(--vf-palette-primary-300)');
   });
 
   it('maps every legacy root color token to its declared semantic aliases', () => {
@@ -131,12 +179,10 @@ describe('color token schema', () => {
     expect(Object.keys(legacyColorTokenMappings).sort()).toEqual(Object.keys(legacyLightColorTokens).sort());
     expect(Object.keys(legacyDarkColorTokens).sort()).toEqual(Object.keys(legacyLightColorTokens).sort());
     expect(mappings).toHaveLength(36);
-    expect(mappedSemanticNames).toHaveProperty('size', 74);
-    expect(vfSemanticColorTokenNames.filter((name) => !mappedSemanticNames.has(name))).toEqual([
-      'colorBackgroundSurfaceHover',
-      'colorBackgroundSurfaceActive',
-      'colorBackgroundSurfaceSelected',
-    ]);
+    expect(mappedSemanticNames.size).toBeLessThan(vfSemanticColorTokenNames.length);
+    expect(mappedSemanticNames.has('colorBackgroundSurfaceSelectedHover')).toBe(false);
+    expect(mappedSemanticNames.has('colorTextLink')).toBe(false);
+    expect(mappedSemanticNames.has('colorInteractivePrimarySubtleForeground')).toBe(false);
 
     for (const [legacyName, semanticTargets] of mappings) {
       expect(legacyDefaultThemePresetSource.tokens, legacyName).toHaveProperty(legacyName);
@@ -147,11 +193,17 @@ describe('color token schema', () => {
         expect(semanticNames.has(semanticName), `${legacyName} -> ${semanticName}`).toBe(true);
 
         if (semanticName === legacyName) {
-          expect(semanticColorTokens[semanticName], `${legacyName} -> ${semanticName}`).toBe(
+          expect(semanticLightColorTokens[semanticName], `${legacyName} -> ${semanticName}`).toBe(
             legacyLightColorTokens[legacyName],
           );
+          expect(semanticDarkColorTokens[semanticName], `${legacyName} -> ${semanticName} dark`).toBe(
+            legacyDarkColorTokens[legacyName],
+          );
         } else {
-          expect(semanticColorTokens[semanticName], `${legacyName} -> ${semanticName}`).toContain(
+          expect(semanticLightColorTokens[semanticName], `${legacyName} -> ${semanticName}`).toContain(
+            `var(${legacyCssName})`,
+          );
+          expect(semanticDarkColorTokens[semanticName], `${legacyName} -> ${semanticName} dark`).toContain(
             `var(${legacyCssName})`,
           );
         }
@@ -159,7 +211,7 @@ describe('color token schema', () => {
     }
 
     expect(legacyColorTokenMappings.colorPrimary).toContain('colorInteractivePrimaryBackground');
-    expect(legacyColorTokenMappings.colorMuted).toContain('colorTextDisabled');
+    expect(legacyColorTokenMappings.colorMuted).toContain('colorTextMuted');
     expect(legacyColorTokenMappings.overlayBackdrop).toEqual(['colorBackgroundBackdrop']);
   });
 
@@ -176,12 +228,14 @@ describe('color token schema', () => {
 
     expect(lightResult.maxDepth).toBeLessThanOrEqual(MAX_CANONICAL_ALIAS_DEPTH);
     expect(darkResult.maxDepth).toBeLessThanOrEqual(MAX_CANONICAL_ALIAS_DEPTH);
+    expect(Math.max(lightResult.maxDepth, darkResult.maxDepth)).toBe(MAX_CANONICAL_ALIAS_DEPTH);
     expect(lightResult.referenceCount).toBeGreaterThan(0);
     expect(darkResult.referenceCount).toBeGreaterThan(0);
   });
 
   it('keeps the custom-prefix compatibility graph defined, acyclic, and bounded', () => {
     const config = resolveThemeConfig({ options: { prefix: 'brand' } });
+    const modeDepths: number[] = [];
 
     for (const [mode, tokens] of [
       ['light', config.preset.light],
@@ -193,13 +247,16 @@ describe('color token schema', () => {
         maxDepth: MAX_CUSTOM_PREFIX_ALIAS_DEPTH,
       });
 
-      expect(variables, mode).toHaveProperty('--brand-palette-neutral-50', '#f6f8fb');
+      expect(variables, mode).toHaveProperty('--brand-palette-neutral-50', 'oklch(97.8% 0.005 260)');
       expect(variables, mode).toHaveProperty('--vf-palette-neutral-50', 'var(--brand-palette-neutral-50)');
       expect(variables, mode).toHaveProperty('--brand-color-background-canvas', 'var(--vf-color-bg)');
       expect(variables, mode).toHaveProperty('--vf-color-background-canvas', 'var(--brand-color-background-canvas)');
       expect(result.maxDepth, mode).toBeLessThanOrEqual(MAX_CUSTOM_PREFIX_ALIAS_DEPTH);
       expect(result.referenceCount, mode).toBeGreaterThan(0);
+      modeDepths.push(result.maxDepth);
     }
+
+    expect(Math.max(...modeDepths)).toBe(MAX_CUSTOM_PREFIX_ALIAS_DEPTH);
   });
 
   it('rejects undefined references, cycles, and excessive alias depth', () => {
