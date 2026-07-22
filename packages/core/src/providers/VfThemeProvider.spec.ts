@@ -206,6 +206,53 @@ describe('VfThemeProvider', () => {
     themeRoot.remove();
   });
 
+  it('applies primitive and semantic overrides on the configured provider root', () => {
+    const themeRoot = document.createElement('div');
+    themeRoot.id = 'color-token-theme-root';
+    document.body.appendChild(themeRoot);
+
+    const wrapper = mount(VfThemeProvider, {
+      attachTo: themeRoot,
+      global: {
+        plugins: [
+          [
+            VueForgeCore,
+            {
+              defaultTheme: 'dark',
+              theme: {
+                extend: {
+                  palettePrimary500: '#123456',
+                },
+                dark: {
+                  colorBackgroundCanvas: '#101820',
+                },
+                options: {
+                  rootSelector: '#color-token-theme-root',
+                  attribute: 'data-engine-theme',
+                },
+              },
+            },
+          ],
+        ],
+      },
+      slots: {
+        default: ThemeConsumer,
+      },
+    });
+
+    expect(themeRoot.getAttribute('data-engine-theme')).toBe('dark');
+    expect(themeRoot.getAttribute('data-theme')).toBe('dark');
+    expect(themeRoot.getAttribute('data-vf-theme')).toBe('dark');
+    expect(getComputedStyle(themeRoot).getPropertyValue('--vf-palette-primary-500')).toBe('#123456');
+    expect(getComputedStyle(themeRoot).getPropertyValue('--vf-color-background-canvas')).toBe('#101820');
+    expect(document.getElementById('vf-theme-preset')?.textContent).toContain(
+      '--vf-color-interactive-primary-background:',
+    );
+
+    wrapper.unmount();
+    themeRoot.remove();
+  });
+
   it('mirrors a legacy attribute override without disconnecting the generated selector', () => {
     const themeRoot = document.createElement('div');
     themeRoot.id = 'theme-alias-root';

@@ -1,6 +1,6 @@
 ---
-title: "Guides"
-description: "Limitations and related packages for the core package"
+title: 'Guides'
+description: 'Limitations and related packages for the core package'
 order: 6
 ---
 
@@ -8,11 +8,9 @@ order: 6
 
 This section provides a quick overview before the detailed subsections below.
 
-
 ## Overview
 
 Practical integration notes, limitations, and related packages for this package.
-
 
 ## Common Integration Patterns
 
@@ -49,6 +47,12 @@ Start with foundation/composables (`useBreakpointValue`, `useScrollLock`), then 
 For heavy lazy-loaded UI (playgrounds, editors, large demo blocks), use the dedicated recipe:
 
 - [SkeletonGate + Async Recipe](/core/guides/skeleton-gate-async-recipe)
+
+### Color Architecture
+
+For the primitive, semantic, component, and VueForge 1.x compatibility layers, see:
+
+- [Color Tokens](/core/guides/color-tokens)
 
 ## Limitations
 

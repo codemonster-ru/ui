@@ -19,10 +19,18 @@ describe('theme bridge', () => {
     expect(config.preset.name).toBe(defaultThemePreset.name);
     expect(config.preset.light.colorPrimary).toBe('color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text))');
     expect(config.preset.light.controlHeightMd).toBe(defaultThemePreset.tokens.controlHeightMd);
-    expect(config.preset.dark.colorBg).toBe('#17191e');
-    expect(config.preset.dark.colorSurface).toBe('#20232a');
-    expect(config.preset.dark.colorSurfaceMuted).toBe('#272b33');
-    expect(config.preset.dark.colorBorder).toBe('#363b46');
+    expect(config.preset.dark.colorBg).toBe('var(--vf-palette-neutral-900)');
+    expect(config.preset.dark.colorSurface).toBe('var(--vf-palette-neutral-800)');
+    expect(config.preset.dark.colorSurfaceMuted).toBe('var(--vf-palette-neutral-700)');
+    expect(config.preset.dark.colorBorder).toBe('var(--vf-palette-neutral-600)');
+    expect(config.preset.light.paletteNeutral50).toBe('#f6f8fb');
+    expect(config.preset.dark.paletteNeutral50).toBe('#f6f8fb');
+    expect(config.preset.light.colorBackgroundCanvas).toBe('var(--vf-color-bg)');
+    expect(config.preset.dark.colorBackgroundCanvas).toBe('var(--vf-color-bg)');
+    expect(config.preset.light.colorInteractivePrimaryBackground).toBe('var(--vf-color-primary)');
+    expect(config.preset.dark.colorInteractivePrimaryBackground).toBe('var(--vf-color-primary)');
+    expect(config.preset.light.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
+    expect(config.preset.dark.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
     expect(config.preset.dark.fieldBackground).toBe('var(--vf-color-bg)');
     expect(defaultThemePreset.tokens.selectableColor).toBe('var(--vf-color-muted)');
     expect(defaultThemePreset.tokens.avatarSizeMd).toBe('2.25rem');
@@ -161,6 +169,7 @@ describe('theme bridge', () => {
       resolveThemeConfig({
         extend: {
           colorPrimary: '#123456',
+          palettePrimary500: '#234567',
         },
         options: {
           prefix: 'brand',
@@ -172,5 +181,11 @@ describe('theme bridge', () => {
     expect(style.textContent).toContain('--brand-color-primary: #123456;');
     expect(style.textContent).toContain('--vf-color-primary: var(--brand-color-primary);');
     expect(style.textContent).toContain('--vf-selectable-color: var(--brand-selectable-color);');
+    expect(style.textContent).toContain('--brand-palette-primary-500: #234567;');
+    expect(style.textContent).toContain('--vf-palette-primary-500: var(--brand-palette-primary-500);');
+    expect(style.textContent).toContain('--brand-color-interactive-primary-background: var(--vf-color-primary);');
+    expect(style.textContent).toContain(
+      '--vf-color-interactive-primary-background: var(--brand-color-interactive-primary-background);',
+    );
   });
 });

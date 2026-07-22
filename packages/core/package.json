@@ -266,11 +266,12 @@
     "format": "prettier --ignore-path ../../.prettierignore --write .",
     "lint": "eslint .",
     "prepack": "npm run build",
-    "test": "npm run check:css-contract && npm run check:css-parity && npm run check:form-geometry && npm run smoke:css-export && npm run smoke:consumer-css && vitest run --config vitest.config.ts",
+    "test": "npm run check:css-contract && npm run check:css-parity && npm run check:form-geometry && npm run smoke:css-export && npm run smoke:consumer-css && npm run smoke:theme-types && vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",
     "typecheck": "vue-tsc --noEmit",
     "smoke:css-export": "node ./scripts/smoke-css-export.mjs",
     "smoke:consumer-css": "node ./scripts/smoke-consumer-auto-css.mjs",
+    "smoke:theme-types": "node ./scripts/smoke-theme-types.mjs",
     "check:css-contract": "node ./scripts/check-css-contract.mjs",
     "check:css-parity": "node ./scripts/check-css-parity.mjs",
     "check:form-geometry": "node ./scripts/check-form-geometry.mjs"

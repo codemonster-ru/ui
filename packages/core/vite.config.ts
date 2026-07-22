@@ -117,6 +117,7 @@ export default defineConfig({
       include: ['src'],
       exclude: ['src/**/*.spec.ts', 'src/__tests__/**'],
       insertTypesEntry: true,
+      aliasesExclude: ['@codemonster-ru/vueforge-theme'],
     }),
   ],
   build: {

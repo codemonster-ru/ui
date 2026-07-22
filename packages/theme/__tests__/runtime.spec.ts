@@ -9,6 +9,8 @@ import {
   themeConfigsToCssText,
   themePresetToCssText,
   themeTokensToCssVars,
+  vfPrimitiveColorTokenNames,
+  vfSemanticColorTokenNames,
 } from '../src';
 import type { VfThemeTokens } from '../src';
 import { createTestThemePreset } from './helpers';
@@ -51,6 +53,68 @@ describe('theme runtime', () => {
     expect(cssVars['--vf-font-size-2xl']).toBe('1.125rem');
     expect(cssVars).not.toHaveProperty('--vf-breakpoint2xl');
     expect(cssVars).not.toHaveProperty('--vf-font-size2xl');
+  });
+
+  it('exports the complete primitive and semantic color token contracts', () => {
+    expect(vfPrimitiveColorTokenNames).toHaveLength(29);
+    expect(new Set(vfPrimitiveColorTokenNames)).toHaveProperty('size', 29);
+    expect(vfPrimitiveColorTokenNames).toContain('paletteNeutral1000');
+    expect(vfPrimitiveColorTokenNames).toContain('paletteWarning950');
+
+    expect(vfSemanticColorTokenNames).toHaveLength(77);
+    expect(new Set(vfSemanticColorTokenNames)).toHaveProperty('size', 77);
+    expect(vfSemanticColorTokenNames).toContain('colorFocusRing');
+    expect(vfSemanticColorTokenNames).toContain('colorBackgroundSurfaceSelected');
+    expect(vfSemanticColorTokenNames).toContain('colorStatusHelpActiveBackground');
+  });
+
+  it('serializes primitive and semantic color tokens with a custom prefix', () => {
+    const cssVars = themeTokensToCssVars(
+      {
+        paletteNeutral50: '#f6f8fb',
+        paletteWarning950: '#1f1300',
+        colorBackgroundCanvas: 'var(--brand-palette-neutral-50)',
+        colorInteractivePrimaryBackground: 'var(--brand-palette-primary-600)',
+        colorStatusWarningSolidForeground: 'var(--brand-palette-warning-950)',
+      },
+      'brand',
+    );
+
+    expect(cssVars['--brand-palette-neutral-50']).toBe('#f6f8fb');
+    expect(cssVars['--brand-palette-warning-950']).toBe('#1f1300');
+    expect(cssVars['--brand-color-background-canvas']).toBe('var(--brand-palette-neutral-50)');
+    expect(cssVars['--brand-color-interactive-primary-background']).toBe('var(--brand-palette-primary-600)');
+    expect(cssVars['--brand-color-status-warning-solid-foreground']).toBe('var(--brand-palette-warning-950)');
+  });
+
+  it('emits primitive and semantic color tokens through the resolved runtime config', () => {
+    const config = resolveThemeConfig({
+      preset: createTestThemePreset({
+        tokens: {
+          palettePrimary500: '#276cb5',
+          palettePrimary600: '#0e639c',
+          colorInteractivePrimaryBackground: 'var(--brand-palette-primary-600)',
+        },
+        dark: {
+          colorInteractivePrimaryBackground: 'var(--brand-palette-primary-500)',
+        },
+      }),
+      options: {
+        prefix: 'brand',
+      },
+    });
+
+    const cssText = themePresetToCssText(config);
+
+    expect(cssText.match(/--brand-palette-primary-500: #276cb5;/g)).toHaveLength(4);
+    expect(cssText.match(/--brand-palette-primary-600: #0e639c;/g)).toHaveLength(4);
+    expect(
+      cssText.match(/--brand-color-interactive-primary-background: var\(--brand-palette-primary-600\);/g),
+    ).toHaveLength(2);
+    expect(
+      cssText.match(/--brand-color-interactive-primary-background: var\(--brand-palette-primary-500\);/g),
+    ).toHaveLength(2);
+    expect(cssText).not.toContain('--vf-palette-primary-600');
   });
 
   it('preserves adjacent acronym and word boundaries in css variable names', () => {

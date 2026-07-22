@@ -13,6 +13,12 @@ import type {
 
 export type VfResolvedTheme = BaseVfResolvedTheme;
 export type VfThemeMode = BaseVfThemeMode;
+export type {
+  VfPrimitiveColorTokenName,
+  VfPrimitiveColorTokens,
+  VfSemanticColorTokenName,
+  VfSemanticColorTokens,
+} from '@codemonster-ru/vueforge-theme';
 export type { VfResolvedThemePresetOptions, VfThemePresetOptions };
 
 type BaseVfThemeTokensWithoutLegacyTypography = Omit<

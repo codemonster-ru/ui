@@ -1,18 +1,19 @@
 # VueForge: итоговый аудит цветовой системы
 
-Дата: 2026-07-21. Статус: **Phase 0 завершена; Phase 1 и последующие фазы не начинались**.
+Дата обновления: 2026-07-22. Статус: **Phase 1 завершена; palette values и component rendering сохранены**.
 
 Связанные документы:
 
 - [Инвентаризация цветов](./color-inventory.md)
 - [Аудит цветовой доступности](./accessibility-colors.md)
 - [Отчёт о реализации Phase 0](./phase-0-report.md)
+- [Отчёт о реализации Phase 1](./phase-1-report.md)
 
 ## Executive summary
 
 VueForge уже выглядит как аккуратная developer-oriented UI-библиотека: спокойная холодная neutral-база, узнаваемый синий primary, единый preset source of truth, token-based CSS без случайных HEX внутри core-компонентов и хороший базовый контраст основного/muted текста.
 
-До зрелой design system системе мешают не отдельные «неудачные оттенки», а архитектурные противоречия:
+Исходный аудит выявил следующие архитектурные и визуальные противоречия; transport drift из пунктов 4–6 закрыт Phase 0, а role architecture из пунктов 1–2 введена Phase 1 без component migration:
 
 1. Один chromatic token одновременно используется как текст/иконка и как solid background. В dark theme эти требования математически несовместимы; отсюда системные AA failures.
 2. `colorBorder` одновременно является почти невидимым декоративным divider и единственной границей form control.
@@ -39,6 +40,22 @@ Phase 0 закрыла только contract/build/runtime drift, не меня�
 - package CSS/export/consumer contracts и light/dark browser smoke покрывают затронутые пути.
 
 Цветовые и accessibility-находки ниже остаются открытыми. Значения palette tokens, Shiki palette, contrast ratios и visual character в Phase 0 не менялись. Полный перечень решений и проверок приведён в [отчёте Phase 0](./phase-0-report.md).
+
+## Результат Phase 1
+
+Phase 1 создала целевое разделение token roles без миграции component CSS и без замены палитры:
+
+- добавлены 29 primitive material tokens, содержащие только уже используемые HEX/black values;
+- введён контракт из 77 semantic roles: background, text, icon, border, interaction и пять status families по восемь ролей;
+- `colorFocusRing` входит и в сохранённый legacy contract, и в semantic set, поэтому новых semantic keys 76;
+- все 847 legacy keys сохранены; built-in preset расширен до 952 keys;
+- compatibility graph однонаправлен: semantic roles и текущие component aliases независимо разрешаются через legacy roots к primitives; component → semantic migration отложена до Phase 2;
+- public name tuples/types, static/runtime maps, full/component-entry, scoped, fallback и custom-prefix paths используют один contract;
+- foreground, solid background, subtle background, border и icon теперь являются разными public roles, даже когда их текущие material values совпадают;
+- отдельная help scale сохранена из-за реального публичного API и набора потребителей;
+- confirmed dead и ambiguous tokens только документированы как v2 candidates, но не удалены и не получили runtime warnings.
+
+Phase 1 не исправляет перечисленные ниже contrast failures: компоненты пока продолжают читать прежние aliases, а target OKLCH values и state migration относятся к Phase 2. Полная архитектура и mapping опубликованы в [Color Tokens guide](../core/guides/color-tokens.md).
 
 ## Сильные стороны, которые нужно сохранить
 
@@ -107,7 +124,7 @@ VueForge сейчас ближе всего к «сдержанной техни
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
 | Surface/elevation различаются на 1.04–1.24:1, `shadow:none` | Cards/layouts выглядят плоско; dark nesting теряется                           | `surface.subtle/elevated` + маленькая системная shadow scale после visual tuning              |
 | 54 duplicate alias groups и cross-component aliases         | 53 tokens равны text, 38 primary; изменение NavMenu влияет на MenuBar/Dropdown | оставить component token только как реальную boundary; убрать зависимости компонент→компонент |
-| Мёртвые публичные tokens                                    | 3 core color tokens, 20 Playground, 1 CodeBlock, 1 Layout token                | deprecation cycle; удалить только в major либо документировать extension point                |
+| Мёртвые публичные tokens                                    | 2 core color tokens, 20 Playground, 1 CodeBlock, 1 Layout token                | deprecation cycle; удалить только в major либо документировать extension point                |
 | Opacity на subtree                                          | Disabled/Header/Stepper/Tabs зависят от background                             | explicit disabled fg/bg/border; opacity только там, где итог проверяем                        |
 | Read-only/indeterminate/disabled gaps                       | Input/Textarea readonly неотличимы; Checkbox indeterminate отсутствует         | добавить модели и токены только там, где API действительно поддерживается                     |
 | Shadow/backdrop и inverse roles неявны                      | raw black recipes; Layout header uses text as background                       | `overlay.backdrop`, `shadow.overlay`, `surface.inverse`, `fg.on-inverse`                      |
@@ -156,50 +173,35 @@ VueForge сейчас ближе всего к «сдержанной техни
 - Showcase полезен структурно, но не показывает swatches, обе темы рядом, locked pseudo-states, local inverse theme, contrast results или screenshot baselines.
 - Опубликованный внешний docs-site не включён в screenshot-выводы: его HTML/маршруты были доступны для проверки структуры, но отдельный browser capture домена в окружении не завершился. Репозиторные docs и локальный showcase проверены полностью.
 
-## Целевая архитектура токенов
+## Архитектура токенов после Phase 1
 
 ```text
-Internal primitive scales (OKLCH)
-neutral / blue / green / cyan / amber / red / violet
-                       │
-                       ▼
-Public semantic contract
-surface / foreground / border / interaction / focus
-primary + status role sets / inverse / overlay / shadow / syntax
-                       │
-                       ▼
-Component decisions
-только реальные исключения и публичные customization boundaries
+Current 1.x component aliases ───────────┐
+                                        ├─→ legacy color roots ─→ 29 primitives
+77 public semantic roles ────────────────┘
+
+Phase 2 target: component decisions ─→ semantic roles
 ```
 
 ### 1. Primitive layer
 
-Primitive scales следует авторить в OKLCH с монотонным lightness/chroma, но не обязательно экспортировать каждый stop как публичный CSS token. Это внутренний материал для семантических тем, а не новый огромный API.
+Добавлены sparse scales `paletteNeutral*`, `palettePrimary*`, `paletteSuccess*`, `paletteInfo*`, `paletteWarning*`, `paletteDanger*` и `paletteHelp*`. Они содержат только 28 прежних HEX и используемый `black`; неиспользуемые промежуточные stops не создавались. Runtime source остаётся в HEX, поэтому Phase 1 не вносит OKLCH conversion/rounding drift.
 
 ### 2. Semantic layer
 
-Минимальный рекомендуемый набор:
+Контракт содержит 11 background, шесть text, четыре icon, восемь border, восемь interactive и 40 status roles. Каждая из success/warning/danger/info/help families разделена на solid background/foreground, subtle background/foreground, border, icon, hover и active. `colorFocusRing` сохранён как единственное пересечение с legacy set.
 
-- `surface.canvas`, `surface.default`, `surface.subtle`, `surface.elevated`, `surface.inverse`;
-- `foreground.default`, `muted`, `disabled`, `placeholder`, `on-inverse`;
-- `border.subtle`, `default`, `control`, при необходимости `strong`;
-- `interaction.hover`, `pressed`, `selected`;
-- `focus.ring`;
-- для `primary/success/info/warning/danger/help`: `foreground`, `solid`, `on-solid`, `subtle`, `border`, `graphic`;
-- `overlay.backdrop`, `shadow.overlay`;
-- `syntax.comment/keyword/string/number/property/punctuation`.
-
-Не следует добавлять accent, пока у продукта нет роли, отличной от primary/help. Токены должны описывать назначение, а не набор красивых swatches.
+Не добавлены accent и syntax roles: у accent нет отдельного product meaning, а Shiki migration относится к ecosystem/Phase 2+. Полный exact-name contract приведён в [Color Tokens guide](../core/guides/color-tokens.md).
 
 ### 3. Component layer
 
-Component tokens оправданы для tooltip inverse plane, dialog/drawer backdrop, switch-specific composition, code syntax adapter и отдельных complex component decisions. Простые aliases `buttonText → colorText` или зависимости `Dropdown → NavMenu` не должны быть самостоятельной архитектурой.
+Component tokens остаются оправданными для Alert 8% primary subtle recipe, overlay composition, switch-specific composition и CodeBlock syntax adapter. Простые aliases `buttonText → colorTextPrimary` не являются основанием для нового public token. Массовая migration существующих component aliases отложена до Phase 2.
 
-Schema должна быть единственным источником для TypeScript types, preset keys, CSS artifacts, docs metadata, deprecations и contrast fixtures. Build и runtime обязаны импортировать один serializer.
+Canonical name tuples являются source of truth для TypeScript types и contract tests; build и runtime продолжают импортировать один serializer из Phase 0.
 
-## Proposed target palette
+## Proposed target palette для Phase 2 — не реализована
 
-Это стартовая палитра для согласования, а не реализованный final visual. Она сохраняет текущий cool developer-oriented характер. OKLCH указан как authoring reference, HEX — как проверенный sRGB output/fallback.
+Таблицы ниже остаются отдельным design proposal для будущей accessibility/OKLCH phase. Ни одно из этих новых значений не применено в Phase 1. Реализованные primitives сохраняют исходные HEX, перечисленные в публичном guide.
 
 ### Neutral roles
 
@@ -263,17 +265,19 @@ Muted/surface: 6.30:1 light и 6.96:1 dark. Placeholder/surface: 4.97:1 и 6.40:
 
 Подробности: [отчёт о реализации Phase 0](./phase-0-report.md).
 
-### Phase 1 — semantic palette
+### Phase 1 — primitive/semantic architecture — **завершена**
 
-Файлы:
+Реализовано:
 
-- canonical token schema/palette modules в `packages/core/src/theme/`;
-- `default-preset-source.ts` или его замена;
-- generated CSS artifacts;
-- `packages/theme/src/types.ts`, core theme types;
-- contrast fixtures/tests.
+- canonical tuples/types для 29 primitives и 77 semantic roles;
+- existing-value primitive palette без новых OKLCH/HEX values;
+- 76 additive semantic keys и сохранённый semantic `colorFocusRing`;
+- built-in preset 952 keys при полном сохранении 847-key legacy API;
+- one-way compatibility mapping без undefined aliases и cycles;
+- exact light/dark, runtime/static, custom-prefix и scoped-theme contracts;
+- public naming, theming, migration и v2 deprecation documentation.
 
-Действия: internal OKLCH primitives; новые semantic roles; target light/dark values; inverse/overlay/shadow; без удаления legacy names.
+Подробности: [отчёт о реализации Phase 1](./phase-1-report.md).
 
 ### Phase 2 — core component states
 
@@ -284,7 +288,7 @@ Muted/surface: 6.30:1 light и 6.96:1 dark. Placeholder/surface: 4.97:1 и 6.40:
 - Vue components и tests только для подтверждённых state/a11y gaps;
 - showcase state matrix.
 
-Действия: focus/control/status/link mapping; state precedence; disabled/readonly/indeterminate; устранение color-only cues; reduced motion; full/subpath parity.
+Действия: component migration на semantic roles; target OKLCH/light-dark values; focus/control/status/link mapping; state precedence; disabled/readonly/indeterminate; устранение color-only cues; reduced motion; full/subpath parity.
 
 ### Phase 3 — ecosystem
 
@@ -364,6 +368,18 @@ Muted/surface: 6.30:1 light и 6.96:1 dark. Placeholder/surface: 4.97:1 и 6.40:
 
 Phase 0 не вводила automated contrast/Axe/screenshot-diff gate: это остаётся задачей последующих palette/accessibility phases. Снимки текущего smoke использовались для ручной проверки и не добавлены как новые baseline assets.
 
+## Проверка после Phase 1
+
+- Public name contracts фиксируют 29 primitives и 77 semantic roles без duplicate names.
+- Built-in preset/type/static/runtime maps содержат 952 keys: 847 legacy + 105 unique additions.
+- Light/dark и scoped maps имеют одинаковый полный key set.
+- Alias graph contract проверяет missing references, self-references и cycles.
+- Custom-prefix contract проверяет requested namespace и canonical `--vf-*` bridge.
+- Full stylesheet и component-entry paths продолжают использовать generated contract Phase 0.
+- Legacy material values и 1.x token names сравниваются с зафиксированным baseline.
+
+Итоговые workspace test/build/smoke команды и количественные результаты приведены в [отчёте Phase 1](./phase-1-report.md).
+
 ## Ограничения и решения после Phase 0
 
 1. Совместимый 1.x слой выбран и реализован для Phase 0; clean v2 остаётся отдельным решением.
@@ -371,7 +387,7 @@ Phase 0 не вводила automated contrast/Axe/screenshot-diff gate: это 
 3. Произвольный custom prefix сохранён; Core и Layouts runtime emit requested variables вместе с canonical compatibility aliases для существующего compiled component CSS.
 4. Динамическая вставка/замена configured Provider root без изменения mode не отслеживается; это редкий edge case, не блокирующий Phase 0.
 5. Изменение внешних stylesheets без DOM/attribute mutation не инициирует повторный snapshot Playground variables; mode/ancestor/reparenting cases покрыты.
-6. Статус `help`, elevation scale, OKLCH baseline и `#396fb6` остаются решениями последующих фаз.
+6. `help` зафиксирован как отдельная semantic family из-за существующего публичного tone и реальных consumers; target OKLCH values, elevation tuning и `#396fb6` остаются решениями последующих фаз.
 7. После будущих palette/semantic изменений потребуется новый visual pass опубликованного docs-site.
 
-Phase 0 завершена. Semantic tokens, OKLCH-палитра, accessibility-коррекция цветов и миграция компонентов не начинались.
+Phase 1 завершена. Target OKLCH-палитра, accessibility-коррекция значений и миграция компонентов не начинались и остаются scope Phase 2.
