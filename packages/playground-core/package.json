@@ -1,9 +1,12 @@
 {
   "name": "@codemonster-ru/vueforge-playground-core",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Framework-agnostic playground core runtime",
   "type": "module",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/playground-core#readme",
   "bugs": {
     "url": "https://github.com/codemonster-ru/vueforge/issues"
@@ -44,7 +47,9 @@
     "typescript": "^5.8.2"
   },
   "devDependencies": {
-    "tsup": "^8.5.0"
+    "eslint": "^9.39.4",
+    "tsup": "^8.5.0",
+    "vitest": "^3.2.6"
   },
   "publishConfig": {
     "access": "public"

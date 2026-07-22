@@ -21,7 +21,9 @@ const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
         ? exportTarget
         : typeof exportTarget?.import === 'string'
           ? exportTarget.import
-          : null;
+          : typeof exportTarget?.import?.default === 'string'
+            ? exportTarget.import.default
+            : null;
     return [exportKey, importTarget];
   })
   .filter(([, importTarget]) => typeof importTarget === 'string');
@@ -31,7 +33,9 @@ const componentTypeExportTargets = Object.entries(packageJson?.exports ?? {})
     const typesTarget =
       typeof exportTarget === 'object' && exportTarget !== null && typeof exportTarget.types === 'string'
         ? exportTarget.types
-        : null;
+        : typeof exportTarget?.import?.types === 'string'
+          ? exportTarget.import.types
+          : null;
     return [exportKey, typesTarget];
   })
   .filter(([, typesTarget]) => typeof typesTarget === 'string');

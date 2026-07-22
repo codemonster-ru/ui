@@ -1,9 +1,12 @@
 {
   "name": "@codemonster-ru/vueforge-playground",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "Vue 3 playground UI adapter for the VueForge playground core runtime.",
   "type": "module",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/playground#readme",
   "bugs": {
     "url": "https://github.com/codemonster-ru/vueforge/issues"
@@ -25,8 +28,11 @@
   "types": "./dist/index.d.ts",
   "exports": {
     "./ui": {
-      "types": "./dist/ui.d.ts",
-      "import": "./dist/auto/ui.js"
+      "import": {
+        "types": "./dist/ui.d.ts",
+        "node": "./dist/ui.js",
+        "default": "./dist/auto/ui.js"
+      }
     },
     "./runtime": {
       "types": "./dist/runtime.d.ts",
@@ -44,21 +50,25 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "@codemonster-ru/vueforge-playground-core": "^1.1.0",
-    "@codemonster-ru/vueforge-codeblock": "^3.6.1",
-    "@codemonster-ru/vueforge-core": "^1.32.0"
+    "@codemonster-ru/vueforge-playground-core": "^1.2.0",
+    "@codemonster-ru/vueforge-codeblock": "^3.7.0",
+    "@codemonster-ru/vueforge-core": "^1.36.0"
   },
   "devDependencies": {
     "@vue/test-utils": "^2.4.6",
     "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/server-renderer": "^3.5.35",
+    "eslint": "^9.39.4",
+    "globals": "^16.5.0",
     "jsdom": "^26.1.0",
+    "typescript": "^5.9.3",
     "vite": "^6.4.2",
     "vitest": "^3.2.4",
     "vue": "^3.5.20",
     "vue-tsc": "^2.2.12"
   },
   "scripts": {
-    "build": "rm -rf dist && vite build && vue-tsc --emitDeclarationOnly --declaration --declarationDir dist",
+    "build": "rm -rf dist && vite build && vue-tsc --emitDeclarationOnly --declaration --declarationDir dist && node ../../scripts/build/finalize-declarations.mjs dist",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "lint": "eslint .",
     "prepack": "npm run build",

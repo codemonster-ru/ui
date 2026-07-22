@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-icons",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Open-source Vue 3 icon library for the VueForge ecosystem.",
   "keywords": [
     "vue",
@@ -22,6 +22,10 @@
   },
   "author": "Kirill Kolesnikov",
   "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.ts.mjs",
   "types": "./dist/lib/index.d.ts",
@@ -29,10 +33,11 @@
     ".": {
       "import": {
         "types": "./dist/lib/index.d.ts",
+        "node": "./dist/index.node.mjs",
         "default": "./dist/index.ts.mjs"
       },
       "require": {
-        "types": "./dist/lib/index.d.ts",
+        "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
     },
@@ -41,11 +46,16 @@
   "files": [
     "dist"
   ],
+  "sideEffects": [
+    "**/*.css",
+    "dist/index.ts.mjs"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "dev": "vite dev --force --mode development",
+    "audit:centering": "node ./scripts/audit-icon-centering.mjs",
     "create-icon": "node ./scripts/create-icon.mjs",
     "generate": "node ./scripts/generate-icons.mjs",
     "validate-icons": "node ./scripts/generate-icons.mjs --validate-only",
@@ -53,20 +63,20 @@
     "format": "prettier --ignore-path ../../.prettierignore --write .",
     "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint .",
-    "build": "npm run generate && vite build --mode production",
+    "build": "npm run generate && vite build --mode production && node ../../scripts/build/finalize-declarations.mjs dist",
     "build:showcase": "vite build --config vite.showcase.config.mts",
     "typecheck": "vue-tsc --noEmit",
     "test": "npm run smoke && npm run render",
     "render": "node ./__tests__/render-consumer.mjs",
     "smoke": "npm run build && tsc -p tsconfig.smoke.json",
-    "prepack": "npm run build",
-    "release": "npm run build && npm run render && npm audit signatures && npm publish"
+    "prepack": "npm run build"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^20.14.10",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/server-renderer": "^3.5.12",
@@ -74,8 +84,9 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-vue": "^10.0.0",
     "globals": "^16.0.0",
+    "pngjs": "^7.0.0",
     "prettier": "^3.3.2",
-    "sass": "^1.77.8",
+    "sass": "~1.99.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.26.1",
     "vite": "^6.0.11",

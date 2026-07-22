@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import zlib from 'node:zlib';
@@ -19,16 +19,47 @@ const commonBuildOptions = {
 };
 const cases = [
   {
-    exportName: 'VfButton',
+    entry: "export { VfButton } from '@codemonster-ru/vueforge-core';\n",
+    fileName: 'core-root-button',
     maxGzipBytes: 4 * 1024,
     name: 'core root VfButton',
-    packageName: '@codemonster-ru/vueforge-core',
   },
   {
-    exportName: 'VfContainer',
+    cssMarker: '.vf-button',
+    entry: "export { VfButton } from '@codemonster-ru/vueforge-core/button';\n",
+    fileName: 'core-subpath-button',
+    forbiddenCssMarkers: ['.vf-accordion'],
+    maxCssGzipBytes: 4 * 1024,
+    maxGzipBytes: 5 * 1024,
+    name: 'core component VfButton with CSS',
+  },
+  {
+    entry: "export { VfButton, VfDialog, VfDataTable } from '@codemonster-ru/vueforge-core';\n",
+    fileName: 'core-multiple',
+    maxGzipBytes: 20 * 1024,
+    name: 'core root multiple components',
+  },
+  {
+    checkForbidden: false,
+    entry: "import * as VueForgeCore from '@codemonster-ru/vueforge-core';\nconsole.log(VueForgeCore);\n",
+    fileName: 'core-full',
+    minGzipBytes: 40 * 1024,
+    maxGzipBytes: 100 * 1024,
+    name: 'core full namespace',
+  },
+  {
+    entry: "export { VfContainer } from '@codemonster-ru/vueforge-layouts';\n",
+    fileName: 'layouts-root-container',
     maxGzipBytes: 4 * 1024,
     name: 'layouts root VfContainer',
-    packageName: '@codemonster-ru/vueforge-layouts',
+  },
+  {
+    cssMarker: '.vf-container',
+    entry: "export { VfContainer } from '@codemonster-ru/vueforge-layouts/container';\n",
+    fileName: 'layouts-subpath-container',
+    maxCssGzipBytes: 2 * 1024,
+    maxGzipBytes: 5 * 1024,
+    name: 'layouts component VfContainer with CSS',
   },
 ];
 const forbiddenOutput = [
@@ -43,12 +74,10 @@ function formatKiB(bytes) {
 
 try {
   for (const testCase of cases) {
-    const entryPath = join(temporaryDirectory, `${testCase.exportName}.js`);
-    const outputPath = join(temporaryDirectory, `${testCase.exportName}.bundle.js`);
-    writeFileSync(
-      entryPath,
-      `export { ${testCase.exportName} } from '${testCase.packageName}';\n`,
-    );
+    const entryPath = join(temporaryDirectory, `${testCase.fileName}.js`);
+    const outputPath = join(temporaryDirectory, `${testCase.fileName}.bundle.js`);
+    const cssOutputPath = join(temporaryDirectory, `${testCase.fileName}.bundle.css`);
+    writeFileSync(entryPath, testCase.entry);
 
     await build({
       ...commonBuildOptions,
@@ -59,6 +88,9 @@ try {
     const output = readFileSync(outputPath);
     const outputText = output.toString('utf8');
     const gzipBytes = zlib.gzipSync(output).length;
+    const cssOutput = existsSync(cssOutputPath) ? readFileSync(cssOutputPath) : null;
+    const cssOutputText = cssOutput?.toString('utf8') ?? '';
+    const searchableOutput = `${outputText}\n${cssOutputText}`;
 
     if (gzipBytes > testCase.maxGzipBytes) {
       throw new Error(
@@ -66,14 +98,42 @@ try {
       );
     }
 
-    for (const [description, matcher] of forbiddenOutput) {
-      if (matcher.test(outputText)) {
-        throw new Error(`${testCase.name} retained unrelated ${description}.`);
+    if (testCase.minGzipBytes && gzipBytes < testCase.minGzipBytes) {
+      throw new Error(
+        `${testCase.name} unexpectedly small: ${formatKiB(gzipBytes)} < ${formatKiB(testCase.minGzipBytes)}`,
+      );
+    }
+
+    if (testCase.checkForbidden !== false) {
+      for (const [description, matcher] of forbiddenOutput) {
+        if (matcher.test(searchableOutput)) {
+          throw new Error(`${testCase.name} retained unrelated ${description}.`);
+        }
       }
     }
 
+    if (testCase.cssMarker) {
+      if (!cssOutputText.includes(testCase.cssMarker)) {
+        throw new Error(`${testCase.name} did not retain ${testCase.cssMarker} styles.`);
+      }
+    }
+
+    for (const forbiddenCssMarker of testCase.forbiddenCssMarkers ?? []) {
+      if (cssOutputText.includes(forbiddenCssMarker)) {
+        throw new Error(`${testCase.name} retained unrelated ${forbiddenCssMarker} styles.`);
+      }
+    }
+
+    const cssGzipBytes = cssOutput ? zlib.gzipSync(cssOutput).length : 0;
+    if (testCase.maxCssGzipBytes && cssGzipBytes > testCase.maxCssGzipBytes) {
+      throw new Error(
+        `${testCase.name} CSS gzip budget exceeded: ${formatKiB(cssGzipBytes)} > ${formatKiB(testCase.maxCssGzipBytes)}`,
+      );
+    }
+
     console.log(
-      `[tree-shaking-check] ${testCase.name}: ${formatKiB(output.length)} raw, ${formatKiB(gzipBytes)} gzip`,
+      `[tree-shaking-check] ${testCase.name}: ${formatKiB(output.length)} raw, ${formatKiB(gzipBytes)} gzip` +
+        (cssOutput ? `; CSS ${formatKiB(cssOutput.length)} raw, ${formatKiB(cssGzipBytes)} gzip` : ''),
     );
   }
 

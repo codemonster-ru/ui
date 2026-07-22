@@ -109,11 +109,24 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
 
 function vueforgeCjsArtifactsPlugin(): Plugin {
   return {
-    name: 'vueforge-remove-cjs-only-css',
+    name: 'vueforge-finalize-cjs-artifacts',
     closeBundle() {
       const cjsCssPath = resolve(rootDir, 'dist/cjs-ssr.css');
       if (existsSync(cjsCssPath)) {
         rmSync(cjsCssPath);
+      }
+
+      const cjsTypeFacades = [
+        ['index.d.cts', './index.js'],
+        ['foundation-api.d.cts', './foundation-api.js'],
+        ['theme-api.d.cts', './theme-api.js'],
+      ] as const;
+
+      for (const [fileName, declarationTarget] of cjsTypeFacades) {
+        writeFileSync(
+          resolve(rootDir, 'dist', fileName),
+          `declare const moduleExports: typeof import('${declarationTarget}');\nexport = moduleExports;\n`,
+        );
       }
     },
   };
@@ -191,7 +204,7 @@ export default defineConfig(({ mode }) => {
               include: ['src'],
               exclude: ['src/**/*.spec.ts', 'src/__tests__/**'],
               insertTypesEntry: true,
-              aliasesExclude: ['@codemonster-ru/vueforge-theme'],
+              aliasesExclude: ['@codemonster-ru/vueforge-theme', '@codemonster-ru/vueforge-icons'],
             }),
           ]),
     ],

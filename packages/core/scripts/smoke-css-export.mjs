@@ -60,15 +60,26 @@ const overlayPrimitiveDeclarations = [
   '--vf-overlay-viewport-block-size:',
 ];
 
-const componentJsExportTargets = Object.entries(packageJson?.exports ?? {})
-  .filter(([exportKey, exportTarget]) => {
-    if (exportKey === '.' || exportKey === './foundation' || exportKey === './theme' || exportKey.endsWith('.css')) {
-      return false;
-    }
+const componentJsExports = Object.entries(packageJson?.exports ?? {}).filter(([exportKey]) => {
+  return exportKey !== '.' && exportKey !== './foundation' && exportKey !== './theme' && !exportKey.endsWith('.css');
+});
+const componentJsExportTargets = componentJsExports
+  .map(([exportKey, exportTarget]) => {
+    const importBranch = typeof exportTarget === 'object' && exportTarget !== null ? exportTarget.import : null;
+    const importTarget =
+      typeof importBranch === 'string'
+        ? importBranch
+        : typeof importBranch === 'object' && importBranch !== null && typeof importBranch.default === 'string'
+          ? importBranch.default
+          : null;
 
-    return typeof exportTarget === 'object' && exportTarget !== null && typeof exportTarget.import === 'string';
+    return [exportKey, importTarget];
   })
-  .map(([exportKey, exportTarget]) => [exportKey, exportTarget.import]);
+  .filter(([, importTarget]) => typeof importTarget === 'string');
+
+if (componentJsExportTargets.length !== componentJsExports.length) {
+  throw new Error('Every component JavaScript subpath must provide a browser import target.');
+}
 
 if (!cssExportTargets.length) {
   throw new Error('Expected at least one CSS export in package.json exports.');

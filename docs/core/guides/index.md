@@ -36,11 +36,14 @@ directly from the package root or from their component subpaths.
 
 The following items are listed in this section:
 
-- Component subpath imports (`@codemonster-ru/vueforge-core/button`, `.../dialog`) auto-load matching component CSS.
+- Component subpath imports (`@codemonster-ru/vueforge-core/button`, `.../dialog`) auto-load matching
+  component CSS. Add the shared `tokens.css`, `theme.css`, and `base.css` entries once.
 - `styles.css`: the opt-in full core stylesheet, including global baseline and every component style.
 - `foundation.css`: foundation-only layer for incremental adoption.
 - `tokens.css` + `theme.css`: when you need token/theme control separately.
-- Component CSS entries (`button.css`, `dialog.css`, `tabs.css`, etc.) for explicit route/page-level imports.
+- Component CSS entries (`button.css`, `dialog.css`, `tabs.css`, etc.) pair with named component
+  imports from the CSS-free package root for fully manual delivery. Browser component subpaths always
+  auto-load their CSS.
 
 ### Adopt Incrementally
 

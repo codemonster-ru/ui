@@ -7,6 +7,59 @@
 
 A Vite plugin for resolving VueForge playground virtual modules from local source files.
 
-## Documentation
+## Requirements
 
-For full documentation, visit [docs.codemonster.net/vueforge/playground-vite-plugin](https://docs.codemonster.net/vueforge/playground-vite-plugin/).
+- Node.js 18 or newer.
+- Vite `^6.0.0`, `^7.0.0`, or `^8.0.0`.
+
+## Install
+
+```bash
+npm install --save-dev @codemonster-ru/vueforge-playground-vite-plugin
+```
+
+```bash
+pnpm add --save-dev @codemonster-ru/vueforge-playground-vite-plugin
+```
+
+```bash
+yarn add --dev @codemonster-ru/vueforge-playground-vite-plugin
+```
+
+## Configure Vite
+
+```ts
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
+import { vueforgePlaygroundVirtualPlugin } from '@codemonster-ru/vueforge-playground-vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    vueforgePlaygroundVirtualPlugin({
+      entries: {
+        example: fileURLToPath(new URL('./src/examples/example.ts', import.meta.url)),
+      },
+    }),
+  ],
+});
+```
+
+Consumer code can then import `virtual:vueforge-playground/example`. Entries support default,
+namespace, and named export modes. The package is side-effect free, ESM-only, and does not ship
+browser runtime code or CSS.
+
+The plugin executes in Vite's Node process and is safe to use for both client and SSR builds. It
+does not need Vue at runtime; the files exposed through virtual modules define their own runtime
+dependencies.
+
+The correctly cased public option types use the `VueForge*` prefix. Deprecated `Vueforge*` aliases
+remain available for source compatibility.
+
+## Package-local documentation
+
+See
+[src/index.ts](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-vite-plugin/src/index.ts)
+and
+[CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-vite-plugin/CHANGELOG.md).
+Playground UI and runtime setup is documented in
+[`@codemonster-ru/vueforge-playground`](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground/README.md).

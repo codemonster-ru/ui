@@ -1,6 +1,6 @@
 import vue from '@vitejs/plugin-vue';
 import dts from 'vite-plugin-dts';
-import { rmSync } from 'node:fs';
+import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import { fileURLToPath, URL } from 'url';
@@ -39,6 +39,22 @@ const removeUnnecessaryFiles = () => {
       for (const file of ['main.d.ts', 'App.vue.d.ts']) {
         rmSync(resolve(outDir, file), { force: true });
       }
+
+      const esmEntryPath = resolve(outDir, 'index.ts.mjs');
+      const esmEntry = readFileSync(esmEntryPath, 'utf8');
+      const cssImport = "import './index.css';";
+      const cssImportIndex = esmEntry.indexOf(cssImport);
+
+      if (cssImportIndex === -1) {
+        throw new Error(`Expected ${cssImport} in the browser ESM entry.`);
+      }
+
+      const nodeEntry = `${esmEntry.slice(0, cssImportIndex)}${esmEntry.slice(cssImportIndex + cssImport.length)}`;
+      writeFileSync(resolve(outDir, 'index.node.mjs'), nodeEntry);
+      writeFileSync(
+        resolve(outDir, 'index.d.cts'),
+        "declare const moduleExports: typeof import('./lib/index.js');\nexport = moduleExports;\n",
+      );
     },
   };
 };

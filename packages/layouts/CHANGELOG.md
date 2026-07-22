@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.22.0
+
+### Added
+
+- Added accurate named/default declarations and CSS-free Node ESM entries for all component subpaths.
+- Added a CommonJS declaration facade and packed SSR/type consumer coverage.
+
+### Changed
+
+- Unified Layouts theme serialization with the shared theme engine and aligned full, runtime, and
+  component CSS artifacts.
+- Updated internal floors to Core 1.36 and Theme 1.4, with Vue 3.5 as the minimum peer version.
+- Made the Layouts plugin singleton tree-shakeable and declared the supported Node engine.
+
+### Fixed
+
+- Fixed `VfAppShell` controlled/uncontrolled sidebar state and removed its initial spurious update.
+- Replaced invalid AppShell grid shorthand and synchronized subheader geometry between full and
+  component CSS.
+- Fixed component subpath declarations that previously described the root plugin instead of the
+  selected component.
+
+### Breaking changes
+
+- None in the documented public API. Existing root, component, theme, and CSS entry names remain
+  available.
+
 ## 1.21.0
 
 ### Changed

@@ -35,8 +35,8 @@ try {
     stdio: 'pipe',
   });
 
-  const uiTarget = packageJson.exports['./ui']?.import;
-  const uiTypesTarget = packageJson.exports['./ui']?.types;
+  const uiTarget = packageJson.exports['./ui']?.import?.default;
+  const uiTypesTarget = packageJson.exports['./ui']?.import?.types;
   const runtimeTarget = packageJson.exports['./runtime']?.import;
   if (typeof uiTarget !== 'string' || typeof uiTypesTarget !== 'string' || typeof runtimeTarget !== 'string') {
     throw new Error('Consumer smoke failed: invalid ./ui or ./runtime export target.');
@@ -54,7 +54,7 @@ try {
     throw new Error('Consumer smoke failed: ./runtime export target unexpectedly references CSS import.');
   }
 
-  if (!uiTypes.includes("export * from './index'")) {
+  if (!uiTypes.includes("export * from './index.js'")) {
     throw new Error('Consumer smoke failed: ./ui declarations do not re-export the public index.');
   }
 
