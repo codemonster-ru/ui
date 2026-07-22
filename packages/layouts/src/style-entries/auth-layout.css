@@ -2,7 +2,7 @@
   display: flex;
   min-width: var(--vf-layout-min-width);
   inline-size: var(--vf-layout-size-full);
-  color: var(--vf-color-text);
+  color: var(--vf-color-text-primary, var(--vf-color-text));
   background: var(--vf-layout-auth-layout-background);
   padding-block: var(--vf-layout-auth-layout-padding-block);
 }

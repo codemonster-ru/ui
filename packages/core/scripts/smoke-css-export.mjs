@@ -30,22 +30,22 @@ const overlayDependentCssExports = new Set([
 const transitionGuardExcludedCssExports = new Set(['./tokens.css', './theme.css', './foundation.css']);
 const colorArchitectureSnippets = {
   './tokens.css': [
-    '--vf-palette-neutral-50: #f6f8fb;',
+    '--vf-palette-neutral-50: oklch(97.8% 0.005 260);',
     '--vf-color-background-canvas: var(--vf-color-bg);',
     '--vf-color-status-help-active-background:',
   ],
   './theme.css': [
-    '--vf-palette-neutral-50: #f6f8fb;',
+    '--vf-palette-neutral-50: oklch(97.8% 0.005 260);',
     '--vf-color-background-canvas: var(--vf-color-bg);',
     '--vf-color-status-help-active-background:',
   ],
   './foundation.css': [
-    '--vf-palette-neutral-50: #f6f8fb;',
+    '--vf-palette-neutral-50: oklch(97.8% 0.005 260);',
     '--vf-color-background-canvas: var(--vf-color-bg);',
     '--vf-color-status-help-active-background:',
   ],
   './styles.css': [
-    '--vf-palette-neutral-50: #f6f8fb;',
+    '--vf-palette-neutral-50: oklch(97.8% 0.005 260);',
     '--vf-color-background-canvas: var(--vf-color-bg);',
     '--vf-color-status-help-active-background:',
   ],

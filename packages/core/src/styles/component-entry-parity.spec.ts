@@ -125,7 +125,7 @@ describe('component entry CSS parity', () => {
     expect(fullCss).toContain('letter-spacing: var(--vf-nav-menu-group-label-letter-spacing);');
     expect(fullCss).toContain('line-clamp: 3;');
     expect(fullCss).toContain('line-clamp: 2;');
-    expect(fullCss).toContain("html:where([data-theme='dark'], [data-vf-theme='dark'])");
+    expect(fullCss).not.toContain("html:where([data-theme='dark'], [data-vf-theme='dark'])");
     expect(fullCss).not.toContain("html[data-vf-theme='dark']");
   });
 });

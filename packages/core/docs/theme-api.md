@@ -25,7 +25,10 @@ In package terms:
   - `VfThemeProvider`
   - `useTheme()`
 
-The canonical built-in VueForge design language lives in [src/theme/default-preset.ts](../src/theme/default-preset.ts), with the primitive and semantic color-name contract shared by `@codemonster-ru/vueforge-theme`.
+The canonical built-in preset assembly lives in [src/theme/default-preset-source.ts](../src/theme/default-preset-source.ts),
+while primitive values and mode-specific semantic maps live in
+[src/theme/color-token-schema.ts](../src/theme/color-token-schema.ts). The color-name contract is shared by
+`@codemonster-ru/vueforge-theme`.
 
 Static CSS files still exist as the package baseline:
 
@@ -36,20 +39,17 @@ These are fallback defaults for consumers who import the package CSS. Runtime th
 
 ## Color Token Architecture
 
-The built-in color contract has three token layers. During the VueForge 1.x transition, existing component aliases and the new semantic roles both resolve through the compatibility roots:
+The built-in color contract has three token layers. Components consume semantic decisions while existing VueForge 1.x component tokens remain the local customization boundary:
 
 ```text
-current component alias ────────────┐
-                                    ├─→ legacy 1.x root → primitive material
-new semantic role ──────────────────┘
-
-Phase 2 target: component decision → semantic role
+component CSS → existing component token → semantic role → primitive material
+                                            └─ legacy 1.x fallback
 ```
 
-- 29 `palette*` primitives contain only material values already present in the light and dark themes.
-- 77 `color*` semantic roles describe backgrounds, text, icons, borders, interaction, and five status families.
+- 66 `palette*` primitives form seven mode-independent OKLCH scales.
+- 85 `color*` semantic roles describe backgrounds, text, icons, borders, interaction, links, and five status families.
 - All 847 pre-Phase-1 tokens remain available. No legacy key is removed or renamed.
-- `colorFocusRing` belongs to both the existing and semantic sets, so Phase 1 adds 105 unique keys and the built-in preset contains 952 keys in total.
+- `colorFocusRing` belongs to both the existing and semantic sets, so the color architecture adds 150 unique keys and the built-in preset contains 997 keys in total.
 
 The shared theme package exports the canonical tuples and their derived types; Core re-exports the same contract:
 
@@ -95,8 +95,12 @@ app.use(VueForgeCore, {
   theme: {
     preset: defaultThemePreset,
     extend: {
-      // Compatibility root: affects current 1.x components and its semantic aliases.
-      colorPrimary: '#ff5a36',
+      colorInteractivePrimaryBackground: '#0f766e',
+      colorInteractivePrimaryHoverBackground: '#0d655f',
+      colorInteractivePrimaryActiveBackground: '#0a524d',
+      colorInteractivePrimaryForeground: '#ffffff',
+      // Keep this only for legacy 1.x consumers that still read the flat root.
+      colorPrimary: '#0f766e',
     },
   },
   defaultTheme: 'system',
@@ -133,12 +137,24 @@ app.use(VueForgeCore, {
     extend: {
       palettePrimary600: '#0f766e',
       colorInteractivePrimaryBackground: 'var(--vf-palette-primary-600)',
+      colorInteractivePrimaryHoverBackground: '#0d655f',
+      colorInteractivePrimaryActiveBackground: '#0a524d',
+      colorInteractivePrimaryForeground: '#ffffff',
     },
   },
 });
 ```
 
-Core component state migration is intentionally deferred to Phase 2. For VueForge 1.x components that still consume a legacy root such as `colorPrimary`, override that legacy root or the component token. The new semantic contract is additive and available now; it does not silently change existing component recipes.
+Core component defaults now resolve through semantic roles with VueForge 1.x fallbacks. Existing component-token overrides still win because component CSS continues to consume that boundary. A legacy root such as `colorPrimary` remains supported, but it can no longer safely define every solid, subtle, selected, hover, and active decision by itself; override the relevant semantic roles when those decisions need to move together.
+
+Base component-token overrides remain effective, but newly independent compound states are semantic-first. For example, a
+custom `tabsTabActiveBackground` controls the selected base and remains the compatibility fallback; customize
+`colorBackgroundSurfaceSelectedHover` and `colorBackgroundSurfaceSelectedActive` as well when the complete selected recipe
+must change.
+
+The public `buttonSolidHoverFilter` and `buttonSolidActiveFilter` fields are retained, while the built-in preset now sets
+both to `none`. Legacy custom presets that still provide `brightness(...)` apply it in addition to the new semantic state
+background. Set the filters to `none` when migrating those backgrounds to independent hover and active roles.
 
 ### `preset`
 
@@ -151,10 +167,20 @@ const customPreset = createThemePreset({
   name: 'custom',
   tokens: {
     ...defaultThemePreset.tokens,
+    colorInteractivePrimaryBackground: '#0f766e',
+    colorInteractivePrimaryHoverBackground: '#0d655f',
+    colorInteractivePrimaryActiveBackground: '#0a524d',
+    colorInteractivePrimaryForeground: '#ffffff',
     colorPrimary: '#0f766e',
   },
   dark: {
+    ...defaultThemePreset.dark,
+    colorInteractivePrimaryBackground: '#5eead4',
+    colorInteractivePrimaryHoverBackground: '#45d6c4',
+    colorInteractivePrimaryActiveBackground: '#2bbfac',
+    colorInteractivePrimaryForeground: '#102a2a',
     colorPrimary: '#5eead4',
+    colorPrimaryContrast: '#102a2a',
   },
 });
 ```
@@ -306,7 +332,8 @@ const { activeId } = useTableOfContents({
 Current behavior:
 
 - presets are defined in TS
-- the built-in preset contains 952 keys: 847 retained legacy keys, 29 primitives, and 76 additional semantic keys
+- the built-in preset contains 997 keys: 847 retained legacy keys, 66 primitives, and 84 additional semantic keys
+- light and dark modes provide complete 85-role semantic maps; the dark preset emits 137 intentional overrides
 - CSS variables are emitted through the same serializer for runtime and static artifacts
 - the plugin injects a `<style>` tag with light and dark token values
 - full, scoped-theme, fallback, and custom-prefix paths share the same token contract

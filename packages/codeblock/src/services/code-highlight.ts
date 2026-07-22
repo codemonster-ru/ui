@@ -1,12 +1,18 @@
 import { escapeCodeHtml, renderPlainCodeLines } from '../utils/plain-code';
 import type { HighlighterGeneric } from 'shiki/core';
+import {
+  VUEFORGE_SHIKI_DARK_THEME_NAME,
+  VUEFORGE_SHIKI_LIGHT_THEME_NAME,
+  createVueForgeShikiTheme,
+} from '../themes/vueforge';
 
 type ShikiLanguageLoader = keyof typeof languageLoaders;
-type ShikiThemeName = keyof typeof shikiThemes;
+type ShikiThemeName = typeof VUEFORGE_SHIKI_LIGHT_THEME_NAME | typeof VUEFORGE_SHIKI_DARK_THEME_NAME;
 
 const languageLoaders = {
   bash: () => import('@shikijs/langs/bash'),
   css: () => import('@shikijs/langs/css'),
+  diff: () => import('@shikijs/langs/diff'),
   dotenv: () => import('@shikijs/langs/dotenv'),
   html: () => import('@shikijs/langs/html'),
   javascript: () => import('@shikijs/langs/javascript'),
@@ -18,11 +24,7 @@ const languageLoaders = {
   vue: () => import('@shikijs/langs/vue'),
 };
 
-const shikiThemes = {
-  'github-dark': () => import('@shikijs/themes/github-dark'),
-  'github-light': () => import('@shikijs/themes/github-light'),
-};
-
+// Kept for VueForge 1.x source compatibility. Highlighting uses the package-owned themes below.
 export const SHIKI_LIGHT_THEME = 'github-light';
 export const SHIKI_DARK_THEME = 'github-dark';
 
@@ -44,10 +46,14 @@ let getHighlighterPromise: Promise<HighlighterGeneric<ShikiLanguageLoader, Shiki
 async function loadHighlighter() {
   if (!getHighlighterPromise) {
     getHighlighterPromise = (async () => {
-      const [{ createBundledHighlighter }, { createJavaScriptRegexEngine }] = await Promise.all([
-        import('shiki/core'),
-        import('shiki/engine/javascript'),
-      ]);
+      const [{ createBundledHighlighter, createCssVariablesTheme }, { createJavaScriptRegexEngine }] =
+        await Promise.all([import('shiki/core'), import('shiki/engine/javascript')]);
+      const lightTheme = createVueForgeShikiTheme('light', createCssVariablesTheme);
+      const darkTheme = createVueForgeShikiTheme('dark', createCssVariablesTheme);
+      const shikiThemes = {
+        [VUEFORGE_SHIKI_DARK_THEME_NAME]: () => Promise.resolve(darkTheme),
+        [VUEFORGE_SHIKI_LIGHT_THEME_NAME]: () => Promise.resolve(lightTheme),
+      };
 
       const createHighlighter = createBundledHighlighter({
         langs: languageLoaders,
@@ -195,7 +201,7 @@ export const highlightCodeLines = async (
     }
     const result = highlighter.codeToTokens(normalizedCode, {
       lang: normalizedLanguage,
-      theme: theme === 'dark' ? SHIKI_DARK_THEME : SHIKI_LIGHT_THEME,
+      theme: theme === 'dark' ? VUEFORGE_SHIKI_DARK_THEME_NAME : VUEFORGE_SHIKI_LIGHT_THEME_NAME,
     });
 
     return result.tokens.map((lineTokens) =>
@@ -215,7 +221,7 @@ export const highlightCodeLines = async (
             }
           }
 
-          return `<span class="vf-codeblock__shiki-token vf-codeblock__shiki-token" style="${escapeAttribute(styles.join('; '))}">${escapeCodeHtml(token.content)}</span>`;
+          return `<span class="vf-codeblock__shiki-token" style="${escapeAttribute(styles.join('; '))}">${escapeCodeHtml(token.content)}</span>`;
         })
         .join(''),
     );

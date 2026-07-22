@@ -29,7 +29,13 @@
   width: 100%;
 
   --vf-tabs-list-background: var(--vf-playground-tab-bg);
-  --vf-tabs-list-border-color: var(--vf-playground-border);
+  --vf-tabs-list-border-color: var(--vf-playground-tab-border);
+  --vf-tabs-tab-background: var(--vf-playground-tab-bg);
+  --vf-tabs-tab-color: var(--vf-playground-tab-text);
+  --vf-tabs-tab-active-background: var(--vf-playground-tab-active-bg);
+  --vf-tabs-tab-active-color: var(--vf-playground-tab-active-text);
+  --vf-tabs-indicator-color: var(--vf-playground-tab-active-border);
+  --vf-tabs-focus-ring-color: var(--vf-playground-focus-ring-color);
   --vf-control-height-md: var(--vf-playground-bar-height);
   --vf-field-padding-md: var(--vf-surface-padding-compact);
 }
