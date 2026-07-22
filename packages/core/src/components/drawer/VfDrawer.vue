@@ -39,6 +39,9 @@ interface VfDrawerProps {
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
   closable?: boolean;
+  ariaLabel?: string;
+  ariaLabelledby?: string;
+  ariaDescribedby?: string;
 }
 
 const props = withDefaults(defineProps<VfDrawerProps>(), {
@@ -57,6 +60,9 @@ const props = withDefaults(defineProps<VfDrawerProps>(), {
   closeOnOverlayClick: true,
   closeOnEscape: true,
   closable: true,
+  ariaLabel: undefined,
+  ariaLabelledby: undefined,
+  ariaDescribedby: undefined,
 });
 
 const emit = defineEmits<{
@@ -120,7 +126,9 @@ const rootClasses = computed(() =>
 );
 const rootStyles = computed<StyleValue>(() => [drawerVariables.value, attrs.style as StyleValue]);
 const rootAttrs = computed(() => {
-  return Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'));
+  return Object.fromEntries(
+    Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style' && !key.startsWith('aria-')),
+  );
 });
 const teleportDisabled = computed(
   () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,
@@ -132,6 +140,7 @@ const resolvedScrollLockTarget = computed(() => {
 
   return props.scrollLockTarget;
 });
+const shouldLockScroll = computed(() => isOpen.value && props.scrollLockTarget !== false);
 const teleportTarget = computed(() => {
   if (typeof props.teleportTo === 'string') {
     return props.teleportTo;
@@ -148,7 +157,9 @@ const contentClasses = computed(() =>
 );
 
 const hasHeaderSlot = computed(() => Boolean(drawerSlots.header));
-const labelledBy = computed<string | undefined>(() => (props.title || hasHeaderSlot.value ? titleId.value : undefined));
+const labelledBy = computed<string | undefined>(() =>
+  props.ariaLabelledby ?? (!props.ariaLabel && (props.title || hasHeaderSlot.value) ? titleId.value : undefined),
+);
 
 function close() {
   disclosure.close();
@@ -197,7 +208,7 @@ useFocusTrap(contentRef, {
   enabled: isOpen,
 });
 
-useScrollLock(isOpen, {
+useScrollLock(shouldLockScroll, {
   target: resolvedScrollLockTarget,
 });
 
@@ -236,18 +247,23 @@ onBeforeUnmount(() => {
         <section
           ref="contentRef"
           :class="contentClasses"
+          :aria-label="props.ariaLabel"
           :aria-labelledby="labelledBy"
+          :aria-describedby="props.ariaDescribedby"
           aria-modal="true"
           role="dialog"
           tabindex="-1"
         >
           <header v-if="title || $slots.header" class="vf-drawer__header">
             <div>
-              <slot name="header">
+              <div v-if="hasHeaderSlot" :id="titleId">
+                <slot name="header" :title-id="titleId" />
+              </div>
+              <template v-else>
                 <h2 v-if="title" :id="titleId" class="vf-drawer__title">
                   {{ title }}
                 </h2>
-              </slot>
+              </template>
             </div>
 
             <div class="vf-drawer__actions">

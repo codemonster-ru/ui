@@ -290,6 +290,6 @@ export function createVueForgeLayouts() {
   return plugin;
 }
 
-export const VueForgeLayouts = createVueForgeLayouts();
+export const VueForgeLayouts = /* @__PURE__ */ createVueForgeLayouts();
 
 export default VueForgeLayouts;

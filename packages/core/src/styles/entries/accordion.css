@@ -29,7 +29,7 @@
   font-weight: var(--vf-font-weight-medium);
   line-height: var(--vf-text-body-line-height);
   cursor: pointer;
-  text-align: left;
+  text-align: start;
 }
 
 .vf-accordion__trigger[aria-expanded='true'] {

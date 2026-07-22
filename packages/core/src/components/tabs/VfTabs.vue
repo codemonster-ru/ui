@@ -40,6 +40,7 @@ const fallbackValue = computed(() => props.items.find((item) => !item.disabled)?
 const internalValue = ref(props.defaultValue ?? fallbackValue.value);
 const isControlled = computed(() => props.modelValue !== undefined);
 const activeValue = computed(() => props.modelValue ?? internalValue.value ?? fallbackValue.value);
+const activeItem = computed(() => props.items.find((item) => item.value === activeValue.value));
 
 let listResizeObserver: ResizeObserver | null = null;
 
@@ -53,8 +54,12 @@ function updateScrollState() {
   }
 
   const maxScrollLeft = list.scrollWidth - list.clientWidth;
-  canScrollLeft.value = list.scrollLeft > 1;
-  canScrollRight.value = maxScrollLeft - list.scrollLeft > 1;
+  const directionHost = list.closest('[dir]');
+  const isRtl =
+    directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' || window.getComputedStyle(list).direction === 'rtl';
+  const scrollOffset = isRtl ? Math.abs(Math.min(list.scrollLeft, 0)) : list.scrollLeft;
+  canScrollLeft.value = isRtl ? maxScrollLeft - scrollOffset > 1 : scrollOffset > 1;
+  canScrollRight.value = isRtl ? scrollOffset > 1 : maxScrollLeft - scrollOffset > 1;
 }
 
 watch(
@@ -101,7 +106,17 @@ function handleKeydown(event: KeyboardEvent, currentItem: VfTabItem) {
     return;
   }
 
-  if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+  const target = event.currentTarget instanceof Element ? event.currentTarget : null;
+  const directionHost = target?.closest('[dir]');
+  const isRtl =
+    directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' ||
+    (!directionHost && document.documentElement.getAttribute('dir')?.toLowerCase() === 'rtl');
+  const movesForward =
+    event.key === 'ArrowDown' || (isRtl ? event.key === 'ArrowLeft' : event.key === 'ArrowRight');
+  const movesBackward =
+    event.key === 'ArrowUp' || (isRtl ? event.key === 'ArrowRight' : event.key === 'ArrowLeft');
+
+  if (movesForward) {
     event.preventDefault();
     const nextItem = enabledItems[(currentIndex + 1) % enabledItems.length];
     activateTab(nextItem);
@@ -109,7 +124,7 @@ function handleKeydown(event: KeyboardEvent, currentItem: VfTabItem) {
     return;
   }
 
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+  if (movesBackward) {
     event.preventDefault();
     const nextItem = enabledItems[(currentIndex - 1 + enabledItems.length) % enabledItems.length];
     activateTab(nextItem);
@@ -133,12 +148,20 @@ function handleKeydown(event: KeyboardEvent, currentItem: VfTabItem) {
   }
 }
 
-function tabId(value: string) {
-  return `${baseId.value}-tab-${value}`;
+function tabId(item: VfTabItem) {
+  return item.tabId ?? `${baseId.value}-tab-${item.value}`;
 }
 
-function panelId(value: string) {
-  return `${baseId.value}-panel-${value}`;
+function panelId(item: VfTabItem) {
+  return item.panelId ?? `${baseId.value}-panel-${item.value}`;
+}
+
+function controlledPanelId(item: VfTabItem) {
+  if (!slots.panel && !item.panelId) {
+    return undefined;
+  }
+
+  return panelId(item);
 }
 
 function updateIndicator() {
@@ -156,8 +179,10 @@ function updateIndicator() {
     return;
   }
 
-  const tabStart = activeTab.offsetLeft - list.scrollLeft;
-  const tabEnd = tabStart + activeTab.offsetWidth;
+  const listBounds = list.getBoundingClientRect();
+  const tabBounds = activeTab.getBoundingClientRect();
+  const tabStart = tabBounds.left - listBounds.left;
+  const tabEnd = tabStart + tabBounds.width;
   const leftScrollButton =
     canScrollLeft.value && listContainer
       ? (listContainer.querySelector('.vf-tabs__scroll-button--left') as HTMLElement | null)
@@ -276,14 +301,14 @@ onBeforeUnmount(() => {
       <div role="tablist" aria-orientation="horizontal">
         <button
           v-for="(item, index) in items"
-          :id="tabId(item.value)"
+          :id="tabId(item)"
           :key="item.value"
           :ref="
             (element) => {
               tabRefs[index] = element as HTMLElement | null;
             }
           "
-          :aria-controls="panelId(item.value)"
+          :aria-controls="controlledPanelId(item)"
           :aria-selected="activeValue === item.value"
           :disabled="item.disabled"
           :tabindex="activeValue === item.value ? 0 : -1"
@@ -315,14 +340,14 @@ onBeforeUnmount(() => {
     </VfHorizontalScroller>
 
     <div
-      v-if="activeValue && slots.panel"
-      :id="panelId(activeValue)"
-      :aria-labelledby="tabId(activeValue)"
+      v-if="activeItem && slots.panel"
+      :id="panelId(activeItem)"
+      :aria-labelledby="tabId(activeItem)"
       class="vf-tabs__panel"
       role="tabpanel"
       tabindex="0"
     >
-      <slot name="panel" v-bind="{ activeValue }" />
+      <slot name="panel" v-bind="{ activeValue: activeItem.value }" />
     </div>
   </div>
 </template>

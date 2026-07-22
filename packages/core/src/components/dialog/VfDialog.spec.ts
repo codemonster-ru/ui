@@ -34,6 +34,30 @@ describe('VfDialog', () => {
     expect(document.activeElement?.textContent).toBe('Confirm');
   });
 
+  it('wires custom labels and supports an explicit accessible name', async () => {
+    const wrapper = mount(VfDialog, {
+      attachTo: document.body,
+      props: { open: true },
+      slots: {
+        header: '<span>Custom heading</span>',
+        description: '<span>Custom description</span>',
+      },
+    });
+    await nextTick();
+
+    const dialog = document.body.querySelector('[role="dialog"]');
+    expect(document.getElementById(dialog?.getAttribute('aria-labelledby') ?? '')?.textContent).toContain(
+      'Custom heading',
+    );
+    expect(document.getElementById(dialog?.getAttribute('aria-describedby') ?? '')?.textContent).toContain(
+      'Custom description',
+    );
+
+    await wrapper.setProps({ ariaLabel: 'Explicit dialog name' });
+    expect(dialog?.getAttribute('aria-label')).toBe('Explicit dialog name');
+    expect(dialog?.hasAttribute('aria-labelledby')).toBe(false);
+  });
+
   it('emits close requests for overlay clicks and escape', async () => {
     const wrapper = mount(VfDialog, {
       attachTo: document.body,

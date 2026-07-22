@@ -1,4 +1,5 @@
 import { escapeCodeHtml, renderPlainCodeLines } from '../utils/plain-code';
+import type { CodeBlockFallbackLanguage, CodeBlockHighlightOptions } from '../types';
 import type { HighlighterGeneric } from 'shiki/core';
 import {
   VUEFORGE_SHIKI_DARK_THEME_NAME,
@@ -29,12 +30,6 @@ export const SHIKI_LIGHT_THEME = 'github-light';
 export const SHIKI_DARK_THEME = 'github-dark';
 
 const escapeAttribute = (value: string): string => escapeCodeHtml(value).replaceAll('"', '&quot;');
-
-type FallbackLanguage = 'plaintext' | 'text';
-interface HighlightRuntimeOptions {
-  allowedLanguages?: string[];
-  fallbackLanguage?: FallbackLanguage;
-}
 
 const loadedLanguages = new Set<ShikiLanguageLoader>();
 const loadingLanguages = new Map<ShikiLanguageLoader, Promise<void>>();
@@ -149,7 +144,7 @@ const resolveAllowlist = (allowedLanguages?: string[]) =>
 
 const getDefaultAllowlist = () => new Set(['plaintext', ...Object.keys(languageLoaders)]);
 
-const warnDisallowedLanguage = (language: string, fallbackLanguage: FallbackLanguage) => {
+const warnDisallowedLanguage = (language: string, fallbackLanguage: CodeBlockFallbackLanguage) => {
   if (!import.meta.env?.DEV || warnedDisallowedLanguages.has(language)) {
     return;
   }
@@ -160,7 +155,7 @@ const warnDisallowedLanguage = (language: string, fallbackLanguage: FallbackLang
   );
 };
 
-const resolveLanguageWithAllowlist = (language: string, options?: HighlightRuntimeOptions): string => {
+const resolveLanguageWithAllowlist = (language: string, options?: CodeBlockHighlightOptions): string => {
   const allowlist = options?.allowedLanguages ? resolveAllowlist(options.allowedLanguages) : getDefaultAllowlist();
   const requestedLanguage = normalizeAllowlistLanguage(language);
   const fallbackLanguage = options?.fallbackLanguage ?? 'plaintext';
@@ -178,7 +173,7 @@ export const highlightCodeLines = async (
   code: string,
   theme: 'light' | 'dark',
   highlight = true,
-  options?: HighlightRuntimeOptions,
+  options?: CodeBlockHighlightOptions,
 ): Promise<string[]> => {
   const normalizedCode = (code || '').replace(/\r\n/g, '\n');
 
@@ -235,7 +230,7 @@ export const highlightCodeBlock = async (
   code: string,
   theme: 'light' | 'dark' = 'light',
   highlight = true,
-  options?: HighlightRuntimeOptions,
+  options?: CodeBlockHighlightOptions,
 ): Promise<string> => (await highlightCodeLines(language, code, theme, highlight, options)).join('\n');
 
 export const highlightCodeLine = async (
@@ -243,7 +238,7 @@ export const highlightCodeLine = async (
   line: string,
   theme: 'light' | 'dark' = 'light',
   highlight = true,
-  options?: HighlightRuntimeOptions,
+  options?: CodeBlockHighlightOptions,
 ): Promise<string> => (await highlightCodeLines(language, line, theme, highlight, options))[0] ?? '';
 
 export const preloadCodeBlockLanguages = async (languages: string[], allowedLanguages?: string[]) => {

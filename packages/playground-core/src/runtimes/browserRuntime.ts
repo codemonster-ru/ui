@@ -246,6 +246,7 @@ interface BuildResult {
 function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildOptions): BuildResult {
   const visited = new Map<string, string>();
   const moduleUrls = new Map<string, string>();
+  const compiling: string[] = [];
   const errors: PlaygroundError[] = [];
 
   const importRegex =
@@ -293,6 +294,15 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
       return visited.get(filePath) as string;
     }
 
+    const cycleStart = compiling.indexOf(filePath);
+    if (cycleStart !== -1) {
+      const cycle = [...compiling.slice(cycleStart), filePath];
+      const fromFile = compiling[compiling.length - 1] ?? filePath;
+      const message = `Circular import detected: ${cycle.join(' -> ')}`;
+      errors.push(makeError(message, 'circular', filePath, fromFile));
+      return `throw new Error(${escapeJsString(message)});`;
+    }
+
     const source = files[filePath];
     if (typeof source !== 'string') {
       errors.push(makeError(`Entry file not found: ${filePath}`, 'unresolved', filePath, filePath));
@@ -301,6 +311,7 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
       return empty;
     }
 
+    compiling.push(filePath);
     const sourceJs = filePath.endsWith('.ts') ? transpileTs(source) : source;
     let usesStyleHelpers = false;
 
@@ -383,6 +394,7 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
     });
 
     const withHelpers = usesStyleHelpers ? `${STYLE_HELPERS}\n${transformed}` : transformed;
+    compiling.pop();
     visited.set(filePath, withHelpers);
     return withHelpers;
   }

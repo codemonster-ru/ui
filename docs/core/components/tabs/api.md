@@ -28,7 +28,7 @@ Available slots and their slot props.
 | Name | Parameters | ReturnType | Description |
 | --- | --- | --- | --- |
 | `tab` | `[scope: { item: VfTabItem; isActive: boolean; index: number }]` | `void` | custom tab node (`{ item, isActive, index }`) |
-| `panel` | `[scope: { activeValue: string \| undefined }]` | `void` | custom panel node (`{ activeValue }`) |
+| `panel` | `[scope: { activeValue: string }]` | `void` | Custom panel node (`{ activeValue }`). |
 
 ## Events
 
@@ -44,7 +44,7 @@ Exported interfaces related to this component.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `VfTabItem` | `interface` | `—` | Tab item definition with value/label and optional disabled state. |
+| `VfTabItem` | `{ value: string; label: string; disabled?: boolean; tabId?: string; panelId?: string }` | `—` | Tab definition. Stable IDs connect tabs to externally rendered panels; without an internal or external panel, `aria-controls` is omitted. |
 
 ## Types
 

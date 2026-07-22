@@ -1,7 +1,20 @@
-import { onBeforeUnmount, onMounted, toValue, type MaybeRefOrGetter, type Ref } from 'vue';
+import {
+  onBeforeUnmount,
+  onMounted,
+  toValue,
+  watch,
+  type MaybeRefOrGetter,
+  type Ref,
+  type WatchStopHandle,
+} from 'vue';
 
-interface UseFocusTrapOptions {
+export interface UseFocusTrapOptions {
   enabled?: MaybeRefOrGetter<boolean>;
+}
+
+interface FocusScopeEntry {
+  target: Ref<HTMLElement | null>;
+  activationOrder: number;
 }
 
 const FOCUSABLE_SELECTOR = [
@@ -13,56 +26,133 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(', ');
 
+const activeTraps: FocusScopeEntry[] = [];
+const activeBranches: FocusScopeEntry[] = [];
+let activationOrder = 0;
+let documentListener: ((event: KeyboardEvent) => void) | null = null;
+
 function getFocusableElements(container: HTMLElement) {
   return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-    (element) => !element.hasAttribute('hidden') && element.getAttribute('aria-hidden') !== 'true',
+    (element) =>
+      !element.hasAttribute('hidden') &&
+      !element.closest('[inert]') &&
+      element.getAttribute('aria-hidden') !== 'true' &&
+      !element.closest('[aria-hidden="true"]'),
   );
 }
 
-export function useFocusTrap(target: Ref<HTMLElement | null>, options: UseFocusTrapOptions = {}) {
-  const listener = (event: KeyboardEvent) => {
-    if (event.key !== 'Tab' || toValue(options.enabled) === false) {
-      return;
-    }
+function removeActiveEntry(entries: FocusScopeEntry[], entry: FocusScopeEntry) {
+  const index = entries.indexOf(entry);
 
-    const container = target.value;
+  if (index >= 0) {
+    entries.splice(index, 1);
+  }
+}
 
-    if (!container) {
-      return;
-    }
+function getTopmostTrap() {
+  return activeTraps.reduce<FocusScopeEntry | null>(
+    (current, candidate) =>
+      current === null || candidate.activationOrder > current.activationOrder ? candidate : current,
+    null,
+  );
+}
 
-    const focusableElements = getFocusableElements(container);
+function handleDocumentKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Tab' || event.defaultPrevented) {
+    return;
+  }
 
-    if (focusableElements.length === 0) {
-      event.preventDefault();
-      container.focus();
-      return;
-    }
+  const trap = getTopmostTrap();
+  const container = trap?.target.value;
 
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-    const activeElement = document.activeElement;
+  if (!trap || !container) {
+    return;
+  }
 
-    if (event.shiftKey) {
-      if (activeElement === firstElement || activeElement === container) {
-        event.preventDefault();
-        lastElement.focus();
-      }
+  const branchContainers = activeBranches
+    .filter((branch) => branch.activationOrder > trap.activationOrder)
+    .sort((left, right) => left.activationOrder - right.activationOrder)
+    .map((branch) => branch.target.value)
+    .filter((branch): branch is HTMLElement => branch instanceof HTMLElement);
+  const focusableElements = [container, ...branchContainers].flatMap(getFocusableElements);
 
-      return;
-    }
+  if (focusableElements.length === 0) {
+    event.preventDefault();
+    container.focus();
+    return;
+  }
 
-    if (activeElement === lastElement) {
-      event.preventDefault();
-      firstElement.focus();
-    }
-  };
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+  const activeElement = document.activeElement;
+  const activeIsInScope =
+    container.contains(activeElement) || branchContainers.some((branch) => branch.contains(activeElement));
+
+  if (!activeIsInScope) {
+    event.preventDefault();
+    (event.shiftKey ? lastElement : firstElement).focus();
+    return;
+  }
+
+  if (event.shiftKey && (activeElement === firstElement || activeElement === container)) {
+    event.preventDefault();
+    lastElement.focus();
+    return;
+  }
+
+  if (!event.shiftKey && activeElement === lastElement) {
+    event.preventDefault();
+    firstElement.focus();
+  }
+}
+
+function refreshDocumentListener() {
+  if (activeTraps.length > 0 && !documentListener && typeof document !== 'undefined') {
+    documentListener = handleDocumentKeydown;
+    document.addEventListener('keydown', documentListener);
+    return;
+  }
+
+  if (activeTraps.length === 0 && documentListener && typeof document !== 'undefined') {
+    document.removeEventListener('keydown', documentListener);
+    documentListener = null;
+  }
+}
+
+function useActiveFocusEntry(
+  entries: FocusScopeEntry[],
+  entry: FocusScopeEntry,
+  enabled: MaybeRefOrGetter<boolean> | undefined,
+) {
+  let stopEnabledWatch: WatchStopHandle | undefined;
 
   onMounted(() => {
-    document.addEventListener('keydown', listener);
+    stopEnabledWatch = watch(
+      () => toValue(enabled) !== false,
+      (active) => {
+        removeActiveEntry(entries, entry);
+        if (active) {
+          entry.activationOrder = ++activationOrder;
+          entries.push(entry);
+        }
+        refreshDocumentListener();
+      },
+      { immediate: true, flush: 'sync' },
+    );
   });
 
   onBeforeUnmount(() => {
-    document.removeEventListener('keydown', listener);
+    stopEnabledWatch?.();
+    removeActiveEntry(entries, entry);
+    refreshDocumentListener();
   });
+}
+
+export function useFocusTrap(target: Ref<HTMLElement | null>, options: UseFocusTrapOptions = {}) {
+  useActiveFocusEntry(activeTraps, { target, activationOrder: 0 }, options.enabled);
+}
+
+/** Registers a teleported focusable subtree as part of the currently active modal focus scope. */
+export function useFocusScopeBranch(target: Ref<HTMLElement | null>, enabled: MaybeRefOrGetter<boolean>) {
+  useActiveFocusEntry(activeBranches, { target, activationOrder: 0 }, enabled);
 }

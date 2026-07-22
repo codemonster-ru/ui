@@ -289,6 +289,21 @@ describe('VfMenuBar', () => {
     wrapper.unmount();
   });
 
+  it('mirrors horizontal menu navigation in rtl', async () => {
+    const wrapper = mount(VfMenuBar, {
+      attachTo: document.body,
+      props: { items },
+      attrs: { dir: 'rtl' },
+    });
+
+    const products = wrapper.get('[data-vf-menu-value="products"]');
+    (products.element as HTMLElement).focus();
+    await products.trigger('keydown', { key: 'ArrowLeft' });
+    await nextTick();
+
+    expect(document.activeElement?.getAttribute('data-vf-menu-value')).toBe('pricing');
+  });
+
   it('opens submenus, moves within them, and restores focus with the keyboard', async () => {
     const wrapper = mount(VfMenuBar, {
       attachTo: document.body,

@@ -4,6 +4,7 @@ import { flip, offset, shift, type MiddlewareType, type PlacementType } from '@c
 import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
+import { useFocusScopeBranch } from '@/composables/useFocusTrap';
 import { vfMotionDurationsMs } from '@/theme/motion';
 import { cx } from '@/utils/classes';
 import type { VfControlSize, VfDropdownPlacement, VfSelectOption } from '@/types/components';
@@ -62,6 +63,8 @@ const transitionDuration = {
 
 const disclosure = useDisclosure();
 const isOpen = disclosure.isOpen;
+
+useFocusScopeBranch(menuRef, isOpen);
 
 const selectedOption = computed(() => props.options.find((option) => option.value === props.modelValue));
 
@@ -169,7 +172,7 @@ const menuStyles = computed(() => ({
 }));
 
 function getItems() {
-  return Array.from(menuRef.value?.querySelectorAll<HTMLElement>('[role="option"]') ?? []);
+  return Array.from(menuRef.value?.querySelectorAll<HTMLElement>('[role="option"]:not(:disabled)') ?? []);
 }
 
 async function syncSelectedIntoView(options: { focus?: boolean } = {}) {
@@ -179,7 +182,9 @@ async function syncSelectedIntoView(options: { focus?: boolean } = {}) {
   });
 
   const items = getItems();
-  const selectedIndex = props.options.findIndex((option) => option.value === props.modelValue && !option.disabled);
+  const selectedIndex = props.options
+    .filter((option) => !option.disabled)
+    .findIndex((option) => option.value === props.modelValue);
 
   const targetItem = items[Math.max(selectedIndex, 0)];
 
@@ -306,7 +311,7 @@ function onMenuKeydown(event: KeyboardEvent) {
   }
 
   if (event.key === 'Enter' || event.key === ' ') {
-    const option = props.options[currentIndex];
+    const option = props.options.filter((item) => !item.disabled)[currentIndex];
 
     if (!option) {
       return;
@@ -347,7 +352,13 @@ useEscapeKey(
 
 <template>
   <div :class="[wrapperClasses, externalClass]" :style="externalStyle">
-    <input v-if="typeof attrs.name === 'string'" type="hidden" :name="attrs.name" :value="props.modelValue" />
+    <input
+      v-if="typeof attrs.name === 'string'"
+      type="hidden"
+      :name="attrs.name"
+      :value="props.modelValue"
+      :disabled="props.disabled"
+    />
 
     <button
       :id="typeof attrs.id === 'string' ? attrs.id : triggerId"
@@ -415,6 +426,7 @@ useEscapeKey(
             role="option"
             :aria-selected="option.value === props.modelValue"
             :disabled="option.disabled"
+            tabindex="-1"
             @click="selectOption(option, { restoreFocus: false })"
           >
             {{ option.label }}

@@ -8,6 +8,7 @@ Component props and their default values.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
+| `as?` | `string` | `div` | Underlying HTML tag name inside the outer layout container. |
 | `layout?` | `'content' \| 'sidebar-content' \| 'sidebar-content-aside'` | `content` | Layout preset used to arrange page regions. |
 | `fillViewport?` | `boolean` | `false` | Expands layout to viewport height. |
 | `edgeNotches?` | `boolean` | `false` | Enables decorative edge-notch accents for document layout. |

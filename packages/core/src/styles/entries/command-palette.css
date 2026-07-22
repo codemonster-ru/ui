@@ -41,7 +41,14 @@
   display: flex;
   flex-direction: column;
   width: min(100%, var(--vf-command-palette-content-width));
-  max-height: var(--vf-command-palette-max-height, var(--vf-command-palette-content-max-height));
+  max-height: min(
+    var(--vf-command-palette-max-height, var(--vf-command-palette-content-max-height)),
+    calc(100vh - var(--vf-command-palette-offset-top) - var(--vf-overlay-viewport-padding))
+  );
+  max-height: min(
+    var(--vf-command-palette-max-height, var(--vf-command-palette-content-max-height)),
+    calc(100dvh - var(--vf-command-palette-offset-top) - var(--vf-overlay-viewport-padding))
+  );
   overflow: hidden;
   padding: 0;
   border: var(--vf-overlay-border-width) solid var(--vf-dialog-content-border-color);
@@ -146,7 +153,7 @@
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
   padding: var(--vf-nav-menu-pills-item-padding);
-  text-align: left;
+  text-align: start;
   transition:
     background-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
     color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),

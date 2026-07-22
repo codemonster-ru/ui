@@ -35,3 +35,5 @@ const ready = ref(false);
 ```
 
 Use `normalizeContentSpacing` when the gated content has outer margins (for example `VfCodeBlock`) and you need tighter skeleton-to-content height matching.
+
+While `ready` is false, the gate exposes `aria-busy="true"` and makes the hidden content subtree inert so keyboard and pointer users cannot interact with invisible controls.

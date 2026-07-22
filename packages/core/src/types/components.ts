@@ -59,6 +59,10 @@ export interface VfTabItem {
   value: string;
   label: string;
   disabled?: boolean;
+  /** Stable DOM id for the tab trigger when it controls an external panel. */
+  tabId?: string;
+  /** DOM id of an external panel controlled by this tab. */
+  panelId?: string;
 }
 
 export interface VfStepperItem {

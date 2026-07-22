@@ -82,8 +82,12 @@ function updateScrollState() {
   }
 
   const maxScrollLeft = viewport.scrollWidth - viewport.clientWidth;
-  canScrollLeft.value = viewport.scrollLeft > 1;
-  canScrollRight.value = maxScrollLeft - viewport.scrollLeft > 1;
+  const directionHost = viewport.closest('[dir]');
+  const isRtl =
+    directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' || window.getComputedStyle(viewport).direction === 'rtl';
+  const scrollOffset = isRtl ? Math.abs(Math.min(viewport.scrollLeft, 0)) : viewport.scrollLeft;
+  canScrollLeft.value = isRtl ? maxScrollLeft - scrollOffset > 1 : scrollOffset > 1;
+  canScrollRight.value = isRtl ? scrollOffset > 1 : maxScrollLeft - scrollOffset > 1;
   emitState();
 }
 
@@ -126,7 +130,10 @@ function scrollBy(direction: 'left' | 'right') {
 
   viewport.scrollTo({
     left: nextScrollLeft,
-    behavior: 'smooth',
+    behavior:
+      typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
   });
 }
 

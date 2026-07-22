@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createScopedThemeModeSelector, serializeThemeTokensToCssVars } from '../../theme/src/css-vars';
@@ -16,6 +16,13 @@ const generatedBreakpointsPath = resolve(generatedStylesDir, 'generated-breakpoi
 const generatedTokensPath = resolve(generatedStylesDir, 'tokens.css');
 const generatedThemePath = resolve(generatedStylesDir, 'theme.css');
 const fallbackThemeAttribute = 'data-vf-theme';
+
+function writeCssArtifact(filePath: string, contents: string) {
+  mkdirSync(generatedStylesDir, { recursive: true });
+  const temporaryPath = `${filePath}.${process.pid}.tmp`;
+  writeFileSync(temporaryPath, contents);
+  renameSync(temporaryPath, filePath);
+}
 
 function cssVarsToText(cssVars: Record<string, string>) {
   return Object.entries(cssVars)
@@ -50,8 +57,7 @@ function buildBreakpointCss() {
     '',
   ];
 
-  mkdirSync(generatedStylesDir, { recursive: true });
-  writeFileSync(generatedBreakpointsPath, lines.join('\n'));
+  writeCssArtifact(generatedBreakpointsPath, lines.join('\n'));
 }
 
 function buildTokensCss() {
@@ -67,8 +73,7 @@ function buildTokensCss() {
     '',
   ];
 
-  mkdirSync(generatedStylesDir, { recursive: true });
-  writeFileSync(generatedTokensPath, lines.join('\n'));
+  writeCssArtifact(generatedTokensPath, lines.join('\n'));
 }
 
 function buildThemeCss() {
@@ -135,8 +140,7 @@ function buildThemeCss() {
     '',
   ];
 
-  mkdirSync(generatedStylesDir, { recursive: true });
-  writeFileSync(generatedThemePath, lines.join('\n'));
+  writeCssArtifact(generatedThemePath, lines.join('\n'));
 }
 
 export function buildThemeCssArtifacts() {

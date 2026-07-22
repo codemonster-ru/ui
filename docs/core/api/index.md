@@ -17,7 +17,8 @@ This page covers package integration APIs and shared utilities. Component-specif
 
 The following items are listed in this section:
 
-- `default` / `VueForgeCore` / `createVueForgeCore`: install VueForge Core components.
+- `default` / `VueForgeCore`: theme/configuration plugin singleton.
+- `createVueForgeCore`: creates a fresh theme/configuration plugin instance.
 - `VfThemeProvider`: provider component for theme context.
 
 ```ts
@@ -26,6 +27,10 @@ import '@codemonster-ru/vueforge-core/styles.css';
 
 app.use(VueForgeCore);
 ```
+
+The plugin resolves and applies theme variables and provides theme-mode defaults to
+`VfThemeProvider`. It does not globally register components. Import component exports directly
+from the package root or use component subpaths with auto CSS.
 
 ## Components
 

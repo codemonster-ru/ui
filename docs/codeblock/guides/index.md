@@ -57,7 +57,7 @@ setCodeBlockThemeVars(
 
 The following items are listed in this section:
 
-- Peer dependency: `vue ^3.4.0`.
+- Peer dependency: `vue ^3.5.0`.
 - Browser-only behavior for runtime style injection (`setCodeBlockThemeVars`).
 
 ## Related Packages

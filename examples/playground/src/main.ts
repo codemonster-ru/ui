@@ -1,6 +1,5 @@
 import { createApp } from 'vue';
 import VueForgeLayouts from '@codemonster-ru/vueforge-layouts';
-import { VfPlaygroundPlugin } from '@codemonster-ru/vueforge-playground/ui';
 
 import '@codemonster-ru/vueforge-core/styles.css';
 import './sections/core/core-showcase.css';
@@ -14,5 +13,4 @@ createApp(App)
     defaultTheme: 'system',
     themeStorageKey: 'codemonster-showcase-theme'
   })
-  .use(VfPlaygroundPlugin)
   .mount('#app');

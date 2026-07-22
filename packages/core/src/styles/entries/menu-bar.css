@@ -133,7 +133,7 @@
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
   text-decoration: none;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   transition:
     background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
@@ -297,20 +297,20 @@
 
 .vf-menu-bar__submenu--root {
   top: calc(100% + var(--vf-surface-gap-compact));
-  left: 0;
+  inset-inline-start: 0;
 }
 
 .vf-menu-bar__submenu--teleported {
   position: absolute;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
   pointer-events: auto;
-  will-change: left, top;
+  will-change: inset-inline-start, top;
 }
 
 .vf-menu-bar__submenu--nested {
   top: 0;
-  left: calc(100% + var(--vf-menu-bar-submenu-offset-inline));
+  inset-inline-start: calc(100% + var(--vf-menu-bar-submenu-offset-inline));
 }
 
 .vf-menu-bar__submenu-list {

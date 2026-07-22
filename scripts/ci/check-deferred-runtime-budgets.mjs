@@ -20,7 +20,11 @@ const routeKeys = {
   playground: 'src/PlaygroundShowcase.vue'
 };
 
-const forbiddenSrcMatchers = [/node_modules\/shiki\//, /node_modules\/@shikijs\//, /packages\/playground-core\/src\//];
+const forbiddenSrcMatchers = [
+  /node_modules\/shiki\//,
+  /node_modules\/@shikijs\//,
+  /packages\/playground(?:-core)?\/src\//,
+];
 
 const getByKey = (key) => manifest[key] ?? null;
 
@@ -86,6 +90,13 @@ const ENTRY_GZIP_BUDGET = 95 * 1024;
 
 if (entryGzip > ENTRY_GZIP_BUDGET) {
   console.error(`[deferred-check] Entry gzip budget exceeded: ${formatKiB(entryGzip)} > ${formatKiB(ENTRY_GZIP_BUDGET)}`);
+  process.exit(1);
+}
+
+const initialGraph = collectStaticImportGraph(['index.html']);
+const initialForbidden = containsForbiddenRuntime(initialGraph);
+if (initialForbidden) {
+  console.error(`[deferred-check] Initial static graph includes forbidden Playground UI/runtime: ${initialForbidden}`);
   process.exit(1);
 }
 

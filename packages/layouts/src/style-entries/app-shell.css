@@ -11,6 +11,7 @@
   padding: var(--vf-layout-aside-padding-block) var(--vf-layout-aside-padding-inline);
 }
 
+/* stylelint-disable declaration-block-no-redundant-longhand-properties, no-descending-specificity -- App shell layout states mirror the full stylesheet and are easier to verify with explicit grid longhands and grouped state selectors. */
 .vf-app-shell {
   --vf-sticky-header-offset: var(--vf-layout-header-height);
   --vf-sticky-subheader-offset: var(--vf-layout-sticky-subheader-offset-default);
@@ -47,16 +48,18 @@
   display: grid;
   min-width: var(--vf-layout-size-zero);
   min-height: var(--vf-layout-size-full);
-  grid-template:
-    'sidebar content aside' minmax(var(--vf-layout-size-zero), 1fr)
+  grid-template-areas: 'sidebar content aside';
+  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+  grid-template-columns:
     minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-width))
     minmax(var(--vf-layout-size-zero), 1fr)
     minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-aside-width));
 }
 
 .vf-app-shell--sidebar-content > .vf-app-shell__body > .vf-app-shell__body-container > .vf-app-shell__body-grid {
-  grid-template:
-    'sidebar content' minmax(var(--vf-layout-size-zero), 1fr)
+  grid-template-areas: 'sidebar content';
+  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+  grid-template-columns:
     minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-width))
     minmax(var(--vf-layout-size-zero), 1fr);
 }
@@ -65,7 +68,9 @@
   > .vf-app-shell__body
   > .vf-app-shell__body-container
   > .vf-app-shell__body-grid {
-  grid-template: 'content' minmax(var(--vf-layout-size-zero), 1fr) / minmax(var(--vf-layout-size-zero), 1fr);
+  grid-template-areas: 'content';
+  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+  grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
 }
 
 .vf-header-area {
@@ -146,8 +151,9 @@
   > .vf-app-shell__body
   > .vf-app-shell__body-container
   > .vf-app-shell__body-grid {
-  grid-template:
-    'sidebar content aside' minmax(var(--vf-layout-size-zero), 1fr)
+  grid-template-areas: 'sidebar content aside';
+  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+  grid-template-columns:
     minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-collapsed-width))
     minmax(var(--vf-layout-size-zero), 1fr)
     minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-aside-width));
@@ -157,8 +163,9 @@
   > .vf-app-shell__body
   > .vf-app-shell__body-container
   > .vf-app-shell__body-grid {
-  grid-template:
-    'sidebar content' minmax(var(--vf-layout-size-zero), 1fr)
+  grid-template-areas: 'sidebar content';
+  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+  grid-template-columns:
     minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-collapsed-width))
     minmax(var(--vf-layout-size-zero), 1fr);
 }
@@ -169,7 +176,9 @@
   > .vf-app-shell__body
   > .vf-app-shell__body-container
   > .vf-app-shell__body-grid {
-  grid-template: 'content' minmax(var(--vf-layout-size-zero), 1fr) / minmax(var(--vf-layout-size-zero), 1fr);
+  grid-template-areas: 'content';
+  grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+  grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
 }
 
 @media (--vf-bp-xl-down) {
@@ -177,8 +186,9 @@
     > .vf-app-shell__body
     > .vf-app-shell__body-container
     > .vf-app-shell__body-grid {
-    grid-template:
-      'sidebar content' minmax(var(--vf-layout-size-zero), 1fr)
+    grid-template-areas: 'sidebar content';
+    grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+    grid-template-columns:
       minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-width))
       minmax(var(--vf-layout-size-zero), 1fr);
   }
@@ -187,8 +197,9 @@
     > .vf-app-shell__body
     > .vf-app-shell__body-container
     > .vf-app-shell__body-grid {
-    grid-template:
-      'sidebar content' minmax(var(--vf-layout-size-zero), 1fr)
+    grid-template-areas: 'sidebar content';
+    grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+    grid-template-columns:
       minmax(var(--vf-layout-size-zero), var(--vf-layout-shell-sidebar-collapsed-width))
       minmax(var(--vf-layout-size-zero), 1fr);
   }
@@ -204,7 +215,9 @@
     > .vf-app-shell__body
     > .vf-app-shell__body-container
     > .vf-app-shell__body-grid {
-    grid-template: 'content' minmax(var(--vf-layout-size-zero), 1fr) / minmax(var(--vf-layout-size-zero), 1fr);
+    grid-template-areas: 'content';
+    grid-template-rows: minmax(var(--vf-layout-size-zero), 1fr);
+    grid-template-columns: minmax(var(--vf-layout-size-zero), 1fr);
   }
 
   .vf-app-shell--sidebar-content .vf-content-subheader-area,
@@ -346,3 +359,4 @@
   border-top: var(--vf-layout-footer-border);
   background: var(--vf-layout-footer-background);
 }
+/* stylelint-enable declaration-block-no-redundant-longhand-properties, no-descending-specificity */

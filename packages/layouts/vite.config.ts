@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import dts from 'unplugin-dts/vite';
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import { buildLayoutCssArtifacts, layoutCssArtifactPaths } from './build/layout-css-artifacts';
@@ -74,31 +74,45 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
           writeFileSync(resolve(distDir, entryFileName), transformed);
         }
 
-        const componentEntries: Array<[string, string, string[]]> = [
-          ['container', 'VfContainer', ['container.css']],
-          ['stack', 'VfStack', ['stack.css']],
-          ['inline', 'VfInline', ['inline.css']],
-          ['section', 'VfSection', ['section.css']],
-          ['grid', 'VfGrid', ['grid.css']],
-          ['app-shell', 'VfAppShell', ['app-shell.css']],
-          ['admin-layout', 'VfAdminLayout', ['admin-layout.css']],
-          ['admin-shell', 'VfAdminShell', ['admin-shell.css']],
-          ['document-layout', 'VfDocumentLayout', ['container.css', 'document-layout.css']],
-          ['auth-layout', 'VfAuthLayout', ['container.css', 'auth-layout.css']],
-          ['error-layout', 'VfErrorLayout', ['error-layout.css']],
-          ['setup-layout', 'VfSetupLayout', ['container.css', 'setup-layout.css']],
-          ['header-area', 'VfHeaderArea', ['header-area.css']],
-          ['sidebar-area', 'VfSidebarArea', ['sidebar-area.css']],
-          ['content-area', 'VfContentArea', ['content-area.css']],
-          ['aside-area', 'VfAsideArea', ['aside-area.css']],
-          ['footer-area', 'VfFooterArea', ['footer-area.css']],
+        const componentEntries: Array<[string, string, string, string[]]> = [
+          ['container', 'VfContainer', './layouts/src/primitives/VfContainer.vue', ['container.css']],
+          ['stack', 'VfStack', './layouts/src/primitives/VfStack.vue', ['stack.css']],
+          ['inline', 'VfInline', './layouts/src/primitives/VfInline.vue', ['inline.css']],
+          ['section', 'VfSection', './layouts/src/primitives/VfSection.vue', ['section.css']],
+          ['grid', 'VfGrid', './layouts/src/primitives/VfGrid.vue', ['grid.css']],
+          ['app-shell', 'VfAppShell', './layouts/src/shell/VfAppShell.vue', ['app-shell.css']],
+          ['admin-layout', 'VfAdminLayout', './layouts/src/shell/VfAdminLayout.vue', ['admin-layout.css']],
+          ['admin-shell', 'VfAdminShell', './layouts/src/shell/VfAdminShell.vue', ['admin-shell.css']],
+          [
+            'document-layout',
+            'VfDocumentLayout',
+            './layouts/src/shell/VfDocumentLayout.vue',
+            ['container.css', 'document-layout.css'],
+          ],
+          ['auth-layout', 'VfAuthLayout', './layouts/src/shell/VfAuthLayout.vue', ['container.css', 'auth-layout.css']],
+          ['error-layout', 'VfErrorLayout', './layouts/src/shell/VfErrorLayout.vue', ['error-layout.css']],
+          [
+            'setup-layout',
+            'VfSetupLayout',
+            './layouts/src/shell/VfSetupLayout.vue',
+            ['container.css', 'setup-layout.css'],
+          ],
+          ['header-area', 'VfHeaderArea', './layouts/src/shell/VfHeaderArea.vue', ['header-area.css']],
+          ['sidebar-area', 'VfSidebarArea', './layouts/src/shell/VfSidebarArea.vue', ['sidebar-area.css']],
+          ['content-area', 'VfContentArea', './layouts/src/shell/VfContentArea.vue', ['content-area.css']],
+          ['aside-area', 'VfAsideArea', './layouts/src/shell/VfAsideArea.vue', ['aside-area.css']],
+          ['footer-area', 'VfFooterArea', './layouts/src/shell/VfFooterArea.vue', ['footer-area.css']],
         ];
 
-        for (const [entryName, exportName, cssFiles] of componentEntries) {
+        for (const [entryName, exportName, declarationSource, cssFiles] of componentEntries) {
           const cssImports = cssFiles.map((cssFile) => `import '../${cssFile}';`).join('\n');
           writeFileSync(
             resolve(autoDir, `${entryName}.js`),
             `${cssImports}\nexport { ${exportName} as default, ${exportName} } from '../index.js';\n`,
+          );
+          writeFileSync(
+            resolve(distDir, `${entryName}.d.ts`),
+            `export { default } from '${declarationSource}';\nexport { default as ${exportName} } from '${declarationSource}';\n`,
           );
         }
       },
@@ -127,82 +141,113 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
   ];
 }
 
+function vueforgeLayoutsCjsArtifactsPlugin(): Plugin {
+  return {
+    name: 'vueforge-layouts-remove-cjs-only-css',
+    closeBundle() {
+      const cjsCssPath = resolve(__dirname, 'dist/cjs-ssr.css');
+      if (existsSync(cjsCssPath)) {
+        rmSync(cjsCssPath);
+      }
+    },
+  };
+}
+
 buildLayoutCssArtifacts();
 
-export default defineConfig({
-  plugins: [
-    vue(),
-    ...vueforgeLayoutStyleArtifactsPlugin(),
-    dts({
-      processor: 'vue',
-      include: ['src'],
-      exclude: ['__tests__/**/*'],
-      insertTypesEntry: true,
-      beforeWriteFile(filePath) {
-        if (filePath.endsWith('.d.ts.map')) {
-          return false;
-        }
-      },
-    }),
-  ],
-  build: {
-    lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'VueforgeLayouts',
-      cssFileName: 'styles',
-      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
-      formats: ['es', 'cjs'],
+export default defineConfig(({ mode }) => {
+  const isCjsBuild = mode === 'cjs';
+
+  return {
+    resolve: {
+      alias: isCjsBuild
+        ? {
+            '@codemonster-ru/vueforge-theme': resolve(__dirname, '../theme/src/index.ts'),
+          }
+        : {},
     },
-    rollupOptions: {
-      external: [
-        'vue',
-        '@codemonster-ru/vueforge-core',
-        '@codemonster-ru/vueforge-core/foundation',
-        '@codemonster-ru/vueforge-theme',
-      ],
-      output: {
-        exports: 'named',
-        globals: {
-          vue: 'Vue',
+    plugins: [
+      vue(),
+      ...(isCjsBuild
+        ? [vueforgeLayoutsCjsArtifactsPlugin()]
+        : [
+            ...vueforgeLayoutStyleArtifactsPlugin(),
+            dts({
+              processor: 'vue',
+              include: ['src'],
+              exclude: ['__tests__/**/*'],
+              insertTypesEntry: true,
+              beforeWriteFile(filePath) {
+                if (filePath.endsWith('.d.ts.map')) {
+                  return false;
+                }
+              },
+            }),
+          ]),
+    ],
+    build: {
+      emptyOutDir: !isCjsBuild,
+      lib: {
+        entry: resolve(__dirname, 'src/index.ts'),
+        name: 'VueforgeLayouts',
+        cssFileName: isCjsBuild ? 'cjs-ssr' : 'styles',
+        fileName: () => (isCjsBuild ? 'index.cjs' : 'index.js'),
+        formats: [isCjsBuild ? 'cjs' : 'es'],
+      },
+      rollupOptions: {
+        external: isCjsBuild
+          ? ['vue', '@codemonster-ru/vueforge-core', '@codemonster-ru/vueforge-core/foundation']
+          : [
+              'vue',
+              '@codemonster-ru/vueforge-core',
+              '@codemonster-ru/vueforge-core/foundation',
+              '@codemonster-ru/vueforge-theme',
+            ],
+        output: {
+          exports: 'named',
+          ...(isCjsBuild ? { interop: 'auto' as const } : {}),
+          globals: {
+            vue: 'Vue',
+          },
         },
       },
     },
-  },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: './__tests__/setup.ts',
-    alias: [
-      {
-        find: /^@\//,
-        replacement: `${resolve(__dirname, '../core/src')}/`,
-      },
-      {
-        find: '@codemonster-ru/vueforge-core/foundation',
-        replacement: resolve(__dirname, '../core/src/foundation/index.ts'),
-      },
-      {
-        find: '@codemonster-ru/vueforge-core',
-        replacement: resolve(__dirname, '../core/src/index.ts'),
-      },
-      {
-        find: '@codemonster-ru/vueforge-theme',
-        replacement: resolve(__dirname, '../theme/src/index.ts'),
-      },
-      {
-        find: '@codemonster-ru/vueforge-icons',
-        replacement: resolve(__dirname, '../core/src/__tests__/mocks/vueforge-icons.ts'),
-      },
-    ],
-    server: {
-      deps: {
-        inline: [
-          '@codemonster-ru/vueforge-core',
-          '@codemonster-ru/vueforge-core/foundation',
-          '@codemonster-ru/vueforge-theme',
-          '@codemonster-ru/vueforge-icons',
-        ],
+    test: {
+      environment: 'jsdom',
+      globals: true,
+      setupFiles: './__tests__/setup.ts',
+      alias: [
+        {
+          find: /^@\//,
+          replacement: `${resolve(__dirname, '../core/src')}/`,
+        },
+        {
+          find: '@codemonster-ru/vueforge-core/foundation',
+          replacement: resolve(__dirname, '../core/src/foundation/index.ts'),
+        },
+        {
+          find: '@codemonster-ru/vueforge-core',
+          replacement: resolve(__dirname, '../core/src/index.ts'),
+        },
+        {
+          find: '@codemonster-ru/vueforge-theme',
+          replacement: resolve(__dirname, '../theme/src/index.ts'),
+        },
+        {
+          find: '@codemonster-ru/vueforge-icons',
+          replacement: resolve(__dirname, '../core/src/__tests__/mocks/vueforge-icons.ts'),
+        },
+      ],
+      server: {
+        deps: {
+          inline: [
+            '@codemonster-ru/vueforge-core',
+            '@codemonster-ru/vueforge-core/foundation',
+            '@codemonster-ru/vueforge-theme',
+            '@codemonster-ru/vueforge-icons',
+          ],
+        },
       },
     },
-  },
+  };
 });

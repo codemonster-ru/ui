@@ -42,10 +42,14 @@ The following items are listed in this section:
 
 The following items are listed in this section:
 
-- Shared props (`VfPlaygroundSharedProps`): `minHeight`, `height`, `theme`, `initialTab`, `tabsRenderer`, `actionsRenderer`, `filesRenderer`.
+- Shared props (`VfPlaygroundSharedProps`): `minHeight`, `height`, `heightMode`, `theme`, `initialTab`, `tabsRenderer`, `actionsRenderer`, `filesRenderer`.
 - Sandbox mode (`VfPlaygroundSandboxProps`): `mode?: 'sandbox'`, `files`, `entry`, `framework`, `autorun`, `showCode`, `resolveImport`, `bootstrapScript`.
 - Component mode (`VfPlaygroundComponentProps`): `mode: 'component'`, `component`, `componentSource`, `componentSourceLanguage`, `componentFiles`, `componentEntry`, `componentPadding`, `componentMinHeight`.
 - Union type: `VfPlaygroundProps`.
+
+`heightMode` is `'fixed'` by default. Use `'auto'` to size every panel from its content, or `'auto-preview'` to use content height only while the preview tab is active.
+
+`resolveImport` is a synchronous fallback for imports that are not resolved from the playground file map. It receives the requested specifier and `{ fromFile, framework }`, and returns `{ kind: 'module' | 'style', url }` or `null` when the import is not handled.
 
 ## CSS Exports
 

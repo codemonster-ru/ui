@@ -22,7 +22,7 @@
   },
   "author": "Kirill Kolesnikov",
   "license": "MIT",
-  "main": "./dist/index.ts.umd.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.ts.mjs",
   "types": "./dist/lib/index.d.ts",
   "exports": {
@@ -33,9 +33,10 @@
       },
       "require": {
         "types": "./dist/lib/index.d.ts",
-        "default": "./dist/index.ts.umd.js"
+        "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./style.css": "./dist/index.css"
   },
   "files": [
     "dist"
@@ -58,6 +59,7 @@
     "test": "npm run smoke && npm run render",
     "render": "node ./__tests__/render-consumer.mjs",
     "smoke": "npm run build && tsc -p tsconfig.smoke.json",
+    "prepack": "npm run build",
     "release": "npm run build && npm run render && npm audit signatures && npm publish"
   },
   "peerDependencies": {
