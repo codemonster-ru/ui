@@ -11,7 +11,13 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const cssExportTargets = Object.entries(packageJson?.exports ?? {})
   .filter(([exportKey, exportTarget]) => exportKey.endsWith('.css') && typeof exportTarget === 'string')
   .map(([exportKey, exportTarget]) => [exportKey, exportTarget]);
-const foundationalCssExports = new Set(['./base.css', './tokens.css', './theme.css', './foundation.css', './styles.css']);
+const foundationalCssExports = new Set([
+  './base.css',
+  './tokens.css',
+  './theme.css',
+  './foundation.css',
+  './styles.css',
+]);
 const overlayDependentCssExports = new Set([
   './command-palette.css',
   './dialog.css',
@@ -22,6 +28,28 @@ const overlayDependentCssExports = new Set([
   './tooltip.css',
 ]);
 const transitionGuardExcludedCssExports = new Set(['./tokens.css', './theme.css', './foundation.css']);
+const colorArchitectureSnippets = {
+  './tokens.css': [
+    '--vf-palette-neutral-50: #f6f8fb;',
+    '--vf-color-background-canvas: var(--vf-color-bg);',
+    '--vf-color-status-help-active-background:',
+  ],
+  './theme.css': [
+    '--vf-palette-neutral-50: #f6f8fb;',
+    '--vf-color-background-canvas: var(--vf-color-bg);',
+    '--vf-color-status-help-active-background:',
+  ],
+  './foundation.css': [
+    '--vf-palette-neutral-50: #f6f8fb;',
+    '--vf-color-background-canvas: var(--vf-color-bg);',
+    '--vf-color-status-help-active-background:',
+  ],
+  './styles.css': [
+    '--vf-palette-neutral-50: #f6f8fb;',
+    '--vf-color-background-canvas: var(--vf-color-bg);',
+    '--vf-color-status-help-active-background:',
+  ],
+};
 const overlayPrimitiveDeclarations = [
   '--vf-overlay-border-width:',
   '--vf-overlay-enter-shift:',
@@ -109,23 +137,31 @@ try {
       throw new Error(`Broken CSS export: ${exportKey} contains an unresolved @import in the publish artifact.`);
     }
 
+    for (const snippet of colorArchitectureSnippets[exportKey] ?? []) {
+      if (!cssSource.includes(snippet)) {
+        throw new Error(`Broken color-token contract: ${exportKey} is missing ${snippet}.`);
+      }
+    }
+
+    if (
+      !foundationalCssExports.has(exportKey) &&
+      (cssSource.includes('--vf-palette-neutral-50:') || cssSource.includes('--vf-color-background-canvas:'))
+    ) {
+      throw new Error(`Broken component isolation: ${exportKey} redeclares the shared color architecture.`);
+    }
+
     if (overlayDependentCssExports.has(exportKey)) {
       for (const declaration of overlayPrimitiveDeclarations) {
         if (!cssSource.includes(declaration)) {
-          throw new Error(
-            `Broken overlay CSS export: ${exportKey} is missing the shared ${declaration} declaration.`,
-          );
+          throw new Error(`Broken overlay CSS export: ${exportKey} is missing the shared ${declaration} declaration.`);
         }
       }
     }
 
     if (!transitionGuardExcludedCssExports.has(exportKey)) {
-      const guardOccurrences =
-        cssSource.match(/:root\.vf-theme-transitioning :where\(\[class\^='vf-'\]/g) ?? [];
+      const guardOccurrences = cssSource.match(/:root\.vf-theme-transitioning :where\(\[class\^='vf-'\]/g) ?? [];
       if (guardOccurrences.length !== 1) {
-        throw new Error(
-          `Broken theme-transition fallback: ${exportKey} must contain the shared guard exactly once.`,
-        );
+        throw new Error(`Broken theme-transition fallback: ${exportKey} must contain the shared guard exactly once.`);
       }
     }
 
@@ -142,21 +178,22 @@ try {
       }
     }
 
-    const requiredSnippets = {
-      './input.css': ['display: block;', 'var(--vf-field-floating-input-offset-inline-lg)'],
-      './textarea.css': ['display: block;'],
-      './select.css': [
-        'var(--vf-field-floating-select-padding-adjustment-sm)',
-        'var(--vf-field-floating-select-padding-adjustment-lg)',
-        '.vf-dropdown__item.vf-select__option',
-      ],
-      './nav-menu.css': ['var(--vf-nav-menu-group-label-letter-spacing)'],
-      './command-palette.css': ['line-clamp: 3;', 'line-clamp: 2;'],
-      './dialog.css': ['.vf-dialog__actions .vf-icon-button .vf-icon'],
-      './drawer.css': ['.vf-drawer__actions .vf-icon-button .vf-icon'],
-      './menu-bar.css': ['.vf-horizontal-scroller {'],
-      './tabs.css': ['.vf-horizontal-scroller {'],
-    }[exportKey] ?? [];
+    const requiredSnippets =
+      {
+        './input.css': ['display: block;', 'var(--vf-field-floating-input-offset-inline-lg)'],
+        './textarea.css': ['display: block;'],
+        './select.css': [
+          'var(--vf-field-floating-select-padding-adjustment-sm)',
+          'var(--vf-field-floating-select-padding-adjustment-lg)',
+          '.vf-dropdown__item.vf-select__option',
+        ],
+        './nav-menu.css': ['var(--vf-nav-menu-group-label-letter-spacing)'],
+        './command-palette.css': ['line-clamp: 3;', 'line-clamp: 2;'],
+        './dialog.css': ['.vf-dialog__actions .vf-icon-button .vf-icon'],
+        './drawer.css': ['.vf-drawer__actions .vf-icon-button .vf-icon'],
+        './menu-bar.css': ['.vf-horizontal-scroller {'],
+        './tabs.css': ['.vf-horizontal-scroller {'],
+      }[exportKey] ?? [];
 
     for (const snippet of requiredSnippets) {
       if (!cssSource.includes(snippet)) {
