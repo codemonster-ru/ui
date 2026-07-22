@@ -1,8 +1,8 @@
 # VueForge: инвентаризация цветовой системы
 
-Дата: 2026-07-21. Статус: **инвентаризация сохранена как baseline; contract drift устранён в Phase 0**.
+Дата обновления: 2026-07-22. Статус: **Phase 1 завершена; primitive/semantic architecture добавлена без изменения palette values**.
 
-Документ фиксирует полную карту color/effect tokens и literal colors, найденных до Phase 0. Состав и значения палитры не менялись; исправления contract/build/runtime отражены в соответствующих разделах и в [отчёте Phase 0](./phase-0-report.md).
+Документ фиксирует legacy color/effect inventory и добавленную в Phase 1 архитектуру. Все прежние material values и 847 legacy keys сохранены. Технические результаты приведены в [отчёте Phase 0](./phase-0-report.md) и [отчёте Phase 1](./phase-1-report.md).
 
 ## Охват
 
@@ -21,32 +21,33 @@
 ## Архитектурная карта
 
 ```text
-default-preset-source.ts (847 light keys + 53 dark overrides)
+component decisions and ecosystem adapters
              │
-             ├── static build converter
-             │      └── .generated/theme/*.css → foundation/full/component CSS
+             ▼
+77 semantic roles (colorFocusRing overlaps the legacy set)
              │
-             ├── defaultThemePreset public object
-             │      └── core ThemeProvider/plugin
+             ▼
+847 retained VueForge 1.x tokens (compatibility bridge)
              │
-             └── @vueforge-theme runtime converter
-                    └── injected style element
+             ▼
+29 primitive material tokens
 
-core semantic variables
-      ├── core component aliases
-      ├── layouts TypeScript preset → generated layout CSS
-      ├── codeblock aliases + Shiki inline syntax colors
-      ├── playground aliases + iframe variable snapshot
-      └── icons via currentColor
+952-key contract delivery
+├── static .generated/theme CSS
+├── runtime ThemeProvider/plugin CSS
+├── full and component-entry CSS
+├── Layouts
+├── CodeBlock / Playground
+└── Icons via currentColor
 ```
 
-Canonical source: `packages/core/src/theme/default-preset-source.ts:13-921`.
+Canonical values live in the Core theme source. Canonical primitive/semantic name tuples and public types live in `packages/theme/src/color-token-contract.ts`.
 
-Generated artifacts после Phase 0:
+Generated artifacts после Phase 1:
 
-- 841 non-breakpoint light declarations: `packages/core/.generated/theme/tokens.css`;
+- 946 non-breakpoint light declarations: `packages/core/.generated/theme/tokens.css`;
 - 6 breakpoint declarations: `generated-breakpoints.css`;
-- 53 root dark overrides и полные 847-key scoped light/dark maps: `theme.css`;
+- 53 root dark overrides и полные 952-key scoped light/dark maps: `theme.css`;
 - `packages/core/src/styles/foundation.css` imports generated tokens/theme.
 
 Runtime source: `packages/theme/src/runtime.ts`. Static generation: `packages/core/build/theme-css-artifacts.ts`.
@@ -55,12 +56,24 @@ Core и Layouts wrappers при custom prefix сохраняют requested varia
 
 ## Количественная карта
 
-Фактический preset содержит 847 light keys. Из них 404 относятся к цвету/effects по воспроизводимому критерию: `color*`, суффиксы `*Color`, `*Background`, `*Backdrop`, `*Shadow`, плюс явно цветовые/effect roles `alertPrimarySoft`, `alertPrimaryBorderSoft`, `progressBarStripedTintRatio`, `buttonSolidHoverFilter`, `buttonSolidActiveFilter`, `shadow`.
+Фактический built-in preset содержит 952 light keys: 847 сохранённых legacy keys и 105 уникальных additions. Additions состоят из 29 primitives и 76 новых semantic keys; `colorFocusRing` уже входил в legacy set и одновременно является одной из 77 semantic roles.
+
+Legacy subset по-прежнему содержит 404 color/effect tokens. Вместе с additions получено 509 уникальных color/effect keys.
+
+| Phase 1 contract             | Количество |
+| ---------------------------- | ---------: |
+| Primitive palette            |     **29** |
+| Semantic roles               |     **77** |
+| Новые semantic keys          |     **76** |
+| Сохранённые legacy keys      |    **847** |
+| Полный built-in preset       |    **952** |
+| Уникальные color/effect keys |    **509** |
+
+Legacy 404-token subset не сокращён:
 
 | Слой/группа                     | Количество | Основные потребители                                          |
 | ------------------------------- | ---------: | ------------------------------------------------------------- |
-| Primitive palette               |      **0** | отсутствует                                                   |
-| Root semantic `color*`          |         35 | вся система                                                   |
+| Legacy root `color*`            |         35 | compatibility bridge / current components                     |
 | Shared selectable               |          5 | menus/options/navigation                                      |
 | Navigation                      |         99 | NavMenu, MenuBar, TOC, Dropdown, Breadcrumbs, Accordion, Tabs |
 | Forms/selection controls        |        108 | Field, Input, Textarea, Select, Checkbox, Radio, Switch       |
@@ -70,9 +83,29 @@ Core и Layouts wrappers при custom prefix сохраняют requested varia
 | Button/text/prose effects       |         12 | Button, Link, prose                                           |
 | Stepper/DataTable               |         26 | Stepper, DataTable                                            |
 | Compatibility shadow            |          1 | Layouts, CodeBlock                                            |
-| **Итого**                       |    **404** |                                                               |
+| **Legacy subtotal**             |    **404** | все прежние keys сохранены                                    |
 
-## Root semantic palette
+## Phase 1 primitive palette
+
+Primitive layer содержит только 29 фактически используемых material values: 16 neutral stops, по два primary/success/info/danger/help stops и три warning stops. Phase 1 сохраняет HEX как runtime source; OKLCH остаётся будущим authoring форматом, чтобы не вносить rounding drift до отдельной palette phase.
+
+Полная таблица значений и naming convention опубликованы в [Color Tokens guide](../core/guides/color-tokens.md).
+
+## Phase 1 semantic contract
+
+| Категория   | Количество | Назначение                                                        |
+| ----------- | ---------: | ----------------------------------------------------------------- |
+| Background  |         11 | canvas, surfaces, states, inverse, backdrop                       |
+| Text        |          6 | primary, secondary, muted, disabled, placeholder, inverse         |
+| Icon        |          4 | primary, secondary, disabled, inverse                             |
+| Border      |          8 | subtle/default/strong/interactive/disabled/focus/divider/inverse  |
+| Interactive |          8 | primary states/foreground/border, focus ring, selected foreground |
+| Status      |         40 | 8 roles × success/warning/danger/info/help                        |
+| **Итого**   |     **77** | `colorFocusRing` сохранён из legacy contract                      |
+
+Новые роли намеренно разделяют foreground, solid background, subtle background, border и icon, даже когда на Phase 1 они разрешаются в один и тот же прежний material value. Это архитектурное разделение без визуального редизайна.
+
+## Сохранённая legacy root palette
 
 ### Light literals
 
@@ -120,11 +153,11 @@ Dark содержит 16 уникальных HEX. Между темами вс�
 
 В source найдено 80 `color-mix` и 23 разных ratio. Это избыточно для предсказуемой state formula.
 
-## Полный реестр 404 system tokens
+## Полный реестр 404 legacy system tokens
 
-Таблица ниже сгенерирована из canonical TypeScript source. `Dark value` показывает только реальный override; `inherits` означает, что dark theme использует тот же alias/recipe, но зависимые semantic variables разрешаются в dark values. Все строки являются системными tokens, а не случайными hardcoded values.
+Таблица ниже фиксирует сохранённый pre-Phase-1 subset. `Dark value` показывает только реальный override; `inherits` означает, что dark theme использует тот же alias/recipe, но зависимые variables разрешаются в dark values. Новые primitive/semantic keys перечислены отдельно выше и в публичном guide.
 
-<!-- Generated from packages/core/src/theme/default-preset-source.ts; do not treat this table as a new API. -->
+<!-- Pre-Phase-1 resolved-value baseline; do not treat this table as a new API. -->
 
 | Token                                       | Runtime CSS variable                                   | Layer / consumers                      | Light value                                                                                                                                                                                                         | Dark override                                                               |
 | ------------------------------------------- | ------------------------------------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
@@ -535,7 +568,7 @@ Dark содержит 16 уникальных HEX. Между темами вс�
 
 ## Дублирование и alias graph
 
-Найдено 54 группы tokens с абсолютно одинаковым значением. Самые крупные:
+В legacy baseline найдено 54 группы tokens с абсолютно одинаковым значением. Самые крупные:
 
 | Одинаковое значение       | Количество aliases | Вывод                                                               |
 | ------------------------- | -----------------: | ------------------------------------------------------------------- |
@@ -553,12 +586,26 @@ Cross-component coupling:
 - Input/Textarea/Select образуют длинные цепочки `component → field → semantic`;
 - component CSS всё ещё содержит 285 прямых ссылок на root `--vf-color-*` в 28 файлах, то есть component layer внедрён непоследовательно.
 
+Phase 1 вводит только однонаправленные зависимости и не подменяет существующие component chains:
+
+```text
+semantic role ───────────┐
+                        ├─→ legacy compatibility root → primitive
+current component alias ┘
+
+Phase 2 target: component decision → semantic role
+```
+
+До Phase 1 graph не содержал циклов и имел максимальную логическую глубину 3. Primitive bridge увеличивает допустимую логическую глубину до 4. Regression contract проверяет отсутствие undefined references, self-references и cycles; нельзя одновременно объявлять `legacy → semantic` и `semantic → legacy` для одной роли.
+
+Phase 0 custom-prefix bridge добавляет физические canonical/requested-prefix hops, но не меняет логическое направление зависимости. Проверка custom prefix должна обходить оба namespace.
+
 ## Неиспользуемые и устаревшие tokens
 
 ### Core color graph
 
 - `switchTrackHoverBackground` — объявлен, но hover использует обычный track background;
-- `colorPrimaryBorderSoft` — ни один alias не достигает его; Alert повторяет формулу отдельно;
+- `colorPrimaryBorderSoft` был недостижим до Phase 1; теперь он является compatibility source для `colorInteractivePrimaryBorder`;
 - `tableOfContentsTitleColor` — документирован, но title отсутствует в CSS component;
 - `shadow` не используется core, но остаётся реальным compatibility bridge для Layouts/CodeBlock.
 
@@ -569,6 +616,8 @@ Cross-component coupling:
 - Layouts: `--vf-layout-surface-subtle` присутствует в preset/type/plugin, но не применяется.
 
 Это публичные custom properties; немедленное удаление может быть breaking. Требуется deprecation cycle или major cleanup.
+
+После полной component migration все 35 flat legacy `color*` roots являются документальными clean-v2 candidates. Особый приоритет имеют перегруженные `colorMuted`, `colorBorder`, base status colors, `colorWarn*` и `colorContrast*`. Вместе с тремя дополнительными Core candidates и 22 ecosystem candidates зафиксировано 60 уникальных v2 cleanup candidates. Phase 1 не добавляет runtime warnings и не помечает весь 1.x contract через TypeScript `@deprecated`.
 
 ## 95 tokens: TypeScript drift закрыт в Phase 0
 
@@ -747,18 +796,19 @@ Phase 0 сделала `entries/*.css` canonical source. Aggregate group files �
 
 Компоненты из брифа, отсутствующие в текущем репозитории и поэтому помеченные N/A: Slider, DatePicker, Tree, Toast/Notification и standalone Pagination. Sidebar/Navigation представлены через Layouts/NavMenu, Modal — через Dialog, Chip — через Tag.
 
-## Итог инвентаризации
+## Итог инвентаризации после Phase 1
 
-- Primitive layer: отсутствует.
-- Semantic roots: 35, но ролей недостаточно.
-- Color/effect tokens: 404, большинство component aliases.
+- Primitive layer: 29 existing-value material tokens.
+- Semantic contract: 77 roles, из которых 76 являются новыми keys.
+- Legacy contract: все 847 keys сохранены; legacy color/effect subset остаётся 404.
+- Полный built-in preset: 952 keys; уникальный color/effect total — 509.
 - Light/dark material HEX: 28 уникальных между темами.
 - Dark overrides: 53; все 35 root semantic colors переопределены.
 - Полностью одинаковые alias groups: 54.
-- Подтверждённо недостижимые core color tokens: 3.
+- Подтверждённо недостижимые core color tokens: 2; `colorPrimaryBorderSoft` получил semantic consumer в Phase 1.
 - Фактические preset keys вне TypeScript contract: 0 после Phase 0, было 95.
 - Fallback vars с неверным именем: 0 после Phase 0, было 9.
 - Случайных HEX/RGB/HSL внутри core component UI CSS: 0.
 - Главный внешний literal source: inline Shiki syntax colors.
 
-Архитектурный вывод после Phase 0: transport/serialization/packaging contract нормализован, но проблема палитры по-прежнему не в количестве уникальных HEX, а в плоском semantic contract и чрезмерном component alias surface. Целевое решение следующих фаз — небольшой internal primitive material layer, строгий public semantic layer и component tokens только для реальных исключений.
+Архитектурный вывод после Phase 1: transport и новый token-layer contract нормализованы, а прежняя палитра сохранена через compatibility bridge. Открытая проблема теперь локализована в component migration и значениях: текущие компоненты ещё используют legacy aliases, status foreground/solid material пока совпадает, а accessibility palette/OKLCH tuning осознанно остаются для Phase 2 и последующих работ.

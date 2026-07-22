@@ -1,7 +1,9 @@
+import type { VfPrimitiveColorTokens, VfSemanticColorTokens } from './color-token-contract.js';
+
 export type VfThemeMode = 'light' | 'dark' | 'system';
 export type VfResolvedTheme = 'light' | 'dark';
 
-export interface VfThemeTokens {
+export interface VfThemeTokens extends VfPrimitiveColorTokens, VfSemanticColorTokens {
   colorBg: string;
   colorSurface: string;
   colorSurfaceMuted: string;

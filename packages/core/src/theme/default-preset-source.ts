@@ -1,6 +1,21 @@
 import { vfBreakpoints } from '../../../theme/src/breakpoints';
 import { vfMotionTokens } from '../../../theme/src/motion';
+import type { VfPrimitiveColorTokenName, VfSemanticColorTokenName } from '../../../theme/src/color-token-contract';
 import type { VfThemePreset, VfThemeTokens } from '@/types/theme';
+import {
+  legacyDarkColorTokens,
+  legacyLightColorTokens,
+  primitiveColorTokens,
+  semanticColorTokens,
+} from './color-token-schema';
+
+type AdditiveColorTokenName = VfPrimitiveColorTokenName | Exclude<VfSemanticColorTokenName, 'colorFocusRing'>;
+type LegacyThemeTokens = Omit<Required<VfThemeTokens>, AdditiveColorTokenName>;
+
+type LegacyDefaultThemePreset = Omit<VfThemePreset, 'tokens' | 'dark'> & {
+  tokens: LegacyThemeTokens;
+  dark?: Partial<LegacyThemeTokens>;
+};
 
 type CompleteDefaultThemePreset = Omit<VfThemePreset, 'tokens' | 'dark'> & {
   tokens: Required<VfThemeTokens>;
@@ -16,7 +31,7 @@ export const breakpointTokens = {
   breakpoint2xl: `${vfBreakpoints['2xl']}px`,
 };
 
-export const defaultThemePresetSource = {
+export const legacyDefaultThemePresetSource = {
   name: 'vueforge-default',
   tokens: {
     fontFamilyBase: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -514,41 +529,7 @@ export const defaultThemePresetSource = {
     proseHrBorderWidth: '1px',
     proseHrOpacity: '0.72',
     proseHrMargin: '1.5rem',
-    colorBg: '#f6f8fb',
-    colorSurface: '#ffffff',
-    colorSurfaceMuted: '#f3f3f3',
-    colorText: '#1f232b',
-    colorMuted: '#616773',
-    colorBorder: '#d9dde3',
-    colorPrimary: '#0e639c',
-    colorPrimaryContrast: '#ffffff',
-    colorPrimarySoft: 'color-mix(in srgb, var(--vf-color-primary) 12%, var(--vf-color-surface))',
-    colorPrimaryBorderSoft: 'color-mix(in srgb, var(--vf-color-primary) 22%, var(--vf-color-border))',
-    colorFocusRing: 'color-mix(in srgb, var(--vf-color-primary) 32%, var(--vf-color-surface))',
-    colorSuccess: '#2e7d32',
-    colorSuccessContrast: '#ffffff',
-    colorInfo: '#0077a3',
-    colorInfoContrast: '#ffffff',
-    colorWarn: '#a1841f',
-    colorWarnContrast: '#1f1300',
-    colorHelp: '#6e43a2',
-    colorHelpContrast: '#ffffff',
-    colorDanger: '#c72e39',
-    colorDangerContrast: '#ffffff',
-    colorContrast: '#252526',
-    colorContrastContrast: '#ffffff',
-    colorSuccessSoft: 'color-mix(in srgb, var(--vf-color-success) 12%, var(--vf-color-surface))',
-    colorInfoSoft: 'color-mix(in srgb, var(--vf-color-info) 12%, var(--vf-color-surface))',
-    colorWarnSoft: 'color-mix(in srgb, var(--vf-color-warn) 12%, var(--vf-color-surface))',
-    colorHelpSoft: 'color-mix(in srgb, var(--vf-color-help) 12%, var(--vf-color-surface))',
-    colorDangerSoft: 'color-mix(in srgb, var(--vf-color-danger) 12%, var(--vf-color-surface))',
-    colorContrastSoft: 'color-mix(in srgb, var(--vf-color-contrast) 10%, var(--vf-color-surface))',
-    colorSuccessBorderSoft: 'color-mix(in srgb, var(--vf-color-success) 24%, var(--vf-color-border))',
-    colorInfoBorderSoft: 'color-mix(in srgb, var(--vf-color-info) 24%, var(--vf-color-border))',
-    colorWarnBorderSoft: 'color-mix(in srgb, var(--vf-color-warn) 24%, var(--vf-color-border))',
-    colorHelpBorderSoft: 'color-mix(in srgb, var(--vf-color-help) 24%, var(--vf-color-border))',
-    colorDangerBorderSoft: 'color-mix(in srgb, var(--vf-color-danger) 24%, var(--vf-color-border))',
-    colorContrastBorderSoft: 'color-mix(in srgb, var(--vf-color-contrast) 24%, var(--vf-color-border))',
+    ...legacyLightColorTokens,
     focusRingWidth: '3px',
     radius: '0.75rem',
     radiusControl: 'calc(var(--vf-radius) - 0.125rem)',
@@ -849,7 +830,6 @@ export const defaultThemePresetSource = {
     commandPaletteHintIconSize: 'var(--vf-icon-size-sm)',
     popoverWidth: 'min(100vw - (var(--vf-overlay-padding) * 2), calc(var(--vf-breakpoint-xs) * 0.733333))',
     floatingArrowSize: '0.625rem',
-    overlayBackdrop: 'color-mix(in srgb, black 44%, transparent)',
     alertPrimarySoft: 'color-mix(in srgb, var(--vf-color-primary) 8%, var(--vf-color-surface))',
     alertPrimaryBorderSoft: 'color-mix(in srgb, var(--vf-color-primary) 22%, var(--vf-color-border))',
     alertIconOffsetY: 'calc((var(--vf-text-body-line-height) - 1) * 0.5em)',
@@ -869,43 +849,8 @@ export const defaultThemePresetSource = {
     shadow: 'none',
   },
   dark: {
-    colorBg: '#17191e',
-    colorSurface: '#20232a',
-    colorSurfaceMuted: '#272b33',
-    colorText: '#d4d4d4',
-    colorMuted: '#9da0a6',
-    colorBorder: '#363b46',
-    colorPrimary: '#276cb5',
-    colorPrimaryContrast: '#ffffff',
-    colorPrimarySoft: 'color-mix(in srgb, var(--vf-color-primary) 12%, var(--vf-color-surface))',
-    colorPrimaryBorderSoft: 'color-mix(in srgb, var(--vf-color-primary) 22%, var(--vf-color-border))',
-    colorFocusRing: 'color-mix(in srgb, var(--vf-color-primary) 42%, var(--vf-color-surface))',
-    colorSuccess: '#37783e',
-    colorSuccessContrast: '#ffffff',
-    colorInfo: '#1a739f',
-    colorInfoContrast: '#ffffff',
-    colorWarn: '#b79a63',
-    colorWarnContrast: '#1f1300',
-    colorHelp: '#7b4c96',
-    colorHelpContrast: '#ffffff',
-    colorDanger: '#bf3f3f',
-    colorDangerContrast: '#ffffff',
-    colorContrast: '#d7d7d7',
-    colorContrastContrast: '#111827',
-    colorSuccessSoft: 'color-mix(in srgb, var(--vf-color-success) 12%, var(--vf-color-surface))',
+    ...legacyDarkColorTokens,
     fieldBackground: 'var(--vf-color-bg)',
-    colorInfoSoft: 'color-mix(in srgb, var(--vf-color-info) 12%, var(--vf-color-surface))',
-    colorWarnSoft: 'color-mix(in srgb, var(--vf-color-warn) 12%, var(--vf-color-surface))',
-    colorHelpSoft: 'color-mix(in srgb, var(--vf-color-help) 12%, var(--vf-color-surface))',
-    colorDangerSoft: 'color-mix(in srgb, var(--vf-color-danger) 12%, var(--vf-color-surface))',
-    colorContrastSoft: 'color-mix(in srgb, var(--vf-color-contrast) 10%, var(--vf-color-surface))',
-    colorSuccessBorderSoft: 'color-mix(in srgb, var(--vf-color-success) 24%, var(--vf-color-border))',
-    colorInfoBorderSoft: 'color-mix(in srgb, var(--vf-color-info) 24%, var(--vf-color-border))',
-    colorWarnBorderSoft: 'color-mix(in srgb, var(--vf-color-warn) 24%, var(--vf-color-border))',
-    colorHelpBorderSoft: 'color-mix(in srgb, var(--vf-color-help) 24%, var(--vf-color-border))',
-    colorDangerBorderSoft: 'color-mix(in srgb, var(--vf-color-danger) 24%, var(--vf-color-border))',
-    colorContrastBorderSoft: 'color-mix(in srgb, var(--vf-color-contrast) 24%, var(--vf-color-border))',
-    overlayBackdrop: 'color-mix(in srgb, black 56%, transparent)',
     switchThumbBackground: 'color-mix(in srgb, var(--vf-color-text) 82%, var(--vf-color-surface))',
     switchThumbBorderColor: 'var(--vf-switch-thumb-background)',
     switchThumbColor: 'color-mix(in srgb, var(--vf-color-surface) 84%, var(--vf-color-text))',
@@ -923,4 +868,14 @@ export const defaultThemePresetSource = {
     zTooltip: '950',
     shadow: 'none',
   },
+} satisfies LegacyDefaultThemePreset;
+
+export const defaultThemePresetSource = {
+  name: legacyDefaultThemePresetSource.name,
+  tokens: {
+    ...legacyDefaultThemePresetSource.tokens,
+    ...primitiveColorTokens,
+    ...semanticColorTokens,
+  },
+  dark: legacyDefaultThemePresetSource.dark,
 } satisfies CompleteDefaultThemePreset;

@@ -2,6 +2,11 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createScopedThemeModeSelector, serializeThemeTokensToCssVars } from '../../theme/src/css-vars';
+import {
+  knownExternalThemeCssVariables,
+  MAX_CANONICAL_ALIAS_DEPTH,
+  validateColorTokenGraph,
+} from '../src/theme/color-token-schema';
 import { defaultThemePresetSource } from '../src/theme/default-preset-source';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
@@ -135,6 +140,13 @@ function buildThemeCss() {
 }
 
 export function buildThemeCssArtifacts() {
+  const validationOptions = {
+    knownExternalVariables: knownExternalThemeCssVariables,
+    maxDepth: MAX_CANONICAL_ALIAS_DEPTH,
+  };
+
+  validateColorTokenGraph(defaultThemePresetSource.tokens, validationOptions);
+  validateColorTokenGraph({ ...defaultThemePresetSource.tokens, ...defaultThemePresetSource.dark }, validationOptions);
   buildBreakpointCss();
   buildTokensCss();
   buildThemeCss();

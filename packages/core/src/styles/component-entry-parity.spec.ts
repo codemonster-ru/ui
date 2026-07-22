@@ -1,12 +1,25 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import {
+  themeTokensToCssVars,
+  vfPrimitiveColorTokenNames,
+  vfSemanticColorTokenNames,
+} from '@codemonster-ru/vueforge-theme';
 import { inlineCssFiles, inlineCssImports } from '../../build/css-imports';
 
 const stylesDir = resolve(__dirname);
 const entriesDir = resolve(stylesDir, 'entries');
 const componentsDir = resolve(stylesDir, 'components');
+const foundationPath = resolve(stylesDir, 'foundation.css');
 const groupedFiles = ['actions.css', 'forms.css', 'surfaces.css', 'feedback.css', 'overlay.css', 'navigation.css'];
+const architectureVariableNames = Object.keys(
+  themeTokensToCssVars(
+    Object.fromEntries(
+      [...vfPrimitiveColorTokenNames, ...vfSemanticColorTokenNames].map((name) => [name, 'contract-value']),
+    ),
+  ),
+);
 
 function stripImports(source: string) {
   return source.replace(/^@import\s+['"].+?['"];\s*$/gm, '').trim();
@@ -56,6 +69,26 @@ describe('component entry CSS parity', () => {
       expect(artifactCss, fileName).toContain(':root.vf-theme-transitioning');
       expect(artifactCss.match(/:root\.vf-theme-transitioning :where\(\[class\^='vf-'\]/g), fileName).toHaveLength(1);
     }
+  });
+
+  it('keeps selective fallback consumption equivalent through foundation plus a component entry', () => {
+    const guardPath = resolve(componentsDir, 'theme-transition-guard.css');
+    const buttonPath = resolve(entriesDir, 'button.css');
+    const foundationCss = inlineCssImports(foundationPath);
+    const fullCss = inlineCssImports(resolve(stylesDir, 'styles.css'));
+    const standaloneButtonCss = inlineCssFiles([guardPath, buttonPath]);
+    const fallbackButtonCss = inlineCssFiles([foundationPath, guardPath, buttonPath]);
+
+    for (const variableName of architectureVariableNames) {
+      expect(foundationCss, variableName).toContain(`${variableName}:`);
+      expect(fullCss, variableName).toContain(`${variableName}:`);
+      expect(fallbackButtonCss, variableName).toContain(`${variableName}:`);
+      expect(standaloneButtonCss, variableName).not.toContain(`${variableName}:`);
+    }
+
+    expect(fallbackButtonCss).toContain('.vf-button {');
+    expect(fallbackButtonCss).not.toContain('.vf-prose');
+    expect(fallbackButtonCss).not.toContain('.vf-nav-menu');
   });
 
   it('keeps Stepper isolated from unrelated navigation and overlay CSS', () => {

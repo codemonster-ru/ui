@@ -3,8 +3,16 @@ import { resolve } from 'node:path';
 import { buildThemeCssArtifacts, themeCssArtifactPaths } from '../../build/theme-css-artifacts';
 import { inlineCssImports } from '../../build/css-imports';
 import { describe, expect, expectTypeOf, it } from 'vitest';
+import { vfPrimitiveColorTokenNames, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-theme';
 import type { VfThemeTokens } from '@/types/theme';
-import { defaultThemePresetSource } from './default-preset-source';
+import {
+  COMPLETE_THEME_TOKEN_COUNT,
+  LEGACY_DARK_OVERRIDE_COUNT,
+  LEGACY_THEME_TOKEN_COUNT,
+  PRIMITIVE_COLOR_TOKEN_COUNT,
+  SEMANTIC_COLOR_TOKEN_COUNT,
+} from './color-token-schema';
+import { defaultThemePresetSource, legacyDefaultThemePresetSource } from './default-preset-source';
 import { resolveThemeConfig, themeTokensToCssVars } from './utils';
 
 const canonicalFallbackNames = [
@@ -84,7 +92,42 @@ function resolveCssVariable(variables: Record<string, string>, name: string, see
   );
 }
 
+function resolveComputedCssVariable(element: Element, name: string, seen = new Set<string>()): string {
+  if (seen.has(name)) {
+    throw new Error(`Circular computed CSS variable reference: ${name}`);
+  }
+
+  const value = getComputedStyle(element).getPropertyValue(name).trim();
+  if (!value) {
+    throw new Error(`Missing computed CSS variable: ${name}`);
+  }
+
+  const nextSeen = new Set(seen).add(name);
+  return value.replace(/var\((--[a-z0-9-]+)\)/g, (_match, dependency: string) =>
+    resolveComputedCssVariable(element, dependency, nextSeen),
+  );
+}
+
 describe('core theme contract', () => {
+  it('keeps the additive color architecture complete without duplicating legacy names', () => {
+    const architectureNames = new Set([...vfPrimitiveColorTokenNames, ...vfSemanticColorTokenNames]);
+    const presetNames = new Set(Object.keys(defaultThemePresetSource.tokens));
+    const legacyNames = new Set(Object.keys(legacyDefaultThemePresetSource.tokens));
+    const overlap = vfSemanticColorTokenNames.filter((name) => legacyNames.has(name));
+
+    expect(legacyNames).toHaveProperty('size', LEGACY_THEME_TOKEN_COUNT);
+    expect(vfPrimitiveColorTokenNames).toHaveLength(PRIMITIVE_COLOR_TOKEN_COUNT);
+    expect(vfSemanticColorTokenNames).toHaveLength(SEMANTIC_COLOR_TOKEN_COUNT);
+    expect(architectureNames).toHaveProperty('size', PRIMITIVE_COLOR_TOKEN_COUNT + SEMANTIC_COLOR_TOKEN_COUNT);
+    expect(overlap).toEqual(['colorFocusRing']);
+    expect(presetNames).toHaveProperty('size', COMPLETE_THEME_TOKEN_COUNT);
+    expect(LEGACY_THEME_TOKEN_COUNT + architectureNames.size - overlap.length).toBe(COMPLETE_THEME_TOKEN_COUNT);
+
+    for (const name of architectureNames) {
+      expect(presetNames.has(name), name).toBe(true);
+    }
+  });
+
   it('keeps built-in preset keys equal to the public token contract', () => {
     expectTypeOf<keyof typeof defaultThemePresetSource.tokens>().toEqualTypeOf<keyof VfThemeTokens>();
   });
@@ -115,7 +158,12 @@ describe('core theme contract', () => {
     const runtimeVariables = themeTokensToCssVars(defaultThemePresetSource.tokens);
 
     expect(sortEntries(staticVariables)).toEqual(sortEntries(runtimeVariables));
-    expect(Object.keys(staticVariables)).toHaveLength(847);
+    expect(Object.keys(staticVariables)).toHaveLength(COMPLETE_THEME_TOKEN_COUNT);
+    expect(resolveCssVariable(staticVariables, '--vf-color-background-canvas')).toBe('#f6f8fb');
+    expect(resolveCssVariable(staticVariables, '--vf-color-text-primary')).toBe('#1f232b');
+    expect(resolveCssVariable(staticVariables, '--vf-color-border-default')).toBe('#d9dde3');
+    expect(resolveCssVariable(staticVariables, '--vf-color-interactive-primary-background')).toBe('#0e639c');
+    expect(resolveCssVariable(staticVariables, '--vf-color-status-success-solid-background')).toBe('#2e7d32');
   });
 
   it('keeps fallback dark overrides equivalent to the source and effective runtime theme', () => {
@@ -134,14 +182,35 @@ describe('core theme contract', () => {
     };
 
     expect(sortEntries(staticDarkOverrides)).toEqual(sortEntries(runtimeDarkOverrides));
-    expect(Object.keys(staticDarkOverrides)).toHaveLength(53);
+    expect(Object.keys(staticDarkOverrides)).toHaveLength(LEGACY_DARK_OVERRIDE_COUNT);
+    expect(Object.keys(defaultThemePresetSource.dark ?? {})).toHaveLength(LEGACY_DARK_OVERRIDE_COUNT);
     expect(sortEntries(effectiveStaticDark)).toEqual(sortEntries(runtimeDark));
     expect(sortEntries(scopedLightVariables)).toEqual(sortEntries(runtimeLight));
-    expect(Object.keys(scopedLightVariables)).toHaveLength(847);
+    expect(Object.keys(scopedLightVariables)).toHaveLength(COMPLETE_THEME_TOKEN_COUNT);
     expect(sortEntries(scopedDarkVariables)).toEqual(sortEntries(runtimeDark));
-    expect(Object.keys(scopedDarkVariables)).toHaveLength(847);
-    expect(resolveCssVariable(scopedLightVariables, '--vf-selectable-color')).toBe('#616773');
-    expect(resolveCssVariable(scopedDarkVariables, '--vf-selectable-color')).toBe('#9da0a6');
+    expect(Object.keys(scopedDarkVariables)).toHaveLength(COMPLETE_THEME_TOKEN_COUNT);
+    const resolvedModePairs = [
+      ['--vf-selectable-color', '#616773', '#9da0a6'],
+      ['--vf-color-background-canvas', '#f6f8fb', '#17191e'],
+      ['--vf-color-background-surface', '#ffffff', '#20232a'],
+      ['--vf-color-text-primary', '#1f232b', '#d4d4d4'],
+      ['--vf-color-text-inverse', '#ffffff', '#111827'],
+      ['--vf-color-border-default', '#d9dde3', '#363b46'],
+      ['--vf-color-border-interactive', '#d9dde3', '#363b46'],
+      ['--vf-color-border-focus', '#0e639c', '#276cb5'],
+      ['--vf-color-interactive-primary-background', '#0e639c', '#276cb5'],
+      ['--vf-color-status-success-solid-background', '#2e7d32', '#37783e'],
+      ['--vf-color-status-info-solid-background', '#0077a3', '#1a739f'],
+      ['--vf-color-status-warning-solid-background', '#a1841f', '#b79a63'],
+      ['--vf-color-status-warning-solid-foreground', '#1f1300', '#1f1300'],
+      ['--vf-color-status-danger-solid-background', '#c72e39', '#bf3f3f'],
+      ['--vf-color-status-help-solid-background', '#6e43a2', '#7b4c96'],
+    ] as const;
+
+    for (const [name, lightValue, darkValue] of resolvedModePairs) {
+      expect(resolveCssVariable(scopedLightVariables, name), `${name} light`).toBe(lightValue);
+      expect(resolveCssVariable(scopedDarkVariables, name), `${name} dark`).toBe(darkValue);
+    }
   });
 
   it('emits canonical fallback names and no malformed serializer variants', () => {
@@ -172,8 +241,8 @@ describe('core theme contract', () => {
     expect(themeCss).toContain(':root[data-vf-theme="dark"]');
     expect(themeCss).toContain(scopedLightSelector);
     expect(themeCss).toContain(scopedDarkSelector);
-    expect(themeCss.match(/--vf-color-bg: #f6f8fb;/g)).toHaveLength(1);
-    expect(themeCss.match(/--vf-color-bg: #17191e;/g)).toHaveLength(2);
+    expect(themeCss.match(/--vf-color-bg: var\(--vf-palette-neutral-50\);/g)).toHaveLength(1);
+    expect(themeCss.match(/--vf-color-bg: var\(--vf-palette-neutral-900\);/g)).toHaveLength(2);
     expect(themeCss.match(/--vf-z-overlay: 1000;/g)).toHaveLength(3);
     expect(extractCssRule(themeCss, scopedLightSelector)).toContain('color-scheme: light;');
     expect(extractCssRule(themeCss, scopedDarkSelector)).toContain('color-scheme: dark;');
@@ -206,17 +275,20 @@ describe('core theme contract', () => {
 
     document.documentElement.dataset.theme = 'dark';
 
-    expect(getComputedStyle(document.documentElement).getPropertyValue('--vf-color-primary')).toBe('#276cb5');
-    expect(getComputedStyle(darkBoundary).getPropertyValue('--vf-color-primary')).toBe('#276cb5');
-    expect(getComputedStyle(lightBoundary).getPropertyValue('--vf-color-primary')).toBe('#0e639c');
-    expect(getComputedStyle(nestedDarkBoundary).getPropertyValue('--vf-color-primary')).toBe('#276cb5');
-    expect(getComputedStyle(darkBoundary).getPropertyValue('--vf-color-muted')).toBe('#9da0a6');
-    expect(getComputedStyle(lightBoundary).getPropertyValue('--vf-color-muted')).toBe('#616773');
-    expect(getComputedStyle(nestedDarkBoundary).getPropertyValue('--vf-color-muted')).toBe('#9da0a6');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('#276cb5');
+    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-primary')).toBe('#276cb5');
+    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-primary')).toBe('#0e639c');
+    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-primary')).toBe('#276cb5');
+    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-muted')).toBe('#9da0a6');
+    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-muted')).toBe('#616773');
+    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-muted')).toBe('#9da0a6');
+    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-background-canvas')).toBe('#17191e');
+    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-background-canvas')).toBe('#f6f8fb');
+    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-background-canvas')).toBe('#17191e');
 
     document.documentElement.dataset.theme = 'light';
 
-    expect(getComputedStyle(document.documentElement).getPropertyValue('--vf-color-primary')).toBe('#0e639c');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('#0e639c');
 
     delete document.documentElement.dataset.theme;
     darkBoundary.remove();
@@ -232,13 +304,15 @@ describe('core theme contract', () => {
 
     document.documentElement.dataset.theme = 'dark';
 
-    expect(getComputedStyle(document.documentElement).getPropertyValue('--vf-color-primary')).toBe('#276cb5');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('#276cb5');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-background-canvas')).toBe('#17191e');
     expect(getComputedStyle(document.documentElement).colorScheme).toBe('dark');
 
     delete document.documentElement.dataset.theme;
     document.documentElement.dataset.vfTheme = 'dark';
 
-    expect(getComputedStyle(document.documentElement).getPropertyValue('--vf-color-primary')).toBe('#276cb5');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('#276cb5');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-background-canvas')).toBe('#17191e');
     expect(getComputedStyle(document.documentElement).colorScheme).toBe('dark');
 
     delete document.documentElement.dataset.vfTheme;

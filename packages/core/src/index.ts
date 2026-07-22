@@ -59,7 +59,12 @@ export {
   useBreakpointValue,
   useScrollLock,
 } from './foundation';
-export { createThemePreset, defaultThemePreset } from './theme/public';
+export {
+  createThemePreset,
+  defaultThemePreset,
+  vfPrimitiveColorTokenNames,
+  vfSemanticColorTokenNames,
+} from './theme/public';
 export { createAsyncWithSkeleton } from './async';
 export type {
   VfBadgeTone,
@@ -91,6 +96,10 @@ export type {
 } from './types/components';
 export type {
   VfResolvedTheme,
+  VfPrimitiveColorTokenName,
+  VfPrimitiveColorTokens,
+  VfSemanticColorTokenName,
+  VfSemanticColorTokens,
   VfThemeConfig,
   VfThemeContext,
   VfThemeMode,
