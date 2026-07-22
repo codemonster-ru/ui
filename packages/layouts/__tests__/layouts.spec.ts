@@ -103,7 +103,7 @@ describe('package exports', () => {
       exports: Record<string, unknown>;
     };
 
-    expect(packageJson.exports['./styles.css']).toBeUndefined();
+    expect(packageJson.exports['./styles.css']).toBe('./dist/styles.css');
     expect(packageJson.exports['./base.css']).toBe('./dist/base.css');
     expect(packageJson.exports['./app-shell.css']).toBe('./dist/app-shell.css');
     expect(packageJson.exports['./auth-layout.css']).toBe('./dist/auth-layout.css');

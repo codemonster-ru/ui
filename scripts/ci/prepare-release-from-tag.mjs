@@ -29,13 +29,17 @@ if (!tagMatch) {
 
 const [, packageName, versionFromTag] = tagMatch;
 const packageSlug = packageName.includes('/') ? packageName.split('/')[1] : packageName;
+const distTag = versionFromTag.includes('-') ? 'next' : 'latest';
+const isPrerelease = versionFromTag.includes('-');
+const tarballName = `${packageName.replace(/^@/, '').replace('/', '-')}-${versionFromTag}.tgz`;
 const packagesDir = path.join(rootDir, 'packages');
 
 if (!fs.existsSync(packagesDir)) {
   fail('packages directory not found.');
 }
 
-const packageDirs = fs.readdirSync(packagesDir, { withFileTypes: true })
+const packageDirs = fs
+  .readdirSync(packagesDir, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
 
@@ -65,9 +69,7 @@ if (String(packageJson.private) === 'true') {
 }
 
 if (packageJson.version !== versionFromTag) {
-  fail(
-    `Version mismatch for "${packageName}": tag has ${versionFromTag}, package.json has ${packageJson.version}.`
-  );
+  fail(`Version mismatch for "${packageName}": tag has ${versionFromTag}, package.json has ${packageJson.version}.`);
 }
 
 const changelogPath = path.join(rootDir, packageDir, 'CHANGELOG.md');
@@ -101,18 +103,24 @@ for (let i = startIndex + 1; i < lines.length; i += 1) {
   }
 }
 
-const releaseNotes = lines.slice(startIndex + 1, endIndex).join('\n').trim();
+const releaseNotes = lines
+  .slice(startIndex + 1, endIndex)
+  .join('\n')
+  .trim();
 if (!releaseNotes) {
   fail(`Changelog section for ${versionFromTag} is empty in ${packageDir}/CHANGELOG.md.`);
 }
 
 const releaseNotesPath = path.join(rootDir, '.release-notes.md');
-fs.writeFileSync(releaseNotesPath, `${releaseNotes}\n`, 'utf8');
+fs.writeFileSync(releaseNotesPath, `# ${packageName}@${versionFromTag}\n\n## Changes\n\n${releaseNotes}\n`, 'utf8');
 
 const output = [
   `package_name=${packageName}`,
   `package_version=${versionFromTag}`,
   `package_dir=${packageDir}`,
+  `dist_tag=${distTag}`,
+  `is_prerelease=${isPrerelease}`,
+  `tarball_name=${tarballName}`,
   `release_notes_path=${releaseNotesPath}`,
   `release_name=${packageSlug} v${versionFromTag}`,
 ].join('\n');

@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.4.0
+
+### Added
+
+- Added public primitive and semantic color token name/type contracts shared by VueForge packages.
+
+### Changed
+
+- Unified runtime, static, Core, and Layouts CSS custom-property serialization, including digit and
+  acronym boundaries.
+- Marked the ESM package as side-effect free and declared Node.js 18 or newer for consumer tooling.
+
+### Fixed
+
+- Made scoped light and dark theme serialization complete and reversible without changing public
+  token names.
+
+### Breaking changes
+
+- None in the documented public API. Existing token names remain available.
+
 ## 1.3.0
 
 ### Added

@@ -55,9 +55,11 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
       closeBundle() {
         const distDir = resolve(__dirname, 'dist');
         const autoDir = resolve(distDir, 'auto');
+        const nodeDir = resolve(distDir, 'node');
 
         mkdirSync(distDir, { recursive: true });
         mkdirSync(autoDir, { recursive: true });
+        mkdirSync(nodeDir, { recursive: true });
         cpSync(layoutCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'breakpoints.css'));
         cpSync(layoutCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
         cpSync(layoutCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
@@ -111,6 +113,10 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
             `${cssImports}\nexport { ${exportName} as default, ${exportName} } from '../index.js';\n`,
           );
           writeFileSync(
+            resolve(nodeDir, `${entryName}.js`),
+            `export { ${exportName} as default, ${exportName} } from '../index.js';\n`,
+          );
+          writeFileSync(
             resolve(distDir, `${entryName}.d.ts`),
             `export { default } from '${declarationSource}';\nexport { default as ${exportName} } from '${declarationSource}';\n`,
           );
@@ -143,12 +149,17 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
 
 function vueforgeLayoutsCjsArtifactsPlugin(): Plugin {
   return {
-    name: 'vueforge-layouts-remove-cjs-only-css',
+    name: 'vueforge-layouts-finalize-cjs-artifacts',
     closeBundle() {
       const cjsCssPath = resolve(__dirname, 'dist/cjs-ssr.css');
       if (existsSync(cjsCssPath)) {
         rmSync(cjsCssPath);
       }
+
+      writeFileSync(
+        resolve(__dirname, 'dist/index.d.cts'),
+        "declare const moduleExports: typeof import('./index.js');\nexport = moduleExports;\n",
+      );
     },
   };
 }
@@ -177,9 +188,29 @@ export default defineConfig(({ mode }) => {
               include: ['src'],
               exclude: ['__tests__/**/*'],
               insertTypesEntry: true,
-              beforeWriteFile(filePath) {
+              aliasesExclude: [
+                '@codemonster-ru/vueforge-core',
+                '@codemonster-ru/vueforge-core/foundation',
+                '@codemonster-ru/vueforge-theme',
+              ],
+              beforeWriteFile(filePath, content) {
                 if (filePath.endsWith('.d.ts.map')) {
                   return false;
+                }
+
+                const normalizedPath = filePath.replaceAll('\\', '/');
+                const dependencyImport = normalizedPath.endsWith('/layouts/src/theme/types.d.ts')
+                  ? '@codemonster-ru/vueforge-core'
+                  : normalizedPath.endsWith('/layouts/src/index.d.ts') ||
+                      normalizedPath.endsWith('/layouts/src/composables/useCssVarBreakpoints.d.ts')
+                    ? '@codemonster-ru/vueforge-core/foundation'
+                    : null;
+
+                if (dependencyImport && content.includes('deps-shim.d.ts')) {
+                  return {
+                    filePath,
+                    content: content.replace(/(['"])(?:\.\.?\/)+types\/deps-shim\.d\.ts\1/g, `'${dependencyImport}'`),
+                  };
                 }
               },
             }),

@@ -7,6 +7,55 @@
 
 A framework-agnostic runtime core for interactive playground sessions in the VueForge ecosystem.
 
-## Documentation
+## Requirements
 
-For full documentation, visit [docs.codemonster.net/vueforge/playground-core](https://docs.codemonster.net/vueforge/playground-core/).
+- Node.js 18 or newer for installation and build tooling.
+- A browser iframe for the built-in browser runtime. Remote runtimes can provide their own executor.
+
+## Install
+
+```bash
+npm install @codemonster-ru/vueforge-playground-core
+```
+
+```bash
+pnpm add @codemonster-ru/vueforge-playground-core
+```
+
+```bash
+yarn add @codemonster-ru/vueforge-playground-core
+```
+
+## Public API
+
+The package exposes one side-effect-free ESM entry and no CSS:
+
+```ts
+import { createPlaygroundSession } from '@codemonster-ru/vueforge-playground-core';
+
+const session = createPlaygroundSession({
+  files: { '/index.ts': 'console.log("ready")' },
+  entry: '/index.ts',
+  iframe: document.querySelector('iframe'),
+});
+
+await session.run();
+```
+
+The browser runtime validates iframe messages and import resolution, and reports structured
+runtime errors. Importing the module is SSR-safe, but executing the browser runtime requires DOM
+APIs. Call `dispose()` when the host is removed.
+
+TypeScript powers in-browser transpilation. Consumer bundlers therefore emit a compiler chunk of
+about 1 MiB gzip; keep the runtime behind a dynamic import when it is not needed at startup. The
+Vue Playground UI activates this runtime boundary only when a sandbox session is created.
+
+## Package-local documentation
+
+See
+[src/index.ts](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-core/src/index.ts),
+[src/types.ts](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-core/src/types.ts),
+and
+[CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-core/CHANGELOG.md).
+The higher-level Vue integration is documented in
+[`@codemonster-ru/vueforge-playground`](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground/README.md).

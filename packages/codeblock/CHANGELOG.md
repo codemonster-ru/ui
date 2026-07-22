@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.7.0
+
+### Added
+
+- Added package-owned light and dark Shiki themes backed by VueForge semantic variables and exact
+  standalone fallbacks.
+- Added public fallback-language and highlight-option types plus CSS-free Node ESM and CommonJS type
+  conditions.
+
+### Changed
+
+- Preserved server-rendered Shiki output during hydration and kept syntax highlighting and grammar
+  loading asynchronous.
+- Normalized scoped light/dark inheritance, reduced-motion behavior, and coarse-pointer copy controls.
+- Bundled the supported Shiki runtime artifacts during the package build instead of requiring Shiki
+  packages at consumer runtime.
+- Declared Node.js 20 and Vue 3.5 requirements and updated the Icons dependency floor to 1.6.
+
+### Fixed
+
+- Fixed standalone token chains that previously ended in unresolved Core variables.
+- Fixed Node/SSR `/view` imports so CSS is not evaluated on the server while browser imports retain
+  automatic component CSS.
+
+### Breaking changes
+
+- None in the documented public API. The package continues to use the explicit `/view` and
+  `/highlight` entries introduced in 3.0.
+
 ## 3.6.1
 
 ### Changed
