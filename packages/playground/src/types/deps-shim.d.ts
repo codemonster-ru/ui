@@ -1,13 +1,19 @@
 declare module '@codemonster-ru/vueforge-core' {
-  import type { DefineComponent } from 'vue';
+  import type { ComputedRef, DefineComponent, MaybeRefOrGetter } from 'vue';
 
   export interface VfTabItem {
     value: string;
     label: string;
     disabled?: boolean;
+    tabId?: string;
+    panelId?: string;
   }
 
   export const VfTabs: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>;
+  export function useId(options?: {
+    prefix?: string;
+    providedId?: MaybeRefOrGetter<string | undefined>;
+  }): ComputedRef<string>;
 }
 
 declare module '@codemonster-ru/vueforge-codeblock/view' {

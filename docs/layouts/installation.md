@@ -53,6 +53,7 @@ For full manual control, keep explicit CSS imports and load only required entrie
 
 Examples:
 
+- `@codemonster-ru/vueforge-layouts/breakpoints.css`
 - `@codemonster-ru/vueforge-layouts/container.css`
 - `@codemonster-ru/vueforge-layouts/admin-layout.css`
 - `@codemonster-ru/vueforge-layouts/admin-shell.css`

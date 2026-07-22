@@ -32,6 +32,25 @@ describe('VfDrawer', () => {
     expect(document.activeElement?.textContent).toBe('Focus target');
   });
 
+  it('wires a custom heading and supports an explicit accessible name', async () => {
+    const wrapper = mount(VfDrawer, {
+      attachTo: document.body,
+      props: { open: true },
+      slots: { header: '<span>Custom drawer heading</span>' },
+    });
+    await nextTick();
+
+    const dialog = document.body.querySelector('[role="dialog"]');
+    expect(document.getElementById(dialog?.getAttribute('aria-labelledby') ?? '')?.textContent).toContain(
+      'Custom drawer heading',
+    );
+
+    await wrapper.setProps({ ariaLabel: 'Explicit drawer name', ariaDescribedby: 'drawer-help' });
+    expect(dialog?.getAttribute('aria-label')).toBe('Explicit drawer name');
+    expect(dialog?.hasAttribute('aria-labelledby')).toBe(false);
+    expect(dialog?.getAttribute('aria-describedby')).toBe('drawer-help');
+  });
+
   it('applies placement and size classes', async () => {
     mount(VfDrawer, {
       attachTo: document.body,
@@ -211,6 +230,18 @@ describe('VfDrawer', () => {
 
     wrapper.unmount();
     host.remove();
+  });
+
+  it('can disable scroll locking explicitly', async () => {
+    document.body.style.overflow = 'auto';
+    const wrapper = mount(VfDrawer, {
+      attachTo: document.body,
+      props: { open: true, title: 'Unlocked drawer', scrollLockTarget: false },
+    });
+
+    await nextTick();
+    expect(document.body.style.overflow).toBe('auto');
+    wrapper.unmount();
   });
 
   it('can render without teleport when requested', async () => {

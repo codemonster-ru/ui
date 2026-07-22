@@ -31,11 +31,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check workspaces
-        run: npm run check
-
-      - name: Check deferred runtime budgets
-        run: npm run check:deferred-budgets
+      - name: Verify repository
+        run: npm run verify
 
       - name: Dry-run publish artifacts
         run: npm run prepublish:all

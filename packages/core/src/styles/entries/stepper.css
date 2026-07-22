@@ -79,7 +79,7 @@
   border: none;
   background: transparent;
   color: var(--vf-stepper-trigger-color);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -197,7 +197,7 @@
 
 .vf-stepper--vertical.vf-stepper--content-start .vf-stepper__content {
   align-items: flex-end;
-  text-align: right;
+  text-align: end;
 }
 
 .vf-stepper__label {

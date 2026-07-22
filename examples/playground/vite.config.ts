@@ -2,7 +2,7 @@ import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } fro
 import vue from '@vitejs/plugin-vue';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { fileURLToPath, URL } from 'node:url';
-import { vueforgePlaygroundVirtualPlugin } from '@codemonster-ru/vueforge-playground-vite-plugin';
+import { vueforgePlaygroundVirtualPlugin } from '../../packages/playground-vite-plugin/src/index';
 import { resolveLayoutCustomMedia } from '../../packages/layouts/src/theme/breakpoint-registry';
 
 const showcaseSectionPattern = /^\/(colors|core|layouts|icons|codeblock|playground)\/?$/;

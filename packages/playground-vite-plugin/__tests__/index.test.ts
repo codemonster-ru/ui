@@ -1,7 +1,17 @@
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import type { Plugin } from 'vite';
-import { vueforgePlaygroundVirtualPlugin } from '../src/index';
+import {
+  vueforgePlaygroundVirtualPlugin,
+  type VueForgePlaygroundVirtualEntryConfig,
+  type VueForgePlaygroundVirtualEntryValue,
+  type VueForgePlaygroundVirtualExportMode,
+  type VueForgePlaygroundVirtualPluginOptions,
+  type VueforgePlaygroundVirtualEntryConfig,
+  type VueforgePlaygroundVirtualEntryValue,
+  type VueforgePlaygroundVirtualExportMode,
+  type VueforgePlaygroundVirtualPluginOptions,
+} from '../src/index';
 
 function getResolveIdHandler(plugin: Plugin) {
   const resolveId = plugin.resolveId;
@@ -22,6 +32,13 @@ function getLoadHandler(plugin: Plugin) {
 }
 
 describe('vueforgePlaygroundVirtualPlugin', () => {
+  it('exports correctly branded aliases without breaking legacy type names', () => {
+    expectTypeOf<VueForgePlaygroundVirtualExportMode>().toEqualTypeOf<VueforgePlaygroundVirtualExportMode>();
+    expectTypeOf<VueForgePlaygroundVirtualEntryConfig>().toEqualTypeOf<VueforgePlaygroundVirtualEntryConfig>();
+    expectTypeOf<VueForgePlaygroundVirtualEntryValue>().toEqualTypeOf<VueforgePlaygroundVirtualEntryValue>();
+    expectTypeOf<VueForgePlaygroundVirtualPluginOptions>().toEqualTypeOf<VueforgePlaygroundVirtualPluginOptions>();
+  });
+
   it('resolves and loads default export entry', async () => {
     const plugin = vueforgePlaygroundVirtualPlugin({
       entries: {

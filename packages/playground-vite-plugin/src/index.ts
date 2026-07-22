@@ -1,18 +1,22 @@
 import path from 'node:path';
 import type { Plugin } from 'vite';
 
+/** @deprecated Use `VueForgePlaygroundVirtualExportMode`. */
 export type VueforgePlaygroundVirtualExportMode =
   | 'default'
   | 'namespace'
   | { named: string };
 
+/** @deprecated Use `VueForgePlaygroundVirtualEntryConfig`. */
 export interface VueforgePlaygroundVirtualEntryConfig {
   file: string;
   export?: VueforgePlaygroundVirtualExportMode;
 }
 
+/** @deprecated Use `VueForgePlaygroundVirtualEntryValue`. */
 export type VueforgePlaygroundVirtualEntryValue = string | VueforgePlaygroundVirtualEntryConfig;
 
+/** @deprecated Use `VueForgePlaygroundVirtualPluginOptions`. */
 export interface VueforgePlaygroundVirtualPluginOptions {
   entries: Record<string, VueforgePlaygroundVirtualEntryValue>;
   virtualPrefix?: string;
@@ -20,8 +24,13 @@ export interface VueforgePlaygroundVirtualPluginOptions {
   exportMode?: VueforgePlaygroundVirtualExportMode;
 }
 
+export type VueForgePlaygroundVirtualExportMode = VueforgePlaygroundVirtualExportMode;
+export type VueForgePlaygroundVirtualEntryConfig = VueforgePlaygroundVirtualEntryConfig;
+export type VueForgePlaygroundVirtualEntryValue = VueforgePlaygroundVirtualEntryValue;
+export type VueForgePlaygroundVirtualPluginOptions = VueforgePlaygroundVirtualPluginOptions;
+
 export function vueforgePlaygroundVirtualPlugin(
-  options: VueforgePlaygroundVirtualPluginOptions
+  options: VueForgePlaygroundVirtualPluginOptions
 ): Plugin {
   const virtualPrefix = options.virtualPrefix ?? 'virtual:vueforge-playground/';
   const resolvedPrefix = `\0${virtualPrefix}`;

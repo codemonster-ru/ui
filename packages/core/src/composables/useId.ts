@@ -1,14 +1,12 @@
-import { computed, type MaybeRefOrGetter, toValue } from 'vue';
+import { computed, type MaybeRefOrGetter, toValue, useId as useVueId } from 'vue';
 
-let idCounter = 0;
-
-interface UseIdOptions {
+export interface UseIdOptions {
   prefix?: string;
   providedId?: MaybeRefOrGetter<string | undefined>;
 }
 
 export function useId(options: UseIdOptions = {}) {
-  const generatedId = `${options.prefix ?? 'vf'}-${++idCounter}`;
+  const generatedId = `${options.prefix ?? 'vf'}-${useVueId()}`;
 
   return computed(() => toValue(options.providedId) ?? generatedId);
 }

@@ -17,6 +17,8 @@ Component props and their default values.
 | `copyLabel?` | `string` | `Copy` | Button label before copy action. |
 | `copiedLabel?` | `string` | `Copied` | Button label after successful copy. |
 | `copiedDuration?` | `number` | `1200` | Duration (ms) for copied state. |
+| `languageLabel?` | `string` | `Language` | Accessible text prefix shown before the language id. |
+| `disabled?` | `boolean` | `false` | Disables the copy action and applies disabled styling. |
 | `theme?` | `'inherit' \| 'light' \| 'dark'` | `inherit` | Theme mode for rendering. |
 | `wrap?` | `boolean` | `false` | Enables long-line wrapping. |
 | `highlight?` | `boolean` | `true` | Enables syntax highlighting. |
@@ -61,6 +63,7 @@ Exported interfaces related to this component.
 | `CodeBlockProps` | `interface` | `—` | Public props contract for `VfCodeBlock`. |
 | `CodeBlockCopyPayload` | `interface` | `—` | Payload emitted by `copy` event. |
 | `CodeBlockPluginOptions` | `interface` | `—` | Plugin options for runtime theme vars and language loading policy. |
+| `CodeBlockHighlightOptions` | `interface` | `—` | Per-call allowlist and fallback options for highlight helpers. |
 | `CodeBlockThemeVarOptions` | `interface` | `—` | Theme vars grouped into `base/light/dark` maps. |
 
 ## Types
@@ -70,5 +73,6 @@ Exported utility and union types.
 | Name | Values |
 | --- | --- |
 | `CodeBlockTheme` | `'inherit' \| 'light' \| 'dark'` |
-| `SupportedCodeBlockLanguage` | `'plaintext' \| 'text' \| 'txt' \| 'js' \| 'javascript' \| 'ts' \| 'typescript' \| 'vue' \| 'html' \| 'json' \| 'bash' \| 'shell' \| 'sh' \| 'css' \| 'scss' \| 'sass'` |
+| `CodeBlockFallbackLanguage` | `'plaintext' \| 'text'` |
+| `SupportedCodeBlockLanguage` | `'plaintext' \| 'text' \| 'txt' \| 'js' \| 'javascript' \| 'ts' \| 'typescript' \| 'vue' \| 'html' \| 'php' \| 'json' \| 'dotenv' \| 'env' \| 'diff' \| 'cron' \| 'crontab' \| 'bash' \| 'shell' \| 'sh' \| 'css' \| 'scss' \| 'sass'` |
 | `CodeBlockLanguage` | `SupportedCodeBlockLanguage \| string` |

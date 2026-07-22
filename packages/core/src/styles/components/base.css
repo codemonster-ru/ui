@@ -1,4 +1,5 @@
 @import './theme-transition-guard.css';
+@import './accessibility-preferences.css';
 
 :where([class^='vf-'], [class*=' vf-']),
 :where([class^='vf-'], [class*=' vf-'])::before,

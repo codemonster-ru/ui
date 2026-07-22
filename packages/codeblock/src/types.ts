@@ -25,6 +25,8 @@ export const SUPPORTED_CODE_BLOCK_LANGUAGES = [
 
 export type CodeBlockTheme = 'inherit' | 'light' | 'dark';
 
+export type CodeBlockFallbackLanguage = 'plaintext' | 'text';
+
 export type SupportedCodeBlockLanguage = (typeof SUPPORTED_CODE_BLOCK_LANGUAGES)[number];
 
 export type CodeBlockLanguage = SupportedCodeBlockLanguage | (string & {});
@@ -40,6 +42,11 @@ export interface CodeBlockThemeVarOptions {
   base?: CodeBlockCssVarMap;
   light?: CodeBlockCssVarMap;
   dark?: CodeBlockCssVarMap;
+}
+
+export interface CodeBlockHighlightOptions {
+  allowedLanguages?: string[];
+  fallbackLanguage?: CodeBlockFallbackLanguage;
 }
 
 export interface CodeBlockPluginOptions {
@@ -70,7 +77,7 @@ export interface CodeBlockProps {
   ariaLabel?: string;
   theme?: CodeBlockTheme;
   allowedLanguages?: string[];
-  languageFallback?: 'plaintext' | 'text';
+  languageFallback?: CodeBlockFallbackLanguage;
 }
 
 export interface CodeBlockLanguageRuntimeOptions {

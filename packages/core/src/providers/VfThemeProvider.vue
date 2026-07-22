@@ -31,14 +31,20 @@ function getThemeRoots(): Element[] {
   }
 }
 
-function getInitialMode(): VfThemeMode {
-  if (typeof window === 'undefined') {
-    return initialTheme.value;
+function readStoredTheme(): VfThemeMode | null {
+  try {
+    const storedTheme = window.localStorage.getItem(storageKey.value);
+
+    return isThemeMode(storedTheme) ? storedTheme : null;
+  } catch {
+    return null;
   }
+}
 
-  const storedTheme = window.localStorage.getItem(storageKey.value);
+function getClientMode(): VfThemeMode {
+  const storedTheme = readStoredTheme();
 
-  if (isThemeMode(storedTheme)) {
+  if (storedTheme) {
     return storedTheme;
   }
 
@@ -56,16 +62,20 @@ function getInitialMode(): VfThemeMode {
   return initialTheme.value;
 }
 
-function getInitialSystemTheme(): VfResolvedTheme {
-  if (typeof window === 'undefined') {
-    return 'light';
+function getColorSchemeMediaQuery(): MediaQueryList | null {
+  if (typeof window.matchMedia !== 'function') {
+    return null;
   }
 
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)');
+  } catch {
+    return null;
+  }
 }
 
-const mode = ref<VfThemeMode>(getInitialMode());
-const systemTheme = ref<VfResolvedTheme>(getInitialSystemTheme());
+const mode = ref<VfThemeMode>(initialTheme.value);
+const systemTheme = ref<VfResolvedTheme>('light');
 const mediaQuery = ref<MediaQueryList | null>(null);
 
 const resolvedTheme = computed(() => resolveTheme(mode.value, systemTheme.value));
@@ -126,26 +136,35 @@ function toggleTheme() {
 }
 
 watch(mode, (value) => {
-  if (typeof window === 'undefined') {
+  if (typeof window === 'undefined' || !hasMounted.value) {
     return;
   }
 
-  window.localStorage.setItem(storageKey.value, value);
-});
+  try {
+    window.localStorage.setItem(storageKey.value, value);
+  } catch {
+    // Storage can be unavailable in privacy-restricted browser contexts.
+  }
+}, { flush: 'sync' });
 
 watch(
   resolvedTheme,
   (value) => {
-    updateDocumentTheme(value, { animate: hasMounted.value });
+    if (hasMounted.value) {
+      updateDocumentTheme(value, { animate: true });
+    }
   },
-  { immediate: true },
+  { flush: 'sync' },
 );
 
 onMounted(() => {
+  mode.value = getClientMode();
+  mediaQuery.value = getColorSchemeMediaQuery();
+  systemTheme.value = mediaQuery.value?.matches ? 'dark' : 'light';
   updateDocumentTheme(resolvedTheme.value);
-  mediaQuery.value = window.matchMedia('(prefers-color-scheme: dark)');
-  handleSystemThemeChange();
-  mediaQuery.value.addEventListener('change', handleSystemThemeChange);
+
+  mediaQuery.value?.addEventListener('change', handleSystemThemeChange);
+
   hasMounted.value = true;
 });
 

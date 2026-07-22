@@ -61,10 +61,10 @@
   appearance: none;
   cursor: pointer;
   transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
-  text-align: left;
+    background-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    border-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
+    color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
+  text-align: start;
 }
 
 .vf-select:focus,

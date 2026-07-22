@@ -6,7 +6,7 @@ export type FrameworkType = 'vanilla' | 'vue' | 'html';
 
 export type ImportResolutionKind = 'module' | 'style';
 
-export type ImportResolutionErrorCode = 'unresolved' | 'blocked' | 'mime';
+export type ImportResolutionErrorCode = 'unresolved' | 'blocked' | 'mime' | 'circular';
 
 export interface ImportResolutionContext {
   fromFile: string;

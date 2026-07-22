@@ -10,6 +10,7 @@ Component props and their default values.
 | --- | --- | --- | --- |
 | `minHeight?` | `string \| number` | — | Minimum height of playground container (number treated as px). |
 | `height?` | `string \| number` | — | Fixed height of playground container (number treated as px). |
+| `heightMode?` | `'fixed' \| 'auto-preview' \| 'auto'` | `fixed` | Uses the configured height, content height only on preview, or content height on every tab. |
 | `theme?` | `'inherit' \| 'light' \| 'dark'` | `inherit` | Theme mode for rendering. |
 | `initialTab?` | `'code' \| 'preview' \| 'console'` | — | Initial active tab on mount. |
 | `tabsRenderer?` | `TabsRenderer` | — | Custom renderer component for tabs header. |
@@ -21,7 +22,7 @@ Component props and their default values.
 | `framework?` | `'vanilla' \| 'vue' \| 'html'` | `vanilla` | Runtime adapter used in sandbox mode. |
 | `autorun?` | `boolean` | `true` | Runs sandbox preview automatically on load. |
 | `showCode?` | `boolean` | `true` | Shows the code panel in UI. |
-| `resolveImport?` | `ResolveImportFn` | — | Custom import resolver for sandbox modules. |
+| `resolveImport?` | `(specifier: string, context: { fromFile: string; framework?: 'vanilla' \| 'vue' \| 'html' }) => { kind: 'module' \| 'style'; url: string } \| null` | — | Synchronous fallback for imports not resolved from the virtual file map. Return `null` to keep the import unresolved/default-resolved. |
 | `bootstrapScript?` | `string` | — | Script injected before app execution. |
 | `mode` | `'component'` | — | Selects playground runtime mode (`sandbox` or `component`). |
 | `component` | `Component` | — | Vue component rendered in component mode. |
@@ -76,4 +77,5 @@ Exported utility and union types.
 | Name | Values |
 | --- | --- |
 | `VfPlaygroundTab` | `'code' \| 'preview' \| 'console'` |
+| `VfPlaygroundHeightMode` | `'fixed' \| 'auto-preview' \| 'auto'` |
 | `VfPlaygroundProps` | `VfPlaygroundSandboxProps \| VfPlaygroundComponentProps` |

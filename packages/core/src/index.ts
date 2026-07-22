@@ -84,12 +84,14 @@ export type {
   VfDividerOrientation,
   VfDropdownPlacement,
   VfFeedbackTone,
+  VfLinkUnderline,
   VfLinkTone,
   VfNavMenuItem,
   VfSelectOption,
   VfStepperContentPosition,
   VfStepperItem,
   VfStepperOrientation,
+  VfSwitchThumbContrast,
   VfTabItem,
   VfTableOfContentsItem,
   VfTooltipPlacement,
@@ -109,6 +111,16 @@ export type {
   VfThemeTokens,
   VfVueForgeOptions,
 } from './types/theme';
+export type {
+  FloatingMiddlewareData,
+  UseClickOutsideOptions,
+  UseDisclosureOptions,
+  UseEscapeKeyOptions,
+  UseFloatingOptions,
+  UseFocusTrapOptions,
+  UseIdOptions,
+  UseTableOfContentsOptions,
+} from './composables';
 export type {
   UseBreakpointOptions,
   UseScrollLockOptions,

@@ -45,6 +45,7 @@ const props = withDefaults(
     stickyHeader: undefined,
     stickySidebar: false,
     stickyAside: false,
+    sidebarCollapsed: undefined,
     sidebarAppearance: 'default',
     asideAppearance: 'default',
     contentAppearance: 'default',
@@ -61,24 +62,38 @@ const attrs = useAttrs();
 const slots = useSlots();
 const headerRef = ref<HTMLElement | null>(null);
 const subheaderRef = ref<HTMLElement | null>(null);
-const isSidebarCollapsed = ref(props.defaultSidebarCollapsed);
+const uncontrolledSidebarCollapsed = ref(props.defaultSidebarCollapsed);
 
 watchEffect(() => {
   if (props.sidebarCollapsed !== undefined) {
-    isSidebarCollapsed.value = props.sidebarCollapsed;
+    uncontrolledSidebarCollapsed.value = props.sidebarCollapsed;
   }
 });
 
+const isSidebarCollapsed = computed(() =>
+  props.sidebarCollapsed === undefined ? uncontrolledSidebarCollapsed.value : props.sidebarCollapsed,
+);
+
+function setSidebarCollapsed(value: boolean) {
+  if (value === isSidebarCollapsed.value) return;
+
+  if (props.sidebarCollapsed === undefined) {
+    uncontrolledSidebarCollapsed.value = value;
+  }
+
+  emit('update:sidebarCollapsed', value);
+}
+
 function collapseSidebar() {
-  isSidebarCollapsed.value = true;
+  setSidebarCollapsed(true);
 }
 
 function expandSidebar() {
-  isSidebarCollapsed.value = false;
+  setSidebarCollapsed(false);
 }
 
 function toggleSidebarCollapsed() {
-  isSidebarCollapsed.value = !isSidebarCollapsed.value;
+  setSidebarCollapsed(!isSidebarCollapsed.value);
 }
 
 const classes = computed(() =>
@@ -157,10 +172,6 @@ defineExpose({
   collapseSidebar,
   expandSidebar,
   toggleSidebarCollapsed,
-});
-
-watchEffect(() => {
-  emit('update:sidebarCollapsed', isSidebarCollapsed.value);
 });
 </script>
 
