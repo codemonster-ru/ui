@@ -79,7 +79,7 @@ Accessibility behavior and keyboard interactions.
 
 The following items are listed in this section:
 
-- Uses native radio input semantics; selected state and group membership are announced.
+- Uses native radio input semantics; selected state and group membership are announced when radios share a `name`.
 - Use `VfFieldset` as the default way to render group-level helper text or error text.
 - Radios should be grouped with shared labeling (for example, `fieldset/legend` or `aria-labelledby`).
 - Each option must have a clear text label.
@@ -88,10 +88,10 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus into/out of radio group. |
-| `Shift + Tab` | Moves focus to previous focusable element. |
-| `ArrowRight` / `ArrowDown` | Moves selection to next radio in group (native behavior). |
-| `ArrowLeft` / `ArrowUp` | Moves selection to previous radio in group (native behavior). |
-| `Space` | Selects focused radio option. |
+| Key                        | Function                                                                          |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| `Tab`                      | Moves focus into/out of radio group.                                              |
+| `Shift + Tab`              | Moves focus to previous focusable element.                                        |
+| `ArrowRight` / `ArrowDown` | Moves selection to the next radio when controls share the same native `name`.     |
+| `ArrowLeft` / `ArrowUp`    | Moves selection to the previous radio when controls share the same native `name`. |
+| `Space`                    | Selects focused radio option.                                                     |

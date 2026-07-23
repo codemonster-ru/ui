@@ -83,9 +83,8 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to next table-of-contents link. |
-| `Shift + Tab` | Moves focus to previous table-of-contents link. |
-| `Enter` | Activates focused link and navigates/scrolls to section. |
-| `Space` | Activates focused link in browsers that map Space to link activation behavior. |
+| Key           | Function                                                 |
+| ------------- | -------------------------------------------------------- |
+| `Tab`         | Moves focus to next table-of-contents link.              |
+| `Shift + Tab` | Moves focus to previous table-of-contents link.          |
+| `Enter`       | Activates focused link and navigates/scrolls to section. |

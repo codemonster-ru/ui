@@ -53,7 +53,7 @@ Accessibility behavior and keyboard interactions.
 
 The following items are listed in this section:
 
-- Renders as semantic links/buttons depending on usage; ensure link text describes destination/action.
+- Renders as a native anchor or the configured router-link component; ensure link text describes the destination.
 - For current-page links, use `aria-current` where appropriate.
 - For external links opening new tabs, include visible or assistive cue in label/content.
 
@@ -61,8 +61,8 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to next link. |
+| Key           | Function                                   |
+| ------------- | ------------------------------------------ |
+| `Tab`         | Moves focus to next link.                  |
 | `Shift + Tab` | Moves focus to previous focusable element. |
-| `Enter` | Activates focused link. |
+| `Enter`       | Activates focused link.                    |

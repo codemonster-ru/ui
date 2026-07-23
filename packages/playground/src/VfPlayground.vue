@@ -243,16 +243,34 @@ const activeFileContent = computed(() => {
   }
   return componentCodeFiles.value[activeFile.value] ?? '';
 });
+
+const resolveCodeLanguage = (filePath: string, fallback: string): string => {
+  const fileName = filePath.split('/').pop() ?? '';
+  const separatorIndex = fileName.lastIndexOf('.');
+  const extension =
+    separatorIndex === 0 && fileName.length > 1
+      ? fileName.slice(1)
+      : separatorIndex > 0 && separatorIndex < fileName.length - 1
+        ? fileName.slice(separatorIndex + 1)
+        : '';
+
+  if (!extension) {
+    return fallback;
+  }
+  return extension === 'ts' ? 'typescript' : extension === 'js' ? 'javascript' : extension;
+};
+
 const codeLanguage = computed(() => {
   if (!isSandboxMode.value) {
-    const ext = activeFile.value.split('.').pop() ?? '';
-    if (ext) {
-      return ext === 'ts' ? 'typescript' : ext === 'js' ? 'javascript' : ext;
+    const fallback = componentProps.value?.componentSourceLanguage ?? 'vue';
+    const componentFiles = componentProps.value?.componentFiles;
+    if (!componentFiles || Object.keys(componentFiles).length === 0) {
+      return fallback;
     }
-    return componentProps.value?.componentSourceLanguage ?? 'vue';
+    return resolveCodeLanguage(activeFile.value, fallback);
   }
-  const ext = activeFile.value.split('.').pop() ?? 'txt';
-  return ext === 'ts' ? 'typescript' : ext === 'js' ? 'javascript' : ext;
+  const extension = activeFile.value.split('.').pop() ?? 'txt';
+  return extension === 'ts' ? 'typescript' : extension === 'js' ? 'javascript' : extension;
 });
 const resolvedTheme = computed<'light' | 'dark'>(() =>
   theme.value === 'inherit' ? (hostIsDark.value ? 'dark' : 'light') : theme.value,
@@ -304,10 +322,7 @@ const defaultTabItems = computed<VfTabItem[]>(() => {
       },
     ];
     if (isCodeVisible.value) {
-      return [
-        { value: 'code', label: 'Code', tabId: mainTabId('code'), panelId: mainPanelId('code') },
-        ...tabs,
-      ];
+      return [{ value: 'code', label: 'Code', tabId: mainTabId('code'), panelId: mainPanelId('code') }, ...tabs];
     }
     return tabs;
   }
@@ -327,10 +342,7 @@ const defaultTabItems = computed<VfTabItem[]>(() => {
     },
   ];
   if (isCodeVisible.value) {
-    return [
-      { value: 'code', label: 'Code', tabId: mainTabId('code'), panelId: mainPanelId('code') },
-      ...tabs,
-    ];
+    return [{ value: 'code', label: 'Code', tabId: mainTabId('code'), panelId: mainPanelId('code') }, ...tabs];
   }
   return tabs;
 });
@@ -732,8 +744,7 @@ function appendError(error: PlaygroundError): void {
 }
 
 function appendLog(entry: string): void {
-  const boundedEntry =
-    entry.length > MAX_CONSOLE_ENTRY_LENGTH ? `${entry.slice(0, MAX_CONSOLE_ENTRY_LENGTH)}…` : entry;
+  const boundedEntry = entry.length > MAX_CONSOLE_ENTRY_LENGTH ? `${entry.slice(0, MAX_CONSOLE_ENTRY_LENGTH)}…` : entry;
   logs.value.push(boundedEntry);
 
   const overflow = logs.value.length - MAX_CONSOLE_ENTRIES;

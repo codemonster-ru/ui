@@ -90,9 +90,8 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to switch. |
+| Key           | Function                                   |
+| ------------- | ------------------------------------------ |
+| `Tab`         | Moves focus to switch.                     |
 | `Shift + Tab` | Moves focus to previous focusable element. |
-| `Space` | Toggles switch state. |
-| `Enter` | Toggles switch state where button semantics are used. |
+| `Space`       | Toggles switch state.                      |

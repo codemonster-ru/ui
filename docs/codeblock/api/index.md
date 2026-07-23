@@ -1,6 +1,6 @@
 ---
-title: "API"
-description: "Public API reference for the codeblock package"
+title: 'API'
+description: 'Public API reference for the codeblock package'
 order: 3
 ---
 
@@ -41,12 +41,15 @@ import VueForgeCodeBlock from '@codemonster-ru/vueforge-codeblock/view';
 app.use(VueForgeCodeBlock, {
   themeScope: '#docs-root',
   allowedLanguages: ['ts', 'vue', 'json'],
-  preloadLanguages: ['ts', 'vue']
+  preloadLanguages: ['ts', 'vue'],
 });
 ```
 
-Language options:
+Plugin options:
 
+- `themeVars?: { base?, light?, dark? }`: runtime CSS variable groups.
+- `themeScope?: string`: selector used for runtime theme variables (`:root` by default).
+- `styleNonce?: string`: CSP nonce applied to the generated runtime style element.
 - `allowedLanguages?: string[]`: global runtime allowlist.
 - `preloadLanguages?: string[]`: preloads selected languages on plugin install (non-blocking, respects allowlist).
 
@@ -69,7 +72,16 @@ The following items are listed in this section:
 The code snippet below illustrates this section.
 
 ```ts
-setCodeBlockThemeVars(themeVars, options?)
+import { setCodeBlockThemeVars } from '@codemonster-ru/vueforge-codeblock/view';
+
+setCodeBlockThemeVars(
+  {
+    base: {
+      '--vf-codeblock-border-color': 'var(--vf-color-border)',
+    },
+  },
+  { themeScope: '#docs-root' },
+);
 ```
 
 Injects CSS variables into a runtime `<style>` element.
@@ -109,7 +121,11 @@ The following items are listed in this section:
 
 The following items are listed in this section:
 
-- `SUPPORTED_CODE_BLOCK_LANGUAGES`: built-in aliases (`ts`, `vue`, `json`, `bash`, etc.).
+- `SUPPORTED_CODE_BLOCK_LANGUAGES` from `/view`: built-in aliases (`ts`, `vue`, `json`, `bash`, etc.).
+- `SHIKI_LIGHT_THEME` from `/highlight`: legacy `github-light` identifier retained for source
+  compatibility; package highlighting uses the internal VueForge light theme.
+- `SHIKI_DARK_THEME` from `/highlight`: legacy `github-dark` identifier retained for source
+  compatibility; package highlighting uses the internal VueForge dark theme.
 
 ## Types
 

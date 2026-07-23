@@ -1,3 +1,9 @@
+---
+title: 'Admin Shell'
+description: 'Administrative shell with global topbar and sidebar'
+order: 18
+---
+
 # Admin Shell
 
 `VfAdminShell` provides a complete administrative shell with a full-width topbar and a body layer with rounded top corners containing the navigation sidebar and content workspace.

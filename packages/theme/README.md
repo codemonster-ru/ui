@@ -7,6 +7,8 @@
 
 A framework-agnostic token and preset engine for the VueForge ecosystem.
 
+Coordinated release: `@codemonster-ru/vueforge-theme@1.4.0`.
+
 ## Requirements
 
 - Node.js 18 or newer.
@@ -26,7 +28,7 @@ pnpm add @codemonster-ru/vueforge-theme
 yarn add @codemonster-ru/vueforge-theme
 ```
 
-## Public API
+## Quick start
 
 The package has one ESM entry and no CSS side effects:
 
@@ -58,3 +60,7 @@ The public contract is available directly in
 [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/theme/CHANGELOG.md).
 Ecosystem upgrade requirements are documented in the repository
 [migration guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-guide.md).
+
+## License
+
+[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/theme/LICENSE)

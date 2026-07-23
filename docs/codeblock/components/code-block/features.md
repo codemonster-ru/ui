@@ -32,12 +32,12 @@ entry: /App.vue
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 
-const theme = ref('light');
-let observer = null;
+const theme = ref<'light' | 'dark'>('light');
+let observer: MutationObserver | null = null;
 
 const syncTheme = () => {
   const htmlTheme = document.documentElement.getAttribute('data-theme');
@@ -124,9 +124,9 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to interactive controls (copy button, toggles) when present. |
-| `Shift + Tab` | Moves focus backward through interactive controls. |
-| `Enter` | Activates focused action control. |
-| `Space` | Activates focused action control. |
+| Key           | Function                                                                 |
+| ------------- | ------------------------------------------------------------------------ |
+| `Tab`         | Moves focus to interactive controls (copy button, toggles) when present. |
+| `Shift + Tab` | Moves focus backward through interactive controls.                       |
+| `Enter`       | Activates focused action control.                                        |
+| `Space`       | Activates focused action control.                                        |
