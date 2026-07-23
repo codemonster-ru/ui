@@ -1,4 +1,4 @@
-/* stylelint-disable no-descending-specificity -- Entry CSS mirrors the grouped interaction matrix from forms.css. */
+/* stylelint-disable no-descending-specificity -- Select states intentionally share one interaction matrix. */
 
 @import './field.css';
 @import './icon-button.css';
@@ -27,7 +27,7 @@
   width: var(--vf-field-clear-button-size-md);
   height: var(--vf-field-clear-button-size-md);
   border-radius: var(--vf-radius-control-tight);
-  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
+  color: var(--vf-color-icon-secondary);
 }
 
 .vf-select-wrap__clear.vf-icon-button svg {
@@ -39,7 +39,7 @@
 .vf-select-wrap__clear.vf-icon-button:active:not(:disabled) {
   background: transparent;
   border-color: transparent;
-  color: var(--vf-color-icon-primary, var(--vf-color-text));
+  color: var(--vf-color-icon-primary);
 }
 
 .vf-select {
@@ -315,11 +315,11 @@
 }
 
 .vf-select__icon--leading {
-  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
+  color: var(--vf-color-icon-secondary);
 }
 
 .vf-select__icon--trailing {
-  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
+  color: var(--vf-color-icon-secondary);
 }
 
 .vf-select--with-leading {

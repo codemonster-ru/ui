@@ -4,7 +4,16 @@ import { dirname, join, resolve } from 'node:path';
 
 const root = process.cwd();
 const files = {
-  forms: join(root, 'src/styles/components/forms.css'),
+  forms: [
+    'field.css',
+    'fieldset.css',
+    'input.css',
+    'textarea.css',
+    'select.css',
+    'checkbox.css',
+    'radio.css',
+    'switch.css',
+  ].map((fileName) => join(root, 'src/styles/entries', fileName)),
   input: join(root, 'src/styles/entries/input.css'),
   select: join(root, 'src/styles/entries/select.css'),
   textarea: join(root, 'src/styles/entries/textarea.css'),
@@ -25,10 +34,18 @@ function inlineCssImports(filePath, seen = new Set()) {
   );
 }
 
+function inlineCssFiles(filePaths) {
+  const seen = new Set();
+  return filePaths
+    .map((filePath) => inlineCssImports(filePath, seen))
+    .filter(Boolean)
+    .join('\n');
+}
+
 const source = Object.fromEntries(
-  Object.entries(files).map(([name, path]) => [
+  Object.entries(files).map(([name, fileOrFiles]) => [
     name,
-    name === 'forms' ? inlineCssImports(path) : readFileSync(path, 'utf8'),
+    Array.isArray(fileOrFiles) ? inlineCssFiles(fileOrFiles) : readFileSync(fileOrFiles, 'utf8'),
   ]),
 );
 

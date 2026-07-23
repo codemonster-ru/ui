@@ -10,53 +10,54 @@ const releaseTrain = [
     directory: 'theme',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-theme',
-    version: '1.4.0',
+    version: '2.0.0',
   },
   {
     directory: 'icons',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-icons',
-    version: '1.6.0',
+    version: '2.0.0',
   },
   {
     directory: 'core',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-core',
-    version: '1.36.0',
+    version: '2.0.0',
   },
   {
     directory: 'layouts',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-layouts',
-    version: '1.22.0',
+    version: '2.0.0',
   },
   {
     directory: 'codeblock',
     enginesNode: '>=20',
     name: '@codemonster-ru/vueforge-codeblock',
-    version: '3.7.0',
+    version: '4.0.0',
   },
   {
     directory: 'playground-core',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-playground-core',
-    version: '1.2.0',
+    version: '2.0.0',
   },
   {
     directory: 'playground-vite-plugin',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-playground-vite-plugin',
-    version: '0.2.0',
+    version: '1.0.0',
   },
   {
     directory: 'playground',
     enginesNode: '>=20',
     name: '@codemonster-ru/vueforge-playground',
-    version: '2.6.0',
+    version: '3.0.0',
   },
 ];
 const releaseByName = new Map(releaseTrain.map((packageContract) => [packageContract.name, packageContract]));
 const runtimeDependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies'];
+const obsoleteResolverFields = ['main', 'module', 'types', 'style', 'typesVersions'];
 const errors = [];
 
 function report(message) {
@@ -328,12 +329,9 @@ function validateMetadata(packageContract, manifest) {
   if (manifest.engines?.node !== packageContract.enginesNode) {
     report(`${packageContract.name} engines.node must be ${packageContract.enginesNode}.`);
   }
-}
-
-function validateLegacyTargets(packageContract, packageDirectory, manifest) {
-  for (const field of ['main', 'module', 'types', 'style']) {
-    if (manifest[field] !== undefined) {
-      assertTargetExists(packageContract, packageDirectory, field, manifest[field]);
+  for (const field of obsoleteResolverFields) {
+    if (Object.hasOwn(manifest, field)) {
+      report(`${packageContract.name} must resolve ${field} through exports, not top-level resolver metadata.`);
     }
   }
 }
@@ -503,7 +501,6 @@ for (const packageContract of releaseTrain) {
 
   manifests.set(packageContract.name, manifest);
   validateMetadata(packageContract, manifest);
-  validateLegacyTargets(packageContract, packageDirectory, manifest);
   validateExports(packageContract, packageDirectory, manifest);
   validateNoShimReferences(packageContract, packageDirectory);
   validateStylePreprocessorDependencies(packageContract, packageDirectory, manifest);

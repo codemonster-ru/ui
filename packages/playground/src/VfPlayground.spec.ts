@@ -578,23 +578,23 @@ describe('VfPlayground', () => {
     ensureIframeDocument(iframe);
     iframe.dispatchEvent(new Event('load'));
     await flushThemeSync();
-    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-vf-theme')).toBe('light');
 
     await wrapper.setProps({ theme: 'dark' });
     await flushThemeSync();
-    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-vf-theme')).toBe('dark');
     expect(iframe.contentDocument?.documentElement.classList.contains('vf-theme-dark')).toBe(true);
 
     await wrapper.setProps({ theme: 'light' });
     await flushThemeSync();
-    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-vf-theme')).toBe('light');
   });
 
   it('keeps inherit as a non-boundary marker while exposing the SSR fallback', async () => {
     const app = createSSRApp(() => h(VfPlayground, { ...baseSandboxProps, theme: 'inherit' }));
     const html = await renderToString(app);
 
-    expect(html).toContain('data-theme="inherit"');
+    expect(html).not.toContain('data-theme=');
     expect(html).toContain('data-vf-theme="inherit"');
     expect(html).toContain('data-vf-resolved-theme="light"');
   });
@@ -665,8 +665,8 @@ describe('VfPlayground', () => {
     wrapper.unmount();
   });
 
-  it('syncs sandbox theme in inherit mode from host root attributes', async () => {
-    document.documentElement.setAttribute('data-theme', 'light');
+  it('syncs sandbox theme in inherit mode from the host root data-vf-theme', async () => {
+    document.documentElement.setAttribute('data-vf-theme', 'light');
     const wrapper = mount(VfPlayground, {
       props: {
         ...baseSandboxProps,
@@ -678,22 +678,24 @@ describe('VfPlayground', () => {
     const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
     ensureIframeDocument(iframe);
     await flushThemeSync();
-    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-vf-theme')).toBe('light');
 
-    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.setAttribute('data-vf-theme', 'dark');
     await flushThemeSync();
-    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-vf-theme')).toBe('dark');
 
-    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.removeAttribute('data-vf-theme');
   });
 
-  it('resolves inherit mode from the nearest valid mixed-attribute boundary', async () => {
-    const outer = document.createElement('div');
-    outer.setAttribute('data-theme', 'light');
+  it.each([
+    ['dark', 'dark'],
+    ['light', 'light'],
+    ['vf-theme-dark', 'dark'],
+    ['vf-theme-light', 'light'],
+  ] as const)('resolves inherit mode from the supported %s class boundary', async (className, expectedTheme) => {
     const host = document.createElement('div');
-    host.setAttribute('data-vf-theme', 'dark');
-    outer.appendChild(host);
-    document.body.appendChild(outer);
+    host.className = className;
+    document.body.appendChild(host);
 
     const wrapper = mount(VfPlayground, {
       attachTo: host,
@@ -706,13 +708,13 @@ describe('VfPlayground', () => {
 
     await flushThemeSync();
 
-    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-theme')).toBeUndefined();
     expect(wrapper.attributes('data-vf-theme')).toBe('inherit');
-    expect(wrapper.attributes('data-vf-resolved-theme')).toBe('dark');
-    expect(findCodeHost(wrapper).attributes('data-code-theme')).toBe('dark');
+    expect(wrapper.attributes('data-vf-resolved-theme')).toBe(expectedTheme);
+    expect(findCodeHost(wrapper).attributes('data-code-theme')).toBe(expectedTheme);
 
     wrapper.unmount();
-    outer.remove();
+    host.remove();
   });
 
   it('resyncs inherit mode after reparenting between theme boundaries', async () => {
@@ -737,17 +739,17 @@ describe('VfPlayground', () => {
     const iframe = wrapper.find('iframe.vf-playground__iframe').element as HTMLIFrameElement;
     ensureIframeDocument(iframe);
     await flushThemeSync();
-    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-theme')).toBeUndefined();
     expect(wrapper.attributes('data-vf-resolved-theme')).toBe('light');
 
     darkBoundary.appendChild(host);
     await flushThemeSync();
     await flushThemeSync();
 
-    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-theme')).toBeUndefined();
     expect(wrapper.attributes('data-vf-theme')).toBe('inherit');
     expect(wrapper.attributes('data-vf-resolved-theme')).toBe('dark');
-    expect(iframe.contentDocument?.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(iframe.contentDocument?.documentElement.getAttribute('data-vf-theme')).toBe('dark');
 
     wrapper.unmount();
     lightBoundary.remove();
@@ -758,7 +760,7 @@ describe('VfPlayground', () => {
     const wrapper = mount(VfPlayground, {
       attrs: {
         style:
-          '--vf-phase-0-probe: var(--brand-phase-2-probe); --brand-phase-2-probe: var(--brand-phase-2-base); --brand-phase-2-base: scoped-value; --vf-color-bg: rgb(12, 34, 56);',
+          '--vf-phase-0-probe: var(--brand-phase-2-probe); --brand-phase-2-probe: var(--brand-phase-2-base); --brand-phase-2-base: scoped-value; --vf-color-background-canvas: rgb(12, 34, 56);',
       },
       props: {
         ...baseSandboxProps,
@@ -882,14 +884,11 @@ describe('VfPlayground', () => {
     iframe.dispatchEvent(new Event('load'));
     await flushThemeSync();
     const iframeRoot = iframe.contentDocument?.documentElement;
-    expect(iframeRoot?.getAttribute('data-theme')).toBe('dark');
+    expect(iframeRoot?.getAttribute('data-theme')).toBeNull();
+    expect(iframeRoot?.getAttribute('data-vf-theme')).toBe('dark');
     expect(iframe.contentDocument?.getElementById('vf-playground-theme-sync')).toBeTruthy();
-    expect(iframe.contentDocument?.body.style.backgroundColor).toBe(
-      'var(--vf-color-background-canvas, var(--vf-color-bg, Canvas))',
-    );
-    expect(iframe.contentDocument?.body.style.color).toBe(
-      'var(--vf-color-text-primary, var(--vf-color-text, CanvasText))',
-    );
+    expect(iframe.contentDocument?.body.style.backgroundColor).toBe('var(--vf-color-background-canvas, Canvas)');
+    expect(iframe.contentDocument?.body.style.color).toBe('var(--vf-color-text-primary, CanvasText)');
   });
 
   it('keeps exact scoped tokens and playground codeblock overrides layout-only', () => {
@@ -899,11 +898,11 @@ describe('VfPlayground', () => {
 
     expect(tokensSource).toContain(
       `:root,
-:where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark']) {`,
+:where([data-vf-theme='light'], [data-vf-theme='dark']) {`,
     );
-    expect(tokensSource).not.toContain('.vf-playground[data-theme=');
+    expect(tokensSource).not.toContain('[data-theme=');
     expect(tokensSource).not.toContain('.vf-playground[data-vf-theme=');
-    expect(tokenNames).toHaveLength(48);
+    expect(tokenNames).toHaveLength(34);
     expect([...new Set(tokenNames)].sort()).toEqual([
       '--vf-playground-bar-height',
       '--vf-playground-border',
@@ -924,25 +923,14 @@ describe('VfPlayground', () => {
       '--vf-playground-console-line-height',
       '--vf-playground-console-padding',
       '--vf-playground-console-text',
-      '--vf-playground-control-font-size-md',
-      '--vf-playground-control-font-weight',
-      '--vf-playground-control-height-md',
-      '--vf-playground-control-line-height',
-      '--vf-playground-control-padding-md',
       '--vf-playground-critical-preview-min-height',
       '--vf-playground-focus-ring-color',
-      '--vf-playground-focus-ring-width',
       '--vf-playground-font-family',
       '--vf-playground-height',
       '--vf-playground-iframe-bg',
       '--vf-playground-radius-lg',
-      '--vf-playground-radius-md',
-      '--vf-playground-run-bg',
-      '--vf-playground-run-border',
-      '--vf-playground-run-text',
       '--vf-playground-ssr-hint',
       '--vf-playground-surface',
-      '--vf-playground-surface-muted',
       '--vf-playground-tab-active-bg',
       '--vf-playground-tab-active-border',
       '--vf-playground-tab-active-text',
@@ -950,20 +938,14 @@ describe('VfPlayground', () => {
       '--vf-playground-tab-border',
       '--vf-playground-tab-text',
       '--vf-playground-text',
-      '--vf-playground-text-muted',
-      '--vf-playground-toolbar-gap',
-      '--vf-playground-toolbar-padding',
     ]);
     expect(tokensSource).toContain('--vf-playground-codeblock-max-height: 100%');
     expect(tokensSource).toContain('--vf-playground-codeblock-border-color: transparent;');
     expect(tokensSource).toContain('--vf-playground-codeblock-border-radius: 0;');
     expect(tokensSource).toContain('--vf-playground-codeblock-shadow: none;');
-    expect(tokensSource).toContain(
-      '--vf-playground-surface: var(--vf-color-background-surface, var(--vf-color-surface));',
-    );
-    expect(tokensSource).toContain(
-      '--vf-playground-iframe-bg: var(--vf-color-background-canvas, var(--vf-color-bg, var(--vf-color-surface)));',
-    );
+    expect(tokensSource).toContain('--vf-playground-surface: var(--vf-color-background-surface);');
+    expect(tokensSource).toContain('--vf-playground-iframe-bg: var(--vf-color-background-canvas);');
+    expect(tokensSource).not.toMatch(/var\(--vf-color-(?:bg|border|muted|primary|surface|surface-muted|text)[,)]/);
     expect(componentSource).toContain('--vf-codeblock-max-height: var(--vf-playground-codeblock-max-height)');
     expect(componentSource).not.toContain('--vf-codeblock-background-color:');
     expect(componentSource).not.toContain('--vf-codeblock-header-background-color:');
@@ -999,14 +981,11 @@ describe('VfPlayground', () => {
     await flushThemeSync();
 
     host.style.setProperty('--vf-playground-surface', 'inherited-brand');
-    expect(tokenDefaults.textContent).not.toContain('.vf-playground[data-theme=');
-    expect(
-      wrapper.element.matches(
-        ":where([data-theme='light'], [data-theme='dark'], [data-vf-theme='light'], [data-vf-theme='dark'])",
-      ),
-    ).toBe(false);
+    expect(tokenDefaults.textContent).not.toContain('[data-theme=');
+    expect(wrapper.element.matches(":where([data-vf-theme='light'], [data-vf-theme='dark'])")).toBe(false);
     expect(host.style.getPropertyValue('--vf-playground-surface')).toBe('inherited-brand');
-    expect(wrapper.attributes('data-theme')).toBe('inherit');
+    expect(wrapper.attributes('data-theme')).toBeUndefined();
+    expect(wrapper.attributes('data-vf-theme')).toBe('inherit');
 
     wrapper.unmount();
     host.remove();

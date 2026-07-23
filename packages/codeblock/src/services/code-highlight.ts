@@ -25,10 +25,6 @@ const languageLoaders = {
   vue: () => import('@shikijs/langs/vue'),
 };
 
-// Kept for VueForge 1.x source compatibility. Highlighting uses the package-owned themes below.
-export const SHIKI_LIGHT_THEME = 'github-light';
-export const SHIKI_DARK_THEME = 'github-dark';
-
 const escapeAttribute = (value: string): string => escapeCodeHtml(value).replaceAll('"', '&quot;');
 
 const loadedLanguages = new Set<ShikiLanguageLoader>();
@@ -36,7 +32,7 @@ const loadingLanguages = new Map<ShikiLanguageLoader, Promise<void>>();
 const warnedDisallowedLanguages = new Set<string>();
 const languageLoadAttempts = new Map<ShikiLanguageLoader, number>();
 
-let getHighlighterPromise: Promise<HighlighterGeneric<ShikiLanguageLoader, ShikiThemeName> | null> | null = null;
+let getHighlighterPromise: Promise<HighlighterGeneric<ShikiLanguageLoader, ShikiThemeName>> | null = null;
 
 async function loadHighlighter() {
   if (!getHighlighterPromise) {
@@ -103,7 +99,7 @@ const normalizeAllowlistLanguage = (language: string): string => {
 const toShikiLanguage = (language: string): ShikiLanguageLoader | null => {
   const normalized = normalizeAllowlistLanguage(language);
 
-  if (normalized === 'plaintext' || normalized === 'text') {
+  if (normalized === 'plaintext') {
     return null;
   }
 
@@ -126,9 +122,6 @@ const ensureLanguageLoaded = async (language: ShikiLanguageLoader) => {
   }
 
   const highlighter = await loadHighlighter();
-  if (!highlighter) {
-    return;
-  }
   languageLoadAttempts.set(language, (languageLoadAttempts.get(language) ?? 0) + 1);
   const request = highlighter.loadLanguage(language).then(() => {
     loadedLanguages.add(language);
@@ -191,9 +184,6 @@ export const highlightCodeLines = async (
   try {
     await ensureLanguageLoaded(normalizedLanguage);
     const highlighter = await loadHighlighter();
-    if (!highlighter) {
-      return renderPlainCodeLines(normalizedCode);
-    }
     const result = highlighter.codeToTokens(normalizedCode, {
       lang: normalizedLanguage,
       theme: theme === 'dark' ? VUEFORGE_SHIKI_DARK_THEME_NAME : VUEFORGE_SHIKI_LIGHT_THEME_NAME,

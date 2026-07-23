@@ -34,19 +34,19 @@ entry: /App.vue
     <article style="display:grid;gap:var(--vf-surface-padding)">
       <section id="introduction">
         <h3 style="margin:0">Introduction</h3>
-        <p style="margin:var(--vf-surface-gap-tight) 0 0">Overview of package goals and design principles.</p>
+        <p style="margin:var(--vf-surface-gap-compact) 0 0">Overview of package goals and design principles.</p>
       </section>
       <section id="installation">
         <h3 style="margin:0">Installation</h3>
-        <p style="margin:var(--vf-surface-gap-tight) 0 0">Package manager setup and versioning rules.</p>
+        <p style="margin:var(--vf-surface-gap-compact) 0 0">Package manager setup and versioning rules.</p>
       </section>
       <section id="vite">
         <h3 style="margin:0">Vite</h3>
-        <p style="margin:var(--vf-surface-gap-tight) 0 0">Vite-specific notes and plugin integration.</p>
+        <p style="margin:var(--vf-surface-gap-compact) 0 0">Vite-specific notes and plugin integration.</p>
       </section>
       <section id="configuration">
         <h3 style="margin:0">Configuration</h3>
-        <p style="margin:var(--vf-surface-gap-tight) 0 0">Runtime options and defaults.</p>
+        <p style="margin:var(--vf-surface-gap-compact) 0 0">Runtime options and defaults.</p>
       </section>
     </article>
   </div>

@@ -39,7 +39,8 @@ import { VfThemeSwitch } from '@codemonster-ru/vueforge-core';
 Additional implementation notes and caveats:
 
 - `VfThemeSwitch` is SSR-safe: initial checked state is synchronized after mount to keep hydration markup stable.
-- Theme resolution can reuse an already-present root theme attribute (`data-theme` / `data-vf-theme`) before applying fallback defaults.
+- Theme resolution can reuse an already-present `data-vf-theme` root attribute before applying
+  fallback defaults.
 
 ## Accessibility
 

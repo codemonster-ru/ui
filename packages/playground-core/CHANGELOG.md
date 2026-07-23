@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.0.0
+
+### Changed
+
+- Made sandbox previews synchronize the canonical `data-vf-theme` attribute only.
+- Simplified local import and re-export rewriting without changing the public session API.
+- Made the package `exports` map authoritative for its ESM runtime and declarations.
+
+### Removed
+
+- Removed the sandbox `data-theme` compatibility mirror and legacy top-level resolver metadata.
+
+### Breaking changes
+
+- Custom preview integrations must read `data-vf-theme`, and package resolution must honor
+  `exports`.
+
 ## 1.2.0
 
 ### Added

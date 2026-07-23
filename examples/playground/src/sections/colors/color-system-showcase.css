@@ -1,5 +1,5 @@
 .color-system {
-  color: var(--vf-color-text-primary, var(--vf-color-text));
+  color: var(--vf-color-text-primary);
 }
 
 .color-system__hero,
@@ -11,9 +11,9 @@
 
 .color-system__hero {
   padding: clamp(1.5rem, 4vw, 3rem);
-  border: var(--vf-border-width) solid var(--vf-color-border-default, var(--vf-color-border));
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-surface);
-  background: var(--vf-color-background-surface-elevated, var(--vf-color-surface));
+  background: var(--vf-color-background-surface-elevated);
 }
 
 .color-system__hero h1,
@@ -35,11 +35,11 @@
 .color-system__hero > p:last-child,
 .color-system__theme-header span,
 .color-system__overlay-card span {
-  color: var(--vf-color-text-secondary, var(--vf-color-muted));
+  color: var(--vf-color-text-secondary);
 }
 
 .color-system__eyebrow {
-  color: var(--vf-color-text-link, var(--vf-color-primary));
+  color: var(--vf-color-text-link);
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-font-weight-semibold);
   letter-spacing: 0.04em;
@@ -58,9 +58,9 @@
 
 .color-system__family {
   padding: var(--vf-layout-section-inset-default);
-  border: var(--vf-border-width) solid var(--vf-color-border-default, var(--vf-color-border));
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-surface);
-  background: var(--vf-color-background-surface, var(--vf-color-surface));
+  background: var(--vf-color-background-surface);
 }
 
 .color-system__scale {
@@ -72,13 +72,13 @@
 .color-system__primitive {
   display: grid;
   gap: 0.25rem;
-  color: var(--vf-color-text-muted, var(--vf-color-muted));
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-caption-font-size);
 }
 
 .color-system__primitive-color {
   min-height: 3rem;
-  border: var(--vf-border-width) solid var(--vf-color-border-subtle, var(--vf-color-border));
+  border: var(--vf-border-width) solid var(--vf-color-border-subtle);
   border-radius: var(--vf-radius-control-tight);
 }
 
@@ -94,10 +94,10 @@
   gap: var(--vf-layout-space-layout-roomy);
   min-width: 0;
   padding: var(--vf-layout-section-inset-default);
-  border: var(--vf-border-width) solid var(--vf-color-border-default, var(--vf-color-border));
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-surface);
-  color: var(--vf-color-text-primary, var(--vf-color-text));
-  background: var(--vf-color-background-canvas, var(--vf-color-bg));
+  color: var(--vf-color-text-primary);
+  background: var(--vf-color-background-canvas);
 }
 
 .color-system__theme-header {
@@ -120,13 +120,13 @@
 .color-system__semantic {
   display: grid;
   gap: 0.25rem;
-  color: var(--vf-color-text-muted, var(--vf-color-muted));
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-caption-font-size);
 }
 
 .color-system__semantic-color {
   min-height: 2.5rem;
-  border: var(--vf-border-width) solid var(--vf-color-border-subtle, var(--vf-color-border));
+  border: var(--vf-border-width) solid var(--vf-color-border-subtle);
   border-radius: var(--vf-radius-control-tight);
 }
 
@@ -140,35 +140,35 @@
 
 .color-system__state {
   padding: 0.5rem 0.75rem;
-  border: var(--vf-border-width) solid var(--vf-color-border-default, var(--vf-color-border));
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-control);
-  background: var(--vf-color-background-surface, var(--vf-color-surface));
+  background: var(--vf-color-background-surface);
 }
 
 .color-system__state--hover {
-  background: var(--vf-color-background-surface-hover, var(--vf-color-surface-muted));
+  background: var(--vf-color-background-surface-hover);
 }
 
 .color-system__state--active {
-  background: var(--vf-color-background-surface-active, var(--vf-color-surface-muted));
+  background: var(--vf-color-background-surface-active);
 }
 
 .color-system__state--selected,
 .color-system__state--selected-hover,
 .color-system__state--selected-active {
-  color: var(--vf-color-selected-foreground, var(--vf-color-primary));
+  color: var(--vf-color-selected-foreground);
 }
 
 .color-system__state--selected {
-  background: var(--vf-color-background-surface-selected, var(--vf-color-primary-soft));
+  background: var(--vf-color-background-surface-selected);
 }
 
 .color-system__state--selected-hover {
-  background: var(--vf-color-background-surface-selected-hover, var(--vf-color-primary-soft));
+  background: var(--vf-color-background-surface-selected-hover);
 }
 
 .color-system__state--selected-active {
-  background: var(--vf-color-background-surface-selected-active, var(--vf-color-primary-soft));
+  background: var(--vf-color-background-surface-selected-active);
 }
 
 .color-system__controls,
@@ -186,41 +186,41 @@
 .color-system__overlay-sample {
   padding: 2rem;
   border-radius: var(--vf-radius-surface);
-  background: var(--vf-color-background-backdrop, var(--vf-overlay-backdrop));
+  background: var(--vf-color-background-backdrop);
 }
 
 .color-system__overlay-card {
   display: grid;
   gap: 0.25rem;
   padding: var(--vf-layout-section-inset-default);
-  border: var(--vf-border-width) solid var(--vf-color-border-strong, var(--vf-color-border));
+  border: var(--vf-border-width) solid var(--vf-color-border-strong);
   border-radius: var(--vf-radius-overlay);
-  background: var(--vf-color-background-surface-elevated, var(--vf-color-surface));
+  background: var(--vf-color-background-surface-elevated);
   box-shadow: var(--vf-overlay-float-shadow);
 }
 
 .color-system__contrast-table-wrap {
   overflow-x: auto;
-  border: var(--vf-border-width) solid var(--vf-color-border-default, var(--vf-color-border));
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-surface);
 }
 
 .color-system__contrast-table {
   width: 100%;
   border-collapse: collapse;
-  color: var(--vf-color-text-primary, var(--vf-color-text));
-  background: var(--vf-color-background-surface, var(--vf-color-surface));
+  color: var(--vf-color-text-primary);
+  background: var(--vf-color-background-surface);
 }
 
 .color-system__contrast-table th,
 .color-system__contrast-table td {
   padding: 0.75rem 1rem;
-  border-bottom: var(--vf-border-width) solid var(--vf-color-border-divider, var(--vf-color-border));
+  border-bottom: var(--vf-border-width) solid var(--vf-color-border-divider);
   text-align: left;
 }
 
 .color-system__contrast-table thead {
-  background: var(--vf-color-background-surface-subtle, var(--vf-color-surface-muted));
+  background: var(--vf-color-background-surface-subtle);
 }
 
 .color-system__contrast-table tbody tr:last-child > * {

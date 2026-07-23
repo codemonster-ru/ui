@@ -14,7 +14,7 @@
 .vf-dialog__overlay {
   position: absolute;
   inset: 0;
-  background: var(--vf-color-background-backdrop, var(--vf-overlay-backdrop));
+  background: var(--vf-color-background-backdrop);
   opacity: 1;
   transition: opacity var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
 }
@@ -87,7 +87,7 @@
 }
 
 .vf-dialog__actions .vf-icon-button {
-  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
+  color: var(--vf-color-icon-secondary);
 }
 
 .vf-dialog__actions .vf-icon-button .vf-icon {
@@ -104,7 +104,7 @@
 
 .vf-dialog__description {
   margin: 0;
-  color: var(--vf-color-text-secondary, var(--vf-color-muted));
+  color: var(--vf-color-text-secondary);
   font-size: var(--vf-text-body-font-size);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
@@ -115,7 +115,7 @@
   min-height: 0;
   overflow: auto;
   padding: var(--vf-overlay-padding);
-  color: var(--vf-color-text-primary, var(--vf-color-text));
+  color: var(--vf-color-text-primary);
   font-size: var(--vf-text-body-font-size);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);

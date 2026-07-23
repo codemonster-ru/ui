@@ -15,15 +15,15 @@ layouts, icons, code presentation, and interactive playgrounds.
 Use the package manager that owns your application lockfile:
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0
+npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0
 ```
 
 ```bash
-pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0
+pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0
 ```
 
 ```bash
-yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0
+yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0
 ```
 
 ## Quick start
@@ -68,22 +68,22 @@ npm run build
 
 ## Packages
 
-| Package                                                       | Release  | Purpose                                    |
-| ------------------------------------------------------------- | -------- | ------------------------------------------ |
-| [`@codemonster-ru/vueforge-core`][npm-core]                   | `1.36.0` | Components, composables, theme integration |
-| [`@codemonster-ru/vueforge-theme`][npm-theme]                 | `1.4.0`  | Framework-agnostic theme engine            |
-| [`@codemonster-ru/vueforge-layouts`][npm-layouts]             | `1.22.0` | Layout primitives and application shells   |
-| [`@codemonster-ru/vueforge-icons`][npm-icons]                 | `1.6.0`  | Vue icon renderer and catalog              |
-| [`@codemonster-ru/vueforge-codeblock`][npm-codeblock]         | `3.7.0`  | Highlighted, themed code blocks            |
-| [`@codemonster-ru/vueforge-playground`][npm-playground]       | `2.6.0`  | Vue playground UI adapter                  |
-| [`@codemonster-ru/vueforge-playground-core`][npm-pg-core]     | `1.2.0`  | Framework-agnostic playground runtime      |
-| [`@codemonster-ru/vueforge-playground-vite-plugin`][npm-vite] | `0.2.0`  | Vite playground virtual-module integration |
+| Package                                                       | Release | Purpose                                    |
+| ------------------------------------------------------------- | ------- | ------------------------------------------ |
+| [`@codemonster-ru/vueforge-core`][npm-core]                   | `2.0.0` | Components, composables, theme integration |
+| [`@codemonster-ru/vueforge-theme`][npm-theme]                 | `2.0.0` | Framework-agnostic theme engine            |
+| [`@codemonster-ru/vueforge-layouts`][npm-layouts]             | `2.0.0` | Layout primitives and application shells   |
+| [`@codemonster-ru/vueforge-icons`][npm-icons]                 | `2.0.0` | Vue icon renderer and catalog              |
+| [`@codemonster-ru/vueforge-codeblock`][npm-codeblock]         | `4.0.0` | Highlighted, themed code blocks            |
+| [`@codemonster-ru/vueforge-playground`][npm-playground]       | `3.0.0` | Vue playground UI adapter                  |
+| [`@codemonster-ru/vueforge-playground-core`][npm-pg-core]     | `2.0.0` | Framework-agnostic playground runtime      |
+| [`@codemonster-ru/vueforge-playground-vite-plugin`][npm-vite] | `1.0.0` | Vite playground virtual-module integration |
 
 ## Documentation
 
 For full documentation, visit [docs.codemonster.net/vueforge](https://docs.codemonster.net/vueforge/).
-Use the [migration guide](./docs/migration-guide.md) for the coordinated release train and the
-[release notes](./docs/release-notes.md) for feature and compatibility details.
+Use the [VueForge 2 migration guide](./docs/migration-to-v2.md) for breaking changes and the
+[release notes](./docs/release-notes.md) for the coordinated package changes.
 
 ## License
 

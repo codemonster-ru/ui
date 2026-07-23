@@ -1,6 +1,6 @@
 ---
-title: "Icons"
-description: "Full VueForge icon catalog with search"
+title: 'Icons'
+description: 'Full VueForge icon catalog with search'
 order: 3
 ---
 
@@ -56,7 +56,7 @@ const stageStyle = {
 };
 const metaStyle = {
   fontSize: 'var(--vf-text-caption-font-size)',
-  color: 'var(--vf-color-muted)'
+  color: 'var(--vf-color-text-muted)'
 };
 const gridStyle = {
   display: 'grid',
@@ -64,14 +64,14 @@ const gridStyle = {
   gap: 'var(--vf-surface-gap-compact)',
   alignContent: 'start',
   overflow: 'auto',
-  paddingRight: 'var(--vf-surface-gap-tight)'
+  paddingRight: 'var(--vf-surface-gap-compact)'
 };
 const cellStyle = {
   display: 'flex',
   gap: 'var(--vf-surface-gap-compact)',
   alignItems: 'center',
   padding: 'var(--vf-surface-gap-compact)',
-  border: '1px solid var(--vf-color-border)',
+  border: '1px solid var(--vf-color-border-default)',
   borderRadius: 'var(--vf-radius-control)'
 };
 const nameStyle = {

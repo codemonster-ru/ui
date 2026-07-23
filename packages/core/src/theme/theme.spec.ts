@@ -9,7 +9,8 @@ describe('theme bridge', () => {
   it('uses core defaultThemePreset when preset is omitted', () => {
     const config = resolveThemeConfig({
       extend: {
-        colorPrimary: 'color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text))',
+        colorInteractivePrimaryBackground:
+          'color-mix(in srgb, var(--vf-color-status-info-solid-background) 80%, var(--vf-color-text-primary))',
       },
       options: {
         styleId: 'vf-test-theme',
@@ -17,50 +18,42 @@ describe('theme bridge', () => {
     });
 
     expect(config.preset.name).toBe(defaultThemePreset.name);
-    expect(config.preset.light.colorPrimary).toBe('color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text))');
+    expect(config.preset.light.colorInteractivePrimaryBackground).toBe(
+      'color-mix(in srgb, var(--vf-color-status-info-solid-background) 80%, var(--vf-color-text-primary))',
+    );
     expect(config.preset.light.controlHeightMd).toBe(defaultThemePreset.tokens.controlHeightMd);
-    expect(config.preset.dark.colorBg).toBe('var(--vf-palette-neutral-900)');
-    expect(config.preset.dark.colorSurface).toBe('var(--vf-palette-neutral-850)');
-    expect(config.preset.dark.colorSurfaceMuted).toBe('var(--vf-palette-neutral-800)');
-    expect(config.preset.dark.colorBorder).toBe('var(--vf-palette-neutral-600)');
     expect(config.preset.light.paletteNeutral50).toBe('oklch(97.8% 0.005 260)');
     expect(config.preset.dark.paletteNeutral50).toBe('oklch(97.8% 0.005 260)');
-    expect(config.preset.light.colorBackgroundCanvas).toBe('var(--vf-color-bg)');
-    expect(config.preset.dark.colorBackgroundCanvas).toBe('var(--vf-color-bg)');
-    expect(config.preset.light.colorInteractivePrimaryBackground).toBe('var(--vf-color-primary)');
-    expect(config.preset.dark.colorInteractivePrimaryBackground).toBe('var(--vf-color-primary)');
-    expect(config.preset.light.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
-    expect(config.preset.dark.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
+    expect(config.preset.light.colorBackgroundCanvas).toBe('var(--vf-palette-neutral-50)');
+    expect(config.preset.dark.colorBackgroundCanvas).toBe('var(--vf-palette-neutral-900)');
+    expect(config.preset.dark.colorBackgroundSurface).toBe('var(--vf-palette-neutral-850)');
+    expect(config.preset.dark.colorBackgroundSurfaceSubtle).toBe('var(--vf-palette-neutral-800)');
+    expect(config.preset.dark.colorBorderDefault).toBe('var(--vf-palette-neutral-600)');
+    expect(config.preset.dark.colorInteractivePrimaryBackground).toBe(
+      'color-mix(in srgb, var(--vf-color-status-info-solid-background) 80%, var(--vf-color-text-primary))',
+    );
+    expect(config.preset.light.colorStatusWarningSolidForeground).toBe('var(--vf-palette-warning-950)');
+    expect(config.preset.dark.colorStatusWarningSolidForeground).toBe('var(--vf-palette-warning-950)');
     expect(config.preset.light.colorBackgroundSurfaceSelectedHover).toBe('var(--vf-palette-primary-200)');
     expect(config.preset.dark.colorBackgroundSurfaceSelectedHover).toBe('var(--vf-palette-primary-800)');
     expect(config.preset.light.colorTextLink).toBe('var(--vf-palette-primary-700)');
     expect(config.preset.dark.colorTextLink).toBe('var(--vf-palette-primary-300)');
-    expect(config.preset.dark.fieldBackground).toBe('var(--vf-color-background-surface, var(--vf-color-bg))');
+    expect(config.preset.dark.fieldBackground).toBe('var(--vf-color-background-surface)');
 
-    expect(defaultThemePreset.tokens.selectableColor).toBe('var(--vf-color-text-secondary, var(--vf-color-muted))');
+    expect(defaultThemePreset.tokens.selectableColor).toBe('var(--vf-color-text-secondary)');
     expect(defaultThemePreset.tokens.selectableHoverBackground).toBe(
       'var(--vf-color-background-surface-hover, transparent)',
     );
-    expect(defaultThemePreset.tokens.selectableActiveBackground).toBe(
-      'var(--vf-color-background-surface-selected, color-mix(in srgb, var(--vf-color-primary) 20%, var(--vf-color-surface)))',
-    );
+    expect(defaultThemePreset.tokens.selectableActiveBackground).toBe('var(--vf-color-background-surface-selected)');
     expect(defaultThemePreset.tokens.breadcrumbsLinkColor).toBe(
       'var(--vf-color-text-link, var(--vf-selectable-color))',
     );
-    expect(defaultThemePreset.tokens.tabsTabActiveColor).toBe(
-      'var(--vf-color-selected-foreground, var(--vf-color-text))',
-    );
-    expect(defaultThemePreset.tokens.badgeSuccessColor).toBe(
-      'var(--vf-color-status-success-subtle-foreground, var(--vf-color-success))',
-    );
-    expect(defaultThemePreset.tokens.fieldHoverBorderColor).toBe(
-      'var(--vf-color-interactive-primary-border, var(--vf-color-primary))',
-    );
-    expect(defaultThemePreset.tokens.textLinkHoverColor).toBe(
-      'var(--vf-color-text-link-hover, var(--vf-color-primary))',
-    );
+    expect(defaultThemePreset.tokens.tabsTabActiveColor).toBe('var(--vf-color-selected-foreground)');
+    expect(defaultThemePreset.tokens.badgeSuccessColor).toBe('var(--vf-color-status-success-subtle-foreground)');
+    expect(defaultThemePreset.tokens.fieldHoverBorderColor).toBe('var(--vf-color-interactive-primary-border)');
+    expect(defaultThemePreset.tokens.textLinkHoverColor).toBe('var(--vf-color-text-link-hover)');
     expect(defaultThemePreset.tokens.stepperCompleteMarkerBackground).toBe(
-      'var(--vf-color-interactive-primary-background, var(--vf-color-primary))',
+      'var(--vf-color-interactive-primary-background)',
     );
     expect(defaultThemePreset.tokens.stepperFocusRingColor).toBe('var(--vf-color-focus-ring)');
 
@@ -74,7 +67,8 @@ describe('theme bridge', () => {
     const style = applyThemeConfig(
       resolveThemeConfig({
         extend: {
-          colorPrimary: 'color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text))',
+          colorInteractivePrimaryBackground:
+            'color-mix(in srgb, var(--vf-color-status-info-solid-background) 80%, var(--vf-color-text-primary))',
         },
         options: {
           styleId: 'vf-test-theme',
@@ -84,7 +78,7 @@ describe('theme bridge', () => {
 
     expect(style.id).toBe('vf-test-theme');
     expect(style.textContent).toContain(
-      '--vf-color-primary: color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text));',
+      '--vf-color-interactive-primary-background: color-mix(in srgb, var(--vf-color-status-info-solid-background) 80%, var(--vf-color-text-primary));',
     );
     expect(style.textContent).toContain('--vf-breakpoint-2xl: 1536px;');
     expect(style.textContent).not.toContain('--vf-breakpoint2xl:');
@@ -104,7 +98,7 @@ describe('theme bridge', () => {
     const style = applyThemeConfig(
       resolveThemeConfig({
         extend: {
-          colorPrimary: '#123456',
+          colorInteractivePrimaryBackground: '#123456',
           palettePrimary500: '#234567',
         },
         options: {
@@ -114,14 +108,12 @@ describe('theme bridge', () => {
       }),
     );
 
-    expect(style.textContent).toContain('--brand-color-primary: #123456;');
-    expect(style.textContent).toContain('--vf-color-primary: var(--brand-color-primary);');
-    expect(style.textContent).toContain('--vf-selectable-color: var(--brand-selectable-color);');
-    expect(style.textContent).toContain('--brand-palette-primary-500: #234567;');
-    expect(style.textContent).toContain('--vf-palette-primary-500: var(--brand-palette-primary-500);');
-    expect(style.textContent).toContain('--brand-color-interactive-primary-background: var(--vf-color-primary);');
+    expect(style.textContent).toContain('--brand-color-interactive-primary-background: #123456;');
     expect(style.textContent).toContain(
       '--vf-color-interactive-primary-background: var(--brand-color-interactive-primary-background);',
     );
+    expect(style.textContent).toContain('--vf-selectable-color: var(--brand-selectable-color);');
+    expect(style.textContent).toContain('--brand-palette-primary-500: #234567;');
+    expect(style.textContent).toContain('--vf-palette-primary-500: var(--brand-palette-primary-500);');
   });
 });

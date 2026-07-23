@@ -1,5 +1,5 @@
 <template>
-  <div class="vf-playground" data-theme="inherit">
+  <div class="vf-playground" data-vf-theme="inherit">
     <div class="vf-playground__tabs">
       <VfTabs
         class="vf-playground__tabs-default"
@@ -38,12 +38,12 @@ const props = defineProps<{
 const activeTab = ref<'preview' | 'code'>('preview');
 const tabItems: VfTabItem[] = [
   { value: 'code', label: 'Code' },
-  { value: 'preview', label: 'Preview' }
+  { value: 'preview', label: 'Preview' },
 ];
 
 const demoComponentMap: Record<'vue-runtime-smoke' | 'custom-resolver-smoke', Component> = {
   'vue-runtime-smoke': VueRuntimeSmokeDemo,
-  'custom-resolver-smoke': CustomResolverSmokeDemo
+  'custom-resolver-smoke': CustomResolverSmokeDemo,
 };
 
 const demoComponent = computed(() => demoComponentMap[props.demoId]);

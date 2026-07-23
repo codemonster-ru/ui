@@ -1,31 +1,59 @@
 import { describe, expect, it } from 'vitest';
+import { vfPrimitiveColorTokenNames, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-theme';
 import {
-  vfPrimitiveColorTokenNames,
-  vfSemanticColorTokenNames,
-  type VfSemanticColorTokenName,
-} from '@codemonster-ru/vueforge-theme';
-import {
-  ADDITIVE_SEMANTIC_COLOR_TOKEN_COUNT,
   COMPLETE_DARK_OVERRIDE_COUNT,
   COMPLETE_THEME_TOKEN_COUNT,
-  LEGACY_DARK_OVERRIDE_COUNT,
-  LEGACY_THEME_TOKEN_COUNT,
   MAX_CANONICAL_ALIAS_DEPTH,
   MAX_CUSTOM_PREFIX_ALIAS_DEPTH,
   PRIMITIVE_COLOR_TOKEN_COUNT,
   SEMANTIC_COLOR_TOKEN_COUNT,
   knownExternalThemeCssVariables,
-  legacyColorTokenMappings,
-  legacyDarkColorTokens,
-  legacyLightColorTokens,
   primitiveColorTokens,
   semanticDarkColorTokens,
   semanticLightColorTokens,
   validateColorTokenGraph,
   validateCssVariableGraph,
 } from './color-token-schema';
-import { defaultThemePresetSource, legacyDefaultThemePresetSource } from './default-preset-source';
+import { defaultThemePresetSource } from './default-preset-source';
 import { resolveThemeConfig, themeTokensToCssVars } from './utils';
+
+const removedLegacyColorTokenNames = [
+  'colorBg',
+  'colorSurface',
+  'colorSurfaceMuted',
+  'colorText',
+  'colorMuted',
+  'colorBorder',
+  'colorPrimary',
+  'colorPrimaryContrast',
+  'colorPrimarySoft',
+  'colorPrimaryBorderSoft',
+  'colorSuccess',
+  'colorSuccessContrast',
+  'colorInfo',
+  'colorInfoContrast',
+  'colorWarn',
+  'colorWarnContrast',
+  'colorHelp',
+  'colorHelpContrast',
+  'colorDanger',
+  'colorDangerContrast',
+  'colorContrast',
+  'colorContrastContrast',
+  'colorSuccessSoft',
+  'colorInfoSoft',
+  'colorWarnSoft',
+  'colorHelpSoft',
+  'colorDangerSoft',
+  'colorContrastSoft',
+  'colorSuccessBorderSoft',
+  'colorInfoBorderSoft',
+  'colorWarnBorderSoft',
+  'colorHelpBorderSoft',
+  'colorDangerBorderSoft',
+  'colorContrastBorderSoft',
+  'overlayBackdrop',
+] as const;
 
 function createCustomPrefixVariableGraph(tokens: Parameters<typeof themeTokensToCssVars>[0], prefix: string) {
   const requestedVariables = themeTokensToCssVars(tokens, prefix);
@@ -37,26 +65,25 @@ function createCustomPrefixVariableGraph(tokens: Parameters<typeof themeTokensTo
 }
 
 describe('color token schema', () => {
-  it('keeps primitive, semantic, legacy, and complete contract counts explicit', () => {
-    const legacyNames = new Set(Object.keys(legacyDefaultThemePresetSource.tokens));
+  it('keeps primitive, semantic, and complete contract counts explicit', () => {
     const primitiveNames = new Set(vfPrimitiveColorTokenNames);
     const semanticNames = new Set(vfSemanticColorTokenNames);
-    const semanticLegacyOverlap = vfSemanticColorTokenNames.filter((name) => legacyNames.has(name));
 
     expect(Object.keys(primitiveColorTokens)).toEqual([...vfPrimitiveColorTokenNames]);
     expect(Object.keys(semanticLightColorTokens)).toEqual([...vfSemanticColorTokenNames]);
     expect(Object.keys(semanticDarkColorTokens)).toEqual([...vfSemanticColorTokenNames]);
     expect(primitiveNames).toHaveProperty('size', PRIMITIVE_COLOR_TOKEN_COUNT);
     expect(semanticNames).toHaveProperty('size', SEMANTIC_COLOR_TOKEN_COUNT);
-    expect(legacyNames).toHaveProperty('size', LEGACY_THEME_TOKEN_COUNT);
-    expect(Object.keys(legacyDefaultThemePresetSource.dark ?? {})).toHaveLength(LEGACY_DARK_OVERRIDE_COUNT);
     expect(Object.keys(defaultThemePresetSource.dark ?? {})).toHaveLength(COMPLETE_DARK_OVERRIDE_COUNT);
-    expect(semanticLegacyOverlap).toEqual(['colorFocusRing']);
-    expect(SEMANTIC_COLOR_TOKEN_COUNT - semanticLegacyOverlap.length).toBe(ADDITIVE_SEMANTIC_COLOR_TOKEN_COUNT);
     expect(Object.keys(defaultThemePresetSource.tokens)).toHaveLength(COMPLETE_THEME_TOKEN_COUNT);
-    expect(LEGACY_THEME_TOKEN_COUNT + primitiveNames.size + ADDITIVE_SEMANTIC_COLOR_TOKEN_COUNT).toBe(
-      COMPLETE_THEME_TOKEN_COUNT,
-    );
+
+    for (const name of [...primitiveNames, ...semanticNames]) {
+      expect(defaultThemePresetSource.tokens).toHaveProperty(name);
+    }
+    for (const name of removedLegacyColorTokenNames) {
+      expect(defaultThemePresetSource.tokens).not.toHaveProperty(name);
+      expect(defaultThemePresetSource.dark).not.toHaveProperty(name);
+    }
   });
 
   it('uses the target OKLCH palette values as mode-independent primitives', () => {
@@ -156,12 +183,12 @@ describe('color token schema', () => {
       }
     }
 
-    expect(semanticLightColorTokens.colorStatusSuccessSolidBackground).toBe('var(--vf-color-success)');
+    expect(semanticLightColorTokens.colorStatusSuccessSolidBackground).toBe('var(--vf-palette-success-600)');
     expect(semanticLightColorTokens.colorStatusSuccessSubtleForeground).toBe('var(--vf-palette-success-700)');
-    expect(semanticDarkColorTokens.colorStatusSuccessSolidBackground).toBe('var(--vf-color-success)');
+    expect(semanticDarkColorTokens.colorStatusSuccessSolidBackground).toBe('var(--vf-palette-success-500)');
     expect(semanticDarkColorTokens.colorStatusSuccessSubtleForeground).toBe('var(--vf-palette-success-300)');
-    expect(semanticLightColorTokens.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
-    expect(semanticDarkColorTokens.colorStatusWarningSolidForeground).toBe('var(--vf-color-warn-contrast)');
+    expect(semanticLightColorTokens.colorStatusWarningSolidForeground).toBe('var(--vf-palette-warning-950)');
+    expect(semanticDarkColorTokens.colorStatusWarningSolidForeground).toBe('var(--vf-palette-warning-950)');
 
     expect(semanticLightColorTokens.colorBackgroundSurfaceSelectedHover).toBe('var(--vf-palette-primary-200)');
     expect(semanticDarkColorTokens.colorBackgroundSurfaceSelectedHover).toBe('var(--vf-palette-primary-800)');
@@ -169,50 +196,13 @@ describe('color token schema', () => {
     expect(semanticDarkColorTokens.colorTextLink).toBe('var(--vf-palette-primary-300)');
   });
 
-  it('maps every legacy root color token to its declared semantic aliases', () => {
-    const semanticNames = new Set(vfSemanticColorTokenNames);
-    const mappings = Object.entries(legacyColorTokenMappings) as Array<
-      [keyof typeof legacyLightColorTokens, readonly VfSemanticColorTokenName[]]
-    >;
-    const mappedSemanticNames = new Set(mappings.flatMap(([, semanticTargets]) => semanticTargets));
+  it('defines every semantic color directly from the primitive palette', () => {
+    const semanticValues = [...Object.values(semanticLightColorTokens), ...Object.values(semanticDarkColorTokens)];
 
-    expect(Object.keys(legacyColorTokenMappings).sort()).toEqual(Object.keys(legacyLightColorTokens).sort());
-    expect(Object.keys(legacyDarkColorTokens).sort()).toEqual(Object.keys(legacyLightColorTokens).sort());
-    expect(mappings).toHaveLength(36);
-    expect(mappedSemanticNames.size).toBeLessThan(vfSemanticColorTokenNames.length);
-    expect(mappedSemanticNames.has('colorBackgroundSurfaceSelectedHover')).toBe(false);
-    expect(mappedSemanticNames.has('colorTextLink')).toBe(false);
-    expect(mappedSemanticNames.has('colorInteractivePrimarySubtleForeground')).toBe(false);
-
-    for (const [legacyName, semanticTargets] of mappings) {
-      expect(legacyDefaultThemePresetSource.tokens, legacyName).toHaveProperty(legacyName);
-      expect(semanticTargets.length, legacyName).toBeGreaterThan(0);
-      const [legacyCssName] = Object.keys(themeTokensToCssVars({ [legacyName]: 'test-value' }));
-
-      for (const semanticName of semanticTargets) {
-        expect(semanticNames.has(semanticName), `${legacyName} -> ${semanticName}`).toBe(true);
-
-        if (semanticName === legacyName) {
-          expect(semanticLightColorTokens[semanticName], `${legacyName} -> ${semanticName}`).toBe(
-            legacyLightColorTokens[legacyName],
-          );
-          expect(semanticDarkColorTokens[semanticName], `${legacyName} -> ${semanticName} dark`).toBe(
-            legacyDarkColorTokens[legacyName],
-          );
-        } else {
-          expect(semanticLightColorTokens[semanticName], `${legacyName} -> ${semanticName}`).toContain(
-            `var(${legacyCssName})`,
-          );
-          expect(semanticDarkColorTokens[semanticName], `${legacyName} -> ${semanticName} dark`).toContain(
-            `var(${legacyCssName})`,
-          );
-        }
-      }
+    for (const value of semanticValues) {
+      expect(value).not.toMatch(/var\(--vf-color-(?!focus-ring)/);
+      expect(value).not.toContain('var(--vf-overlay-backdrop)');
     }
-
-    expect(legacyColorTokenMappings.colorPrimary).toContain('colorInteractivePrimaryBackground');
-    expect(legacyColorTokenMappings.colorMuted).toContain('colorTextMuted');
-    expect(legacyColorTokenMappings.overlayBackdrop).toEqual(['colorBackgroundBackdrop']);
   });
 
   it('keeps the canonical light and dark graphs defined, acyclic, and bounded', () => {
@@ -249,7 +239,10 @@ describe('color token schema', () => {
 
       expect(variables, mode).toHaveProperty('--brand-palette-neutral-50', 'oklch(97.8% 0.005 260)');
       expect(variables, mode).toHaveProperty('--vf-palette-neutral-50', 'var(--brand-palette-neutral-50)');
-      expect(variables, mode).toHaveProperty('--brand-color-background-canvas', 'var(--vf-color-bg)');
+      expect(variables, mode).toHaveProperty(
+        '--brand-color-background-canvas',
+        mode === 'light' ? 'var(--vf-palette-neutral-50)' : 'var(--vf-palette-neutral-900)',
+      );
       expect(variables, mode).toHaveProperty('--vf-color-background-canvas', 'var(--brand-color-background-canvas)');
       expect(result.maxDepth, mode).toBeLessThanOrEqual(MAX_CUSTOM_PREFIX_ALIAS_DEPTH);
       expect(result.referenceCount, mode).toBeGreaterThan(0);

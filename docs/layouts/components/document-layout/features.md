@@ -23,9 +23,9 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <VfDocumentLayout layout="sidebar-content">
-    <template #header><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border)">Doc Header</div></template>
-    <template #sidebar><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border)">TOC</div></template>
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border)">Article body</div>
+    <template #header><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default)">Doc Header</div></template>
+    <template #sidebar><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default)">TOC</div></template>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default)">Article body</div>
   </VfDocumentLayout>
 </template>
 
@@ -51,7 +51,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                                              |
+| ----- | ----------------------------------------------------------------------------------------------------- |
 | `Tab` | Layout wrapper is not focusable by default; focus moves through interactive descendants by DOM order. |
-

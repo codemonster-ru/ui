@@ -30,7 +30,7 @@
 .vf-command-palette__overlay {
   position: absolute;
   inset: 0;
-  background: var(--vf-color-background-backdrop, var(--vf-overlay-backdrop));
+  background: var(--vf-color-background-backdrop);
   opacity: 1;
   transition: opacity var(--vf-motion-duration-fast) var(--vf-motion-ease-standard);
 }

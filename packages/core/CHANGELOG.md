@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.0.0
+
+### Changed
+
+- Made primitive, semantic, and built-in non-color fields required in complete theme presets while
+  keeping `extend`, `light`, and `dark` overrides partial.
+- Made component styling resolve through canonical semantic colors without terminal VueForge 1.x
+  color fallbacks.
+- Made `data-vf-theme` the only implicit Core theme attribute. Explicit custom attributes and
+  custom-prefix generation remain supported.
+- Made the package `exports` map authoritative while preserving documented ESM and CommonJS
+  conditions.
+
+### Removed
+
+- Removed legacy color maps, CSS variables, preset fields, and compatibility-only serializers.
+- Removed `buttonSolidHoverFilter`, `buttonSolidActiveFilter`, `tableOfContentsTitleColor`, and the
+  generic `shadow` token.
+- Removed import-only grouped CSS compatibility manifests and legacy top-level resolver metadata.
+
+### Breaking changes
+
+- Migrate complete presets and CSS overrides to canonical primitive, semantic, and component token
+  names.
+- Replace implicit `data-theme` boundaries with `data-vf-theme` and use a resolver that honors
+  package `exports`.
+
 ## 1.36.0
 
 ### Added

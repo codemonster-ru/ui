@@ -4,7 +4,7 @@
   max-width: 100%;
   align-self: flex-start;
   border: var(--vf-border-width) solid transparent;
-  color: var(--vf-color-text-link, var(--vf-color-primary));
+  color: var(--vf-color-text-link);
   font-size: var(--vf-text-body-font-size);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
@@ -25,7 +25,7 @@
 }
 
 .vf-link:active {
-  color: var(--vf-color-text-link-active, var(--vf-color-primary));
+  color: var(--vf-color-text-link-active);
 }
 
 .vf-link--underline-hover:hover {
@@ -35,13 +35,13 @@
 
 .vf-link:focus-visible {
   outline: none;
-  border-color: var(--vf-color-border-focus, var(--vf-color-primary));
+  border-color: var(--vf-color-border-focus);
   border-radius: var(--vf-radius-control);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
 .vf-link--muted {
-  color: var(--vf-color-text-muted, var(--vf-color-muted));
+  color: var(--vf-color-text-muted);
 }
 
 .vf-link--underline-always {

@@ -236,8 +236,8 @@ watch(theme, (value) => {
 <style lang="scss" scoped>
 :global(body) {
   margin: 0;
-  background: var(--vf-color-bg);
-  color: var(--vf-color-text);
+  background: var(--vf-color-background-canvas);
+  color: var(--vf-color-text-primary);
   font-family: var(--vf-font-family-base);
 }
 
@@ -284,7 +284,7 @@ watch(theme, (value) => {
 
 .showcase__hint {
   margin: 0;
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   line-height: var(--vf-text-body-line-height);
 }
 
@@ -296,10 +296,10 @@ watch(theme, (value) => {
   gap: var(--vf-button-gap);
   min-height: var(--vf-control-height-md);
   padding: var(--vf-button-padding-md);
-  border: var(--vf-border-width) solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-control);
-  background: var(--vf-color-surface-muted);
-  color: var(--vf-color-text);
+  background: var(--vf-color-background-surface-subtle);
+  color: var(--vf-color-text-primary);
   font-size: var(--vf-control-font-size-md);
   font-weight: var(--vf-text-body-font-weight);
   line-height: var(--vf-text-body-line-height);
@@ -311,25 +311,25 @@ watch(theme, (value) => {
   width: 100%;
   min-height: var(--vf-icons-showcase-card-min-height);
   padding: var(--vf-surface-padding-compact);
-  border: var(--vf-border-width) solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-surface);
-  background: var(--vf-color-surface);
-  color: var(--vf-color-text);
+  background: var(--vf-color-background-surface);
+  color: var(--vf-color-text-primary);
   cursor: pointer;
 }
 
 .theme-toggle:hover,
 .copy-button:hover,
 .icon-card:hover {
-  border-color: var(--vf-color-primary);
-  color: var(--vf-color-primary);
+  border-color: var(--vf-color-interactive-primary-background);
+  color: var(--vf-color-interactive-primary-background);
 }
 
 .theme-toggle:focus-visible,
 .copy-button:focus-visible,
 .icon-card:focus-visible {
   outline: none;
-  border-color: var(--vf-color-primary);
+  border-color: var(--vf-color-interactive-primary-background);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
@@ -348,10 +348,10 @@ watch(theme, (value) => {
 .panel,
 .catalog-group {
   padding: var(--vf-surface-padding);
-  border: var(--vf-border-width) solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-surface);
-  background: var(--vf-color-surface);
-  color: var(--vf-color-text);
+  background: var(--vf-color-background-surface);
+  color: var(--vf-color-text-primary);
 }
 
 .panel--compact {
@@ -360,7 +360,7 @@ watch(theme, (value) => {
 
 .eyebrow {
   margin: 0;
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
@@ -385,7 +385,7 @@ h2 {
 }
 
 h3 {
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-label-font-size);
   line-height: var(--vf-text-label-line-height);
 }
@@ -403,10 +403,10 @@ pre {
   overflow: auto;
   margin: var(--vf-surface-gap) 0 0;
   padding: var(--vf-surface-padding-compact);
-  border: var(--vf-border-width) solid var(--vf-color-border);
+  border: var(--vf-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-surface);
-  background: var(--vf-color-surface-muted);
-  color: var(--vf-color-text);
+  background: var(--vf-color-background-surface-subtle);
+  color: var(--vf-color-text-primary);
   line-height: var(--vf-text-body-line-height);
 }
 
@@ -422,7 +422,7 @@ pre {
 }
 
 .icon-card__meta {
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-label-font-size);
   line-height: var(--vf-text-label-line-height);
 }

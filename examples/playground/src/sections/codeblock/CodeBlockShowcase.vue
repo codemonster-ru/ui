@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="demo-page" :data-theme="resolvedTheme">
+  <main class="demo-page" :data-vf-theme="resolvedTheme">
     <div class="demo-container">
       <section class="demo-block">
         <div class="demo-block__header">
@@ -185,7 +185,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .demo-page {
   min-height: 100vh;
-  background: var(--vf-color-bg);
+  background: var(--vf-color-background-canvas);
 }
 
 .demo-grid {
@@ -210,10 +210,10 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--vf-color-border);
+  border: 1px solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-control);
-  background: var(--vf-color-surface);
-  color: var(--vf-color-text);
+  background: var(--vf-color-background-surface);
+  color: var(--vf-color-text-primary);
   padding: 0.35rem 0.65rem;
   font: inherit;
   cursor: pointer;

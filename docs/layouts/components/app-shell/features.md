@@ -23,11 +23,11 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <VfAppShell>
-    <template #header><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border)">Header</div></template>
-    <template #sidebar><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border)">Sidebar</div></template>
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border)">Main content</div>
-    <template #aside><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border)">Aside</div></template>
-    <template #footer><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border)">Footer</div></template>
+    <template #header><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default)">Header</div></template>
+    <template #sidebar><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default)">Sidebar</div></template>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default)">Main content</div>
+    <template #aside><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default)">Aside</div></template>
+    <template #footer><div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default)">Footer</div></template>
   </VfAppShell>
 </template>
 
@@ -53,7 +53,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                                                     |
+| ----- | ------------------------------------------------------------------------------------------------------------ |
 | `Tab` | Shell wrapper is not focusable by default; focus moves through interactive controls across composed regions. |
-

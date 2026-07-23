@@ -13,7 +13,7 @@
   gap: var(--vf-selection-gap);
   width: fit-content;
   min-width: 0;
-  color: var(--vf-color-text-primary, var(--vf-color-text));
+  color: var(--vf-color-text-primary);
   cursor: pointer;
 }
 

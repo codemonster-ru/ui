@@ -23,7 +23,7 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <VfSection surface style="padding:var(--vf-surface-padding-compact)">
-    <h3 style="margin:0 0 var(--vf-surface-gap-tight)">Section title</h3>
+    <h3 style="margin:0 0 var(--vf-surface-gap-compact)">Section title</h3>
     <p style="margin:0">Grouped content area with spacing and background surface.</p>
   </VfSection>
 </template>
@@ -50,7 +50,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                                  |
+| ----- | ----------------------------------------------------------------------------------------- |
 | `Tab` | Section wrapper is not focusable by default; focus moves through interactive descendants. |
-

@@ -192,16 +192,16 @@ import {
   type VfSemanticColorTokens as SemanticTokensFromThemeEntry,
 } from '@codemonster-ru/vueforge-core/theme';
 
-type PrimitiveTokensStayOptional = {} extends Pick<VfThemeTokens, 'paletteNeutral50'> ? true : false;
-type SemanticTokensStayOptional = {} extends Pick<VfThemeTokens, 'colorBackgroundCanvas'> ? true : false;
+type PrimitiveTokensAreRequired = {} extends Pick<VfThemeTokens, 'paletteNeutral50'> ? false : true;
+type SemanticTokensAreRequired = {} extends Pick<VfThemeTokens, 'colorBackgroundCanvas'> ? false : true;
 
 const primitiveTokens: VfPrimitiveColorTokens = { paletteNeutral50: '#f6f8fb' };
-const semanticTokens: VfSemanticColorTokens = { colorBackgroundCanvas: 'var(--vf-color-bg)' };
+const semanticTokens: VfSemanticColorTokens = { colorBackgroundCanvas: 'var(--vf-palette-neutral-50)' };
 const semanticTokensFromThemeEntry: SemanticTokensFromThemeEntry = semanticTokens;
 const primitiveName: VfPrimitiveColorTokenName = 'paletteNeutral50';
 const semanticName: VfSemanticColorTokenName = 'colorBackgroundCanvas';
-const primitiveTokensAreOptional: PrimitiveTokensStayOptional = true;
-const semanticTokensAreOptional: SemanticTokensStayOptional = true;
+const primitiveTokensAreRequired: PrimitiveTokensAreRequired = true;
+const semanticTokensAreRequired: SemanticTokensAreRequired = true;
 const overrides: Partial<VfThemeTokens> = { ...primitiveTokens, ...semanticTokens };
 const presetName = defaultThemePreset.name;
 const linkUnderline: VfLinkUnderline = 'hover';
@@ -227,8 +227,8 @@ console.log(
   vfSemanticColorTokenNames.length,
   primitiveName,
   semanticName,
-  primitiveTokensAreOptional,
-  semanticTokensAreOptional,
+  primitiveTokensAreRequired,
+  semanticTokensAreRequired,
   semanticTokensFromThemeEntry,
   overrides,
   invalidOverrides,

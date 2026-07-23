@@ -1,7 +1,7 @@
-# VueForge public release assets
+# VueForge 2 public release assets
 
-These copy-ready assets describe the coordinated VueForge release train. Publish them only after
-all eight package workflows and the final registry-only consumer smoke test have passed.
+These copy-ready assets describe the coordinated VueForge 2 release. Publish them only after all
+eight package workflows and the registry-only consumer smoke tests have passed.
 
 ## Short project description
 
@@ -33,51 +33,57 @@ These descriptions match the publication manifests:
 | `@codemonster-ru/vueforge-playground-vite-plugin` | Vite plugin for VueForge playground virtual modules                                                               |
 | `@codemonster-ru/vueforge-playground`             | Vue 3 playground UI adapter for the VueForge playground core runtime.                                             |
 
+## Coordinated versions
+
+| Package                | Version |
+| ---------------------- | ------: |
+| Theme                  | `2.0.0` |
+| Icons                  | `2.0.0` |
+| Core                   | `2.0.0` |
+| Layouts                | `2.0.0` |
+| CodeBlock              | `4.0.0` |
+| Playground Core        | `2.0.0` |
+| Playground Vite Plugin | `1.0.0` |
+| Playground             | `3.0.0` |
+
 ## GitHub Release description
 
 The release workflow creates one GitHub Release for each scoped package tag and takes its package
 changes from the matching `CHANGELOG.md` section. Use the following text as the coordinated
-project-level description or introduction; package-specific changelogs remain the source of truth.
+project-level introduction; package-specific changelogs remain the source of truth.
 
-### VueForge coordinated public release
+### VueForge 2
 
-VueForge's coordinated release train is ready for public Vue 3 applications. It brings the theme
-contract, semantic token architecture, accessible OKLCH defaults, hardened component behavior, and
-verified npm distribution together in compatible package versions.
+VueForge 2 completes the transition to one primitive and semantic token architecture. It removes
+legacy token aliases, deprecated TypeScript spellings, compatibility resolver metadata, implicit
+`data-theme` handling, dead runtime paths, and unused styling hooks.
 
-This release includes:
+The release preserves the built-in OKLCH palette, visual design, accessibility behavior, component
+set, custom theme prefixes and attributes, and advertised CommonJS support. Package `exports` now
+defines every supported JavaScript, declaration, Node, browser, and CSS entry.
 
-- consistent runtime, static, full, and component-entry theme contracts;
-- accessible light and dark defaults without public token removal;
-- deterministic SSR and hydration behavior;
-- coordinated overlays, keyboard interactions, focus management, RTL, reduced motion, and forced
-  colors;
-- corrected ESM, CommonJS, TypeScript, CSS, and browser/Node package conditions;
-- secure, deferred CodeBlock and Playground runtimes;
-- clean npm, pnpm, and Yarn tarball-consumer validation.
+Upgrade interdependent packages together. Core starts at
+`@codemonster-ru/vueforge-core@2.0.0` and requires Vue `^3.5.0`. CodeBlock 4 and Playground 3
+require Node.js 20 or newer; other consumer packages require Node.js 18 or newer.
 
-Install only the packages used by an application. Core starts at
-`@codemonster-ru/vueforge-core@1.36.0` and requires Vue `^3.5.0`. CodeBlock and Playground require
-Node.js 20 or newer; other consumer packages require Node.js 18 or newer.
-
-Read the
-[migration guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-guide.md)
+Read
+[Migrating to VueForge 2](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-to-v2.md)
 before upgrading and the
 [coordinated release notes](https://github.com/codemonster-ru/vueforge/blob/main/docs/release-notes.md)
-for package versions, behavior corrections, and bundle notes.
+for package versions and preserved behavior.
 
 ## Release announcement
 
 Use this announcement only after registry propagation, provenance, integrity, and fresh-consumer
 checks have passed:
 
-> VueForge's coordinated public release is now available for Vue 3.5 applications. The release
-> includes accessible components and layouts, light/dark runtime theming, icons, CodeBlock, and a
-> secure interactive Playground, backed by verified TypeScript, SSR, CSS, tree-shaking, and clean
-> npm/pnpm/Yarn consumer paths. Start with
-> [the documentation](https://docs.codemonster.net/vueforge/) and review the
-> [migration guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-guide.md)
-> when upgrading.
+> VueForge 2 is available for Vue 3.5 applications. This breaking release removes the completed
+> 1.x compatibility layer and leaves one canonical token, theme, runtime, and package-entry
+> architecture. The existing design, accessibility behavior, scoped theming, CommonJS support, and
+> explicit CSS entries remain intact. Start with
+> [the documentation](https://docs.codemonster.net/vueforge/) and review
+> [Migrating to VueForge 2](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-to-v2.md)
+> before upgrading.
 
 ## Change list
 

@@ -22,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <div style="display:flex;gap:var(--vf-surface-padding-compact);font-size:var(--vf-text-title-font-size);align-items:center">
+  <div style="display:flex;gap:var(--vf-surface-padding-compact);font-size:var(--vf-text-label-font-size);align-items:center">
     <VueIconify icon="github" />
     <VueIconify icon="sparkles" spin />
     <VueIconify icon="arrowRightLong" />

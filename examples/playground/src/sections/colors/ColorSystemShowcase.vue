@@ -62,7 +62,7 @@ const semanticSwatches = vfSemanticColorTokenNames.map((name) => {
 
 const codeSample = [
   'type Release = { version: string; stable: boolean };',
-  "const release: Release = { version: '1.36.0', stable: true };",
+  "const release: Release = { version: '2.0.0', stable: true };",
   '// Semantic colors stay readable in both themes.',
 ].join('\n');
 </script>
@@ -74,8 +74,8 @@ const codeSample = [
         <p class="color-system__eyebrow">VueForge color system · Phase 2</p>
         <h1>Perceptual materials, semantic decisions</h1>
         <p>
-          Primitive OKLCH scales feed semantic roles. Components consume those roles through the VueForge 1.x
-          compatibility boundary.
+          Primitive OKLCH scales feed semantic roles. Components consume only the canonical VueForge 2 semantic token
+          layer.
         </p>
       </header>
 

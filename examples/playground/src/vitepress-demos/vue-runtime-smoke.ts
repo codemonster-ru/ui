@@ -15,7 +15,7 @@ export default defineComponent({
               'display: grid',
               'align-content: start',
               'gap: var(--vf-layout-space-layout-base)',
-              'background: linear-gradient(180deg, color-mix(in oklab, var(--vf-color-bg) 92%, var(--vf-color-brand-primary) 8%), var(--vf-color-bg))'
+              'background: linear-gradient(180deg, color-mix(in oklab, var(--vf-color-background-canvas) 92%, var(--vf-color-brand-primary) 8%), var(--vf-color-background-canvas))'
             ].join(';')
         },
         [

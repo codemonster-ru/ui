@@ -9,7 +9,7 @@
   border: var(--vf-border-width) solid transparent;
   border-radius: var(--vf-radius-control);
   background: transparent;
-  color: var(--vf-color-icon-primary, var(--vf-color-text));
+  color: var(--vf-color-icon-primary);
   cursor: pointer;
   transition:
     background-color var(--vf-motion-duration-fast) var(--vf-motion-ease-standard),
@@ -20,62 +20,62 @@
 
 .vf-icon-button:focus-visible {
   outline: none;
-  border-color: var(--vf-color-border-focus, var(--vf-color-primary));
+  border-color: var(--vf-color-border-focus);
   border-radius: var(--vf-radius-control);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
 .vf-icon-button:disabled {
-  border-color: var(--vf-color-border-disabled, var(--vf-color-border));
-  background: var(--vf-color-background-surface-disabled, var(--vf-color-surface-muted));
-  color: var(--vf-color-icon-disabled, var(--vf-color-muted));
+  border-color: var(--vf-color-border-disabled);
+  background: var(--vf-color-background-surface-disabled);
+  color: var(--vf-color-icon-disabled);
   cursor: not-allowed;
 }
 
 .vf-icon-button--primary {
-  background: var(--vf-color-interactive-primary-background, var(--vf-color-primary));
-  color: var(--vf-color-interactive-primary-foreground, var(--vf-color-primary-contrast));
+  background: var(--vf-color-interactive-primary-background);
+  color: var(--vf-color-interactive-primary-foreground);
 }
 
 .vf-icon-button--success {
-  background: var(--vf-color-status-success-solid-background, var(--vf-color-success));
-  color: var(--vf-color-status-success-solid-foreground, var(--vf-color-success-contrast));
+  background: var(--vf-color-status-success-solid-background);
+  color: var(--vf-color-status-success-solid-foreground);
 }
 
 .vf-icon-button--info {
-  background: var(--vf-color-status-info-solid-background, var(--vf-color-info));
-  color: var(--vf-color-status-info-solid-foreground, var(--vf-color-info-contrast));
+  background: var(--vf-color-status-info-solid-background);
+  color: var(--vf-color-status-info-solid-foreground);
 }
 
 .vf-icon-button--warn {
-  background: var(--vf-color-status-warning-solid-background, var(--vf-color-warn));
-  color: var(--vf-color-status-warning-solid-foreground, var(--vf-color-warn-contrast));
+  background: var(--vf-color-status-warning-solid-background);
+  color: var(--vf-color-status-warning-solid-foreground);
 }
 
 .vf-icon-button--help {
-  background: var(--vf-color-status-help-solid-background, var(--vf-color-help));
-  color: var(--vf-color-status-help-solid-foreground, var(--vf-color-help-contrast));
+  background: var(--vf-color-status-help-solid-background);
+  color: var(--vf-color-status-help-solid-foreground);
 }
 
 .vf-icon-button--danger {
-  background: var(--vf-color-status-danger-solid-background, var(--vf-color-danger));
-  color: var(--vf-color-status-danger-solid-foreground, var(--vf-color-danger-contrast));
+  background: var(--vf-color-status-danger-solid-background);
+  color: var(--vf-color-status-danger-solid-foreground);
 }
 
 .vf-icon-button--contrast {
-  background: var(--vf-color-background-inverse, var(--vf-color-contrast));
-  color: var(--vf-color-icon-inverse, var(--vf-color-contrast-contrast));
+  background: var(--vf-color-background-inverse);
+  color: var(--vf-color-icon-inverse);
 }
 
 .vf-icon-button--secondary {
-  background: var(--vf-color-background-surface-subtle, var(--vf-color-surface-muted));
-  border-color: var(--vf-color-border-interactive, var(--vf-color-border-default, var(--vf-color-border)));
-  color: var(--vf-color-icon-primary, var(--vf-color-text));
+  background: var(--vf-color-background-surface-subtle);
+  border-color: var(--vf-color-border-interactive);
+  color: var(--vf-color-icon-primary);
 }
 
 .vf-icon-button--ghost {
   background: transparent;
-  color: var(--vf-color-icon-primary, var(--vf-color-text));
+  color: var(--vf-color-icon-primary);
 }
 
 .vf-icon-button--secondary:hover:not(:disabled) {
@@ -99,79 +99,59 @@
 }
 
 .vf-icon-button--primary:hover:not(:disabled) {
-  background: var(--vf-color-interactive-primary-hover-background, var(--vf-color-primary));
+  background: var(--vf-color-interactive-primary-hover-background);
 }
 
 .vf-icon-button--success:hover:not(:disabled) {
-  background: var(--vf-color-status-success-hover-background, var(--vf-color-success));
+  background: var(--vf-color-status-success-hover-background);
 }
 
 .vf-icon-button--info:hover:not(:disabled) {
-  background: var(--vf-color-status-info-hover-background, var(--vf-color-info));
+  background: var(--vf-color-status-info-hover-background);
 }
 
 .vf-icon-button--warn:hover:not(:disabled) {
-  background: var(--vf-color-status-warning-hover-background, var(--vf-color-warn));
+  background: var(--vf-color-status-warning-hover-background);
 }
 
 .vf-icon-button--help:hover:not(:disabled) {
-  background: var(--vf-color-status-help-hover-background, var(--vf-color-help));
+  background: var(--vf-color-status-help-hover-background);
 }
 
 .vf-icon-button--danger:hover:not(:disabled) {
-  background: var(--vf-color-status-danger-hover-background, var(--vf-color-danger));
+  background: var(--vf-color-status-danger-hover-background);
 }
 
 .vf-icon-button--contrast:hover:not(:disabled) {
-  background: var(--vf-color-background-inverse-hover, var(--vf-color-contrast));
-}
-
-.vf-icon-button--primary:hover:not(:disabled),
-.vf-icon-button--success:hover:not(:disabled),
-.vf-icon-button--info:hover:not(:disabled),
-.vf-icon-button--warn:hover:not(:disabled),
-.vf-icon-button--help:hover:not(:disabled),
-.vf-icon-button--danger:hover:not(:disabled),
-.vf-icon-button--contrast:hover:not(:disabled) {
-  filter: var(--vf-button-solid-hover-filter);
+  background: var(--vf-color-background-inverse-hover);
 }
 
 .vf-icon-button--primary:active:not(:disabled) {
-  background: var(--vf-color-interactive-primary-active-background, var(--vf-color-primary));
+  background: var(--vf-color-interactive-primary-active-background);
 }
 
 .vf-icon-button--success:active:not(:disabled) {
-  background: var(--vf-color-status-success-active-background, var(--vf-color-success));
+  background: var(--vf-color-status-success-active-background);
 }
 
 .vf-icon-button--info:active:not(:disabled) {
-  background: var(--vf-color-status-info-active-background, var(--vf-color-info));
+  background: var(--vf-color-status-info-active-background);
 }
 
 .vf-icon-button--warn:active:not(:disabled) {
-  background: var(--vf-color-status-warning-active-background, var(--vf-color-warn));
+  background: var(--vf-color-status-warning-active-background);
 }
 
 .vf-icon-button--help:active:not(:disabled) {
-  background: var(--vf-color-status-help-active-background, var(--vf-color-help));
+  background: var(--vf-color-status-help-active-background);
 }
 
 .vf-icon-button--danger:active:not(:disabled) {
-  background: var(--vf-color-status-danger-active-background, var(--vf-color-danger));
+  background: var(--vf-color-status-danger-active-background);
 }
 
 .vf-icon-button--contrast:active:not(:disabled) {
-  background: var(--vf-color-background-inverse-active, var(--vf-color-contrast));
-}
-
-.vf-icon-button--primary:active:not(:disabled),
-.vf-icon-button--success:active:not(:disabled),
-.vf-icon-button--info:active:not(:disabled),
-.vf-icon-button--warn:active:not(:disabled),
-.vf-icon-button--help:active:not(:disabled),
-.vf-icon-button--danger:active:not(:disabled),
-.vf-icon-button--contrast:active:not(:disabled) {
-  filter: var(--vf-button-solid-active-filter);
+  background: var(--vf-color-background-inverse-active);
 }
 
 .vf-icon-button--sm {

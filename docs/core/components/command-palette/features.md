@@ -24,7 +24,7 @@ entry: /App.vue
 <template>
   <div style="display:grid;gap:var(--vf-surface-gap)">
     <VfButton @click="open = true">Open Command Palette</VfButton>
-    <div style="font-size:var(--vf-text-caption-font-size);color:var(--vf-color-muted)">
+    <div style="font-size:var(--vf-text-caption-font-size);color:var(--vf-color-text-muted)">
       Selected: <strong>{{ selected || 'none' }}</strong>
     </div>
 
@@ -39,16 +39,16 @@ entry: /App.vue
     >
       <template #item="{ item, active }">
         <span
-          style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:var(--vf-surface-gap-compact) var(--vf-surface-gap);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control);background:var(--vf-color-surface);cursor:pointer"
-          :style="active ? 'border-color:var(--vf-color-border);background:var(--vf-color-surface)' : ''"
+          style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:var(--vf-surface-gap-compact) var(--vf-surface-gap);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control);background:var(--vf-color-background-surface);cursor:pointer"
+          :style="active ? 'border-color:var(--vf-color-border-default);background:var(--vf-color-background-surface)' : ''"
         >
           <span>{{ item }}</span>
-          <span style="font-size:var(--vf-text-label-font-size);color:var(--vf-color-muted)">Enter</span>
+          <span style="font-size:var(--vf-text-label-font-size);color:var(--vf-color-text-muted)">Enter</span>
         </span>
       </template>
 
       <template #footer>
-        <div style="display:flex;gap:var(--vf-surface-gap-compact);font-size:var(--vf-text-caption-font-size);color:var(--vf-color-muted)">
+        <div style="display:flex;gap:var(--vf-surface-gap-compact);font-size:var(--vf-text-caption-font-size);color:var(--vf-color-text-muted)">
           <span>↑↓ navigate</span>
           <span>Enter select</span>
           <span>Esc close</span>
@@ -100,10 +100,10 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `ArrowDown` | Moves active result to next item. |
-| `ArrowUp` | Moves active result to previous item. |
-| `Enter` | Selects active result; if no active result, submits current query. |
-| `Escape` | Closes palette when `closeOnEscape` is enabled. |
-| `Tab` | Keeps focus within palette while open (focus trap). |
+| Key         | Function                                                           |
+| ----------- | ------------------------------------------------------------------ |
+| `ArrowDown` | Moves active result to next item.                                  |
+| `ArrowUp`   | Moves active result to previous item.                              |
+| `Enter`     | Selects active result; if no active result, submits current query. |
+| `Escape`    | Closes palette when `closeOnEscape` is enabled.                    |
+| `Tab`       | Keeps focus within palette while open (focus trap).                |

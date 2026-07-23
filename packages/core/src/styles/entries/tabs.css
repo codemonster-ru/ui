@@ -51,8 +51,8 @@
   padding: 0;
   border: none;
   border-radius: 0;
-  background: var(--vf-color-background-surface, var(--vf-color-surface));
-  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
+  background: var(--vf-color-background-surface);
+  color: var(--vf-color-icon-secondary);
   font-size: var(--vf-control-font-size-md);
   line-height: 0;
   cursor: pointer;
@@ -65,7 +65,7 @@
   right: 0;
   bottom: calc(-1 * var(--vf-tabs-list-baseline-overlap));
   height: var(--vf-tabs-list-baseline-overlap);
-  background: var(--vf-color-background-surface, var(--vf-color-surface));
+  background: var(--vf-color-background-surface);
   pointer-events: none;
 }
 
@@ -80,8 +80,8 @@
 }
 
 .vf-tabs__scroll-button:hover {
-  background: var(--vf-color-background-surface, var(--vf-color-surface));
-  color: var(--vf-color-icon-primary, var(--vf-color-text));
+  background: var(--vf-color-background-surface);
+  color: var(--vf-color-icon-primary);
 }
 
 .vf-tabs__scroll-button:focus-visible {

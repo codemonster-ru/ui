@@ -1,6 +1,4 @@
 export {
-  SHIKI_DARK_THEME,
-  SHIKI_LIGHT_THEME,
   highlightCodeBlock,
   highlightCodeLine,
   highlightCodeLines,

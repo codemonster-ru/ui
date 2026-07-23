@@ -199,8 +199,9 @@ surface, inherited theme, CodeBlock highlighting/focus и отсутствие h
 
 ## 9. Migration Guide Review
 
-[Migration guide](../migration-guide.md) повторно проверен против package manifests, exports,
-versions и Phase 4 release notes. Он позволяет выполнить переход без чтения исходников и включает:
+Исторический release-train guide заменён актуальным
+[VueForge 2 migration guide](../migration-to-v2.md). На момент Phase 5 он был повторно проверен
+против package manifests, exports, versions и Phase 4 release notes и включал:
 
 - полный coordinated version/floor matrix;
 - совместное обновление Vue и Vue server renderer;

@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.0.0
+
+### Changed
+
+- Made the package `exports` map authoritative while preserving the documented browser, Node ESM,
+  and CommonJS conditions.
+
+### Removed
+
+- Removed the inert `style="solid"` prop from `VueIconify`; the catalog remains solid-only.
+- Removed the empty `dualStyleCoreIconNames` export and the obsolete regular-variant generator path.
+- Removed the obsolete icon-generator variant argument.
+- Removed legacy top-level resolver metadata.
+
+### Breaking changes
+
+- Remove the `style` prop from `VueIconify` usage, remove imports of `dualStyleCoreIconNames`, and
+  use a resolver that honors package `exports`.
+
 ## 1.6.0
 
 ### Added
