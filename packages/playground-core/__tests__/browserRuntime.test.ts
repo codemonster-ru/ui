@@ -77,6 +77,20 @@ describe('renderBrowserHtml', () => {
     expect(rendered.html).toContain('<script type="module">console.log(\'ok\');</script>');
   });
 
+  it('rewrites local re-export specifiers to compiled module URLs', () => {
+    const rendered = renderBrowserHtml(
+      {
+        '/main.js': "export { value } from './feature.js';",
+        '/feature.js': 'export const value = 42;',
+      },
+      '/main.js',
+    );
+
+    expect(rendered.error).toBeUndefined();
+    expect(rendered.html).toContain("export { value } from 'data:text/javascript;base64,");
+    expect(rendered.html).not.toContain("from './feature.js'");
+  });
+
   it('injects a theme bridge for opaque sandbox previews', () => {
     const rendered = renderBrowserHtml(
       {
@@ -86,7 +100,6 @@ describe('renderBrowserHtml', () => {
     );
 
     expect(rendered.html).toContain("message.type !== 'theme'");
-    expect(rendered.html).toContain("root.setAttribute('data-theme', theme)");
     expect(rendered.html).toContain("root.setAttribute('data-vf-theme', theme)");
     expect(rendered.html).toContain('event.source !== parent');
     expect(rendered.html).toContain("propertyName.startsWith('--vf-')");
@@ -180,7 +193,6 @@ describe('renderBrowserHtml', () => {
       },
     });
 
-    expect(attributes.get('data-theme')).toBe('light');
     expect(attributes.get('data-vf-theme')).toBe('light');
     expect(classes.has('light')).toBe(true);
     expect(classes.has('dark')).toBe(false);
@@ -189,8 +201,8 @@ describe('renderBrowserHtml', () => {
     expect(variables.get('--brand-first')).toBe('var(--brand-base)');
     expect(variables.get('--brand-base')).toBe('first-value');
     expect(variables.has('--not-vf')).toBe(false);
-    expect(bodyStyle.backgroundColor).toBe('var(--vf-color-background-canvas, var(--vf-color-bg, Canvas))');
-    expect(bodyStyle.color).toBe('var(--vf-color-text-primary, var(--vf-color-text, CanvasText))');
+    expect(bodyStyle.backgroundColor).toBe('var(--vf-color-background-canvas, Canvas)');
+    expect(bodyStyle.color).toBe('var(--vf-color-text-primary, CanvasText)');
 
     handleMessage?.({
       source: parentWindow,
@@ -201,7 +213,7 @@ describe('renderBrowserHtml', () => {
       },
     });
 
-    expect(attributes.get('data-theme')).toBe('dark');
+    expect(attributes.get('data-vf-theme')).toBe('dark');
     expect(classes.has('dark')).toBe(true);
     expect(classes.has('light')).toBe(false);
     expect(rootStyle.colorScheme).toBe('dark');

@@ -5,7 +5,6 @@
     class="vf-codeblock"
     :class="{ 'vf-codeblock--disabled': disabled }"
     :style="rootStyle"
-    :data-theme="themeAttribute"
     :data-vf-theme="themeAttribute"
     :data-vf-resolved-theme="resolvedTheme"
     :aria-label="ariaLabel"
@@ -233,11 +232,6 @@ const findClosestThemeValue = (element: HTMLElement | null) => {
   let currentElement = element?.parentElement ?? null;
 
   while (currentElement) {
-    const dataTheme = normalizeThemeValue(currentElement.getAttribute('data-theme'));
-    if (dataTheme) {
-      return dataTheme;
-    }
-
     const dataVfTheme = normalizeThemeValue(currentElement.getAttribute('data-vf-theme'));
     if (dataVfTheme) {
       return dataVfTheme;
@@ -299,7 +293,7 @@ onMounted(() => {
     subtree: true,
     childList: true,
     attributes: true,
-    attributeFilter: ['data-theme', 'data-vf-theme'],
+    attributeFilter: ['data-vf-theme'],
   });
 });
 

@@ -1,6 +1,6 @@
 ---
-title: "Theming"
-description: "Theme and styling customization for Skeleton"
+title: 'Theming'
+description: 'Theme and styling customization for Skeleton'
 order: 3
 ---
 
@@ -8,8 +8,8 @@ order: 3
 
 `VfSkeleton` inherits surface palette and radius from shared core tokens:
 
-- `--vf-color-surface-muted`
-- `--vf-color-text`
+- `--vf-color-background-surface-subtle`
+- `--vf-color-text-primary`
 - `--vf-radius-surface`
 
 Skeleton shimmer behavior is also tokenized and can be tuned via preset-backed CSS custom properties:

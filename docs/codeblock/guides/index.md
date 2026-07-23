@@ -18,17 +18,18 @@ Use these patterns as a baseline for stable integration in apps and docs portals
 
 ### Use with VueForge Core Theme Provider
 
-With `theme="inherit"`, `VfCodeBlock` resolves the nearest ancestor carrying a valid `data-theme` or
-`data-vf-theme`. `VfThemeProvider` keeps both attributes synchronized on its configured theme root;
-component nesting alone does not create a local boundary.
+With `theme="inherit"`, `VfCodeBlock` resolves the nearest ancestor carrying a valid
+`data-vf-theme`. `VfThemeProvider` synchronizes that canonical attribute and any explicitly
+configured theme attributes on its configured root; component nesting alone does not create a
+local boundary.
 
 ```ts
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 ```
 
-In inherited mode the host keeps `data-theme="inherit"` and `data-vf-theme="inherit"`. Inspect
-`data-vf-resolved-theme` for the effective `light` or `dark` mode.
+In inherited mode the host keeps `data-vf-theme="inherit"`. Inspect `data-vf-resolved-theme` for
+the effective `light` or `dark` mode.
 
 ### Scope Runtime Theme Vars to Docs Area
 
@@ -40,13 +41,13 @@ import { setCodeBlockThemeVars } from '@codemonster-ru/vueforge-codeblock/view';
 setCodeBlockThemeVars(
   {
     base: {
-      '--vf-codeblock-border-color': 'var(--vf-color-border)',
+      '--vf-codeblock-border-color': 'var(--vf-color-border-default)',
     },
     light: {
-      '--vf-codeblock-background-color': 'var(--vf-color-surface-muted)',
+      '--vf-codeblock-background-color': 'var(--vf-color-background-surface-subtle)',
     },
     dark: {
-      '--vf-codeblock-background-color': 'var(--vf-color-surface-muted)',
+      '--vf-codeblock-background-color': 'var(--vf-color-background-surface-subtle)',
     },
   },
   { themeScope: '#docs-content' },

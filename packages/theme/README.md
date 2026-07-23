@@ -7,7 +7,7 @@
 
 A framework-agnostic token and preset engine for the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-theme@1.4.0`.
+Coordinated release: `@codemonster-ru/vueforge-theme@2.0.0`.
 
 ## Requirements
 
@@ -41,7 +41,7 @@ import {
 } from '@codemonster-ru/vueforge-theme';
 
 const variables = themeTokensToCssVars({
-  colorBg: '#fff',
+  colorBackgroundCanvas: '#fff',
   breakpoint2xl: '96rem',
 });
 ```
@@ -59,7 +59,7 @@ The public contract is available directly in
 [src/types.ts](https://github.com/codemonster-ru/vueforge/blob/main/packages/theme/src/types.ts), and
 [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/theme/CHANGELOG.md).
 Ecosystem upgrade requirements are documented in the repository
-[migration guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-guide.md).
+[VueForge 2 migration guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-to-v2.md).
 
 ## License
 

@@ -7,7 +7,7 @@
 
 A Vite plugin for resolving VueForge playground virtual modules from local source files.
 
-Coordinated release: `@codemonster-ru/vueforge-playground-vite-plugin@0.2.0`.
+Coordinated release: `@codemonster-ru/vueforge-playground-vite-plugin@1.0.0`.
 
 ## Requirements
 
@@ -55,8 +55,7 @@ The plugin executes in Vite's Node process and is safe to use for both client an
 does not need Vue at runtime; the files exposed through virtual modules define their own runtime
 dependencies.
 
-The correctly cased public option types use the `VueForge*` prefix. Deprecated `Vueforge*` aliases
-remain available for source compatibility.
+Public option types use the `VueForge*` prefix.
 
 ## Package-local documentation
 

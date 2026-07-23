@@ -25,7 +25,6 @@ export interface VfLayoutTokens {
   borderBase: string;
   surfaceBase: string;
   surfaceMuted: string;
-  surfaceSubtle: string;
   surfaceRadius: string;
   surfaceShadow: string;
   shadowOverlay: string;

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const [, , iconName, categoryId, legacyVariantArg] = process.argv;
+const [, , iconName, categoryId, ...extraArgs] = process.argv;
 
 const rootDir = process.cwd();
 const componentsDir = resolve(rootDir, 'src/lib/components');
@@ -13,16 +13,12 @@ const fail = (message) => {
   process.exit(1);
 };
 
-if (!iconName || !categoryId) {
+if (!iconName || !categoryId || extraArgs.length > 0) {
   fail('Usage: npm run create-icon -- <iconName> <categoryId>');
 }
 
 if (!/^[a-z][A-Za-z0-9]*$/.test(iconName)) {
   fail('Icon name must be lowerCamelCase, for example: externalLink');
-}
-
-if (legacyVariantArg && legacyVariantArg !== 'solid') {
-  fail('New icons are scaffolded as solid-only for now. Omit the variant argument.');
 }
 
 const iconGroups = JSON.parse(readFileSync(iconMetaPath, 'utf8'));

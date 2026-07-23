@@ -23,7 +23,7 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <VfContainer size="xl">
-    <div style="padding:var(--vf-surface-padding-compact);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">
+    <div style="padding:var(--vf-surface-padding-compact);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">
       Constrained content area
     </div>
   </VfContainer>
@@ -51,7 +51,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                              |
+| ----- | ------------------------------------------------------------------------------------- |
 | `Tab` | Container itself is not focusable by default; focus moves to interactive descendants. |
-

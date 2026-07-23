@@ -12,22 +12,22 @@ Install the package and import the public entry points for this module.
 
 - Node.js 18 or newer for consumer tooling and SSR.
 - Vue `^3.5.0`.
-- `@codemonster-ru/vueforge-core` `^1.36.0`.
+- `@codemonster-ru/vueforge-core` `^2.0.0`.
 
 ## Install
 
 Install Core as a direct dependency because it is a Layouts peer:
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-layouts
+npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-layouts
 ```
 
 ```bash
-pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-layouts
+pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-layouts
 ```
 
 ```bash
-yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-layouts
+yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-layouts
 ```
 
 ## Full CSS setup

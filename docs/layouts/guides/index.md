@@ -1,6 +1,6 @@
 ---
-title: "Guides"
-description: "Limitations and related packages for the layouts package"
+title: 'Guides'
+description: 'Limitations and related packages for the layouts package'
 order: 6
 ---
 
@@ -8,11 +8,9 @@ order: 6
 
 This section provides a quick overview before the detailed subsections below.
 
-
 ## Overview
 
 Practical integration notes, limitations, and related packages for this package.
-
 
 ## Common Integration Patterns
 
@@ -46,7 +44,7 @@ Use `createLayoutsPreset`/`applyLayoutsThemeConfig` for layout token changes ins
 The following items are listed in this section:
 
 - Peer dependency: `vue ^3.5.0`.
-- Peer dependency: `@codemonster-ru/vueforge-core ^1.36.0`.
+- Peer dependency: `@codemonster-ru/vueforge-core ^2.0.0`.
 - Consumer tooling and SSR require Node.js 18 or newer.
 - The plugin configures themes but does not globally register layout components.
 

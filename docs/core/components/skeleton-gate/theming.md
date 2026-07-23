@@ -1,6 +1,6 @@
 ---
-title: "Theming"
-description: "Theme and styling customization for Skeleton Gate"
+title: 'Theming'
+description: 'Theme and styling customization for Skeleton Gate'
 order: 3
 ---
 
@@ -18,4 +18,5 @@ order: 3
   - `--vf-skeleton-gate-fade-easing-default`
   - `--vf-skeleton-gate-overflow-default`
 
-For palette changes, adjust shared core tokens (for example `--vf-color-surface-muted`) so both gate and skeleton stay visually consistent.
+For palette changes, adjust shared core tokens (for example `--vf-color-background-surface-subtle`)
+so both gate and skeleton stay visually consistent.

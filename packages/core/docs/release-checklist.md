@@ -20,6 +20,6 @@ Before the Core tag is pushed, additionally confirm:
 - [README.md](../README.md), [CHANGELOG.md](../CHANGELOG.md), [foundation-api.md](./foundation-api.md),
   [theme-api.md](./theme-api.md), and [visual-baseline.md](./visual-baseline.md) match the release.
 
-Core `1.36.0` is published only after Theme `1.4.0`, Icons `1.6.0`, Playground Core `1.2.0`, and the
-Playground Vite Plugin `0.2.0` have passed their registry smokes. Layouts, CodeBlock, and Playground
+Core `2.0.0` is published only after Theme `2.0.0`, Icons `2.0.0`, Playground Core `2.0.0`, and the
+Playground Vite Plugin `1.0.0` have passed their registry smokes. Layouts, CodeBlock, and Playground
 follow Core in the canonical sequence.

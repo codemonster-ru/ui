@@ -1,8 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { themeTokensToCssVars, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-theme';
 import { describe, expect, it } from 'vitest';
-import { legacyLightColorTokens } from '../theme/color-token-schema';
 
 const stylesRoot = resolve(process.cwd(), 'src/styles');
 const entriesRoot = resolve(stylesRoot, 'entries');
@@ -27,6 +25,10 @@ const packageSourceRoots = readdirSync(packagesRoot, { withFileTypes: true })
   .map((entry) => resolve(packagesRoot, entry.name, 'src'))
   .filter(existsSync);
 const colorStyleFiles = packageSourceRoots.flatMap(collectCssFiles);
+const canonicalColorStyleFiles = [
+  ...collectCssFiles(stylesRoot),
+  ...collectCssFiles(resolve(packagesRoot, 'layouts/src')),
+];
 const rawColorLiteralAllowlist = new Map<string, Readonly<Record<string, number>>>([
   [
     resolve(packagesRoot, 'codeblock/src/tokens.css'),
@@ -47,34 +49,46 @@ const rawColorLiteralAllowlist = new Map<string, Readonly<Record<string, number>
     },
   ],
 ]);
-const legacyFallbackRecipeAllowlist = new Map<string, readonly string[]>([
-  [
-    resolve(packagesRoot, 'playground/src/tokens.css'),
-    [
-      `var(
-    --vf-color-background-surface-selected,
-    color-mix(in srgb, var(--vf-color-primary) 20%, var(--vf-color-surface))
-  )`,
-      'var(--vf-color-background-canvas, var(--vf-color-bg, var(--vf-color-surface)))',
-    ],
-  ],
-]);
-const semanticColorVariables = Object.keys(
-  themeTokensToCssVars(Object.fromEntries(vfSemanticColorTokenNames.map((name) => [name, 'contract-value']))),
-);
-const semanticColorVariableSet = new Set(semanticColorVariables);
-const legacyPaletteVariables = Object.keys(themeTokensToCssVars(legacyLightColorTokens)).filter(
-  (name) => !semanticColorVariableSet.has(name),
-);
 const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const semanticFirstLegacyFallback = new RegExp(
-  `var\\((?:${semanticColorVariables.map(escapeRegExp).join('|')}),\\s*var\\((?:${legacyPaletteVariables
-    .map(escapeRegExp)
-    .join('|')})\\)\\)`,
-  'g',
-);
-const standaloneLegacyPaletteReference = new RegExp(
-  `var\\((?:${legacyPaletteVariables.map(escapeRegExp).join('|')})\\)`,
+const removedLegacyColorVariables = [
+  '--vf-color-bg',
+  '--vf-color-surface',
+  '--vf-color-surface-muted',
+  '--vf-color-text',
+  '--vf-color-muted',
+  '--vf-color-border',
+  '--vf-color-primary',
+  '--vf-color-primary-contrast',
+  '--vf-color-primary-soft',
+  '--vf-color-primary-border-soft',
+  '--vf-color-success',
+  '--vf-color-success-contrast',
+  '--vf-color-info',
+  '--vf-color-info-contrast',
+  '--vf-color-warn',
+  '--vf-color-warn-contrast',
+  '--vf-color-help',
+  '--vf-color-help-contrast',
+  '--vf-color-danger',
+  '--vf-color-danger-contrast',
+  '--vf-color-contrast',
+  '--vf-color-contrast-contrast',
+  '--vf-color-success-soft',
+  '--vf-color-info-soft',
+  '--vf-color-warn-soft',
+  '--vf-color-help-soft',
+  '--vf-color-danger-soft',
+  '--vf-color-contrast-soft',
+  '--vf-color-success-border-soft',
+  '--vf-color-info-border-soft',
+  '--vf-color-warn-border-soft',
+  '--vf-color-help-border-soft',
+  '--vf-color-danger-border-soft',
+  '--vf-color-contrast-border-soft',
+  '--vf-overlay-backdrop',
+] as const;
+const removedLegacyColorReference = new RegExp(
+  `(?:${removedLegacyColorVariables.map(escapeRegExp).join('|')})(?![-a-z0-9])`,
 );
 const cssNamedColors = [
   'aliceblue',
@@ -248,18 +262,12 @@ describe('component palette contract', () => {
     }
   });
 
-  it('keeps primitives out of components and permits legacy palette roots only as semantic-first fallbacks', () => {
-    for (const file of colorStyleFiles) {
+  it('keeps primitives and removed legacy roots out of Core and Layout component styles', () => {
+    for (const file of canonicalColorStyleFiles) {
       const css = readFileSync(file, 'utf8');
-      let cssWithoutCompatibilityFallbacks = css.replace(semanticFirstLegacyFallback, '');
-
-      for (const allowedRecipe of legacyFallbackRecipeAllowlist.get(file) ?? []) {
-        expect(css, file).toContain(allowedRecipe);
-        cssWithoutCompatibilityFallbacks = cssWithoutCompatibilityFallbacks.replace(allowedRecipe, '');
-      }
 
       expect(css, file).not.toContain('var(--vf-palette-');
-      expect(cssWithoutCompatibilityFallbacks, file).not.toMatch(standaloneLegacyPaletteReference);
+      expect(css, file).not.toMatch(removedLegacyColorReference);
     }
   });
 
@@ -277,22 +285,22 @@ describe('component palette contract', () => {
     expect(readEntry(name)).not.toMatch(/var\(--vf-color-/);
   });
 
-  it('uses the semantic backdrop with the runtime-compatible Command Palette fallback', () => {
-    expect(readEntry('command-palette')).toContain('var(--vf-color-background-backdrop, var(--vf-overlay-backdrop))');
+  it('uses the semantic backdrop for Command Palette', () => {
+    expect(readEntry('command-palette')).toContain('var(--vf-color-background-backdrop)');
   });
 
-  it('uses semantic solid states while retaining no-op compatibility filter hooks', () => {
+  it('uses semantic solid states without compatibility filters', () => {
     for (const name of ['button', 'icon-button']) {
       const css = readEntry(name);
 
       expect(css).not.toContain('brightness(');
-      expect(css).toContain('filter: var(--vf-button-solid-hover-filter);');
-      expect(css).toContain('filter: var(--vf-button-solid-active-filter);');
+      expect(css).not.toContain('--vf-button-solid-hover-filter');
+      expect(css).not.toContain('--vf-button-solid-active-filter');
       expect(css).not.toMatch(/:disabled\s*\{[^}]*opacity:/s);
-      expect(css).toContain('var(--vf-color-interactive-primary-hover-background, var(--vf-color-primary))');
-      expect(css).toContain('var(--vf-color-status-danger-active-background, var(--vf-color-danger))');
-      expect(css).toContain('var(--vf-color-background-inverse-active, var(--vf-color-contrast))');
-      expect(css).toContain('var(--vf-color-background-surface-disabled, var(--vf-color-surface-muted))');
+      expect(css).toContain('var(--vf-color-interactive-primary-hover-background)');
+      expect(css).toContain('var(--vf-color-status-danger-active-background)');
+      expect(css).toContain('var(--vf-color-background-inverse-active)');
+      expect(css).toContain('var(--vf-color-background-surface-disabled)');
     }
   });
 
@@ -359,7 +367,7 @@ describe('component palette contract', () => {
     );
   });
 
-  it('preserves the VueForge 1.x pills fallback for active sidebar top-level states', () => {
+  it('preserves the pills component-token fallback for active sidebar top-level states', () => {
     const css = readEntry('nav-menu');
     const topHoverRule = css.slice(
       css.indexOf('.vf-nav-menu__item--top.vf-nav-menu__item--active:hover'),
@@ -380,12 +388,12 @@ describe('component palette contract', () => {
     ['nav-menu', ['--vf-nav-menu-current-item-active-background']],
     ['table-of-contents', ['--vf-table-of-contents-current-active-background']],
     ['tabs', ['--vf-tabs-tab-active-background']],
-  ])('%s gives selected items deterministic hover and active surfaces', (name, compatibilityFallbacks) => {
+  ])('%s gives selected items deterministic hover and active surfaces', (name, componentFallbacks) => {
     const css = readEntry(name as string);
 
     expect(css).toContain('--vf-color-background-surface-selected-hover');
     expect(css).toContain('--vf-color-background-surface-selected-active');
-    for (const fallback of compatibilityFallbacks as string[]) {
+    for (const fallback of componentFallbacks as string[]) {
       expect(css).toContain(`var(${fallback})`);
     }
 
@@ -406,7 +414,7 @@ describe('component palette contract', () => {
       expect(css).not.toMatch(/disabled[^,{]*[^{]*[{][^}]*opacity\s*:/s);
     }
 
-    expect(readEntry('menu-bar')).toContain('var(--vf-color-text-disabled, var(--vf-color-muted))');
+    expect(readEntry('menu-bar')).toContain('var(--vf-color-text-disabled)');
     expect(readEntry('nav-menu')).toContain('var(--vf-color-background-surface-disabled, transparent)');
     expect(readEntry('stepper')).toContain('var(--vf-color-border-disabled, var(--vf-stepper-rail-color))');
     expect(readEntry('tabs')).toContain('var(--vf-color-background-surface-disabled, var(--vf-tabs-tab-background))');
@@ -427,28 +435,24 @@ describe('component palette contract', () => {
       const css = readEntry(name);
 
       expect(css).toContain(`.vf-${name}:read-only:not(:disabled, .vf-${name}--invalid)::placeholder`);
-      expect(css).toContain('color: var(--vf-color-text-secondary, var(--vf-color-muted));');
+      expect(css).toContain('color: var(--vf-color-text-secondary);');
     }
   });
 
-  it('uses the interactive boundary for secondary action controls with a VueForge 1.x fallback', () => {
+  it('uses the interactive boundary for secondary action controls', () => {
     for (const name of ['button', 'icon-button']) {
-      expect(readEntry(name)).toContain(
-        'border-color: var(--vf-color-border-interactive, var(--vf-color-border-default, var(--vf-color-border)));',
-      );
+      expect(readEntry(name)).toContain('border-color: var(--vf-color-border-interactive);');
     }
   });
 
-  it('uses a text role for the neutral ProgressBar label with its VueForge 1.x fallback', () => {
-    expect(readEntry('progress-bar')).toContain(
-      '--vf-progress-bar-label-color: var(--vf-color-text-inverse, var(--vf-color-bg));',
-    );
+  it('uses a text role for the neutral ProgressBar label', () => {
+    expect(readEntry('progress-bar')).toContain('--vf-progress-bar-label-color: var(--vf-color-text-inverse);');
   });
 
   it('keeps Switch state precedence theme-scoped through tokens', () => {
     const css = readEntry('switch');
 
-    expect(css).not.toContain("html:where([data-theme='dark'], [data-vf-theme='dark'])");
+    expect(css).not.toContain("html[data-vf-theme='dark']");
     expect(css).not.toContain('var(--vf-color-primary-contrast)');
     expect(css).not.toContain('.vf-switch--invalid:not(.vf-switch--static):hover');
     expect(css).toContain('background: var(--vf-switch-track-hover-background);');

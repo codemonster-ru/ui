@@ -1,6 +1,6 @@
 ---
-title: "Installation"
-description: "How to install and import the playground package"
+title: 'Installation'
+description: 'How to install and import the playground package'
 order: 2
 ---
 
@@ -19,15 +19,15 @@ Install the package and import the public entry points for this module.
 Use the package manager already used by the application:
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-playground
+npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-playground
 ```
 
 ```bash
-pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-playground
+pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-playground
 ```
 
 ```bash
-yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-playground
+yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-playground
 ```
 
 ## Import

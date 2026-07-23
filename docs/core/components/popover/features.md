@@ -28,9 +28,9 @@ entry: /App.vue
         <VfButton class="demo-trigger" variant="ghost">{{ open ? 'Hide' : 'Show' }} details</VfButton>
       </template>
 
-      <div style="min-width:var(--vf-breakpoint-xs);padding:var(--vf-surface-gap-tight)">
+      <div style="min-width:var(--vf-breakpoint-xs);padding:var(--vf-surface-gap-compact)">
         <h4 style="margin:0 0 var(--vf-surface-gap-compact)">Popover title</h4>
-        <p style="margin:0;color:var(--vf-color-muted)">Short contextual help or quick actions.</p>
+        <p style="margin:0;color:var(--vf-color-text-muted)">Short contextual help or quick actions.</p>
       </div>
     </VfPopover>
   </div>
@@ -45,10 +45,10 @@ const stage = ref(null);
 
 <style>
 .demo-trigger {
-  border: 1px solid var(--vf-color-border);
+  border: 1px solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-control);
   padding: var(--vf-surface-gap-compact) var(--vf-surface-padding-compact);
-  background: var(--vf-color-surface);
+  background: var(--vf-color-background-surface);
   cursor: pointer;
 }
 </style>
@@ -71,10 +71,10 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Enter` | Toggles popover when trigger is focused. |
-| `Space` | Toggles popover when trigger is focused. |
-| `ArrowDown` | Opens popover from trigger. |
-| `Escape` | Closes popover and restores focus to trigger (when `closeOnEscape` is enabled). |
-| `Tab` | Moves focus through interactive content inside popover using normal tab order. |
+| Key         | Function                                                                        |
+| ----------- | ------------------------------------------------------------------------------- |
+| `Enter`     | Toggles popover when trigger is focused.                                        |
+| `Space`     | Toggles popover when trigger is focused.                                        |
+| `ArrowDown` | Opens popover from trigger.                                                     |
+| `Escape`    | Closes popover and restores focus to trigger (when `closeOnEscape` is enabled). |
+| `Tab`       | Moves focus through interactive content inside popover using normal tab order.  |

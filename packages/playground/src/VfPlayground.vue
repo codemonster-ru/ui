@@ -4,7 +4,6 @@
     class="vf-playground"
     :class="containerClassName"
     :style="containerStyle"
-    :data-theme="themeAttribute"
     :data-vf-theme="themeAttribute"
     :data-vf-resolved-theme="resolvedTheme"
   >
@@ -394,8 +393,8 @@ let mountedReadyFallbackRaf1: number | null = null;
 let mountedReadyFallbackRaf2: number | null = null;
 let sandboxThemeVariableNames = new Set<string>();
 const SANDBOX_THEME_STYLE_ID = 'vf-playground-theme-sync';
-const SANDBOX_CANVAS_COLOR = 'var(--vf-color-background-canvas, var(--vf-color-bg, Canvas))';
-const SANDBOX_TEXT_COLOR = 'var(--vf-color-text-primary, var(--vf-color-text, CanvasText))';
+const SANDBOX_CANVAS_COLOR = 'var(--vf-color-background-canvas, Canvas)';
+const SANDBOX_TEXT_COLOR = 'var(--vf-color-text-primary, CanvasText)';
 const MAX_SANDBOX_THEME_VARIABLES = 8192;
 
 function loadCreatePlaygroundSession(): Promise<CreatePlaygroundSession> {
@@ -428,11 +427,6 @@ function readHostThemeIsDark(): boolean {
   }
 
   const readBoundary = (element: HTMLElement): boolean | null => {
-    const dataTheme = element.getAttribute('data-theme');
-    if (dataTheme === 'dark' || dataTheme === 'light') {
-      return dataTheme === 'dark';
-    }
-
     const dataVfTheme = element.getAttribute('data-vf-theme');
     if (dataVfTheme === 'dark' || dataVfTheme === 'light') {
       return dataVfTheme === 'dark';
@@ -566,7 +560,6 @@ function syncSandboxThemeToIframe(): void {
 
   if (iframeDocument) {
     const iframeRoot = iframeDocument.documentElement;
-    iframeRoot.setAttribute('data-theme', nextTheme);
     iframeRoot.setAttribute('data-vf-theme', nextTheme);
     iframeRoot.classList.toggle('dark', nextTheme === 'dark');
     iframeRoot.classList.toggle('light', nextTheme === 'light');
@@ -869,7 +862,7 @@ onMounted(async () => {
       subtree: true,
       childList: true,
       attributes: true,
-      attributeFilter: ['data-theme', 'data-vf-theme', 'class', 'style'],
+      attributeFilter: ['data-vf-theme', 'class', 'style'],
     });
     mediaTheme = window.matchMedia('(prefers-color-scheme: dark)');
     onMediaThemeChange = () => syncHostTheme();

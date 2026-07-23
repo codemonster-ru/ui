@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-theme",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "Shared theme engine, tokens, and preset runtime for the VueForge ecosystem.",
   "type": "module",
   "license": "MIT",
@@ -23,9 +23,6 @@
     "dist"
   ],
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

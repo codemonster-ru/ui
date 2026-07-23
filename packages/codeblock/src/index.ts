@@ -43,10 +43,10 @@ const createThemeCss = (themeVars: CodeBlockThemeVarOptions, scope?: string) => 
   const dark = mapToCssVars(themeVars.dark);
   const chunks: string[] = [];
   const modeSelectors = (mode: 'light' | 'dark') => {
-    const boundarySelector = `:where([data-theme="${mode}"], [data-vf-theme="${mode}"])`;
+    const boundarySelector = `:where([data-vf-theme="${mode}"])`;
 
     return [
-      `:is(${scopeSelector}):where([data-theme="${mode}"], [data-vf-theme="${mode}"])`,
+      `:is(${scopeSelector}):where([data-vf-theme="${mode}"])`,
       `${boundarySelector} :is(${scopeSelector})`,
       `:where(${scopeSelector}) ${boundarySelector}`,
     ].join(', ');

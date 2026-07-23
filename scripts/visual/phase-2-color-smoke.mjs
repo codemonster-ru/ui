@@ -160,9 +160,7 @@ async function setMode(mode, readySelector) {
     `localStorage.setItem(${JSON.stringify(storageKey)}, ${JSON.stringify(mode)}); location.reload(); true`,
   );
   await waitFor(`document.readyState === 'complete' && document.querySelector(${JSON.stringify(readySelector)})`);
-  await waitFor(
-    `document.documentElement.dataset.theme === ${JSON.stringify(mode)} && document.documentElement.dataset.vfTheme === ${JSON.stringify(mode)}`,
-  );
+  await waitFor(`document.documentElement.dataset.vfTheme === ${JSON.stringify(mode)}`);
   await sleep(700);
 }
 

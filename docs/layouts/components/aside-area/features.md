@@ -22,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfAsideArea style="border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">
+  <VfAsideArea style="border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">
     <p style="margin:0">Tip: Use keyboard shortcuts to speed up navigation.</p>
   </VfAsideArea>
 </template>
@@ -49,7 +49,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                        |
+| ----- | ------------------------------------------------------------------------------- |
 | `Tab` | Aside area is not focusable by default; focus moves to interactive descendants. |
-

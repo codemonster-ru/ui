@@ -1,4 +1,4 @@
-/* stylelint-disable no-descending-specificity -- Entry CSS mirrors the grouped interaction matrix from forms.css. */
+/* stylelint-disable no-descending-specificity -- Input states intentionally share one interaction matrix. */
 
 @import './field.css';
 @import './icon-button.css';
@@ -46,7 +46,7 @@
 .vf-input-wrap__icon {
   position: absolute;
   inset-block-start: 50%;
-  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
+  color: var(--vf-color-icon-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -98,7 +98,7 @@
   width: var(--vf-field-clear-button-size-md);
   height: var(--vf-field-clear-button-size-md);
   border-radius: var(--vf-radius-control-tight);
-  color: var(--vf-color-icon-secondary, var(--vf-color-muted));
+  color: var(--vf-color-icon-secondary);
 }
 
 .vf-input-wrap__clear.vf-icon-button svg,
@@ -113,7 +113,7 @@
 .vf-input-wrap__password-toggle.vf-icon-button:active:not(:disabled) {
   background: transparent;
   border-color: transparent;
-  color: var(--vf-color-icon-primary, var(--vf-color-text));
+  color: var(--vf-color-icon-primary);
 }
 
 .vf-input:focus,
@@ -368,11 +368,11 @@
 
 .vf-input:read-only:not(:disabled, .vf-input--invalid) {
   cursor: default;
-  border-color: var(--vf-color-border-default, var(--vf-color-border));
-  background: var(--vf-color-background-surface-subtle, var(--vf-color-surface-muted));
-  color: var(--vf-color-text-secondary, var(--vf-color-muted));
+  border-color: var(--vf-color-border-default);
+  background: var(--vf-color-background-surface-subtle);
+  color: var(--vf-color-text-secondary);
 }
 
 .vf-input:read-only:not(:disabled, .vf-input--invalid)::placeholder {
-  color: var(--vf-color-text-secondary, var(--vf-color-muted));
+  color: var(--vf-color-text-secondary);
 }

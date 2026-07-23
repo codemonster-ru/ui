@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0
+
+### Changed
+
+- Made the primitive and semantic color fields required in complete `VfThemeTokens` presets while
+  keeping configuration overrides partial.
+- Made `data-vf-theme` the only implicit theme attribute. Explicitly configured custom attributes
+  and custom variable prefixes remain supported.
+- Made the package `exports` map authoritative for JavaScript and declaration resolution.
+
+### Removed
+
+- Removed the VueForge 1.x color roots, `overlayBackdrop`, the generic `shadow` token, and their CSS
+  serialization paths.
+- Removed legacy top-level resolver metadata. Supported package exports remain unchanged.
+
+### Breaking changes
+
+- Complete presets must use primitive and semantic color fields and provide every required token.
+- Replace implicit `data-theme` boundaries with `data-vf-theme` and use a resolver that honors
+  package `exports`.
+
 ## 1.4.0
 
 ### Added

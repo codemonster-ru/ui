@@ -17,7 +17,6 @@ const attribute = computed(
 );
 const engineAttribute = computed(() => config?.theme.options.attribute ?? DEFAULT_ATTRIBUTE);
 const rootSelector = computed(() => config?.theme.options.rootSelector ?? ':root');
-const compatibleAttributes = ['data-theme', 'data-vf-theme'] as const;
 
 function getThemeRoots(): Element[] {
   if (typeof document === 'undefined') {
@@ -48,7 +47,7 @@ function getClientMode(): VfThemeMode {
     return storedTheme;
   }
 
-  const attributes = new Set([attribute.value, engineAttribute.value, ...compatibleAttributes]);
+  const attributes = new Set([attribute.value, engineAttribute.value, DEFAULT_ATTRIBUTE]);
 
   for (const root of getThemeRoots()) {
     for (const name of attributes) {
@@ -101,7 +100,7 @@ function updateDocumentTheme(theme: VfResolvedTheme, options: { animate?: boolea
     document.documentElement.classList.add('vf-theme-transitioning');
   }
 
-  const attributes = new Set([engineAttribute.value, attribute.value, ...compatibleAttributes]);
+  const attributes = new Set([engineAttribute.value, attribute.value, DEFAULT_ATTRIBUTE]);
 
   for (const root of roots) {
     for (const name of attributes) {
@@ -135,17 +134,21 @@ function toggleTheme() {
   mode.value = nextTheme;
 }
 
-watch(mode, (value) => {
-  if (typeof window === 'undefined' || !hasMounted.value) {
-    return;
-  }
+watch(
+  mode,
+  (value) => {
+    if (typeof window === 'undefined' || !hasMounted.value) {
+      return;
+    }
 
-  try {
-    window.localStorage.setItem(storageKey.value, value);
-  } catch {
-    // Storage can be unavailable in privacy-restricted browser contexts.
-  }
-}, { flush: 'sync' });
+    try {
+      window.localStorage.setItem(storageKey.value, value);
+    } catch {
+      // Storage can be unavailable in privacy-restricted browser contexts.
+    }
+  },
+  { flush: 'sync' },
+);
 
 watch(
   resolvedTheme,

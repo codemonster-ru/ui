@@ -124,11 +124,22 @@ describe('VueForge Shiki themes', () => {
       ['ansi-bright-cyan', 'color-status-info-subtle-foreground'],
       ['ansi-bright-white', 'color-text-primary'],
     ]) {
-      expect(serializedThemes).toContain(
-        `var(--vf-codeblock-syntax-${syntaxVariable}, var(--vf-${semanticVariable},`,
-      );
+      expect(serializedThemes).toContain(`var(--vf-codeblock-syntax-${syntaxVariable}, var(--vf-${semanticVariable},`);
     }
     expect(serializedThemes).toContain('oklch(');
+    for (const legacyVariable of [
+      'color-surface-muted',
+      'color-text',
+      'color-muted',
+      'color-success',
+      'color-primary',
+      'color-danger',
+      'color-warn',
+      'color-help',
+      'color-info',
+    ]) {
+      expect(serializedThemes).not.toContain(`var(--vf-${legacyVariable},`);
+    }
     expect(serializedThemes).not.toContain('github-light');
     expect(serializedThemes).not.toContain('github-dark');
   });

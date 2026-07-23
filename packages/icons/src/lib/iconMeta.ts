@@ -1,7 +1,6 @@
 import iconGroupsJson from '@/lib/iconMeta.json';
 import iconCatalogJson from '@/lib/iconCatalog.json';
 import iconCoreJson from '@/lib/iconCore.json';
-import iconDualStyleCoreJson from '@/lib/iconDualStyleCore.json';
 import iconShowcaseJson from '@/lib/iconShowcase.json';
 
 type IconGroup = {
@@ -46,5 +45,4 @@ export const icons = Object.freeze(
 
 export const iconCatalog = iconCatalogJson as Record<IconName, IconCatalogEntry>;
 export const coreIconNames = iconCoreJson as IconName[];
-export const dualStyleCoreIconNames = iconDualStyleCoreJson as IconName[];
 export const showcaseIconEntries = iconShowcaseJson as IconShowcaseEntry[];

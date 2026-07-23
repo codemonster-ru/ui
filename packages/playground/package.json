@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-playground",
-  "version": "2.6.0",
+  "version": "3.0.0",
   "description": "Vue 3 playground UI adapter for the VueForge playground core runtime.",
   "type": "module",
   "license": "MIT",
@@ -23,9 +23,6 @@
     "sandbox",
     "vueforge"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     "./ui": {
       "import": {
@@ -50,9 +47,9 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "@codemonster-ru/vueforge-playground-core": "^1.2.0",
-    "@codemonster-ru/vueforge-codeblock": "^3.7.0",
-    "@codemonster-ru/vueforge-core": "^1.36.0"
+    "@codemonster-ru/vueforge-playground-core": "^2.0.0",
+    "@codemonster-ru/vueforge-codeblock": "^4.0.0",
+    "@codemonster-ru/vueforge-core": "^2.0.0"
   },
   "devDependencies": {
     "@vue/test-utils": "^2.4.6",

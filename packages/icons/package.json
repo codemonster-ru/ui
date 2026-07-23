@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-icons",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "Open-source Vue 3 icon library for the VueForge ecosystem.",
   "keywords": [
     "vue",
@@ -26,9 +26,6 @@
   "engines": {
     "node": ">=18"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.ts.mjs",
-  "types": "./dist/lib/index.d.ts",
   "exports": {
     ".": {
       "import": {

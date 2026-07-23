@@ -8,11 +8,10 @@ import type { VfThemeTokens } from '@/types/theme';
 import {
   COMPLETE_DARK_OVERRIDE_COUNT,
   COMPLETE_THEME_TOKEN_COUNT,
-  LEGACY_THEME_TOKEN_COUNT,
   PRIMITIVE_COLOR_TOKEN_COUNT,
   SEMANTIC_COLOR_TOKEN_COUNT,
 } from './color-token-schema';
-import { defaultThemePresetSource, legacyDefaultThemePresetSource } from './default-preset-source';
+import { defaultThemePresetSource } from './default-preset-source';
 import { resolveThemeConfig, themeTokensToCssVars } from './utils';
 
 const canonicalFallbackNames = [
@@ -40,12 +39,12 @@ const malformedFallbackNames = [
 ] as const;
 
 const scopedLightSelector = [
-  ":is(:root):where([data-vf-theme='light'], [data-theme='light'])",
-  ":where(:root) :where([data-vf-theme='light'], [data-theme='light'])",
+  ":is(:root):where([data-vf-theme='light'])",
+  ":where(:root) :where([data-vf-theme='light'])",
 ].join(',\n');
 const scopedDarkSelector = [
-  ":is(:root):where([data-vf-theme='dark'], [data-theme='dark'])",
-  ":where(:root) :where([data-vf-theme='dark'], [data-theme='dark'])",
+  ":is(:root):where([data-vf-theme='dark'])",
+  ":where(:root) :where([data-vf-theme='dark'])",
 ].join(',\n');
 
 function parseCssVariableDeclarations(css: string) {
@@ -109,22 +108,20 @@ function resolveComputedCssVariable(element: Element, name: string, seen = new S
 }
 
 describe('core theme contract', () => {
-  it('keeps the additive color architecture complete without duplicating legacy names', () => {
+  it('keeps the canonical color architecture complete without legacy roots', () => {
     const architectureNames = new Set([...vfPrimitiveColorTokenNames, ...vfSemanticColorTokenNames]);
     const presetNames = new Set(Object.keys(defaultThemePresetSource.tokens));
-    const legacyNames = new Set(Object.keys(legacyDefaultThemePresetSource.tokens));
-    const overlap = vfSemanticColorTokenNames.filter((name) => legacyNames.has(name));
 
-    expect(legacyNames).toHaveProperty('size', LEGACY_THEME_TOKEN_COUNT);
     expect(vfPrimitiveColorTokenNames).toHaveLength(PRIMITIVE_COLOR_TOKEN_COUNT);
     expect(vfSemanticColorTokenNames).toHaveLength(SEMANTIC_COLOR_TOKEN_COUNT);
     expect(architectureNames).toHaveProperty('size', PRIMITIVE_COLOR_TOKEN_COUNT + SEMANTIC_COLOR_TOKEN_COUNT);
-    expect(overlap).toEqual(['colorFocusRing']);
     expect(presetNames).toHaveProperty('size', COMPLETE_THEME_TOKEN_COUNT);
-    expect(LEGACY_THEME_TOKEN_COUNT + architectureNames.size - overlap.length).toBe(COMPLETE_THEME_TOKEN_COUNT);
 
     for (const name of architectureNames) {
       expect(presetNames.has(name), name).toBe(true);
+    }
+    for (const name of ['colorBg', 'colorSurface', 'colorPrimary', 'overlayBackdrop', 'shadow']) {
+      expect(presetNames.has(name), name).toBe(false);
     }
   });
 
@@ -132,18 +129,16 @@ describe('core theme contract', () => {
     expectTypeOf<keyof typeof defaultThemePresetSource.tokens>().toEqualTypeOf<keyof VfThemeTokens>();
   });
 
-  it('accepts every built-in 1.x token through the public override contract', () => {
+  it('accepts every built-in token through the public override contract', () => {
     const config = resolveThemeConfig({
       extend: {
         fieldIconSize: '1rem',
         drawerViewportWidth: '100dvw',
-        tableOfContentsTitleColor: 'var(--vf-color-muted)',
       },
     });
 
     expect(config.preset.light.fieldIconSize).toBe('1rem');
     expect(config.preset.light.drawerViewportWidth).toBe('100dvw');
-    expect(config.preset.light.tableOfContentsTitleColor).toBe('var(--vf-color-muted)');
   });
 
   it('keeps fallback light declarations byte-for-value equivalent to runtime variables', () => {
@@ -241,11 +236,12 @@ describe('core theme contract', () => {
 
     expect(tokensCss).not.toContain("[data-theme='light']");
     expect(tokensCss).not.toContain("[data-vf-theme='light']");
+    expect(themeCss).not.toContain('[data-theme=');
     expect(themeCss).toContain(':root[data-vf-theme="dark"]');
     expect(themeCss).toContain(scopedLightSelector);
     expect(themeCss).toContain(scopedDarkSelector);
-    expect(themeCss.match(/--vf-color-bg: var\(--vf-palette-neutral-50\);/g)).toHaveLength(1);
-    expect(themeCss.match(/--vf-color-bg: var\(--vf-palette-neutral-900\);/g)).toHaveLength(2);
+    expect(themeCss.match(/--vf-color-background-canvas: var\(--vf-palette-neutral-50\);/g)).toHaveLength(1);
+    expect(themeCss.match(/--vf-color-background-canvas: var\(--vf-palette-neutral-900\);/g)).toHaveLength(2);
     expect(themeCss.match(/--vf-z-overlay: 1000;/g)).toHaveLength(3);
     expect(themeCss.match(/--vf-z-dropdown: 1100;/g)).toHaveLength(3);
     expect(themeCss.match(/--vf-z-popover: 1125;/g)).toHaveLength(3);
@@ -253,10 +249,10 @@ describe('core theme contract', () => {
     expect(extractCssRule(themeCss, scopedLightSelector)).toContain('color-scheme: light;');
     expect(extractCssRule(themeCss, scopedDarkSelector)).toContain('color-scheme: dark;');
     expect(extractCssRule(themeCss, scopedLightSelector)).toContain(
-      '--vf-selectable-color: var(--vf-color-text-secondary, var(--vf-color-muted));',
+      '--vf-selectable-color: var(--vf-color-text-secondary);',
     );
     expect(extractCssRule(themeCss, scopedDarkSelector)).toContain(
-      '--vf-selectable-color: var(--vf-color-text-secondary, var(--vf-color-muted));',
+      '--vf-selectable-color: var(--vf-color-text-secondary);',
     );
   });
 
@@ -276,56 +272,59 @@ describe('core theme contract', () => {
     style.id = 'vf-fallback-contract';
     style.textContent = `${tokenCss}\n${themeCss}`;
     darkBoundary.dataset.vfTheme = 'dark';
-    lightBoundary.dataset.theme = 'light';
+    lightBoundary.dataset.vfTheme = 'light';
     nestedDarkBoundary.dataset.vfTheme = 'dark';
     lightBoundary.appendChild(nestedDarkBoundary);
     darkBoundary.appendChild(lightBoundary);
     document.head.appendChild(style);
     document.body.appendChild(darkBoundary);
 
-    document.documentElement.dataset.theme = 'dark';
+    document.documentElement.dataset.vfTheme = 'dark';
 
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
-    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
-    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-primary')).toBe('oklch(50% 0.130 247)');
-    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
-    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-muted')).toBe('oklch(65% 0.026 260)');
-    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-muted')).toBe('oklch(55% 0.032 260)');
-    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-muted')).toBe('oklch(65% 0.026 260)');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-interactive-primary-background')).toBe(
+      'oklch(55.7% 0.144 247)',
+    );
+    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-interactive-primary-background')).toBe(
+      'oklch(55.7% 0.144 247)',
+    );
+    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-interactive-primary-background')).toBe(
+      'oklch(50% 0.130 247)',
+    );
+    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-interactive-primary-background')).toBe(
+      'oklch(55.7% 0.144 247)',
+    );
+    expect(resolveComputedCssVariable(darkBoundary, '--vf-color-text-muted')).toBe('oklch(65% 0.026 260)');
+    expect(resolveComputedCssVariable(lightBoundary, '--vf-color-text-muted')).toBe('oklch(55% 0.032 260)');
+    expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-text-muted')).toBe('oklch(65% 0.026 260)');
     expect(resolveComputedCssVariable(darkBoundary, '--vf-color-background-canvas')).toBe('oklch(21.4% 0.010 260)');
     expect(resolveComputedCssVariable(lightBoundary, '--vf-color-background-canvas')).toBe('oklch(97.8% 0.005 260)');
     expect(resolveComputedCssVariable(nestedDarkBoundary, '--vf-color-background-canvas')).toBe(
       'oklch(21.4% 0.010 260)',
     );
 
-    document.documentElement.dataset.theme = 'light';
+    document.documentElement.dataset.vfTheme = 'light';
 
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('oklch(50% 0.130 247)');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-interactive-primary-background')).toBe(
+      'oklch(50% 0.130 247)',
+    );
 
-    delete document.documentElement.dataset.theme;
+    delete document.documentElement.dataset.vfTheme;
     darkBoundary.remove();
     style.remove();
   });
 
-  it('preserves dark color-scheme for both compatible attributes in the assembled stylesheet', () => {
+  it('preserves dark color-scheme for the canonical attribute in the assembled stylesheet', () => {
     buildThemeCssArtifacts();
 
     const style = document.createElement('style');
     style.textContent = inlineCssImports(resolve(__dirname, '../styles/styles.css'));
     document.head.appendChild(style);
 
-    document.documentElement.dataset.theme = 'dark';
-
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-background-canvas')).toBe(
-      'oklch(21.4% 0.010 260)',
-    );
-    expect(getComputedStyle(document.documentElement).colorScheme).toBe('dark');
-
-    delete document.documentElement.dataset.theme;
     document.documentElement.dataset.vfTheme = 'dark';
 
-    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-primary')).toBe('oklch(55.7% 0.144 247)');
+    expect(resolveComputedCssVariable(document.documentElement, '--vf-color-interactive-primary-background')).toBe(
+      'oklch(55.7% 0.144 247)',
+    );
     expect(resolveComputedCssVariable(document.documentElement, '--vf-color-background-canvas')).toBe(
       'oklch(21.4% 0.010 260)',
     );

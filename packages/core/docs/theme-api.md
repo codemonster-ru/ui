@@ -39,17 +39,17 @@ These are fallback defaults for consumers who import the package CSS. Runtime th
 
 ## Color Token Architecture
 
-The built-in color contract has three token layers. Components consume semantic decisions while existing VueForge 1.x component tokens remain the local customization boundary:
+The built-in color contract has three token layers. Components consume semantic decisions while component tokens remain
+the local customization boundary:
 
 ```text
 component CSS → existing component token → semantic role → primitive material
-                                            └─ legacy 1.x fallback
 ```
 
 - 66 `palette*` primitives form seven mode-independent OKLCH scales.
 - 85 `color*` semantic roles describe backgrounds, text, icons, borders, interaction, links, and five status families.
-- All 847 pre-Phase-1 tokens remain available. No legacy key is removed or renamed.
-- `colorFocusRing` belongs to both the existing and semantic sets, so the color architecture adds 150 unique keys and the built-in preset contains 997 keys in total.
+- 807 shared and component tokens define typography, geometry, and local customization boundaries.
+- The built-in preset contains 958 keys in total.
 
 The shared theme package exports the canonical tuples and their derived types; Core re-exports the same contract:
 
@@ -101,8 +101,6 @@ app.use(VueForgeCore, {
       colorInteractivePrimaryHoverBackground: '#0d655f',
       colorInteractivePrimaryActiveBackground: '#0a524d',
       colorInteractivePrimaryForeground: '#ffffff',
-      // Keep this only for legacy 1.x consumers that still read the flat root.
-      colorPrimary: '#0f766e',
     },
   },
   defaultTheme: 'system',
@@ -147,16 +145,13 @@ app.use(VueForgeCore, {
 });
 ```
 
-Core component defaults now resolve through semantic roles with VueForge 1.x fallbacks. Existing component-token overrides still win because component CSS continues to consume that boundary. A legacy root such as `colorPrimary` remains supported, but it can no longer safely define every solid, subtle, selected, hover, and active decision by itself; override the relevant semantic roles when those decisions need to move together.
+Core component defaults resolve through semantic roles. Existing component-token overrides still win because component CSS
+continues to consume that boundary.
 
 Base component-token overrides remain effective, but newly independent compound states are semantic-first. For example, a
-custom `tabsTabActiveBackground` controls the selected base and remains the compatibility fallback; customize
+custom `tabsTabActiveBackground` controls the selected base and remains the component-token fallback; customize
 `colorBackgroundSurfaceSelectedHover` and `colorBackgroundSurfaceSelectedActive` as well when the complete selected recipe
 must change.
-
-The public `buttonSolidHoverFilter` and `buttonSolidActiveFilter` fields are retained, while the built-in preset now sets
-both to `none`. Legacy custom presets that still provide `brightness(...)` apply it in addition to the new semantic state
-background. Set the filters to `none` when migrating those backgrounds to independent hover and active roles.
 
 ### `preset`
 
@@ -173,7 +168,6 @@ const customPreset = createThemePreset({
     colorInteractivePrimaryHoverBackground: '#0d655f',
     colorInteractivePrimaryActiveBackground: '#0a524d',
     colorInteractivePrimaryForeground: '#ffffff',
-    colorPrimary: '#0f766e',
   },
   dark: {
     ...defaultThemePreset.dark,
@@ -181,8 +175,6 @@ const customPreset = createThemePreset({
     colorInteractivePrimaryHoverBackground: '#45d6c4',
     colorInteractivePrimaryActiveBackground: '#2bbfac',
     colorInteractivePrimaryForeground: '#102a2a',
-    colorPrimary: '#5eead4',
-    colorPrimaryContrast: '#102a2a',
   },
 });
 ```
@@ -212,8 +204,8 @@ app.use(VueForgeCore, {
   theme: {
     preset: defaultThemePreset,
     light: {
-      colorSurface: '#ffffff',
-      colorSurfaceMuted: '#f8fafc',
+      colorBackgroundSurface: '#ffffff',
+      colorBackgroundSurfaceSubtle: '#f8fafc',
     },
   },
 });
@@ -228,8 +220,8 @@ app.use(VueForgeCore, {
   theme: {
     preset: defaultThemePreset,
     dark: {
-      colorSurface: '#111827',
-      colorBorder: '#334155',
+      colorBackgroundSurface: '#111827',
+      colorBorderDefault: '#334155',
     },
   },
 });
@@ -280,7 +272,7 @@ Provider behavior:
 
 ## Public Theme API
 
-Stable public theme API for `1.x`:
+Stable public theme API for V2:
 
 - `VueForgeCore`
 - `createVueForgeCore`
@@ -335,8 +327,8 @@ const { activeId } = useTableOfContents({
 Current behavior:
 
 - presets are defined in TS
-- the built-in preset contains 997 keys: 847 retained legacy keys, 66 primitives, and 84 additional semantic keys
-- light and dark modes provide complete 85-role semantic maps; the dark preset emits 137 intentional overrides
+- the built-in preset contains 958 keys: 66 primitives, 85 semantic roles, and 807 shared or component tokens
+- light and dark modes provide complete 85-role semantic maps; the dark preset emits 101 intentional overrides
 - CSS variables are emitted through the same serializer for runtime and static artifacts
 - the plugin injects a `<style>` tag with light and dark token values
 - full, scoped-theme, fallback, and custom-prefix paths share the same token contract

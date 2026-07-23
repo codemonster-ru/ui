@@ -27,7 +27,7 @@ entry: /App.vue
       <VfButton class="demo-trigger" variant="ghost">{{ open ? 'Close' : 'Open' }} menu</VfButton>
     </template>
 
-    <div style="display:flex;flex-direction:column;gap:var(--vf-surface-gap-tight);min-width:var(--vf-breakpoint-xs)">
+    <div style="display:flex;flex-direction:column;gap:var(--vf-surface-gap-compact);min-width:var(--vf-breakpoint-xs)">
       <VfButton role="menuitem" class="demo-item" variant="ghost">Profile</VfButton>
       <VfButton role="menuitem" class="demo-item" variant="ghost">Billing</VfButton>
       <VfButton role="menuitem" class="demo-item" variant="ghost">Sign out</VfButton>
@@ -41,18 +41,18 @@ import { VfButton, VfDropdown } from '@codemonster-ru/vueforge-core';
 
 <style>
 .demo-trigger {
-  border: 1px solid var(--vf-color-border);
+  border: 1px solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-control);
   padding: var(--vf-surface-gap-compact) var(--vf-surface-padding-compact);
-  background: var(--vf-color-surface);
+  background: var(--vf-color-background-surface);
   cursor: pointer;
 }
 
 .demo-item {
-  border: 1px solid var(--vf-color-border);
+  border: 1px solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-control);
   padding: var(--vf-surface-gap-compact) var(--vf-surface-gap);
-  background: var(--vf-color-surface);
+  background: var(--vf-color-background-surface);
   text-align: left;
   cursor: pointer;
 }
@@ -76,12 +76,12 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Enter` | Opens the menu from trigger and moves focus to the first menu item. |
-| `Space` | Opens the menu from trigger and moves focus to the first menu item. |
-| `ArrowDown` | Opens menu from trigger; inside menu moves focus to next item. |
-| `ArrowUp` | Inside menu moves focus to previous item. |
-| `Home` | Inside menu moves focus to first item. |
-| `End` | Inside menu moves focus to last item. |
-| `Escape` | Closes menu and restores focus to trigger. |
+| Key         | Function                                                            |
+| ----------- | ------------------------------------------------------------------- |
+| `Enter`     | Opens the menu from trigger and moves focus to the first menu item. |
+| `Space`     | Opens the menu from trigger and moves focus to the first menu item. |
+| `ArrowDown` | Opens menu from trigger; inside menu moves focus to next item.      |
+| `ArrowUp`   | Inside menu moves focus to previous item.                           |
+| `Home`      | Inside menu moves focus to first item.                              |
+| `End`       | Inside menu moves focus to last item.                               |
+| `Escape`    | Closes menu and restores focus to trigger.                          |

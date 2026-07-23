@@ -14,39 +14,35 @@ export default defineConfig({
         cpSync(resolve(__dirname, 'src/critical.css'), resolve(__dirname, 'dist/critical.css'));
         const autoDir = resolve(__dirname, 'dist/auto');
         mkdirSync(autoDir, { recursive: true });
-        writeFileSync(
-          resolve(autoDir, 'ui.js'),
-          "import '../index.css';\nexport * from '../ui.js';\n",
-        );
-      }
-    }
+        writeFileSync(resolve(autoDir, 'ui.js'), "import '../index.css';\nexport * from '../ui.js';\n");
+      },
+    },
   ],
   resolve: {
     alias: [
       {
         find: /^@codemonster-ru\/vueforge-codeblock\/view$/,
-        replacement: resolve(__dirname, '../codeblock/src/view.ts')
-      }
-    ]
+        replacement: resolve(__dirname, '../codeblock/src/view.ts'),
+      },
+    ],
   },
   build: {
     lib: {
       entry: {
-        index: resolve(__dirname, 'src/index.ts'),
         ui: resolve(__dirname, 'src/ui.ts'),
-        runtime: resolve(__dirname, 'src/runtime.ts')
+        runtime: resolve(__dirname, 'src/runtime.ts'),
       },
       cssFileName: 'index',
       formats: ['es'],
-      fileName: (_format, entryName) => `${entryName}.js`
+      fileName: (_format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
       external: [
         'vue',
         '@codemonster-ru/vueforge-playground-core',
         '@codemonster-ru/vueforge-codeblock/view',
-        /^@codemonster-ru\/vueforge-core(?:\/.*)?$/
-      ]
-    }
-  }
+        /^@codemonster-ru\/vueforge-core(?:\/.*)?$/,
+      ],
+    },
+  },
 });

@@ -1,17 +1,7 @@
 import path from 'node:path';
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { Plugin } from 'vite';
-import {
-  vueforgePlaygroundVirtualPlugin,
-  type VueForgePlaygroundVirtualEntryConfig,
-  type VueForgePlaygroundVirtualEntryValue,
-  type VueForgePlaygroundVirtualExportMode,
-  type VueForgePlaygroundVirtualPluginOptions,
-  type VueforgePlaygroundVirtualEntryConfig,
-  type VueforgePlaygroundVirtualEntryValue,
-  type VueforgePlaygroundVirtualExportMode,
-  type VueforgePlaygroundVirtualPluginOptions,
-} from '../src/index';
+import { vueforgePlaygroundVirtualPlugin } from '../src/index';
 
 function getResolveIdHandler(plugin: Plugin) {
   const resolveId = plugin.resolveId;
@@ -32,18 +22,11 @@ function getLoadHandler(plugin: Plugin) {
 }
 
 describe('vueforgePlaygroundVirtualPlugin', () => {
-  it('exports correctly branded aliases without breaking legacy type names', () => {
-    expectTypeOf<VueForgePlaygroundVirtualExportMode>().toEqualTypeOf<VueforgePlaygroundVirtualExportMode>();
-    expectTypeOf<VueForgePlaygroundVirtualEntryConfig>().toEqualTypeOf<VueforgePlaygroundVirtualEntryConfig>();
-    expectTypeOf<VueForgePlaygroundVirtualEntryValue>().toEqualTypeOf<VueforgePlaygroundVirtualEntryValue>();
-    expectTypeOf<VueForgePlaygroundVirtualPluginOptions>().toEqualTypeOf<VueforgePlaygroundVirtualPluginOptions>();
-  });
-
   it('resolves and loads default export entry', async () => {
     const plugin = vueforgePlaygroundVirtualPlugin({
       entries: {
-        smoke: '/tmp/smoke.ts'
-      }
+        smoke: '/tmp/smoke.ts',
+      },
     });
 
     const resolved = await getResolveIdHandler(plugin).call(
@@ -52,8 +35,8 @@ describe('vueforgePlaygroundVirtualPlugin', () => {
       undefined,
       {
         attributes: {},
-        isEntry: false
-      }
+        isEntry: false,
+      },
     );
     expect(resolved).toBe('\0virtual:vueforge-playground/smoke');
 
@@ -64,9 +47,9 @@ describe('vueforgePlaygroundVirtualPlugin', () => {
   it('supports namespace export mode', async () => {
     const plugin = vueforgePlaygroundVirtualPlugin({
       entries: {
-        smoke: '/tmp/smoke.ts'
+        smoke: '/tmp/smoke.ts',
       },
-      exportMode: 'namespace'
+      exportMode: 'namespace',
     });
 
     const loaded = await getLoadHandler(plugin).call({} as never, '\0virtual:vueforge-playground/smoke');
@@ -78,9 +61,9 @@ describe('vueforgePlaygroundVirtualPlugin', () => {
       entries: {
         smoke: {
           file: '/tmp/smoke.ts',
-          export: { named: 'SmokeDemo' }
-        }
-      }
+          export: { named: 'SmokeDemo' },
+        },
+      },
     });
 
     const loaded = await getLoadHandler(plugin).call({} as never, '\0virtual:vueforge-playground/smoke');
@@ -90,8 +73,8 @@ describe('vueforgePlaygroundVirtualPlugin', () => {
   it('returns null for unresolved virtual entry id', async () => {
     const plugin = vueforgePlaygroundVirtualPlugin({
       entries: {
-        known: '/tmp/known.ts'
-      }
+        known: '/tmp/known.ts',
+      },
     });
 
     const resolved = await getResolveIdHandler(plugin).call(
@@ -100,8 +83,8 @@ describe('vueforgePlaygroundVirtualPlugin', () => {
       undefined,
       {
         attributes: {},
-        isEntry: false
-      }
+        isEntry: false,
+      },
     );
     const loaded = await getLoadHandler(plugin).call({} as never, '\0virtual:vueforge-playground/unknown');
 
@@ -112,8 +95,8 @@ describe('vueforgePlaygroundVirtualPlugin', () => {
   it('normalizes /@id/__x00__ virtual id form', async () => {
     const plugin = vueforgePlaygroundVirtualPlugin({
       entries: {
-        smoke: '/tmp/smoke.ts'
-      }
+        smoke: '/tmp/smoke.ts',
+      },
     });
 
     const resolved = await getResolveIdHandler(plugin).call(
@@ -122,8 +105,8 @@ describe('vueforgePlaygroundVirtualPlugin', () => {
       undefined,
       {
         attributes: {},
-        isEntry: false
-      }
+        isEntry: false,
+      },
     );
     expect(resolved).toBe('\0virtual:vueforge-playground/smoke');
   });

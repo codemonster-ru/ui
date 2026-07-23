@@ -358,7 +358,8 @@ Layouts может использовать единый новый `@codemonste
 
 ## 10. Migration
 
-Создан единый [migration guide](../migration-guide.md) для coordinated release train. Он включает:
+Исторический release-train guide заменён актуальным
+[VueForge 2 migration guide](../migration-to-v2.md). На момент Phase 4 его scope включал:
 
 - таблицу всех версий, Node/Vue/Vite и внутренних floors;
 - команду согласованного обновления packages;

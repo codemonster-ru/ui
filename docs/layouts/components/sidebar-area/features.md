@@ -22,8 +22,8 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfSidebarArea style="border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">
-    <nav style="display:grid;gap:var(--vf-surface-gap-tight)">
+  <VfSidebarArea style="border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">
+    <nav style="display:grid;gap:var(--vf-surface-gap-compact)">
       <VfLink href="#intro">Introduction</VfLink>
       <VfLink href="#install">Installation</VfLink>
       <VfLink href="#api">API</VfLink>
@@ -54,6 +54,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                               |
+| ----- | -------------------------------------------------------------------------------------- |
 | `Tab` | Sidebar area is not focusable by default; focus moves through interactive descendants. |

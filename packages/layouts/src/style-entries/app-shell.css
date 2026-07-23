@@ -25,7 +25,7 @@
     'footer' auto
     / minmax(var(--vf-layout-size-zero), 1fr);
   background: var(--vf-layout-app-background);
-  color: var(--vf-color-text-primary, var(--vf-color-text));
+  color: var(--vf-color-text-primary);
   min-width: var(--vf-layout-min-width);
 }
 

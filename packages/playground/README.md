@@ -7,7 +7,7 @@
 
 A Vue 3 UI adapter for running interactive code playground sessions in the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-playground@2.6.0`.
+Coordinated release: `@codemonster-ru/vueforge-playground@3.0.0`.
 
 ## Requirements
 
@@ -18,15 +18,15 @@ Coordinated release: `@codemonster-ru/vueforge-playground@2.6.0`.
 ## Install
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-playground
+npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-playground
 ```
 
 ```bash
-pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-playground
+pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-playground
 ```
 
 ```bash
-yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-playground
+yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-playground
 ```
 
 ## Quick start

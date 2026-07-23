@@ -32,12 +32,12 @@ import {
 
 const packageRoot = resolve(__dirname, '..');
 const scopedLightSelector = [
-  ":is(:root):where([data-vf-theme='light'], [data-theme='light'])",
-  ":where(:root) :where([data-vf-theme='light'], [data-theme='light'])",
+  ":is(:root):where([data-vf-theme='light'])",
+  ":where(:root) :where([data-vf-theme='light'])",
 ].join(',\n');
 const scopedDarkSelector = [
-  ":is(:root):where([data-vf-theme='dark'], [data-theme='dark'])",
-  ":where(:root) :where([data-vf-theme='dark'], [data-theme='dark'])",
+  ":is(:root):where([data-vf-theme='dark'])",
+  ":where(:root) :where([data-vf-theme='dark'])",
 ].join(',\n');
 
 function parseCssVariableDeclarations(css: string) {
@@ -92,7 +92,6 @@ afterEach(() => {
   document.getElementById('vf-layouts-theme-preset')?.remove();
   document.getElementById('vf-theme-preset')?.remove();
   document.documentElement.removeAttribute('style');
-  document.documentElement.removeAttribute('data-theme');
   document.documentElement.removeAttribute('data-vf-theme');
   document.documentElement.removeAttribute('data-test-theme');
 });
@@ -118,14 +117,14 @@ describe('package exports', () => {
 
     expect(tokensCss).toContain('--vf-layout-shell-sidebar-width: 18rem;');
     expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-width: 18rem;');
-    expect(tokensCss).toContain('--vf-layout-admin-shell-header-background: var(--vf-color-text);');
-    expect(tokensCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-surface);');
-    expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-background: var(--vf-color-bg);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-header-background: var(--vf-color-text-primary);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-background-surface);');
+    expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-background: var(--vf-color-background-canvas);');
     expect(tokensCss).toContain('--vf-layout-admin-shell-workspace-background: var(--vf-layout-surface-base);');
     expect(themeCss).toContain(
-      '--vf-layout-admin-shell-header-background: color-mix(in srgb, var(--vf-color-bg) 75%, black);',
+      '--vf-layout-admin-shell-header-background: color-mix(in srgb, var(--vf-color-background-canvas) 75%, black);',
     );
-    expect(themeCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-text);');
+    expect(themeCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-text-primary);');
     const rootDarkRule = extractCssRule(themeCss, ":root[data-vf-theme='dark']");
     expect(rootDarkRule).not.toContain('--vf-layout-admin-shell-sidebar-background:');
     expect(rootDarkRule).not.toContain('--vf-layout-admin-shell-workspace-background:');
@@ -150,14 +149,14 @@ describe('package exports', () => {
     const effectiveRuntimeDark = layoutsTokensToCssVars(resolveLayoutsThemeConfig().preset.dark, 'vf-layout');
 
     expect(sortEntries(staticLight)).toEqual(sortEntries(runtimeLight));
-    expect(Object.keys(staticLight)).toHaveLength(124);
+    expect(Object.keys(staticLight)).toHaveLength(123);
     expect(sortEntries(staticDarkOverrides)).toEqual(sortEntries(runtimeDarkOverrides));
     expect(Object.keys(staticDarkOverrides)).toHaveLength(2);
     expect(sortEntries(effectiveStaticDark)).toEqual(sortEntries(effectiveRuntimeDark));
     expect(sortEntries(scopedLightVariables)).toEqual(sortEntries(runtimeLight));
-    expect(Object.keys(scopedLightVariables)).toHaveLength(124);
+    expect(Object.keys(scopedLightVariables)).toHaveLength(123);
     expect(sortEntries(scopedDarkVariables)).toEqual(sortEntries(effectiveRuntimeDark));
-    expect(Object.keys(scopedDarkVariables)).toHaveLength(124);
+    expect(Object.keys(scopedDarkVariables)).toHaveLength(123);
     expect(staticLight).toHaveProperty('--vf-layout-app-shell-header-sticky-z-index', '20');
     expect(staticLight).not.toHaveProperty('--vf-layout-app-shell-header-sticky-zindex');
   });
@@ -177,10 +176,12 @@ describe('package exports', () => {
     expect(extractCssRule(themeCss, ":root[data-vf-theme='dark']")).toContain('color-scheme: dark;');
     expect(extractCssRule(themeCss, scopedLightSelector)).toContain('color-scheme: light;');
     expect(extractCssRule(themeCss, scopedDarkSelector)).toContain('color-scheme: dark;');
-    expect(themeCss.match(/--vf-layout-admin-shell-header-background: var\(--vf-color-text\);/g)).toHaveLength(1);
+    expect(themeCss.match(/--vf-layout-admin-shell-header-background: var\(--vf-color-text-primary\);/g)).toHaveLength(
+      1,
+    );
     expect(
       themeCss.match(
-        /--vf-layout-admin-shell-header-background: color-mix\(in srgb, var\(--vf-color-bg\) 75%, black\);/g,
+        /--vf-layout-admin-shell-header-background: color-mix\(in srgb, var\(--vf-color-background-canvas\) 75%, black\);/g,
       ),
     ).toHaveLength(2);
     expect(extractCssRule(themeCss, scopedLightSelector)).toContain(
@@ -199,10 +200,16 @@ describe('package exports', () => {
     const scopedDarkVariables = parseCssVariableDeclarations(extractCssRule(themeCss, scopedDarkSelector));
 
     expect(
-      resolveCssVariable({ '--vf-color-surface': '#ffffff', ...scopedLightVariables }, '--vf-layout-header-background'),
+      resolveCssVariable(
+        { '--vf-color-background-surface': '#ffffff', ...scopedLightVariables },
+        '--vf-layout-header-background',
+      ),
     ).toBe('#ffffff');
     expect(
-      resolveCssVariable({ '--vf-color-surface': '#20232a', ...scopedDarkVariables }, '--vf-layout-header-background'),
+      resolveCssVariable(
+        { '--vf-color-background-surface': '#20232a', ...scopedDarkVariables },
+        '--vf-layout-header-background',
+      ),
     ).toBe('#20232a');
   });
 
@@ -532,11 +539,11 @@ describe('layout theme runtime', () => {
         },
         light: {
           shellSidebarWidth: 'var(--vf-breakpoint-xs)',
-          headerBackground: 'var(--vf-color-surface)',
+          headerBackground: 'var(--vf-color-background-surface)',
         },
         dark: {
           shellSidebarWidth: 'calc(var(--vf-breakpoint-xs) * 0.9)',
-          headerBackground: 'var(--vf-color-surface)',
+          headerBackground: 'var(--vf-color-background-surface)',
         },
         options: {
           styleId: 'vf-layouts-test-theme',
@@ -547,7 +554,7 @@ describe('layout theme runtime', () => {
     expect(style.id).toBe('vf-layouts-test-theme');
     expect(style.textContent).toContain('--vf-layout-shell-sidebar-width: var(--vf-breakpoint-xs);');
     expect(style.textContent).toContain('--vf-layout-shell-sidebar-width: calc(var(--vf-breakpoint-xs) * 0.9);');
-    expect(style.textContent).toContain('--vf-layout-header-background: var(--vf-color-surface);');
+    expect(style.textContent).toContain('--vf-layout-header-background: var(--vf-color-background-surface);');
     expect(style.textContent).toContain(
       '--vf-layout-content-subheader-background: var(--vf-layout-header-background);',
     );
@@ -562,9 +569,10 @@ describe('layout theme runtime', () => {
     expect(style.textContent).toContain(
       '--vf-layout-auth-layout-panel-padding-compact: var(--vf-layout-space-layout-roomy);',
     );
-    expect(style.textContent).toContain('--vf-layout-auth-layout-description-color: var(--vf-color-muted);');
+    expect(style.textContent).toContain('--vf-layout-auth-layout-description-color: var(--vf-color-text-muted);');
+    expect(style.textContent).toContain('--vf-layout-auth-layout-footer-color: var(--vf-color-text-muted);');
     expect(style.textContent).toContain('--vf-layout-error-layout-code-font-size: clamp(2.25rem, 8vw, 5.5rem);');
-    expect(style.textContent).toContain('--vf-layout-error-layout-description-color: var(--vf-color-muted);');
+    expect(style.textContent).toContain('--vf-layout-error-layout-description-color: var(--vf-color-text-muted);');
     expect(style.textContent).toContain(
       '--vf-layout-setup-layout-padding-block: var(--vf-layout-content-padding-block);',
     );
@@ -578,15 +586,15 @@ describe('layout theme runtime', () => {
     expect(style.textContent).toContain(
       '--vf-layout-setup-layout-title-line-height: var(--vf-heading-h-4-line-height);',
     );
-    expect(style.textContent).toContain('--vf-layout-setup-layout-description-color: var(--vf-color-muted);');
+    expect(style.textContent).toContain('--vf-layout-setup-layout-description-color: var(--vf-color-text-muted);');
     expect(style.textContent).toContain('--vf-layout-setup-layout-description-line-height: 1.5;');
     expect(style.textContent).toContain('--vf-layout-setup-layout-divider-width: 1px;');
     expect(style.textContent).toContain(
-      '--vf-layout-setup-layout-divider-color: color-mix(in srgb, var(--vf-color-border) 70%, transparent);',
+      '--vf-layout-setup-layout-divider-color: color-mix(in srgb, var(--vf-color-border-default) 70%, transparent);',
     );
   });
 
-  it('scopes reversible layout modes to configured and compatible attributes', () => {
+  it('scopes reversible layout modes to configured and canonical attributes', () => {
     const cssText = layoutsPresetToCssText(
       resolveLayoutsThemeConfig({
         options: {
@@ -596,22 +604,18 @@ describe('layout theme runtime', () => {
       }),
     );
 
+    expect(cssText).toContain(":is(#layout-theme-root):where([data-layout-theme='light'], [data-vf-theme='light'])");
     expect(cssText).toContain(
-      ":is(#layout-theme-root):where([data-layout-theme='light'], [data-theme='light'], [data-vf-theme='light'])",
+      ":where(#layout-theme-root) :where([data-layout-theme='light'], [data-vf-theme='light'])",
     );
-    expect(cssText).toContain(
-      ":where(#layout-theme-root) :where([data-layout-theme='light'], [data-theme='light'], [data-vf-theme='light'])",
+    expect(cssText).toContain(":is(#layout-theme-root):where([data-layout-theme='dark'], [data-vf-theme='dark'])");
+    expect(cssText).toContain(":where(#layout-theme-root) :where([data-layout-theme='dark'], [data-vf-theme='dark'])");
+    expect(cssText.match(/--vf-layout-admin-shell-header-background: var\(--vf-color-text-primary\);/g)).toHaveLength(
+      2,
     );
-    expect(cssText).toContain(
-      ":is(#layout-theme-root):where([data-layout-theme='dark'], [data-theme='dark'], [data-vf-theme='dark'])",
-    );
-    expect(cssText).toContain(
-      ":where(#layout-theme-root) :where([data-layout-theme='dark'], [data-theme='dark'], [data-vf-theme='dark'])",
-    );
-    expect(cssText.match(/--vf-layout-admin-shell-header-background: var\(--vf-color-text\);/g)).toHaveLength(2);
     expect(
       cssText.match(
-        /--vf-layout-admin-shell-header-background: color-mix\(in srgb, var\(--vf-color-bg\) 75%, black\);/g,
+        /--vf-layout-admin-shell-header-background: color-mix\(in srgb, var\(--vf-color-background-canvas\) 75%, black\);/g,
       ),
     ).toHaveLength(2);
     expect(cssText.match(/--vf-layout-shell-sidebar-width: 18rem;/g)).toHaveLength(4);
@@ -678,7 +682,8 @@ describe('layout theme runtime', () => {
               theme: {
                 core: {
                   extend: {
-                    colorPrimary: 'color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text))',
+                    colorInteractivePrimaryBackground:
+                      'color-mix(in srgb, var(--vf-color-status-info-solid-background) 80%, var(--vf-color-text-primary))',
                   },
                 },
                 layouts: {
@@ -701,11 +706,11 @@ describe('layout theme runtime', () => {
     expect(document.querySelectorAll('#vf-theme-preset')).toHaveLength(1);
     expect(document.querySelectorAll('#vf-layouts-theme-preset')).toHaveLength(1);
     expect(coreStyle?.textContent).toContain(
-      '--vf-color-primary: color-mix(in srgb, var(--vf-color-info) 80%, var(--vf-color-text));',
+      '--vf-color-interactive-primary-background: color-mix(in srgb, var(--vf-color-status-info-solid-background) 80%, var(--vf-color-text-primary));',
     );
     expect(coreStyle?.textContent).not.toContain('--vf-layout-shell-sidebar-width:');
     expect(layoutsStyle?.textContent).toContain('--vf-layout-shell-sidebar-width: var(--vf-breakpoint-xs);');
-    expect(layoutsStyle?.textContent).not.toContain('--vf-color-primary:');
+    expect(layoutsStyle?.textContent).not.toContain('--vf-color-interactive-primary-background:');
   });
 
   it('forwards theme mode defaults to VfThemeProvider through the layouts plugin', async () => {
@@ -763,7 +768,6 @@ describe('layout theme runtime', () => {
     expect(wrapper.get('[data-test="theme"]').text()).toBe('dark');
     expect(wrapper.get('[data-test="resolved"]').text()).toBe('dark');
     expect(document.documentElement.getAttribute('data-test-theme')).toBe('dark');
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
     expect(document.documentElement.getAttribute('data-vf-theme')).toBe('dark');
   });
 });

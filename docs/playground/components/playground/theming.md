@@ -3,18 +3,17 @@
 `VfPlayground` consumes Core semantic roles through its existing `--vf-playground-*` customization tokens. Its toolbar,
 tabs, console, CodeBlock, and preview sandbox resolve the same light or dark decision.
 
-With `theme="inherit"`, the component observes the nearest `data-theme` or `data-vf-theme` boundary. Explicit `light` and
-`dark` values create a local boundary. The effective mode is exposed as `data-vf-resolved-theme`.
+With `theme="inherit"`, the component observes the nearest `data-vf-theme` boundary. Explicit
+`light` and `dark` values create a local boundary. The effective mode is exposed as
+`data-vf-resolved-theme`.
 
 ## Color tokens
 
 | CSS variable                        | Default role                             | Purpose                  |
 | ----------------------------------- | ---------------------------------------- | ------------------------ |
 | `--vf-playground-surface`           | `--vf-color-background-surface`          | Component surface        |
-| `--vf-playground-surface-muted`     | `--vf-color-background-surface-subtle`   | Retained 1.x alias       |
 | `--vf-playground-border`            | `--vf-color-border-default`              | Component boundary       |
 | `--vf-playground-text`              | `--vf-color-text-primary`                | Primary text             |
-| `--vf-playground-text-muted`        | `--vf-color-text-secondary`              | Retained 1.x alias       |
 | `--vf-playground-tab-bg`            | `--vf-color-background-surface-subtle`   | Inactive tab surface     |
 | `--vf-playground-tab-active-bg`     | `--vf-color-background-surface-selected` | Active tab surface       |
 | `--vf-playground-tab-active-text`   | `--vf-color-selected-foreground`         | Active tab text          |
@@ -24,13 +23,9 @@ With `theme="inherit"`, the component observes the nearest `data-theme` or `data
 | `--vf-playground-iframe-bg`         | `--vf-color-background-canvas`           | Preview canvas           |
 | `--vf-playground-focus-ring-color`  | `--vf-color-focus-ring`                  | Keyboard focus indicator |
 
-The existing Playground variables remain the VueForge 1.x override surface. Their defaults are semantic-first and keep
-legacy fallbacks for presets that do not yet define the additive color contract.
-
-The built-in file tabs consume `--vf-playground-focus-ring-color` through `VfTabs`. The declared
-`--vf-playground-surface-muted` and `--vf-playground-text-muted` variables remain compatibility aliases, but the current
-built-in renderer uses the narrower tab, console, and CodeBlock hooks instead; overriding either alias alone has no
-rendered effect.
+The documented Playground variables are the package override surface, and their defaults resolve
+through the canonical Core semantic contract. Built-in file tabs consume
+`--vf-playground-focus-ring-color` through `VfTabs`.
 
 ## Sandbox theme synchronization
 
@@ -38,8 +33,9 @@ Sandbox previews receive the resolved mode and the transitive closure of CSS cus
 This includes aliases whose names use a custom prefix rather than `--vf-*`. The same payload is used for direct iframe
 access and the message bridge, so runtime, scoped-theme, and cross-origin-capable paths do not diverge.
 
-For a custom prefix, generate the theme through the VueForge runtime or static builder. The canonical compatibility bridge
-must remain available because package CSS intentionally keeps `--vf-*` component variables.
+For a custom prefix, generate the theme through the VueForge runtime or static builder. Its
+canonical-prefix bridge must remain available because package CSS intentionally consumes `--vf-*`
+component variables.
 
 ```ts
 app.use(VueForgeCore, {

@@ -1,5 +1,26 @@
 # Changelog
 
+## 4.0.0
+
+### Changed
+
+- Made `data-vf-theme` the only implicit inherited theme boundary and kept explicit `light` and
+  `dark` component modes unchanged.
+- Simplified highlighter initialization by removing an unreachable null path.
+- Made the `/view`, `/highlight`, and CSS `exports` authoritative while preserving their supported
+  ESM and CommonJS conditions.
+
+### Removed
+
+- Removed the compatibility-only `SHIKI_LIGHT_THEME` and `SHIKI_DARK_THEME` exports.
+- Removed unused CodeBlock opacity variables, terminal legacy color fallbacks, and legacy top-level
+  resolver metadata.
+
+### Breaking changes
+
+- Remove imports of the old Shiki-name constants, replace `data-theme` boundaries with
+  `data-vf-theme`, and import only documented package subpaths.
+
 ## 3.7.0
 
 ### Added

@@ -1,13 +1,12 @@
 ---
-title: "API"
-description: "Public API reference for the icons package"
+title: 'API'
+description: 'Public API reference for the icons package'
 order: 3
 ---
 
 # API
 
 This section provides a quick overview before the detailed subsections below.
-
 
 ## Overview
 
@@ -25,7 +24,6 @@ Key props:
 - `size?: number | string`
 - `spin?: boolean`
 - `inset?: number`
-- `style?: 'solid'`
 
 ```ts
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
@@ -40,7 +38,6 @@ The following items are listed in this section:
 - `icons`
 - `iconCatalog`
 - `coreIconNames`
-- `dualStyleCoreIconNames`
 - `showcaseIconEntries`
 
 ## Usage Example

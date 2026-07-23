@@ -1,5 +1,26 @@
 # Changelog
 
+## 3.0.0
+
+### Changed
+
+- Updated Core, CodeBlock, and Playground Core dependencies to their coordinated breaking-release
+  lines.
+- Made `data-vf-theme` the only implicit host and sandbox theme attribute.
+- Made `/ui`, `/runtime`, and CSS `exports` authoritative and stopped emitting the unexported
+  compatibility index entry.
+
+### Removed
+
+- Removed unused Playground surface, run-control, radius, control, focus-ring, and toolbar
+  compatibility variables.
+- Removed legacy package-root resolver metadata.
+
+### Breaking changes
+
+- Upgrade the coordinated dependencies together, replace `data-theme` boundaries with
+  `data-vf-theme`, and import only `/ui` or `/runtime`.
+
 ## 2.6.0
 
 ### Added

@@ -57,7 +57,7 @@ For heavy lazy-loaded UI (playgrounds, editors, large demo blocks), use the dedi
 
 ### Color Architecture
 
-For the primitive, semantic, component, and VueForge 1.x compatibility layers, see:
+For the primitive, semantic, and component token layers, see:
 
 - [Color Tokens](/core/guides/color-tokens)
 

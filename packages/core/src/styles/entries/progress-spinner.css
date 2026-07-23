@@ -18,31 +18,31 @@
 }
 
 .vf-progress-spinner--success {
-  --vf-progress-spinner-value-color: var(--vf-color-status-success-icon, var(--vf-color-success));
+  --vf-progress-spinner-value-color: var(--vf-color-status-success-icon);
 }
 
 .vf-progress-spinner--neutral {
-  --vf-progress-spinner-value-color: var(--vf-color-icon-secondary, var(--vf-color-muted));
+  --vf-progress-spinner-value-color: var(--vf-color-icon-secondary);
 }
 
 .vf-progress-spinner--info {
-  --vf-progress-spinner-value-color: var(--vf-color-status-info-icon, var(--vf-color-info));
+  --vf-progress-spinner-value-color: var(--vf-color-status-info-icon);
 }
 
 .vf-progress-spinner--warn {
-  --vf-progress-spinner-value-color: var(--vf-color-status-warning-icon, var(--vf-color-warn));
+  --vf-progress-spinner-value-color: var(--vf-color-status-warning-icon);
 }
 
 .vf-progress-spinner--help {
-  --vf-progress-spinner-value-color: var(--vf-color-status-help-icon, var(--vf-color-help));
+  --vf-progress-spinner-value-color: var(--vf-color-status-help-icon);
 }
 
 .vf-progress-spinner--danger {
-  --vf-progress-spinner-value-color: var(--vf-color-status-danger-icon, var(--vf-color-danger));
+  --vf-progress-spinner-value-color: var(--vf-color-status-danger-icon);
 }
 
 .vf-progress-spinner--contrast {
-  --vf-progress-spinner-value-color: var(--vf-color-icon-primary, var(--vf-color-contrast));
+  --vf-progress-spinner-value-color: var(--vf-color-icon-primary);
 }
 
 .vf-progress-spinner__value {

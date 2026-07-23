@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.0.0
+
+### Changed
+
+- Updated the Core peer and Theme dependency lines for the coordinated VueForge 2 token contract.
+- Made layout color defaults use canonical Core semantic variables and made `data-vf-theme` the
+  only implicit theme attribute.
+- Made the package `exports` map authoritative while preserving supported ESM and CommonJS entries.
+
+### Removed
+
+- Removed the unused `surfaceSubtle` layout token and the generic `--vf-shadow` fallback.
+- Removed the already-unexported `useSidebarState` source and legacy top-level resolver metadata.
+
+### Breaking changes
+
+- Upgrade Core and Layouts together, replace `data-theme` boundaries with `data-vf-theme`, and use
+  canonical semantic colors in custom layout presets.
+
 ## 1.22.0
 
 ### Added

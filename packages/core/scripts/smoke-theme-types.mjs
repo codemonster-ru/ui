@@ -124,7 +124,7 @@ import type {
 } from '@codemonster-ru/vueforge-core/theme';
 
 const themePrimitive: ThemePrimitiveColorTokens = { paletteNeutral50: '#f6f8fb' };
-const themeSemantic: ThemeSemanticColorTokens = { colorBackgroundCanvas: 'var(--vf-color-bg)' };
+const themeSemantic: ThemeSemanticColorTokens = { colorBackgroundCanvas: 'var(--vf-palette-neutral-50)' };
 const themeTokens: Partial<ThemeTokens> = {
   paletteWarning950: '#1f1300',
   colorStatusWarningSolidForeground: 'var(--vf-palette-warning-950)',
@@ -138,12 +138,9 @@ const coreThemeSemantic: CoreThemeSemanticColorTokens = {
 };
 const coreThemeTokens: Partial<CoreThemeTokens> = { colorTextPlaceholder: '#616773' };
 
-type AdditiveColorTokenName =
-  | keyof ThemePrimitiveColorTokens
-  | Exclude<keyof ThemeSemanticColorTokens, 'colorFocusRing'>;
-type LegacyOnlyThemeTokens = Omit<ThemeTokens, AdditiveColorTokenName>;
-declare const legacyOnlyTokens: LegacyOnlyThemeTokens;
-const legacyOnlyPreset: VfThemePreset = { tokens: legacyOnlyTokens };
+const incompleteTokens = { colorFocusRing: '#0e639c' };
+// @ts-expect-error complete presets require the full primitive, semantic, and component token contract
+const incompletePreset: VfThemePreset = { tokens: incompleteTokens };
 
 const invalidSemantic: ThemeSemanticColorTokens = {
   // @ts-expect-error misspelled semantic names must not enter the public contract
@@ -160,7 +157,7 @@ void [
   coreThemePrimitive,
   coreThemeSemantic,
   coreThemeTokens,
-  legacyOnlyPreset,
+  incompletePreset,
   invalidSemantic,
 ];
 `,

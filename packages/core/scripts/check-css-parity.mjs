@@ -9,31 +9,45 @@ const componentsDir = join(stylesDir, 'components');
 const transitionGuardPath = join(componentsDir, 'theme-transition-guard.css');
 const accessibilityPreferencesPath = join(componentsDir, 'accessibility-preferences.css');
 
-const groupedManifests = {
-  'actions.css': ['button.css', 'icon-button.css', 'link.css'],
-  'forms.css': [
-    'field.css',
-    'fieldset.css',
-    'input.css',
-    'textarea.css',
-    'select.css',
-    'checkbox.css',
-    'radio.css',
-    'switch.css',
-  ],
-  'surfaces.css': ['card.css', 'panel.css', 'table.css', 'data-table.css'],
-  'feedback.css': ['badge.css', 'tag.css', 'progress-bar.css', 'progress-spinner.css', 'alert.css', 'divider.css'],
-  'overlay.css': ['dialog.css', 'drawer.css', 'command-palette.css', 'dropdown.css', 'popover.css', 'tooltip.css'],
-  'navigation.css': [
-    'accordion.css',
-    'breadcrumbs.css',
-    'stepper.css',
-    'menu-bar.css',
-    'tabs.css',
-    'nav-menu.css',
-    'table-of-contents.css',
-  ],
-};
+const componentEntryNames = [
+  'button.css',
+  'icon-button.css',
+  'link.css',
+  'field.css',
+  'fieldset.css',
+  'input.css',
+  'textarea.css',
+  'select.css',
+  'checkbox.css',
+  'radio.css',
+  'switch.css',
+  'card.css',
+  'panel.css',
+  'table.css',
+  'data-table.css',
+  'badge.css',
+  'tag.css',
+  'progress-bar.css',
+  'progress-spinner.css',
+  'alert.css',
+  'divider.css',
+  'dialog.css',
+  'drawer.css',
+  'command-palette.css',
+  'dropdown.css',
+  'popover.css',
+  'tooltip.css',
+  'accordion.css',
+  'breadcrumbs.css',
+  'stepper.css',
+  'menu-bar.css',
+  'tabs.css',
+  'nav-menu.css',
+  'table-of-contents.css',
+  'skeleton.css',
+  'skeleton-gate.css',
+  'avatar.css',
+];
 
 function inlineCssImports(filePath, seen = new Set(), trace = []) {
   if (trace.includes(filePath)) {
@@ -78,20 +92,24 @@ const fail = (message) => {
   failures += 1;
 };
 
-for (const [fileName, entryNames] of Object.entries(groupedManifests)) {
-  const source = readFileSync(join(componentsDir, fileName), 'utf8');
-  const expectedImports = entryNames.map((entryName) => `../entries/${entryName}`);
+const componentsPath = join(stylesDir, 'components.css');
+const componentsSource = readFileSync(componentsPath, 'utf8');
+const expectedComponentImports = [
+  '../../.generated/theme/tokens.css',
+  '../../.generated/theme/theme.css',
+  './components/base.css',
+  ...componentEntryNames.map((entryName) => `./entries/${entryName}`),
+];
 
-  if (stripImportsAndComments(source) !== '') {
-    fail(`${fileName} must remain an import-only compatibility manifest.`);
-  }
-
-  if (JSON.stringify(importsOf(source)) !== JSON.stringify(expectedImports)) {
-    fail(`${fileName} does not import the canonical entries in the expected order.`);
-  }
+if (stripImportsAndComments(componentsSource) !== '') {
+  fail('components.css must remain an import-only manifest.');
 }
 
-const fullCss = inlineCssImports(join(stylesDir, 'components.css'));
+if (JSON.stringify(importsOf(componentsSource)) !== JSON.stringify(expectedComponentImports)) {
+  fail('components.css does not import the canonical entries in the expected order.');
+}
+
+const fullCss = inlineCssImports(componentsPath);
 const entryNames = readdirSync(entriesDir)
   .filter((fileName) => fileName.endsWith('.css'))
   .sort();
@@ -132,10 +150,8 @@ const stepperArtifact = inlineCssFiles([transitionGuardPath, stepperPath]);
 if (!stepperSource.includes('.vf-stepper {')) {
   fail('Stepper entry is missing its own rules.');
 }
-for (const forbidden of ['../components/navigation.css', '../components/overlay-primitives.css']) {
-  if (stepperSource.includes(forbidden)) {
-    fail(`Stepper entry must not import ${forbidden}.`);
-  }
+if (stepperSource.includes('../components/overlay-primitives.css')) {
+  fail('Stepper entry must not import ../components/overlay-primitives.css.');
 }
 for (const forbiddenSelector of ['.vf-nav-menu', '.vf-menu-bar', '.vf-tabs', '.vf-accordion']) {
   if (stepperArtifact.includes(forbiddenSelector)) {
@@ -155,8 +171,7 @@ for (const fileName of ['menu-bar.css', 'tabs.css']) {
 
 const commandPaletteSource = readFileSync(join(entriesDir, 'command-palette.css'), 'utf8');
 for (const viewportUnit of ['vh', 'dvh']) {
-  const viewportBound =
-    `calc(100${viewportUnit} - var(--vf-command-palette-offset-top) - var(--vf-overlay-viewport-padding))`;
+  const viewportBound = `calc(100${viewportUnit} - var(--vf-command-palette-offset-top) - var(--vf-overlay-viewport-padding))`;
   if (!commandPaletteSource.includes(viewportBound)) {
     fail(`Command Palette max-height must remain bounded by the ${viewportUnit} viewport.`);
   }
@@ -185,10 +200,7 @@ if (fullCss.includes('min-height: var(--vf-select-filter-min-height-sm)')) {
   fail('Full stylesheet still uses the legacy select-filter min-height as floating Select geometry.');
 }
 
-if (
-  fullCss.includes("html:where([data-theme='dark'], [data-vf-theme='dark'])") ||
-  fullCss.includes("html[data-vf-theme='dark']")
-) {
+if (fullCss.includes("html[data-vf-theme='dark']")) {
   fail('Full stylesheet still contains a root-only dark-mode component selector.');
 }
 

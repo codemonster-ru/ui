@@ -11,46 +11,13 @@ const iconCatalogPath = resolve(rootDir, 'src/lib/iconCatalog.json');
 const iconCorePath = resolve(rootDir, 'src/lib/iconCore.json');
 const validateOnly = process.argv.includes('--validate-only');
 
-const variantSuffixes = [
-  {
-    suffix: 'Regular',
-    style: 'regular',
-  },
-];
-
 const componentFiles = readdirSync(componentsDir)
   .filter((file) => file.endsWith('.vue') && file !== 'icon.vue')
   .sort((left, right) => left.localeCompare(right));
 
-const toPascalCase = (value) => value.replace(/(^\w|[-_]\w)/g, (part) => part.replace(/[-_]/g, '').toUpperCase());
+const iconNames = componentFiles.map((fileName) => fileName.replace(/\.vue$/, ''));
 
-const parseComponentName = (fileName) => {
-  const componentName = fileName.replace(/\.vue$/, '');
-  const matchedVariant = variantSuffixes.find(({ suffix }) => componentName.endsWith(suffix));
-
-  if (!matchedVariant) {
-    return {
-      componentName,
-      iconName: componentName,
-      exportName: `Vif${toPascalCase(componentName)}Icon`,
-      style: 'solid',
-    };
-  }
-
-  const baseName = componentName.slice(0, -matchedVariant.suffix.length);
-
-  return {
-    componentName,
-    iconName: baseName,
-    exportName: `Vif${toPascalCase(baseName)}${toPascalCase(matchedVariant.style)}Icon`,
-    style: matchedVariant.style,
-  };
-};
-
-const componentEntries = componentFiles.map(parseComponentName);
-const iconNames = componentEntries.filter((entry) => entry.style === 'solid').map((entry) => entry.iconName);
-
-const indexContent = `export { default as VueIconify } from '@/lib/components/icon.vue';\n\nexport {\n  iconGroups,\n  iconNames,\n  icons,\n  iconCatalog,\n  coreIconNames,\n  dualStyleCoreIconNames,\n  showcaseIconEntries,\n} from '@/lib/iconMeta';\nexport type { IconName, IconCatalogEntry, IconShowcaseEntry } from '@/lib/iconMeta';\n`;
+const indexContent = `export { default as VueIconify } from '@/lib/components/icon.vue';\n\nexport { iconGroups, iconNames, icons, iconCatalog, coreIconNames, showcaseIconEntries } from '@/lib/iconMeta';\nexport type { IconName, IconCatalogEntry, IconShowcaseEntry } from '@/lib/iconMeta';\n`;
 
 const iconsContent = `${JSON.stringify({ list: iconNames }, null, 2)}\n`;
 
@@ -100,16 +67,10 @@ const compareIconSets = (iconNames, iconGroups) => {
   }
 };
 
-const compareIconCatalog = (iconNames, iconCatalog, componentEntries) => {
+const compareIconCatalog = (iconNames, iconCatalog) => {
   const catalogNames = Object.keys(iconCatalog).sort((left, right) => left.localeCompare(right));
   const componentSet = new Set(iconNames);
   const catalogSet = new Set(catalogNames);
-  const componentVariantsByIcon = componentEntries.reduce((variantsByIcon, entry) => {
-    const currentVariants = variantsByIcon.get(entry.iconName) ?? [];
-    currentVariants.push(entry.style);
-    variantsByIcon.set(entry.iconName, currentVariants);
-    return variantsByIcon;
-  }, new Map());
 
   const missingInCatalog = iconNames.filter((iconName) => !catalogSet.has(iconName));
   const missingComponents = catalogNames.filter((iconName) => !componentSet.has(iconName));
@@ -147,34 +108,12 @@ const compareIconCatalog = (iconNames, iconCatalog, componentEntries) => {
       throw new Error(`Icon catalog entry "${iconName}" contains duplicate keywords.`);
     }
 
-    if (!['solid', 'regular'].includes(entry.style)) {
-      throw new Error(`Icon catalog entry "${iconName}" has unsupported style "${entry.style}".`);
+    if (entry.style !== 'solid') {
+      throw new Error(`Icon catalog entry "${iconName}" must use the solid style.`);
     }
 
     if (entry.variants !== undefined) {
-      if (!Array.isArray(entry.variants) || entry.variants.length === 0) {
-        throw new Error(`Icon catalog entry "${iconName}" has malformed variants metadata.`);
-      }
-
-      if (!entry.variants.every((variant) => ['solid', 'regular'].includes(variant))) {
-        throw new Error(`Icon catalog entry "${iconName}" contains unsupported variants.`);
-      }
-
-      if (new Set(entry.variants).size !== entry.variants.length) {
-        throw new Error(`Icon catalog entry "${iconName}" contains duplicate variants.`);
-      }
-    }
-
-    const declaredVariants = entry.variants ?? [entry.style];
-    const componentVariants = [...new Set(componentVariantsByIcon.get(iconName) ?? ['solid'])];
-
-    if (
-      declaredVariants.length !== componentVariants.length ||
-      declaredVariants.some((variant) => !componentVariants.includes(variant))
-    ) {
-      throw new Error(
-        `Icon catalog entry "${iconName}" variants do not match components. Expected ${componentVariants.join(', ')}, got ${declaredVariants.join(', ')}`,
-      );
+      throw new Error(`Icon catalog entry "${iconName}" must not declare removed variant metadata.`);
     }
   }
 };
@@ -208,7 +147,7 @@ const buildReadme = async () => {
   const coreIconNames = JSON.parse(readFileSync(iconCorePath, 'utf8'));
 
   compareIconSets(iconNames, iconGroups);
-  compareIconCatalog(iconNames, iconCatalog, componentEntries);
+  compareIconCatalog(iconNames, iconCatalog);
   compareCoreSet(iconNames, coreIconNames);
 
   const categorySummarySection = iconGroups

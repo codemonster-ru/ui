@@ -7,8 +7,8 @@ body,
 
 body {
   font-family: var(--vf-font-family-base);
-  color: var(--vf-color-text);
-  background: var(--vf-color-bg);
+  color: var(--vf-color-text-primary);
+  background: var(--vf-color-background-canvas);
 }
 
 .demo-page {
@@ -72,7 +72,7 @@ body {
 
 .demo-label {
   margin: 0;
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
 }

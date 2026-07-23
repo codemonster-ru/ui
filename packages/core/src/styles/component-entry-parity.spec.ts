@@ -12,7 +12,6 @@ const stylesDir = resolve(__dirname);
 const entriesDir = resolve(stylesDir, 'entries');
 const componentsDir = resolve(stylesDir, 'components');
 const foundationPath = resolve(stylesDir, 'foundation.css');
-const groupedFiles = ['actions.css', 'forms.css', 'surfaces.css', 'feedback.css', 'overlay.css', 'navigation.css'];
 const architectureVariableNames = Object.keys(
   themeTokensToCssVars(
     Object.fromEntries(
@@ -30,11 +29,21 @@ function stripComments(source: string) {
 }
 
 describe('component entry CSS parity', () => {
-  it('keeps grouped component files as import-only compatibility manifests', () => {
-    for (const fileName of groupedFiles) {
-      const source = readFileSync(resolve(componentsDir, fileName), 'utf8');
-      expect(stripComments(stripImports(source)), fileName).toBe('');
-    }
+  it('composes canonical component entries directly', () => {
+    const source = readFileSync(resolve(stylesDir, 'components.css'), 'utf8');
+    const actualEntries = [...source.matchAll(/^@import\s+['"]\.\/entries\/(.+?\.css)['"];\s*$/gm)]
+      .map((match) => match[1])
+      .sort();
+    const expectedEntries = readdirSync(entriesDir)
+      .filter((name) => name.endsWith('.css'))
+      .filter((name) => {
+        const entrySource = readFileSync(resolve(entriesDir, name), 'utf8');
+        return stripComments(stripImports(entrySource)).includes('{');
+      })
+      .sort();
+
+    expect(stripComments(stripImports(source))).toBe('');
+    expect(actualEntries).toEqual(expectedEntries);
   });
 
   it('composes every canonical component entry into the full stylesheet exactly once', () => {
@@ -100,7 +109,6 @@ describe('component entry CSS parity', () => {
     const standaloneCss = inlineCssImports(resolve(entriesDir, 'stepper.css'));
 
     expect(source).toContain('.vf-stepper');
-    expect(source).not.toContain('../components/navigation.css');
     expect(source).not.toContain('../components/overlay-primitives.css');
     expect(standaloneCss).not.toContain('.vf-nav-menu');
     expect(standaloneCss).not.toContain('.vf-menu-bar');
@@ -129,7 +137,6 @@ describe('component entry CSS parity', () => {
     expect(fullCss).toContain('letter-spacing: var(--vf-nav-menu-group-label-letter-spacing);');
     expect(fullCss).toContain('line-clamp: 3;');
     expect(fullCss).toContain('line-clamp: 2;');
-    expect(fullCss).not.toContain("html:where([data-theme='dark'], [data-vf-theme='dark'])");
     expect(fullCss).not.toContain("html[data-vf-theme='dark']");
   });
 });

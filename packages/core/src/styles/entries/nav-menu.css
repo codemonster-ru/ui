@@ -302,7 +302,7 @@
   cursor: not-allowed;
   border-color: var(--vf-color-border-disabled, transparent);
   background: var(--vf-color-background-surface-disabled, transparent);
-  color: var(--vf-color-text-disabled, var(--vf-color-muted));
+  color: var(--vf-color-text-disabled);
 }
 
 .vf-nav-menu__item:focus-visible:not(:disabled, .vf-nav-menu__item--disabled) {

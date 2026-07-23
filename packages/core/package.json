@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "1.36.0",
+  "version": "2.0.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -38,18 +38,6 @@
   "files": [
     "dist"
   ],
-  "module": "./dist/vueforge-core.js",
-  "types": "./dist/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "foundation": [
-        "dist/foundation-api.d.ts"
-      ],
-      "theme": [
-        "dist/theme-api.d.ts"
-      ]
-    }
-  },
   "exports": {
     ".": {
       "import": {
@@ -442,11 +430,10 @@
   },
   "dependencies": {
     "@codemonster-ru/floater.js": "^1.0.8",
-    "@codemonster-ru/vueforge-theme": "^1.4.0",
-    "@codemonster-ru/vueforge-icons": "^1.6.0"
+    "@codemonster-ru/vueforge-theme": "^2.0.0",
+    "@codemonster-ru/vueforge-icons": "^2.0.0"
   },
   "overrides": {
     "@microsoft/api-extractor": "^7.58.1"
-  },
-  "main": "./dist/vueforge-core.cjs"
+  }
 }

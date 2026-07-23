@@ -53,11 +53,6 @@ const explicitDeps = {
 };
 
 const globallyAllowed = new Set(['icon', 'icon-wrapper']);
-const groupedCompatibilityImports = new Set(
-  ['actions', 'forms', 'surfaces', 'feedback', 'overlay', 'navigation'].map(
-    (name) => `../components/${name}.css`,
-  ),
-);
 const requiredSelectors = {
   'command-palette.css': ['.vf-command-palette-transition-enter-from'],
   'dialog.css': ['.vf-dialog-transition-enter-from'],
@@ -81,13 +76,6 @@ for (const fileName of readdirSync(entriesDir)
 
   const foundImports = [...css.matchAll(/@import\s+['"]([^'"]+)['"]/g)].map((m) => m[1]);
   const expectedImports = explicitDeps[fileName] ?? [];
-
-  for (const foundImport of foundImports) {
-    if (groupedCompatibilityImports.has(foundImport)) {
-      console.error(`[css-contract] Canonical entry ${fileName} imports grouped compatibility CSS: ${foundImport}`);
-      failures += 1;
-    }
-  }
 
   for (const expected of expectedImports) {
     if (!foundImports.includes(expected)) {

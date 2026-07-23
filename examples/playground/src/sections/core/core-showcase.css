@@ -1,7 +1,7 @@
 .demo-text {
   margin: 0;
   line-height: var(--vf-text-body-line-height);
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
 }
 
 .demo-inline {
@@ -90,7 +90,7 @@
   font-size: var(--vf-text-caption-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-caption-line-height);
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   text-transform: uppercase;
 }
 
@@ -128,7 +128,7 @@
   font-size: var(--vf-text-caption-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-caption-line-height);
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   text-transform: uppercase;
 }
 
@@ -145,7 +145,7 @@
   padding: var(--vf-layout-section-inset-default);
   border: var(--vf-layout-border-base);
   border-radius: var(--vf-layout-section-radius);
-  background: color-mix(in srgb, var(--vf-color-surface) 88%, var(--vf-color-surface-muted));
+  background: color-mix(in srgb, var(--vf-color-background-surface) 88%, var(--vf-color-background-surface-subtle));
 }
 
 .demo-avatar-panel__header {
@@ -163,7 +163,7 @@
 .demo-avatar-panel__eyebrow,
 .demo-avatar-variant > span,
 .demo-avatar-size-scale > span {
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-caption-font-size);
   font-weight: var(--vf-text-caption-font-weight);
   line-height: var(--vf-text-caption-line-height);
@@ -171,7 +171,7 @@
 
 .demo-avatar-panel__title {
   margin-top: 0.125rem;
-  color: var(--vf-color-text);
+  color: var(--vf-color-text-primary);
   font-size: var(--vf-text-body-font-size);
   font-weight: var(--vf-font-weight-semibold);
   line-height: var(--vf-text-body-line-height);
@@ -195,7 +195,7 @@
 }
 
 .demo-avatar-person__name {
-  color: var(--vf-color-text);
+  color: var(--vf-color-text-primary);
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-font-weight-medium);
   line-height: var(--vf-text-label-line-height);
@@ -203,7 +203,7 @@
 
 .demo-avatar-person__role {
   overflow: hidden;
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-caption-font-size);
   line-height: var(--vf-text-caption-line-height);
   text-overflow: ellipsis;
@@ -213,13 +213,13 @@
 .demo-avatar-person__presence {
   inline-size: 0.5rem;
   block-size: 0.5rem;
-  border: 1px solid var(--vf-color-surface);
+  border: 1px solid var(--vf-color-background-surface);
   border-radius: 999px;
-  background: var(--vf-color-muted);
+  background: var(--vf-color-text-muted);
 }
 
 .demo-avatar-person__presence--online {
-  background: var(--vf-color-success);
+  background: var(--vf-color-status-success-solid-background);
 }
 
 .demo-avatar-variants {
@@ -243,28 +243,44 @@
 }
 
 .demo-avatar--violet {
-  --vf-avatar-background: color-mix(in srgb, var(--vf-color-help) 24%, var(--vf-color-surface));
-  --vf-avatar-color: var(--vf-color-help);
+  --vf-avatar-background: color-mix(
+    in srgb,
+    var(--vf-color-status-help-solid-background) 24%,
+    var(--vf-color-background-surface)
+  );
+  --vf-avatar-color: var(--vf-color-status-help-solid-background);
 }
 
 .demo-avatar--amber {
-  --vf-avatar-background: color-mix(in srgb, var(--vf-color-warn) 24%, var(--vf-color-surface));
-  --vf-avatar-color: var(--vf-color-warn);
+  --vf-avatar-background: color-mix(
+    in srgb,
+    var(--vf-color-status-warning-solid-background) 24%,
+    var(--vf-color-background-surface)
+  );
+  --vf-avatar-color: var(--vf-color-status-warning-solid-background);
 }
 
 .demo-avatar--teal {
-  --vf-avatar-background: color-mix(in srgb, var(--vf-color-info) 24%, var(--vf-color-surface));
-  --vf-avatar-color: var(--vf-color-info);
+  --vf-avatar-background: color-mix(
+    in srgb,
+    var(--vf-color-status-info-solid-background) 24%,
+    var(--vf-color-background-surface)
+  );
+  --vf-avatar-color: var(--vf-color-status-info-solid-background);
 }
 
 .demo-avatar--rose {
-  --vf-avatar-background: color-mix(in srgb, var(--vf-color-danger) 24%, var(--vf-color-surface));
-  --vf-avatar-color: var(--vf-color-danger);
+  --vf-avatar-background: color-mix(
+    in srgb,
+    var(--vf-color-status-danger-solid-background) 24%,
+    var(--vf-color-background-surface)
+  );
+  --vf-avatar-color: var(--vf-color-status-danger-solid-background);
 }
 
 .demo-avatar--slate {
-  --vf-avatar-background: var(--vf-color-surface-muted);
-  --vf-avatar-color: var(--vf-color-muted);
+  --vf-avatar-background: var(--vf-color-background-surface-subtle);
+  --vf-avatar-color: var(--vf-color-text-muted);
 }
 
 @media (width <= 960px) {

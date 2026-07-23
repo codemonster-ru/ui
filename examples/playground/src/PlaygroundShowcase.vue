@@ -144,7 +144,7 @@ const componentModeDemo = defineComponent({
         h('h3', { style: 'margin:0;' }, 'Vue Component Preview'),
         h(
           'p',
-          { style: 'margin:0;color:var(--vf-color-muted);' },
+          { style: 'margin:0;color:var(--vf-color-text-muted);' },
           'This preview is rendered directly as a Vue component without iframe sandbox.'
         ),
         h('button', { class: 'vf-button vf-button--secondary', type: 'button' }, 'Action')
@@ -312,10 +312,10 @@ function onError(error: {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--vf-color-border);
+  border: 1px solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-control);
-  background: var(--vf-color-surface);
-  color: var(--vf-color-text);
+  background: var(--vf-color-background-surface);
+  color: var(--vf-color-text-primary);
   padding: 0.35rem 0.65rem;
   font: inherit;
   cursor: pointer;
