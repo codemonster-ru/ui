@@ -24,6 +24,7 @@
   SSR/client branch drift.
 - Fixed Node/SSR UI imports so they do not evaluate CSS; browser `/ui` imports continue to auto-load
   Playground CSS.
+- Fixed `componentSourceLanguage` so it applies to single-source and extensionless component files.
 
 ### Breaking changes
 

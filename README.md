@@ -1,20 +1,99 @@
 # VueForge
 
-VueForge is a Vue 3 ecosystem for design-system foundations, theming, layouts, icons, and interactive playground experiences.
+VueForge is a Vue 3 ecosystem for design-system foundations, theming, accessible components,
+layouts, icons, code presentation, and interactive playgrounds.
+
+## Requirements
+
+- Vue `^3.5.0`.
+- Node.js 18 or newer for packages other than CodeBlock and Playground. A selected Vite version may
+  impose a higher Node.js requirement on the Playground Vite plugin.
+- Node.js 20 or newer when using CodeBlock or Playground.
+
+## Install Core
+
+Use the package manager that owns your application lockfile:
+
+```bash
+npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0
+```
+
+```bash
+pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0
+```
+
+```bash
+yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0
+```
+
+## Quick start
+
+Install the Core plugin once and import its complete stylesheet in the browser entry:
+
+```ts
+// src/main.ts
+import { createApp } from 'vue';
+import VueForgeCore from '@codemonster-ru/vueforge-core';
+import '@codemonster-ru/vueforge-core/styles.css';
+import App from './App.vue';
+
+createApp(App).use(VueForgeCore).mount('#app');
+```
+
+Wrap themed UI in `VfThemeProvider`. Components are not registered globally, so import the
+components used by each application:
+
+```vue
+<!-- src/App.vue -->
+<script setup lang="ts">
+import { VfButton, VfThemeProvider, VfThemeSwitch } from '@codemonster-ru/vueforge-core';
+</script>
+
+<template>
+  <VfThemeProvider default-theme="system">
+    <main>
+      <VfThemeSwitch label="Theme" />
+      <VfButton>First VueForge action</VfButton>
+    </main>
+  </VfThemeProvider>
+</template>
+```
+
+`VfThemeSwitch` persists the selected light or dark mode through the provider. Build the
+application with its normal production command—for a standard Vite project:
+
+```bash
+npm run build
+```
 
 ## Packages
 
-| Package | Version | Downloads/month | License |
-| --- | --- | --- | --- |
-| `@codemonster-ru/vueforge-core` | [![npm version](https://img.shields.io/npm/v/%40codemonster-ru%2Fvueforge-core)](https://www.npmjs.com/package/@codemonster-ru/vueforge-core) | [![npm downloads/month](https://img.shields.io/npm/dm/%40codemonster-ru%2Fvueforge-core)](https://www.npmjs.com/package/@codemonster-ru/vueforge-core) | [![License](https://img.shields.io/npm/l/%40codemonster-ru%2Fvueforge-core)](https://www.npmjs.com/package/@codemonster-ru/vueforge-core) |
-| `@codemonster-ru/vueforge-theme` | [![npm version](https://img.shields.io/npm/v/%40codemonster-ru%2Fvueforge-theme)](https://www.npmjs.com/package/@codemonster-ru/vueforge-theme) | [![npm downloads/month](https://img.shields.io/npm/dm/%40codemonster-ru%2Fvueforge-theme)](https://www.npmjs.com/package/@codemonster-ru/vueforge-theme) | [![License](https://img.shields.io/npm/l/%40codemonster-ru%2Fvueforge-theme)](https://www.npmjs.com/package/@codemonster-ru/vueforge-theme) |
-| `@codemonster-ru/vueforge-layouts` | [![npm version](https://img.shields.io/npm/v/%40codemonster-ru%2Fvueforge-layouts)](https://www.npmjs.com/package/@codemonster-ru/vueforge-layouts) | [![npm downloads/month](https://img.shields.io/npm/dm/%40codemonster-ru%2Fvueforge-layouts)](https://www.npmjs.com/package/@codemonster-ru/vueforge-layouts) | [![License](https://img.shields.io/npm/l/%40codemonster-ru%2Fvueforge-layouts)](https://www.npmjs.com/package/@codemonster-ru/vueforge-layouts) |
-| `@codemonster-ru/vueforge-icons` | [![npm version](https://img.shields.io/npm/v/%40codemonster-ru%2Fvueforge-icons)](https://www.npmjs.com/package/@codemonster-ru/vueforge-icons) | [![npm downloads/month](https://img.shields.io/npm/dm/%40codemonster-ru%2Fvueforge-icons)](https://www.npmjs.com/package/@codemonster-ru/vueforge-icons) | [![License](https://img.shields.io/npm/l/%40codemonster-ru%2Fvueforge-icons)](https://www.npmjs.com/package/@codemonster-ru/vueforge-icons) |
-| `@codemonster-ru/vueforge-codeblock` | [![npm version](https://img.shields.io/npm/v/%40codemonster-ru%2Fvueforge-codeblock)](https://www.npmjs.com/package/@codemonster-ru/vueforge-codeblock) | [![npm downloads/month](https://img.shields.io/npm/dm/%40codemonster-ru%2Fvueforge-codeblock)](https://www.npmjs.com/package/@codemonster-ru/vueforge-codeblock) | [![License](https://img.shields.io/npm/l/%40codemonster-ru%2Fvueforge-codeblock)](https://www.npmjs.com/package/@codemonster-ru/vueforge-codeblock) |
-| `@codemonster-ru/vueforge-playground` | [![npm version](https://img.shields.io/npm/v/%40codemonster-ru%2Fvueforge-playground)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground) | [![npm downloads/month](https://img.shields.io/npm/dm/%40codemonster-ru%2Fvueforge-playground)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground) | [![License](https://img.shields.io/npm/l/%40codemonster-ru%2Fvueforge-playground)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground) |
-| `@codemonster-ru/vueforge-playground-core` | [![npm version](https://img.shields.io/npm/v/%40codemonster-ru%2Fvueforge-playground-core)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-core) | [![npm downloads/month](https://img.shields.io/npm/dm/%40codemonster-ru%2Fvueforge-playground-core)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-core) | [![License](https://img.shields.io/npm/l/%40codemonster-ru%2Fvueforge-playground-core)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-core) |
-| `@codemonster-ru/vueforge-playground-vite-plugin` | [![npm version](https://img.shields.io/npm/v/%40codemonster-ru%2Fvueforge-playground-vite-plugin)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-vite-plugin) | [![npm downloads/month](https://img.shields.io/npm/dm/%40codemonster-ru%2Fvueforge-playground-vite-plugin)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-vite-plugin) | [![License](https://img.shields.io/npm/l/%40codemonster-ru%2Fvueforge-playground-vite-plugin)](https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-vite-plugin) |
+| Package                                                       | Release  | Purpose                                    |
+| ------------------------------------------------------------- | -------- | ------------------------------------------ |
+| [`@codemonster-ru/vueforge-core`][npm-core]                   | `1.36.0` | Components, composables, theme integration |
+| [`@codemonster-ru/vueforge-theme`][npm-theme]                 | `1.4.0`  | Framework-agnostic theme engine            |
+| [`@codemonster-ru/vueforge-layouts`][npm-layouts]             | `1.22.0` | Layout primitives and application shells   |
+| [`@codemonster-ru/vueforge-icons`][npm-icons]                 | `1.6.0`  | Vue icon renderer and catalog              |
+| [`@codemonster-ru/vueforge-codeblock`][npm-codeblock]         | `3.7.0`  | Highlighted, themed code blocks            |
+| [`@codemonster-ru/vueforge-playground`][npm-playground]       | `2.6.0`  | Vue playground UI adapter                  |
+| [`@codemonster-ru/vueforge-playground-core`][npm-pg-core]     | `1.2.0`  | Framework-agnostic playground runtime      |
+| [`@codemonster-ru/vueforge-playground-vite-plugin`][npm-vite] | `0.2.0`  | Vite playground virtual-module integration |
 
 ## Documentation
 
 For full documentation, visit [docs.codemonster.net/vueforge](https://docs.codemonster.net/vueforge/).
+Use the [migration guide](./docs/migration-guide.md) for the coordinated release train and the
+[release notes](./docs/release-notes.md) for feature and compatibility details.
+
+## License
+
+VueForge packages are available under the [MIT License](./LICENSE).
+
+[npm-codeblock]: https://www.npmjs.com/package/@codemonster-ru/vueforge-codeblock
+[npm-core]: https://www.npmjs.com/package/@codemonster-ru/vueforge-core
+[npm-icons]: https://www.npmjs.com/package/@codemonster-ru/vueforge-icons
+[npm-layouts]: https://www.npmjs.com/package/@codemonster-ru/vueforge-layouts
+[npm-pg-core]: https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-core
+[npm-playground]: https://www.npmjs.com/package/@codemonster-ru/vueforge-playground
+[npm-theme]: https://www.npmjs.com/package/@codemonster-ru/vueforge-theme
+[npm-vite]: https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-vite-plugin

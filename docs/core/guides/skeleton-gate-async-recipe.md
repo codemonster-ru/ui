@@ -1,6 +1,6 @@
 ---
-title: "SkeletonGate + Async Recipe"
-description: "Reusable pattern for async component loading with skeleton placeholders"
+title: 'SkeletonGate + Async Recipe'
+description: 'Reusable pattern for async component loading with skeleton placeholders'
 order: 1
 ---
 
@@ -18,7 +18,13 @@ The following items are listed in this section:
 
 ## Recipe
 
-```vue
+````playground-src
+mode: component
+framework: vue
+height: 420
+entry: /App.vue
+
+```vue file=/App.vue
 <template>
   <VfSkeletonGate
     :ready="ready"
@@ -63,6 +69,34 @@ const onReady = () => {
 </script>
 ```
 
+```vue file=/HeavyWidget.vue
+<template>
+  <article :style="{ minHeight: props.minHeight }">
+    <h2>Heavy widget</h2>
+    <p>Async content is ready.</p>
+  </article>
+</template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue';
+
+const props = defineProps<{
+  minHeight?: string;
+}>();
+
+const emit = defineEmits<{
+  ready: [];
+  'preview-ready': [];
+  error: [error: unknown];
+}>();
+
+onMounted(() => {
+  emit('ready');
+});
+</script>
+```
+````
+
 ## Notes
 
 The following items are listed in this section:
@@ -70,4 +104,3 @@ The following items are listed in this section:
 - Keep one height source of truth (`estimatedHeight`) for async fallback + gate + content container.
 - Emit `ready` only after first stable visual paint in heavy components.
 - For components with dual runtime phases (for example code/preview), listen to both `ready` and `preview-ready`.
-

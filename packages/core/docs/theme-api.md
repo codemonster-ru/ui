@@ -32,7 +32,7 @@ while primitive values and mode-specific semantic maps live in
 
 Static CSS files still exist as the package baseline:
 
-- generated token CSS in [.generated/theme](../.generated/theme)
+- generated token/theme CSS owned by [build/theme-css-artifacts.ts](../build/theme-css-artifacts.ts)
 - the narrow baseline entry in [src/styles/foundation.css](../src/styles/foundation.css)
 
 These are fallback defaults for consumers who import the package CSS. Runtime theme configuration should be treated as the primary API.
@@ -67,6 +67,8 @@ import {
 The tuples are the machine-readable contract for tests, tooling, and documentation. Do not maintain a second handwritten list.
 
 See the [Color Tokens guide](../../../docs/core/guides/color-tokens.md) for the complete palette, role map, naming rules, and component migration policy.
+See [Theme Configuration](../../../docs/core/guides/theme-configuration.md) for the supported
+application setup, mode priority, scoped boundaries, custom prefixes, and fallback behavior.
 
 ## Installation
 
@@ -273,7 +275,8 @@ Provider behavior:
 - `VfThemeProvider` uses those plugin defaults when its own props are omitted
 - provider props still win when you need a local override
 - mode state still supports `light`, `dark`, and `system`
-- resolved mode still syncs to `localStorage`, `matchMedia`, and `data-vf-theme`
+- the selected preference is persisted to `localStorage`, system mode resolves through `matchMedia`,
+  and the resolved light/dark mode is written to the configured attributes
 
 ## Public Theme API
 
@@ -337,7 +340,8 @@ Current behavior:
 - CSS variables are emitted through the same serializer for runtime and static artifacts
 - the plugin injects a `<style>` tag with light and dark token values
 - full, scoped-theme, fallback, and custom-prefix paths share the same token contract
-- selective static consumption uses `foundation.css + component entry`; an isolated component entry relies on runtime theme injection
+- granular static consumption uses `tokens.css + theme.css + base.css + component entry`; an isolated
+  component entry relies on runtime theme injection
 
 Current scope for `core`:
 

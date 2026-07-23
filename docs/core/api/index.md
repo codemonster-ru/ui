@@ -1,13 +1,12 @@
 ---
-title: "API"
-description: "Package-level API reference for the core package"
+title: 'API'
+description: 'Package-level API reference for the core package'
 order: 3
 ---
 
 # Package API
 
 Package-level exports and integration surface of `@codemonster-ru/vueforge-core`.
-
 
 ## Overview
 
@@ -31,6 +30,9 @@ app.use(VueForgeCore);
 The plugin resolves and applies theme variables and provides theme-mode defaults to
 `VfThemeProvider`. It does not globally register components. Import component exports directly
 from the package root or use component subpaths with auto CSS.
+
+See [Theme Configuration](/core/guides/theme-configuration#vfthemeprovider-contract) for the exact
+`VfThemeProvider` props, precedence rules, default slot, mode behavior, and fallback contract.
 
 ## Components
 
@@ -89,7 +91,7 @@ import { useBreakpointValue } from '@codemonster-ru/vueforge-core';
 const size = useBreakpointValue({
   base: 'sm',
   md: 'md',
-  lg: 'lg'
+  lg: 'lg',
 });
 ```
 

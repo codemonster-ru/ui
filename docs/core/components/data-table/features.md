@@ -28,10 +28,10 @@ entry: /App.vue
   />
 </template>
 
-<script setup>
-import { VfDataTable } from '@codemonster-ru/vueforge-core';
+<script setup lang="ts">
+import { VfDataTable, type VfDataTableColumn } from '@codemonster-ru/vueforge-core';
 
-const columns = [
+const columns: VfDataTableColumn[] = [
   { key: 'member', header: 'Member' },
   { key: 'role', header: 'Role' },
   { key: 'status', header: 'Status' },

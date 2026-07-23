@@ -7,6 +7,8 @@
 
 A Vue 3 UI adapter for running interactive code playground sessions in the VueForge ecosystem.
 
+Coordinated release: `@codemonster-ru/vueforge-playground@2.6.0`.
+
 ## Requirements
 
 - Node.js 20 or newer for consumer tooling and SSR.
@@ -27,7 +29,7 @@ pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vuefor
 yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^1.36.0 @codemonster-ru/vueforge-playground
 ```
 
-## Configure Vue
+## Quick start
 
 There is no root Playground export. Import the UI plugin from `/ui` and install it explicitly:
 
@@ -77,3 +79,7 @@ For full documentation, visit [docs.codemonster.net/vueforge/playground](https:/
 See the repository
 [installation guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/playground/installation.md)
 and [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground/CHANGELOG.md).
+
+## License
+
+[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground/LICENSE)

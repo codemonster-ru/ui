@@ -1,13 +1,12 @@
 ---
-title: "API"
-description: "Public API reference for the playground package"
+title: 'API'
+description: 'Public API reference for the playground package'
 order: 3
 ---
 
 # API
 
 This section provides a quick overview before the detailed subsections below.
-
 
 ## Overview
 
@@ -38,6 +37,15 @@ The following items are listed in this section:
 - `VfPlaygroundPluginOptions`: plugin options contract.
 - `componentName?`: custom global component name.
 
+The `/ui` entry also exports the component prop types:
+
+- `VfPlaygroundSharedProps`
+- `VfPlaygroundSandboxProps`
+- `VfPlaygroundComponentProps`
+- `VfPlaygroundProps`
+- `VfPlaygroundTab`
+- `VfPlaygroundHeightMode`
+
 ## Props Model
 
 The following items are listed in this section:
@@ -50,6 +58,43 @@ The following items are listed in this section:
 `heightMode` is `'fixed'` by default. Use `'auto'` to size every panel from its content, or `'auto-preview'` to use content height only while the preview tab is active.
 
 `resolveImport` is a synchronous fallback for imports that are not resolved from the playground file map. It receives the requested specifier and `{ fromFile, framework }`, and returns `{ kind: 'module' | 'style', url }` or `null` when the import is not handled.
+
+## Runtime API
+
+`@codemonster-ru/vueforge-playground/runtime` is a CSS-free facade for direct session control. It
+exports:
+
+- `createPlaygroundSession`
+- type `ConsoleEvent`
+- type `CreatePlaygroundSessionOptions`
+- type `PlaygroundError`
+- type `PlaygroundFiles`
+- type `PlaygroundSession`
+
+```ts
+import { createPlaygroundSession } from '@codemonster-ru/vueforge-playground/runtime';
+
+const iframe = document.querySelector<HTMLIFrameElement>('#playground-preview');
+
+if (!iframe) {
+  throw new Error('Playground preview iframe was not found.');
+}
+
+const session = createPlaygroundSession({
+  files: {
+    '/main.js': "document.querySelector('#app').textContent = 'Ready';",
+  },
+  entry: '/main.js',
+  iframe,
+});
+
+await session.run();
+
+window.addEventListener('pagehide', () => session.dispose(), { once: true });
+```
+
+Keep the returned session while the host is mounted. Call `updateFiles(...)` before rerunning
+changed files and call `dispose()` when the host is removed.
 
 ## CSS Exports
 

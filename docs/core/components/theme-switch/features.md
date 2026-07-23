@@ -49,17 +49,17 @@ Accessibility behavior and keyboard interactions.
 
 The following items are listed in this section:
 
-- Theme switch should announce current mode and action (for example, “Switch to dark theme”).
-- Control must have explicit accessible name since icon-only affordances are common.
-- Expose active/pressed state so current theme is discoverable to assistive technologies.
+- The `switch` variant exposes its checked state with native switch semantics.
+- The `button` variant and icon-only `switch` announce the next action (for example, “Switch to dark
+  theme”). A labeled `switch` uses its visible label together with the native checked state.
 
 ### Keyboard Support
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to theme switch. |
+| Key           | Function                                   |
+| ------------- | ------------------------------------------ |
+| `Tab`         | Moves focus to theme switch.               |
 | `Shift + Tab` | Moves focus to previous focusable element. |
-| `Enter` | Toggles theme. |
-| `Space` | Toggles theme. |
+| `Enter`       | Toggles theme in the `button` variant.     |
+| `Space`       | Toggles theme.                             |

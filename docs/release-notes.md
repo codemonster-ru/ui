@@ -42,6 +42,21 @@ design-system readiness work for public distribution.
 - Icons declares its Sass build compiler directly instead of relying on a transitive development
   dependency.
 
+## Documentation and onboarding
+
+- Root and package READMEs now provide consistent requirements, npm/pnpm/Yarn installation, quick
+  starts, public imports, documentation links, release versions, and license information.
+- Canonical guides cover runtime and scoped themes, custom prefixes, static fallbacks,
+  accessibility, Vue/Vite SSR, Nuxt, hydration, Teleports, CodeBlock, and Playground.
+- Component API tables and runnable examples are checked against public exports, SFC contracts, Vue
+  compilation, and built TypeScript declarations during `verify`.
+- Documentation fixtures reject path traversal before writing generated files, so untrusted pull
+  request Markdown cannot escape the isolated example workspace.
+- Playground now honors the existing `componentSourceLanguage` prop for single-source and
+  extensionless component examples.
+- The production showcase declares its existing SVG favicon and completes clean-profile Chromium
+  smoke tests without console or network errors.
+
 ## Breaking changes
 
 There are no removed or renamed exports, props, events, or public design tokens in this release train.
@@ -97,3 +112,6 @@ Use component subpaths when granular browser CSS and smaller bundles are preferr
 Core and Layouts shared token/theme/base entries once. For fully manual CSS, use named imports from
 the CSS-free package roots plus explicit component CSS. For SSR, keep CSS imports in the client entry
 and exercise the CSS-free Node paths in the server build.
+
+Copy-ready project, GitHub Release, npm description, and announcement text is available in
+[public-release-assets.md](./public-release-assets.md).

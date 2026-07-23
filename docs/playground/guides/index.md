@@ -1,13 +1,12 @@
 ---
-title: "Guides"
-description: "Limitations and related packages for the playground package"
+title: 'Guides'
+description: 'Limitations and related packages for the playground package'
 order: 6
 ---
 
 # Guides
 
 This section provides a quick overview before the detailed subsections below.
-
 
 ## Overview
 
@@ -28,6 +27,15 @@ creation is not required at startup.
 Install `VfPlaygroundPlugin` with `app.use(...)`. It registers the component but does not install the
 Core theme plugin, so configure Core and its baseline CSS separately.
 
+## Choose an Integration
+
+- Use [component mode](../components/playground/features.md#component-mode) for an existing Vue
+  component and optional source files. It renders directly and does not load the sandbox compiler.
+- Use [sandbox mode](../components/playground/features.md#sandbox-mode) for virtual HTML,
+  JavaScript, TypeScript, or CSS files rendered in an iframe.
+- Use the [runtime API](../api/index.md#runtime-api) when the built-in UI is not required.
+- Use the [theming guide](../components/playground/theming.md) to synchronize host, CodeBlock, and
+  iframe preview themes.
 
 ## Limitations
 

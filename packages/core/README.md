@@ -7,6 +7,8 @@
 
 Core Vue 3 components, tokens, and theme runtime for the VueForge ecosystem.
 
+Coordinated release: `@codemonster-ru/vueforge-core@1.36.0`.
+
 ## Requirements
 
 - Node.js 18 or newer for consumer tooling and SSR.
@@ -26,7 +28,7 @@ pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core
 yarn add vue@^3.5.0 @codemonster-ru/vueforge-core
 ```
 
-## Full setup
+## Quick start
 
 The plugin applies the default theme and provides configuration. It does not globally register
 components.
@@ -89,3 +91,7 @@ For full documentation, visit [docs.codemonster.net/vueforge/core](https://docs.
 Start with the repository
 [installation guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/core/installation.md)
 and [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/core/CHANGELOG.md).
+
+## License
+
+[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/core/LICENSE)

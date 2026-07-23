@@ -61,12 +61,34 @@ For the primitive, semantic, component, and VueForge 1.x compatibility layers, s
 
 - [Color Tokens](/core/guides/color-tokens)
 
+### Theme Configuration
+
+For runtime overrides, light/dark/system mode, scoped themes, custom prefixes, and static fallback
+behavior, see:
+
+- [Theme Configuration](/core/guides/theme-configuration)
+
+### Accessibility
+
+For keyboard, focus, ARIA, reduced-motion, forced-colors, RTL, screen-reader, and WCAG integration
+guidance, see:
+
+- [Accessibility](/core/guides/accessibility)
+
+### SSR and Hydration
+
+For Vue SSR, Vite SSR, Nuxt, theme bootstrap, Teleports, CodeBlock, and Playground, see:
+
+- [SSR and Hydration](/core/guides/ssr)
+
 ## Limitations
 
 The following items are listed in this section:
 
 - Peer dependency: `vue ^3.5.0`.
 - Theme/foundation CSS usage should be documented per entry export.
+- Nuxt integration is manual; VueForge does not currently ship a Nuxt module or Nuxt end-to-end
+  fixture.
 
 ## Related Packages
 

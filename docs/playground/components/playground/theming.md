@@ -60,13 +60,13 @@ height variables without replacing the VueForge Shiki color pair. Override CodeB
 
 ## Styling hooks
 
-| Class                               | Purpose                                      |
-| ----------------------------------- | -------------------------------------------- |
-| `.vf-playground`                    | Component and scoped-theme boundary          |
-| `.vf-playground__tabs`              | Tabs region supplied through the `tabs` slot |
-| `.vf-playground__tabs-default`      | Built-in file tabs region                    |
-| `.vf-playground__files`             | Source-file panel                            |
-| `.vf-playground__panel--code`       | Code source panel                            |
-| `.vf-playground__iframe`            | Sandbox preview frame                        |
-| `.vf-playground__component-preview` | Inline component preview surface             |
-| `.vf-playground__console`           | Runtime messages                             |
+| Class                               | Purpose                                        |
+| ----------------------------------- | ---------------------------------------------- |
+| `.vf-playground`                    | Component and scoped-theme boundary            |
+| `.vf-playground__tabs`              | Built-in or custom-renderer tabs/action region |
+| `.vf-playground__tabs-default`      | Built-in file tabs region                      |
+| `.vf-playground__files`             | Source-file panel                              |
+| `.vf-playground__panel--code`       | Code source panel                              |
+| `.vf-playground__iframe`            | Sandbox preview frame                          |
+| `.vf-playground__component-preview` | Inline component preview surface               |
+| `.vf-playground__console`           | Runtime messages                               |

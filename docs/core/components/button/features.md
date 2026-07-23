@@ -23,7 +23,7 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <div style="display:flex;gap:var(--vf-surface-gap);align-items:center">
-    <VfButton variant="solid">Save</VfButton>
+    <VfButton variant="primary">Save</VfButton>
     <VfButton variant="ghost">Cancel</VfButton>
   </div>
 </template>
@@ -72,9 +72,9 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to the button. |
+| Key           | Function                                   |
+| ------------- | ------------------------------------------ |
+| `Tab`         | Moves focus to the button.                 |
 | `Shift + Tab` | Moves focus to previous focusable element. |
-| `Enter` | Activates button action. |
-| `Space` | Activates button action. |
+| `Enter`       | Activates button action.                   |
+| `Space`       | Activates button action.                   |

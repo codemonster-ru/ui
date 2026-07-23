@@ -25,7 +25,7 @@ entry: /App.vue
   <div style="display:flex;gap:var(--vf-surface-gap-compact);flex-wrap:wrap">
     <VfTag>Default</VfTag>
     <VfTag tone="success">Stable</VfTag>
-    <VfTag tone="warning">Beta</VfTag>
+    <VfTag tone="warn">Beta</VfTag>
   </div>
 </template>
 
@@ -51,9 +51,8 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to interactive controls inside a tag (if present). |
-| `Shift + Tab` | Moves focus backward through interactive controls. |
-| `Enter` | Activates focused tag action where interactive controls are used. |
-
+| Key           | Function                                                          |
+| ------------- | ----------------------------------------------------------------- |
+| `Tab`         | Moves focus to interactive controls inside a tag (if present).    |
+| `Shift + Tab` | Moves focus backward through interactive controls.                |
+| `Enter`       | Activates focused tag action where interactive controls are used. |

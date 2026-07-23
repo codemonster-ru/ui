@@ -7,6 +7,8 @@
 
 A lightweight Vue 3 icon library with a unified API for the VueForge ecosystem.
 
+Coordinated release: `@codemonster-ru/vueforge-icons@1.6.0`.
+
 ## Requirements
 
 - Node.js 18 or newer for consumer tooling and SSR.
@@ -26,7 +28,7 @@ pnpm add vue@^3.5.0 @codemonster-ru/vueforge-icons
 yarn add vue@^3.5.0 @codemonster-ru/vueforge-icons
 ```
 
-## Use
+## Quick start
 
 ```vue
 <script setup lang="ts">
@@ -59,3 +61,7 @@ See
 [src/lib/index.ts](https://github.com/codemonster-ru/vueforge/blob/main/packages/icons/src/lib/index.ts)
 and [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/icons/CHANGELOG.md)
 for the package-local public contract and release history.
+
+## License
+
+[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/icons/LICENSE)
