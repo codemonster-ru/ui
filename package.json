@@ -26,7 +26,7 @@
     "check:docs:examples": "node --test ./scripts/ci/documentation-example-paths.test.mjs && node ./scripts/ci/check-documentation-examples.mjs",
     "lint:data": "prettier --check \"**/*.{json,yml,yaml}\"",
     "lint:all": "npm run lint && npm run lint:styles && npm run lint:html && npm run lint:md && npm run lint:data",
-    "test": "npm run test --workspaces --if-present --include-workspace-root=false",
+    "test": "npm run test --workspaces --if-present --include-workspace-root=false && npm run test:migration",
     "test:ci-like": "scripts/ci/test-without-dist.sh",
     "typecheck": "npm run typecheck --workspaces --if-present --include-workspace-root=false",
     "audit:release": "npm audit --omit=dev && npm audit --audit-level=high",
@@ -36,12 +36,13 @@
     "check:packed-consumer": "node ./scripts/ci/check-packed-consumer.mjs --manager=npm",
     "check:packed-consumers": "npm run check:packed-consumer && npx --yes --package=pnpm@10.34.5 -- node ./scripts/ci/check-packed-consumer.mjs --manager=pnpm && npx --yes --package=yarn@1.22.22 -- node ./scripts/ci/check-packed-consumer.mjs --manager=yarn",
     "visual:phase2": "node ./scripts/visual/phase-2-color-smoke.mjs",
-    "verify": "npm run check:clean-install && npm run audit:release && npm run lint:all && npm run check && npm run test:ci-like && npm run build && npm run check:docs:examples && npm run test:release-prep && npm run check:package-contracts && npm run check:packed-consumers && npm run check:consumer-tree-shaking && npm run check:deferred-budgets",
+    "verify": "npm run check:clean-install && npm run audit:release && npm run lint:all && npm run check && npm run test:ci-like && npm run test:migration && npm run build && npm run check:docs:examples && npm run test:release-prep && npm run check:package-contracts && npm run check:packed-consumers && npm run check:consumer-tree-shaking && npm run check:deferred-budgets",
     "format": "npm run format --workspaces --if-present --include-workspace-root=false",
     "prepublish:all": "npm run build && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-icons --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-theme --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-core --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-layouts --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-codeblock --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-playground-core --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-playground --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/vueforge-playground-vite-plugin --dry-run --ignore-scripts",
     "check:deferred-budgets": "npm run build -w @codemonster-ru/vueforge-playground-example -- --manifest && node ./scripts/ci/check-deferred-runtime-budgets.mjs",
     "check:consumer-tree-shaking": "node ./scripts/ci/check-consumer-tree-shaking.mjs",
-    "test:release-prep": "node --test ./scripts/ci/prepare-release-from-tag.test.mjs"
+    "test:release-prep": "node --test ./scripts/ci/prepare-release-from-tag.test.mjs",
+    "test:migration": "node --test ./scripts/migrate-to-v2.test.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

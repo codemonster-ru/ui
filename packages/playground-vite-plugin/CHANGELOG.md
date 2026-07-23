@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.0.0
+
+### Changed
+
+- Defined the correctly branded `VueForge*` virtual-entry option types as the canonical public
+  contract.
+- Made the package `exports` map authoritative for its ESM plugin and declarations.
+
+### Removed
+
+- Removed the deprecated `Vueforge*` type aliases and legacy top-level resolver metadata.
+
+### Breaking changes
+
+- Rename `Vueforge*` type imports to `VueForge*` and use a resolver that honors package `exports`.
+
 ## 0.2.0
 
 ### Added

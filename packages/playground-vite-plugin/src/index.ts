@@ -1,37 +1,23 @@
 import path from 'node:path';
 import type { Plugin } from 'vite';
 
-/** @deprecated Use `VueForgePlaygroundVirtualExportMode`. */
-export type VueforgePlaygroundVirtualExportMode =
-  | 'default'
-  | 'namespace'
-  | { named: string };
+export type VueForgePlaygroundVirtualExportMode = 'default' | 'namespace' | { named: string };
 
-/** @deprecated Use `VueForgePlaygroundVirtualEntryConfig`. */
-export interface VueforgePlaygroundVirtualEntryConfig {
+export interface VueForgePlaygroundVirtualEntryConfig {
   file: string;
-  export?: VueforgePlaygroundVirtualExportMode;
+  export?: VueForgePlaygroundVirtualExportMode;
 }
 
-/** @deprecated Use `VueForgePlaygroundVirtualEntryValue`. */
-export type VueforgePlaygroundVirtualEntryValue = string | VueforgePlaygroundVirtualEntryConfig;
+export type VueForgePlaygroundVirtualEntryValue = string | VueForgePlaygroundVirtualEntryConfig;
 
-/** @deprecated Use `VueForgePlaygroundVirtualPluginOptions`. */
-export interface VueforgePlaygroundVirtualPluginOptions {
-  entries: Record<string, VueforgePlaygroundVirtualEntryValue>;
+export interface VueForgePlaygroundVirtualPluginOptions {
+  entries: Record<string, VueForgePlaygroundVirtualEntryValue>;
   virtualPrefix?: string;
   pluginName?: string;
-  exportMode?: VueforgePlaygroundVirtualExportMode;
+  exportMode?: VueForgePlaygroundVirtualExportMode;
 }
 
-export type VueForgePlaygroundVirtualExportMode = VueforgePlaygroundVirtualExportMode;
-export type VueForgePlaygroundVirtualEntryConfig = VueforgePlaygroundVirtualEntryConfig;
-export type VueForgePlaygroundVirtualEntryValue = VueforgePlaygroundVirtualEntryValue;
-export type VueForgePlaygroundVirtualPluginOptions = VueforgePlaygroundVirtualPluginOptions;
-
-export function vueforgePlaygroundVirtualPlugin(
-  options: VueForgePlaygroundVirtualPluginOptions
-): Plugin {
+export function vueforgePlaygroundVirtualPlugin(options: VueForgePlaygroundVirtualPluginOptions): Plugin {
   const virtualPrefix = options.virtualPrefix ?? 'virtual:vueforge-playground/';
   const resolvedPrefix = `\0${virtualPrefix}`;
   const pluginName = options.pluginName ?? 'vueforge-playground-virtual';
@@ -81,7 +67,7 @@ export function vueforgePlaygroundVirtualPlugin(
       }
 
       return `export { default } from ${JSON.stringify(resolvedFile)};`;
-    }
+    },
   };
 }
 

@@ -132,7 +132,7 @@ watch(activeSection, (nextSection) => {
 <style scoped>
 .showcase-shell {
   min-height: 100vh;
-  background: var(--vf-color-bg);
+  background: var(--vf-color-background-canvas);
 }
 
 .showcase-header {
@@ -145,7 +145,7 @@ watch(activeSection, (nextSection) => {
 
 .showcase-brand {
   min-width: 0;
-  color: var(--vf-color-text);
+  color: var(--vf-color-text-primary);
   font-size: var(--vf-heading-h-6-font-size);
   font-weight: var(--vf-heading-font-weight);
   line-height: var(--vf-heading-h-6-line-height);

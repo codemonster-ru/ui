@@ -1,102 +1,104 @@
-# VueForge coordinated release notes
+# VueForge 2 coordinated release notes
 
-This release train packages the completed theme-contract, semantic-token, accessible color, and
-design-system readiness work for public distribution.
+VueForge 2 removes the compatibility paths left behind by the completed token and theme
+architecture migration. The built-in visual design, OKLCH palette, accessibility behavior,
+component set, documented custom-prefix support, and supported CommonJS entries are unchanged.
 
 ## Package versions
 
-| Package                |  Version |
-| ---------------------- | -------: |
-| Theme                  |  `1.4.0` |
-| Icons                  |  `1.6.0` |
-| Core                   | `1.36.0` |
-| Layouts                | `1.22.0` |
-| CodeBlock              |  `3.7.0` |
-| Playground Core        |  `1.2.0` |
-| Playground Vite Plugin |  `0.2.0` |
-| Playground             |  `2.6.0` |
+| Package                | Version |
+| ---------------------- | ------: |
+| Theme                  | `2.0.0` |
+| Icons                  | `2.0.0` |
+| Core                   | `2.0.0` |
+| Layouts                | `2.0.0` |
+| CodeBlock              | `4.0.0` |
+| Playground Core        | `2.0.0` |
+| Playground Vite Plugin | `1.0.0` |
+| Playground             | `3.0.0` |
 
 ## Highlights
 
-- One canonical TypeScript/runtime/static CSS token contract across Theme, Core, and Layouts.
-- Primitive and semantic color architecture with an accessible OKLCH default palette.
-- Matching full, component-entry, fallback, runtime, and scoped-theme behavior.
-- Request-stable SSR IDs and deterministic ThemeProvider, CodeBlock, and Playground hydration.
-- Coordinated nested overlays, focus traps, Escape ownership, and scroll locking.
-- Improved ARIA, keyboard, RTL, reduced-motion, forced-colors, touch, and 400% zoom behavior.
-- Correct ESM/CommonJS/type/CSS package conditions, clean tarball builds, and packed consumer gates.
-- Secure Playground iframe transport, bounded logs, circular-import diagnostics, and deferred runtime.
-
-## Package and distribution fixes
-
-- Browser component entries retain automatic CSS, while Node ESM and CommonJS paths avoid server-side
-  CSS or DOM evaluation.
-- Icons CommonJS no longer uses the old DOM-injecting UMD path. Explicit `style.css` remains available
-  for client bundles.
-- Core and Layouts CommonJS entries have matching CommonJS declaration facades.
-- Core and Layouts component subpaths expose declarations for the actual selected component.
-- Internal dependency floors are coordinated so a clean registry install cannot resolve an older,
-  incompatible VueForge package.
-- Theme, Playground Core, and the Playground Vite plugin are explicitly side-effect free.
-- Package builds and publication checks start from clean artifacts rather than stale workspace `dist`.
-- Icons declares its Sass build compiler directly instead of relying on a transitive development
-  dependency.
-
-## Documentation and onboarding
-
-- Root and package READMEs now provide consistent requirements, npm/pnpm/Yarn installation, quick
-  starts, public imports, documentation links, release versions, and license information.
-- Canonical guides cover runtime and scoped themes, custom prefixes, static fallbacks,
-  accessibility, Vue/Vite SSR, Nuxt, hydration, Teleports, CodeBlock, and Playground.
-- Component API tables and runnable examples are checked against public exports, SFC contracts, Vue
-  compilation, and built TypeScript declarations during `verify`.
-- Documentation fixtures reject path traversal before writing generated files, so untrusted pull
-  request Markdown cannot escape the isolated example workspace.
-- Playground now honors the existing `componentSourceLanguage` prop for single-source and
-  extensionless component examples.
-- The production showcase declares its existing SVG favicon and completes clean-profile Chromium
-  smoke tests without console or network errors.
+- Primitive and semantic tokens are the only color contract; the 35 legacy color roots are gone.
+- `data-vf-theme` is the only implicit theme attribute. Explicitly configured custom attributes
+  and prefixes remain supported.
+- Complete presets now require the complete built-in token contract, while mode and extension
+  overrides remain partial.
+- Package `exports` is authoritative. Supported ESM, CommonJS, Node, browser, declaration, and CSS
+  conditions remain available.
+- Deprecated type aliases, unused constants, inert component props, dead runtime branches, and
+  unused CSS hooks were removed.
+- Grouped Core CSS manifests that only forwarded imports were replaced by direct canonical entry
+  imports.
+- A read-only migration checker with an opt-in write mode is included.
 
 ## Breaking changes
 
-There are no removed or renamed exports, props, events, or public design tokens in this release train.
+- Legacy token roots such as `colorBg`, `colorPrimary`, and `colorSuccessSoft` were replaced by
+  primitive or semantic tokens.
+- The implicit `data-theme` selector and runtime observation path were removed.
+- Complete `VfThemeTokens` presets can no longer omit built-in fields.
+- Four deprecated `VueforgePlayground*` type aliases were removed in favor of the existing
+  `VueForgePlayground*` names.
+- `SHIKI_LIGHT_THEME` and `SHIKI_DARK_THEME` were removed from CodeBlock.
+- The inert `style="solid"` prop was removed from `VueIconify`.
+- The empty `dualStyleCoreIconNames` export and unused regular-variant generator path were removed.
+- Unused component hooks, including generic `shadow`, button filter hooks, and retired Playground
+  control variables, were removed.
+- Top-level `main`, `module`, and `types` resolver metadata was removed from package manifests.
+  Consumers must use package `exports`.
+- CodeBlock and Playground continue to require their documented `/view`, `/highlight`, `/ui`, and
+  `/runtime` subpaths instead of package-root JavaScript imports.
 
-Compatibility requirements and corrected behavior still require attention:
+See [Migrating to VueForge 2](./migration-to-v2.md) for the complete old-to-new mapping and the
+migration checker.
 
-- Vue 3.5 is the minimum for all Vue packages.
-- CodeBlock uses `/view` and `/highlight`; Playground uses `/ui` and `/runtime`. Neither has a modern
-  root JS export; legacy resolver metadata remains for compatibility.
-- Node ESM and CommonJS imports are CSS-free. Import package CSS in the browser/client entry.
-- Icons CommonJS no longer injects CSS through the DOM. This is a correction of unintended SSR
-  behavior; add the explicit `style.css` client import when needed.
-- Phase 2 changes default color values to OKLCH, but preserves public token names.
+## Preserved behavior
 
-See the [migration guide](./migration-guide.md) for exact package floors and examples.
+- Default light and dark OKLCH values and rendered component design.
+- Existing component, slot, emit, and accessibility contracts that were not deprecated.
+- Explicit custom theme attributes and custom token prefixes.
+- Explicit CodeBlock theme props and Playground class-based theme selection.
+- CommonJS for packages that advertise a `require` export condition.
+- CSS-free Node/SSR paths and explicit browser CSS exports.
+- Component subpaths and current tree-shaking boundaries.
 
-## Bundle and lazy-loading notes
+## Package notes
 
-The Phase 4 production audit measured minified outputs with gzip reported separately. Values are
-snapshots for regression review, not permanent public size guarantees.
+- **Theme:** exposes only the canonical attribute and serialization path.
+- **Icons:** removes the inert icon-style prop while preserving catalog style metadata.
+- **Core:** removes legacy token roots, no-op hooks, and forwarding-only CSS manifests.
+- **Layouts:** removes an unexported composable and obsolete token defaults.
+- **CodeBlock:** removes unused Shiki exports, fallback branches, and dead styling hooks.
+- **Playground Core:** collapses an identical runtime branch.
+- **Playground Vite Plugin:** removes deprecated type spellings.
+- **Playground:** removes retired variables and the implicit `data-theme` path.
 
-| Scenario                                             |                           Audited payload | Interpretation                                                           |
-| ---------------------------------------------------- | ----------------------------------------: | ------------------------------------------------------------------------ |
-| Core `button` component subpath, including CSS       |                           `2.65 KiB` gzip | Entry JS and button CSS; Vue and Core shared foundation excluded         |
-| Layouts `container` component subpath, including CSS |                           `0.70 KiB` gzip | Entry JS and container CSS; Vue and Core/Layouts foundations excluded    |
-| Generic Icons renderer                               |                          `24.18 KiB` gzip | Includes the dynamic-name icon component catalog; Vue external           |
-| CodeBlock `/view` initial entry                      |                           `4.42 KiB` gzip | Icons and Vue external; Shiki remains deferred                           |
-| All emitted CodeBlock Shiki chunks                   |                   about `174.81 KiB` gzip | Only core/engine and requested grammars are downloaded at runtime        |
-| Playground `/ui` initial entry                       |                           `4.25 KiB` gzip | Shared VueForge dependencies external; sandbox runtime/compiler deferred |
-| Playground TypeScript compiler chunk                 | `3.61 MB` minified / about `1.03 MB` gzip | Loaded only when a browser sandbox session is activated                  |
-| Showcase initial application entry                   |                          `90.24 KiB` gzip | Passes the repository `95 KiB` initial-entry budget                      |
+## Distribution and verification
 
-Vite still reports the optional TypeScript compiler chunk as larger than 500 kB. Manual chunking
-cannot make the compiler smaller, and raising the global warning threshold would hide unrelated
-regressions. The release gates instead assert that TypeScript, Playground runtime, and Shiki do not
-enter the initial static graph.
+The release gates cover:
+
+- browser ESM, Node ESM, CommonJS, SSR, and declaration consumers;
+- authoritative package exports and CSS entry points;
+- component-subpath tree shaking and deferred runtime budgets;
+- clean tarballs consumed through npm, pnpm, and Yarn;
+- documentation imports, compiled examples, and generated fixtures;
+- runtime, component, accessibility, and theme-contract tests.
+
+Measured before-and-after artifacts and the complete cleanup inventory are recorded in the
+[VueForge 2 cleanup report](./design-audit/vueforge-2-cleanup-report.md).
 
 ## Recommended installation
 
-Install only the packages used by the application. A full Core and Layouts setup is:
+Upgrade interdependent packages together. A full Core and Layouts setup starts with:
+
+```bash
+npm install vue@^3.5.0 \
+  @codemonster-ru/vueforge-core@^2.0.0 \
+  @codemonster-ru/vueforge-layouts@^2.0.0
+```
+
+Import CSS from the browser/client entry used by the application:
 
 ```ts
 import { createApp } from 'vue';
@@ -106,12 +108,6 @@ import '@codemonster-ru/vueforge-layouts/styles.css';
 
 createApp({}).use(VueForgeLayouts);
 ```
-
-The Layouts plugin installs the Core theme plugin, so installing both plugins would apply Core twice.
-Use component subpaths when granular browser CSS and smaller bundles are preferred, and import the
-Core and Layouts shared token/theme/base entries once. For fully manual CSS, use named imports from
-the CSS-free package roots plus explicit component CSS. For SSR, keep CSS imports in the client entry
-and exercise the CSS-free Node paths in the server build.
 
 Copy-ready project, GitHub Release, npm description, and announcement text is available in
 [public-release-assets.md](./public-release-assets.md).

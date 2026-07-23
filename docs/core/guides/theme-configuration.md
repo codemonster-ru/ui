@@ -47,16 +47,15 @@ See [Installation](/core/installation) for full, granular, and manual CSS delive
 
 ## Token Layers
 
-The built-in theme contains four compatible layers:
+The built-in theme contains three layers:
 
 1. OKLCH `palette*` primitives provide material values.
 2. `color*` semantic tokens describe interface decisions.
-3. VueForge 1.x component tokens remain the local override boundary.
-4. Component CSS consumes component tokens with semantic and legacy fallbacks.
+3. Component tokens remain the local override boundary and resolve through semantic roles.
 
 Prefer semantic tokens when changing an interface decision. Use primitives to construct a theme, not
-directly in component CSS. The exact names, supported contrast pairings, and 1.x compatibility rules
-are documented in [Color Tokens](/core/guides/color-tokens).
+directly in component CSS. The exact names and supported contrast pairings are documented in
+[Color Tokens](/core/guides/color-tokens).
 
 ## Runtime Overrides
 
@@ -97,7 +96,8 @@ app.mount('#app');
 `extend` affects both modes. `light` and `dark` win for their respective modes. Keep each semantic
 foreground/background pair together and re-run contrast checks when changing color roles.
 
-For a reusable complete preset, start from the built-in one so all VueForge 1.x tokens stay present:
+For a reusable complete preset, start from the built-in one so the full primitive, semantic, and component contract stays
+present:
 
 ```ts
 import { createThemePreset, defaultThemePreset } from '@codemonster-ru/vueforge-core';
@@ -150,8 +150,8 @@ const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
 
 The component exposes one default slot with no slot props and renders that content unchanged. A
 provider prop takes precedence over its corresponding plugin or theme option. On mount and each mode
-update, the provider writes the same resolved value to `data-theme`, `data-vf-theme`, the
-theme-engine attribute, and the configured provider attribute on every matched root.
+update, the provider writes the same resolved value to `data-vf-theme`, the theme-engine attribute,
+and the configured provider attribute on every matched root.
 
 After mount, the provider chooses the preference in this order:
 
@@ -166,7 +166,7 @@ made through the provider are persisted when storage is available. Blocked stora
 ## Scoped Themes
 
 Both runtime and static theme CSS emit complete light and dark maps for nested boundaries. Use
-`data-vf-theme` or the compatible `data-theme` attribute:
+`data-vf-theme`:
 
 ```vue
 <template>
@@ -174,7 +174,7 @@ Both runtime and static theme CSS emit complete light and dark maps for nested b
     <section data-vf-theme="dark">
       <h2>Dark panel</h2>
 
-      <aside data-theme="light">This nested region returns to light mode.</aside>
+      <aside data-vf-theme="light">This nested region returns to light mode.</aside>
     </section>
   </main>
 </template>
@@ -240,18 +240,18 @@ app.use(VueForgeCore, {
 });
 ```
 
-Core emits requested `--product-*` variables and canonical `--vf-*` aliases because compiled
+Core emits requested `--product-*` variables and canonical `--vf-*` bridges because compiled
 VueForge component CSS reads the canonical namespace. Do not hand-write only the custom-prefixed
-variables: without the compatibility aliases, Core and Layouts components cannot consume them.
+variables: without the canonical bridges, Core and Layouts components cannot consume them.
 
-The configured attribute is synchronized together with `data-theme` and `data-vf-theme`. The
-compatible attributes remain valid for scoped light/dark boundaries.
+The configured attribute is synchronized together with `data-vf-theme`. Both remain valid for
+scoped light/dark boundaries.
 
 ## Static and Runtime Fallbacks
 
 | Setup                                                          | Initial behavior                                 | Mode behavior                                                           |
 | -------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
-| `styles.css` or `tokens.css` + `theme.css`, no plugin/provider | Built-in light variables                         | Set `data-vf-theme="dark"` or `data-theme="dark"` explicitly            |
+| `styles.css` or `tokens.css` + `theme.css`, no plugin/provider | Built-in light variables                         | Set `data-vf-theme="dark"` explicitly                                   |
 | Core plugin, no provider                                       | Runtime token values are injected in the browser | No reactive mode owner                                                  |
 | Core plugin + provider                                         | Configured initial mode is hydration-stable      | Storage, root attribute, and system preference are resolved after mount |
 | Scoped data attribute                                          | Complete local light/dark variable map           | Nearest valid nested boundary wins                                      |
@@ -271,5 +271,5 @@ tooling or server-generated CSS when you own the complete preset.
 
 `themePresetToCssText()` is DOM-free. `applyThemeConfig()` writes to a `Document` and is therefore a
 browser operation unless an explicit document is supplied. The neutral engine does not add Core's
-custom-prefix compatibility aliases; Vue applications using VueForge components should normally
+custom-prefix canonical bridges; Vue applications using VueForge components should normally
 configure themes through the Core plugin.

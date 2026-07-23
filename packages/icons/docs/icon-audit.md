@@ -60,21 +60,12 @@ This file defines the preferred semantic choices for the current pack so the set
 ## Core Set Policy
 
 - `src/lib/iconCore.json` is the preferred starter set for product UIs.
-- `src/lib/iconDualStyleCore.json` is the small, stricter set that should define the library's `solid + regular` language.
 - New icons do not need to enter the core set automatically.
-- New icons currently ship as `solid` only.
+- New icons ship as `solid` only.
 - A core-set addition should satisfy at least one of these:
   - solves a repeated SaaS/admin use case
   - replaces multiple ad hoc icons with one canonical semantic choice
   - is needed in dashboards, forms, tables, billing, auth, messaging, or infrastructure views
-
-## Dual-Style Priority
-
-- The current active track is `solid` first; do not add fresh `regular` variants while the base pack is being rebuilt.
-- Do not try to add `regular` variants for the entire pack at once.
-- A new `regular` icon should usually land only after its `solid` version feels visually stable.
-- `solid + regular` should be developed first for the canonical primitives in `src/lib/iconDualStyleCore.json`.
-- The dual-style core is the visual benchmark for the rest of the library.
 
 ## Deprioritized Duplicates
 

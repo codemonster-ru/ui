@@ -6,7 +6,7 @@ root on the exact commit that will receive all package tags.
 ## 1. Choose the release channel
 
 - Stable versions publish to npm tag `latest`.
-- Prerelease versions such as `1.4.0-beta.1` publish to npm tag `next`.
+- Prerelease versions such as `2.0.0-beta.1` publish to npm tag `next`.
 - The package version, changelog heading, and Git tag version must match exactly.
 - Do not publish an untested stable version under `next`; create a SemVer prerelease version first.
 
@@ -19,7 +19,7 @@ The tag preparation script derives `next` whenever the version contains a prerel
 - Start from the protected default branch with a clean worktree.
 - Confirm all eight package versions and internal ranges match the coordinated version matrix.
 - Confirm every package has a non-empty matching section in its `CHANGELOG.md`.
-- Review [migration-guide.md](./migration-guide.md) and [release-notes.md](./release-notes.md).
+- Review [migration-to-v2.md](./migration-to-v2.md) and [release-notes.md](./release-notes.md).
 - Confirm npm Trusted Publishing is configured for `.github/workflows/release-from-tag.yml`.
 - Confirm the workflow has only `contents: write` and `id-token: write` permissions.
 
@@ -71,7 +71,7 @@ npm pack --workspace @codemonster-ru/vueforge-playground --dry-run --ignore-scri
 
 For every proposed archive and generated consumer tarball, verify:
 
-- every `exports`, `main`, `module`, `types`, and CSS target exists;
+- every declared `exports` target exists, including JavaScript, declarations, and CSS;
 - no source-only tests, examples, caches, or unrelated monorepo files are present;
 - declaration files do not resolve through workspace-only aliases;
 - package metadata, license, repository directory, engine, and peer ranges are correct;
@@ -115,14 +115,14 @@ publish, and no rebuild may occur between packing, inspection, and publication.
 
 | Order | Tag                                                     |
 | ----: | ------------------------------------------------------- |
-|     1 | `@codemonster-ru/vueforge-theme@1.4.0`                  |
-|     2 | `@codemonster-ru/vueforge-icons@1.6.0`                  |
-|     3 | `@codemonster-ru/vueforge-playground-core@1.2.0`        |
-|     4 | `@codemonster-ru/vueforge-playground-vite-plugin@0.2.0` |
-|     5 | `@codemonster-ru/vueforge-core@1.36.0`                  |
-|     6 | `@codemonster-ru/vueforge-codeblock@3.7.0`              |
-|     7 | `@codemonster-ru/vueforge-layouts@1.22.0`               |
-|     8 | `@codemonster-ru/vueforge-playground@2.6.0`             |
+|     1 | `@codemonster-ru/vueforge-theme@2.0.0`                  |
+|     2 | `@codemonster-ru/vueforge-icons@2.0.0`                  |
+|     3 | `@codemonster-ru/vueforge-playground-core@2.0.0`        |
+|     4 | `@codemonster-ru/vueforge-playground-vite-plugin@1.0.0` |
+|     5 | `@codemonster-ru/vueforge-core@2.0.0`                   |
+|     6 | `@codemonster-ru/vueforge-codeblock@4.0.0`              |
+|     7 | `@codemonster-ru/vueforge-layouts@2.0.0`                |
+|     8 | `@codemonster-ru/vueforge-playground@3.0.0`             |
 
 For each row:
 
@@ -135,19 +135,19 @@ For each row:
 Example for the first stable package:
 
 ```bash
-git tag '@codemonster-ru/vueforge-theme@1.4.0'
-git push origin '@codemonster-ru/vueforge-theme@1.4.0'
+git tag '@codemonster-ru/vueforge-theme@2.0.0'
+git push origin '@codemonster-ru/vueforge-theme@2.0.0'
 ```
 
 For a beta, update the package and changelog to a matching prerelease version first, then use a tag
-such as `@codemonster-ru/vueforge-theme@1.4.0-beta.1`. The workflow publishes it under `next`.
+such as `@codemonster-ru/vueforge-theme@2.0.0-beta.1`. The workflow publishes it under `next`.
 
 ## 7. Registry, provenance, and integrity smoke
 
 After each workflow completes:
 
 ```bash
-npm view @codemonster-ru/vueforge-theme@1.4.0 version dist.integrity dist.shasum --json
+npm view @codemonster-ru/vueforge-theme@2.0.0 version dist.integrity dist.shasum --json
 npm dist-tag ls @codemonster-ru/vueforge-theme
 ```
 
@@ -178,14 +178,14 @@ For a stable regression:
 Commands use the real package and known-good version:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-core@1.35.1 latest
-npm deprecate @codemonster-ru/vueforge-core@1.36.0 "Use the latest verified patch release."
+npm dist-tag add @codemonster-ru/vueforge-core@1.36.0 latest
+npm deprecate @codemonster-ru/vueforge-core@2.0.0 "Use the latest verified patch release."
 ```
 
 For a prerelease regression, move `next` to the last verified prerelease:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-core@1.36.0-beta.0 next
+npm dist-tag add @codemonster-ru/vueforge-core@2.0.0-beta.0 next
 ```
 
 If no prerelease should remain discoverable, remove `next` instead:

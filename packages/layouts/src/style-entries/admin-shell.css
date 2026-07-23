@@ -2,7 +2,7 @@
   min-width: var(--vf-layout-min-width);
   display: flex;
   flex-direction: column;
-  color: var(--vf-color-text-primary, var(--vf-color-text));
+  color: var(--vf-color-text-primary);
   background: var(--vf-layout-admin-shell-header-background);
 }
 

@@ -161,18 +161,12 @@
 }
 
 /* stylelint-disable no-descending-specificity -- Theme selectors intentionally layer explicit, inherited, and fallback modes. */
-.vf-codeblock[data-theme='light'],
-:root:not([data-theme='dark']) .vf-codeblock:not([data-theme='dark']),
-[data-theme='light'] .vf-codeblock,
+.vf-codeblock[data-vf-theme='light'],
 [data-vf-theme='light'] .vf-codeblock,
-:root:not([data-vf-theme='dark']) .vf-codeblock:not([data-theme='dark']) {
+:root:not([data-vf-theme='dark']) .vf-codeblock:not([data-vf-theme='dark']) {
   box-shadow: var(--vf-codeblock-shadow);
 }
 /* stylelint-enable no-descending-specificity */
-
-.vf-codeblock--disabled {
-  opacity: var(--vf-codeblock-disabled-opacity);
-}
 
 @media (hover: none), (pointer: coarse) {
   .vf-codeblock .vf-codeblock__copy:not(:disabled) {

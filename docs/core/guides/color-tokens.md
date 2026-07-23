@@ -1,6 +1,6 @@
 ---
 title: 'Color Tokens'
-description: 'OKLCH primitives, semantic color roles, accessibility pairings, and VueForge 1.x compatibility'
+description: 'OKLCH primitives, semantic color roles, accessibility pairings, and component customization'
 order: 2
 ---
 
@@ -11,16 +11,16 @@ VueForge separates material values from interface decisions:
 ```text
 OKLCH primitive material
   └─ semantic role (background, text, border, interaction, status)
-       └─ VueForge 1.x component compatibility token
+       └─ component customization token
             └─ component CSS
 ```
 
 Semantic roles are the supported interface between components and the color system. Primitive variables are for theme
-construction, documentation, and explicitly documented adapters such as syntax highlighting. Legacy roots and component
-tokens remain available throughout VueForge 1.x so existing presets and local overrides do not silently stop working.
+construction, documentation, and explicitly documented adapters such as syntax highlighting. Component tokens remain the
+local customization boundary where a component needs a narrower override.
 
-The built-in preset has 997 keys: 847 legacy keys, 66 primitive colors, and 84 additive semantic keys.
-`colorFocusRing` already belonged to the 1.x surface and is also one of the 85 semantic roles.
+The built-in preset has 958 keys: 66 primitive colors, 85 semantic roles, and 807 shared or component tokens.
+Complete presets provide every primitive and semantic role; mode-specific overrides remain partial.
 
 ## Naming
 
@@ -28,7 +28,7 @@ The built-in preset has 997 keys: 847 legacy keys, 66 primitive colors, and 84 a
 - Shared role: `color{Category}{Role}`, for example `colorTextSecondary` / `--vf-color-text-secondary`.
 - Status role: `colorStatus{Tone}{Role}`, for example `colorStatusDangerSubtleForeground`.
 - Component adapter exception: a scoped CSS role such as `--vf-codeblock-syntax-token-comment`.
-- New names use `Warning`; the public VueForge 1.x `Warn` spelling remains supported.
+- Warning status names use `Warning`.
 
 Names describe purpose rather than hue. Components must not select `palettePrimary600` directly because the appropriate
 material changes by role and mode.
@@ -263,16 +263,15 @@ iframe HTML; custom-prefix and sandbox tests pin those two exceptions. The compo
 one composited recipe: `overlayFloatShadow` may use Neutral 1000 at two documented alpha levels. A contract asserts that no
 other component mapping references a primitive directly.
 
-During VueForge 1.x, existing component tokens remain the customization boundary:
+Component tokens remain the customization boundary:
 
 ```text
 component CSS → --vf-input-border-color
---vf-input-border-color → --vf-color-border-interactive → legacy fallback
+--vf-input-border-color → --vf-color-border-interactive → --vf-palette-neutral-400
 ```
 
-This keeps an existing `extend: { inputBorderColor: ... }` or manual `--vf-input-border-color` override effective while the
-built-in default is governed by the semantic layer. Simple compatibility aliases are candidates for removal only in
-VueForge 2.
+This keeps `extend: { inputBorderColor: ... }` and manual `--vf-input-border-color` overrides effective while the built-in
+default is governed by the semantic layer.
 
 One-token component overrides continue to control their base state, but they cannot define the new compound-state model.
 For example, `--vf-tabs-tab-active-background` remains the selected fallback, while selected + hover and selected + active
@@ -281,8 +280,9 @@ otherwise the built-in compound states intentionally remain accessible and mode-
 
 ## Custom theme migration
 
-Primitive and semantic fields remain optional additions to `VfThemeTokens`, so a complete VueForge 1.x preset without them
-continues to type-check. Migrated CSS includes a legacy fallback for that case.
+`VfThemeTokens` requires all primitive and semantic fields. Standalone `VfPrimitiveColorTokens` and
+`VfSemanticColorTokens` remain partial-map types for override utilities, while `extend`, `light`, and `dark` continue to
+accept partial token maps.
 
 For new or updated themes:
 
@@ -290,23 +290,16 @@ For new or updated themes:
 2. Override `colorInteractivePrimaryBackground` separately from `colorSelectedForeground`.
 3. Supply independent status solid, subtle foreground, border, hover, and active roles.
 4. Test both root and nested scoped light/dark themes.
-5. If a custom prefix is used, generate CSS through the VueForge runtime or static builder so canonical `--vf-*` aliases are
-   emitted.
+5. If a custom prefix is used, generate CSS through the VueForge runtime or static builder so
+   canonical `--vf-*` bridges are emitted.
 
-The public `buttonSolidHoverFilter` and `buttonSolidActiveFilter` hooks remain available for VueForge 1.x compatibility,
-but their built-in values are now `none`. A copied 1.x theme that still supplies `brightness(...)` will apply that filter on
-top of the new independent semantic hover or active material. Set both filters to `none` when adopting the Phase 2 state
-roles, or keep them deliberately and review the compounded result.
-
-The unavoidable VueForge 1.x behavior change is the removal of overloaded legacy meaning. Previously, changing only
-`colorDanger` also changed danger subtle text, icon, hover, and active because all roles pointed to one root. It now controls
-the compatible solid material; override the corresponding semantic roles when the whole danger scale is customized.
-
-Legacy tokens are not removed or renamed. `colorWarn*` remains available even though new semantic names use `Warning`.
+VueForge 1 root-name replacements are listed in the
+[VueForge 2 migration guide](/migration-to-v2). A complete status-scale customization sets its
+solid, subtle foreground, border, icon, hover, and active roles independently.
 
 ## Browser support
 
-The built-in palette uses `oklch()` and the compatibility layer already uses `color-mix()`. Consumers must target browsers
+The built-in palette uses `oklch()` and composited roles use `color-mix()`. Consumers must target browsers
 that support modern CSS Color syntax. VueForge does not emit a second sRGB declaration for every runtime-generated custom
 property because doing so would make runtime, static, scoped, and custom-prefix serialization diverge. The reference sRGB
 values above can be used by custom presets that intentionally support an older browser matrix.

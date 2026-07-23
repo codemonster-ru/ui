@@ -23,9 +23,9 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <VfStack style="gap:var(--vf-surface-gap)">
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">Block A</div>
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">Block B</div>
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">Block C</div>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">Block A</div>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">Block B</div>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">Block C</div>
   </VfStack>
 </template>
 
@@ -51,7 +51,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                                  |
+| ----- | ----------------------------------------------------------------------------------------- |
 | `Tab` | Stack is not focusable by default; focus follows child interactive elements in DOM order. |
-

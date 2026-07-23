@@ -31,22 +31,22 @@ const transitionGuardExcludedCssExports = new Set(['./tokens.css', './theme.css'
 const colorArchitectureSnippets = {
   './tokens.css': [
     '--vf-palette-neutral-50: oklch(97.8% 0.005 260);',
-    '--vf-color-background-canvas: var(--vf-color-bg);',
+    '--vf-color-background-canvas: var(--vf-palette-neutral-50);',
     '--vf-color-status-help-active-background:',
   ],
   './theme.css': [
     '--vf-palette-neutral-50: oklch(97.8% 0.005 260);',
-    '--vf-color-background-canvas: var(--vf-color-bg);',
+    '--vf-color-background-canvas: var(--vf-palette-neutral-50);',
     '--vf-color-status-help-active-background:',
   ],
   './foundation.css': [
     '--vf-palette-neutral-50: oklch(97.8% 0.005 260);',
-    '--vf-color-background-canvas: var(--vf-color-bg);',
+    '--vf-color-background-canvas: var(--vf-palette-neutral-50);',
     '--vf-color-status-help-active-background:',
   ],
   './styles.css': [
     '--vf-palette-neutral-50: oklch(97.8% 0.005 260);',
-    '--vf-color-background-canvas: var(--vf-color-bg);',
+    '--vf-color-background-canvas: var(--vf-palette-neutral-50);',
     '--vf-color-status-help-active-background:',
   ],
 };

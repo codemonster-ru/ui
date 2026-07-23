@@ -22,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfFooterArea style="padding:var(--vf-surface-gap);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">
+  <VfFooterArea style="padding:var(--vf-surface-gap);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">
     <small>© 2026 VueForge Docs</small>
   </VfFooterArea>
 </template>
@@ -49,7 +49,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                           |
+| ----- | ---------------------------------------------------------------------------------- |
 | `Tab` | Footer area is not focusable by default; focus moves through footer links/actions. |
-

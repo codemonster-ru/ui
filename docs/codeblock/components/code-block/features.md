@@ -40,9 +40,8 @@ const theme = ref<'light' | 'dark'>('light');
 let observer: MutationObserver | null = null;
 
 const syncTheme = () => {
-  const htmlTheme = document.documentElement.getAttribute('data-theme');
   const vfTheme = document.documentElement.getAttribute('data-vf-theme');
-  theme.value = htmlTheme === 'dark' || vfTheme === 'dark' ? 'dark' : 'light';
+  theme.value = vfTheme === 'dark' ? 'dark' : 'light';
 };
 
 onMounted(() => {
@@ -55,7 +54,7 @@ onMounted(() => {
   observer = new MutationObserver(syncTheme);
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['data-theme', 'data-vf-theme']
+    attributeFilter: ['data-vf-theme']
   });
 });
 
@@ -87,7 +86,7 @@ export const formatGreeting = (user: User) => {
 
 Additional implementation notes and caveats:
 
-- When `theme="inherit"`, component tracks nearest `data-theme` / `data-vf-theme`.
+- When `theme="inherit"`, the component tracks the nearest `data-vf-theme`.
 - Highlighting is async; plain-code fallback is rendered first for responsiveness.
 - SSR can render finalized Shiki markup. During hydration, only the asynchronous contents of each code line are
   marked as an expected mismatch; component attributes and surrounding structure remain fully checked by Vue.

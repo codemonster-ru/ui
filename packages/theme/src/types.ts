@@ -3,42 +3,7 @@ import type { VfPrimitiveColorTokens, VfSemanticColorTokens } from './color-toke
 export type VfThemeMode = 'light' | 'dark' | 'system';
 export type VfResolvedTheme = 'light' | 'dark';
 
-export interface VfThemeTokens extends VfPrimitiveColorTokens, VfSemanticColorTokens {
-  colorBg: string;
-  colorSurface: string;
-  colorSurfaceMuted: string;
-  colorText: string;
-  colorMuted: string;
-  colorBorder: string;
-  colorPrimary: string;
-  colorPrimaryContrast: string;
-  colorPrimarySoft: string;
-  colorPrimaryBorderSoft: string;
-  colorFocusRing: string;
-  colorSuccess: string;
-  colorSuccessContrast: string;
-  colorInfo: string;
-  colorInfoContrast: string;
-  colorWarn: string;
-  colorWarnContrast: string;
-  colorHelp: string;
-  colorHelpContrast: string;
-  colorDanger: string;
-  colorDangerContrast: string;
-  colorContrast: string;
-  colorContrastContrast: string;
-  colorSuccessSoft: string;
-  colorInfoSoft: string;
-  colorWarnSoft: string;
-  colorHelpSoft: string;
-  colorDangerSoft: string;
-  colorContrastSoft: string;
-  colorSuccessBorderSoft: string;
-  colorInfoBorderSoft: string;
-  colorWarnBorderSoft: string;
-  colorHelpBorderSoft: string;
-  colorDangerBorderSoft: string;
-  colorContrastBorderSoft: string;
+export interface VfThemeTokens extends Required<VfPrimitiveColorTokens>, Required<VfSemanticColorTokens> {
   focusRingWidth: string;
   radius: string;
   radiusControl: string;
@@ -153,7 +118,6 @@ export interface VfThemeTokens extends VfPrimitiveColorTokens, VfSemanticColorTo
   dialogActionsGap: string;
   popoverWidth: string;
   floatingArrowSize: string;
-  overlayBackdrop: string;
   alertPrimarySoft: string;
   alertPrimaryBorderSoft: string;
   alertContentGap: string;
@@ -169,7 +133,6 @@ export interface VfThemeTokens extends VfPrimitiveColorTokens, VfSemanticColorTo
   zPopover: string;
   zTooltip: string;
   spacing: string;
-  shadow: string;
 }
 
 export interface VfThemePreset {

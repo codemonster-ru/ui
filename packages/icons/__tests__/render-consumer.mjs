@@ -42,8 +42,9 @@ try {
   assert.equal(globalThis.document, undefined);
 
   const packageJson = JSON.parse(readFileSync(join(extractedPackage, 'package.json'), 'utf8'));
-  const commonJsBundle = readFileSync(join(extractedPackage, packageJson.main), 'utf8');
-  const esmBundle = readFileSync(join(extractedPackage, packageJson.module), 'utf8');
+  const rootExport = packageJson.exports['.'];
+  const commonJsBundle = readFileSync(join(extractedPackage, rootExport.require.default), 'utf8');
+  const esmBundle = readFileSync(join(extractedPackage, rootExport.import.default), 'utf8');
   const iconCss = readFileSync(consumerRequire.resolve('@codemonster-ru/vueforge-icons/style.css'), 'utf8');
 
   assert.doesNotMatch(commonJsBundle, /document\.(?:createElement|head)/);

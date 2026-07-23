@@ -7,7 +7,7 @@
 
 A lightweight Vue 3 icon library with a unified API for the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-icons@1.6.0`.
+Coordinated release: `@codemonster-ru/vueforge-icons@2.0.0`.
 
 ## Requirements
 
@@ -50,6 +50,9 @@ import '@codemonster-ru/vueforge-icons/style.css';
 Node ESM and CommonJS conditions are DOM-free and deliberately do not inject CSS. Import
 `style.css` from the client stylesheet or browser entry of an SSR application. The CommonJS API
 is available through `require('@codemonster-ru/vueforge-icons')`.
+
+The package also retains `dist/index.ts.umd.js` for direct CDN consumers that provide the global
+`Vue` runtime. It is a standalone distribution artifact, not a package `exports` subpath.
 
 `VueIconify` accepts icon names dynamically, so the generic renderer includes the icon component
 catalog. Metadata-only named imports remain tree-shakeable.

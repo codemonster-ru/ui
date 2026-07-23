@@ -22,7 +22,7 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfContentArea style="border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">
+  <VfContentArea style="border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">
     <p style="margin:0">Article content goes here.</p>
   </VfContentArea>
 </template>
@@ -49,7 +49,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                               |
+| ----- | -------------------------------------------------------------------------------------- |
 | `Tab` | Content area is not focusable by default; focus moves through interactive descendants. |
-

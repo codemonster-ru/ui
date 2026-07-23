@@ -89,13 +89,13 @@
 
 .vf-textarea:read-only:not(:disabled, .vf-textarea--invalid) {
   cursor: default;
-  border-color: var(--vf-color-border-default, var(--vf-color-border));
-  background: var(--vf-color-background-surface-subtle, var(--vf-color-surface-muted));
-  color: var(--vf-color-text-secondary, var(--vf-color-muted));
+  border-color: var(--vf-color-border-default);
+  background: var(--vf-color-background-surface-subtle);
+  color: var(--vf-color-text-secondary);
 }
 
 .vf-textarea:read-only:not(:disabled, .vf-textarea--invalid)::placeholder {
-  color: var(--vf-color-text-secondary, var(--vf-color-muted));
+  color: var(--vf-color-text-secondary);
 }
 
 .vf-textarea + .vf-field__label--floating {

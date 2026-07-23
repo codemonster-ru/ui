@@ -156,8 +156,7 @@ If the server knows a validated light/dark preference from a cookie:
 1. pass that mode as `defaultTheme` to the server app;
 2. serialize the same validated value into the HTML response;
 3. use it for the client app factory;
-4. set matching `data-vf-theme` and `data-theme` attributes on the theme root before the stylesheet
-   paints.
+4. set the matching `data-vf-theme` attribute on the theme root before the stylesheet paints.
 
 Escape serialized data for its HTML context and accept only `light`, `dark`, or `system`. Do not
 insert an untrusted cookie value into an attribute or inline script.
@@ -180,9 +179,9 @@ render. This advanced path imports the low-level engine directly, so declare The
 dependency instead of relying on Core's transitive dependency:
 
 ```bash
-npm install @codemonster-ru/vueforge-theme@^1.4.0
-pnpm add @codemonster-ru/vueforge-theme@^1.4.0
-yarn add @codemonster-ru/vueforge-theme@^1.4.0
+npm install @codemonster-ru/vueforge-theme@^2.0.0
+pnpm add @codemonster-ru/vueforge-theme@^2.0.0
+yarn add @codemonster-ru/vueforge-theme@^2.0.0
 ```
 
 ```ts
@@ -204,7 +203,7 @@ and place `themeCss` after the package stylesheet in the HTML cascade. Do not bu
 untrusted input. Apply the application's CSP nonce when inline styles require one.
 
 Keep the `vf` prefix in this server path. The neutral Theme engine does not generate Core's
-custom-prefix aliases; a custom prefix needs an application-owned build step that emits the same
+custom-prefix bridges; a custom prefix needs an application-owned build step that emits the same
 canonical `--vf-*` bridge as the Core browser integration.
 
 ## Hydration Rules

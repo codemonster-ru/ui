@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-playground-core",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Framework-agnostic playground core runtime",
   "type": "module",
   "license": "MIT",
@@ -22,9 +22,6 @@
     "runtime",
     "sandbox"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

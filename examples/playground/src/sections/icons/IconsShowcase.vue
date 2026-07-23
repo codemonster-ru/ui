@@ -210,7 +210,7 @@ const copySnippet = async (snippet: string, key: string) => {
 
 .icon-tile__header h3 {
   margin: 0;
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
@@ -223,10 +223,10 @@ const copySnippet = async (snippet: string, key: string) => {
   width: 100%;
   min-height: 8rem;
   padding: var(--vf-surface-padding-compact);
-  border: 1px solid var(--vf-color-border);
+  border: 1px solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-surface);
-  background: var(--vf-color-surface);
-  color: var(--vf-color-text);
+  background: var(--vf-color-background-surface);
+  color: var(--vf-color-text-primary);
   cursor: pointer;
   transition:
     background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
@@ -236,13 +236,13 @@ const copySnippet = async (snippet: string, key: string) => {
 }
 
 .icon-tile__button:hover {
-  border-color: var(--vf-color-primary);
-  color: var(--vf-color-primary);
+  border-color: var(--vf-color-interactive-primary-background);
+  color: var(--vf-color-interactive-primary-background);
 }
 
 .icon-tile__button:focus-visible {
   outline: none;
-  border-color: var(--vf-color-primary);
+  border-color: var(--vf-color-interactive-primary-background);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
@@ -255,7 +255,7 @@ const copySnippet = async (snippet: string, key: string) => {
 }
 
 .icon-tile__meta {
-  color: var(--vf-color-muted);
+  color: var(--vf-color-text-muted);
   font-size: var(--vf-text-label-font-size);
   line-height: var(--vf-text-label-line-height);
 }

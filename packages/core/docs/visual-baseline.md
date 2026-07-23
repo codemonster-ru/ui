@@ -47,7 +47,7 @@ CSS fallback baseline source: [src/theme/default-preset-source.ts](../src/theme/
 ## Focus Contract
 
 - Interactive controls use:
-  - `border-color: var(--vf-color-primary)`
+  - `border-color: var(--vf-color-interactive-primary-background)`
   - `box-shadow: 0 0 0 2px var(--vf-color-focus-ring)`
 - Links may be slightly lighter, but should still follow the same ring language.
 - Focus should never rely on inconsistent native outlines.

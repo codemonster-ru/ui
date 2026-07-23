@@ -77,7 +77,7 @@ import { setCodeBlockThemeVars } from '@codemonster-ru/vueforge-codeblock/view';
 setCodeBlockThemeVars(
   {
     base: {
-      '--vf-codeblock-border-color': 'var(--vf-color-border)',
+      '--vf-codeblock-border-color': 'var(--vf-color-border-default)',
     },
   },
   { themeScope: '#docs-root' },
@@ -119,13 +119,7 @@ The following items are listed in this section:
 
 ## Constants
 
-The following items are listed in this section:
-
 - `SUPPORTED_CODE_BLOCK_LANGUAGES` from `/view`: built-in aliases (`ts`, `vue`, `json`, `bash`, etc.).
-- `SHIKI_LIGHT_THEME` from `/highlight`: legacy `github-light` identifier retained for source
-  compatibility; package highlighting uses the internal VueForge light theme.
-- `SHIKI_DARK_THEME` from `/highlight`: legacy `github-dark` identifier retained for source
-  compatibility; package highlighting uses the internal VueForge dark theme.
 
 ## Types
 

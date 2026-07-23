@@ -28,9 +28,9 @@
   gap: var(--vf-menu-gap);
   min-width: var(--vf-menu-min-width);
   padding: var(--vf-menu-padding);
-  border: var(--vf-overlay-border-width) solid var(--vf-color-border-default, var(--vf-color-border));
+  border: var(--vf-overlay-border-width) solid var(--vf-color-border-default);
   border-radius: var(--vf-radius-control);
-  background: var(--vf-color-background-surface-elevated, var(--vf-color-surface));
+  background: var(--vf-color-background-surface-elevated);
   box-shadow: var(--vf-overlay-float-shadow);
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
@@ -51,9 +51,9 @@
   z-index: 0;
   width: var(--vf-floating-arrow-size);
   height: var(--vf-floating-arrow-size);
-  background: var(--vf-color-background-surface-elevated, var(--vf-color-surface));
-  border-left: var(--vf-overlay-border-width) solid var(--vf-color-border-default, var(--vf-color-border));
-  border-top: var(--vf-overlay-border-width) solid var(--vf-color-border-default, var(--vf-color-border));
+  background: var(--vf-color-background-surface-elevated);
+  border-left: var(--vf-overlay-border-width) solid var(--vf-color-border-default);
+  border-top: var(--vf-overlay-border-width) solid var(--vf-color-border-default);
   transform: rotate(45deg);
   pointer-events: none;
 }

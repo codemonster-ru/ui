@@ -91,7 +91,6 @@ const CONSOLE_BRIDGE_SCRIPT = `
     });
 
     var root = document.documentElement;
-    root.setAttribute('data-theme', theme);
     root.setAttribute('data-vf-theme', theme);
     root.classList.toggle('dark', theme === 'dark');
     root.classList.toggle('light', theme === 'light');
@@ -110,8 +109,8 @@ const CONSOLE_BRIDGE_SCRIPT = `
     });
 
     if (document.body) {
-      document.body.style.backgroundColor = 'var(--vf-color-background-canvas, var(--vf-color-bg, Canvas))';
-      document.body.style.color = 'var(--vf-color-text-primary, var(--vf-color-text, CanvasText))';
+      document.body.style.backgroundColor = 'var(--vf-color-background-canvas, Canvas)';
+      document.body.style.color = 'var(--vf-color-text-primary, CanvasText)';
     }
   });
 })();
@@ -250,7 +249,7 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
   const errors: PlaygroundError[] = [];
 
   const importRegex =
-    /(import\s+(?:[^"'()]+?\s+from\s+)?["']([^"']+)["']\s*;?)|(export\s+[^"']+?\s+from\s+["']([^"']+)["']\s*;?)/g;
+    /(?:import\s+(?:[^"'()]+?\s+from\s+)?["']([^"']+)["']\s*;?)|(?:export\s+[^"']+?\s+from\s+["']([^"']+)["']\s*;?)/g;
 
   function makeError(
     message: string,
@@ -315,9 +314,8 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
     const sourceJs = filePath.endsWith('.ts') ? transpileTs(source) : source;
     let usesStyleHelpers = false;
 
-    const transformed = sourceJs.replace(importRegex, (full, importStmt, importSpec, exportStmt, exportSpec) => {
+    const transformed = sourceJs.replace(importRegex, (full, importSpec, exportSpec) => {
       const specifier = (importSpec ?? exportSpec) as string;
-      const isExport = Boolean(exportStmt);
 
       if (isCssPath(specifier)) {
         const resolvedLocal = isBareImport(specifier)
@@ -371,9 +369,6 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
         const compiled = compileModule(localModulePath);
         const moduleUrl = ensureModuleUrl(localModulePath, compiled);
 
-        if (isExport) {
-          return full.replace(specifier, moduleUrl);
-        }
         return full.replace(specifier, moduleUrl);
       }
 

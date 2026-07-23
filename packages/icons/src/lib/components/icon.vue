@@ -14,7 +14,6 @@ defineOptions({
 });
 
 const FALLBACK_ICON = 'moon' as const;
-type IconStyle = 'solid';
 
 const iconModules = import.meta.glob('./*.vue', {
   eager: true,
@@ -28,14 +27,12 @@ const props = withDefaults(
     icon?: IconName | string;
     spin?: boolean;
     size?: number | string;
-    style?: IconStyle;
     inset?: number;
   }>(),
   {
     icon: FALLBACK_ICON,
     spin: false,
     size: 'var(--vf-icon-current-size, var(--vf-icon-size-md))',
-    style: 'solid',
     inset: 0,
   },
 );

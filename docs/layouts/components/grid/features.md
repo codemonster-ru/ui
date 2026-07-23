@@ -23,10 +23,10 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <VfGrid style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--vf-surface-gap)">
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">Cell 1</div>
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">Cell 2</div>
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">Cell 3</div>
-    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border);border-radius:var(--vf-radius-control)">Cell 4</div>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">Cell 1</div>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">Cell 2</div>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">Cell 3</div>
+    <div style="padding:var(--vf-surface-gap-compact);border:1px solid var(--vf-color-border-default);border-radius:var(--vf-radius-control)">Cell 4</div>
   </VfGrid>
 </template>
 
@@ -52,7 +52,6 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
+| Key   | Function                                                                                            |
+| ----- | --------------------------------------------------------------------------------------------------- |
 | `Tab` | Grid wrapper is not focusable by default; focus moves through interactive descendants in DOM order. |
-

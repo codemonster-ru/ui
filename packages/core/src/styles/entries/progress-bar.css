@@ -26,13 +26,13 @@
     color-mix(
         in srgb,
         var(--vf-progress-bar-value-color) var(--vf-progress-bar-striped-tint-ratio),
-        var(--vf-color-background-canvas, var(--vf-color-bg))
+        var(--vf-color-background-canvas)
       )
       var(--vf-progress-bar-striped-segment-size),
     color-mix(
         in srgb,
         var(--vf-progress-bar-value-color) var(--vf-progress-bar-striped-tint-ratio),
-        var(--vf-color-background-canvas, var(--vf-color-bg))
+        var(--vf-color-background-canvas)
       )
       calc(var(--vf-progress-bar-striped-segment-size) * 2)
   );
@@ -40,38 +40,38 @@
 }
 
 .vf-progress-bar--success {
-  --vf-progress-bar-value-color: var(--vf-color-status-success-solid-background, var(--vf-color-success));
-  --vf-progress-bar-label-color: var(--vf-color-status-success-solid-foreground, var(--vf-color-success-contrast));
+  --vf-progress-bar-value-color: var(--vf-color-status-success-solid-background);
+  --vf-progress-bar-label-color: var(--vf-color-status-success-solid-foreground);
 }
 
 .vf-progress-bar--neutral {
-  --vf-progress-bar-value-color: var(--vf-color-icon-secondary, var(--vf-color-muted));
-  --vf-progress-bar-label-color: var(--vf-color-text-inverse, var(--vf-color-bg));
+  --vf-progress-bar-value-color: var(--vf-color-icon-secondary);
+  --vf-progress-bar-label-color: var(--vf-color-text-inverse);
 }
 
 .vf-progress-bar--info {
-  --vf-progress-bar-value-color: var(--vf-color-status-info-solid-background, var(--vf-color-info));
-  --vf-progress-bar-label-color: var(--vf-color-status-info-solid-foreground, var(--vf-color-info-contrast));
+  --vf-progress-bar-value-color: var(--vf-color-status-info-solid-background);
+  --vf-progress-bar-label-color: var(--vf-color-status-info-solid-foreground);
 }
 
 .vf-progress-bar--warn {
-  --vf-progress-bar-value-color: var(--vf-color-status-warning-active-background, var(--vf-color-warn));
-  --vf-progress-bar-label-color: var(--vf-color-status-warning-solid-foreground, var(--vf-color-warn-contrast));
+  --vf-progress-bar-value-color: var(--vf-color-status-warning-active-background);
+  --vf-progress-bar-label-color: var(--vf-color-status-warning-solid-foreground);
 }
 
 .vf-progress-bar--help {
-  --vf-progress-bar-value-color: var(--vf-color-status-help-solid-background, var(--vf-color-help));
-  --vf-progress-bar-label-color: var(--vf-color-status-help-solid-foreground, var(--vf-color-help-contrast));
+  --vf-progress-bar-value-color: var(--vf-color-status-help-solid-background);
+  --vf-progress-bar-label-color: var(--vf-color-status-help-solid-foreground);
 }
 
 .vf-progress-bar--danger {
-  --vf-progress-bar-value-color: var(--vf-color-status-danger-solid-background, var(--vf-color-danger));
-  --vf-progress-bar-label-color: var(--vf-color-status-danger-solid-foreground, var(--vf-color-danger-contrast));
+  --vf-progress-bar-value-color: var(--vf-color-status-danger-solid-background);
+  --vf-progress-bar-label-color: var(--vf-color-status-danger-solid-foreground);
 }
 
 .vf-progress-bar--contrast {
-  --vf-progress-bar-value-color: var(--vf-color-background-inverse, var(--vf-color-contrast));
-  --vf-progress-bar-label-color: var(--vf-color-text-inverse, var(--vf-color-contrast-contrast));
+  --vf-progress-bar-value-color: var(--vf-color-background-inverse);
+  --vf-progress-bar-label-color: var(--vf-color-text-inverse);
 }
 
 .vf-progress-bar__label {
