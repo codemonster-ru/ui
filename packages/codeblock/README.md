@@ -7,6 +7,8 @@
 
 A Vue 3 code block component with syntax highlighting and token-based theming for VueForge.
 
+Coordinated release: `@codemonster-ru/vueforge-codeblock@3.7.0`.
+
 ## Requirements
 
 - Node.js 20 or newer for consumer tooling and SSR.
@@ -26,7 +28,7 @@ pnpm add vue@^3.5.0 @codemonster-ru/vueforge-codeblock
 yarn add vue@^3.5.0 @codemonster-ru/vueforge-codeblock
 ```
 
-## Use the component
+## Quick start
 
 There is no root package export. Import the Vue component and plugin from `/view`:
 
@@ -66,3 +68,7 @@ For full documentation, visit [docs.codemonster.net/vueforge/codeblock](https://
 See the repository
 [installation guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/codeblock/installation.md)
 and [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/codeblock/CHANGELOG.md).
+
+## License
+
+[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/codeblock/LICENSE)

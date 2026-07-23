@@ -51,8 +51,7 @@ vi.mock('@codemonster-ru/vueforge-playground-core', () => ({
     files?: Record<string, string>;
     entry?: string;
     resolveImport?: unknown;
-  }) =>
-    createSessionMock(options),
+  }) => createSessionMock(options),
 }));
 
 const TabsStub = defineComponent({
@@ -333,7 +332,7 @@ describe('VfPlayground', () => {
     ).toThrow('[VfPlayground] `component` is required when `mode` is "component".');
   });
 
-  it('shows code tab in component mode when componentSource is provided', () => {
+  it('uses componentSourceLanguage for single-source component mode', () => {
     const wrapper = mount(VfPlayground, {
       props: {
         mode: 'component',
@@ -345,8 +344,8 @@ describe('VfPlayground', () => {
             },
           }),
         ),
-        componentSource: '<template><div>preview</div></template>',
-        componentSourceLanguage: 'vue',
+        componentSource: 'export default { name: "Preview" };',
+        componentSourceLanguage: 'typescript',
       },
       global: testGlobal,
     });
@@ -354,8 +353,32 @@ describe('VfPlayground', () => {
     expect(wrapper.find('.vf-tabs-item[data-value="code"]').exists()).toBe(true);
     expect(wrapper.find('.vf-tabs-item[data-value="preview"]').exists()).toBe(true);
     expect(findTabsHost(wrapper).attributes('data-model-value')).toBe('code');
-    expect(findCodeHost(wrapper).attributes('data-language')).toBe('vue');
-    expect(findCodeHost(wrapper).text()).toContain('<template><div>preview</div></template>');
+    expect(findCodeHost(wrapper).attributes('data-language')).toBe('typescript');
+    expect(findCodeHost(wrapper).text()).toContain('export default');
+  });
+
+  it('uses componentSourceLanguage for extensionless component files', () => {
+    const wrapper = mount(VfPlayground, {
+      props: {
+        mode: 'component',
+        component: markRaw(
+          defineComponent({
+            name: 'ExtensionlessComponentSource',
+            setup() {
+              return () => h('div', 'preview');
+            },
+          }),
+        ),
+        componentFiles: {
+          Component: 'export default { name: "Preview" };',
+        },
+        componentEntry: 'Component',
+        componentSourceLanguage: 'typescript',
+      },
+      global: testGlobal,
+    });
+
+    expect(findCodeHost(wrapper).attributes('data-language')).toBe('typescript');
   });
 
   it('uses initialTab preview in component mode when code is available', () => {

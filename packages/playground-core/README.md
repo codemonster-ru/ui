@@ -7,6 +7,8 @@
 
 A framework-agnostic runtime core for interactive playground sessions in the VueForge ecosystem.
 
+Coordinated release: `@codemonster-ru/vueforge-playground-core@1.2.0`.
+
 ## Requirements
 
 - Node.js 18 or newer for installation and build tooling.
@@ -26,17 +28,26 @@ pnpm add @codemonster-ru/vueforge-playground-core
 yarn add @codemonster-ru/vueforge-playground-core
 ```
 
-## Public API
+## Quick start
 
 The package exposes one side-effect-free ESM entry and no CSS:
+
+```html
+<iframe id="playground-preview" title="Playground preview" sandbox="allow-scripts"></iframe>
+```
 
 ```ts
 import { createPlaygroundSession } from '@codemonster-ru/vueforge-playground-core';
 
+const iframe = document.querySelector<HTMLIFrameElement>('#playground-preview');
+if (!iframe) {
+  throw new Error('Playground preview iframe is missing.');
+}
+
 const session = createPlaygroundSession({
   files: { '/index.ts': 'console.log("ready")' },
   entry: '/index.ts',
-  iframe: document.querySelector('iframe'),
+  iframe,
 });
 
 await session.run();
@@ -59,3 +70,7 @@ and
 [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-core/CHANGELOG.md).
 The higher-level Vue integration is documented in
 [`@codemonster-ru/vueforge-playground`](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground/README.md).
+
+## License
+
+[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-core/LICENSE)

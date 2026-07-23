@@ -7,9 +7,12 @@
 
 A Vite plugin for resolving VueForge playground virtual modules from local source files.
 
+Coordinated release: `@codemonster-ru/vueforge-playground-vite-plugin@0.2.0`.
+
 ## Requirements
 
-- Node.js 18 or newer.
+- Node.js 18 or newer for the plugin itself. The selected Vite major may require a newer Node.js
+  version.
 - Vite `^6.0.0`, `^7.0.0`, or `^8.0.0`.
 
 ## Install
@@ -26,7 +29,7 @@ pnpm add --save-dev @codemonster-ru/vueforge-playground-vite-plugin
 yarn add --dev @codemonster-ru/vueforge-playground-vite-plugin
 ```
 
-## Configure Vite
+## Quick start
 
 ```ts
 import { fileURLToPath, URL } from 'node:url';
@@ -63,3 +66,7 @@ and
 [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-vite-plugin/CHANGELOG.md).
 Playground UI and runtime setup is documented in
 [`@codemonster-ru/vueforge-playground`](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground/README.md).
+
+## License
+
+[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/playground-vite-plugin/LICENSE)
