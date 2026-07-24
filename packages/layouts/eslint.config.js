@@ -1,4 +1,3 @@
-import globals from 'globals';
 import { createVueTsConfig } from '../../eslint.base.mjs';
 
 export default [
@@ -20,14 +19,4 @@ export default [
       'vue/singleline-html-element-content-newline': 'off',
     },
   }),
-  {
-    files: ['tests/**/*.ts'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        ...globals.vitest,
-      },
-    },
-  },
 ];
