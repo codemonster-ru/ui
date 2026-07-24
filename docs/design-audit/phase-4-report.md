@@ -1,57 +1,57 @@
-# VueForge — Phase 4: аудит публикации, упаковки и дистрибуции
+# VueForge — Phase 4: publication, packaging, and distribution audit
 
-Дата подготовки: 2026-07-23. Область аудита: восемь публикуемых npm-пакетов VueForge,
-их dependency graph, package metadata, exports, tarballs, consumer-сценарии, bundle delivery,
-release automation и документация обновления.
+Prepared on: 2026-07-23. Audit scope: eight publishable VueForge npm packages,
+their dependency graph, package metadata, exports, tarballs, consumer scenarios, bundle delivery,
+release automation, and upgrade documentation.
 
 ## 1. Executive summary
 
-Phase 4 проверила VueForge в том виде, в котором библиотеку увидит внешний потребитель: не через
-workspace aliases и исходники monorepo, а через реальные tarballs, чистую установку и только
-заявленные package exports.
+Phase 4 verified VueForge as an external consumer will see the library: not through workspace
+aliases and monorepo sources, but through actual tarballs, a clean installation, and only the
+declared package exports.
 
-До исправлений локальные сборки и тесты не гарантировали корректную публикацию. Были подтверждены
-следующие объективные release-дефекты:
+Before the fixes, local builds and tests did not guarantee a correct publication. The following
+objective release defects were confirmed:
 
-- часть browser entrypoints с автоматическим CSS выбиралась также прямым Node ESM import и была
-  непригодна для SSR без CSS loader;
-- CommonJS runtime и его TypeScript declarations разрешались через разные module systems;
-- опубликованные declarations содержали extensionless relative imports, CSS side-effect imports и
-  ссылки на локальные dependency shims;
-- `main`, `module` и `types` у CodeBlock и Playground расходились с намеренно отсутствующим modern
-  root export и требовали явного решения о legacy compatibility;
-- Layouts собирал full stylesheet, но не экспортировал его как `./styles.css`;
-- внутренние dependency floors допускали установку пакетов до Phase 0–3, несовместимых с текущей
-  сборкой;
-- Shiki ошибочно оставался production dependency CodeBlock, хотя runtime использует уже собранные
-  deferred chunks;
-- package manager, engine, repository и side-effect metadata были неполными или неодинаковыми;
-- release workflow не фиксировал npm toolchain и не различал stable/prerelease dist-tags;
-- release toolchain удерживал уязвимые транзитивные patch-версии и не имел security gate для
-  production graph и high/critical development advisories;
-- lockfile допускал невалидный Vue companion graph: `vue@3.5.35` мог получить deduplicated
-  `@vue/compiler-dom`/`@vue/shared@3.5.33`, а clean-install gate не запускал `npm ls`;
-- не существовало одного автоматического контракта, проверяющего все manifests, exports, tarballs,
-  TypeScript modes, SSR и package-manager consumers.
+- some browser entrypoints with automatic CSS were also selected by direct Node ESM imports and
+  were unsuitable for SSR without a CSS loader;
+- the CommonJS runtime and its TypeScript declarations resolved through different module systems;
+- published declarations contained extensionless relative imports, CSS side-effect imports, and
+  references to local dependency shims;
+- `main`, `module`, and `types` for CodeBlock and Playground conflicted with the intentionally absent
+  modern root export and required an explicit legacy compatibility decision;
+- Layouts built a full stylesheet but did not export it as `./styles.css`;
+- internal dependency floors allowed packages predating Phase 0–3 that were incompatible with the
+  current build to be installed;
+- Shiki incorrectly remained a production dependency of CodeBlock even though the runtime uses
+  already-built deferred chunks;
+- package manager, engine, repository, and side-effect metadata were incomplete or inconsistent;
+- the release workflow did not pin the npm toolchain or distinguish stable/prerelease dist-tags;
+- the release toolchain retained vulnerable transitive patch versions and had no security gate for
+  the production graph and high/critical development advisories;
+- the lockfile allowed an invalid Vue companion graph: `vue@3.5.35` could receive deduplicated
+  `@vue/compiler-dom`/`@vue/shared@3.5.33`, and the clean-install gate did not run `npm ls`;
+- there was no single automated contract covering all manifests, exports, tarballs, TypeScript
+  modes, SSR, and package-manager consumers.
 
-После исправлений все восемь пакетов имеют согласованный release train, существующие export targets,
-CSS-free Node paths, корректные declaration conditions и воспроизводимую publication sequence. Реальные
-tarballs успешно установлены и использованы в чистых consumers через npm 11.9.0, pnpm 10.34.5 и Yarn
-Classic 1.22.22.
+After the fixes, all eight packages have a coordinated release train, valid export targets,
+CSS-free Node paths, correct declaration conditions, and a reproducible publication sequence. Actual
+tarballs were successfully installed and used by clean consumers with npm 11.9.0, pnpm 10.34.5, and
+Yarn Classic 1.22.22.
 
-Phase 4 не меняла component markup, component CSS, публичные design tokens, значения палитры или
-визуальное поведение. Единственное изменение runtime-source — локализация публичной структурной формы
-типов `useFloating`, чтобы declarations Core не переносили в consumer дефектные внутренние specifiers
-стороннего пакета; выполняемый runtime-код и допустимые placement/strategy values не изменены.
+Phase 4 did not change component markup, component CSS, public design tokens, palette values, or
+visual behavior. The only runtime-source change localizes the public structural shape of the
+`useFloating` types so Core declarations do not expose a third-party package's defective internal
+specifiers to consumers; executable runtime code and valid placement/strategy values are unchanged.
 
-Рекомендуемый статус после этой фазы — **Ready for Stable Release** в границах packaging и
-distribution. Registry smoke, provenance/integrity и остановка train при первом сбое остаются
-обязательными шагами самого release process: их невозможно выполнить до появления первого пакета в
-registry, но для них есть последовательный gate и rollback plan.
+The recommended status after this phase is **Ready for Stable Release** within the packaging and
+distribution scope. Registry smoke, provenance/integrity, and stopping the train at the first failure
+remain mandatory steps of the release process itself: they cannot be performed before the first
+package appears in the registry, but a sequential gate and rollback plan are in place.
 
 ## 2. Package graph
 
-Публикуемый граф состоит ровно из восьми пакетов:
+The publishable graph consists of exactly eight packages:
 
 ```text
 @codemonster-ru/vueforge-theme ───────────────┐
@@ -66,42 +66,43 @@ registry, но для них есть последовательный gate и r
   independent build-time integration; Vite is a peer
 ```
 
-`vueforge-layouts` также напрямую зависит от Theme, а Playground — от Core, CodeBlock и Playground
-Core. Циклических внутренних runtime/peer-зависимостей нет.
+`vueforge-layouts` also depends directly on Theme, while Playground depends on Core, CodeBlock, and
+Playground Core. There are no cyclic internal runtime/peer dependencies.
 
 ### Manifest consistency
 
-| Пакет                  | Export keys | Root JS                            | Module delivery | CSS delivery                               | Node engine |
-| ---------------------- | ----------: | ---------------------------------- | --------------- | ------------------------------------------ | ----------- |
-| Theme                  |           1 | Да                                 | ESM             | Нет собственного CSS entry                 | `>=18`      |
-| Icons                  |           2 | Да                                 | ESM + CJS       | Browser auto + `style.css`                 | `>=18`      |
-| Core                   |          85 | Да                                 | ESM + root CJS  | Full, 38 component и 4 support CSS entries | `>=18`      |
-| Layouts                |          40 | Да                                 | ESM + root CJS  | Full и 21 granular entries                 | `>=18`      |
-| CodeBlock              |           6 | Нет, только `/view` и `/highlight` | ESM + CJS       | Auto `/view` + 4 explicit entries          | `>=20`      |
-| Playground Core        |           1 | Да                                 | ESM             | Нет                                        | `>=18`      |
-| Playground Vite Plugin |           1 | Да                                 | ESM             | Нет                                        | `>=18`      |
-| Playground             |           6 | Нет, только `/ui` и `/runtime`     | ESM             | Auto `/ui` + 4 explicit entries            | `>=20`      |
+| Package                | Export keys | Root JS                           | Module delivery | CSS delivery                                 | Node engine |
+| ---------------------- | ----------: | --------------------------------- | --------------- | -------------------------------------------- | ----------- |
+| Theme                  |           1 | Yes                               | ESM             | No dedicated CSS entry                       | `>=18`      |
+| Icons                  |           2 | Yes                               | ESM + CJS       | Browser auto + `style.css`                   | `>=18`      |
+| Core                   |          85 | Yes                               | ESM + root CJS  | Full, 38 component and 4 support CSS entries | `>=18`      |
+| Layouts                |          40 | Yes                               | ESM + root CJS  | Full and 21 granular entries                 | `>=18`      |
+| CodeBlock              |           6 | No, only `/view` and `/highlight` | ESM + CJS       | Auto `/view` + 4 explicit entries            | `>=20`      |
+| Playground Core        |           1 | Yes                               | ESM             | None                                         | `>=18`      |
+| Playground Vite Plugin |           1 | Yes                               | ESM             | None                                         | `>=18`      |
+| Playground             |           6 | No, only `/ui` and `/runtime`     | ESM             | Auto `/ui` + 4 explicit entries              | `>=20`      |
 
-Для каждого пакета проверены `name`, `description`, `license`, `author`, `keywords`, `files`,
-`publishConfig`, `repository`, `repository.directory`, `homepage`, `bugs`, `engines` и export map.
-Все packages публикуют только `dist` и имеют `publishConfig.access: public`. README, LICENSE и
-`package.json` добавляются npm автоматически и присутствуют в dry-run tarballs.
+For each package, `name`, `description`, `license`, `author`, `keywords`, `files`, `publishConfig`,
+`repository`, `repository.directory`, `homepage`, `bugs`, `engines`, and the export map were checked.
+All packages publish only `dist` and have `publishConfig.access: public`. README, LICENSE, and
+`package.json` are added automatically by npm and are present in dry-run tarballs.
 
-Funding metadata отсутствует у всех пакетов. Это не скрытая несогласованность: в проекте не задан
-официальный funding URL, поэтому добавление фиктивного значения было бы хуже осознанного отсутствия.
-Отдельное поле `browser` не требуется: browser bundlers получают `exports.import.default`, а CSS-free
-SSR получает более приоритетный `exports.import.node` там, где browser entry имеет side effect.
+Funding metadata is absent from all packages. This is not a hidden inconsistency: the project has no
+official funding URL, so adding a fictitious value would be worse than an intentional omission.
+A separate `browser` field is unnecessary: browser bundlers receive `exports.import.default`, while
+CSS-free SSR receives the higher-priority `exports.import.node` where the browser entry has a side
+effect.
 
-CodeBlock и Playground с major 3 и 2 соответственно по-прежнему не объявляют modern root export:
-поддерживаемый API использует явные subpaths. Их существующие `main`/`module`/`types` сохранены как
-совместимость для старых resolvers, игнорирующих `exports`, и указывают на реальные artifacts. Это не
-расширяет modern package API и не ломает legacy consumers в minor release.
+CodeBlock and Playground, at major versions 3 and 2 respectively, still do not declare a modern root
+export: the supported API uses explicit subpaths. Their existing `main`/`module`/`types` are retained
+for compatibility with older resolvers that ignore `exports` and point to actual artifacts. This
+does not expand the modern package API or break legacy consumers in a minor release.
 
 ## 3. Dependency audit
 
 ### Runtime and peer edges
 
-| Пакет                  | Production dependencies                                      | Peer dependencies                     |
+| Package                | Production dependencies                                      | Peer dependencies                     |
 | ---------------------- | ------------------------------------------------------------ | ------------------------------------- |
 | Theme                  | —                                                            | —                                     |
 | Icons                  | —                                                            | Vue `^3.5.0`                          |
@@ -112,185 +113,188 @@ CodeBlock и Playground с major 3 и 2 соответственно по-пре
 | Playground Vite Plugin | —                                                            | Vite `^6.0.0 \|\| ^7.0.0 \|\| ^8.0.0` |
 | Playground             | Core `^1.36.0`, CodeBlock `^3.7.0`, Playground Core `^1.2.0` | Vue `^3.5.0`                          |
 
-`optionalDependencies` не используются. Vue остаётся peer у Vue-компонентов, чтобы consumer владел
-единственным application runtime. Core является peer Layouts, потому что Layouts использует его
-публичные contracts, но не должен устанавливать вторую копию UI layer. Vite является peer build-time
-plugin. TypeScript намеренно остаётся production dependency Playground Core: браузерный sandbox
-реально загружает compiler runtime по требованию.
+`optionalDependencies` are not used. Vue remains a peer of Vue components so the consumer owns the
+single application runtime. Core is a peer of Layouts because Layouts uses its public contracts but
+must not install a second copy of the UI layer. Vite is a peer of the build-time plugin. TypeScript
+intentionally remains a production dependency of Playground Core: the browser sandbox actually
+loads the compiler runtime on demand.
 
-Объективные cleanup-изменения:
+Objective cleanup changes:
 
-- `shiki` перенесён из production dependencies CodeBlock в devDependencies вместе с прямыми
-  `@shikijs/core` и `@shikijs/langs`: библиотечная сборка уже содержит lazy chunks, а чистый consumer
-  не должен повторно устанавливать исходный Shiki graph;
-- Icons теперь явно объявляет Sass compiler, используемый его Vue sources: прежде clean build
-  случайно зависел от транзитивного dev dependency другого инструмента;
-- удалены неиспользуемые CodeBlock devDependencies на Core, Layouts и Sass;
-- добавлены фактически используемые audit/build dependencies Icons, Core, Layouts, Playground,
-  Playground Core и Vite plugin;
-- удалён root override `vue-router`, которого нет в фактическом install graph;
-- sibling packages в devDependencies по-прежнему используют явные `file:../...`, а publishable
-  runtime/peer edges — только SemVer ranges.
+- `shiki` was moved from CodeBlock production dependencies to devDependencies along with direct
+  `@shikijs/core` and `@shikijs/langs`: the library build already contains lazy chunks, and a clean
+  consumer must not reinstall the source Shiki graph;
+- Icons now explicitly declares the Sass compiler used by its Vue sources: previously, a clean build
+  accidentally depended on another tool's transitive dev dependency;
+- unused CodeBlock devDependencies on Core, Layouts, and Sass were removed;
+- the actually used audit/build dependencies were added to Icons, Core, Layouts, Playground,
+  Playground Core, and the Vite plugin;
+- the root `vue-router` override, absent from the actual install graph, was removed;
+- sibling packages in devDependencies still use explicit `file:../...`, while publishable
+  runtime/peer edges use only SemVer ranges.
 
-Root `markdownlint-cli2` обновлён до 0.23.1; устаревшие global overrides `js-yaml@4.2.0` и
-`markdown-it@14.2.0` удалены, чтобы зависимости получали поддерживаемые исправленные версии. Lockfile
-также поднял уязвимые `brace-expansion`, `fast-uri` и `linkify-it` в рамках объявленных ranges.
-`npm audit --omit=dev` сообщает 0 vulnerabilities, а `npm audit --audit-level=high` проходит. Полный
-audit оставляет один принятый low dev-only advisory в `tsup → esbuild`; он описан в remaining risks.
-Deprecated `glob@10.5.0` и `whatwg-encoding@3.1.1`, видимые при чистой установке, разрешаются только
-через test/dev tooling и не входят ни в один consumer tarball.
+Root `markdownlint-cli2` was updated to 0.23.1; obsolete global overrides for `js-yaml@4.2.0` and
+`markdown-it@14.2.0` were removed so dependencies receive supported patched versions. The lockfile
+also upgraded vulnerable `brace-expansion`, `fast-uri`, and `linkify-it` within the declared ranges.
+`npm audit --omit=dev` reports 0 vulnerabilities, and `npm audit --audit-level=high` passes. The full
+audit leaves one accepted low dev-only advisory in `tsup → esbuild`; it is described under remaining
+risks. Deprecated `glob@10.5.0` and `whatwg-encoding@3.1.1`, visible during a clean installation,
+resolve only through test/dev tooling and are not included in any consumer tarball.
 
-Vue companion resolution в lockfile выровнен: runtime `vue@3.5.35` получает точные compiler/shared
-3.5.35, а совместимые 3.5.33 остаются изолированы внутри development language-tooling branches.
-`npm ls --all` проходит и теперь выполняется автоматически сразу после временного clean `npm ci`,
-поэтому повторная невалидная дедупликация блокирует `verify` до тестов и сборки.
+Vue companion resolution in the lockfile is aligned: runtime `vue@3.5.35` receives exact
+compiler/shared 3.5.35 versions, while compatible 3.5.33 versions remain isolated within development
+language-tooling branches. `npm ls --all` passes and now runs automatically immediately after the
+temporary clean `npm ci`, so another invalid deduplication blocks `verify` before tests and builds.
 
-Автоматический graph contract проверяет все внутренние edges во всех трёх runtime fields, точные
-минимальные версии release train и отсутствие cycles. Packed consumer дополнительно доказывает, что
-каждый установленный пакет находится вне monorepo и что production graph не содержит Shiki.
+The automated graph contract checks all internal edges across all three runtime fields, exact minimum
+release-train versions, and the absence of cycles. The packed consumer additionally proves that each
+installed package is outside the monorepo and that the production graph contains no Shiki.
 
 ## 4. Versioning
 
-Предыдущие версии из левого столбца опубликованы в npm, а все пакеты получили публично значимые
-изменения в Phase 0–3 или packaging corrections в Phase 4. Поэтому подготовлен согласованный minor
-release train:
+The previous versions in the left column are published on npm, and all packages received
+publicly significant changes in Phase 0–3 or packaging corrections in Phase 4. A coordinated minor
+release train was therefore prepared:
 
-| Пакет                  | Опубликованная версия | Следующая версия | Основание                                                  |
-| ---------------------- | --------------------: | ---------------: | ---------------------------------------------------------- |
-| Theme                  |               `1.3.0` |          `1.4.0` | Расширенный theme/token contract и release metadata        |
-| Icons                  |               `1.5.0` |          `1.6.0` | SSR-safe Node/CJS delivery и declaration contract          |
-| Core                   |              `1.35.1` |         `1.36.0` | Phase 0–3 contracts, exports и SSR package paths           |
-| Layouts                |              `1.21.0` |         `1.22.0` | Исправленные component types, full CSS export и Node paths |
-| CodeBlock              |               `3.6.1` |          `3.7.0` | SSR/deferred runtime и package dependency correction       |
-| Playground Core        |               `1.1.1` |          `1.2.0` | Runtime hardening и additive contracts                     |
-| Playground Vite Plugin |               `0.1.1` |          `0.2.0` | Additive typings/naming и package metadata                 |
-| Playground             |               `2.5.1` |          `2.6.0` | Runtime/UI hardening и explicit SSR paths                  |
+| Package                | Published version | Next version | Rationale                                                  |
+| ---------------------- | ----------------: | -----------: | ---------------------------------------------------------- |
+| Theme                  |           `1.3.0` |      `1.4.0` | Expanded theme/token contract and release metadata         |
+| Icons                  |           `1.5.0` |      `1.6.0` | SSR-safe Node/CJS delivery and declaration contract        |
+| Core                   |          `1.35.1` |     `1.36.0` | Phase 0–3 contracts, exports, and SSR package paths        |
+| Layouts                |          `1.21.0` |     `1.22.0` | Corrected component types, full CSS export, and Node paths |
+| CodeBlock              |           `3.6.1` |      `3.7.0` | SSR/deferred runtime and package dependency correction     |
+| Playground Core        |           `1.1.1` |      `1.2.0` | Runtime hardening and additive contracts                   |
+| Playground Vite Plugin |           `0.1.1` |      `0.2.0` | Additive typings/naming and package metadata               |
+| Playground             |           `2.5.1` |      `2.6.0` | Runtime/UI hardening and explicit SSR paths                |
 
-На дату аудита все восемь target versions свободны в npm registry. Major bump не требуется в принятой
-compatibility policy: ни один documented modern export, prop, event или token не удалён, а legacy root
-metadata CodeBlock/Playground сохранены. Новые `engines` фиксируют уже фактические floors toolchain и
-Shiki 4 (`>=20` для CodeBlock/Playground), а не удаляют поддерживаемый runtime. Vue `^3.5.0` фиксирует
-фактическое требование согласованного graph. Для pre-1.0 Vite plugin переход `0.1.1` → `0.2.0` выбран
-явно; additive изменение достаточно значимо для pre-stable minor.
+As of the audit date, all eight target versions are available in the npm registry. A major bump is
+not required under the adopted compatibility policy: no documented modern export, prop, event, or
+token was removed, and legacy root metadata for CodeBlock/Playground is retained. The new `engines`
+record the existing toolchain and Shiki 4 floors (`>=20` for CodeBlock/Playground), rather than
+removing a supported runtime. Vue `^3.5.0` records the actual coordinated-graph requirement. For the
+pre-1.0 Vite plugin, the `0.1.1` → `0.2.0` transition was chosen explicitly; the additive change is
+significant enough for a pre-stable minor.
 
-Internal dependency floors указывают на версии из этой таблицы. Это исключает ситуацию, когда новый
-Playground или Layouts устанавливается с более старым Core/Theme, который не содержит требуемых
-Phase 0–3 contracts.
+Internal dependency floors point to the versions in this table. This prevents a new Playground or
+Layouts from being installed with an older Core/Theme that lacks the required Phase 0–3 contracts.
 
-Stable tags публикуются под npm dist-tag `latest`; SemVer prerelease tags — под `next`. Это поведение
-закреплено отдельными tests release-preparation script.
+Stable tags are published under the npm dist-tag `latest`; SemVer prerelease tags use `next`. This
+behavior is enforced by dedicated tests for the release-preparation script.
 
 ## 5. Packaging
 
 ### Export architecture
 
-Browser ESM component subpaths Core/Layout, Icons root, CodeBlock `/view` и Playground `/ui` сохраняют
-автоматическое подключение CSS. Для прямого Node ESM import добавлены CSS-free `node` conditions.
-CommonJS существует только для реально поддерживаемых surfaces:
+Browser ESM component subpaths for Core/Layout, the Icons root, CodeBlock `/view`, and Playground
+`/ui` retain automatic CSS loading. CSS-free `node` conditions were added for direct Node ESM
+imports. CommonJS exists only for genuinely supported surfaces:
 
 - Icons root;
 - Core root, `/foundation`, `/theme`;
 - Layouts root;
 - CodeBlock `/view`, `/highlight`.
 
-У каждого CJS runtime теперь есть `.d.cts` facade. ESM types остаются `.d.ts`; `types` расположен внутри
-соответствующей `import`/`require` ветки до runtime conditions. Core и Layouts component subpaths,
-CodeBlock `/view`, Playground `/ui` и Icons root выбирают CSS-free Node artifact без изменения browser
-default.
+Each CJS runtime now has a `.d.cts` facade. ESM types remain `.d.ts`; `types` is located inside the
+corresponding `import`/`require` branch before runtime conditions. Core and Layouts component
+subpaths, CodeBlock `/view`, Playground `/ui`, and the Icons root select a CSS-free Node artifact
+without changing the browser default.
 
-Theme, Playground Core и Playground Vite Plugin являются осознанно ESM-only. Playground UI/runtime
-не заявляет CommonJS. Legacy Node 10 resolution не обещан и не имитируется compatibility wrappers.
+Theme, Playground Core, and Playground Vite Plugin are intentionally ESM-only. Playground UI/runtime
+does not declare CommonJS. Legacy Node 10 resolution is neither promised nor emulated by compatibility
+wrappers.
 
-Общий build finalizer делает generated declarations пригодными для современного Node resolution:
+The shared build finalizer makes generated declarations suitable for modern Node resolution:
 
-- разрешает relative declaration target до файла или directory index;
-- добавляет runtime-safe `.js`/`index.js` specifier;
-- удаляет бессмысленные CSS side-effect imports из `.d.ts`;
-- аварийно завершает build, если небезопасный specifier остаётся.
+- resolves a relative declaration target to a file or directory index;
+- adds a runtime-safe `.js`/`index.js` specifier;
+- removes meaningless CSS side-effect imports from `.d.ts`;
+- fails the build if an unsafe specifier remains.
 
-На полном build нормализовано 4 specifiers Icons, 242 Core, 65 Layouts, 15 CodeBlock и 6 Playground;
-из Playground declarations удалены 3 CSS imports. Core/Layout build дополнительно исключает workspace
-dependency shims из опубликованного declaration graph.
+In a full build, 4 specifiers for Icons, 242 for Core, 65 for Layouts, 15 for CodeBlock, and 6 for
+Playground were normalized; 3 CSS imports were removed from Playground declarations. The Core/Layout
+build additionally excludes workspace dependency shims from the published declaration graph.
 
 ### Tarball inventory
 
-| Пакет                        | Файлов | Packed bytes | Unpacked bytes |
-| ---------------------------- | -----: | -----------: | -------------: |
-| Theme 1.4.0                  |     27 |        9,267 |         38,374 |
-| Icons 1.6.0                  |     19 |      130,960 |        587,402 |
-| Core 1.36.0                  |    530 |      289,147 |      2,119,117 |
-| Layouts 1.22.0               |    109 |       39,561 |        275,666 |
-| CodeBlock 3.7.0              |     53 |      371,637 |      1,982,163 |
-| Playground Core 1.2.0        |      5 |        7,864 |         25,277 |
-| Playground Vite Plugin 0.2.0 |      5 |        3,043 |          8,623 |
-| Playground 2.6.0             |     17 |       13,043 |         54,311 |
+| Package                      | Files | Packed bytes | Unpacked bytes |
+| ---------------------------- | ----: | -----------: | -------------: |
+| Theme 1.4.0                  |    27 |        9,267 |         38,374 |
+| Icons 1.6.0                  |    19 |      130,960 |        587,402 |
+| Core 1.36.0                  |   530 |      289,147 |      2,119,117 |
+| Layouts 1.22.0               |   109 |       39,561 |        275,666 |
+| CodeBlock 3.7.0              |    53 |      371,637 |      1,982,163 |
+| Playground Core 1.2.0        |     5 |        7,864 |         25,277 |
+| Playground Vite Plugin 0.2.0 |     5 |        3,043 |          8,623 |
+| Playground 2.6.0             |    17 |       13,043 |         54,311 |
 
-Для каждого tarball подтверждено наличие всех targets из `exports`, `main`, `module`, `types` и
-`style`; отсутствующих targets — 0. `files: ["dist"]` не пропускает tests, source aliases или
+For each tarball, the presence of all targets from `exports`, `main`, `module`, `types`, and `style`
+was confirmed; missing targets: 0. `files: ["dist"]` does not include tests, source aliases, or
 workspace-only files.
 
-Дополнительно все восемь архивов были созданы по одному разу вне workspace и переданы как точные
-`.tgz` в `npm publish <archive> --dry-run --ignore-scripts`; каждый dry-run прошёл. Это локально
-подтверждает тот же immutable-artifact path, который использует release workflow.
+In addition, all eight archives were created once outside the workspace and passed as exact `.tgz`
+files to `npm publish <archive> --dry-run --ignore-scripts`; every dry-run passed. This locally
+confirms the same immutable-artifact path used by the release workflow.
 
-Publint не находит ошибок ни в одном пакете. Два предупреждения фиксируют намеренное различие:
-CodeBlock и Playground сохраняют legacy `main`, но не добавляют modern root export после major 3/2.
-Are The Types Wrong проходит для всех JavaScript entrypoints в Node16 ESM и bundler modes, а также для
-всех заявленных CJS branches. Оставшиеся 296 `NoResolution` cells относятся к 74 CSS subpaths в
-четырёх TypeScript modes: инструмент рассматривает их как TypeScript imports, хотя файлы физически
-присутствуют в tarballs и предназначены для CSS loaders. Это tool limitation, а не потерянный export.
+Publint finds no errors in any package. Two warnings record an intentional distinction: CodeBlock and
+Playground retain legacy `main` but do not add a modern root export after major versions 3/2. Are The
+Types Wrong passes for all JavaScript entrypoints in Node16 ESM and bundler modes, as well as for all
+declared CJS branches. The remaining 296 `NoResolution` cells concern 74 CSS subpaths across four
+TypeScript modes: the tool treats them as TypeScript imports even though the files physically exist
+in the tarballs and are intended for CSS loaders. This is a tool limitation, not a missing export.
 
 ### Changed file groups
 
-- package contracts: root `package.json`/lockfile и восемь package manifests;
-- generated artifact logic: Vite configs Core, Layouts, Icons, CodeBlock и declaration finalizer;
-- release gates: package-contract, packed-consumer, tree-shaking, deferred-runtime и tag-preparation
+- package contracts: root `package.json`/lockfile and eight package manifests;
+- generated artifact logic: Vite configs for Core, Layouts, Icons, and CodeBlock, plus the declaration
+  finalizer;
+- release gates: package-contract, packed-consumer, tree-shaking, deferred-runtime, and tag-preparation
   scripts/tests;
 - automation: `.github/workflows/release-from-tag.yml`;
-- user guidance: README/CHANGELOG каждого пакета, installation guides, migration guide, release notes
-  и release checklist;
+- user guidance: each package's README/CHANGELOG, installation guides, migration guide, release notes,
+  and release checklist;
 - one type-only source correction: `packages/core/src/composables/useFloating.ts`.
 
-CSS и Vue component implementation files в Phase 4 не изменялись.
+CSS and Vue component implementation files were not changed in Phase 4.
 
 ## 6. Consumer verification
 
-Один и тот же сценарий запускается для npm, pnpm и Yarn вне workspace. Fixture создаётся в system
-temporary directory, собирает восемь реальных `.tgz`, устанавливает только их и после проверки
-удаляется. До появления новых версий в registry pnpm overrides и Yarn resolutions указывают
-транзитивные internal ranges на те же локальные tarballs; это моделирует атомарно доступный release
-train, не подменяя package contents workspace links. npm и Yarn caches также изолированы внутри
-fixture, чтобы повторный прогон не мог получить архив с тем же version/path от предыдущей сборки.
+The same scenario runs for npm, pnpm, and Yarn outside the workspace. The fixture is created in the
+system temporary directory, builds eight actual `.tgz` files, installs only those files, and is
+removed after verification. Until the new versions appear in the registry, pnpm overrides and Yarn
+resolutions point transitive internal ranges to the same local tarballs; this models an atomically
+available release train without replacing package contents with workspace links. npm and Yarn caches
+are also isolated inside the fixture so a repeat run cannot retrieve an archive with the same
+version/path from a previous build.
 
-| Сценарий        | Версии                                                | Результат |
-| --------------- | ----------------------------------------------------- | --------- |
-| npm install     | npm 11.9.0                                            | PASS      |
-| pnpm install    | pnpm 10.34.5, strict peers                            | PASS      |
-| Yarn install    | Yarn Classic 1.22.22                                  | PASS      |
-| Framework       | Vue + server renderer 3.5.35                          | PASS      |
-| TypeScript      | 5.9.3, Bundler + NodeNext, `skipLibCheck: false`      | PASS      |
-| Browser build   | Vite 6.4.3                                            | PASS      |
-| Node ESM SSR    | Все public JS ESM specifiers и все UI packages        | PASS      |
-| CommonJS SSR    | Все заявленные `require` branches без DOM shim        | PASS      |
-| Minimum engines | Node 18.20.8 и Node 20.x ESM/CJS entry smoke          | PASS      |
-| CSS             | Representative auto CSS + все 74 explicit CSS exports | PASS      |
-| Isolation       | Нет resolution в monorepo, версии graph точны         | PASS      |
+| Scenario        | Versions                                              | Result |
+| --------------- | ----------------------------------------------------- | ------ |
+| npm install     | npm 11.9.0                                            | PASS   |
+| pnpm install    | pnpm 10.34.5, strict peers                            | PASS   |
+| Yarn install    | Yarn Classic 1.22.22                                  | PASS   |
+| Framework       | Vue + server renderer 3.5.35                          | PASS   |
+| TypeScript      | 5.9.3, Bundler + NodeNext, `skipLibCheck: false`      | PASS   |
+| Browser build   | Vite 6.4.3                                            | PASS   |
+| Node ESM SSR    | All public JS ESM specifiers and all UI packages      | PASS   |
+| CommonJS SSR    | All declared `require` branches without a DOM shim    | PASS   |
+| Minimum engines | Node 18.20.8 and Node 20.x ESM/CJS entry smoke        | PASS   |
+| CSS             | Representative auto CSS + all 74 explicit CSS exports | PASS   |
+| Isolation       | No resolution into monorepo; graph versions are exact | PASS   |
 
-Consumer импортирует только specifiers, доступные через опубликованный `exports`. Он отдельно проверяет
-direct CSS entries, browser auto-CSS, Node CSS-free entries, CodeBlock `/view`/`/highlight`, Playground
-`/ui`/`/runtime`, Vite plugin и SSR render. Ни один тест не использует source alias или `dist` другого
-workspace-пакета.
+The consumer imports only specifiers available through published `exports`. It separately verifies
+direct CSS entries, browser auto-CSS, Node CSS-free entries, CodeBlock `/view`/`/highlight`,
+Playground `/ui`/`/runtime`, the Vite plugin, and SSR rendering. No test uses a source alias or the
+`dist` of another workspace package.
 
-Полная registry installation остаётся post-publish gate: локальный tarball может доказать package
-contents и resolution semantics, но не npm dist-tag, registry replication, provenance или integrity
+A full registry installation remains a post-publish gate: a local tarball can prove package contents
+and resolution semantics, but not the npm dist-tag, registry replication, provenance, or integrity
 metadata.
 
 ## 7. Tree shaking
 
-Regression gate покрывает один компонент, несколько компонентов, namespace import, granular subpath и
-CSS side effects.
+The regression gate covers one component, multiple components, a namespace import, a granular
+subpath, and CSS side effects.
 
-| Import scenario                         | Minified JS raw |   JS gzip | Результат                    |
+| Import scenario                         | Minified JS raw |   JS gzip | Result                       |
 | --------------------------------------- | --------------: | --------: | ---------------------------- |
 | Core root → `VfButton`                  |        2.22 KiB |  1.01 KiB | PASS                         |
 | Core `/button`                          |        2.00 KiB |  0.91 KiB | PASS, button CSS retained    |
@@ -299,102 +303,106 @@ CSS side effects.
 | Layouts root → `VfContainer`            |        0.91 KiB |  0.54 KiB | PASS                         |
 | Layouts `/container`                    |        0.91 KiB |  0.54 KiB | PASS, container CSS retained |
 
-В packed consumer независимая Vite build одного Core Button дала 2,769 bytes JS / 1,064 bytes gzip и
-10.27 kB CSS / 1.78 kB gzip. Button CSS сохранён, Accordion CSS отсутствует. Таким образом precise
-`sideEffects` не позволяет bundler удалить нужные styles и не удерживает unrelated component styles.
+In the packed consumer, an independent Vite build of one Core Button produced 2,769 bytes JS / 1,064
+bytes gzip and 10.27 kB CSS / 1.78 kB gzip. Button CSS is retained, while Accordion CSS is absent.
+Thus, precise `sideEffects` prevents the bundler from removing required styles without retaining
+unrelated component styles.
 
-Small imports также проверяются на отсутствие OKLCH palette graph и theme application runtime.
-Автоматические CSS wrappers помечены side-effectful точечно; Theme, Playground Core и Vite Plugin
-помечены `sideEffects: false`. Generic Icons renderer по своей природе включает dynamic-name catalog
-(около 24.18 KiB gzip); для статически известного icon это осознанная API-модель, а не потеря tree
-shaking во всём VueForge graph.
+Small imports are also checked for the absence of the OKLCH palette graph and theme application
+runtime. Automatic CSS wrappers are marked side-effectful individually; Theme, Playground Core, and
+Vite Plugin are marked `sideEffects: false`. The generic Icons renderer inherently includes the
+dynamic-name catalog (about 24.18 KiB gzip); for a statically known icon, this is an intentional API
+model, not a loss of tree shaking across the entire VueForge graph.
 
 ## 8. Bundle analysis
 
-Vite warning о chunk больше 500 kB воспроизводится и локализован. Его источник — TypeScript compiler,
-который Playground Core загружает для браузерной sandbox compilation:
+The Vite warning about a chunk larger than 500 kB is reproducible and isolated. Its source is the
+TypeScript compiler that Playground Core loads for browser sandbox compilation:
 
 - minified chunk: 3.61 MB;
 - gzip: 1,009.52 KiB;
-- около 99.6% содержимого относится к TypeScript;
-- chunk загружается только после активации sandbox session;
-- initial application graph не содержит TypeScript, Playground runtime или Shiki.
+- about 99.6% of its contents belong to TypeScript;
+- the chunk loads only after the sandbox session is activated;
+- the initial application graph does not contain TypeScript, Playground runtime, or Shiki.
 
-Предупреждение не маскируется повышением глобального `chunkSizeWarningLimit`: это скрыло бы будущие
-регрессии других chunks. Ручное разбиение compiler internals не уменьшает суммарную загрузку и может
-увеличить request/parse overhead. Объективной причины менять runtime в Phase 4 нет; вместо этого
-установлен отдельный deferred compiler budget 1,100 KiB gzip и проверка отсутствия compiler в static
-route graph.
+The warning is not masked by increasing the global `chunkSizeWarningLimit`, which would hide future
+regressions in other chunks. Manually splitting compiler internals does not reduce the total download
+and may increase request/parse overhead. There is no objective reason to change the runtime in Phase
+4; instead, a separate deferred compiler budget of 1,100 KiB gzip and a check that the compiler is
+absent from the static route graph were established.
 
-Showcase initial entry составляет 90.24 KiB gzip при budget 95 KiB. Route chunks: Core 23.56 KiB,
-Layouts 10.42 KiB, Icons 1.32 KiB, CodeBlock 2.00 KiB, Playground 3.97 KiB gzip. CodeBlock route не
-включает Shiki статически; суммарные Shiki-related deferred chunks составляют около 174.81 KiB gzip.
+The Showcase initial entry is 90.24 KiB gzip against a 95 KiB budget. Route chunks: Core 23.56 KiB,
+Layouts 10.42 KiB, Icons 1.32 KiB, CodeBlock 2.00 KiB, and Playground 3.97 KiB gzip. The CodeBlock
+route does not include Shiki statically; total Shiki-related deferred chunks are about 174.81 KiB
+gzip.
 
-Итог: large compiler chunk влияет на download/parse только при запуске Playground, не увеличивает
-базовый VueForge runtime и не свидетельствует о неработающем tree shaking. Его размер должен
-оставаться наблюдаемым отдельным budget, а не блокировать Core/Layout consumers.
+Conclusion: the large compiler chunk affects download/parse only when Playground starts, does not
+increase the base VueForge runtime, and does not indicate broken tree shaking. Its size should remain
+observable under a separate budget rather than blocking Core/Layout consumers.
 
 ## 9. Installation UX
 
-README всех восьми пакетов и основные installation guides теперь описывают одинаковый contract:
+The READMEs for all eight packages and the primary installation guides now describe the same
+contract:
 
-- package-specific Node requirement и Vue/Vite peer requirement;
-- команды npm, pnpm и Yarn;
-- полный и granular import paths;
-- browser auto-CSS, explicit full CSS и CSS-free Node conditions;
-- SSR placement CSS imports в client entry;
-- CodeBlock `/view` и `/highlight` вместо несуществующего root import;
-- Playground `/ui`, `/runtime`, component mode и lazy sandbox behavior;
-- Theme runtime usage и Vite virtual modules.
+- package-specific Node requirements and Vue/Vite peer requirements;
+- npm, pnpm, and Yarn commands;
+- full and granular import paths;
+- browser auto-CSS, explicit full CSS, and CSS-free Node conditions;
+- placement of SSR CSS imports in the client entry;
+- CodeBlock `/view` and `/highlight` instead of a nonexistent root import;
+- Playground `/ui`, `/runtime`, component mode, and lazy sandbox behavior;
+- Theme runtime usage and Vite virtual modules.
 
-Для обычного Core consumer обязательны только установка Vue/Core и один выбранный CSS strategy.
-Layouts может использовать единый новый `@codemonster-ru/vueforge-layouts/styles.css` вместо знания
-внутреннего dist path. CodeBlock и Playground явно разделяют UI и runtime, поэтому server build не
-должен угадывать browser entry.
+For a typical Core consumer, only installing Vue/Core and choosing one CSS strategy are required.
+Layouts can use the single new `@codemonster-ru/vueforge-layouts/styles.css` instead of knowing an
+internal dist path. CodeBlock and Playground explicitly separate UI and runtime, so a server build
+does not have to infer the browser entry.
 
-Упрощение не потребовало нового facade package, global setup или fallback API. Modern resolvers
-однозначно используют documented subpaths CodeBlock/Playground, а прежние `main`/`module`/`types`
-оставлены только для legacy resolvers. Documented imports одинаковы в Vite, TypeScript и Node.
+The simplification required no new facade package, global setup, or fallback API. Modern resolvers
+unambiguously use documented CodeBlock/Playground subpaths, while the former `main`/`module`/`types`
+are retained only for legacy resolvers. Documented imports are identical in Vite, TypeScript, and
+Node.
 
 ## 10. Migration
 
-Исторический release-train guide заменён актуальным
-[VueForge 2 migration guide](../migration-to-v2.md). На момент Phase 4 его scope включал:
+The historical release-train guide was replaced with the current
+[VueForge 2 migration guide](../migration-to-v2.md). At Phase 4, its scope included:
 
-- таблицу всех версий, Node/Vue/Vite и внутренних floors;
-- команду согласованного обновления packages;
-- требование обновлять Vue и `@vue/server-renderer` вместе до 3.5;
-- явные CodeBlock и Playground subpaths;
-- правила browser/SSR CSS;
-- Icons CommonJS correction и explicit client CSS;
-- совместимость token names и сохранённые legacy aliases;
-- список исправленных behavior contracts, которые стоит перепроверить приложению.
+- a table of all versions, Node/Vue/Vite requirements, and internal floors;
+- a command for coordinated package upgrades;
+- the requirement to upgrade Vue and `@vue/server-renderer` together to 3.5;
+- explicit CodeBlock and Playground subpaths;
+- browser/SSR CSS rules;
+- the Icons CommonJS correction and explicit client CSS;
+- token-name compatibility and retained legacy aliases;
+- a list of corrected behavior contracts that applications should recheck.
 
-Документ не объявляет packaging correction фиктивным redesign. Публичные token names не переименованы,
-публичные component exports не удалены, Phase 4 не меняет OKLCH values. Accidental malformed CSS custom
-property spellings старого serializer не обещаются как API; canonical token names и legacy aliases,
-закреплённые после Phase 0, остаются.
+The document does not present the packaging correction as a fictitious redesign. Public token names
+were not renamed, public component exports were not removed, and Phase 4 does not change OKLCH
+values. Accidental malformed CSS custom-property spellings from the old serializer are not promised
+as API; canonical token names and legacy aliases established after Phase 0 remain.
 
-Release notes и package CHANGELOGs разделяют breaking changes, compatibility requirements, новые
-возможности и исправления. Единственные обязательные migration actions — соблюдать Vue/Node floors,
-использовать уже документированные subpaths CodeBlock/Playground и импортировать CSS на client side
-для Node/CJS scenarios.
+Release notes and package CHANGELOGs separate breaking changes, compatibility requirements, new
+features, and fixes. The only mandatory migration actions are to observe Vue/Node floors, use the
+already documented CodeBlock/Playground subpaths, and import CSS on the client side for Node/CJS
+scenarios.
 
 ## 11. Release checklist
 
-Канонический [release checklist](../release-checklist.md) охватывает:
+The canonical [release checklist](../release-checklist.md) covers:
 
-1. выбор `latest` или `next`;
-2. чистый release commit и matching package/tag/changelog versions;
-3. полный repository verification sequence;
-4. dry-run, создание и ручную инспекцию каждого tarball;
-5. повторные clean consumers npm/pnpm/Yarn;
-6. последовательную публикацию в topological order;
-7. post-publish registry, provenance, integrity и signature smoke;
-8. rollback через dist-tag/deprecation и forward patch;
-9. финальную проверку всех восьми registry packages.
+1. selecting `latest` or `next`;
+2. a clean release commit and matching package/tag/changelog versions;
+3. the complete repository verification sequence;
+4. a dry-run, creation, and manual inspection of each tarball;
+5. repeat clean consumers for npm/pnpm/Yarn;
+6. sequential publication in topological order;
+7. post-publish registry, provenance, integrity, and signature smoke;
+8. rollback through dist-tag/deprecation and a forward patch;
+9. final verification of all eight registry packages.
 
-Порядок публикации:
+Publication order:
 
 1. Theme 1.4.0;
 2. Icons 1.6.0;
@@ -405,22 +413,23 @@ Release notes и package CHANGELOGs разделяют breaking changes, compati
 7. Layouts 1.22.0;
 8. Playground 2.6.0.
 
-GitHub workflow принимает только scoped tag формата `@scope/package@x.y.z`, сверяет package version и
-непустой matching CHANGELOG section, запускает полный `verify` со всеми тремя package managers, один
-раз создаёт target `.tgz`, инспектирует его через publish dry-run и публикует именно тот же файл с
-`--provenance`, explicit access и вычисленным dist-tag. Повторная lifecycle-пересборка между inspection
-и publication исключена. Prerelease version также помечает GitHub Release как prerelease. Node 24 и
-npm 11.9.0 зафиксированы; workflow actions используют Node 24 majors. Глобальная concurrency не
-позволяет двум package publications выполняться одновременно.
+The GitHub workflow accepts only a scoped tag in the `@scope/package@x.y.z` format, verifies the
+package version and a nonempty matching CHANGELOG section, runs the full `verify` with all three
+package managers, creates the target `.tgz` once, inspects it through a publish dry-run, and publishes
+that exact same file with `--provenance`, explicit access, and the computed dist-tag. A repeated
+lifecycle rebuild between inspection and publication is excluded. A prerelease version also marks
+the GitHub Release as a prerelease. Node 24 and npm 11.9.0 are pinned; workflow actions use Node 24
+majors. Global concurrency prevents two package publications from running simultaneously.
 
-Rollback не использует unpublish как основной путь: останавливается train, `latest`/`next`
-возвращается на известную рабочую версию, дефектная версия deprecate-ится и выпускается forward patch.
+Rollback does not use unpublish as the primary path: the train is stopped, `latest`/`next` is moved
+back to a known working version, the defective version is deprecated, and a forward patch is
+released.
 
 ### Final verification matrix
 
 <!-- PHASE4_FINAL_VERIFICATION_START -->
 
-| Команда                           | Статус                                                      |
+| Command                           | Status                                                      |
 | --------------------------------- | ----------------------------------------------------------- |
 | `npm test`                        | PASS                                                        |
 | `npm run audit:release`           | PASS — production 0; high/critical tooling 0; one low noted |
@@ -438,71 +447,73 @@ Rollback не использует unpublish как основной путь: �
 
 ## 12. Remaining risks
 
-Не осталось известного дефекта package contents или export resolution, блокирующего beta. Остаются
-риски, которые нельзя корректно закрыть локальной prepublication проверкой:
+No known package-content or export-resolution defect blocking beta remains. The following risks
+cannot be properly closed by local prepublication verification:
 
-- новые versions ещё не существуют в npm, поэтому dist-tags, registry replication, provenance,
-  integrity, signatures и registry-only transitive resolution проверяются после публикации каждого
-  пакета;
-- npm Trusted Publisher и ownership каждого scoped package являются внешней настройкой registry;
-  release owner должен подтвердить привязку именно к `.github/workflows/release-from-tag.yml`;
-- Yarn проверен в поддерживаемом Classic 1.22 mode; Yarn Berry Plug'n'Play не заявлен отдельным
-  compatibility target и требует отдельной сертификации, если проект решит его обещать;
-- packed browser consumer проверен на Vite 6.4.3; заявленный peer range также допускает Vite 7/8,
-  которые остаются отдельной compatibility matrix для последующей сертификации;
-- latest `tsup@8.5.1` разрешает `esbuild@0.27.7`, для которого зарегистрирован один low advisory,
-  относящийся к Windows development server. В VueForge этот dependency используется только командой
-  build и отсутствует в production package graph; принудительный переход на `esbuild@0.28.1` не
-  выполнен, потому что он находится вне объявленного `tsup` range. Security gate блокирует все
-  production и high/critical tooling advisories, а этот pin нужно снять штатным обновлением `tsup`;
-- локальный финальный прогон выполняется на Node 24/macOS, CI — на Node 24/Linux; заявленные minimum
-  Node 18/20 entrypoints прошли отдельный runtime smoke, но полный cross-platform test matrix не
-  заменён одним workstation run;
-- Are The Types Wrong не моделирует CSS loaders и поэтому продолжает показывать ожидаемые CSS
-  `NoResolution`; JS/types resolution при этом зелёный;
-- intentional ESM-only packages и component subpaths не получают искусственный CommonJS facade;
-  consumer должен соблюдать exports matrix;
-- TypeScript compiler Playground остаётся крупным deferred payload и требует наблюдения по отдельному
-  budget;
-- Phase 3 platform risks — Firefox/WebKit, Windows High Contrast, native zoom и реальные assistive
-  technologies — не становятся закрытыми от package audit;
-- hosted documentation должна быть задеплоена с этим release train; локальные docs сами по себе не
-  обновляют уже опубликованный сайт.
+- the new versions do not yet exist on npm, so dist-tags, registry replication, provenance,
+  integrity, signatures, and registry-only transitive resolution are verified after each package is
+  published;
+- npm Trusted Publisher and ownership of each scoped package are external registry configuration;
+  the release owner must confirm the binding specifically to `.github/workflows/release-from-tag.yml`;
+- Yarn was verified in supported Classic 1.22 mode; Yarn Berry Plug'n'Play is not declared as a
+  separate compatibility target and requires separate certification if the project decides to
+  promise it;
+- the packed browser consumer was verified on Vite 6.4.3; the declared peer range also allows Vite
+  7/8, which remain a separate compatibility matrix for subsequent certification;
+- the latest `tsup@8.5.1` resolves `esbuild@0.27.7`, which has one registered low advisory concerning
+  the Windows development server. In VueForge, this dependency is used only by the build command and
+  is absent from the production package graph; a forced move to `esbuild@0.28.1` was not made because
+  it is outside the declared `tsup` range. The security gate blocks all production and high/critical
+  tooling advisories, and this pin should be removed through a regular `tsup` update;
+- the final local run uses Node 24/macOS, while CI uses Node 24/Linux; the declared minimum Node 18/20
+  entrypoints passed a separate runtime smoke, but one workstation run does not replace a complete
+  cross-platform test matrix;
+- Are The Types Wrong does not model CSS loaders and therefore continues to show the expected CSS
+  `NoResolution`; JS/types resolution is green;
+- intentional ESM-only packages and component subpaths do not receive an artificial CommonJS facade;
+  consumers must follow the exports matrix;
+- the Playground TypeScript compiler remains a large deferred payload and requires monitoring under
+  a separate budget;
+- Phase 3 platform risks—Firefox/WebKit, Windows High Contrast, native zoom, and actual assistive
+  technologies—are not closed by a package audit;
+- hosted documentation must be deployed with this release train; local docs alone do not update the
+  already published site.
 
-Operational mitigation для подготовленного stable train: публиковать строго по одному пакету в
-topological order, после каждого шага выполнять registry smoke и немедленно останавливать train при
-ошибке. Если команда отдельно решит провести canary, тот же workflow поддерживает SemVer prerelease под
-`next`, но подготовленные в manifests/changelogs версии являются stable и предназначены для `latest`.
+Operational mitigation for the prepared stable train: publish strictly one package at a time in
+topological order, run registry smoke after each step, and stop the train immediately on error. If
+the team separately decides to run a canary, the same workflow supports a SemVer prerelease under
+`next`, but the versions prepared in manifests/changelogs are stable and intended for `latest`.
 
 ## 13. Overall release readiness
 
-### Ready for Internal Release — да
+### Ready for Internal Release — yes
 
-Все package contracts, builds, tests, packed installs, SSR paths, types и tarball contents проверяются
-автоматически. Внутренний релиз не имеет известных blocker-ов; package graph и rollback procedure
-однозначны.
+All package contracts, builds, tests, packed installs, SSR paths, types, and tarball contents are
+verified automatically. The internal release has no known blockers; the package graph and rollback
+procedure are unambiguous.
 
-### Ready for Public Beta — да
+### Ready for Public Beta — yes
 
-Публичная beta при желании может быть опубликована под `next`: consumers npm/pnpm/Yarn проходят на
-реальных tarballs, documentation и migration path готовы, large payload изолирован, а публичные
-component/token contracts не удалены. Это доступный дополнительный этап, но не обязательный вывод
-аудита.
+A public beta can optionally be published under `next`: npm/pnpm/Yarn consumers pass with actual
+tarballs, documentation and the migration path are ready, the large payload is isolated, and public
+component/token contracts were not removed. This is an available additional stage, but not a
+required conclusion of the audit.
 
-### Ready for Stable Release — да, рекомендуемый итоговый статус
+### Ready for Stable Release — yes, recommended final status
 
-Подготовленный train использует stable SemVer versions и не имеет известного local release blocker.
-Exact tarball publication, cross-manager packed consumers, SSR/type resolution, dependency floors,
-package contracts и changelog extraction автоматизированы; migration и rollback подробно
-документированы. Поэтому с точки зрения Phase 4 система готова к stable release.
+The prepared train uses stable SemVer versions and has no known local release blocker. Exact tarball
+publication, cross-manager packed consumers, SSR/type resolution, dependency floors, package
+contracts, and changelog extraction are automated; migration and rollback are documented in detail.
+Therefore, from the Phase 4 perspective, the system is ready for a stable release.
 
-В ходе публикации обязательны следующие stop-the-line gates:
+The following stop-the-line gates are mandatory during publication:
 
-1. все восемь packages публикуются последовательно и получают provenance/integrity;
-2. полный consumer повторён только с registry versions;
-3. подтверждены npm dist-tags и internal dependency resolution;
-4. при первом installation/SSR regression дальнейшие tags не создаются;
-5. hosted documentation развёрнута, а оставшиеся platform risks явно приняты release owner.
+1. all eight packages are published sequentially and receive provenance/integrity;
+2. the full consumer is repeated using registry versions only;
+3. npm dist-tags and internal dependency resolution are confirmed;
+4. no further tags are created after the first installation/SSR regression;
+5. hosted documentation is deployed, and the remaining platform risks are explicitly accepted by
+   the release owner.
 
-Эти проверки являются частью stable rollout, а не основанием публиковать уже подготовленные stable
-versions как beta. Итоговая оценка Phase 4: **Ready for Stable Release**.
+These checks are part of the stable rollout, not grounds for publishing the already prepared stable
+versions as beta. Final Phase 4 assessment: **Ready for Stable Release**.

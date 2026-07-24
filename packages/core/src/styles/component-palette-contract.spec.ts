@@ -387,7 +387,6 @@ describe('component palette contract', () => {
     ['menu-bar', ['--vf-menu-bar-current-top-active-background', '--vf-menu-bar-current-submenu-active-background']],
     ['nav-menu', ['--vf-nav-menu-current-item-active-background']],
     ['table-of-contents', ['--vf-table-of-contents-current-active-background']],
-    ['tabs', ['--vf-tabs-tab-active-background']],
   ])('%s gives selected items deterministic hover and active surfaces', (name, componentFallbacks) => {
     const css = readEntry(name as string);
 
@@ -417,7 +416,7 @@ describe('component palette contract', () => {
     expect(readEntry('menu-bar')).toContain('var(--vf-color-text-disabled)');
     expect(readEntry('nav-menu')).toContain('var(--vf-color-background-surface-disabled, transparent)');
     expect(readEntry('stepper')).toContain('var(--vf-color-border-disabled, var(--vf-stepper-rail-color))');
-    expect(readEntry('tabs')).toContain('var(--vf-color-background-surface-disabled, var(--vf-tabs-tab-background))');
+    expect(readEntry('tabs')).toContain('background: var(--vf-tabs-tab-background);');
   });
 
   it('makes disabled text fields override invalid and open boundaries', () => {

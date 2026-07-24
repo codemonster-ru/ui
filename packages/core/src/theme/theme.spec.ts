@@ -45,6 +45,16 @@ describe('theme bridge', () => {
       'var(--vf-color-background-surface-hover, transparent)',
     );
     expect(defaultThemePreset.tokens.selectableActiveBackground).toBe('var(--vf-color-background-surface-selected)');
+    expect(defaultThemePreset.tokens.navMenuItemHoverBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.navMenuItemActiveBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.menuBarTopHoverBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.menuBarTopActiveBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.menuBarSubmenuHoverBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.menuBarSubmenuActiveBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.tableOfContentsHoverBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.tableOfContentsActiveBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.tabsTabHoverBackground).toBe('transparent');
+    expect(defaultThemePreset.tokens.tabsTabActiveBackground).toBe('transparent');
     expect(defaultThemePreset.tokens.breadcrumbsLinkColor).toBe(
       'var(--vf-color-text-link, var(--vf-selectable-color))',
     );

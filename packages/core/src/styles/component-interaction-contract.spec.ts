@@ -40,12 +40,8 @@ describe('component interaction contract', () => {
     }
 
     const presetSource = readTheme('default-preset-source.ts');
-    expect(presetSource).toContain(
-      "buttonSecondaryHoverBackground: 'var(--vf-color-background-surface-hover)'",
-    );
-    expect(presetSource).toContain(
-      "buttonSecondaryActiveBackground: 'var(--vf-color-background-surface-active)'",
-    );
+    expect(presetSource).toContain("buttonSecondaryHoverBackground: 'var(--vf-color-background-surface-hover)'");
+    expect(presetSource).toContain("buttonSecondaryActiveBackground: 'var(--vf-color-background-surface-active)'");
   });
 
   it('keeps underline tab geometry stable and focus rings visible inside clipped scrollers', () => {
@@ -54,13 +50,31 @@ describe('component interaction contract', () => {
     const tabFocusRule = extractRule(css, '.vf-tabs__tab:focus-visible');
     const scrollFocusRule = extractRule(css, '.vf-tabs__scroll-button:focus-visible');
 
-    expect(tabRule).toContain('border-radius: var(--vf-radius-control-tight);');
+    expect(tabRule).toContain('border-radius: var(--vf-radius-control-tight) var(--vf-radius-control-tight) 0 0;');
     expect(tabFocusRule).toContain(
       'box-shadow: inset 0 0 0 var(--vf-focus-ring-width) var(--vf-tabs-focus-ring-color);',
     );
     expect(scrollFocusRule).toContain(
       'box-shadow: inset 0 0 0 var(--vf-focus-ring-width) var(--vf-tabs-focus-ring-color);',
     );
+  });
+
+  it('keeps underline tab backgrounds text-first across interaction states', () => {
+    const css = readEntry('tabs');
+    const presetSource = readTheme('default-preset-source.ts');
+    const pressedRule = extractRule(css, ".vf-tabs__tab:active:not(:disabled, [aria-selected='true'])");
+    const selectedHoverRule = extractRule(css, ".vf-tabs__tab[aria-selected='true']:hover:not(:disabled)");
+    const selectedActiveRule = extractRule(css, ".vf-tabs__tab[aria-selected='true']:active:not(:disabled)");
+    const disabledRule = extractRule(css, '.vf-tabs__tab:disabled');
+
+    expect(presetSource).toContain("tabsTabHoverBackground: 'transparent'");
+    expect(presetSource).toContain("tabsTabActiveBackground: 'transparent'");
+    expect(pressedRule).toContain('background: var(--vf-tabs-tab-hover-background);');
+    expect(selectedHoverRule).toContain('background: var(--vf-tabs-tab-active-background);');
+    expect(selectedActiveRule).toContain('background: var(--vf-tabs-tab-active-background);');
+    expect(disabledRule).toContain('background: var(--vf-tabs-tab-background);');
+    expect(css).not.toContain('var(--vf-color-background-surface-selected-hover');
+    expect(css).not.toContain('var(--vf-color-background-surface-selected-active');
   });
 
   it('uses symmetric overlap geometry for both public Tooltip placements', () => {
@@ -123,35 +137,54 @@ describe('component interaction contract', () => {
     );
   });
 
-  it('gives unselected navigation and menu items a stronger semantic press state', () => {
-    const singleLineSelectors = {
-      dropdown:
-        ".vf-dropdown__item:active:not(.vf-dropdown__item--active, :disabled, [aria-disabled='true'])",
-      'nav-menu':
-        '.vf-nav-menu__item:active:not(:disabled, .vf-nav-menu__item--disabled, .vf-nav-menu__item--active)',
-      tabs: ".vf-tabs__tab:active:not(:disabled, [aria-selected='true'])",
-    };
-
-    for (const [name, selector] of Object.entries(singleLineSelectors)) {
-      expect(extractRule(readEntry(name), selector)).toContain('var(--vf-color-background-surface-active');
-    }
-
-    const topMenuRule = extractRule(
-      readEntry('menu-bar'),
-      `.vf-menu-bar__item--top:active:not(
-    :disabled,
-    .vf-menu-bar__item--disabled,
-    .vf-menu-bar__item--active,
-    .vf-menu-bar__item--open
-  )`,
-    );
-    expect(topMenuRule).toContain('var(--vf-color-background-surface-active');
-
+  it('gives surface-backed Select options a stronger semantic press state', () => {
     const selectRule = extractRule(
       readEntry('select'),
       ".vf-select__option:active:not(:disabled, .vf-select__option--selected, [aria-selected='true'])",
     );
     expect(selectRule).toContain('var(--vf-color-background-surface-active');
+  });
+
+  it('keeps text-first navigation variants free of filled pointer-state leakage', () => {
+    const presetSource = readTheme('default-preset-source.ts');
+    const navMenuCss = readEntry('nav-menu');
+    const tableOfContentsCss = readEntry('table-of-contents');
+    const menuBarCss = readEntry('menu-bar');
+    const dropdownCss = readEntry('dropdown');
+
+    for (const token of [
+      'navMenuItemHoverBackground',
+      'navMenuItemActiveBackground',
+      'menuBarTopHoverBackground',
+      'menuBarTopActiveBackground',
+      'menuBarSubmenuHoverBackground',
+      'menuBarSubmenuActiveBackground',
+      'tableOfContentsHoverBackground',
+      'tableOfContentsActiveBackground',
+    ]) {
+      expect(presetSource).toContain(`${token}: 'transparent'`);
+    }
+
+    expect(navMenuCss).not.toContain(
+      '.vf-nav-menu__item:active:not(:disabled, .vf-nav-menu__item--disabled, .vf-nav-menu__item--active)',
+    );
+    expect(menuBarCss).not.toContain('.vf-menu-bar__item--top:active:not(');
+    expect(dropdownCss).not.toContain(
+      ".vf-dropdown__item:active:not(.vf-dropdown__item--active, :disabled, [aria-disabled='true'])",
+    );
+
+    expect(navMenuCss).toContain(
+      ':where(.vf-nav-menu--pills) .vf-nav-menu__item--active:hover:not(:disabled, .vf-nav-menu__item--disabled)',
+    );
+    expect(tableOfContentsCss).toContain(
+      ':where(.vf-table-of-contents--pills) .vf-table-of-contents__link.vf-table-of-contents__link--active:hover',
+    );
+    expect(menuBarCss).toContain(
+      ':where(.vf-menu-bar--pills)\n  .vf-menu-bar__item--top.vf-menu-bar__item--active:hover',
+    );
+    expect(dropdownCss).toContain(
+      ".vf-dropdown__menu--pills .vf-dropdown__item--active:hover:not(:disabled, [aria-disabled='true'])",
+    );
   });
 
   it('uses the semantic focus treatment for programmatically focused Popovers', () => {
