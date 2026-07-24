@@ -233,6 +233,26 @@
   background: var(--vf-menu-bar-current-submenu-open-background);
 }
 
+.vf-menu-bar__item--top:active:not(
+    :disabled,
+    .vf-menu-bar__item--disabled,
+    .vf-menu-bar__item--active,
+    .vf-menu-bar__item--open
+  ) {
+  color: var(--vf-menu-bar-current-top-hover-color);
+  background: var(--vf-color-background-surface-active, var(--vf-menu-bar-current-top-hover-background));
+}
+
+.vf-menu-bar__item:not(.vf-menu-bar__item--top):active:not(
+    :disabled,
+    .vf-menu-bar__item--disabled,
+    .vf-menu-bar__item--active,
+    .vf-menu-bar__item--open
+  ) {
+  color: var(--vf-menu-bar-current-submenu-hover-color);
+  background: var(--vf-color-background-surface-active, var(--vf-menu-bar-current-submenu-hover-background));
+}
+
 .vf-menu-bar__item-content {
   display: inline-flex;
   align-items: center;

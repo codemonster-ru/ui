@@ -87,6 +87,11 @@
   border-color: var(--vf-radio-hover-border-color);
 }
 
+.vf-radio:active:not(.vf-radio--disabled) .vf-radio__input:not(:checked) + .vf-radio__control {
+  border-color: var(--vf-radio-hover-border-color);
+  background: var(--vf-color-background-surface-active, var(--vf-radio-control-background));
+}
+
 .vf-radio--sm .vf-radio__control {
   width: var(--vf-checkbox-size-sm);
   height: var(--vf-checkbox-size-sm);
@@ -145,6 +150,22 @@
   opacity: 1;
 }
 
+.vf-radio:hover:not(.vf-radio--disabled) .vf-radio__input:checked + .vf-radio__control {
+  border-color: var(--vf-color-interactive-primary-hover-background, var(--vf-radio-checked-border-color));
+}
+
+.vf-radio:hover:not(.vf-radio--disabled) .vf-radio__input:checked + .vf-radio__control .vf-radio__dot {
+  background: var(--vf-color-interactive-primary-hover-background, var(--vf-radio-dot-color));
+}
+
+.vf-radio:active:not(.vf-radio--disabled) .vf-radio__input:checked + .vf-radio__control {
+  border-color: var(--vf-color-interactive-primary-active-background, var(--vf-radio-checked-border-color));
+}
+
+.vf-radio:active:not(.vf-radio--disabled) .vf-radio__input:checked + .vf-radio__control .vf-radio__dot {
+  background: var(--vf-color-interactive-primary-active-background, var(--vf-radio-dot-color));
+}
+
 .vf-radio__input:focus-visible + .vf-radio__control {
   outline: none;
   border-color: var(--vf-radio-focus-border-color);
@@ -153,6 +174,9 @@
 
 .vf-radio--invalid:not(.vf-radio--disabled) .vf-radio__control,
 .vf-radio--invalid:not(.vf-radio--disabled) .vf-radio__input:checked + .vf-radio__control,
-.vf-radio--invalid:hover:not(.vf-radio--disabled) .vf-radio__input + .vf-radio__control {
+.vf-radio--invalid:hover:not(.vf-radio--disabled) .vf-radio__input:not(:checked) + .vf-radio__control,
+.vf-radio--invalid:hover:not(.vf-radio--disabled) .vf-radio__input:checked + .vf-radio__control,
+.vf-radio--invalid:active:not(.vf-radio--disabled) .vf-radio__input:not(:checked) + .vf-radio__control,
+.vf-radio--invalid:active:not(.vf-radio--disabled) .vf-radio__input:checked + .vf-radio__control {
   border-color: var(--vf-radio-invalid-border-color);
 }

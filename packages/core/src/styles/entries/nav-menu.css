@@ -318,6 +318,12 @@
   background: var(--vf-nav-menu-current-item-hover-background);
 }
 
+.vf-nav-menu__item:active:not(:disabled, .vf-nav-menu__item--disabled, .vf-nav-menu__item--active) {
+  color: var(--vf-nav-menu-current-item-hover-color);
+  border-color: transparent;
+  background: var(--vf-color-background-surface-active, var(--vf-nav-menu-current-item-hover-background));
+}
+
 .vf-nav-menu__item--active:not(:disabled, .vf-nav-menu__item--disabled) {
   font-weight: var(--vf-text-label-font-weight);
   color: var(--vf-nav-menu-current-item-active-color);
@@ -402,7 +408,8 @@
     :disabled,
     .vf-nav-menu__item--disabled,
     .vf-nav-menu__item--active,
-    .vf-nav-menu__item--ancestor-active
+    .vf-nav-menu__item--ancestor-active,
+    :active
   ) {
   background: var(--vf-nav-menu-sidebar-top-hover-background);
 }

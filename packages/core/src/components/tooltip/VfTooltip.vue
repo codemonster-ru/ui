@@ -28,8 +28,8 @@ const triggerRef = ref<HTMLElement | null>(null);
 const contentRef = ref<HTMLElement | null>(null);
 const arrowRef = ref<HTMLElement | null>(null);
 const transitionDuration = {
-  enter: vfMotionDurationsMs.fast,
-  leave: vfMotionDurationsMs.fast,
+  enter: vfMotionDurationsMs.normal,
+  leave: vfMotionDurationsMs.normal,
 } as const;
 const teleportDisabled = computed(
   () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,

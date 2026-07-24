@@ -58,7 +58,7 @@
 }
 
 .vf-tooltip__arrow--top {
-  margin-top: var(--vf-overlay-arrow-separated-offset);
+  margin-top: var(--vf-overlay-arrow-overlap-offset);
   border-right: var(--vf-overlay-border-width) solid var(--vf-tooltip-content-border-color);
   border-bottom: var(--vf-overlay-border-width) solid var(--vf-tooltip-content-border-color);
 }
