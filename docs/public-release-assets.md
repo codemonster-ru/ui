@@ -58,9 +58,9 @@ VueForge 2 completes the transition to one primitive and semantic token architec
 legacy token aliases, deprecated TypeScript spellings, compatibility resolver metadata, implicit
 `data-theme` handling, dead runtime paths, and unused styling hooks.
 
-The release preserves the built-in OKLCH palette, visual design, accessibility behavior, component
-set, custom theme prefixes and attributes, and advertised CommonJS support. Package `exports` now
-defines every supported JavaScript, declaration, Node, browser, and CSS entry.
+The release introduces the accessible OKLCH palette and consistent interaction-state treatment while
+preserving the component set, custom theme prefixes and attributes, and advertised CommonJS support.
+Package `exports` now defines every supported JavaScript, declaration, Node, browser, and CSS entry.
 
 Upgrade interdependent packages together. Core starts at
 `@codemonster-ru/vueforge-core@2.0.0` and requires Vue `^3.5.0`. CodeBlock 4 and Playground 3
@@ -70,7 +70,7 @@ Read
 [Migrating to VueForge 2](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-to-v2.md)
 before upgrading and the
 [coordinated release notes](https://github.com/codemonster-ru/vueforge/blob/main/docs/release-notes.md)
-for package versions and preserved behavior.
+for package versions and release details.
 
 ## Release announcement
 
@@ -79,8 +79,8 @@ checks have passed:
 
 > VueForge 2 is available for Vue 3.5 applications. This breaking release removes the completed
 > 1.x compatibility layer and leaves one canonical token, theme, runtime, and package-entry
-> architecture. The existing design, accessibility behavior, scoped theming, CommonJS support, and
-> explicit CSS entries remain intact. Start with
+> architecture. It also delivers the new accessible OKLCH palette and hardened interaction states,
+> while scoped theming, CommonJS support, and explicit CSS entries remain intact. Start with
 > [the documentation](https://docs.codemonster.net/vueforge/) and review
 > [Migrating to VueForge 2](https://github.com/codemonster-ru/vueforge/blob/main/docs/migration-to-v2.md)
 > before upgrading.
