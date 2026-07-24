@@ -148,10 +148,10 @@ app.use(VueForgeCore, {
 Core component defaults resolve through semantic roles. Existing component-token overrides still win because component CSS
 continues to consume that boundary.
 
-Base component-token overrides remain effective, but newly independent compound states are semantic-first. For example, a
-custom `tabsTabActiveBackground` controls the selected base and remains the component-token fallback; customize
-`colorBackgroundSurfaceSelectedHover` and `colorBackgroundSurfaceSelectedActive` as well when the complete selected recipe
-must change.
+Base component-token overrides remain effective. Underline Tabs intentionally keep
+`tabsTabActiveBackground` across selected, selected-hover, and selected-active states so the default
+text-first treatment stays transparent while a custom background remains possible. Filled
+selection components use the semantic `colorBackgroundSurfaceSelected*` compound roles.
 
 ### `preset`
 

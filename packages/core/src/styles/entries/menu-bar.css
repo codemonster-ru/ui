@@ -162,22 +162,24 @@
   background: var(--vf-menu-bar-current-submenu-active-background);
 }
 
-.vf-menu-bar__item--top.vf-menu-bar__item--active:hover:not(:disabled, .vf-menu-bar__item--disabled) {
+:where(.vf-menu-bar--pills)
+  .vf-menu-bar__item--top.vf-menu-bar__item--active:hover:not(:disabled, .vf-menu-bar__item--disabled) {
   background: var(--vf-color-background-surface-selected-hover, var(--vf-menu-bar-current-top-active-background));
 }
 
-.vf-menu-bar__item--top.vf-menu-bar__item--active:active:not(:disabled, .vf-menu-bar__item--disabled) {
+:where(.vf-menu-bar--pills)
+  .vf-menu-bar__item--top.vf-menu-bar__item--active:active:not(:disabled, .vf-menu-bar__item--disabled) {
   background: var(--vf-color-background-surface-selected-active, var(--vf-menu-bar-current-top-active-background));
 }
 
-.vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active:hover:not(
+:where(.vf-menu-bar--pills) .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active:hover:not(
     :disabled,
     .vf-menu-bar__item--disabled
   ) {
   background: var(--vf-color-background-surface-selected-hover, var(--vf-menu-bar-current-submenu-active-background));
 }
 
-.vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active:active:not(
+:where(.vf-menu-bar--pills) .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active:active:not(
     :disabled,
     .vf-menu-bar__item--disabled
   ) {
@@ -231,26 +233,6 @@
 .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--open:not(:disabled, .vf-menu-bar__item--disabled) {
   color: var(--vf-menu-bar-current-submenu-open-color);
   background: var(--vf-menu-bar-current-submenu-open-background);
-}
-
-.vf-menu-bar__item--top:active:not(
-    :disabled,
-    .vf-menu-bar__item--disabled,
-    .vf-menu-bar__item--active,
-    .vf-menu-bar__item--open
-  ) {
-  color: var(--vf-menu-bar-current-top-hover-color);
-  background: var(--vf-color-background-surface-active, var(--vf-menu-bar-current-top-hover-background));
-}
-
-.vf-menu-bar__item:not(.vf-menu-bar__item--top):active:not(
-    :disabled,
-    .vf-menu-bar__item--disabled,
-    .vf-menu-bar__item--active,
-    .vf-menu-bar__item--open
-  ) {
-  color: var(--vf-menu-bar-current-submenu-hover-color);
-  background: var(--vf-color-background-surface-active, var(--vf-menu-bar-current-submenu-hover-background));
 }
 
 .vf-menu-bar__item-content {

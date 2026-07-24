@@ -1,33 +1,32 @@
-# VueForge: отчёт о реализации Phase 2
+# VueForge: Phase 2 implementation report
 
-Дата подготовки: 2026-07-22. Статус: **Phase 2 завершена; целевая color architecture, component migration,
-contract-проверки и visual regression выполнены**.
+Prepared on: 2026-07-22. Status: **Phase 2 is complete; the target color architecture, component migration,
+contract checks, and visual regression are complete**.
 
-Исторические значения взяты из Phase 0/1 audit-документов, а итоговые значения — из текущей canonical schema.
-Phase 0 и Phase 1 не переписываются задним числом.
+Historical values are taken from the Phase 0/1 audit documents, while final values come from the current canonical schema.
+Phase 0 and Phase 1 are not retroactively rewritten.
 
-## 1. Цели и границы Phase 2
+## 1. Phase 2 goals and scope
 
-Phase 2 намеренно меняет цветовой облик VueForge: вводит целевую OKLCH-палитру, разделяет light/dark semantic
-materials, исправляет подтверждённые contrast failures и переводит built-in component mappings на semantic roles.
+Phase 2 intentionally changes the visual color treatment of VueForge: it introduces the target OKLCH palette, separates
+light/dark semantic materials, fixes confirmed contrast failures, and migrates built-in component mappings to semantic roles.
 
-В scope вошли:
+The scope includes:
 
-- семь perceptually tuned primitive scales;
-- самостоятельные surface, link, selected, hover и active materials;
-- WCAG 2.2 contrast matrix только для поддерживаемых semantic pairings;
-- semantic-first component mappings с VueForge 1.x fallback;
-- state precedence для disabled, invalid, selected/checked, hover/active, focus-visible и read-only;
-- собственные согласованные light/dark Shiki themes для CodeBlock;
-- Playground theme bridge для зависимостей semantic CSS variables;
-- color-system showcase и воспроизводимый desktop/mobile/CVD smoke script;
-- regression policy для primitive usage и hardcoded colors.
+- seven perceptually tuned primitive scales;
+- independent surface, link, selected, hover, and active materials;
+- a WCAG 2.2 contrast matrix limited to supported semantic pairings;
+- semantic-first component mappings with a VueForge 1.x fallback;
+- state precedence for disabled, invalid, selected/checked, hover/active, focus-visible, and read-only;
+- custom, coordinated light/dark Shiki themes for CodeBlock;
+- a Playground theme bridge for semantic CSS variable dependencies;
+- a color-system showcase and reproducible desktop/mobile/CVD smoke script;
+- a regression policy for primitive usage and hardcoded colors.
 
-Вне scope остались geometry, spacing, typography, DOM redesign, удаление legacy tokens и другие breaking changes
-VueForge 2. Phase 2 не копирует палитру другой UI-библиотеки и не добавляет отдельный `accent` без продуктового
-сценария.
+Out of scope are geometry, spacing, typography, DOM redesign, removal of legacy tokens, and other VueForge 2 breaking
+changes. Phase 2 does not copy another UI library's palette or add a separate `accent` without a product use case.
 
-## 2. Палитра до и после
+## 2. Palette before and after
 
 ```text
 Phase 1
@@ -39,23 +38,23 @@ component CSS → existing component customization token → 85 semantic roles �
                                                       └→ VueForge 1.x legacy fallback
 ```
 
-| Contract                        |        До: Phase 1 |     После: Phase 2 |
+| Contract                        |    Before: Phase 1 |     After: Phase 2 |
 | ------------------------------- | -----------------: | -----------------: |
 | Primitive tokens                |             **29** |             **66** |
 | Semantic roles                  |             **77** |             **85** |
 | Additive semantic keys          |             **76** |             **84** |
-| Сохранённые legacy keys         |            **847** |            **847** |
-| Полный built-in preset          |            **952** |            **997** |
+| Preserved legacy keys           |            **847** |            **847** |
+| Complete built-in preset        |            **952** |            **997** |
 | Root dark overrides             |             **53** |            **137** |
 | Canonical alias depth limit     |              **4** |              **5** |
 | Custom-prefix alias depth limit |              **9** |             **11** |
 | Authoring format                | Existing-value HEX | In-gamut `oklch()` |
 
-`colorFocusRing` остаётся единственным пересечением legacy и semantic sets. Поэтому итоговый preset содержит
-`847 + 66 + 84 = 997` уникальных keys. Все 847 ключей VueForge 1.x сохранены; изменение `952 → 997` состоит из
-37 новых primitive stops и восьми новых semantic roles.
+`colorFocusRing` remains the only intersection of the legacy and semantic sets. Therefore, the final preset contains
+`847 + 66 + 84 = 997` unique keys. All 847 VueForge 1.x keys are preserved; the change from `952 → 997` consists of
+37 new primitive stops and eight new semantic roles.
 
-## 3. Primitive values до и после
+## 3. Primitive values before and after
 
 ### Phase 1 baseline
 
@@ -69,17 +68,17 @@ component CSS → existing component customization token → 85 semantic roles �
 | Danger  | `500 #bf3f3f`, `600 #c72e39`                                                                                                                                                                                                           |
 | Help    | `500 #7b4c96`, `600 #6e43a2`                                                                                                                                                                                                           |
 
-Эти 29 materials сохраняли исходный rendered output, но не образовывали полноценных state scales. Один и тот же
-chromatic material часто использовался и как solid background, и как foreground.
+These 29 materials preserved the original rendered output but did not form complete state scales. The same chromatic
+material was often used both as a solid background and as a foreground.
 
 ### Phase 2 neutral scale
 
-Neutral использует hue `260` и низкую chroma. Крайние stops не являются абсолютными white/black; surface hierarchy
-строится lightness, а не случайным blue cast.
+Neutral uses hue `260` and low chroma. The endpoint stops are not absolute white/black; the surface hierarchy is built
+with lightness rather than an incidental blue cast.
 
-| Step | OKLCH                    | Назначение                           |
+| Step | OKLCH                    | Purpose                              |
 | ---: | ------------------------ | ------------------------------------ |
-|    0 | `oklch(99.5% 0.002 260)` | light surface и light on-solid       |
+|    0 | `oklch(99.5% 0.002 260)` | light surface and light on-solid     |
 |   50 | `oklch(97.8% 0.005 260)` | light canvas                         |
 |  100 | `oklch(95.8% 0.007 260)` | light subtle/hover/disabled          |
 |  200 | `oklch(90% 0.012 260)`   | light divider; dark primary text     |
@@ -98,8 +97,8 @@ Neutral использует hue `260` и низкую chroma. Крайние st
 
 ### Phase 2 chromatic scales
 
-Chroma вручную возрастает к полезным средним stops и снижается на концах. Scales mode-independent; light/dark
-semantic maps выбирают разные stops, поэтому dark theme не является механической инверсией light.
+Chroma is manually increased toward useful middle stops and reduced at the endpoints. The scales are mode-independent;
+light/dark semantic maps select different stops, so the dark theme is not a mechanical inversion of the light theme.
 
 | Family  | Hue | Steps: `lightness/chroma`                                                                                                                         |
 | ------- | --: | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -110,15 +109,15 @@ semantic maps выбирают разные stops, поэтому dark theme н�
 | Danger  |  20 | `100 95.5/.020`, `300 76/.142`, `400 66.5/.180`, `500 60.5/.180`, `600 53.5/.170`, `700 47.5/.150`, `800 40.5/.120`, `900 30/.050`                |
 | Help    | 307 | `100 95.5/.020`, `300 77/.115`, `400 67/.145`, `500 60/.150`, `600 52/.130`, `700 44.5/.115`, `800 38/.090`, `900 29.5/.045`                      |
 
-`help` сохраняется отдельной violet family: это существующий public tone для actions, feedback и progress. Все 66
-authored values находятся внутри sRGB gamut, что защищает contrast расчёты от browser gamut mapping.
+`help` remains a separate violet family: it is an existing public tone for actions, feedback, and progress. All 66
+authored values are within the sRGB gamut, protecting contrast calculations from browser gamut mapping.
 
-## 4. Semantic values до и после
+## 4. Semantic values before and after
 
-В Phase 1 большинство ролей были aliases к 36 legacy color sources; hover/active/selected частично вычислялись через
-multi-source `color-mix`. В Phase 2 light и dark получают полные самостоятельные 85-role maps.
+In Phase 1, most roles were aliases to 36 legacy color sources; hover/active/selected were partially calculated through
+multi-source `color-mix`. In Phase 2, light and dark receive complete, independent 85-role maps.
 
-Восемь новых ролей:
+Eight new roles:
 
 - `colorBackgroundSurfaceSelectedHover`;
 - `colorBackgroundSurfaceSelectedActive`;
@@ -145,7 +144,7 @@ multi-source `color-mix`. В Phase 2 light и dark получают полные
 | primary solid / hover / active   | one base material                    | P600 / P700 / P800 | P500 / P600 / P700 |
 | primary subtle bg / fg           | soft mix / primary                   | P100 / P700        | P900 / P300        |
 
-Status roles остаются восемью независимыми decisions для каждой из success, warning, danger, info и help:
+Status roles remain eight independent decisions for each of success, warning, danger, info, and help:
 
 | Status material          | Phase 1            | Phase 2 light                | Phase 2 dark       |
 | ------------------------ | ------------------ | ---------------------------- | ------------------ |
@@ -156,80 +155,80 @@ Status roles остаются восемью независимыми decisions 
 | subtle foreground / icon | overloaded base    | 700; warning 800             | 300                |
 | border                   | soft mix           | 500; warning 700             | 400                |
 
-Opaque interactive materials дают одинаковый итог на canvas, surface и elevated containers. Прозрачность сохранена
-только для композиционных backdrop/shadow сценариев.
+Opaque interactive materials produce the same result on canvas, surface, and elevated containers. Transparency is
+preserved only for compositional backdrop/shadow scenarios.
 
-## 5. Контрастность до и после
+## 5. Contrast before and after
 
-Baseline использует исторические computed sRGB ratios. Итоговые ratios рассчитаны из canonical OKLCH values той же
-WCAG 2.2 luminance формулой, которую использует regression test.
+The baseline uses historical computed sRGB ratios. Final ratios are calculated from canonical OKLCH values with the same
+WCAG 2.2 luminance formula used by the regression test.
 
-| Pairing                                        |                                  До light / dark | После light / dark | Минимум |
-| ---------------------------------------------- | -----------------------------------------------: | -----------------: | ------: |
-| Primary text / surface                         |                                  `15.75 / 10.61` |    `15.50 / 11.67` |     4.5 |
-| Muted text / canvas                            |                                    `5.34 / 6.71` |      `4.55 / 5.43` |     4.5 |
-| Primary/link foreground / surface              |                                    `6.40 / 2.92` |      `7.30 / 7.39` |     4.5 |
-| Danger foreground / surface                    |                                    `5.41 / 2.99` |      `7.13 / 6.89` |     4.5 |
-| Help foreground / surface                      |                                    `7.03 / 2.48` |      `7.91 / 7.29` |     4.5 |
-| Warning foreground / surface                   |                                    `3.60 / 5.85` |      `6.62 / 8.83` |     4.5 |
-| Interactive control border / surface           |                                    `1.36 / 1.40` |      `3.19 / 3.24` |     3.0 |
-| Focus ring / surface                           |                                    `1.65 / 1.52` |      `5.89 / 7.39` |     3.0 |
-| Selected foreground / strongest selected state |                                    `4.73 / 2.42` |      `4.59 / 5.35` |     4.5 |
-| Status subtle foreground / background, minimum |                                    `3.16 / 2.27` |      `5.98 / 6.10` |     4.5 |
-| Status border / subtle background, minimum     | прежние soft-border recipes не гарантировали 3:1 |      `3.38 / 4.19` |     3.0 |
-| CodeBlock syntax foreground, minimum           |                                    `3.15 / 2.95` |      `5.59 / 6.18` |     4.5 |
+| Pairing                                        |                                Before light / dark | After light / dark | Minimum |
+| ---------------------------------------------- | -------------------------------------------------: | -----------------: | ------: |
+| Primary text / surface                         |                                    `15.75 / 10.61` |    `15.50 / 11.67` |     4.5 |
+| Muted text / canvas                            |                                      `5.34 / 6.71` |      `4.55 / 5.43` |     4.5 |
+| Primary/link foreground / surface              |                                      `6.40 / 2.92` |      `7.30 / 7.39` |     4.5 |
+| Danger foreground / surface                    |                                      `5.41 / 2.99` |      `7.13 / 6.89` |     4.5 |
+| Help foreground / surface                      |                                      `7.03 / 2.48` |      `7.91 / 7.29` |     4.5 |
+| Warning foreground / surface                   |                                      `3.60 / 5.85` |      `6.62 / 8.83` |     4.5 |
+| Interactive control border / surface           |                                      `1.36 / 1.40` |      `3.19 / 3.24` |     3.0 |
+| Focus ring / surface                           |                                      `1.65 / 1.52` |      `5.89 / 7.39` |     3.0 |
+| Selected foreground / strongest selected state |                                      `4.73 / 2.42` |      `4.59 / 5.35` |     4.5 |
+| Status subtle foreground / background, minimum |                                      `3.16 / 2.27` |      `5.98 / 6.10` |     4.5 |
+| Status border / subtle background, minimum     | previous soft-border recipes did not guarantee 3:1 |      `3.38 / 4.19` |     3.0 |
+| CodeBlock syntax foreground, minimum           |                                      `3.15 / 2.95` |      `5.59 / 6.18` |     4.5 |
 
-Supported matrix также проверяет primary/on-solid, inverse, placeholder, links, status solid/hover/active, meaningful
-icons, borders и progress materials. Это конечный список реальных pairings, а не бессмысленный Cartesian product.
+The supported matrix also checks primary/on-solid, inverse, placeholder, links, status solid/hover/active, meaningful
+icons, borders, and progress materials. This is a finite list of real pairings, not a meaningless Cartesian product.
 
-## 6. Исправленные WCAG-нарушения
+## 6. Fixed WCAG violations
 
-На уровне built-in semantic contract исправлены:
+The following issues are fixed at the built-in semantic contract level:
 
-- focus ring и focus border, ранее не достигавшие 3:1;
+- focus ring and focus border, which previously failed to reach 3:1;
 - interactive boundaries Input/Select/Checkbox/Radio/Switch;
-- dark primary/link, danger и help foregrounds;
+- dark primary/link, danger, and help foregrounds;
 - light warning foreground;
-- status foreground/icon/border на subtle surfaces;
-- dark selected/current foreground и отдельные selected + hover/active states;
-- CodeBlock syntax tokens, editor background pairing, selection и copy-button focus;
-- secondary, muted и placeholder pairings без повторного subtree opacity;
-- primary/status solids и их independently authored on-solid foregrounds;
-- invalid + checked/open/focus precedence, при котором danger boundary больше не исчезает.
+- status foreground/icon/border on subtle surfaces;
+- dark selected/current foreground and separate selected + hover/active states;
+- CodeBlock syntax tokens, editor background pairing, selection, and copy-button focus;
+- secondary, muted, and placeholder pairings without repeated subtree opacity;
+- primary/status solids and their independently authored on-solid foregrounds;
+- invalid + checked/open/focus precedence, under which the danger boundary no longer disappears.
 
-Disabled roles намеренно не доводятся до уровня активного текста: unavailable controls исключены из соответствующих
-WCAG criteria, но получают явные fg/bg/border/cursor materials и больше не ослабляются повторным opacity там, где CSS
-был мигрирован.
+Disabled roles intentionally do not reach active-text levels: unavailable controls are excluded from the relevant WCAG
+criteria, but receive explicit fg/bg/border/cursor materials and are no longer weakened by repeated opacity where CSS
+has been migrated.
 
-## 7. Осознанные исключения и CVD/non-color cues
+## 7. Intentional exceptions and CVD/non-color cues
 
-Цветовая матрица гарантирует luminance contrast, но не доказывает передачу смысла без hue. В showcase зафиксированы
-существующие non-color cues: Alert icons, Checkbox/Radio marks, selected indicator/position/weight и focus geometry.
-Visual script подготавливает отдельные protanopia, deuteranopia, tritanopia и achromatopsia captures для обеих тем.
-Все восемь CVD captures проверены вручную. Alert/status labels и icons, control marks, focus geometry и selected
-position/weight сохраняют читаемую структуру в обеих темах. При achromatopsia chromatic materials закономерно теряют
-hue distinction, но встроенные showcase-сценарии не полагаются только на неё. Перечисленные ниже API-исключения
-остаются осознанными ограничениями.
+The color matrix guarantees luminance contrast but does not prove that meaning is conveyed without hue. The showcase
+documents existing non-color cues: Alert icons, Checkbox/Radio marks, selected indicator/position/weight, and focus
+geometry. The visual script prepares separate protanopia, deuteranopia, tritanopia, and achromatopsia captures for both
+themes. All eight CVD captures were reviewed manually. Alert/status labels and icons, control marks, focus geometry, and
+selected position/weight retain a readable structure in both themes. Under achromatopsia, chromatic materials naturally
+lose hue distinction, but the built-in showcase scenarios do not rely on it alone. The API exceptions listed below
+remain intentional limitations.
 
-Осознанно остаются продуктовые/API исключения:
+The following product/API exceptions intentionally remain:
 
-- `Alert` может лишиться второго сигнала при `hideIcon`; consumer должен сохранить понятный title/text;
-- `Badge` и `Tag` tone не добавляют иконку автоматически;
-- `ProgressBar` и `ProgressSpinner` tone по-прежнему требует внешней label/context semantics;
-- выбранный option в `VfSelect` имеет ARIA/state semantics, но внутри открытого списка визуально различается в основном
-  цветом selected material;
-- invalid control без supporting message/icon может сообщать ошибку только boundary hue;
-- custom content может удалить встроенные shape/label cues;
-- disabled content имеет intentionally lower contrast и должен определяться также cursor/behavior/ARIA semantics.
+- `Alert` can lose its second signal when `hideIcon` is used; the consumer must retain a clear title/text;
+- the `Badge` and `Tag` tone does not add an icon automatically;
+- the `ProgressBar` and `ProgressSpinner` tone still requires external label/context semantics;
+- a selected option in `VfSelect` has ARIA/state semantics, but within the open list it is visually distinguished mainly
+  by the selected material color;
+- an invalid control without a supporting message/icon may communicate the error only through the boundary hue;
+- custom content can remove the built-in shape/label cues;
+- disabled content has intentionally lower contrast and must also be identifiable through cursor/behavior/ARIA semantics.
 
-Phase 2 не меняет component props или DOM ради автоматической вставки cue: это было бы отдельным public API решением.
-Ни одно syntax role не требует пониженного text-contrast исключения: package fallbacks рассчитаны минимум на 4.5:1.
+Phase 2 does not change component props or the DOM to insert cues automatically: that would be a separate public API
+decision. No syntax role requires a reduced text-contrast exception: package fallbacks are designed for at least 4.5:1.
 
-## 8. Мигрированные компоненты и состояния
+## 8. Migrated components and states
 
-Built-in component-token defaults теперь semantic-first, а CSS сохраняет legacy/component fallback. Миграция охватывает:
+Built-in component-token defaults are now semantic-first, while CSS retains a legacy/component fallback. The migration covers:
 
-| Группа        | Компоненты/области                                                                                       | Основные изменения                                                        |
+| Group         | Components/areas                                                                                         | Main changes                                                              |
 | ------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Foundations   | root, prose, inline code, text utilities, HorizontalScroller, Divider                                    | canvas/text/link/divider/focus roles                                      |
 | Actions       | Button, IconButton, Link                                                                                 | independent solid hover/active, 3:1 secondary boundary, disabled/focus    |
@@ -240,45 +239,46 @@ Built-in component-token defaults теперь semantic-first, а CSS сохра
 | Layouts       | AdminLayout/Shell, AppShell, Auth/Document/Error/Setup layouts                                           | semantic-first canvas/surface/text roots with legacy fallback             |
 | Ecosystem     | CodeBlock, Playground, sandbox runtime                                                                   | scoped semantic adapters and full dependency propagation                  |
 
-`Alert`, `DataTable` и `Fieldset` продолжают обращаться к собственным component tokens, когда это реальная
-customization boundary; их default values теперь semantic. Primitive references в component CSS запрещены.
+`Alert`, `DataTable`, and `Fieldset` continue to use their own component tokens where they form a real customization
+boundary; their default values are now semantic. Primitive references in component CSS are prohibited.
 
 ### Compound states
 
-Новая precedence model:
+New precedence model:
 
-1. disabled suppresses hover/active и применяет собственные fg/bg/border roles;
-2. invalid boundary остаётся поверх checked/open, а focus добавляет ring и не стирает invalid;
-3. selected/checked задаёт base material;
-4. selected + hover и selected + active используют отдельные opaque roles;
-5. обычные hover/active применяются только без более приоритетного состояния;
-6. focus-visible добавляется, не заменяя selected/checked/open;
-7. read-only использует subtle surface, но invalid сохраняет danger boundary.
+1. disabled suppresses hover/active and applies its own fg/bg/border roles;
+2. the invalid boundary remains above checked/open, while focus adds a ring without erasing invalid;
+3. selected/checked defines the base material;
+4. selected + hover and selected + active use separate opaque roles;
+5. regular hover/active applies only when no higher-priority state is present;
+6. focus-visible is added without replacing selected/checked/open;
+7. read-only uses a subtle surface, while invalid retains the danger boundary.
 
-`VfSwitch static` остаётся интерактивным visual variant: он удерживает static track recipe, но сохраняет hover и
-focus-visible cues и не использует disabled semantics.
+`VfSwitch static` remains an interactive visual variant: it retains the static track recipe, preserves hover and
+focus-visible cues, and does not use disabled semantics.
 
-Button/IconButton больше не используют `brightness()` для built-in state colors. Legacy filter hooks
-`--vf-button-solid-hover-filter` и `--vf-button-solid-active-filter` сохранены; их built-in default теперь `none`, поэтому
-существующая custom CSS может продолжить использовать hook без возврата фильтра в стандартную палитру.
+Button/IconButton no longer use `brightness()` for built-in state colors. The legacy filter hooks
+`--vf-button-solid-hover-filter` and `--vf-button-solid-active-filter` are preserved; their built-in default is now
+`none`, so existing custom CSS can continue using the hook without restoring the filter to the standard palette.
 
-### CodeBlock и Shiki
+### CodeBlock and Shiki
 
-`github-light`/`github-dark` больше не смешиваются с VueForge background. Lazy highlighter создаёт package-owned
-`vueforge-light`/`vueforge-dark` CSS-variable themes, где syntax background, foreground, comments, strings, constants,
-keywords, parameters, functions, diff/ANSI roles и selection согласованы с semantic palette. Добавлена `diff` language,
-copy focus outline и единый editor/code background. Standalone OKLCH fallbacks — документированное исключение из
-hardcoded-color policy и проверяются отдельным gamut/contrast contract. Exact Shiki adapters закреплены по каждой syntax
-variable; default Core semantic resolutions отдельно проверяются на фактическом neutral-subtle editor surface.
+`github-light`/`github-dark` are no longer combined with the VueForge background. The lazy highlighter creates
+package-owned `vueforge-light`/`vueforge-dark` CSS-variable themes where syntax background, foreground, comments,
+strings, constants, keywords, parameters, functions, diff/ANSI roles, and selection are coordinated with the semantic
+palette. The `diff` language, a copy focus outline, and a unified editor/code background were added. Standalone OKLCH
+fallbacks are a documented exception to the hardcoded-color policy and are checked by a separate gamut/contrast
+contract. Exact Shiki adapters are fixed for each syntax variable; default Core semantic resolutions are checked
+separately against the actual neutral-subtle editor surface.
 
-Публичный `--vf-codeblock-disabled-opacity` остаётся рабочим VueForge 1.x hook. Его built-in default изменён с `0.6` на
-`1`, чтобы disabled state не снижал контраст всего syntax subtree; явный consumer override продолжает применяться, а
-disabled copy action не раскрывается и не получает hover/focus treatment.
+The public `--vf-codeblock-disabled-opacity` remains a working VueForge 1.x hook. Its built-in default changed from
+`0.6` to `1` so that the disabled state does not reduce contrast across the entire syntax subtree; an explicit consumer
+override continues to apply, while the disabled copy action is not revealed and receives no hover/focus treatment.
 
-## 9. Legacy tokens как compatibility layer
+## 9. Legacy tokens as a compatibility layer
 
-Все **847** pre-Phase-1 keys сохранены, ни один legacy token не удалён и не переименован. Существующие component-token
-overrides остаются customization boundary:
+All **847** pre-Phase-1 keys are preserved; no legacy token was removed or renamed. Existing component-token overrides
+remain the customization boundary:
 
 ```text
 component CSS
@@ -287,18 +287,18 @@ component CSS
   → var(--vf-color-border) compatibility fallback
 ```
 
-Primitive и semantic fields остаются optional в `VfThemeTokens`, поэтому complete VueForge 1.x preset продолжает
-type-check. Custom prefix runtime/static paths должны создавать canonical `--vf-*` aliases, как в Phase 0/1.
+Primitive and semantic fields remain optional in `VfThemeTokens`, so a complete VueForge 1.x preset continues to
+type-check. Custom prefix runtime/static paths must create canonical `--vf-*` aliases, as in Phase 0/1.
 
-Совместимость не означает прежнее fan-out поведение: например, `colorDanger` теперь остаётся solid compatibility root и
-не обязан одновременно определять subtle text, icon, border, hover и active. Это намеренное устранение перегруженной
-семантики; для полной custom scale нужны соответствующие semantic overrides.
+Compatibility does not imply the previous fan-out behavior: for example, `colorDanger` now remains a solid
+compatibility root and is not required to define subtle text, icon, border, hover, and active simultaneously. This
+intentionally removes overloaded semantics; a complete custom scale requires the corresponding semantic overrides.
 
-## 10. Изменённые файлы
+## 10. Changed files
 
-Список отражает Phase 2 working tree на момент подготовки отчёта; generated `dist`/build artifacts не включены.
+The list reflects the Phase 2 working tree when this report was prepared; generated `dist`/build artifacts are excluded.
 
-### Theme и Core color contract
+### Theme and Core color contract
 
 - `packages/theme/src/color-token-contract.ts`
 - `packages/theme/__tests__/runtime.spec.ts`
@@ -309,7 +309,7 @@ type-check. Custom prefix runtime/static paths должны создавать c
 - `packages/core/src/theme/theme-contract.spec.ts`
 - `packages/core/src/theme/theme.spec.ts`
 
-### Core component migration и policy
+### Core component migration and policy
 
 - `packages/core/src/styles/components/base.css`
 - `packages/core/src/styles/components/horizontal-scroller.css`
@@ -343,7 +343,7 @@ type-check. Custom prefix runtime/static paths должны создавать c
 - `packages/core/scripts/check-form-geometry.mjs`
 - `packages/core/scripts/smoke-css-export.mjs`
 
-### CodeBlock и Playground
+### CodeBlock and Playground
 
 - `packages/codeblock/src/themes/vueforge.ts`
 - `packages/codeblock/src/themes/vueforge.test.ts`
@@ -370,7 +370,7 @@ type-check. Custom prefix runtime/static paths должны создавать c
 - `packages/layouts/src/style-entries/setup-layout.css`
 - `packages/layouts/src/style-parts/shell.css`
 
-### Showcase, visual automation и documentation
+### Showcase, visual automation, and documentation
 
 - `examples/playground/src/App.vue`
 - `examples/playground/src/sections/colors/ColorSystemShowcase.vue`
@@ -383,173 +383,174 @@ type-check. Custom prefix runtime/static paths должны создавать c
 - `docs/codeblock/components/code-block/theming.md`
 - `docs/playground/components/playground/theming.md`
 - `docs/design-audit/phase-2-report.md`
-- `docs/design-audit/color-inventory.md` — только historical banner
-- `docs/design-audit/accessibility-colors.md` — только historical banner
-- `docs/design-audit/color-audit-report.md` — только historical banner
-- `packages/core/docs/visual-baseline.md` — только historical banner
+- `docs/design-audit/color-inventory.md` — historical banner only
+- `docs/design-audit/accessibility-colors.md` — historical banner only
+- `docs/design-audit/color-audit-report.md` — historical banner only
+- `packages/core/docs/visual-baseline.md` — historical banner only
 
-## 11. Публичные изменения
+## 11. Public changes
 
 Additive public contract:
 
-- Theme/Core name tuples и derived types содержат 37 новых primitive names и восемь semantic names;
-- `VfThemeTokens` принимает новые optional fields;
-- CSS contract публикует те же 997 names в runtime/static/full/foundation + component/scoped/custom-prefix paths;
-- `diff` добавлен в `SUPPORTED_CODE_BLOCK_LANGUAGES`;
-- CodeBlock получает новые syntax/selection/copy-focus CSS customization variables;
-- `/colors` добавлен только в repository showcase, не в library runtime API.
+- Theme/Core name tuples and derived types contain 37 new primitive names and eight semantic names;
+- `VfThemeTokens` accepts new optional fields;
+- the CSS contract publishes the same 997 names in runtime/static/full/foundation + component/scoped/custom-prefix paths;
+- `diff` was added to `SUPPORTED_CODE_BLOCK_LANGUAGES`;
+- CodeBlock receives new syntax/selection/copy-focus CSS customization variables;
+- `/colors` was added only to the repository showcase, not to the library runtime API.
 
-Не изменены component props, events, slots, DOM contracts, CSS export paths и signatures theme runtime. Public constants
-`SHIKI_LIGHT_THEME`/`SHIKI_DARK_THEME` сохранены для source compatibility, хотя built-in highlighter теперь использует
-package-owned themes.
+Component props, events, slots, DOM contracts, CSS export paths, and theme runtime signatures are unchanged. Public
+constants `SHIKI_LIGHT_THEME`/`SHIKI_DARK_THEME` are preserved for source compatibility, although the built-in
+highlighter now uses package-owned themes.
 
 Intentional behavioral changes:
 
-- built-in palette и rendered colors меняются;
-- built-in runtime CSS требует browser support для `oklch()` наряду с уже используемым `color-mix()`;
-- raw custom-property values могут быть OKLCH/aliases вместо прежних HEX/recipes;
-- перегруженный legacy root больше не управляет всеми semantic descendants автоматически;
-- compound selected hover/active roles имеют приоритет над одним base component override.
-- secondary Button/IconButton используют validated interactive border вместо decorative default border;
-- neutral ProgressBar label использует semantic inverse-text role вместо background role;
-- built-in `--vf-codeblock-disabled-opacity` равен `1` вместо `0.6`; hook остаётся активным, disabled copy не раскрывается.
+- the built-in palette and rendered colors change;
+- built-in runtime CSS requires browser support for `oklch()` alongside the already used `color-mix()`;
+- raw custom-property values may be OKLCH/aliases instead of the previous HEX/recipes;
+- an overloaded legacy root no longer controls all semantic descendants automatically;
+- compound selected hover/active roles take precedence over a single base component override.
+- secondary Button/IconButton use a validated interactive border instead of a decorative default border;
+- the neutral ProgressBar label uses the semantic inverse-text role instead of the background role;
+- built-in `--vf-codeblock-disabled-opacity` is `1` instead of `0.6`; the hook remains active, and disabled copy is not revealed.
 
-## 12. Риски для custom themes
+## 12. Risks for custom themes
 
-1. **Partial root override.** Изменение только `colorPrimary` или status root больше не задаёт всю scale. Нужны semantic
-   solid/subtle/foreground/border/hover/active overrides.
-2. **Compound states.** `tabsTabActiveBackground` и аналогичный 1.x component token сохраняют base selected fallback, но
-   selected + hover/active используют новые semantic roles.
-3. **OKLCH support.** Built-in preset не дублирует каждую runtime variable вторым sRGB declaration, иначе разойдутся
-   static/runtime/scoped/custom-prefix maps. Старый browser matrix требует custom sRGB preset.
-4. **Custom prefix.** Ручной CSS с нестандартным prefix без canonical aliases не подходит compiled component CSS;
-   используйте VueForge runtime/static builder.
-5. **CodeBlock.** Third-party Shiki colors должны проектироваться вместе с фактическим CodeBlock background. Подмена
-   отдельных inline token colors без background contract снова создаст прежний mismatch.
-6. **Filter hooks.** Existing custom Button/IconButton filters продолжают применяться; сочетание custom filter с новыми
-   authored state colors требует визуальной перепроверки.
-7. **Raw-value introspection.** Код, сравнивающий строки из `getPropertyValue()` вместо computed rendered color, увидит
-   новые OKLCH/`var()` representations.
-8. **CodeBlock disabled opacity.** Built-in block больше не ослабляет весь syntax subtree. Если прежнее визуальное
-   затемнение было частью custom theme, задайте `--vf-codeblock-disabled-opacity` явно и перепроверьте syntax contrast.
+1. **Partial root override.** Changing only `colorPrimary` or a status root no longer defines the entire scale. Semantic
+   overrides are required for solid/subtle/foreground/border/hover/active.
+2. **Compound states.** `tabsTabActiveBackground` and a similar 1.x component token retain the base selected fallback,
+   but selected + hover/active use the new semantic roles.
+3. **OKLCH support.** The built-in preset does not duplicate every runtime variable with a second sRGB declaration,
+   because that would cause static/runtime/scoped/custom-prefix maps to diverge. An older browser matrix requires a
+   custom sRGB preset.
+4. **Custom prefix.** Handwritten CSS with a nonstandard prefix and no canonical aliases is incompatible with compiled
+   component CSS; use the VueForge runtime/static builder.
+5. **CodeBlock.** Third-party Shiki colors must be designed together with the actual CodeBlock background. Replacing
+   individual inline token colors without the background contract recreates the previous mismatch.
+6. **Filter hooks.** Existing custom Button/IconButton filters continue to apply; combining a custom filter with the new
+   authored state colors requires visual revalidation.
+7. **Raw-value introspection.** Code that compares strings from `getPropertyValue()` instead of the computed rendered
+   color will see new OKLCH/`var()` representations.
+8. **CodeBlock disabled opacity.** The built-in block no longer weakens the entire syntax subtree. If the previous visual
+   dimming was part of a custom theme, set `--vf-codeblock-disabled-opacity` explicitly and recheck syntax contrast.
 
 ## 13. Migration notes
 
-Для custom preset VueForge 1.x:
+For a custom VueForge 1.x preset:
 
-1. Сохраните legacy/component overrides, которые являются локальной customization boundary.
-2. Перенесите общие решения в semantic roles; не используйте primitives непосредственно в component CSS.
-3. Для primary задайте solid, hover, active, subtle background/foreground, border и selected roles независимо.
-4. Для каждого status задайте восемь roles, особенно отдельные solid и subtle foreground.
-5. Для selected recipe настройте base, selected-hover и selected-active вместе.
-6. Проверьте light и dark независимо, включая root dark/local light и root light/local dark.
-7. Проверьте supported contrast matrix; не считайте любой произвольный foreground/background поддерживаемой парой.
-8. При собственном CodeBlock/Shiki adapter синхронизируйте editor background, syntax foregrounds, selection и focus.
-9. Если нужен pre-OKLCH browser support, поставьте собственные sRGB token values через тот же public theme contract.
-10. Не удаляйте `colorWarn*` и другие legacy names до VueForge 2.
-11. Если custom theme полагалась на прежний CodeBlock disabled fade, задайте `--vf-codeblock-disabled-opacity: 0.6`
-    явно; built-in default теперь `1`, а сам hook не удалён.
+1. Preserve legacy/component overrides that form a local customization boundary.
+2. Move shared decisions into semantic roles; do not use primitives directly in component CSS.
+3. For primary, define solid, hover, active, subtle background/foreground, border, and selected roles independently.
+4. For each status, define eight roles, especially separate solid and subtle foreground roles.
+5. Configure base, selected-hover, and selected-active together for the selected recipe.
+6. Check light and dark independently, including root dark/local light and root light/local dark.
+7. Check the supported contrast matrix; do not treat an arbitrary foreground/background as a supported pairing.
+8. For a custom CodeBlock/Shiki adapter, coordinate editor background, syntax foregrounds, selection, and focus.
+9. If pre-OKLCH browser support is needed, provide custom sRGB token values through the same public theme contract.
+10. Do not remove `colorWarn*` or other legacy names before VueForge 2.
+11. If a custom theme relied on the previous CodeBlock disabled fade, set `--vf-codeblock-disabled-opacity: 0.6`
+    explicitly; the built-in default is now `1`, and the hook itself has not been removed.
 
-## 14. Результаты тестов и сборок
+## 14. Test and build results
 
-Итоговые проверки выполнены после стабилизации working tree.
+Final checks were performed after the working tree stabilized.
 
-| Проверка                                       | Команда/contract                     | Результат                                                      |
-| ---------------------------------------------- | ------------------------------------ | -------------------------------------------------------------- |
-| Полный workspace suite                         | `npm test`                           | **PASS** — 420 Vitest tests и package smoke contracts          |
-| TypeScript                                     | `npm run typecheck`                  | **PASS** во всех workspaces                                    |
-| ESLint, Stylelint, HTML, Markdown, data        | `npm run lint:all`                   | **PASS**, включая 286 Markdown files                           |
-| Library packages                               | `npm run build`                      | **PASS** — восемь library packages                             |
-| Demo/docs production build                     | `npm run build:demo`                 | **PASS**; только Vite warning о размере production chunk       |
-| Clean install и CI-like полный gate            | `npm run verify`                     | **PASS**, включая clean install, checks, no-dist tests и build |
-| Packed consumers и type contracts              | Core/package consumer smokes         | **PASS**                                                       |
-| CSS exports/full/component-entry               | Core CSS export/parity contracts     | **PASS**                                                       |
-| Runtime/static/scoped/custom-prefix/fallback   | Theme/Core exact-map contracts       | **PASS** — одинаковые 997 names                                |
-| Semantic contrast matrix и in-gamut primitives | `color-contrast.spec.ts`             | **PASS** — 66 primitives и 15 supported-pairing tests          |
-| Hardcoded color/primitive usage policy         | `component-palette-contract.spec.ts` | **PASS**                                                       |
-| CodeBlock Shiki gamut/contrast/theme adapter   | `vueforge.test.ts` + CodeBlock suite | **PASS** — exact syntax map, 51 package tests                  |
-| Production browser console/network errors      | `npm run visual:phase2`              | **PASS** — 0 browser errors и 0 network failures               |
+| Check                                            | Command/contract                     | Result                                                              |
+| ------------------------------------------------ | ------------------------------------ | ------------------------------------------------------------------- |
+| Full workspace suite                             | `npm test`                           | **PASS** — 420 Vitest tests and package smoke contracts             |
+| TypeScript                                       | `npm run typecheck`                  | **PASS** in all workspaces                                          |
+| ESLint, Stylelint, HTML, Markdown, data          | `npm run lint:all`                   | **PASS**, including 286 Markdown files                              |
+| Library packages                                 | `npm run build`                      | **PASS** — eight library packages                                   |
+| Demo/docs production build                       | `npm run build:demo`                 | **PASS**; only a Vite warning about production chunk size           |
+| Clean install and complete CI-like gate          | `npm run verify`                     | **PASS**, including clean install, checks, no-dist tests, and build |
+| Packed consumers and type contracts              | Core/package consumer smokes         | **PASS**                                                            |
+| CSS exports/full/component-entry                 | Core CSS export/parity contracts     | **PASS**                                                            |
+| Runtime/static/scoped/custom-prefix/fallback     | Theme/Core exact-map contracts       | **PASS** — the same 997 names                                       |
+| Semantic contrast matrix and in-gamut primitives | `color-contrast.spec.ts`             | **PASS** — 66 primitives and 15 supported-pairing tests             |
+| Hardcoded color/primitive usage policy           | `component-palette-contract.spec.ts` | **PASS**                                                            |
+| CodeBlock Shiki gamut/contrast/theme adapter     | `vueforge.test.ts` + CodeBlock suite | **PASS** — exact syntax map, 51 package tests                       |
+| Production browser console/network errors        | `npm run visual:phase2`              | **PASS** — 0 browser errors and 0 network failures                  |
 
-Implemented contracts проверяют 66/85/997 counts, 847 legacy keys, 137 dark overrides, alias graph, supported semantic
-pairings, реальные Alert/Badge/Tag/Field/Progress/CodeBlock combinations, standalone CodeBlock fallbacks, exact Shiki
-adapter roles, semantic-first legacy fallback shape и запрет новых raw colors/primitives в package component CSS.
-Разрешённый literal exception ограничен шестью standalone CodeBlock OKLCH fallbacks; composition keywords
-`transparent`/`currentColor` не являются palette materials. Единственное прямое primitive mapping — документированный
-composited `overlayFloatShadow` с двумя alpha-levels Neutral 1000.
+Implemented contracts check 66/85/997 counts, 847 legacy keys, 137 dark overrides, the alias graph, supported semantic
+pairings, real Alert/Badge/Tag/Field/Progress/CodeBlock combinations, standalone CodeBlock fallbacks, exact Shiki
+adapter roles, the semantic-first legacy fallback shape, and the prohibition on new raw colors/primitives in package
+component CSS. The permitted literal exception is limited to six standalone CodeBlock OKLCH fallbacks; the composition
+keywords `transparent`/`currentColor` are not palette materials. The only direct primitive mapping is the documented
+composited `overlayFloatShadow` with two Neutral 1000 alpha levels.
 
 ## 15. Visual regression summary
 
-Добавлена команда `npm run visual:phase2`. Script проверяет четыре routes (`/colors`, `/core`, `/codeblock`,
-`/playground`) в light/dark на desktop `1440×1100` и mobile `390×844`:
+The `npm run visual:phase2` command was added. The script checks four routes (`/colors`, `/core`, `/codeblock`,
+`/playground`) in light/dark on desktop `1440×1100` and mobile `390×844`:
 
-- **16** обычных screenshots;
-- **8** CVD screenshots: protanopia, deuteranopia, tritanopia и achromatopsia × light/dark;
-- rendered primitives/statuses/semantic surfaces и scoped light/dark panels;
-- visible focus, control boundary и invalid states;
-- browser-computed cascade для invalid + focus/open, disabled Dropdown/navigation/Select hover, secondary action boundary
-  и selected + hover/active через `CSS.forcePseudoState`;
-- CodeBlock Shiki tokens, matching editor background, selection/copy focus и resolved scope;
-- Playground surface, border, content/iframe и resolved scope;
-- horizontal overflow, browser/runtime/console errors, HTTP failures и `Network.loadingFailed` для local assets.
+- **16** standard screenshots;
+- **8** CVD screenshots: protanopia, deuteranopia, tritanopia, and achromatopsia × light/dark;
+- rendered primitives/statuses/semantic surfaces and scoped light/dark panels;
+- visible focus, control boundary, and invalid states;
+- browser-computed cascade for invalid + focus/open, disabled Dropdown/navigation/Select hover, secondary action boundary,
+  and selected + hover/active through `CSS.forcePseudoState`;
+- CodeBlock Shiki tokens, matching editor background, selection/copy focus, and resolved scope;
+- Playground surface, border, content/iframe, and resolved scope;
+- horizontal overflow, browser/runtime/console errors, HTTP failures, and `Network.loadingFailed` for local assets.
 
-При `VUEFORGE_VISUAL_BASELINE_DIR` script требует точного совпадения bytes с предоставленным baseline; без переменной
-создаёт manifest с SHA-256 для ручного before/after review.
+When `VUEFORGE_VISUAL_BASELINE_DIR` is set, the script requires an exact byte match with the supplied baseline; without
+the variable, it creates a manifest with SHA-256 hashes for manual before/after review.
 
-Фактический production browser run завершён: получены **16** обычных и **8** CVD screenshots. Manifest сохранён в
-`/private/tmp/vueforge-phase2/manifest.json`; `browserErrors` и `networkErrors` пусты. Все desktop/mobile captures
-проверены вручную: document-level horizontal overflow отсутствует, а внутренний horizontal scroll длинного CodeBlock
-является ожидаемым поведением.
+The actual production browser run completed: **16** standard and **8** CVD screenshots were produced. The manifest was
+saved to `/private/tmp/vueforge-phase2/manifest.json`; `browserErrors` and `networkErrors` are empty. All desktop/mobile
+captures were reviewed manually: document-level horizontal overflow is absent, while the internal horizontal scrolling
+of a long CodeBlock is expected behavior.
 
-Before/after выполнен относительно заново собранного commit Phase 1 `dc2b333` на одинаковых desktop routes Core,
-CodeBlock и Playground в light/dark. Exact byte comparison не применялся: Phase 2 намеренно меняет палитру, state
-showcase и добавляет новый `/colors` route, поэтому pixel identity не является корректным acceptance criterion.
-Ручное сравнение не выявило изменений geometry, typography или document structure.
+The before/after comparison used a freshly built Phase 1 commit `dc2b333` on the same desktop routes for Core,
+CodeBlock, and Playground in light/dark. Exact byte comparison was not used: Phase 2 intentionally changes the palette
+and state showcase and adds a new `/colors` route, so pixel identity is not a valid acceptance criterion. Manual
+comparison found no changes to geometry, typography, or document structure.
 
-Наблюдаемые намеренные визуальные изменения:
+Observed intentional visual changes:
 
-- neutral canvas/surface hierarchy стала менее случайно синей и лучше разделяется borders в обеих темах;
-- primary/status foregrounds, solids, subtle materials и state colors получили новую OKLCH-палитру;
-- focus, control и secondary action boundaries стали заметнее;
-- CodeBlock syntax и editor background теперь образуют одну light/dark theme pair;
-- Playground использует те же editor/surface roles, что CodeBlock и Core;
-- disabled CodeBlock больше не ослабляет весь syntax subtree built-in opacity `0.6`.
+- the neutral canvas/surface hierarchy has a less incidental blue cast and is better separated by borders in both themes;
+- primary/status foregrounds, solids, subtle materials, and state colors use the new OKLCH palette;
+- focus, control, and secondary action boundaries are more visible;
+- CodeBlock syntax and editor background now form a single light/dark theme pair;
+- Playground uses the same editor/surface roles as CodeBlock and Core;
+- disabled CodeBlock no longer weakens the entire syntax subtree with the built-in opacity `0.6`.
 
-Все восемь CVD captures проверены для light/dark. Status labels/icons, focus outline и structural selected cues остаются
-видимыми; известные случаи, где consumer может убрать non-color cue или selected option остаётся преимущественно
-цветовым, перечислены в разделе 7.
+All eight CVD captures were reviewed for light/dark. Status labels/icons, the focus outline, and structural selected cues
+remain visible; known cases where a consumer can remove a non-color cue or where a selected option remains primarily
+color-based are listed in section 7.
 
-## 16. Оценка цветовой системы до и после
+## 16. Color system assessment before and after
 
-Baseline scores сохранены из исходного аудита. Итоговые scores учитывают architecture/contracts, contrast matrix и
-ручную оценку desktop/mobile/CVD captures из раздела 15.
+Baseline scores are preserved from the original audit. Final scores account for architecture/contracts, the contrast
+matrix, and manual assessment of the desktop/mobile/CVD captures from section 15.
 
-| Область               | До Phase 0 | После Phase 2 | Обоснование                                                    |
-| --------------------- | ---------: | ------------: | -------------------------------------------------------------- |
-| Архитектура токенов   |       4/10 |          9/10 | canonical OKLCH scales, mode maps, semantic component boundary |
-| Гармоничность палитры |       6/10 |          8/10 | coherent hue/chroma progression подтверждена visual review     |
-| Neutral palette       |       6/10 |          8/10 | separate surface hierarchy, text and boundary steps            |
-| Primary               |       5/10 |          8/10 | independent solid/link/subtle/selected states                  |
-| Semantic colors       |       4/10 |          9/10 | independent status fg/bg/border/icon/interaction roles         |
-| Light theme           |       7/10 |          8/10 | stronger hierarchy/focus without heavy borders                 |
-| Dark theme            |       4/10 |          8/10 | separately authored surfaces and chromatic foregrounds         |
-| Component states      |       5/10 |          8/10 | documented compound precedence and semantic-first migration    |
-| Accessibility         |       4/10 |          9/10 | supported text/UI/syntax matrix и CVD review проходят criteria |
-| Consistency           |       5/10 |          8/10 | shared roles across Core, CodeBlock and Playground             |
-| Visual uniqueness     |       5/10 |          7/10 | restrained VueForge character retained after visual review     |
-| Scalability           |       4/10 |          9/10 | machine-readable names, graph/contrast/policy/export contracts |
+| Area               | Before Phase 0 | After Phase 2 | Rationale                                                        |
+| ------------------ | -------------: | ------------: | ---------------------------------------------------------------- |
+| Token architecture |           4/10 |          9/10 | canonical OKLCH scales, mode maps, semantic component boundary   |
+| Palette harmony    |           6/10 |          8/10 | coherent hue/chroma progression confirmed by visual review       |
+| Neutral palette    |           6/10 |          8/10 | separate surface hierarchy, text and boundary steps              |
+| Primary            |           5/10 |          8/10 | independent solid/link/subtle/selected states                    |
+| Semantic colors    |           4/10 |          9/10 | independent status fg/bg/border/icon/interaction roles           |
+| Light theme        |           7/10 |          8/10 | stronger hierarchy/focus without heavy borders                   |
+| Dark theme         |           4/10 |          8/10 | separately authored surfaces and chromatic foregrounds           |
+| Component states   |           5/10 |          8/10 | documented compound precedence and semantic-first migration      |
+| Accessibility      |           4/10 |          9/10 | supported text/UI/syntax matrix and CVD review pass the criteria |
+| Consistency        |           5/10 |          8/10 | shared roles across Core, CodeBlock and Playground               |
+| Visual uniqueness  |           5/10 |          7/10 | restrained VueForge character retained after visual review       |
+| Scalability        |           4/10 |          9/10 | machine-readable names, graph/contrast/policy/export contracts   |
 
-## 17. Что остаётся для следующей фазы
+## 17. What remains for the next phase
 
-После Phase 2 остаются:
+After Phase 2, the following remain:
 
-- решения public API для non-color cues Badge/Tag/Progress и invalid controls, если automatic cue действительно нужен;
-- дальнейшая semantic migration оставшихся ecosystem-specific component mappings, не затронутых текущим diff;
-- persistent reviewed screenshot baselines и CI pixel-diff policy вместо только локального script;
-- forced-colors/high-contrast и Axe/browser-level accessibility gates;
-- visited-link policy и дополнительные pairings только при появлении реального сценария;
-- расширение browser matrix sRGB fallback preset, если product support выйдет за modern `oklch()` browsers;
-- дальнейший reduced-motion/motion-state audit, который не относится напрямую к цветовой палитре;
-- документированная deprecation/migration cycle и удаление legacy bridge только в VueForge 2.
+- public API decisions for non-color cues in Badge/Tag/Progress and invalid controls, if an automatic cue is actually needed;
+- further semantic migration of remaining ecosystem-specific component mappings not touched by the current diff;
+- persistent, reviewed screenshot baselines and a CI pixel-diff policy instead of only a local script;
+- forced-colors/high-contrast and Axe/browser-level accessibility gates;
+- a visited-link policy and additional pairings only when a real use case emerges;
+- expansion of the browser matrix with an sRGB fallback preset if product support extends beyond modern `oklch()` browsers;
+- a further reduced-motion/motion-state audit, which is not directly related to the color palette;
+- a documented deprecation/migration cycle and removal of the legacy bridge only in VueForge 2.
 
-Phase 2 не удаляет legacy tokens и не начинает breaking cleanup VueForge 2.
-Работа остановлена на границе Phase 2; перечисленные пункты не реализовывались в этом commit.
+Phase 2 does not remove legacy tokens or begin the VueForge 2 breaking cleanup.
+Work stopped at the Phase 2 boundary; the listed items were not implemented in this commit.

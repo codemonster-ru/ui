@@ -1,304 +1,312 @@
-# VueForge — Phase 5: документация и финальная готовность к GA
+# VueForge — Phase 5: Documentation and Final GA Readiness
 
-Дата подготовки: 2026-07-23. Область аудита: публичный путь от первого открытия репозитория до
-production build, документация восьми npm-пакетов, компонентные и theme-контракты, accessibility,
-SSR, Playground, migration path и материалы публичного релиза.
+Prepared on: 2026-07-23. Audit scope: the public path from first opening the repository to a
+production build, documentation for eight npm packages, component and theme contracts,
+accessibility, SSR, Playground, migration path, and public release materials.
 
 ## 1. Executive Summary
 
-Phase 5 проверила VueForge глазами разработчика, который не знаком с репозиторием и использует
-только публичные пакеты и документацию. До исправлений package/runtime verification из Phase 4 уже
-проходила, но документационный слой не давал такого же уровня гарантий. Были подтверждены следующие
-объективные дефекты:
+Phase 5 assessed VueForge from the perspective of a developer who is unfamiliar with the repository
+and uses only public packages and documentation. Before the fixes, the package/runtime verification
+from Phase 4 already passed, but the documentation layer did not provide the same level of
+assurance. The following objective defects were confirmed:
 
-- корневой README не содержал воспроизводимого пути от установки до темы, первого компонента и
-  production build;
-- README восьми пакетов неодинаково описывали требования, package-manager commands, quick start,
-  документацию, лицензию и версии согласованного release train;
-- Icons описывал установку только через npm и не объяснял явный CSS/SSR contract;
-- не существовало единого актуального руководства по runtime-настройке темы, scoped themes, custom
-  prefix, fallback behavior, accessibility и SSR/Vite/Nuxt;
-- API-таблицы ряда компонентов расходились с реальными props, emits, slots и defaults;
-- примеры Button, Tag, DataTable, SkeletonGate, CodeBlock и Playground содержали устаревшие или
-  неполные вызовы;
-- Playground documentation смешивала sandbox/component modes и неполно описывала renderer props,
-  runtime exports и theme inheritance;
-- локальные ссылки, якоря, package subpaths, install targets и кодовые примеры не имели общего
-  автоматического regression gate;
-- новый documentation-example extractor не ограничивал `file=` и relative SFC import paths своей
-  временной fixture, что делало CI небезопасным для недоверенного Markdown из pull request;
-- production showcase не объявлял favicon, поэтому чистый browser profile получал `/favicon.ico`
-  404 и загрязнял release smoke.
+- the root README did not provide a reproducible path from installation to a theme, the first
+  component, and a production build;
+- the READMEs of the eight packages described requirements, package-manager commands, quick start,
+  documentation, license, and coordinated release train versions inconsistently;
+- Icons described installation only with npm and did not explain the explicit CSS/SSR contract;
+- there was no single up-to-date guide for runtime theme configuration, scoped themes, custom
+  prefix, fallback behavior, accessibility, and SSR/Vite/Nuxt;
+- API tables for several components diverged from the actual props, emits, slots, and defaults;
+- Button, Tag, DataTable, SkeletonGate, CodeBlock, and Playground examples contained outdated or
+  incomplete calls;
+- Playground documentation mixed sandbox/component modes and incompletely described renderer props,
+  runtime exports, and theme inheritance;
+- local links, anchors, package subpaths, install targets, and code examples had no common automated
+  regression gate;
+- the new documentation-example extractor did not confine `file=` and relative SFC import paths to
+  its temporary fixture, making CI unsafe for untrusted Markdown from a pull request;
+- the production showcase did not declare a favicon, so a clean browser profile received a
+  `/favicon.ico` 404 and polluted the release smoke.
 
-Исправления выполнены в документации, приватном root tooling и shell production showcase.
-Исходники CSS, design tokens, палитра, manifests восьми публикуемых пакетов и публичные TypeScript
-shapes не изменялись. Единственное runtime-исключение — исправление уже публичного
-`componentSourceLanguage`, который игнорировался для single-source и extensionless component
-files. Подготовлен автоматический contract-аудит 296 Markdown-файлов, 58 catalog component API и
-восьми package README, а также реальный `vue-tsc`-прогон 207 fixtures из complete/runnable examples
-и проверяемых public imports.
+Fixes were made in the documentation, private root tooling, and shell production showcase.
+CSS sources, design tokens, the palette, manifests of the eight published packages, and public
+TypeScript shapes were not changed. The only runtime exception was a fix to the already-public
+`componentSourceLanguage`, which was ignored for single-source and extensionless component files.
+An automated contract audit was prepared for 296 Markdown files, 58 catalog component APIs, and
+eight package READMEs, together with an actual `vue-tsc` run of 207 fixtures from complete/runnable
+examples and verified public imports.
 
-Итоговая рекомендация: документация и локальный release candidate готовы к публичному stable
-rollout. Публикация не выполнялась. Hosted documentation deployment, registry-only smoke,
-provenance и ручные platform/accessibility checks остаются обязательными stop-the-line gates самого
-релиза.
+Final recommendation: the documentation and local release candidate are ready for a public stable
+rollout. Publication was not performed. Hosted documentation deployment, registry-only smoke,
+provenance, and manual platform/accessibility checks remain mandatory stop-the-line gates for the
+release itself.
 
 ## 2. Documentation Audit
 
-### README и первый пользовательский путь
+### README and the First User Journey
 
-Корневой [README](../../README.md) теперь содержит:
+The root [README](../../README.md) now contains:
 
-- назначение экосистемы и минимальные Vue/Node requirements;
-- команды npm, pnpm и Yarn для Core;
-- полный browser setup с CSS и Core plugin;
-- `VfThemeProvider`, `VfThemeSwitch` и первый компонент;
-- production build command;
-- таблицу всех восьми пакетов с согласованными версиями;
-- ссылки на hosted documentation, migration guide, release notes и MIT License.
+- the purpose of the ecosystem and minimum Vue/Node requirements;
+- npm, pnpm, and Yarn commands for Core;
+- complete browser setup with CSS and the Core plugin;
+- `VfThemeProvider`, `VfThemeSwitch`, and the first component;
+- the production build command;
+- a table of all eight packages with coordinated versions;
+- links to hosted documentation, the migration guide, release notes, and the MIT License.
 
-README каждого публикуемого пакета приведён к единому минимальному контракту: purpose,
+The README of each published package has been aligned to a common minimum contract: purpose,
 requirements, installation, quick start, documented public import, current coordinated version,
-documentation и license. Package-specific различия сохранены: CodeBlock и Playground используют
-явные subpaths, Theme и Playground Core не требуют Vue, Vite plugin документирует peer Vite, а
-browser CSS не приписан CSS-free Node entries.
+documentation, and license. Package-specific differences were preserved: CodeBlock and Playground
+use explicit subpaths, Theme and Playground Core do not require Vue, the Vite plugin documents peer
+Vite, and browser CSS is not attributed to CSS-free Node entries.
 
-### Consistency и regression gates
+### Consistency and Regression Gates
 
-Добавлены две release-проверки:
+Two release checks were added:
 
-- `check:docs` проверяет exact-case локальных ссылок и изображений, anchors, существование VueForge
-  packages/subpath exports, install targets, синтаксис TS/JS/Vue snippets, package README sections и
-  соответствие документированных props/emits/slots реальным SFC;
-- `check:docs:examples` извлекает complete SFC, `playground-src`, runnable file examples, Quick Start
-  TypeScript и публичные imports, после чего проверяет их через реальный `vue-tsc` и собранные
-  declarations. Все генерируемые paths проходят cross-platform containment check; отдельные
-  regression tests отклоняют `..`, absolute, backslash и UNC escapes до записи fixture.
+- `check:docs` checks the exact case of local links and images, anchors, the existence of VueForge
+  packages/subpath exports, install targets, TS/JS/Vue snippet syntax, package README sections, and
+  the correspondence of documented props/emits/slots to actual SFCs;
+- `check:docs:examples` extracts complete SFCs, `playground-src`, runnable file examples, Quick Start
+  TypeScript, and public imports, then checks them with the actual `vue-tsc` and built declarations.
+  All generated paths go through a cross-platform containment check; separate regression tests
+  reject `..`, absolute, backslash, and UNC escapes before writing a fixture.
 
-Обе проверки включены в основной `check`/`verify`, поэтому повторный drift блокирует release gate.
-Существующий ownership check подтверждает корректную принадлежность package imports. Markdown,
-JSON/YAML и whitespace проверяются штатными linters.
+Both checks are included in the main `check`/`verify`, so recurring drift blocks the release gate.
+The existing ownership check confirms correct ownership of package imports. Markdown, JSON/YAML,
+and whitespace are checked by the standard linters.
 
-Одноразовый внешний HTTP audit подтвердил доступность корневого hosted docs route и разделов Core,
-Layouts, Icons, CodeBlock и Playground, а также использованных официальных Vue, Vite, Nuxt и W3C
-references. Ссылки на новые локальные release documents станут доступны на GitHub только после push
-release commit; npm package pages ограничивают автоматические HTML-запросы, поэтому registry state
-проверяется release workflow через `npm view`, а не scraping.
+A one-time external HTTP audit confirmed the availability of the root hosted docs route and the
+Core, Layouts, Icons, CodeBlock, and Playground sections, as well as the referenced official Vue,
+Vite, Nuxt, and W3C references. Links to new local release documents will become available on
+GitHub only after the release commit is pushed; npm package pages restrict automated HTML requests,
+so registry state is checked by the release workflow through `npm view`, not scraping.
 
 ## 3. Installation Experience
 
-Путь нового Core consumer сводится к трём действиям: установить Vue/Core выбранным package manager,
-импортировать `styles.css` в browser entry и установить Core plugin. Компоненты импортируются явно,
-а provider добавляется только там, где приложение использует reactive theme state.
+The journey for a new Core consumer is reduced to three actions: install Vue/Core with the chosen
+package manager, import `styles.css` in the browser entry, and install the Core plugin. Components
+are imported explicitly, and the provider is added only where the application uses reactive theme
+state.
 
-Документация последовательно различает:
+The documentation consistently distinguishes:
 
-- npm `install`, pnpm `add` и Yarn `add`;
-- full stylesheet, component-entry auto CSS и manual/granular CSS;
-- browser entry с CSS side effects и CSS-free Node/SSR conditions;
-- Core/Layout root imports и обязательные `/view`, `/highlight`, `/ui`, `/runtime` subpaths;
-- Node 18 baseline и Node 20 requirement CodeBlock/Playground.
+- npm `install`, pnpm `add`, and Yarn `add`;
+- the full stylesheet, component-entry auto CSS, and manual/granular CSS;
+- the browser entry with CSS side effects and CSS-free Node/SSR conditions;
+- Core/Layout root imports and mandatory `/view`, `/highlight`, `/ui`, `/runtime` subpaths;
+- the Node 18 baseline and the Node 20 requirement for CodeBlock/Playground.
 
-Core, Layouts, CodeBlock, Icons и Playground getting-started pages получили явные следующие шаги,
-чтобы пользователь мог перейти от установки к API, theme, accessibility и SSR без поиска по
-исходникам. Нового facade package, global component registration или compatibility layer не
-потребовалось.
+The Core, Layouts, CodeBlock, Icons, and Playground getting-started pages received explicit next
+steps so that a user can proceed from installation to API, theme, accessibility, and SSR without
+searching the source code. No new facade package, global component registration, or compatibility
+layer was required.
 
 ## 4. Component Documentation
 
-Сформирован source-derived inventory 58 catalog/API-tab Vue components из Core, Layouts, Icons,
-CodeBlock и Playground. Для каждого элемента этого inventory release gate требует существующую
-API-страницу и точное совпадение множеств props, emits и slots с SFC contract. Отдельные integration
-components также документированы на своих канонических страницах: `VfThemeProvider` — в Theme
-Configuration, а `VfPlaygroundAsync` — в Playground features; generic API-table gate к ним не
-применяется.
+A source-derived inventory was created for 58 catalog/API-tab Vue components from Core, Layouts,
+Icons, CodeBlock, and Playground. For each item in this inventory, the release gate requires an
+existing API page and exact matching of the props, emits, and slots sets with the SFC contract.
+Separate integration components are also documented on their canonical pages:
+`VfThemeProvider` in Theme Configuration and `VfPlaygroundAsync` in Playground features; the generic
+API-table gate does not apply to them.
 
-Исправлены подтверждённые расхождения, включая Avatar, Breadcrumbs, Command Palette, Link, Select,
-Switch, Table of Contents, Theme Switch и Error Layout. Документация теперь отражает реальные
-optional/required props, events, scoped slots и defaults. Feature pages Button, DataTable,
-IconButton, Input, Link, Radio, Switch, Tag и Theme Switch больше не обещают неподдерживаемое
-поведение, не импортируют undeclared transitive packages и используют актуальные примеры.
+Confirmed discrepancies were fixed, including Avatar, Breadcrumbs, Command Palette, Link, Select,
+Switch, Table of Contents, Theme Switch, and Error Layout. The documentation now reflects the
+actual optional/required props, events, scoped slots, and defaults. The Button, DataTable,
+IconButton, Input, Link, Radio, Switch, Tag, and Theme Switch feature pages no longer promise
+unsupported behavior, import undeclared transitive packages, or use outdated examples.
 
-CodeBlock API дополнен реальными plugin/theme options, legacy constants и exports
-`/view`/`/highlight`. Playground API разделяет sandbox и component discriminated props, описывает
-renderer contracts, layout slot, runtime behavior и доступные exports. Полные SFC, multi-file
-playground examples, Quick Start/file-marked TypeScript входят в автоматический typecheck; короткие
-TS/JS/template fragments проходят syntax/compiler validation, а их публичные imports проверяются
-против собранных declarations.
+The CodeBlock API was supplemented with actual plugin/theme options, legacy constants, and
+`/view`/`/highlight` exports. The Playground API separates sandbox and component discriminated
+props and describes renderer contracts, the layout slot, runtime behavior, and available exports.
+Complete SFCs, multi-file playground examples, and Quick Start/file-marked TypeScript are included
+in the automated typecheck; short TS/JS/template fragments undergo syntax/compiler validation,
+while their public imports are checked against built declarations.
 
 ## 5. Theme Documentation
 
-Создано единое руководство [Theme Configuration](../core/guides/theme-configuration.md), которое
-описывает текущую архитектуру без изменения самой системы:
+A unified [Theme Configuration](../core/guides/theme-configuration.md) guide was created, describing
+the current architecture without changing the system itself:
 
-- primitive, semantic, VueForge 1.x component и fallback layers;
-- `extend`, mode-specific overrides и complete custom presets;
-- `VfThemeProvider`, `useTheme()` и `VfThemeSwitch`;
-- light, dark и system resolution;
-- nested/reversed scoped themes через `data-vf-theme`/`data-theme`;
-- custom root, attribute, storage key, style id и custom prefix с canonical `--vf-*` aliases;
-- static CSS, no-JavaScript fallback и runtime style injection;
-- границу между Core integration и low-level Theme engine.
+- primitive, semantic, VueForge 1.x component, and fallback layers;
+- `extend`, mode-specific overrides, and complete custom presets;
+- `VfThemeProvider`, `useTheme()`, and `VfThemeSwitch`;
+- light, dark, and system resolution;
+- nested/reversed scoped themes through `data-vf-theme`/`data-theme`;
+- custom root, attribute, storage key, style id, and custom prefix with canonical `--vf-*` aliases;
+- static CSS, no-JavaScript fallback, and runtime style injection;
+- the boundary between Core integration and the low-level Theme engine.
 
-Старые theme API pages и visual-baseline links синхронизированы с каноническим руководством.
-Примеры используют существующие exports и реальные option shapes. Значения палитры, token names,
-legacy aliases и runtime serialization не менялись.
+The old theme API pages and visual-baseline links were synchronized with the canonical guide.
+Examples use existing exports and actual option shapes. Palette values, token names, legacy
+aliases, and runtime serialization were not changed.
 
 ## 6. Accessibility Documentation
 
-Создано приложение-ориентированное руководство [Accessibility](../core/guides/accessibility.md).
-Оно покрывает все запрошенные области:
+An application-oriented [Accessibility](../core/guides/accessibility.md) guide was created.
+It covers all requested areas:
 
-- keyboard-only navigation и composite widget patterns;
-- initial focus, focus trap, restoration и visible focus indicators;
-- ARIA roles, relationships, labels и ответственность custom slots;
-- `prefers-reduced-motion` и недопустимость возврата длинных consumer animations;
-- `forced-colors` и границы browser emulation;
-- RTL, logical geometry и mixed-direction content;
+- keyboard-only navigation and composite widget patterns;
+- initial focus, focus trap, restoration, and visible focus indicators;
+- ARIA roles, relationships, labels, and responsibility for custom slots;
+- `prefers-reduced-motion` and the prohibition against reintroducing long consumer animations;
+- `forced-colors` and the limits of browser emulation;
+- RTL, logical geometry, and mixed-direction content;
 - VoiceOver/NVDA/JAWS manual screen-reader scenarios;
-- WCAG 2.2, contrast revalidation и отсутствие blanket conformance claim.
+- WCAG 2.2, contrast revalidation, and the absence of a blanket conformance claim.
 
-Формулировки feature pages скорректированы там, где прежний текст делал более широкое обещание,
-чем реализация. Автоматические tests остаются regression signal, а не заменой реальной assistive
-technology или Windows High Contrast verification.
+Feature-page wording was adjusted where the previous text made a broader promise than the
+implementation. Automated tests remain a regression signal, not a replacement for actual assistive
+technology or Windows High Contrast verification.
 
 ## 7. SSR Documentation
 
-Создано руководство [SSR and Hydration](../core/guides/ssr.md) для Vue SSR, Vite SSR и Nuxt. Оно
-фиксирует:
+An [SSR and Hydration](../core/guides/ssr.md) guide was created for Vue SSR, Vite SSR, and Nuxt.
+It specifies:
 
-- fresh app factory на каждый request и одинаковую server/client configuration;
-- размещение CSS в client graph при CSS-free Node conditions;
-- deterministic `VfThemeProvider` initial render и безопасный theme bootstrap;
-- Nuxt universal plugin и global CSS setup без несуществующего Nuxt module;
-- правила для custom runtime token CSS и CSP nonce;
-- hydration constraints, request-stable IDs, Teleports и initial overlay state;
-- SSR/lazy behavior CodeBlock и Playground.
+- a fresh app factory for every request and identical server/client configuration;
+- placing CSS in the client graph under CSS-free Node conditions;
+- deterministic `VfThemeProvider` initial render and safe theme bootstrap;
+- a Nuxt universal plugin and global CSS setup without a nonexistent Nuxt module;
+- rules for custom runtime token CSS and a CSP nonce;
+- hydration constraints, request-stable IDs, Teleports, and initial overlay state;
+- SSR/lazy behavior for CodeBlock and Playground.
 
-Документация явно не заявляет непроверенное: в репозитории нет Nuxt end-to-end fixture, hosted SSR
-deployment или edge-runtime matrix. Эти проверки перенесены в remaining release risks.
+The documentation explicitly does not claim what has not been verified: the repository has no Nuxt
+end-to-end fixture, hosted SSR deployment, or edge-runtime matrix. These checks were moved to the
+remaining release risks.
 
 ## 8. Playground Audit
 
-Getting Started, API, features, theming и guide index Playground сверены с `VfPlayground.vue`,
-публичными types и runtime exports. Исправлены mode requirements, defaults, custom renderer props,
-theme inheritance и lazy runtime guidance. Multi-file `playground-src` examples теперь собираются
-как связанные fixtures, а не проверяются как изолированные fragments.
+Playground Getting Started, API, features, theming, and guide index were reconciled with
+`VfPlayground.vue`, public types, and runtime exports. Mode requirements, defaults, custom renderer
+props, theme inheritance, and lazy runtime guidance were corrected. Multi-file `playground-src`
+examples are now built as connected fixtures instead of being checked as isolated fragments.
 
-Showcase navigation, theme switch, CodeBlock и Playground routes проходят demo typecheck/build.
-Большой TypeScript compiler остаётся deferred и не был затронут. Единственная runtime correction
-Phase 5 заставляет существующий `componentSourceLanguage` реально управлять single-source и
-extensionless examples; regression tests покрывают оба сценария. Bundle architecture не менялась.
+Showcase navigation, theme switch, CodeBlock, and Playground routes pass the demo typecheck/build.
+The large TypeScript compiler remains deferred and was not affected. The only runtime correction
+in Phase 5 makes the existing `componentSourceLanguage` actually control single-source and
+extensionless examples; regression tests cover both scenarios. Bundle architecture was not
+changed.
 
-Production Chromium smoke на чистом profile проверил desktop/mobile и light/dark для Color System,
-Core, CodeBlock и Playground: 16 route/mode/viewport snapshots и восемь CVD screenshots, без
-browser console errors и network failures. Проверка подтверждает видимый Playground content
-surface, inherited theme, CodeBlock highlighting/focus и отсутствие horizontal overflow. В ходе
-этой проверки найден и исправлен отсутствующий showcase favicon; повторный clean-profile run
-прошёл полностью. Это Chromium smoke, а не замена multi-engine или assistive-technology matrix.
+Production Chromium smoke on a clean profile checked desktop/mobile and light/dark for Color
+System, Core, CodeBlock, and Playground: 16 route/mode/viewport snapshots and eight CVD screenshots,
+with no browser console errors or network failures. The check confirms a visible Playground content
+surface, inherited theme, CodeBlock highlighting/focus, and the absence of horizontal overflow.
+During this check, the missing showcase favicon was found and fixed; the repeated clean-profile run
+passed completely. This is Chromium smoke, not a replacement for a multi-engine or
+assistive-technology matrix.
 
 ## 9. Migration Guide Review
 
-Исторический release-train guide заменён актуальным
-[VueForge 2 migration guide](../migration-to-v2.md). На момент Phase 5 он был повторно проверен
-против package manifests, exports, versions и Phase 4 release notes и включал:
+The historical release-train guide was replaced with the current
+[VueForge 2 migration guide](../migration-to-v2.md). At the time of Phase 5, it was rechecked
+against package manifests, exports, versions, and Phase 4 release notes and included:
 
-- полный coordinated version/floor matrix;
-- совместное обновление Vue и Vue server renderer;
-- поддерживаемые CodeBlock/Playground subpaths;
+- the complete coordinated version/floor matrix;
+- joint updating of Vue and the Vue server renderer;
+- supported CodeBlock/Playground subpaths;
 - browser/Node CSS behavior;
-- Icons CommonJS correction;
-- token compatibility и сохранённые aliases;
-- список behavior corrections и post-upgrade checks.
+- the Icons CommonJS correction;
+- token compatibility and preserved aliases;
+- a list of behavior corrections and post-upgrade checks.
 
-Объективных пропусков после Phase 4 не обнаружено, поэтому документ не менялся ради формального
-diff. Release notes получили ссылку на copy-ready public release assets.
+No objective omissions were found after Phase 4, so the document was not changed merely to produce
+a formal diff. Release notes received a link to copy-ready public release assets.
 
 ## 10. Release Assets
 
-Создан [Public release assets](../public-release-assets.md) с готовыми к использованию материалами:
+[Public release assets](../public-release-assets.md) was created with ready-to-use materials:
 
-- кратким project description и feature list;
-- точными npm descriptions из package manifests;
-- coordinated GitHub Release introduction;
-- release announcement, публикуемым только после registry smoke;
-- ссылками на authoritative release notes, migration guide и package changelogs.
+- a concise project description and feature list;
+- exact npm descriptions from package manifests;
+- a coordinated GitHub Release introduction;
+- a release announcement to be published only after registry smoke;
+- links to authoritative release notes, the migration guide, and package changelogs.
 
-Материалы не заменяют package-specific CHANGELOG sections, которые release workflow использует для
-scoped GitHub Releases. Публикация, теги, GitHub Release и announcement в Phase 5 не выполнялись.
+These materials do not replace package-specific CHANGELOG sections, which the release workflow uses
+for scoped GitHub Releases. Publication, tags, GitHub Release, and announcement were not performed
+in Phase 5.
 
 ### Final verification matrix
 
 <!-- PHASE5_FINAL_VERIFICATION_START -->
 
-| Команда                           | Результат                                                                  |
-| --------------------------------- | -------------------------------------------------------------------------- |
-| `npm test`                        | **PASS** — все workspace suites; Playground: 36 tests                      |
-| `npm run verify`                  | **PASS** — полный clean-install и release gate                             |
-| `npm run typecheck`               | **PASS** — восемь packages и showcase                                      |
-| `npm run lint:all`                | **PASS** — source/styles/HTML/data и 296 Markdown files                    |
-| `npm run build`                   | **PASS** — восемь публикуемых packages                                     |
-| `npm run build:demo`              | **PASS** — production showcase, 385 modules                                |
-| `npm run prepublish:all`          | **PASS** — build и dry-run pack всех восьми packages                       |
-| `npm run check:docs`              | **PASS** — 296 Markdown, 58 catalog API, 8 package README                  |
-| `npm run check:docs:examples`     | **PASS** — 207 fixtures и 3 path-containment tests                         |
-| `npm run check:package-contracts` | **PASS** — 8 publishable manifests и built exports                         |
-| `npm run check:packed-consumers`  | **PASS** — npm 11.9.0, pnpm 10.34.5 и Yarn 1.22.22                         |
-| `npm run audit:release`           | **PASS** — 0 production; принят один low dev-only `tsup`/`esbuild` finding |
-| `npm run visual:phase2`           | **PASS** — 16 snapshots, 8 CVD, 0 browser/network errors                   |
-| `git diff --check`                | **PASS**                                                                   |
+| Command                           | Result                                                                      |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| `npm test`                        | **PASS** — all workspace suites; Playground: 36 tests                       |
+| `npm run verify`                  | **PASS** — full clean-install and release gate                              |
+| `npm run typecheck`               | **PASS** — eight packages and showcase                                      |
+| `npm run lint:all`                | **PASS** — source/styles/HTML/data and 296 Markdown files                   |
+| `npm run build`                   | **PASS** — eight published packages                                         |
+| `npm run build:demo`              | **PASS** — production showcase, 385 modules                                 |
+| `npm run prepublish:all`          | **PASS** — build and dry-run pack of all eight packages                     |
+| `npm run check:docs`              | **PASS** — 296 Markdown, 58 catalog API, 8 package README                   |
+| `npm run check:docs:examples`     | **PASS** — 207 fixtures and 3 path-containment tests                        |
+| `npm run check:package-contracts` | **PASS** — 8 publishable manifests and built exports                        |
+| `npm run check:packed-consumers`  | **PASS** — npm 11.9.0, pnpm 10.34.5, and Yarn 1.22.22                       |
+| `npm run audit:release`           | **PASS** — 0 production; one low dev-only `tsup`/`esbuild` finding accepted |
+| `npm run visual:phase2`           | **PASS** — 16 snapshots, 8 CVD, 0 browser/network errors                    |
+| `git diff --check`                | **PASS**                                                                    |
 
 <!-- PHASE5_FINAL_VERIFICATION_END -->
 
 ## 11. Remaining Risks
 
-Известного локального documentation/runtime defect, блокирующего release candidate, не осталось.
-Следующие риски нельзя честно закрыть до публикации или на одной macOS workstation:
+No known local documentation/runtime defect that blocks the release candidate remains.
+The following risks cannot be honestly resolved before publication or on a single macOS
+workstation:
 
-- npm Trusted Publishing, provenance, signatures, integrity, registry propagation и dist-tags;
-- fresh registry-only npm/pnpm/Yarn installation после появления всех восьми target versions;
-- фактическое создание GitHub Releases и доступность новых repository-relative links после push;
-- deployment и rendering hosted documentation: repository не содержит его generator/config;
-- Nuxt end-to-end, streaming SSR, edge runtimes и framework-specific Teleport integration;
-- VoiceOver, NVDA и JAWS speech/browse-mode behavior;
-- native Windows High Contrast и platform focus rendering;
-- Firefox/WebKit automation, Windows/Linux browser matrix и реальный 400% zoom/reflow pass;
-- Yarn Berry Plug'n'Play и полная Vite 7/8 compatibility matrix, которые не входят в текущую
-  заявленную consumer certification;
-- deferred Playground TypeScript compiler остаётся примерно 3.61 MB minified / 1.03 MB gzip и
-  контролируется budget, но загружается при запуске sandbox;
-- принятый Phase 4 low dev-only advisory в `tsup`/`esbuild` остаётся вне production package graph.
+- npm Trusted Publishing, provenance, signatures, integrity, registry propagation, and dist-tags;
+- fresh registry-only npm/pnpm/Yarn installation after all eight target versions become available;
+- actual creation of GitHub Releases and availability of new repository-relative links after push;
+- deployment and rendering of hosted documentation: the repository does not contain its
+  generator/config;
+- Nuxt end-to-end, streaming SSR, edge runtimes, and framework-specific Teleport integration;
+- VoiceOver, NVDA, and JAWS speech/browse-mode behavior;
+- native Windows High Contrast and platform focus rendering;
+- Firefox/WebKit automation, the Windows/Linux browser matrix, and an actual 400% zoom/reflow pass;
+- Yarn Berry Plug'n'Play and the full Vite 7/8 compatibility matrix, which are not part of the
+  currently stated consumer certification;
+- the deferred Playground TypeScript compiler remains approximately 3.61 MB minified / 1.03 MB gzip
+  and is controlled by a budget, but is loaded when the sandbox starts;
+- the accepted Phase 4 low dev-only advisory in `tsup`/`esbuild` remains outside the production
+  package graph.
 
-Release owner должен выполнить topological publication и stop после первого failed registry smoke.
-Hosted docs следует развернуть с тем же release commit до announcement. Platform/accessibility
-риски требуют ручной фиксации результатов в release issue; их отсутствие нельзя вывести из
-unit/DOM tests.
+The release owner must perform topological publication and stop after the first failed registry
+smoke. Hosted docs should be deployed from the same release commit before the announcement.
+Platform/accessibility risks require manual recording of the results in the release issue; their
+absence cannot be inferred from unit/DOM tests.
 
 ## 12. Final Recommendation
 
-### Documentation Ready — да
+### Documentation Ready — yes
 
-Новый пользователь получает согласованный путь installation → CSS → Core plugin → ThemeProvider →
-component → production build. Все package README имеют обязательный контракт, component API
-сверяется с source, локальные links/anchors и public imports проверяются автоматически, а runnable
-examples компилируются и typecheck-ятся.
+A new user gets a coherent path from installation → CSS → Core plugin → ThemeProvider → component →
+production build. All package READMEs have the mandatory contract, component APIs are reconciled
+with the source, local links/anchors and public imports are checked automatically, and runnable
+examples compile and typecheck.
 
-### Release Ready — да
+### Release Ready — yes
 
-Документация, migration path, release notes, announcement assets и локальные tarball consumers
-согласованы с stable release train. Изменения Phase 5 не расширяют публичный API, не меняют CSS или
-визуальную систему; runtime correction восстанавливает заявленное поведение существующего prop.
-Перед созданием следующего package tag обязательны hosted-docs deploy и последовательные
-registry/provenance checks из release checklist.
+The documentation, migration path, release notes, announcement assets, and local tarball consumers
+are aligned with the stable release train. Phase 5 changes do not expand the public API or change
+CSS or the visual system; the runtime correction restores the declared behavior of an existing
+prop. Before creating the next package tag, hosted-docs deployment and the sequential
+registry/provenance checks from the release checklist are mandatory.
 
-### Production Ready — да для release artifact в пределах заявленной support matrix
+### Production Ready — yes for the release artifact within the stated support matrix
 
-VueForge имеет полный локальный release gate для tests, types, builds, package contracts, real
-tarballs, npm/pnpm/Yarn consumers, SSR, tree shaking, deferred budgets и documentation examples.
-Поэтому известного инженерного blocker для production use нет.
+VueForge has a complete local release gate for tests, types, builds, package contracts, real
+tarballs, npm/pnpm/Yarn consumers, SSR, tree shaking, deferred budgets, and documentation examples.
+Therefore, there is no known engineering blocker for production use.
 
-Статус не является обещанием непроверенных платформ. GA rollout считается завершённым только после
-успешной публикации всех восьми packages, registry-only ecosystem smoke, deployment документации и
-явного принятия manual accessibility/browser risks. До выполнения этих внешних шагов корректная
-операционная формулировка — **production-ready release candidate**, готовый к последовательной GA
-публикации.
+This status is not a promise for unverified platforms. The GA rollout is considered complete only
+after successful publication of all eight packages, registry-only ecosystem smoke, documentation
+deployment, and explicit acceptance of manual accessibility/browser risks. Until these external
+steps are completed, the correct operational wording is **production-ready release candidate**,
+ready for sequential GA publication.
