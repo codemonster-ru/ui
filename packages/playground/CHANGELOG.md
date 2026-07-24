@@ -2,6 +2,12 @@
 
 ## 3.0.0
 
+### Added
+
+- Added complete public prop unions/interfaces and stable tab/panel ID relationships for external
+  Playground panels.
+- Added a CSS-free Node ESM `/ui` condition for SSR consumers.
+
 ### Changed
 
 - Updated Core, CodeBlock, and Playground Core dependencies to their coordinated breaking-release
@@ -9,6 +15,21 @@
 - Made `data-vf-theme` the only implicit host and sandbox theme attribute.
 - Made `/ui`, `/runtime`, and CSS `exports` authoritative and stopped emitting the unexported
   compatibility index entry.
+- Made server and first client render deterministic; iframe and browser session work now starts only
+  after mount.
+- Normalized nearest-boundary light/dark inheritance and secure theme-variable transfer to sandbox
+  previews.
+- Bounded console history and individual serialized messages while preserving existing events.
+- Aligned embedded file tabs with Core's text-first underline styling and corrected tab-bar geometry.
+- Declared Node.js 20 and Vue 3.5 requirements.
+
+### Fixed
+
+- Fixed malformed/cross-window runtime messages, circular imports, stale scoped-theme snapshots, and
+  SSR/client branch drift.
+- Fixed Node/SSR UI imports so they do not evaluate CSS; browser `/ui` imports continue to auto-load
+  Playground CSS.
+- Fixed `componentSourceLanguage` so it applies to single-source and extensionless component files.
 
 ### Removed
 
@@ -20,37 +41,6 @@
 
 - Upgrade the coordinated dependencies together, replace `data-theme` boundaries with
   `data-vf-theme`, and import only `/ui` or `/runtime`.
-
-## 2.6.0
-
-### Added
-
-- Added complete public prop unions/interfaces and stable tab/panel ID relationships for external
-  Playground panels.
-- Added a CSS-free Node ESM `/ui` condition for SSR consumers.
-
-### Changed
-
-- Made server and first client render deterministic; iframe and browser session work now starts only
-  after mount.
-- Normalized nearest-boundary light/dark inheritance and secure theme-variable transfer to sandbox
-  previews.
-- Bounded console history and individual serialized messages while preserving existing events.
-- Declared Node.js 20 and Vue 3.5 requirements and coordinated Core 1.36, CodeBlock 3.7, and Playground
-  Core 1.2 dependency floors.
-
-### Fixed
-
-- Fixed malformed/cross-window runtime messages, circular imports, stale scoped-theme snapshots, and
-  SSR/client branch drift.
-- Fixed Node/SSR UI imports so they do not evaluate CSS; browser `/ui` imports continue to auto-load
-  Playground CSS.
-- Fixed `componentSourceLanguage` so it applies to single-source and extensionless component files.
-
-### Breaking changes
-
-- None in the documented public API. The package continues to use explicit `/ui` and `/runtime`
-  entries introduced in 2.0.
 
 ## 2.5.1
 

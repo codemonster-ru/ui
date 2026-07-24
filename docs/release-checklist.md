@@ -178,7 +178,7 @@ For a stable regression:
 Commands use the real package and known-good version:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-core@1.36.0 latest
+npm dist-tag add @codemonster-ru/vueforge-core@1.35.1 latest
 npm deprecate @codemonster-ru/vueforge-core@2.0.0 "Use the latest verified patch release."
 ```
 

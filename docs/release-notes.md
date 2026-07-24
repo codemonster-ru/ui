@@ -1,8 +1,9 @@
 # VueForge 2 coordinated release notes
 
 VueForge 2 removes the compatibility paths left behind by the completed token and theme
-architecture migration. The built-in visual design, OKLCH palette, accessibility behavior,
-component set, documented custom-prefix support, and supported CommonJS entries are unchanged.
+architecture migration. It also ships the accessible OKLCH palette, hardened interaction states,
+and SSR/distribution work completed since the last published package versions. The component set,
+documented custom-prefix support, and supported CommonJS entries remain available.
 
 ## Package versions
 
@@ -20,6 +21,10 @@ component set, documented custom-prefix support, and supported CommonJS entries 
 ## Highlights
 
 - Primitive and semantic tokens are the only color contract; the 35 legacy color roots are gone.
+- The built-in light and dark palette now uses the accessible OKLCH recipes, including stronger
+  text, control-boundary, focus, status, and syntax-highlight contrast.
+- Interactive controls use consistent hover, pressed, focus, invalid, disabled, and compound-state
+  precedence; text-first navigation and underline tabs remain transparent.
 - `data-vf-theme` is the only implicit theme attribute. Explicitly configured custom attributes
   and prefixes remain supported.
 - Complete presets now require the complete built-in token contract, while mode and extension
@@ -53,9 +58,8 @@ component set, documented custom-prefix support, and supported CommonJS entries 
 See [Migrating to VueForge 2](./migration-to-v2.md) for the complete old-to-new mapping and the
 migration checker.
 
-## Preserved behavior
+## Preserved contracts
 
-- Default light and dark OKLCH values and rendered component design.
 - Existing component, slot, emit, and accessibility contracts that were not deprecated.
 - Explicit custom theme attributes and custom token prefixes.
 - Explicit CodeBlock theme props and Playground class-based theme selection.
@@ -67,12 +71,14 @@ migration checker.
 
 - **Theme:** exposes only the canonical attribute and serialization path.
 - **Icons:** removes the inert icon-style prop while preserving catalog style metadata.
-- **Core:** removes legacy token roots, no-op hooks, and forwarding-only CSS manifests.
+- **Core:** introduces the accessible semantic palette and interaction-state refinements, then
+  removes legacy token roots, no-op hooks, and forwarding-only CSS manifests.
 - **Layouts:** removes an unexported composable and obsolete token defaults.
 - **CodeBlock:** removes unused Shiki exports, fallback branches, and dead styling hooks.
 - **Playground Core:** collapses an identical runtime branch.
 - **Playground Vite Plugin:** removes deprecated type spellings.
-- **Playground:** removes retired variables and the implicit `data-theme` path.
+- **Playground:** aligns embedded tabs with the text-first Core contract, removes retired variables,
+  and removes the implicit `data-theme` path.
 
 ## Distribution and verification
 

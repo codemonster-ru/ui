@@ -1,8 +1,9 @@
 # Migrating to VueForge 2
 
 VueForge 2 removes the compatibility paths that remained after the primitive and semantic token
-architecture shipped. The built-in visual design, OKLCH palette, accessibility behavior, component
-set, CommonJS support, and documented custom-prefix support are unchanged.
+architecture work. It also includes the accessible OKLCH palette, interaction-state refinements, and
+SSR/distribution fixes completed since the last published versions. The component set, CommonJS
+support, and documented custom-prefix support remain available.
 
 ## Release and platform floors
 
@@ -10,14 +11,14 @@ Upgrade interdependent VueForge packages together.
 
 | Package                                           | VueForge 2 line | Previous line | Runtime floor                 |
 | ------------------------------------------------- | --------------- | ------------- | ----------------------------- |
-| `@codemonster-ru/vueforge-theme`                  | `2.0.0`         | `1.4.0`       | Node.js `>=18`                |
-| `@codemonster-ru/vueforge-icons`                  | `2.0.0`         | `1.6.0`       | Node.js `>=18`, Vue `^3.5.0`  |
-| `@codemonster-ru/vueforge-core`                   | `2.0.0`         | `1.36.0`      | Node.js `>=18`, Vue `^3.5.0`  |
-| `@codemonster-ru/vueforge-layouts`                | `2.0.0`         | `1.22.0`      | Node.js `>=18`, Core `^2.0.0` |
-| `@codemonster-ru/vueforge-codeblock`              | `4.0.0`         | `3.7.0`       | Node.js `>=20`, Vue `^3.5.0`  |
-| `@codemonster-ru/vueforge-playground-core`        | `2.0.0`         | `1.2.0`       | Node.js `>=18`                |
-| `@codemonster-ru/vueforge-playground-vite-plugin` | `1.0.0`         | `0.2.0`       | Node.js `>=18`, Vite `^6–^8`  |
-| `@codemonster-ru/vueforge-playground`             | `3.0.0`         | `2.6.0`       | Node.js `>=20`, Vue `^3.5.0`  |
+| `@codemonster-ru/vueforge-theme`                  | `2.0.0`         | `1.3.0`       | Node.js `>=18`                |
+| `@codemonster-ru/vueforge-icons`                  | `2.0.0`         | `1.5.0`       | Node.js `>=18`, Vue `^3.5.0`  |
+| `@codemonster-ru/vueforge-core`                   | `2.0.0`         | `1.35.1`      | Node.js `>=18`, Vue `^3.5.0`  |
+| `@codemonster-ru/vueforge-layouts`                | `2.0.0`         | `1.21.0`      | Node.js `>=18`, Core `^2.0.0` |
+| `@codemonster-ru/vueforge-codeblock`              | `4.0.0`         | `3.6.1`       | Node.js `>=20`, Vue `^3.5.0`  |
+| `@codemonster-ru/vueforge-playground-core`        | `2.0.0`         | `1.1.1`       | Node.js `>=18`                |
+| `@codemonster-ru/vueforge-playground-vite-plugin` | `1.0.0`         | `0.1.1`       | Node.js `>=18`, Vite `^6–^8`  |
+| `@codemonster-ru/vueforge-playground`             | `3.0.0`         | `2.5.1`       | Node.js `>=20`, Vue `^3.5.0`  |
 
 TypeScript `>=5.8` with `moduleResolution: "Bundler"` or `"NodeNext"` is the supported declaration
 resolution path. Package `exports` is authoritative; metadata for resolvers that ignore `exports`

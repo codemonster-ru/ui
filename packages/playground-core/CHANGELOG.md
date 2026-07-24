@@ -2,23 +2,6 @@
 
 ## 2.0.0
 
-### Changed
-
-- Made sandbox previews synchronize the canonical `data-vf-theme` attribute only.
-- Simplified local import and re-export rewriting without changing the public session API.
-- Made the package `exports` map authoritative for its ESM runtime and declarations.
-
-### Removed
-
-- Removed the sandbox `data-theme` compatibility mirror and legacy top-level resolver metadata.
-
-### Breaking changes
-
-- Custom preview integrations must read `data-vf-theme`, and package resolution must honor
-  `exports`.
-
-## 1.2.0
-
 ### Added
 
 - Added deterministic circular-import diagnostics and stricter import resolution coverage.
@@ -27,6 +10,9 @@
 
 ### Changed
 
+- Made sandbox previews synchronize the canonical `data-vf-theme` attribute only.
+- Simplified local import and re-export rewriting without changing the public session API.
+- Made the package `exports` map authoritative for its ESM runtime and declarations.
 - Scoped theme transfer now accepts only validated VueForge variables and works with opaque-origin
   sandbox frames.
 - Declared Node.js 18 support and included all build, lint, and test tooling needed by a clean package
@@ -37,10 +23,14 @@
 - Rejected messages from unrelated windows and malformed runtime payloads.
 - Prevented direct and indirect import cycles from recursing until a stack failure.
 
+### Removed
+
+- Removed the sandbox `data-theme` compatibility mirror and legacy top-level resolver metadata.
+
 ### Breaking changes
 
-- None in the documented public API. Invalid transport payloads that were never part of the public
-  contract are now ignored.
+- Custom preview integrations must read `data-vf-theme`, and package resolution must honor
+  `exports`.
 
 ## 1.1.1
 

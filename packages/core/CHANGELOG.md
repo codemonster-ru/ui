@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+### Added
+
+- Added public primitive and semantic color contracts, an accessible OKLCH default palette, and
+  automated contrast and CSS contract coverage.
+- Added public option/types that were already represented by runtime behavior, including overlay,
+  dialog, drawer, tab, and composable contracts.
+- Added reduced-motion and forced-colors rules to full and component CSS artifacts.
+- Added CSS-free Node ESM component conditions and CommonJS declaration facades for SSR consumers.
+
 ### Changed
 
 - Made primitive, semantic, and built-in non-color fields required in complete theme presets while
@@ -12,6 +21,25 @@
   custom-prefix generation remain supported.
 - Made the package `exports` map authoritative while preserving documented ESM and CommonJS
   conditions.
+- Unified the TypeScript theme contract, runtime theme output, static theme CSS, full stylesheet, and
+  component-entry CSS around canonical token names and component entries.
+- Moved IDs, theme startup, breakpoints, Escape handling, focus traps, and scroll locking to
+  request-safe and coordinated Vue 3.5 behavior.
+- Improved keyboard, ARIA, RTL, zoom, overlay stacking, and controlled-state behavior across the
+  affected components.
+- Refined interaction feedback and state precedence for buttons, selection controls, menus,
+  overlays, navigation, and tabs while keeping text-first variants transparent.
+- Declared Node.js 18 and Vue 3.5 requirements and made all nested CSS side effects explicit.
+
+### Fixed
+
+- Fixed fallback-only floating labels, Drawer and Command Palette geometry, scoped themes, full
+  versus component CSS drift, and generated CSS race conditions.
+- Fixed SSR/hydration stability, nested overlay ownership, dangling ARIA relationships, disabled
+  Select navigation, and hidden SkeletonGate interactivity.
+- Fixed published ESM/CommonJS/type conditions so Node imports do not require CSS handling.
+- Fixed clipped focus rings, asymmetric Tooltip geometry, overlay transition timing, Playground tab
+  geometry, and invalid/disabled compound states.
 
 ### Removed
 
@@ -26,40 +54,6 @@
   names.
 - Replace implicit `data-theme` boundaries with `data-vf-theme` and use a resolver that honors
   package `exports`.
-
-## 1.36.0
-
-### Added
-
-- Added public primitive and semantic color contracts, an accessible OKLCH default palette, and
-  automated contrast and CSS contract coverage.
-- Added public option/types that were already represented by runtime behavior, including overlay,
-  dialog, drawer, tab, and composable contracts.
-- Added reduced-motion and forced-colors rules to full and component CSS artifacts.
-- Added CSS-free Node ESM component conditions and CommonJS declaration facades for SSR consumers.
-
-### Changed
-
-- Unified the TypeScript theme contract, runtime theme output, static theme CSS, full stylesheet, and
-  component-entry CSS around canonical token names and component entries.
-- Moved IDs, theme startup, breakpoints, Escape handling, focus traps, and scroll locking to
-  request-safe and coordinated Vue 3.5 behavior.
-- Improved keyboard, ARIA, RTL, zoom, overlay stacking, and controlled-state behavior across the
-  affected components without removing public props or exports.
-- Declared Node.js 18 and Vue 3.5 requirements and made all nested CSS side effects explicit.
-
-### Fixed
-
-- Fixed fallback-only floating labels, Drawer and Command Palette geometry, scoped themes, full versus
-  component CSS drift, and generated CSS race conditions.
-- Fixed SSR/hydration stability, nested overlay ownership, dangling ARIA relationships, disabled
-  Select navigation, and hidden SkeletonGate interactivity.
-- Fixed published ESM/CommonJS/type conditions so Node imports do not require CSS handling.
-
-### Breaking changes
-
-- None in the documented public API. No public design token was removed or renamed; Vue 3.5 is now the
-  minimum supported Vue version.
 
 ## 1.35.1
 

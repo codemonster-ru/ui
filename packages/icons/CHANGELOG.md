@@ -2,10 +2,24 @@
 
 ## 2.0.0
 
+### Added
+
+- Added an explicit CSS-free Node ESM condition and CommonJS declaration facade for SSR consumers.
+
 ### Changed
 
 - Made the package `exports` map authoritative while preserving the documented browser, Node ESM,
   and CommonJS conditions.
+- Kept browser ESM auto CSS and the explicit `style.css` export while making Node ESM and CommonJS
+  imports DOM-free.
+- Declared Vue 3.5 and Node.js 18 consumer requirements and made CSS side effects explicit.
+- Disabled icon spin animation when reduced motion is requested.
+
+### Fixed
+
+- Corrected the previous CommonJS/SSR path that depended on browser CSS injection and a global DOM.
+- Ensured clean package builds generate ESM, CommonJS, Node ESM, CSS, and declaration artifacts.
+- Declared the Sass compiler used by icon Vue sources instead of relying on a transitive build tool.
 
 ### Removed
 
@@ -18,30 +32,6 @@
 
 - Remove the `style` prop from `VueIconify` usage, remove imports of `dualStyleCoreIconNames`, and
   use a resolver that honors package `exports`.
-
-## 1.6.0
-
-### Added
-
-- Added an explicit CSS-free Node ESM condition and CommonJS declaration facade for SSR consumers.
-
-### Changed
-
-- Kept browser ESM auto CSS and the explicit `style.css` export while making Node ESM and CommonJS
-  imports DOM-free.
-- Declared Vue 3.5 and Node.js 18 consumer requirements and made CSS side effects explicit.
-- Disabled icon spin animation when reduced motion is requested.
-
-### Fixed
-
-- Corrected the previous CommonJS/SSR path that depended on browser CSS injection and a global DOM.
-- Ensured clean package builds generate ESM, CommonJS, Node ESM, CSS, and declaration artifacts.
-- Declared the Sass compiler used by icon Vue sources instead of relying on a transitive build tool.
-
-### Breaking changes
-
-- None in the documented component API. SSR/CommonJS applications must import `style.css` from their
-  client bundle; this is a correction of unintended server-side DOM injection.
 
 ## 1.5.0
 

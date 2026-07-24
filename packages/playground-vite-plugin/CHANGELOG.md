@@ -2,11 +2,21 @@
 
 ## 1.0.0
 
+### Added
+
+- Added the correctly cased `VueForge*` names for all public virtual-entry option types.
+
 ### Changed
 
 - Defined the correctly branded `VueForge*` virtual-entry option types as the canonical public
   contract.
 - Made the package `exports` map authoritative for its ESM plugin and declarations.
+- Declared Node.js 18 support, marked the ESM package as side-effect free, and included clean-checkout
+  lint tooling.
+
+### Fixed
+
+- Normalized virtual IDs received through Vite's `/@id/__x00__` representation.
 
 ### Removed
 
@@ -15,26 +25,6 @@
 ### Breaking changes
 
 - Rename `Vueforge*` type imports to `VueForge*` and use a resolver that honors package `exports`.
-
-## 0.2.0
-
-### Added
-
-- Added correctly cased `VueForge*` aliases for all public virtual-entry option types.
-
-### Changed
-
-- Retained the previous `Vueforge*` type names as deprecated compatibility aliases.
-- Declared Node.js 18 support, marked the ESM package as side-effect free, and included clean-checkout
-  lint tooling.
-
-### Fixed
-
-- Normalized virtual IDs received through Vite's `/@id/__x00__` representation.
-
-### Breaking changes
-
-- None. Existing plugin options, virtual module IDs, and deprecated type aliases remain available.
 
 ## 0.1.1
 
