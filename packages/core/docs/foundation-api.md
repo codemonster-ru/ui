@@ -122,7 +122,7 @@ This is the narrow CSS entry point for packages that need token and theme baseli
 
 ## Stability
 
-Stable foundation API for `1.0.0`:
+Stable foundation API for `@codemonster-ru/vueforge-core` 2.x:
 
 - `vfBreakpoints`
 - `toMinWidthQuery`

@@ -1,6 +1,7 @@
-# Vue Basic Example
+# VueForge Showcase
 
-Minimal integration example for `@codemonster-ru/vueforge-playground`.
+Development showcase for the VueForge color system, Core components, layouts, icons, CodeBlock, and
+Playground packages.
 
 ## Run
 
@@ -8,8 +9,11 @@ Minimal integration example for `@codemonster-ru/vueforge-playground`.
 npm run dev
 ```
 
-Expected:
+The app exposes six sections:
 
-- `Code` tab renders source code.
-- `Preview` tab renders iframe output.
-- `Console` tab shows logs/errors from runtime.
+- Colors
+- Core
+- Layouts
+- Icons
+- CodeBlock
+- Playground
