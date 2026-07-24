@@ -52,6 +52,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
     },
     {
       name: 'vueforge-layouts-copy-css-entries',
+      apply: 'build',
       closeBundle() {
         const distDir = resolve(__dirname, 'dist');
         const autoDir = resolve(distDir, 'auto');
@@ -125,6 +126,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
     },
     {
       name: 'vueforge-layouts-finalize-dist-styles',
+      apply: 'build',
       closeBundle() {
         const distStylesPath = resolve(__dirname, 'dist/styles.css');
         if (!existsSync(distStylesPath)) {
