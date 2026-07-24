@@ -23,7 +23,7 @@ entry: /App.vue
 ```vue file=/App.vue
 <template>
   <div style="display:flex;gap:var(--vf-surface-padding-compact);align-items:center;flex-wrap:wrap">
-    <VfLink href="https://github.com/codemonster-ru/vueforge-core" target="_blank">
+    <VfLink href="https://github.com/codemonster-ru/vueforge" target="_blank">
       VueForge Core
     </VfLink>
     <VfLink href="/vueforge-core/components/link?tab=api" underline="always" tone="muted">

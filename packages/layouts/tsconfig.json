@@ -15,5 +15,5 @@
     },
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*", "env.d.ts", "index.html"]
+  "include": ["src/**/*", "env.d.ts"]
 }

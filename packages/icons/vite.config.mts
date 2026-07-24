@@ -63,9 +63,6 @@ export default defineConfig(({ mode }) => {
   const isDevelopment = mode === 'development';
 
   return {
-    define: {
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-    },
     plugins: [vue(), dts(), esOnlyCssInjection(), removeUnnecessaryFiles()],
     resolve: {
       alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }],

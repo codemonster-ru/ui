@@ -225,15 +225,5 @@ export default defineConfig(({ mode }) => {
         output: isCjsBuild ? { exports: 'named' } : {},
       },
     },
-    test: {
-      environment: 'jsdom',
-      globals: true,
-      setupFiles: './src/__tests__/setup.ts',
-      server: {
-        deps: {
-          inline: ['@codemonster-ru/vueforge-icons'],
-        },
-      },
-    },
   };
 });
