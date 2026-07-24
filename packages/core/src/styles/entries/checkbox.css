@@ -88,6 +88,11 @@
   border-color: var(--vf-checkbox-hover-border-color);
 }
 
+.vf-checkbox:active:not(.vf-checkbox--disabled) .vf-checkbox__input:not(:checked) + .vf-checkbox__control {
+  border-color: var(--vf-checkbox-hover-border-color);
+  background: var(--vf-color-background-surface-active, var(--vf-checkbox-background));
+}
+
 .vf-checkbox--sm .vf-checkbox__control {
   width: var(--vf-checkbox-size-sm);
   height: var(--vf-checkbox-size-sm);
@@ -150,6 +155,16 @@
   opacity: 1;
 }
 
+.vf-checkbox:hover:not(.vf-checkbox--disabled) .vf-checkbox__input:checked + .vf-checkbox__control {
+  border-color: var(--vf-color-interactive-primary-hover-background, var(--vf-checkbox-checked-border-color));
+  background: var(--vf-color-interactive-primary-hover-background, var(--vf-checkbox-checked-background));
+}
+
+.vf-checkbox:active:not(.vf-checkbox--disabled) .vf-checkbox__input:checked + .vf-checkbox__control {
+  border-color: var(--vf-color-interactive-primary-active-background, var(--vf-checkbox-checked-border-color));
+  background: var(--vf-color-interactive-primary-active-background, var(--vf-checkbox-checked-background));
+}
+
 .vf-checkbox__input:focus-visible + .vf-checkbox__control {
   outline: none;
   border-color: var(--vf-checkbox-focus-border-color);
@@ -158,6 +173,9 @@
 
 .vf-checkbox--invalid:not(.vf-checkbox--disabled) .vf-checkbox__control,
 .vf-checkbox--invalid:not(.vf-checkbox--disabled) .vf-checkbox__input:checked + .vf-checkbox__control,
-.vf-checkbox--invalid:hover:not(.vf-checkbox--disabled) .vf-checkbox__input + .vf-checkbox__control {
+.vf-checkbox--invalid:hover:not(.vf-checkbox--disabled) .vf-checkbox__input:not(:checked) + .vf-checkbox__control,
+.vf-checkbox--invalid:hover:not(.vf-checkbox--disabled) .vf-checkbox__input:checked + .vf-checkbox__control,
+.vf-checkbox--invalid:active:not(.vf-checkbox--disabled) .vf-checkbox__input:not(:checked) + .vf-checkbox__control,
+.vf-checkbox--invalid:active:not(.vf-checkbox--disabled) .vf-checkbox__input:checked + .vf-checkbox__control {
   border-color: var(--vf-checkbox-invalid-border-color);
 }

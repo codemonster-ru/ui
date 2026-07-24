@@ -149,25 +149,47 @@
   background: var(--vf-switch-track-checked-hover-background);
 }
 
+.vf-switch:active:not(.vf-switch--disabled, .vf-switch--static) .vf-switch__control {
+  border-color: var(--vf-switch-track-hover-border-color);
+  background: var(--vf-color-background-surface-active, var(--vf-switch-track-hover-background));
+}
+
+.vf-switch:active:not(.vf-switch--disabled, .vf-switch--static)
+  .vf-switch__input:checked
+  + .vf-switch__control,
+.vf-switch--checked:active:not(.vf-switch--disabled, .vf-switch--static) .vf-switch__control {
+  border-color: var(
+    --vf-color-interactive-primary-active-background,
+    var(--vf-switch-track-checked-hover-border-color)
+  );
+  background: var(
+    --vf-color-interactive-primary-active-background,
+    var(--vf-switch-track-checked-hover-background)
+  );
+}
+
 .vf-switch__input:focus-visible + .vf-switch__control {
   outline: none;
   border-color: var(--vf-switch-track-focus-border-color);
   box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
 }
 
-.vf-switch--invalid .vf-switch__control,
-.vf-switch--invalid .vf-switch__input:checked + .vf-switch__control,
-.vf-switch--invalid.vf-switch--checked .vf-switch__control {
+.vf-switch--invalid:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--invalid:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--invalid.vf-switch--checked:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
 .vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__control,
 .vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
-.vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
+.vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--invalid:active:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--invalid:active:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--invalid.vf-switch--checked:active:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
-.vf-switch--invalid .vf-switch__input:focus-visible + .vf-switch__control {
+.vf-switch--invalid:not(.vf-switch--disabled) .vf-switch__input:focus-visible + .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
@@ -178,9 +200,9 @@
   background: var(--vf-switch-track-background);
 }
 
-.vf-switch--static.vf-switch--invalid .vf-switch__control,
-.vf-switch--static.vf-switch--invalid .vf-switch__input:checked + .vf-switch__control,
-.vf-switch--static.vf-switch--invalid.vf-switch--checked .vf-switch__control {
+.vf-switch--static.vf-switch--invalid:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--static.vf-switch--invalid:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--static.vf-switch--invalid.vf-switch--checked:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
@@ -191,9 +213,21 @@
   background: var(--vf-switch-track-background);
 }
 
+.vf-switch--static:active:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--static:active:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
+.vf-switch--static.vf-switch--checked:active:not(.vf-switch--disabled) .vf-switch__control {
+  border-color: var(--vf-switch-track-hover-border-color);
+  background: var(--vf-switch-track-background);
+}
+
 .vf-switch--static.vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__control,
 .vf-switch--static.vf-switch--invalid:hover:not(.vf-switch--disabled) .vf-switch__input:checked + .vf-switch__control,
-.vf-switch--static.vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control {
+.vf-switch--static.vf-switch--invalid.vf-switch--checked:hover:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--static.vf-switch--invalid:active:not(.vf-switch--disabled) .vf-switch__control,
+.vf-switch--static.vf-switch--invalid:active:not(.vf-switch--disabled)
+  .vf-switch__input:checked
+  + .vf-switch__control,
+.vf-switch--static.vf-switch--invalid.vf-switch--checked:active:not(.vf-switch--disabled) .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 
@@ -202,7 +236,7 @@
   background: var(--vf-switch-track-background);
 }
 
-.vf-switch--static.vf-switch--invalid .vf-switch__input:focus-visible + .vf-switch__control {
+.vf-switch--static.vf-switch--invalid:not(.vf-switch--disabled) .vf-switch__input:focus-visible + .vf-switch__control {
   border-color: var(--vf-switch-track-invalid-border-color);
 }
 

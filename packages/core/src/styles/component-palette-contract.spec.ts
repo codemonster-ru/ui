@@ -457,7 +457,8 @@ describe('component palette contract', () => {
     expect(css).not.toContain('.vf-switch--invalid:not(.vf-switch--static):hover');
     expect(css).toContain('background: var(--vf-switch-track-hover-background);');
     expect(css).toContain(
-      '.vf-switch--invalid .vf-switch__input:focus-visible + .vf-switch__control {\n  border-color: var(--vf-switch-track-invalid-border-color);',
+      '.vf-switch--invalid:not(.vf-switch--disabled) .vf-switch__input:focus-visible + .vf-switch__control {\n  border-color: var(--vf-switch-track-invalid-border-color);',
     );
+    expect(css).toContain('.vf-switch--static.vf-switch--invalid:not(.vf-switch--disabled)');
   });
 });

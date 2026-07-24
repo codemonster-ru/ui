@@ -68,7 +68,7 @@
 }
 
 .vf-icon-button--secondary {
-  background: var(--vf-color-background-surface-subtle);
+  background: var(--vf-color-background-surface);
   border-color: var(--vf-color-border-interactive);
   color: var(--vf-color-icon-primary);
 }

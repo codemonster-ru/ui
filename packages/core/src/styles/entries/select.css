@@ -429,6 +429,12 @@
   color: var(--vf-select-option-hover-color);
 }
 
+.vf-select__option:active:not(:disabled, .vf-select__option--selected, [aria-selected='true']) {
+  border-color: transparent;
+  background: var(--vf-color-background-surface-active, var(--vf-select-option-hover-background));
+  color: var(--vf-select-option-hover-color);
+}
+
 .vf-select-wrap + .vf-field__label--floating {
   --vf-field-floating-label-offset-inline: var(--vf-field-floating-control-offset-inline-md);
 }
