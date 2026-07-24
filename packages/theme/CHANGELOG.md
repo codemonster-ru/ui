@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## 2.0.0
 
+### Added
+
+- Added public primitive and semantic color token name/type contracts shared by VueForge packages.
+
 ### Changed
 
 - Made the primitive and semantic color fields required in complete `VfThemeTokens` presets while
@@ -11,6 +15,13 @@ All notable changes to this project will be documented in this file.
 - Made `data-vf-theme` the only implicit theme attribute. Explicitly configured custom attributes
   and custom variable prefixes remain supported.
 - Made the package `exports` map authoritative for JavaScript and declaration resolution.
+- Unified runtime, static, Core, and Layouts CSS custom-property serialization, including digit and
+  acronym boundaries.
+- Marked the ESM package as side-effect free and declared Node.js 18 or newer for consumer tooling.
+
+### Fixed
+
+- Made scoped light and dark theme serialization complete and reversible.
 
 ### Removed
 
@@ -23,27 +34,6 @@ All notable changes to this project will be documented in this file.
 - Complete presets must use primitive and semantic color fields and provide every required token.
 - Replace implicit `data-theme` boundaries with `data-vf-theme` and use a resolver that honors
   package `exports`.
-
-## 1.4.0
-
-### Added
-
-- Added public primitive and semantic color token name/type contracts shared by VueForge packages.
-
-### Changed
-
-- Unified runtime, static, Core, and Layouts CSS custom-property serialization, including digit and
-  acronym boundaries.
-- Marked the ESM package as side-effect free and declared Node.js 18 or newer for consumer tooling.
-
-### Fixed
-
-- Made scoped light and dark theme serialization complete and reversible without changing public
-  token names.
-
-### Breaking changes
-
-- None in the documented public API. Existing token names remain available.
 
 ## 1.3.0
 

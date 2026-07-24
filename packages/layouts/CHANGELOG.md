@@ -2,12 +2,28 @@
 
 ## 2.0.0
 
+### Added
+
+- Added accurate named/default declarations and CSS-free Node ESM entries for all component subpaths.
+- Added a CommonJS declaration facade and packed SSR/type consumer coverage.
+
 ### Changed
 
 - Updated the Core peer and Theme dependency lines for the coordinated VueForge 2 token contract.
 - Made layout color defaults use canonical Core semantic variables and made `data-vf-theme` the
   only implicit theme attribute.
 - Made the package `exports` map authoritative while preserving supported ESM and CommonJS entries.
+- Unified Layouts theme serialization with the shared theme engine and aligned full, runtime, and
+  component CSS artifacts.
+- Made the Layouts plugin singleton tree-shakeable and declared Node.js 18 and Vue 3.5 requirements.
+
+### Fixed
+
+- Fixed `VfAppShell` controlled/uncontrolled sidebar state and removed its initial spurious update.
+- Replaced invalid AppShell grid shorthand and synchronized subheader geometry between full and
+  component CSS.
+- Fixed component subpath declarations that previously described the root plugin instead of the
+  selected component.
 
 ### Removed
 
@@ -18,33 +34,6 @@
 
 - Upgrade Core and Layouts together, replace `data-theme` boundaries with `data-vf-theme`, and use
   canonical semantic colors in custom layout presets.
-
-## 1.22.0
-
-### Added
-
-- Added accurate named/default declarations and CSS-free Node ESM entries for all component subpaths.
-- Added a CommonJS declaration facade and packed SSR/type consumer coverage.
-
-### Changed
-
-- Unified Layouts theme serialization with the shared theme engine and aligned full, runtime, and
-  component CSS artifacts.
-- Updated internal floors to Core 1.36 and Theme 1.4, with Vue 3.5 as the minimum peer version.
-- Made the Layouts plugin singleton tree-shakeable and declared the supported Node engine.
-
-### Fixed
-
-- Fixed `VfAppShell` controlled/uncontrolled sidebar state and removed its initial spurious update.
-- Replaced invalid AppShell grid shorthand and synchronized subheader geometry between full and
-  component CSS.
-- Fixed component subpath declarations that previously described the root plugin instead of the
-  selected component.
-
-### Breaking changes
-
-- None in the documented public API. Existing root, component, theme, and CSS entry names remain
-  available.
 
 ## 1.21.0
 
