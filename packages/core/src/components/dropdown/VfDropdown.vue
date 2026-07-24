@@ -37,8 +37,8 @@ const arrowRef = ref<HTMLElement | null>(null);
 const menuId = useId({ prefix: 'vf-dropdown-menu' });
 const triggerId = useId({ prefix: 'vf-dropdown-trigger' });
 const transitionDuration = {
-  enter: vfMotionDurationsMs.fast,
-  leave: vfMotionDurationsMs.fast,
+  enter: vfMotionDurationsMs.normal,
+  leave: vfMotionDurationsMs.normal,
 } as const;
 const teleportDisabled = computed(
   () => props.disableTeleport || props.teleportTo === false || props.teleportTo === null,

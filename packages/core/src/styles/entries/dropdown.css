@@ -110,6 +110,12 @@
   background: var(--vf-selectable-hover-background);
 }
 
+.vf-dropdown__item:active:not(.vf-dropdown__item--active, :disabled, [aria-disabled='true']) {
+  color: var(--vf-selectable-hover-color);
+  border-color: transparent;
+  background: var(--vf-color-background-surface-active, var(--vf-selectable-hover-background));
+}
+
 .vf-dropdown__menu--default .vf-dropdown__item--active:not(:disabled, [aria-disabled='true']) {
   color: var(--vf-dropdown-item-default-active-color);
   border-color: transparent;
@@ -133,6 +139,18 @@
   color: var(--vf-dropdown-item-pills-hover-color);
   border-color: transparent;
   background: var(--vf-dropdown-item-pills-hover-background);
+}
+
+.vf-dropdown__menu--default
+  .vf-dropdown__item:active:not(.vf-dropdown__item--active, :disabled, [aria-disabled='true']) {
+  color: var(--vf-dropdown-item-default-hover-color);
+  background: var(--vf-color-background-surface-active, var(--vf-dropdown-item-default-hover-background));
+}
+
+.vf-dropdown__menu--pills
+  .vf-dropdown__item:active:not(.vf-dropdown__item--active, :disabled, [aria-disabled='true']) {
+  color: var(--vf-dropdown-item-pills-hover-color);
+  background: var(--vf-color-background-surface-active, var(--vf-dropdown-item-pills-hover-background));
 }
 
 .vf-dropdown__menu--default .vf-dropdown__item--active:hover:not(:disabled, [aria-disabled='true']) {

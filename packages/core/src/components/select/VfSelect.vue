@@ -57,8 +57,8 @@ const triggerId = useId({ prefix: 'vf-select-trigger' });
 fieldContext?.setFloatingSupported(true);
 const listboxId = useId({ prefix: 'vf-select-listbox' });
 const transitionDuration = {
-  enter: vfMotionDurationsMs.fast,
-  leave: vfMotionDurationsMs.fast,
+  enter: vfMotionDurationsMs.normal,
+  leave: vfMotionDurationsMs.normal,
 } as const;
 
 const disclosure = useDisclosure();
