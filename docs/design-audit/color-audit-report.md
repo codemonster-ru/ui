@@ -1,182 +1,182 @@
-# VueForge: итоговый аудит цветовой системы
+# VueForge: Final Color System Audit
 
-> **Historical audit.** Этот отчёт фиксирует baseline и proposal до внедрения целевой палитры. Реализованное
-> состояние и актуальные ограничения находятся в [отчёте Phase 2](./phase-2-report.md).
+> **Historical audit.** This report records the baseline and proposal from before the target palette was implemented. The implemented
+> state and current constraints are documented in the [Phase 2 report](./phase-2-report.md).
 
-Дата обновления: 2026-07-22. Статус: **Phase 1 завершена; palette values и component rendering сохранены**.
+Last updated: 2026-07-22. Status: **Phase 1 completed; palette values and component rendering preserved**.
 
-Связанные документы:
+Related documents:
 
-- [Инвентаризация цветов](./color-inventory.md)
-- [Аудит цветовой доступности](./accessibility-colors.md)
-- [Отчёт о реализации Phase 0](./phase-0-report.md)
-- [Отчёт о реализации Phase 1](./phase-1-report.md)
+- [Color Inventory](./color-inventory.md)
+- [Color Accessibility Audit](./accessibility-colors.md)
+- [Phase 0 Implementation Report](./phase-0-report.md)
+- [Phase 1 Implementation Report](./phase-1-report.md)
 
 ## Executive summary
 
-VueForge уже выглядит как аккуратная developer-oriented UI-библиотека: спокойная холодная neutral-база, узнаваемый синий primary, единый preset source of truth, token-based CSS без случайных HEX внутри core-компонентов и хороший базовый контраст основного/muted текста.
+VueForge already looks like a polished, developer-oriented UI library: a calm, cool neutral base, a recognizable blue primary, a single preset source of truth, token-based CSS without stray HEX values inside core components, and good baseline contrast for primary/muted text.
 
-Исходный аудит выявил следующие архитектурные и визуальные противоречия; transport drift из пунктов 4–6 закрыт Phase 0, а role architecture из пунктов 1–2 введена Phase 1 без component migration:
+The initial audit identified the following architectural and visual conflicts; Phase 0 resolved the transport drift in items 4–6, while Phase 1 introduced the role architecture from items 1–2 without component migration:
 
-1. Один chromatic token одновременно используется как текст/иконка и как solid background. В dark theme эти требования математически несовместимы; отсюда системные AA failures.
-2. `colorBorder` одновременно является почти невидимым декоративным divider и единственной границей form control.
-3. Focus ring имеет лишь 1.65:1 в light и 1.52:1 в dark.
-4. Фактический preset, публичные TypeScript types, статический CSS и runtime CSS расходятся.
-5. Full stylesheet и component entry CSS поддерживаются вручную в двух местах и уже дают разный cascade/geometry.
-6. Scoped/local theme contract в CodeBlock/Playground и часть provider options визуально не выполняют обещанное поведение.
-7. Shiki-палитры используются на чужом фоне, поэтому syntax highlighting не проходит AA.
-8. Нет automated contrast, focus, scoped-theme или visual-regression gate.
+1. A single chromatic token is used both for text/icons and as a solid background. In a dark theme, these requirements are mathematically incompatible, resulting in systemic AA failures.
+2. `colorBorder` serves both as an almost invisible decorative divider and as the only boundary for form controls.
+3. The focus ring has a contrast ratio of only 1.65:1 in light mode and 1.52:1 in dark mode.
+4. The actual preset, public TypeScript types, static CSS, and runtime CSS diverge.
+5. The full stylesheet and component entry CSS are maintained manually in two places and already produce different cascade/geometry.
+6. The scoped/local theme contract in CodeBlock/Playground and some provider options do not visually deliver the promised behavior.
+7. Shiki palettes are used on a different background, so syntax highlighting does not meet AA.
+8. There is no automated contrast, focus, scoped-theme, or visual-regression gate.
 
-Итог: текущую систему не следует «лечить» массовой заменой HEX. Сначала требуется нормализовать contract и роли, затем подобрать значения и только после этого мигрировать компоненты.
+Conclusion: the current system should not be "fixed" by replacing HEX values en masse. First normalize the contract and roles, then select values, and only then migrate components.
 
-## Результат Phase 0
+## Phase 0 Outcome
 
-Phase 0 закрыла только contract/build/runtime drift, не меняя палитру и не переходя к новой semantic architecture:
+Phase 0 addressed only contract/build/runtime drift, without changing the palette or moving to the new semantic architecture:
 
-- все 847 фактически поддерживаемых core tokens представлены в TypeScript contract; ранее отсутствовавшие 95 полей добавлены как optional для совместимости 1.x;
-- static core CSS, runtime generation и layouts используют один алгоритм сериализации custom-property names;
-- девять ошибочных fallback names заменены каноническими именами, а exhaustive parity tests не допускают их возврата;
-- root fallback сохраняет компактные dark overrides, а scoped light/dark boundaries получают полный обратимый набор variables и `color-scheme`;
-- full stylesheet теперь компонуется из тех же canonical component entries; отдельный parity gate проверяет отсутствие пропусков и дублей;
-- fallback behavior для floating labels, Drawer и Command Palette восстановлен;
-- ThemeProvider синхронизирует configured root aliases; CodeBlock и Playground разрешают тему по ближайшей валидной DOM boundary и сохраняют inherited component-token overrides; sandboxed Playground iframe получает resolved mode и `--vf-*` variables через проверяемый bridge;
-- package CSS/export/consumer contracts и light/dark browser smoke покрывают затронутые пути.
+- all 847 core tokens actually supported are represented in the TypeScript contract; the previously missing 95 fields were added as optional for 1.x compatibility;
+- static core CSS, runtime generation, and layouts use a single algorithm for serializing custom-property names;
+- nine incorrect fallback names were replaced with canonical names, and exhaustive parity tests prevent their return;
+- the root fallback retains compact dark overrides, while scoped light/dark boundaries receive a complete reversible set of variables and `color-scheme`;
+- the full stylesheet is now composed from the same canonical component entries; a dedicated parity gate checks for omissions and duplicates;
+- fallback behavior for floating labels, Drawer, and Command Palette was restored;
+- ThemeProvider synchronizes configured root aliases; CodeBlock and Playground resolve the theme from the nearest valid DOM boundary and preserve inherited component-token overrides; the sandboxed Playground iframe receives the resolved mode and `--vf-*` variables through a verifiable bridge;
+- package CSS/export/consumer contracts and light/dark browser smoke tests cover the affected paths.
 
-Цветовые и accessibility-находки ниже остаются открытыми. Значения palette tokens, Shiki palette, contrast ratios и visual character в Phase 0 не менялись. Полный перечень решений и проверок приведён в [отчёте Phase 0](./phase-0-report.md).
+The color and accessibility findings below remain open. Palette token values, the Shiki palette, contrast ratios, and visual character were not changed in Phase 0. The complete list of decisions and checks is provided in the [Phase 0 report](./phase-0-report.md).
 
-## Результат Phase 1
+## Phase 1 Outcome
 
-Phase 1 создала целевое разделение token roles без миграции component CSS и без замены палитры:
+Phase 1 created the target separation of token roles without migrating component CSS or replacing the palette:
 
-- добавлены 29 primitive material tokens, содержащие только уже используемые HEX/black values;
-- введён контракт из 77 semantic roles: background, text, icon, border, interaction и пять status families по восемь ролей;
-- `colorFocusRing` входит и в сохранённый legacy contract, и в semantic set, поэтому новых semantic keys 76;
-- все 847 legacy keys сохранены; built-in preset расширен до 952 keys;
-- compatibility graph однонаправлен: semantic roles и текущие component aliases независимо разрешаются через legacy roots к primitives; component → semantic migration отложена до Phase 2;
-- public name tuples/types, static/runtime maps, full/component-entry, scoped, fallback и custom-prefix paths используют один contract;
-- foreground, solid background, subtle background, border и icon теперь являются разными public roles, даже когда их текущие material values совпадают;
-- отдельная help scale сохранена из-за реального публичного API и набора потребителей;
-- confirmed dead и ambiguous tokens только документированы как v2 candidates, но не удалены и не получили runtime warnings.
+- 29 primitive material tokens were added, containing only HEX/black values already in use;
+- a contract of 77 semantic roles was introduced: background, text, icon, border, interaction, and five status families with eight roles each;
+- `colorFocusRing` belongs to both the preserved legacy contract and the semantic set, so there are 76 new semantic keys;
+- all 847 legacy keys were preserved; the built-in preset was expanded to 952 keys;
+- the compatibility graph is one-way: semantic roles and current component aliases resolve independently through legacy roots to primitives; component → semantic migration was deferred to Phase 2;
+- public name tuples/types, static/runtime maps, full/component-entry, scoped, fallback, and custom-prefix paths use a single contract;
+- foreground, solid background, subtle background, border, and icon are now distinct public roles, even when their current material values are identical;
+- a separate help scale was retained because of the actual public API and its consumers;
+- confirmed dead and ambiguous tokens were only documented as v2 candidates; they were neither removed nor given runtime warnings.
 
-Phase 1 не исправляет перечисленные ниже contrast failures: компоненты пока продолжают читать прежние aliases, а target OKLCH values и state migration относятся к Phase 2. Полная архитектура и mapping опубликованы в [Color Tokens guide](../core/guides/color-tokens.md).
+Phase 1 does not fix the contrast failures listed below: components still read the previous aliases, while target OKLCH values and state migration belong to Phase 2. The complete architecture and mapping are published in the [Color Tokens guide](../core/guides/color-tokens.md).
 
-## Сильные стороны, которые нужно сохранить
+## Strengths to Preserve
 
-- Фирменный характер: строгий, минималистичный, технический, спокойный, developer-oriented.
-- Light canvas не ослепительно белый; dark text не чрезмерно яркий.
-- Основной и muted text уверенно проходят AA.
-- Все solid semantic buttons имеют контраст не ниже 5.04:1.
-- Core component CSS почти полностью использует custom properties; случайных literal HEX/RGB/HSL в UI-правилах нет.
-- Layouts, CodeBlock и Playground в основном наследуют core semantic layer.
-- Иконки используют `currentColor`; black/white в SVG masks не являются видимой палитрой.
-- Showcase широко покрывает компоненты и позволяет реальный light/dark проход без создания audit-page.
-- Текущие geometry, CSS export и unit contracts дают хорошую основу для расширения проверок.
+- Brand character: rigorous, minimalist, technical, calm, and developer-oriented.
+- The light canvas is not dazzling white; dark-mode text is not excessively bright.
+- Primary and muted text comfortably meet AA.
+- All solid semantic buttons have a contrast ratio of at least 5.04:1.
+- Core component CSS uses custom properties almost exclusively; there are no stray literal HEX/RGB/HSL values in UI rules.
+- Layouts, CodeBlock, and Playground largely inherit the core semantic layer.
+- Icons use `currentColor`; black/white in SVG masks are not part of the visible palette.
+- The showcase covers components broadly and supports a real light/dark review without creating an audit page.
+- The current geometry, CSS export, and unit contracts provide a good foundation for expanding checks.
 
-## Текущий визуальный характер
+## Current Visual Character
 
-VueForge сейчас ближе всего к «сдержанной технической библиотеке для внутренних интерфейсов». Палитра прохладная, low-noise и достаточно профессиональная. Она не выглядит playful или consumer-oriented. При этом слабая elevation, почти незаметные borders/states и типовая GitHub syntax palette делают интерфейс менее узнаваемым и менее «дорогим», чем позволяет хорошая базовая геометрия.
+VueForge currently feels closest to "a restrained technical library for internal interfaces." The palette is cool, low-noise, and sufficiently professional. It does not look playful or consumer-oriented. However, weak elevation, barely visible borders/states, and a generic GitHub syntax palette make the interface less distinctive and less premium than its strong underlying geometry would allow.
 
-Рекомендуемый вектор — не радикальный ребрендинг, а более точная иерархия того же характера: сохранить cool blue/blue-gray, повысить role clarity, дать dark foreground отдельные светлые stops и добавить очень умеренную elevation scale.
+The recommended direction is not a radical rebrand, but a more precise hierarchy with the same character: preserve the cool blue/blue-gray, improve role clarity, give dark foreground colors separate lighter stops, and add a very restrained elevation scale.
 
-## Исходная оценка до Phase 0
+## Initial Assessment Before Phase 0
 
-Оценки ниже фиксируют исходное состояние и не пересчитаны после инфраструктурной Phase 0. Архитектурный drift из пунктов 4–6 устранён или сужен, но palette/semantic/accessibility debt намеренно не затрагивался.
+The scores below capture the initial state and were not recalculated after the infrastructure-focused Phase 0. The architectural drift in items 4–6 was eliminated or narrowed, but palette/semantic/accessibility debt was intentionally left untouched.
 
-| Аспект                  | Оценка | Обоснование                                                                                                     |
-| ----------------------- | -----: | --------------------------------------------------------------------------------------------------------------- |
-| Архитектура токенов     |   4/10 | Один preset source, но primitive layer отсутствует; 847 keys, 95 не типизированы; flat component aliases        |
-| Гармоничность палитры   |   6/10 | Спокойная и цельная база, но status colors не построены как шкалы, температуры light surfaces расходятся        |
-| Neutral palette         |   6/10 | Хороший text/muted; surface и borders слишком близки; roles disabled/placeholder не разделены                   |
-| Primary/accent          |   5/10 | Узнаваемый restrained blue; dark foreground провален; отдельной accent-роли нет и пока не нужно                 |
-| Семантические цвета     |   4/10 | Solid variants хороши, foreground/solid смешаны; soft statuses массово не проходят                              |
-| Светлая тема            |   7/10 | Чистая и комфортная, но плоская; borders/focus и light warning/syntax требуют исправления                       |
-| Тёмная тема             |   4/10 | Комфортные neutrals, но primary/error/help/status foreground и focus системно слишком тёмные                    |
-| Состояния компонентов   |   5/10 | Покрытие широкое, но contrast, precedence, disabled/read-only/indeterminate и compound states непоследовательны |
-| Accessibility           |   4/10 | Основной текст хорош; focus, controls, links, statuses и syntax содержат подтверждённые failures                |
-| Консистентность         |   5/10 | Общий язык виден, но full/entry CSS, local theme и cross-component aliases уже расходятся                       |
-| Визуальная уникальность |   5/10 | VueForge узнаваем по сдержанности, но palette/elevation/syntax пока обобщённые                                  |
-| Премиальность           |   5/10 | Аккуратно, но слабая иерархия, недокументированные contracts и состояния снижают ощущение завершённости         |
-| Масштабируемость        |   4/10 | Runtime engine полезен, но огромный ручной type/API surface и отсутствие schema создают drift                   |
+| Aspect                 | Score | Rationale                                                                                                        |
+| ---------------------- | ----: | ---------------------------------------------------------------------------------------------------------------- |
+| Token architecture     |  4/10 | One preset source, but no primitive layer; 847 keys, 95 untyped; flat component aliases                          |
+| Palette harmony        |  6/10 | Calm and cohesive base, but status colors are not built as scales, and light-surface temperatures diverge        |
+| Neutral palette        |  6/10 | Good text/muted; surface and borders are too similar; disabled/placeholder roles are not separated               |
+| Primary/accent         |  5/10 | Recognizable restrained blue; dark foreground fails; a separate accent role is absent and not yet needed         |
+| Semantic colors        |  4/10 | Solid variants are good, but foreground/solid are conflated; soft statuses fail broadly                          |
+| Light theme            |  7/10 | Clean and comfortable, but flat; borders/focus and light warning/syntax need correction                          |
+| Dark theme             |  4/10 | Comfortable neutrals, but primary/error/help/status foreground and focus are systematically too dark             |
+| Component states       |  5/10 | Broad coverage, but contrast, precedence, disabled/read-only/indeterminate, and compound states are inconsistent |
+| Accessibility          |  4/10 | Primary text is good; focus, controls, links, statuses, and syntax contain confirmed failures                    |
+| Consistency            |  5/10 | A common language is visible, but full/entry CSS, local theme, and cross-component aliases already diverge       |
+| Visual distinctiveness |  5/10 | VueForge is recognizable for its restraint, but palette/elevation/syntax are still generic                       |
+| Premium feel           |  5/10 | Polished, but weak hierarchy, undocumented contracts, and states reduce the sense of completeness                |
+| Scalability            |  4/10 | The runtime engine is useful, but a huge manual type/API surface and lack of a schema create drift               |
 
-## Главные проблемы по приоритету
+## Key Issues by Priority
 
 ### Critical
 
-| Проблема                                                      | Файлы/компоненты                                                            | Последствие                                                    | Причина                                             | Решение                                                             | Риск                           | Проверка                                           |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------ | -------------------------------------------------- |
-| Focus ring ниже 3:1                                           | `default-preset-source.ts`; все focusable core; CodeBlock copy              | Keyboard focus почти исчезает                                  | 32/42% primary mix; у CodeBlock outline отсутствует | отдельный `focus.ring`; общий focus recipe; добавить CodeBlock ring | Средний визуальный             | computed contrast + keyboard screenshots обеих тем |
-| Control boundary ниже 3:1                                     | Field/Input/Textarea/Select/Checkbox/Radio/Switch                           | Пустой control трудно распознать                               | один `colorBorder` для divider и control            | `border.subtle/default/control`; control не ниже 3:1                | Средний, UI станет контрастнее | rendered boundary contrast на canvas/surface       |
-| Chromatic role conflation                                     | links, errors, Badge, Tag, Alert icon, progress, selected states            | Dark primary/danger/help/status text 2.27–2.99:1               | один color для foreground и solid                   | `foreground/solid/on-solid/subtle/border/graphic` на tone           | Высокий охват                  | semantic pair tests + visual matrix                |
-| Static/runtime token names расходятся — **закрыто в Phase 0** | `theme-css-artifacts.ts`, `theme/runtime.ts`, Field, Drawer, CommandPalette | fallback CSS ломал label transform, drawer motion, icon offset | два serializer algorithm                            | реализованы shared serializer + exhaustive parity test              | Низкий после fixture coverage  | fallback-only page, all-key parity                 |
-| Syntax palette не проходит AA                                 | CodeBlock/Shiki                                                             | Мелкий code text 2.95–4.34:1                                   | GitHub token colors на VueForge background          | custom Shiki theme/syntax roles                                     | Средний визуальный             | каждый rendered syntax fg/background >=4.5         |
+| Issue                                                        | Files/components                                                            | Impact                                                         | Cause                                          | Solution                                                       | Risk                          | Verification                                            |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------- |
+| Focus ring below 3:1                                         | `default-preset-source.ts`; all focusable core components; CodeBlock copy   | Keyboard focus nearly disappears                               | 32/42% primary mix; CodeBlock has no outline   | separate `focus.ring`; shared focus recipe; add CodeBlock ring | Medium visual risk            | computed contrast + keyboard screenshots in both themes |
+| Control boundary below 3:1                                   | Field/Input/Textarea/Select/Checkbox/Radio/Switch                           | An empty control is difficult to identify                      | one `colorBorder` for both divider and control | `border.subtle/default/control`; control at least 3:1          | Medium; UI will gain contrast | rendered boundary contrast on canvas/surface            |
+| Chromatic role conflation                                    | links, errors, Badge, Tag, Alert icon, progress, selected states            | Dark primary/danger/help/status text 2.27–2.99:1               | one color for foreground and solid             | `foreground/solid/on-solid/subtle/border/graphic` per tone     | High reach                    | semantic pair tests + visual matrix                     |
+| Static/runtime token names diverge — **resolved in Phase 0** | `theme-css-artifacts.ts`, `theme/runtime.ts`, Field, Drawer, CommandPalette | fallback CSS broke label transform, drawer motion, icon offset | two serializer algorithms                      | implemented shared serializer + exhaustive parity test         | Low after fixture coverage    | fallback-only page, all-key parity                      |
+| Syntax palette does not meet AA                              | CodeBlock/Shiki                                                             | Small code text has 2.95–4.34:1 contrast                       | GitHub token colors on a VueForge background   | custom Shiki theme/syntax roles                                | Medium visual risk            | every rendered syntax fg/background >=4.5               |
 
 ### High
 
-| Проблема                                                                                  | Файлы/компоненты                                                          | Последствие                                                                                                                    | Рекомендуемое решение                                                                 | Риск/проверка                                     |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| 95 preset keys отсутствуют в public type — **закрыто в Phase 0**                          | `core/src/theme/default-preset*.ts`, `core/src/types/theme.ts`            | часть существующей темы нельзя было безопасно override через TS                                                                | 95 optional fields, `satisfies` и exact-key contract                                  | Низкий additive API; compile/type tests           |
-| Scoped/local theme contract сломан — **закрыто в Phase 0**                                | ThemeProvider, CodeBlock, Playground/iframe                               | local dark оставался light или смешивал dark syntax с light surface                                                            | nearest resolved-theme contract и полный scoped variable map                          | Низкий после inverse/nested/iframe tests          |
-| `prefix/rootSelector/attribute` допускают неработающие комбинации — **закрыто в Phase 0** | theme runtime/provider/docs                                               | configured roots и aliases синхронизированы; invalid selectors получают fallback; custom prefixes bridged к compiled CSS names | сохранить 1.x API; генерировать canonical `--vf-*` / `--vf-layout-*` aliases          | Низкий после configuration/custom-prefix fixtures |
-| Два источника component CSS расходятся — **закрыто в Phase 0**                            | `components/*.css`, `entries/*.css`; Forms/NavMenu/CommandPalette/Stepper | full и standalone imports выглядели по-разному; Stepper тянул ~49 KB navigation CSS                                            | canonical entries + aggregate composition + parity gate                               | Низкий после packaging/consumer/smoke checks      |
-| Compound-state precedence непоследовательна                                               | Select, Switch, disabled menus/Tabs/Stepper                               | invalid исчезает при open/focus; double opacity                                                                                | единая precedence `disabled > invalid > focus/open > hover > base`; state fixtures    | Средний visual; pairwise states                   |
-| Нет browser a11y/visual gates                                                             | CI, Stylelint, Vitest                                                     | регрессии проходят 318 тестов                                                                                                  | contrast module, browser computed-style, keyboard, screenshots, fallback/scoped theme | Низкий; контролировать runtime CI                 |
+| Issue                                                                                      | Files/components                                                          | Impact                                                                                                                                 | Recommended solution                                                                  | Risk/verification                              |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 95 preset keys missing from public type — **resolved in Phase 0**                          | `core/src/theme/default-preset*.ts`, `core/src/types/theme.ts`            | part of the existing theme could not be safely overridden through TS                                                                   | 95 optional fields, `satisfies`, and exact-key contract                               | Low-risk additive API; compile/type tests      |
+| Scoped/local theme contract broken — **resolved in Phase 0**                               | ThemeProvider, CodeBlock, Playground/iframe                               | local dark remained light or mixed dark syntax with a light surface                                                                    | nearest resolved-theme contract and complete scoped variable map                      | Low after inverse/nested/iframe tests          |
+| `prefix/rootSelector/attribute` allow nonfunctional combinations — **resolved in Phase 0** | theme runtime/provider/docs                                               | configured roots and aliases are synchronized; invalid selectors receive a fallback; custom prefixes are bridged to compiled CSS names | preserve 1.x API; generate canonical `--vf-*` / `--vf-layout-*` aliases               | Low after configuration/custom-prefix fixtures |
+| Two component CSS sources diverge — **resolved in Phase 0**                                | `components/*.css`, `entries/*.css`; Forms/NavMenu/CommandPalette/Stepper | full and standalone imports looked different; Stepper pulled in ~49 KB of navigation CSS                                               | canonical entries + aggregate composition + parity gate                               | Low after packaging/consumer/smoke checks      |
+| Compound-state precedence is inconsistent                                                  | Select, Switch, disabled menus/Tabs/Stepper                               | invalid disappears when open/focused; double opacity                                                                                   | unified precedence `disabled > invalid > focus/open > hover > base`; state fixtures   | Medium visual risk; pairwise states            |
+| No browser a11y/visual gates                                                               | CI, Stylelint, Vitest                                                     | regressions pass 318 tests                                                                                                             | contrast module, browser computed-style, keyboard, screenshots, fallback/scoped theme | Low; monitor CI runtime                        |
 
 ### Medium
 
-| Проблема                                                    | Влияние                                                                        | Решение                                                                                       |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| Surface/elevation различаются на 1.04–1.24:1, `shadow:none` | Cards/layouts выглядят плоско; dark nesting теряется                           | `surface.subtle/elevated` + маленькая системная shadow scale после visual tuning              |
-| 54 duplicate alias groups и cross-component aliases         | 53 tokens равны text, 38 primary; изменение NavMenu влияет на MenuBar/Dropdown | оставить component token только как реальную boundary; убрать зависимости компонент→компонент |
-| Мёртвые публичные tokens                                    | 2 core color tokens, 20 Playground, 1 CodeBlock, 1 Layout token                | deprecation cycle; удалить только в major либо документировать extension point                |
-| Opacity на subtree                                          | Disabled/Header/Stepper/Tabs зависят от background                             | explicit disabled fg/bg/border; opacity только там, где итог проверяем                        |
-| Read-only/indeterminate/disabled gaps                       | Input/Textarea readonly неотличимы; Checkbox indeterminate отсутствует         | добавить модели и токены только там, где API действительно поддерживается                     |
-| Shadow/backdrop и inverse roles неявны                      | raw black recipes; Layout header uses text as background                       | `overlay.backdrop`, `shadow.overlay`, `surface.inverse`, `fg.on-inverse`                      |
-| Документация CodeBlock/Playground theming пустая            | десятки public vars без контракта                                              | сгенерированные token tables, scoped theme/contrast guarantees                                |
-| Mobile `/core` имеет 441 px scrollWidth при viewport 390    | возможный overflow MenuBar/DataTable/upstream container                        | локализовать первый overflowing ancestor; не маскировать глобальным `overflow-x:hidden`       |
+| Issue                                                        | Impact                                                                            | Solution                                                                                  |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Surface/elevation differ by 1.04–1.24:1, `shadow:none`       | Cards/layouts look flat; dark nesting is lost                                     | `surface.subtle/elevated` + a small systematic shadow scale after visual tuning           |
+| 54 duplicate alias groups and cross-component aliases        | 53 tokens equal text, 38 equal primary; changing NavMenu affects MenuBar/Dropdown | retain a component token only as a real boundary; remove component→component dependencies |
+| Dead public tokens                                           | 2 core color tokens, 20 Playground, 1 CodeBlock, 1 Layout token                   | deprecation cycle; remove only in a major release or document as an extension point       |
+| Opacity on a subtree                                         | Disabled/Header/Stepper/Tabs depend on the background                             | explicit disabled fg/bg/border; use opacity only where the result is verified             |
+| Read-only/indeterminate/disabled gaps                        | Input/Textarea readonly is indistinguishable; Checkbox has no indeterminate state | add models and tokens only where the API actually supports them                           |
+| Shadow/backdrop and inverse roles are implicit               | raw black recipes; Layout header uses text as a background                        | `overlay.backdrop`, `shadow.overlay`, `surface.inverse`, `fg.on-inverse`                  |
+| CodeBlock/Playground theming documentation is empty          | dozens of public vars without a contract                                          | generated token tables, scoped theme/contrast guarantees                                  |
+| Mobile `/core` has a 441 px scrollWidth at a 390 px viewport | possible overflow in MenuBar/DataTable/upstream container                         | locate the first overflowing ancestor; do not mask it globally with `overflow-x:hidden`   |
 
 ### Low
 
-- Привести `warn` к `warning` в следующем major или документировать исключение.
-- Решить, является ли `help` самостоятельным status; не превращать его неявно в accent.
-- Переименовать неоднозначный `contrast/contrast-contrast` в inverse semantics в clean v2 contract.
-- Документировать `#396fb6` как brand asset color либо развести/дедуплицировать два одинаковых demo-logo.
-- Добавить icon showcase на 16/20/24 px и semantic surfaces.
-- Унифицировать `color-mix` space и сократить 23 произвольных ratio до небольшой state scale.
+- Normalize `warn` to `warning` in the next major release or document the exception.
+- Decide whether `help` is an independent status; do not implicitly turn it into an accent.
+- Rename the ambiguous `contrast/contrast-contrast` to inverse semantics in the clean v2 contract.
+- Document `#396fb6` as a brand asset color, or differentiate/deduplicate the two identical demo logos.
+- Add an icon showcase at 16/20/24 px and on semantic surfaces.
+- Standardize the `color-mix` space and reduce 23 arbitrary ratios to a small state scale.
 
-## Компонентный вывод
+## Component Conclusions
 
-Полная state matrix находится в инвентаризации; главные сквозные выводы:
+The complete state matrix is in the inventory; the main cross-cutting conclusions are:
 
-- Button/IconButton геометрически цельные; solid tones читаемы, но focus и subtree opacity требуют исправления.
-- Forms имеют системно слабую boundary; readonly отсутствует визуально; invalid compound states теряют danger cue.
-- Checkbox/Radio/Switch нуждаются в более сильной unchecked boundary и non-color invalid cue; Checkbox не имеет indeterminate.
-- Navigation покрывает много состояний, но dark primary/current indicators слабы, disabled ветки и full/entry CSS расходятся.
-- Feedback body text обычно читаем; status foreground/icons/graphics и Badge/Tag требуют разделённых ролей.
-- Overlays используют работающий float shadow, но schema elevation отсутствует; fallback Drawer tokens сломаны serializer-ом.
-- CodeBlock требует собственной syntax palette и focus contract.
-- Slider, DatePicker, Tree, Toast/Notification и standalone Pagination в текущем репозитории отсутствуют; им нельзя приписывать результаты аудита.
+- Button/IconButton geometry is cohesive; solid tones are legible, but focus and subtree opacity need correction.
+- Forms have systematically weak boundaries; readonly has no visual treatment; invalid compound states lose their danger cue.
+- Checkbox/Radio/Switch need a stronger unchecked boundary and a non-color invalid cue; Checkbox has no indeterminate state.
+- Navigation covers many states, but dark primary/current indicators are weak, and disabled branches and full/entry CSS diverge.
+- Feedback body text is generally legible; status foreground/icons/graphics and Badge/Tag require separate roles.
+- Overlays use a functional floating shadow, but no elevation schema exists; fallback Drawer tokens are broken by the serializer.
+- CodeBlock requires its own syntax palette and focus contract.
+- Slider, DatePicker, Tree, Toast/Notification, and standalone Pagination are absent from the current repository; audit results cannot be attributed to them.
 
-## Визуальная проверка
+## Visual Review
 
-Проверен существующий playground/showcase без добавления audit-page:
+The existing playground/showcase was reviewed without adding an audit page:
 
-- маршруты `/core`, `/layouts`, `/icons`, `/codeblock`, `/playground`;
-- light и dark;
-- desktop 1440×1000 и mobile 390×844;
-- типовые композиции, формы, navigation, feedback, surfaces, dialogs/drawers и принудительный focus.
+- routes `/core`, `/layouts`, `/icons`, `/codeblock`, `/playground`;
+- light and dark;
+- desktop 1440×1000 and mobile 390×844;
+- typical compositions, forms, navigation, feedback, surfaces, dialogs/drawers, and forced focus.
 
-Наблюдения:
+Observations:
 
-- Light выглядит чисто и спокойно, но surface/canvas и muted surface практически сливаются; hierarchy держится на слишком слабых borders.
-- Dark не слепит и не имеет грязного hue cast, но nested surfaces и elevation почти исчезают.
-- Dark blue/green/info/help/red foreground визуально «тонет»; вычисленные failures подтверждаются скриншотами.
-- Focus ring присутствует в CSS, но почти не виден; проблема в contrast, а не в отсутствии правила (кроме CodeBlock copy).
-- Solid actions выглядят наиболее завершённой частью текущей палитры.
-- Layouts/icons/codeblock/playground на 390 px не создают document overflow; `/core` требует отдельной локализации overflow.
-- Showcase полезен структурно, но не показывает swatches, обе темы рядом, locked pseudo-states, local inverse theme, contrast results или screenshot baselines.
-- Опубликованный внешний docs-site не включён в screenshot-выводы: его HTML/маршруты были доступны для проверки структуры, но отдельный browser capture домена в окружении не завершился. Репозиторные docs и локальный showcase проверены полностью.
+- Light mode looks clean and calm, but surface/canvas and muted surface nearly blend together; the hierarchy relies on overly weak borders.
+- Dark mode is not dazzling and has no muddy hue cast, but nested surfaces and elevation nearly disappear.
+- Dark blue/green/info/help/red foreground colors visually "sink"; screenshots confirm the calculated failures.
+- The focus ring is present in CSS but barely visible; the problem is contrast, not a missing rule (except for CodeBlock copy).
+- Solid actions look like the most complete part of the current palette.
+- Layouts/icons/codeblock/playground do not create document overflow at 390 px; `/core` requires separate overflow diagnosis.
+- The showcase is structurally useful, but does not show swatches, both themes side by side, locked pseudo-states, a local inverse theme, contrast results, or screenshot baselines.
+- The published external docs site is excluded from the screenshot conclusions: its HTML/routes were available for structural verification, but a separate browser capture of the domain did not complete in the environment. Repository docs and the local showcase were reviewed in full.
 
-## Архитектура токенов после Phase 1
+## Token Architecture After Phase 1
 
 ```text
 Current 1.x component aliases ───────────┐
@@ -188,42 +188,42 @@ Phase 2 target: component decisions ─→ semantic roles
 
 ### 1. Primitive layer
 
-Добавлены sparse scales `paletteNeutral*`, `palettePrimary*`, `paletteSuccess*`, `paletteInfo*`, `paletteWarning*`, `paletteDanger*` и `paletteHelp*`. Они содержат только 28 прежних HEX и используемый `black`; неиспользуемые промежуточные stops не создавались. Runtime source остаётся в HEX, поэтому Phase 1 не вносит OKLCH conversion/rounding drift.
+Sparse scales `paletteNeutral*`, `palettePrimary*`, `paletteSuccess*`, `paletteInfo*`, `paletteWarning*`, `paletteDanger*`, and `paletteHelp*` were added. They contain only the 28 previous HEX values and the `black` value already in use; unused intermediate stops were not created. The runtime source remains in HEX, so Phase 1 introduces no OKLCH conversion/rounding drift.
 
 ### 2. Semantic layer
 
-Контракт содержит 11 background, шесть text, четыре icon, восемь border, восемь interactive и 40 status roles. Каждая из success/warning/danger/info/help families разделена на solid background/foreground, subtle background/foreground, border, icon, hover и active. `colorFocusRing` сохранён как единственное пересечение с legacy set.
+The contract contains 11 background, six text, four icon, eight border, eight interactive, and 40 status roles. Each success/warning/danger/info/help family is divided into solid background/foreground, subtle background/foreground, border, icon, hover, and active. `colorFocusRing` is retained as the only overlap with the legacy set.
 
-Не добавлены accent и syntax roles: у accent нет отдельного product meaning, а Shiki migration относится к ecosystem/Phase 2+. Полный exact-name contract приведён в [Color Tokens guide](../core/guides/color-tokens.md).
+Accent and syntax roles were not added: accent has no distinct product meaning, while Shiki migration belongs to ecosystem/Phase 2+. The complete exact-name contract is provided in the [Color Tokens guide](../core/guides/color-tokens.md).
 
 ### 3. Component layer
 
-Component tokens остаются оправданными для Alert 8% primary subtle recipe, overlay composition, switch-specific composition и CodeBlock syntax adapter. Простые aliases `buttonText → colorTextPrimary` не являются основанием для нового public token. Массовая migration существующих component aliases отложена до Phase 2.
+Component tokens remain justified for the Alert 8% primary subtle recipe, overlay composition, switch-specific composition, and the CodeBlock syntax adapter. Simple aliases such as `buttonText → colorTextPrimary` do not justify a new public token. Bulk migration of existing component aliases was deferred to Phase 2.
 
-Canonical name tuples являются source of truth для TypeScript types и contract tests; build и runtime продолжают импортировать один serializer из Phase 0.
+Canonical name tuples are the source of truth for TypeScript types and contract tests; build and runtime continue to import the single serializer from Phase 0.
 
-## Proposed target palette для Phase 2 — не реализована
+## Proposed Target Palette for Phase 2 — Not Implemented
 
-Таблицы ниже остаются отдельным design proposal для будущей accessibility/OKLCH phase. Ни одно из этих новых значений не применено в Phase 1. Реализованные primitives сохраняют исходные HEX, перечисленные в публичном guide.
+The tables below remain a separate design proposal for a future accessibility/OKLCH phase. None of these new values were applied in Phase 1. The implemented primitives retain the original HEX values listed in the public guide.
 
 ### Neutral roles
 
-| Role             | Light                                | Dark                                 | Назначение                           |
-| ---------------- | ------------------------------------ | ------------------------------------ | ------------------------------------ |
-| Canvas           | `oklch(0.978 0.005 258)` / `#f6f8fb` | `oklch(0.214 0.010 268)` / `#17191e` | сохранить характер текущего page bg  |
-| Surface          | `oklch(1 0 0)` / `#ffffff`           | `oklch(0.256 0.014 267)` / `#20232a` | базовая поверхность                  |
-| Surface subtle   | `oklch(0.966 0.006 256)` / `#f1f4f8` | `oklch(0.288 0.016 264)` / `#272b33` | вложенный neutral слой               |
-| Surface elevated | `#ffffff` + shadow                   | `oklch(0.309 0.017 266)` / `#2c3039` | overlays/cards, не default container |
-| Foreground       | `oklch(0.271 0.025 261)` / `#202733` | `oklch(0.899 0.013 262)` / `#d9dee7` | основной текст                       |
-| Muted            | `oklch(0.488 0.030 256)` / `#556171` | `oklch(0.745 0.018 259)` / `#a6adb8` | secondary text                       |
-| Disabled         | `#7a8594`                            | `#747b86`                            | отдельная inactive роль              |
-| Placeholder      | `#667085`                            | `#9da6b3`                            | не связывать с disabled              |
-| Border subtle    | `#d7dde5`                            | `#363b46`                            | декоративные separators              |
-| Border default   | `#b3bdc9`                            | `#4d5664`                            | структурные borders                  |
-| Border control   | `#84909f`                            | `#687587`                            | 3.25:1 / 3.36:1 к surface            |
-| Focus ring       | `oklch(0.530 0.136 247)` / `#0b70b5` | `oklch(0.756 0.117 241)` / `#65b9f3` | 5.25:1 / 7.33:1 к surface            |
+| Role             | Light                                | Dark                                 | Purpose                                       |
+| ---------------- | ------------------------------------ | ------------------------------------ | --------------------------------------------- |
+| Canvas           | `oklch(0.978 0.005 258)` / `#f6f8fb` | `oklch(0.214 0.010 268)` / `#17191e` | preserve the character of the current page bg |
+| Surface          | `oklch(1 0 0)` / `#ffffff`           | `oklch(0.256 0.014 267)` / `#20232a` | base surface                                  |
+| Surface subtle   | `oklch(0.966 0.006 256)` / `#f1f4f8` | `oklch(0.288 0.016 264)` / `#272b33` | nested neutral layer                          |
+| Surface elevated | `#ffffff` + shadow                   | `oklch(0.309 0.017 266)` / `#2c3039` | overlays/cards, not the default container     |
+| Foreground       | `oklch(0.271 0.025 261)` / `#202733` | `oklch(0.899 0.013 262)` / `#d9dee7` | primary text                                  |
+| Muted            | `oklch(0.488 0.030 256)` / `#556171` | `oklch(0.745 0.018 259)` / `#a6adb8` | secondary text                                |
+| Disabled         | `#7a8594`                            | `#747b86`                            | separate inactive role                        |
+| Placeholder      | `#667085`                            | `#9da6b3`                            | do not couple to disabled                     |
+| Border subtle    | `#d7dde5`                            | `#363b46`                            | decorative separators                         |
+| Border default   | `#b3bdc9`                            | `#4d5664`                            | structural borders                            |
+| Border control   | `#84909f`                            | `#687587`                            | 3.25:1 / 3.36:1 against surface               |
+| Focus ring       | `oklch(0.530 0.136 247)` / `#0b70b5` | `oklch(0.756 0.117 241)` / `#65b9f3` | 5.25:1 / 7.33:1 against surface               |
 
-Muted/surface: 6.30:1 light и 6.96:1 dark. Placeholder/surface: 4.97:1 и 6.40:1. Disabled остаётся слабее активного foreground и не должен дополнительно получать subtree opacity.
+Muted/surface: 6.30:1 light and 6.96:1 dark. Placeholder/surface: 4.97:1 and 6.40:1. Disabled remains weaker than the active foreground and should not additionally receive subtree opacity.
 
 ### Chromatic roles
 
@@ -236,161 +236,161 @@ Muted/surface: 6.30:1 light и 6.96:1 dark. Placeholder/surface: 4.97:1 и 6.40:
 | Danger  | `#bc3542` / `#bc3542` / `#f9e8ea` | `#ff818a` / `#b7434c` / `#3b252b` |
 | Help    | `#6d4695` / `#6d4695` / `#f1eaf7` | `#c7a0ea` / `#764d93` / `#30283a` |
 
-`on-solid` остаётся white, кроме warning (`#241a00` light, `#211700` dark). У предложенных пар foreground/subtle минимум 4.66:1 light и 5.90:1 dark; on-solid/solid минимум 5.17:1.
+`on-solid` remains white, except for warning (`#241a00` light, `#211700` dark). The proposed foreground/subtle pairs have minimum contrast ratios of 4.66:1 in light mode and 5.90:1 in dark mode; on-solid/solid has a minimum of 5.17:1.
 
-Изменения по смыслу:
+Meaningful changes:
 
-- Primary сохраняет hue и сдержанность; dark foreground становится светлее, solid остаётся достаточно тёмным для white.
-- Success/info/danger/help получают отдельные dark foreground stops и перестают тонуть на surface.
-- Warning foreground затемняется в light, а solid остаётся светлым с тёмным on-solid.
-- Neutral hierarchy становится явной без превращения интерфейса в тяжёлую сетку borders.
+- Primary retains its hue and restraint; the dark foreground becomes lighter, while solid remains dark enough for white.
+- Success/info/danger/help receive separate dark foreground stops and no longer sink into the surface.
+- Warning foreground becomes darker in light mode, while solid remains light with a dark on-solid.
+- The neutral hierarchy becomes explicit without turning the interface into a heavy grid of borders.
 
-Перед внедрением необходимо зафиксировать browser-support contract OKLCH. Проект уже требует `color-mix()`, поэтому современная color pipeline допустима, но production CSS может сохранять проверенные sRGB fallbacks/fixtures.
+Before implementation, the OKLCH browser-support contract must be established. The project already requires `color-mix()`, so a modern color pipeline is acceptable, but production CSS may retain verified sRGB fallbacks/fixtures.
 
-## План изменений
+## Change Plan
 
-Рекомендуемый путь — staged 1.x migration с clean v2 endpoint. Публичные legacy custom properties нельзя молча удалить в minor release.
+The recommended path is a staged 1.x migration with a clean v2 endpoint. Public legacy custom properties cannot be silently removed in a minor release.
 
-### Phase 0 — contract correctness, без редизайна — **завершена**
+### Phase 0 — Contract Correctness, No Redesign — **Completed**
 
-Реализовано:
+Implemented:
 
-- единый serializer для runtime, core static build и layouts static build;
-- exact preset/type/static/runtime contracts для 847 core и 124 layout tokens;
-- канонические имена девяти fallback variables;
-- полные обратимые scoped light/dark maps с `color-scheme`;
-- рабочие configured `rootSelector`/`attribute` без изменения публичных сигнатур;
-- custom-prefix compatibility bridge для Core и Layouts;
-- синхронизация `data-theme`/`data-vf-theme`/configured attributes и deterministic invalid-selector fallback;
-- canonical component-entry CSS и автоматическая full/entry composition parity;
-- inherit/resolved marker split и nearest-boundary contract для CodeBlock/Playground, включая sandboxed iframe;
-- regression tests и package CSS/export/consumer contracts.
+- a single serializer for runtime, the core static build, and the layouts static build;
+- exact preset/type/static/runtime contracts for 847 core and 124 layout tokens;
+- canonical names for nine fallback variables;
+- complete reversible scoped light/dark maps with `color-scheme`;
+- functional configured `rootSelector`/`attribute` without changing public signatures;
+- a custom-prefix compatibility bridge for Core and Layouts;
+- synchronization of `data-theme`/`data-vf-theme`/configured attributes and a deterministic invalid-selector fallback;
+- canonical component-entry CSS and automatic full/entry composition parity;
+- an inherit/resolved marker split and nearest-boundary contract for CodeBlock/Playground, including the sandboxed iframe;
+- regression tests and package CSS/export/consumer contracts.
 
-Подробности: [отчёт о реализации Phase 0](./phase-0-report.md).
+Details: [Phase 0 implementation report](./phase-0-report.md).
 
-### Phase 1 — primitive/semantic architecture — **завершена**
+### Phase 1 — Primitive/Semantic Architecture — **Completed**
 
-Реализовано:
+Implemented:
 
-- canonical tuples/types для 29 primitives и 77 semantic roles;
-- existing-value primitive palette без новых OKLCH/HEX values;
-- 76 additive semantic keys и сохранённый semantic `colorFocusRing`;
-- built-in preset 952 keys при полном сохранении 847-key legacy API;
-- one-way compatibility mapping без undefined aliases и cycles;
-- exact light/dark, runtime/static, custom-prefix и scoped-theme contracts;
-- public naming, theming, migration и v2 deprecation documentation.
+- canonical tuples/types for 29 primitives and 77 semantic roles;
+- an existing-value primitive palette without new OKLCH/HEX values;
+- 76 additive semantic keys and the retained semantic `colorFocusRing`;
+- a 952-key built-in preset while fully preserving the 847-key legacy API;
+- one-way compatibility mapping without undefined aliases or cycles;
+- exact light/dark, runtime/static, custom-prefix, and scoped-theme contracts;
+- public naming, theming, migration, and v2 deprecation documentation.
 
-Подробности: [отчёт о реализации Phase 1](./phase-1-report.md).
+Details: [Phase 1 implementation report](./phase-1-report.md).
 
 ### Phase 2 — core component states
 
-Файлы:
+Files:
 
-- `packages/core/src/styles/entries/*.css` как предполагаемый canonical source;
+- `packages/core/src/styles/entries/*.css` as the intended canonical source;
 - aggregate CSS generation/composition;
-- Vue components и tests только для подтверждённых state/a11y gaps;
+- Vue components and tests only for confirmed state/a11y gaps;
 - showcase state matrix.
 
-Действия: component migration на semantic roles; target OKLCH/light-dark values; focus/control/status/link mapping; state precedence; disabled/readonly/indeterminate; устранение color-only cues; reduced motion; full/subpath parity.
+Actions: migrate components to semantic roles; target OKLCH/light-dark values; focus/control/status/link mapping; state precedence; disabled/readonly/indeterminate; eliminate color-only cues; reduced motion; full/subpath parity.
 
 ### Phase 3 — ecosystem
 
-Файлы:
+Files:
 
 - layouts preset/mappings;
 - CodeBlock tokens/CSS/Shiki theme;
 - Playground host/iframe theme sync;
 - docs/examples/logo decision.
 
-Действия: optional provider-local wrapper boundary; SSR hint; syntax palette; inverse roles; dead token deprecations; elevation tuning.
+Actions: optional provider-local wrapper boundary; SSR hint; syntax palette; inverse roles; dead token deprecations; elevation tuning.
 
-### Phase 4 — gates и документация
+### Phase 4 — Gates and Documentation
 
-Файлы:
+Files:
 
 - CI/scripts/tests;
 - Stylelint/literal audit allowlist;
-- `docs/**/theming.md` и showcase.
+- `docs/**/theming.md` and showcase.
 
-Действия: contrast/reference/parity checks, computed-style browser smoke, keyboard focus, screenshots light/dark 1440/390, fallback/local theme, forced colors, generated token documentation.
+Actions: contrast/reference/parity checks, computed-style browser smoke, keyboard focus, screenshots light/dark 1440/390, fallback/local theme, forced colors, generated token documentation.
 
-### Phase 5 — clean v2 (отдельное решение)
+### Phase 5 — Clean v2 (Separate Decision)
 
-- удалить deprecated aliases и мёртвые public tokens;
-- переименовать неоднозначные `warn`, `contrast` roles;
-- сделать component API существенно меньше;
-- опубликовать migration map и visual diffs.
+- remove deprecated aliases and dead public tokens;
+- rename ambiguous `warn` and `contrast` roles;
+- make the component API substantially smaller;
+- publish a migration map and visual diffs.
 
 ## Migration risks
 
-- Palette role split затрагивает почти все компоненты, но позволяет сохранить solid colors отдельно и уменьшает риск массовой регрессии.
-- CSS custom properties фактически являются публичным API даже без TypeScript declaration; удалять их только через deprecation/major.
-- Scoped theme исправление меняет specificity и SSR/hydration; нужна матрица nested providers.
-- Custom Shiki theme изменит все code screenshots и может повлиять на payload.
-- Canonical CSS source затрагивает package subpaths; обязательны export/consumer isolation tests.
-- Более сильные control borders и elevation требуют design review на сложных layouts, чтобы не сделать UI тяжёлым.
+- The palette role split affects almost every component, but allows solid colors to remain separate and reduces the risk of a broad regression.
+- CSS custom properties are effectively a public API even without a TypeScript declaration; remove them only through deprecation/a major release.
+- Fixing scoped themes changes specificity and SSR/hydration; a matrix of nested providers is required.
+- A custom Shiki theme will change all code screenshots and may affect payload size.
+- The canonical CSS source affects package subpaths; export/consumer isolation tests are mandatory.
+- Stronger control borders and elevation require design review on complex layouts to avoid making the UI feel heavy.
 
-## Проверка после каждой фазы
+## Verification After Each Phase
 
-1. `npm run typecheck`, package tests и CSS contracts.
+1. `npm run typecheck`, package tests, and CSS contracts.
 2. generated/runtime/type exact parity.
-3. contrast fixtures и computed-style pairs обеих тем.
-4. standalone CSS subpaths без full bundle и без runtime plugin.
+3. contrast fixtures and computed-style pairs for both themes.
+4. standalone CSS subpaths without the full bundle or runtime plugin.
 5. root light/local dark, root dark/local light, nested provider, dynamic switch.
-6. SSR/hydration и Playground iframe custom variables.
-7. keyboard-only focus и accessible-name/relationship assertions.
-8. screenshots 1440×1000 и 390×844.
+6. SSR/hydration and Playground iframe custom variables.
+7. keyboard-only focus and accessible-name/relationship assertions.
+8. screenshots at 1440×1000 and 390×844.
 9. no document overflow, hardcoded-color audit, bundle/export regression.
 10. grayscale/color-vision review semantic statuses.
 
-## Выполненная проверка исходного состояния
+## Completed Verification of the Initial State
 
-- Полный `npm test`: pass.
-- Core: 187 tests pass; CSS contract, form geometry и 43 CSS export checks pass.
+- Full `npm test`: pass.
+- Core: 187 tests pass; CSS contract, form geometry, and 43 CSS export checks pass.
 - CodeBlock: 37 tests pass; CSS export/consumer smoke pass.
 - Playground: 24 tests pass; CSS export/consumer smoke pass.
-- Layouts: 50 tests pass; CSS contract и 21 CSS export checks pass.
+- Layouts: 50 tests pass; CSS contract and 21 CSS export checks pass.
 - Theme: 6 tests pass.
 - Playground core/plugin: 14 tests pass.
 - Icons build/render smoke pass.
-- Всего Vitest: 318 tests pass, плюс package smoke/contract checks.
+- Total Vitest: 318 tests pass, plus package smoke/contract checks.
 
-Эти результаты не опровергают аудит: существующие тесты проверяют DOM/строки/exports, но не serializer parity всех keys, computed contrast, focus rendering, scoped theme или visual parity.
+These results do not invalidate the audit: the existing tests verify DOM/strings/exports, but not serializer parity for all keys, computed contrast, focus rendering, scoped themes, or visual parity.
 
-## Проверка после Phase 0
+## Verification After Phase 0
 
-- Полный workspace test suite: 365 Vitest tests, package smoke/contract checks и Icons render smoke проходят.
-- TypeScript, ESLint и Stylelint проходят во всех workspace packages.
-- Library build и production showcase/docs build проходят.
-- Core static/runtime contract: 847 light variables, 53 root dark overrides и по 847 variables в scoped light/dark maps.
-- Layouts static/runtime contract: 124 variables в light и каждом scoped mode; root dark сохраняет два overrides.
-- Все 9 canonical fallback names присутствуют, все 9 прежних malformed names отсутствуют.
-- Full stylesheet содержит каждый canonical component entry ровно один раз; standalone CSS export/consumer checks проходят.
-- Browser smoke без runtime style подтвердил floating labels, Drawer и Command Palette в light/dark.
-- Browser smoke scoped themes подтвердил CodeBlock и Playground, включая actual sandbox iframe preview, в light/dark; ошибок страницы не зафиксировано.
+- Full workspace test suite: 365 Vitest tests, package smoke/contract checks, and Icons render smoke pass.
+- TypeScript, ESLint, and Stylelint pass in all workspace packages.
+- The library build and production showcase/docs build pass.
+- Core static/runtime contract: 847 light variables, 53 root dark overrides, and 847 variables in each scoped light/dark map.
+- Layouts static/runtime contract: 124 variables in light and each scoped mode; root dark retains two overrides.
+- All 9 canonical fallback names are present; all 9 previous malformed names are absent.
+- The full stylesheet contains every canonical component entry exactly once; standalone CSS export/consumer checks pass.
+- Browser smoke without runtime style confirmed floating labels, Drawer, and Command Palette in light/dark.
+- Browser smoke for scoped themes confirmed CodeBlock and Playground, including the actual sandbox iframe preview, in light/dark; no page errors were recorded.
 
-Phase 0 не вводила automated contrast/Axe/screenshot-diff gate: это остаётся задачей последующих palette/accessibility phases. Снимки текущего smoke использовались для ручной проверки и не добавлены как новые baseline assets.
+Phase 0 did not introduce an automated contrast/Axe/screenshot-diff gate; that remains a task for subsequent palette/accessibility phases. Captures from the current smoke tests were used for manual review and were not added as new baseline assets.
 
-## Проверка после Phase 1
+## Verification After Phase 1
 
-- Public name contracts фиксируют 29 primitives и 77 semantic roles без duplicate names.
-- Built-in preset/type/static/runtime maps содержат 952 keys: 847 legacy + 105 unique additions.
-- Light/dark и scoped maps имеют одинаковый полный key set.
-- Alias graph contract проверяет missing references, self-references и cycles.
-- Custom-prefix contract проверяет requested namespace и canonical `--vf-*` bridge.
-- Full stylesheet и component-entry paths продолжают использовать generated contract Phase 0.
-- Legacy material values и 1.x token names сравниваются с зафиксированным baseline.
+- Public name contracts define 29 primitives and 77 semantic roles without duplicate names.
+- Built-in preset/type/static/runtime maps contain 952 keys: 847 legacy + 105 unique additions.
+- Light/dark and scoped maps have the same complete key set.
+- The alias graph contract checks missing references, self-references, and cycles.
+- The custom-prefix contract checks the requested namespace and canonical `--vf-*` bridge.
+- Full stylesheet and component-entry paths continue to use the generated Phase 0 contract.
+- Legacy material values and 1.x token names are compared against the recorded baseline.
 
-Итоговые workspace test/build/smoke команды и количественные результаты приведены в [отчёте Phase 1](./phase-1-report.md).
+The final workspace test/build/smoke commands and quantitative results are provided in the [Phase 1 report](./phase-1-report.md).
 
-## Ограничения и решения после Phase 0
+## Constraints and Decisions After Phase 0
 
-1. Совместимый 1.x слой выбран и реализован для Phase 0; clean v2 остаётся отдельным решением.
-2. Scoped theme semantics зафиксированы на ближайшей валидной DOM light/dark boundary; Provider синхронизирует только configured roots.
-3. Произвольный custom prefix сохранён; Core и Layouts runtime emit requested variables вместе с canonical compatibility aliases для существующего compiled component CSS.
-4. Динамическая вставка/замена configured Provider root без изменения mode не отслеживается; это редкий edge case, не блокирующий Phase 0.
-5. Изменение внешних stylesheets без DOM/attribute mutation не инициирует повторный snapshot Playground variables; mode/ancestor/reparenting cases покрыты.
-6. `help` зафиксирован как отдельная semantic family из-за существующего публичного tone и реальных consumers; target OKLCH values, elevation tuning и `#396fb6` остаются решениями последующих фаз.
-7. После будущих palette/semantic изменений потребуется новый visual pass опубликованного docs-site.
+1. A compatible 1.x layer was selected and implemented for Phase 0; clean v2 remains a separate decision.
+2. Scoped theme semantics are defined by the nearest valid DOM light/dark boundary; Provider synchronizes only configured roots.
+3. An arbitrary custom prefix was retained; Core and Layouts runtime emit the requested variables together with canonical compatibility aliases for existing compiled component CSS.
+4. Dynamic insertion/replacement of a configured Provider root without changing mode is not tracked; this is a rare edge case that does not block Phase 0.
+5. Changing external stylesheets without a DOM/attribute mutation does not trigger another snapshot of Playground variables; mode/ancestor/reparenting cases are covered.
+6. `help` is defined as a separate semantic family because of the existing public tone and real consumers; target OKLCH values, elevation tuning, and `#396fb6` remain decisions for subsequent phases.
+7. Future palette/semantic changes will require a new visual pass of the published docs site.
 
-Phase 1 завершена. Target OKLCH-палитра, accessibility-коррекция значений и миграция компонентов не начинались и остаются scope Phase 2.
+Phase 1 is complete. The target OKLCH palette, accessibility corrections to values, and component migration have not begun and remain in the scope of Phase 2.

@@ -1,180 +1,215 @@
-# VueForge 2 — финальный аудит UI consistency
+# VueForge 2 — final UI consistency audit
 
-Дата аудита: 2026-07-24.
+Audit date: 2026-07-24.
 
-## Область и ограничения
+## Scope and constraints
 
-Проверены публичные интерактивные компоненты VueForge Core перед релизом 2.0: их состояния,
-геометрия, semantic state tokens, переходы, focus treatment и поведение в светлой и тёмной темах.
-Изменения ограничены подтверждёнными визуальными несогласованностями. Архитектура, public API,
-props, exports, accessibility contracts, SSR, package structure, build pipeline, палитра OKLCH и
-набор design tokens не менялись.
+The public interactive VueForge Core components were reviewed before the 2.0 release: their states,
+geometry, semantic state tokens, transitions, focus treatment, and behavior in light and dark themes.
+Changes were limited to confirmed visual inconsistencies. The architecture, public API, props,
+exports, accessibility contracts, SSR, package structure, build pipeline, OKLCH palette, and set of
+design tokens were unchanged.
 
-Фактические публичные границы отличаются от части формулировок исходного задания:
+The actual public boundaries differ from some wording in the original task:
 
-- `VfTooltipPlacement` поддерживает только `top | bottom`; `left` и `right` не добавлялись, поскольку
-  это изменило бы public API;
-- `VfNavMenu` поддерживает `default | pills | sidebar`; вариантов `filled` и `soft` нет;
-- отдельного публичного `VfToggle` и отдельного `VfMenu` нет; проверены `VfSwitch`,
-  `VfThemeSwitch` и `VfMenuBar`;
-- `VfBadge` рендерится неинтерактивным `span` и не имеет interactive props.
+- `VfTooltipPlacement` supports only `top | bottom`; `left` and `right` were not added because that
+  would change the public API;
+- `VfNavMenu` supports `default | pills | sidebar`; there are no `filled` or `soft` variants;
+- there is no separate public `VfToggle` or `VfMenu`; `VfSwitch`, `VfThemeSwitch`, and `VfMenuBar`
+  were reviewed;
+- `VfBadge` renders as a non-interactive `span` and has no interactive props.
 
-## Найденные проблемы и исправления
+## Issues found and fixes
 
-### Button и IconButton
+### Button and IconButton
 
-Причина незаметного hover у `secondary`: базовый `surface-subtle` и semantic hover surface
-разрешались в одинаковый цвет в обеих темах. Базовый фон переведён на существующий
-`--vf-color-background-surface`. Hover и active продолжают использовать существующие
-`surface-hover` и `surface-active` через component aliases. Primary остаётся визуально сильнее.
+The `secondary` hover was imperceptible because the base `surface-subtle` and semantic hover surface
+resolved to the same color in both themes. The base background now uses the existing
+`--vf-color-background-surface`. Hover and active continue to use the existing `surface-hover` and
+`surface-active` through component aliases. Primary remains visually stronger.
 
-Одинаковое исправление внесено в `VfButton` и `VfIconButton`, поскольку варианты разделяют один
-interaction contract. Focus-visible, disabled и loading не менялись: loading у `VfButton`
-по-прежнему приводит control к нативному disabled-state и сохраняет spinner.
+The same fix was applied to `VfButton` and `VfIconButton` because the variants share one interaction
+contract. Focus-visible, disabled, and loading were unchanged: loading on `VfButton` still puts the
+control into the native disabled state and retains the spinner.
 
 ### Tooltip
 
-Стрелка `top` использовала separated offset, а `bottom` — overlap offset. При одинаковом квадрате
-10 px и повороте 45 градусов наружу выступало примерно 8.29 px сверху против 6.56 px снизу, из-за
-чего верхняя стрелка читалась как ромб. Обе публичные стороны теперь используют существующий
-overlap offset `-1px`.
+The `top` arrow used a separated offset, while `bottom` used an overlap offset. With the same 10 px
+square rotated by 45 degrees, the outward projection was approximately 8.29 px at the top versus
+6.56 px at the bottom, making the top arrow look like a diamond. Both public sides now use the
+existing overlap offset of `-1px`.
 
-После исправления измеренный выступ составляет примерно 6.30 px для `top` и 6.57 px для `bottom`;
-остаточная разница 0.27 px обусловлена subpixel rasterization. Transformed bounds одинаковы
-(примерно 14.14 px), rotation и border geometry симметричны в light/dark.
+After the fix, the measured projection is approximately 6.30 px for `top` and 6.57 px for `bottom`;
+the remaining 0.27 px difference is caused by subpixel rasterization. The transformed bounds are
+identical (approximately 14.14 px), and rotation and border geometry are symmetrical in light/dark.
 
-Также устранено обрезание leave-transition: Vue удалял Tooltip через fast duration, хотя CSS
-анимация floating surface использовала normal duration. Lifecycle теперь совпадает с существующим
-CSS motion token. Общий дизайн Tooltip не менялся.
+Leave-transition clipping was also eliminated: Vue removed the Tooltip after the fast duration,
+although the floating-surface CSS animation used the normal duration. The lifecycle now matches the
+existing CSS motion token. The overall Tooltip design was unchanged.
 
 ### Tabs
 
-Tab button имел нулевой radius в покое, но получал `control-tight` только при focus-visible. Поэтому
-hover, active и focus имели разную геометрию. Существующий `--vf-radius-control-tight` перенесён в
-базовый tab button. Tab list и scroll controls оставлены квадратными; underline tabs не превращены
-в pills.
+The tab button had zero radius at rest but received `control-tight` only when focus-visible.
+Consequently, hover, active, and focus had different geometry. The existing
+`--vf-radius-control-tight` was moved to the base tab button for the top corners only; the bottom
+corners remain zero in all states so the tab item geometry terminates at the underline without a
+pill silhouette. The tab list and scroll controls remain square.
 
-Внешний focus shadow обрезался overflow-контейнером scroller. Для tab buttons и scroll controls
-использован inset focus ring той же ширины и того же semantic цвета. Для unselected tab добавлен
-отсутствовавший press-state на `surface-active`; selected hover/active продолжают использовать
-dedicated selected roles.
+The outer focus shadow was clipped by the scroller's overflow container. Tab buttons and scroll
+controls now use an inset focus ring of the same width and semantic color.
 
-### NavMenu
+The semantic migration also turned underline Tabs into a partially filled control: hover, pressed,
+selected, selected-hover/active, and disabled received neutral/selected surface backgrounds. This
+contradicted the original text-first contract and made Tabs visually resemble pills. Built-in
+background aliases were restored to `transparent`; all states retain their background through
+component aliases, while feedback is provided by the semantic foreground, focus ring, and bottom
+indicator. Custom background overrides remain supported.
 
-Предполагаемый постоянный фон обычных пунктов не воспроизвёлся: default item уже был прозрачным,
-а постоянный background принадлежал только current/disabled состояниям. Это поведение сохранено.
+In multi-file `VfPlayground`, the inner `VfTabs` height incorrectly equaled the full tab-bar height,
+after which base Tabs added bottom padding for the baseline. As a result, the list was 3 px taller
+than the toolbar, and the outer row's indicator overlapped the file row by 1 CSS px (2 device pixels
+on Retina). The control/scroller height is now calculated as the existing `playground-bar-height`
+minus the existing `tabs-list-padding-bottom`; both rows fit within their boundaries without
+clipping or arbitrary spacing. The Playground active-tab override was also restored to a
+transparent background so the embedded rows retain the Core Tabs underline contract.
 
-Реальным пропуском был press-state у невыбранных пунктов. Он добавлен через существующий
-`surface-active`, с исключениями для disabled и current items. Проверены `default`, `pills` и
-`sidebar`: sidebar hover остаётся прозрачным там, где это задано вариантом, физическое нажатие
-получает краткий neutral feedback, а current/ancestor rail и selected states сохраняют приоритет.
+### NavMenu and TableOfContents
 
-### Checkbox, Radio и Switch
+Visual review revealed variant leakage after the semantic token migration. The `default` base item
+was transparent, but hover/current aliases resolved to `surface-hover` and `surface-selected`, so
+the variant looked like `pills`. This contradicted the existing theming docs and changelog, where
+`default` is defined as text-first and filled states belong to `pills`.
 
-У checked Checkbox и Radio отсутствовал hover feedback, у всех трёх binary controls отсутствовал
-отдельный press-state, а active у Switch совпадал с hover. Добавлены существующие semantic роли:
+Built-in hover/current background tokens for `default` were restored to `transparent`; the
+foreground, focus ring, and OKLCH palette were unchanged. Compound selected-hover/active surfaces
+are now limited to `pills`. In `sidebar`, the intended top-level branch pills remain, while nested
+current items remain transparent and are indicated by text and an active rail.
+
+The unconditional `surface-active` added to unselected NavMenu items during the first audit pass
+caused a brief flash in an ordinary nested tree. The rule was removed: text-first items retain their
+hover treatment while pressed, and filled/current states remain variant-specific.
+
+The same correction was applied to `VfTableOfContents`: the default variant no longer duplicates
+`pills`, either at rest or on hover/active for the current link.
+
+### Checkbox, Radio, and Switch
+
+Checked Checkbox and Radio controls lacked hover feedback, all three binary controls lacked a
+distinct pressed state, and Switch active matched hover. Existing semantic roles were added:
 
 - unchecked active — `surface-active`;
 - checked hover — `primary-hover`;
 - checked active — `primary-active`;
-- static Switch сохраняет static background и меняет только предусмотренный border cue.
+- static Switch retains its static background and changes only the intended border cue.
 
-Одновременно исправлен cascade compound states. Invalid border теперь остаётся danger-boundary для
-checked/unchecked hover и active, а disabled подавляет invalid и interaction states. В частности,
-`static + invalid + disabled` Switch больше не сохраняет danger-border вместо disabled-border.
+Compound-state cascading was fixed at the same time. The invalid border now remains a danger
+boundary for checked/unchecked hover and active, while disabled suppresses invalid and interaction
+states. In particular, a `static + invalid + disabled` Switch no longer retains a danger border
+instead of a disabled border.
 
-### Dropdown, MenuBar и Select
+### Dropdown, MenuBar, and Select
 
-У невыбранных пунктов был hover, но отсутствовал более сильный press-state. Добавлен
-`surface-active` с сохранением variant-specific foreground и исключениями для selected, open и
-disabled элементов. Для Select добавлен отдельный поздний selector: его собственный hover-rule
-иначе перекрывал общий Dropdown press-state.
+`MenuBar` had the same filled-state leakage in `default`: top-level and submenu hover/current/open
+used the `pills` background. Default aliases were restored to a transparent background, and selected
+compound surfaces were limited to `pills`.
 
-Selected/current hover и active, focus-visible, disabled, Dropdown variants, Select trigger,
-padding, radius и overlay shadows проверены и не менялись.
+The unconditional pressed backgrounds added to MenuBar and Dropdown during the first pass were
+removed. In the dark theme, `surface-active` and the elevated-menu background resolve to the same
+neutral material, so pointer-down removed the visible hover and appeared as flicker. After the fix,
+hover remains stable while pressed; `pills` selected/current continues to use `selected`,
+`selected-hover`, and
+`selected-active`.
 
-### Popover и floating overlays
+`Dropdown default` uses the same text-first NavMenu aliases, so its default hover/current also
+remain transparent; `Dropdown pills` retains filled states. The distinct Select pressed state
+remains: the option list is a surface-backed selection control and has no text-first variant.
+Focus-visible, disabled, the Select trigger, padding, radius, and overlay shadows were reviewed and
+unchanged.
 
-Popover программно фокусирует content surface, но получал нативный browser outline вместо
-semantic focus treatment. Добавлен focus-visible ring, который сохраняет существующий float shadow.
-Для Windows forced-colors предусмотрен отдельный системный двухпиксельный `Highlight` outline,
-поскольку box-shadow в этом режиме подавляется.
+### Popover and floating overlays
 
-Dropdown, Popover, Select и Tooltip использовали normal CSS transition, но Vue lifecycle завершал
-их по fast duration. Все четыре lifecycle duration синхронизированы с уже существующим normal
-motion token; значения tokens и сама анимация не менялись.
+Popover programmatically focuses the content surface but received the native browser outline
+instead of semantic focus treatment. A focus-visible ring was added while preserving the existing
+float shadow. For Windows forced-colors, a separate system two-pixel `Highlight` outline is
+provided because box-shadow is suppressed in this mode.
 
-## Проверенные компоненты и состояния
+Dropdown, Popover, Select, and Tooltip used the normal CSS transition, but the Vue lifecycle ended
+them after the fast duration. All four lifecycle durations were synchronized with the existing
+normal motion token; token values and the animation itself were unchanged.
 
-| Компонент | Проверенные состояния | Результат |
-| --- | --- | --- |
-| Button | hover, active, focus-visible, disabled, loading, variants | Исправлен secondary base/hover contrast |
-| IconButton | hover, active, focus-visible, disabled, variants | Синхронизирован secondary с Button |
-| Tabs | hover, active, selected, selected-hover, selected-active, focus-visible, disabled | Исправлены radius, press и clipped focus |
-| NavMenu | default, pills, sidebar, hover, pressed, current, ancestor, focus-visible, disabled | Исправлен только missing press-state |
-| Tooltip | top, bottom, open/close motion, light/dark | Исправлены arrow offset и lifecycle |
-| Dropdown | default, pills, hover, pressed, selected, focus-visible, disabled, open/close | Исправлены press и lifecycle |
-| MenuBar | default, pills, hover, pressed, current, ancestor, open, focus-visible, disabled | Исправлен press-state |
-| Popover | trigger/content focus, open/close, arrow/surface, forced-colors | Исправлены focus treatment и lifecycle |
-| Select | trigger, option hover/pressed/selected/disabled, invalid/open/focus, clear, lifecycle | Исправлены option press и lifecycle |
-| Checkbox | checked/unchecked, hover, active, focus-visible, invalid, disabled | Исправлены hover/press и precedence |
-| Radio | checked/unchecked, hover, active, focus-visible, invalid, disabled | Исправлены hover/press и precedence |
-| Switch | checked/unchecked, hover, active, static, focus-visible, invalid, disabled | Исправлены press и precedence |
-| Badge | tones и разметка | Изменения не нужны: компонент неинтерактивен |
-| ThemeSwitch | switch и button representations | Использует уже проверенные Switch/Button/IconButton |
+## Reviewed components and states
 
-## Почему остальные области не изменялись
+| Component       | Reviewed states                                                                       | Result                                              |
+| --------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Button          | hover, active, focus-visible, disabled, loading, variants                             | Fixed secondary base/hover contrast                 |
+| IconButton      | hover, active, focus-visible, disabled, variants                                      | Synchronized secondary with Button                  |
+| Tabs            | hover, active, selected, selected-hover, selected-active, focus-visible, disabled     | Fixed text-first states, radius, and clipped focus  |
+| NavMenu         | default, pills, sidebar, hover, pressed, current, ancestor, focus-visible, disabled   | Removed default fills and tree press flash          |
+| Tooltip         | top, bottom, open/close motion, light/dark                                            | Fixed arrow offset and lifecycle                    |
+| Dropdown        | default, pills, hover, pressed, selected, focus-visible, disabled, open/close         | Separated text-first/pills states; fixed lifecycle  |
+| MenuBar         | default, pills, hover, pressed, current, ancestor, open, focus-visible, disabled      | Removed default fills and press flash               |
+| TableOfContents | default, pills, hover, pressed, current, focus-visible                                | Removed default filled states                       |
+| Popover         | trigger/content focus, open/close, arrow/surface, forced-colors                       | Fixed focus treatment and lifecycle                 |
+| Select          | trigger, option hover/pressed/selected/disabled, invalid/open/focus, clear, lifecycle | Fixed option pressed state and lifecycle            |
+| Checkbox        | checked/unchecked, hover, active, focus-visible, invalid, disabled                    | Fixed hover/press and precedence                    |
+| Radio           | checked/unchecked, hover, active, focus-visible, invalid, disabled                    | Fixed hover/press and precedence                    |
+| Switch          | checked/unchecked, hover, active, static, focus-visible, invalid, disabled            | Fixed pressed state and precedence                  |
+| Badge           | tones and markup                                                                      | No changes needed: the component is non-interactive |
+| ThemeSwitch     | switch and button representations                                                     | Uses the reviewed Switch/Button/IconButton          |
+| Playground      | main/file tabs, selected indicator, light/dark, Retina geometry                       | Removed overlap between nested tab rows             |
 
-- Primary, status, contrast и ghost Button/IconButton уже имели различимые hover/active roles и
-  корректный disabled precedence.
-- NavMenu default уже соответствовал требуемой модели transparent → hover → current.
-- Selected/current Dropdown, MenuBar, NavMenu, Select и Tabs уже использовали dedicated
-  selected-hover/selected-active roles.
-- Focus ring width, transitions, shadows, padding и control geometry в остальных проверенных
-  компонентах совпадали с существующими tokens.
-- Light/dark различия происходят только из theme-scoped semantic values; случайных hardcoded
-  theme overrides в затронутых стилях не добавлено.
-- Badge не имеет интерактивного контракта. Loading существует только у Button среди перечисленных
-  компонентов и корректно наследует disabled treatment.
-- Документационные showcase examples соответствуют фактическим public variants и успешно проходят
-  production build и automated documentation example checks.
+## Why other areas were unchanged
+
+- Primary, status, contrast, and ghost Button/IconButton already had distinguishable hover/active
+  roles and correct disabled precedence.
+- Filled selected/current compound roles remain on `pills` and Select; the text-first Tabs, NavMenu,
+  TableOfContents, MenuBar, and Dropdown variants no longer receive them from the shared cascade.
+- Focus-ring width, transitions, shadows, padding, and control geometry in the other reviewed
+  components matched the existing tokens.
+- Light/dark differences come only from theme-scoped semantic values; no accidental hardcoded theme
+  overrides were added to the affected styles.
+- Badge has no interactive contract. Loading exists only on Button among the listed components and
+  correctly inherits disabled treatment.
+- Documentation showcase examples match the actual public variants and successfully pass the
+  production build and automated documentation example checks.
 
 ## Visual verification
 
-Production Chromium проверен на чистом профиле:
+Production Chromium was tested with a clean profile:
 
-- light и dark;
-- desktop 1440 × 1100 и mobile 390 × 844;
-- 16 route snapshots и 8 CVD snapshots существующего `visual:phase2`;
-- Core, Colors, CodeBlock и Playground routes;
-- browser console/network errors и horizontal overflow;
-- отдельная CDP computed-state matrix для hover, active, focus-visible, selected, invalid, disabled
-  и forced-colors;
-- отдельные screenshots и DOM measurements Tooltip `top`/`bottom`.
+- light and dark;
+- desktop 1440 × 1100 and mobile 390 × 844;
+- 16 route snapshots and 8 CVD snapshots from the existing `visual:phase2`;
+- Core, Colors, CodeBlock, and Playground routes;
+- browser console/network errors and horizontal overflow;
+- a separate CDP computed-state matrix for hover, active, focus-visible, selected, invalid, disabled,
+  and forced-colors;
+- DOM measurements of the outer and file Tabs rows in multi-file Playground;
+- separate screenshots and DOM measurements for Tooltip `top`/`bottom`.
 
-Existing visual smoke прошёл полностью. Baseline directory для byte-for-byte image comparison не
-был настроен, поэтому результат оценивался штатными DOM/computed-state assertions и визуальным
-просмотром новых production screenshots. Новая source contract suite фиксирует semantic mappings,
-точные selectors, state precedence, radius/focus geometry, arrow offset и overlay timing от
-повторного drift.
+The existing visual smoke test passed completely. A baseline directory for byte-for-byte image
+comparison was not configured, so the result was evaluated with the standard DOM/computed-state
+assertions and visual review of new production screenshots. The new source contract suite locks
+down semantic mappings, exact selectors, state precedence, radius/focus geometry, arrow offset, and
+overlay timing to prevent future drift.
 
 ## Verification matrix
 
-| Команда | Результат |
-| --- | --- |
-| `npm test` | **PASS** — все workspace suites и migration tests |
-| `npm run verify` | **PASS** — полный clean-install/release gate |
-| `npm run typecheck` | **PASS** — все workspaces |
-| `npm run lint:all` | **PASS** — source, styles, HTML, Markdown и data |
-| `npm run build` | **PASS** — все восемь публикуемых packages |
-| `npm run build:demo` | **PASS** — production showcase, 385 modules |
-| `npm run prepublish:all` | **PASS** — build и dry-run pack восьми packages |
-| `npm run visual:phase2` | **PASS** — 16 route snapshots, 8 CVD snapshots, state assertions |
-| `git diff --check` | **PASS** |
+| Command                  | Result                                                           |
+| ------------------------ | ---------------------------------------------------------------- |
+| `npm test`               | **PASS** — all workspace suites and migration tests              |
+| `npm run verify`         | **PASS** — full clean-install/release gate                       |
+| `npm run typecheck`      | **PASS** — all workspaces                                        |
+| `npm run lint:all`       | **PASS** — source, styles, HTML, Markdown, and data              |
+| `npm run build`          | **PASS** — all eight published packages                          |
+| `npm run build:demo`     | **PASS** — production showcase, 385 modules                      |
+| `npm run prepublish:all` | **PASS** — build and dry-run pack for eight packages             |
+| `npm run visual:phase2`  | **PASS** — 16 route snapshots, 8 CVD snapshots, state assertions |
+| `git diff --check`       | **PASS**                                                         |
 
-## Риски и migration notes
+## Risks and migration notes
 
-Migration не требуется: public API и token surface не изменились. Потребители увидят только
-исправленные визуальные состояния и завершённые floating transitions. Pixel-level screenshot
-baselines в репозитории не настроены; текущий visual gate сочетает production screenshots,
-computed-style assertions и browser/runtime validation.
+No migration is required: the public API and token surface were unchanged. Consumers will see only
+corrected visual states and complete floating transitions. Pixel-level screenshot baselines are not
+configured in the repository; the current visual gate combines production screenshots,
+computed-style assertions, and browser/runtime validation.

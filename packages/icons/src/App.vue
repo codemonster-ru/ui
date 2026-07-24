@@ -4,7 +4,7 @@
       <div class="showcase__brand">
         <p class="eyebrow">Local preview</p>
         <h1>VueIconify icons</h1>
-        <p class="showcase__hint">Быстрый просмотр набора. Клик по карточке копирует сниппет.</p>
+        <p class="showcase__hint">Quick set preview. Click a card to copy the snippet.</p>
       </div>
 
       <button class="theme-toggle" type="button" @click="toggleTheme">

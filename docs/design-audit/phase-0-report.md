@@ -1,195 +1,195 @@
-# VueForge: отчёт о реализации Phase 0
+# VueForge: Phase 0 implementation report
 
-Дата завершения: 2026-07-21. Статус: **завершена; переход к Phase 1 не выполнялся**.
+Completion date: 2026-07-21. Status: **complete; Phase 1 was not started**.
 
-## Scope и результат
+## Scope and outcome
 
-Phase 0 устранила расхождения между публичным TypeScript contract, runtime theme generation, static CSS build, full stylesheet и component-entry CSS. Дополнительно восстановлены fallback и scoped-theme paths, непосредственно зависевшие от этих контрактов.
+Phase 0 eliminated discrepancies between the public TypeScript contract, runtime theme generation, static CSS build, full stylesheet, and component-entry CSS. It also restored the fallback and scoped-theme paths that directly depended on these contracts.
 
-Вне scope остались semantic tokens, OKLCH/material palette, accessibility-коррекция цветов, новая Shiki palette, переработка component states и визуальный редизайн.
+Semantic tokens, the OKLCH/material palette, accessibility color correction, a new Shiki palette, revised component states, and visual redesign remained out of scope.
 
-Итоговые инварианты:
+Final invariants:
 
-- canonical core preset содержит 847 keys, и те же keys доступны через `VfThemeTokens`;
-- static и runtime используют один serializer custom-property names;
-- root fallback, scoped modes и runtime согласованы по именам и значениям;
-- full CSS собирается из тех же canonical entries, которые публикуются как component subpaths;
-- fallback-only и runtime-enabled consumers получают одинаковые имена variables;
-- ближайшая валидная DOM theme boundary определяет CodeBlock и Playground, включая sandboxed preview;
-- ни одно значение цветовой палитры не изменено.
+- canonical core preset contains 847 keys, and the same keys are available through `VfThemeTokens`;
+- static and runtime use one serializer for custom-property names;
+- root fallback, scoped modes, and runtime are aligned in names and values;
+- full CSS is assembled from the same canonical entries published as component subpaths;
+- fallback-only and runtime-enabled consumers receive identical variable names;
+- the nearest valid DOM theme boundary determines the CodeBlock and Playground theme, including the sandboxed preview;
+- no color palette value was changed.
 
-## Причины исходных расхождений
+## Causes of the original discrepancies
 
-| Расхождение                                        | Конкретная причина                                                                                                                                         | Проявление до Phase 0                                                                                                                   |
-| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| 95 preset keys отсутствовали в TypeScript          | `defaultThemePresetSource` сначала выводился как untyped intermediate object и только затем присваивался typed export; excess-property check не срабатывал | built-in token существовал в CSS/runtime, но TypeScript запрещал безопасный override                                                    |
-| Девять custom-property names различались           | static build и runtime содержали независимые camelCase → kebab-case regex algorithms                                                                       | static CSS создавал `...-ydefault`, `...-xrest`, `...-xleft`; runtime создавал канонические `...-y-default`, `...-x-rest`, `...-x-left` |
-| Scoped light/dark были необратимыми                | root baseline и частичные dark overrides не задавали полный mode map на локальной boundary                                                                 | root dark/local light и nested inverse themes наследовали часть variables чужого mode                                                   |
-| Layouts имели отдельную сериализацию               | layouts build поддерживал третий converter, включая локальную special-case замену `zindex`                                                                 | core/runtime/layouts могли расходиться при новых token shapes                                                                           |
-| Full и entry CSS поддерживались вручную            | aggregate group files дублировали содержимое `entries/*.css`                                                                                               | Select geometry, Command Palette cascade, Stepper payload и transition guard различались                                                |
-| Floating label, Drawer и Command fallback ломался  | consumers читали канонические names, которых не было в static fallback                                                                                     | runtime style скрывал дефект; без plugin терялись transform/motion/icon offset                                                          |
-| Provider options применялись не к configured root  | provider всегда записывал mode на `document.documentElement` и только в один attribute                                                                     | `rootSelector`/engine attribute могли генерировать CSS, который provider фактически не активировал                                      |
-| CodeBlock local theme зависела от root assumptions | component искал attributes раздельными проходами, token aliases объявлялись только на `:root`, explicit → inherit не пересчитывался                        | ближайшая boundary могла проигнорироваться; локальные aliases не переопределялись корректно                                             |
-| Playground snapshot брал document root             | theme и variables копировались с `document.documentElement`; direct iframe access предполагал same-origin                                                  | nested theme не доходила до host/preview; `sandbox="allow-scripts"` создавал opaque origin                                              |
-| Layouts emitted types расходились с runtime        | dependency shim описывал serializer/apply helpers уже, чем реальная реализация                                                                             | опубликованные declarations не соответствовали фактическим return values                                                                |
+| Discrepancy                                          | Specific cause                                                                                                                                                  | Behavior before Phase 0                                                                                                                  |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 95 preset keys were missing from TypeScript          | `defaultThemePresetSource` was first inferred as an untyped intermediate object and only then assigned to a typed export; the excess-property check did not run | the built-in token existed in CSS/runtime, but TypeScript prevented safe overrides                                                       |
+| Nine custom-property names differed                  | static build and runtime contained independent camelCase → kebab-case regex algorithms                                                                          | static CSS produced `...-ydefault`, `...-xrest`, `...-xleft`; runtime produced the canonical `...-y-default`, `...-x-rest`, `...-x-left` |
+| Scoped light/dark modes were not reversible          | root baseline and partial dark overrides did not define a complete mode map on the local boundary                                                               | root dark/local light and nested inverse themes inherited some variables from the opposite mode                                          |
+| Layouts used separate serialization                  | layouts build maintained a third converter, including a local special-case replacement for `zindex`                                                             | core/runtime/layouts could diverge with new token shapes                                                                                 |
+| Full and entry CSS were maintained manually          | aggregate group files duplicated the contents of `entries/*.css`                                                                                                | Select geometry, Command Palette cascade, Stepper payload, and transition guard differed                                                 |
+| Floating label, Drawer, and Command fallback broke   | consumers read canonical names that were absent from static fallback                                                                                            | runtime style concealed the defect; without the plugin, transform/motion/icon offset were lost                                           |
+| Provider options were not applied to configured root | provider always wrote the mode to `document.documentElement` and only to one attribute                                                                          | `rootSelector`/engine attribute could generate CSS that the provider did not actually activate                                           |
+| CodeBlock local theme depended on root assumptions   | the component searched attributes in separate passes, token aliases were declared only on `:root`, and explicit → inherit was not recomputed                    | the nearest boundary could be ignored; local aliases were not overridden correctly                                                       |
+| Playground snapshot used document root               | theme and variables were copied from `document.documentElement`; direct iframe access assumed same-origin                                                       | nested theme did not reach the host/preview; `sandbox="allow-scripts"` created an opaque origin                                          |
+| Layouts emitted types diverged from runtime          | the dependency shim described serializer/apply helpers more narrowly than the actual implementation                                                             | published declarations did not match the actual return values                                                                            |
 
-## Обязательные исправления
+## Required fixes
 
-Следующие решения были необходимы для выполнения согласованных contract goals и реализованы без изменения palette values:
+The following changes were required to meet the agreed contract goals and were implemented without changing palette values:
 
-1. Один shared serializer в `packages/theme/src/css-vars.ts` для runtime, core build и layouts build.
-2. Additive TypeScript contract для всех 847 built-in keys; 95 новых declarations оставлены optional для 1.x source compatibility.
-3. `satisfies CompleteDefaultThemePreset` и exact-key compile-time regression test.
-4. Полные scoped light/dark maps. Root path сохраняет baseline light declarations и только 53 core/two layout dark overrides, чтобы не менять прежнюю fallback модель.
-5. Canonical component entries и build-time composition с dedupe/cycle detection.
-6. Exact-map, serializer, fallback-name, CSS parity, export и consumer regression tests.
-7. Nearest-boundary mode для CodeBlock/Playground и безопасная доставка computed `--vf-*` variables в sandbox iframe.
+1. One shared serializer in `packages/theme/src/css-vars.ts` for runtime, core build, and layouts build.
+2. An additive TypeScript contract for all 847 built-in keys; 95 new declarations remain optional for 1.x source compatibility.
+3. `satisfies CompleteDefaultThemePreset` and an exact-key compile-time regression test.
+4. Complete scoped light/dark maps. The root path retains baseline light declarations and only 53 core/two layout dark overrides to preserve the previous fallback model.
+5. Canonical component entries and build-time composition with dedupe/cycle detection.
+6. Exact-map, serializer, fallback-name, CSS parity, export, and consumer regression tests.
+7. Nearest-boundary mode for CodeBlock/Playground and safe delivery of computed `--vf-*` variables to the sandbox iframe.
 
-## Потенциально спорные решения и выбранный вариант
+## Potentially controversial decisions and selected approach
 
-| Решение                                          | Выбранный вариант         | Почему                                                                                                                                                                                                            |
-| ------------------------------------------------ | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Сделать 95 полей required или optional           | optional                  | required-поля сломали бы существующие complete custom presets VueForge 1.x; built-in preset отдельно проверяется как complete                                                                                     |
-| Scoped mode как delta или полный map             | полный map                | только полный map гарантированно отменяет inherited opposite-mode values и сохраняет component aliases при nested inverse themes                                                                                  |
-| Сохранить ошибочные static spellings как aliases | не сохранять              | эти девять names не были source/public tokens и отсутствовали в runtime; распространение accidental names во все paths закрепило бы drift. Их удаление из static artifact — целевое исправление fallback contract |
-| Aggregate CSS или entries как canonical source   | entries                   | component subpath должен оставаться изолированным; aggregate manifests теперь только задают состав full bundle                                                                                                    |
-| Добавить iframe `allow-same-origin`              | не добавлять              | это ослабило бы sandbox. Theme bridge работает при opaque origin и валидирует source, message type, mode и `--vf-*` payload                                                                                       |
-| Сузить `prefix/rootSelector/attribute` API       | не делать breaking change | configured roots/attributes исправлены совместимо; при custom prefix Core и Layouts дополнительно генерируют канонические aliases для уже скомпилированного component CSS                                         |
-| Менять token values для визуального выравнивания | не менять                 | Phase 0 ограничена доставкой существующего контракта; palette и accessibility требуют отдельного согласования                                                                                                     |
+| Decision                                       | Selected approach  | Rationale                                                                                                                                                                                                                      |
+| ---------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Make the 95 fields required or optional        | optional           | required fields would break existing complete custom presets in VueForge 1.x; the built-in preset is separately verified as complete                                                                                           |
+| Scoped mode as a delta or a complete map       | complete map       | only a complete map reliably cancels inherited opposite-mode values and preserves component aliases in nested inverse themes                                                                                                   |
+| Preserve incorrect static spellings as aliases | do not preserve    | these nine names were not source/public tokens and were absent from runtime; propagating accidental names to every path would entrench the drift. Removing them from the static artifact is the intended fallback contract fix |
+| Aggregate CSS or entries as canonical source   | entries            | the component subpath must remain isolated; aggregate manifests now only define the contents of the full bundle                                                                                                                |
+| Add iframe `allow-same-origin`                 | do not add         | this would weaken the sandbox. The theme bridge works with an opaque origin and validates source, message type, mode, and the `--vf-*` payload                                                                                 |
+| Narrow the `prefix/rootSelector/attribute` API | no breaking change | configured roots/attributes were fixed compatibly; with a custom prefix, Core and Layouts also generate canonical aliases for already compiled component CSS                                                                   |
+| Change token values for visual alignment       | do not change      | Phase 0 is limited to delivering the existing contract; palette and accessibility require separate agreement                                                                                                                   |
 
-## Реализованные изменения
+## Implemented changes
 
 ### Token/type/runtime/static contract
 
-- Добавлен shared `serializeThemeTokensToCssVars()` с единым camelCase/digit behavior и `createScopedThemeModeSelector()`.
-- Core static artifacts используют тот же serializer, что и runtime.
-- Runtime и fallback CSS задают `color-scheme` на root и scoped mode boundaries.
-- Runtime rule order фиксирован как root baseline → custom dark selector → scoped light → scoped dark, поэтому explicit local light отменяет внешний custom dark selector.
-- При custom prefix Core и Layouts генерируют requested variables и канонические `--vf-*` / `--vf-layout-*` aliases, ссылающиеся на них.
-- Assembled full stylesheet сохраняет root `color-scheme: dark`: поздний base rule одинаково распознаёт `data-theme` и `data-vf-theme`.
-- Core root dark остаётся 53-key override; scoped light и dark содержат полные 847-key effective maps.
-- Layouts сохраняет 124 light variables, два root dark overrides и полные 124-key scoped maps.
-- Девять canonical fallback variables проверяются явно; девять прежних malformed spellings запрещены regression test.
-- `VfThemeTokens` расширен 95 optional declarations; built-in preset и public keys сравниваются на уровне типов.
-- Layouts public emitted declarations приведены к реальному `Record<string, string>` и `HTMLElement` return contract.
+- Added shared `serializeThemeTokensToCssVars()` with consistent camelCase/digit behavior and `createScopedThemeModeSelector()`.
+- Core static artifacts use the same serializer as runtime.
+- Runtime and fallback CSS set `color-scheme` on root and scoped mode boundaries.
+- Runtime rule order is fixed as root baseline → custom dark selector → scoped light → scoped dark, so explicit local light overrides an outer custom dark selector.
+- With a custom prefix, Core and Layouts generate requested variables and canonical `--vf-*` / `--vf-layout-*` aliases that reference them.
+- The assembled full stylesheet preserves root `color-scheme: dark`: the later base rule recognizes `data-theme` and `data-vf-theme` identically.
+- Core root dark remains a 53-key override; scoped light and dark contain complete 847-key effective maps.
+- Layouts retains 124 light variables, two root dark overrides, and complete 124-key scoped maps.
+- Nine canonical fallback variables are checked explicitly; the nine previous malformed spellings are prohibited by a regression test.
+- `VfThemeTokens` was extended with 95 optional declarations; built-in preset and public keys are compared at the type level.
+- Layouts public emitted declarations now match the actual `Record<string, string>` and `HTMLElement` return contract.
 
-### Full stylesheet и component entries
+### Full stylesheet and component entries
 
-- `entries/*.css` стали canonical component styles.
-- Шесть group files в `styles/components/` стали import-only manifests.
-- Новый CSS composer рекурсивно раскрывает local imports, обнаруживает cycle и включает каждый artifact один раз.
-- Shared theme-transition guard одинаково попадает в full/base и standalone component CSS.
-- Shared horizontal-scroller fragment используется MenuBar и Tabs без взаимного импорта больших bundles.
-- Stepper больше не включает navigation bundle целиком.
-- Исправлена подтверждённая standalone parity для Input, Textarea, Select, Dialog, Drawer, MenuBar, Tabs, Stepper и уже покрытых NavMenu/Command Palette rules.
+- `entries/*.css` became canonical component styles.
+- Six group files in `styles/components/` became import-only manifests.
+- A new CSS composer recursively expands local imports, detects cycles, and includes each artifact once.
+- The shared theme-transition guard is included identically in full/base and standalone component CSS.
+- A shared horizontal-scroller fragment is used by MenuBar and Tabs without mutually importing large bundles.
+- Stepper no longer includes the entire navigation bundle.
+- Confirmed standalone parity was fixed for Input, Textarea, Select, Dialog, Drawer, MenuBar, Tabs, Stepper, and the already covered NavMenu/Command Palette rules.
 
 ### Fallback behavior
 
-- Floating label читает существующие канонические `translate-y-default` variables и снова получает правильный transform без runtime plugin.
-- Drawer получает канонические rest/side offsets и восстанавливает transition geometry во всех направлениях.
-- Command Palette title icon получает канонический default Y offset.
-- Switch root-dark rules одинаково распознают `data-theme="dark"` и `data-vf-theme="dark"`.
-- Contracts запускают fallback artifact generation перед сравнением и проверяют отсутствие старых spellings.
+- Floating label reads the existing canonical `translate-y-default` variables and once again gets the correct transform without the runtime plugin.
+- Drawer receives canonical rest/side offsets and restores transition geometry in every direction.
+- Command Palette title icon receives the canonical default Y offset.
+- Switch root-dark rules recognize `data-theme="dark"` and `data-vf-theme="dark"` identically.
+- Contracts run fallback artifact generation before comparison and verify that the old spellings are absent.
 
-### Scoped ThemeProvider, CodeBlock и Playground
+### Scoped ThemeProvider, CodeBlock, and Playground
 
-- `VfThemeProvider` находит configured roots и при каждом обновлении записывает resolved mode в engine attribute, requested attribute, `data-theme` и `data-vf-theme`; конфликтующие aliases нормализуются.
-- Initial mode сохраняет приоритет storage/requested/engine attributes и затем читает совместимые root aliases, поэтому SSR/fallback с единственным `data-theme` не сбрасывается при mount.
-- В browser context невалидный `rootSelector` нормализуется к `:root`, а невалидный explicit `darkModeSelector` — к каноническому selector на нормализованном root. Валидный selector без текущих matches сохраняется.
-- При `theme="inherit"` CodeBlock и Playground сохраняют на host `data-theme="inherit"` и `data-vf-theme="inherit"`, а effective mode публикуют через `data-vf-resolved-theme="light|dark"`; explicit modes по-прежнему записываются в оба theme attributes.
-- CodeBlock и Playground определяют mode по ближайшей валидной DOM boundary на предках. Сам `VfThemeProvider` не создаёт wrapper/local boundary, а синхронизирует configured roots.
-- Component token defaults объявляются на `:root` и реальных light/dark boundaries, но не на host с `inherit`; поэтому ancestor overrides `--vf-codeblock-*` / `--vf-playground-*` не перезаписываются self-boundary.
-- Playground реагирует на relevant ancestor mutations/reparenting.
-- В preview передаются только computed properties с prefix `--vf-`; устаревшие snapshot variables удаляются перед новым применением.
-- Sandboxed iframe получает mode/variables через postMessage bridge без `allow-same-origin`; direct same-origin path оставлен как best-effort для интеграций и тестов.
-- Bridge принимает сообщения только от parent, только типа `theme`, только с `light|dark` и строковыми `--vf-*` values.
+- `VfThemeProvider` finds configured roots and, on every update, writes the resolved mode to the engine attribute, requested attribute, `data-theme`, and `data-vf-theme`; conflicting aliases are normalized.
+- Initial mode preserves the priority of storage/requested/engine attributes and then reads compatible root aliases, so SSR/fallback with only `data-theme` is not reset on mount.
+- In browser context, an invalid `rootSelector` is normalized to `:root`, and an invalid explicit `darkModeSelector` to the canonical selector on the normalized root. A valid selector with no current matches is preserved.
+- With `theme="inherit"`, CodeBlock and Playground retain `data-theme="inherit"` and `data-vf-theme="inherit"` on the host, while publishing the effective mode through `data-vf-resolved-theme="light|dark"`; explicit modes are still written to both theme attributes.
+- CodeBlock and Playground determine mode from the nearest valid DOM boundary among their ancestors. `VfThemeProvider` itself does not create a wrapper/local boundary; it synchronizes configured roots.
+- Component token defaults are declared on `:root` and actual light/dark boundaries, but not on a host with `inherit`; therefore, ancestor overrides of `--vf-codeblock-*` / `--vf-playground-*` are not overwritten by a self-boundary.
+- Playground responds to relevant ancestor mutations/reparenting.
+- Only computed properties with the `--vf-` prefix are passed to the preview; stale snapshot variables are removed before the new values are applied.
+- The sandboxed iframe receives mode/variables through a postMessage bridge without `allow-same-origin`; the direct same-origin path remains as best-effort support for integrations and tests.
+- The bridge accepts messages only from the parent, only of type `theme`, only with `light|dark`, and only with string `--vf-*` values.
 
-## Contract matrix после Phase 0
+## Contract matrix after Phase 0
 
-| Path                    |                    Light |                         Dark |    Scoped light |     Scoped dark | Имена                  |
-| ----------------------- | -----------------------: | ---------------------------: | --------------: | --------------: | ---------------------- |
-| Core static fallback    |                      847 | 53 overrides / 847 effective |             847 |             847 | shared serializer      |
-| Core runtime            |                      847 |                847 effective |             847 |             847 | shared serializer      |
-| Layouts static fallback |                      124 |  2 overrides / 124 effective |             124 |             124 | shared serializer      |
-| Layouts runtime         |                      124 |                124 effective |             124 |             124 | shared serializer      |
-| Full core stylesheet    |    canonical entry union |        canonical entry union | тот же contract | тот же contract | no duplicate entry     |
-| Component-entry CSS     | isolated canonical entry |     isolated canonical entry | тот же contract | тот же contract | export/consumer tested |
+| Path                    |                    Light |                         Dark |  Scoped light |   Scoped dark | Names                  |
+| ----------------------- | -----------------------: | ---------------------------: | ------------: | ------------: | ---------------------- |
+| Core static fallback    |                      847 | 53 overrides / 847 effective |           847 |           847 | shared serializer      |
+| Core runtime            |                      847 |                847 effective |           847 |           847 | shared serializer      |
+| Layouts static fallback |                      124 |  2 overrides / 124 effective |           124 |           124 | shared serializer      |
+| Layouts runtime         |                      124 |                124 effective |           124 |           124 | shared serializer      |
+| Full core stylesheet    |    canonical entry union |        canonical entry union | same contract | same contract | no duplicate entry     |
+| Component-entry CSS     | isolated canonical entry |     isolated canonical entry | same contract | same contract | export/consumer tested |
 
-Ecosystem token surfaces не сокращены: CodeBlock сохраняет 55 custom properties, Playground — 48. Layout/core legacy tokens сохранены.
+Ecosystem token surfaces were not reduced: CodeBlock retains 55 custom properties, and Playground retains 48. Layout/core legacy tokens were preserved.
 
-## Изменения, способные повлиять на внешний вид
+## Changes that may affect appearance
 
-Palette values и visual language не менялись. Внешне заметны только восстановления уже заявленного behavior и устранение full/entry различий:
+Palette values and visual language were not changed. The only visible changes are restoration of the previously specified behavior and elimination of full/entry differences:
 
-- floating labels снова занимают активную позицию в fallback-only mode;
-- Drawer снова использует заданные directional offsets и корректно входит/выходит без runtime theme plugin;
-- Command Palette icon получает предусмотренный вертикальный offset;
-- standalone Input/Textarea получают тот же block geometry, что full stylesheet;
-- standalone Select получает те же floating sizes/padding, clear-button geometry и option foreground, что full stylesheet;
-- standalone Dialog/Drawer получают те же close/action icon styles;
-- standalone MenuBar/Tabs получают тот же horizontal-scroller behavior;
-- scoped CodeBlock и Playground реально переключаются между существующими light/dark значениями;
-- inherited CodeBlock/Playground больше не создают собственную light/dark boundary и сохраняют ancestor component-token overrides;
-- Playground preview background/text и inherited variables соответствуют host scope;
-- `color-scheme` синхронизирует browser-native controls внутри theme boundary;
-- custom-prefix configurations теперь влияют на compiled Core/Layouts components через канонические compatibility aliases;
-- root dark и Switch dark rules одинаково работают с обоими compatibility attributes;
-- невалидная selector configuration получает безопасный канонический fallback вместо отсутствующего theme application;
-- общий transition guard теперь действует одинаково при full и component imports.
+- floating labels once again occupy the active position in fallback-only mode;
+- Drawer once again uses the specified directional offsets and enters/exits correctly without the runtime theme plugin;
+- Command Palette icon receives the intended vertical offset;
+- standalone Input/Textarea receive the same block geometry as the full stylesheet;
+- standalone Select receives the same floating sizes/padding, clear-button geometry, and option foreground as the full stylesheet;
+- standalone Dialog/Drawer receive the same close/action icon styles;
+- standalone MenuBar/Tabs receive the same horizontal-scroller behavior;
+- scoped CodeBlock and Playground actually switch between the existing light/dark values;
+- inherited CodeBlock/Playground no longer create their own light/dark boundary and preserve ancestor component-token overrides;
+- Playground preview background/text and inherited variables match the host scope;
+- `color-scheme` synchronizes browser-native controls inside the theme boundary;
+- custom-prefix configurations now affect compiled Core/Layouts components through canonical compatibility aliases;
+- root dark and Switch dark rules work identically with both compatibility attributes;
+- invalid selector configuration receives a safe canonical fallback instead of failing to apply the theme;
+- the shared transition guard now works identically with full and component imports.
 
-Это parity/fallback fixes, а не новые design values. Полные scoped maps увеличивают размер generated CSS; это осознанный correctness trade-off и не меняет runtime token values.
+These are parity/fallback fixes, not new design values. Complete scoped maps increase the size of generated CSS; this is a deliberate correctness trade-off and does not change runtime token values.
 
-## Публичный API и совместимость 1.x
+## Public API and 1.x compatibility
 
-- Ни один существующий source token или legacy token не удалён.
-- Ни один публичный token не переименован.
-- В `VfThemeTokens` добавлены только optional properties.
-- Package export maps не менялись.
-- Runtime function signatures сохранены.
-- Существующий `setCodeBlockThemeVars` дополнительно re-exported из публичного `/view` entry; subpath и signature не менялись.
-- Layouts `.d.ts` исправлены в соответствии с уже существующим runtime behavior. Это объективная contract correction; код, полагавшийся на прежний неверный return type, может получить более точный TypeScript inference.
-- Девять malformed static-only names удалены из generated fallback CSS. Они не соответствовали source keys, CSS consumers или runtime output; канонические public names теперь одинаковы во всех paths.
-- CodeBlock/Playground сохраняют оба совместимых theme attributes; для inherited mode их значение теперь `inherit`, а additive `data-vf-resolved-theme` отдельно отражает effective mode.
+- No existing source token or legacy token was removed.
+- No public token was renamed.
+- Only optional properties were added to `VfThemeTokens`.
+- Package export maps were unchanged.
+- Runtime function signatures were preserved.
+- The existing `setCodeBlockThemeVars` is additionally re-exported from the public `/view` entry; its subpath and signature were unchanged.
+- Layouts `.d.ts` files were corrected to match the existing runtime behavior. This is an objective contract correction; code that relied on the previous incorrect return type may receive more accurate TypeScript inference.
+- Nine malformed static-only names were removed from generated fallback CSS. They did not correspond to source keys, CSS consumers, or runtime output; canonical public names are now identical across all paths.
+- CodeBlock/Playground retain both compatible theme attributes; for inherited mode, their value is now `inherit`, while the additive `data-vf-resolved-theme` separately reflects the effective mode.
 
 ## Verification
 
-Выполнены следующие проверки:
+The following checks were completed:
 
-| Проверка                                             | Результат                                                                |
-| ---------------------------------------------------- | ------------------------------------------------------------------------ |
-| `npm test`                                           | pass; 365 Vitest tests плюс package smoke/contracts и Icons render smoke |
-| `npm run typecheck`                                  | pass                                                                     |
-| `npm run lint`                                       | pass                                                                     |
-| `npm run lint:styles`                                | pass                                                                     |
-| `npm run lint:md`                                    | pass                                                                     |
-| `npm run lint:docs-imports`                          | pass                                                                     |
-| `npm run build`                                      | pass для всех library workspaces                                         |
-| `npm run build:demo`                                 | pass; production showcase/docs bundle собран                             |
-| Core CSS contract/parity/form geometry               | pass                                                                     |
-| Core CSS exports                                     | 43 CSS и 39 auto-CSS exports pass                                        |
-| Layouts CSS/export contracts                         | 21 CSS и 17 JS exports pass                                              |
-| CodeBlock/Playground CSS export и consumer isolation | pass                                                                     |
-| Core static/runtime exact comparison                 | 847 light, 53 dark overrides, scoped 847/847 pass                        |
-| Layouts static/runtime exact comparison              | 124 light, two dark overrides, scoped 124/124 pass                       |
-| Canonical/malformed fallback names                   | 9/9 canonical present; 9/9 malformed absent                              |
-| Full/component-entry composition                     | каждый canonical entry включён ровно один раз                            |
+| Check                                                  | Result                                                                     |
+| ------------------------------------------------------ | -------------------------------------------------------------------------- |
+| `npm test`                                             | pass; 365 Vitest tests plus package smoke/contracts and Icons render smoke |
+| `npm run typecheck`                                    | pass                                                                       |
+| `npm run lint`                                         | pass                                                                       |
+| `npm run lint:styles`                                  | pass                                                                       |
+| `npm run lint:md`                                      | pass                                                                       |
+| `npm run lint:docs-imports`                            | pass                                                                       |
+| `npm run build`                                        | pass for all library workspaces                                            |
+| `npm run build:demo`                                   | pass; production showcase/docs bundle built                                |
+| Core CSS contract/parity/form geometry                 | pass                                                                       |
+| Core CSS exports                                       | 43 CSS and 39 auto-CSS exports pass                                        |
+| Layouts CSS/export contracts                           | 21 CSS and 17 JS exports pass                                              |
+| CodeBlock/Playground CSS export and consumer isolation | pass                                                                       |
+| Core static/runtime exact comparison                   | 847 light, 53 dark overrides, scoped 847/847 pass                          |
+| Layouts static/runtime exact comparison                | 124 light, two dark overrides, scoped 124/124 pass                         |
+| Canonical/malformed fallback names                     | 9/9 canonical present; 9/9 malformed absent                                |
+| Full/component-entry composition                       | each canonical entry included exactly once                                 |
 
-Ручной production browser smoke выполнен для light и dark без core runtime style injection:
+Manual production browser smoke testing was completed for light and dark without core runtime style injection:
 
-- floating Input/Select/Textarea labels имеют непустые canonical transforms;
-- Drawer открыт с ожидаемой geometry и identity transform;
-- Command Palette отображается с ожидаемым icon offset;
-- все девять malformed variables отсутствуют в computed styles;
-- CodeBlock/Playground с `theme="inherit"` сохраняют inherit markers, публикуют корректный `data-vf-resolved-theme` и принимают ancestor component-token overrides;
-- explicit light/dark paths и actual sandbox iframe preview используют прежние palette values и соответствующий `color-scheme`;
-- browser page errors отсутствуют;
-- 14 временных screenshots просмотрены вручную; clipping или очевидного full/entry/theme drift не обнаружено.
+- floating Input/Select/Textarea labels have non-empty canonical transforms;
+- Drawer is open with the expected geometry and identity transform;
+- Command Palette is displayed with the expected icon offset;
+- all nine malformed variables are absent from computed styles;
+- CodeBlock/Playground with `theme="inherit"` retain inherit markers, publish the correct `data-vf-resolved-theme`, and accept ancestor component-token overrides;
+- explicit light/dark paths and the actual sandbox iframe preview use the previous palette values and the corresponding `color-scheme`;
+- browser page errors are absent;
+- 14 temporary screenshots were reviewed manually; no clipping or obvious full/entry/theme drift was found.
 
-Screenshots и временный smoke script не добавлялись в репозиторий. Phase 0 добавляет автоматические contract tests, но не заявляет automated pixel-diff или contrast gate.
+Screenshots and the temporary smoke script were not added to the repository. Phase 0 adds automated contract tests but does not claim an automated pixel-diff or contrast gate.
 
-## Изменённые файлы
+## Changed files
 
-### Theme/core contract и build
+### Theme/core contract and build
 
 - `packages/theme/src/css-vars.ts`
 - `packages/theme/src/runtime.ts`
@@ -206,7 +206,7 @@ Screenshots и временный smoke script не добавлялись в р
 - `packages/layouts/__tests__/layouts.spec.ts`
 - `packages/layouts/scripts/smoke-css-export.mjs`
 
-### CSS composition, entries и contracts
+### CSS composition, entries, and contracts
 
 - `packages/core/build/css-imports.ts`
 - `packages/core/vite.config.ts`
@@ -237,7 +237,7 @@ Screenshots и временный smoke script не добавлялись в р
 - `packages/core/src/styles/entries/textarea.css`
 - `packages/core/src/components/stepper/VfStepper.spec.ts`
 
-### Provider, CodeBlock и Playground
+### Provider, CodeBlock, and Playground
 
 - `packages/core/src/providers/VfThemeProvider.vue`
 - `packages/core/src/providers/VfThemeProvider.spec.ts`
@@ -265,18 +265,18 @@ Screenshots и временный smoke script не добавлялись в р
 - `docs/design-audit/phase-0-report.md`
 - `docs/codeblock/guides/index.md`
 
-## Осознанно отложено
+## Deliberately deferred
 
-- semantic role split, primitives и OKLCH palette;
-- любые изменения HEX/color-mix values и contrast tuning;
+- semantic role split, primitives, and OKLCH palette;
+- any changes to HEX/color-mix values and contrast tuning;
 - focus/control/status accessibility redesign;
-- новая Shiki syntax palette;
-- component state migration и color-only cue remediation;
-- автоматическое обнаружение вставки/замены configured Provider root без mode change;
-- автоматическое создание provider-local wrapper boundary: scoped mode задаётся явным DOM attribute boundary;
-- перенос teleported overlays внутрь произвольной local boundary;
-- повторный Playground variable snapshot при stylesheet-only mutation без DOM/attribute event;
-- version bump и coordinated publish Theme/Core/Layouts; при релизе Core/Layouts должны требовать версию Theme с shared serializer;
+- a new Shiki syntax palette;
+- component state migration and color-only cue remediation;
+- automatic detection of configured Provider root insertion/replacement without a mode change;
+- automatic creation of a provider-local wrapper boundary: scoped mode is set by an explicit DOM attribute boundary;
+- moving teleported overlays inside an arbitrary local boundary;
+- repeating the Playground variable snapshot after a stylesheet-only mutation without a DOM/attribute event;
+- version bump and coordinated publish of Theme/Core/Layouts; on release, Core/Layouts must require a Theme version with the shared serializer;
 - automated Axe/contrast/pixel-diff/forced-colors CI gates.
 
-Phase 0 на этом завершена. Следующая фаза не начата.
+Phase 0 is now complete. The next phase has not started.

@@ -945,6 +945,7 @@ describe('VfPlayground', () => {
     expect(tokensSource).toContain('--vf-playground-codeblock-shadow: none;');
     expect(tokensSource).toContain('--vf-playground-surface: var(--vf-color-background-surface);');
     expect(tokensSource).toContain('--vf-playground-iframe-bg: var(--vf-color-background-canvas);');
+    expect(tokensSource).toContain('--vf-playground-tab-active-bg: transparent;');
     expect(tokensSource).not.toMatch(/var\(--vf-color-(?:bg|border|muted|primary|surface|surface-muted|text)[,)]/);
     expect(componentSource).toContain('--vf-codeblock-max-height: var(--vf-playground-codeblock-max-height)');
     expect(componentSource).not.toContain('--vf-codeblock-background-color:');
@@ -957,6 +958,11 @@ describe('VfPlayground', () => {
     expect(componentSource).toContain('--vf-tabs-tab-active-color: var(--vf-playground-tab-active-text)');
     expect(componentSource).toContain('--vf-tabs-indicator-color: var(--vf-playground-tab-active-border)');
     expect(componentSource).toContain('--vf-tabs-focus-ring-color: var(--vf-playground-focus-ring-color)');
+    expect(componentSource).toContain(
+      '--vf-control-height-md: calc(var(--vf-playground-bar-height) - var(--vf-tabs-list-padding-bottom))',
+    );
+    expect(componentSource).toContain('min-height: var(--vf-control-height-md)');
+    expect(componentSource).not.toContain('--vf-control-height-md: var(--vf-playground-bar-height)');
   });
 
   it('preserves inherited public token overrides in inherit mode', async () => {

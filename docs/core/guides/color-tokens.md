@@ -273,10 +273,10 @@ component CSS → --vf-input-border-color
 This keeps `extend: { inputBorderColor: ... }` and manual `--vf-input-border-color` overrides effective while the built-in
 default is governed by the semantic layer.
 
-One-token component overrides continue to control their base state, but they cannot define the new compound-state model.
-For example, `--vf-tabs-tab-active-background` remains the selected fallback, while selected + hover and selected + active
-use their dedicated semantic roles. A custom theme that changes the entire selected recipe must override all three roles;
-otherwise the built-in compound states intentionally remain accessible and mode-aware.
+One-token component overrides continue to control their base state. Filled selection components use
+the semantic selected-hover and selected-active roles for their compound states. Underline Tabs are
+intentionally text-first: `--vf-tabs-tab-active-background` controls selected, selected-hover, and
+selected-active together and defaults to `transparent`.
 
 ## Custom theme migration
 

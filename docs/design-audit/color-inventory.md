@@ -1,27 +1,27 @@
-# VueForge: инвентаризация цветовой системы
+# VueForge: color system inventory
 
-> **Historical baseline.** Этот документ сохраняет состояние после Phase 1 и не переписывается задним числом.
-> Целевая OKLCH-палитра и component migration описаны в [отчёте Phase 2](./phase-2-report.md).
+> **Historical baseline.** This document preserves the state after Phase 1 and is not retroactively rewritten.
+> The target OKLCH palette and component migration are described in the [Phase 2 report](./phase-2-report.md).
 
-Дата обновления: 2026-07-22. Статус: **Phase 1 завершена; primitive/semantic architecture добавлена без изменения palette values**.
+Last updated: 2026-07-22. Status: **Phase 1 complete; primitive/semantic architecture added without changing palette values**.
 
-Документ фиксирует legacy color/effect inventory и добавленную в Phase 1 архитектуру. Все прежние material values и 847 legacy keys сохранены. Технические результаты приведены в [отчёте Phase 0](./phase-0-report.md) и [отчёте Phase 1](./phase-1-report.md).
+This document records the legacy color/effect inventory and the architecture added in Phase 1. All previous material values and 847 legacy keys are retained. Technical results are provided in the [Phase 0 report](./phase-0-report.md) and [Phase 1 report](./phase-1-report.md).
 
-## Охват
+## Scope
 
-Проверены:
+Reviewed:
 
-- `packages/theme` — runtime, types и public configuration;
-- `packages/core/src/theme`, generated fallback CSS, все aggregate и component-entry CSS;
-- 41 Vue template и 39 CSS entry core;
+- `packages/theme` — runtime, types, and public configuration;
+- `packages/core/src/theme`, generated fallback CSS, all aggregate and component-entry CSS;
+- 41 Vue templates and 39 core CSS entries;
 - `packages/layouts`, `packages/codeblock`, `packages/playground`, `packages/icons`;
-- `examples/playground`, `docs`, CI, Stylelint и tests;
-- HEX/RGB/RGBA/HSL/HSLA/OKLCH/named colors, `color-mix`, inline styles, SVG masks, gradients, shadows и backdrops;
-- light/dark computed styles и showcase на desktop/mobile.
+- `examples/playground`, `docs`, CI, Stylelint, and tests;
+- HEX/RGB/RGBA/HSL/HSLA/OKLCH/named colors, `color-mix`, inline styles, SVG masks, gradients, shadows, and backdrops;
+- light/dark computed styles and the showcase on desktop/mobile.
 
-Исключены generated package `dist`, dependencies и test/demo literals, которые являются содержимым демонстрируемого кода, а не UI-цветом. Они отдельно классифицированы ниже.
+Excluded are generated package `dist`, dependencies, and test/demo literals that are content of the code being demonstrated rather than UI colors. They are classified separately below.
 
-## Архитектурная карта
+## Architecture map
 
 ```text
 component decisions and ecosystem adapters
@@ -46,69 +46,69 @@ component decisions and ecosystem adapters
 
 Canonical values live in the Core theme source. Canonical primitive/semantic name tuples and public types live in `packages/theme/src/color-token-contract.ts`.
 
-Generated artifacts после Phase 1:
+Generated artifacts after Phase 1:
 
 - 946 non-breakpoint light declarations: `packages/core/.generated/theme/tokens.css`;
 - 6 breakpoint declarations: `generated-breakpoints.css`;
-- 53 root dark overrides и полные 952-key scoped light/dark maps: `theme.css`;
+- 53 root dark overrides and complete 952-key scoped light/dark maps: `theme.css`;
 - `packages/core/src/styles/foundation.css` imports generated tokens/theme.
 
 Runtime source: `packages/theme/src/runtime.ts`. Static generation: `packages/core/build/theme-css-artifacts.ts`.
-Core и Layouts wrappers при custom prefix сохраняют requested variables и добавляют canonical
-`--vf-*` / `--vf-layout-*` aliases для compiled component CSS.
+Core and Layouts wrappers with a custom prefix retain the requested variables and add canonical
+`--vf-*` / `--vf-layout-*` aliases for compiled component CSS.
 
-## Количественная карта
+## Quantitative map
 
-Фактический built-in preset содержит 952 light keys: 847 сохранённых legacy keys и 105 уникальных additions. Additions состоят из 29 primitives и 76 новых semantic keys; `colorFocusRing` уже входил в legacy set и одновременно является одной из 77 semantic roles.
+The actual built-in preset contains 952 light keys: 847 retained legacy keys and 105 unique additions. The additions consist of 29 primitives and 76 new semantic keys; `colorFocusRing` was already part of the legacy set and is also one of the 77 semantic roles.
 
-Legacy subset по-прежнему содержит 404 color/effect tokens. Вместе с additions получено 509 уникальных color/effect keys.
+The legacy subset still contains 404 color/effect tokens. Together with the additions, this yields 509 unique color/effect keys.
 
-| Phase 1 contract             | Количество |
-| ---------------------------- | ---------: |
-| Primitive palette            |     **29** |
-| Semantic roles               |     **77** |
-| Новые semantic keys          |     **76** |
-| Сохранённые legacy keys      |    **847** |
-| Полный built-in preset       |    **952** |
-| Уникальные color/effect keys |    **509** |
+| Phase 1 contract         |   Count |
+| ------------------------ | ------: |
+| Primitive palette        |  **29** |
+| Semantic roles           |  **77** |
+| New semantic keys        |  **76** |
+| Retained legacy keys     | **847** |
+| Complete built-in preset | **952** |
+| Unique color/effect keys | **509** |
 
-Legacy 404-token subset не сокращён:
+The legacy 404-token subset was not reduced:
 
-| Слой/группа                     | Количество | Основные потребители                                          |
-| ------------------------------- | ---------: | ------------------------------------------------------------- |
-| Legacy root `color*`            |         35 | compatibility bridge / current components                     |
-| Shared selectable               |          5 | menus/options/navigation                                      |
-| Navigation                      |         99 | NavMenu, MenuBar, TOC, Dropdown, Breadcrumbs, Accordion, Tabs |
-| Forms/selection controls        |        108 | Field, Input, Textarea, Select, Checkbox, Radio, Switch       |
-| Feedback/status/avatar/progress |         77 | Badge, Tag, Alert, Avatar, Progress, Spinner, Skeleton        |
-| Surfaces                        |         18 | Divider, Card, Panel, Table                                   |
-| Overlays                        |         23 | Dialog, Drawer, Popover, Tooltip, CommandPalette              |
-| Button/text/prose effects       |         12 | Button, Link, prose                                           |
-| Stepper/DataTable               |         26 | Stepper, DataTable                                            |
-| Compatibility shadow            |          1 | Layouts, CodeBlock                                            |
-| **Legacy subtotal**             |    **404** | все прежние keys сохранены                                    |
+| Layer/group                     |   Count | Primary consumers                                             |
+| ------------------------------- | ------: | ------------------------------------------------------------- |
+| Legacy root `color*`            |      35 | compatibility bridge / current components                     |
+| Shared selectable               |       5 | menus/options/navigation                                      |
+| Navigation                      |      99 | NavMenu, MenuBar, TOC, Dropdown, Breadcrumbs, Accordion, Tabs |
+| Forms/selection controls        |     108 | Field, Input, Textarea, Select, Checkbox, Radio, Switch       |
+| Feedback/status/avatar/progress |      77 | Badge, Tag, Alert, Avatar, Progress, Spinner, Skeleton        |
+| Surfaces                        |      18 | Divider, Card, Panel, Table                                   |
+| Overlays                        |      23 | Dialog, Drawer, Popover, Tooltip, CommandPalette              |
+| Button/text/prose effects       |      12 | Button, Link, prose                                           |
+| Stepper/DataTable               |      26 | Stepper, DataTable                                            |
+| Compatibility shadow            |       1 | Layouts, CodeBlock                                            |
+| **Legacy subtotal**             | **404** | all previous keys retained                                    |
 
 ## Phase 1 primitive palette
 
-Primitive layer содержит только 29 фактически используемых material values: 16 neutral stops, по два primary/success/info/danger/help stops и три warning stops. Phase 1 сохраняет HEX как runtime source; OKLCH остаётся будущим authoring форматом, чтобы не вносить rounding drift до отдельной palette phase.
+The primitive layer contains only the 29 material values actually in use: 16 neutral stops, two stops each for primary/success/info/danger/help, and three warning stops. Phase 1 retains HEX as the runtime source; OKLCH remains a future authoring format to avoid introducing rounding drift before a dedicated palette phase.
 
-Полная таблица значений и naming convention опубликованы в [Color Tokens guide](../core/guides/color-tokens.md).
+The complete value table and naming convention are published in the [Color Tokens guide](../core/guides/color-tokens.md).
 
 ## Phase 1 semantic contract
 
-| Категория   | Количество | Назначение                                                        |
-| ----------- | ---------: | ----------------------------------------------------------------- |
-| Background  |         11 | canvas, surfaces, states, inverse, backdrop                       |
-| Text        |          6 | primary, secondary, muted, disabled, placeholder, inverse         |
-| Icon        |          4 | primary, secondary, disabled, inverse                             |
-| Border      |          8 | subtle/default/strong/interactive/disabled/focus/divider/inverse  |
-| Interactive |          8 | primary states/foreground/border, focus ring, selected foreground |
-| Status      |         40 | 8 roles × success/warning/danger/info/help                        |
-| **Итого**   |     **77** | `colorFocusRing` сохранён из legacy contract                      |
+| Category    |  Count | Purpose                                                           |
+| ----------- | -----: | ----------------------------------------------------------------- |
+| Background  |     11 | canvas, surfaces, states, inverse, backdrop                       |
+| Text        |      6 | primary, secondary, muted, disabled, placeholder, inverse         |
+| Icon        |      4 | primary, secondary, disabled, inverse                             |
+| Border      |      8 | subtle/default/strong/interactive/disabled/focus/divider/inverse  |
+| Interactive |      8 | primary states/foreground/border, focus ring, selected foreground |
+| Status      |     40 | 8 roles × success/warning/danger/info/help                        |
+| **Total**   | **77** | `colorFocusRing` retained from the legacy contract                |
 
-Новые роли намеренно разделяют foreground, solid background, subtle background, border и icon, даже когда на Phase 1 они разрешаются в один и тот же прежний material value. Это архитектурное разделение без визуального редизайна.
+The new roles deliberately separate foreground, solid background, subtle background, border, and icon, even when they resolve to the same previous material value in Phase 1. This is an architectural separation without a visual redesign.
 
-## Сохранённая legacy root palette
+## Retained legacy root palette
 
 ### Light literals
 
@@ -124,7 +124,7 @@ Primitive layer содержит только 29 фактически испол
 | danger / on-danger               | `#c72e39` / `#ffffff`             |
 | contrast / on-contrast           | `#252526` / `#ffffff`             |
 
-Light содержит 14 уникальных HEX.
+Light contains 14 unique HEX values.
 
 ### Dark literals
 
@@ -140,25 +140,25 @@ Light содержит 14 уникальных HEX.
 | danger / on-danger               | `#bf3f3f` / `#ffffff`             |
 | contrast / on-contrast           | `#d7d7d7` / `#111827`             |
 
-Dark содержит 16 уникальных HEX. Между темами всего 28 уникальных HEX; общие значения — `#ffffff` и `#1f1300`.
+Dark contains 16 unique HEX values. There are 28 unique HEX values across both themes; the shared values are `#ffffff` and `#1f1300`.
 
-### Формулы
+### Formulas
 
-- primary/status soft: 12% chromatic color на surface;
-- status soft border: 24% chromatic color в default border;
-- primary border soft: 22%; alert primary soft использует отдельную 8% формулу;
-- focus ring: 32% primary light / 42% dark на surface;
-- generic hover backgrounds используют text 6%; open/ancestor 8%; active 10%; selected primary 20%;
+- primary/status soft: 12% chromatic color on surface;
+- status soft border: 24% chromatic color in the default border;
+- primary border soft: 22%; alert primary soft uses a separate 8% formula;
+- focus ring: 32% primary in light / 42% in dark on surface;
+- generic hover backgrounds use 6% text; open/ancestor 8%; active 10%; selected primary 20%;
 - overlay backdrop: 44% black light / 56% black dark;
-- float shadow: две black-alpha тени;
-- dark Field background отдельно переопределён в canvas;
-- `shadow` равен `none`, хотя overlay имеет собственный shadow recipe.
+- float shadow: two black-alpha shadows;
+- the dark Field background is separately overridden to canvas;
+- `shadow` is `none`, although overlay has its own shadow recipe.
 
-В source найдено 80 `color-mix` и 23 разных ratio. Это избыточно для предсказуемой state formula.
+The source contains 80 `color-mix` instances and 23 different ratios. This is excessive for a predictable state formula.
 
-## Полный реестр 404 legacy system tokens
+## Complete registry of 404 legacy system tokens
 
-Таблица ниже фиксирует сохранённый pre-Phase-1 subset. `Dark value` показывает только реальный override; `inherits` означает, что dark theme использует тот же alias/recipe, но зависимые variables разрешаются в dark values. Новые primitive/semantic keys перечислены отдельно выше и в публичном guide.
+The table below records the retained pre-Phase-1 subset. `Dark value` shows only an actual override; `inherits` means that the dark theme uses the same alias/recipe, but dependent variables resolve to dark values. New primitive/semantic keys are listed separately above and in the public guide.
 
 <!-- Pre-Phase-1 resolved-value baseline; do not treat this table as a new API. -->
 
@@ -569,27 +569,27 @@ Dark содержит 16 уникальных HEX. Между темами вс�
 | `dataTablePaginationPageColor`              | `--vf-data-table-pagination-page-color`                | Stepper/DataTable / stepper/data       | `var(--vf-color-text)`                                                                                                                                                                                              | inherits                                                                    |
 | `shadow`                                    | `--vf-shadow`                                          | Compatibility / layouts/codeblock      | `none`                                                                                                                                                                                                              | `none`                                                                      |
 
-## Дублирование и alias graph
+## Duplication and alias graph
 
-В legacy baseline найдено 54 группы tokens с абсолютно одинаковым значением. Самые крупные:
+The legacy baseline contains 54 groups of tokens with exactly the same value. The largest are:
 
-| Одинаковое значение       | Количество aliases | Вывод                                                               |
-| ------------------------- | -----------------: | ------------------------------------------------------------------- |
-| `var(--vf-color-text)`    |                 53 | component layer в основном переименовывает один semantic foreground |
-| `var(--vf-color-primary)` |                 38 | foreground, graphic и solid roles смешаны                           |
-| `var(--vf-color-muted)`   |                 24 | secondary, placeholder, disabled и inactive роли связаны            |
-| `var(--vf-color-border)`  |                 20 | divider и control boundary не разделены                             |
-| `transparent`             |                 18 | часть оправданных state/background defaults                         |
-| `var(--vf-color-surface)` |                 13 | surface hierarchy почти отсутствует                                 |
+| Identical value           | Alias count | Finding                                                          |
+| ------------------------- | ----------: | ---------------------------------------------------------------- |
+| `var(--vf-color-text)`    |          53 | the component layer mostly renames a single semantic foreground  |
+| `var(--vf-color-primary)` |          38 | foreground, graphic, and solid roles are mixed                   |
+| `var(--vf-color-muted)`   |          24 | secondary, placeholder, disabled, and inactive roles are coupled |
+| `var(--vf-color-border)`  |          20 | divider and control boundary are not separated                   |
+| `transparent`             |          18 | some justified state/background defaults                         |
+| `var(--vf-color-surface)` |          13 | surface hierarchy is almost absent                               |
 
 Cross-component coupling:
 
-- Dropdown и MenuBar зависят от NavMenu palette (`default-preset-source.ts:116-143`);
-- Switch base track зависит от Radio (`switchTrackBackground`);
-- Input/Textarea/Select образуют длинные цепочки `component → field → semantic`;
-- component CSS всё ещё содержит 285 прямых ссылок на root `--vf-color-*` в 28 файлах, то есть component layer внедрён непоследовательно.
+- Dropdown and MenuBar depend on the NavMenu palette (`default-preset-source.ts:116-143`);
+- the Switch base track depends on Radio (`switchTrackBackground`);
+- Input/Textarea/Select form long `component → field → semantic` chains;
+- component CSS still contains 285 direct references to root `--vf-color-*` variables in 28 files, meaning the component layer is applied inconsistently.
 
-Phase 1 вводит только однонаправленные зависимости и не подменяет существующие component chains:
+Phase 1 introduces only unidirectional dependencies and does not replace existing component chains:
 
 ```text
 semantic role ───────────┐
@@ -599,34 +599,34 @@ current component alias ┘
 Phase 2 target: component decision → semantic role
 ```
 
-До Phase 1 graph не содержал циклов и имел максимальную логическую глубину 3. Primitive bridge увеличивает допустимую логическую глубину до 4. Regression contract проверяет отсутствие undefined references, self-references и cycles; нельзя одновременно объявлять `legacy → semantic` и `semantic → legacy` для одной роли.
+Before Phase 1, the graph contained no cycles and had a maximum logical depth of 3. The primitive bridge increases the permitted logical depth to 4. The regression contract checks for the absence of undefined references, self-references, and cycles; `legacy → semantic` and `semantic → legacy` cannot both be declared for the same role.
 
-Phase 0 custom-prefix bridge добавляет физические canonical/requested-prefix hops, но не меняет логическое направление зависимости. Проверка custom prefix должна обходить оба namespace.
+The Phase 0 custom-prefix bridge adds physical canonical/requested-prefix hops but does not change the logical dependency direction. Custom-prefix checks must traverse both namespaces.
 
-## Неиспользуемые и устаревшие tokens
+## Unused and obsolete tokens
 
 ### Core color graph
 
-- `switchTrackHoverBackground` — объявлен, но hover использует обычный track background;
-- `colorPrimaryBorderSoft` был недостижим до Phase 1; теперь он является compatibility source для `colorInteractivePrimaryBorder`;
-- `tableOfContentsTitleColor` — документирован, но title отсутствует в CSS component;
-- `shadow` не используется core, но остаётся реальным compatibility bridge для Layouts/CodeBlock.
+- `switchTrackHoverBackground` — declared, but hover uses the regular track background;
+- `colorPrimaryBorderSoft` was unreachable before Phase 1; it is now the compatibility source for `colorInteractivePrimaryBorder`;
+- `tableOfContentsTitleColor` — documented, but the title is absent from the CSS component;
+- `shadow` is not used by core but remains an actual compatibility bridge for Layouts/CodeBlock.
 
 ### Ecosystem
 
-- Playground: 20 объявленных aliases не имеют потребителей после перехода на core `VfTabs` (`surface-muted`, `text-muted`, tab/run/control/focus/toolbar roles и `radius-md`);
-- CodeBlock: `--vf-codeblock-action-opacity` не используется;
-- Layouts: `--vf-layout-surface-subtle` присутствует в preset/type/plugin, но не применяется.
+- Playground: 20 declared aliases have no consumers after the migration to core `VfTabs` (`surface-muted`, `text-muted`, tab/run/control/focus/toolbar roles, and `radius-md`);
+- CodeBlock: `--vf-codeblock-action-opacity` is unused;
+- Layouts: `--vf-layout-surface-subtle` is present in preset/type/plugin but is not applied.
 
-Это публичные custom properties; немедленное удаление может быть breaking. Требуется deprecation cycle или major cleanup.
+These are public custom properties; immediate removal may be breaking. A deprecation cycle or major cleanup is required.
 
-После полной component migration все 35 flat legacy `color*` roots являются документальными clean-v2 candidates. Особый приоритет имеют перегруженные `colorMuted`, `colorBorder`, base status colors, `colorWarn*` и `colorContrast*`. Вместе с тремя дополнительными Core candidates и 22 ecosystem candidates зафиксировано 60 уникальных v2 cleanup candidates. Phase 1 не добавляет runtime warnings и не помечает весь 1.x contract через TypeScript `@deprecated`.
+After complete component migration, all 35 flat legacy `color*` roots are documented clean-v2 candidates. Overloaded `colorMuted`, `colorBorder`, base status colors, `colorWarn*`, and `colorContrast*` have special priority. Together with three additional Core candidates and 22 ecosystem candidates, 60 unique v2 cleanup candidates are recorded. Phase 1 does not add runtime warnings or mark the entire 1.x contract with TypeScript `@deprecated`.
 
-## 95 tokens: TypeScript drift закрыт в Phase 0
+## 95 tokens: TypeScript drift resolved in Phase 0
 
-До Phase 0 preset имел 847 light keys, а объединённый `VfThemeTokens` — 752 поля. Промежуточная переменная `defaultThemePresetSource` присваивалась typed export позже, поэтому excess-property check не срабатывал.
+Before Phase 0, the preset had 847 light keys, while the combined `VfThemeTokens` had 752 fields. The intermediate `defaultThemePresetSource` variable was assigned to a typed export later, so the excess-property check did not run.
 
-Phase 0 добавила все перечисленные ниже 95 полей в публичный TypeScript contract как optional, сохранив source compatibility VueForge 1.x. Canonical preset теперь проверяется через `satisfies CompleteDefaultThemePreset`, а regression test требует точного равенства 847 runtime keys и TypeScript keys. Ни один существующий token не удалён и не переименован.
+Phase 0 added all 95 fields listed below to the public TypeScript contract as optional, preserving VueForge 1.x source compatibility. The canonical preset is now checked with `satisfies CompleteDefaultThemePreset`, and the regression test requires exact equality between 847 runtime keys and TypeScript keys. No existing token was removed or renamed.
 
 ```text
 borderWidth
@@ -726,11 +726,11 @@ commandPaletteItemIconSize
 commandPaletteHintIconSize
 ```
 
-Из них восемь входят в color/effect inventory: `alertBoxShadow`, `stepperCurrentMarkerBoxShadow` и шесть `tableOfContents*Color/Background` tokens.
+Eight of these are included in the color/effect inventory: `alertBoxShadow`, `stepperCurrentMarkerBoxShadow`, and six `tableOfContents*Color/Background` tokens.
 
-## Static/runtime naming drift: закрыт в Phase 0
+## Static/runtime naming drift: resolved in Phase 0
 
-До Phase 0 static build и runtime использовали разные camelCase → kebab-case algorithms. Девять source tokens получали неверные имена только в fallback CSS:
+Before Phase 0, the static build and runtime used different camelCase → kebab-case algorithms. Nine source tokens received incorrect names only in fallback CSS:
 
 ```text
 fieldFloatingLabelTranslateYDefault
@@ -744,74 +744,74 @@ drawerOffsetYBottom
 commandPaletteItemTitleIconOffsetYDefault
 ```
 
-Например static объявлял `--vf-field-floating-label-translate-ydefault`, а CSS читал `--vf-field-floating-label-translate-y-default`. Runtime injection маскировал functional defect.
+For example, static declared `--vf-field-floating-label-translate-ydefault`, while CSS read `--vf-field-floating-label-translate-y-default`. Runtime injection masked the functional defect.
 
-После Phase 0 runtime, core static build и layouts static build используют один serializer. Все девять canonical names присутствуют во всех применимых artifacts, прежние malformed variants отсутствуют. Exact-map tests сравнивают static и runtime values, включая root/scoped light/dark modes.
+After Phase 0, runtime, the core static build, and the layouts static build use one serializer. All nine canonical names are present in all applicable artifacts, and the previous malformed variants are absent. Exact-map tests compare static and runtime values, including root/scoped light/dark modes.
 
-## Hardcoded values и исключения
+## Hardcoded values and exceptions
 
-### Оправданные/system literals
+### Justified/system literals
 
-- root HEX palette в canonical preset — допустимый источник material values;
-- `black` в overlay backdrop/float shadow — системная роль, но должна быть вынесена в overlay/shadow semantics;
-- transparent stops в skeleton/gradients — механизм композиции;
-- `black`/`white` в SVG masks Icons — невидимая mask geometry; финальный цвет задаёт `currentColor`.
+- the root HEX palette in the canonical preset is an acceptable source of material values;
+- `black` in the overlay backdrop/float shadow is a system role but should be moved into overlay/shadow semantics;
+- transparent stops in skeleton/gradients are a composition mechanism;
+- `black`/`white` in SVG masks for Icons is invisible mask geometry; the final color is set by `currentColor`.
 
-### Требуют нормализации
+### Require normalization
 
-- Shiki `github-light/github-dark` создают inline hardcoded syntax colors вне VueForge token architecture;
-- prose inline/pre code использует локальные `color-mix` recipes;
-- MenuBar group label и DataTable loading mask используют локальные recipes вне component tokens;
-- два demo logo SVG дублированы и содержат `#396fb6`, отличный от текущего primary. Это либо документированный brand exception, либо asset debt;
-- Layout admin header использует `text` как background и `surface` как foreground; dark добавляет смесь с `black`, вместо inverse semantics.
+- Shiki `github-light/github-dark` creates inline hardcoded syntax colors outside the VueForge token architecture;
+- prose inline/pre code uses local `color-mix` recipes;
+- the MenuBar group label and DataTable loading mask use local recipes outside component tokens;
+- two demo logo SVGs are duplicated and contain `#396fb6`, which differs from the current primary. This is either a documented brand exception or asset debt;
+- the Layout admin header uses `text` as background and `surface` as foreground; dark adds a mix with `black` instead of inverse semantics.
 
-### Не являются UI hardcode
+### Not UI hardcodes
 
-- HEX в CodeBlock showcase — текст примера CSS/Sass;
-- test fixtures с orange/custom colors — входные данные runtime tests;
-- demo gradients на semantic vars — tokenized recipes;
-- inline Vue styles в core задают geometry/position, а не literal colors.
+- HEX in the CodeBlock showcase is text in a CSS/Sass example;
+- test fixtures with orange/custom colors are input data for runtime tests;
+- demo gradients on semantic vars are tokenized recipes;
+- inline Vue styles in core set geometry/position, not literal colors.
 
-## Full CSS и component-entry CSS: drift закрыт в Phase 0
+## Full CSS and component-entry CSS: drift resolved in Phase 0
 
-До Phase 0 цветовая система имела два вручную поддерживаемых пути: aggregate `components/*.css` и standalone `entries/*.css`. Были подтверждены visual/cascade differences:
+Before Phase 0, the color system had two manually maintained paths: aggregate `components/*.css` and standalone `entries/*.css`. Visual/cascade differences were confirmed:
 
-- standalone Stepper импортирует весь navigation bundle (~49 KB);
-- aggregate/entry Select floating geometry различается;
-- NavMenu aggregate читает MenuBar group letter-spacing token;
-- CommandPalette имеет разный hover/focus order, icon inherit и `line-clamp`;
-- full bundle подавляет generated theme color transitions через более поздний `!important`, entries ведут себя иначе.
+- standalone Stepper imports the entire navigation bundle (~49 KB);
+- aggregate/entry Select floating geometry differs;
+- the NavMenu aggregate reads the MenuBar group letter-spacing token;
+- CommandPalette has different hover/focus order, icon inheritance, and `line-clamp`;
+- the full bundle suppresses generated theme color transitions through a later `!important`, while entries behave differently.
 
-Phase 0 сделала `entries/*.css` canonical source. Aggregate group files теперь являются import-only manifests, а build composer рекурсивно включает каждый entry один раз, обнаруживает cycles и добавляет общий theme-transition guard одинаково во все artifacts. Stepper стал self-contained; shared horizontal scroller вынесен в отдельный canonical fragment. Static parity test, export smoke и consumer isolation contracts предотвращают повторное расхождение.
+Phase 0 made `entries/*.css` the canonical source. Aggregate group files are now import-only manifests, while the build composer recursively includes each entry once, detects cycles, and adds the shared theme-transition guard consistently to all artifacts. Stepper became self-contained; the shared horizontal scroller was moved into a separate canonical fragment. The static parity test, export smoke, and consumer isolation contracts prevent future divergence.
 
 ## Component coverage
 
-| Группа             | Компоненты                                                             | Color/state verdict                                                                |
-| ------------------ | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Typography/actions | Heading, Text, Prose, Link, Button, IconButton                         | solid actions сильны; dark links/focus/disabled требуют roles                      |
-| Forms              | Field, Fieldset, Input, Textarea, Select                               | слабая boundary; readonly отсутствует; invalid compound states расходятся          |
-| Selection          | Checkbox, Radio, Switch                                                | unchecked boundary слабая; invalid иногда только цветом; indeterminate отсутствует |
-| Feedback           | Alert, Badge, Tag, ProgressBar, ProgressSpinner, Skeleton, Avatar      | body text обычно хорош; status foreground/graphics массово провалены в dark        |
-| Surfaces/data      | Card, Panel, Table, DataTable, Divider                                 | чисто, но hierarchy/stripes/dividers слишком слабы                                 |
-| Navigation         | Tabs, Accordion, Breadcrumbs, Stepper, MenuBar, NavMenu, TOC, Dropdown | много state coverage; dark current/focus и disabled consistency слабы              |
-| Overlay            | Tooltip, Popover, Dialog, Drawer, CommandPalette                       | fallback Drawer исправлен; backdrop/shadow и focus/status roles остаются debt      |
-| Ecosystem          | Layouts, CodeBlock, Playground, Icons                                  | scoped theme исправлена; syntax palette и token documentation остаются debt        |
+| Group              | Components                                                             | Color/state verdict                                                                 |
+| ------------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Typography/actions | Heading, Text, Prose, Link, Button, IconButton                         | solid actions are strong; dark links/focus/disabled require roles                   |
+| Forms              | Field, Fieldset, Input, Textarea, Select                               | weak boundary; readonly is absent; invalid compound states diverge                  |
+| Selection          | Checkbox, Radio, Switch                                                | unchecked boundary is weak; invalid sometimes uses only color; indeterminate absent |
+| Feedback           | Alert, Badge, Tag, ProgressBar, ProgressSpinner, Skeleton, Avatar      | body text is generally good; status foreground/graphics fail broadly in dark        |
+| Surfaces/data      | Card, Panel, Table, DataTable, Divider                                 | clean, but hierarchy/stripes/dividers are too weak                                  |
+| Navigation         | Tabs, Accordion, Breadcrumbs, Stepper, MenuBar, NavMenu, TOC, Dropdown | broad state coverage; dark current/focus and disabled consistency are weak          |
+| Overlay            | Tooltip, Popover, Dialog, Drawer, CommandPalette                       | fallback Drawer fixed; backdrop/shadow and focus/status roles remain debt           |
+| Ecosystem          | Layouts, CodeBlock, Playground, Icons                                  | scoped theme fixed; syntax palette and token documentation remain debt              |
 
-Компоненты из брифа, отсутствующие в текущем репозитории и поэтому помеченные N/A: Slider, DatePicker, Tree, Toast/Notification и standalone Pagination. Sidebar/Navigation представлены через Layouts/NavMenu, Modal — через Dialog, Chip — через Tag.
+Components from the brief that are absent from the current repository and therefore marked N/A: Slider, DatePicker, Tree, Toast/Notification, and standalone Pagination. Sidebar/Navigation are represented by Layouts/NavMenu, Modal by Dialog, and Chip by Tag.
 
-## Итог инвентаризации после Phase 1
+## Inventory summary after Phase 1
 
 - Primitive layer: 29 existing-value material tokens.
-- Semantic contract: 77 roles, из которых 76 являются новыми keys.
-- Legacy contract: все 847 keys сохранены; legacy color/effect subset остаётся 404.
-- Полный built-in preset: 952 keys; уникальный color/effect total — 509.
-- Light/dark material HEX: 28 уникальных между темами.
-- Dark overrides: 53; все 35 root semantic colors переопределены.
-- Полностью одинаковые alias groups: 54.
-- Подтверждённо недостижимые core color tokens: 2; `colorPrimaryBorderSoft` получил semantic consumer в Phase 1.
-- Фактические preset keys вне TypeScript contract: 0 после Phase 0, было 95.
-- Fallback vars с неверным именем: 0 после Phase 0, было 9.
-- Случайных HEX/RGB/HSL внутри core component UI CSS: 0.
-- Главный внешний literal source: inline Shiki syntax colors.
+- Semantic contract: 77 roles, of which 76 are new keys.
+- Legacy contract: all 847 keys retained; the legacy color/effect subset remains at 404.
+- Complete built-in preset: 952 keys; unique color/effect total — 509.
+- Light/dark material HEX: 28 unique values across both themes.
+- Dark overrides: 53; all 35 root semantic colors overridden.
+- Completely identical alias groups: 54.
+- Confirmed unreachable core color tokens: 2; `colorPrimaryBorderSoft` gained a semantic consumer in Phase 1.
+- Actual preset keys outside the TypeScript contract: 0 after Phase 0, previously 95.
+- Fallback vars with incorrect names: 0 after Phase 0, previously 9.
+- Accidental HEX/RGB/HSL values in core component UI CSS: 0.
+- Main external literal source: inline Shiki syntax colors.
 
-Архитектурный вывод после Phase 1: transport и новый token-layer contract нормализованы, а прежняя палитра сохранена через compatibility bridge. Открытая проблема теперь локализована в component migration и значениях: текущие компоненты ещё используют legacy aliases, status foreground/solid material пока совпадает, а accessibility palette/OKLCH tuning осознанно остаются для Phase 2 и последующих работ.
+Architectural conclusion after Phase 1: transport and the new token-layer contract are normalized, while the previous palette is retained through a compatibility bridge. The open problem is now localized to component migration and values: current components still use legacy aliases, status foreground/solid material still coincide, and accessibility palette/OKLCH tuning are intentionally left for Phase 2 and subsequent work.

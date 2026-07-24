@@ -1,18 +1,18 @@
-# VueForge: отчёт о реализации Phase 1
+# VueForge: Phase 1 implementation report
 
-Дата завершения: 2026-07-22. Статус: **primitive/semantic architecture внедрена; переход к Phase 2 не выполнялся**.
+Completion date: 2026-07-22. Status: **primitive/semantic architecture implemented; no transition to Phase 2 was performed**.
 
-## Scope и результат
+## Scope and result
 
-Phase 1 добавила целевой primitive и semantic color contract поверх исправленной в Phase 0 delivery infrastructure. Все существующие VueForge 1.x tokens, palette values, component styles и public component APIs сохранены.
+Phase 1 added the target primitive and semantic color contract on top of the delivery infrastructure corrected in Phase 0. All existing VueForge 1.x tokens, palette values, component styles, and public component APIs were preserved.
 
 ```text
-До Phase 1
+Before Phase 1
 847 flat preset keys
-└── 35 перегруженных root color roles
+└── 35 overloaded root color roles
     └── component aliases and direct component references
 
-После Phase 1
+After Phase 1
 current 1.x component aliases ───────────┐
                                         ├─→ legacy color roots ─→ 29 primitives
 77 semantic roles ───────────────────────┘
@@ -20,37 +20,37 @@ current 1.x component aliases ───────────┐
 Phase 2 target: component decisions ─→ semantic roles
 ```
 
-Built-in preset теперь содержит 952 keys. `colorFocusRing` уже входил в legacy contract и одновременно является semantic role, поэтому 29 primitives + 77 roles дают 105, а не 106 уникальных additions.
+The built-in preset now contains 952 keys. `colorFocusRing` was already part of the legacy contract and is also a semantic role, so 29 primitives + 77 roles yield 105 rather than 106 unique additions.
 
-## Количественный контракт
+## Quantitative contract
 
-| Contract                               | Количество |
-| -------------------------------------- | ---------: |
-| Primitive tokens                       |     **29** |
-| Semantic roles                         |     **77** |
-| Новые semantic keys                    |     **76** |
-| Сохранённые legacy keys                |    **847** |
-| Уникальные additions                   |    **105** |
-| Полный built-in preset                 |    **952** |
-| Legacy dark overrides                  |     **53** |
-| Максимальная canonical alias depth     |      **4** |
-| Максимальная custom-prefix alias depth |      **9** |
+| Contract                          |   Count |
+| --------------------------------- | ------: |
+| Primitive tokens                  |  **29** |
+| Semantic roles                    |  **77** |
+| New semantic keys                 |  **76** |
+| Retained legacy keys              | **847** |
+| Unique additions                  | **105** |
+| Complete built-in preset          | **952** |
+| Legacy dark overrides             |  **53** |
+| Maximum canonical alias depth     |   **4** |
+| Maximum custom-prefix alias depth |   **9** |
 
 ## Primitive architecture
 
-Добавлены семь sparse material families:
+Seven sparse material families were added:
 
 - neutral: 16 stops;
-- primary, success, info, danger и help: по два stops;
-- warning: три stops, включая тёмный on-solid material.
+- primary, success, info, danger, and help: two stops each;
+- warning: three stops, including a dark on-solid material.
 
-Все 29 значений уже существовали в текущем preset или его black-alpha recipes. Phase 1 не создаёт промежуточные оттенки и не преобразует runtime source в OKLCH, поэтому исходный sRGB output сохраняется без rounding drift. Primitives mode-independent: light/dark выбирают разные существующие stops через compatibility roots. Hue и chroma не нормализуются; numeric steps фиксируют приблизительный baseline lightness order, а не новую интерполированную шкалу. Neutral `0`/`1000` остаются white/black extremes, `warning950` — отдельным on-solid material.
+All 29 values already existed in the current preset or its black-alpha recipes. Phase 1 does not create intermediate shades or convert the runtime source to OKLCH, so the original sRGB output is preserved without rounding drift. Primitives are mode-independent: light/dark select different existing stops through compatibility roots. Hue and chroma are not normalized; numeric steps record the approximate baseline lightness order rather than a new interpolated scale. Neutral `0`/`1000` remain the white/black extremes, and `warning950` remains a separate on-solid material.
 
-Полная таблица приведена в [Color Tokens guide](../core/guides/color-tokens.md).
+The complete table is provided in the [Color Tokens guide](../core/guides/color-tokens.md).
 
 ## Semantic architecture
 
-| Категория   |   Роли |
+| Category    |  Roles |
 | ----------- | -----: |
 | Background  |     11 |
 | Text        |      6 |
@@ -58,9 +58,9 @@ Built-in preset теперь содержит 952 keys. `colorFocusRing` уже 
 | Border      |      8 |
 | Interactive |      8 |
 | Status      |     40 |
-| **Итого**   | **77** |
+| **Total**   | **77** |
 
-Status contract одинаков для success, warning, danger, info и help:
+The status contract is identical for success, warning, danger, info, and help:
 
 ```text
 solid background / solid foreground
@@ -69,13 +69,13 @@ border / icon
 hover background / active background
 ```
 
-Foreground и solid background имеют разные public names, даже если на Phase 1 временно разрешаются в один primitive. Это отделяет архитектурную миграцию от будущей accessibility palette.
+Foreground and solid background have different public names even though they temporarily resolve to the same primitive in Phase 1. This separates the architectural migration from the future accessibility palette.
 
-`help` сохранён как самостоятельная family: это отдельный публичный tone Button, IconButton, Badge, Tag, Alert, ProgressBar, ProgressSpinner и text utility. Его объединение с `info` было бы и semantic, и visual breaking change.
+`help` is retained as a separate family: it is a distinct public tone for Button, IconButton, Badge, Tag, Alert, ProgressBar, ProgressSpinner, and the text utility. Merging it with `info` would be both a semantic and visual breaking change.
 
-## Legacy mapping и совместимость 1.x
+## Legacy mapping and 1.x compatibility
 
-Ни один из 847 legacy keys не удалён и не переименован. Default bridge однонаправлен. Phase 1 не вставляет semantic layer в уже существующие component chains:
+None of the 847 legacy keys were removed or renamed. The default bridge is one-way. Phase 1 does not insert the semantic layer into existing component chains:
 
 ```text
 semantic role ───────────┐
@@ -85,38 +85,38 @@ current component alias ┘
 Phase 2 component migration: component decision → semantic role
 ```
 
-Поэтому прежний override `colorPrimary`, `colorMuted`, `colorBorder` или status root продолжает влиять на semantic aliases. Reverse alias для той же пары запрещён, чтобы не создать цикл.
+Therefore, an existing override of `colorPrimary`, `colorMuted`, `colorBorder`, or a status root continues to affect semantic aliases. A reverse alias for the same pair is prohibited to avoid creating a cycle.
 
-Основной mapping:
+Main mapping:
 
-| Legacy family                                  | Semantic target                                                         |
-| ---------------------------------------------- | ----------------------------------------------------------------------- |
-| `colorBg`, `colorSurface`, `colorSurfaceMuted` | canvas/surface/subtle/elevated/disabled backgrounds                     |
-| `colorText`, `colorMuted`                      | раздельные text/icon primary/secondary/muted/disabled/placeholder roles |
-| `colorBorder`                                  | subtle/default/strong/interactive/disabled/divider borders              |
-| `colorPrimary*`                                | interactive backgrounds/foreground/border, focus/selection roles        |
-| `colorContrast*`                               | inverse background/text/icon/border roles                               |
-| `overlayBackdrop`                              | `colorBackgroundBackdrop`                                               |
-| `{success,warn,danger,info,help}*`             | соответствующий восьмиролевой status contract                           |
+| Legacy family                                  | Semantic target                                                       |
+| ---------------------------------------------- | --------------------------------------------------------------------- |
+| `colorBg`, `colorSurface`, `colorSurfaceMuted` | canvas/surface/subtle/elevated/disabled backgrounds                   |
+| `colorText`, `colorMuted`                      | separate text/icon primary/secondary/muted/disabled/placeholder roles |
+| `colorBorder`                                  | subtle/default/strong/interactive/disabled/divider borders            |
+| `colorPrimary*`                                | interactive backgrounds/foreground/border, focus/selection roles      |
+| `colorContrast*`                               | inverse background/text/icon/border roles                             |
+| `overlayBackdrop`                              | `colorBackgroundBackdrop`                                             |
+| `{success,warn,danger,info,help}*`             | corresponding eight-role status contract                              |
 
-Canonical exact-name mapping хранится и тестируется во внутренней Core schema; пользовательская группировка и status formula приведены в [Color Tokens guide](../core/guides/color-tokens.md). Mapping охватывает 36 compatibility sources (35 legacy color roots и `overlayBackdrop`) и 74 direct semantic targets. Ещё три surface roles (`hover`, `active`, `selected`) являются multi-source recipes и потому не приписаны одному legacy source.
+The canonical exact-name mapping is stored and tested in the internal Core schema; the user-facing grouping and status formula are provided in the [Color Tokens guide](../core/guides/color-tokens.md). The mapping covers 36 compatibility sources (35 legacy color roots and `overlayBackdrop`) and 74 direct semantic targets. Three additional surface roles (`hover`, `active`, `selected`) are multi-source recipes and therefore are not assigned to a single legacy source.
 
-Новые primitive и semantic fields являются additive/optional в public preset type. Это сохраняет source compatibility существующих complete custom presets. Core components не мигрированы массово: текущие component aliases продолжают работать как раньше, а Phase 2 должна использовать semantic roles с legacy fallback на период 1.x.
+The new primitive and semantic fields are additive/optional in the public preset type. This preserves source compatibility for existing complete custom presets. Core components were not migrated wholesale: current component aliases continue to work as before, while Phase 2 must use semantic roles with a legacy fallback during the 1.x period.
 
 ## Alias graph
 
-До Phase 1 canonical preset не имел циклов, его максимальная глубина была равна трём. Primitive bridge увеличил разрешённую logical depth до четырёх. Custom-prefix compatibility из Phase 0 добавляет canonical/requested namespace hops и ограничен глубиной девять.
+Before Phase 1, the canonical preset had no cycles and a maximum depth of three. The primitive bridge increased the permitted logical depth to four. Custom-prefix compatibility from Phase 0 adds canonical/requested namespace hops and is limited to a depth of nine.
 
-Автоматический graph validator отклоняет:
+The automatic graph validator rejects:
 
-- ссылку на неизвестную custom property;
+- a reference to an unknown custom property;
 - self-reference;
-- прямой или транзитивный цикл;
-- canonical/custom-prefix chain выше согласованного лимита.
+- a direct or transitive cycle;
+- a canonical/custom-prefix chain above the agreed limit.
 
 ## Public additive changes
 
-`@codemonster-ru/vueforge-theme` экспортирует:
+`@codemonster-ru/vueforge-theme` exports:
 
 - `vfPrimitiveColorTokenNames`;
 - `vfSemanticColorTokenNames`;
@@ -125,65 +125,65 @@ Canonical exact-name mapping хранится и тестируется во в�
 - `VfSemanticColorTokenName`;
 - `VfSemanticColorTokens`.
 
-Core re-exportирует public name tuples/types. Mapping, count/depth constants и graph validation helpers остаются internal schema/build-test infrastructure. Имена сериализуются существующим Phase 0 serializer, включая numeric steps (`paletteNeutral1000` → `--vf-palette-neutral-1000`).
+Core re-exports the public name tuples/types. Mapping, count/depth constants, and graph validation helpers remain internal schema/build-test infrastructure. Names are serialized by the existing Phase 0 serializer, including numeric steps (`paletteNeutral1000` → `--vf-palette-neutral-1000`).
 
-Публичный API расширен только additive. Component props, variants, events и CSS entry paths не изменены.
+The public API was extended only additively. Component props, variants, events, and CSS entry paths were unchanged.
 
-## Изменения, способные повлиять на внешний вид
+## Changes that may affect appearance
 
-Новых palette values и component style migrations нет. Изменилось представление legacy root values: literals теперь проходят через primitive aliases, но computed sRGB values, color-mix recipes и dark overrides эквивалентны baseline.
+There are no new palette values or component-style migrations. The representation of legacy root values changed: literals now pass through primitive aliases, but computed sRGB values, color-mix recipes, and dark overrides are equivalent to the baseline.
 
-Это создаёт узкий non-visual compatibility risk только для consumer-кода, который сравнивает raw custom-property declaration strings: например, `getPropertyValue('--vf-color-primary')` теперь может вернуть `var(--vf-palette-primary-600)` вместо HEX literal. Код, использующий переменную в CSS или сравнивающий computed rendered color, получает прежнее значение.
+This creates a narrow non-visual compatibility risk only for consumer code that compares raw custom-property declaration strings: for example, `getPropertyValue('--vf-color-primary')` may now return `var(--vf-palette-primary-600)` instead of a HEX literal. Code that uses the variable in CSS or compares the computed rendered color receives the previous value.
 
-Следовательно, ожидаемый visual diff равен нулю. Semantic hover/active tokens пока равны текущему solid material; существующие Button/IconButton filters продолжают формировать прежние rendered states.
+Therefore, the expected visual diff is zero. Semantic hover/active tokens currently equal the existing solid material; existing Button/IconButton filters continue to produce the previous rendered states.
 
-## Deprecated candidates для VueForge 2
+## Deprecation candidates for VueForge 2
 
-На Phase 1 кандидаты только документированы; удаления, runtime warnings и массовые TypeScript `@deprecated` annotations отсутствуют.
+In Phase 1, candidates are documented only; there are no removals, runtime warnings, or bulk TypeScript `@deprecated` annotations.
 
-- после component migration: все 35 flat legacy `color*` roots;
+- after component migration: all 35 flat legacy `color*` roots;
 - Core: `switchTrackHoverBackground`, `tableOfContentsTitleColor`, compatibility-only `shadow`;
-- Playground: 20 неиспользуемых aliases;
+- Playground: 20 unused aliases;
 - CodeBlock: `--vf-codeblock-action-opacity`;
 - Layouts: `--vf-layout-surface-subtle`.
 
-Итого зафиксировано 60 уникальных clean-v2 candidates. Ранее недостижимый `colorPrimaryBorderSoft` теперь является compatibility source для `colorInteractivePrimaryBorder`, но остаётся частью общей flat-root migration.
+A total of 60 unique clean-v2 candidates were recorded. The previously unreachable `colorPrimaryBorderSoft` is now a compatibility source for `colorInteractivePrimaryBorder`, but remains part of the overall flat-root migration.
 
 ## Regression coverage
 
-Добавленные contracts проверяют:
+The added contracts verify:
 
-- точные primitive/semantic/legacy/complete counts;
-- порядок и полноту canonical name tuples;
-- все primitive values;
-- восемь отдельных ролей каждой status family;
-- 36-source / 74-target legacy → semantic mapping и фактические direct aliases;
-- отсутствие undefined aliases, cycles и excessive depth;
+- exact primitive/semantic/legacy/complete counts;
+- order and completeness of canonical name tuples;
+- all primitive values;
+- eight separate roles for each status family;
+- the 36-source / 74-target legacy → semantic mapping and actual direct aliases;
+- absence of undefined aliases, cycles, and excessive depth;
 - light/dark parity;
 - runtime/static exact map;
-- full stylesheet и selective `foundation.css + component entry` delivery;
-- custom prefix и canonical bridge;
-- scoped light/dark и Provider output;
-- fallback CSS и package consumer/export surface;
-- сохранение resolved legacy palette values.
+- full stylesheet and selective `foundation.css + component entry` delivery;
+- custom prefix and canonical bridge;
+- scoped light/dark and Provider output;
+- fallback CSS and package consumer/export surface;
+- preservation of resolved legacy palette values.
 
 ## Verification
 
-Перед Phase 1 commit выполнены:
+Before the Phase 1 commit, the following were completed:
 
-- `npm test`: успешно, 378 Vitest tests в семи пакетах, Core CSS/export/consumer contracts и Icons render smoke;
-- Core suite: 23 test files / 219 tests, 43 CSS exports и 39 auto-CSS exports, packed Core/Theme consumer type contracts;
-- `npm run typecheck`: успешно для всего workspace;
-- `npm run lint:all`: ESLint, Stylelint, Prettier и Markdownlint успешно; Markdownlint проверил 285 файлов без ошибок;
-- `npm run build`: успешно для всех library workspaces; Core full stylesheet — 152.59 kB, gzip 17.58 kB;
-- `npm run build:demo`: успешно, documentation/showcase build обработал 382 modules;
-- runtime/static/root/scoped comparison: одинаковые 952-key maps, включая 53 dark overrides; full stylesheet и `foundation.css + component entry` содержат тот же theme contract;
-- graph contracts: canonical depth 4, custom-prefix depth 9, undefined aliases/cycles/depth overflow отклоняются;
-- packed declaration smoke подтвердил, что Core сохраняет внешний import из `@codemonster-ru/vueforge-theme`, а legacy-only custom preset остаётся типобезопасным.
+- `npm test`: passed, 378 Vitest tests across seven packages, Core CSS/export/consumer contracts, and Icons render smoke;
+- Core suite: 23 test files / 219 tests, 43 CSS exports and 39 auto-CSS exports, packed Core/Theme consumer type contracts;
+- `npm run typecheck`: passed for the entire workspace;
+- `npm run lint:all`: ESLint, Stylelint, Prettier, and Markdownlint passed; Markdownlint checked 285 files without errors;
+- `npm run build`: passed for all library workspaces; Core full stylesheet — 152.59 kB, gzip 17.58 kB;
+- `npm run build:demo`: passed; the documentation/showcase build processed 382 modules;
+- runtime/static/root/scoped comparison: identical 952-key maps, including 53 dark overrides; the full stylesheet and `foundation.css + component entry` contain the same theme contract;
+- graph contracts: canonical depth 4, custom-prefix depth 9; undefined aliases/cycles/depth overflow are rejected;
+- packed declaration smoke confirmed that Core retains the external import from `@codemonster-ru/vueforge-theme`, while a legacy-only custom preset remains type-safe.
 
-Visual smoke выполнен в реальном headless Chrome для light/dark режимов: восемь снимков покрыли Core runtime/fallback, противоположные scoped boundaries, CodeBlock и Playground. Runtime и fallback дали одинаковый computed palette, legacy override `colorPrimary` продолжил влиять на semantic primary aliases, 2410 component nodes отрисовались без browser/page errors. Все восемь снимков просмотрены вручную: заметного color/geometry drift, clipping или skeleton-state capture нет.
+Visual smoke was run in real headless Chrome for light/dark modes: eight captures covered Core runtime/fallback, opposing scoped boundaries, CodeBlock, and Playground. Runtime and fallback produced the same computed palette, the legacy `colorPrimary` override continued to affect semantic primary aliases, and 2,410 component nodes rendered without browser/page errors. All eight captures were reviewed manually: no noticeable color/geometry drift, clipping, or skeleton-state capture was found.
 
-## Изменённые файлы
+## Changed files
 
 ### Shared contract
 
@@ -192,7 +192,7 @@ Visual smoke выполнен в реальном headless Chrome для light/d
 - `packages/theme/src/index.ts`
 - `packages/theme/__tests__/runtime.spec.ts`
 
-### Core schema, preset и delivery contracts
+### Core schema, preset, and delivery contracts
 
 - `packages/core/src/theme/color-token-schema.ts`
 - `packages/core/src/theme/color-token-schema.spec.ts`
@@ -221,30 +221,30 @@ Visual smoke выполнен в реальном headless Chrome для light/d
 - `docs/design-audit/color-inventory.md`
 - `docs/design-audit/phase-1-report.md`
 
-Phase 0 report намеренно не изменялся.
+The Phase 0 report was intentionally unchanged.
 
-## Publication risks и version bump
+## Publication risks and version bump
 
-Core импортирует новые public contract exports из Theme, поэтому публиковать Core раньше совместимой Theme нельзя. Минимальная точная рекомендация для Phase 1:
+Core imports new public contract exports from Theme, so Core cannot be published before a compatible Theme. The minimum precise recommendation for Phase 1 is:
 
 1. `@codemonster-ru/vueforge-theme` `1.3.0 → 1.4.0`;
 2. Core dependency `@codemonster-ru/vueforge-theme` `^1.3.0 → ^1.4.0`;
 3. `@codemonster-ru/vueforge-core` `1.35.1 → 1.36.0`.
 
-Если релиз объединяет ещё не опубликованные Phase 0 changes, рекомендуемый coordinated train также включает Layouts `1.21.0 → 1.22.0`, CodeBlock `3.6.1 → 3.7.0`, Playground Core `1.1.1 → 1.2.0` и Playground `2.5.1 → 2.6.0`, с dependency floors, поднятыми до версий этого train. Сам Phase 1 не добавляет новый API этим четырём пакетам.
+If the release includes unpublished Phase 0 changes, the recommended coordinated train also includes Layouts `1.21.0 → 1.22.0`, CodeBlock `3.6.1 → 3.7.0`, Playground Core `1.1.1 → 1.2.0`, and Playground `2.5.1 → 2.6.0`, with dependency floors raised to the versions in this train. Phase 1 itself adds no new API to these four packages.
 
-Package versions и dependency ranges намеренно не изменялись внутри architecture commit: их следует обновить единым release commit после принятия coordinated train.
+Package versions and dependency ranges were intentionally unchanged in the architecture commit; they should be updated in one release commit after the coordinated train is approved.
 
-## Что остаётся для Phase 2
+## What remains for Phase 2
 
-- целевая OKLCH palette и browser/fallback policy;
-- независимые accessible foreground/solid/hover/active materials;
-- migration Core component states с legacy fallback;
-- control boundary и focus contrast;
+- target OKLCH palette and browser/fallback policy;
+- independent accessible foreground/solid/hover/active materials;
+- migration of Core component states with legacy fallback;
+- control-boundary and focus contrast;
 - disabled/placeholder/read-only/indeterminate semantics;
 - compound-state precedence;
-- устранение color-only cues;
-- CodeBlock syntax palette и copy focus;
-- automated contrast, keyboard и screenshot-diff gates.
+- elimination of color-only cues;
+- CodeBlock syntax palette and copy focus;
+- automated contrast, keyboard, and screenshot-diff gates.
 
-Phase 1 останавливается на architecture/contract boundary и не выполняет эти изменения.
+Phase 1 stops at the architecture/contract boundary and does not implement these changes.

@@ -9,19 +9,19 @@ With `theme="inherit"`, the component observes the nearest `data-vf-theme` bound
 
 ## Color tokens
 
-| CSS variable                        | Default role                             | Purpose                  |
-| ----------------------------------- | ---------------------------------------- | ------------------------ |
-| `--vf-playground-surface`           | `--vf-color-background-surface`          | Component surface        |
-| `--vf-playground-border`            | `--vf-color-border-default`              | Component boundary       |
-| `--vf-playground-text`              | `--vf-color-text-primary`                | Primary text             |
-| `--vf-playground-tab-bg`            | `--vf-color-background-surface-subtle`   | Inactive tab surface     |
-| `--vf-playground-tab-active-bg`     | `--vf-color-background-surface-selected` | Active tab surface       |
-| `--vf-playground-tab-active-text`   | `--vf-color-selected-foreground`         | Active tab text          |
-| `--vf-playground-tab-active-border` | `--vf-color-border-focus`                | Active tab indicator     |
-| `--vf-playground-console-bg`        | `--vf-color-background-surface-subtle`   | Console surface          |
-| `--vf-playground-console-text`      | `--vf-color-text-primary`                | Console text             |
-| `--vf-playground-iframe-bg`         | `--vf-color-background-canvas`           | Preview canvas           |
-| `--vf-playground-focus-ring-color`  | `--vf-color-focus-ring`                  | Keyboard focus indicator |
+| CSS variable                        | Default role                           | Purpose                  |
+| ----------------------------------- | -------------------------------------- | ------------------------ |
+| `--vf-playground-surface`           | `--vf-color-background-surface`        | Component surface        |
+| `--vf-playground-border`            | `--vf-color-border-default`            | Component boundary       |
+| `--vf-playground-text`              | `--vf-color-text-primary`              | Primary text             |
+| `--vf-playground-tab-bg`            | `--vf-color-background-surface-subtle` | Inactive tab surface     |
+| `--vf-playground-tab-active-bg`     | `transparent`                          | Active tab surface       |
+| `--vf-playground-tab-active-text`   | `--vf-color-selected-foreground`       | Active tab text          |
+| `--vf-playground-tab-active-border` | `--vf-color-border-focus`              | Active tab indicator     |
+| `--vf-playground-console-bg`        | `--vf-color-background-surface-subtle` | Console surface          |
+| `--vf-playground-console-text`      | `--vf-color-text-primary`              | Console text             |
+| `--vf-playground-iframe-bg`         | `--vf-color-background-canvas`         | Preview canvas           |
+| `--vf-playground-focus-ring-color`  | `--vf-color-focus-ring`                | Keyboard focus indicator |
 
 The documented Playground variables are the package override surface, and their defaults resolve
 through the canonical Core semantic contract. Built-in file tabs consume

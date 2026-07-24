@@ -346,8 +346,8 @@ const stateMatrixSnapshotExpression = `(() => {
       selectOptionDisabledColor: tokenColor('--vf-select-option-disabled-color'),
       selectedTab: {
         base: tokenColor('--vf-tabs-tab-active-background'),
-        hover: tokenColor('--vf-color-background-surface-selected-hover'),
-        active: tokenColor('--vf-color-background-surface-selected-active'),
+        hover: tokenColor('--vf-tabs-tab-active-background'),
+        active: tokenColor('--vf-tabs-tab-active-background'),
       },
       secondaryControlBorder: tokenColor('--vf-color-border-interactive'),
       disabledNavigation: disabledExpected,

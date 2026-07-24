@@ -318,12 +318,6 @@
   background: var(--vf-nav-menu-current-item-hover-background);
 }
 
-.vf-nav-menu__item:active:not(:disabled, .vf-nav-menu__item--disabled, .vf-nav-menu__item--active) {
-  color: var(--vf-nav-menu-current-item-hover-color);
-  border-color: transparent;
-  background: var(--vf-color-background-surface-active, var(--vf-nav-menu-current-item-hover-background));
-}
-
 .vf-nav-menu__item--active:not(:disabled, .vf-nav-menu__item--disabled) {
   font-weight: var(--vf-text-label-font-weight);
   color: var(--vf-nav-menu-current-item-active-color);
@@ -331,11 +325,11 @@
   background: var(--vf-nav-menu-current-item-active-background);
 }
 
-.vf-nav-menu__item--active:hover:not(:disabled, .vf-nav-menu__item--disabled) {
+:where(.vf-nav-menu--pills) .vf-nav-menu__item--active:hover:not(:disabled, .vf-nav-menu__item--disabled) {
   background: var(--vf-color-background-surface-selected-hover, var(--vf-nav-menu-current-item-active-background));
 }
 
-.vf-nav-menu__item--active:active:not(:disabled, .vf-nav-menu__item--disabled) {
+:where(.vf-nav-menu--pills) .vf-nav-menu__item--active:active:not(:disabled, .vf-nav-menu__item--disabled) {
   background: var(--vf-color-background-surface-selected-active, var(--vf-nav-menu-current-item-active-background));
 }
 
@@ -408,8 +402,7 @@
     :disabled,
     .vf-nav-menu__item--disabled,
     .vf-nav-menu__item--active,
-    .vf-nav-menu__item--ancestor-active,
-    :active
+    .vf-nav-menu__item--ancestor-active
   ) {
   background: var(--vf-nav-menu-sidebar-top-hover-background);
 }
@@ -441,7 +434,7 @@
 
 .vf-nav-menu--sidebar
   .vf-nav-menu__item--active:not(.vf-nav-menu__item--top):hover:not(:disabled, .vf-nav-menu__item--disabled) {
-  background: var(--vf-color-background-surface-selected-hover, var(--vf-nav-menu-current-item-active-background));
+  background: var(--vf-nav-menu-current-item-active-background);
 }
 
 .vf-nav-menu--sidebar
@@ -451,7 +444,7 @@
 
 .vf-nav-menu--sidebar
   .vf-nav-menu__item--active:not(.vf-nav-menu__item--top):active:not(:disabled, .vf-nav-menu__item--disabled) {
-  background: var(--vf-color-background-surface-selected-active, var(--vf-nav-menu-current-item-active-background));
+  background: var(--vf-nav-menu-current-item-active-background);
 }
 
 .vf-nav-menu__label {
