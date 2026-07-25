@@ -245,6 +245,7 @@
   border-color: var(--vf-switch-thumb-background);
   background: var(--vf-switch-thumb-background);
   box-shadow: var(--vf-switch-thumb-shadow);
+  color: var(--vf-switch-thumb-color);
 }
 
 .vf-switch--thumb-contrast-inverse:not(.vf-switch--disabled) .vf-switch__thumb,
