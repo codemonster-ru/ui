@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { VfSemanticColorTokenName, VfThemeTokens } from '@codemonster-ru/vueforge-theme';
+import type { VfSemanticColorTokenName } from '@codemonster-ru/vueforge-theme';
+import type { VfThemeTokens } from '@/types/theme';
 import { resolveThemeConfig, themeTokensToCssVars } from './utils';
 
 type ContrastPair = readonly [
@@ -261,6 +262,24 @@ describe('semantic color contrast', () => {
         contrastRatio(foreground, background),
         `${mode}: ${foregroundName} on ${backgroundName}`,
       ).toBeGreaterThanOrEqual(minimum);
+    }
+  });
+
+  it.each(modes)('keeps switch thumb icons distinguishable in %s mode', (mode, variables) => {
+    const pairs = [
+      ['switchThumbColor', 'switchThumbBackground'],
+      ['switchThumbCheckedColor', 'switchThumbCheckedBackground'],
+      ['switchThumbInverseColor', 'switchThumbInverseBackground'],
+    ] as const satisfies readonly (readonly [keyof VfThemeTokens, keyof VfThemeTokens])[];
+
+    for (const [foregroundName, backgroundName] of pairs) {
+      const foreground = resolveCssVariable(variables, cssVariableName(foregroundName));
+      const background = resolveCssVariable(variables, cssVariableName(backgroundName));
+
+      expect(
+        contrastRatio(foreground, background),
+        `${mode}: ${foregroundName} on ${backgroundName}`,
+      ).toBeGreaterThanOrEqual(3);
     }
   });
 
