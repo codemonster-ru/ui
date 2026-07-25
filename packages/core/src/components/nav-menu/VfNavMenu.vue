@@ -1,17 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import VfNavMenuItemNode from './VfNavMenuItemNode.vue';
-import type { VfNavMenuItem } from '@/types/components';
-
-interface VfNavMenuProps {
-  items: VfNavMenuItem[];
-  modelValue?: string;
-  defaultValue?: string;
-  ariaLabel?: string;
-  expandMode?: 'multiple' | 'single';
-  variant?: 'default' | 'pills' | 'sidebar';
-  compact?: boolean;
-}
+import type { VfNavMenuItem, VfNavMenuProps } from '../../types/components';
 
 const props = withDefaults(defineProps<VfNavMenuProps>(), {
   modelValue: undefined,

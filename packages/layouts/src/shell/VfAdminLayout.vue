@@ -1,33 +1,27 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, useId, useSlots, watchEffect } from 'vue';
+import { computed, ref, useAttrs, useId, watchEffect } from 'vue';
 import { cx } from '../utils/classes';
+import type {
+  VfAdminLayoutExposed,
+  VfAdminLayoutMobileSidebarScope,
+  VfAdminLayoutProps,
+  VfAdminLayoutScope,
+} from './admin-layout.types';
 
 defineOptions({
   inheritAttrs: false,
 });
 
-const props = withDefaults(
-  defineProps<{
-    as?: string;
-    fillViewport?: boolean;
-    sidebarCollapsed?: boolean;
-    defaultSidebarCollapsed?: boolean;
-    mobileSidebarOpen?: boolean;
-    defaultMobileSidebarOpen?: boolean;
-    mobileSidebarOpenLabel?: string;
-    mobileSidebarCloseLabel?: string;
-  }>(),
-  {
-    as: 'div',
-    fillViewport: true,
-    sidebarCollapsed: undefined,
-    defaultSidebarCollapsed: false,
-    mobileSidebarOpen: undefined,
-    defaultMobileSidebarOpen: false,
-    mobileSidebarOpenLabel: 'Open navigation',
-    mobileSidebarCloseLabel: 'Close navigation',
-  },
-);
+const props = withDefaults(defineProps<VfAdminLayoutProps>(), {
+  as: 'div',
+  fillViewport: true,
+  sidebarCollapsed: undefined,
+  defaultSidebarCollapsed: false,
+  mobileSidebarOpen: undefined,
+  defaultMobileSidebarOpen: false,
+  mobileSidebarOpenLabel: 'Open navigation',
+  mobileSidebarCloseLabel: 'Close navigation',
+});
 
 const emit = defineEmits<{
   'update:sidebarCollapsed': [value: boolean];
@@ -35,7 +29,15 @@ const emit = defineEmits<{
 }>();
 
 const attrs = useAttrs();
-const slots = useSlots();
+const slots = defineSlots<{
+  brand?: (scope: VfAdminLayoutScope) => unknown;
+  aside?: (scope: VfAdminLayoutScope) => unknown;
+  'mobile-toggle'?: (scope: VfAdminLayoutMobileSidebarScope) => unknown;
+  'mobile-brand'?: () => unknown;
+  header?: (scope: VfAdminLayoutScope) => unknown;
+  default?: (scope: VfAdminLayoutScope) => unknown;
+  footer?: () => unknown;
+}>();
 const uncontrolledSidebarCollapsed = ref(props.defaultSidebarCollapsed);
 const uncontrolledMobileSidebarOpen = ref(props.defaultMobileSidebarOpen);
 const isSidebarPreviewExpanded = ref(false);
@@ -153,7 +155,7 @@ const classes = computed(() =>
   ),
 );
 
-defineExpose({
+defineExpose<VfAdminLayoutExposed>({
   collapseSidebar,
   expandSidebar,
   toggleSidebarCollapsed,
