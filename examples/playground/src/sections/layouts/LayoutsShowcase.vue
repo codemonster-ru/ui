@@ -533,7 +533,7 @@
                   :style="{ maxWidth: activeAdminBreakpointConfig.value }"
                 >
                   <div class="demo-shell-frame demo-shell-frame--scroll demo-shell-frame--fixed-preview">
-                    <VfAdminLayout class="demo-admin-layout">
+                    <VfAdminLayout v-model:sidebar-collapsed="adminLayoutSidebarCollapsed" class="demo-admin-layout">
                       <template #brand>
                         <div class="demo-admin-layout__brand">
                           <img class="demo-admin-layout__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
@@ -541,9 +541,14 @@
                         </div>
                       </template>
 
-                      <template #header>
+                      <template #header="{ toggleSidebarCollapsed }">
                         <VfInline class="demo-admin-layout__header" :wrap="false">
-                          <strong>Header</strong>
+                          <VfIconButton
+                            icon="bars"
+                            variant="ghost"
+                            :aria-label="adminLayoutSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+                            @click="toggleSidebarCollapsed"
+                          />
                         </VfInline>
                       </template>
 
@@ -1018,6 +1023,7 @@ const activeShellBreakpoint = ref<string>(getPreferredBreakpointName(availableSh
 const activeAdminBreakpoint = ref<string>(getPreferredBreakpointName(availableShellBreakpoints.value));
 const activeAdminShellBreakpoint = ref<string>(getPreferredBreakpointName(availableShellBreakpoints.value));
 const activeAdminNavigation = ref('warehouse-availability');
+const adminLayoutSidebarCollapsed = ref(false);
 const adminShellDrawerOpen = ref(false);
 const adminNavigationItems = [
   { value: 'dashboard', label: 'Dashboard', leadingIcon: 'grid' },
