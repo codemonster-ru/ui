@@ -116,7 +116,7 @@ describe('package exports', () => {
     const themeCss = readFileSync(resolve(packageRoot, '.generated/theme/layout-theme.css'), 'utf8');
 
     expect(tokensCss).toContain('--vf-layout-shell-sidebar-width: 18rem;');
-    expect(tokensCss).toContain('--vf-layout-admin-layout-sidebar-collapsed-width: var(--vf-layout-header-height);');
+    expect(tokensCss).toContain('--vf-layout-admin-layout-sidebar-collapsed-width: 4.75rem;');
     expect(tokensCss).toContain(
       '--vf-layout-admin-layout-sidebar-transition-duration: var(--vf-motion-duration-normal);',
     );
@@ -281,6 +281,32 @@ describe('admin layout', () => {
     expect(wrapper.emitted('update:sidebarCollapsed')).toEqual([[false]]);
   });
 
+  it('reports the effective compact state during temporary sidebar expansion', async () => {
+    const wrapper = mount(VfAdminLayout, {
+      props: {
+        defaultSidebarCollapsed: true,
+      },
+      slots: {
+        aside: ({ isSidebarCompact }: { isSidebarCompact: boolean }) =>
+          h('span', { 'data-test': 'compact-state' }, String(isSidebarCompact)),
+      },
+    });
+    const aside = wrapper.get('.vf-admin-layout__aside');
+
+    expect(wrapper.get('[data-test="compact-state"]').text()).toBe('true');
+    expect(wrapper.classes()).toContain('vf-admin-layout--sidebar-compact');
+
+    await aside.trigger('mouseenter');
+
+    expect(wrapper.get('[data-test="compact-state"]').text()).toBe('false');
+    expect(wrapper.classes()).not.toContain('vf-admin-layout--sidebar-compact');
+
+    await aside.trigger('mouseleave');
+
+    expect(wrapper.get('[data-test="compact-state"]').text()).toBe('true');
+    expect(wrapper.classes()).toContain('vf-admin-layout--sidebar-compact');
+  });
+
   it('keeps controlled sidebar state owned by the parent', async () => {
     const wrapper = mount(VfAdminLayout, {
       props: {
@@ -303,6 +329,57 @@ describe('admin layout', () => {
     expect(wrapper.classes()).not.toContain('vf-admin-layout--sidebar-collapsed');
   });
 
+  it('opens and closes the uncontrolled mobile sidebar from the built-in controls', async () => {
+    const wrapper = mount(VfAdminLayout, {
+      slots: {
+        brand: () => 'Annabel CMS',
+        'mobile-brand': () => 'Annabel',
+        header: () => 'Account',
+        aside: ({ closeMobileSidebar }: { closeMobileSidebar: () => void }) =>
+          h('button', { 'data-test': 'navigation-link', onClick: closeMobileSidebar }, 'Dashboard'),
+        default: () => 'Dashboard content',
+      },
+    });
+
+    const toggle = wrapper.get<HTMLButtonElement>('.vf-admin-layout__mobile-toggle-button');
+    const aside = wrapper.get('.vf-admin-layout__aside');
+
+    expect(toggle.attributes('aria-controls')).toBe(aside.attributes('id'));
+    expect(toggle.attributes('aria-expanded')).toBe('false');
+    expect(wrapper.find('.vf-admin-layout__mobile-brand').text()).toBe('Annabel');
+
+    await toggle.trigger('click');
+
+    expect(wrapper.classes()).toContain('vf-admin-layout--mobile-sidebar-open');
+    expect(toggle.attributes('aria-expanded')).toBe('true');
+    expect(wrapper.emitted('update:mobileSidebarOpen')).toEqual([[true]]);
+
+    await wrapper.get('[data-test="navigation-link"]').trigger('click');
+
+    expect(wrapper.classes()).not.toContain('vf-admin-layout--mobile-sidebar-open');
+    expect(wrapper.emitted('update:mobileSidebarOpen')).toEqual([[true], [false]]);
+  });
+
+  it('keeps controlled mobile sidebar state owned by the parent and requests closing on Escape', async () => {
+    const wrapper = mount(VfAdminLayout, {
+      props: {
+        mobileSidebarOpen: true,
+      },
+      slots: {
+        aside: () => 'Navigation',
+      },
+    });
+
+    await wrapper.trigger('keydown', { key: 'Escape' });
+
+    expect(wrapper.classes()).toContain('vf-admin-layout--mobile-sidebar-open');
+    expect(wrapper.emitted('update:mobileSidebarOpen')).toEqual([[false]]);
+
+    await wrapper.setProps({ mobileSidebarOpen: false });
+
+    expect(wrapper.classes()).not.toContain('vf-admin-layout--mobile-sidebar-open');
+  });
+
   it('keeps the aside and header fixed across the full viewport while the main column owns the footer', () => {
     const adminLayoutCss = readFileSync(resolve(packageRoot, 'src/style-entries/admin-layout.css'), 'utf8');
 
@@ -317,11 +394,15 @@ describe('admin layout', () => {
     expect(adminLayoutCss).toMatch(
       /\.vf-admin-layout__brand\s*\{[^}]*box-sizing: border-box;[^}]*block-size: var\(--vf-layout-header-height\);/,
     );
+    expect(adminLayoutCss).toMatch(/\.vf-admin-layout__brand\s*\{[^}]*container-type: inline-size;/);
     expect(adminLayoutCss).toMatch(
       /\.vf-admin-layout__header\s*\{[^}]*box-sizing: border-box;[^}]*block-size: var\(--vf-layout-header-height\);/,
     );
     expect(adminLayoutCss).toMatch(
       /\.vf-admin-layout--with-brand-divider .vf-admin-layout__brand\s*\{[^}]*border-block-end:/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout__aside-content\s*\{[^}]*min-width: var\(--vf-layout-size-zero\);/,
     );
     expect(adminLayoutCss).toMatch(/\.vf-admin-layout__footer\s*\{[^}]*margin-top: auto;/);
     expect(adminLayoutCss).toMatch(
@@ -331,7 +412,33 @@ describe('admin layout', () => {
       /\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__main\s*\{[^}]*margin-inline-start: var\(--vf-layout-admin-layout-sidebar-collapsed-width\);/,
     );
     expect(adminLayoutCss).toMatch(
-      /\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside:is\(:hover, :focus-within\)\s*\{[^}]*inline-size: var\(--vf-layout-shell-sidebar-width\);/,
+      /\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside:is\(:hover, :has\(:focus-visible\)\)\s*\{[^}]*inline-size: var\(--vf-layout-shell-sidebar-width\);/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout\s*\{[^}]*container-name: vf-admin-layout;[^}]*container-type: inline-size;/,
+    );
+    expect(adminLayoutCss).toContain('@container vf-admin-layout (max-width: 1023.98px)');
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout--mobile-sidebar-open .vf-admin-layout__aside\s*\{[^}]*visibility: visible;[^}]*transform: translateX\(0\);/,
+    );
+    expect(adminLayoutCss).not.toContain('visibility var(--vf-layout-size-zero)');
+    expect(adminLayoutCss).toMatch(
+      /@container vf-admin-layout \(max-width: 1023\.98px\)\s*\{[\s\S]*?\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside\s*\{[^}]*inline-size: min\(var\(--vf-layout-shell-sidebar-width\), 85cqi\);/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /@container vf-admin-layout \(max-width: 1023\.98px\)\s*\{[\s\S]*?\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside:is\(:hover, :has\(:focus-visible\)\)\s*\{[^}]*z-index: calc\(var\(--vf-layout-admin-layout-sidebar-expanded-z-index\) \+ 2\);/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /@container vf-admin-layout \(max-width: 1023\.98px\)\s*\{[\s\S]*?\.vf-admin-layout__aside\s*\{[^}]*inset-block-start: var\(--vf-layout-size-zero\);[^}]*z-index: calc\(var\(--vf-layout-admin-layout-sidebar-expanded-z-index\) \+ 2\);/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout__mobile-backdrop\s*\{[^}]*opacity: 0;[^}]*visibility: hidden;[^}]*transition:/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout--mobile-sidebar-open .vf-admin-layout__mobile-backdrop\s*\{[^}]*opacity: 1;[^}]*visibility: visible;/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout--with-aside \.vf-admin-layout__main,[^}]*\{[^}]*margin-inline-start: var\(--vf-layout-size-zero\);/,
     );
   });
 });

@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.1.0
+
+### Added
+
+- Added the optional controlled `compact` prop to `VfNavMenu` so parent sidebars can synchronize
+  compact navigation with their own transitions.
+- Added public sidebar compact-mode tokens for the `VfNavMenu` collapse threshold, item width,
+  inline padding, and expanded label width.
+
+### Changed
+
+- Made the `VfNavMenu` sidebar variant adapt to narrow containers with an icon-only presentation and
+  smoothly restore labels, indicators, and expanded branches when more width becomes available.
+- Kept container-width detection as the default when the controlled `compact` prop is omitted.
+
+### Fixed
+
+- Made the sidebar compact-width detection honor its runtime CSS token instead of relying on an
+  unsupported custom property in a container-query condition.
+- Restored readable Switch thumb-icon contrast and added contrast regression coverage.
+
 ## 2.0.0
 
 ### Added

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import semver from 'semver';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const expectedRepositoryUrl = 'git+https://github.com/codemonster-ru/vueforge.git';
@@ -22,13 +23,13 @@ const releaseTrain = [
     directory: 'core',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-core',
-    version: '2.0.0',
+    version: '2.1.0',
   },
   {
     directory: 'layouts',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-layouts',
-    version: '2.0.0',
+    version: '2.1.0',
   },
   {
     directory: 'codeblock',
@@ -443,10 +444,9 @@ function validateInternalDependencies(manifests) {
         }
 
         graph.get(packageName).add(dependencyName);
-        const expectedRange = `^${dependencyContract.version}`;
-        if (range !== expectedRange) {
+        if (typeof range !== 'string' || !semver.satisfies(dependencyContract.version, range)) {
           report(
-            `${packageName} ${field}.${dependencyName} must start at this release train (${expectedRange}, received ${range}).`,
+            `${packageName} ${field}.${dependencyName} must accept the current ${dependencyContract.version} version (received ${range}).`,
           );
         }
       }

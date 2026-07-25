@@ -14,6 +14,12 @@ Component props and their default values.
 | `ariaLabel?`    | `string`                            | `Navigation` | Accessible label for screen readers.                            |
 | `expandMode?`   | `'multiple' \| 'single'`            | `multiple`   | Defines whether multiple groups can be expanded simultaneously. |
 | `variant?`      | `'default' \| 'pills' \| 'sidebar'` | `default`    | Visual variant for component appearance.                        |
+| `compact?`      | `boolean`                           | —            | Controlled compact state for the `sidebar` variant.             |
+
+The `sidebar` variant becomes icon-only at `--vf-nav-menu-sidebar-compact-breakpoint` (`8rem` by
+default). When `compact` is omitted, this responsive presentation requires no additional prop.
+Supply `compact` when its transition must be synchronized with a parent sidebar. Top-level items
+should provide `leadingIcon` when the menu can be displayed at that width.
 
 ## Emits
 

@@ -7,26 +7,26 @@
 
 Responsive layout primitives and application shells for VueForge-based Vue 3 applications.
 
-Coordinated release: `@codemonster-ru/vueforge-layouts@2.0.0`.
+Coordinated release: `@codemonster-ru/vueforge-layouts@2.1.0`.
 
 ## Requirements
 
 - Node.js 18 or newer for consumer tooling and SSR.
 - Vue `^3.5.0`.
-- `@codemonster-ru/vueforge-core` `^2.0.0`.
+- `@codemonster-ru/vueforge-core` `^2.1.0`.
 
 ## Install
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-layouts
+npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0 @codemonster-ru/vueforge-layouts
 ```
 
 ```bash
-pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-layouts
+pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0 @codemonster-ru/vueforge-layouts
 ```
 
 ```bash
-yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0 @codemonster-ru/vueforge-layouts
+yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0 @codemonster-ru/vueforge-layouts
 ```
 
 ## Quick start

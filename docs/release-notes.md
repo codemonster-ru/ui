@@ -1,84 +1,75 @@
-# VueForge 2 coordinated release notes
+# VueForge Core and Layouts 2.1 release notes
 
-VueForge 2 removes the compatibility paths left behind by the completed token and theme
-architecture migration. It also ships the accessible OKLCH palette, hardened interaction states,
-and SSR/distribution work completed since the last published package versions. The component set,
-documented custom-prefix support, and supported CommonJS entries remain available.
+VueForge 2.1 adds a responsive administrative sidebar, an adaptive compact navigation mode, and a
+mobile navigation drawer. The release keeps the VueForge 2 public theme and package-entry contracts
+intact.
 
-## Package versions
+## Current package versions
 
-| Package                | Version |
-| ---------------------- | ------: |
-| Theme                  | `2.0.0` |
-| Icons                  | `2.0.0` |
-| Core                   | `2.0.0` |
-| Layouts                | `2.0.0` |
-| CodeBlock              | `4.0.0` |
-| Playground Core        | `2.0.0` |
-| Playground Vite Plugin | `1.0.0` |
-| Playground             | `3.0.0` |
+| Package                | Version | Published in this release |
+| ---------------------- | ------: | :-----------------------: |
+| Theme                  | `2.0.0` |            No             |
+| Icons                  | `2.0.0` |            No             |
+| Core                   | `2.1.0` |            Yes            |
+| Layouts                | `2.1.0` |            Yes            |
+| CodeBlock              | `4.0.0` |            No             |
+| Playground Core        | `2.0.0` |            No             |
+| Playground Vite Plugin | `1.0.0` |            No             |
+| Playground             | `3.0.0` |            No             |
 
 ## Highlights
 
-- Primitive and semantic tokens are the only color contract; the 35 legacy color roots are gone.
-- The built-in light and dark palette now uses the accessible OKLCH recipes, including stronger
-  text, control-boundary, focus, status, and syntax-highlight contrast.
-- Interactive controls use consistent hover, pressed, focus, invalid, disabled, and compound-state
-  precedence; text-first navigation and underline tabs remain transparent.
-- `data-vf-theme` is the only implicit theme attribute. Explicitly configured custom attributes
-  and prefixes remain supported.
-- Complete presets now require the complete built-in token contract, while mode and extension
-  overrides remain partial.
-- Package `exports` is authoritative. Supported ESM, CommonJS, Node, browser, declaration, and CSS
-  conditions remain available.
-- Deprecated type aliases, unused constants, inert component props, dead runtime branches, and
-  unused CSS hooks were removed.
-- Grouped Core CSS manifests that only forwarded imports were replaced by direct canonical entry
-  imports.
-- A read-only migration checker with an opt-in write mode is included.
+- `VfAdminLayout` supports controlled and uncontrolled sidebar collapsing, manual slot controls,
+  and temporary pointer or keyboard expansion.
+- Below its own `lg` container breakpoint, `VfAdminLayout` replaces the desktop sidebar with an
+  animated full-height drawer, built-in accessible bars toggle, backdrop, and Escape dismissal.
+- Mobile navigation has independent controlled and uncontrolled state, while `mobile-brand` and
+  `mobile-toggle` slots let applications supply branding or replace the built-in control.
+- The `VfNavMenu` sidebar variant responds to its container width and switches to an icon-only
+  presentation in compact sidebars.
+- `VfNavMenu` also accepts a controlled `compact` prop when its label transition must be synchronized
+  with a parent sidebar; automatic width detection remains the default.
+- Compact navigation geometry is configurable through public theme tokens instead of fixed
+  component values.
+- Sidebar labels, branch content, indicators, and brand examples transition without wrapping or
+  abrupt layout changes.
+- Pointer-activated navigation no longer leaves a temporarily expanded sidebar pinned after the
+  pointer exits.
+- Switch thumb icons retain readable contrast in their active states.
 
-## Breaking changes
+## Compatibility
 
-- Legacy token roots such as `colorBg`, `colorPrimary`, and `colorSuccessSoft` were replaced by
-  primitive or semantic tokens.
-- The implicit `data-theme` selector and runtime observation path were removed.
-- Complete `VfThemeTokens` presets can no longer omit built-in fields.
-- Four deprecated `VueforgePlayground*` type aliases were removed in favor of the existing
-  `VueForgePlayground*` names.
-- `SHIKI_LIGHT_THEME` and `SHIKI_DARK_THEME` were removed from CodeBlock.
-- The inert `style="solid"` prop was removed from `VueIconify`.
-- The empty `dualStyleCoreIconNames` export and unused regular-variant generator path were removed.
-- Unused component hooks, including generic `shadow`, button filter hooks, and retired Playground
-  control variables, were removed.
-- Top-level `main`, `module`, and `types` resolver metadata was removed from package manifests.
-  Consumers must use package `exports`.
-- CodeBlock and Playground continue to require their documented `/view`, `/highlight`, `/ui`, and
-  `/runtime` subpaths instead of package-root JavaScript imports.
+This release has no breaking API changes. Applications using the new `VfAdminLayout` responsive
+sidebar behavior should upgrade Core and Layouts together:
 
-See [Migrating to VueForge 2](./migration-to-v2.md) for the complete old-to-new mapping and the
-migration checker.
+```bash
+npm install vue@^3.5.0 \
+  @codemonster-ru/vueforge-core@^2.1.0 \
+  @codemonster-ru/vueforge-layouts@^2.1.0
+```
 
-## Preserved contracts
+Theme, Icons, CodeBlock, Playground Core, Playground Vite Plugin, and Playground have no runtime or
+public API changes in this work and are not republished.
 
-- Existing component, slot, emit, and accessibility contracts that were not deprecated.
-- Explicit custom theme attributes and custom token prefixes.
-- Explicit CodeBlock theme props and Playground class-based theme selection.
-- CommonJS for packages that advertise a `require` export condition.
-- CSS-free Node/SSR paths and explicit browser CSS exports.
-- Component subpaths and current tree-shaking boundaries.
+## New Core theme tokens
+
+The compact `VfNavMenu` sidebar behavior can be customized with:
+
+- `--vf-nav-menu-sidebar-compact-breakpoint`
+- `--vf-nav-menu-sidebar-compact-item-width`
+- `--vf-nav-menu-sidebar-compact-item-padding-inline`
+- `--vf-nav-menu-sidebar-label-max-width`
+
+The collapsed AdminLayout sidebar width remains configurable with:
+
+- `--vf-layout-admin-layout-sidebar-collapsed-width`
 
 ## Package notes
 
-- **Theme:** exposes only the canonical attribute and serialization path.
-- **Icons:** removes the inert icon-style prop while preserving catalog style metadata.
-- **Core:** introduces the accessible semantic palette and interaction-state refinements, then
-  removes legacy token roots, no-op hooks, and forwarding-only CSS manifests.
-- **Layouts:** removes an unexported composable and obsolete token defaults.
-- **CodeBlock:** removes unused Shiki exports, fallback branches, and dead styling hooks.
-- **Playground Core:** collapses an identical runtime branch.
-- **Playground Vite Plugin:** removes deprecated type spellings.
-- **Playground:** aligns embedded tabs with the text-first Core contract, removes retired variables,
-  and removes the implicit `data-theme` path.
+- **Core 2.1.0:** adaptive compact `VfNavMenu`, optional controlled compact state, public
+  compact-mode tokens, and restored Switch thumb-icon contrast.
+- **Layouts 2.1.0:** responsive `VfAdminLayout` with desktop collapse, temporary expansion, an
+  independent mobile drawer, mobile header slots, and corrected transition and focus behavior.
 
 ## Distribution and verification
 
@@ -89,31 +80,8 @@ The release gates cover:
 - component-subpath tree shaking and deferred runtime budgets;
 - clean tarballs consumed through npm, pnpm, and Yarn;
 - documentation imports, compiled examples, and generated fixtures;
-- runtime, component, accessibility, and theme-contract tests.
+- production and development dependency audits with zero known vulnerabilities;
+- runtime, component, accessibility, theme-contract, and CSS-contract tests.
 
-Measured before-and-after artifacts and the complete cleanup inventory are recorded in the
-[VueForge 2 cleanup report](./design-audit/vueforge-2-cleanup-report.md).
-
-## Recommended installation
-
-Upgrade interdependent packages together. A full Core and Layouts setup starts with:
-
-```bash
-npm install vue@^3.5.0 \
-  @codemonster-ru/vueforge-core@^2.0.0 \
-  @codemonster-ru/vueforge-layouts@^2.0.0
-```
-
-Import CSS from the browser/client entry used by the application:
-
-```ts
-import { createApp } from 'vue';
-import VueForgeLayouts from '@codemonster-ru/vueforge-layouts';
-import '@codemonster-ru/vueforge-core/styles.css';
-import '@codemonster-ru/vueforge-layouts/styles.css';
-
-createApp({}).use(VueForgeLayouts);
-```
-
-Copy-ready project, GitHub Release, npm description, and announcement text is available in
-[public-release-assets.md](./public-release-assets.md).
+Package-specific changes are recorded in each package `CHANGELOG.md` and are used directly by the
+tag-driven release workflow.

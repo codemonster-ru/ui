@@ -63,7 +63,7 @@ export const defaultLayoutsPreset: VfLayoutPreset = {
     appShellHeaderStickyZIndex: '20',
     appShellSubheaderStickyZIndex: '19',
     appShellContentSubheaderStickyZIndex: '18',
-    adminLayoutSidebarCollapsedWidth: 'var(--vf-layout-header-height)',
+    adminLayoutSidebarCollapsedWidth: '4.75rem',
     adminLayoutSidebarTransitionDuration: 'var(--vf-motion-duration-normal)',
     adminLayoutSidebarTransitionEasing: 'var(--vf-motion-ease-standard)',
     adminLayoutSidebarExpandedZIndex: 'calc(var(--vf-layout-app-shell-header-sticky-z-index) + 2)',

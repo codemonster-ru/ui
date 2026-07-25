@@ -15,15 +15,15 @@ layouts, icons, code presentation, and interactive playgrounds.
 Use the package manager that owns your application lockfile:
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0
+npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0
 ```
 
 ```bash
-pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0
+pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0
 ```
 
 ```bash
-yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.0.0
+yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0
 ```
 
 ## Quick start

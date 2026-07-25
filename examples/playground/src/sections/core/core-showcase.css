@@ -132,6 +132,14 @@
   text-transform: uppercase;
 }
 
+.demo-nav-menu-collapsed-frame {
+  width: var(--vf-nav-menu-sidebar-compact-item-width);
+}
+
+.demo-nav-menu-variants-grid {
+  grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1.25fr);
+}
+
 .demo-avatar-showcase {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

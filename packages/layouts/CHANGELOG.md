@@ -1,11 +1,33 @@
 # Changelog
 
-## Unreleased
+## 2.1.0
 
 ### Added
 
 - Added controlled and uncontrolled sidebar collapsing to `VfAdminLayout`, including manual slot
   controls and temporary hover/focus expansion.
+- Added an independent controlled or uncontrolled mobile drawer state, built-in accessible bars
+  toggle, backdrop dismissal, and Escape-key dismissal to `VfAdminLayout`.
+- Added `mobile-brand` and `mobile-toggle` slots, mobile drawer methods, and mobile state and control
+  methods to the existing scoped slots.
+
+### Changed
+
+- Updated the collapsed sidebar geometry and content sizing, and raised the Core peer dependency to
+  the `2.1` feature line.
+- Made `VfAdminLayout` switch at its own `lg` container breakpoint from the desktop column to an
+  animated full-height drawer above the header, content, and footer.
+- Kept desktop collapsed state independent from the mobile drawer so opening navigation on mobile
+  always presents the complete sidebar.
+
+### Fixed
+
+- Prevented pointer-activated menu focus from keeping a collapsed sidebar expanded after the pointer
+  leaves.
+- Kept the sidebar brand and compact navigation aligned while the sidebar transitions between
+  collapsed, temporarily expanded, and persistent states.
+- Synchronized desktop collapse and mobile drawer transitions and prevented stale breakpoint state
+  from causing abrupt sidebar flashes.
 
 ## 2.0.0
 

@@ -74,6 +74,10 @@ export interface VfThemeTokens extends BaseVfThemeTokens {
   navMenuSidebarLevelStep: string;
   navMenuSidebarNestedItemOffset: string;
   navMenuSidebarConnectorOffsetTop: string;
+  navMenuSidebarCompactBreakpoint: string;
+  navMenuSidebarCompactItemWidth: string;
+  navMenuSidebarCompactItemPaddingInline: string;
+  navMenuSidebarLabelMaxWidth: string;
   navMenuGroupLabelColor: string;
   navMenuItemColor: string;
   navMenuTopItemFontWeight: string;

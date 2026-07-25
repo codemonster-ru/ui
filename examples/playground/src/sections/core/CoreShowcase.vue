@@ -2039,10 +2039,21 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">menus and toc</p>
                   <VfNavMenu v-model="navMenuDefaultValue" :items="docsMenuSimpleItems" />
                   <VfNavMenu v-model="navMenuPillsValue" :items="docsMenuSimpleItems" variant="pills" />
-                  <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
+                  <div class="demo-component-matrix__grid demo-nav-menu-variants-grid">
                     <div class="demo-component-matrix__cell">
                       <p class="demo-component-matrix__label">sidebar with icons</p>
                       <VfNavMenu v-model="navMenuSidebarValue" :items="docsMenuSidebarItems" variant="sidebar" />
+                    </div>
+                    <div class="demo-component-matrix__cell">
+                      <p class="demo-component-matrix__label">sidebar collapsed</p>
+                      <div class="demo-nav-menu-collapsed-frame">
+                        <VfNavMenu
+                          v-model="navMenuSidebarValue"
+                          :items="docsMenuSidebarItems"
+                          variant="sidebar"
+                          aria-label="Collapsed sidebar navigation"
+                        />
+                      </div>
                     </div>
                     <div class="demo-component-matrix__cell">
                       <p class="demo-component-matrix__label">sidebar without icons and wrapping labels</p>

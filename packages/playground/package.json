@@ -52,17 +52,17 @@
     "@codemonster-ru/vueforge-core": "^2.0.0"
   },
   "devDependencies": {
-    "@vue/test-utils": "^2.4.6",
+    "@vue/test-utils": "2.4.11",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/server-renderer": "^3.5.35",
-    "eslint": "^9.39.4",
+    "eslint": "^10.8.0",
     "globals": "^16.5.0",
     "jsdom": "^26.1.0",
     "typescript": "^5.9.3",
     "vite": "^6.4.2",
     "vitest": "^3.2.4",
     "vue": "^3.5.20",
-    "vue-tsc": "^2.2.12"
+    "vue-tsc": "^3.3.8"
   },
   "scripts": {
     "build": "rm -rf dist && vite build && vue-tsc --emitDeclarationOnly --declaration --declarationDir dist && node ../../scripts/build/finalize-declarations.mjs dist",

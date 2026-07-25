@@ -266,7 +266,7 @@ void [${componentReferences}, appShellProps, invalidAppShellProps, containerProp
     });
   } catch (error) {
     const output = [error?.stdout, error?.stderr].filter(Boolean).join('\n');
-    throw new Error(`Packed component type consumer failed to compile.\n${output}`);
+    throw new Error(`Packed component type consumer failed to compile.\n${output}`, { cause: error });
   }
 
   const cssCount = cssExportTargets.length;
