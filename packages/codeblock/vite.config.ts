@@ -11,6 +11,7 @@ export default defineConfig({
   plugins: [
     vue(),
     dts({
+      processor: 'vue',
       entryRoot: 'src',
       include: ['src'],
       exclude: ['src/**/*.test.ts', 'src/**/__tests__/**/*'],

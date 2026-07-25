@@ -530,12 +530,24 @@
                 <div
                   class="demo-shell-preview"
                   :class="`demo-shell-preview--${activeAdminBreakpointConfig.name}`"
-                  :style="{ maxWidth: activeAdminBreakpointConfig.value }"
+                  :style="{ maxWidth: `calc(${activeAdminBreakpointConfig.value} + 2 * var(--vf-border-width))` }"
                 >
                   <div class="demo-shell-frame demo-shell-frame--scroll demo-shell-frame--fixed-preview">
-                    <VfAdminLayout v-model:sidebar-collapsed="adminLayoutSidebarCollapsed" class="demo-admin-layout">
+                    <VfAdminLayout
+                      :key="activeAdminBreakpointConfig.name"
+                      v-model:sidebar-collapsed="adminLayoutSidebarCollapsed"
+                      v-model:mobile-sidebar-open="adminLayoutMobileSidebarOpen"
+                      class="demo-admin-layout"
+                    >
                       <template #brand>
                         <div class="demo-admin-layout__brand">
+                          <img class="demo-admin-layout__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
+                          <strong class="demo-admin-layout__brand-label">Annabel</strong>
+                        </div>
+                      </template>
+
+                      <template #mobile-brand>
+                        <div class="demo-admin-layout__mobile-brand">
                           <img class="demo-admin-layout__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
                           <strong>Annabel</strong>
                         </div>
@@ -544,6 +556,7 @@
                       <template #header="{ toggleSidebarCollapsed }">
                         <VfInline class="demo-admin-layout__header" :wrap="false">
                           <VfIconButton
+                            class="demo-admin-layout__desktop-toggle"
                             icon="bars"
                             variant="ghost"
                             :aria-label="adminLayoutSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
@@ -552,11 +565,12 @@
                         </VfInline>
                       </template>
 
-                      <template #aside>
+                      <template #aside="{ isSidebarCompact }">
                         <VfNavMenu
                           v-model="activeAdminNavigation"
                           :items="adminNavigationItems"
                           variant="sidebar"
+                          :compact="isSidebarCompact && !activeAdminBreakpointUsesMobileSidebar"
                           aria-label="Admin navigation"
                         />
                       </template>
@@ -1024,6 +1038,7 @@ const activeAdminBreakpoint = ref<string>(getPreferredBreakpointName(availableSh
 const activeAdminShellBreakpoint = ref<string>(getPreferredBreakpointName(availableShellBreakpoints.value));
 const activeAdminNavigation = ref('warehouse-availability');
 const adminLayoutSidebarCollapsed = ref(false);
+const adminLayoutMobileSidebarOpen = ref(false);
 const adminShellDrawerOpen = ref(false);
 const adminNavigationItems = [
   { value: 'dashboard', label: 'Dashboard', leadingIcon: 'grid' },
@@ -1135,6 +1150,14 @@ const activeAdminBreakpointConfig = computed(
     ) ??
     availableShellBreakpoints.value[0],
 );
+
+const activeAdminBreakpointUsesMobileSidebar = computed(
+  () => Number.parseFloat(activeAdminBreakpointConfig.value?.value ?? '0') < resolvedBreakpoints.value.lg,
+);
+
+watch(activeAdminBreakpoint, () => {
+  adminLayoutMobileSidebarOpen.value = false;
+});
 const activeAdminShellBreakpointConfig = computed(
   () =>
     availableShellBreakpoints.value.find((breakpoint) => breakpoint.name === activeAdminShellBreakpoint.value) ??

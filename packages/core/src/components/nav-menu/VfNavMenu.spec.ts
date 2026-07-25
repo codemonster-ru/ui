@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
 import { defineComponent, h, nextTick, ref } from 'vue';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import VfNavMenu from './VfNavMenu.vue';
 import type { VfNavMenuItem } from '@/types/components';
 
@@ -92,6 +94,87 @@ describe('VfNavMenu', () => {
     expect(wrapper.get('.vf-nav-menu__node--level-0').classes()).toContain('vf-nav-menu__node--expanded');
     expect(wrapper.get('.vf-nav-menu__node--ancestor-active').text()).toContain('Getting Started');
     expect(wrapper.get('.vf-nav-menu__node--active').text()).toBe('Quick Start');
+  });
+
+  it('provides a width-aware compact sidebar presentation', () => {
+    const navMenuCss = readFileSync(resolve(process.cwd(), 'src/styles/entries/nav-menu.css'), 'utf8');
+    const compactSidebarCss = navMenuCss.slice(navMenuCss.indexOf('.vf-nav-menu--sidebar-compact'));
+
+    expect(navMenuCss).not.toContain('@container (max-width: var(--vf-nav-menu-sidebar-compact-breakpoint))');
+    expect(navMenuCss).toMatch(
+      /\.vf-nav-menu__compact-breakpoint-probe\s*\{[^}]*inline-size: var\(--vf-nav-menu-sidebar-compact-breakpoint\);/,
+    );
+    expect(compactSidebarCss).not.toContain('justify-content: center');
+    expect(compactSidebarCss).not.toContain('padding-inline: 0');
+    expect(compactSidebarCss).toMatch(
+      /\.vf-nav-menu__item--top:not\(\.vf-nav-menu__item--icon-offset\)\s*\{[^}]*width: var\(--vf-nav-menu-sidebar-compact-item-width\);[^}]*max-width: 100%;[^}]*padding-inline: var\(--vf-nav-menu-sidebar-compact-item-padding-inline\);/,
+    );
+    expect(navMenuCss).toMatch(
+      /\.vf-nav-menu--sidebar[\s\S]*?\.vf-nav-menu__label\s*\{[^}]*white-space: nowrap;[^}]*transition:/,
+    );
+    expect(navMenuCss).toMatch(
+      /\.vf-nav-menu__item--top:not\(\.vf-nav-menu__item--icon-offset\)[\s\S]*?\.vf-nav-menu__label\s*\{[^}]*max-width: 0;[^}]*opacity: 0;/,
+    );
+    expect(navMenuCss).toMatch(
+      /\.vf-nav-menu__node--level-0[\s\S]*?> \.vf-nav-menu__collapse\s*\{[^}]*grid-template-rows: 0fr;[^}]*opacity: 0;[^}]*visibility: hidden;/,
+    );
+  });
+
+  it('switches the sidebar presentation when its measured width crosses the token breakpoint', async () => {
+    let resizeCallback: ResizeObserverCallback = () => undefined;
+
+    class ResizeObserverMock {
+      constructor(callback: ResizeObserverCallback) {
+        resizeCallback = callback;
+      }
+
+      observe() {}
+
+      unobserve() {}
+
+      disconnect() {}
+    }
+
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+
+    const wrapper = mount(VfNavMenu, {
+      props: {
+        items,
+        variant: 'sidebar',
+      },
+    });
+    const nav = wrapper.get('.vf-nav-menu').element;
+    const probe = wrapper.get('.vf-nav-menu__compact-breakpoint-probe').element;
+    const rect = (width: number) => ({ width }) as DOMRect;
+
+    vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue(rect(76));
+    vi.spyOn(probe, 'getBoundingClientRect').mockReturnValue(rect(128));
+    resizeCallback([], {} as ResizeObserver);
+    await nextTick();
+
+    expect(wrapper.get('.vf-nav-menu').classes()).toContain('vf-nav-menu--sidebar-compact');
+
+    vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue(rect(240));
+    resizeCallback([], {} as ResizeObserver);
+    await nextTick();
+
+    expect(wrapper.get('.vf-nav-menu').classes()).not.toContain('vf-nav-menu--sidebar-compact');
+  });
+
+  it('supports an explicitly controlled compact sidebar presentation', async () => {
+    const wrapper = mount(VfNavMenu, {
+      props: {
+        items,
+        variant: 'sidebar',
+        compact: true,
+      },
+    });
+
+    expect(wrapper.get('.vf-nav-menu').classes()).toContain('vf-nav-menu--sidebar-compact');
+
+    await wrapper.setProps({ compact: false });
+
+    expect(wrapper.get('.vf-nav-menu').classes()).not.toContain('vf-nav-menu--sidebar-compact');
   });
 
   it('limits sidebar ancestor pills to the top level', () => {

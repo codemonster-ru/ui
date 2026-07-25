@@ -201,6 +201,8 @@ export default defineConfig(({ mode }) => {
         : [
             ...vueforgeStyleArtifactsPlugin(),
             dts({
+              processor: 'vue',
+              entryRoot: 'src',
               include: ['src'],
               exclude: ['src/**/*.spec.ts', 'src/__tests__/**'],
               insertTypesEntry: true,

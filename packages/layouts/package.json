@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-layouts",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Layout primitives, shell components, and responsive composables for Vue 3 applications.",
   "type": "module",
   "license": "MIT",
@@ -196,7 +196,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@codemonster-ru/vueforge-core": "^2.0.0",
+    "@codemonster-ru/vueforge-core": "^2.1.0",
     "vue": "^3.5.0"
   },
   "dependencies": {
@@ -205,25 +205,25 @@
   "devDependencies": {
     "@codemonster-ru/vueforge-core": "file:../core",
     "@codemonster-ru/vueforge-icons": "file:../icons",
-    "@eslint/js": "^9.22.0",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^25.5.0",
     "@vitejs/plugin-vue": "^5.2.1",
-    "@vue/language-core": "~3.1.8",
+    "@vue/language-core": "~3.3.8",
     "@vue/server-renderer": "^3.5.13",
-    "@vue/test-utils": "^2.4.6",
-    "eslint": "^9.22.0",
-    "eslint-plugin-vue": "^10.0.0",
+    "@vue/test-utils": "2.4.11",
+    "eslint": "^10.8.0",
+    "eslint-plugin-vue": "^10.10.0",
     "globals": "^16.0.0",
     "jsdom": "^26.0.0",
     "prettier": "^3.5.3",
     "typescript": "5.9.3",
-    "typescript-eslint": "^8.26.1",
-    "unplugin-dts": "^1.0.0-beta.6",
+    "typescript-eslint": "^8.65.0",
+    "unplugin-dts": "^1.0.3",
     "vite": "^6.4.2",
     "vitest": "^3.0.8",
     "vue": "^3.5.13",
     "vue-eslint-parser": "^10.1.1",
-    "vue-tsc": "^2.2.8"
+    "vue-tsc": "^3.3.8"
   },
   "keywords": [
     "vue",

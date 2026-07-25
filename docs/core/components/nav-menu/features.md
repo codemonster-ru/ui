@@ -68,6 +68,25 @@ Use the `sidebar` variant for application navigation where the active top-level 
 <VfNavMenu v-model="active" :items="items" variant="sidebar" />
 ```
 
+The sidebar variant automatically switches to an icon-only presentation when its own width reaches
+`--vf-nav-menu-sidebar-compact-breakpoint` (`8rem` by default). Top-level labels remain available
+to assistive technologies, while group headings, nested lists, and trailing indicators are hidden.
+Give every top-level item a `leadingIcon` when the menu can appear in a collapsed sidebar.
+
+Because this behavior uses the menu's actual container width, temporarily expanding a collapsed
+`VfAdminLayout` sidebar on hover or keyboard focus restores the complete navigation without an
+additional prop. Labels remain on one line while the item width, indicators, and expanded branch
+transition between compact and regular presentations.
+
+Pass `compact` when the parent owns the sidebar transition and both components must change state in
+the same render:
+
+```vue
+<VfNavMenu v-model="active" :compact="isSidebarCompact" :items="items" variant="sidebar" />
+```
+
+Omit `compact` for standalone responsive menus; width detection remains the default.
+
 ## Accessibility
 
 Accessibility behavior and keyboard interactions.

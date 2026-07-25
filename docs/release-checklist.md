@@ -15,10 +15,14 @@ The tag preparation script derives `next` whenever the version contains a prerel
 
 ## 2. Prepare the release commit
 
-- Use Node.js 24 and npm 11.9, matching CI and the root `packageManager` field.
+- Use Node.js 24.15 or newer and npm 11.9, matching CI and the root `packageManager` field.
 - Start from the protected default branch with a clean worktree.
-- Confirm all eight package versions and internal ranges match the coordinated version matrix.
-- Confirm every package has a non-empty matching section in its `CHANGELOG.md`.
+- Confirm Core and Layouts use the target release versions and all other package versions remain
+  unchanged.
+- Confirm Core and Layouts have non-empty matching sections in their `CHANGELOG.md` files.
+- Keep `@vue/test-utils` pinned to `2.4.11` while the root install patch redirects its vulnerable
+  formatter dependency to `js-beautify@2`; the patch intentionally fails when the upstream
+  dependency contract changes and must then be reviewed.
 - Review [migration-to-v2.md](./migration-to-v2.md) and [release-notes.md](./release-notes.md).
 - Confirm npm Trusted Publishing is configured for `.github/workflows/release-from-tag.yml`.
 - Confirm the workflow has only `contents: write` and `id-token: write` permissions.
@@ -113,16 +117,10 @@ the target once with lifecycle scripts disabled, dry-runs publication of that ex
 publishes the same file. No workspace or package-directory publish may replace the final tarball
 publish, and no rebuild may occur between packing, inspection, and publication.
 
-| Order | Tag                                                     |
-| ----: | ------------------------------------------------------- |
-|     1 | `@codemonster-ru/vueforge-theme@2.0.0`                  |
-|     2 | `@codemonster-ru/vueforge-icons@2.0.0`                  |
-|     3 | `@codemonster-ru/vueforge-playground-core@2.0.0`        |
-|     4 | `@codemonster-ru/vueforge-playground-vite-plugin@1.0.0` |
-|     5 | `@codemonster-ru/vueforge-core@2.0.0`                   |
-|     6 | `@codemonster-ru/vueforge-codeblock@4.0.0`              |
-|     7 | `@codemonster-ru/vueforge-layouts@2.0.0`                |
-|     8 | `@codemonster-ru/vueforge-playground@3.0.0`             |
+| Order | Tag                                          |
+| ----: | -------------------------------------------- |
+|     1 | `@codemonster-ru/vueforge-core@2.1.0`        |
+|     2 | `@codemonster-ru/vueforge-layouts@2.1.0`     |
 
 For each row:
 
@@ -135,20 +133,20 @@ For each row:
 Example for the first stable package:
 
 ```bash
-git tag '@codemonster-ru/vueforge-theme@2.0.0'
-git push origin '@codemonster-ru/vueforge-theme@2.0.0'
+git tag '@codemonster-ru/vueforge-core@2.1.0'
+git push origin '@codemonster-ru/vueforge-core@2.1.0'
 ```
 
 For a beta, update the package and changelog to a matching prerelease version first, then use a tag
-such as `@codemonster-ru/vueforge-theme@2.0.0-beta.1`. The workflow publishes it under `next`.
+such as `@codemonster-ru/vueforge-core@2.2.0-beta.1`. The workflow publishes it under `next`.
 
 ## 7. Registry, provenance, and integrity smoke
 
 After each workflow completes:
 
 ```bash
-npm view @codemonster-ru/vueforge-theme@2.0.0 version dist.integrity dist.shasum --json
-npm dist-tag ls @codemonster-ru/vueforge-theme
+npm view @codemonster-ru/vueforge-core@2.1.0 version dist.integrity dist.shasum --json
+npm dist-tag ls @codemonster-ru/vueforge-core
 ```
 
 Repeat with the package and version just published. Confirm:
@@ -160,7 +158,7 @@ Repeat with the package and version just published. Confirm:
 - a fresh registry install passes TypeScript, browser build, SSR, and CSS import smoke tests;
 - `npm audit signatures` passes in the clean npm consumer.
 
-After all eight packages publish, repeat the complete ecosystem consumer with only registry versions.
+After both packages publish, repeat the complete ecosystem consumer with only registry versions.
 
 ## 8. Rollback plan
 
@@ -178,14 +176,14 @@ For a stable regression:
 Commands use the real package and known-good version:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-core@1.35.1 latest
-npm deprecate @codemonster-ru/vueforge-core@2.0.0 "Use the latest verified patch release."
+npm dist-tag add @codemonster-ru/vueforge-core@2.0.0 latest
+npm deprecate @codemonster-ru/vueforge-core@2.1.0 "Use the latest verified release."
 ```
 
 For a prerelease regression, move `next` to the last verified prerelease:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-core@2.0.0-beta.0 next
+npm dist-tag add @codemonster-ru/vueforge-core@2.1.0-beta.0 next
 ```
 
 If no prerelease should remain discoverable, remove `next` instead:
@@ -199,7 +197,7 @@ the release notes or issue tracker.
 
 ## 9. Complete the release
 
-- Confirm all eight tags point to the same reviewed release commit.
+- Confirm both tags point to the same reviewed release commit.
 - Confirm internal dependency ranges resolve to published versions from the registry.
 - Confirm `latest` or `next` is correct for every package.
 - Confirm registry consumers pass with npm, pnpm, and Yarn.
