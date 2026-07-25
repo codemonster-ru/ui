@@ -1,15 +1,7 @@
 import type { IconName } from '@codemonster-ru/vueforge-icons';
 
 export type VfButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'success'
-  | 'info'
-  | 'warn'
-  | 'help'
-  | 'danger'
-  | 'contrast'
-  | 'ghost';
+  'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'help' | 'danger' | 'contrast' | 'ghost';
 export type VfControlSize = 'sm' | 'md' | 'lg';
 export type VfAvatarShape = 'square' | 'circle';
 export type VfSwitchThumbContrast = 'auto' | 'inverse';
@@ -83,6 +75,16 @@ export interface VfNavMenuItem {
   rel?: string;
   disabled?: boolean;
   children?: VfNavMenuItem[];
+}
+
+export interface VfNavMenuProps {
+  items: VfNavMenuItem[];
+  modelValue?: string;
+  defaultValue?: string;
+  ariaLabel?: string;
+  expandMode?: 'multiple' | 'single';
+  variant?: 'default' | 'pills' | 'sidebar';
+  compact?: boolean;
 }
 
 export interface VfTableOfContentsItem {

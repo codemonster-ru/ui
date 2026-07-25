@@ -117,10 +117,10 @@ the target once with lifecycle scripts disabled, dry-runs publication of that ex
 publishes the same file. No workspace or package-directory publish may replace the final tarball
 publish, and no rebuild may occur between packing, inspection, and publication.
 
-| Order | Tag                                          |
-| ----: | -------------------------------------------- |
-|     1 | `@codemonster-ru/vueforge-core@2.1.0`        |
-|     2 | `@codemonster-ru/vueforge-layouts@2.1.0`     |
+| Order | Tag                                      |
+| ----: | ---------------------------------------- |
+|     1 | `@codemonster-ru/vueforge-core@2.1.1`    |
+|     2 | `@codemonster-ru/vueforge-layouts@2.1.1` |
 
 For each row:
 
@@ -133,8 +133,8 @@ For each row:
 Example for the first stable package:
 
 ```bash
-git tag '@codemonster-ru/vueforge-core@2.1.0'
-git push origin '@codemonster-ru/vueforge-core@2.1.0'
+git tag '@codemonster-ru/vueforge-core@2.1.1'
+git push origin '@codemonster-ru/vueforge-core@2.1.1'
 ```
 
 For a beta, update the package and changelog to a matching prerelease version first, then use a tag
@@ -145,7 +145,7 @@ such as `@codemonster-ru/vueforge-core@2.2.0-beta.1`. The workflow publishes it 
 After each workflow completes:
 
 ```bash
-npm view @codemonster-ru/vueforge-core@2.1.0 version dist.integrity dist.shasum --json
+npm view @codemonster-ru/vueforge-core@2.1.1 version dist.integrity dist.shasum --json
 npm dist-tag ls @codemonster-ru/vueforge-core
 ```
 
@@ -176,8 +176,8 @@ For a stable regression:
 Commands use the real package and known-good version:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-core@2.0.0 latest
-npm deprecate @codemonster-ru/vueforge-core@2.1.0 "Use the latest verified release."
+npm dist-tag add @codemonster-ru/vueforge-core@2.1.0 latest
+npm deprecate @codemonster-ru/vueforge-core@2.1.1 "Use the latest verified release."
 ```
 
 For a prerelease regression, move `next` to the last verified prerelease:

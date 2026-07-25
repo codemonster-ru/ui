@@ -51,9 +51,10 @@ Native DOM events exposed by the component.
 
 Exported interfaces related to this component.
 
-| Name            | Type        | Default | Description                                                    |
-| --------------- | ----------- | ------- | -------------------------------------------------------------- |
-| `VfNavMenuItem` | `interface` | `—`     | Navigation menu node definition with optional nested children. |
+| Name             | Type        | Default | Description                                                    |
+| ---------------- | ----------- | ------- | -------------------------------------------------------------- |
+| `VfNavMenuItem`  | `interface` | `—`     | Navigation menu node definition with optional nested children. |
+| `VfNavMenuProps` | `interface` | `—`     | Public component props, exported from the root and `nav-menu`. |
 
 ## Types
 

@@ -87,6 +87,7 @@ export type {
   VfLinkUnderline,
   VfLinkTone,
   VfNavMenuItem,
+  VfNavMenuProps,
   VfSelectOption,
   VfStepperContentPosition,
   VfStepperItem,

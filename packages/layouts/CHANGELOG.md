@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1.1
+
+### Added
+
+- Exported public `VfAdminLayoutProps`, slot-scope, mobile-toggle attribute, and exposed-method
+  interfaces from the package root and `admin-layout` component subpath.
+
+### Fixed
+
+- Made the published TypeScript API match the named `VfAdminLayout` contracts documented in 2.1.0.
+
 ## 2.1.0
 
 ### Added

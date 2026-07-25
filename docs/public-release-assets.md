@@ -1,6 +1,6 @@
-# VueForge 2.1 public release assets
+# VueForge 2.1.1 public release assets
 
-These copy-ready assets describe the VueForge Core and Layouts 2.1 release. Publish them only after
+These copy-ready assets describe the VueForge Core and Layouts 2.1.1 release. Publish them only after
 both package workflows and the registry-only consumer smoke tests have passed.
 
 ## Short project description
@@ -16,6 +16,8 @@ layouts, icons, highlighted code, and secure interactive playgrounds.
   and application-provided centered branding.
 - Container-aware compact `VfNavMenu` navigation with smooth icon-only transitions.
 - Optional controlled compact navigation for synchronization with parent sidebars.
+- Named public TypeScript interfaces for `VfNavMenu` and `VfAdminLayout` props, slots, mobile-toggle
+  attributes, and exposed methods.
 - Public theme tokens for compact navigation geometry.
 - Corrected temporary-expansion focus behavior and Switch thumb-icon contrast.
 
@@ -40,8 +42,8 @@ These descriptions match the publication manifests:
 | ---------------------- | ------: | :-----------------------: |
 | Theme                  | `2.0.0` |            No             |
 | Icons                  | `2.0.0` |            No             |
-| Core                   | `2.1.0` |            Yes            |
-| Layouts                | `2.1.0` |            Yes            |
+| Core                   | `2.1.1` |            Yes            |
+| Layouts                | `2.1.1` |            Yes            |
 | CodeBlock              | `4.0.0` |            No             |
 | Playground Core        | `2.0.0` |            No             |
 | Playground Vite Plugin | `1.0.0` |            No             |
@@ -53,9 +55,10 @@ The release workflow creates one GitHub Release for each Core and Layouts packag
 package changes from the matching `CHANGELOG.md` section. Use the following text as the project-level
 introduction; package-specific changelogs remain the source of truth.
 
-### VueForge 2.1
+### VueForge 2.1.1
 
-VueForge 2.1 introduces a responsive administrative sidebar and container-aware compact navigation.
+VueForge 2.1.1 completes the public TypeScript API for the responsive administrative sidebar and
+container-aware compact navigation introduced in 2.1.0.
 `VfAdminLayout` can manage desktop collapse and mobile drawer state internally or receive either
 state from an application. Temporary pointer and keyboard expansion preserves access to the full
 desktop sidebar.
@@ -85,10 +88,10 @@ for the complete version matrix and package details.
 Use this announcement only after registry propagation, provenance, integrity, and fresh-consumer
 checks have passed:
 
-> VueForge 2.1 is available for Vue 3.5 applications. The release adds collapsible desktop
-> AdminLayout sidebars, animated mobile navigation drawers, smooth container-aware compact
-> navigation, public compact-mode theme tokens, and fixes temporary sidebar expansion and Switch
-> icon contrast. Upgrade Core and Layouts together and see
+> VueForge 2.1.1 is available for Vue 3.5 applications. The patch exports named TypeScript
+> interfaces for responsive NavMenu and AdminLayout props, slot scopes, mobile-toggle attributes,
+> and exposed methods while preserving the 2.1 runtime behavior. Upgrade Core and Layouts together
+> and see
 > [the release notes](https://github.com/codemonster-ru/vueforge/blob/main/docs/release-notes.md)
 > for the coordinated package versions.
 

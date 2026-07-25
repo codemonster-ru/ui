@@ -7,7 +7,7 @@
 
 Responsive layout primitives and application shells for VueForge-based Vue 3 applications.
 
-Coordinated release: `@codemonster-ru/vueforge-layouts@2.1.0`.
+Coordinated release: `@codemonster-ru/vueforge-layouts@2.1.1`.
 
 ## Requirements
 

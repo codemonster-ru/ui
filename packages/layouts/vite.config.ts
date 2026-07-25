@@ -109,6 +109,10 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
 
         for (const [entryName, exportName, declarationSource, cssFiles] of componentEntries) {
           const cssImports = cssFiles.map((cssFile) => `import '../${cssFile}';`).join('\n');
+          const typeExports =
+            entryName === 'admin-layout'
+              ? "export type { VfAdminLayoutExposed, VfAdminLayoutMobileSidebarScope, VfAdminLayoutMobileToggleAttrs, VfAdminLayoutProps, VfAdminLayoutScope } from './layouts/src/shell/admin-layout.types';\n"
+              : '';
           writeFileSync(
             resolve(autoDir, `${entryName}.js`),
             `${cssImports}\nexport { ${exportName} as default, ${exportName} } from '../index.js';\n`,
@@ -119,7 +123,7 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
           );
           writeFileSync(
             resolve(distDir, `${entryName}.d.ts`),
-            `export { default } from '${declarationSource}';\nexport { default as ${exportName} } from '${declarationSource}';\n`,
+            `export { default } from '${declarationSource}';\nexport { default as ${exportName} } from '${declarationSource}';\n${typeExports}`,
           );
         }
       },
