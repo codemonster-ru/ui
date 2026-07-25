@@ -24,13 +24,13 @@ const packageContracts = [
     directory: 'core',
     entry: '@codemonster-ru/vueforge-core',
     name: '@codemonster-ru/vueforge-core',
-    version: '2.1.0',
+    version: '2.1.1',
   },
   {
     directory: 'layouts',
     entry: '@codemonster-ru/vueforge-layouts',
     name: '@codemonster-ru/vueforge-layouts',
-    version: '2.1.0',
+    version: '2.1.1',
   },
   {
     directory: 'codeblock',
@@ -520,6 +520,72 @@ void [options, invalidFloatingMiddleware];
 `,
   );
 
+  writeFileSync(
+    join(typesDirectory, 'admin-navigation-contract.mts'),
+    `import type { VfNavMenuProps as RootNavMenuProps } from '@codemonster-ru/vueforge-core';
+import type { VfNavMenuProps as SubpathNavMenuProps } from '@codemonster-ru/vueforge-core/nav-menu';
+import type {
+  VfAdminLayoutExposed,
+  VfAdminLayoutMobileSidebarScope,
+  VfAdminLayoutMobileToggleAttrs,
+  VfAdminLayoutProps,
+  VfAdminLayoutScope,
+} from '@codemonster-ru/vueforge-layouts';
+import type {
+  VfAdminLayoutProps as SubpathAdminLayoutProps,
+  VfAdminLayoutScope as SubpathAdminLayoutScope,
+} from '@codemonster-ru/vueforge-layouts/admin-layout';
+
+const navMenuProps: RootNavMenuProps = {
+  compact: true,
+  items: [{ label: 'Dashboard', value: 'dashboard' }],
+  variant: 'sidebar',
+};
+const subpathNavMenuProps: SubpathNavMenuProps = navMenuProps;
+const adminLayoutProps: VfAdminLayoutProps = {
+  mobileSidebarOpen: true,
+  sidebarCollapsed: false,
+};
+const subpathAdminLayoutProps: SubpathAdminLayoutProps = adminLayoutProps;
+const mobileToggleAttrs: VfAdminLayoutMobileToggleAttrs = {
+  'aria-controls': 'navigation',
+  'aria-expanded': true,
+  'aria-label': 'Close navigation',
+};
+const exposed: VfAdminLayoutExposed = {
+  closeMobileSidebar() {},
+  collapseSidebar() {},
+  expandSidebar() {},
+  openMobileSidebar() {},
+  toggleMobileSidebar() {},
+  toggleSidebarCollapsed() {},
+};
+const scope: VfAdminLayoutScope = {
+  ...exposed,
+  isMobileSidebarOpen: true,
+  isSidebarCollapsed: false,
+  isSidebarCompact: false,
+};
+const subpathScope: SubpathAdminLayoutScope = scope;
+const mobileScope: VfAdminLayoutMobileSidebarScope = {
+  closeMobileSidebar: exposed.closeMobileSidebar,
+  isMobileSidebarOpen: true,
+  mobileToggleAttrs,
+  openMobileSidebar: exposed.openMobileSidebar,
+  toggleMobileSidebar: exposed.toggleMobileSidebar,
+};
+
+void [
+  adminLayoutProps,
+  mobileScope,
+  navMenuProps,
+  subpathAdminLayoutProps,
+  subpathNavMenuProps,
+  subpathScope,
+];
+`,
+  );
+
   const commonCompilerOptions = {
     target: 'ES2022',
     strict: true,
@@ -535,7 +601,7 @@ void [options, invalidFloatingMiddleware];
       module: 'ESNext',
       moduleResolution: 'Bundler',
     },
-    include: ['types/public-exports.mts', 'types/floating-contract.mts'],
+    include: ['types/public-exports.mts', 'types/floating-contract.mts', 'types/admin-navigation-contract.mts'],
   });
   writeJson(join(consumerDirectory, 'tsconfig.nodenext.json'), {
     compilerOptions: {
@@ -543,7 +609,12 @@ void [options, invalidFloatingMiddleware];
       module: 'NodeNext',
       moduleResolution: 'NodeNext',
     },
-    include: ['types/public-exports.mts', 'types/public-requires.cts', 'types/floating-contract.mts'],
+    include: [
+      'types/public-exports.mts',
+      'types/public-requires.cts',
+      'types/floating-contract.mts',
+      'types/admin-navigation-contract.mts',
+    ],
   });
 }
 

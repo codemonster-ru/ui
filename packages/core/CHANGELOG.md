@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.1
+
+### Added
+
+- Exported the public `VfNavMenuProps` interface from the package root and `nav-menu` component
+  subpath.
+
 ## 2.1.0
 
 ### Added

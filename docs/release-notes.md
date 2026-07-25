@@ -1,8 +1,7 @@
-# VueForge Core and Layouts 2.1 release notes
+# VueForge Core and Layouts 2.1.1 release notes
 
-VueForge 2.1 adds a responsive administrative sidebar, an adaptive compact navigation mode, and a
-mobile navigation drawer. The release keeps the VueForge 2 public theme and package-entry contracts
-intact.
+VueForge 2.1.1 completes the public TypeScript API for the responsive administrative navigation
+introduced in 2.1.0. It is a backward-compatible declaration-only API addition.
 
 ## Current package versions
 
@@ -10,8 +9,8 @@ intact.
 | ---------------------- | ------: | :-----------------------: |
 | Theme                  | `2.0.0` |            No             |
 | Icons                  | `2.0.0` |            No             |
-| Core                   | `2.1.0` |            Yes            |
-| Layouts                | `2.1.0` |            Yes            |
+| Core                   | `2.1.1` |            Yes            |
+| Layouts                | `2.1.1` |            Yes            |
 | CodeBlock              | `4.0.0` |            No             |
 | Playground Core        | `2.0.0` |            No             |
 | Playground Vite Plugin | `1.0.0` |            No             |
@@ -19,6 +18,11 @@ intact.
 
 ## Highlights
 
+- Core exports `VfNavMenuProps` from the package root and `nav-menu` subpath.
+- Layouts exports `VfAdminLayoutProps`, `VfAdminLayoutScope`,
+  `VfAdminLayoutMobileSidebarScope`, `VfAdminLayoutMobileToggleAttrs`, and
+  `VfAdminLayoutExposed` from the package root and `admin-layout` subpath.
+- Published declarations now match the named slot-scope contracts described by the documentation.
 - `VfAdminLayout` supports controlled and uncontrolled sidebar collapsing, manual slot controls,
   and temporary pointer or keyboard expansion.
 - Below its own `lg` container breakpoint, `VfAdminLayout` replaces the desktop sidebar with an
@@ -66,10 +70,9 @@ The collapsed AdminLayout sidebar width remains configurable with:
 
 ## Package notes
 
-- **Core 2.1.0:** adaptive compact `VfNavMenu`, optional controlled compact state, public
-  compact-mode tokens, and restored Switch thumb-icon contrast.
-- **Layouts 2.1.0:** responsive `VfAdminLayout` with desktop collapse, temporary expansion, an
-  independent mobile drawer, mobile header slots, and corrected transition and focus behavior.
+- **Core 2.1.1:** exports the public `VfNavMenuProps` interface.
+- **Layouts 2.1.1:** exports the complete public `VfAdminLayout` props, slot-scope, mobile-toggle,
+  and exposed-method interfaces.
 
 ## Distribution and verification
 
