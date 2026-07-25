@@ -88,6 +88,12 @@ const componentThemePresetSource = {
     navMenuSidebarLevelStep: 'calc(var(--vf-nav-menu-leading-icon-column-size) + var(--vf-nav-menu-item-gap) * 0.5)',
     navMenuSidebarNestedItemOffset: 'var(--vf-surface-gap-compact)',
     navMenuSidebarConnectorOffsetTop: 'calc(var(--vf-border-width) + var(--vf-field-padding-block-md) + 0.75rem)',
+    navMenuSidebarCompactBreakpoint: '8rem',
+    navMenuSidebarCompactItemWidth:
+      'calc(var(--vf-nav-menu-leading-icon-column-size) + var(--vf-field-padding-inline-md) * 2)',
+    navMenuSidebarCompactItemPaddingInline:
+      'min(var(--vf-field-padding-inline-md), max(0px, calc((100cqi - var(--vf-nav-menu-leading-icon-column-size)) / 2)))',
+    navMenuSidebarLabelMaxWidth: '20rem',
     navMenuGroupLabelColor: 'var(--vf-color-text-secondary)',
     navMenuItemColor: 'var(--vf-selectable-color)',
     navMenuTopItemFontWeight: 'var(--vf-text-label-font-weight)',

@@ -24,13 +24,13 @@ const packageContracts = [
     directory: 'core',
     entry: '@codemonster-ru/vueforge-core',
     name: '@codemonster-ru/vueforge-core',
-    version: '2.0.0',
+    version: '2.1.0',
   },
   {
     directory: 'layouts',
     entry: '@codemonster-ru/vueforge-layouts',
     name: '@codemonster-ru/vueforge-layouts',
-    version: '2.0.0',
+    version: '2.1.0',
   },
   {
     directory: 'codeblock',
