@@ -61,6 +61,10 @@ export interface VfLayoutTokens {
   appShellHeaderStickyZIndex: string;
   appShellSubheaderStickyZIndex: string;
   appShellContentSubheaderStickyZIndex: string;
+  adminLayoutSidebarCollapsedWidth: string;
+  adminLayoutSidebarTransitionDuration: string;
+  adminLayoutSidebarTransitionEasing: string;
+  adminLayoutSidebarExpandedZIndex: string;
   documentLayoutHeaderStickyZIndex: string;
   documentLayoutSubheaderStickyZIndex: string;
   documentLayoutContentSubheaderStickyZIndex: string;

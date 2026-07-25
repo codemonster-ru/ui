@@ -10,6 +10,8 @@ The component does not include a logo, navigation items, buttons, or page conten
 - When both `brand` and `aside` are present, a divider separates the brand from navigation.
 - The aside has a border on its right edge; the header and footer have horizontal borders.
 - The `aside` and `header` remain fixed while the page content scrolls.
+- The sidebar can be collapsed manually to `--vf-layout-admin-layout-sidebar-collapsed-width`, freeing horizontal space for the main column. By default, the token references `--vf-layout-header-height`.
+- A collapsed sidebar temporarily expands over the page on hover or keyboard focus and collapses again when interaction leaves it. This preview does not change the persisted collapsed state.
 - The content area uses the setup-layout background token, so setup and admin screens share the same base surface.
 
 ## Import
@@ -28,9 +30,14 @@ entry: /App.vue
 
 ```vue file=/App.vue
 <template>
-  <VfAdminLayout>
+  <VfAdminLayout v-model:sidebar-collapsed="sidebarCollapsed">
     <template #brand>Acme CMS</template>
-    <template #header>Administration</template>
+    <template #header="{ toggleSidebarCollapsed }">
+      <button type="button" @click="toggleSidebarCollapsed">
+        {{ sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation' }}
+      </button>
+      Administration
+    </template>
     <template #aside>
       <nav>
         <a href="/dashboard">Dashboard</a>
@@ -46,7 +53,10 @@ entry: /App.vue
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts';
+
+const sidebarCollapsed = ref(false);
 </script>
 ```
 ````

@@ -116,6 +116,11 @@ describe('package exports', () => {
     const themeCss = readFileSync(resolve(packageRoot, '.generated/theme/layout-theme.css'), 'utf8');
 
     expect(tokensCss).toContain('--vf-layout-shell-sidebar-width: 18rem;');
+    expect(tokensCss).toContain('--vf-layout-admin-layout-sidebar-collapsed-width: var(--vf-layout-header-height);');
+    expect(tokensCss).toContain(
+      '--vf-layout-admin-layout-sidebar-transition-duration: var(--vf-motion-duration-normal);',
+    );
+    expect(tokensCss).toContain('--vf-layout-admin-layout-sidebar-transition-easing: var(--vf-motion-ease-standard);');
     expect(tokensCss).toContain('--vf-layout-admin-shell-sidebar-width: 18rem;');
     expect(tokensCss).toContain('--vf-layout-admin-shell-header-background: var(--vf-color-text-primary);');
     expect(tokensCss).toContain('--vf-layout-admin-shell-header-color: var(--vf-color-background-surface);');
@@ -149,14 +154,14 @@ describe('package exports', () => {
     const effectiveRuntimeDark = layoutsTokensToCssVars(resolveLayoutsThemeConfig().preset.dark, 'vf-layout');
 
     expect(sortEntries(staticLight)).toEqual(sortEntries(runtimeLight));
-    expect(Object.keys(staticLight)).toHaveLength(123);
+    expect(Object.keys(staticLight)).toHaveLength(127);
     expect(sortEntries(staticDarkOverrides)).toEqual(sortEntries(runtimeDarkOverrides));
     expect(Object.keys(staticDarkOverrides)).toHaveLength(2);
     expect(sortEntries(effectiveStaticDark)).toEqual(sortEntries(effectiveRuntimeDark));
     expect(sortEntries(scopedLightVariables)).toEqual(sortEntries(runtimeLight));
-    expect(Object.keys(scopedLightVariables)).toHaveLength(123);
+    expect(Object.keys(scopedLightVariables)).toHaveLength(127);
     expect(sortEntries(scopedDarkVariables)).toEqual(sortEntries(effectiveRuntimeDark));
-    expect(Object.keys(scopedDarkVariables)).toHaveLength(123);
+    expect(Object.keys(scopedDarkVariables)).toHaveLength(127);
     expect(staticLight).toHaveProperty('--vf-layout-app-shell-header-sticky-z-index', '20');
     expect(staticLight).not.toHaveProperty('--vf-layout-app-shell-header-sticky-zindex');
   });
@@ -253,6 +258,51 @@ describe('admin layout', () => {
     expect(wrapper.find('.vf-admin-layout__footer').text()).toBe('Footer');
   });
 
+  it('updates uncontrolled sidebar state from its default and exposes manual controls', async () => {
+    const wrapper = mount(VfAdminLayout, {
+      props: {
+        defaultSidebarCollapsed: true,
+      },
+      slots: {
+        aside: ({ isSidebarCollapsed }: { isSidebarCollapsed: boolean }) =>
+          h('span', { 'data-test': 'sidebar-state' }, String(isSidebarCollapsed)),
+        header: ({ toggleSidebarCollapsed }: { toggleSidebarCollapsed: () => void }) =>
+          h('button', { 'data-test': 'toggle-sidebar', onClick: toggleSidebarCollapsed }, 'Toggle sidebar'),
+      },
+    });
+
+    expect(wrapper.classes()).toContain('vf-admin-layout--sidebar-collapsed');
+    expect(wrapper.get('[data-test="sidebar-state"]').text()).toBe('true');
+
+    await wrapper.get('[data-test="toggle-sidebar"]').trigger('click');
+
+    expect(wrapper.classes()).not.toContain('vf-admin-layout--sidebar-collapsed');
+    expect(wrapper.get('[data-test="sidebar-state"]').text()).toBe('false');
+    expect(wrapper.emitted('update:sidebarCollapsed')).toEqual([[false]]);
+  });
+
+  it('keeps controlled sidebar state owned by the parent', async () => {
+    const wrapper = mount(VfAdminLayout, {
+      props: {
+        sidebarCollapsed: true,
+      },
+      slots: {
+        aside: () => 'Navigation',
+        header: ({ expandSidebar }: { expandSidebar: () => void }) =>
+          h('button', { 'data-test': 'expand-sidebar', onClick: expandSidebar }, 'Expand sidebar'),
+      },
+    });
+
+    await wrapper.get('[data-test="expand-sidebar"]').trigger('click');
+
+    expect(wrapper.classes()).toContain('vf-admin-layout--sidebar-collapsed');
+    expect(wrapper.emitted('update:sidebarCollapsed')).toEqual([[false]]);
+
+    await wrapper.setProps({ sidebarCollapsed: false });
+
+    expect(wrapper.classes()).not.toContain('vf-admin-layout--sidebar-collapsed');
+  });
+
   it('keeps the aside and header fixed across the full viewport while the main column owns the footer', () => {
     const adminLayoutCss = readFileSync(resolve(packageRoot, 'src/style-entries/admin-layout.css'), 'utf8');
 
@@ -274,6 +324,15 @@ describe('admin layout', () => {
       /\.vf-admin-layout--with-brand-divider .vf-admin-layout__brand\s*\{[^}]*border-block-end:/,
     );
     expect(adminLayoutCss).toMatch(/\.vf-admin-layout__footer\s*\{[^}]*margin-top: auto;/);
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside\s*\{[^}]*inline-size: var\(--vf-layout-admin-layout-sidebar-collapsed-width\);/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__main\s*\{[^}]*margin-inline-start: var\(--vf-layout-admin-layout-sidebar-collapsed-width\);/,
+    );
+    expect(adminLayoutCss).toMatch(
+      /\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside:is\(:hover, :focus-within\)\s*\{[^}]*inline-size: var\(--vf-layout-shell-sidebar-width\);/,
+    );
   });
 });
 
