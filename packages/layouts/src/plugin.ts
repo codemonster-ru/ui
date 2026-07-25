@@ -26,6 +26,8 @@ const CORE_DEPENDENCY_TOKENS = [
   '--vf-color-text-secondary',
   '--vf-border-width',
   '--vf-divider-color',
+  '--vf-motion-duration-normal',
+  '--vf-motion-ease-standard',
 ] as const;
 
 const LAYOUT_OUTPUT_TOKENS = [
@@ -60,6 +62,10 @@ const LAYOUT_OUTPUT_TOKENS = [
   '--vf-layout-app-shell-header-sticky-z-index',
   '--vf-layout-app-shell-subheader-sticky-z-index',
   '--vf-layout-app-shell-content-subheader-sticky-z-index',
+  '--vf-layout-admin-layout-sidebar-collapsed-width',
+  '--vf-layout-admin-layout-sidebar-transition-duration',
+  '--vf-layout-admin-layout-sidebar-transition-easing',
+  '--vf-layout-admin-layout-sidebar-expanded-z-index',
   '--vf-layout-document-layout-header-sticky-z-index',
   '--vf-layout-document-layout-subheader-sticky-z-index',
   '--vf-layout-document-layout-content-subheader-sticky-z-index',

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added controlled and uncontrolled sidebar collapsing to `VfAdminLayout`, including manual slot
+  controls and temporary hover/focus expansion.
+
 ## 2.0.0
 
 ### Added
