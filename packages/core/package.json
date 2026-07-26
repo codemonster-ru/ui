@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-core",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Foundation layer for the VueForge design system.",
   "type": "module",
   "license": "MIT",
@@ -189,6 +189,13 @@
         "default": "./dist/auto/menu-bar.js"
       }
     },
+    "./menu": {
+      "import": {
+        "types": "./dist/menu.d.ts",
+        "node": "./dist/menu.js",
+        "default": "./dist/auto/menu.js"
+      }
+    },
     "./nav-menu": {
       "import": {
         "types": "./dist/nav-menu.d.ts",
@@ -335,6 +342,7 @@
     "./input.css": "./dist/input.css",
     "./link.css": "./dist/link.css",
     "./menu-bar.css": "./dist/menu-bar.css",
+    "./menu.css": "./dist/menu.css",
     "./nav-menu.css": "./dist/nav-menu.css",
     "./panel.css": "./dist/panel.css",
     "./popover.css": "./dist/popover.css",

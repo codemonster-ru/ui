@@ -21,13 +21,18 @@ export type VfDataTableDensity = 'default' | 'compact';
 export type VfDataTableLoadingVariant = 'mask' | 'skeleton';
 export type VfDataTablePaginationMode = 'client' | 'manual';
 export type VfDataTableCellAlign = 'start' | 'center' | 'end';
+export type VfDataTableCellVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
 
 export type VfDataTableRow = object;
+export type VfDataTableRowKey = string | number;
 
 export interface VfDataTableColumn {
   key: string;
   header?: string;
+  /** CSS width applied to the column header and cells. */
+  width?: string;
   align?: VfDataTableCellAlign;
+  verticalAlign?: VfDataTableCellVerticalAlign;
   scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';
 }
 

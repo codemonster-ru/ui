@@ -24,6 +24,7 @@ const overlayDependentCssExports = new Set([
   './drawer.css',
   './dropdown.css',
   './menu-bar.css',
+  './menu.css',
   './popover.css',
   './tooltip.css',
 ]);

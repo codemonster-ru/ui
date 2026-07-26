@@ -2,6 +2,7 @@ import { defineComponent, h, nextTick, ref } from 'vue';
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it } from 'vitest';
 import VfDropdown from './VfDropdown.vue';
+import { VfMenu, VfMenuItem } from '@/components/menu';
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -89,6 +90,31 @@ describe('VfDropdown', () => {
 
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
     expect(wrapper.get('.vf-dropdown__trigger').attributes('aria-expanded')).toBe('false');
+  });
+
+  it('closes when a VfMenuItem is selected', async () => {
+    const wrapper = mount(VfDropdown, {
+      attachTo: document.body,
+      global: {
+        components: { VfMenu, VfMenuItem },
+        stubs: {
+          teleport: true,
+        },
+      },
+      props: {
+        defaultOpen: true,
+      },
+      slots: {
+        trigger: '<button type="button">Actions</button>',
+        default: '<VfMenu><VfMenuItem label="Edit" /></VfMenu>',
+      },
+    });
+
+    await nextTick();
+    await wrapper.get('.vf-menu__item').trigger('click');
+    await nextTick();
+
+    expect(wrapper.find('[role="menu"]').exists()).toBe(false);
   });
 
   it('keeps focus on trigger when opened by click', async () => {

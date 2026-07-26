@@ -70,6 +70,15 @@ const error = 'Please accept the terms to continue.';
 ```
 ````
 
+## Indeterminate
+
+Use `indeterminate` for a select-all checkbox when only some items are selected. The native input
+state and `aria-checked="mixed"` are kept in sync.
+
+```vue
+<VfCheckbox :model-value="false" indeterminate aria-label="Select all rows" />
+```
+
 ## Group Error
 
 Recommended pattern when a checkbox group needs shared helper text or an error message.
@@ -125,8 +134,8 @@ The following items are listed in this section:
 
 Keyboard interaction follows native semantics of the rendered element or composite widget.
 
-| Key | Function |
-| --- | --- |
-| `Tab` | Moves focus to checkbox. |
+| Key           | Function                                   |
+| ------------- | ------------------------------------------ |
+| `Tab`         | Moves focus to checkbox.                   |
 | `Shift + Tab` | Moves focus to previous focusable element. |
-| `Space` | Toggles checked state. |
+| `Space`       | Toggles checked state.                     |

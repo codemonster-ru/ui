@@ -140,6 +140,11 @@
   grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1.25fr);
 }
 
+.demo-nav-menu-wrapping-labels .vf-nav-menu--sidebar .vf-nav-menu__label {
+  overflow: visible;
+  white-space: normal;
+}
+
 .demo-avatar-showcase {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

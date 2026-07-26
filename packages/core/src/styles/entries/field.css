@@ -9,7 +9,7 @@
 
 .vf-field__label {
   margin: 0;
-  font-size: var(--vf-text-label-font-size);
+  font-size: var(--vf-field-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
   color: var(--vf-color-text-primary);
@@ -66,7 +66,7 @@
   max-inline-size: calc(100% - (var(--vf-field-floating-label-offset-inline) * 2));
   overflow: hidden;
   background: var(--vf-field-floating-label-background);
-  font-size: var(--vf-text-label-font-size);
+  font-size: var(--vf-field-label-font-size);
   font-weight: var(--vf-text-label-font-weight);
   line-height: var(--vf-text-label-line-height);
   color: var(--vf-color-text-placeholder);

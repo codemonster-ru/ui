@@ -23,7 +23,7 @@ const releaseTrain = [
     directory: 'core',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-core',
-    version: '2.1.1',
+    version: '2.2.0',
   },
   {
     directory: 'layouts',

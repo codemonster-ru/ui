@@ -10,6 +10,7 @@
   position: relative;
   display: inline-flex;
   align-items: flex-start;
+  vertical-align: top;
   gap: var(--vf-selection-gap);
   width: fit-content;
   min-width: 0;
@@ -146,6 +147,34 @@
 .vf-checkbox__input:checked + .vf-checkbox__control {
   border-color: var(--vf-checkbox-checked-border-color);
   background: var(--vf-checkbox-checked-background);
+}
+
+.vf-checkbox--indeterminate .vf-checkbox__control,
+.vf-checkbox__input:indeterminate + .vf-checkbox__control {
+  border-color: var(--vf-checkbox-checked-border-color);
+  background: var(--vf-checkbox-checked-background);
+}
+
+.vf-checkbox__indeterminate-mark {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  box-sizing: border-box;
+  width: var(--vf-checkbox-mark-height);
+  height: var(--vf-checkbox-mark-stroke-width);
+  border: 0;
+  border-radius: var(--vf-radius-control-tight);
+  background: var(--vf-checkbox-mark-color);
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+.vf-checkbox--sm .vf-checkbox__indeterminate-mark {
+  width: var(--vf-checkbox-mark-height-sm);
+}
+
+.vf-checkbox--lg .vf-checkbox__indeterminate-mark {
+  width: var(--vf-checkbox-mark-height-lg);
 }
 
 .vf-checkbox__input:checked + .vf-checkbox__control .vf-checkbox__mark {

@@ -7,7 +7,7 @@
 
 Core Vue 3 components, tokens, and theme runtime for the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-core@2.1.1`.
+Coordinated release: `@codemonster-ru/vueforge-core@2.2.0`.
 
 ## Requirements
 
@@ -76,7 +76,8 @@ import '@codemonster-ru/vueforge-core/button.css';
 ## Public entries
 
 - Root: plugin, components, composables, theme helpers, and public types.
-- Components: `./button`, `./dialog`, `./tabs`, and the other documented component subpaths.
+- Components: `./button`, `./dialog`, `./menu`, `./tabs`, and the other documented component
+  subpaths.
 - Runtime utilities: `./foundation`, `./theme`, and `./async`.
 - CSS: `./styles.css`, `./foundation.css`, `./tokens.css`, `./theme.css`, `./base.css`, and
   per-component CSS entries.

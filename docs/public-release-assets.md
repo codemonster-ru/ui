@@ -1,7 +1,7 @@
-# VueForge 2.1.1 public release assets
+# VueForge Core 2.2.0 public release assets
 
-These copy-ready assets describe the VueForge Core and Layouts 2.1.1 release. Publish them only after
-both package workflows and the registry-only consumer smoke tests have passed.
+These copy-ready assets describe the VueForge Core 2.2.0 release. Publish them only after the Core
+workflow and registry-only consumer smoke tests have passed.
 
 ## Short project description
 
@@ -10,16 +10,11 @@ layouts, icons, highlighted code, and secure interactive playgrounds.
 
 ## Key release features
 
-- Collapsible `VfAdminLayout` sidebars with controlled and uncontrolled state.
-- Temporary sidebar expansion for pointer and keyboard interaction.
-- Animated mobile navigation drawers with an accessible bars toggle, backdrop, Escape dismissal,
-  and application-provided centered branding.
-- Container-aware compact `VfNavMenu` navigation with smooth icon-only transitions.
-- Optional controlled compact navigation for synchronization with parent sidebars.
-- Named public TypeScript interfaces for `VfNavMenu` and `VfAdminLayout` props, slots, mobile-toggle
-  attributes, and exposed methods.
-- Public theme tokens for compact navigation geometry.
-- Corrected temporary-expansion focus behavior and Switch thumb-icon contrast.
+- `VfMenu` and `VfMenuItem` for icon-supported vertical menus inside popup containers.
+- Controlled and uncontrolled `VfDataTable` row selection with select-all and indeterminate states.
+- `VfDataTable` column widths and vertical alignment controls.
+- Native mixed-selection semantics for `VfCheckbox`.
+- A public `fieldLabelFontSize` theme token and larger default form labels.
 
 ## npm package descriptions
 
@@ -42,8 +37,8 @@ These descriptions match the publication manifests:
 | ---------------------- | ------: | :-----------------------: |
 | Theme                  | `2.0.0` |            No             |
 | Icons                  | `2.0.0` |            No             |
-| Core                   | `2.1.1` |            Yes            |
-| Layouts                | `2.1.1` |            Yes            |
+| Core                   | `2.2.0` |            Yes            |
+| Layouts                | `2.1.1` |            No             |
 | CodeBlock              | `4.0.0` |            No             |
 | Playground Core        | `2.0.0` |            No             |
 | Playground Vite Plugin | `1.0.0` |            No             |
@@ -51,32 +46,24 @@ These descriptions match the publication manifests:
 
 ## GitHub Release description
 
-The release workflow creates one GitHub Release for each Core and Layouts package tag and takes its
-package changes from the matching `CHANGELOG.md` section. Use the following text as the project-level
+The release workflow creates one GitHub Release for the Core package tag and takes its package
+changes from the matching `CHANGELOG.md` section. Use the following text as the project-level
 introduction; package-specific changelogs remain the source of truth.
 
-### VueForge 2.1.1
+### VueForge Core 2.2.0
 
-VueForge 2.1.1 completes the public TypeScript API for the responsive administrative sidebar and
-container-aware compact navigation introduced in 2.1.0.
-`VfAdminLayout` can manage desktop collapse and mobile drawer state internally or receive either
-state from an application. Temporary pointer and keyboard expansion preserves access to the full
-desktop sidebar.
+VueForge Core 2.2.0 adds reusable popup menus and practical data-table controls for applications
+that need bulk actions and predictable table layout.
 
-Below the layout's own `lg` container breakpoint, the sidebar becomes an animated full-height drawer
-with a built-in accessible bars toggle, backdrop, and Escape dismissal. Applications can supply the
-centered mobile brand, replace the toggle, and retain their own trailing header content.
+`VfMenu` and `VfMenuItem` provide icon-supported actions and links inside `VfDropdown`. `VfDataTable`
+supports controlled or uncontrolled row selection, select-all, indeterminate header state, column
+widths, and vertical cell alignment. Form labels now use a dedicated theme token.
 
-The `VfNavMenu` sidebar variant now transitions between full and icon-only presentations according
-to its container width. Public theme tokens control the breakpoint, compact item geometry, and label
-width, so applications can adapt the behavior without overriding component CSS.
-
-This is a backward-compatible release. Upgrade Core and Layouts together:
+This is a backward-compatible release. Upgrade Core independently:
 
 ```bash
 npm install vue@^3.5.0 \
-  @codemonster-ru/vueforge-core@^2.1.0 \
-  @codemonster-ru/vueforge-layouts@^2.1.0
+  @codemonster-ru/vueforge-core@^2.2.0
 ```
 
 Read the
@@ -88,10 +75,9 @@ for the complete version matrix and package details.
 Use this announcement only after registry propagation, provenance, integrity, and fresh-consumer
 checks have passed:
 
-> VueForge 2.1.1 is available for Vue 3.5 applications. The patch exports named TypeScript
-> interfaces for responsive NavMenu and AdminLayout props, slot scopes, mobile-toggle attributes,
-> and exposed methods while preserving the 2.1 runtime behavior. Upgrade Core and Layouts together
-> and see
+> VueForge Core 2.2.0 is available for Vue 3.5 applications. The release adds reusable popup menus,
+> data-table selection and column controls, native mixed-selection checkboxes, and a dedicated form
+> label theme token. See
 > [the release notes](https://github.com/codemonster-ru/vueforge/blob/main/docs/release-notes.md)
 > for the coordinated package versions.
 

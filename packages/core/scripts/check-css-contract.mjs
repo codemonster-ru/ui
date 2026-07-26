@@ -24,6 +24,7 @@ const ownBases = {
   'input.css': ['input', 'input-wrap'],
   'link.css': ['link'],
   'menu-bar.css': ['menu-bar', 'horizontal-scroller', 'floating-transition'],
+  'menu.css': ['menu'],
   'nav-menu.css': ['nav-menu'],
   'panel.css': ['panel'],
   'popover.css': ['popover', 'floating', 'floating-transition'],
@@ -50,6 +51,7 @@ const explicitDeps = {
   'select.css': ['./field.css', './icon-button.css', './dropdown.css'],
   'textarea.css': ['./field.css'],
   'theme-switch.css': ['./button.css', './switch.css'],
+  'menu.css': ['../components/overlay-primitives.css'],
 };
 
 const globallyAllowed = new Set(['icon', 'icon-wrapper']);

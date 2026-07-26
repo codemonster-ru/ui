@@ -1,0 +1,79 @@
+@import '../components/overlay-primitives.css';
+
+.vf-menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vf-menu-gap);
+  min-width: 0;
+}
+
+.vf-menu__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--vf-surface-gap-compact);
+  width: 100%;
+  min-height: var(--vf-control-height-sm);
+  padding: var(--vf-field-padding-sm);
+  border: var(--vf-overlay-border-width) solid transparent;
+  border-radius: var(--vf-radius-control-tight);
+  background: transparent;
+  color: var(--vf-dropdown-item-color);
+  font: inherit;
+  font-size: var(--vf-text-body-font-size);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
+    color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
+    border-color var(--vf-motion-duration-normal) var(--vf-motion-ease-standard),
+    box-shadow var(--vf-motion-duration-normal) var(--vf-motion-ease-standard);
+}
+
+.vf-menu__item-icon {
+  flex: none;
+  width: var(--vf-icon-size-md);
+  height: var(--vf-icon-size-md);
+}
+
+.vf-menu__item-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.vf-menu__item:is(:disabled, [aria-disabled='true']) {
+  color: var(--vf-color-text-disabled, var(--vf-dropdown-item-color));
+  border-color: var(--vf-color-border-disabled, transparent);
+  background: var(--vf-color-background-surface-disabled, transparent);
+  cursor: not-allowed;
+}
+
+.vf-menu__item:focus-visible:not(:disabled, [aria-disabled='true']) {
+  outline: none;
+  border-color: var(--vf-dropdown-item-focus-border-color);
+  box-shadow: 0 0 0 var(--vf-focus-ring-width) var(--vf-color-focus-ring);
+  color: var(--vf-dropdown-item-focus-color);
+}
+
+.vf-menu__item:hover:not(.vf-menu__item--active, :disabled, [aria-disabled='true']) {
+  color: var(--vf-selectable-hover-color);
+  background: var(--vf-selectable-hover-background);
+}
+
+.vf-menu__item--active,
+.vf-menu__item--active:hover {
+  color: var(--vf-dropdown-item-default-active-color);
+  background: var(--vf-dropdown-item-default-active-background);
+}
+
+.vf-menu__item--danger {
+  color: var(--vf-color-status-danger-subtle-foreground);
+}
+
+.vf-menu__item--danger:hover:not(:disabled, [aria-disabled='true']),
+.vf-menu__item--danger:focus-visible:not(:disabled, [aria-disabled='true']) {
+  color: var(--vf-color-status-danger-subtle-foreground);
+  background: var(--vf-color-status-danger-subtle-background);
+}
