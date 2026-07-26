@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs } from 'vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
+import VfCheckbox from '@/components/checkbox/VfCheckbox.vue';
 import VfProgressSpinner from '@/components/progress-spinner/VfProgressSpinner.vue';
 import VfSelect from '@/components/select/VfSelect.vue';
 import VfSkeleton from '@/components/skeleton/VfSkeleton.vue';
@@ -12,6 +13,7 @@ import type {
   VfDataTableLoadingVariant,
   VfDataTablePaginationMode,
   VfDataTableRow,
+  VfDataTableRowKey,
 } from '@/types/components';
 
 defineOptions({
@@ -21,7 +23,10 @@ defineOptions({
 interface VfDataTableProps {
   columns: VfDataTableColumn[];
   rows?: VfDataTableRow[];
-  rowKey?: string | ((row: VfDataTableRow, index: number) => string | number);
+  rowKey?: string | ((row: VfDataTableRow, index: number) => VfDataTableRowKey);
+  selectable?: boolean;
+  selectedRowKeys?: VfDataTableRowKey[];
+  defaultSelectedRowKeys?: VfDataTableRowKey[];
   caption?: string;
   density?: VfDataTableDensity;
   striped?: boolean;
@@ -45,6 +50,9 @@ interface VfDataTableProps {
 const props = withDefaults(defineProps<VfDataTableProps>(), {
   rows: () => [],
   rowKey: undefined,
+  selectable: false,
+  selectedRowKeys: undefined,
+  defaultSelectedRowKeys: () => [],
   caption: undefined,
   density: 'default',
   striped: false,
@@ -66,6 +74,7 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
 });
 
 const emit = defineEmits<{
+  'update:selectedRowKeys': [selectedRowKeys: VfDataTableRowKey[]];
   'update:page': [page: number];
   'update:pageSize': [pageSize: number];
 }>();
@@ -73,6 +82,7 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 const internalPage = ref(props.defaultPage);
 const internalPageSize = ref(props.defaultPageSize);
+const internalSelectedRowKeys = ref<VfDataTableRowKey[]>([...props.defaultSelectedRowKeys]);
 
 const classes = computed(() =>
   cx(
@@ -99,7 +109,7 @@ const visibleRows = computed(() => {
   return props.rows.slice(start, start + currentPageSize.value);
 });
 const hasRows = computed(() => visibleRows.value.length > 0);
-const stateColspan = computed(() => Math.max(props.columns.length, 1));
+const stateColspan = computed(() => Math.max(props.columns.length + (props.selectable ? 1 : 0), 1));
 const skeletonRows = computed(() => Array.from({ length: Math.max(1, props.loadingRows) }, (_, index) => index));
 const firstVisibleRow = computed(() => {
   if (!hasRows.value) {
@@ -134,8 +144,17 @@ const pageSizeSelectOptions = computed(() =>
     label: String(option),
   })),
 );
+const currentSelectedRowKeys = computed(() => props.selectedRowKeys ?? internalSelectedRowKeys.value);
+const visibleRowKeys = computed(() => visibleRows.value.map((row, index) => selectionRowId(row, index)));
+const allVisibleRowsSelected = computed(
+  () =>
+    visibleRowKeys.value.length > 0 && visibleRowKeys.value.every((key) => currentSelectedRowKeys.value.includes(key)),
+);
+const someVisibleRowsSelected = computed(
+  () => !allVisibleRowsSelected.value && visibleRowKeys.value.some((key) => currentSelectedRowKeys.value.includes(key)),
+);
 
-function rowId(row: VfDataTableRow, index: number): string | number {
+function rowId(row: VfDataTableRow, index: number): VfDataTableRowKey {
   if (typeof props.rowKey === 'function') {
     return props.rowKey(row, index);
   }
@@ -147,6 +166,13 @@ function rowId(row: VfDataTableRow, index: number): string | number {
   }
 
   return index;
+}
+
+function selectionRowId(row: VfDataTableRow, index: number): VfDataTableRowKey {
+  const offset =
+    props.pagination && props.paginationMode === 'client' ? (currentPage.value - 1) * currentPageSize.value : 0;
+
+  return rowId(row, index + offset);
 }
 
 function cellValue(row: VfDataTableRow, key: string) {
@@ -161,6 +187,17 @@ function cellValue(row: VfDataTableRow, key: string) {
 
 function columnHeader(column: VfDataTableColumn) {
   return column.header ?? column.key;
+}
+
+function columnClasses(column: VfDataTableColumn) {
+  return [
+    column.align && `vf-data-table__cell--${column.align}`,
+    column.verticalAlign && `vf-data-table__cell--vertical-${column.verticalAlign}`,
+  ];
+}
+
+function columnStyle(column: VfDataTableColumn) {
+  return column.width ? { width: column.width } : undefined;
 }
 
 function clampPage(page: number) {
@@ -189,6 +226,30 @@ function setPageSize(value: string) {
   emit('update:pageSize', nextPageSize);
   setPage(1);
 }
+
+function updateSelectedRowKeys(selectedRowKeys: VfDataTableRowKey[]) {
+  internalSelectedRowKeys.value = selectedRowKeys;
+  emit('update:selectedRowKeys', selectedRowKeys);
+}
+
+function setRowSelected(row: VfDataTableRow, index: number, selected: boolean) {
+  const key = selectionRowId(row, index);
+  const nextKeys = selected
+    ? [...currentSelectedRowKeys.value, key].filter((value, keyIndex, keys) => keys.indexOf(value) === keyIndex)
+    : currentSelectedRowKeys.value.filter((selectedKey) => selectedKey !== key);
+
+  updateSelectedRowKeys(nextKeys);
+}
+
+function setAllVisibleRowsSelected(selected: boolean) {
+  const nextKeys = selected
+    ? [...currentSelectedRowKeys.value, ...visibleRowKeys.value].filter(
+        (value, keyIndex, keys) => keys.indexOf(value) === keyIndex,
+      )
+    : currentSelectedRowKeys.value.filter((key) => !visibleRowKeys.value.includes(key));
+
+  updateSelectedRowKeys(nextKeys);
+}
 </script>
 
 <template>
@@ -201,11 +262,21 @@ function setPageSize(value: string) {
 
         <thead class="vf-table__head">
           <tr>
+            <th v-if="props.selectable" class="vf-data-table__selection-cell" scope="col">
+              <VfCheckbox
+                :model-value="allVisibleRowsSelected"
+                :indeterminate="someVisibleRowsSelected"
+                :disabled="!hasRows"
+                aria-label="Select all rows"
+                @update:model-value="setAllVisibleRowsSelected"
+              />
+            </th>
             <th
               v-for="column in props.columns"
               :key="column.key"
-              :class="['vf-data-table__header-cell', column.align && `vf-data-table__cell--${column.align}`]"
+              :class="['vf-data-table__header-cell', ...columnClasses(column)]"
               :scope="column.scope ?? 'col'"
+              :style="columnStyle(column)"
             >
               <slot :name="`header-${column.key}`" :column="column">
                 {{ columnHeader(column) }}
@@ -217,14 +288,12 @@ function setPageSize(value: string) {
         <tbody class="vf-table__body">
           <template v-if="props.loading && props.loadingVariant === 'skeleton'">
             <tr v-for="row in skeletonRows" :key="`skeleton-${row}`" class="vf-data-table__skeleton-row">
+              <td v-if="props.selectable" class="vf-data-table__selection-cell" />
               <td
                 v-for="column in props.columns"
                 :key="column.key"
-                :class="[
-                  'vf-data-table__cell',
-                  'vf-data-table__skeleton-cell',
-                  column.align && `vf-data-table__cell--${column.align}`,
-                ]"
+                :class="['vf-data-table__cell', 'vf-data-table__skeleton-cell', ...columnClasses(column)]"
+                :style="columnStyle(column)"
               >
                 <VfSkeleton min-height="var(--vf-icon-size-md)" radius="var(--vf-radius-control)" />
               </td>
@@ -232,11 +301,25 @@ function setPageSize(value: string) {
           </template>
 
           <template v-else-if="hasRows">
-            <tr v-for="(row, rowIndex) in visibleRows" :key="rowId(row, rowIndex)">
+            <tr
+              v-for="(row, rowIndex) in visibleRows"
+              :key="rowId(row, rowIndex)"
+              :aria-selected="
+                props.selectable ? currentSelectedRowKeys.includes(selectionRowId(row, rowIndex)) : undefined
+              "
+            >
+              <td v-if="props.selectable" class="vf-data-table__selection-cell">
+                <VfCheckbox
+                  :model-value="currentSelectedRowKeys.includes(selectionRowId(row, rowIndex))"
+                  :aria-label="`Select row ${rowIndex + 1}`"
+                  @update:model-value="setRowSelected(row, rowIndex, $event)"
+                />
+              </td>
               <td
                 v-for="column in props.columns"
                 :key="column.key"
-                :class="['vf-data-table__cell', column.align && `vf-data-table__cell--${column.align}`]"
+                :class="['vf-data-table__cell', ...columnClasses(column)]"
+                :style="columnStyle(column)"
               >
                 <slot
                   :name="`cell-${column.key}`"

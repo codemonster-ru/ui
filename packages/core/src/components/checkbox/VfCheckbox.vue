@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs, type StyleValue } from 'vue';
+import { computed, onMounted, ref, useAttrs, watch, type StyleValue } from 'vue';
 import { cx } from '@/utils/classes';
 import type { VfControlSize } from '@/types/components';
 
@@ -12,6 +12,7 @@ interface VfCheckboxProps {
   size?: VfControlSize;
   invalid?: boolean;
   disabled?: boolean;
+  indeterminate?: boolean;
   label?: string;
 }
 
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<VfCheckboxProps>(), {
   size: 'md',
   invalid: false,
   disabled: false,
+  indeterminate: false,
   label: undefined,
 });
 
@@ -29,12 +31,23 @@ const emit = defineEmits<{
 }>();
 
 const attrs = useAttrs();
+const input = ref<HTMLInputElement>();
+
+function syncIndeterminate() {
+  if (input.value) {
+    input.value.indeterminate = props.indeterminate;
+  }
+}
+
+watch(() => props.indeterminate, syncIndeterminate);
+onMounted(syncIndeterminate);
 
 const rootClasses = computed(() =>
   cx(
     'vf-checkbox',
     `vf-checkbox--${props.size}`,
     props.modelValue && 'vf-checkbox--checked',
+    props.indeterminate && 'vf-checkbox--indeterminate',
     props.invalid && 'vf-checkbox--invalid',
     props.disabled && 'vf-checkbox--disabled',
     attrs.class as string | undefined,
@@ -56,16 +69,19 @@ function handleChange(event: Event) {
 <template>
   <label :class="rootClasses" :style="rootStyles">
     <input
+      ref="input"
       class="vf-checkbox__input"
       type="checkbox"
       :checked="props.modelValue"
       :disabled="props.disabled"
       :aria-invalid="props.invalid || undefined"
+      :aria-checked="props.indeterminate ? 'mixed' : props.modelValue ? 'true' : 'false'"
       v-bind="inputAttrs"
       @change="handleChange"
     />
     <span class="vf-checkbox__control" aria-hidden="true">
-      <span class="vf-checkbox__mark" />
+      <span v-if="props.indeterminate" class="vf-checkbox__indeterminate-mark" />
+      <span v-else class="vf-checkbox__mark" />
     </span>
     <span v-if="label || $slots.default" class="vf-checkbox__content">
       <slot>{{ label }}</slot>

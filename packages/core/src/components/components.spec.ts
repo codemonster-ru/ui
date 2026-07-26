@@ -495,9 +495,9 @@ describe('core primitives', () => {
       props: {
         caption: 'Team availability',
         columns: [
-          { key: 'member', header: 'Member' },
-          { key: 'status', header: 'Status' },
-          { key: 'meta.score', header: 'Score', align: 'end' },
+          { key: 'member', header: 'Member', width: '14rem' },
+          { key: 'status', header: 'Status', width: '10rem' },
+          { key: 'meta.score', header: 'Score', align: 'end', verticalAlign: 'middle', width: '6rem' },
         ],
         rows: [
           { id: 1, member: 'Alice', status: 'available', meta: { score: 42 } },
@@ -516,12 +516,15 @@ describe('core primitives', () => {
     expect(wrapper.classes()).toContain('vf-data-table-wrap');
     expect(wrapper.find('caption').text()).toBe('Team availability');
     expect(wrapper.findAll('thead th')).toHaveLength(3);
+    expect(wrapper.find('thead th').attributes('style')).toContain('width: 14rem');
+    expect(wrapper.find('tbody td').attributes('style')).toContain('width: 14rem');
     expect(wrapper.findAll('tbody tr')).toHaveLength(2);
     expect(wrapper.text()).toContain('AVAILABLE');
     expect(wrapper.text()).toContain('42');
     expect(wrapper.find('.vf-table').classes()).toContain('vf-table--compact');
     expect(wrapper.find('.vf-table').classes()).toContain('vf-table--column-dividers');
     expect(wrapper.find('tbody td:last-child').classes()).toContain('vf-data-table__cell--end');
+    expect(wrapper.find('tbody td:last-child').classes()).toContain('vf-data-table__cell--vertical-middle');
 
     const empty = mount(VfDataTable, {
       props: {
@@ -583,6 +586,36 @@ describe('core primitives', () => {
     expect(paginated.emitted('update:page')).toEqual([[2]]);
     expect(paginated.findAll('tbody tr')).toHaveLength(1);
     expect(paginated.text()).toContain('3-3 of 3');
+  });
+
+  it('selects data table rows individually and in bulk', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        selectable: true,
+        columns: [{ key: 'name', header: 'Name' }],
+        rows: [
+          { id: 1, name: 'Alice' },
+          { id: 2, name: 'Bob' },
+        ],
+        rowKey: 'id',
+      },
+    });
+
+    const checkboxes = wrapper.findAll('.vf-checkbox__input');
+
+    expect(checkboxes).toHaveLength(3);
+    expect(wrapper.find('thead .vf-checkbox__input').attributes('aria-label')).toBe('Select all rows');
+
+    await checkboxes[0]?.setValue(true);
+
+    expect(wrapper.emitted('update:selectedRowKeys')).toEqual([[[1, 2]]]);
+    expect(wrapper.findAll('tbody .vf-checkbox--checked')).toHaveLength(2);
+
+    await wrapper.findAll('tbody .vf-checkbox__input')[0]?.setValue(false);
+
+    expect(wrapper.emitted('update:selectedRowKeys')).toEqual([[[1, 2]], [[2]]]);
+    expect(wrapper.find('thead .vf-checkbox').classes()).toContain('vf-checkbox--indeterminate');
+    expect((wrapper.find('thead .vf-checkbox__input').element as HTMLInputElement).indeterminate).toBe(true);
   });
 
   it('emits input updates and invalid state', async () => {
@@ -1134,6 +1167,20 @@ describe('core primitives', () => {
 
     expect(checkbox.emitted('update:modelValue')).toEqual([[false]]);
     expect(switchControl.emitted('update:modelValue')).toEqual([[true]]);
+  });
+
+  it('renders an indeterminate checkbox state', () => {
+    const checkbox = mount(VfCheckbox, {
+      props: {
+        indeterminate: true,
+      },
+    });
+
+    expect(checkbox.classes()).toContain('vf-checkbox--indeterminate');
+    expect(checkbox.find('.vf-checkbox__indeterminate-mark').exists()).toBe(true);
+    expect(checkbox.find('.vf-checkbox__mark').exists()).toBe(false);
+    expect(checkbox.get('input').attributes('aria-checked')).toBe('mixed');
+    expect((checkbox.get('input').element as HTMLInputElement).indeterminate).toBe(true);
   });
 
   it('supports static switch track variant', () => {

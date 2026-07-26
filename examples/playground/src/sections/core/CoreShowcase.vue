@@ -23,7 +23,9 @@ import {
   VfIconButton,
   VfInput,
   VfLink,
+  VfMenu,
   VfMenuBar,
+  VfMenuItem,
   VfNavMenu,
   VfPanel,
   VfPopover,
@@ -72,6 +74,7 @@ const navMenuSidebarValue = ref('quick-start');
 const navMenuSidebarNoIconsValue = ref('no-icons-accessibility');
 const menuBarDefaultValue = ref('pricing');
 const menuBarPillsValue = ref('about');
+const selectedDataTableRowKeys = ref<Array<string | number>>([]);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 
 const formGeometrySizes = ['sm', 'md', 'lg'] as const;
@@ -895,8 +898,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <template #trigger>
                       <VfButton tabindex="-1" variant="secondary">Open menu</VfButton>
                     </template>
-                    <button class="vf-dropdown__item" role="menuitem">Action one</button>
-                    <button class="vf-dropdown__item" role="menuitem">Action two</button>
+                    <VfMenu>
+                      <VfMenuItem :icon="icons.pencil" label="Edit" />
+                      <VfMenuItem :icon="icons.trash" label="Delete" tone="danger" />
+                    </VfMenu>
                   </VfDropdown>
                 </div>
 
@@ -1177,6 +1182,30 @@ const tabContent = computed<Record<string, string>>(() => ({
                     striped
                     column-dividers
                   />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table selection</p>
+                  <VfDataTable
+                    v-model:selected-row-keys="selectedDataTableRowKeys"
+                    selectable
+                    :columns="dataTableColumns"
+                    :rows="dataTableRows"
+                    row-key="id"
+                    striped
+                    column-dividers
+                  />
+                  <div class="demo-inline">
+                    <span class="demo-text">{{ selectedDataTableRowKeys.length }} rows selected</span>
+                    <VfButton
+                      size="sm"
+                      variant="secondary"
+                      :disabled="selectedDataTableRowKeys.length === 0"
+                      @click="selectedDataTableRowKeys = []"
+                    >
+                      Clear selection
+                    </VfButton>
+                  </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">
@@ -2055,7 +2084,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                         />
                       </div>
                     </div>
-                    <div class="demo-component-matrix__cell">
+                    <div class="demo-component-matrix__cell demo-nav-menu-wrapping-labels">
                       <p class="demo-component-matrix__label">sidebar without icons and wrapping labels</p>
                       <VfNavMenu
                         v-model="navMenuSidebarNoIconsValue"

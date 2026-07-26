@@ -18,6 +18,7 @@ export { VfIconButton } from './icon-button';
 export { VfInput } from './input';
 export { VfLink } from './link';
 export { VfMenuBar } from './menu-bar';
+export { VfMenu, VfMenuItem } from './menu';
 export { VfNavMenu } from './nav-menu';
 export { VfPanel } from './panel';
 export { VfPopover } from './popover';

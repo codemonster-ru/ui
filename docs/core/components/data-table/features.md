@@ -61,6 +61,38 @@ Use `cell-{key}` slots to format individual columns without taking over the full
 </VfDataTable>
 ```
 
+## Column sizing and alignment
+
+Set `width` on a column to apply a CSS width to its header and cells. Use `align` for horizontal
+alignment and `verticalAlign` for vertical alignment.
+
+```ts
+const columns: VfDataTableColumn[] = [
+  { key: 'member', header: 'Member', width: '14rem' },
+  { key: 'role', header: 'Role', verticalAlign: 'middle' },
+  { key: 'tasks', header: 'Tasks', width: '6rem', align: 'end' },
+];
+```
+
+## Row selection
+
+Set `selectable` and provide a stable `row-key` to render row checkboxes and a select-all checkbox.
+Use `v-model:selected-row-keys` when the selected keys are controlled by the parent.
+
+```vue
+<VfDataTable
+  v-model:selected-row-keys="selectedRowKeys"
+  selectable
+  row-key="id"
+  :columns="columns"
+  :rows="rows"
+  striped
+/>
+```
+
+The header checkbox becomes indeterminate when only some visible rows are selected. Use the
+selected keys to perform bulk actions such as deleting the selected records.
+
 ## Loading
 
 The default loading state renders a mask over the current table with a progress spinner. Use `loadingVariant="skeleton"` for placeholder rows.
