@@ -351,6 +351,7 @@ export interface VfThemeTokens extends BaseVfThemeTokens {
   textCaptionFontSize: string;
   textCaptionLineHeight: string;
   textCaptionFontWeight: string;
+  fieldLabelFontSize: string;
   textLabelFontSize: string;
   textLabelLineHeight: string;
   textLabelFontWeight: string;

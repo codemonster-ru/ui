@@ -4,7 +4,7 @@ import type { VfPrimitiveColorTokenName, VfSemanticColorTokenName } from '../../
 
 export const PRIMITIVE_COLOR_TOKEN_COUNT = 66;
 export const SEMANTIC_COLOR_TOKEN_COUNT = 85;
-export const COMPLETE_THEME_TOKEN_COUNT = 962;
+export const COMPLETE_THEME_TOKEN_COUNT = 963;
 export const COMPLETE_DARK_OVERRIDE_COUNT = 101;
 export const MAX_CANONICAL_ALIAS_DEPTH = 4;
 export const MAX_CUSTOM_PREFIX_ALIAS_DEPTH = 9;

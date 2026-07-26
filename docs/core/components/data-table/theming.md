@@ -4,6 +4,8 @@
 
 Skeleton loading rows reuse the `VfSkeleton` token namespace. Spinner loading reuses the `VfProgressSpinner` token namespace.
 
+Selection controls reuse the `VfCheckbox` token namespace.
+
 | Token                          | Purpose                                        |
 | ------------------------------ | ---------------------------------------------- |
 | `tableBorderColor`             | Outer, row, and optional column divider color. |

@@ -41,6 +41,7 @@ const componentEntryNames = [
   'breadcrumbs.css',
   'stepper.css',
   'menu-bar.css',
+  'menu.css',
   'tabs.css',
   'nav-menu.css',
   'table-of-contents.css',

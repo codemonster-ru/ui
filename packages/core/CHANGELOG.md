@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.2.0
+
+### Added
+
+- Added `VfMenu` and `VfMenuItem` for icon-supported vertical menus inside `VfDropdown` and other
+  popup containers.
+- Added controlled and uncontrolled row selection to `VfDataTable`, including select-all,
+  indeterminate header state, `selectedRowKeys`, and `update:selectedRowKeys`.
+- Added `VfDataTableColumn.width` and `verticalAlign` support for column sizing and cell alignment.
+- Added the public `VfCheckbox.indeterminate` state with native mixed-selection semantics.
+- Added the `fieldLabelFontSize` theme token for form field labels.
+
+### Changed
+
+- Improved data table header and striped-row contrast in light and dark themes.
+- Increased the default form field label size to `1rem`.
+- Increased the minimum vertical space of data table pagination controls.
+
 ## 2.1.1
 
 ### Added
