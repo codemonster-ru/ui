@@ -7,7 +7,7 @@
 
 Core Vue 3 components, tokens, and theme runtime for the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-core@2.2.0`.
+Coordinated release: `@codemonster-ru/vueforge-core@2.3.0`.
 
 ## Requirements
 
