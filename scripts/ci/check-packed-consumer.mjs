@@ -24,7 +24,7 @@ const packageContracts = [
     directory: 'core',
     entry: '@codemonster-ru/vueforge-core',
     name: '@codemonster-ru/vueforge-core',
-    version: '2.2.0',
+    version: '2.3.0',
   },
   {
     directory: 'layouts',

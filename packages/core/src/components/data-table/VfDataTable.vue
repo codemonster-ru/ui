@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs } from 'vue';
+import { computed, onUnmounted, ref, useAttrs } from 'vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import VfCheckbox from '@/components/checkbox/VfCheckbox.vue';
@@ -9,6 +9,7 @@ import VfSkeleton from '@/components/skeleton/VfSkeleton.vue';
 import { cx } from '@/utils/classes';
 import type {
   VfDataTableColumn,
+  VfDataTableColumnWidths,
   VfDataTableDensity,
   VfDataTableLoadingVariant,
   VfDataTablePaginationMode,
@@ -32,6 +33,9 @@ interface VfDataTableProps {
   striped?: boolean;
   columnDividers?: boolean;
   stickyHeader?: boolean;
+  columnWidths?: VfDataTableColumnWidths;
+  defaultColumnWidths?: VfDataTableColumnWidths;
+  resizableColumns?: boolean;
   loading?: boolean;
   loadingVariant?: VfDataTableLoadingVariant;
   loadingRows?: number;
@@ -58,6 +62,9 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
   striped: false,
   columnDividers: false,
   stickyHeader: false,
+  columnWidths: undefined,
+  defaultColumnWidths: () => ({}),
+  resizableColumns: false,
   loading: false,
   loadingVariant: 'mask',
   loadingRows: 3,
@@ -77,12 +84,40 @@ const emit = defineEmits<{
   'update:selectedRowKeys': [selectedRowKeys: VfDataTableRowKey[]];
   'update:page': [page: number];
   'update:pageSize': [pageSize: number];
+  'update:columnWidths': [columnWidths: VfDataTableColumnWidths];
+  'column-resize-end': [columnWidths: VfDataTableColumnWidths];
 }>();
 
 const attrs = useAttrs();
 const internalPage = ref(props.defaultPage);
 const internalPageSize = ref(props.defaultPageSize);
 const internalSelectedRowKeys = ref<VfDataTableRowKey[]>([...props.defaultSelectedRowKeys]);
+const internalColumnWidths = ref<VfDataTableColumnWidths>({ ...props.defaultColumnWidths });
+const lastCommittedColumnWidths = ref<VfDataTableColumnWidths>({ ...props.defaultColumnWidths });
+const tableRef = ref<HTMLTableElement>();
+const scrollRef = ref<HTMLDivElement>();
+const isResizing = ref(false);
+const resizingColumnIndex = ref<number>();
+const highlightedColumnBoundaryIndex = ref<number>();
+const columnBoundaryGuideStyle = ref<Record<string, string>>();
+
+interface ColumnResizeSession {
+  pointerId?: number;
+  columnIndex: number;
+  startX: number;
+  startWidth: number;
+  minWidth: number;
+  maxWidth: number;
+  adjacentStartWidth: number;
+  adjacentMinWidth: number;
+  adjacentMaxWidth: number;
+  direction: number;
+  columnWidths: VfDataTableColumnWidths;
+  changed: boolean;
+}
+
+let resizeSession: ColumnResizeSession | undefined;
+let columnBoundaryGuideFrame: number | undefined;
 
 const classes = computed(() =>
   cx(
@@ -92,6 +127,12 @@ const classes = computed(() =>
     props.striped && 'vf-table--striped',
     props.columnDividers && 'vf-table--column-dividers',
     props.stickyHeader && 'vf-table--sticky-header',
+    props.resizableColumns && 'vf-data-table--resizable',
+    props.resizableColumns &&
+      props.columns.length > 0 &&
+      props.columns.every((column) => renderedColumnWidths.value[column.key]) &&
+      'vf-data-table--fixed-layout',
+    isResizing.value && 'vf-data-table--resizing',
   ),
 );
 
@@ -145,6 +186,10 @@ const pageSizeSelectOptions = computed(() =>
   })),
 );
 const currentSelectedRowKeys = computed(() => props.selectedRowKeys ?? internalSelectedRowKeys.value);
+const currentColumnWidths = computed(() => props.columnWidths ?? internalColumnWidths.value);
+const renderedColumnWidths = computed(() =>
+  isResizing.value ? internalColumnWidths.value : currentColumnWidths.value,
+);
 const visibleRowKeys = computed(() => visibleRows.value.map((row, index) => selectionRowId(row, index)));
 const allVisibleRowsSelected = computed(
   () =>
@@ -193,11 +238,316 @@ function columnClasses(column: VfDataTableColumn) {
   return [
     column.align && `vf-data-table__cell--${column.align}`,
     column.verticalAlign && `vf-data-table__cell--vertical-${column.verticalAlign}`,
+    column.nowrap && 'vf-data-table__cell--nowrap',
   ];
 }
 
 function columnStyle(column: VfDataTableColumn) {
-  return column.width ? { width: column.width } : undefined;
+  const width = renderedColumnWidths.value[column.key] ?? column.width;
+
+  if (!width && !column.minWidth && !column.maxWidth) {
+    return undefined;
+  }
+
+  return {
+    width,
+    minWidth: column.minWidth,
+    maxWidth: column.maxWidth,
+  };
+}
+
+function canResizeColumn(column: VfDataTableColumn, columnIndex: number) {
+  if (!props.resizableColumns || column.resizable === false) {
+    return false;
+  }
+
+  const adjacentColumn = props.columns[columnIndex + 1];
+
+  return Boolean(adjacentColumn && adjacentColumn.resizable !== false);
+}
+
+function activeColumnBoundaryIndex() {
+  return resizingColumnIndex.value ?? highlightedColumnBoundaryIndex.value;
+}
+
+function updateColumnBoundaryGuide() {
+  const columnIndex = activeColumnBoundaryIndex();
+  const table = tableRef.value;
+  const scroll = scrollRef.value;
+
+  if (columnIndex === undefined || !table || !scroll) {
+    columnBoundaryGuideStyle.value = undefined;
+    return;
+  }
+
+  const cells = Array.from(table.querySelectorAll<HTMLElement>(`[data-vf-column-index="${columnIndex}"]`));
+  const headerCell = cells[0];
+  const lastCell = cells[cells.length - 1];
+
+  if (!headerCell || !lastCell) {
+    columnBoundaryGuideStyle.value = undefined;
+    return;
+  }
+
+  const headerRect = headerCell.getBoundingClientRect();
+  const lastCellRect = lastCell.getBoundingClientRect();
+  const scrollRect = scroll.getBoundingClientRect();
+  const direction = getComputedStyle(table).direction;
+  const boundaryPosition = direction === 'rtl' ? headerRect.left : headerRect.right;
+
+  columnBoundaryGuideStyle.value = {
+    left: `${boundaryPosition - scrollRect.left + scroll.scrollLeft}px`,
+    top: `${headerRect.top - scrollRect.top + scroll.scrollTop}px`,
+    height: `${Math.max(0, lastCellRect.bottom - headerRect.top)}px`,
+    transform: direction === 'rtl' ? 'translateX(-100%)' : 'none',
+  };
+}
+
+function scheduleColumnBoundaryGuideUpdate() {
+  if (columnBoundaryGuideFrame !== undefined) {
+    cancelAnimationFrame(columnBoundaryGuideFrame);
+  }
+
+  columnBoundaryGuideFrame = requestAnimationFrame(() => {
+    columnBoundaryGuideFrame = undefined;
+    updateColumnBoundaryGuide();
+  });
+}
+
+function setHighlightedColumnBoundary(columnIndex?: number) {
+  highlightedColumnBoundaryIndex.value = columnIndex;
+  updateColumnBoundaryGuide();
+}
+
+function columnCell(columnIndex: number) {
+  return tableRef.value?.querySelector<HTMLElement>(`[data-vf-column-index="${columnIndex}"]`);
+}
+
+function resolvedSize(value: string, fallback: number) {
+  const size = Number.parseFloat(value);
+
+  return Number.isFinite(size) ? size : fallback;
+}
+
+function columnBounds(cell: HTMLElement) {
+  const style = getComputedStyle(cell);
+  const minWidth = Math.max(0, resolvedSize(style.minWidth, 0));
+  const maxWidth = Math.max(minWidth, resolvedSize(style.maxWidth, Number.POSITIVE_INFINITY));
+
+  return { minWidth, maxWidth };
+}
+
+function createResizeSession(columnIndex: number, startX = 0): ColumnResizeSession | undefined {
+  const cell = columnCell(columnIndex);
+
+  if (!cell) {
+    return undefined;
+  }
+
+  const bounds = columnBounds(cell);
+  const adjacentCell = columnCell(columnIndex + 1);
+
+  if (!adjacentCell) {
+    return undefined;
+  }
+
+  const adjacentBounds = columnBounds(adjacentCell);
+  const columnWidths = props.columns.reduce<VfDataTableColumnWidths>(
+    (widths, column, index) => {
+      const currentCell = columnCell(index);
+      const width = currentCell?.getBoundingClientRect().width ?? 0;
+
+      if (width > 0) {
+        widths[column.key] = `${Math.round(width)}px`;
+      }
+
+      return widths;
+    },
+    { ...currentColumnWidths.value },
+  );
+
+  return {
+    columnIndex,
+    startX,
+    startWidth: cell.getBoundingClientRect().width,
+    minWidth: bounds.minWidth,
+    maxWidth: bounds.maxWidth,
+    adjacentStartWidth: adjacentCell.getBoundingClientRect().width,
+    adjacentMinWidth: adjacentBounds.minWidth,
+    adjacentMaxWidth: adjacentBounds.maxWidth,
+    direction: getComputedStyle(tableRef.value ?? cell).direction === 'rtl' ? -1 : 1,
+    columnWidths,
+    changed: false,
+  };
+}
+
+function commitColumnWidths(columnWidths: VfDataTableColumnWidths) {
+  const nextWidths = { ...columnWidths };
+
+  internalColumnWidths.value = nextWidths;
+  lastCommittedColumnWidths.value = nextWidths;
+  emit('update:columnWidths', nextWidths);
+}
+
+function resizeColumn(session: ColumnResizeSession, rawDelta: number) {
+  const delta = rawDelta * session.direction;
+  // Auto table layout can initially resolve a column outside its declared
+  // bounds. Keep zero as a valid delta so the first drag never jumps to a
+  // constraint; movement toward the valid range remains possible.
+  let minimumDelta = Math.min(0, session.minWidth - session.startWidth);
+  let maximumDelta = Math.max(0, session.maxWidth - session.startWidth);
+
+  minimumDelta = Math.max(minimumDelta, Math.min(0, session.adjacentStartWidth - session.adjacentMaxWidth));
+  maximumDelta = Math.min(maximumDelta, Math.max(0, session.adjacentStartWidth - session.adjacentMinWidth));
+
+  const clampedDelta = Math.min(Math.max(delta, minimumDelta), maximumDelta);
+  const column = props.columns[session.columnIndex];
+
+  if (!column) {
+    return;
+  }
+
+  session.changed = true;
+  const nextWidths: VfDataTableColumnWidths = {
+    ...session.columnWidths,
+    [column.key]: `${Math.round(session.startWidth + clampedDelta)}px`,
+  };
+
+  const adjacentColumn = props.columns[session.columnIndex + 1];
+
+  if (adjacentColumn) {
+    nextWidths[adjacentColumn.key] = `${Math.round(session.adjacentStartWidth - clampedDelta)}px`;
+  }
+
+  commitColumnWidths(nextWidths);
+  scheduleColumnBoundaryGuideUpdate();
+}
+
+function stopColumnResize(event?: PointerEvent) {
+  if (
+    !resizeSession ||
+    (event && resizeSession.pointerId !== undefined && event.pointerId !== resizeSession.pointerId)
+  ) {
+    return;
+  }
+
+  const completedSession = resizeSession;
+
+  resizeSession = undefined;
+  isResizing.value = false;
+  resizingColumnIndex.value = undefined;
+  window.removeEventListener('pointermove', onColumnPointerMove);
+  window.removeEventListener('pointerup', stopColumnResize);
+  window.removeEventListener('pointercancel', stopColumnResize);
+
+  if (completedSession.changed) {
+    emit('column-resize-end', { ...lastCommittedColumnWidths.value });
+  }
+
+  updateColumnBoundaryGuide();
+}
+
+function onColumnPointerMove(event: PointerEvent) {
+  if (!resizeSession || (resizeSession.pointerId !== undefined && event.pointerId !== resizeSession.pointerId)) {
+    return;
+  }
+
+  event.preventDefault();
+  resizeColumn(resizeSession, event.clientX - resizeSession.startX);
+}
+
+function startColumnResize(event: PointerEvent, columnIndex: number) {
+  if (event.button !== 0) {
+    return;
+  }
+
+  const session = createResizeSession(columnIndex, event.clientX);
+
+  if (!session) {
+    return;
+  }
+
+  session.pointerId = event.pointerId;
+  resizeSession = session;
+  internalColumnWidths.value = { ...session.columnWidths };
+  isResizing.value = true;
+  resizingColumnIndex.value = columnIndex;
+  updateColumnBoundaryGuide();
+  window.addEventListener('pointermove', onColumnPointerMove);
+  window.addEventListener('pointerup', stopColumnResize);
+  window.addEventListener('pointercancel', stopColumnResize);
+}
+
+function measureColumnContentWidth(cells: HTMLElement[]) {
+  const measurementTable = document.createElement('table');
+  const measurementBody = document.createElement('tbody');
+
+  measurementTable.className = tableRef.value?.className ?? '';
+  measurementTable.setAttribute('aria-hidden', 'true');
+  measurementTable.style.position = 'fixed';
+  measurementTable.style.insetBlockStart = '-10000px';
+  measurementTable.style.insetInlineStart = '-10000px';
+  measurementTable.style.width = 'max-content';
+  measurementTable.style.minWidth = '0';
+  measurementTable.style.visibility = 'hidden';
+  measurementTable.style.pointerEvents = 'none';
+
+  cells.forEach((cell) => {
+    const row = document.createElement('tr');
+    const clone = cell.cloneNode(true) as HTMLElement;
+
+    clone.querySelector('.vf-data-table__column-resizer')?.remove();
+    clone.style.width = 'auto';
+    clone.style.minWidth = '0';
+    clone.style.maxWidth = 'none';
+    clone.style.whiteSpace = 'nowrap';
+    row.append(clone);
+    measurementBody.append(row);
+  });
+
+  measurementTable.append(measurementBody);
+  document.body.append(measurementTable);
+
+  const measuredWidth = Math.max(measurementTable.getBoundingClientRect().width, measurementTable.scrollWidth);
+
+  measurementTable.remove();
+
+  return measuredWidth;
+}
+
+function autosizeColumn(columnIndex: number) {
+  const session = createResizeSession(columnIndex);
+  const table = tableRef.value;
+
+  if (!session || !table) {
+    return;
+  }
+
+  const cells = Array.from(table.querySelectorAll<HTMLElement>(`[data-vf-column-index="${columnIndex}"]`));
+  const measuredWidth = measureColumnContentWidth(cells);
+  const fallbackWidth = Math.max(...cells.map((cell) => cell.scrollWidth));
+  const contentWidth = Math.max(measuredWidth || fallbackWidth, session.minWidth);
+
+  resizeColumn(session, contentWidth - session.startWidth);
+  emit('column-resize-end', { ...lastCommittedColumnWidths.value });
+}
+
+function resizeColumnWithKeyboard(event: KeyboardEvent, columnIndex: number) {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+    return;
+  }
+
+  const session = createResizeSession(columnIndex);
+
+  if (!session) {
+    return;
+  }
+
+  event.preventDefault();
+  const delta = event.key === 'ArrowRight' ? 8 : -8;
+
+  resizeColumn(session, delta);
+  emit('column-resize-end', { ...lastCommittedColumnWidths.value });
 }
 
 function clampPage(page: number) {
@@ -250,12 +600,25 @@ function setAllVisibleRowsSelected(selected: boolean) {
 
   updateSelectedRowKeys(nextKeys);
 }
+
+onUnmounted(() => {
+  if (columnBoundaryGuideFrame !== undefined) {
+    cancelAnimationFrame(columnBoundaryGuideFrame);
+  }
+
+  if (resizeSession) {
+    resizeSession = undefined;
+    window.removeEventListener('pointermove', onColumnPointerMove);
+    window.removeEventListener('pointerup', stopColumnResize);
+    window.removeEventListener('pointercancel', stopColumnResize);
+  }
+});
 </script>
 
 <template>
   <div class="vf-table-wrap vf-data-table-wrap" v-bind="attrs">
-    <div class="vf-table-scroll vf-data-table-scroll">
-      <table :class="classes">
+    <div ref="scrollRef" class="vf-table-scroll vf-data-table-scroll">
+      <table ref="tableRef" :class="classes">
         <caption v-if="props.caption || $slots.caption" class="vf-table__caption">
           <slot name="caption">{{ props.caption }}</slot>
         </caption>
@@ -272,15 +635,34 @@ function setAllVisibleRowsSelected(selected: boolean) {
               />
             </th>
             <th
-              v-for="column in props.columns"
+              v-for="(column, columnIndex) in props.columns"
               :key="column.key"
               :class="['vf-data-table__header-cell', ...columnClasses(column)]"
+              :data-vf-column-index="columnIndex"
               :scope="column.scope ?? 'col'"
               :style="columnStyle(column)"
             >
               <slot :name="`header-${column.key}`" :column="column">
                 {{ columnHeader(column) }}
               </slot>
+              <span
+                v-if="canResizeColumn(column, columnIndex)"
+                :class="[
+                  'vf-data-table__column-resizer',
+                  resizingColumnIndex === columnIndex && 'vf-data-table__column-resizer--active',
+                ]"
+                role="separator"
+                tabindex="0"
+                aria-orientation="vertical"
+                :aria-label="`Resize ${columnHeader(column)} column`"
+                @pointerdown.stop.prevent="startColumnResize($event, columnIndex)"
+                @pointerenter="setHighlightedColumnBoundary(columnIndex)"
+                @pointerleave="setHighlightedColumnBoundary()"
+                @dblclick.stop.prevent="autosizeColumn(columnIndex)"
+                @focus="setHighlightedColumnBoundary(columnIndex)"
+                @blur="setHighlightedColumnBoundary()"
+                @keydown="resizeColumnWithKeyboard($event, columnIndex)"
+              />
             </th>
           </tr>
         </thead>
@@ -290,9 +672,10 @@ function setAllVisibleRowsSelected(selected: boolean) {
             <tr v-for="row in skeletonRows" :key="`skeleton-${row}`" class="vf-data-table__skeleton-row">
               <td v-if="props.selectable" class="vf-data-table__selection-cell" />
               <td
-                v-for="column in props.columns"
+                v-for="(column, columnIndex) in props.columns"
                 :key="column.key"
                 :class="['vf-data-table__cell', 'vf-data-table__skeleton-cell', ...columnClasses(column)]"
+                :data-vf-column-index="columnIndex"
                 :style="columnStyle(column)"
               >
                 <VfSkeleton min-height="var(--vf-icon-size-md)" radius="var(--vf-radius-control)" />
@@ -316,9 +699,10 @@ function setAllVisibleRowsSelected(selected: boolean) {
                 />
               </td>
               <td
-                v-for="column in props.columns"
+                v-for="(column, columnIndex) in props.columns"
                 :key="column.key"
                 :class="['vf-data-table__cell', ...columnClasses(column)]"
+                :data-vf-column-index="columnIndex"
                 :style="columnStyle(column)"
               >
                 <slot
@@ -345,6 +729,13 @@ function setAllVisibleRowsSelected(selected: boolean) {
           <slot name="footer" />
         </tfoot>
       </table>
+
+      <span
+        v-if="columnBoundaryGuideStyle"
+        class="vf-data-table__column-boundary-guide"
+        :style="columnBoundaryGuideStyle"
+        aria-hidden="true"
+      />
 
       <div
         v-if="props.loading && props.loadingVariant === 'mask'"

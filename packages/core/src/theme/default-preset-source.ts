@@ -742,6 +742,7 @@ const componentThemePresetSource = {
     dataTableStateColor: 'var(--vf-color-text-secondary)',
     dataTablePaginationColor: 'var(--vf-color-text-secondary)',
     dataTablePaginationPageColor: 'var(--vf-color-text-primary)',
+    dataTableColumnResizerColor: 'var(--vf-color-interactive-primary-border)',
     tabsGap: 'var(--vf-surface-gap)',
     tabsListGap: 'var(--vf-menu-gap)',
     tabsListPadding: 'var(--vf-menu-gap)',

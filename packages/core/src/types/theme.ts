@@ -597,6 +597,7 @@ export interface VfThemeTokens extends BaseVfThemeTokens {
   dataTableStateColor: string;
   dataTablePaginationColor: string;
   dataTablePaginationPageColor: string;
+  dataTableColumnResizerColor: string;
   proseHeadingMargin: string;
   proseHeadingGap: string;
   proseBlockSpacing: string;

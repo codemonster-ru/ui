@@ -1,7 +1,7 @@
-# VueForge Core 2.2.0 release notes
+# VueForge Core 2.3.0 release notes
 
-VueForge Core 2.2.0 adds table selection and layout controls, reusable popup menus, and a refined
-form-label theme token. This is a backward-compatible minor release.
+VueForge Core 2.3.0 adds constrained, accessible, and persistable column resizing to `VfDataTable`.
+This is a backward-compatible minor release.
 
 ## Current package versions
 
@@ -9,7 +9,7 @@ form-label theme token. This is a backward-compatible minor release.
 | ---------------------- | ------: | :-----------------------: |
 | Theme                  | `2.0.0` |            No             |
 | Icons                  | `2.0.0` |            No             |
-| Core                   | `2.2.0` |            Yes            |
+| Core                   | `2.3.0` |            Yes            |
 | Layouts                | `2.1.1` |            No             |
 | CodeBlock              | `4.0.0` |            No             |
 | Playground Core        | `2.0.0` |            No             |
@@ -18,14 +18,13 @@ form-label theme token. This is a backward-compatible minor release.
 
 ## Highlights
 
-- Added `VfMenu` and `VfMenuItem` for icon-supported vertical menus inside `VfDropdown` and other
-  popup containers.
-- Added controlled and uncontrolled row selection to `VfDataTable`, including select-all and
-  indeterminate header states for bulk actions.
-- Added `VfDataTableColumn.width` and `verticalAlign` support.
-- Added `VfCheckbox.indeterminate` with native mixed-selection semantics.
-- Added the `fieldLabelFontSize` theme token and changed default form field labels to `1rem`.
-- Improved data table header/stripe contrast and pagination vertical spacing.
+- Added pointer resizing from the boundary between adjacent `VfDataTable` columns.
+- Added keyboard resizing with Left and Right Arrow and double-click content autosizing.
+- Added controlled `columnWidths`, uncontrolled `defaultColumnWidths`, `update:columnWidths`, and
+  `column-resize-end` contracts.
+- Added `minWidth`, `maxWidth`, `nowrap`, and `resizable` column options.
+- Added `dataTableColumnResizerColor` for theme-level resize boundary feedback.
+- Added a resizable-column showcase with width reset and constrained-width examples.
 
 ## Compatibility
 
@@ -34,20 +33,23 @@ independently:
 
 ```bash
 npm install vue@^3.5.0 \
-  @codemonster-ru/vueforge-core@^2.2.0
+  @codemonster-ru/vueforge-core@^2.3.0
 ```
 
 Theme, Icons, Layouts, CodeBlock, Playground Core, Playground Vite Plugin, and Playground have no
 runtime or public API changes in this work and are not republished.
 
-## New Core theme token
+## Data table resize behavior
 
-- `--vf-field-label-font-size` controls the size of standard and resting floating field labels.
+- Resizing changes the two columns adjacent to the dragged boundary.
+- The combined width of those columns and the overall table width remain fixed.
+- The last column and a column followed by `resizable: false` do not expose a resize handle.
+- `minWidth` and `maxWidth` constrain pointer, keyboard, and autosize operations.
+- Controlled width records are serializable and can be persisted by applications.
 
 ## Package notes
 
-- **Core 2.2.0:** adds `VfMenu`, `VfMenuItem`, data table selection and column controls, the
-  indeterminate checkbox state, and the field label typography token.
+- **Core 2.3.0:** adds constrained and persistable `VfDataTable` column resizing and its theme token.
 - **Layouts 2.1.1:** unchanged from the previous release.
 
 ## Distribution and verification

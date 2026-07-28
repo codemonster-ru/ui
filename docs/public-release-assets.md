@@ -1,6 +1,6 @@
-# VueForge Core 2.2.0 public release assets
+# VueForge Core 2.3.0 public release assets
 
-These copy-ready assets describe the VueForge Core 2.2.0 release. Publish them only after the Core
+These copy-ready assets describe the VueForge Core 2.3.0 release. Publish them only after the Core
 workflow and registry-only consumer smoke tests have passed.
 
 ## Short project description
@@ -10,11 +10,11 @@ layouts, icons, highlighted code, and secure interactive playgrounds.
 
 ## Key release features
 
-- `VfMenu` and `VfMenuItem` for icon-supported vertical menus inside popup containers.
-- Controlled and uncontrolled `VfDataTable` row selection with select-all and indeterminate states.
-- `VfDataTable` column widths and vertical alignment controls.
-- Native mixed-selection semantics for `VfCheckbox`.
-- A public `fieldLabelFontSize` theme token and larger default form labels.
+- Pointer and keyboard resizing between adjacent `VfDataTable` columns.
+- Double-click content autosizing with `minWidth` and `maxWidth` constraints.
+- Controlled, uncontrolled, and persistable column-width state.
+- Per-column `nowrap` and `resizable` controls.
+- A public `dataTableColumnResizerColor` theme token.
 
 ## npm package descriptions
 
@@ -37,7 +37,7 @@ These descriptions match the publication manifests:
 | ---------------------- | ------: | :-----------------------: |
 | Theme                  | `2.0.0` |            No             |
 | Icons                  | `2.0.0` |            No             |
-| Core                   | `2.2.0` |            Yes            |
+| Core                   | `2.3.0` |            Yes            |
 | Layouts                | `2.1.1` |            No             |
 | CodeBlock              | `4.0.0` |            No             |
 | Playground Core        | `2.0.0` |            No             |
@@ -50,20 +50,20 @@ The release workflow creates one GitHub Release for the Core package tag and tak
 changes from the matching `CHANGELOG.md` section. Use the following text as the project-level
 introduction; package-specific changelogs remain the source of truth.
 
-### VueForge Core 2.2.0
+### VueForge Core 2.3.0
 
-VueForge Core 2.2.0 adds reusable popup menus and practical data-table controls for applications
-that need bulk actions and predictable table layout.
+VueForge Core 2.3.0 adds constrained and persistable column resizing to `VfDataTable`.
 
-`VfMenu` and `VfMenuItem` provide icon-supported actions and links inside `VfDropdown`. `VfDataTable`
-supports controlled or uncontrolled row selection, select-all, indeterminate header state, column
-widths, and vertical cell alignment. Form labels now use a dedicated theme token.
+Applications can resize a boundary with a pointer, use Left and Right Arrow from the focused handle,
+or double-click to fit rendered content. Adjacent columns compensate each other so the overall table
+width and unrelated boundaries remain fixed. Widths support controlled and uncontrolled state,
+column constraints, and application-managed persistence.
 
 This is a backward-compatible release. Upgrade Core independently:
 
 ```bash
 npm install vue@^3.5.0 \
-  @codemonster-ru/vueforge-core@^2.2.0
+  @codemonster-ru/vueforge-core@^2.3.0
 ```
 
 Read the
@@ -75,9 +75,9 @@ for the complete version matrix and package details.
 Use this announcement only after registry propagation, provenance, integrity, and fresh-consumer
 checks have passed:
 
-> VueForge Core 2.2.0 is available for Vue 3.5 applications. The release adds reusable popup menus,
-> data-table selection and column controls, native mixed-selection checkboxes, and a dedicated form
-> label theme token. See
+> VueForge Core 2.3.0 is available for Vue 3.5 applications. The release adds constrained pointer
+> and keyboard column resizing, content autosizing, persistable width state, and resize-boundary
+> theming to `VfDataTable`. See
 > [the release notes](https://github.com/codemonster-ru/vueforge/blob/main/docs/release-notes.md)
 > for the coordinated package versions.
 

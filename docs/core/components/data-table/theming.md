@@ -20,3 +20,4 @@ Selection controls reuse the `VfCheckbox` token namespace.
 | `dataTableStateColor`          | Empty and loading state text color.            |
 | `dataTablePaginationColor`     | Pagination metadata color.                     |
 | `dataTablePaginationPageColor` | Current page color.                            |
+| `dataTableColumnResizerColor`  | Hover, focus, and active resize handle color.  |
