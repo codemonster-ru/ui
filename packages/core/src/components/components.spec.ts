@@ -495,7 +495,7 @@ describe('core primitives', () => {
       props: {
         caption: 'Team availability',
         columns: [
-          { key: 'member', header: 'Member', width: '14rem' },
+          { key: 'member', header: 'Member', width: '14rem', minWidth: '10rem', maxWidth: '20rem', nowrap: true },
           { key: 'status', header: 'Status', width: '10rem' },
           { key: 'meta.score', header: 'Score', align: 'end', verticalAlign: 'middle', width: '6rem' },
         ],
@@ -517,7 +517,10 @@ describe('core primitives', () => {
     expect(wrapper.find('caption').text()).toBe('Team availability');
     expect(wrapper.findAll('thead th')).toHaveLength(3);
     expect(wrapper.find('thead th').attributes('style')).toContain('width: 14rem');
+    expect(wrapper.find('thead th').attributes('style')).toContain('min-width: 10rem');
+    expect(wrapper.find('thead th').attributes('style')).toContain('max-width: 20rem');
     expect(wrapper.find('tbody td').attributes('style')).toContain('width: 14rem');
+    expect(wrapper.find('tbody td').classes()).toContain('vf-data-table__cell--nowrap');
     expect(wrapper.findAll('tbody tr')).toHaveLength(2);
     expect(wrapper.text()).toContain('AVAILABLE');
     expect(wrapper.text()).toContain('42');
@@ -586,6 +589,187 @@ describe('core primitives', () => {
     expect(paginated.emitted('update:page')).toEqual([[2]]);
     expect(paginated.findAll('tbody tr')).toHaveLength(1);
     expect(paginated.text()).toContain('3-3 of 3');
+  });
+
+  it('resizes data table columns with controlled and uncontrolled width state', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name', minWidth: '100px', maxWidth: '220px' },
+          { key: 'status', header: 'Status', minWidth: '80px' },
+        ],
+        rows: [{ name: 'Alice', status: 'Available' }],
+        defaultColumnWidths: { name: '140px' },
+        resizableColumns: true,
+      },
+    });
+    const headers = wrapper.findAll('.vf-data-table__header-cell');
+
+    vi.spyOn(headers[0]!.element, 'getBoundingClientRect').mockReturnValue({
+      width: 140,
+    } as DOMRect);
+    vi.spyOn(headers[1]!.element, 'getBoundingClientRect').mockReturnValue({
+      width: 120,
+      left: 140,
+      right: 260,
+      top: 10,
+      bottom: 50,
+    } as DOMRect);
+    const handle = wrapper.find('.vf-data-table__column-resizer');
+
+    await handle.trigger('pointerdown', { button: 0, clientX: 100, pointerId: 1 });
+
+    const move = new Event('pointermove', { cancelable: true });
+
+    Object.defineProperties(move, {
+      clientX: { value: 300 },
+      pointerId: { value: 1 },
+    });
+    window.dispatchEvent(move);
+    await nextTick();
+
+    const widthUpdates = wrapper.emitted('update:columnWidths') ?? [];
+
+    expect(widthUpdates[widthUpdates.length - 1]).toEqual([{ name: '180px', status: '80px' }]);
+    expect(wrapper.find('tbody td').attributes('style')).toContain('width: 180px');
+    expect(wrapper.findAll('tbody td')[1]!.attributes('style')).toContain('width: 80px');
+    expect(wrapper.find('.vf-data-table').classes()).toContain('vf-data-table--fixed-layout');
+
+    const end = new Event('pointerup');
+
+    Object.defineProperty(end, 'pointerId', { value: 1 });
+    window.dispatchEvent(end);
+
+    const resizeEnds = wrapper.emitted('column-resize-end') ?? [];
+
+    expect(resizeEnds[resizeEnds.length - 1]).toEqual([{ name: '180px', status: '80px' }]);
+
+    await wrapper.setProps({ columnWidths: { name: '180px' } });
+
+    expect(wrapper.find('thead th').attributes('style')).toContain('width: 180px');
+  });
+
+  it('supports keyboard resizing and content autosizing', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name', minWidth: '80px', maxWidth: '220px' },
+          { key: 'status', header: 'Status', minWidth: '80px', maxWidth: '180px' },
+          { key: 'fixed', header: 'Fixed', resizable: false },
+        ],
+        rows: [{ name: 'Alexandria', status: 'Available', fixed: '—' }],
+        defaultColumnWidths: { name: '140px', status: '120px' },
+        resizableColumns: true,
+      },
+    });
+    const headers = wrapper.findAll('.vf-data-table__header-cell');
+
+    vi.spyOn(headers[0]!.element, 'getBoundingClientRect').mockReturnValue({
+      width: 140,
+      left: 0,
+      right: 140,
+      top: 10,
+      bottom: 50,
+    } as DOMRect);
+    vi.spyOn(headers[1]!.element, 'getBoundingClientRect').mockReturnValue({ width: 120 } as DOMRect);
+    vi.spyOn(headers[2]!.element, 'getBoundingClientRect').mockReturnValue({ width: 100 } as DOMRect);
+    vi.spyOn(wrapper.findAll('tbody td')[0]!.element, 'getBoundingClientRect').mockReturnValue({
+      bottom: 250,
+    } as DOMRect);
+
+    expect(wrapper.findAll('.vf-data-table__column-resizer')).toHaveLength(1);
+
+    const handle = wrapper.find('.vf-data-table__column-resizer');
+
+    await handle.trigger('pointerenter');
+
+    const boundaryGuide = wrapper.find('.vf-data-table__column-boundary-guide');
+
+    expect(boundaryGuide.attributes('style')).toContain('left: 140px');
+    expect(boundaryGuide.attributes('style')).toContain('top: 10px');
+    expect(boundaryGuide.attributes('style')).toContain('height: 240px');
+
+    await handle.trigger('pointerleave');
+
+    expect(wrapper.find('.vf-data-table__column-boundary-guide').exists()).toBe(false);
+
+    await handle.trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+
+    let widthUpdates = wrapper.emitted('update:columnWidths') ?? [];
+
+    expect(widthUpdates[widthUpdates.length - 1]).toEqual([
+      {
+        name: '148px',
+        status: '112px',
+        fixed: '100px',
+      },
+    ]);
+
+    const cells = wrapper.findAll('[data-vf-column-index="0"]');
+
+    Object.defineProperty(cells[0]!.element, 'scrollWidth', { configurable: true, value: 190 });
+    Object.defineProperty(cells[1]!.element, 'scrollWidth', { configurable: true, value: 180 });
+
+    await handle.trigger('dblclick');
+    await nextTick();
+
+    widthUpdates = wrapper.emitted('update:columnWidths') ?? [];
+
+    expect(widthUpdates[widthUpdates.length - 1]).toEqual([
+      {
+        name: '180px',
+        status: '80px',
+        fixed: '100px',
+      },
+    ]);
+    expect(wrapper.emitted('column-resize-end')).toHaveLength(2);
+  });
+
+  it('renders controlled fit resizing immediately when auto layout resolves widths outside bounds', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name', minWidth: '100px', maxWidth: '220px' },
+          { key: 'status', header: 'Status', minWidth: '80px', maxWidth: '180px' },
+        ],
+        rows: [{ name: 'Alice', status: 'Available' }],
+        columnWidths: { name: '260px', status: '140px' },
+        resizableColumns: true,
+      },
+    });
+    const headers = wrapper.findAll('.vf-data-table__header-cell');
+
+    vi.spyOn(headers[0]!.element, 'getBoundingClientRect').mockReturnValue({
+      width: 260,
+    } as DOMRect);
+    vi.spyOn(headers[1]!.element, 'getBoundingClientRect').mockReturnValue({
+      width: 140,
+    } as DOMRect);
+
+    const handle = wrapper.find('.vf-data-table__column-resizer');
+
+    await handle.trigger('pointerdown', { button: 0, clientX: 260, pointerId: 1 });
+
+    const move = new Event('pointermove', { cancelable: true });
+
+    Object.defineProperties(move, {
+      clientX: { value: 250 },
+      pointerId: { value: 1 },
+    });
+    window.dispatchEvent(move);
+    await nextTick();
+
+    const widthUpdates = wrapper.emitted('update:columnWidths') ?? [];
+
+    expect(widthUpdates[widthUpdates.length - 1]).toEqual([{ name: '250px', status: '150px' }]);
+    expect(wrapper.findAll('thead th')[0]!.attributes('style')).toContain('width: 250px');
+    expect(wrapper.findAll('thead th')[1]!.attributes('style')).toContain('width: 150px');
+
+    const end = new Event('pointerup');
+
+    Object.defineProperty(end, 'pointerId', { value: 1 });
+    window.dispatchEvent(end);
   });
 
   it('selects data table rows individually and in bulk', async () => {

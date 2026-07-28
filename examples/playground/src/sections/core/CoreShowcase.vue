@@ -49,6 +49,7 @@ import {
 import type {
   VfBreadcrumbItem,
   VfDataTableColumn,
+  VfDataTableColumnWidths,
   VfDataTableRow,
   VfNavMenuItem,
   VfStepperItem,
@@ -75,6 +76,7 @@ const navMenuSidebarNoIconsValue = ref('no-icons-accessibility');
 const menuBarDefaultValue = ref('pricing');
 const menuBarPillsValue = ref('about');
 const selectedDataTableRowKeys = ref<Array<string | number>>([]);
+const dataTableColumnWidths = ref<VfDataTableColumnWidths>({});
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 
 const formGeometrySizes = ['sm', 'md', 'lg'] as const;
@@ -245,6 +247,10 @@ function handleGlobalCommandPaletteShortcut(event: KeyboardEvent) {
 
   event.preventDefault();
   commandPaletteOpen.value = true;
+}
+
+function resetDataTableColumnWidths() {
+  dataTableColumnWidths.value = {};
 }
 
 onMounted(() => {
@@ -465,6 +471,13 @@ const dataTableMetricColumns: VfDataTableColumn[] = [
   { key: 'member', header: 'Member' },
   { key: 'status', header: 'Status' },
   { key: 'tasks', header: 'Tasks', align: 'end' },
+];
+
+const dataTableResizableColumns: VfDataTableColumn[] = [
+  { key: 'member', header: 'Member', width: '35%', minWidth: '8rem' },
+  { key: 'role', header: 'Role', width: '25%', minWidth: '7rem' },
+  { key: 'status', header: 'Status', width: '25%', minWidth: '7rem', nowrap: true },
+  { key: 'tasks', header: 'Tasks', width: '15%', minWidth: '6rem', nowrap: true, align: 'end' },
 ];
 
 const dataTableRows: VfDataTableRow[] = [
@@ -1182,6 +1195,36 @@ const tabContent = computed<Record<string, string>>(() => ({
                     striped
                     column-dividers
                   />
+                </div>
+
+                <div class="demo-component-matrix__cell demo-item--full">
+                  <p class="demo-component-matrix__label">data table resizable columns</p>
+                  <div class="demo-stack">
+                    <div class="demo-inline">
+                      <VfButton
+                        size="sm"
+                        variant="secondary"
+                        :disabled="Object.keys(dataTableColumnWidths).length === 0"
+                        @click="resetDataTableColumnWidths"
+                      >
+                        Reset widths
+                      </VfButton>
+                    </div>
+                    <p class="demo-text">
+                      Drag a divider to resize both adjacent columns without changing the table width. Reset restores
+                      the starting widths.
+                    </p>
+                    <VfDataTable
+                      v-model:column-widths="dataTableColumnWidths"
+                      caption="Resizable team roster"
+                      :columns="dataTableResizableColumns"
+                      :rows="dataTableRows"
+                      row-key="id"
+                      resizable-columns
+                      striped
+                      column-dividers
+                    />
+                  </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">

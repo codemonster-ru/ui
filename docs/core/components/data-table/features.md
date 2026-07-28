@@ -63,16 +63,55 @@ Use `cell-{key}` slots to format individual columns without taking over the full
 
 ## Column sizing and alignment
 
-Set `width` on a column to apply a CSS width to its header and cells. Use `align` for horizontal
+Set `width`, `minWidth`, and `maxWidth` on a column to constrain its header and cells. Set `nowrap`
+when compact content such as actions or statuses must remain on one line. Use `align` for horizontal
 alignment and `verticalAlign` for vertical alignment.
 
 ```ts
 const columns: VfDataTableColumn[] = [
-  { key: 'member', header: 'Member', width: '14rem' },
+  { key: 'member', header: 'Member', minWidth: '10rem', maxWidth: '24rem' },
   { key: 'role', header: 'Role', verticalAlign: 'middle' },
-  { key: 'tasks', header: 'Tasks', width: '6rem', align: 'end' },
+  { key: 'tasks', header: 'Tasks', width: '1%', minWidth: '6rem', nowrap: true, align: 'end' },
 ];
 ```
+
+## Resizable columns
+
+Enable `resizableColumns` to render a resize handle between columns. Drag a handle with a pointer,
+focus it and press Left or Right Arrow, or double-click it to fit the column to its widest rendered
+cell. Hovering a header previews its resizable edge; hovering or focusing the edge highlights the
+same boundary through the header and visible body rows. A column with `resizable: false` does not
+expose a handle.
+
+Resizing preserves the combined width of the active and adjacent columns, so every other column
+boundary and the overall table width remain fixed. The last column and a column followed by
+`resizable: false` do not expose a handle.
+
+```vue
+<VfDataTable
+  v-model:column-widths="columnWidths"
+  :columns="columns"
+  :rows="rows"
+  resizable-columns
+  @column-resize-end="saveColumnWidths"
+/>
+```
+
+```ts
+import { ref } from 'vue';
+import type { VfDataTableColumnWidths } from '@codemonster-ru/vueforge-core';
+
+const storageKey = 'team-table-column-widths';
+const storedColumnWidths = localStorage.getItem(storageKey);
+const columnWidths = ref<VfDataTableColumnWidths>(storedColumnWidths ? JSON.parse(storedColumnWidths) : {});
+
+function saveColumnWidths(widths: VfDataTableColumnWidths) {
+  localStorage.setItem(storageKey, JSON.stringify(widths));
+}
+```
+
+`columnWidths` is a serializable record keyed by `VfDataTableColumn.key`. Persist on
+`column-resize-end` instead of on every `update:columnWidths` event.
 
 ## Row selection
 

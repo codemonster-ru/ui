@@ -22,6 +22,7 @@ export type VfDataTableLoadingVariant = 'mask' | 'skeleton';
 export type VfDataTablePaginationMode = 'client' | 'manual';
 export type VfDataTableCellAlign = 'start' | 'center' | 'end';
 export type VfDataTableCellVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
+export type VfDataTableColumnWidths = Record<string, string>;
 
 export type VfDataTableRow = object;
 export type VfDataTableRowKey = string | number;
@@ -31,6 +32,14 @@ export interface VfDataTableColumn {
   header?: string;
   /** CSS width applied to the column header and cells. */
   width?: string;
+  /** Minimum CSS width applied to the column header and cells. */
+  minWidth?: string;
+  /** Maximum CSS width applied to the column header and cells. */
+  maxWidth?: string;
+  /** Prevents cell content from wrapping. */
+  nowrap?: boolean;
+  /** Set to false to disable resizing for this column. */
+  resizable?: boolean;
   align?: VfDataTableCellAlign;
   verticalAlign?: VfDataTableCellVerticalAlign;
   scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';

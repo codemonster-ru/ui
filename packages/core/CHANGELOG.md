@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.3.0
+
+### Added
+
+- Added constrained, controlled, and persistable `VfDataTable` column widths with pointer and
+  keyboard resizing and double-click autosizing.
+- Added `minWidth`, `maxWidth`, `nowrap`, and `resizable` column options.
+- Added the `dataTableColumnResizerColor` theme token for resize boundary feedback.
+
 ## 2.2.0
 
 ### Added
