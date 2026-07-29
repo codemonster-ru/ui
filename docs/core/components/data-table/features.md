@@ -197,6 +197,110 @@ The default loading state renders a mask over the current table with a progress 
 
 Use the `loading` slot to replace the mask content when visible text or custom layout is needed.
 
+## Sorting
+
+Set `sortable: true` on columns that users may sort. Client sorting processes the complete `rows`
+array before client pagination. A click cycles through ascending, descending, and unsorted states.
+
+````playground-src
+mode: component
+framework: vue
+height: 460
+entry: /App.vue
+
+```vue file=/App.vue
+<template>
+  <div class="sorting-demo">
+    <p>Click headers to add sort columns in priority order.</p>
+
+    <VfDataTable
+      v-model:sort="sort"
+      :columns="columns"
+      :rows="rows"
+      :default-page-size="3"
+      :page-size-options="[3, 6]"
+      caption="Team workload"
+      multi-sort
+      pagination
+      row-key="id"
+      striped
+    />
+
+    <p class="sorting-demo__state" aria-live="polite">
+      Sort:
+      <code>{{ sortLabel }}</code>
+    </p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { VfDataTable } from '@codemonster-ru/vueforge-core';
+import type { VfDataTableColumn, VfDataTableSort } from '@codemonster-ru/vueforge-core';
+
+const columns: VfDataTableColumn[] = [
+  { key: 'member', header: 'Member', sortable: true },
+  { key: 'team', header: 'Team', sortable: true },
+  { key: 'tasks', header: 'Tasks', sortable: true, align: 'end' },
+];
+
+const rows = [
+  { id: 1, member: 'Alice', team: 'Design', tasks: 12 },
+  { id: 2, member: 'Bob', team: 'Platform', tasks: 8 },
+  { id: 3, member: 'Carol', team: 'Product', tasks: 15 },
+  { id: 4, member: 'Diego', team: 'Design', tasks: 5 },
+  { id: 5, member: 'Eve', team: 'Platform', tasks: 3 },
+  { id: 6, member: 'Fatima', team: 'Product', tasks: 11 },
+];
+
+const sort = ref<VfDataTableSort[]>([]);
+
+const sortLabel = computed(() =>
+  sort.value.length ? sort.value.map(({ key, direction }) => `${key} ${direction}`).join(', ') : 'none',
+);
+</script>
+
+<style scoped>
+.sorting-demo {
+  display: grid;
+  gap: 1rem;
+}
+
+.sorting-demo p {
+  margin: 0;
+}
+
+.sorting-demo__state {
+  color: var(--vf-color-text-secondary);
+}
+</style>
+```
+````
+
+Enable `multiSort` to let users add criteria with regular clicks. The `sort` array stores criteria
+in priority order and the headers display that priority. Clicking a sorted column cycles through
+ascending, descending, and removal without clearing the other criteria.
+
+When an API provides already-paged rows, use manual pagination. Manual pagination always leaves row
+ordering to the consumer, preventing the component from sorting only the current page:
+
+```vue
+<VfDataTable
+  v-model:page="page"
+  v-model:sort="sort"
+  :columns="columns"
+  :rows="pageRows"
+  :total-rows="totalRows"
+  pagination
+  pagination-mode="manual"
+  sorting-mode="manual"
+  @update:sort="loadPage"
+/>
+```
+
+Changing the sort resets pagination to page 1. Map column keys to the API's field names in the
+consumer; the table does not prescribe a server query format.
+
 ## Pagination
 
 Client pagination slices local rows. Use `paginationMode="manual"` with `totalRows` when rows are already paged by an API.

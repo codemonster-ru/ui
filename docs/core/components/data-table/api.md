@@ -35,6 +35,10 @@ Public component contract: props, events, slots, and related types.
 | `defaultPageSize?`        | `number`                                       | `10`           | Initial rows per page for uncontrolled pagination.                                      |
 | `pageSizeOptions?`        | `number[]`                                     | `[10, 25, 50]` | Page size options.                                                                      |
 | `totalRows?`              | `number`                                       | —              | Total row count, mainly for manual pagination.                                          |
+| `sort?`                   | `VfDataTableSort[]`                            | —              | Controlled column sort state, in priority order.                                        |
+| `defaultSort?`            | `VfDataTableSort[]`                            | `[]`           | Initial sort state for uncontrolled sorting.                                            |
+| `sortingMode?`            | `'client' \| 'manual'`                         | `'client'`     | Client mode sorts local rows; manual mode only emits sort changes.                      |
+| `multiSort?`              | `boolean`                                      | `false`        | Keeps existing criteria when another sortable column is clicked.                        |
 | `emptyText?`              | `string`                                       | `'No data'`    | Empty state fallback text.                                                              |
 | `loadingText?`            | `string`                                       | `'Loading...'` | Accessible label for the default loading mask.                                          |
 
@@ -49,6 +53,7 @@ Public component contract: props, events, slots, and related types.
 | `column-reorder-end`     | `[columnOrder: VfDataTableColumnOrder]`   | `void`     | Emitted after pointer or keyboard reorder ends. |
 | `update:columnWidths`    | `[columnWidths: VfDataTableColumnWidths]` | `void`     | Emitted while column widths change.             |
 | `column-resize-end`      | `[columnWidths: VfDataTableColumnWidths]` | `void`     | Emitted after drag, keyboard, or autosize ends. |
+| `update:sort`            | `[sort: VfDataTableSort[]]`               | `void`     | Emitted when column sorting changes.            |
 
 ## Slots
 
@@ -68,6 +73,9 @@ Public component contract: props, events, slots, and related types.
 | `VfDataTableDensity`           | `'default' \| 'compact'`                      | Density options.                  |
 | `VfDataTableLoadingVariant`    | `'mask' \| 'skeleton'`                        | Loading presentation options.     |
 | `VfDataTablePaginationMode`    | `'client' \| 'manual'`                        | Pagination mode options.          |
+| `VfDataTableSortingMode`       | `'client' \| 'manual'`                        | Sorting execution mode.           |
+| `VfDataTableSortDirection`     | `'asc' \| 'desc'`                             | Sort direction.                   |
+| `VfDataTableSort`              | `{ key: string; direction: 'asc' \| 'desc' }` | One column sort criterion.        |
 | `VfDataTableColumnOrder`       | `string[]`                                    | Persistable order by column key.  |
 | `VfDataTableColumnWidths`      | `Record<string, string>`                      | Persistable widths by column key. |
 | `VfDataTableCellAlign`         | `'start' \| 'center' \| 'end'`                | Cell alignment options.           |
@@ -82,6 +90,7 @@ Public component contract: props, events, slots, and related types.
 | ---------------- | --------------------------------------------- | ------- | --------------------------------------------------------- |
 | `key`            | `string`                                      | —       | Row property key and stable width-state key.              |
 | `header?`        | `string`                                      | `key`   | Header label.                                             |
+| `sortable?`      | `boolean`                                     | `false` | Enables sorting by the column.                            |
 | `width?`         | `string`                                      | —       | Initial CSS width.                                        |
 | `minWidth?`      | `string`                                      | —       | Minimum width used by layout and resize constraints.      |
 | `maxWidth?`      | `string`                                      | —       | Maximum width used by layout and resize constraints.      |
