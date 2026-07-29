@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onUnmounted, ref, useAttrs } from 'vue';
-import { icons } from '@codemonster-ru/vueforge-icons';
+import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import VfCheckbox from '@/components/checkbox/VfCheckbox.vue';
 import VfProgressSpinner from '@/components/progress-spinner/VfProgressSpinner.vue';
@@ -16,6 +16,8 @@ import type {
   VfDataTablePaginationMode,
   VfDataTableRow,
   VfDataTableRowKey,
+  VfDataTableSort,
+  VfDataTableSortingMode,
 } from '@/types/components';
 
 defineOptions({
@@ -52,6 +54,10 @@ interface VfDataTableProps {
   defaultPageSize?: number;
   pageSizeOptions?: number[];
   totalRows?: number;
+  sort?: VfDataTableSort[];
+  defaultSort?: VfDataTableSort[];
+  sortingMode?: VfDataTableSortingMode;
+  multiSort?: boolean;
   emptyText?: string;
   loadingText?: string;
 }
@@ -85,6 +91,10 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
   defaultPageSize: 10,
   pageSizeOptions: () => [10, 25, 50],
   totalRows: undefined,
+  sort: undefined,
+  defaultSort: () => [],
+  sortingMode: 'client',
+  multiSort: false,
   emptyText: 'No data',
   loadingText: 'Loading...',
 });
@@ -95,6 +105,7 @@ const emit = defineEmits<{
   'update:pageSize': [pageSize: number];
   'update:columnOrder': [columnOrder: VfDataTableColumnOrder];
   'update:columnWidths': [columnWidths: VfDataTableColumnWidths];
+  'update:sort': [sort: VfDataTableSort[]];
   'column-reorder-end': [columnOrder: VfDataTableColumnOrder];
   'column-resize-end': [columnWidths: VfDataTableColumnWidths];
 }>();
@@ -105,6 +116,7 @@ const internalPageSize = ref(props.defaultPageSize);
 const internalSelectedRowKeys = ref<VfDataTableRowKey[]>([...props.defaultSelectedRowKeys]);
 const internalColumnOrder = ref<VfDataTableColumnOrder>([...props.defaultColumnOrder]);
 const internalColumnWidths = ref<VfDataTableColumnWidths>({ ...props.defaultColumnWidths });
+const internalSort = ref<VfDataTableSort[]>(props.defaultSort.map((sort) => ({ ...sort })));
 const lastCommittedColumnWidths = ref<VfDataTableColumnWidths>({ ...props.defaultColumnWidths });
 const tableRef = ref<HTMLTableElement>();
 const scrollRef = ref<HTMLDivElement>();
@@ -148,6 +160,8 @@ let reorderSession: ColumnReorderSession | undefined;
 let resizeSession: ColumnResizeSession | undefined;
 let columnBoundaryGuideFrame: number | undefined;
 let columnReorderAnimationGeneration = 0;
+let suppressHeaderSortClick = false;
+let headerSortClickReset: number | undefined;
 const activeColumnReorderAnimations = new Set<Animation>();
 
 const classes = computed(() =>
@@ -172,14 +186,29 @@ const totalRowCount = computed(() => Math.max(0, props.totalRows ?? props.rows.l
 const currentPageSize = computed(() => Math.max(1, props.pageSize ?? internalPageSize.value));
 const pageCount = computed(() => Math.max(1, Math.ceil(totalRowCount.value / currentPageSize.value)));
 const currentPage = computed(() => clampPage(props.page ?? internalPage.value));
+const currentSort = computed(() => normalizeSort(props.sort ?? internalSort.value));
+const sortedRows = computed(() => {
+  if (
+    currentSort.value.length === 0 ||
+    props.sortingMode === 'manual' ||
+    (props.pagination && props.paginationMode === 'manual')
+  ) {
+    return props.rows;
+  }
+
+  return props.rows
+    .map((row, index) => ({ row, index }))
+    .sort((left, right) => compareRows(left.row, right.row) || left.index - right.index)
+    .map(({ row }) => row);
+});
 const visibleRows = computed(() => {
   if (!props.pagination || props.paginationMode === 'manual') {
-    return props.rows;
+    return sortedRows.value;
   }
 
   const start = (currentPage.value - 1) * currentPageSize.value;
 
-  return props.rows.slice(start, start + currentPageSize.value);
+  return sortedRows.value.slice(start, start + currentPageSize.value);
 });
 const hasRows = computed(() => visibleRows.value.length > 0);
 const stateColspan = computed(() => Math.max(renderedColumns.value.length + (props.selectable ? 1 : 0), 1));
@@ -284,6 +313,142 @@ function cellValue(row: VfDataTableRow, key: string) {
 
 function columnHeader(column: VfDataTableColumn) {
   return column.header ?? column.key;
+}
+
+function normalizeSort(sort: VfDataTableSort[]) {
+  const sortableColumnKeys = new Set(props.columns.filter((column) => column.sortable).map((column) => column.key));
+  const normalizedSort = sort.filter(
+    (item, index) =>
+      sortableColumnKeys.has(item.key) &&
+      (item.direction === 'asc' || item.direction === 'desc') &&
+      sort.findIndex((candidate) => candidate.key === item.key) === index,
+  );
+
+  return props.multiSort ? normalizedSort : normalizedSort.slice(0, 1);
+}
+
+const sortCollator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: 'base',
+});
+
+function compareSortValues(left: unknown, right: unknown) {
+  if (Object.is(left, right)) {
+    return 0;
+  }
+
+  if (left == null) {
+    return 1;
+  }
+
+  if (right == null) {
+    return -1;
+  }
+
+  if (typeof left === 'number' && typeof right === 'number') {
+    return left - right;
+  }
+
+  if (left instanceof Date && right instanceof Date) {
+    return left.getTime() - right.getTime();
+  }
+
+  if (typeof left === 'boolean' && typeof right === 'boolean') {
+    return Number(left) - Number(right);
+  }
+
+  return sortCollator.compare(String(left), String(right));
+}
+
+function compareRows(left: VfDataTableRow, right: VfDataTableRow) {
+  for (const sort of currentSort.value) {
+    const leftValue = cellValue(left, sort.key);
+    const rightValue = cellValue(right, sort.key);
+
+    if (leftValue == null || rightValue == null) {
+      if (!Object.is(leftValue, rightValue)) {
+        return leftValue == null ? 1 : -1;
+      }
+
+      continue;
+    }
+
+    const comparison = compareSortValues(leftValue, rightValue);
+
+    if (comparison !== 0) {
+      return sort.direction === 'asc' ? comparison : -comparison;
+    }
+  }
+
+  return 0;
+}
+
+function columnSortIndex(column: VfDataTableColumn) {
+  return currentSort.value.findIndex((sort) => sort.key === column.key);
+}
+
+function columnSortDirection(column: VfDataTableColumn) {
+  return currentSort.value[columnSortIndex(column)]?.direction;
+}
+
+function columnAriaSort(column: VfDataTableColumn) {
+  const direction = columnSortDirection(column);
+
+  return direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none';
+}
+
+function columnSortLabel(column: VfDataTableColumn) {
+  const direction = columnSortDirection(column);
+
+  if (direction === 'asc') {
+    return `Sort ${columnHeader(column)} descending`;
+  }
+
+  if (direction === 'desc') {
+    return `Clear sorting for ${columnHeader(column)}`;
+  }
+
+  return `Sort ${columnHeader(column)} ascending`;
+}
+
+function toggleColumnSort(column: VfDataTableColumn) {
+  if (!column.sortable) {
+    return;
+  }
+
+  const sortIndex = columnSortIndex(column);
+  const direction = sortIndex < 0 ? undefined : currentSort.value[sortIndex]?.direction;
+  const nextDirection = direction === undefined ? 'asc' : direction === 'asc' ? 'desc' : undefined;
+  const preserveOtherColumns = props.multiSort;
+  const nextSort = preserveOtherColumns ? currentSort.value.filter((sort) => sort.key !== column.key) : [];
+
+  if (nextDirection) {
+    const nextItem: VfDataTableSort = { key: column.key, direction: nextDirection };
+
+    if (preserveOtherColumns && sortIndex >= 0) {
+      nextSort.splice(sortIndex, 0, nextItem);
+    } else {
+      nextSort.push(nextItem);
+    }
+  }
+
+  internalSort.value = nextSort;
+  emit(
+    'update:sort',
+    nextSort.map((sort) => ({ ...sort })),
+  );
+
+  if (props.pagination && currentPage.value !== 1) {
+    setPage(1);
+  }
+}
+
+function sortColumnFromHeader(column: VfDataTableColumn) {
+  if (suppressHeaderSortClick) {
+    return;
+  }
+
+  toggleColumnSort(column);
 }
 
 function normalizeColumnOrder(columnOrder: VfDataTableColumnOrder) {
@@ -532,6 +697,19 @@ function endColumnReorder(commit: boolean, event?: PointerEvent) {
 
   const previousPositions = session.active ? captureColumnPositions() : undefined;
 
+  if (session.active) {
+    suppressHeaderSortClick = true;
+
+    if (headerSortClickReset !== undefined) {
+      window.clearTimeout(headerSortClickReset);
+    }
+
+    headerSortClickReset = window.setTimeout(() => {
+      suppressHeaderSortClick = false;
+      headerSortClickReset = undefined;
+    });
+  }
+
   cancelColumnReorderAnimations();
   reorderSession = undefined;
   previewColumnOrder.value = undefined;
@@ -699,6 +877,10 @@ function updateColumnBoundaryGuide() {
 function scheduleColumnBoundaryGuideUpdate() {
   if (columnBoundaryGuideFrame !== undefined) {
     cancelAnimationFrame(columnBoundaryGuideFrame);
+  }
+
+  if (headerSortClickReset !== undefined) {
+    window.clearTimeout(headerSortClickReset);
   }
 
   columnBoundaryGuideFrame = requestAnimationFrame(() => {
@@ -1039,6 +1221,7 @@ onUnmounted(() => {
               :key="column.key"
               :class="[
                 'vf-data-table__header-cell',
+                column.sortable && 'vf-data-table__header-cell--sortable',
                 canReorderColumn(column) && 'vf-data-table__header-cell--reorderable',
                 reorderingColumnKey === column.key && 'vf-data-table__header-cell--reordering',
                 ...columnClasses(column),
@@ -1047,6 +1230,7 @@ onUnmounted(() => {
               :data-vf-column-key="column.key"
               :scope="column.scope ?? 'col'"
               :style="columnStyle(column)"
+              :aria-sort="column.sortable ? columnAriaSort(column) : undefined"
               :tabindex="canReorderColumn(column) ? 0 : undefined"
               :aria-label="
                 canReorderColumn(column)
@@ -1057,11 +1241,43 @@ onUnmounted(() => {
                 canReorderColumn(column) ? 'Drag to reorder, or use Left and Right Arrow keys.' : undefined
               "
               :aria-keyshortcuts="canReorderColumn(column) ? 'ArrowLeft ArrowRight' : undefined"
+              @click="sortColumnFromHeader(column)"
               @pointerdown="startColumnReorder($event, column)"
               @keydown="reorderColumnWithKeyboard($event, column)"
             >
               <span class="vf-data-table__header-content">
-                <slot :name="`header-${column.key}`" :column="column">
+                <button
+                  v-if="column.sortable"
+                  class="vf-data-table__sort-button"
+                  type="button"
+                  :aria-label="columnSortLabel(column)"
+                >
+                  <span class="vf-data-table__sort-label">
+                    <slot :name="`header-${column.key}`" :column="column">
+                      {{ columnHeader(column) }}
+                    </slot>
+                  </span>
+                  <VueIconify
+                    class="vf-data-table__sort-icon"
+                    :icon="
+                      columnSortDirection(column) === 'asc'
+                        ? icons.caretUp
+                        : columnSortDirection(column) === 'desc'
+                          ? icons.caretDown
+                          : icons.sort
+                    "
+                    size="var(--vf-icon-size-sm)"
+                    aria-hidden="true"
+                  />
+                  <span
+                    v-if="props.multiSort && currentSort.length > 1 && columnSortIndex(column) >= 0"
+                    class="vf-data-table__sort-priority"
+                    aria-hidden="true"
+                  >
+                    {{ columnSortIndex(column) + 1 }}
+                  </span>
+                </button>
+                <slot v-else :name="`header-${column.key}`" :column="column">
                   {{ columnHeader(column) }}
                 </slot>
               </span>
@@ -1076,6 +1292,7 @@ onUnmounted(() => {
                 aria-orientation="vertical"
                 :aria-label="`Resize ${columnHeader(column)} column`"
                 @pointerdown.stop.prevent="startColumnResize($event, columnIndex)"
+                @click.stop
                 @pointerenter="setHighlightedColumnBoundary(columnIndex)"
                 @pointerleave="setHighlightedColumnBoundary()"
                 @dblclick.stop.prevent="autosizeColumn(columnIndex)"

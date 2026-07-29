@@ -20,6 +20,8 @@ export type VfTooltipPlacement = 'top' | 'bottom';
 export type VfDataTableDensity = 'default' | 'compact';
 export type VfDataTableLoadingVariant = 'mask' | 'skeleton';
 export type VfDataTablePaginationMode = 'client' | 'manual';
+export type VfDataTableSortingMode = 'client' | 'manual';
+export type VfDataTableSortDirection = 'asc' | 'desc';
 export type VfDataTableCellAlign = 'start' | 'center' | 'end';
 export type VfDataTableCellVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
 export type VfDataTableColumnWidths = Record<string, string>;
@@ -28,9 +30,16 @@ export type VfDataTableColumnOrder = string[];
 export type VfDataTableRow = object;
 export type VfDataTableRowKey = string | number;
 
+export interface VfDataTableSort {
+  key: string;
+  direction: VfDataTableSortDirection;
+}
+
 export interface VfDataTableColumn {
   key: string;
   header?: string;
+  /** Enables sorting by this column. */
+  sortable?: boolean;
   /** CSS width applied to the column header and cells. */
   width?: string;
   /** Minimum CSS width applied to the column header and cells. */

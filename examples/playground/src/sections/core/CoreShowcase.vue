@@ -52,6 +52,7 @@ import type {
   VfDataTableColumnOrder,
   VfDataTableColumnWidths,
   VfDataTableRow,
+  VfDataTableSort,
   VfNavMenuItem,
   VfStepperItem,
   VfTableOfContentsItem,
@@ -79,6 +80,7 @@ const menuBarPillsValue = ref('about');
 const selectedDataTableRowKeys = ref<Array<string | number>>([]);
 const dataTableColumnOrder = ref<VfDataTableColumnOrder>([]);
 const dataTableColumnWidths = ref<VfDataTableColumnWidths>({});
+const dataTableSort = ref<VfDataTableSort[]>([]);
 const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 
@@ -493,6 +495,19 @@ const dataTableMetricColumns: VfDataTableColumn[] = [
   { key: 'status', header: 'Status' },
   { key: 'tasks', header: 'Tasks', align: 'end' },
 ];
+
+const dataTableSortableColumns: VfDataTableColumn[] = [
+  { key: 'member', header: 'Member', sortable: true },
+  { key: 'role', header: 'Role', sortable: true },
+  { key: 'status', header: 'Status', sortable: true },
+  { key: 'tasks', header: 'Tasks', sortable: true, align: 'end' },
+];
+
+const dataTableSortLabel = computed(() =>
+  dataTableSort.value.length
+    ? dataTableSort.value.map(({ key, direction }) => `${key} ${direction}`).join(', ')
+    : 'none',
+);
 
 const dataTableResizableColumns: VfDataTableColumn[] = [
   { key: 'member', header: 'Member', width: '35%', minWidth: '8rem' },
@@ -1383,6 +1398,32 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">data table skeleton</p>
                   <VfDataTable :columns="dataTableMetricColumns" loading loading-variant="skeleton" :loading-rows="4" />
+                </div>
+
+                <div class="demo-component-matrix__cell demo-item--full">
+                  <p class="demo-component-matrix__label">data table sorting</p>
+                  <div class="demo-stack">
+                    <p class="demo-text">
+                      Click headers to add sort columns in priority order. Sorting is applied to all rows before
+                      pagination.
+                    </p>
+                    <VfDataTable
+                      v-model:sort="dataTableSort"
+                      caption="Sortable team workload"
+                      :columns="dataTableSortableColumns"
+                      :rows="dataTableRows"
+                      row-key="id"
+                      multi-sort
+                      pagination
+                      :default-page-size="3"
+                      :page-size-options="[3, 5, 10]"
+                      striped
+                      column-dividers
+                    />
+                    <p class="demo-text" aria-live="polite">
+                      Sort: <code>{{ dataTableSortLabel }}</code>
+                    </p>
+                  </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">

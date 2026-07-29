@@ -614,6 +614,107 @@ describe('core primitives', () => {
     expect(wrapper.findAll('tbody td').map((cell) => cell.text())).toEqual(['alice@example.com']);
   });
 
+  it('sorts all client rows before pagination and cycles the sort state', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name', sortable: true },
+          { key: 'score', header: 'Score', sortable: true },
+        ],
+        rows: [
+          { id: 1, name: 'Zoe', score: 2 },
+          { id: 2, name: 'Alice', score: 10 },
+          { id: 3, name: 'Bob', score: 1 },
+        ],
+        rowKey: 'id',
+        pagination: true,
+        defaultPage: 2,
+        defaultPageSize: 2,
+        pageSizeOptions: [2],
+      },
+    });
+
+    await wrapper.find('[data-vf-column-key="name"]').trigger('click');
+
+    expect(wrapper.emitted('update:sort')).toEqual([[[{ key: 'name', direction: 'asc' }]]]);
+    expect(wrapper.emitted('update:page')).toEqual([[1]]);
+    expect(wrapper.findAll('tbody tr').map((row) => row.text())).toEqual(['Alice10', 'Bob1']);
+    expect(wrapper.find('[aria-sort="ascending"]').exists()).toBe(true);
+
+    await wrapper.find('[aria-label="Sort Name descending"]').trigger('click');
+
+    expect(wrapper.emitted('update:sort')?.[1]).toEqual([[{ key: 'name', direction: 'desc' }]]);
+    expect(wrapper.findAll('tbody tr').map((row) => row.text())).toEqual(['Zoe2', 'Bob1']);
+
+    await wrapper.find('[aria-label="Clear sorting for Name"]').trigger('click');
+
+    expect(wrapper.emitted('update:sort')?.[2]).toEqual([[]]);
+    expect(wrapper.findAll('tbody tr').map((row) => row.text())).toEqual(['Zoe2', 'Alice10']);
+  });
+
+  it('emits manual sorting without reordering the current server page', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Name', sortable: true }],
+        rows: [{ name: 'Zoe' }, { name: 'Alice' }],
+        pagination: true,
+        paginationMode: 'manual',
+        totalRows: 20,
+      },
+    });
+
+    await wrapper.find('[aria-label="Sort Name ascending"]').trigger('click');
+
+    expect(wrapper.emitted('update:sort')).toEqual([[[{ key: 'name', direction: 'asc' }]]]);
+    expect(wrapper.findAll('tbody tr').map((row) => row.text())).toEqual(['Zoe', 'Alice']);
+  });
+
+  it('supports opt-in multi-column sorting with regular clicks', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'team', header: 'Team', sortable: true },
+          { key: 'score', header: 'Score', sortable: true },
+        ],
+        rows: [
+          { team: 'B', score: 2 },
+          { team: 'A', score: 1 },
+          { team: 'A', score: 3 },
+        ],
+        multiSort: true,
+      },
+    });
+
+    await wrapper.find('[aria-label="Sort Team ascending"]').trigger('click');
+
+    expect(wrapper.find('.vf-data-table__sort-priority').exists()).toBe(false);
+
+    await wrapper.find('[aria-label="Sort Score ascending"]').trigger('click');
+
+    expect(wrapper.emitted('update:sort')?.[1]).toEqual([
+      [
+        { key: 'team', direction: 'asc' },
+        { key: 'score', direction: 'asc' },
+      ],
+    ]);
+    expect(wrapper.findAll('tbody tr').map((row) => row.text())).toEqual(['A1', 'A3', 'B2']);
+    expect(wrapper.findAll('.vf-data-table__sort-priority').map((priority) => priority.text())).toEqual(['1', '2']);
+
+    await wrapper.find('[aria-label="Sort Team descending"]').trigger('click');
+
+    expect(wrapper.emitted('update:sort')?.[2]).toEqual([
+      [
+        { key: 'team', direction: 'desc' },
+        { key: 'score', direction: 'asc' },
+      ],
+    ]);
+
+    await wrapper.find('[aria-label="Clear sorting for Team"]').trigger('click');
+
+    expect(wrapper.emitted('update:sort')?.[3]).toEqual([[{ key: 'score', direction: 'asc' }]]);
+    expect(wrapper.find('.vf-data-table__sort-priority').exists()).toBe(false);
+  });
+
   it('normalizes and reorders data table columns with the keyboard', async () => {
     const wrapper = mount(VfDataTable, {
       props: {
