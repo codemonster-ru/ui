@@ -77,6 +77,7 @@ const menuBarDefaultValue = ref('pricing');
 const menuBarPillsValue = ref('about');
 const selectedDataTableRowKeys = ref<Array<string | number>>([]);
 const dataTableColumnWidths = ref<VfDataTableColumnWidths>({});
+const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 
 const formGeometrySizes = ['sm', 'md', 'lg'] as const;
@@ -251,6 +252,20 @@ function handleGlobalCommandPaletteShortcut(event: KeyboardEvent) {
 
 function resetDataTableColumnWidths() {
   dataTableColumnWidths.value = {};
+}
+
+function setDataTableColumnVisible(columnKey: string, visible: boolean) {
+  const visibleKeys = new Set(visibleDataTableColumnKeys.value);
+
+  if (visible) {
+    visibleKeys.add(columnKey);
+  } else {
+    visibleKeys.delete(columnKey);
+  }
+
+  visibleDataTableColumnKeys.value = dataTableConfigurableColumns
+    .filter((column) => column.key === 'member' || visibleKeys.has(column.key))
+    .map((column) => column.key);
 }
 
 onMounted(() => {
@@ -479,6 +494,14 @@ const dataTableResizableColumns: VfDataTableColumn[] = [
   { key: 'status', header: 'Status', width: '25%', minWidth: '7rem', nowrap: true },
   { key: 'tasks', header: 'Tasks', width: '15%', minWidth: '6rem', nowrap: true, align: 'end' },
 ];
+
+const dataTableConfigurableColumns: VfDataTableColumn[] = [
+  { key: 'member', header: 'Member' },
+  { key: 'role', header: 'Role' },
+  { key: 'status', header: 'Status' },
+  { key: 'tasks', header: 'Tasks', align: 'end' },
+];
+const optionalDataTableColumns = dataTableConfigurableColumns.slice(1);
 
 const dataTableRows: VfDataTableRow[] = [
   { id: 1, member: 'Alice', role: 'Design', status: 'Available', tasks: 12 },
@@ -1195,6 +1218,43 @@ const tabContent = computed<Record<string, string>>(() => ({
                     striped
                     column-dividers
                   />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table configurable columns</p>
+                  <div class="demo-stack">
+                    <div class="demo-inline">
+                      <VfPopover placement="bottom-start">
+                        <template #trigger>
+                          <VfIconButton
+                            :icon="icons.columns"
+                            tabindex="-1"
+                            variant="secondary"
+                            aria-label="Choose visible columns"
+                          />
+                        </template>
+                        <div class="demo-stack">
+                          <VfCheckbox
+                            v-for="column in optionalDataTableColumns"
+                            :key="column.key"
+                            :model-value="visibleDataTableColumnKeys.includes(column.key)"
+                            :label="column.header"
+                            @update:model-value="setDataTableColumnVisible(column.key, $event)"
+                          />
+                        </div>
+                      </VfPopover>
+                      <span class="demo-text">Member is always visible</span>
+                    </div>
+                    <VfDataTable
+                      :visible-column-keys="visibleDataTableColumnKeys"
+                      caption="Configurable team roster"
+                      :columns="dataTableConfigurableColumns"
+                      :rows="dataTableRows"
+                      row-key="id"
+                      striped
+                      column-dividers
+                    />
+                  </div>
                 </div>
 
                 <div class="demo-component-matrix__cell demo-item--full">

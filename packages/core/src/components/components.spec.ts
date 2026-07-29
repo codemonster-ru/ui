@@ -591,6 +591,29 @@ describe('core primitives', () => {
     expect(paginated.text()).toContain('3-3 of 3');
   });
 
+  it('renders only externally controlled visible data table columns', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'actions', header: 'Actions' },
+          { key: 'name', header: 'Name' },
+          { key: 'email', header: 'Email' },
+        ],
+        rows: [{ actions: 'Edit', name: 'Alice', email: 'alice@example.com' }],
+        visibleColumnKeys: ['actions', 'name'],
+      },
+    });
+
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual(['Actions', 'Name']);
+    expect(wrapper.findAll('tbody td').map((cell) => cell.text())).toEqual(['Edit', 'Alice']);
+    expect(wrapper.find('[aria-label="Configure columns"]').exists()).toBe(false);
+
+    await wrapper.setProps({ visibleColumnKeys: ['email'] });
+
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual(['Email']);
+    expect(wrapper.findAll('tbody td').map((cell) => cell.text())).toEqual(['alice@example.com']);
+  });
+
   it('resizes data table columns with controlled and uncontrolled width state', async () => {
     const wrapper = mount(VfDataTable, {
       props: {
