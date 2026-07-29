@@ -23,6 +23,7 @@ export type VfDataTablePaginationMode = 'client' | 'manual';
 export type VfDataTableCellAlign = 'start' | 'center' | 'end';
 export type VfDataTableCellVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
 export type VfDataTableColumnWidths = Record<string, string>;
+export type VfDataTableColumnOrder = string[];
 
 export type VfDataTableRow = object;
 export type VfDataTableRowKey = string | number;
@@ -40,6 +41,8 @@ export interface VfDataTableColumn {
   nowrap?: boolean;
   /** Set to false to disable resizing for this column. */
   resizable?: boolean;
+  /** Set to false to disable pointer and keyboard reordering for this column. */
+  reorderable?: boolean;
   align?: VfDataTableCellAlign;
   verticalAlign?: VfDataTableCellVerticalAlign;
   scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';

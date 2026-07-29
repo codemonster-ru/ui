@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref, useAttrs } from 'vue';
+import { computed, nextTick, onUnmounted, ref, useAttrs } from 'vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import VfCheckbox from '@/components/checkbox/VfCheckbox.vue';
@@ -9,6 +9,7 @@ import VfSkeleton from '@/components/skeleton/VfSkeleton.vue';
 import { cx } from '@/utils/classes';
 import type {
   VfDataTableColumn,
+  VfDataTableColumnOrder,
   VfDataTableColumnWidths,
   VfDataTableDensity,
   VfDataTableLoadingVariant,
@@ -34,6 +35,9 @@ interface VfDataTableProps {
   columnDividers?: boolean;
   stickyHeader?: boolean;
   visibleColumnKeys?: string[];
+  columnOrder?: VfDataTableColumnOrder;
+  defaultColumnOrder?: VfDataTableColumnOrder;
+  reorderableColumns?: boolean;
   columnWidths?: VfDataTableColumnWidths;
   defaultColumnWidths?: VfDataTableColumnWidths;
   resizableColumns?: boolean;
@@ -64,6 +68,9 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
   columnDividers: false,
   stickyHeader: false,
   visibleColumnKeys: undefined,
+  columnOrder: undefined,
+  defaultColumnOrder: () => [],
+  reorderableColumns: false,
   columnWidths: undefined,
   defaultColumnWidths: () => ({}),
   resizableColumns: false,
@@ -86,7 +93,9 @@ const emit = defineEmits<{
   'update:selectedRowKeys': [selectedRowKeys: VfDataTableRowKey[]];
   'update:page': [page: number];
   'update:pageSize': [pageSize: number];
+  'update:columnOrder': [columnOrder: VfDataTableColumnOrder];
   'update:columnWidths': [columnWidths: VfDataTableColumnWidths];
+  'column-reorder-end': [columnOrder: VfDataTableColumnOrder];
   'column-resize-end': [columnWidths: VfDataTableColumnWidths];
 }>();
 
@@ -94,6 +103,7 @@ const attrs = useAttrs();
 const internalPage = ref(props.defaultPage);
 const internalPageSize = ref(props.defaultPageSize);
 const internalSelectedRowKeys = ref<VfDataTableRowKey[]>([...props.defaultSelectedRowKeys]);
+const internalColumnOrder = ref<VfDataTableColumnOrder>([...props.defaultColumnOrder]);
 const internalColumnWidths = ref<VfDataTableColumnWidths>({ ...props.defaultColumnWidths });
 const lastCommittedColumnWidths = ref<VfDataTableColumnWidths>({ ...props.defaultColumnWidths });
 const tableRef = ref<HTMLTableElement>();
@@ -102,6 +112,22 @@ const isResizing = ref(false);
 const resizingColumnIndex = ref<number>();
 const highlightedColumnBoundaryIndex = ref<number>();
 const columnBoundaryGuideStyle = ref<Record<string, string>>();
+const previewColumnOrder = ref<VfDataTableColumnOrder>();
+const reorderingColumnKey = ref<string>();
+const isReordering = ref(false);
+const columnReorderAnnouncement = ref('');
+
+interface ColumnReorderSession {
+  pointerId: number;
+  column: VfDataTableColumn;
+  header: HTMLElement;
+  startX: number;
+  startY: number;
+  pointerToColumnCenterOffset: number;
+  originalOrder: VfDataTableColumnOrder;
+  previewOrder: VfDataTableColumnOrder;
+  active: boolean;
+}
 
 interface ColumnResizeSession {
   pointerId?: number;
@@ -118,8 +144,11 @@ interface ColumnResizeSession {
   changed: boolean;
 }
 
+let reorderSession: ColumnReorderSession | undefined;
 let resizeSession: ColumnResizeSession | undefined;
 let columnBoundaryGuideFrame: number | undefined;
+let columnReorderAnimationGeneration = 0;
+const activeColumnReorderAnimations = new Set<Animation>();
 
 const classes = computed(() =>
   cx(
@@ -134,6 +163,7 @@ const classes = computed(() =>
       renderedColumns.value.length > 0 &&
       renderedColumns.value.every((column) => renderedColumnWidths.value[column.key]) &&
       'vf-data-table--fixed-layout',
+    isReordering.value && 'vf-data-table--reordering',
     isResizing.value && 'vf-data-table--resizing',
   ),
 );
@@ -188,14 +218,25 @@ const pageSizeSelectOptions = computed(() =>
   })),
 );
 const currentSelectedRowKeys = computed(() => props.selectedRowKeys ?? internalSelectedRowKeys.value);
+const currentColumnOrder = computed(() => normalizeColumnOrder(props.columnOrder ?? internalColumnOrder.value));
+const displayedColumnOrder = computed(() => normalizeColumnOrder(previewColumnOrder.value ?? currentColumnOrder.value));
+const orderedColumns = computed(() => {
+  const columnsByKey = new Map(props.columns.map((column) => [column.key, column]));
+
+  return displayedColumnOrder.value.flatMap((key) => {
+    const column = columnsByKey.get(key);
+
+    return column ? [column] : [];
+  });
+});
 const renderedColumns = computed(() => {
   if (props.visibleColumnKeys === undefined) {
-    return props.columns;
+    return orderedColumns.value;
   }
 
   const visibleColumnKeys = new Set(props.visibleColumnKeys);
 
-  return props.columns.filter((column) => visibleColumnKeys.has(column.key));
+  return orderedColumns.value.filter((column) => visibleColumnKeys.has(column.key));
 });
 const currentColumnWidths = computed(() => props.columnWidths ?? internalColumnWidths.value);
 const renderedColumnWidths = computed(() =>
@@ -243,6 +284,347 @@ function cellValue(row: VfDataTableRow, key: string) {
 
 function columnHeader(column: VfDataTableColumn) {
   return column.header ?? column.key;
+}
+
+function normalizeColumnOrder(columnOrder: VfDataTableColumnOrder) {
+  const columnKeys = props.columns.map((column) => column.key);
+  const validColumnKeys = new Set(columnKeys);
+  const normalizedOrder = columnOrder.filter(
+    (key, index) => validColumnKeys.has(key) && columnOrder.indexOf(key) === index,
+  );
+  const orderedKeys = new Set(normalizedOrder);
+
+  return [...normalizedOrder, ...columnKeys.filter((key) => !orderedKeys.has(key))];
+}
+
+function canReorderColumn(column: VfDataTableColumn) {
+  return props.reorderableColumns && column.reorderable !== false;
+}
+
+function commitColumnOrder(columnOrder: VfDataTableColumnOrder, movedColumn: VfDataTableColumn) {
+  const nextOrder = normalizeColumnOrder(columnOrder);
+
+  if (nextOrder.every((key, index) => key === currentColumnOrder.value[index])) {
+    return;
+  }
+
+  internalColumnOrder.value = nextOrder;
+  emit('update:columnOrder', [...nextOrder]);
+  emit('column-reorder-end', [...nextOrder]);
+
+  const visibleColumnKeys = new Set(renderedColumns.value.map((column) => column.key));
+  const nextVisibleOrder = nextOrder.filter((key) => visibleColumnKeys.has(key));
+  const visiblePosition = nextVisibleOrder.indexOf(movedColumn.key) + 1;
+
+  columnReorderAnnouncement.value = `${columnHeader(movedColumn)} column moved to position ${visiblePosition} of ${nextVisibleOrder.length}`;
+}
+
+function reorderedColumnOrder(
+  columnOrder: VfDataTableColumnOrder,
+  columnKey: string,
+  targetColumnKey: string,
+  position: 'before' | 'after',
+) {
+  if (columnKey === targetColumnKey) {
+    return columnOrder;
+  }
+
+  const nextOrder = [...columnOrder];
+  const columnIndex = nextOrder.indexOf(columnKey);
+
+  if (columnIndex < 0) {
+    return columnOrder;
+  }
+
+  nextOrder.splice(columnIndex, 1);
+  const targetIndex = nextOrder.indexOf(targetColumnKey);
+
+  if (targetIndex < 0) {
+    return columnOrder;
+  }
+
+  nextOrder.splice(targetIndex + (position === 'after' ? 1 : 0), 0, columnKey);
+
+  return nextOrder;
+}
+
+function moveColumn(column: VfDataTableColumn, targetColumn: VfDataTableColumn, position: 'before' | 'after') {
+  const nextOrder = reorderedColumnOrder(currentColumnOrder.value, column.key, targetColumn.key, position);
+
+  const previousPositions = captureColumnPositions();
+
+  cancelColumnReorderAnimations();
+  commitColumnOrder(nextOrder, column);
+  animateColumnOrderChange(previousPositions);
+}
+
+function ordersMatch(left: VfDataTableColumnOrder, right: VfDataTableColumnOrder) {
+  return left.length === right.length && left.every((key, index) => key === right[index]);
+}
+
+function columnHeaderElements() {
+  return Array.from(tableRef.value?.querySelectorAll<HTMLElement>('thead [data-vf-column-key]') ?? []);
+}
+
+function columnElements() {
+  return Array.from(tableRef.value?.querySelectorAll<HTMLElement>('[data-vf-column-key]') ?? []);
+}
+
+function captureColumnPositions() {
+  return new Map(columnElements().map((element) => [element, element.getBoundingClientRect().left]));
+}
+
+function cancelColumnReorderAnimations() {
+  activeColumnReorderAnimations.forEach((animation) => animation.cancel());
+  activeColumnReorderAnimations.clear();
+}
+
+function motionDurationMilliseconds(value: string, fallback: number) {
+  const duration = Number.parseFloat(value);
+
+  if (!Number.isFinite(duration)) {
+    return fallback;
+  }
+
+  return value.trim().endsWith('s') && !value.trim().endsWith('ms') ? duration * 1000 : duration;
+}
+
+function animateColumnOrderChange(previousPositions: Map<HTMLElement, number>) {
+  const generation = ++columnReorderAnimationGeneration;
+
+  void nextTick(() => {
+    if (
+      generation !== columnReorderAnimationGeneration ||
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return;
+    }
+
+    const elements = columnElements();
+
+    if (elements.length > 200 || elements.every((element) => typeof element.animate !== 'function')) {
+      return;
+    }
+
+    const tableStyle = getComputedStyle(tableRef.value ?? elements[0]!);
+    const duration = motionDurationMilliseconds(tableStyle.getPropertyValue('--vf-motion-duration-fast'), 160);
+    const easing = tableStyle.getPropertyValue('--vf-motion-ease-standard').trim() || 'ease';
+
+    elements.forEach((element) => {
+      const previousLeft = previousPositions.get(element);
+
+      if (previousLeft === undefined || typeof element.animate !== 'function') {
+        return;
+      }
+
+      const delta = previousLeft - element.getBoundingClientRect().left;
+
+      if (Math.abs(delta) < 0.5) {
+        return;
+      }
+
+      const animation = element.animate([{ transform: `translateX(${delta}px)` }, { transform: 'translateX(0)' }], {
+        duration,
+        easing,
+      });
+      const removeAnimation = () => activeColumnReorderAnimations.delete(animation);
+
+      animation.onfinish = removeAnimation;
+      animation.oncancel = removeAnimation;
+      activeColumnReorderAnimations.add(animation);
+    });
+  });
+}
+
+function previewColumnReorder(clientX: number) {
+  const session = reorderSession;
+
+  if (!session) {
+    return;
+  }
+
+  if (renderedColumns.value.length < 2) {
+    return;
+  }
+
+  const headerElements = new Map(
+    columnHeaderElements().flatMap((element) => {
+      const key = element.dataset.vfColumnKey;
+
+      return key ? [[key, element] as const] : [];
+    }),
+  );
+  const isRtl = getComputedStyle(tableRef.value ?? session.header).direction === 'rtl';
+  const draggedColumnCenter = clientX + session.pointerToColumnCenterOffset;
+  const columnRects = renderedColumns.value.map((column) => ({
+    column,
+    rect: headerElements.get(column.key)?.getBoundingClientRect(),
+  }));
+
+  if (columnRects.some(({ rect }) => !rect)) {
+    return;
+  }
+
+  const insertionIndex = columnRects.slice(0, -1).filter(({ rect }, index) => {
+    const adjacentRect = columnRects[index + 1]?.rect;
+
+    if (!rect || !adjacentRect) {
+      return false;
+    }
+
+    const boundary = isRtl ? (rect.left + adjacentRect.right) / 2 : (rect.right + adjacentRect.left) / 2;
+
+    return isRtl ? draggedColumnCenter < boundary : draggedColumnCenter > boundary;
+  }).length;
+  const remainingColumns = renderedColumns.value.filter((column) => column.key !== session.column.key);
+  const targetColumn =
+    insertionIndex === remainingColumns.length
+      ? remainingColumns[remainingColumns.length - 1]
+      : remainingColumns[insertionIndex];
+  const position = insertionIndex === remainingColumns.length ? 'after' : 'before';
+
+  if (!targetColumn) {
+    return;
+  }
+
+  const nextOrder = reorderedColumnOrder(session.previewOrder, session.column.key, targetColumn.key, position);
+
+  if (!ordersMatch(nextOrder, session.previewOrder)) {
+    const previousPositions = captureColumnPositions();
+
+    cancelColumnReorderAnimations();
+    session.previewOrder = nextOrder;
+    previewColumnOrder.value = [...nextOrder];
+    animateColumnOrderChange(previousPositions);
+  }
+}
+
+function onColumnReorderPointerMove(event: PointerEvent) {
+  const session = reorderSession;
+
+  if (!session || event.pointerId !== session.pointerId) {
+    return;
+  }
+
+  if (!session.active) {
+    const distance = Math.hypot(event.clientX - session.startX, event.clientY - session.startY);
+
+    if (distance < 4) {
+      return;
+    }
+
+    session.active = true;
+    isReordering.value = true;
+    reorderingColumnKey.value = session.column.key;
+    previewColumnOrder.value = [...session.previewOrder];
+  }
+
+  event.preventDefault();
+  previewColumnReorder(event.clientX);
+}
+
+function endColumnReorder(commit: boolean, event?: PointerEvent) {
+  const session = reorderSession;
+
+  if (!session || (event && event.pointerId !== session.pointerId)) {
+    return;
+  }
+
+  const previousPositions = session.active ? captureColumnPositions() : undefined;
+
+  cancelColumnReorderAnimations();
+  reorderSession = undefined;
+  previewColumnOrder.value = undefined;
+  reorderingColumnKey.value = undefined;
+  isReordering.value = false;
+  window.removeEventListener('pointermove', onColumnReorderPointerMove);
+  window.removeEventListener('pointerup', finishColumnReorder);
+  window.removeEventListener('pointercancel', cancelColumnReorder);
+  window.removeEventListener('keydown', cancelColumnReorderWithKeyboard);
+
+  if (session.header.hasPointerCapture?.(session.pointerId)) {
+    session.header.releasePointerCapture(session.pointerId);
+  }
+
+  if (commit && session.active && !ordersMatch(session.previewOrder, session.originalOrder)) {
+    commitColumnOrder(session.previewOrder, session.column);
+  }
+
+  if (previousPositions) {
+    animateColumnOrderChange(previousPositions);
+  }
+}
+
+function finishColumnReorder(event: PointerEvent) {
+  endColumnReorder(true, event);
+}
+
+function cancelColumnReorder(event?: PointerEvent) {
+  endColumnReorder(false, event);
+}
+
+function cancelColumnReorderWithKeyboard(event: KeyboardEvent) {
+  if (event.key !== 'Escape') {
+    return;
+  }
+
+  event.preventDefault();
+  endColumnReorder(false);
+}
+
+function startColumnReorder(event: PointerEvent, column: VfDataTableColumn) {
+  if (reorderSession || event.button !== 0 || !canReorderColumn(column)) {
+    return;
+  }
+
+  const header = event.currentTarget as HTMLElement;
+  const target = event.target instanceof Element ? event.target : undefined;
+  const interactiveTarget = target?.closest(
+    'a, button, input, select, textarea, [contenteditable="true"], [role="button"], [role="checkbox"], [role="link"], [role="separator"]',
+  );
+
+  if (interactiveTarget && interactiveTarget !== header) {
+    return;
+  }
+
+  const headerRect = header.getBoundingClientRect();
+  const order = [...currentColumnOrder.value];
+
+  reorderSession = {
+    pointerId: event.pointerId,
+    column,
+    header,
+    startX: event.clientX,
+    startY: event.clientY,
+    pointerToColumnCenterOffset: headerRect.left + headerRect.width / 2 - event.clientX,
+    originalOrder: order,
+    previewOrder: [...order],
+    active: false,
+  };
+  header.setPointerCapture?.(event.pointerId);
+  window.addEventListener('pointermove', onColumnReorderPointerMove);
+  window.addEventListener('pointerup', finishColumnReorder);
+  window.addEventListener('pointercancel', cancelColumnReorder);
+  window.addEventListener('keydown', cancelColumnReorderWithKeyboard);
+}
+
+function reorderColumnWithKeyboard(event: KeyboardEvent, column: VfDataTableColumn) {
+  if (event.target !== event.currentTarget || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) {
+    return;
+  }
+
+  const columnIndex = renderedColumns.value.findIndex((renderedColumn) => renderedColumn.key === column.key);
+  const isRtl = getComputedStyle(tableRef.value ?? (event.currentTarget as HTMLElement)).direction === 'rtl';
+  const visualDelta = event.key === 'ArrowRight' ? 1 : -1;
+  const orderDelta = isRtl ? -visualDelta : visualDelta;
+  const targetColumn = renderedColumns.value[columnIndex + orderDelta];
+
+  if (!targetColumn) {
+    return;
+  }
+
+  event.preventDefault();
+  moveColumn(column, targetColumn, orderDelta < 0 ? 'before' : 'after');
 }
 
 function columnClasses(column: VfDataTableColumn) {
@@ -613,6 +995,9 @@ function setAllVisibleRowsSelected(selected: boolean) {
 }
 
 onUnmounted(() => {
+  columnReorderAnimationGeneration++;
+  cancelColumnReorderAnimations();
+
   if (columnBoundaryGuideFrame !== undefined) {
     cancelAnimationFrame(columnBoundaryGuideFrame);
   }
@@ -622,6 +1007,10 @@ onUnmounted(() => {
     window.removeEventListener('pointermove', onColumnPointerMove);
     window.removeEventListener('pointerup', stopColumnResize);
     window.removeEventListener('pointercancel', stopColumnResize);
+  }
+
+  if (reorderSession) {
+    endColumnReorder(false);
   }
 });
 </script>
@@ -648,14 +1037,34 @@ onUnmounted(() => {
             <th
               v-for="(column, columnIndex) in renderedColumns"
               :key="column.key"
-              :class="['vf-data-table__header-cell', ...columnClasses(column)]"
+              :class="[
+                'vf-data-table__header-cell',
+                canReorderColumn(column) && 'vf-data-table__header-cell--reorderable',
+                reorderingColumnKey === column.key && 'vf-data-table__header-cell--reordering',
+                ...columnClasses(column),
+              ]"
               :data-vf-column-index="columnIndex"
+              :data-vf-column-key="column.key"
               :scope="column.scope ?? 'col'"
               :style="columnStyle(column)"
+              :tabindex="canReorderColumn(column) ? 0 : undefined"
+              :aria-label="
+                canReorderColumn(column)
+                  ? `${columnHeader(column)}, column ${columnIndex + 1} of ${renderedColumns.length}`
+                  : undefined
+              "
+              :aria-description="
+                canReorderColumn(column) ? 'Drag to reorder, or use Left and Right Arrow keys.' : undefined
+              "
+              :aria-keyshortcuts="canReorderColumn(column) ? 'ArrowLeft ArrowRight' : undefined"
+              @pointerdown="startColumnReorder($event, column)"
+              @keydown="reorderColumnWithKeyboard($event, column)"
             >
-              <slot :name="`header-${column.key}`" :column="column">
-                {{ columnHeader(column) }}
-              </slot>
+              <span class="vf-data-table__header-content">
+                <slot :name="`header-${column.key}`" :column="column">
+                  {{ columnHeader(column) }}
+                </slot>
+              </span>
               <span
                 v-if="canResizeColumn(column, columnIndex)"
                 :class="[
@@ -687,6 +1096,7 @@ onUnmounted(() => {
                 :key="column.key"
                 :class="['vf-data-table__cell', 'vf-data-table__skeleton-cell', ...columnClasses(column)]"
                 :data-vf-column-index="columnIndex"
+                :data-vf-column-key="column.key"
                 :style="columnStyle(column)"
               >
                 <VfSkeleton min-height="var(--vf-icon-size-md)" radius="var(--vf-radius-control)" />
@@ -714,6 +1124,7 @@ onUnmounted(() => {
                 :key="column.key"
                 :class="['vf-data-table__cell', ...columnClasses(column)]"
                 :data-vf-column-index="columnIndex"
+                :data-vf-column-key="column.key"
                 :style="columnStyle(column)"
               >
                 <slot
@@ -747,6 +1158,8 @@ onUnmounted(() => {
         :style="columnBoundaryGuideStyle"
         aria-hidden="true"
       />
+
+      <span class="vf-sr-only" aria-live="polite">{{ columnReorderAnnouncement }}</span>
 
       <div
         v-if="props.loading && props.loadingVariant === 'mask'"
