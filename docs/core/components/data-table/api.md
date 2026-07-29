@@ -17,6 +17,7 @@ Public component contract: props, events, slots, and related types.
 | `striped?`                | `boolean`                                      | `false`        | Applies alternating row background styling.                                             |
 | `columnDividers?`         | `boolean`                                      | `false`        | Adds vertical separators between columns.                                               |
 | `stickyHeader?`           | `boolean`                                      | `false`        | Makes header sticky inside a scroll container.                                          |
+| `visibleColumnKeys?`      | `string[]`                                     | all keys       | Column keys to render, controlled by the consumer.                                      |
 | `columnWidths?`           | `VfDataTableColumnWidths`                      | —              | Controlled column widths keyed by column key.                                           |
 | `defaultColumnWidths?`    | `VfDataTableColumnWidths`                      | `{}`           | Initial column widths for uncontrolled resizing.                                        |
 | `resizableColumns?`       | `boolean`                                      | `false`        | Adds pointer and keyboard resize handles to resizable columns.                          |

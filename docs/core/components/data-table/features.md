@@ -113,6 +113,26 @@ function saveColumnWidths(widths: VfDataTableColumnWidths) {
 `columnWidths` is a serializable record keyed by `VfDataTableColumn.key`. Persist on
 `column-resize-end` instead of on every `update:columnWidths` event.
 
+## Column visibility
+
+Pass `visibleColumnKeys` to control which columns render. The table does not prescribe a column
+chooser, so the same state can be managed from a toolbar, popover, dialog, or another consumer-owned
+interface.
+
+```vue
+<VfCheckbox
+  v-for="column in optionalColumns"
+  :key="column.key"
+  :model-value="visibleColumnKeys.includes(column.key)"
+  :label="column.header"
+  @update:model-value="setColumnVisible(column.key, $event)"
+/>
+
+<VfDataTable :visible-column-keys="visibleColumnKeys" :columns="columns" :rows="rows" />
+```
+
+Keep required column keys in `visibleColumnKeys` and omit them from the chooser.
+
 ## Row selection
 
 Set `selectable` and provide a stable `row-key` to render row checkboxes and a select-all checkbox.
