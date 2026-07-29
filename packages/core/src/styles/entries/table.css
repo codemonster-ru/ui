@@ -27,6 +27,7 @@
 
 .vf-table__caption {
   padding: var(--vf-field-padding-lg);
+  border-bottom: var(--vf-border-width) solid var(--vf-table-border-color);
   text-align: start;
   color: var(--vf-table-caption-color);
   font-weight: var(--vf-font-weight-medium);

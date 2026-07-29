@@ -327,9 +327,9 @@ const componentThemePresetSource = {
     tableBackground: 'var(--vf-color-background-surface)',
     tableColor: 'var(--vf-color-text-primary)',
     tableCaptionColor: 'var(--vf-color-text-secondary)',
-    tableHeadBackground: 'var(--vf-color-background-surface-hover)',
+    tableHeadBackground: 'var(--vf-color-background-surface)',
     tableHeadColor: 'var(--vf-color-text-primary)',
-    tableFootBackground: 'var(--vf-color-background-surface-subtle)',
+    tableFootBackground: 'var(--vf-color-background-surface)',
     tableFootColor: 'var(--vf-color-text-secondary)',
     tableStripeBackground:
       'color-mix(in srgb, var(--vf-color-background-surface) 65%, var(--vf-color-background-surface-hover) 35%)',
