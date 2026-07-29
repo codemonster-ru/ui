@@ -614,6 +614,250 @@ describe('core primitives', () => {
     expect(wrapper.findAll('tbody td').map((cell) => cell.text())).toEqual(['alice@example.com']);
   });
 
+  it('normalizes and reorders data table columns with the keyboard', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'actions', header: 'Actions', reorderable: false },
+          { key: 'name', header: 'Name' },
+          { key: 'email', header: 'Email' },
+        ],
+        rows: [{ actions: 'Edit', name: 'Alice', email: 'alice@example.com' }],
+        defaultColumnOrder: ['email', 'removed', 'email'],
+        reorderableColumns: true,
+      },
+    });
+
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual([
+      'Email',
+      'Actions',
+      'Name',
+    ]);
+    expect(wrapper.findAll('.vf-data-table__header-cell--reorderable')).toHaveLength(2);
+
+    await wrapper.find('.vf-data-table__header-cell--reorderable').trigger('keydown', { key: 'ArrowRight' });
+
+    expect(wrapper.emitted('update:columnOrder')).toEqual([[['actions', 'email', 'name']]]);
+    expect(wrapper.emitted('column-reorder-end')).toEqual([[['actions', 'email', 'name']]]);
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual([
+      'Actions',
+      'Email',
+      'Name',
+    ]);
+    expect(wrapper.find('[aria-live="polite"]').text()).toBe('Email column moved to position 2 of 3');
+  });
+
+  it('animates reordered column cells and respects reduced motion', async () => {
+    const originalAnimate = HTMLElement.prototype.animate;
+    const animate = vi.fn(
+      () =>
+        ({
+          cancel: vi.fn(),
+          oncancel: null,
+          onfinish: null,
+        }) as unknown as Animation,
+    );
+
+    Object.defineProperty(HTMLElement.prototype, 'animate', {
+      configurable: true,
+      value: animate,
+    });
+
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name' },
+          { key: 'email', header: 'Email' },
+        ],
+        rows: [{ name: 'Alice', email: 'alice@example.com' }],
+        reorderableColumns: true,
+      },
+    });
+
+    wrapper.findAll<HTMLElement>('[data-vf-column-key]').forEach((cell) => {
+      vi.spyOn(cell.element, 'getBoundingClientRect').mockImplementation(() => {
+        const siblings = Array.from(cell.element.parentElement?.children ?? []).filter(
+          (element) => element instanceof HTMLElement && element.dataset.vfColumnKey,
+        );
+        const index = siblings.indexOf(cell.element);
+
+        return {
+          left: index * 100,
+          right: (index + 1) * 100,
+          width: 100,
+        } as DOMRect;
+      });
+    });
+
+    await wrapper.find('.vf-data-table__header-cell--reorderable').trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+
+    expect(animate).toHaveBeenCalled();
+    expect(animate).toHaveBeenCalledWith(
+      [{ transform: 'translateX(-100px)' }, { transform: 'translateX(0)' }],
+      expect.objectContaining({ duration: 160 }),
+    );
+
+    animate.mockClear();
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockImplementation((query: string) => ({
+        matches: query === '(prefers-reduced-motion: reduce)',
+        media: query,
+      })),
+    );
+
+    await wrapper.findAll('.vf-data-table__header-cell--reorderable')[1]!.trigger('keydown', {
+      key: 'ArrowLeft',
+    });
+    await nextTick();
+
+    expect(animate).not.toHaveBeenCalled();
+
+    Object.defineProperty(HTMLElement.prototype, 'animate', {
+      configurable: true,
+      value: originalAnimate,
+    });
+  });
+
+  it('previews pointer column reordering and commits controlled state on release', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name' },
+          { key: 'email', header: 'Email' },
+          { key: 'status', header: 'Status' },
+        ],
+        rows: [{ name: 'Alice', email: 'alice@example.com', status: 'Available' }],
+        columnOrder: ['name', 'email', 'status'],
+        reorderableColumns: true,
+      },
+    });
+    const headers = wrapper.findAll('.vf-data-table__header-cell');
+
+    vi.spyOn(headers[0]!.element, 'getBoundingClientRect').mockReturnValue({
+      left: 0,
+      right: 100,
+      width: 100,
+    } as DOMRect);
+    vi.spyOn(headers[1]!.element, 'getBoundingClientRect').mockReturnValue({
+      left: 100,
+      right: 200,
+      width: 100,
+    } as DOMRect);
+    vi.spyOn(headers[2]!.element, 'getBoundingClientRect').mockReturnValue({
+      left: 200,
+      right: 300,
+      width: 100,
+    } as DOMRect);
+
+    await headers[0]!.trigger('pointerdown', { button: 0, clientX: 10, clientY: 10, pointerId: 7 });
+
+    const move = new Event('pointermove', { cancelable: true });
+
+    Object.defineProperties(move, {
+      clientX: { value: 61 },
+      clientY: { value: 10 },
+      pointerId: { value: 7 },
+    });
+    window.dispatchEvent(move);
+    await nextTick();
+
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual([
+      'Email',
+      'Name',
+      'Status',
+    ]);
+    expect(wrapper.find('.vf-data-table').classes()).toContain('vf-data-table--reordering');
+    expect(wrapper.emitted('update:columnOrder')).toBeUndefined();
+    expect(wrapper.emitted('column-reorder-end')).toBeUndefined();
+
+    const end = new Event('pointerup');
+
+    Object.defineProperty(end, 'pointerId', { value: 7 });
+    window.dispatchEvent(end);
+    await nextTick();
+
+    expect(wrapper.emitted('update:columnOrder')).toEqual([[['email', 'name', 'status']]]);
+    expect(wrapper.emitted('column-reorder-end')).toEqual([[['email', 'name', 'status']]]);
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual([
+      'Name',
+      'Email',
+      'Status',
+    ]);
+
+    await wrapper.setProps({ columnOrder: ['email', 'name', 'status'] });
+
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual([
+      'Email',
+      'Name',
+      'Status',
+    ]);
+  });
+
+  it('restores the original column order when pointer reordering is cancelled', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name' },
+          { key: 'email', header: 'Email' },
+          { key: 'status', header: 'Status' },
+        ],
+        rows: [{ name: 'Alice', email: 'alice@example.com', status: 'Available' }],
+        reorderableColumns: true,
+      },
+    });
+    const headers = wrapper.findAll('.vf-data-table__header-cell');
+
+    vi.spyOn(headers[0]!.element, 'getBoundingClientRect').mockReturnValue({
+      left: 0,
+      right: 100,
+      width: 100,
+    } as DOMRect);
+    vi.spyOn(headers[1]!.element, 'getBoundingClientRect').mockReturnValue({
+      left: 100,
+      right: 200,
+      width: 100,
+    } as DOMRect);
+    vi.spyOn(headers[2]!.element, 'getBoundingClientRect').mockReturnValue({
+      left: 200,
+      right: 300,
+      width: 100,
+    } as DOMRect);
+
+    await headers[0]!.trigger('pointerdown', { button: 0, clientX: 10, clientY: 10, pointerId: 8 });
+
+    const move = new Event('pointermove', { cancelable: true });
+
+    Object.defineProperties(move, {
+      clientX: { value: 61 },
+      clientY: { value: 10 },
+      pointerId: { value: 8 },
+    });
+    window.dispatchEvent(move);
+    await nextTick();
+
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual([
+      'Email',
+      'Name',
+      'Status',
+    ]);
+
+    const cancel = new Event('pointercancel');
+
+    Object.defineProperty(cancel, 'pointerId', { value: 8 });
+    window.dispatchEvent(cancel);
+    await nextTick();
+
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual([
+      'Name',
+      'Email',
+      'Status',
+    ]);
+    expect(wrapper.emitted('update:columnOrder')).toBeUndefined();
+    expect(wrapper.emitted('column-reorder-end')).toBeUndefined();
+  });
+
   it('resizes data table columns with controlled and uncontrolled width state', async () => {
     const wrapper = mount(VfDataTable, {
       props: {

@@ -113,6 +113,41 @@ function saveColumnWidths(widths: VfDataTableColumnWidths) {
 `columnWidths` is a serializable record keyed by `VfDataTableColumn.key`. Persist on
 `column-resize-end` instead of on every `update:columnWidths` event.
 
+## Reorderable columns
+
+Enable `reorderableColumns` to make each non-interactive header area draggable. The table previews
+the new order with a short movement animation while a mouse or touch pointer moves and commits it
+when the pointer is released. Focus a header and press Left or Right Arrow for keyboard reordering.
+Buttons, inputs, links, and resize handles inside a header keep their own interactions. Set
+`reorderable: false` to disable reordering for a column. Movement animation is omitted when reduced
+motion is requested or the rendered table contains more than 200 column cells.
+
+```vue
+<VfDataTable
+  v-model:column-order="columnOrder"
+  :columns="columns"
+  :rows="rows"
+  reorderable-columns
+  @column-reorder-end="saveColumnOrder"
+/>
+```
+
+```ts
+import { ref } from 'vue';
+import type { VfDataTableColumnOrder } from '@codemonster-ru/vueforge-core';
+
+const storageKey = 'team-table-column-order';
+const storedColumnOrder = localStorage.getItem(storageKey);
+const columnOrder = ref<VfDataTableColumnOrder>(storedColumnOrder ? JSON.parse(storedColumnOrder) : []);
+
+function saveColumnOrder(order: VfDataTableColumnOrder) {
+  localStorage.setItem(storageKey, JSON.stringify(order));
+}
+```
+
+The table removes unknown and duplicate keys from `columnOrder` and appends new column keys. Storage
+remains consumer-owned so applications can choose local, session, remote, or no persistence.
+
 ## Column visibility
 
 Pass `visibleColumnKeys` to control which columns render. The table does not prescribe a column

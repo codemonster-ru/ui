@@ -18,6 +18,9 @@ Public component contract: props, events, slots, and related types.
 | `columnDividers?`         | `boolean`                                      | `false`        | Adds vertical separators between columns.                                               |
 | `stickyHeader?`           | `boolean`                                      | `false`        | Makes header sticky inside a scroll container.                                          |
 | `visibleColumnKeys?`      | `string[]`                                     | all keys       | Column keys to render, controlled by the consumer.                                      |
+| `columnOrder?`            | `VfDataTableColumnOrder`                       | —              | Controlled order keyed by `VfDataTableColumn.key`.                                      |
+| `defaultColumnOrder?`     | `VfDataTableColumnOrder`                       | `[]`           | Initial order for uncontrolled column reordering.                                       |
+| `reorderableColumns?`     | `boolean`                                      | `false`        | Makes column headers pointer- and keyboard-reorderable.                                 |
 | `columnWidths?`           | `VfDataTableColumnWidths`                      | —              | Controlled column widths keyed by column key.                                           |
 | `defaultColumnWidths?`    | `VfDataTableColumnWidths`                      | `{}`           | Initial column widths for uncontrolled resizing.                                        |
 | `resizableColumns?`       | `boolean`                                      | `false`        | Adds pointer and keyboard resize handles to resizable columns.                          |
@@ -42,6 +45,8 @@ Public component contract: props, events, slots, and related types.
 | `update:page`            | `[page: number]`                          | `void`     | Emitted when pagination changes page.           |
 | `update:pageSize`        | `[pageSize: number]`                      | `void`     | Emitted when pagination changes rows per page.  |
 | `update:selectedRowKeys` | `[selectedRowKeys: VfDataTableRowKey[]]`  | `void`     | Emitted when row selection changes.             |
+| `update:columnOrder`     | `[columnOrder: VfDataTableColumnOrder]`   | `void`     | Emitted when the column order changes.          |
+| `column-reorder-end`     | `[columnOrder: VfDataTableColumnOrder]`   | `void`     | Emitted after pointer or keyboard reorder ends. |
 | `update:columnWidths`    | `[columnWidths: VfDataTableColumnWidths]` | `void`     | Emitted while column widths change.             |
 | `column-resize-end`      | `[columnWidths: VfDataTableColumnWidths]` | `void`     | Emitted after drag, keyboard, or autosize ends. |
 
@@ -63,6 +68,7 @@ Public component contract: props, events, slots, and related types.
 | `VfDataTableDensity`           | `'default' \| 'compact'`                      | Density options.                  |
 | `VfDataTableLoadingVariant`    | `'mask' \| 'skeleton'`                        | Loading presentation options.     |
 | `VfDataTablePaginationMode`    | `'client' \| 'manual'`                        | Pagination mode options.          |
+| `VfDataTableColumnOrder`       | `string[]`                                    | Persistable order by column key.  |
 | `VfDataTableColumnWidths`      | `Record<string, string>`                      | Persistable widths by column key. |
 | `VfDataTableCellAlign`         | `'start' \| 'center' \| 'end'`                | Cell alignment options.           |
 | `VfDataTableCellVerticalAlign` | `'top' \| 'middle' \| 'bottom' \| 'baseline'` | Vertical cell alignment options.  |
@@ -81,6 +87,7 @@ Public component contract: props, events, slots, and related types.
 | `maxWidth?`      | `string`                                      | —       | Maximum width used by layout and resize constraints.      |
 | `nowrap?`        | `boolean`                                     | `false` | Prevents header and cell content from wrapping.           |
 | `resizable?`     | `boolean`                                     | `true`  | Set to `false` to disable boundaries touching the column. |
+| `reorderable?`   | `boolean`                                     | `true`  | Set to `false` to disable reordering for the column.      |
 | `align?`         | `'start' \| 'center' \| 'end'`                | —       | Horizontal cell alignment.                                |
 | `verticalAlign?` | `'top' \| 'middle' \| 'bottom' \| 'baseline'` | —       | Vertical cell alignment.                                  |
 | `scope?`         | `'col' \| 'row' \| 'colgroup' \| 'rowgroup'`  | `'col'` | Header scope.                                             |
