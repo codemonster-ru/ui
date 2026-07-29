@@ -33,6 +33,7 @@ interface VfDataTableProps {
   striped?: boolean;
   columnDividers?: boolean;
   stickyHeader?: boolean;
+  visibleColumnKeys?: string[];
   columnWidths?: VfDataTableColumnWidths;
   defaultColumnWidths?: VfDataTableColumnWidths;
   resizableColumns?: boolean;
@@ -62,6 +63,7 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
   striped: false,
   columnDividers: false,
   stickyHeader: false,
+  visibleColumnKeys: undefined,
   columnWidths: undefined,
   defaultColumnWidths: () => ({}),
   resizableColumns: false,
@@ -129,8 +131,8 @@ const classes = computed(() =>
     props.stickyHeader && 'vf-table--sticky-header',
     props.resizableColumns && 'vf-data-table--resizable',
     props.resizableColumns &&
-      props.columns.length > 0 &&
-      props.columns.every((column) => renderedColumnWidths.value[column.key]) &&
+      renderedColumns.value.length > 0 &&
+      renderedColumns.value.every((column) => renderedColumnWidths.value[column.key]) &&
       'vf-data-table--fixed-layout',
     isResizing.value && 'vf-data-table--resizing',
   ),
@@ -150,7 +152,7 @@ const visibleRows = computed(() => {
   return props.rows.slice(start, start + currentPageSize.value);
 });
 const hasRows = computed(() => visibleRows.value.length > 0);
-const stateColspan = computed(() => Math.max(props.columns.length + (props.selectable ? 1 : 0), 1));
+const stateColspan = computed(() => Math.max(renderedColumns.value.length + (props.selectable ? 1 : 0), 1));
 const skeletonRows = computed(() => Array.from({ length: Math.max(1, props.loadingRows) }, (_, index) => index));
 const firstVisibleRow = computed(() => {
   if (!hasRows.value) {
@@ -186,6 +188,15 @@ const pageSizeSelectOptions = computed(() =>
   })),
 );
 const currentSelectedRowKeys = computed(() => props.selectedRowKeys ?? internalSelectedRowKeys.value);
+const renderedColumns = computed(() => {
+  if (props.visibleColumnKeys === undefined) {
+    return props.columns;
+  }
+
+  const visibleColumnKeys = new Set(props.visibleColumnKeys);
+
+  return props.columns.filter((column) => visibleColumnKeys.has(column.key));
+});
 const currentColumnWidths = computed(() => props.columnWidths ?? internalColumnWidths.value);
 const renderedColumnWidths = computed(() =>
   isResizing.value ? internalColumnWidths.value : currentColumnWidths.value,
@@ -261,7 +272,7 @@ function canResizeColumn(column: VfDataTableColumn, columnIndex: number) {
     return false;
   }
 
-  const adjacentColumn = props.columns[columnIndex + 1];
+  const adjacentColumn = renderedColumns.value[columnIndex + 1];
 
   return Boolean(adjacentColumn && adjacentColumn.resizable !== false);
 }
@@ -352,7 +363,7 @@ function createResizeSession(columnIndex: number, startX = 0): ColumnResizeSessi
   }
 
   const adjacentBounds = columnBounds(adjacentCell);
-  const columnWidths = props.columns.reduce<VfDataTableColumnWidths>(
+  const columnWidths = renderedColumns.value.reduce<VfDataTableColumnWidths>(
     (widths, column, index) => {
       const currentCell = columnCell(index);
       const width = currentCell?.getBoundingClientRect().width ?? 0;
@@ -401,7 +412,7 @@ function resizeColumn(session: ColumnResizeSession, rawDelta: number) {
   maximumDelta = Math.min(maximumDelta, Math.max(0, session.adjacentStartWidth - session.adjacentMinWidth));
 
   const clampedDelta = Math.min(Math.max(delta, minimumDelta), maximumDelta);
-  const column = props.columns[session.columnIndex];
+  const column = renderedColumns.value[session.columnIndex];
 
   if (!column) {
     return;
@@ -413,7 +424,7 @@ function resizeColumn(session: ColumnResizeSession, rawDelta: number) {
     [column.key]: `${Math.round(session.startWidth + clampedDelta)}px`,
   };
 
-  const adjacentColumn = props.columns[session.columnIndex + 1];
+  const adjacentColumn = renderedColumns.value[session.columnIndex + 1];
 
   if (adjacentColumn) {
     nextWidths[adjacentColumn.key] = `${Math.round(session.adjacentStartWidth - clampedDelta)}px`;
@@ -635,7 +646,7 @@ onUnmounted(() => {
               />
             </th>
             <th
-              v-for="(column, columnIndex) in props.columns"
+              v-for="(column, columnIndex) in renderedColumns"
               :key="column.key"
               :class="['vf-data-table__header-cell', ...columnClasses(column)]"
               :data-vf-column-index="columnIndex"
@@ -672,7 +683,7 @@ onUnmounted(() => {
             <tr v-for="row in skeletonRows" :key="`skeleton-${row}`" class="vf-data-table__skeleton-row">
               <td v-if="props.selectable" class="vf-data-table__selection-cell" />
               <td
-                v-for="(column, columnIndex) in props.columns"
+                v-for="(column, columnIndex) in renderedColumns"
                 :key="column.key"
                 :class="['vf-data-table__cell', 'vf-data-table__skeleton-cell', ...columnClasses(column)]"
                 :data-vf-column-index="columnIndex"
@@ -699,7 +710,7 @@ onUnmounted(() => {
                 />
               </td>
               <td
-                v-for="(column, columnIndex) in props.columns"
+                v-for="(column, columnIndex) in renderedColumns"
                 :key="column.key"
                 :class="['vf-data-table__cell', ...columnClasses(column)]"
                 :data-vf-column-index="columnIndex"
