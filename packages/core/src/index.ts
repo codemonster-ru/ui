@@ -77,6 +77,7 @@ export type {
   VfDataTableCellAlign,
   VfDataTableCellVerticalAlign,
   VfDataTableColumn,
+  VfDataTableColumnOrder,
   VfDataTableColumnWidths,
   VfDataTableDensity,
   VfDataTableLoadingVariant,

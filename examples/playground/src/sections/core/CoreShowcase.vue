@@ -49,6 +49,7 @@ import {
 import type {
   VfBreadcrumbItem,
   VfDataTableColumn,
+  VfDataTableColumnOrder,
   VfDataTableColumnWidths,
   VfDataTableRow,
   VfNavMenuItem,
@@ -76,6 +77,7 @@ const navMenuSidebarNoIconsValue = ref('no-icons-accessibility');
 const menuBarDefaultValue = ref('pricing');
 const menuBarPillsValue = ref('about');
 const selectedDataTableRowKeys = ref<Array<string | number>>([]);
+const dataTableColumnOrder = ref<VfDataTableColumnOrder>([]);
 const dataTableColumnWidths = ref<VfDataTableColumnWidths>({});
 const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
@@ -252,6 +254,10 @@ function handleGlobalCommandPaletteShortcut(event: KeyboardEvent) {
 
 function resetDataTableColumnWidths() {
   dataTableColumnWidths.value = {};
+}
+
+function resetDataTableColumnOrder() {
+  dataTableColumnOrder.value = [];
 }
 
 function setDataTableColumnVisible(columnKey: string, visible: boolean) {
@@ -1281,6 +1287,36 @@ const tabContent = computed<Record<string, string>>(() => ({
                       :rows="dataTableRows"
                       row-key="id"
                       resizable-columns
+                      striped
+                      column-dividers
+                    />
+                  </div>
+                </div>
+
+                <div class="demo-component-matrix__cell demo-item--full">
+                  <p class="demo-component-matrix__label">data table reorderable columns</p>
+                  <div class="demo-stack">
+                    <div class="demo-inline">
+                      <VfButton
+                        size="sm"
+                        variant="secondary"
+                        :disabled="dataTableColumnOrder.length === 0"
+                        @click="resetDataTableColumnOrder"
+                      >
+                        Reset order
+                      </VfButton>
+                    </div>
+                    <p class="demo-text">
+                      Drag anywhere in a column header to preview the animated new order, then release to commit. You
+                      can also focus a header and press Left or Right Arrow. Reset restores the declared column order.
+                    </p>
+                    <VfDataTable
+                      v-model:column-order="dataTableColumnOrder"
+                      caption="Reorderable team roster"
+                      :columns="dataTableConfigurableColumns"
+                      :rows="dataTableRows"
+                      row-key="id"
+                      reorderable-columns
                       striped
                       column-dividers
                     />
