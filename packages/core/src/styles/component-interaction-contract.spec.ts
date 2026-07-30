@@ -37,6 +37,15 @@ describe('component interaction contract', () => {
     expect(css).not.toContain('pinned-end-edge)::after {\n  display: none;');
   });
 
+  it('keeps data table pagination controls visible in narrow containers', () => {
+    const css = readEntry('data-table');
+
+    expect(extractRule(css, '.vf-data-table__pagination')).toContain('container-type: inline-size;');
+    expect(css).toContain('@container (max-width: 479.98px)');
+    expect(css).toContain('flex-basis: 100%;');
+    expect(css).toContain(".vf-data-table__pagination-page:not([aria-current='page']),");
+  });
+
   it('keeps secondary actions on distinct base, hover, and active surfaces', () => {
     for (const name of ['button', 'icon-button']) {
       const css = readEntry(name);

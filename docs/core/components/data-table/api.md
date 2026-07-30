@@ -108,6 +108,7 @@ The `labels` prop accepts a partial object. Omitted fields keep their English de
 | `rows`                      | `string`                                    | `'Rows'`                                   |
 | `rowsPerPage`               | `string`                                    | `'Rows per page'`                          |
 | `pageSummary`               | `(page, pageCount) => string`               | `'Page 1 of 5'`                            |
+| `goToPage`                  | `(page) => string`                          | `'Go to page 2'`                           |
 | `previousPage`              | `string`                                    | `'Previous page'`                          |
 | `nextPage`                  | `string`                                    | `'Next page'`                              |
 | `selectAllRows`             | `string`                                    | `'Select all rows'`                        |
