@@ -1297,6 +1297,47 @@ describe('core primitives', () => {
     expect((wrapper.find('thead .vf-checkbox__input').element as HTMLInputElement).indeterminate).toBe(true);
   });
 
+  it('excludes non-selectable data table rows from individual and bulk selection', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        selectable: true,
+        columns: [{ key: 'name', header: 'Name' }],
+        rows: [
+          { id: 1, name: 'Alice' },
+          { id: 2, name: 'System account' },
+          { id: 3, name: 'Bob' },
+        ],
+        rowKey: 'id',
+        defaultSelectedRowKeys: [2],
+        rowSelectable: (row) => (row as { id: number }).id !== 2,
+      },
+    });
+    const headerCheckbox = wrapper.find('thead .vf-checkbox__input');
+    const rowCheckboxes = wrapper.findAll('tbody .vf-checkbox__input');
+
+    expect(rowCheckboxes[1]?.attributes('disabled')).toBeDefined();
+    expect(rowCheckboxes[1]?.attributes('checked')).toBeDefined();
+    expect(wrapper.findAll('tbody tr')[1]?.attributes('aria-selected')).toBe('true');
+    expect(headerCheckbox.attributes('disabled')).toBeUndefined();
+    expect((headerCheckbox.element as HTMLInputElement).indeterminate).toBe(false);
+
+    await rowCheckboxes[1]?.setValue(false);
+
+    expect(wrapper.emitted('update:selectedRowKeys')).toBeUndefined();
+
+    await headerCheckbox.setValue(true);
+
+    expect(wrapper.emitted('update:selectedRowKeys')).toEqual([[[2, 1, 3]]]);
+
+    await headerCheckbox.setValue(false);
+
+    expect(wrapper.emitted('update:selectedRowKeys')).toEqual([[[2, 1, 3]], [[2]]]);
+
+    await wrapper.setProps({ rowSelectable: () => false });
+
+    expect(wrapper.find('thead .vf-checkbox__input').attributes('disabled')).toBeDefined();
+  });
+
   it('emits input updates and invalid state', async () => {
     const wrapper = mount(VfInput, {
       props: {
