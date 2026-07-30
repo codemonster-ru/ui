@@ -12,6 +12,7 @@ import type {
   VfDataTableColumnOrder,
   VfDataTableColumnWidths,
   VfDataTableDensity,
+  VfDataTableLabels,
   VfDataTableLoadingVariant,
   VfDataTablePaginationMode,
   VfDataTableRow,
@@ -58,9 +59,32 @@ interface VfDataTableProps {
   defaultSort?: VfDataTableSort[];
   sortingMode?: VfDataTableSortingMode;
   multiSort?: boolean;
+  labels?: Partial<VfDataTableLabels>;
   emptyText?: string;
   loadingText?: string;
 }
+
+const defaultLabels: VfDataTableLabels = {
+  empty: 'No data',
+  loading: 'Loading...',
+  pagination: 'Table pagination',
+  paginationSummary: (firstRow, lastRow, totalRows) =>
+    totalRows === 0 ? '0 rows' : `${firstRow}-${lastRow} of ${totalRows}`,
+  rows: 'Rows',
+  rowsPerPage: 'Rows per page',
+  pageSummary: (page, pageCount) => `Page ${page} of ${pageCount}`,
+  previousPage: 'Previous page',
+  nextPage: 'Next page',
+  selectAllRows: 'Select all rows',
+  selectRow: (rowIndex) => `Select row ${rowIndex}`,
+  sortAscending: (column) => `Sort ${column} ascending`,
+  sortDescending: (column) => `Sort ${column} descending`,
+  clearSort: (column) => `Clear sorting for ${column}`,
+  reorderColumn: (column, position, columnCount) => `${column}, column ${position} of ${columnCount}`,
+  reorderColumnInstructions: 'Drag to reorder, or use Left and Right Arrow keys.',
+  columnMoved: (column, position, columnCount) => `${column} column moved to position ${position} of ${columnCount}`,
+  resizeColumn: (column) => `Resize ${column} column`,
+};
 
 const props = withDefaults(defineProps<VfDataTableProps>(), {
   rows: () => [],
@@ -95,8 +119,9 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
   defaultSort: () => [],
   sortingMode: 'client',
   multiSort: false,
-  emptyText: 'No data',
-  loadingText: 'Loading...',
+  labels: () => ({}),
+  emptyText: undefined,
+  loadingText: undefined,
 });
 
 const emit = defineEmits<{
@@ -163,6 +188,18 @@ let columnReorderAnimationGeneration = 0;
 let suppressHeaderSortClick = false;
 let headerSortClickReset: number | undefined;
 const activeColumnReorderAnimations = new Set<Animation>();
+const resolvedLabels = computed<VfDataTableLabels>(() => {
+  const labels = Object.fromEntries(
+    Object.entries(props.labels).filter(([, label]) => label !== undefined),
+  ) as Partial<VfDataTableLabels>;
+
+  return {
+    ...defaultLabels,
+    ...labels,
+    empty: props.emptyText ?? labels.empty ?? defaultLabels.empty,
+    loading: props.loadingText ?? labels.loading ?? defaultLabels.loading,
+  };
+});
 
 const classes = computed(() =>
   cx(
@@ -232,11 +269,7 @@ const lastVisibleRow = computed(() => {
   return Math.min(firstVisibleRow.value + visibleRows.value.length - 1, totalRowCount.value);
 });
 const paginationLabel = computed(() => {
-  if (totalRowCount.value === 0) {
-    return '0 rows';
-  }
-
-  return `${firstVisibleRow.value}-${lastVisibleRow.value} of ${totalRowCount.value}`;
+  return resolvedLabels.value.paginationSummary(firstVisibleRow.value, lastVisibleRow.value, totalRowCount.value);
 });
 const canGoPrevious = computed(() => props.pagination && currentPage.value > 1);
 const canGoNext = computed(() => props.pagination && currentPage.value < pageCount.value);
@@ -401,14 +434,14 @@ function columnSortLabel(column: VfDataTableColumn) {
   const direction = columnSortDirection(column);
 
   if (direction === 'asc') {
-    return `Sort ${columnHeader(column)} descending`;
+    return resolvedLabels.value.sortDescending(columnHeader(column));
   }
 
   if (direction === 'desc') {
-    return `Clear sorting for ${columnHeader(column)}`;
+    return resolvedLabels.value.clearSort(columnHeader(column));
   }
 
-  return `Sort ${columnHeader(column)} ascending`;
+  return resolvedLabels.value.sortAscending(columnHeader(column));
 }
 
 function toggleColumnSort(column: VfDataTableColumn) {
@@ -481,7 +514,11 @@ function commitColumnOrder(columnOrder: VfDataTableColumnOrder, movedColumn: VfD
   const nextVisibleOrder = nextOrder.filter((key) => visibleColumnKeys.has(key));
   const visiblePosition = nextVisibleOrder.indexOf(movedColumn.key) + 1;
 
-  columnReorderAnnouncement.value = `${columnHeader(movedColumn)} column moved to position ${visiblePosition} of ${nextVisibleOrder.length}`;
+  columnReorderAnnouncement.value = resolvedLabels.value.columnMoved(
+    columnHeader(movedColumn),
+    visiblePosition,
+    nextVisibleOrder.length,
+  );
 }
 
 function reorderedColumnOrder(
@@ -1212,7 +1249,7 @@ onUnmounted(() => {
                 :model-value="allVisibleRowsSelected"
                 :indeterminate="someVisibleRowsSelected"
                 :disabled="!hasRows"
-                aria-label="Select all rows"
+                :aria-label="resolvedLabels.selectAllRows"
                 @update:model-value="setAllVisibleRowsSelected"
               />
             </th>
@@ -1234,12 +1271,10 @@ onUnmounted(() => {
               :tabindex="canReorderColumn(column) ? 0 : undefined"
               :aria-label="
                 canReorderColumn(column)
-                  ? `${columnHeader(column)}, column ${columnIndex + 1} of ${renderedColumns.length}`
+                  ? resolvedLabels.reorderColumn(columnHeader(column), columnIndex + 1, renderedColumns.length)
                   : undefined
               "
-              :aria-description="
-                canReorderColumn(column) ? 'Drag to reorder, or use Left and Right Arrow keys.' : undefined
-              "
+              :aria-description="canReorderColumn(column) ? resolvedLabels.reorderColumnInstructions : undefined"
               :aria-keyshortcuts="canReorderColumn(column) ? 'ArrowLeft ArrowRight' : undefined"
               @click="sortColumnFromHeader(column)"
               @pointerdown="startColumnReorder($event, column)"
@@ -1290,7 +1325,7 @@ onUnmounted(() => {
                 role="separator"
                 tabindex="0"
                 aria-orientation="vertical"
-                :aria-label="`Resize ${columnHeader(column)} column`"
+                :aria-label="resolvedLabels.resizeColumn(columnHeader(column))"
                 @pointerdown.stop.prevent="startColumnResize($event, columnIndex)"
                 @click.stop
                 @pointerenter="setHighlightedColumnBoundary(columnIndex)"
@@ -1332,7 +1367,7 @@ onUnmounted(() => {
               <td v-if="props.selectable" class="vf-data-table__selection-cell">
                 <VfCheckbox
                   :model-value="currentSelectedRowKeys.includes(selectionRowId(row, rowIndex))"
-                  :aria-label="`Select row ${rowIndex + 1}`"
+                  :aria-label="resolvedLabels.selectRow(rowIndex + 1)"
                   @update:model-value="setRowSelected(row, rowIndex, $event)"
                 />
               </td>
@@ -1359,7 +1394,7 @@ onUnmounted(() => {
 
           <tr v-else class="vf-data-table__state-row">
             <td class="vf-data-table__state-cell" :colspan="stateColspan">
-              <slot name="empty">{{ props.emptyText }}</slot>
+              <slot name="empty">{{ resolvedLabels.empty }}</slot>
             </td>
           </tr>
         </tbody>
@@ -1382,13 +1417,13 @@ onUnmounted(() => {
         v-if="props.loading && props.loadingVariant === 'mask'"
         class="vf-data-table__loading-mask"
         role="status"
-        :aria-label="props.loadingText"
+        :aria-label="resolvedLabels.loading"
       >
         <slot name="loading">
           <span class="vf-data-table__loading">
             <VfProgressSpinner
               class="vf-data-table__loading-spinner"
-              :label="props.loadingText"
+              :label="resolvedLabels.loading"
               size="var(--vf-data-table-loading-spinner-size)"
             />
           </span>
@@ -1396,17 +1431,17 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div v-if="props.pagination" class="vf-data-table__pagination" aria-label="Table pagination">
+    <div v-if="props.pagination" class="vf-data-table__pagination" :aria-label="resolvedLabels.pagination">
       <span class="vf-data-table__pagination-summary">{{ paginationLabel }}</span>
 
       <div class="vf-data-table__page-size">
-        <span class="vf-data-table__page-size-label">Rows</span>
+        <span class="vf-data-table__page-size-label">{{ resolvedLabels.rows }}</span>
         <VfSelect
           class="vf-data-table__page-size-select"
           :model-value="String(currentPageSize)"
           :options="pageSizeSelectOptions"
           size="sm"
-          aria-label="Rows per page"
+          :aria-label="resolvedLabels.rowsPerPage"
           @update:model-value="setPageSize"
         />
       </div>
@@ -1416,16 +1451,18 @@ onUnmounted(() => {
           :icon="icons.chevronLeft"
           size="sm"
           variant="ghost"
-          aria-label="Previous page"
+          :aria-label="resolvedLabels.previousPage"
           :disabled="!canGoPrevious"
           @click="setPage(currentPage - 1)"
         />
-        <span class="vf-data-table__pagination-page">Page {{ currentPage }} of {{ pageCount }}</span>
+        <span class="vf-data-table__pagination-page">
+          {{ resolvedLabels.pageSummary(currentPage, pageCount) }}
+        </span>
         <VfIconButton
           :icon="icons.chevronRight"
           size="sm"
           variant="ghost"
-          aria-label="Next page"
+          :aria-label="resolvedLabels.nextPage"
           :disabled="!canGoNext"
           @click="setPage(currentPage + 1)"
         />

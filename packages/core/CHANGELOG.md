@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added complete `VfDataTable` built-in label localization through the typed `labels` prop.
 - Added constrained, controlled, and persistable `VfDataTable` column widths with pointer and
   keyboard resizing and double-click autosizing.
 - Added `minWidth`, `maxWidth`, `nowrap`, and `resizable` column options.

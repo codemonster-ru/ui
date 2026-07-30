@@ -80,6 +80,7 @@ export type {
   VfDataTableColumnOrder,
   VfDataTableColumnWidths,
   VfDataTableDensity,
+  VfDataTableLabels,
   VfDataTableLoadingVariant,
   VfDataTablePaginationMode,
   VfDataTableRow,

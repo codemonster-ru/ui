@@ -35,6 +35,27 @@ export interface VfDataTableSort {
   direction: VfDataTableSortDirection;
 }
 
+export interface VfDataTableLabels {
+  empty: string;
+  loading: string;
+  pagination: string;
+  paginationSummary: (firstRow: number, lastRow: number, totalRows: number) => string;
+  rows: string;
+  rowsPerPage: string;
+  pageSummary: (page: number, pageCount: number) => string;
+  previousPage: string;
+  nextPage: string;
+  selectAllRows: string;
+  selectRow: (rowIndex: number) => string;
+  sortAscending: (column: string) => string;
+  sortDescending: (column: string) => string;
+  clearSort: (column: string) => string;
+  reorderColumn: (column: string, position: number, columnCount: number) => string;
+  reorderColumnInstructions: string;
+  columnMoved: (column: string, position: number, columnCount: number) => string;
+  resizeColumn: (column: string) => string;
+}
+
 export interface VfDataTableColumn {
   key: string;
   header?: string;
