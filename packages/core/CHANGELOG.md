@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added an accessible, localizable `VfDataTable` error state with a consumer-owned retry slot.
 - Added complete `VfDataTable` built-in label localization through the typed `labels` prop.
 - Added constrained, controlled, and persistable `VfDataTable` column widths with pointer and
   keyboard resizing and double-click autosizing.

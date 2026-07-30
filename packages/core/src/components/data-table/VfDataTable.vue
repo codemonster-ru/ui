@@ -60,12 +60,14 @@ interface VfDataTableProps {
   sortingMode?: VfDataTableSortingMode;
   multiSort?: boolean;
   labels?: Partial<VfDataTableLabels>;
+  error?: boolean;
   emptyText?: string;
   loadingText?: string;
 }
 
 const defaultLabels: VfDataTableLabels = {
   empty: 'No data',
+  error: 'Failed to load data',
   loading: 'Loading...',
   pagination: 'Table pagination',
   paginationSummary: (firstRow, lastRow, totalRows) =>
@@ -120,6 +122,7 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
   sortingMode: 'client',
   multiSort: false,
   labels: () => ({}),
+  error: false,
   emptyText: undefined,
   loadingText: undefined,
 });
@@ -1355,6 +1358,14 @@ onUnmounted(() => {
               </td>
             </tr>
           </template>
+
+          <tr v-else-if="props.error && !props.loading" class="vf-data-table__state-row">
+            <td class="vf-data-table__state-cell" :colspan="stateColspan">
+              <div class="vf-data-table__error" role="alert">
+                <slot name="error">{{ resolvedLabels.error }}</slot>
+              </div>
+            </td>
+          </tr>
 
           <template v-else-if="hasRows">
             <tr

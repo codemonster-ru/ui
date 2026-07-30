@@ -595,6 +595,7 @@ export interface VfThemeTokens extends BaseVfThemeTokens {
   stepperDisabledColor: string;
   stepperFocusRingColor: string;
   dataTableStateColor: string;
+  dataTableErrorColor: string;
   dataTablePaginationColor: string;
   dataTablePaginationPageColor: string;
   dataTableColumnResizerColor: string;

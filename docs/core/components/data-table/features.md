@@ -197,6 +197,27 @@ The default loading state renders a mask over the current table with a progress 
 
 Use the `loading` slot to replace the mask content when visible text or custom layout is needed.
 
+## Error
+
+Set `error` when loading fails. The error state replaces body rows, is announced to assistive
+technology, and uses `labels.error` as its default text. An active loading state takes precedence
+over the error state.
+
+Use the `error` slot to provide details or consumer-owned retry behavior:
+
+```vue
+<VfDataTable :columns="columns" :rows="rows" :error="Boolean(error)">
+  <template #error>
+    <div>
+      <p>Could not load records.</p>
+      <VfButton @click="loadRows">Try again</VfButton>
+    </div>
+  </template>
+</VfDataTable>
+```
+
+Fetching and retry behavior remain outside the table.
+
 ## Localization
 
 Use `labels` to replace every built-in visible and accessible label. The prop accepts a partial
@@ -209,6 +230,7 @@ Function labels receive the values needed for locale-specific formatting and plu
   :rows="rows"
   :labels="{
     empty: 'Нет данных',
+    error: 'Не удалось загрузить данные',
     loading: 'Загрузка…',
     rows: 'Строк',
     rowsPerPage: 'Строк на странице',

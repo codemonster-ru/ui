@@ -18,6 +18,10 @@
   gap: var(--vf-layout-space-layout-base);
 }
 
+.demo-stack--center {
+  align-items: center;
+}
+
 .demo-m-0 {
   margin: 0;
 }

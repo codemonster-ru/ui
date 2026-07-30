@@ -37,6 +37,7 @@ export interface VfDataTableSort {
 
 export interface VfDataTableLabels {
   empty: string;
+  error: string;
   loading: string;
   pagination: string;
   paginationSummary: (firstRow: number, lastRow: number, totalRows: number) => string;
