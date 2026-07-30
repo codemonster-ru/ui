@@ -35,6 +35,10 @@
   overflow: auto;
 }
 
+.vf-table-wrap.demo-data-table-pinned {
+  max-inline-size: 32rem;
+}
+
 .demo-max-w-16 {
   max-width: 16rem;
 }

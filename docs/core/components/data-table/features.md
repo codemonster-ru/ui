@@ -168,6 +168,26 @@ interface.
 
 Keep required column keys in `visibleColumnKeys` and omit them from the chooser.
 
+## Pinned columns
+
+Set `pinned: 'start'` or `pinned: 'end'` on columns that must remain visible while the table scrolls
+horizontally. Logical placement follows the document direction, so the same configuration works in
+LTR and RTL layouts.
+
+```ts
+const columns: VfDataTableColumn[] = [
+  { key: 'member', header: 'Member', pinned: 'start', minWidth: '12rem' },
+  { key: 'role', header: 'Role', minWidth: '10rem' },
+  { key: 'status', header: 'Status', minWidth: '10rem' },
+  { key: 'actions', header: 'Actions', pinned: 'end', width: '1%', nowrap: true },
+];
+```
+
+The table groups start-pinned, unpinned, and end-pinned columns automatically. Multiple pinned
+columns receive cumulative offsets based on their rendered widths. Visibility and width changes
+recalculate those offsets. When column reordering is enabled, columns can move only within their
+current pin group.
+
 ## Row selection
 
 Set `selectable` and provide a stable `row-key` to render row checkboxes and a select-all checkbox.

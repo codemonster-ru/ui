@@ -80,6 +80,7 @@ Public component contract: props, events, slots, and related types.
 | `VfDataTableSortingMode`       | `'client' \| 'manual'`                        | Sorting execution mode.           |
 | `VfDataTableSortDirection`     | `'asc' \| 'desc'`                             | Sort direction.                   |
 | `VfDataTableSort`              | `{ key: string; direction: 'asc' \| 'desc' }` | One column sort criterion.        |
+| `VfDataTableColumnPin`         | `'start' \| 'end'`                            | Logical column pin placement.     |
 | `VfDataTableColumnOrder`       | `string[]`                                    | Persistable order by column key.  |
 | `VfDataTableColumnWidths`      | `Record<string, string>`                      | Persistable widths by column key. |
 | `VfDataTableLabels`            | `interface`                                   | Built-in label configuration.     |
@@ -128,6 +129,7 @@ The `labels` prop accepts a partial object. Omitted fields keep their English de
 | `nowrap?`        | `boolean`                                     | `false` | Prevents header and cell content from wrapping.           |
 | `resizable?`     | `boolean`                                     | `true`  | Set to `false` to disable boundaries touching the column. |
 | `reorderable?`   | `boolean`                                     | `true`  | Set to `false` to disable reordering for the column.      |
+| `pinned?`        | `'start' \| 'end'`                            | —       | Pins the column while scrolling horizontally.             |
 | `align?`         | `'start' \| 'center' \| 'end'`                | —       | Horizontal cell alignment.                                |
 | `verticalAlign?` | `'top' \| 'middle' \| 'bottom' \| 'baseline'` | —       | Vertical cell alignment.                                  |
 | `scope?`         | `'col' \| 'row' \| 'colgroup' \| 'rowgroup'`  | `'col'` | Header scope.                                             |

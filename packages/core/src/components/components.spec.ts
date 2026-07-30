@@ -741,6 +741,82 @@ describe('core primitives', () => {
     expect(wrapper.findAll('tbody td').map((cell) => cell.text())).toEqual(['alice@example.com']);
   });
 
+  it('pins data table columns with cumulative logical offsets and constrained reordering', async () => {
+    const columnWidths: Record<string, number> = {
+      member: 120,
+      status: 90,
+      role: 180,
+      actions: 80,
+    };
+    const getBoundingClientRect = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      return {
+        width: columnWidths[this.dataset.vfColumnKey ?? ''] ?? 0,
+      } as DOMRect;
+    });
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'actions', header: 'Actions', pinned: 'end' },
+          { key: 'member', header: 'Member', pinned: 'start' },
+          { key: 'role', header: 'Role' },
+          { key: 'status', header: 'Status', pinned: 'start' },
+        ],
+        rows: [{ member: 'Alice', role: 'Design', status: 'Available', actions: 'Edit' }],
+        reorderableColumns: true,
+      },
+    });
+
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await nextTick();
+
+    expect(wrapper.findAll('.vf-data-table__header-cell').map((cell) => cell.text())).toEqual([
+      'Member',
+      'Status',
+      'Role',
+      'Actions',
+    ]);
+
+    const memberHeader = wrapper.get('[data-vf-column-key="member"].vf-data-table__header-cell');
+    const statusHeader = wrapper.get('[data-vf-column-key="status"].vf-data-table__header-cell');
+    const actionsHeader = wrapper.get('[data-vf-column-key="actions"].vf-data-table__header-cell');
+
+    expect(memberHeader.attributes('style')).toContain('inset-inline-start: 0px');
+    expect(statusHeader.attributes('style')).toContain('inset-inline-start: 120px');
+    expect(actionsHeader.attributes('style')).toContain('inset-inline-end: 0px');
+    expect(statusHeader.classes()).toContain('vf-data-table__cell--pinned-start-edge');
+    expect(actionsHeader.classes()).toContain('vf-data-table__cell--pinned-end-edge');
+    expect(wrapper.findAll('tbody .vf-data-table__cell--pinned')).toHaveLength(3);
+
+    columnWidths.member = 140;
+    window.dispatchEvent(new Event('resize'));
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await nextTick();
+
+    expect(statusHeader.attributes('style')).toContain('inset-inline-start: 140px');
+
+    await memberHeader.trigger('keydown', { key: 'ArrowRight' });
+
+    expect(wrapper.emitted('update:columnOrder')).toEqual([[['status', 'member', 'role', 'actions']]]);
+
+    await wrapper.get('[data-vf-column-key="member"].vf-data-table__header-cell').trigger('keydown', {
+      key: 'ArrowRight',
+    });
+
+    expect(wrapper.emitted('update:columnOrder')).toHaveLength(1);
+
+    await wrapper.setProps({ visibleColumnKeys: ['status', 'role', 'actions'] });
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await nextTick();
+
+    expect(wrapper.get('[data-vf-column-key="status"].vf-data-table__header-cell').attributes('style')).toContain(
+      'inset-inline-start: 0px',
+    );
+
+    getBoundingClientRect.mockRestore();
+  });
+
   it('sorts all client rows before pagination and cycles the sort state', async () => {
     const wrapper = mount(VfDataTable, {
       props: {

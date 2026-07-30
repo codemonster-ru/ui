@@ -22,6 +22,7 @@ export type VfDataTableLoadingVariant = 'mask' | 'skeleton';
 export type VfDataTablePaginationMode = 'client' | 'manual';
 export type VfDataTableSortingMode = 'client' | 'manual';
 export type VfDataTableSortDirection = 'asc' | 'desc';
+export type VfDataTableColumnPin = 'start' | 'end';
 export type VfDataTableCellAlign = 'start' | 'center' | 'end';
 export type VfDataTableCellVerticalAlign = 'top' | 'middle' | 'bottom' | 'baseline';
 export type VfDataTableColumnWidths = Record<string, string>;
@@ -74,6 +75,8 @@ export interface VfDataTableColumn {
   resizable?: boolean;
   /** Set to false to disable pointer and keyboard reordering for this column. */
   reorderable?: boolean;
+  /** Pins the column to the logical start or end while scrolling horizontally. */
+  pinned?: VfDataTableColumnPin;
   align?: VfDataTableCellAlign;
   verticalAlign?: VfDataTableCellVerticalAlign;
   scope?: 'col' | 'row' | 'colgroup' | 'rowgroup';

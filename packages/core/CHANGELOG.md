@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added logical start/end `VfDataTable` pinned columns with measured multi-column offsets.
 - Added per-row `VfDataTable` selection eligibility with select-all support.
 - Added an accessible, localizable `VfDataTable` error state with a consumer-owned retry slot.
 - Added complete `VfDataTable` built-in label localization through the typed `labels` prop.
