@@ -583,13 +583,69 @@ describe('core primitives', () => {
 
     expect(paginated.findAll('tbody tr')).toHaveLength(2);
     expect(paginated.text()).toContain('1-2 of 3');
-    expect(paginated.text()).toContain('Page 1 of 2');
+    expect(paginated.get('.vf-data-table__pagination-page[aria-current="page"]').attributes('aria-label')).toBe(
+      'Page 1 of 2',
+    );
 
     await paginated.find('[aria-label="Next page"]').trigger('click');
 
     expect(paginated.emitted('update:page')).toEqual([[2]]);
     expect(paginated.findAll('tbody tr')).toHaveLength(1);
     expect(paginated.text()).toContain('3-3 of 3');
+    expect(paginated.get('.vf-data-table__pagination-page[aria-current="page"]').text()).toBe('2');
+  });
+
+  it('renders a compact data table page range with first and last page access', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Name' }],
+        rows: Array.from({ length: 200 }, (_, index) => ({ name: `Member ${index + 1}` })),
+        pagination: true,
+        defaultPage: 10,
+        defaultPageSize: 10,
+        pageSizeOptions: [10],
+      },
+    });
+
+    expect(wrapper.findAll('.vf-data-table__pagination-page').map((button) => button.text())).toEqual([
+      '1',
+      '9',
+      '10',
+      '11',
+      '20',
+    ]);
+    expect(wrapper.findAll('.vf-data-table__pagination-ellipsis')).toHaveLength(2);
+    expect(wrapper.get('[aria-current="page"]').attributes('aria-label')).toBe('Page 10 of 20');
+
+    await wrapper.get('[aria-label="Go to page 11"]').trigger('click');
+
+    expect(wrapper.emitted('update:page')).toEqual([[11]]);
+    expect(wrapper.get('[aria-current="page"]').text()).toBe('11');
+
+    await wrapper.get('[aria-label="Go to page 20"]').trigger('click');
+
+    expect(wrapper.emitted('update:page')?.[1]).toEqual([20]);
+    expect(wrapper.findAll('.vf-data-table__pagination-page').map((button) => button.text())).toEqual([
+      '1',
+      '16',
+      '17',
+      '18',
+      '19',
+      '20',
+    ]);
+    expect(wrapper.findAll('.vf-data-table__pagination-ellipsis')).toHaveLength(1);
+
+    await wrapper.get('[aria-label="Go to page 1"]').trigger('click');
+
+    expect(wrapper.emitted('update:page')?.[2]).toEqual([1]);
+    expect(wrapper.findAll('.vf-data-table__pagination-page').map((button) => button.text())).toEqual([
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '20',
+    ]);
   });
 
   it('localizes all built-in data table labels while preserving legacy text overrides', async () => {
@@ -603,6 +659,7 @@ describe('core primitives', () => {
       rows: 'Строк',
       rowsPerPage: 'Строк на странице',
       pageSummary: (page, pageCount) => `Страница ${page} из ${pageCount}`,
+      goToPage: (page) => `Перейти на страницу ${page}`,
       previousPage: 'Предыдущая страница',
       nextPage: 'Следующая страница',
       selectAllRows: 'Выбрать все строки',
@@ -627,6 +684,8 @@ describe('core primitives', () => {
         rowKey: 'id',
         selectable: true,
         pagination: true,
+        paginationMode: 'manual',
+        totalRows: 2,
         pageSizeOptions: [1],
         defaultPageSize: 1,
         reorderableColumns: true,
@@ -636,10 +695,12 @@ describe('core primitives', () => {
     });
 
     expect(wrapper.find('.vf-data-table__pagination').attributes('aria-label')).toBe('Пагинация таблицы');
-    expect(wrapper.find('.vf-data-table__pagination-summary').text()).toBe('1–1 из 1');
+    expect(wrapper.find('.vf-data-table__pagination-summary').text()).toBe('1–1 из 2');
     expect(wrapper.find('.vf-data-table__page-size-label').text()).toBe('Строк');
     expect(wrapper.find('.vf-data-table__page-size-select button').attributes('aria-label')).toBe('Строк на странице');
-    expect(wrapper.find('.vf-data-table__pagination-page').text()).toBe('Страница 1 из 1');
+    expect(wrapper.find('.vf-data-table__pagination-page').text()).toBe('1');
+    expect(wrapper.find('.vf-data-table__pagination-page').attributes('aria-label')).toBe('Страница 1 из 2');
+    expect(wrapper.find('[aria-label="Перейти на страницу 2"]').exists()).toBe(true);
     expect(wrapper.find('[aria-label="Предыдущая страница"]').exists()).toBe(true);
     expect(wrapper.find('[aria-label="Следующая страница"]').exists()).toBe(true);
     expect(wrapper.find('thead [aria-label="Выбрать все строки"]').exists()).toBe(true);

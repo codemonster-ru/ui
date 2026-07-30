@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added responsive numbered `VfDataTable` pagination with first/last page access and ellipsis ranges.
 - Added controlled and uncontrolled expandable `VfDataTable` rows with accessible disclosure
   controls and a scoped details slot.
 - Added logical start/end `VfDataTable` pinned columns with measured multi-column offsets.

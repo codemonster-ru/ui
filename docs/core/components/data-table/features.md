@@ -282,6 +282,7 @@ Function labels receive the values needed for locale-specific formatting and plu
     rows: 'Строк',
     rowsPerPage: 'Строк на странице',
     pageSummary: (page, pageCount) => `Страница ${page} из ${pageCount}`,
+    goToPage: (page) => `Перейти на страницу ${page}`,
     paginationSummary: (firstRow, lastRow, totalRows) =>
       totalRows === 0 ? 'Нет строк' : `${firstRow}–${lastRow} из ${totalRows}`,
     previousPage: 'Предыдущая страница',
@@ -402,8 +403,25 @@ consumer; the table does not prescribe a server query format.
 
 ## Pagination
 
-Client pagination slices local rows. Use `paginationMode="manual"` with `totalRows` when rows are already paged by an API.
+Client pagination slices local rows. The paginator shows page numbers in a compact range. The first
+and last pages remain available, pages around the current position are shown directly, and omitted
+ranges are represented by non-interactive ellipses.
 
 ```vue
-<VfDataTable :columns="columns" :rows="rows" pagination :default-page-size="10" />
+<VfDataTable
+  v-model:page="page"
+  v-model:page-size="pageSize"
+  :columns="columns"
+  :rows="rows"
+  :page-size-options="[10, 25, 50]"
+  pagination
+/>
 ```
+
+The current page uses `aria-current="page"`. Number buttons use `labels.goToPage`, while the current
+button uses `labels.pageSummary`. Previous and next controls retain their localized labels.
+Below the VueForge `xs` container threshold, the paginator keeps only the previous, current, and
+next page controls visible so it does not overflow narrow table regions.
+
+Use `paginationMode="manual"` with `totalRows` when rows are already paged by an API. The same page
+range is calculated from `totalRows` and `pageSize`; fetching remains consumer-owned.

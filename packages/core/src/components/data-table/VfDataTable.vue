@@ -79,6 +79,7 @@ const defaultLabels: VfDataTableLabels = {
   rows: 'Rows',
   rowsPerPage: 'Rows per page',
   pageSummary: (page, pageCount) => `Page ${page} of ${pageCount}`,
+  goToPage: (page) => `Go to page ${page}`,
   previousPage: 'Previous page',
   nextPage: 'Next page',
   selectAllRows: 'Select all rows',
@@ -296,6 +297,24 @@ const paginationLabel = computed(() => {
 });
 const canGoPrevious = computed(() => props.pagination && currentPage.value > 1);
 const canGoNext = computed(() => props.pagination && currentPage.value < pageCount.value);
+const paginationItems = computed<Array<number | 'start-ellipsis' | 'end-ellipsis'>>(() => {
+  const count = pageCount.value;
+  const page = currentPage.value;
+
+  if (count <= 7) {
+    return Array.from({ length: count }, (_, index) => index + 1);
+  }
+
+  if (page <= 4) {
+    return [1, 2, 3, 4, 5, 'end-ellipsis', count];
+  }
+
+  if (page >= count - 3) {
+    return [1, 'start-ellipsis', count - 4, count - 3, count - 2, count - 1, count];
+  }
+
+  return [1, 'start-ellipsis', page - 1, page, page + 1, 'end-ellipsis', count];
+});
 const pageSizeSelectOptions = computed(() =>
   props.pageSizeOptions.map((option) => ({
     value: String(option),
@@ -1685,7 +1704,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div v-if="props.pagination" class="vf-data-table__pagination" :aria-label="resolvedLabels.pagination">
+    <nav v-if="props.pagination" class="vf-data-table__pagination" :aria-label="resolvedLabels.pagination">
       <span class="vf-data-table__pagination-summary">{{ paginationLabel }}</span>
 
       <div class="vf-data-table__page-size">
@@ -1709,9 +1728,25 @@ onUnmounted(() => {
           :disabled="!canGoPrevious"
           @click="setPage(currentPage - 1)"
         />
-        <span class="vf-data-table__pagination-page">
-          {{ resolvedLabels.pageSummary(currentPage, pageCount) }}
-        </span>
+        <div class="vf-data-table__pagination-pages">
+          <template v-for="item in paginationItems" :key="item">
+            <span v-if="typeof item !== 'number'" class="vf-data-table__pagination-ellipsis" aria-hidden="true">
+              …
+            </span>
+            <button
+              v-else
+              class="vf-data-table__pagination-page"
+              type="button"
+              :aria-current="item === currentPage ? 'page' : undefined"
+              :aria-label="
+                item === currentPage ? resolvedLabels.pageSummary(item, pageCount) : resolvedLabels.goToPage(item)
+              "
+              @click="item !== currentPage && setPage(item)"
+            >
+              {{ item }}
+            </button>
+          </template>
+        </div>
         <VfIconButton
           :icon="icons.chevronRight"
           size="sm"
@@ -1721,6 +1756,6 @@ onUnmounted(() => {
           @click="setPage(currentPage + 1)"
         />
       </div>
-    </div>
+    </nav>
   </div>
 </template>

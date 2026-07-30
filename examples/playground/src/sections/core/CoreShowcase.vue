@@ -615,6 +615,16 @@ const dataTableRows: VfDataTableRow[] = [
   },
 ];
 
+const dataTablePaginationRows: VfDataTableRow[] = Array.from({ length: 42 }, (_, index) => {
+  const source = dataTableRows[index % dataTableRows.length] as Record<string, unknown>;
+
+  return {
+    ...source,
+    id: index + 1,
+    member: `Member ${index + 1}`,
+  };
+});
+
 const tabContent = computed<Record<string, string>>(() => ({
   overview: 'Overview content.',
   api: 'API content.',
@@ -1588,9 +1598,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">data table pagination</p>
                   <VfDataTable
                     :columns="dataTableMetricColumns"
-                    :rows="dataTableRows"
+                    :rows="dataTablePaginationRows"
                     row-key="id"
                     pagination
+                    :default-page="7"
                     :default-page-size="3"
                     :page-size-options="[3, 5, 10]"
                   />
