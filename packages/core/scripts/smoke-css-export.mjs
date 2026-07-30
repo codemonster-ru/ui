@@ -20,6 +20,7 @@ const foundationalCssExports = new Set([
 ]);
 const overlayDependentCssExports = new Set([
   './command-palette.css',
+  './date-picker.css',
   './dialog.css',
   './drawer.css',
   './dropdown.css',

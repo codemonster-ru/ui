@@ -119,6 +119,13 @@
         "default": "./dist/auto/data-table.js"
       }
     },
+    "./date-picker": {
+      "import": {
+        "types": "./dist/date-picker.d.ts",
+        "node": "./dist/date-picker.js",
+        "default": "./dist/auto/date-picker.js"
+      }
+    },
     "./dialog": {
       "import": {
         "types": "./dist/dialog.d.ts",
@@ -332,6 +339,7 @@
     "./checkbox.css": "./dist/checkbox.css",
     "./command-palette.css": "./dist/command-palette.css",
     "./data-table.css": "./dist/data-table.css",
+    "./date-picker.css": "./dist/date-picker.css",
     "./dialog.css": "./dist/dialog.css",
     "./divider.css": "./dist/divider.css",
     "./drawer.css": "./dist/drawer.css",

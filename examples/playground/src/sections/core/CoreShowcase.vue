@@ -14,6 +14,7 @@ import {
   VfCheckbox,
   VfCommandPalette,
   VfDataTable,
+  VfDatePicker,
   VfDrawer,
   VfDialog,
   VfDivider,
@@ -70,6 +71,8 @@ const drawerPlacement = ref<'left' | 'right' | 'top' | 'bottom'>('right');
 const formStackNameValue = ref('');
 const formStackEmailValue = ref('');
 const formStackPlanValue = ref('');
+const datePickerValue = ref('2026-07-30');
+const constrainedDatePickerValue = ref('2026-08-12');
 const dynamicProgressValue = ref(0);
 const navMenuDefaultValue = ref('installation');
 const navMenuPillsValue = ref('quick-start');
@@ -1905,6 +1908,63 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </template>
               </VfField>
             </VfStack>
+          </div>
+
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">Date picker</p>
+            <div class="demo-component-matrix">
+              <div class="demo-component-matrix__section">
+                <p class="demo-text">
+                  Localized display with a stable <code>YYYY-MM-DD</code> model value, date constraints, and form
+                  states.
+                </p>
+                <div class="demo-component-matrix__grid">
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">Interactive</p>
+                    <VfField label="Release date">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfDatePicker
+                          :id="controlId"
+                          v-model="datePickerValue"
+                          locale="en-US"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Choose a date"
+                        />
+                      </template>
+                    </VfField>
+                    <p class="demo-text">Model: <code>{{ datePickerValue || 'empty' }}</code></p>
+                  </div>
+
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">Min and max</p>
+                    <VfField label="Booking date" description="Available from August 10 through August 20, 2026.">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfDatePicker
+                          :id="controlId"
+                          v-model="constrainedDatePickerValue"
+                          locale="en-US"
+                          min="2026-08-10"
+                          max="2026-08-20"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                        />
+                      </template>
+                    </VfField>
+                    <p class="demo-text">Model: <code>{{ constrainedDatePickerValue || 'empty' }}</code></p>
+                  </div>
+
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">States</p>
+                    <VfDatePicker model-value="" invalid placeholder="Invalid date" aria-label="Invalid date" />
+                    <VfDatePicker model-value="2026-07-30" disabled locale="en-US" aria-label="Disabled date" />
+                    <VfDatePicker model-value="2026-07-30" readonly locale="en-US" aria-label="Readonly date" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="demo-item demo-item--full">
