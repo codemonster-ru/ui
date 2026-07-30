@@ -45,6 +45,7 @@ export interface VfDataTableLabels {
   rows: string;
   rowsPerPage: string;
   pageSummary: (page: number, pageCount: number) => string;
+  goToPage: (page: number) => string;
   previousPage: string;
   nextPage: string;
   selectAllRows: string;
