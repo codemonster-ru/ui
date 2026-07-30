@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { describe, expect, it } from 'vitest';
+import VfSelect from '@/components/select/VfSelect.vue';
 import VfDatePicker from './VfDatePicker.vue';
 
 describe('VfDatePicker', () => {
@@ -123,5 +124,92 @@ describe('VfDatePicker', () => {
 
     expect(wrapper.emitted('update:modelValue')).toEqual([['']]);
     expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(false);
+  });
+
+  it('updates the local ISO value immediately when date or time changes', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: '2026-07-15T14:20',
+        showTime: true,
+        minuteStep: 10,
+        locale: 'en-US',
+        disableTeleport: true,
+      },
+    });
+
+    expect(wrapper.get('.vf-date-picker__value').text()).toContain('14:20');
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+    await wrapper.get('[data-date="2026-07-20"]').trigger('click');
+
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
+    expect(wrapper.emitted('update:modelValue')).toEqual([['2026-07-20T14:20']]);
+
+    const [hourSelect, minuteSelect] = wrapper.findAllComponents(VfSelect);
+    await hourSelect!.setValue('16');
+    await minuteSelect!.setValue('30');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([
+      ['2026-07-20T14:20'],
+      ['2026-07-20T16:20'],
+      ['2026-07-20T16:30'],
+    ]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
+  });
+
+  it('keeps the calendar open when a time option is selected from a teleported menu', async () => {
+    const wrapper = mount(VfDatePicker, {
+      attachTo: document.body,
+      props: {
+        modelValue: '2026-07-15T14:20',
+        showTime: true,
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await wrapper.get('[aria-label="Hour"]').trigger('click');
+    await nextTick();
+
+    const hourOption = Array.from(document.body.querySelectorAll<HTMLElement>('[role="option"]'))
+      .find((option) => option.textContent?.trim() === '16');
+
+    expect(hourOption).toBeDefined();
+    expect(document.body.contains(hourOption ?? null)).toBe(true);
+    expect(wrapper.get('.vf-date-picker__calendar').element.contains(hourOption ?? null)).toBe(false);
+
+    hourOption?.click();
+    await nextTick();
+
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
+    expect(wrapper.get('[aria-label="Hour"]').text()).toContain('16');
+  });
+
+  it('disables unavailable time options at date-time boundaries', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: '2026-08-10T10:30',
+        min: '2026-08-10T10:30',
+        max: '2026-08-10T11:00',
+        showTime: true,
+        minuteStep: 15,
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    const [hourSelect, minuteSelect] = wrapper.findAllComponents(VfSelect);
+    const hourOptions = hourSelect!.props('options') as Array<{ value: string; disabled?: boolean }>;
+    const minuteOptions = minuteSelect!.props('options') as Array<{ value: string; disabled?: boolean }>;
+
+    expect(hourOptions.find((option) => option.value === '09')?.disabled).toBe(true);
+    expect(hourOptions.find((option) => option.value === '10')?.disabled).toBe(false);
+    expect(hourOptions.find((option) => option.value === '11')?.disabled).toBe(false);
+    expect(hourOptions.find((option) => option.value === '12')?.disabled).toBe(true);
+    expect(minuteOptions.find((option) => option.value === '15')?.disabled).toBe(true);
+    expect(minuteOptions.find((option) => option.value === '30')?.disabled).toBe(false);
   });
 });

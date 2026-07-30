@@ -96,6 +96,9 @@ export interface VfDatePickerLabels {
   clear: string;
   previousMonth: string;
   nextMonth: string;
+  time: string;
+  hour: string;
+  minute: string;
 }
 
 export interface VfBreadcrumbItem {
