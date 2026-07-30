@@ -88,6 +88,44 @@
   white-space: nowrap;
 }
 
+.vf-data-table__cell--pinned {
+  position: sticky;
+  z-index: 1;
+  background: var(--vf-table-background);
+}
+
+.vf-data-table__header-cell.vf-data-table__cell--pinned {
+  z-index: 2;
+  background: var(--vf-table-head-background);
+}
+
+.vf-table--striped tbody tr:nth-child(even) .vf-data-table__cell--pinned {
+  background: var(--vf-table-stripe-background);
+}
+
+.vf-data-table__cell--pinned-start-edge::after,
+.vf-data-table__cell--pinned-end-edge::after {
+  position: absolute;
+  inset-block: 0;
+  width: var(--vf-border-width);
+  background: var(--vf-table-border-color);
+  pointer-events: none;
+  content: '';
+}
+
+.vf-data-table__cell--pinned-start-edge::after {
+  inset-inline-end: 0;
+}
+
+.vf-data-table__cell--pinned-end-edge::after {
+  inset-inline-start: 0;
+}
+
+.vf-table--column-dividers .vf-data-table__cell--pinned-start-edge + :where(th, td),
+.vf-table--column-dividers .vf-data-table__cell--pinned-end-edge {
+  border-inline-start-color: transparent;
+}
+
 .vf-data-table__column-resizer {
   position: absolute;
   inset-block: 0;

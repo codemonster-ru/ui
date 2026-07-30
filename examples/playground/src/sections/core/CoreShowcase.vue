@@ -529,6 +529,14 @@ const dataTableConfigurableColumns: VfDataTableColumn[] = [
 ];
 const optionalDataTableColumns = dataTableConfigurableColumns.slice(1);
 
+const dataTablePinnedColumns: VfDataTableColumn[] = [
+  { key: 'actions', header: 'Actions', pinned: 'end', width: '1%', minWidth: '7rem', nowrap: true },
+  { key: 'member', header: 'Member', pinned: 'start', minWidth: '12rem', nowrap: true },
+  { key: 'role', header: 'Role', minWidth: '12rem' },
+  { key: 'status', header: 'Status', minWidth: '10rem' },
+  { key: 'tasks', header: 'Tasks', minWidth: '8rem', align: 'end' },
+];
+
 const dataTableRows: VfDataTableRow[] = [
   { id: 1, member: 'Alice', role: 'Design', status: 'Available', tasks: 12 },
   { id: 2, member: 'Bob', role: 'Platform', status: 'Busy', tasks: 8 },
@@ -1395,6 +1403,25 @@ const tabContent = computed<Record<string, string>>(() => ({
                     row-key="id"
                     sticky-header
                   />
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table pinned columns</p>
+                  <div class="demo-stack">
+                    <p class="demo-text">Scroll horizontally to keep Member and Actions visible.</p>
+                    <VfDataTable
+                      class="demo-data-table-pinned"
+                      :columns="dataTablePinnedColumns"
+                      :rows="dataTableRows.slice(0, 5)"
+                      row-key="id"
+                      striped
+                      column-dividers
+                    >
+                      <template #cell-actions>
+                        <VfButton size="sm" variant="ghost">Edit</VfButton>
+                      </template>
+                    </VfDataTable>
+                  </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">

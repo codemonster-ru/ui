@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onUnmounted, ref, useAttrs } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, onUpdated, ref, useAttrs } from 'vue';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import VfCheckbox from '@/components/checkbox/VfCheckbox.vue';
@@ -158,6 +158,7 @@ const previewColumnOrder = ref<VfDataTableColumnOrder>();
 const reorderingColumnKey = ref<string>();
 const isReordering = ref(false);
 const columnReorderAnnouncement = ref('');
+const pinnedColumnStyles = ref<Record<string, Record<string, string>>>({});
 
 interface ColumnReorderSession {
   pointerId: number;
@@ -192,6 +193,8 @@ let columnBoundaryGuideFrame: number | undefined;
 let columnReorderAnimationGeneration = 0;
 let suppressHeaderSortClick = false;
 let headerSortClickReset: number | undefined;
+let pinnedColumnsResizeObserver: ResizeObserver | undefined;
+let pinnedColumnsFrame: number | undefined;
 const activeColumnReorderAnimations = new Set<Animation>();
 const resolvedLabels = computed<VfDataTableLabels>(() => {
   const labels = Object.fromEntries(
@@ -498,15 +501,25 @@ function sortColumnFromHeader(column: VfDataTableColumn) {
   toggleColumnSort(column);
 }
 
+function columnPin(column?: VfDataTableColumn) {
+  return column?.pinned === 'start' || column?.pinned === 'end' ? column.pinned : undefined;
+}
+
 function normalizeColumnOrder(columnOrder: VfDataTableColumnOrder) {
   const columnKeys = props.columns.map((column) => column.key);
+  const columnsByKey = new Map(props.columns.map((column) => [column.key, column]));
   const validColumnKeys = new Set(columnKeys);
   const normalizedOrder = columnOrder.filter(
     (key, index) => validColumnKeys.has(key) && columnOrder.indexOf(key) === index,
   );
   const orderedKeys = new Set(normalizedOrder);
+  const completeOrder = [...normalizedOrder, ...columnKeys.filter((key) => !orderedKeys.has(key))];
 
-  return [...normalizedOrder, ...columnKeys.filter((key) => !orderedKeys.has(key))];
+  return [
+    ...completeOrder.filter((key) => columnPin(columnsByKey.get(key)) === 'start'),
+    ...completeOrder.filter((key) => columnPin(columnsByKey.get(key)) === undefined),
+    ...completeOrder.filter((key) => columnPin(columnsByKey.get(key)) === 'end'),
+  ];
 }
 
 function canReorderColumn(column: VfDataTableColumn) {
@@ -659,7 +672,9 @@ function previewColumnReorder(clientX: number) {
     return;
   }
 
-  if (renderedColumns.value.length < 2) {
+  const reorderableGroup = renderedColumns.value.filter((column) => columnPin(column) === columnPin(session.column));
+
+  if (reorderableGroup.length < 2) {
     return;
   }
 
@@ -672,7 +687,7 @@ function previewColumnReorder(clientX: number) {
   );
   const isRtl = getComputedStyle(tableRef.value ?? session.header).direction === 'rtl';
   const draggedColumnCenter = clientX + session.pointerToColumnCenterOffset;
-  const columnRects = renderedColumns.value.map((column) => ({
+  const columnRects = reorderableGroup.map((column) => ({
     column,
     rect: headerElements.get(column.key)?.getBoundingClientRect(),
   }));
@@ -692,7 +707,7 @@ function previewColumnReorder(clientX: number) {
 
     return isRtl ? draggedColumnCenter < boundary : draggedColumnCenter > boundary;
   }).length;
-  const remainingColumns = renderedColumns.value.filter((column) => column.key !== session.column.key);
+  const remainingColumns = reorderableGroup.filter((column) => column.key !== session.column.key);
   const targetColumn =
     insertionIndex === remainingColumns.length
       ? remainingColumns[remainingColumns.length - 1]
@@ -842,11 +857,14 @@ function reorderColumnWithKeyboard(event: KeyboardEvent, column: VfDataTableColu
     return;
   }
 
-  const columnIndex = renderedColumns.value.findIndex((renderedColumn) => renderedColumn.key === column.key);
+  const reorderableGroup = renderedColumns.value.filter(
+    (renderedColumn) => columnPin(renderedColumn) === columnPin(column),
+  );
+  const columnIndex = reorderableGroup.findIndex((renderedColumn) => renderedColumn.key === column.key);
   const isRtl = getComputedStyle(tableRef.value ?? (event.currentTarget as HTMLElement)).direction === 'rtl';
   const visualDelta = event.key === 'ArrowRight' ? 1 : -1;
   const orderDelta = isRtl ? -visualDelta : visualDelta;
-  const targetColumn = renderedColumns.value[columnIndex + orderDelta];
+  const targetColumn = reorderableGroup[columnIndex + orderDelta];
 
   if (!targetColumn) {
     return;
@@ -856,26 +874,143 @@ function reorderColumnWithKeyboard(event: KeyboardEvent, column: VfDataTableColu
   moveColumn(column, targetColumn, orderDelta < 0 ? 'before' : 'after');
 }
 
-function columnClasses(column: VfDataTableColumn) {
+function columnClasses(column: VfDataTableColumn, columnIndex: number) {
+  const pin = columnPin(column);
+  const previousPin = columnPin(renderedColumns.value[columnIndex - 1]);
+  const nextPin = columnPin(renderedColumns.value[columnIndex + 1]);
+
   return [
     column.align && `vf-data-table__cell--${column.align}`,
     column.verticalAlign && `vf-data-table__cell--vertical-${column.verticalAlign}`,
     column.nowrap && 'vf-data-table__cell--nowrap',
+    pin && 'vf-data-table__cell--pinned',
+    pin && `vf-data-table__cell--pinned-${pin}`,
+    pin === 'start' && nextPin !== 'start' && 'vf-data-table__cell--pinned-start-edge',
+    pin === 'end' && previousPin !== 'end' && 'vf-data-table__cell--pinned-end-edge',
   ];
 }
 
 function columnStyle(column: VfDataTableColumn) {
   const width = renderedColumnWidths.value[column.key] ?? column.width;
+  const pinnedStyle = pinnedColumnStyles.value[column.key];
 
-  if (!width && !column.minWidth && !column.maxWidth) {
+  if (!width && !column.minWidth && !column.maxWidth && !pinnedStyle) {
     return undefined;
   }
 
   return {
+    ...pinnedStyle,
     width,
     minWidth: column.minWidth,
     maxWidth: column.maxWidth,
   };
+}
+
+function pinnedStylesMatch(
+  left: Record<string, Record<string, string>>,
+  right: Record<string, Record<string, string>>,
+) {
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every((key) => {
+      const leftStyle = left[key];
+      const rightStyle = right[key];
+
+      return (
+        leftStyle &&
+        rightStyle &&
+        leftStyle.insetInlineStart === rightStyle.insetInlineStart &&
+        leftStyle.insetInlineEnd === rightStyle.insetInlineEnd
+      );
+    })
+  );
+}
+
+function updatePinnedColumnStyles() {
+  const table = tableRef.value;
+  const pinnedColumns = renderedColumns.value.filter((column) => columnPin(column));
+
+  if (!table || pinnedColumns.length === 0) {
+    if (Object.keys(pinnedColumnStyles.value).length > 0) {
+      pinnedColumnStyles.value = {};
+    }
+
+    return;
+  }
+
+  const headerWidths = new Map(
+    Array.from(table.querySelectorAll<HTMLElement>('thead [data-vf-column-key]')).flatMap((header) => {
+      const key = header.dataset.vfColumnKey;
+
+      return key ? [[key, header.getBoundingClientRect().width] as const] : [];
+    }),
+  );
+  const nextStyles: Record<string, Record<string, string>> = {};
+  let startOffset = 0;
+
+  renderedColumns.value.forEach((column) => {
+    if (columnPin(column) !== 'start') {
+      return;
+    }
+
+    nextStyles[column.key] = { insetInlineStart: `${startOffset}px` };
+    startOffset += headerWidths.get(column.key) ?? 0;
+  });
+
+  let endOffset = 0;
+
+  renderedColumns.value
+    .slice()
+    .reverse()
+    .forEach((column) => {
+      if (columnPin(column) !== 'end') {
+        return;
+      }
+
+      nextStyles[column.key] = { insetInlineEnd: `${endOffset}px` };
+      endOffset += headerWidths.get(column.key) ?? 0;
+    });
+
+  if (!pinnedStylesMatch(pinnedColumnStyles.value, nextStyles)) {
+    pinnedColumnStyles.value = nextStyles;
+  }
+}
+
+function schedulePinnedColumnStylesUpdate() {
+  if (pinnedColumnsFrame !== undefined) {
+    cancelAnimationFrame(pinnedColumnsFrame);
+  }
+
+  pinnedColumnsFrame = requestAnimationFrame(() => {
+    pinnedColumnsFrame = undefined;
+    updatePinnedColumnStyles();
+  });
+}
+
+function refreshPinnedColumnObservers() {
+  pinnedColumnsResizeObserver?.disconnect();
+
+  if (!renderedColumns.value.some((column) => columnPin(column))) {
+    schedulePinnedColumnStylesUpdate();
+    return;
+  }
+
+  if (pinnedColumnsResizeObserver) {
+    if (tableRef.value) {
+      pinnedColumnsResizeObserver.observe(tableRef.value);
+    }
+
+    if (scrollRef.value) {
+      pinnedColumnsResizeObserver.observe(scrollRef.value);
+    }
+
+    columnHeaderElements().forEach((header) => pinnedColumnsResizeObserver?.observe(header));
+  }
+
+  schedulePinnedColumnStylesUpdate();
 }
 
 function canResizeColumn(column: VfDataTableColumn, columnIndex: number) {
@@ -1231,12 +1366,30 @@ function setAllVisibleRowsSelected(selected: boolean) {
   updateSelectedRowKeys(nextKeys);
 }
 
+onMounted(() => {
+  if (typeof ResizeObserver !== 'undefined') {
+    pinnedColumnsResizeObserver = new ResizeObserver(schedulePinnedColumnStylesUpdate);
+  }
+
+  window.addEventListener('resize', schedulePinnedColumnStylesUpdate);
+  refreshPinnedColumnObservers();
+});
+
+onUpdated(refreshPinnedColumnObservers);
+
 onUnmounted(() => {
   columnReorderAnimationGeneration++;
   cancelColumnReorderAnimations();
+  pinnedColumnsResizeObserver?.disconnect();
+  pinnedColumnsResizeObserver = undefined;
+  window.removeEventListener('resize', schedulePinnedColumnStylesUpdate);
 
   if (columnBoundaryGuideFrame !== undefined) {
     cancelAnimationFrame(columnBoundaryGuideFrame);
+  }
+
+  if (pinnedColumnsFrame !== undefined) {
+    cancelAnimationFrame(pinnedColumnsFrame);
   }
 
   if (resizeSession) {
@@ -1279,7 +1432,7 @@ onUnmounted(() => {
                 column.sortable && 'vf-data-table__header-cell--sortable',
                 canReorderColumn(column) && 'vf-data-table__header-cell--reorderable',
                 reorderingColumnKey === column.key && 'vf-data-table__header-cell--reordering',
-                ...columnClasses(column),
+                ...columnClasses(column, columnIndex),
               ]"
               :data-vf-column-index="columnIndex"
               :data-vf-column-key="column.key"
@@ -1364,7 +1517,7 @@ onUnmounted(() => {
               <td
                 v-for="(column, columnIndex) in renderedColumns"
                 :key="column.key"
-                :class="['vf-data-table__cell', 'vf-data-table__skeleton-cell', ...columnClasses(column)]"
+                :class="['vf-data-table__cell', 'vf-data-table__skeleton-cell', ...columnClasses(column, columnIndex)]"
                 :data-vf-column-index="columnIndex"
                 :data-vf-column-key="column.key"
                 :style="columnStyle(column)"
@@ -1401,7 +1554,7 @@ onUnmounted(() => {
               <td
                 v-for="(column, columnIndex) in renderedColumns"
                 :key="column.key"
-                :class="['vf-data-table__cell', ...columnClasses(column)]"
+                :class="['vf-data-table__cell', ...columnClasses(column, columnIndex)]"
                 :data-vf-column-index="columnIndex"
                 :data-vf-column-key="column.key"
                 :style="columnStyle(column)"

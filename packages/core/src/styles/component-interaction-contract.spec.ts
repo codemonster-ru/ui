@@ -27,6 +27,16 @@ function extractRule(source: string, selector: string) {
 }
 
 describe('component interaction contract', () => {
+  it('does not duplicate pinned boundaries when data table column dividers are enabled', () => {
+    const css = readEntry('data-table');
+    const selector =
+      '.vf-table--column-dividers .vf-data-table__cell--pinned-start-edge + :where(th, td),\n.vf-table--column-dividers .vf-data-table__cell--pinned-end-edge';
+    const rule = extractRule(css, selector);
+
+    expect(rule).toContain('border-inline-start-color: transparent;');
+    expect(css).not.toContain('pinned-end-edge)::after {\n  display: none;');
+  });
+
   it('keeps secondary actions on distinct base, hover, and active surfaces', () => {
     for (const name of ['button', 'icon-button']) {
       const css = readEntry(name);
