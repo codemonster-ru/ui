@@ -96,6 +96,8 @@ export interface VfDatePickerLabels {
   clear: string;
   previousMonth: string;
   nextMonth: string;
+  previousYear?: string;
+  nextYear?: string;
   time: string;
   hour: string;
   minute: string;

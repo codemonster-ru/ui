@@ -75,6 +75,7 @@ const datePickerValue = ref('2026-07-30');
 const dateTimePickerValue = ref('2026-07-30T14:30');
 const multipleDatePickerValue = ref(['2026-07-15', '2026-07-30']);
 const rangeDatePickerValue = ref(['2026-08-10', '2026-08-20']);
+const monthPickerValue = ref('2026-07');
 const constrainedDatePickerValue = ref('2026-08-12');
 const dynamicProgressValue = ref(0);
 const navMenuDefaultValue = ref('installation');
@@ -1918,8 +1919,8 @@ const tabContent = computed<Record<string, string>>(() => ({
             <div class="demo-component-matrix">
               <div class="demo-component-matrix__section">
                 <p class="demo-text">
-                  Localized display with stable ISO model values, single or multiple selection, date constraints,
-                  and form states.
+                  Localized display with stable ISO model values, date and month selection, constraints, and form
+                  states.
                 </p>
                 <div class="demo-component-matrix__grid">
                   <div class="demo-component-matrix__cell">
@@ -1937,7 +1938,9 @@ const tabContent = computed<Record<string, string>>(() => ({
                         />
                       </template>
                     </VfField>
-                    <p class="demo-text">Model: <code>{{ datePickerValue || 'empty' }}</code></p>
+                    <p class="demo-text">
+                      Model: <code>{{ datePickerValue || 'empty' }}</code>
+                    </p>
                   </div>
 
                   <div class="demo-component-matrix__cell">
@@ -1956,7 +1959,9 @@ const tabContent = computed<Record<string, string>>(() => ({
                         />
                       </template>
                     </VfField>
-                    <p class="demo-text">Model: <code>{{ dateTimePickerValue || 'empty' }}</code></p>
+                    <p class="demo-text">
+                      Model: <code>{{ dateTimePickerValue || 'empty' }}</code>
+                    </p>
                   </div>
 
                   <div class="demo-component-matrix__cell">
@@ -1975,7 +1980,9 @@ const tabContent = computed<Record<string, string>>(() => ({
                         />
                       </template>
                     </VfField>
-                    <p class="demo-text">Model: <code>{{ constrainedDatePickerValue || 'empty' }}</code></p>
+                    <p class="demo-text">
+                      Model: <code>{{ constrainedDatePickerValue || 'empty' }}</code>
+                    </p>
                   </div>
 
                   <div class="demo-component-matrix__cell">
@@ -1993,7 +2000,9 @@ const tabContent = computed<Record<string, string>>(() => ({
                         />
                       </template>
                     </VfField>
-                    <p class="demo-text">Model: <code>{{ JSON.stringify(multipleDatePickerValue) }}</code></p>
+                    <p class="demo-text">
+                      Model: <code>{{ JSON.stringify(multipleDatePickerValue) }}</code>
+                    </p>
                   </div>
 
                   <div class="demo-component-matrix__cell">
@@ -2011,7 +2020,29 @@ const tabContent = computed<Record<string, string>>(() => ({
                         />
                       </template>
                     </VfField>
-                    <p class="demo-text">Model: <code>{{ JSON.stringify(rangeDatePickerValue) }}</code></p>
+                    <p class="demo-text">
+                      Model: <code>{{ JSON.stringify(rangeDatePickerValue) }}</code>
+                    </p>
+                  </div>
+
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">Month</p>
+                    <VfField label="Billing month">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfDatePicker
+                          :id="controlId"
+                          v-model="monthPickerValue"
+                          month-picker
+                          locale="en-US"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                        />
+                      </template>
+                    </VfField>
+                    <p class="demo-text">
+                      Model: <code>{{ monthPickerValue || 'empty' }}</code>
+                    </p>
                   </div>
 
                   <div class="demo-component-matrix__cell">
