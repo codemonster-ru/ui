@@ -41,10 +41,36 @@ describe('component interaction contract', () => {
     expect(valueRule).toContain('text-overflow: ellipsis;');
 
     const dayRule = extractRule(css, '.vf-date-picker__day');
+    const weekRule = extractRule(css, '.vf-date-picker__week');
+    const daysRule = extractRule(css, '.vf-date-picker__days');
 
+    expect(weekRule).toContain('column-gap: var(--vf-date-picker-day-gap);');
+    expect(daysRule).toContain('row-gap: var(--vf-date-picker-day-gap);');
     expect(dayRule).toContain('width: var(--vf-control-height-md);');
     expect(dayRule).toContain('height: var(--vf-control-height-md);');
     expect(dayRule).not.toContain('aspect-ratio');
+
+    const rangeRule = extractRule(css, '.vf-date-picker__day--in-range');
+    expect(css).toContain(
+      '.vf-date-picker__day--in-range,\n.vf-date-picker__day--range-start,\n.vf-date-picker__day--range-end {\n  position: relative;\n  width: 100%;',
+    );
+    expect(rangeRule).toContain('border-radius: 0;');
+    expect(rangeRule).toContain('background: var(--vf-selectable-hover-background);');
+    expect(rangeRule).toContain('color: var(--vf-selectable-hover-color);');
+    expect(css).toContain('.vf-date-picker__day--range-start::after,');
+    expect(css).toContain('.vf-date-picker__day--range-end::before {');
+    expect(css).toContain('inset-block: calc(var(--vf-border-width) * -1);');
+    expect(css).toContain('width: var(--vf-date-picker-day-gap);');
+    expect(css).toContain('.vf-date-picker__week > :first-child::before,');
+    expect(css).toContain('.vf-date-picker__week > :last-child::after,');
+    expect(css).toContain('.vf-date-picker__day--range-start {\n  border-start-end-radius: 0;');
+    expect(css).toContain('.vf-date-picker__day--range-end {\n  border-start-start-radius: 0;');
+    expect(css).not.toContain(
+      '.vf-date-picker__week > .vf-date-picker__day--in-range:first-child',
+    );
+    expect(css).not.toContain(
+      '.vf-date-picker__week > .vf-date-picker__day--in-range:last-child',
+    );
 
     const disabledDayRule = extractRule(css, '.vf-date-picker__day:disabled');
     expect(disabledDayRule).toContain('border-color: transparent;');
