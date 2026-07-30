@@ -214,6 +214,26 @@ The header checkbox becomes indeterminate when only some eligible visible rows a
 disabled when no visible rows are eligible. Use the selected keys to perform bulk actions such as
 deleting the selected records.
 
+## Expandable rows
+
+Provide the `expanded-row` slot to add a disclosure control to every data row. Use a stable
+`row-key` and `v-model:expanded-row-keys` when the parent needs to control which details are open.
+
+```vue
+<VfDataTable v-model:expanded-row-keys="expandedRowKeys" :columns="columns" :rows="orders" row-key="id">
+  <template #expanded-row="{ row }">
+    <OrderDetails :order="row" />
+  </template>
+</VfDataTable>
+```
+
+The slot receives `row`, `rowKey`, and the index on the rendered page. Without a controlled model,
+use `default-expanded-row-keys` to set the initially open rows. Expansion state remains keyed to the
+record while sorting or client pagination changes which rows are visible.
+
+Disclosure buttons expose `aria-expanded`, reference their detail row with `aria-controls`, and use
+the localizable `labels.expandRow` and `labels.collapseRow` accessible names.
+
 ## Loading
 
 The default loading state renders a mask over the current table with a progress spinner. Use `loadingVariant="skeleton"` for placeholder rows.
@@ -266,6 +286,8 @@ Function labels receive the values needed for locale-specific formatting and plu
       totalRows === 0 ? 'Нет строк' : `${firstRow}–${lastRow} из ${totalRows}`,
     previousPage: 'Предыдущая страница',
     nextPage: 'Следующая страница',
+    expandRow: (rowIndex) => `Развернуть строку ${rowIndex}`,
+    collapseRow: (rowIndex) => `Свернуть строку ${rowIndex}`,
   }"
   pagination
 />
