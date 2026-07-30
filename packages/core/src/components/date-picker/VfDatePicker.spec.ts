@@ -148,6 +148,116 @@ describe('VfDatePicker', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-04']], [['2026-02', '2026-04']]]);
   });
 
+  it('selects a year and preserves the YYYY model value', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: '2026',
+        yearPicker: true,
+        locale: 'en-US',
+        showTime: true,
+        disableTeleport: true,
+      },
+      attrs: {
+        name: 'fiscalYear',
+      },
+    });
+
+    expect(wrapper.get('.vf-date-picker__value').text()).toBe('2026');
+    expect(wrapper.get('input[type="hidden"]').attributes('value')).toBe('2026');
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('.vf-date-picker__month').text()).toBe('2020–2031');
+    expect(wrapper.findAll('.vf-date-picker__year-option')).toHaveLength(12);
+    expect(wrapper.findAll('.vf-date-picker__year-row')).toHaveLength(4);
+    expect(wrapper.get('[data-year="2026"]').attributes('aria-selected')).toBe('true');
+    expect(wrapper.find('.vf-date-picker__time').exists()).toBe(false);
+
+    await wrapper.get('[data-year="2028"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([['2028']]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(false);
+  });
+
+  it('applies year constraints and navigates between decades', async () => {
+    const wrapper = mount(VfDatePicker, {
+      attachTo: document.body,
+      props: {
+        modelValue: '2026',
+        yearPicker: true,
+        min: '2024',
+        max: '2032',
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('[data-year="2023"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-year="2024"]').attributes('disabled')).toBeUndefined();
+    expect(wrapper.get('[aria-label="Previous decade"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[aria-label="Next decade"]').attributes('disabled')).toBeUndefined();
+
+    const selectedYear = wrapper.get<HTMLElement>('[data-year="2026"]');
+    selectedYear.element.focus();
+    await selectedYear.trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+
+    expect(document.activeElement).toBe(wrapper.get('[data-year="2027"]').element);
+
+    await wrapper.get('[aria-label="Next decade"]').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('.vf-date-picker__month').text()).toBe('2032–2043');
+    expect(document.activeElement).toBe(wrapper.get('[data-year="2032"]').element);
+    expect(wrapper.get('[data-year="2033"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[aria-label="Next decade"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('supports multiple year selection', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2025', '2027'],
+        yearPicker: true,
+        multiple: true,
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+    await wrapper.get('[data-year="2025"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2027']]]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
+  });
+
+  it('selects and renders a year range', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2023', '2027'],
+        yearPicker: true,
+        range: true,
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('[data-year="2023"]').classes()).toContain('vf-date-picker__day--range-start');
+    expect(wrapper.get('[data-year="2025"]').classes()).toContain('vf-date-picker__day--in-range');
+    expect(wrapper.get('[data-year="2027"]').classes()).toContain('vf-date-picker__day--range-end');
+
+    await wrapper.get('[data-year="2023"]').trigger('click');
+    await wrapper.setProps({ modelValue: ['2023'] });
+    await wrapper.get('[data-year="2021"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2023']], [['2021', '2023']]]);
+  });
+
   it('opens the selected month and emits an ISO date when a day is selected', async () => {
     const wrapper = mount(VfDatePicker, {
       props: {

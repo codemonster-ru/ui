@@ -23,6 +23,7 @@ interface VfDatePickerProps {
   multiple?: boolean;
   range?: boolean;
   monthPicker?: boolean;
+  yearPicker?: boolean;
   showTime?: boolean;
   minuteStep?: number;
   locale?: string | string[];
@@ -47,6 +48,7 @@ const props = withDefaults(defineProps<VfDatePickerProps>(), {
   multiple: false,
   range: false,
   monthPicker: false,
+  yearPicker: false,
   showTime: false,
   minuteStep: 1,
   locale: undefined,
@@ -94,10 +96,24 @@ interface CalendarMonth {
   disabled: boolean;
 }
 
+interface CalendarYear {
+  date: Date;
+  value: string;
+  isCurrent: boolean;
+  isSelected: boolean;
+  isInRange: boolean;
+  isRangeStart: boolean;
+  isRangeEnd: boolean;
+  disabled: boolean;
+}
+
 interface SelectedValue {
   value: string;
   date: Date;
 }
+
+const YEAR_RANGE_SIZE = 12;
+const YEAR_ROW_SIZE = 3;
 
 const attrs = useAttrs();
 const fieldContext = inject(vfFieldContextKey, null);
@@ -112,6 +128,7 @@ const isOpen = disclosure.isOpen;
 const today = startOfDay(new Date());
 const initialDate = parseModelValues(props.modelValue, props.multiple || props.range)[0]?.date ?? today;
 const visibleMonth = ref(startOfMonth(initialDate));
+const visibleYearRangeStart = ref(getInitialYearRangeStart(initialDate));
 const focusedDate = ref(initialDate);
 const draftDate = ref(initialDate);
 const draftHour = ref(initialDate.getHours());
@@ -131,13 +148,15 @@ const resolvedLabels = computed<Required<VfDatePickerLabels>>(() => ({
   nextMonth: 'Next month',
   previousYear: 'Previous year',
   nextYear: 'Next year',
+  previousDecade: 'Previous decade',
+  nextDecade: 'Next decade',
   time: 'Time',
   hour: 'Hour',
   minute: 'Minute',
   ...props.labels,
 }));
 const isArrayMode = computed(() => props.multiple || props.range);
-const hasTimePicker = computed(() => props.showTime && !props.monthPicker);
+const hasTimePicker = computed(() => props.showTime && !props.monthPicker && !props.yearPicker);
 const selectedValues = computed(() => {
   const values = parseModelValues(props.modelValue, isArrayMode.value);
   return props.range ? values.slice(0, 2) : values;
@@ -176,15 +195,18 @@ const triggerAttrs = computed(() =>
     ),
   ),
 );
-const dateFormatter = computed(
-  () =>
-    new Intl.DateTimeFormat(props.locale, {
-      year: '2-digit',
-      month: '2-digit',
-      ...(!props.monthPicker ? { day: '2-digit' } : {}),
-      ...(hasTimePicker.value ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' as const } : {}),
-    }),
-);
+const dateFormatter = computed(() => {
+  if (props.yearPicker) {
+    return new Intl.DateTimeFormat(props.locale, { year: 'numeric' });
+  }
+
+  return new Intl.DateTimeFormat(props.locale, {
+    year: '2-digit',
+    month: '2-digit',
+    ...(!props.monthPicker ? { day: '2-digit' } : {}),
+    ...(hasTimePicker.value ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' as const } : {}),
+  });
+});
 const monthFormatter = computed(() => new Intl.DateTimeFormat(props.locale, { year: 'numeric', month: 'long' }));
 const yearFormatter = computed(() => new Intl.DateTimeFormat(props.locale, { year: 'numeric' }));
 const monthOptionFormatter = computed(() => new Intl.DateTimeFormat(props.locale, { month: 'short' }));
@@ -310,6 +332,43 @@ const calendarMonths = computed<CalendarMonth[]>(() =>
 const calendarMonthRows = computed(() =>
   Array.from({ length: 4 }, (_, index) => calendarMonths.value.slice(index * 3, index * 3 + 3)),
 );
+const calendarYears = computed<CalendarYear[]>(() =>
+  Array.from({ length: YEAR_RANGE_SIZE }, (_, index) => {
+    const date = new Date(visibleYearRangeStart.value + index, 0, 1);
+    const rangeStart = rangeBounds.value?.start ?? selectedValues.value[0]?.date;
+    const rangeEnd = rangeBounds.value?.end;
+    const isRangeStart = Boolean(props.range && rangeStart && isSameYear(date, rangeStart));
+    const isRangeEnd = Boolean(props.range && rangeEnd && isSameYear(date, rangeEnd));
+    const isInRange = Boolean(
+      rangeBounds.value && date > startOfYear(rangeBounds.value.start) && date < startOfYear(rangeBounds.value.end),
+    );
+
+    return {
+      date,
+      value: formatYear(date),
+      isCurrent: isSameYear(date, today),
+      isSelected: props.range
+        ? isRangeStart || isRangeEnd
+        : props.multiple
+          ? selectedValues.value.some((selected) => isSameYear(date, selected.date))
+          : activeDate.value
+            ? isSameYear(date, activeDate.value)
+            : false,
+      isInRange,
+      isRangeStart,
+      isRangeEnd,
+      disabled: isYearDisabled(date),
+    };
+  }),
+);
+const calendarYearRows = computed(() =>
+  Array.from({ length: YEAR_RANGE_SIZE / YEAR_ROW_SIZE }, (_, index) =>
+    calendarYears.value.slice(index * YEAR_ROW_SIZE, index * YEAR_ROW_SIZE + YEAR_ROW_SIZE),
+  ),
+);
+const visibleYearRangeLabel = computed(
+  () => `${visibleYearRangeStart.value}–${visibleYearRangeStart.value + YEAR_RANGE_SIZE - 1}`,
+);
 const triggerClasses = computed(() =>
   cx(
     'vf-date-picker',
@@ -359,14 +418,18 @@ const calendarClasses = computed(() => [
 ]);
 const calendarStyles = computed(() => floatingStyles.value);
 const previousPeriodDisabled = computed(() =>
-  props.monthPicker
-    ? !yearHasSelectableMonth(addYears(visibleMonth.value, -1))
-    : !monthHasSelectableDate(addMonths(visibleMonth.value, -1)),
+  props.yearPicker
+    ? !yearRangeHasSelectableYear(visibleYearRangeStart.value - YEAR_RANGE_SIZE)
+    : props.monthPicker
+      ? !yearHasSelectableMonth(addYears(visibleMonth.value, -1))
+      : !monthHasSelectableDate(addMonths(visibleMonth.value, -1)),
 );
 const nextPeriodDisabled = computed(() =>
-  props.monthPicker
-    ? !yearHasSelectableMonth(addYears(visibleMonth.value, 1))
-    : !monthHasSelectableDate(addMonths(visibleMonth.value, 1)),
+  props.yearPicker
+    ? !yearRangeHasSelectableYear(visibleYearRangeStart.value + YEAR_RANGE_SIZE)
+    : props.monthPicker
+      ? !yearHasSelectableMonth(addYears(visibleMonth.value, 1))
+      : !monthHasSelectableDate(addMonths(visibleMonth.value, 1)),
 );
 
 watch(
@@ -384,6 +447,7 @@ watch(
 
     if (date && !isOpen.value) {
       visibleMonth.value = startOfMonth(date);
+      visibleYearRangeStart.value = getInitialYearRangeStart(date);
       focusedDate.value = date;
       syncDraft(date);
     }
@@ -419,6 +483,18 @@ function parseMonth(value?: string): Date | null {
   return formatMonth(date) === value ? date : null;
 }
 
+function parseYear(value?: string): Date | null {
+  const match = value?.match(/^(\d{4})$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const date = new Date(Number(match[1]), 0, 1);
+
+  return formatYear(date) === value ? date : null;
+}
+
 function parseDateTime(value?: string): Date | null {
   const match = value?.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
 
@@ -432,6 +508,10 @@ function parseDateTime(value?: string): Date | null {
 }
 
 function parseModelValue(value?: string): Date | null {
+  if (props.yearPicker) {
+    return parseYear(value);
+  }
+
   if (props.monthPicker) {
     return parseMonth(value);
   }
@@ -449,6 +529,16 @@ function parseModelValues(value: string | string[] | undefined, multiple: boolea
 }
 
 function parseBoundary(value: string | undefined, endForDateOnly: boolean): Date | null {
+  if (props.yearPicker) {
+    const year = parseYear(value);
+
+    if (!year) {
+      return null;
+    }
+
+    return endForDateOnly ? endOfDay(endOfYear(year)) : year;
+  }
+
   if (props.monthPicker) {
     const month = parseMonth(value);
 
@@ -472,6 +562,10 @@ function parseBoundary(value: string | undefined, endForDateOnly: boolean): Date
   }
 
   return endForDateOnly ? endOfDay(date) : date;
+}
+
+function formatYear(date: Date): string {
+  return String(date.getFullYear()).padStart(4, '0');
 }
 
 function formatMonth(date: Date): string {
@@ -530,6 +624,14 @@ function endOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0);
 }
 
+function startOfYear(date: Date): Date {
+  return new Date(date.getFullYear(), 0, 1);
+}
+
+function endOfYear(date: Date): Date {
+  return new Date(date.getFullYear(), 11, 31);
+}
+
 function addDays(date: Date, amount: number): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + amount);
 }
@@ -540,6 +642,10 @@ function addMonths(date: Date, amount: number): Date {
 
 function addYears(date: Date, amount: number): Date {
   return new Date(date.getFullYear() + amount, date.getMonth(), 1);
+}
+
+function getInitialYearRangeStart(date: Date): number {
+  return Math.floor(date.getFullYear() / 10) * 10;
 }
 
 function moveToMonth(date: Date, amount: number): Date {
@@ -555,7 +661,15 @@ function isSameMonth(left: Date, right: Date): boolean {
   return formatMonth(left) === formatMonth(right);
 }
 
+function isSameYear(left: Date, right: Date): boolean {
+  return left.getFullYear() === right.getFullYear();
+}
+
 function isSameSelectionUnit(left: Date, right: Date): boolean {
+  if (props.yearPicker) {
+    return isSameYear(left, right);
+  }
+
   return props.monthPicker ? isSameMonth(left, right) : isSameDay(left, right);
 }
 
@@ -577,6 +691,12 @@ function isMonthDisabled(month: Date): boolean {
   return Boolean((minDate.value && end < minDate.value) || (maxDate.value && start > maxDate.value));
 }
 
+function isYearDisabled(year: Date): boolean {
+  const start = startOfYear(year);
+  const end = endOfDay(endOfYear(year));
+  return Boolean((minDate.value && end < minDate.value) || (maxDate.value && start > maxDate.value));
+}
+
 function toDateTime(date: Date, hour: number, minute: number): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute);
 }
@@ -594,6 +714,12 @@ function monthHasSelectableDate(month: Date): boolean {
 function yearHasSelectableMonth(year: Date): boolean {
   return Array.from({ length: 12 }, (_, month) => new Date(year.getFullYear(), month, 1)).some(
     (month) => !isMonthDisabled(month),
+  );
+}
+
+function yearRangeHasSelectableYear(startYear: number): boolean {
+  return Array.from({ length: YEAR_RANGE_SIZE }, (_, index) => new Date(startYear + index, 0, 1)).some(
+    (year) => !isYearDisabled(year),
   );
 }
 
@@ -647,10 +773,29 @@ async function focusMonth(date: Date) {
   calendarRef.value?.querySelector<HTMLElement>(`[data-month="${formatMonth(date)}"]:not(:disabled)`)?.focus();
 }
 
+async function focusYear(date: Date) {
+  const year = date.getFullYear();
+
+  if (year < visibleYearRangeStart.value || year >= visibleYearRangeStart.value + YEAR_RANGE_SIZE) {
+    visibleYearRangeStart.value += Math.floor((year - visibleYearRangeStart.value) / YEAR_RANGE_SIZE) * YEAR_RANGE_SIZE;
+  }
+
+  focusedDate.value = startOfYear(date);
+  visibleMonth.value = startOfMonth(date);
+  await nextTick();
+  calendarRef.value?.querySelector<HTMLElement>(`[data-year="${formatYear(date)}"]:not(:disabled)`)?.focus();
+}
+
 function getInitialFocusDate(): Date {
   const preferred = selectedDate.value ?? today;
 
-  if (props.monthPicker ? !isMonthDisabled(preferred) : !isDateDisabled(preferred)) {
+  const selectable = props.yearPicker
+    ? !isYearDisabled(preferred)
+    : props.monthPicker
+      ? !isMonthDisabled(preferred)
+      : !isDateDisabled(preferred);
+
+  if (selectable) {
     return preferred;
   }
 
@@ -665,8 +810,11 @@ function openCalendar() {
   const date = getInitialFocusDate();
   syncDraft(selectedDate.value ?? date);
   visibleMonth.value = startOfMonth(date);
+  visibleYearRangeStart.value = getInitialYearRangeStart(date);
   disclosure.open();
-  if (props.monthPicker) {
+  if (props.yearPicker) {
+    void focusYear(date);
+  } else if (props.monthPicker) {
     void focusMonth(date);
   } else {
     void focusDay(date);
@@ -773,6 +921,10 @@ function selectMonth(month: CalendarMonth) {
   selectValue(month.date, month.value, month.disabled);
 }
 
+function selectYear(year: CalendarYear) {
+  selectValue(year.date, year.value, year.disabled);
+}
+
 function updateDraftHour(value: string) {
   draftHour.value = Number(value);
   ensureDraftTime();
@@ -823,6 +975,23 @@ function clearValue(event: MouseEvent) {
 }
 
 function changePeriod(amount: number) {
+  if (props.yearPicker) {
+    const targetStartYear = visibleYearRangeStart.value + amount * YEAR_RANGE_SIZE;
+
+    if (!yearRangeHasSelectableYear(targetStartYear)) {
+      return;
+    }
+
+    const candidate = new Date(focusedDate.value.getFullYear() + amount * YEAR_RANGE_SIZE, 0, 1);
+    const nextFocus = isYearDisabled(candidate)
+      ? minDate.value && candidate < minDate.value
+        ? minDate.value
+        : (maxDate.value ?? candidate)
+      : candidate;
+    void focusYear(nextFocus);
+    return;
+  }
+
   if (props.monthPicker) {
     const target = addYears(visibleMonth.value, amount);
 
@@ -907,6 +1076,29 @@ function onMonthKeydown(event: KeyboardEvent, month: CalendarMonth) {
 
   if (!isMonthDisabled(target)) {
     void focusMonth(target);
+  }
+}
+
+function onYearKeydown(event: KeyboardEvent, year: CalendarYear) {
+  let target: Date | null = null;
+
+  if (event.key === 'ArrowLeft') target = addYears(year.date, -1);
+  if (event.key === 'ArrowRight') target = addYears(year.date, 1);
+  if (event.key === 'ArrowUp') target = addYears(year.date, -YEAR_ROW_SIZE);
+  if (event.key === 'ArrowDown') target = addYears(year.date, YEAR_ROW_SIZE);
+  if (event.key === 'Home') target = new Date(visibleYearRangeStart.value, 0, 1);
+  if (event.key === 'End') target = new Date(visibleYearRangeStart.value + YEAR_RANGE_SIZE - 1, 0, 1);
+  if (event.key === 'PageUp') target = addYears(year.date, -YEAR_RANGE_SIZE);
+  if (event.key === 'PageDown') target = addYears(year.date, YEAR_RANGE_SIZE);
+
+  if (!target) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (!isYearDisabled(target)) {
+    void focusYear(target);
   }
 }
 
@@ -1016,24 +1208,78 @@ useEscapeKey(
               class="vf-date-picker__navigation"
               :icon="icons.caretLeft"
               size="md"
-              :aria-label="props.monthPicker ? resolvedLabels.previousYear : resolvedLabels.previousMonth"
+              :aria-label="
+                props.yearPicker
+                  ? resolvedLabels.previousDecade
+                  : props.monthPicker
+                    ? resolvedLabels.previousYear
+                    : resolvedLabels.previousMonth
+              "
               :disabled="previousPeriodDisabled"
               @click="changePeriod(-1)"
             />
             <div class="vf-date-picker__month" aria-live="polite">
-              {{ props.monthPicker ? yearFormatter.format(visibleMonth) : monthFormatter.format(visibleMonth) }}
+              {{
+                props.yearPicker
+                  ? visibleYearRangeLabel
+                  : props.monthPicker
+                    ? yearFormatter.format(visibleMonth)
+                    : monthFormatter.format(visibleMonth)
+              }}
             </div>
             <VfIconButton
               class="vf-date-picker__navigation"
               :icon="icons.caretRight"
               size="md"
-              :aria-label="props.monthPicker ? resolvedLabels.nextYear : resolvedLabels.nextMonth"
+              :aria-label="
+                props.yearPicker
+                  ? resolvedLabels.nextDecade
+                  : props.monthPicker
+                    ? resolvedLabels.nextYear
+                    : resolvedLabels.nextMonth
+              "
               :disabled="nextPeriodDisabled"
               @click="changePeriod(1)"
             />
           </header>
 
-          <div v-if="props.monthPicker" class="vf-date-picker__months" role="grid">
+          <div v-if="props.yearPicker" class="vf-date-picker__years" role="grid">
+            <div
+              v-for="(row, rowIndex) in calendarYearRows"
+              :key="rowIndex"
+              class="vf-date-picker__year-row"
+              role="row"
+            >
+              <VfButton
+                v-for="year in row"
+                :key="year.value"
+                variant="ghost"
+                size="md"
+                class="vf-date-picker__year-option"
+                :class="{
+                  'vf-date-picker__day--today': year.isCurrent,
+                  'vf-date-picker__day--in-range': year.isInRange,
+                  'vf-date-picker__day--range-start': year.isRangeStart,
+                  'vf-date-picker__day--range-end': year.isRangeEnd,
+                  'vf-date-picker__day--selected': year.isSelected,
+                }"
+                role="gridcell"
+                :data-year="year.value"
+                :aria-label="year.value"
+                :aria-selected="year.isSelected"
+                :aria-current="year.isCurrent ? 'date' : undefined"
+                :disabled="year.disabled"
+                :tabindex="isSameYear(year.date, focusedDate) ? 0 : -1"
+                @focus="focusedDate = year.date"
+                @click="selectYear(year)"
+                @keydown="onYearKeydown($event, year)"
+              >
+                {{ year.value }}
+              </VfButton>
+            </div>
+          </div>
+
+          <div v-else-if="props.monthPicker" class="vf-date-picker__months" role="grid">
             <div
               v-for="(row, rowIndex) in calendarMonthRows"
               :key="rowIndex"
