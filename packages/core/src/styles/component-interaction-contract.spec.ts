@@ -29,6 +29,17 @@ function extractRule(source: string, selector: string) {
 describe('component interaction contract', () => {
   it('keeps date picker days at the VfButton md control size', () => {
     const css = readEntry('date-picker');
+    const wrapperRule = extractRule(css, '.vf-date-picker-wrap');
+    const triggerRule = extractRule(css, '.vf-date-picker');
+    const valueRule = extractRule(css, '.vf-date-picker__value');
+
+    expect(wrapperRule).toContain('min-width: 0;');
+    expect(wrapperRule).toContain('max-width: 100%;');
+    expect(triggerRule).toContain('min-width: 0;');
+    expect(triggerRule).toContain('max-width: 100%;');
+    expect(valueRule).toContain('flex: 1 1 auto;');
+    expect(valueRule).toContain('text-overflow: ellipsis;');
+
     const dayRule = extractRule(css, '.vf-date-picker__day');
 
     expect(dayRule).toContain('width: var(--vf-control-height-md);');

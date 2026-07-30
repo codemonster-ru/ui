@@ -10,6 +10,8 @@
   position: relative;
   box-sizing: border-box;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .vf-date-picker {
@@ -20,6 +22,8 @@
   box-sizing: border-box;
   gap: var(--vf-button-gap);
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: var(--vf-control-height-md);
   padding: var(--vf-field-padding-md);
   border: var(--vf-border-width) solid var(--vf-select-border-color);
@@ -70,15 +74,16 @@
   cursor: default;
 }
 
-.vf-date-picker--placeholder .vf-date-picker__value {
-  color: var(--vf-select-placeholder-color);
-}
-
 .vf-date-picker__value {
+  flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.vf-date-picker--placeholder .vf-date-picker__value {
+  color: var(--vf-select-placeholder-color);
 }
 
 .vf-date-picker__icon {

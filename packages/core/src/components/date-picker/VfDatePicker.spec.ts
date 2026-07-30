@@ -16,11 +16,27 @@ describe('VfDatePicker', () => {
       },
     });
 
-    expect(wrapper.get('.vf-date-picker__value').text()).toBe('Jul 30, 2026');
+    expect(wrapper.get('.vf-date-picker__value').text()).toBe('07/30/26');
     expect(wrapper.get('input[type="hidden"]').attributes()).toMatchObject({
       name: 'startsAt',
       value: '2026-07-30',
     });
+  });
+
+  it('supports a custom display format without changing the model value', () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: '2026-07-30T14:05',
+        showTime: true,
+        displayFormat: 'yyyy/MM/dd HH:mm',
+      },
+      attrs: {
+        name: 'startsAt',
+      },
+    });
+
+    expect(wrapper.get('.vf-date-picker__value').text()).toBe('2026/07/30 14:05');
+    expect(wrapper.get('input[type="hidden"]').attributes('value')).toBe('2026-07-30T14:05');
   });
 
   it('opens the selected month and emits an ISO date when a day is selected', async () => {
@@ -126,6 +142,60 @@ describe('VfDatePicker', () => {
     expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(false);
   });
 
+  it('toggles multiple dates and keeps the calendar open', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2026-07-15', '2026-07-20'],
+        multiple: true,
+        locale: 'en-US',
+        clearable: true,
+        disableTeleport: true,
+      },
+      attrs: {
+        name: 'releaseDates',
+      },
+    });
+
+    expect(wrapper.get('.vf-date-picker__value').text()).toBe('07/15/26; 07/20/26');
+    expect(wrapper.findAll('input[type="hidden"]').map((input) => input.attributes('value'))).toEqual([
+      '2026-07-15',
+      '2026-07-20',
+    ]);
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('[data-date="2026-07-15"]').attributes('aria-selected')).toBe('true');
+    expect(wrapper.get('[data-date="2026-07-20"]').attributes('aria-selected')).toBe('true');
+
+    await wrapper.get('[data-date="2026-07-20"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-07-15']]]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
+
+    await wrapper.setProps({ modelValue: ['2026-07-15'] });
+    await wrapper.get('[data-date="2026-07-30"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([
+      [['2026-07-15']],
+      [['2026-07-15', '2026-07-30']],
+    ]);
+  });
+
+  it('clears multiple dates as an empty array', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2026-07-15', '2026-07-20'],
+        multiple: true,
+        clearable: true,
+      },
+    });
+
+    await wrapper.get('[aria-label="Clear date"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[[]]]);
+  });
+
   it('updates the local ISO value immediately when date or time changes', async () => {
     const wrapper = mount(VfDatePicker, {
       props: {
@@ -154,6 +224,28 @@ describe('VfDatePicker', () => {
       ['2026-07-20T14:20'],
       ['2026-07-20T16:20'],
       ['2026-07-20T16:30'],
+    ]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
+  });
+
+  it('updates time for the active date in multiple mode', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2026-07-15T14:20', '2026-07-20T10:00'],
+        multiple: true,
+        showTime: true,
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    const [hourSelect] = wrapper.findAllComponents(VfSelect);
+    await hourSelect!.setValue('16');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([
+      [['2026-07-15T16:20', '2026-07-20T10:00']],
     ]);
     expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
   });
