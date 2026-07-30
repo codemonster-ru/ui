@@ -91,6 +91,13 @@ export interface VfSelectOption {
   disabled?: boolean;
 }
 
+export interface VfDatePickerLabels {
+  calendar: string;
+  clear: string;
+  previousMonth: string;
+  nextMonth: string;
+}
+
 export interface VfBreadcrumbItem {
   label: string;
   href?: string;

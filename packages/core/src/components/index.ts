@@ -8,6 +8,7 @@ export { VfCard } from './card';
 export { VfCheckbox } from './checkbox';
 export { VfCommandPalette } from './command-palette';
 export { VfDataTable } from './data-table';
+export { VfDatePicker } from './date-picker';
 export { VfDrawer } from './drawer';
 export { VfDialog } from './dialog';
 export { VfDivider } from './divider';

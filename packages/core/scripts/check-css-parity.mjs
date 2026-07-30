@@ -25,6 +25,7 @@ const componentEntryNames = [
   'panel.css',
   'table.css',
   'data-table.css',
+  'date-picker.css',
   'badge.css',
   'tag.css',
   'progress-bar.css',

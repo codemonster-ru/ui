@@ -27,6 +27,28 @@ function extractRule(source: string, selector: string) {
 }
 
 describe('component interaction contract', () => {
+  it('keeps date picker days at the VfButton md control size', () => {
+    const css = readEntry('date-picker');
+    const dayRule = extractRule(css, '.vf-date-picker__day');
+
+    expect(dayRule).toContain('width: var(--vf-control-height-md);');
+    expect(dayRule).toContain('height: var(--vf-control-height-md);');
+    expect(dayRule).not.toContain('aspect-ratio');
+
+    const disabledDayRule = extractRule(css, '.vf-date-picker__day:disabled');
+    expect(disabledDayRule).toContain('border-color: transparent;');
+    expect(disabledDayRule).toContain('background: transparent;');
+
+    const disabledNavigationRule = extractRule(css, '.vf-date-picker__navigation:disabled');
+    expect(disabledNavigationRule).toContain('border-color: transparent;');
+    expect(disabledNavigationRule).toContain('background: transparent;');
+
+    const clearRule = extractRule(css, '.vf-date-picker-wrap__clear');
+    const calendarIconRule = extractRule(css, '.vf-date-picker--with-clear .vf-date-picker__icon');
+    expect(clearRule).toContain('inset-inline-end: var(--vf-field-adornment-offset-md);');
+    expect(calendarIconRule).toContain('inset-inline-end: var(--vf-field-trailing-before-clear-offset-md);');
+  });
+
   it('does not duplicate pinned boundaries when data table column dividers are enabled', () => {
     const css = readEntry('data-table');
     const selector =
