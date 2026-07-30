@@ -213,11 +213,13 @@ const monthOptionFormatter = computed(() => new Intl.DateTimeFormat(props.locale
 const monthLabelFormatter = computed(() => new Intl.DateTimeFormat(props.locale, { year: 'numeric', month: 'long' }));
 const dayFormatter = computed(() => new Intl.DateTimeFormat(props.locale, { weekday: 'short' }));
 const dateLabelFormatter = computed(() => new Intl.DateTimeFormat(props.locale, { dateStyle: 'full' }));
-const displayValue = computed(() =>
-  selectedValues.value.length > 0
-    ? selectedValues.value.map(({ date }) => formatDisplayDate(date)).join(props.range ? ' – ' : '; ')
-    : (props.placeholder ?? ''),
-);
+const displayValue = computed(() => {
+  if (selectedValues.value.length > 0) {
+    return selectedValues.value.map(({ date }) => formatDisplayDate(date)).join(props.range ? ' – ' : '; ');
+  }
+
+  return isFloatingLabel.value ? '' : (props.placeholder ?? '');
+});
 const activeDate = computed(() => (hasTimePicker.value && isOpen.value ? draftDate.value : selectedDate.value));
 const timeCandidates = computed(() =>
   Array.from({ length: 24 }, (_, hour) =>
