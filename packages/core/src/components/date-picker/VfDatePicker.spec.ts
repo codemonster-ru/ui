@@ -196,6 +196,66 @@ describe('VfDatePicker', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([[[]]]);
   });
 
+  it('renders range boundaries and the dates between them', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2026-07-15', '2026-07-20'],
+        range: true,
+        locale: 'en-US',
+        disableTeleport: true,
+      },
+      attrs: {
+        name: 'bookingRange',
+      },
+    });
+
+    expect(wrapper.get('.vf-date-picker__value').text()).toBe('07/15/26 – 07/20/26');
+    expect(wrapper.findAll('input[type="hidden"]').map((input) => input.attributes('value'))).toEqual([
+      '2026-07-15',
+      '2026-07-20',
+    ]);
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('[data-date="2026-07-15"]').classes()).toContain(
+      'vf-date-picker__day--range-start',
+    );
+    expect(wrapper.get('[data-date="2026-07-20"]').classes()).toContain(
+      'vf-date-picker__day--range-end',
+    );
+    expect(wrapper.get('[data-date="2026-07-16"]').classes()).toContain(
+      'vf-date-picker__day--in-range',
+    );
+    expect(wrapper.get('[data-date="2026-07-16"]').attributes('aria-selected')).toBe('false');
+  });
+
+  it('selects and sorts range boundaries', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2026-07-20', '2026-07-25'],
+        range: true,
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+    await wrapper.get('[data-date="2026-07-20"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-07-20']]]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
+
+    await wrapper.setProps({ modelValue: ['2026-07-20'] });
+    await wrapper.get('[data-date="2026-07-15"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([
+      [['2026-07-20']],
+      [['2026-07-15', '2026-07-20']],
+    ]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(false);
+  });
+
   it('updates the local ISO value immediately when date or time changes', async () => {
     const wrapper = mount(VfDatePicker, {
       props: {
