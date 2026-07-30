@@ -30,6 +30,7 @@ interface VfDataTableProps {
   rows?: VfDataTableRow[];
   rowKey?: string | ((row: VfDataTableRow, index: number) => VfDataTableRowKey);
   selectable?: boolean;
+  rowSelectable?: (row: VfDataTableRow, rowIndex: number) => boolean;
   selectedRowKeys?: VfDataTableRowKey[];
   defaultSelectedRowKeys?: VfDataTableRowKey[];
   caption?: string;
@@ -92,6 +93,7 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
   rows: () => [],
   rowKey: undefined,
   selectable: false,
+  rowSelectable: undefined,
   selectedRowKeys: undefined,
   defaultSelectedRowKeys: () => [],
   caption: undefined,
@@ -307,13 +309,18 @@ const currentColumnWidths = computed(() => props.columnWidths ?? internalColumnW
 const renderedColumnWidths = computed(() =>
   isResizing.value ? internalColumnWidths.value : currentColumnWidths.value,
 );
-const visibleRowKeys = computed(() => visibleRows.value.map((row, index) => selectionRowId(row, index)));
+const selectableVisibleRowKeys = computed(() =>
+  visibleRows.value.flatMap((row, rowIndex) => (isRowSelectable(row, rowIndex) ? [selectionRowId(row, rowIndex)] : [])),
+);
 const allVisibleRowsSelected = computed(
   () =>
-    visibleRowKeys.value.length > 0 && visibleRowKeys.value.every((key) => currentSelectedRowKeys.value.includes(key)),
+    selectableVisibleRowKeys.value.length > 0 &&
+    selectableVisibleRowKeys.value.every((key) => currentSelectedRowKeys.value.includes(key)),
 );
 const someVisibleRowsSelected = computed(
-  () => !allVisibleRowsSelected.value && visibleRowKeys.value.some((key) => currentSelectedRowKeys.value.includes(key)),
+  () =>
+    !allVisibleRowsSelected.value &&
+    selectableVisibleRowKeys.value.some((key) => currentSelectedRowKeys.value.includes(key)),
 );
 
 function rowId(row: VfDataTableRow, index: number): VfDataTableRowKey {
@@ -335,6 +342,10 @@ function selectionRowId(row: VfDataTableRow, index: number): VfDataTableRowKey {
     props.pagination && props.paginationMode === 'client' ? (currentPage.value - 1) * currentPageSize.value : 0;
 
   return rowId(row, index + offset);
+}
+
+function isRowSelectable(row: VfDataTableRow, rowIndex: number) {
+  return props.rowSelectable?.(row, rowIndex) ?? true;
 }
 
 function cellValue(row: VfDataTableRow, key: string) {
@@ -1198,6 +1209,10 @@ function updateSelectedRowKeys(selectedRowKeys: VfDataTableRowKey[]) {
 }
 
 function setRowSelected(row: VfDataTableRow, index: number, selected: boolean) {
+  if (!isRowSelectable(row, index)) {
+    return;
+  }
+
   const key = selectionRowId(row, index);
   const nextKeys = selected
     ? [...currentSelectedRowKeys.value, key].filter((value, keyIndex, keys) => keys.indexOf(value) === keyIndex)
@@ -1208,10 +1223,10 @@ function setRowSelected(row: VfDataTableRow, index: number, selected: boolean) {
 
 function setAllVisibleRowsSelected(selected: boolean) {
   const nextKeys = selected
-    ? [...currentSelectedRowKeys.value, ...visibleRowKeys.value].filter(
+    ? [...currentSelectedRowKeys.value, ...selectableVisibleRowKeys.value].filter(
         (value, keyIndex, keys) => keys.indexOf(value) === keyIndex,
       )
-    : currentSelectedRowKeys.value.filter((key) => !visibleRowKeys.value.includes(key));
+    : currentSelectedRowKeys.value.filter((key) => !selectableVisibleRowKeys.value.includes(key));
 
   updateSelectedRowKeys(nextKeys);
 }
@@ -1251,7 +1266,7 @@ onUnmounted(() => {
               <VfCheckbox
                 :model-value="allVisibleRowsSelected"
                 :indeterminate="someVisibleRowsSelected"
-                :disabled="!hasRows"
+                :disabled="selectableVisibleRowKeys.length === 0"
                 :aria-label="resolvedLabels.selectAllRows"
                 @update:model-value="setAllVisibleRowsSelected"
               />
@@ -1378,6 +1393,7 @@ onUnmounted(() => {
               <td v-if="props.selectable" class="vf-data-table__selection-cell">
                 <VfCheckbox
                   :model-value="currentSelectedRowKeys.includes(selectionRowId(row, rowIndex))"
+                  :disabled="!isRowSelectable(row, rowIndex)"
                   :aria-label="resolvedLabels.selectRow(rowIndex + 1)"
                   @update:model-value="setRowSelected(row, rowIndex, $event)"
                 />

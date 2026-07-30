@@ -10,6 +10,7 @@ Public component contract: props, events, slots, and related types.
 | `rows?`                   | `VfDataTableRow[]`                             | `[]`           | Data records rendered into table rows.                                                  |
 | `rowKey?`                 | `string \| ((row, index) => string \| number)` | —              | Stable row key. String keys support dot paths.                                          |
 | `selectable?`             | `boolean`                                      | `false`        | Renders row checkboxes and a select-all checkbox.                                       |
+| `rowSelectable?`          | `(row, rowIndex) => boolean`                   | —              | Disables selection for rows where the predicate returns `false`.                        |
 | `selectedRowKeys?`        | `VfDataTableRowKey[]`                          | —              | Controlled selected row keys.                                                           |
 | `defaultSelectedRowKeys?` | `VfDataTableRowKey[]`                          | `[]`           | Initial selected row keys for uncontrolled selection.                                   |
 | `caption?`                | `string`                                       | —              | Optional semantic table caption.                                                        |

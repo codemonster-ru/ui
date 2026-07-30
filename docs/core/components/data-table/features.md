@@ -177,6 +177,7 @@ Use `v-model:selected-row-keys` when the selected keys are controlled by the par
 <VfDataTable
   v-model:selected-row-keys="selectedRowKeys"
   selectable
+  :row-selectable="(row) => !row.protected"
   row-key="id"
   :columns="columns"
   :rows="rows"
@@ -184,8 +185,14 @@ Use `v-model:selected-row-keys` when the selected keys are controlled by the par
 />
 ```
 
-The header checkbox becomes indeterminate when only some visible rows are selected. Use the
-selected keys to perform bulk actions such as deleting the selected records.
+Use `rowSelectable` to prevent selection of protected or otherwise ineligible records. The
+predicate receives the row and its index on the rendered page. Ineligible rows have disabled
+checkboxes and are excluded from select-all and indeterminate calculations. Existing keys are not
+removed from `selectedRowKeys` when their rows become ineligible.
+
+The header checkbox becomes indeterminate when only some eligible visible rows are selected and is
+disabled when no visible rows are eligible. Use the selected keys to perform bulk actions such as
+deleting the selected records.
 
 ## Loading
 
