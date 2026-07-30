@@ -36,6 +36,7 @@ import {
   VfTextarea,
 } from '@/components';
 import VfThemeProvider from '@/providers/VfThemeProvider.vue';
+import type { VfDataTableLabels } from '@/types/components';
 
 const SwitchThumbProbe = defineComponent({
   components: {
@@ -589,6 +590,92 @@ describe('core primitives', () => {
     expect(paginated.emitted('update:page')).toEqual([[2]]);
     expect(paginated.findAll('tbody tr')).toHaveLength(1);
     expect(paginated.text()).toContain('3-3 of 3');
+  });
+
+  it('localizes all built-in data table labels while preserving legacy text overrides', async () => {
+    const labels: VfDataTableLabels = {
+      empty: 'Нет данных',
+      loading: 'Загрузка…',
+      pagination: 'Пагинация таблицы',
+      paginationSummary: (firstRow, lastRow, totalRows) =>
+        totalRows === 0 ? 'Нет строк' : `${firstRow}–${lastRow} из ${totalRows}`,
+      rows: 'Строк',
+      rowsPerPage: 'Строк на странице',
+      pageSummary: (page, pageCount) => `Страница ${page} из ${pageCount}`,
+      previousPage: 'Предыдущая страница',
+      nextPage: 'Следующая страница',
+      selectAllRows: 'Выбрать все строки',
+      selectRow: (rowIndex) => `Выбрать строку ${rowIndex}`,
+      sortAscending: (column) => `Сортировать ${column} по возрастанию`,
+      sortDescending: (column) => `Сортировать ${column} по убыванию`,
+      clearSort: (column) => `Сбросить сортировку ${column}`,
+      reorderColumn: (column, position, columnCount) => `${column}, столбец ${position} из ${columnCount}`,
+      reorderColumnInstructions: 'Перетащите или используйте стрелки влево и вправо.',
+      columnMoved: (column, position, columnCount) => `${column}: новая позиция ${position} из ${columnCount}`,
+      resizeColumn: (column) => `Изменить ширину столбца ${column}`,
+    };
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Имя', sortable: true },
+          { key: 'status', header: 'Статус' },
+        ],
+        rows: [{ id: 1, name: 'Анна', status: 'Активна' }],
+        rowKey: 'id',
+        selectable: true,
+        pagination: true,
+        pageSizeOptions: [1],
+        defaultPageSize: 1,
+        reorderableColumns: true,
+        resizableColumns: true,
+        labels,
+      },
+    });
+
+    expect(wrapper.find('.vf-data-table__pagination').attributes('aria-label')).toBe('Пагинация таблицы');
+    expect(wrapper.find('.vf-data-table__pagination-summary').text()).toBe('1–1 из 1');
+    expect(wrapper.find('.vf-data-table__page-size-label').text()).toBe('Строк');
+    expect(wrapper.find('.vf-data-table__page-size-select button').attributes('aria-label')).toBe('Строк на странице');
+    expect(wrapper.find('.vf-data-table__pagination-page').text()).toBe('Страница 1 из 1');
+    expect(wrapper.find('[aria-label="Предыдущая страница"]').exists()).toBe(true);
+    expect(wrapper.find('[aria-label="Следующая страница"]').exists()).toBe(true);
+    expect(wrapper.find('thead [aria-label="Выбрать все строки"]').exists()).toBe(true);
+    expect(wrapper.find('tbody [aria-label="Выбрать строку 1"]').exists()).toBe(true);
+    expect(wrapper.find('[aria-label="Сортировать Имя по возрастанию"]').exists()).toBe(true);
+    expect(wrapper.find('[aria-label="Изменить ширину столбца Имя"]').exists()).toBe(true);
+
+    await wrapper.find('[aria-label="Сортировать Имя по возрастанию"]').trigger('click');
+    expect(wrapper.find('[aria-label="Сортировать Имя по убыванию"]').exists()).toBe(true);
+
+    await wrapper.find('[aria-label="Сортировать Имя по убыванию"]').trigger('click');
+    expect(wrapper.find('[aria-label="Сбросить сортировку Имя"]').exists()).toBe(true);
+
+    const reorderableHeader = wrapper.find('[aria-label="Имя, столбец 1 из 2"]');
+
+    expect(reorderableHeader.attributes('aria-description')).toBe('Перетащите или используйте стрелки влево и вправо.');
+
+    await reorderableHeader.trigger('keydown', { key: 'ArrowRight' });
+
+    expect(wrapper.find('[aria-live="polite"]').text()).toBe('Имя: новая позиция 2 из 2');
+
+    const stateWrapper = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Имя' }],
+        labels,
+        loading: true,
+      },
+    });
+
+    expect(stateWrapper.find('.vf-data-table__state-cell').text()).toBe('Нет данных');
+    expect(stateWrapper.find('.vf-data-table__loading-mask').attributes('aria-label')).toBe('Загрузка…');
+
+    await stateWrapper.setProps({
+      emptyText: 'Старое пустое состояние',
+      loadingText: 'Старая загрузка',
+    });
+
+    expect(stateWrapper.find('.vf-data-table__state-cell').text()).toBe('Старое пустое состояние');
+    expect(stateWrapper.find('.vf-data-table__loading-mask').attributes('aria-label')).toBe('Старая загрузка');
   });
 
   it('renders only externally controlled visible data table columns', async () => {

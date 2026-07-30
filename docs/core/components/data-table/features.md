@@ -197,6 +197,34 @@ The default loading state renders a mask over the current table with a progress 
 
 Use the `loading` slot to replace the mask content when visible text or custom layout is needed.
 
+## Localization
+
+Use `labels` to replace every built-in visible and accessible label. The prop accepts a partial
+`VfDataTableLabels` object, so applications only need to provide the labels they want to change.
+Function labels receive the values needed for locale-specific formatting and pluralization.
+
+```vue
+<VfDataTable
+  :columns="columns"
+  :rows="rows"
+  :labels="{
+    empty: 'Нет данных',
+    loading: 'Загрузка…',
+    rows: 'Строк',
+    rowsPerPage: 'Строк на странице',
+    pageSummary: (page, pageCount) => `Страница ${page} из ${pageCount}`,
+    paginationSummary: (firstRow, lastRow, totalRows) =>
+      totalRows === 0 ? 'Нет строк' : `${firstRow}–${lastRow} из ${totalRows}`,
+    previousPage: 'Предыдущая страница',
+    nextPage: 'Следующая страница',
+  }"
+  pagination
+/>
+```
+
+`emptyText` and `loadingText` remain supported and take precedence over `labels.empty` and
+`labels.loading`, respectively.
+
 ## Sorting
 
 Set `sortable: true` on columns that users may sort. Client sorting processes the complete `rows`

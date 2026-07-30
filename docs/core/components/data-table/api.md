@@ -39,8 +39,9 @@ Public component contract: props, events, slots, and related types.
 | `defaultSort?`            | `VfDataTableSort[]`                            | `[]`           | Initial sort state for uncontrolled sorting.                                            |
 | `sortingMode?`            | `'client' \| 'manual'`                         | `'client'`     | Client mode sorts local rows; manual mode only emits sort changes.                      |
 | `multiSort?`              | `boolean`                                      | `false`        | Keeps existing criteria when another sortable column is clicked.                        |
-| `emptyText?`              | `string`                                       | `'No data'`    | Empty state fallback text.                                                              |
-| `loadingText?`            | `string`                                       | `'Loading...'` | Accessible label for the default loading mask.                                          |
+| `labels?`                 | `Partial<VfDataTableLabels>`                   | `{}`           | Overrides built-in visible and accessible labels.                                       |
+| `emptyText?`              | `string`                                       | `'No data'`    | Legacy empty-state override. Takes precedence over `labels.empty`.                      |
+| `loadingText?`            | `string`                                       | `'Loading...'` | Legacy loading-label override. Takes precedence over `labels.loading`.                  |
 
 ## Emits
 
@@ -78,11 +79,37 @@ Public component contract: props, events, slots, and related types.
 | `VfDataTableSort`              | `{ key: string; direction: 'asc' \| 'desc' }` | One column sort criterion.        |
 | `VfDataTableColumnOrder`       | `string[]`                                    | Persistable order by column key.  |
 | `VfDataTableColumnWidths`      | `Record<string, string>`                      | Persistable widths by column key. |
+| `VfDataTableLabels`            | `interface`                                   | Built-in label configuration.     |
 | `VfDataTableCellAlign`         | `'start' \| 'center' \| 'end'`                | Cell alignment options.           |
 | `VfDataTableCellVerticalAlign` | `'top' \| 'middle' \| 'bottom' \| 'baseline'` | Vertical cell alignment options.  |
 | `VfDataTableRowKey`            | `string \| number`                            | Stable row selection key.         |
 | `VfDataTableRow`               | `object`                                      | Row record shape.                 |
 | `VfDataTableColumn`            | `interface`                                   | Column definition.                |
+
+### `VfDataTableLabels`
+
+The `labels` prop accepts a partial object. Omitted fields keep their English defaults.
+
+| Name                        | Type                                        | Default                                    |
+| --------------------------- | ------------------------------------------- | ------------------------------------------ |
+| `empty`                     | `string`                                    | `'No data'`                                |
+| `loading`                   | `string`                                    | `'Loading...'`                             |
+| `pagination`                | `string`                                    | `'Table pagination'`                       |
+| `paginationSummary`         | `(firstRow, lastRow, totalRows) => string`  | `'1-10 of 42'` or `'0 rows'`               |
+| `rows`                      | `string`                                    | `'Rows'`                                   |
+| `rowsPerPage`               | `string`                                    | `'Rows per page'`                          |
+| `pageSummary`               | `(page, pageCount) => string`               | `'Page 1 of 5'`                            |
+| `previousPage`              | `string`                                    | `'Previous page'`                          |
+| `nextPage`                  | `string`                                    | `'Next page'`                              |
+| `selectAllRows`             | `string`                                    | `'Select all rows'`                        |
+| `selectRow`                 | `(rowIndex) => string`                      | `'Select row 1'`                           |
+| `sortAscending`             | `(column) => string`                        | `'Sort Name ascending'`                    |
+| `sortDescending`            | `(column) => string`                        | `'Sort Name descending'`                   |
+| `clearSort`                 | `(column) => string`                        | `'Clear sorting for Name'`                 |
+| `reorderColumn`             | `(column, position, columnCount) => string` | `'Name, column 1 of 4'`                    |
+| `reorderColumnInstructions` | `string`                                    | Pointer and keyboard reorder instructions. |
+| `columnMoved`               | `(column, position, columnCount) => string` | `'Name column moved to position 2 of 4'`   |
+| `resizeColumn`              | `(column) => string`                        | `'Resize Name column'`                     |
 
 ### `VfDataTableColumn`
 
