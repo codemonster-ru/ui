@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added controlled and uncontrolled expandable `VfDataTable` rows with accessible disclosure
+  controls and a scoped details slot.
 - Added logical start/end `VfDataTable` pinned columns with measured multi-column offsets.
 - Added per-row `VfDataTable` selection eligibility with select-all support.
 - Added an accessible, localizable `VfDataTable` error state with a consumer-owned retry slot.

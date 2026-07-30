@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, onUpdated, ref, useAttrs } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, onUpdated, ref, useAttrs, useSlots } from 'vue';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import VfCheckbox from '@/components/checkbox/VfCheckbox.vue';
 import VfProgressSpinner from '@/components/progress-spinner/VfProgressSpinner.vue';
 import VfSelect from '@/components/select/VfSelect.vue';
 import VfSkeleton from '@/components/skeleton/VfSkeleton.vue';
+import { useId } from '@/composables';
 import { cx } from '@/utils/classes';
 import type {
   VfDataTableColumn,
@@ -33,6 +34,8 @@ interface VfDataTableProps {
   rowSelectable?: (row: VfDataTableRow, rowIndex: number) => boolean;
   selectedRowKeys?: VfDataTableRowKey[];
   defaultSelectedRowKeys?: VfDataTableRowKey[];
+  expandedRowKeys?: VfDataTableRowKey[];
+  defaultExpandedRowKeys?: VfDataTableRowKey[];
   caption?: string;
   density?: VfDataTableDensity;
   striped?: boolean;
@@ -80,6 +83,8 @@ const defaultLabels: VfDataTableLabels = {
   nextPage: 'Next page',
   selectAllRows: 'Select all rows',
   selectRow: (rowIndex) => `Select row ${rowIndex}`,
+  expandRow: (rowIndex) => `Expand row ${rowIndex}`,
+  collapseRow: (rowIndex) => `Collapse row ${rowIndex}`,
   sortAscending: (column) => `Sort ${column} ascending`,
   sortDescending: (column) => `Sort ${column} descending`,
   clearSort: (column) => `Clear sorting for ${column}`,
@@ -96,6 +101,8 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
   rowSelectable: undefined,
   selectedRowKeys: undefined,
   defaultSelectedRowKeys: () => [],
+  expandedRowKeys: undefined,
+  defaultExpandedRowKeys: () => [],
   caption: undefined,
   density: 'default',
   striped: false,
@@ -131,6 +138,7 @@ const props = withDefaults(defineProps<VfDataTableProps>(), {
 
 const emit = defineEmits<{
   'update:selectedRowKeys': [selectedRowKeys: VfDataTableRowKey[]];
+  'update:expandedRowKeys': [expandedRowKeys: VfDataTableRowKey[]];
   'update:page': [page: number];
   'update:pageSize': [pageSize: number];
   'update:columnOrder': [columnOrder: VfDataTableColumnOrder];
@@ -141,9 +149,12 @@ const emit = defineEmits<{
 }>();
 
 const attrs = useAttrs();
+const slots = useSlots();
+const expandedRowBaseId = useId({ prefix: 'vf-data-table-expanded-row' });
 const internalPage = ref(props.defaultPage);
 const internalPageSize = ref(props.defaultPageSize);
 const internalSelectedRowKeys = ref<VfDataTableRowKey[]>([...props.defaultSelectedRowKeys]);
+const internalExpandedRowKeys = ref<VfDataTableRowKey[]>([...props.defaultExpandedRowKeys]);
 const internalColumnOrder = ref<VfDataTableColumnOrder>([...props.defaultColumnOrder]);
 const internalColumnWidths = ref<VfDataTableColumnWidths>({ ...props.defaultColumnWidths });
 const internalSort = ref<VfDataTableSort[]>(props.defaultSort.map((sort) => ({ ...sort })));
@@ -217,6 +228,7 @@ const classes = computed(() =>
     props.striped && 'vf-table--striped',
     props.columnDividers && 'vf-table--column-dividers',
     props.stickyHeader && 'vf-table--sticky-header',
+    hasExpandedRowSlot.value && 'vf-data-table--expandable',
     props.resizableColumns && 'vf-data-table--resizable',
     props.resizableColumns &&
       renderedColumns.value.length > 0 &&
@@ -256,7 +268,10 @@ const visibleRows = computed(() => {
   return sortedRows.value.slice(start, start + currentPageSize.value);
 });
 const hasRows = computed(() => visibleRows.value.length > 0);
-const stateColspan = computed(() => Math.max(renderedColumns.value.length + (props.selectable ? 1 : 0), 1));
+const hasExpandedRowSlot = computed(() => Boolean(slots['expanded-row']));
+const stateColspan = computed(() =>
+  Math.max(renderedColumns.value.length + (props.selectable ? 1 : 0) + (hasExpandedRowSlot.value ? 1 : 0), 1),
+);
 const skeletonRows = computed(() => Array.from({ length: Math.max(1, props.loadingRows) }, (_, index) => index));
 const firstVisibleRow = computed(() => {
   if (!hasRows.value) {
@@ -288,6 +303,7 @@ const pageSizeSelectOptions = computed(() =>
   })),
 );
 const currentSelectedRowKeys = computed(() => props.selectedRowKeys ?? internalSelectedRowKeys.value);
+const currentExpandedRowKeys = computed(() => props.expandedRowKeys ?? internalExpandedRowKeys.value);
 const currentColumnOrder = computed(() => normalizeColumnOrder(props.columnOrder ?? internalColumnOrder.value));
 const displayedColumnOrder = computed(() => normalizeColumnOrder(previewColumnOrder.value ?? currentColumnOrder.value));
 const orderedColumns = computed(() => {
@@ -345,6 +361,18 @@ function selectionRowId(row: VfDataTableRow, index: number): VfDataTableRowKey {
     props.pagination && props.paginationMode === 'client' ? (currentPage.value - 1) * currentPageSize.value : 0;
 
   return rowId(row, index + offset);
+}
+
+function expandedRowId(row: VfDataTableRow, index: number) {
+  return selectionRowId(row, index);
+}
+
+function expandedRowContentId(row: VfDataTableRow, index: number) {
+  return `${expandedRowBaseId.value}-${encodeURIComponent(String(expandedRowId(row, index)))}`;
+}
+
+function isRowExpanded(row: VfDataTableRow, index: number) {
+  return currentExpandedRowKeys.value.includes(expandedRowId(row, index));
 }
 
 function isRowSelectable(row: VfDataTableRow, rowIndex: number) {
@@ -1366,6 +1394,18 @@ function setAllVisibleRowsSelected(selected: boolean) {
   updateSelectedRowKeys(nextKeys);
 }
 
+function toggleRowExpanded(row: VfDataTableRow, index: number) {
+  const key = expandedRowId(row, index);
+  const nextKeys = isRowExpanded(row, index)
+    ? currentExpandedRowKeys.value.filter((expandedKey) => expandedKey !== key)
+    : [...currentExpandedRowKeys.value, key].filter(
+        (value, keyIndex, expandedRowKeys) => expandedRowKeys.indexOf(value) === keyIndex,
+      );
+
+  internalExpandedRowKeys.value = nextKeys;
+  emit('update:expandedRowKeys', nextKeys);
+}
+
 onMounted(() => {
   if (typeof ResizeObserver !== 'undefined') {
     pinnedColumnsResizeObserver = new ResizeObserver(schedulePinnedColumnStylesUpdate);
@@ -1424,6 +1464,7 @@ onUnmounted(() => {
                 @update:model-value="setAllVisibleRowsSelected"
               />
             </th>
+            <th v-if="hasExpandedRowSlot" class="vf-data-table__expansion-cell" scope="col" />
             <th
               v-for="(column, columnIndex) in renderedColumns"
               :key="column.key"
@@ -1514,6 +1555,7 @@ onUnmounted(() => {
           <template v-if="props.loading && props.loadingVariant === 'skeleton'">
             <tr v-for="row in skeletonRows" :key="`skeleton-${row}`" class="vf-data-table__skeleton-row">
               <td v-if="props.selectable" class="vf-data-table__selection-cell" />
+              <td v-if="hasExpandedRowSlot" class="vf-data-table__expansion-cell" />
               <td
                 v-for="(column, columnIndex) in renderedColumns"
                 :key="column.key"
@@ -1536,40 +1578,72 @@ onUnmounted(() => {
           </tr>
 
           <template v-else-if="hasRows">
-            <tr
-              v-for="(row, rowIndex) in visibleRows"
-              :key="rowId(row, rowIndex)"
-              :aria-selected="
-                props.selectable ? currentSelectedRowKeys.includes(selectionRowId(row, rowIndex)) : undefined
-              "
-            >
-              <td v-if="props.selectable" class="vf-data-table__selection-cell">
-                <VfCheckbox
-                  :model-value="currentSelectedRowKeys.includes(selectionRowId(row, rowIndex))"
-                  :disabled="!isRowSelectable(row, rowIndex)"
-                  :aria-label="resolvedLabels.selectRow(rowIndex + 1)"
-                  @update:model-value="setRowSelected(row, rowIndex, $event)"
-                />
-              </td>
-              <td
-                v-for="(column, columnIndex) in renderedColumns"
-                :key="column.key"
-                :class="['vf-data-table__cell', ...columnClasses(column, columnIndex)]"
-                :data-vf-column-index="columnIndex"
-                :data-vf-column-key="column.key"
-                :style="columnStyle(column)"
+            <template v-for="(row, rowIndex) in visibleRows" :key="rowId(row, rowIndex)">
+              <tr
+                :class="[
+                  'vf-data-table__data-row',
+                  props.striped && rowIndex % 2 === 1 && 'vf-data-table__data-row--striped',
+                ]"
+                :aria-selected="
+                  props.selectable ? currentSelectedRowKeys.includes(selectionRowId(row, rowIndex)) : undefined
+                "
               >
-                <slot
-                  :name="`cell-${column.key}`"
-                  :row="row"
-                  :column="column"
-                  :value="cellValue(row, column.key)"
-                  :row-index="rowIndex"
+                <td v-if="props.selectable" class="vf-data-table__selection-cell">
+                  <VfCheckbox
+                    :model-value="currentSelectedRowKeys.includes(selectionRowId(row, rowIndex))"
+                    :disabled="!isRowSelectable(row, rowIndex)"
+                    :aria-label="resolvedLabels.selectRow(rowIndex + 1)"
+                    @update:model-value="setRowSelected(row, rowIndex, $event)"
+                  />
+                </td>
+                <td v-if="hasExpandedRowSlot" class="vf-data-table__expansion-cell">
+                  <VfIconButton
+                    class="vf-data-table__expansion-trigger"
+                    :icon="icons.chevronDown"
+                    size="sm"
+                    variant="ghost"
+                    :aria-label="
+                      isRowExpanded(row, rowIndex)
+                        ? resolvedLabels.collapseRow(rowIndex + 1)
+                        : resolvedLabels.expandRow(rowIndex + 1)
+                    "
+                    :aria-expanded="isRowExpanded(row, rowIndex)"
+                    :aria-controls="expandedRowContentId(row, rowIndex)"
+                    @click="toggleRowExpanded(row, rowIndex)"
+                  />
+                </td>
+                <td
+                  v-for="(column, columnIndex) in renderedColumns"
+                  :key="column.key"
+                  :class="['vf-data-table__cell', ...columnClasses(column, columnIndex)]"
+                  :data-vf-column-index="columnIndex"
+                  :data-vf-column-key="column.key"
+                  :style="columnStyle(column)"
                 >
-                  {{ cellValue(row, column.key) }}
-                </slot>
-              </td>
-            </tr>
+                  <slot
+                    :name="`cell-${column.key}`"
+                    :row="row"
+                    :column="column"
+                    :value="cellValue(row, column.key)"
+                    :row-index="rowIndex"
+                  >
+                    {{ cellValue(row, column.key) }}
+                  </slot>
+                </td>
+              </tr>
+              <tr
+                v-if="isRowExpanded(row, rowIndex)"
+                :id="expandedRowContentId(row, rowIndex)"
+                :class="[
+                  'vf-data-table__expanded-row',
+                  props.striped && rowIndex % 2 === 1 && 'vf-data-table__expanded-row--striped',
+                ]"
+              >
+                <td class="vf-data-table__expanded-cell" :colspan="stateColspan">
+                  <slot name="expanded-row" :row="row" :row-key="expandedRowId(row, rowIndex)" :row-index="rowIndex" />
+                </td>
+              </tr>
+            </template>
           </template>
 
           <tr v-else class="vf-data-table__state-row">

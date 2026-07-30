@@ -78,6 +78,7 @@ const navMenuSidebarNoIconsValue = ref('no-icons-accessibility');
 const menuBarDefaultValue = ref('pricing');
 const menuBarPillsValue = ref('about');
 const selectedDataTableRowKeys = ref<Array<string | number>>([]);
+const expandedDataTableRowKeys = ref<Array<string | number>>([2]);
 const dataTableColumnOrder = ref<VfDataTableColumnOrder>([]);
 const dataTableColumnWidths = ref<VfDataTableColumnWidths>({});
 const dataTableSort = ref<VfDataTableSort[]>([]);
@@ -265,6 +266,10 @@ function resetDataTableColumnOrder() {
 
 function isDataTableRowSelectable(row: VfDataTableRow) {
   return (row as { status?: string }).status !== 'Offline';
+}
+
+function dataTableRowValue(row: VfDataTableRow, key: string) {
+  return String((row as Record<string, unknown>)[key] ?? '');
 }
 
 function setDataTableColumnVisible(columnKey: string, visible: boolean) {
@@ -538,13 +543,76 @@ const dataTablePinnedColumns: VfDataTableColumn[] = [
 ];
 
 const dataTableRows: VfDataTableRow[] = [
-  { id: 1, member: 'Alice', role: 'Design', status: 'Available', tasks: 12 },
-  { id: 2, member: 'Bob', role: 'Platform', status: 'Busy', tasks: 8 },
-  { id: 3, member: 'Carol', role: 'Product', status: 'Available', tasks: 15 },
-  { id: 4, member: 'Diego', role: 'Design', status: 'Away', tasks: 5 },
-  { id: 5, member: 'Eve', role: 'QA', status: 'Offline', tasks: 3 },
-  { id: 6, member: 'Frank', role: 'Support', status: 'Available', tasks: 9 },
-  { id: 7, member: 'Grace', role: 'Platform', status: 'Busy', tasks: 11 },
+  {
+    id: 1,
+    member: 'Alice',
+    role: 'Design',
+    status: 'Available',
+    tasks: 12,
+    email: 'alice@example.com',
+    lastActivity: '10 minutes ago',
+    note: 'Reviewing the new dashboard flow.',
+  },
+  {
+    id: 2,
+    member: 'Bob',
+    role: 'Platform',
+    status: 'Busy',
+    tasks: 8,
+    email: 'bob@example.com',
+    lastActivity: '25 minutes ago',
+    note: 'Preparing the next infrastructure release.',
+  },
+  {
+    id: 3,
+    member: 'Carol',
+    role: 'Product',
+    status: 'Available',
+    tasks: 15,
+    email: 'carol@example.com',
+    lastActivity: '1 hour ago',
+    note: 'Collecting feedback for the roadmap.',
+  },
+  {
+    id: 4,
+    member: 'Diego',
+    role: 'Design',
+    status: 'Away',
+    tasks: 5,
+    email: 'diego@example.com',
+    lastActivity: 'Yesterday',
+    note: 'Out for a customer research session.',
+  },
+  {
+    id: 5,
+    member: 'Eve',
+    role: 'QA',
+    status: 'Offline',
+    tasks: 3,
+    email: 'eve@example.com',
+    lastActivity: '2 days ago',
+    note: 'Documenting regression scenarios.',
+  },
+  {
+    id: 6,
+    member: 'Frank',
+    role: 'Support',
+    status: 'Available',
+    tasks: 9,
+    email: 'frank@example.com',
+    lastActivity: '5 minutes ago',
+    note: 'Following up on priority tickets.',
+  },
+  {
+    id: 7,
+    member: 'Grace',
+    role: 'Platform',
+    status: 'Busy',
+    tasks: 11,
+    email: 'grace@example.com',
+    lastActivity: '40 minutes ago',
+    note: 'Investigating deployment metrics.',
+  },
 ];
 
 const tabContent = computed<Record<string, string>>(() => ({
@@ -1390,6 +1458,34 @@ const tabContent = computed<Record<string, string>>(() => ({
                       <tr>
                         <td colspan="3">Total: 43 open tasks</td>
                       </tr>
+                    </template>
+                  </VfDataTable>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">data table expandable rows</p>
+                  <VfDataTable
+                    v-model:expanded-row-keys="expandedDataTableRowKeys"
+                    :columns="dataTableColumns"
+                    :rows="dataTableRows.slice(0, 5)"
+                    row-key="id"
+                    striped
+                  >
+                    <template #expanded-row="{ row }">
+                      <dl class="demo-data-table-details">
+                        <div>
+                          <dt>Email</dt>
+                          <dd>{{ dataTableRowValue(row, 'email') }}</dd>
+                        </div>
+                        <div>
+                          <dt>Last activity</dt>
+                          <dd>{{ dataTableRowValue(row, 'lastActivity') }}</dd>
+                        </div>
+                        <div>
+                          <dt>Note</dt>
+                          <dd>{{ dataTableRowValue(row, 'note') }}</dd>
+                        </div>
+                      </dl>
                     </template>
                   </VfDataTable>
                 </div>

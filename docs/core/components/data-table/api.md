@@ -13,6 +13,8 @@ Public component contract: props, events, slots, and related types.
 | `rowSelectable?`          | `(row, rowIndex) => boolean`                   | —              | Disables selection for rows where the predicate returns `false`.                        |
 | `selectedRowKeys?`        | `VfDataTableRowKey[]`                          | —              | Controlled selected row keys.                                                           |
 | `defaultSelectedRowKeys?` | `VfDataTableRowKey[]`                          | `[]`           | Initial selected row keys for uncontrolled selection.                                   |
+| `expandedRowKeys?`        | `VfDataTableRowKey[]`                          | —              | Controlled expanded row keys.                                                           |
+| `defaultExpandedRowKeys?` | `VfDataTableRowKey[]`                          | `[]`           | Initial expanded row keys for uncontrolled disclosure.                                  |
 | `caption?`                | `string`                                       | —              | Optional semantic table caption.                                                        |
 | `density?`                | `'default' \| 'compact'`                       | `'default'`    | Row density.                                                                            |
 | `striped?`                | `boolean`                                      | `false`        | Applies alternating row background styling.                                             |
@@ -52,6 +54,7 @@ Public component contract: props, events, slots, and related types.
 | `update:page`            | `[page: number]`                          | `void`     | Emitted when pagination changes page.           |
 | `update:pageSize`        | `[pageSize: number]`                      | `void`     | Emitted when pagination changes rows per page.  |
 | `update:selectedRowKeys` | `[selectedRowKeys: VfDataTableRowKey[]]`  | `void`     | Emitted when row selection changes.             |
+| `update:expandedRowKeys` | `[expandedRowKeys: VfDataTableRowKey[]]`  | `void`     | Emitted when row disclosure changes.            |
 | `update:columnOrder`     | `[columnOrder: VfDataTableColumnOrder]`   | `void`     | Emitted when the column order changes.          |
 | `column-reorder-end`     | `[columnOrder: VfDataTableColumnOrder]`   | `void`     | Emitted after pointer or keyboard reorder ends. |
 | `update:columnWidths`    | `[columnWidths: VfDataTableColumnWidths]` | `void`     | Emitted while column widths change.             |
@@ -60,15 +63,16 @@ Public component contract: props, events, slots, and related types.
 
 ## Slots
 
-| Name           | Parameters                         | ReturnType | Description                       |
-| -------------- | ---------------------------------- | ---------- | --------------------------------- |
-| `caption`      | `—`                                | `void`     | Caption content.                  |
-| `header-{key}` | `{ column }`                       | `void`     | Custom column header content.     |
-| `cell-{key}`   | `{ row, column, value, rowIndex }` | `void`     | Custom cell content for a column. |
-| `empty`        | `—`                                | `void`     | Empty state content.              |
-| `error`        | `—`                                | `void`     | Error state content and retry UI. |
-| `loading`      | `—`                                | `void`     | Loading state content.            |
-| `footer`       | `—`                                | `void`     | Table footer rows.                |
+| Name           | Parameters                         | ReturnType | Description                        |
+| -------------- | ---------------------------------- | ---------- | ---------------------------------- |
+| `caption`      | `—`                                | `void`     | Caption content.                   |
+| `header-{key}` | `{ column }`                       | `void`     | Custom column header content.      |
+| `cell-{key}`   | `{ row, column, value, rowIndex }` | `void`     | Custom cell content for a column.  |
+| `expanded-row` | `{ row, rowKey, rowIndex }`        | `void`     | Expanded content below a data row. |
+| `empty`        | `—`                                | `void`     | Empty state content.               |
+| `error`        | `—`                                | `void`     | Error state content and retry UI.  |
+| `loading`      | `—`                                | `void`     | Loading state content.             |
+| `footer`       | `—`                                | `void`     | Table footer rows.                 |
 
 ## Types
 
@@ -108,6 +112,8 @@ The `labels` prop accepts a partial object. Omitted fields keep their English de
 | `nextPage`                  | `string`                                    | `'Next page'`                              |
 | `selectAllRows`             | `string`                                    | `'Select all rows'`                        |
 | `selectRow`                 | `(rowIndex) => string`                      | `'Select row 1'`                           |
+| `expandRow`                 | `(rowIndex) => string`                      | `'Expand row 1'`                           |
+| `collapseRow`               | `(rowIndex) => string`                      | `'Collapse row 1'`                         |
 | `sortAscending`             | `(column) => string`                        | `'Sort Name ascending'`                    |
 | `sortDescending`            | `(column) => string`                        | `'Sort Name descending'`                   |
 | `clearSort`                 | `(column) => string`                        | `'Clear sorting for Name'`                 |
