@@ -263,6 +263,10 @@ function resetDataTableColumnOrder() {
   dataTableColumnOrder.value = [];
 }
 
+function isDataTableRowSelectable(row: VfDataTableRow) {
+  return (row as { status?: string }).status !== 'Offline';
+}
+
 function setDataTableColumnVisible(columnKey: string, visible: boolean) {
   const visibleKeys = new Set(visibleDataTableColumnKeys.value);
 
@@ -1344,6 +1348,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <VfDataTable
                     v-model:selected-row-keys="selectedDataTableRowKeys"
                     selectable
+                    :row-selectable="isDataTableRowSelectable"
                     :columns="dataTableColumns"
                     :rows="dataTableRows"
                     row-key="id"
@@ -1352,6 +1357,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   />
                   <div class="demo-inline">
                     <span class="demo-text">{{ selectedDataTableRowKeys.length }} rows selected</span>
+                    <span class="demo-text">Offline rows are unavailable</span>
                     <VfButton
                       size="sm"
                       variant="secondary"
