@@ -76,6 +76,7 @@ const dateTimePickerValue = ref('2026-07-30T14:30');
 const multipleDatePickerValue = ref(['2026-07-15', '2026-07-30']);
 const rangeDatePickerValue = ref(['2026-08-10', '2026-08-20']);
 const monthPickerValue = ref('2026-07');
+const yearPickerValue = ref('2026');
 const constrainedDatePickerValue = ref('2026-08-12');
 const dynamicProgressValue = ref(0);
 const navMenuDefaultValue = ref('installation');
@@ -2042,6 +2043,26 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </VfField>
                     <p class="demo-text">
                       Model: <code>{{ monthPickerValue || 'empty' }}</code>
+                    </p>
+                  </div>
+
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">Year</p>
+                    <VfField label="Fiscal year">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfDatePicker
+                          :id="controlId"
+                          v-model="yearPickerValue"
+                          year-picker
+                          locale="en-US"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                        />
+                      </template>
+                    </VfField>
+                    <p class="demo-text">
+                      Model: <code>{{ yearPickerValue || 'empty' }}</code>
                     </p>
                   </div>
 

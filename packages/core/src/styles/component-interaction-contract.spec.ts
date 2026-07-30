@@ -69,12 +69,18 @@ describe('component interaction contract', () => {
     expect(css).not.toContain('.vf-date-picker__week > .vf-date-picker__day--in-range:last-child');
 
     const monthRowRule = extractRule(css, '.vf-date-picker__month-row');
-    const monthOptionRule = extractRule(css, '.vf-date-picker__month-option');
+    const yearRowRule = extractRule(css, '.vf-date-picker__year-row');
+    const monthOptionRule = extractRule(css, '.vf-date-picker__month-option,\n.vf-date-picker__year-option');
     expect(monthRowRule).toContain('grid-template-columns: repeat(3, minmax(0, 1fr));');
     expect(monthRowRule).toContain('column-gap: var(--vf-date-picker-day-gap);');
-    expect(monthOptionRule).toContain('width: 100%;');
+    expect(yearRowRule).toContain('grid-template-columns: repeat(3, minmax(0, 1fr));');
+    expect(yearRowRule).toContain('column-gap: var(--vf-date-picker-day-gap);');
+    expect(monthOptionRule).toContain('justify-self: center;');
+    expect(monthOptionRule).toContain('width: auto;');
     expect(css).toContain('.vf-date-picker__month-row > :first-child::before,');
     expect(css).toContain('.vf-date-picker__month-row > :last-child::after,');
+    expect(css).toContain('.vf-date-picker__year-row > :first-child::before,');
+    expect(css).toContain('.vf-date-picker__year-row > :last-child::after,');
 
     const disabledDayRule = extractRule(css, '.vf-date-picker__day:disabled');
     expect(disabledDayRule).toContain('border-color: transparent;');
