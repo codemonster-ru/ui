@@ -16,6 +16,7 @@
 @import './entries/panel.css';
 @import './entries/table.css';
 @import './entries/data-table.css';
+@import './entries/date-picker.css';
 @import './entries/badge.css';
 @import './entries/tag.css';
 @import './entries/progress-bar.css';

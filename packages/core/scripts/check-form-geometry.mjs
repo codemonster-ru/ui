@@ -10,6 +10,7 @@ const files = {
     'input.css',
     'textarea.css',
     'select.css',
+    'date-picker.css',
     'checkbox.css',
     'radio.css',
     'switch.css',

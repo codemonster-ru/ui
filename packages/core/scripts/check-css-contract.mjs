@@ -14,6 +14,7 @@ const ownBases = {
   'checkbox.css': ['checkbox'],
   'command-palette.css': ['command-palette', 'command-palette-transition'],
   'data-table.css': ['data-table', 'data-table-wrap', 'data-table-scroll'],
+  'date-picker.css': ['date-picker', 'date-picker-wrap', 'floating-transition'],
   'dialog.css': ['dialog', 'dialog-transition'],
   'divider.css': ['divider'],
   'drawer.css': ['drawer', 'drawer-transition'],
@@ -45,6 +46,7 @@ const ownBases = {
 const explicitDeps = {
   'command-palette.css': ['./icon-button.css'],
   'data-table.css': ['./table.css', './icon-button.css', './progress-spinner.css', './select.css', './skeleton.css'],
+  'date-picker.css': ['./field.css', './button.css', './icon-button.css', './dropdown.css'],
   'dialog.css': ['./icon-button.css'],
   'drawer.css': ['./icon-button.css'],
   'input.css': ['./field.css', './icon-button.css'],
