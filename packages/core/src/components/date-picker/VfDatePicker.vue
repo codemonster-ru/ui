@@ -4,6 +4,7 @@ import { flip, offset, shift, type MiddlewareType, type PlacementType } from '@c
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import VfButton from '@/components/button/VfButton.vue';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
+import VfSelect from '@/components/select/VfSelect.vue';
 import { vfFieldContextKey } from '@/components/field/context';
 import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
 import { useFocusScopeBranch } from '@/composables/useFocusTrap';
@@ -12,6 +13,7 @@ import type {
   VfControlSize,
   VfDatePickerLabels,
   VfDropdownPlacement,
+  VfSelectOption,
 } from '@/types/components';
 import { cx } from '@/utils/classes';
 
@@ -23,6 +25,8 @@ interface VfDatePickerProps {
   modelValue?: string;
   min?: string;
   max?: string;
+  showTime?: boolean;
+  minuteStep?: number;
   locale?: string | string[];
   firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   size?: VfControlSize;
@@ -41,6 +45,8 @@ const props = withDefaults(defineProps<VfDatePickerProps>(), {
   modelValue: '',
   min: undefined,
   max: undefined,
+  showTime: false,
+  minuteStep: 1,
   locale: undefined,
   firstDayOfWeek: 1,
   size: 'md',
@@ -75,12 +81,17 @@ const triggerRef = ref<HTMLElement | null>(null);
 const calendarRef = ref<HTMLElement | null>(null);
 const triggerId = useId({ prefix: 'vf-date-picker-trigger' });
 const calendarId = useId({ prefix: 'vf-date-picker-calendar' });
+const hourSelectId = useId({ prefix: 'vf-date-picker-hour' });
+const minuteSelectId = useId({ prefix: 'vf-date-picker-minute' });
 const disclosure = useDisclosure();
 const isOpen = disclosure.isOpen;
 const today = startOfDay(new Date());
-const initialDate = parseDate(props.modelValue) ?? today;
+const initialDate = parseModelValue(props.modelValue) ?? today;
 const visibleMonth = ref(startOfMonth(initialDate));
 const focusedDate = ref(initialDate);
+const draftDate = ref(initialDate);
+const draftHour = ref(initialDate.getHours());
+const draftMinute = ref(initialDate.getMinutes());
 const transitionDuration = {
   enter: vfMotionDurationsMs.normal,
   leave: vfMotionDurationsMs.normal,
@@ -94,11 +105,17 @@ const resolvedLabels = computed<VfDatePickerLabels>(() => ({
   clear: 'Clear date',
   previousMonth: 'Previous month',
   nextMonth: 'Next month',
+  time: 'Time',
+  hour: 'Hour',
+  minute: 'Minute',
   ...props.labels,
 }));
-const selectedDate = computed(() => parseDate(props.modelValue));
-const minDate = computed(() => parseDate(props.min));
-const maxDate = computed(() => parseDate(props.max));
+const selectedDate = computed(() => parseModelValue(props.modelValue));
+const minDate = computed(() => parseBoundary(props.min, false));
+const maxDate = computed(() => parseBoundary(props.max, true));
+const normalizedMinuteStep = computed(() =>
+  Math.min(60, Math.max(1, Math.trunc(props.minuteStep) || 1)),
+);
 const hasValue = computed(() => selectedDate.value !== null);
 const hasClearControl = computed(
   () => props.clearable && hasValue.value && !props.disabled && !props.readonly,
@@ -118,7 +135,13 @@ const triggerAttrs = computed(() =>
   ),
 );
 const dateFormatter = computed(
-  () => new Intl.DateTimeFormat(props.locale, { year: 'numeric', month: 'short', day: 'numeric' }),
+  () =>
+    new Intl.DateTimeFormat(props.locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      ...(props.showTime ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' as const } : {}),
+    }),
 );
 const monthFormatter = computed(
   () => new Intl.DateTimeFormat(props.locale, { year: 'numeric', month: 'long' }),
@@ -132,6 +155,43 @@ const dateLabelFormatter = computed(
 const displayValue = computed(() =>
   selectedDate.value ? dateFormatter.value.format(selectedDate.value) : props.placeholder ?? '',
 );
+const activeDate = computed(() =>
+  props.showTime && isOpen.value ? draftDate.value : selectedDate.value,
+);
+const timeCandidates = computed(() =>
+  Array.from({ length: 24 }, (_, hour) =>
+    Array.from(
+      { length: Math.ceil(60 / normalizedMinuteStep.value) },
+      (_, index) => ({
+        hour,
+        minute: index * normalizedMinuteStep.value,
+      }),
+    ),
+  ).flat(),
+);
+const hourOptions = computed<VfSelectOption[]>(() =>
+  Array.from({ length: 24 }, (_, hour) => ({
+    value: String(hour).padStart(2, '0'),
+    label: String(hour).padStart(2, '0'),
+    disabled: !timeCandidates.value.some(
+      (candidate) =>
+        candidate.hour === hour &&
+        isDateTimeSelectable(toDateTime(draftDate.value, candidate.hour, candidate.minute)),
+    ),
+  })),
+);
+const minuteOptions = computed<VfSelectOption[]>(() =>
+  Array.from(
+    { length: Math.ceil(60 / normalizedMinuteStep.value) },
+    (_, index) => index * normalizedMinuteStep.value,
+  ).map((minute) => ({
+    value: String(minute).padStart(2, '0'),
+    label: String(minute).padStart(2, '0'),
+    disabled: !isDateTimeSelectable(toDateTime(draftDate.value, draftHour.value, minute)),
+  })),
+);
+const draftHourValue = computed(() => String(draftHour.value).padStart(2, '0'));
+const draftMinuteValue = computed(() => String(draftMinute.value).padStart(2, '0'));
 const weekdayLabels = computed(() =>
   Array.from({ length: 7 }, (_, index) => {
     const day = addDays(new Date(2024, 0, 7), (props.firstDayOfWeek + index) % 7);
@@ -155,7 +215,7 @@ const calendarDays = computed<CalendarDay[]>(() => {
       label: dateLabelFormatter.value.format(date),
       inCurrentMonth: date.getMonth() === monthStart.getMonth(),
       isToday: isSameDay(date, today),
-      isSelected: selectedDate.value ? isSameDay(date, selectedDate.value) : false,
+      isSelected: activeDate.value ? isSameDay(date, activeDate.value) : false,
       disabled: isDateDisabled(date),
     };
   });
@@ -230,11 +290,15 @@ watch([hasValue, isOpen], ([value, open]) => {
 watch(
   () => props.modelValue,
   (value) => {
-    const date = parseDate(value);
+    const date = parseModelValue(value);
 
     if (date) {
       visibleMonth.value = startOfMonth(date);
       focusedDate.value = date;
+
+      if (!isOpen.value) {
+        syncDraft(date);
+      }
     }
   },
 );
@@ -256,6 +320,44 @@ function parseDate(value?: string): Date | null {
   return formatDate(date) === value ? date : null;
 }
 
+function parseDateTime(value?: string): Date | null {
+  const match = value?.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+    Number(match[4]),
+    Number(match[5]),
+  );
+
+  return formatDateTime(date) === value ? date : null;
+}
+
+function parseModelValue(value?: string): Date | null {
+  return parseDateTime(value) ?? parseDate(value);
+}
+
+function parseBoundary(value: string | undefined, endForDateOnly: boolean): Date | null {
+  const dateTime = parseDateTime(value);
+
+  if (dateTime) {
+    return dateTime;
+  }
+
+  const date = parseDate(value);
+
+  if (!date) {
+    return null;
+  }
+
+  return endForDateOnly ? endOfDay(date) : date;
+}
+
 function formatDate(date: Date): string {
   const year = String(date.getFullYear()).padStart(4, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -263,8 +365,18 @@ function formatDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+function formatDateTime(date: Date): string {
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+  return `${formatDate(date)}T${hour}:${minute}`;
+}
+
 function startOfDay(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function endOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
 }
 
 function startOfMonth(date: Date): Date {
@@ -297,16 +409,71 @@ function isSameDay(left: Date, right: Date): boolean {
 }
 
 function isDateDisabled(date: Date): boolean {
+  if (props.showTime) {
+    return !timeCandidates.value.some((candidate) =>
+      isDateTimeSelectable(toDateTime(date, candidate.hour, candidate.minute)),
+    );
+  }
+
   return Boolean(
-    (minDate.value && date < minDate.value) ||
-    (maxDate.value && date > maxDate.value),
+    (minDate.value && endOfDay(date) < minDate.value) ||
+    (maxDate.value && startOfDay(date) > maxDate.value),
+  );
+}
+
+function toDateTime(date: Date, hour: number, minute: number): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute);
+}
+
+function isDateTimeSelectable(date: Date): boolean {
+  return Boolean(
+    (!minDate.value || date >= minDate.value) &&
+    (!maxDate.value || date <= maxDate.value),
   );
 }
 
 function monthHasSelectableDate(month: Date): boolean {
   const start = startOfMonth(month);
-  const end = endOfMonth(month);
+  const end = endOfDay(endOfMonth(month));
   return !(minDate.value && end < minDate.value) && !(maxDate.value && start > maxDate.value);
+}
+
+function syncDraft(date: Date) {
+  draftDate.value = startOfDay(date);
+  draftHour.value = date.getHours();
+  draftMinute.value =
+    Math.floor(date.getMinutes() / normalizedMinuteStep.value) * normalizedMinuteStep.value;
+  ensureDraftTime();
+}
+
+function ensureDraftTime() {
+  const current = toDateTime(draftDate.value, draftHour.value, draftMinute.value);
+
+  if (isDateTimeSelectable(current) && draftMinute.value % normalizedMinuteStep.value === 0) {
+    return;
+  }
+
+  const available = timeCandidates.value
+    .map((candidate) => ({
+      ...candidate,
+      date: toDateTime(draftDate.value, candidate.hour, candidate.minute),
+    }))
+    .filter((candidate) => isDateTimeSelectable(candidate.date));
+  const target = available.reduce<(typeof available)[number] | null>((closest, candidate) => {
+    if (!closest) {
+      return candidate;
+    }
+
+    return Math.abs(candidate.date.getTime() - current.getTime()) <
+      Math.abs(closest.date.getTime() - current.getTime())
+      ? candidate
+      : closest;
+  }, null);
+
+  if (target) {
+    draftHour.value = target.hour;
+    draftMinute.value = target.minute;
+  }
 }
 
 async function focusDay(date: Date) {
@@ -334,6 +501,7 @@ function openCalendar() {
   }
 
   const date = getInitialFocusDate();
+  syncDraft(selectedDate.value ?? date);
   visibleMonth.value = startOfMonth(date);
   disclosure.open();
   void focusDay(date);
@@ -361,8 +529,38 @@ function selectDate(day: CalendarDay) {
     return;
   }
 
+  if (props.showTime) {
+    draftDate.value = day.date;
+    focusedDate.value = day.date;
+    visibleMonth.value = startOfMonth(day.date);
+    ensureDraftTime();
+    emitDraftDateTime();
+    return;
+  }
+
   emit('update:modelValue', day.value);
   closeCalendar();
+}
+
+function updateDraftHour(value: string) {
+  draftHour.value = Number(value);
+  ensureDraftTime();
+  emitDraftDateTime();
+}
+
+function updateDraftMinute(value: string) {
+  draftMinute.value = Number(value);
+  emitDraftDateTime();
+}
+
+function emitDraftDateTime() {
+  const value = toDateTime(draftDate.value, draftHour.value, draftMinute.value);
+
+  if (!isDateTimeSelectable(value)) {
+    return;
+  }
+
+  emit('update:modelValue', formatDateTime(value));
 }
 
 function clearValue(event: MouseEvent) {
@@ -425,9 +623,27 @@ function onDayKeydown(event: KeyboardEvent, day: CalendarDay) {
   }
 }
 
+function isTimeSelectClick(event: MouseEvent | PointerEvent) {
+  if (!props.showTime) {
+    return false;
+  }
+
+  const controlledIds = [hourSelectId.value, minuteSelectId.value]
+    .map((id) => document.getElementById(id)?.getAttribute('aria-controls'))
+    .filter((id): id is string => Boolean(id));
+
+  return event.composedPath().some(
+    (target) => target instanceof Element && controlledIds.includes(target.id),
+  );
+}
+
 useClickOutside(
   [triggerRef, calendarRef],
-  () => {
+  (event) => {
+    if (isTimeSelectClick(event)) {
+      return;
+    }
+
     if (isOpen.value) {
       closeCalendar({ restoreFocus: false });
     }
@@ -572,6 +788,29 @@ useEscapeKey(
                   {{ day.date.getDate() }}
                 </VfButton>
               </div>
+            </div>
+          </div>
+
+          <div v-if="props.showTime" class="vf-date-picker__time">
+            <span class="vf-date-picker__time-label">{{ resolvedLabels.time }}</span>
+            <div class="vf-date-picker__time-controls">
+              <VfSelect
+                :id="hourSelectId"
+                class="vf-date-picker__time-select"
+                :model-value="draftHourValue"
+                :options="hourOptions"
+                :aria-label="resolvedLabels.hour"
+                @update:model-value="updateDraftHour"
+              />
+              <span class="vf-date-picker__time-separator" aria-hidden="true">:</span>
+              <VfSelect
+                :id="minuteSelectId"
+                class="vf-date-picker__time-select"
+                :model-value="draftMinuteValue"
+                :options="minuteOptions"
+                :aria-label="resolvedLabels.minute"
+                @update:model-value="updateDraftMinute"
+              />
             </div>
           </div>
         </section>

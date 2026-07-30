@@ -46,7 +46,7 @@ const ownBases = {
 const explicitDeps = {
   'command-palette.css': ['./icon-button.css'],
   'data-table.css': ['./table.css', './icon-button.css', './progress-spinner.css', './select.css', './skeleton.css'],
-  'date-picker.css': ['./field.css', './button.css', './icon-button.css', './dropdown.css'],
+  'date-picker.css': ['./field.css', './button.css', './icon-button.css', './select.css', './dropdown.css'],
   'dialog.css': ['./icon-button.css'],
   'drawer.css': ['./icon-button.css'],
   'input.css': ['./field.css', './icon-button.css'],
