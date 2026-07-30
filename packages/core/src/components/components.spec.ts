@@ -607,6 +607,8 @@ describe('core primitives', () => {
       nextPage: 'Следующая страница',
       selectAllRows: 'Выбрать все строки',
       selectRow: (rowIndex) => `Выбрать строку ${rowIndex}`,
+      expandRow: (rowIndex) => `Развернуть строку ${rowIndex}`,
+      collapseRow: (rowIndex) => `Свернуть строку ${rowIndex}`,
       sortAscending: (column) => `Сортировать ${column} по возрастанию`,
       sortDescending: (column) => `Сортировать ${column} по убыванию`,
       clearSort: (column) => `Сбросить сортировку ${column}`,
@@ -677,6 +679,72 @@ describe('core primitives', () => {
 
     expect(stateWrapper.find('.vf-data-table__state-cell').text()).toBe('Старое пустое состояние');
     expect(stateWrapper.find('.vf-data-table__loading-mask').attributes('aria-label')).toBe('Старая загрузка');
+  });
+
+  it('supports controlled and uncontrolled expanded data table rows', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [
+          { key: 'name', header: 'Name' },
+          { key: 'status', header: 'Status' },
+        ],
+        rows: [
+          { id: 1, name: 'Alice', status: 'Available', note: 'Works remotely' },
+          { id: 2, name: 'Bob', status: 'Busy', note: 'In a meeting' },
+        ],
+        rowKey: 'id',
+        defaultExpandedRowKeys: [2],
+        labels: {
+          expandRow: (rowIndex) => `Show row ${rowIndex} details`,
+          collapseRow: (rowIndex) => `Hide row ${rowIndex} details`,
+        },
+        striped: true,
+      },
+      slots: {
+        'expanded-row': ({ row }: { row: object }) => h('p', { class: 'row-details' }, (row as { note: string }).note),
+      },
+    });
+
+    const triggers = wrapper.findAll('.vf-data-table__expansion-trigger');
+
+    expect(wrapper.findAll('thead th')).toHaveLength(3);
+    expect(triggers).toHaveLength(2);
+    expect(triggers[0]?.attributes('aria-expanded')).toBe('false');
+    expect(triggers[0]?.attributes('aria-label')).toBe('Show row 1 details');
+    expect(triggers[1]?.attributes('aria-expanded')).toBe('true');
+    expect(triggers[1]?.attributes('aria-label')).toBe('Hide row 2 details');
+    expect(wrapper.findAll('.vf-data-table__expanded-row')).toHaveLength(1);
+    expect(wrapper.get('.row-details').text()).toBe('In a meeting');
+    expect(wrapper.get('.vf-data-table__expanded-cell').attributes('colspan')).toBe('3');
+    expect(triggers[1]?.attributes('aria-controls')).toBe(wrapper.get('.vf-data-table__expanded-row').attributes('id'));
+    expect(wrapper.findAll('.vf-data-table__data-row')[1]?.classes()).toContain('vf-data-table__data-row--striped');
+    expect(wrapper.get('.vf-data-table__expanded-row').classes()).toContain('vf-data-table__expanded-row--striped');
+
+    await triggers[0]?.trigger('click');
+
+    expect(wrapper.emitted('update:expandedRowKeys')).toEqual([[[2, 1]]]);
+    expect(wrapper.findAll('.vf-data-table__expanded-row')).toHaveLength(2);
+
+    const controlled = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Name' }],
+        rows: [{ id: 1, name: 'Alice' }],
+        rowKey: 'id',
+        expandedRowKeys: [1],
+      },
+      slots: {
+        'expanded-row': ({ row }: { row: object }) => (row as { name: string }).name,
+      },
+    });
+
+    await controlled.get('.vf-data-table__expansion-trigger').trigger('click');
+
+    expect(controlled.emitted('update:expandedRowKeys')).toEqual([[[]]]);
+    expect(controlled.find('.vf-data-table__expanded-row').exists()).toBe(true);
+
+    await controlled.setProps({ expandedRowKeys: [] });
+
+    expect(controlled.find('.vf-data-table__expanded-row').exists()).toBe(false);
   });
 
   it('renders an accessible data table error state and gives loading precedence', async () => {

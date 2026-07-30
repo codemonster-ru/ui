@@ -49,6 +49,8 @@ export interface VfDataTableLabels {
   nextPage: string;
   selectAllRows: string;
   selectRow: (rowIndex: number) => string;
+  expandRow: (rowIndex: number) => string;
+  collapseRow: (rowIndex: number) => string;
   sortAscending: (column: string) => string;
   sortDescending: (column: string) => string;
   clearSort: (column: string) => string;
