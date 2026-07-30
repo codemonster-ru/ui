@@ -26,6 +26,7 @@ interface VfDatePickerProps {
   min?: string;
   max?: string;
   multiple?: boolean;
+  range?: boolean;
   showTime?: boolean;
   minuteStep?: number;
   locale?: string | string[];
@@ -48,6 +49,7 @@ const props = withDefaults(defineProps<VfDatePickerProps>(), {
   min: undefined,
   max: undefined,
   multiple: false,
+  range: false,
   showTime: false,
   minuteStep: 1,
   locale: undefined,
@@ -76,6 +78,9 @@ interface CalendarDay {
   inCurrentMonth: boolean;
   isToday: boolean;
   isSelected: boolean;
+  isInRange: boolean;
+  isRangeStart: boolean;
+  isRangeEnd: boolean;
   disabled: boolean;
 }
 
@@ -95,7 +100,8 @@ const minuteSelectId = useId({ prefix: 'vf-date-picker-minute' });
 const disclosure = useDisclosure();
 const isOpen = disclosure.isOpen;
 const today = startOfDay(new Date());
-const initialDate = parseModelValues(props.modelValue, props.multiple)[0]?.date ?? today;
+const initialDate =
+  parseModelValues(props.modelValue, props.multiple || props.range)[0]?.date ?? today;
 const visibleMonth = ref(startOfMonth(initialDate));
 const focusedDate = ref(initialDate);
 const draftDate = ref(initialDate);
@@ -119,15 +125,30 @@ const resolvedLabels = computed<VfDatePickerLabels>(() => ({
   minute: 'Minute',
   ...props.labels,
 }));
-const selectedValues = computed(() => parseModelValues(props.modelValue, props.multiple));
+const isArrayMode = computed(() => props.multiple || props.range);
+const selectedValues = computed(() => {
+  const values = parseModelValues(props.modelValue, isArrayMode.value);
+  return props.range ? values.slice(0, 2) : values;
+});
 const selectedDate = computed(() => selectedValues.value[0]?.date ?? null);
 const formValues = computed(() =>
-  props.multiple
+  isArrayMode.value
     ? Array.isArray(props.modelValue)
       ? props.modelValue
       : []
     : [typeof props.modelValue === 'string' ? props.modelValue : ''],
 );
+const rangeBounds = computed(() => {
+  if (!props.range || selectedValues.value.length < 2) {
+    return null;
+  }
+
+  const [first, second] = selectedValues.value;
+
+  return first!.date <= second!.date
+    ? { start: first!.date, end: second!.date }
+    : { start: second!.date, end: first!.date };
+});
 const minDate = computed(() => parseBoundary(props.min, false));
 const maxDate = computed(() => parseBoundary(props.max, true));
 const normalizedMinuteStep = computed(() =>
@@ -171,7 +192,9 @@ const dateLabelFormatter = computed(
 );
 const displayValue = computed(() =>
   selectedValues.value.length > 0
-    ? selectedValues.value.map(({ date }) => formatDisplayDate(date)).join('; ')
+    ? selectedValues.value
+        .map(({ date }) => formatDisplayDate(date))
+        .join(props.range ? ' – ' : '; ')
     : props.placeholder ?? '',
 );
 const activeDate = computed(() =>
@@ -227,6 +250,15 @@ const calendarDays = computed<CalendarDay[]>(() => {
   return Array.from({ length: cellCount }, (_, index) => {
     const date = addDays(gridStart, index);
     const value = formatDate(date);
+    const rangeStart = rangeBounds.value?.start ?? selectedValues.value[0]?.date;
+    const rangeEnd = rangeBounds.value?.end;
+    const isRangeStart = Boolean(props.range && rangeStart && isSameDay(date, rangeStart));
+    const isRangeEnd = Boolean(props.range && rangeEnd && isSameDay(date, rangeEnd));
+    const isInRange = Boolean(
+      rangeBounds.value &&
+      date > startOfDay(rangeBounds.value.start) &&
+      date < startOfDay(rangeBounds.value.end),
+    );
 
     return {
       date,
@@ -234,11 +266,16 @@ const calendarDays = computed<CalendarDay[]>(() => {
       label: dateLabelFormatter.value.format(date),
       inCurrentMonth: date.getMonth() === monthStart.getMonth(),
       isToday: isSameDay(date, today),
-      isSelected: props.multiple
-        ? selectedValues.value.some((selected) => isSameDay(date, selected.date))
-        : activeDate.value
-          ? isSameDay(date, activeDate.value)
-          : false,
+      isSelected: props.range
+        ? isRangeStart || isRangeEnd
+        : props.multiple
+          ? selectedValues.value.some((selected) => isSameDay(date, selected.date))
+          : activeDate.value
+            ? isSameDay(date, activeDate.value)
+            : false,
+      isInRange,
+      isRangeStart,
+      isRangeEnd,
       disabled: isDateDisabled(date),
     };
   });
@@ -313,7 +350,7 @@ watch([hasValue, isOpen], ([value, open]) => {
 watch(
   () => props.modelValue,
   (value) => {
-    const date = parseModelValues(value, props.multiple)[0]?.date;
+    const date = parseModelValues(value, props.multiple || props.range)[0]?.date;
 
     if (date && !isOpen.value) {
       visibleMonth.value = startOfMonth(date);
@@ -594,6 +631,36 @@ function selectDate(day: CalendarDay) {
   focusedDate.value = day.date;
   visibleMonth.value = startOfMonth(day.date);
 
+  if (props.range) {
+    draftDate.value = day.date;
+
+    if (props.showTime) {
+      ensureDraftTime();
+    }
+
+    const value = props.showTime
+      ? formatDateTime(toDateTime(draftDate.value, draftHour.value, draftMinute.value))
+      : day.value;
+
+    if (selectedValues.value.length !== 1) {
+      emit('update:modelValue', [value]);
+      return;
+    }
+
+    const nextRange = [
+      selectedValues.value[0]!,
+      { value, date: parseModelValue(value) ?? day.date },
+    ].sort((left, right) => left.date.getTime() - right.date.getTime());
+
+    emit('update:modelValue', nextRange.map((selected) => selected.value));
+
+    if (!props.showTime) {
+      closeCalendar();
+    }
+
+    return;
+  }
+
   if (props.multiple) {
     const remainingValues = selectedValues.value
       .filter((selected) => !isSameDay(selected.date, day.date))
@@ -650,7 +717,7 @@ function emitDraftDateTime() {
 
   const formattedValue = formatDateTime(value);
 
-  if (!props.multiple) {
+  if (!isArrayMode.value) {
     emit('update:modelValue', formattedValue);
     return;
   }
@@ -679,7 +746,7 @@ function clearValue(event: MouseEvent) {
     return;
   }
 
-  emit('update:modelValue', props.multiple ? [] : '');
+  emit('update:modelValue', isArrayMode.value ? [] : '');
   closeCalendar();
 }
 
@@ -883,6 +950,9 @@ useEscapeKey(
                   :class="{
                     'vf-date-picker__day--outside': !day.inCurrentMonth,
                     'vf-date-picker__day--today': day.isToday,
+                    'vf-date-picker__day--in-range': day.isInRange,
+                    'vf-date-picker__day--range-start': day.isRangeStart,
+                    'vf-date-picker__day--range-end': day.isRangeEnd,
                     'vf-date-picker__day--selected': day.isSelected,
                   }"
                   role="gridcell"

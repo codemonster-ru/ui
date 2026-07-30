@@ -194,6 +194,8 @@
 }
 
 .vf-date-picker__calendar {
+  --vf-date-picker-day-gap: calc(var(--vf-surface-gap-compact) / 4);
+
   width: min(20rem, calc(100vw - var(--vf-overlay-viewport-padding) * 2));
   max-height: none;
   gap: var(--vf-surface-gap-compact);
@@ -228,11 +230,13 @@
 .vf-date-picker__week {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
+  column-gap: var(--vf-date-picker-day-gap);
   justify-items: center;
 }
 
 .vf-date-picker__days {
   display: grid;
+  row-gap: var(--vf-date-picker-day-gap);
 }
 
 .vf-date-picker__weekdays {
@@ -284,6 +288,61 @@
 
 .vf-date-picker__day--today {
   border-color: var(--vf-color-border-interactive);
+}
+
+.vf-date-picker__day--in-range,
+.vf-date-picker__day--range-start,
+.vf-date-picker__day--range-end {
+  position: relative;
+  width: 100%;
+}
+
+.vf-date-picker__day--in-range {
+  border-radius: 0;
+  background: var(--vf-selectable-hover-background);
+  color: var(--vf-selectable-hover-color);
+}
+
+.vf-date-picker__day--range-start {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.vf-date-picker__day--range-end {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+.vf-date-picker__day--range-start.vf-date-picker__day--range-end {
+  border-radius: var(--vf-radius-control-tight);
+}
+
+.vf-date-picker__day--in-range::before,
+.vf-date-picker__day--in-range::after,
+.vf-date-picker__day--range-start::after,
+.vf-date-picker__day--range-end::before {
+  position: absolute;
+  inset-block: calc(var(--vf-border-width) * -1);
+  width: var(--vf-date-picker-day-gap);
+  background: var(--vf-selectable-hover-background);
+  content: '';
+}
+
+.vf-date-picker__day--in-range::before,
+.vf-date-picker__day--range-end::before {
+  inset-inline-end: 100%;
+}
+
+.vf-date-picker__day--in-range::after,
+.vf-date-picker__day--range-start::after {
+  inset-inline-start: 100%;
+}
+
+.vf-date-picker__week > :first-child::before,
+.vf-date-picker__week > :last-child::after,
+.vf-date-picker__day--range-start.vf-date-picker__day--range-end::before,
+.vf-date-picker__day--range-start.vf-date-picker__day--range-end::after {
+  display: none;
 }
 
 .vf-date-picker__day--selected,

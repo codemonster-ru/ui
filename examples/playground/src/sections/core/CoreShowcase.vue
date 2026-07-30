@@ -74,6 +74,7 @@ const formStackPlanValue = ref('');
 const datePickerValue = ref('2026-07-30');
 const dateTimePickerValue = ref('2026-07-30T14:30');
 const multipleDatePickerValue = ref(['2026-07-15', '2026-07-30']);
+const rangeDatePickerValue = ref(['2026-08-10', '2026-08-20']);
 const constrainedDatePickerValue = ref('2026-08-12');
 const dynamicProgressValue = ref(0);
 const navMenuDefaultValue = ref('installation');
@@ -1993,6 +1994,24 @@ const tabContent = computed<Record<string, string>>(() => ({
                       </template>
                     </VfField>
                     <p class="demo-text">Model: <code>{{ JSON.stringify(multipleDatePickerValue) }}</code></p>
+                  </div>
+
+                  <div class="demo-component-matrix__cell">
+                    <p class="demo-component-matrix__label">Range</p>
+                    <VfField label="Booking period">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfDatePicker
+                          :id="controlId"
+                          v-model="rangeDatePickerValue"
+                          range
+                          locale="en-US"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                        />
+                      </template>
+                    </VfField>
+                    <p class="demo-text">Model: <code>{{ JSON.stringify(rangeDatePickerValue) }}</code></p>
                   </div>
 
                   <div class="demo-component-matrix__cell">
