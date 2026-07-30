@@ -22,12 +22,14 @@ defineOptions({
 });
 
 interface VfDatePickerProps {
-  modelValue?: string;
+  modelValue?: string | string[];
   min?: string;
   max?: string;
+  multiple?: boolean;
   showTime?: boolean;
   minuteStep?: number;
   locale?: string | string[];
+  displayFormat?: string;
   firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   size?: VfControlSize;
   invalid?: boolean;
@@ -45,9 +47,11 @@ const props = withDefaults(defineProps<VfDatePickerProps>(), {
   modelValue: '',
   min: undefined,
   max: undefined,
+  multiple: false,
   showTime: false,
   minuteStep: 1,
   locale: undefined,
+  displayFormat: undefined,
   firstDayOfWeek: 1,
   size: 'md',
   invalid: false,
@@ -62,7 +66,7 @@ const props = withDefaults(defineProps<VfDatePickerProps>(), {
 });
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string];
+  'update:modelValue': [value: string | string[]];
 }>();
 
 interface CalendarDay {
@@ -73,6 +77,11 @@ interface CalendarDay {
   isToday: boolean;
   isSelected: boolean;
   disabled: boolean;
+}
+
+interface SelectedValue {
+  value: string;
+  date: Date;
 }
 
 const attrs = useAttrs();
@@ -86,7 +95,7 @@ const minuteSelectId = useId({ prefix: 'vf-date-picker-minute' });
 const disclosure = useDisclosure();
 const isOpen = disclosure.isOpen;
 const today = startOfDay(new Date());
-const initialDate = parseModelValue(props.modelValue) ?? today;
+const initialDate = parseModelValues(props.modelValue, props.multiple)[0]?.date ?? today;
 const visibleMonth = ref(startOfMonth(initialDate));
 const focusedDate = ref(initialDate);
 const draftDate = ref(initialDate);
@@ -110,7 +119,15 @@ const resolvedLabels = computed<VfDatePickerLabels>(() => ({
   minute: 'Minute',
   ...props.labels,
 }));
-const selectedDate = computed(() => parseModelValue(props.modelValue));
+const selectedValues = computed(() => parseModelValues(props.modelValue, props.multiple));
+const selectedDate = computed(() => selectedValues.value[0]?.date ?? null);
+const formValues = computed(() =>
+  props.multiple
+    ? Array.isArray(props.modelValue)
+      ? props.modelValue
+      : []
+    : [typeof props.modelValue === 'string' ? props.modelValue : ''],
+);
 const minDate = computed(() => parseBoundary(props.min, false));
 const maxDate = computed(() => parseBoundary(props.max, true));
 const normalizedMinuteStep = computed(() =>
@@ -137,9 +154,9 @@ const triggerAttrs = computed(() =>
 const dateFormatter = computed(
   () =>
     new Intl.DateTimeFormat(props.locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
       ...(props.showTime ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' as const } : {}),
     }),
 );
@@ -153,7 +170,9 @@ const dateLabelFormatter = computed(
   () => new Intl.DateTimeFormat(props.locale, { dateStyle: 'full' }),
 );
 const displayValue = computed(() =>
-  selectedDate.value ? dateFormatter.value.format(selectedDate.value) : props.placeholder ?? '',
+  selectedValues.value.length > 0
+    ? selectedValues.value.map(({ date }) => formatDisplayDate(date)).join('; ')
+    : props.placeholder ?? '',
 );
 const activeDate = computed(() =>
   props.showTime && isOpen.value ? draftDate.value : selectedDate.value,
@@ -215,7 +234,11 @@ const calendarDays = computed<CalendarDay[]>(() => {
       label: dateLabelFormatter.value.format(date),
       inCurrentMonth: date.getMonth() === monthStart.getMonth(),
       isToday: isSameDay(date, today),
-      isSelected: activeDate.value ? isSameDay(date, activeDate.value) : false,
+      isSelected: props.multiple
+        ? selectedValues.value.some((selected) => isSameDay(date, selected.date))
+        : activeDate.value
+          ? isSameDay(date, activeDate.value)
+          : false,
       disabled: isDateDisabled(date),
     };
   });
@@ -290,15 +313,12 @@ watch([hasValue, isOpen], ([value, open]) => {
 watch(
   () => props.modelValue,
   (value) => {
-    const date = parseModelValue(value);
+    const date = parseModelValues(value, props.multiple)[0]?.date;
 
-    if (date) {
+    if (date && !isOpen.value) {
       visibleMonth.value = startOfMonth(date);
       focusedDate.value = date;
-
-      if (!isOpen.value) {
-        syncDraft(date);
-      }
+      syncDraft(date);
     }
   },
 );
@@ -342,6 +362,24 @@ function parseModelValue(value?: string): Date | null {
   return parseDateTime(value) ?? parseDate(value);
 }
 
+function parseModelValues(
+  value: string | string[] | undefined,
+  multiple: boolean,
+): SelectedValue[] {
+  const values = multiple
+    ? Array.isArray(value)
+      ? value
+      : []
+    : typeof value === 'string'
+      ? [value]
+      : [];
+
+  return values.flatMap((item) => {
+    const date = parseModelValue(item);
+    return date ? [{ value: item, date }] : [];
+  });
+}
+
 function parseBoundary(value: string | undefined, endForDateOnly: boolean): Date | null {
   const dateTime = parseDateTime(value);
 
@@ -369,6 +407,30 @@ function formatDateTime(date: Date): string {
   const hour = String(date.getHours()).padStart(2, '0');
   const minute = String(date.getMinutes()).padStart(2, '0');
   return `${formatDate(date)}T${hour}:${minute}`;
+}
+
+function formatDisplayDate(date: Date): string {
+  if (!props.displayFormat) {
+    return dateFormatter.value.format(date);
+  }
+
+  const tokens: Record<string, string> = {
+    yyyy: String(date.getFullYear()).padStart(4, '0'),
+    yy: String(date.getFullYear()).slice(-2),
+    MM: String(date.getMonth() + 1).padStart(2, '0'),
+    M: String(date.getMonth() + 1),
+    dd: String(date.getDate()).padStart(2, '0'),
+    d: String(date.getDate()),
+    HH: String(date.getHours()).padStart(2, '0'),
+    H: String(date.getHours()),
+    mm: String(date.getMinutes()).padStart(2, '0'),
+    m: String(date.getMinutes()),
+  };
+
+  return props.displayFormat.replace(
+    /yyyy|yy|MM|M|dd|d|HH|H|mm|m/g,
+    (token) => tokens[token] ?? token,
+  );
 }
 
 function startOfDay(date: Date): Date {
@@ -529,10 +591,36 @@ function selectDate(day: CalendarDay) {
     return;
   }
 
+  focusedDate.value = day.date;
+  visibleMonth.value = startOfMonth(day.date);
+
+  if (props.multiple) {
+    const remainingValues = selectedValues.value
+      .filter((selected) => !isSameDay(selected.date, day.date))
+      .map((selected) => selected.value);
+
+    if (remainingValues.length < selectedValues.value.length) {
+      emit('update:modelValue', remainingValues);
+      return;
+    }
+
+    draftDate.value = day.date;
+
+    if (props.showTime) {
+      ensureDraftTime();
+    }
+
+    emit('update:modelValue', [
+      ...remainingValues,
+      props.showTime
+        ? formatDateTime(toDateTime(draftDate.value, draftHour.value, draftMinute.value))
+        : day.value,
+    ]);
+    return;
+  }
+
   if (props.showTime) {
     draftDate.value = day.date;
-    focusedDate.value = day.date;
-    visibleMonth.value = startOfMonth(day.date);
     ensureDraftTime();
     emitDraftDateTime();
     return;
@@ -560,7 +648,27 @@ function emitDraftDateTime() {
     return;
   }
 
-  emit('update:modelValue', formatDateTime(value));
+  const formattedValue = formatDateTime(value);
+
+  if (!props.multiple) {
+    emit('update:modelValue', formattedValue);
+    return;
+  }
+
+  const activeIndex = selectedValues.value.findIndex((selected) =>
+    isSameDay(selected.date, draftDate.value),
+  );
+
+  if (activeIndex === -1) {
+    return;
+  }
+
+  emit(
+    'update:modelValue',
+    selectedValues.value.map((selected, index) =>
+      index === activeIndex ? formattedValue : selected.value,
+    ),
+  );
 }
 
 function clearValue(event: MouseEvent) {
@@ -571,7 +679,7 @@ function clearValue(event: MouseEvent) {
     return;
   }
 
-  emit('update:modelValue', '');
+  emit('update:modelValue', props.multiple ? [] : '');
   closeCalendar();
 }
 
@@ -671,13 +779,16 @@ useEscapeKey(
 
 <template>
   <div :class="[wrapperClasses, externalClass]" :style="externalStyle">
-    <input
-      v-if="typeof attrs.name === 'string'"
-      type="hidden"
-      :name="attrs.name"
-      :value="props.modelValue"
-      :disabled="props.disabled"
-    />
+    <template v-if="typeof attrs.name === 'string'">
+      <input
+        v-for="(value, index) in formValues"
+        :key="`${value}-${index}`"
+        type="hidden"
+        :name="attrs.name"
+        :value="value"
+        :disabled="props.disabled"
+      />
+    </template>
 
     <button
       :id="typeof attrs.id === 'string' ? attrs.id : triggerId"
