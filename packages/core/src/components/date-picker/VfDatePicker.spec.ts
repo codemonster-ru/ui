@@ -39,6 +39,115 @@ describe('VfDatePicker', () => {
     expect(wrapper.get('input[type="hidden"]').attributes('value')).toBe('2026-07-30T14:05');
   });
 
+  it('selects a month and preserves the YYYY-MM model value', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: '2026-07',
+        monthPicker: true,
+        locale: 'en-US',
+        showTime: true,
+        disableTeleport: true,
+      },
+      attrs: {
+        name: 'billingMonth',
+      },
+    });
+
+    expect(wrapper.get('.vf-date-picker__value').text()).toBe('07/26');
+    expect(wrapper.get('input[type="hidden"]').attributes('value')).toBe('2026-07');
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('.vf-date-picker__month').text()).toBe('2026');
+    expect(wrapper.findAll('.vf-date-picker__month-option')).toHaveLength(12);
+    expect(wrapper.get('[data-month="2026-07"]').attributes('aria-selected')).toBe('true');
+    expect(wrapper.find('.vf-date-picker__time').exists()).toBe(false);
+
+    await wrapper.get('[data-month="2026-09"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([['2026-09']]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(false);
+  });
+
+  it('applies month constraints and navigates between years', async () => {
+    const wrapper = mount(VfDatePicker, {
+      attachTo: document.body,
+      props: {
+        modelValue: '2026-07',
+        monthPicker: true,
+        min: '2026-04',
+        max: '2027-02',
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('[data-month="2026-03"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-month="2026-04"]').attributes('disabled')).toBeUndefined();
+    expect(wrapper.get('[aria-label="Previous year"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[aria-label="Next year"]').attributes('disabled')).toBeUndefined();
+
+    const selectedMonth = wrapper.get<HTMLElement>('[data-month="2026-07"]');
+    selectedMonth.element.focus();
+    await selectedMonth.trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+
+    expect(document.activeElement).toBe(wrapper.get('[data-month="2026-08"]').element);
+
+    await wrapper.get('[aria-label="Next year"]').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('.vf-date-picker__month').text()).toBe('2027');
+    expect(document.activeElement).toBe(wrapper.get('[data-month="2027-02"]').element);
+    expect(wrapper.get('[data-month="2027-03"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[aria-label="Next year"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('supports multiple month selection', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2026-05', '2026-07'],
+        monthPicker: true,
+        multiple: true,
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+    await wrapper.get('[data-month="2026-05"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-07']]]);
+    expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
+  });
+
+  it('selects and renders a month range', async () => {
+    const wrapper = mount(VfDatePicker, {
+      props: {
+        modelValue: ['2026-04', '2026-08'],
+        monthPicker: true,
+        range: true,
+        disableTeleport: true,
+      },
+    });
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('[data-month="2026-04"]').classes()).toContain('vf-date-picker__day--range-start');
+    expect(wrapper.get('[data-month="2026-06"]').classes()).toContain('vf-date-picker__day--in-range');
+    expect(wrapper.get('[data-month="2026-08"]').classes()).toContain('vf-date-picker__day--range-end');
+
+    await wrapper.get('[data-month="2026-04"]').trigger('click');
+    await wrapper.setProps({ modelValue: ['2026-04'] });
+    await wrapper.get('[data-month="2026-02"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-04']], [['2026-02', '2026-04']]]);
+  });
+
   it('opens the selected month and emits an ISO date when a day is selected', async () => {
     const wrapper = mount(VfDatePicker, {
       props: {
@@ -176,10 +285,7 @@ describe('VfDatePicker', () => {
     await wrapper.setProps({ modelValue: ['2026-07-15'] });
     await wrapper.get('[data-date="2026-07-30"]').trigger('click');
 
-    expect(wrapper.emitted('update:modelValue')).toEqual([
-      [['2026-07-15']],
-      [['2026-07-15', '2026-07-30']],
-    ]);
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-07-15']], [['2026-07-15', '2026-07-30']]]);
   });
 
   it('clears multiple dates as an empty array', async () => {
@@ -218,15 +324,9 @@ describe('VfDatePicker', () => {
     await wrapper.get('.vf-date-picker').trigger('click');
     await nextTick();
 
-    expect(wrapper.get('[data-date="2026-07-15"]').classes()).toContain(
-      'vf-date-picker__day--range-start',
-    );
-    expect(wrapper.get('[data-date="2026-07-20"]').classes()).toContain(
-      'vf-date-picker__day--range-end',
-    );
-    expect(wrapper.get('[data-date="2026-07-16"]').classes()).toContain(
-      'vf-date-picker__day--in-range',
-    );
+    expect(wrapper.get('[data-date="2026-07-15"]').classes()).toContain('vf-date-picker__day--range-start');
+    expect(wrapper.get('[data-date="2026-07-20"]').classes()).toContain('vf-date-picker__day--range-end');
+    expect(wrapper.get('[data-date="2026-07-16"]').classes()).toContain('vf-date-picker__day--in-range');
     expect(wrapper.get('[data-date="2026-07-16"]').attributes('aria-selected')).toBe('false');
   });
 
@@ -249,10 +349,7 @@ describe('VfDatePicker', () => {
     await wrapper.setProps({ modelValue: ['2026-07-20'] });
     await wrapper.get('[data-date="2026-07-15"]').trigger('click');
 
-    expect(wrapper.emitted('update:modelValue')).toEqual([
-      [['2026-07-20']],
-      [['2026-07-15', '2026-07-20']],
-    ]);
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-07-20']], [['2026-07-15', '2026-07-20']]]);
     expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(false);
   });
 
@@ -304,9 +401,7 @@ describe('VfDatePicker', () => {
     const [hourSelect] = wrapper.findAllComponents(VfSelect);
     await hourSelect!.setValue('16');
 
-    expect(wrapper.emitted('update:modelValue')).toEqual([
-      [['2026-07-15T16:20', '2026-07-20T10:00']],
-    ]);
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['2026-07-15T16:20', '2026-07-20T10:00']]]);
     expect(wrapper.find('.vf-date-picker__calendar').exists()).toBe(true);
   });
 
@@ -324,8 +419,9 @@ describe('VfDatePicker', () => {
     await wrapper.get('[aria-label="Hour"]').trigger('click');
     await nextTick();
 
-    const hourOption = Array.from(document.body.querySelectorAll<HTMLElement>('[role="option"]'))
-      .find((option) => option.textContent?.trim() === '16');
+    const hourOption = Array.from(document.body.querySelectorAll<HTMLElement>('[role="option"]')).find(
+      (option) => option.textContent?.trim() === '16',
+    );
 
     expect(hourOption).toBeDefined();
     expect(document.body.contains(hourOption ?? null)).toBe(true);
