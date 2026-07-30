@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { defineComponent, nextTick } from 'vue';
 import { describe, expect, it } from 'vitest';
+import VfField from '@/components/field/VfField.vue';
 import VfSelect from '@/components/select/VfSelect.vue';
 import VfDatePicker from './VfDatePicker.vue';
 
@@ -37,6 +38,48 @@ describe('VfDatePicker', () => {
 
     expect(wrapper.get('.vf-date-picker__value').text()).toBe('2026/07/30 14:05');
     expect(wrapper.get('input[type="hidden"]').attributes('value')).toBe('2026-07-30T14:05');
+  });
+
+  it('integrates with floating field labels and suppresses the empty placeholder', async () => {
+    const wrapper = mount(
+      defineComponent({
+        components: {
+          VfDatePicker,
+          VfField,
+        },
+        data() {
+          return {
+            value: '',
+          };
+        },
+        template: `
+          <VfField label="Release date" label-placement="floating">
+            <template #default="{ controlId, describedBy, invalid }">
+              <VfDatePicker
+                :id="controlId"
+                v-model="value"
+                placeholder="Choose a date"
+                :invalid="invalid"
+                :aria-describedby="describedBy"
+                disable-teleport
+              />
+            </template>
+          </VfField>
+        `,
+      }),
+    );
+
+    await nextTick();
+
+    expect(wrapper.get('.vf-field').classes()).toContain('vf-field--floating');
+    expect(wrapper.get('.vf-date-picker').classes()).toContain('vf-date-picker--floating');
+    expect(wrapper.get('.vf-date-picker__value').text()).toBe('');
+    expect(wrapper.get('.vf-field__control').classes()).not.toContain('vf-field__control--filled');
+
+    await wrapper.get('.vf-date-picker').trigger('click');
+    await nextTick();
+
+    expect(wrapper.get('.vf-field__control').classes()).toContain('vf-field__control--filled');
   });
 
   it('selects a month and preserves the YYYY-MM model value', async () => {
