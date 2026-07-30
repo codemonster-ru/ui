@@ -72,6 +72,11 @@ const formStackNameValue = ref('');
 const formStackEmailValue = ref('');
 const formStackPlanValue = ref('');
 const datePickerValue = ref('2026-07-30');
+const floatingDatePickerValues = ref<Record<'in' | 'on' | 'over', string>>({
+  in: '',
+  on: '',
+  over: '',
+});
 const dateTimePickerValue = ref('2026-07-30T14:30');
 const multipleDatePickerValue = ref(['2026-07-15', '2026-07-30']);
 const rangeDatePickerValue = ref(['2026-08-10', '2026-08-20']);
@@ -2063,6 +2068,30 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </VfField>
                     <p class="demo-text">
                       Model: <code>{{ yearPickerValue || 'empty' }}</code>
+                    </p>
+                  </div>
+
+                  <div
+                    v-for="variant in formGeometryFloatingVariants"
+                    :key="`date-picker-floating-${variant}`"
+                    class="demo-component-matrix__cell"
+                  >
+                    <p class="demo-component-matrix__label">Floating {{ variant }}</p>
+                    <VfField label="Release date" label-placement="floating" :floating-variant="variant">
+                      <template #default="{ controlId, describedBy, invalid }">
+                        <VfDatePicker
+                          :id="controlId"
+                          v-model="floatingDatePickerValues[variant]"
+                          locale="en-US"
+                          clearable
+                          :invalid="invalid"
+                          :aria-describedby="describedBy"
+                          placeholder="Choose a date"
+                        />
+                      </template>
+                    </VfField>
+                    <p class="demo-text">
+                      Model: <code>{{ floatingDatePickerValues[variant] || 'empty' }}</code>
                     </p>
                   </div>
 

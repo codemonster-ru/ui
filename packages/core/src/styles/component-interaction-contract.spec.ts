@@ -39,6 +39,7 @@ describe('component interaction contract', () => {
     expect(triggerRule).toContain('max-width: 100%;');
     expect(valueRule).toContain('flex: 1 1 auto;');
     expect(valueRule).toContain('text-overflow: ellipsis;');
+    expect(css).toContain(".vf-date-picker__value:empty::before {\n  content: '\\00a0';");
 
     const dayRule = extractRule(css, '.vf-date-picker__day');
     const weekRule = extractRule(css, '.vf-date-picker__week');
@@ -92,8 +93,18 @@ describe('component interaction contract', () => {
 
     const clearRule = extractRule(css, '.vf-date-picker-wrap__clear');
     const calendarIconRule = extractRule(css, '.vf-date-picker--with-clear .vf-date-picker__icon');
+    const iconRule = extractRule(css, '.vf-date-picker__icon');
+    const floatingIconRule = extractRule(css, '.vf-date-picker--floating .vf-date-picker__icon');
     expect(clearRule).toContain('inset-inline-end: var(--vf-field-adornment-offset-md);');
     expect(calendarIconRule).toContain('inset-inline-end: var(--vf-field-trailing-before-clear-offset-md);');
+    expect(iconRule).toContain('align-items: center;');
+    expect(iconRule).toContain('justify-content: center;');
+    expect(iconRule).toContain('width: var(--vf-field-icon-size);');
+    expect(iconRule).toContain('height: var(--vf-field-icon-size);');
+    expect(iconRule).toContain('line-height: 1;');
+    expect(floatingIconRule).toContain('position: absolute;');
+    expect(floatingIconRule).toContain('inset-block-start: 50%;');
+    expect(floatingIconRule).toContain('transform: translateY(-50%);');
   });
 
   it('does not duplicate pinned boundaries when data table column dividers are enabled', () => {
