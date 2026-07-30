@@ -595,6 +595,7 @@ describe('core primitives', () => {
   it('localizes all built-in data table labels while preserving legacy text overrides', async () => {
     const labels: VfDataTableLabels = {
       empty: 'Нет данных',
+      error: 'Не удалось загрузить данные',
       loading: 'Загрузка…',
       pagination: 'Пагинация таблицы',
       paginationSummary: (firstRow, lastRow, totalRows) =>
@@ -676,6 +677,45 @@ describe('core primitives', () => {
 
     expect(stateWrapper.find('.vf-data-table__state-cell').text()).toBe('Старое пустое состояние');
     expect(stateWrapper.find('.vf-data-table__loading-mask').attributes('aria-label')).toBe('Старая загрузка');
+  });
+
+  it('renders an accessible data table error state and gives loading precedence', async () => {
+    const wrapper = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Name' }],
+        rows: [{ name: 'Alice' }],
+        error: true,
+      },
+      slots: {
+        error: '<button class="retry">Try again</button>',
+      },
+    });
+
+    expect(wrapper.find('.vf-data-table__error').attributes('role')).toBe('alert');
+    expect(wrapper.find('.vf-data-table__error .retry').text()).toBe('Try again');
+    expect(wrapper.findAll('tbody tr')).toHaveLength(1);
+    expect(wrapper.find('tbody').text()).not.toContain('Alice');
+
+    await wrapper.setProps({
+      loading: true,
+      loadingVariant: 'skeleton',
+      loadingRows: 2,
+    });
+
+    expect(wrapper.find('.vf-data-table__error').exists()).toBe(false);
+    expect(wrapper.findAll('.vf-data-table__skeleton-row')).toHaveLength(2);
+
+    const localized = mount(VfDataTable, {
+      props: {
+        columns: [{ key: 'name', header: 'Name' }],
+        error: true,
+        labels: {
+          error: 'Не удалось загрузить данные',
+        },
+      },
+    });
+
+    expect(localized.find('.vf-data-table__error').text()).toBe('Не удалось загрузить данные');
   });
 
   it('renders only externally controlled visible data table columns', async () => {

@@ -740,6 +740,7 @@ const componentThemePresetSource = {
     dataTableSkeletonCellMaxInlineSize: '12rem',
     dataTableLoadingSpinnerSize: 'var(--vf-progress-spinner-size)',
     dataTableStateColor: 'var(--vf-color-text-secondary)',
+    dataTableErrorColor: 'var(--vf-color-status-danger-subtle-foreground)',
     dataTablePaginationColor: 'var(--vf-color-text-secondary)',
     dataTablePaginationPageColor: 'var(--vf-color-text-primary)',
     dataTableColumnResizerColor: 'var(--vf-color-interactive-primary-border)',

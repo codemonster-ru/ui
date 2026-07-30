@@ -173,6 +173,10 @@
   text-align: center;
 }
 
+.vf-data-table__error {
+  color: var(--vf-data-table-error-color);
+}
+
 .vf-data-table__loading {
   display: inline-flex;
   gap: var(--vf-surface-gap-compact);

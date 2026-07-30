@@ -18,6 +18,7 @@ Selection controls reuse the `VfCheckbox` token namespace.
 | `tableFootColor`               | Footer text color.                             |
 | `tableStripeBackground`        | Alternating row background.                    |
 | `dataTableStateColor`          | Empty and loading state text color.            |
+| `dataTableErrorColor`          | Error state text color.                        |
 | `dataTablePaginationColor`     | Pagination metadata color.                     |
 | `dataTablePaginationPageColor` | Current page color.                            |
 | `dataTableColumnResizerColor`  | Resize and reorder interaction color.          |

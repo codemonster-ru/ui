@@ -24,6 +24,7 @@ Public component contract: props, events, slots, and related types.
 | `columnWidths?`           | `VfDataTableColumnWidths`                      | —              | Controlled column widths keyed by column key.                                           |
 | `defaultColumnWidths?`    | `VfDataTableColumnWidths`                      | `{}`           | Initial column widths for uncontrolled resizing.                                        |
 | `resizableColumns?`       | `boolean`                                      | `false`        | Adds pointer and keyboard resize handles to resizable columns.                          |
+| `error?`                  | `boolean`                                      | `false`        | Replaces body rows with the error state when loading is inactive.                       |
 | `loading?`                | `boolean`                                      | `false`        | Renders the loading state.                                                              |
 | `loadingVariant?`         | `'mask' \| 'skeleton'`                         | `'mask'`       | Loading presentation.                                                                   |
 | `loadingRows?`            | `number`                                       | `3`            | Number of skeleton rows when `loadingVariant` is `skeleton`.                            |
@@ -64,6 +65,7 @@ Public component contract: props, events, slots, and related types.
 | `header-{key}` | `{ column }`                       | `void`     | Custom column header content.     |
 | `cell-{key}`   | `{ row, column, value, rowIndex }` | `void`     | Custom cell content for a column. |
 | `empty`        | `—`                                | `void`     | Empty state content.              |
+| `error`        | `—`                                | `void`     | Error state content and retry UI. |
 | `loading`      | `—`                                | `void`     | Loading state content.            |
 | `footer`       | `—`                                | `void`     | Table footer rows.                |
 
@@ -93,6 +95,7 @@ The `labels` prop accepts a partial object. Omitted fields keep their English de
 | Name                        | Type                                        | Default                                    |
 | --------------------------- | ------------------------------------------- | ------------------------------------------ |
 | `empty`                     | `string`                                    | `'No data'`                                |
+| `error`                     | `string`                                    | `'Failed to load data'`                    |
 | `loading`                   | `string`                                    | `'Loading...'`                             |
 | `pagination`                | `string`                                    | `'Table pagination'`                       |
 | `paginationSummary`         | `(firstRow, lastRow, totalRows) => string`  | `'1-10 of 42'` or `'0 rows'`               |
