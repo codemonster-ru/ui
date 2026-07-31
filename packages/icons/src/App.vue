@@ -13,21 +13,13 @@
         </button>
       </nav>
 
-      <section v-if="view === 'reference' || view === 'batch2'" class="reference-review">
+      <section v-if="view === 'reference' || view === 'batch2' || view === 'batch3'" class="reference-review">
         <header class="section-heading">
           <div>
-            <p class="eyebrow">
-              {{ view === 'batch2' ? 'Migration batch 2 · approved' : 'Approved reference review' }}
-            </p>
+            <p class="eyebrow">{{ activeReviewCopy.eyebrow }}</p>
             <h2>Old, new, and overlay</h2>
           </div>
-          <p>
-            {{
-              view === 'batch2'
-                ? 'Eight directional icons approved by the project owner.'
-                : 'Icons render at their stated production size. The emphasized row is 20 px.'
-            }}
-          </p>
+          <p>{{ activeReviewCopy.note }}</p>
         </header>
 
         <article v-for="item in referenceReview" :key="item.icon" class="reference-card">
@@ -429,11 +421,13 @@ import VueIconify from './lib/components/icon.vue';
 import auditJson from './lib/iconAudit.json';
 import migrationBatch02BeforeJson from './lib/iconMigrationBatch02Before.json';
 import migrationBatch02Json from './lib/iconMigrationBatch02.json';
+import migrationBatch03BeforeJson from './lib/iconMigrationBatch03Before.json';
+import migrationBatch03Json from './lib/iconMigrationBatch03.json';
 import beforeIconsJson from './lib/iconReferenceBefore.json';
 import referenceSetJson from './lib/iconReferenceSet.json';
 import type { IconName } from './lib/iconMeta';
 
-type View = 'reference' | 'batch2' | 'stroke' | 'ui' | 'families' | 'mass' | 'blind' | 'catalog';
+type View = 'reference' | 'batch2' | 'batch3' | 'stroke' | 'ui' | 'families' | 'mass' | 'blind' | 'catalog';
 type Vote = 'a' | 'b' | 'equal' | 'redraw';
 type Votes = Partial<Record<IconName, Vote>>;
 type BlindItem = { icon: IconName; oldIsA: boolean };
@@ -442,6 +436,8 @@ const audit = auditJson;
 const beforeIcons = beforeIconsJson as Partial<Record<IconName, string>>;
 const migrationBatch02Before = migrationBatch02BeforeJson as Partial<Record<IconName, string>>;
 const migrationBatch02 = migrationBatch02Json as IconName[];
+const migrationBatch03Before = migrationBatch03BeforeJson as Partial<Record<IconName, string>>;
+const migrationBatch03 = migrationBatch03Json as IconName[];
 const referenceSet = referenceSetJson as IconName[];
 const sizes = [16, 20, 24, 32] as const;
 const strokeSizes = [16, 20, 24] as const;
@@ -458,6 +454,7 @@ const revisedIcons: IconName[] = ['users'];
 const viewOptions: Array<{ id: View; label: string }> = [
   { id: 'reference', label: 'Reference review' },
   { id: 'batch2', label: 'Batch 2 review' },
+  { id: 'batch3', label: 'Batch 3 review' },
   { id: 'stroke', label: 'Stroke 1.75 / 1.8 / 2' },
   { id: 'ui', label: 'SaaS contexts' },
   { id: 'families', label: 'Families' },
@@ -479,6 +476,7 @@ const refinementIcons = new Set<IconName>([
   'xmark',
   'plus',
   'magnifyingGlass',
+  'minus',
 ]);
 const reviewFamilyByIcon: Partial<Record<IconName, string>> = {
   arrowLeft: 'Directional',
@@ -519,6 +517,13 @@ const reviewFamilyByIcon: Partial<Record<IconName, string>> = {
   trash: 'Editing',
   bell: 'Communication',
   magnifyingGlass: 'Search',
+  minus: 'System symbols',
+  userPlus: 'People',
+  userMinus: 'People',
+  userCheck: 'People',
+  unlock: 'Infrastructure',
+  fileText: 'Content',
+  folderOpen: 'Content',
 };
 
 const family = (name: string, icons: IconName[]) => ({ name, icons });
@@ -554,8 +559,35 @@ const voteChoices: Array<{ id: Vote; label: string }> = [
   { id: 'redraw', label: 'Both need work' },
 ];
 
-const activeReviewSet = computed(() => (view.value === 'batch2' ? migrationBatch02 : referenceSet));
-const activeBeforeIcons = computed(() => (view.value === 'batch2' ? migrationBatch02Before : beforeIcons));
+const activeReviewCopy = computed(() => {
+  if (view.value === 'batch2') {
+    return {
+      eyebrow: 'Migration batch 2 · approved',
+      note: 'Eight directional icons approved by the project owner.',
+    };
+  }
+  if (view.value === 'batch3') {
+    return {
+      eyebrow: 'Migration batch 3 · approved',
+      note: 'Seven derived-family icons approved by the project owner.',
+    };
+  }
+  return {
+    eyebrow: 'Approved reference review',
+    note: 'Icons render at their stated production size. The emphasized row is 20 px.',
+  };
+});
+
+const activeReviewSet = computed(() => {
+  if (view.value === 'batch2') return migrationBatch02;
+  if (view.value === 'batch3') return migrationBatch03;
+  return referenceSet;
+});
+const activeBeforeIcons = computed(() => {
+  if (view.value === 'batch2') return migrationBatch02Before;
+  if (view.value === 'batch3') return migrationBatch03Before;
+  return beforeIcons;
+});
 
 const referenceReview = computed(() =>
   activeReviewSet.value.map((icon) => {

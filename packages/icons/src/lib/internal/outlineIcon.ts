@@ -39,6 +39,7 @@ export const outlineGeometry = {
   check: [polyline('3.75 12.25 9.25 17.5 20.25 6.5')],
   xmark: [line(5.75, 5.75, 18.25, 18.25), line(18.25, 5.75, 5.75, 18.25)],
   plus: [line(12, 4.75, 12, 19.25), line(4.75, 12, 19.25, 12)],
+  minus: [line(4.75, 12, 19.25, 12)],
   magnifyingGlass: [circle(10.5, 10.5, 6.5), line(15.25, 15.25, 20.25, 20.25)],
   gear: [
     path(
@@ -57,12 +58,42 @@ export const outlineGeometry = {
     path('M21.75 20v-1.25c0-3.35-1.25-5.25-3.5-5.25-1.08 0-1.93.44-2.52 1.26'),
     path('M7 20v-1c0-3.75 1.85-6 5-6s5 2.25 5 6v1'),
   ],
+  userPlus: [
+    circle(12, 7.75, 3.25, { transform: 'translate(-2.75)' }),
+    path('M5.5 20c.35-4.1 2.75-6.25 6.5-6.25s6.15 2.15 6.5 6.25', { transform: 'translate(-2.75)' }),
+    line(18.5, 5, 18.5, 11.5),
+    line(15.25, 8.25, 21.75, 8.25),
+  ],
+  userMinus: [
+    circle(12, 7.75, 3.25, { transform: 'translate(-2.75)' }),
+    path('M5.5 20c.35-4.1 2.75-6.25 6.5-6.25s6.15 2.15 6.5 6.25', { transform: 'translate(-2.75)' }),
+    line(15.25, 8.25, 21.75, 8.25),
+  ],
+  userCheck: [
+    circle(12, 7.75, 3.25, { transform: 'translate(-2.75)' }),
+    path('M5.5 20c.35-4.1 2.75-6.25 6.5-6.25s6.15 2.15 6.5 6.25', { transform: 'translate(-2.75)' }),
+    polyline('15.25 8.25 17.5 10.5 21.75 5.5'),
+  ],
   file: [path('M6 2.75h7l5 5v13.5H6z'), path('M13 2.75v5h5')],
+  fileText: [
+    path('M6 2.75h7l5 5v13.5H6z'),
+    path('M13 2.75v5h5'),
+    line(8.5, 12.25, 15.5, 12.25),
+    line(8.5, 16.25, 15.5, 16.25),
+  ],
   folder: [
     path('M2.75 6.25h6l1.75 2h10.75v10.5a2 2 0 0 1-2 2H4.75a2 2 0 0 1-2-2Z', {
       transform: 'translate(0 -1.25)',
     }),
     path('M2.75 9h18.5', { transform: 'translate(0 -1.25)' }),
+  ],
+  folderOpen: [
+    path('M2.75 20.75V6.25a1.5 1.5 0 0 1 1.5-1.5H9l2 2h7.75a1.5 1.5 0 0 1 1.5 1.5V10', {
+      transform: 'translate(-.375 -.75)',
+    }),
+    path('M6 9.75h14.25a1.75 1.75 0 0 1 1.7 2.2l-2 7.5a1.75 1.75 0 0 1-1.7 1.3H2.75Z', {
+      transform: 'translate(-.375 -.75)',
+    }),
   ],
   calendar: [
     rect(3, 4.25, 18, 16.5, 2),
@@ -84,6 +115,7 @@ export const outlineGeometry = {
   ],
   infoCircle: [circle(12, 12, 9), path('M12 10.75v6M12 7.25h.01')],
   lock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 8.5 0V10'), path('M12 14.25v2.25')],
+  unlock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 7.25-3'), path('M12 14.25v2.25')],
   grid: [
     rect(3.5, 3.5, 7, 7, 1.5),
     rect(13.5, 3.5, 7, 7, 1.5),

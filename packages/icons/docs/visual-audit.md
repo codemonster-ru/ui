@@ -222,7 +222,13 @@ visual language, expand the reference set, or authorize a catalog-wide migration
 On 2026-07-31, the project owner accepted directional Batch 2: `arrowLeft`, `arrowUp`,
 `chevronLeft`, `chevronUp`, `caretLeft`, `caretRight`, `caretUp`, and `caretDown`. This completes the
 standard arrow, chevron, and compact-caret rotations without changing the frozen 30-icon reference
-set. The catalog now contains 38 approved outline icons and 78 untouched solid icons.
+set.
+
+On 2026-07-31, the project owner accepted related-family Batch 3: `minus`, `userPlus`, `userMinus`,
+`userCheck`, `unlock`, `fileText`, and `folderOpen`. The three user actions retain the approved
+`user` geometry with a separate action symbol; `unlock` has a shortened open shackle; and
+`folderOpen` uses a square rear folder with a right-tilted front flap. The catalog now contains 45
+approved outline icons and 71 untouched solid icons.
 
 ## Review of the `style` metadata change
 
