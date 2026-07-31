@@ -27,8 +27,9 @@
   `fileText`, and `folderOpen`.
 - Added approved system-feedback outlines for `info`, `question`, `questionCircle`, `alertCircle`,
   `checkCircle`, `xCircle`, and `ban`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 52 approved migrated icons are
-  `outline`, while the 64 untouched legacy icons remain `solid`.
+- Added the approved visibility outlines `eye` and `eyeSlash`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 54 approved migrated icons are
+  `outline`, while 62 untouched legacy icons remain `solid`.
 
 ### Fixed
 
