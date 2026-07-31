@@ -236,7 +236,12 @@ production-scale forms.
 
 On 2026-07-31, the project owner accepted visibility Batch 5: `eye` and `eyeSlash`. Both icons share
 the same eye contour and circular pupil, while the hidden state adds one canonical rounded
-diagonal. The catalog now contains 54 approved outline icons and 62 untouched solid icons.
+diagonal.
+
+On 2026-08-01, the project owner accepted appearance Batch 6: `sun`, `moon`, and `circleHalf`. The
+sun uses one outlined center and eight equal rays; the moon retains a narrow tilted crescent; and
+the contrast circle combines an outline container with one filled half. The catalog now contains
+57 approved outline icons and 59 untouched solid icons.
 
 ## Review of the `style` metadata change
 
