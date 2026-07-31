@@ -40,8 +40,9 @@
 - Added the approved session-action family `logIn` and `logOut`.
 - Added the approved filtering-action family `filter` and `funnelX`.
 - Added the approved infrastructure-storage family `server` and `hardDrive`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 80 approved migrated icons are
-  `outline`, while 36 untouched legacy icons remain `solid`.
+- Added the approved developer-tools family `terminal` and `code`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 82 approved migrated icons are
+  `outline`, while 34 untouched legacy icons remain `solid`.
 
 ### Fixed
 
