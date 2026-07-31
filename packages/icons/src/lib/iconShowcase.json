@@ -176,13 +176,13 @@
   },
   {
     "icon": "sun",
-    "status": "in_progress",
-    "note": "Solid sun icon being simplified toward a cleaner ring-and-rays silhouette."
+    "status": "approved",
+    "note": "Approved Batch 6 outline sun with eight equal rounded rays."
   },
   {
     "icon": "moon",
-    "status": "in_progress",
-    "note": "Solid moon icon being simplified toward a cleaner crescent silhouette."
+    "status": "approved",
+    "note": "Approved Batch 6 narrow tilted outline crescent."
   },
   {
     "icon": "info",
@@ -521,8 +521,8 @@
   },
   {
     "icon": "circleHalf",
-    "status": "in_progress",
-    "note": "Solid circle-half icon being simplified toward a cleaner split-circle silhouette."
+    "status": "approved",
+    "note": "Approved Batch 6 contrast circle with an outline container and one filled half."
   },
   {
     "icon": "circleNotch",
