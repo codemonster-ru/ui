@@ -151,6 +151,14 @@ export const outlineGeometry = {
   circleHalf: [path('M12 3a9 9 0 0 0 0 18Z', { fill: 'currentColor', stroke: 'none' }), circle(12, 12, 9)],
   clock: [circle(12, 12, 9), path('M12 7.25V12l3.75 2.25')],
   history: [path('M3.6 8.25A9 9 0 1 1 3.75 16'), polyline('3.5 4.5 3.5 8.5 7.5 8.5'), path('M12 7.25V12l3.75 2.25')],
+  refresh: [
+    path('M3.54 8.92A9 9 0 0 1 18.36 5.64L21 8.5'),
+    polyline('14.5 8.5 21 8.5 21 3'),
+    path('M20.46 15.08A9 9 0 0 1 5.64 18.36L3 15.5'),
+    polyline('9.5 15.5 3 15.5 3 21'),
+  ],
+  rotateRight: [path('M18.36 18.36A9 9 0 1 1 18.36 5.64L21 8.5'), polyline('14.5 8.5 21 8.5 21 3')],
+  circleNotch: [path('M9.67 3.31A9 9 0 1 0 14.33 3.31')],
   lock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 8.5 0V10'), path('M12 14.25v2.25')],
   unlock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 7.25-3'), path('M12 14.25v2.25')],
   grid: [

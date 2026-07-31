@@ -30,8 +30,9 @@
 - Added the approved visibility outlines `eye` and `eyeSlash`.
 - Added the approved appearance family `sun`, `moon`, and `circleHalf`.
 - Added the approved time family `clock` and `history`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 59 approved migrated icons are
-  `outline`, while 57 untouched legacy icons remain `solid`.
+- Added the approved circular-motion family `refresh`, `rotateRight`, and `circleNotch`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 62 approved migrated icons are
+  `outline`, while 54 untouched legacy icons remain `solid`.
 
 ### Fixed
 

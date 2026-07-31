@@ -391,8 +391,8 @@
   },
   {
     "icon": "refresh",
-    "status": "in_progress",
-    "note": "Solid refresh icon being simplified toward a cleaner two-arrow circular-cycle silhouette."
+    "status": "approved",
+    "note": "Approved Batch 8 two-arrow refresh derived from one centered circle."
   },
   {
     "icon": "trash",
@@ -526,13 +526,13 @@
   },
   {
     "icon": "circleNotch",
-    "status": "in_progress",
-    "note": "Solid circle-notch icon being simplified toward a cleaner loading-ring silhouette."
+    "status": "approved",
+    "note": "Approved Batch 8 loading ring with a symmetric 30-degree top notch."
   },
   {
     "icon": "rotateRight",
-    "status": "in_progress",
-    "note": "Solid rotate-right icon being simplified toward a cleaner clockwise-refresh silhouette."
+    "status": "approved",
+    "note": "Approved Batch 8 clockwise rotation with a connected L-shaped arrowhead."
   },
   {
     "icon": "sparkles",
