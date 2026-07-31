@@ -12,7 +12,7 @@
   "arrowRightLong": {
     "title": "Arrow Right Long",
     "keywords": ["arrow", "right", "long", "direction", "forward"],
-    "style": "solid"
+    "style": "outline"
   },
   "bars": {
     "title": "Bars",
@@ -608,16 +608,16 @@
   "arrowDownLong": {
     "title": "Arrow Down Long",
     "keywords": ["arrow", "down", "long", "direction"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowLeftLong": {
     "title": "Arrow Left Long",
     "keywords": ["arrow", "left", "long", "direction", "back"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowUpLong": {
     "title": "Arrow Up Long",
     "keywords": ["arrow", "up", "long", "direction"],
-    "style": "solid"
+    "style": "outline"
   }
 }

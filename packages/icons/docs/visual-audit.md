@@ -254,7 +254,11 @@ On 2026-08-01, the project owner accepted content-operations Batch 9: `copy` and
 catalog contains 64 approved outline icons.
 
 On 2026-08-01, the project owner accepted storage-container Batch 10: `inbox` and `archive`. The
-catalog therefore contains 66 approved outline icons and 50 untouched solid icons.
+catalog contains 66 approved outline icons.
+
+On 2026-08-01, the project owner accepted long-directional Batch 11: `arrowLeftLong`,
+`arrowRightLong`, `arrowUpLong`, and `arrowDownLong`. The catalog therefore contains 70 approved
+outline icons and 46 untouched solid icons.
 
 ## Review of the `style` metadata change
 
