@@ -297,7 +297,7 @@
   {
     "icon": "hardDrive",
     "status": "in_progress",
-    "note": "Solid hard-drive icon being simplified toward a cleaner enclosure-and-indicators silhouette."
+    "note": "Batch 15 outline drive candidate with a lower status panel and restrained indicators."
   },
   {
     "icon": "globe",
@@ -312,7 +312,7 @@
   {
     "icon": "server",
     "status": "in_progress",
-    "note": "Solid server icon being simplified toward a cleaner dual-rack silhouette."
+    "note": "Batch 15 outline server candidate with two equal rack units and matched indicators."
   },
   {
     "icon": "terminal",

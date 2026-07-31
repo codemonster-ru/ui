@@ -39,8 +39,9 @@
   `arrowTurnRightUp`, and `arrowTurnLeftDown`.
 - Added the approved session-action family `logIn` and `logOut`.
 - Added the approved filtering-action family `filter` and `funnelX`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 78 approved migrated icons are
-  `outline`, while 38 untouched legacy icons remain `solid`.
+- Added the approved infrastructure-storage family `server` and `hardDrive`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 80 approved migrated icons are
+  `outline`, while 36 untouched legacy icons remain `solid`.
 
 ### Fixed
 

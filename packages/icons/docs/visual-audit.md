@@ -268,7 +268,10 @@ On 2026-08-01, the project owner accepted session-action Batch 13: `logIn` and `
 contains 76 approved outline icons.
 
 On 2026-08-01, the project owner accepted filtering-action Batch 14: `filter` and `funnelX`. The
-catalog therefore contains 78 approved outline icons and 38 untouched solid icons.
+catalog contains 78 approved outline icons.
+
+On 2026-08-01, the project owner accepted infrastructure-storage Batch 15: `server` and `hardDrive`.
+The catalog therefore contains 80 approved outline icons and 36 untouched solid icons.
 
 ## Review of the `style` metadata change
 
