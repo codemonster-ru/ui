@@ -317,7 +317,7 @@
   {
     "icon": "terminal",
     "status": "in_progress",
-    "note": "Solid terminal icon being simplified toward a cleaner chevron-and-command-line silhouette."
+    "note": "Batch 16 balanced outline terminal prompt candidate awaiting visual review."
   },
   {
     "icon": "wallet",
@@ -337,7 +337,7 @@
   {
     "icon": "code",
     "status": "in_progress",
-    "note": "Solid code icon being simplified toward a cleaner chevrons-and-slash silhouette."
+    "note": "Batch 16 symmetric code-operator candidate with a centered slash."
   },
   {
     "icon": "users",
