@@ -87,7 +87,7 @@
   "circleNotch": {
     "title": "Circle Notch",
     "keywords": ["circle", "notch"],
-    "style": "solid"
+    "style": "outline"
   },
   "copy": {
     "title": "Copy",
@@ -202,7 +202,7 @@
   "rotateRight": {
     "title": "Rotate Right",
     "keywords": ["rotate", "right"],
-    "style": "solid"
+    "style": "outline"
   },
   "shield": {
     "title": "Shield",
@@ -362,7 +362,7 @@
   "refresh": {
     "title": "Refresh",
     "keywords": ["refresh"],
-    "style": "solid"
+    "style": "outline"
   },
   "activity": {
     "title": "Activity",
