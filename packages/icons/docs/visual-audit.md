@@ -271,7 +271,10 @@ On 2026-08-01, the project owner accepted filtering-action Batch 14: `filter` an
 catalog contains 78 approved outline icons.
 
 On 2026-08-01, the project owner accepted infrastructure-storage Batch 15: `server` and `hardDrive`.
-The catalog therefore contains 80 approved outline icons and 36 untouched solid icons.
+The catalog contains 80 approved outline icons.
+
+On 2026-08-01, the project owner accepted developer-tools Batch 16: `terminal` and `code`. The
+catalog therefore contains 82 approved outline icons and 34 untouched solid icons.
 
 ## Review of the `style` metadata change
 

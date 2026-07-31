@@ -337,12 +337,12 @@
   "terminal": {
     "title": "Terminal",
     "keywords": ["terminal"],
-    "style": "solid"
+    "style": "outline"
   },
   "code": {
     "title": "Code",
     "keywords": ["code"],
-    "style": "solid"
+    "style": "outline"
   },
   "sparkles": {
     "title": "Sparkles",
