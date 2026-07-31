@@ -240,8 +240,12 @@ diagonal.
 
 On 2026-08-01, the project owner accepted appearance Batch 6: `sun`, `moon`, and `circleHalf`. The
 sun uses one outlined center and eight equal rays; the moon retains a narrow tilted crescent; and
-the contrast circle combines an outline container with one filled half. The catalog now contains
-57 approved outline icons and 59 untouched solid icons.
+the contrast circle combines an outline container with one filled half.
+
+On 2026-08-01, the project owner accepted time Batch 7: `clock` and `history`. Both icons share the
+same restrained hour and minute hands; `clock` uses the canonical circular container, while
+`history` replaces it with an open counterclockwise return arrow. The catalog now contains 59
+approved outline icons and 57 untouched solid icons.
 
 ## Review of the `style` metadata change
 

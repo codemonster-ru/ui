@@ -29,8 +29,9 @@
   `checkCircle`, `xCircle`, and `ban`.
 - Added the approved visibility outlines `eye` and `eyeSlash`.
 - Added the approved appearance family `sun`, `moon`, and `circleHalf`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 57 approved migrated icons are
-  `outline`, while 59 untouched legacy icons remain `solid`.
+- Added the approved time family `clock` and `history`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 59 approved migrated icons are
+  `outline`, while 57 untouched legacy icons remain `solid`.
 
 ### Fixed
 
