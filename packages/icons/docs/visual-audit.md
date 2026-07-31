@@ -248,8 +248,10 @@ same restrained hour and minute hands; `clock` uses the canonical circular conta
 
 On 2026-08-01, the project owner accepted circular-motion Batch 8: `refresh`, `rotateRight`, and
 `circleNotch`. All three derive from the same centered 9-unit circle; the action icons use connected
-L-shaped arrowheads, while the loading indicator retains a symmetric 30-degree top notch. The
-catalog now contains 62 approved outline icons and 54 untouched solid icons.
+L-shaped arrowheads, while the loading indicator retains a symmetric 30-degree top notch.
+
+On 2026-08-01, the project owner accepted content-operations Batch 9: `copy` and `clipboard`. The
+catalog therefore contains 64 approved outline icons and 52 untouched solid icons.
 
 ## Review of the `style` metadata change
 

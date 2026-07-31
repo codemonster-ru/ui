@@ -92,7 +92,7 @@
   "copy": {
     "title": "Copy",
     "keywords": ["copy"],
-    "style": "solid"
+    "style": "outline"
   },
   "download": {
     "title": "Download",
@@ -507,7 +507,7 @@
   "clipboard": {
     "title": "Clipboard",
     "keywords": ["clipboard"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowTurnUpLeft": {
     "title": "Arrow Turn Up Left",

@@ -31,8 +31,9 @@
 - Added the approved appearance family `sun`, `moon`, and `circleHalf`.
 - Added the approved time family `clock` and `history`.
 - Added the approved circular-motion family `refresh`, `rotateRight`, and `circleNotch`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 62 approved migrated icons are
-  `outline`, while 54 untouched legacy icons remain `solid`.
+- Added the approved content-operations family `copy` and `clipboard`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 64 approved migrated icons are
+  `outline`, while 52 untouched legacy icons remain `solid`.
 
 ### Fixed
 
