@@ -147,7 +147,7 @@
   "info": {
     "title": "Info",
     "keywords": ["info"],
-    "style": "solid"
+    "style": "outline"
   },
   "infoCircle": {
     "title": "Info Circle",
@@ -192,12 +192,12 @@
   "question": {
     "title": "Question",
     "keywords": ["question"],
-    "style": "solid"
+    "style": "outline"
   },
   "questionCircle": {
     "title": "Question Circle",
     "keywords": ["question", "circle"],
-    "style": "solid"
+    "style": "outline"
   },
   "rotateRight": {
     "title": "Rotate Right",
@@ -352,7 +352,7 @@
   "ban": {
     "title": "Ban",
     "keywords": ["ban"],
-    "style": "solid"
+    "style": "outline"
   },
   "funnelX": {
     "title": "Funnel X",
@@ -412,7 +412,7 @@
   "alertCircle": {
     "title": "Alert Circle",
     "keywords": ["alert", "circle"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowDown": {
     "title": "Arrow Down",
@@ -427,7 +427,7 @@
   "checkCircle": {
     "title": "Check Circle",
     "keywords": ["check", "circle"],
-    "style": "solid"
+    "style": "outline"
   },
   "collapse": {
     "title": "Collapse",
@@ -452,7 +452,7 @@
   "xCircle": {
     "title": "X Circle",
     "keywords": ["x", "circle"],
-    "style": "solid"
+    "style": "outline"
   },
   "cpu": {
     "title": "Cpu",

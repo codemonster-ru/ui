@@ -25,8 +25,10 @@
   `caretLeft`, `caretRight`, `caretUp`, and `caretDown`.
 - Extended approved related families with `minus`, `userPlus`, `userMinus`, `userCheck`, `unlock`,
   `fileText`, and `folderOpen`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 45 approved migrated icons are
-  `outline`, while the 71 untouched legacy icons remain `solid`.
+- Added approved system-feedback outlines for `info`, `question`, `questionCircle`, `alertCircle`,
+  `checkCircle`, `xCircle`, and `ban`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 52 approved migrated icons are
+  `outline`, while the 64 untouched legacy icons remain `solid`.
 
 ### Fixed
 
