@@ -172,7 +172,7 @@
   "minus": {
     "title": "Minus",
     "keywords": ["minus"],
-    "style": "solid"
+    "style": "outline"
   },
   "moon": {
     "title": "Moon",
@@ -387,7 +387,7 @@
   "fileText": {
     "title": "File Text",
     "keywords": ["file", "text"],
-    "style": "solid"
+    "style": "outline"
   },
   "globe": {
     "title": "Globe",
@@ -402,12 +402,12 @@
   "userMinus": {
     "title": "User Minus",
     "keywords": ["user", "minus"],
-    "style": "solid"
+    "style": "outline"
   },
   "userPlus": {
     "title": "User Plus",
     "keywords": ["user", "plus"],
-    "style": "solid"
+    "style": "outline"
   },
   "alertCircle": {
     "title": "Alert Circle",
@@ -447,7 +447,7 @@
   "folderOpen": {
     "title": "Folder Open",
     "keywords": ["folder", "open"],
-    "style": "solid"
+    "style": "outline"
   },
   "xCircle": {
     "title": "X Circle",
@@ -497,12 +497,12 @@
   "unlock": {
     "title": "Unlock",
     "keywords": ["unlock"],
-    "style": "solid"
+    "style": "outline"
   },
   "userCheck": {
     "title": "User Check",
     "keywords": ["user", "check"],
-    "style": "solid"
+    "style": "outline"
   },
   "clipboard": {
     "title": "Clipboard",

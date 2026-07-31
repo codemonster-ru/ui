@@ -23,8 +23,10 @@
   `pencil`, `trash`, `download`, `upload`, and `message`; their public names are unchanged.
 - Completed the approved directional pairs with `arrowLeft`, `arrowUp`, `chevronLeft`, `chevronUp`,
   `caretLeft`, `caretRight`, `caretUp`, and `caretDown`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 38 approved migrated icons are
-  `outline`, while the 78 untouched legacy icons remain `solid`.
+- Extended approved related families with `minus`, `userPlus`, `userMinus`, `userCheck`, `unlock`,
+  `fileText`, and `folderOpen`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 45 approved migrated icons are
+  `outline`, while the 71 untouched legacy icons remain `solid`.
 
 ### Fixed
 
