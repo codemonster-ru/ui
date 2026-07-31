@@ -372,7 +372,7 @@
   "archive": {
     "title": "Archive",
     "keywords": ["archive"],
-    "style": "solid"
+    "style": "outline"
   },
   "building": {
     "title": "Building",
@@ -487,7 +487,7 @@
   "inbox": {
     "title": "Inbox",
     "keywords": ["inbox"],
-    "style": "solid"
+    "style": "outline"
   },
   "phone": {
     "title": "Phone",

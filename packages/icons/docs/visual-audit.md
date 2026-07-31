@@ -251,7 +251,10 @@ On 2026-08-01, the project owner accepted circular-motion Batch 8: `refresh`, `r
 L-shaped arrowheads, while the loading indicator retains a symmetric 30-degree top notch.
 
 On 2026-08-01, the project owner accepted content-operations Batch 9: `copy` and `clipboard`. The
-catalog therefore contains 64 approved outline icons and 52 untouched solid icons.
+catalog contains 64 approved outline icons.
+
+On 2026-08-01, the project owner accepted storage-container Batch 10: `inbox` and `archive`. The
+catalog therefore contains 66 approved outline icons and 50 untouched solid icons.
 
 ## Review of the `style` metadata change
 

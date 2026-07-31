@@ -32,8 +32,9 @@
 - Added the approved time family `clock` and `history`.
 - Added the approved circular-motion family `refresh`, `rotateRight`, and `circleNotch`.
 - Added the approved content-operations family `copy` and `clipboard`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 64 approved migrated icons are
-  `outline`, while 52 untouched legacy icons remain `solid`.
+- Added the approved storage-container family `inbox` and `archive`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 66 approved migrated icons are
+  `outline`, while 50 untouched legacy icons remain `solid`.
 
 ### Fixed
 
