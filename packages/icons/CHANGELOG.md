@@ -38,8 +38,9 @@
 - Added the approved turn-directional family `arrowTurnUpLeft`, `arrowTurnUpRight`,
   `arrowTurnRightUp`, and `arrowTurnLeftDown`.
 - Added the approved session-action family `logIn` and `logOut`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 76 approved migrated icons are
-  `outline`, while 40 untouched legacy icons remain `solid`.
+- Added the approved filtering-action family `filter` and `funnelX`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 78 approved migrated icons are
+  `outline`, while 38 untouched legacy icons remain `solid`.
 
 ### Fixed
 

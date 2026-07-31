@@ -122,7 +122,7 @@
   "filter": {
     "title": "Filter",
     "keywords": ["filter"],
-    "style": "solid"
+    "style": "outline"
   },
   "folder": {
     "title": "Folder",
@@ -357,7 +357,7 @@
   "funnelX": {
     "title": "Funnel X",
     "keywords": ["funnel", "x"],
-    "style": "solid"
+    "style": "outline"
   },
   "refresh": {
     "title": "Refresh",

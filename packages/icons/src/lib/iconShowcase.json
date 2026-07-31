@@ -402,12 +402,12 @@
   {
     "icon": "filter",
     "status": "in_progress",
-    "note": "Solid filter icon being simplified toward a cleaner funnel silhouette."
+    "note": "Batch 14 canonical outline funnel candidate awaiting visual review."
   },
   {
     "icon": "funnelX",
     "status": "in_progress",
-    "note": "Solid funnel-x icon being simplified toward a cleaner filter-with-clear action silhouette."
+    "note": "Batch 14 filter-clear candidate derived from the same funnel with a compact x mark."
   },
   {
     "icon": "sort",
