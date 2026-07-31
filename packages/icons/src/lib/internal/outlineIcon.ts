@@ -114,6 +114,19 @@ export const outlineGeometry = {
     path('M12 17.25h.01'),
   ],
   infoCircle: [circle(12, 12, 9), path('M12 10.75v6M12 7.25h.01')],
+  info: [path('M9.25 10.25H12v7M9.25 17.25h5.5'), circle(12, 6.25, 1.375, { fill: 'currentColor', stroke: 'none' })],
+  question: [
+    path('M7 8a5 5 0 1 1 7.35 4.42C12.8 13.25 12 14.25 12 16'),
+    circle(12, 20.25, 1.375, { fill: 'currentColor', stroke: 'none' }),
+  ],
+  questionCircle: [
+    circle(12, 12, 9),
+    path('M9.25 8.75a2.75 2.75 0 1 1 4.05 2.44C12.45 11.75 12 12.4 12 13.5M12 17.25h.01'),
+  ],
+  alertCircle: [circle(12, 12, 9), line(12, 7.25, 12, 13.25), path('M12 17.25h.01')],
+  checkCircle: [circle(12, 12, 9), polyline('8.25 12.25 10.75 14.75 16 9.5')],
+  xCircle: [circle(12, 12, 9), line(8.5, 8.5, 15.5, 15.5), line(15.5, 8.5, 8.5, 15.5)],
+  ban: [circle(12, 12, 9), line(5.75, 5.75, 18.25, 18.25)],
   lock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 8.5 0V10'), path('M12 14.25v2.25')],
   unlock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 7.25-3'), path('M12 14.25v2.25')],
   grid: [
