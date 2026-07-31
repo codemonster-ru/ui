@@ -258,7 +258,11 @@ catalog contains 66 approved outline icons.
 
 On 2026-08-01, the project owner accepted long-directional Batch 11: `arrowLeftLong`,
 `arrowRightLong`, `arrowUpLong`, and `arrowDownLong`. The catalog therefore contains 70 approved
-outline icons and 46 untouched solid icons.
+outline icons.
+
+On 2026-08-01, the project owner accepted turn-directional Batch 12: `arrowTurnUpLeft`,
+`arrowTurnUpRight`, `arrowTurnRightUp`, and `arrowTurnLeftDown`. The catalog therefore contains 74
+approved outline icons and 42 untouched solid icons.
 
 ## Review of the `style` metadata change
 

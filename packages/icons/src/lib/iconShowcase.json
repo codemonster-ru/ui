@@ -12,22 +12,22 @@
   {
     "icon": "arrowTurnUpLeft",
     "status": "in_progress",
-    "note": "Rounded turn-up-left arrow matching the curved return-style silhouette."
+    "note": "Batch 12 turn-up-left candidate with the canonical bend and arrowhead."
   },
   {
     "icon": "arrowTurnUpRight",
     "status": "in_progress",
-    "note": "Rounded turn-up-right arrow mirrored from the same curved return-style silhouette."
+    "note": "Batch 12 turn-up-right candidate mirrored from the same construction."
   },
   {
     "icon": "arrowTurnRightUp",
     "status": "in_progress",
-    "note": "Rounded turn-right-up arrow rotated to keep the same return-style stroke behavior."
+    "note": "Batch 12 turn-right-up candidate rotated from the same construction."
   },
   {
     "icon": "arrowTurnLeftDown",
     "status": "in_progress",
-    "note": "Rounded turn-left-down arrow rotated to complete the directional return-style set."
+    "note": "Batch 12 turn-left-down candidate rotated from the same construction."
   },
   {
     "icon": "arrowRight",
