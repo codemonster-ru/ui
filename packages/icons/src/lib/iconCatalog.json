@@ -332,7 +332,7 @@
   "server": {
     "title": "Server",
     "keywords": ["server"],
-    "style": "solid"
+    "style": "outline"
   },
   "terminal": {
     "title": "Terminal",
@@ -462,7 +462,7 @@
   "hardDrive": {
     "title": "Hard Drive",
     "keywords": ["hard", "drive"],
-    "style": "solid"
+    "style": "outline"
   },
   "layers": {
     "title": "Layers",
