@@ -21,8 +21,10 @@
   `plus`, `magnifyingGlass`, `gear`, `house`, `user`, `users`, `file`, `folder`, `calendar`, `bell`,
   `warning`, `infoCircle`, `lock`, `grid`, `chartBar`, `columns`, `mail`, `cloud`, `database`,
   `pencil`, `trash`, `download`, `upload`, and `message`; their public names are unchanged.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; the approved 30-icon reference set is
-  `outline`, while the 86 untouched legacy icons remain `solid`.
+- Completed the approved directional pairs with `arrowLeft`, `arrowUp`, `chevronLeft`, `chevronUp`,
+  `caretLeft`, `caretRight`, `caretUp`, and `caretDown`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 38 approved migrated icons are
+  `outline`, while the 78 untouched legacy icons remain `solid`.
 
 ### Fixed
 
@@ -43,7 +45,7 @@
 - Remove the `style` prop from `VueIconify` usage, remove imports of `dualStyleCoreIconNames`, and
   use a resolver that honors package `exports`.
 - Consumer code that exhaustively handles `IconCatalogEntry.style` must handle the new `outline`
-  value. Snapshot tests may also change for the 30 redrawn icon names.
+  value. Snapshot tests may also change for the 38 redrawn icon names.
 
 ## 1.5.0
 

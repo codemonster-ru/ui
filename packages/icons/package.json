@@ -56,6 +56,7 @@
     "audit:icons:check": "node ./scripts/audit-icons.mjs --validate-only",
     "audit:centering": "node ./scripts/audit-icon-centering.mjs",
     "snapshot:reference": "node ./scripts/snapshot-reference-icons.mjs",
+    "snapshot:batch2": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch02.json --output=src/lib/iconMigrationBatch02Before.json",
     "create-icon": "node ./scripts/create-icon.mjs",
     "generate": "node ./scripts/generate-icons.mjs",
     "validate-icons": "node ./scripts/generate-icons.mjs --validate-only && npm run audit:icons:check",
