@@ -13,7 +13,10 @@
         </button>
       </nav>
 
-      <section v-if="view === 'reference' || view === 'batch2' || view === 'batch3'" class="reference-review">
+      <section
+        v-if="view === 'reference' || view === 'batch2' || view === 'batch3' || view === 'batch4'"
+        class="reference-review"
+      >
         <header class="section-heading">
           <div>
             <p class="eyebrow">{{ activeReviewCopy.eyebrow }}</p>
@@ -423,11 +426,13 @@ import migrationBatch02BeforeJson from './lib/iconMigrationBatch02Before.json';
 import migrationBatch02Json from './lib/iconMigrationBatch02.json';
 import migrationBatch03BeforeJson from './lib/iconMigrationBatch03Before.json';
 import migrationBatch03Json from './lib/iconMigrationBatch03.json';
+import migrationBatch04BeforeJson from './lib/iconMigrationBatch04Before.json';
+import migrationBatch04Json from './lib/iconMigrationBatch04.json';
 import beforeIconsJson from './lib/iconReferenceBefore.json';
 import referenceSetJson from './lib/iconReferenceSet.json';
 import type { IconName } from './lib/iconMeta';
 
-type View = 'reference' | 'batch2' | 'batch3' | 'stroke' | 'ui' | 'families' | 'mass' | 'blind' | 'catalog';
+type View = 'reference' | 'batch2' | 'batch3' | 'batch4' | 'stroke' | 'ui' | 'families' | 'mass' | 'blind' | 'catalog';
 type Vote = 'a' | 'b' | 'equal' | 'redraw';
 type Votes = Partial<Record<IconName, Vote>>;
 type BlindItem = { icon: IconName; oldIsA: boolean };
@@ -438,6 +443,8 @@ const migrationBatch02Before = migrationBatch02BeforeJson as Partial<Record<Icon
 const migrationBatch02 = migrationBatch02Json as IconName[];
 const migrationBatch03Before = migrationBatch03BeforeJson as Partial<Record<IconName, string>>;
 const migrationBatch03 = migrationBatch03Json as IconName[];
+const migrationBatch04Before = migrationBatch04BeforeJson as Partial<Record<IconName, string>>;
+const migrationBatch04 = migrationBatch04Json as IconName[];
 const referenceSet = referenceSetJson as IconName[];
 const sizes = [16, 20, 24, 32] as const;
 const strokeSizes = [16, 20, 24] as const;
@@ -455,6 +462,7 @@ const viewOptions: Array<{ id: View; label: string }> = [
   { id: 'reference', label: 'Reference review' },
   { id: 'batch2', label: 'Batch 2 review' },
   { id: 'batch3', label: 'Batch 3 review' },
+  { id: 'batch4', label: 'Batch 4 review' },
   { id: 'stroke', label: 'Stroke 1.75 / 1.8 / 2' },
   { id: 'ui', label: 'SaaS contexts' },
   { id: 'families', label: 'Families' },
@@ -524,6 +532,13 @@ const reviewFamilyByIcon: Partial<Record<IconName, string>> = {
   unlock: 'Infrastructure',
   fileText: 'Content',
   folderOpen: 'Content',
+  info: 'System feedback',
+  question: 'System feedback',
+  questionCircle: 'System feedback',
+  alertCircle: 'System feedback',
+  checkCircle: 'System feedback',
+  xCircle: 'System feedback',
+  ban: 'System feedback',
 };
 
 const family = (name: string, icons: IconName[]) => ({ name, icons });
@@ -572,6 +587,12 @@ const activeReviewCopy = computed(() => {
       note: 'Seven derived-family icons approved by the project owner.',
     };
   }
+  if (view.value === 'batch4') {
+    return {
+      eyebrow: 'Migration batch 4 · approved',
+      note: 'Seven system-feedback icons approved by the project owner.',
+    };
+  }
   return {
     eyebrow: 'Approved reference review',
     note: 'Icons render at their stated production size. The emphasized row is 20 px.',
@@ -581,11 +602,13 @@ const activeReviewCopy = computed(() => {
 const activeReviewSet = computed(() => {
   if (view.value === 'batch2') return migrationBatch02;
   if (view.value === 'batch3') return migrationBatch03;
+  if (view.value === 'batch4') return migrationBatch04;
   return referenceSet;
 });
 const activeBeforeIcons = computed(() => {
   if (view.value === 'batch2') return migrationBatch02Before;
   if (view.value === 'batch3') return migrationBatch03Before;
+  if (view.value === 'batch4') return migrationBatch04Before;
   return beforeIcons;
 });
 

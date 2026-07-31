@@ -227,8 +227,13 @@ set.
 On 2026-07-31, the project owner accepted related-family Batch 3: `minus`, `userPlus`, `userMinus`,
 `userCheck`, `unlock`, `fileText`, and `folderOpen`. The three user actions retain the approved
 `user` geometry with a separate action symbol; `unlock` has a shortened open shackle; and
-`folderOpen` uses a square rear folder with a right-tilted front flap. The catalog now contains 45
-approved outline icons and 71 untouched solid icons.
+`folderOpen` uses a square rear folder with a right-tilted front flap.
+
+On 2026-07-31, the project owner accepted system-feedback Batch 4: `info`, `question`,
+`questionCircle`, `alertCircle`, `checkCircle`, `xCircle`, and `ban`. The circular variants share a
+canonical container and optically balanced internal symbols; the standalone symbols use larger
+production-scale forms. The catalog now contains 52 approved outline icons and 64 untouched solid
+icons.
 
 ## Review of the `style` metadata change
 
