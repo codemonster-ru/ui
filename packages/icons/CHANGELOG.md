@@ -33,8 +33,10 @@
 - Added the approved circular-motion family `refresh`, `rotateRight`, and `circleNotch`.
 - Added the approved content-operations family `copy` and `clipboard`.
 - Added the approved storage-container family `inbox` and `archive`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 66 approved migrated icons are
-  `outline`, while 50 untouched legacy icons remain `solid`.
+- Added the approved long-directional family `arrowLeftLong`, `arrowRightLong`, `arrowUpLong`, and
+  `arrowDownLong`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 70 approved migrated icons are
+  `outline`, while 46 untouched legacy icons remain `solid`.
 
 ### Fixed
 
