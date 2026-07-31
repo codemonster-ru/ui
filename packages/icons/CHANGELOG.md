@@ -28,8 +28,9 @@
 - Added approved system-feedback outlines for `info`, `question`, `questionCircle`, `alertCircle`,
   `checkCircle`, `xCircle`, and `ban`.
 - Added the approved visibility outlines `eye` and `eyeSlash`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 54 approved migrated icons are
-  `outline`, while 62 untouched legacy icons remain `solid`.
+- Added the approved appearance family `sun`, `moon`, and `circleHalf`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 57 approved migrated icons are
+  `outline`, while 59 untouched legacy icons remain `solid`.
 
 ### Fixed
 

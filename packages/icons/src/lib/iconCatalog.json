@@ -82,7 +82,7 @@
   "circleHalf": {
     "title": "Circle Half",
     "keywords": ["circle", "half"],
-    "style": "solid"
+    "style": "outline"
   },
   "circleNotch": {
     "title": "Circle Notch",
@@ -177,7 +177,7 @@
   "moon": {
     "title": "Moon",
     "keywords": ["moon"],
-    "style": "solid"
+    "style": "outline"
   },
   "pencil": {
     "title": "Pencil",
@@ -217,7 +217,7 @@
   "sun": {
     "title": "Sun",
     "keywords": ["sun"],
-    "style": "solid"
+    "style": "outline"
   },
   "trash": {
     "title": "Trash",
