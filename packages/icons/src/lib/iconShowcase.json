@@ -432,12 +432,12 @@
   {
     "icon": "logIn",
     "status": "in_progress",
-    "note": "Solid log-in icon being simplified toward a cleaner enter-arrow and doorway silhouette."
+    "note": "Batch 13 log-in candidate with an entering arrow and right-side doorway."
   },
   {
     "icon": "logOut",
     "status": "in_progress",
-    "note": "Solid log-out icon being simplified toward a cleaner exit-arrow and doorway silhouette."
+    "note": "Batch 13 log-out candidate with an exiting arrow and mirrored doorway."
   },
   {
     "icon": "pencil",

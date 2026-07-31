@@ -262,7 +262,10 @@ outline icons.
 
 On 2026-08-01, the project owner accepted turn-directional Batch 12: `arrowTurnUpLeft`,
 `arrowTurnUpRight`, `arrowTurnRightUp`, and `arrowTurnLeftDown`. The catalog therefore contains 74
-approved outline icons and 42 untouched solid icons.
+approved outline icons.
+
+On 2026-08-01, the project owner accepted session-action Batch 13: `logIn` and `logOut`. The catalog
+therefore contains 76 approved outline icons and 40 untouched solid icons.
 
 ## Review of the `style` metadata change
 
