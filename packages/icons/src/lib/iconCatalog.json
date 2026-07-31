@@ -512,22 +512,22 @@
   "arrowTurnUpLeft": {
     "title": "Arrow Turn Up Left",
     "keywords": ["arrow", "turn", "up", "left", "return", "back"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowTurnUpRight": {
     "title": "Arrow Turn Up Right",
     "keywords": ["arrow", "turn", "up", "right", "return", "forward"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowTurnRightUp": {
     "title": "Arrow Turn Right Up",
     "keywords": ["arrow", "turn", "right", "up", "redirect", "upward"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowTurnLeftDown": {
     "title": "Arrow Turn Left Down",
     "keywords": ["arrow", "turn", "left", "down", "redirect", "downward"],
-    "style": "solid"
+    "style": "outline"
   },
   "github": {
     "title": "GitHub",
