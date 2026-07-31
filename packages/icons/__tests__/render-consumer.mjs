@@ -37,7 +37,7 @@ try {
 
   assert.equal(globalThis.document, undefined);
 
-  const { VueIconify, icons } = consumerRequire('@codemonster-ru/vueforge-icons');
+  const { VueIconify, iconCatalog, icons } = consumerRequire('@codemonster-ru/vueforge-icons');
 
   assert.equal(globalThis.document, undefined);
 
@@ -50,7 +50,11 @@ try {
   assert.doesNotMatch(commonJsBundle, /document\.(?:createElement|head)/);
   assert.doesNotMatch(commonJsBundle, /require\(["'][^"']+\.css["']\)/);
   assert.match(esmBundle, /import ["']\.\/index\.css["']/);
+  assert.doesNotMatch(esmBundle, /Blind comparison|vueforge-icons-reference-review-votes-v1/);
+  assert.doesNotMatch(commonJsBundle, /Blind comparison|vueforge-icons-reference-review-votes-v1/);
   assert.equal(packageJson.exports['./style.css'], './dist/index.css');
+  assert.equal(iconCatalog.calendar.style, 'outline');
+  assert.equal(iconCatalog.moon.style, 'solid');
   assert.match(iconCss, /prefers-reduced-motion:\s*reduce/);
   assert.match(iconCss, /vf-icon-wrapper--spin[^}]*animation:\s*none/);
 
@@ -93,7 +97,11 @@ try {
   });
 
   assert.match(calendarGenericMarkup, /<svg/);
-  assert.match(calendarGenericMarkup, /fill="currentColor"/);
+  assert.match(calendarGenericMarkup, /viewBox="0 0 24 24"/);
+  assert.match(calendarGenericMarkup, /stroke="currentColor"/);
+  assert.match(calendarGenericMarkup, /stroke-width="2"/);
+  assert.match(calendarGenericMarkup, /stroke-linecap="round"/);
+  assert.match(calendarGenericMarkup, /stroke-linejoin="round"/);
   assert.match(calendarGenericMarkup, /width="22"/);
   assert.match(calendarGenericMarkup, /height="22"/);
 

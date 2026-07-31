@@ -1,7 +1,7 @@
-import iconGroupsJson from '@/lib/iconMeta.json';
-import iconCatalogJson from '@/lib/iconCatalog.json';
-import iconCoreJson from '@/lib/iconCore.json';
-import iconShowcaseJson from '@/lib/iconShowcase.json';
+import iconGroupsJson from './iconMeta.json';
+import iconCatalogJson from './iconCatalog.json';
+import iconCoreJson from './iconCore.json';
+import iconShowcaseJson from './iconShowcase.json';
 
 type IconGroup = {
   id: string;
@@ -20,7 +20,7 @@ export type IconName = (typeof iconNames)[number];
 export type IconCatalogEntry = {
   title: string;
   keywords: string[];
-  style: 'solid';
+  style: 'solid' | 'outline';
   brand?: {
     source: string;
     guidelines?: string;

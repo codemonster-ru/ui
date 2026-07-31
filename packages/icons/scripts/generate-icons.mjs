@@ -108,8 +108,8 @@ const compareIconCatalog = (iconNames, iconCatalog) => {
       throw new Error(`Icon catalog entry "${iconName}" contains duplicate keywords.`);
     }
 
-    if (entry.style !== 'solid') {
-      throw new Error(`Icon catalog entry "${iconName}" must use the solid style.`);
+    if (!['solid', 'outline'].includes(entry.style)) {
+      throw new Error(`Icon catalog entry "${iconName}" must use the solid or outline style.`);
     }
 
     if (entry.variants !== undefined) {

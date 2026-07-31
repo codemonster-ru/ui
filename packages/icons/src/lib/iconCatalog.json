@@ -7,7 +7,7 @@
   "arrowRight": {
     "title": "Arrow Right",
     "keywords": ["arrow", "right"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowRightLong": {
     "title": "Arrow Right Long",
@@ -22,7 +22,7 @@
   "bell": {
     "title": "Bell",
     "keywords": ["bell"],
-    "style": "solid"
+    "style": "outline"
   },
   "bookmark": {
     "title": "Bookmark",
@@ -32,7 +32,7 @@
   "calendar": {
     "title": "Calendar",
     "keywords": ["calendar"],
-    "style": "solid"
+    "style": "outline"
   },
   "caretDown": {
     "title": "Caret Down",
@@ -57,12 +57,12 @@
   "check": {
     "title": "Check",
     "keywords": ["check"],
-    "style": "solid"
+    "style": "outline"
   },
   "chevronDown": {
     "title": "Chevron Down",
     "keywords": ["chevron", "down"],
-    "style": "solid"
+    "style": "outline"
   },
   "chevronLeft": {
     "title": "Chevron Left",
@@ -72,7 +72,7 @@
   "chevronRight": {
     "title": "Chevron Right",
     "keywords": ["chevron", "right"],
-    "style": "solid"
+    "style": "outline"
   },
   "chevronUp": {
     "title": "Chevron Up",
@@ -97,7 +97,7 @@
   "download": {
     "title": "Download",
     "keywords": ["download"],
-    "style": "solid"
+    "style": "outline"
   },
   "ellipsis": {
     "title": "Ellipsis",
@@ -127,12 +127,12 @@
   "folder": {
     "title": "Folder",
     "keywords": ["folder"],
-    "style": "solid"
+    "style": "outline"
   },
   "gear": {
     "title": "Gear",
     "keywords": ["gear"],
-    "style": "solid"
+    "style": "outline"
   },
   "heart": {
     "title": "Heart",
@@ -142,7 +142,7 @@
   "house": {
     "title": "House",
     "keywords": ["house"],
-    "style": "solid"
+    "style": "outline"
   },
   "info": {
     "title": "Info",
@@ -152,7 +152,7 @@
   "infoCircle": {
     "title": "Info Circle",
     "keywords": ["info", "circle"],
-    "style": "solid"
+    "style": "outline"
   },
   "link": {
     "title": "Link",
@@ -162,12 +162,12 @@
   "lock": {
     "title": "Lock",
     "keywords": ["lock"],
-    "style": "solid"
+    "style": "outline"
   },
   "magnifyingGlass": {
     "title": "Magnifying Glass",
     "keywords": ["magnifying", "glass"],
-    "style": "solid"
+    "style": "outline"
   },
   "minus": {
     "title": "Minus",
@@ -182,12 +182,12 @@
   "pencil": {
     "title": "Pencil",
     "keywords": ["pencil"],
-    "style": "solid"
+    "style": "outline"
   },
   "plus": {
     "title": "Plus",
     "keywords": ["plus"],
-    "style": "solid"
+    "style": "outline"
   },
   "question": {
     "title": "Question",
@@ -222,37 +222,37 @@
   "trash": {
     "title": "Trash",
     "keywords": ["trash"],
-    "style": "solid"
+    "style": "outline"
   },
   "upload": {
     "title": "Upload",
     "keywords": ["upload"],
-    "style": "solid"
+    "style": "outline"
   },
   "user": {
     "title": "User",
     "keywords": ["user"],
-    "style": "solid"
+    "style": "outline"
   },
   "warning": {
     "title": "Warning",
     "keywords": ["warning"],
-    "style": "solid"
+    "style": "outline"
   },
   "xmark": {
     "title": "Xmark",
     "keywords": ["xmark"],
-    "style": "solid"
+    "style": "outline"
   },
   "columns": {
     "title": "Columns",
     "keywords": ["columns"],
-    "style": "solid"
+    "style": "outline"
   },
   "grid": {
     "title": "Grid",
     "keywords": ["grid"],
-    "style": "solid"
+    "style": "outline"
   },
   "logIn": {
     "title": "Log In",
@@ -277,7 +277,7 @@
   "chartBar": {
     "title": "Chart Bar",
     "keywords": ["chart", "bar"],
-    "style": "solid"
+    "style": "outline"
   },
   "creditCard": {
     "title": "Credit Card",
@@ -287,7 +287,7 @@
   "database": {
     "title": "Database",
     "keywords": ["database"],
-    "style": "solid"
+    "style": "outline"
   },
   "key": {
     "title": "Key",
@@ -297,12 +297,12 @@
   "mail": {
     "title": "Mail",
     "keywords": ["mail"],
-    "style": "solid"
+    "style": "outline"
   },
   "message": {
     "title": "Message",
     "keywords": ["message"],
-    "style": "solid"
+    "style": "outline"
   },
   "receipt": {
     "title": "Receipt",
@@ -312,7 +312,7 @@
   "users": {
     "title": "Users",
     "keywords": ["users"],
-    "style": "solid"
+    "style": "outline"
   },
   "wallet": {
     "title": "Wallet",
@@ -327,7 +327,7 @@
   "cloud": {
     "title": "Cloud",
     "keywords": ["cloud"],
-    "style": "solid"
+    "style": "outline"
   },
   "server": {
     "title": "Server",
@@ -417,7 +417,7 @@
   "arrowDown": {
     "title": "Arrow Down",
     "keywords": ["arrow", "down"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowUp": {
     "title": "Arrow Up",
@@ -442,7 +442,7 @@
   "file": {
     "title": "File",
     "keywords": ["file"],
-    "style": "solid"
+    "style": "outline"
   },
   "folderOpen": {
     "title": "Folder Open",

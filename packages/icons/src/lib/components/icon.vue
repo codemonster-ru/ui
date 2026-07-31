@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import { computed, useAttrs, type Component } from 'vue';
-import iconOpticalOffsetsJson from '@/lib/iconOpticalOffsets.json';
-import { iconNames, type IconName } from '@/lib/iconMeta';
+import iconOpticalOffsetsJson from '../iconOpticalOffsets.json';
+import { iconNames, type IconName } from '../iconMeta';
 
 defineOptions({
   inheritAttrs: false,

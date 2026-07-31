@@ -1,0 +1,150 @@
+import { defineComponent, h, type PropType, type SVGAttributes } from 'vue';
+
+type GeometryNode = {
+  tag: 'circle' | 'line' | 'path' | 'polyline' | 'rect';
+  attrs: SVGAttributes;
+};
+
+const path = (d: string, attrs: SVGAttributes = {}): GeometryNode => ({
+  tag: 'path',
+  attrs: { d, ...attrs },
+});
+const line = (x1: number, y1: number, x2: number, y2: number): GeometryNode => ({
+  tag: 'line',
+  attrs: { x1, y1, x2, y2 },
+});
+const circle = (cx: number, cy: number, r: number, attrs: SVGAttributes = {}): GeometryNode => ({
+  tag: 'circle',
+  attrs: { cx, cy, r, ...attrs },
+});
+const rect = (x: number, y: number, width: number, height: number, rx: number): GeometryNode => ({
+  tag: 'rect',
+  attrs: { x, y, width, height, rx },
+});
+const polyline = (points: string): GeometryNode => ({ tag: 'polyline', attrs: { points } });
+
+export const outlineGeometry = {
+  arrowRight: [line(3.5, 12, 20.5, 12), polyline('14.75 6.25 20.5 12 14.75 17.75')],
+  arrowDown: [line(12, 3.5, 12, 20.5), polyline('6.25 14.75 12 20.5 17.75 14.75')],
+  chevronRight: [polyline('8.75 5.75 15 12 8.75 18.25')],
+  chevronDown: [polyline('5.75 8.75 12 15 18.25 8.75')],
+  check: [polyline('3.75 12.25 9.25 17.5 20.25 6.5')],
+  xmark: [line(5.75, 5.75, 18.25, 18.25), line(18.25, 5.75, 5.75, 18.25)],
+  plus: [line(12, 4.75, 12, 19.25), line(4.75, 12, 19.25, 12)],
+  magnifyingGlass: [circle(10.5, 10.5, 6.5), line(15.25, 15.25, 20.25, 20.25)],
+  gear: [
+    path(
+      'M9.7 3.4 10.2 2h3.6l.5 1.4c.15.43.5.76.94.9l1.42.46c.43.14.9.06 1.27-.2l1.2-.86 2.55 2.55-.86 1.2c-.26.37-.34.84-.2 1.27l.46 1.42c.14.44.47.79.9.94l1.4.5v3.6l-1.4.5c-.43.15-.76.5-.9.94l-.46 1.42c-.14.43-.06.9.2 1.27l.86 1.2-2.55 2.55-1.2-.86c-.37-.26-.84-.34-1.27-.2l-1.42.46c-.44.14-.79.47-.94.9l-.5 1.4h-3.6l-.5-1.4a1.46 1.46 0 0 0-.94-.9l-1.42-.46c-.43-.14-.9-.06-1.27.2l-1.2.86-2.55-2.55.86-1.2c.26-.37.34-.84.2-1.27l-.46-1.42a1.46 1.46 0 0 0-.9-.94l-1.4-.5v-3.6l1.4-.5c.43-.15.76-.5.9-.94l.46-1.42c.14-.43.06-.9-.2-1.27l-.86-1.2L4.87 3.7l1.2.86c.37.26.84.34 1.27.2l1.42-.46c.44-.14.79-.47.94-.9Z',
+      { transform: 'translate(1.656 .62) scale(.862)' },
+    ),
+    circle(12, 12, 2.72),
+  ],
+  house: [path('M3.5 10.75 12 3.6l8.5 7.15'), path('M5.25 9.5v10.25h13.5V9.5'), path('M9.25 19.75v-5.5h5.5v5.5')],
+  user: [circle(12, 7.75, 3.25), path('M5.5 20c.35-4.1 2.75-6.25 6.5-6.25s6.15 2.15 6.5 6.25')],
+  users: [
+    circle(12, 6.75, 2.65),
+    circle(5.75, 8.5, 1.75),
+    circle(18.25, 8.5, 1.75),
+    path('M2.25 20v-1.25C2.25 15.4 3.5 13.5 5.75 13.5c1.08 0 1.93.44 2.52 1.26'),
+    path('M21.75 20v-1.25c0-3.35-1.25-5.25-3.5-5.25-1.08 0-1.93.44-2.52 1.26'),
+    path('M7 20v-1c0-3.75 1.85-6 5-6s5 2.25 5 6v1'),
+  ],
+  file: [path('M6 2.75h7l5 5v13.5H6z'), path('M13 2.75v5h5')],
+  folder: [
+    path('M2.75 6.25h6l1.75 2h10.75v10.5a2 2 0 0 1-2 2H4.75a2 2 0 0 1-2-2Z', {
+      transform: 'translate(0 -1.25)',
+    }),
+    path('M2.75 9h18.5', { transform: 'translate(0 -1.25)' }),
+  ],
+  calendar: [
+    rect(3, 4.25, 18, 16.5, 2),
+    line(3, 9, 21, 9),
+    line(7.5, 2.75, 7.5, 6),
+    line(16.5, 2.75, 16.5, 6),
+    path('M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01'),
+  ],
+  bell: [
+    path('M5.25 16.25v-6a6.75 6.75 0 0 1 13.5 0v6l1.5 2H3.75Z', { transform: 'translate(0 -.25)' }),
+    path('M9.25 20.25c.65.8 1.55 1.25 2.75 1.25s2.1-.45 2.75-1.25', {
+      transform: 'translate(0 -.25)',
+    }),
+  ],
+  warning: [
+    path('M10.35 3.9 2.8 18.1a1.65 1.65 0 0 0 1.45 2.4h15.5a1.65 1.65 0 0 0 1.45-2.4L13.65 3.9a1.86 1.86 0 0 0-3.3 0Z'),
+    line(12, 8.25, 12, 13.75),
+    path('M12 17.25h.01'),
+  ],
+  infoCircle: [circle(12, 12, 9), path('M12 10.75v6M12 7.25h.01')],
+  lock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 8.5 0V10'), path('M12 14.25v2.25')],
+  grid: [
+    rect(3.5, 3.5, 7, 7, 1.5),
+    rect(13.5, 3.5, 7, 7, 1.5),
+    rect(3.5, 13.5, 7, 7, 1.5),
+    rect(13.5, 13.5, 7, 7, 1.5),
+  ],
+  chartBar: [path('M4 3.25v16.5h16.5'), path('M8 16v-3.5M12.5 16V8.5M17 16V5.25')],
+  columns: [
+    rect(2.75, 3.5, 18.5, 17, 2),
+    line(2.75, 8.5, 21.25, 8.5),
+    line(9, 8.5, 9, 20.5),
+    line(15.25, 8.5, 15.25, 20.5),
+  ],
+  mail: [rect(2.75, 5.25, 18.5, 13.5, 2), path('m3.5 6 7.25 6a2 2 0 0 0 2.5 0l7.25-6')],
+  cloud: [path('M6.4 19.25h11.35a3.75 3.75 0 0 0 .4-7.48A6.25 6.25 0 0 0 6.3 9.5a4.9 4.9 0 0 0 .1 9.75Z')],
+  database: [
+    path('M4.25 6.25c0-2 3.47-3.5 7.75-3.5s7.75 1.5 7.75 3.5-3.47 3.5-7.75 3.5-7.75-1.5-7.75-3.5Z'),
+    path('M4.25 6.25v5.75c0 2 3.47 3.5 7.75 3.5s7.75-1.5 7.75-3.5V6.25'),
+    path('M4.25 12v5.75c0 2 3.47 3.5 7.75 3.5s7.75-1.5 7.75-3.5V12'),
+  ],
+  pencil: [
+    path('M4 20l1.1-4.4L16.25 4.45a2.15 2.15 0 0 1 3.05 0l.25.25a2.15 2.15 0 0 1 0 3.05L8.4 18.9Z'),
+    line(14.9, 5.8, 18.2, 9.1),
+  ],
+  trash: [
+    path('M5.25 8.25h13.5l-1 12.25H6.25Z'),
+    line(4, 5.25, 20, 5.25),
+    path('M9 5.25V3.5h6v1.75M9.5 11v5.75M14.5 11v5.75'),
+  ],
+  download: [line(12, 3, 12, 15), polyline('7.5 10.75 12 15.25 16.5 10.75'), path('M4 17.25v3h16v-3')],
+  upload: [line(12, 15.25, 12, 3.25), polyline('7.5 7.5 12 3 16.5 7.5'), path('M4 17.25v3h16v-3')],
+  message: [
+    path(
+      'M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z',
+    ),
+    path('M7.25 9h9.5M7.25 13h6'),
+  ],
+} as const satisfies Record<string, GeometryNode[]>;
+
+export type OutlineIconName = keyof typeof outlineGeometry;
+
+export const createOutlineIcon = (name: OutlineIconName) => {
+  return defineComponent({
+    name: `Vf${name.charAt(0).toUpperCase()}${name.slice(1)}Icon`,
+    inheritAttrs: false,
+    props: {
+      size: {
+        type: [Number, String] as PropType<number | string>,
+        default: 'var(--vf-icon-current-size, var(--vf-icon-size-md))',
+      },
+    },
+    setup(props, { attrs }) {
+      return () =>
+        h(
+          'svg',
+          {
+            ...attrs,
+            xmlns: 'http://www.w3.org/2000/svg',
+            viewBox: '0 0 24 24',
+            width: props.size,
+            height: props.size,
+            fill: 'none',
+            stroke: 'currentColor',
+            'stroke-width': 2,
+            'stroke-linecap': 'round',
+            'stroke-linejoin': 'round',
+          },
+          outlineGeometry[name].map((node) => h(node.tag, node.attrs)),
+        );
+    },
+  });
+};

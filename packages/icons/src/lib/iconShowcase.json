@@ -520,26 +520,6 @@
     "note": "Solid caret-up icon being simplified toward a cleaner directional triangle silhouette."
   },
   {
-    "icon": "chevronUp",
-    "status": "in_progress",
-    "note": "Solid chevron-up icon being simplified toward a cleaner directional-angle silhouette."
-  },
-  {
-    "icon": "chevronDown",
-    "status": "in_progress",
-    "note": "Solid chevron-down icon being simplified toward a cleaner directional-angle silhouette."
-  },
-  {
-    "icon": "chevronLeft",
-    "status": "in_progress",
-    "note": "Solid chevron-left icon being simplified toward a cleaner directional-angle silhouette."
-  },
-  {
-    "icon": "chevronRight",
-    "status": "in_progress",
-    "note": "Solid chevron-right icon being simplified toward a cleaner directional-angle silhouette."
-  },
-  {
     "icon": "circleHalf",
     "status": "in_progress",
     "note": "Solid circle-half icon being simplified toward a cleaner split-circle silhouette."
