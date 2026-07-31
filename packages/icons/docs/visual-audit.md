@@ -232,8 +232,11 @@ On 2026-07-31, the project owner accepted related-family Batch 3: `minus`, `user
 On 2026-07-31, the project owner accepted system-feedback Batch 4: `info`, `question`,
 `questionCircle`, `alertCircle`, `checkCircle`, `xCircle`, and `ban`. The circular variants share a
 canonical container and optically balanced internal symbols; the standalone symbols use larger
-production-scale forms. The catalog now contains 52 approved outline icons and 64 untouched solid
-icons.
+production-scale forms.
+
+On 2026-07-31, the project owner accepted visibility Batch 5: `eye` and `eyeSlash`. Both icons share
+the same eye contour and circular pupil, while the hidden state adds one canonical rounded
+diagonal. The catalog now contains 54 approved outline icons and 62 untouched solid icons.
 
 ## Review of the `style` metadata change
 
