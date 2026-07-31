@@ -37,8 +37,9 @@
   `arrowDownLong`.
 - Added the approved turn-directional family `arrowTurnUpLeft`, `arrowTurnUpRight`,
   `arrowTurnRightUp`, and `arrowTurnLeftDown`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 74 approved migrated icons are
-  `outline`, while 42 untouched legacy icons remain `solid`.
+- Added the approved session-action family `logIn` and `logOut`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 76 approved migrated icons are
+  `outline`, while 40 untouched legacy icons remain `solid`.
 
 ### Fixed
 

@@ -36,6 +36,16 @@ export const outlineGeometry = {
   arrowTurnUpRight: [path('M3.5 6.25V8a4 4 0 0 0 4 4h13'), polyline('14.75 6.25 20.5 12 14.75 17.75')],
   arrowTurnRightUp: [path('M6.25 20.5H8a4 4 0 0 0 4-4v-13'), polyline('6.25 9.25 12 3.5 17.75 9.25')],
   arrowTurnLeftDown: [path('M6.25 3.5H8a4 4 0 0 1 4 4v13'), polyline('6.25 14.75 12 20.5 17.75 14.75')],
+  logIn: [
+    path('M15.5 3.5H19a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-3.5'),
+    line(3, 12, 16.5, 12),
+    polyline('12 7.5 16.5 12 12 16.5'),
+  ],
+  logOut: [
+    path('M8.5 3.5H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h3.5'),
+    line(8.5, 12, 21, 12),
+    polyline('16.5 7.5 21 12 16.5 16.5'),
+  ],
   chevronLeft: [polyline('15.25 5.75 9 12 15.25 18.25')],
   chevronRight: [polyline('8.75 5.75 15 12 8.75 18.25')],
   chevronUp: [polyline('5.75 15.25 12 9 18.25 15.25')],
