@@ -54,14 +54,14 @@ const toKeywords = (value) =>
     .filter(Boolean);
 
 const componentTemplate = `<template>
-    <svg v-bind="iconSvgAttrs" :width="size" :height="size">
-        <!-- Replace the placeholder path with the final icon geometry. -->
-        <path fill='currentColor' d='' />
+    <svg v-bind="outlineIconSvgAttrs" :width="size" :height="size">
+        <!-- Draw original geometry on the VueForge 24-unit keyline system. -->
+        <path d="" />
     </svg>
 </template>
 
 <script setup lang="ts">
-import { iconSizeDefaults, iconSvgAttrs, type IconSizeProps } from './_shared';
+import { iconSizeDefaults, outlineIconSvgAttrs, type IconSizeProps } from './_shared';
 
 withDefaults(defineProps<IconSizeProps>(), iconSizeDefaults);
 </script>
@@ -85,7 +85,7 @@ const nextIconCatalog = {
   [iconName]: {
     title: toTitleCase(iconName),
     keywords: toKeywords(iconName),
-    style: 'solid',
+    style: 'outline',
   },
 };
 
@@ -93,7 +93,7 @@ writeFileSync(iconCatalogPath, `${JSON.stringify(nextIconCatalog, null, 4)}\n`);
 
 console.log(`Created src/lib/components/${iconName}.vue`);
 console.log(`Added "${iconName}" to src/lib/iconMeta.json under "${categoryId}"`);
-console.log(`Seeded "${iconName}" in src/lib/iconCatalog.json as "${toTitleCase(iconName)}" (solid)`);
+console.log(`Seeded "${iconName}" in src/lib/iconCatalog.json as "${toTitleCase(iconName)}" (outline)`);
 console.log('Next steps:');
 console.log(`1. Draw the final SVG path in src/lib/components/${iconName}.vue`);
 console.log('2. Refine title and keywords in src/lib/iconCatalog.json if needed');
