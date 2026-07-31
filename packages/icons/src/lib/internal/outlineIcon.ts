@@ -24,10 +24,18 @@ const rect = (x: number, y: number, width: number, height: number, rx: number): 
 const polyline = (points: string): GeometryNode => ({ tag: 'polyline', attrs: { points } });
 
 export const outlineGeometry = {
+  arrowLeft: [line(20.5, 12, 3.5, 12), polyline('9.25 6.25 3.5 12 9.25 17.75')],
   arrowRight: [line(3.5, 12, 20.5, 12), polyline('14.75 6.25 20.5 12 14.75 17.75')],
+  arrowUp: [line(12, 20.5, 12, 3.5), polyline('6.25 9.25 12 3.5 17.75 9.25')],
   arrowDown: [line(12, 3.5, 12, 20.5), polyline('6.25 14.75 12 20.5 17.75 14.75')],
+  chevronLeft: [polyline('15.25 5.75 9 12 15.25 18.25')],
   chevronRight: [polyline('8.75 5.75 15 12 8.75 18.25')],
+  chevronUp: [polyline('5.75 15.25 12 9 18.25 15.25')],
   chevronDown: [polyline('5.75 8.75 12 15 18.25 8.75')],
+  caretLeft: [polyline('14 8.25 10.25 12 14 15.75')],
+  caretRight: [polyline('10 8.25 13.75 12 10 15.75')],
+  caretUp: [polyline('8.25 14 12 10.25 15.75 14')],
+  caretDown: [polyline('8.25 10 12 13.75 15.75 10')],
   check: [polyline('3.75 12.25 9.25 17.5 20.25 6.5')],
   xmark: [line(5.75, 5.75, 18.25, 18.25), line(18.25, 5.75, 5.75, 18.25)],
   plus: [line(12, 4.75, 12, 19.25), line(4.75, 12, 19.25, 12)],

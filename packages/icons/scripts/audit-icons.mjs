@@ -12,12 +12,14 @@ const catalogPath = resolve(rootDir, 'src/lib/iconCatalog.json');
 const offsetsPath = resolve(rootDir, 'src/lib/iconOpticalOffsets.json');
 const showcasePath = resolve(rootDir, 'src/lib/iconShowcase.json');
 const referenceSetPath = resolve(rootDir, 'src/lib/iconReferenceSet.json');
+const migrationBatch02Path = resolve(rootDir, 'src/lib/iconMigrationBatch02.json');
 const validateOnly = process.argv.includes('--validate-only');
 const metadata = JSON.parse(readFileSync(metadataPath, 'utf8'));
 const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
 const offsets = JSON.parse(readFileSync(offsetsPath, 'utf8'));
 const showcase = JSON.parse(readFileSync(showcasePath, 'utf8'));
 const referenceSet = JSON.parse(readFileSync(referenceSetPath, 'utf8'));
+const migrationBatch02 = JSON.parse(readFileSync(migrationBatch02Path, 'utf8'));
 const outlineSource = readFileSync(resolve(rootDir, 'src/lib/internal/outlineIcon.ts'), 'utf8');
 const outlineObjectBody = outlineSource.match(
   /export const outlineGeometry = \{([\s\S]*?)\n\} as const satisfies/,
@@ -367,6 +369,12 @@ const showcaseConsistency = {
   referenceCountMismatch: referenceSet.length === 30 ? [] : [referenceSet.length],
   referenceStyleMismatch: referenceSet.filter((icon) => catalog[icon]?.style !== 'outline'),
 };
+const migrationBatch02Consistency = {
+  invalidIcons: migrationBatch02.filter((icon) => !iconNames.includes(icon)),
+  duplicates: [...new Set(migrationBatch02.filter((icon, index) => migrationBatch02.indexOf(icon) !== index))],
+  countMismatch: migrationBatch02.length === 8 ? [] : [migrationBatch02.length],
+  styleMismatch: migrationBatch02.filter((icon) => catalog[icon]?.style !== 'outline'),
+};
 
 const result = {
   generatedAt: new Date().toISOString(),
@@ -385,6 +393,7 @@ const result = {
   nearGeometryPairs,
   relatedVariantWarnings,
   showcaseConsistency,
+  migrationBatch02Consistency,
   icons: entries,
 };
 const output = await format(JSON.stringify(result), { parser: 'json', printWidth: 120 });
@@ -395,6 +404,10 @@ if (Object.values(metadataMismatch).some((items) => items.length > 0)) {
 
 if (Object.values(showcaseConsistency).some((items) => items.length > 0)) {
   throw new Error(`Showcase/reference-set mismatch: ${JSON.stringify(showcaseConsistency)}`);
+}
+
+if (Object.values(migrationBatch02Consistency).some((items) => items.length > 0)) {
+  throw new Error(`Migration batch 02 mismatch: ${JSON.stringify(migrationBatch02Consistency)}`);
 }
 
 if (validateOnly) {

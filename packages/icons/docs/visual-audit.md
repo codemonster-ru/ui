@@ -151,7 +151,8 @@ offsets, and metadata/catalog/showcase/reference-set consistency. `npm run valid
 that the committed audit is current. `audit:centering` reports effective centers after offsets and
 deliberately exits non-zero while review candidates remain.
 
-The current audit flags 54 of 116 icons. Within the 30-icon reference set, `gear` triggers the
+After the approved directional Batch 2, the current audit flags 46 of 116 icons and records 27
+remaining runtime optical offsets. Within the 30-icon reference set, `gear` triggers the
 general bounds-area warning after the owner-selected 2-unit stroke increased its already broad
 toothed contour. This remains a visual-review signal rather than an automatic failure. Centering
 review is intentionally stricter and still calls out asymmetric reference metaphors such as cloud,
@@ -216,6 +217,13 @@ As of 2026-07-31:
 These decisions approve only the named review stages and candidates. They do not approve the whole
 visual language, expand the reference set, or authorize a catalog-wide migration.
 
+### Subsequent migration decisions
+
+On 2026-07-31, the project owner accepted directional Batch 2: `arrowLeft`, `arrowUp`,
+`chevronLeft`, `chevronUp`, `caretLeft`, `caretRight`, `caretUp`, and `caretDown`. This completes the
+standard arrow, chevron, and compact-caret rotations without changing the frozen 30-icon reference
+set. The catalog now contains 38 approved outline icons and 78 untouched solid icons.
+
 ## Review of the `style` metadata change
 
 ### Did real solid icons exist before the redesign?
@@ -260,8 +268,8 @@ visual review. The available choices were:
    behavior, and version the public contract appropriately.
 
 After approving the reference set, the project owner chose to retain `solid | outline`. The mixed
-values now deliberately describe the incremental catalog: the accepted reference icons are
-`outline`, while icons that have not been migrated retain `solid`. Runtime rendering remains
+values now deliberately describe the incremental catalog: accepted migrated icons are `outline`,
+while icons that have not been migrated retain `solid`. Runtime rendering remains
 independent of the field. Release notes must identify the widened TypeScript union and changed
 catalog values as a public metadata-contract change.
 
