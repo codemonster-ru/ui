@@ -382,7 +382,7 @@
   "clock": {
     "title": "Clock",
     "keywords": ["clock"],
-    "style": "solid"
+    "style": "outline"
   },
   "fileText": {
     "title": "File Text",
@@ -397,7 +397,7 @@
   "history": {
     "title": "History",
     "keywords": ["history"],
-    "style": "solid"
+    "style": "outline"
   },
   "userMinus": {
     "title": "User Minus",

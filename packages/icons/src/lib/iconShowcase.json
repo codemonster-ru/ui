@@ -361,13 +361,13 @@
   },
   {
     "icon": "clock",
-    "status": "in_progress",
-    "note": "Solid clock icon being simplified toward a cleaner circular face with hour and minute hands."
+    "status": "approved",
+    "note": "Approved Batch 7 outline clock with restrained hour and minute hands."
   },
   {
     "icon": "history",
-    "status": "in_progress",
-    "note": "Solid history icon being simplified toward a cleaner return-arrow clock silhouette."
+    "status": "approved",
+    "note": "Approved Batch 7 history clock with an open counterclockwise return arrow."
   },
   {
     "icon": "download",
