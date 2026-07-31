@@ -35,8 +35,10 @@
 - Added the approved storage-container family `inbox` and `archive`.
 - Added the approved long-directional family `arrowLeftLong`, `arrowRightLong`, `arrowUpLong`, and
   `arrowDownLong`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 70 approved migrated icons are
-  `outline`, while 46 untouched legacy icons remain `solid`.
+- Added the approved turn-directional family `arrowTurnUpLeft`, `arrowTurnUpRight`,
+  `arrowTurnRightUp`, and `arrowTurnLeftDown`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 74 approved migrated icons are
+  `outline`, while 42 untouched legacy icons remain `solid`.
 
 ### Fixed
 
