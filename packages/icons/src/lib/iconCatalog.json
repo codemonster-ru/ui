@@ -2,7 +2,7 @@
   "arrowLeft": {
     "title": "Arrow Left",
     "keywords": ["arrow", "left"],
-    "style": "solid"
+    "style": "outline"
   },
   "arrowRight": {
     "title": "Arrow Right",
@@ -37,22 +37,22 @@
   "caretDown": {
     "title": "Caret Down",
     "keywords": ["caret", "down"],
-    "style": "solid"
+    "style": "outline"
   },
   "caretLeft": {
     "title": "Caret Left",
     "keywords": ["caret", "left"],
-    "style": "solid"
+    "style": "outline"
   },
   "caretRight": {
     "title": "Caret Right",
     "keywords": ["caret", "right"],
-    "style": "solid"
+    "style": "outline"
   },
   "caretUp": {
     "title": "Caret Up",
     "keywords": ["caret", "up"],
-    "style": "solid"
+    "style": "outline"
   },
   "check": {
     "title": "Check",
@@ -67,7 +67,7 @@
   "chevronLeft": {
     "title": "Chevron Left",
     "keywords": ["chevron", "left"],
-    "style": "solid"
+    "style": "outline"
   },
   "chevronRight": {
     "title": "Chevron Right",
@@ -77,7 +77,7 @@
   "chevronUp": {
     "title": "Chevron Up",
     "keywords": ["chevron", "up"],
-    "style": "solid"
+    "style": "outline"
   },
   "circleHalf": {
     "title": "Circle Half",
@@ -422,7 +422,7 @@
   "arrowUp": {
     "title": "Arrow Up",
     "keywords": ["arrow", "up"],
-    "style": "solid"
+    "style": "outline"
   },
   "checkCircle": {
     "title": "Check Circle",

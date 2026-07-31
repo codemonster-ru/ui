@@ -4,8 +4,10 @@ import { format } from 'prettier';
 
 const rootDir = process.cwd();
 const componentsDir = resolve(rootDir, 'src/lib/components');
-const referenceSetPath = resolve(rootDir, 'src/lib/iconReferenceSet.json');
-const outputPath = resolve(rootDir, 'src/lib/iconReferenceBefore.json');
+const readOption = (name, fallback) =>
+  process.argv.find((argument) => argument.startsWith(`--${name}=`))?.slice(name.length + 3) ?? fallback;
+const referenceSetPath = resolve(rootDir, readOption('set', 'src/lib/iconReferenceSet.json'));
+const outputPath = resolve(rootDir, readOption('output', 'src/lib/iconReferenceBefore.json'));
 const referenceSet = JSON.parse(readFileSync(referenceSetPath, 'utf8'));
 const force = process.argv.includes('--force');
 
@@ -39,4 +41,4 @@ const snapshots = Object.fromEntries(
 );
 
 writeFileSync(outputPath, await format(JSON.stringify(snapshots), { parser: 'json', printWidth: 120 }));
-console.log(`Captured ${referenceSet.length} reference icons in src/lib/iconReferenceBefore.json.`);
+console.log(`Captured ${referenceSet.length} icons in ${outputPath}.`);
