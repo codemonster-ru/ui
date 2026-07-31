@@ -7,7 +7,7 @@
   {
     "icon": "arrowLeftLong",
     "status": "in_progress",
-    "note": "Extended left arrow using the same head size with a longer horizontal tail."
+    "note": "Batch 11 extended left arrow candidate derived from the approved directional geometry."
   },
   {
     "icon": "arrowTurnUpLeft",
@@ -37,12 +37,12 @@
   {
     "icon": "arrowRightLong",
     "status": "in_progress",
-    "note": "Extended right arrow using the same head size with a longer horizontal tail."
+    "note": "Batch 11 extended right arrow candidate derived from the approved directional geometry."
   },
   {
     "icon": "arrowUpLong",
     "status": "in_progress",
-    "note": "Extended up arrow using the same head size with a longer vertical tail."
+    "note": "Batch 11 extended up arrow candidate derived from the approved directional geometry."
   },
   {
     "icon": "arrowUp",
@@ -57,7 +57,7 @@
   {
     "icon": "arrowDownLong",
     "status": "in_progress",
-    "note": "Extended down arrow using the same head size with a longer vertical tail."
+    "note": "Batch 11 extended down arrow candidate derived from the approved directional geometry."
   },
   {
     "icon": "check",
