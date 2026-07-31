@@ -221,13 +221,13 @@
   },
   {
     "icon": "eye",
-    "status": "in_progress",
-    "note": "Solid eye icon being simplified toward a cleaner iris-and-highlight silhouette."
+    "status": "approved",
+    "note": "Approved Batch 5 outline eye with a centered circular pupil."
   },
   {
     "icon": "eyeSlash",
-    "status": "in_progress",
-    "note": "Solid eye-slash icon being simplified toward a cleaner crossed-out eye silhouette."
+    "status": "approved",
+    "note": "Approved Batch 5 outline eye with a canonical rounded visibility slash."
   },
   {
     "icon": "bell",

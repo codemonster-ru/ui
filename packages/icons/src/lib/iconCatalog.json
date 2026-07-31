@@ -112,12 +112,12 @@
   "eye": {
     "title": "Eye",
     "keywords": ["eye"],
-    "style": "solid"
+    "style": "outline"
   },
   "eyeSlash": {
     "title": "Eye Slash",
     "keywords": ["eye", "slash"],
-    "style": "solid"
+    "style": "outline"
   },
   "filter": {
     "title": "Filter",
