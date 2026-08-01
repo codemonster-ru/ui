@@ -289,7 +289,10 @@ On 2026-08-01, the project owner accepted data-control Batch 20: `sliders` and `
 contains 91 approved outline icons.
 
 On 2026-08-01, the project owner accepted navigation-link Batch 21: `link` and `externalLink`. The
-catalog therefore contains 93 approved outline icons and 23 untouched solid icons.
+catalog contains 93 approved outline icons.
+
+On 2026-08-01, the project owner accepted menu-trigger Batch 22: `bars` and `ellipsis`. The catalog
+therefore contains 95 approved outline icons and 21 untouched solid icons.
 
 ## Review of the `style` metadata change
 
