@@ -287,7 +287,7 @@
   {
     "icon": "layers",
     "status": "in_progress",
-    "note": "Solid layers icon being simplified toward a cleaner three-tier stacked silhouette."
+    "note": "Batch 28 outline layers candidate with three equal-width rhombic levels."
   },
   {
     "icon": "creditCard",
@@ -302,7 +302,7 @@
   {
     "icon": "globe",
     "status": "in_progress",
-    "note": "Solid globe icon being simplified toward a cleaner meridian-and-latitude silhouette."
+    "note": "Batch 28 outline globe candidate with one meridian, a central axis, and a clear equator."
   },
   {
     "icon": "receipt",

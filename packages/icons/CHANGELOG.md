@@ -52,8 +52,9 @@
 - Added the approved communication-action family `share`, `send`, and `phone`.
 - Added the approved system-hardware family `cpu` and `plug`.
 - Added the approved dynamic-signal family `activity` and `sparkles`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 107 approved migrated icons are
-  `outline`, while 9 untouched legacy icons remain `solid`.
+- Added the approved spatial-structure family `globe` and `layers`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 109 approved migrated icons are
+  `outline`, while 7 independent brand marks remain `solid`.
 
 ### Fixed
 
