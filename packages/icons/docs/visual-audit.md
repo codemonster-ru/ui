@@ -301,7 +301,10 @@ On 2026-08-01, the project owner accepted security-access Batch 24: `shield` and
 deliberately large bounds of `key`. The catalog contains 100 approved outline icons.
 
 On 2026-08-02, the project owner accepted communication-action Batch 25: `share`, `send`, and
-`phone`. The catalog therefore contains 103 approved outline icons and 13 untouched solid icons.
+`phone`. The catalog contains 103 approved outline icons.
+
+On 2026-08-02, the project owner accepted system-hardware Batch 26: `cpu` and `plug`. The catalog
+therefore contains 105 approved outline icons and 11 untouched solid icons.
 
 ## Review of the `style` metadata change
 

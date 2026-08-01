@@ -50,8 +50,9 @@
 - Added the approved favorite-marker family `bookmark`, `heart`, and `star`.
 - Added the approved security-access family `shield` and `key`.
 - Added the approved communication-action family `share`, `send`, and `phone`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 103 approved migrated icons are
-  `outline`, while 13 untouched legacy icons remain `solid`.
+- Added the approved system-hardware family `cpu` and `plug`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 105 approved migrated icons are
+  `outline`, while 11 untouched legacy icons remain `solid`.
 
 ### Fixed
 

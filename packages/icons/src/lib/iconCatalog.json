@@ -457,7 +457,7 @@
   "cpu": {
     "title": "Cpu",
     "keywords": ["cpu"],
-    "style": "solid"
+    "style": "outline"
   },
   "hardDrive": {
     "title": "Hard Drive",
@@ -477,7 +477,7 @@
   "plug": {
     "title": "Plug",
     "keywords": ["plug"],
-    "style": "solid"
+    "style": "outline"
   },
   "send": {
     "title": "Send",
