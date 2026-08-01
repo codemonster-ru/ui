@@ -27,7 +27,7 @@
   "bookmark": {
     "title": "Bookmark",
     "keywords": ["bookmark"],
-    "style": "solid"
+    "style": "outline"
   },
   "calendar": {
     "title": "Calendar",
@@ -137,7 +137,7 @@
   "heart": {
     "title": "Heart",
     "keywords": ["heart"],
-    "style": "solid"
+    "style": "outline"
   },
   "house": {
     "title": "House",
@@ -212,7 +212,7 @@
   "star": {
     "title": "Star",
     "keywords": ["star"],
-    "style": "solid"
+    "style": "outline"
   },
   "sun": {
     "title": "Sun",

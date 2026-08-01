@@ -292,7 +292,10 @@ On 2026-08-01, the project owner accepted navigation-link Batch 21: `link` and `
 catalog contains 93 approved outline icons.
 
 On 2026-08-01, the project owner accepted menu-trigger Batch 22: `bars` and `ellipsis`. The catalog
-therefore contains 95 approved outline icons and 21 untouched solid icons.
+contains 95 approved outline icons.
+
+On 2026-08-01, the project owner accepted favorite-marker Batch 23: `bookmark`, `heart`, and `star`.
+The catalog therefore contains 98 approved outline icons and 18 untouched solid icons.
 
 ## Review of the `style` metadata change
 
