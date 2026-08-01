@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01T19:48:04.460Z",
+  "generatedAt": "2026-08-01T19:54:22.583Z",
   "summary": {
     "iconCount": 116,
     "fillOnly": 7,
@@ -72,6 +72,14 @@
   "migrationBatch26Consistency": { "invalidIcons": [], "duplicates": [], "countMismatch": [], "styleMismatch": [] },
   "migrationBatch27Consistency": { "invalidIcons": [], "duplicates": [], "countMismatch": [], "styleMismatch": [] },
   "migrationBatch28Consistency": { "invalidIcons": [], "duplicates": [], "countMismatch": [], "styleMismatch": [] },
+  "migrationBatch29Consistency": {
+    "invalidIcons": [],
+    "duplicates": [],
+    "countMismatch": [],
+    "styleMismatch": [],
+    "missingBaselines": [],
+    "geometryMismatch": []
+  },
   "icons": [
     {
       "icon": "activity",

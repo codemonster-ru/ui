@@ -42,7 +42,8 @@
           view === 'batch25' ||
           view === 'batch26' ||
           view === 'batch27' ||
-          view === 'batch28'
+          view === 'batch28' ||
+          view === 'batch29'
         "
         class="reference-review"
       >
@@ -505,6 +506,8 @@ import migrationBatch27BeforeJson from './lib/iconMigrationBatch27Before.json';
 import migrationBatch27Json from './lib/iconMigrationBatch27.json';
 import migrationBatch28BeforeJson from './lib/iconMigrationBatch28Before.json';
 import migrationBatch28Json from './lib/iconMigrationBatch28.json';
+import migrationBatch29BeforeJson from './lib/iconMigrationBatch29Before.json';
+import migrationBatch29Json from './lib/iconMigrationBatch29.json';
 import beforeIconsJson from './lib/iconReferenceBefore.json';
 import referenceSetJson from './lib/iconReferenceSet.json';
 import type { IconName } from './lib/iconMeta';
@@ -538,6 +541,7 @@ type View =
   | 'batch26'
   | 'batch27'
   | 'batch28'
+  | 'batch29'
   | 'stroke'
   | 'ui'
   | 'families'
@@ -604,6 +608,8 @@ const migrationBatch27Before = migrationBatch27BeforeJson as Partial<Record<Icon
 const migrationBatch27 = migrationBatch27Json as IconName[];
 const migrationBatch28Before = migrationBatch28BeforeJson as Partial<Record<IconName, string>>;
 const migrationBatch28 = migrationBatch28Json as IconName[];
+const migrationBatch29Before = migrationBatch29BeforeJson as Partial<Record<IconName, string>>;
+const migrationBatch29 = migrationBatch29Json as IconName[];
 const referenceSet = referenceSetJson as IconName[];
 const sizes = [16, 20, 24, 32] as const;
 const strokeSizes = [16, 20, 24] as const;
@@ -646,6 +652,7 @@ const viewOptions: Array<{ id: View; label: string }> = [
   { id: 'batch26', label: 'Batch 26 review' },
   { id: 'batch27', label: 'Batch 27 review' },
   { id: 'batch28', label: 'Batch 28 review' },
+  { id: 'batch29', label: 'Batch 29 review' },
   { id: 'stroke', label: 'Stroke 1.75 / 1.8 / 2' },
   { id: 'ui', label: 'SaaS contexts' },
   { id: 'families', label: 'Families' },
@@ -779,6 +786,13 @@ const reviewFamilyByIcon: Partial<Record<IconName, string>> = {
   sparkles: 'Dynamic signals',
   globe: 'Spatial structure',
   layers: 'Spatial structure',
+  github: 'Brand marks',
+  telegram: 'Brand marks',
+  vk: 'Brand marks',
+  x: 'Brand marks',
+  youtube: 'Brand marks',
+  facebook: 'Brand marks',
+  instagram: 'Brand marks',
 };
 
 const family = (name: string, icons: IconName[]) => ({ name, icons });
@@ -977,6 +991,12 @@ const activeReviewCopy = computed(() => {
       note: 'Two spatial-structure icons approved by the project owner.',
     };
   }
+  if (view.value === 'batch29') {
+    return {
+      eyebrow: 'Migration batch 29 · approved',
+      note: 'Seven independent brand marks approved with their geometry preserved exactly.',
+    };
+  }
   return {
     eyebrow: 'Approved reference review',
     note: 'Icons render at their stated production size. The emphasized row is 20 px.',
@@ -1011,6 +1031,7 @@ const activeReviewSet = computed(() => {
   if (view.value === 'batch26') return migrationBatch26;
   if (view.value === 'batch27') return migrationBatch27;
   if (view.value === 'batch28') return migrationBatch28;
+  if (view.value === 'batch29') return migrationBatch29;
   return referenceSet;
 });
 const activeBeforeIcons = computed(() => {
@@ -1041,6 +1062,7 @@ const activeBeforeIcons = computed(() => {
   if (view.value === 'batch26') return migrationBatch26Before;
   if (view.value === 'batch27') return migrationBatch27Before;
   if (view.value === 'batch28') return migrationBatch28Before;
+  if (view.value === 'batch29') return migrationBatch29Before;
   return beforeIcons;
 });
 
@@ -1052,7 +1074,12 @@ const referenceReview = computed(() =>
       ...auditEntry,
       icon,
       family: reviewFamilyByIcon[icon] ?? auditEntry.group,
-      change: refinementIcons.has(icon) ? 'refinement' : 'complete redraw',
+      change:
+        view.value === 'batch29'
+          ? 'preserved brand geometry'
+          : refinementIcons.has(icon)
+            ? 'refinement'
+            : 'complete redraw',
     };
   }),
 );

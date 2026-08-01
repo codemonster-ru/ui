@@ -24,8 +24,11 @@ const toStaticSvg = (source, iconName) => {
     throw new Error(`Missing template for "${iconName}".`);
   }
 
+  const hasExplicitViewBox = /viewBox="[^"]+"/.test(template);
+  const staticSvgAttrs = `xmlns="http://www.w3.org/2000/svg"${hasExplicitViewBox ? '' : ' viewBox="0 0 512 512"'} fill="none"`;
+
   return template
-    .replace(/v-bind="iconSvgAttrs"/g, 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none"')
+    .replace(/v-bind="iconSvgAttrs"/g, staticSvgAttrs)
     .replace(/:width="size"/g, 'width="100%"')
     .replace(/:height="size"/g, 'height="100%"')
     .replace(/:id="maskId"/g, `id="before-${iconName}-mask"`)

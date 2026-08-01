@@ -53,6 +53,8 @@
 - Added the approved system-hardware family `cpu` and `plug`.
 - Added the approved dynamic-signal family `activity` and `sparkles`.
 - Added the approved spatial-structure family `globe` and `layers`.
+- Completed the brand-preservation review for `github`, `telegram`, `vk`, `x`, `youtube`,
+  `facebook`, and `instagram` without altering their trademark geometry.
 - Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 109 approved migrated icons are
   `outline`, while 7 independent brand marks remain `solid`.
 
