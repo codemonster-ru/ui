@@ -39,6 +39,8 @@ const migrationBatch25Path = resolve(rootDir, 'src/lib/iconMigrationBatch25.json
 const migrationBatch26Path = resolve(rootDir, 'src/lib/iconMigrationBatch26.json');
 const migrationBatch27Path = resolve(rootDir, 'src/lib/iconMigrationBatch27.json');
 const migrationBatch28Path = resolve(rootDir, 'src/lib/iconMigrationBatch28.json');
+const migrationBatch29Path = resolve(rootDir, 'src/lib/iconMigrationBatch29.json');
+const migrationBatch29BeforePath = resolve(rootDir, 'src/lib/iconMigrationBatch29Before.json');
 const validateOnly = process.argv.includes('--validate-only');
 const metadata = JSON.parse(readFileSync(metadataPath, 'utf8'));
 const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
@@ -72,6 +74,8 @@ const migrationBatch25 = JSON.parse(readFileSync(migrationBatch25Path, 'utf8'));
 const migrationBatch26 = JSON.parse(readFileSync(migrationBatch26Path, 'utf8'));
 const migrationBatch27 = JSON.parse(readFileSync(migrationBatch27Path, 'utf8'));
 const migrationBatch28 = JSON.parse(readFileSync(migrationBatch28Path, 'utf8'));
+const migrationBatch29 = JSON.parse(readFileSync(migrationBatch29Path, 'utf8'));
+const migrationBatch29Before = JSON.parse(readFileSync(migrationBatch29BeforePath, 'utf8'));
 const outlineSource = readFileSync(resolve(rootDir, 'src/lib/internal/outlineIcon.ts'), 'utf8');
 const outlineObjectBody = outlineSource.match(
   /export const outlineGeometry = \{([\s\S]*?)\n\} as const satisfies/,
@@ -124,6 +128,25 @@ const getTemplate = (source, iconName) => {
   const nodes = geometry.map((node) => `<${node.tag} ${serializeAttrs(node.attrs)} />`).join('');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="512" height="512" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${nodes}</svg>`;
+};
+
+const toBaselineSvg = (source, iconName) => {
+  const template = source.match(/<template>([\s\S]*?)<\/template>/)?.[1].trim();
+
+  if (!template) {
+    throw new Error(`Missing template for preserved brand mark "${iconName}".`);
+  }
+
+  const hasExplicitViewBox = /viewBox="[^"]+"/.test(template);
+  const staticSvgAttrs = `xmlns="http://www.w3.org/2000/svg"${hasExplicitViewBox ? '' : ' viewBox="0 0 512 512"'} fill="none"`;
+
+  return template
+    .replace(/v-bind="iconSvgAttrs"/g, staticSvgAttrs)
+    .replace(/:width="size"/g, 'width="100%"')
+    .replace(/:height="size"/g, 'height="100%"')
+    .replace(/:id="maskId"/g, `id="before-${iconName}-mask"`)
+    .replace(/:mask="`url\(#\$\{maskId\}\)`"/g, `mask="url(#before-${iconName}-mask)"`)
+    .replace(/currentColor/g, 'var(--audit-icon-color, currentColor)');
 };
 
 const toStaticSvg = (template, iconName) => {
@@ -605,6 +628,17 @@ const migrationBatch28Consistency = {
   countMismatch: migrationBatch28.length === 2 ? [] : [migrationBatch28.length],
   styleMismatch: migrationBatch28.filter((icon) => catalog[icon]?.style !== 'outline'),
 };
+const migrationBatch29Consistency = {
+  invalidIcons: migrationBatch29.filter((icon) => !iconNames.includes(icon)),
+  duplicates: [...new Set(migrationBatch29.filter((icon, index) => migrationBatch29.indexOf(icon) !== index))],
+  countMismatch: migrationBatch29.length === 7 ? [] : [migrationBatch29.length],
+  styleMismatch: migrationBatch29.filter((icon) => catalog[icon]?.style !== 'solid'),
+  missingBaselines: migrationBatch29.filter((icon) => !migrationBatch29Before[icon]),
+  geometryMismatch: migrationBatch29.filter((icon) => {
+    const source = readFileSync(resolve(componentsDir, `${icon}.vue`), 'utf8');
+    return migrationBatch29Before[icon] !== toBaselineSvg(source, icon);
+  }),
+};
 
 const result = {
   generatedAt: new Date().toISOString(),
@@ -650,6 +684,7 @@ const result = {
   migrationBatch26Consistency,
   migrationBatch27Consistency,
   migrationBatch28Consistency,
+  migrationBatch29Consistency,
   icons: entries,
 };
 const output = await format(JSON.stringify(result), { parser: 'json', printWidth: 120 });
@@ -768,6 +803,10 @@ if (Object.values(migrationBatch27Consistency).some((items) => items.length > 0)
 
 if (Object.values(migrationBatch28Consistency).some((items) => items.length > 0)) {
   throw new Error(`Migration batch 28 mismatch: ${JSON.stringify(migrationBatch28Consistency)}`);
+}
+
+if (Object.values(migrationBatch29Consistency).some((items) => items.length > 0)) {
+  throw new Error(`Migration batch 29 mismatch: ${JSON.stringify(migrationBatch29Consistency)}`);
 }
 
 if (validateOnly) {
