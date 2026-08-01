@@ -73,6 +73,7 @@
     "snapshot:batch16": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch16.json --output=src/lib/iconMigrationBatch16Before.json",
     "snapshot:batch17": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch17.json --output=src/lib/iconMigrationBatch17Before.json",
     "snapshot:batch18": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch18.json --output=src/lib/iconMigrationBatch18Before.json",
+    "snapshot:batch19": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch19.json --output=src/lib/iconMigrationBatch19Before.json",
     "create-icon": "node ./scripts/create-icon.mjs",
     "generate": "node ./scripts/generate-icons.mjs",
     "validate-icons": "node ./scripts/generate-icons.mjs --validate-only && npm run audit:icons:check",

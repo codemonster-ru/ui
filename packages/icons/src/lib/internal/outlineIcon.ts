@@ -242,6 +242,8 @@ export const outlineGeometry = {
     path('M2.5 12.5h8M13.5 12.5h8'),
     rect(10.5, 11.5, 3, 2, 0.5),
   ],
+  expand: [polyline('15 3 21 3 21 9'), line(14, 10, 21, 3), polyline('9 21 3 21 3 15'), line(3, 21, 10, 14)],
+  collapse: [line(3, 21, 9, 15), polyline('9 21 9 15 3 15'), line(15, 9, 21, 3), polyline('15 3 15 9 21 9')],
   lock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 8.5 0V10'), path('M12 14.25v2.25')],
   unlock: [rect(4.75, 10, 14.5, 10.75, 2), path('M7.75 10V7.25a4.25 4.25 0 0 1 7.25-3'), path('M12 14.25v2.25')],
   grid: [
