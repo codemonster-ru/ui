@@ -117,7 +117,7 @@
   {
     "icon": "bars",
     "status": "in_progress",
-    "note": "Rounded menu bars aligned to the same stroke-based control family."
+    "note": "Batch 22 three-line menu candidate with equal reach and vertical spacing."
   },
   {
     "icon": "calendar",
@@ -422,7 +422,7 @@
   {
     "icon": "ellipsis",
     "status": "in_progress",
-    "note": "Solid ellipsis icon being simplified toward a cleaner three-dot horizontal action silhouette."
+    "note": "Batch 22 overflow-menu candidate with three larger equal stroke circles."
   },
   {
     "icon": "send",

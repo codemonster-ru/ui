@@ -17,7 +17,7 @@
   "bars": {
     "title": "Bars",
     "keywords": ["bars"],
-    "style": "solid"
+    "style": "outline"
   },
   "bell": {
     "title": "Bell",
@@ -102,7 +102,7 @@
   "ellipsis": {
     "title": "Ellipsis",
     "keywords": ["ellipsis"],
-    "style": "solid"
+    "style": "outline"
   },
   "externalLink": {
     "title": "External Link",
