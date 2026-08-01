@@ -286,7 +286,10 @@ On 2026-08-01, the project owner accepted layout-action Batch 19: `expand` and `
 catalog contains 89 approved outline icons.
 
 On 2026-08-01, the project owner accepted data-control Batch 20: `sliders` and `sort`. The catalog
-therefore contains 91 approved outline icons and 25 untouched solid icons.
+contains 91 approved outline icons.
+
+On 2026-08-01, the project owner accepted navigation-link Batch 21: `link` and `externalLink`. The
+catalog therefore contains 93 approved outline icons and 23 untouched solid icons.
 
 ## Review of the `style` metadata change
 

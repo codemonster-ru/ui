@@ -34,7 +34,8 @@
           view === 'batch17' ||
           view === 'batch18' ||
           view === 'batch19' ||
-          view === 'batch20'
+          view === 'batch20' ||
+          view === 'batch21'
         "
         class="reference-review"
       >
@@ -481,6 +482,8 @@ import migrationBatch19BeforeJson from './lib/iconMigrationBatch19Before.json';
 import migrationBatch19Json from './lib/iconMigrationBatch19.json';
 import migrationBatch20BeforeJson from './lib/iconMigrationBatch20Before.json';
 import migrationBatch20Json from './lib/iconMigrationBatch20.json';
+import migrationBatch21BeforeJson from './lib/iconMigrationBatch21Before.json';
+import migrationBatch21Json from './lib/iconMigrationBatch21.json';
 import beforeIconsJson from './lib/iconReferenceBefore.json';
 import referenceSetJson from './lib/iconReferenceSet.json';
 import type { IconName } from './lib/iconMeta';
@@ -506,6 +509,7 @@ type View =
   | 'batch18'
   | 'batch19'
   | 'batch20'
+  | 'batch21'
   | 'stroke'
   | 'ui'
   | 'families'
@@ -556,6 +560,8 @@ const migrationBatch19Before = migrationBatch19BeforeJson as Partial<Record<Icon
 const migrationBatch19 = migrationBatch19Json as IconName[];
 const migrationBatch20Before = migrationBatch20BeforeJson as Partial<Record<IconName, string>>;
 const migrationBatch20 = migrationBatch20Json as IconName[];
+const migrationBatch21Before = migrationBatch21BeforeJson as Partial<Record<IconName, string>>;
+const migrationBatch21 = migrationBatch21Json as IconName[];
 const referenceSet = referenceSetJson as IconName[];
 const sizes = [16, 20, 24, 32] as const;
 const strokeSizes = [16, 20, 24] as const;
@@ -590,6 +596,7 @@ const viewOptions: Array<{ id: View; label: string }> = [
   { id: 'batch18', label: 'Batch 18 review' },
   { id: 'batch19', label: 'Batch 19 review' },
   { id: 'batch20', label: 'Batch 20 review' },
+  { id: 'batch21', label: 'Batch 21 review' },
   { id: 'stroke', label: 'Stroke 1.75 / 1.8 / 2' },
   { id: 'ui', label: 'SaaS contexts' },
   { id: 'families', label: 'Families' },
@@ -705,6 +712,8 @@ const reviewFamilyByIcon: Partial<Record<IconName, string>> = {
   collapse: 'Layout actions',
   sliders: 'Data controls',
   sort: 'Data controls',
+  link: 'Navigation links',
+  externalLink: 'Navigation links',
 };
 
 const family = (name: string, icons: IconName[]) => ({ name, icons });
@@ -851,8 +860,14 @@ const activeReviewCopy = computed(() => {
   }
   if (view.value === 'batch20') {
     return {
-      eyebrow: 'Migration batch 20 · awaiting visual review',
-      note: 'Two data-control icons are candidates pending project-owner approval.',
+      eyebrow: 'Migration batch 20 · approved',
+      note: 'Two data-control icons approved by the project owner.',
+    };
+  }
+  if (view.value === 'batch21') {
+    return {
+      eyebrow: 'Migration batch 21 · approved',
+      note: 'Two navigation-link icons approved by the project owner.',
     };
   }
   return {
@@ -881,6 +896,7 @@ const activeReviewSet = computed(() => {
   if (view.value === 'batch18') return migrationBatch18;
   if (view.value === 'batch19') return migrationBatch19;
   if (view.value === 'batch20') return migrationBatch20;
+  if (view.value === 'batch21') return migrationBatch21;
   return referenceSet;
 });
 const activeBeforeIcons = computed(() => {
@@ -903,6 +919,7 @@ const activeBeforeIcons = computed(() => {
   if (view.value === 'batch18') return migrationBatch18Before;
   if (view.value === 'batch19') return migrationBatch19Before;
   if (view.value === 'batch20') return migrationBatch20Before;
+  if (view.value === 'batch21') return migrationBatch21Before;
   return beforeIcons;
 });
 
