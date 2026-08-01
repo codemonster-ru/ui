@@ -327,7 +327,7 @@
   {
     "icon": "plug",
     "status": "in_progress",
-    "note": "Solid plug icon being simplified toward a cleaner twin-prong silhouette."
+    "note": "Batch 26 centered outline plug candidate with equal prongs and a short cable stem."
   },
   {
     "icon": "share",
@@ -462,7 +462,7 @@
   {
     "icon": "cpu",
     "status": "in_progress",
-    "note": "Solid cpu icon being simplified toward a cleaner chip-and-core silhouette."
+    "note": "Batch 26 outline cpu candidate with a shared chip frame, compact core, and eight symmetric contacts."
   },
   {
     "icon": "grid",
