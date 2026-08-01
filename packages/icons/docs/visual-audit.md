@@ -313,6 +313,11 @@ On 2026-08-02, the project owner accepted spatial-structure Batch 28: `globe` an
 catalog therefore contains 109 approved outline icons and seven intentionally independent solid
 brand marks.
 
+On 2026-08-02, the project owner accepted brand-preservation Batch 29: `github`, `telegram`, `vk`,
+`x`, `youtube`, `facebook`, and `instagram`. Their fill-based trademark geometry remains unchanged
+and is locked to the preserved baseline. This completes review coverage for all 116 catalog icons:
+109 VueForge outline icons and seven independent solid brand marks.
+
 ## Review of the `style` metadata change
 
 ### Did real solid icons exist before the redesign?
