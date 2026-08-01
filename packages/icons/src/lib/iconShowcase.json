@@ -162,17 +162,17 @@
   {
     "icon": "bookmark",
     "status": "in_progress",
-    "note": "Solid bookmark icon being simplified toward a cleaner ribbon silhouette."
+    "note": "Batch 23 outline bookmark candidate with a broad centered ribbon notch."
   },
   {
     "icon": "star",
     "status": "in_progress",
-    "note": "Solid star icon being simplified toward a cleaner five-point silhouette."
+    "note": "Batch 23 balanced five-point outline star candidate."
   },
   {
     "icon": "heart",
     "status": "in_progress",
-    "note": "Solid heart icon being simplified toward a cleaner rounded silhouette."
+    "note": "Batch 23 symmetric outline heart candidate with a stable lower point."
   },
   {
     "icon": "sun",
