@@ -412,12 +412,12 @@
   {
     "icon": "sort",
     "status": "in_progress",
-    "note": "Solid sort icon being simplified toward a cleaner dual-direction chevron silhouette."
+    "note": "Batch 20 symmetric closed-triangle sort candidate awaiting visual review."
   },
   {
     "icon": "sliders",
     "status": "in_progress",
-    "note": "Solid sliders icon being simplified toward a cleaner three-track control silhouette."
+    "note": "Batch 20 three-track sliders candidate with separated circular handles."
   },
   {
     "icon": "ellipsis",

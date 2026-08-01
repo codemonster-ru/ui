@@ -283,7 +283,10 @@ On 2026-08-01, the project owner accepted workplace-object Batch 18: `building` 
 The catalog contains 87 approved outline icons.
 
 On 2026-08-01, the project owner accepted layout-action Batch 19: `expand` and `collapse`. The
-catalog therefore contains 89 approved outline icons and 27 untouched solid icons.
+catalog contains 89 approved outline icons.
+
+On 2026-08-01, the project owner accepted data-control Batch 20: `sliders` and `sort`. The catalog
+therefore contains 91 approved outline icons and 25 untouched solid icons.
 
 ## Review of the `style` metadata change
 
