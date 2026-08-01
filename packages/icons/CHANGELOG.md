@@ -47,8 +47,9 @@
 - Added the approved data-control family `sliders` and `sort`.
 - Added the approved navigation-link family `link` and `externalLink`.
 - Added the approved menu-trigger family `bars` and `ellipsis`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 95 approved migrated icons are
-  `outline`, while 21 untouched legacy icons remain `solid`.
+- Added the approved favorite-marker family `bookmark`, `heart`, and `star`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 98 approved migrated icons are
+  `outline`, while 18 untouched legacy icons remain `solid`.
 
 ### Fixed
 
