@@ -207,7 +207,7 @@
   "shield": {
     "title": "Shield",
     "keywords": ["shield"],
-    "style": "solid"
+    "style": "outline"
   },
   "star": {
     "title": "Star",
@@ -292,7 +292,7 @@
   "key": {
     "title": "Key",
     "keywords": ["key"],
-    "style": "solid"
+    "style": "outline"
   },
   "mail": {
     "title": "Mail",
