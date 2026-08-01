@@ -322,7 +322,7 @@
   "briefcase": {
     "title": "Briefcase",
     "keywords": ["briefcase"],
-    "style": "solid"
+    "style": "outline"
   },
   "cloud": {
     "title": "Cloud",
@@ -377,7 +377,7 @@
   "building": {
     "title": "Building",
     "keywords": ["building"],
-    "style": "solid"
+    "style": "outline"
   },
   "clock": {
     "title": "Clock",
