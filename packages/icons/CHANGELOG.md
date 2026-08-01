@@ -49,8 +49,9 @@
 - Added the approved menu-trigger family `bars` and `ellipsis`.
 - Added the approved favorite-marker family `bookmark`, `heart`, and `star`.
 - Added the approved security-access family `shield` and `key`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 100 approved migrated icons are
-  `outline`, while 16 untouched legacy icons remain `solid`.
+- Added the approved communication-action family `share`, `send`, and `phone`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 103 approved migrated icons are
+  `outline`, while 13 untouched legacy icons remain `solid`.
 
 ### Fixed
 

@@ -298,8 +298,10 @@ On 2026-08-01, the project owner accepted favorite-marker Batch 23: `bookmark`, 
 The catalog contains 98 approved outline icons.
 
 On 2026-08-01, the project owner accepted security-access Batch 24: `shield` and `key`, including the
-deliberately large bounds of `key`. The catalog therefore contains 100 approved outline icons and
-16 untouched solid icons.
+deliberately large bounds of `key`. The catalog contains 100 approved outline icons.
+
+On 2026-08-02, the project owner accepted communication-action Batch 25: `share`, `send`, and
+`phone`. The catalog therefore contains 103 approved outline icons and 13 untouched solid icons.
 
 ## Review of the `style` metadata change
 

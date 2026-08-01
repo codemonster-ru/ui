@@ -472,7 +472,7 @@
   "share": {
     "title": "Share",
     "keywords": ["share"],
-    "style": "solid"
+    "style": "outline"
   },
   "plug": {
     "title": "Plug",
@@ -482,7 +482,7 @@
   "send": {
     "title": "Send",
     "keywords": ["send"],
-    "style": "solid"
+    "style": "outline"
   },
   "inbox": {
     "title": "Inbox",
@@ -492,7 +492,7 @@
   "phone": {
     "title": "Phone",
     "keywords": ["phone"],
-    "style": "solid"
+    "style": "outline"
   },
   "unlock": {
     "title": "Unlock",
