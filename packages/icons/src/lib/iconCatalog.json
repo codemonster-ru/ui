@@ -267,12 +267,12 @@
   "sliders": {
     "title": "Sliders",
     "keywords": ["sliders"],
-    "style": "solid"
+    "style": "outline"
   },
   "sort": {
     "title": "Sort",
     "keywords": ["sort"],
-    "style": "solid"
+    "style": "outline"
   },
   "chartBar": {
     "title": "Chart Bar",

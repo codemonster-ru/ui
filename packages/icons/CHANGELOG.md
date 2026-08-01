@@ -44,8 +44,9 @@
 - Added the approved financial-object family `creditCard`, `wallet`, and `receipt`.
 - Added the approved workplace-object family `building` and `briefcase`.
 - Added the approved layout-action family `expand` and `collapse`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 89 approved migrated icons are
-  `outline`, while 27 untouched legacy icons remain `solid`.
+- Added the approved data-control family `sliders` and `sort`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 91 approved migrated icons are
+  `outline`, while 25 untouched legacy icons remain `solid`.
 
 ### Fixed
 
