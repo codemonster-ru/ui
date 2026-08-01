@@ -34,6 +34,7 @@ const migrationBatch20Path = resolve(rootDir, 'src/lib/iconMigrationBatch20.json
 const migrationBatch21Path = resolve(rootDir, 'src/lib/iconMigrationBatch21.json');
 const migrationBatch22Path = resolve(rootDir, 'src/lib/iconMigrationBatch22.json');
 const migrationBatch23Path = resolve(rootDir, 'src/lib/iconMigrationBatch23.json');
+const migrationBatch24Path = resolve(rootDir, 'src/lib/iconMigrationBatch24.json');
 const validateOnly = process.argv.includes('--validate-only');
 const metadata = JSON.parse(readFileSync(metadataPath, 'utf8'));
 const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
@@ -62,6 +63,7 @@ const migrationBatch20 = JSON.parse(readFileSync(migrationBatch20Path, 'utf8'));
 const migrationBatch21 = JSON.parse(readFileSync(migrationBatch21Path, 'utf8'));
 const migrationBatch22 = JSON.parse(readFileSync(migrationBatch22Path, 'utf8'));
 const migrationBatch23 = JSON.parse(readFileSync(migrationBatch23Path, 'utf8'));
+const migrationBatch24 = JSON.parse(readFileSync(migrationBatch24Path, 'utf8'));
 const outlineSource = readFileSync(resolve(rootDir, 'src/lib/internal/outlineIcon.ts'), 'utf8');
 const outlineObjectBody = outlineSource.match(
   /export const outlineGeometry = \{([\s\S]*?)\n\} as const satisfies/,
@@ -387,6 +389,7 @@ const relatedFamilies = [
   ['link', 'externalLink'],
   ['bars', 'ellipsis'],
   ['bookmark', 'heart', 'star'],
+  ['shield', 'key'],
   ['chevronLeft', 'chevronRight', 'chevronUp', 'chevronDown'],
   ['caretLeft', 'caretRight', 'caretUp', 'caretDown'],
   ['user', 'userPlus', 'userMinus', 'userCheck'],
@@ -560,6 +563,12 @@ const migrationBatch23Consistency = {
   countMismatch: migrationBatch23.length === 3 ? [] : [migrationBatch23.length],
   styleMismatch: migrationBatch23.filter((icon) => catalog[icon]?.style !== 'outline'),
 };
+const migrationBatch24Consistency = {
+  invalidIcons: migrationBatch24.filter((icon) => !iconNames.includes(icon)),
+  duplicates: [...new Set(migrationBatch24.filter((icon, index) => migrationBatch24.indexOf(icon) !== index))],
+  countMismatch: migrationBatch24.length === 2 ? [] : [migrationBatch24.length],
+  styleMismatch: migrationBatch24.filter((icon) => catalog[icon]?.style !== 'outline'),
+};
 
 const result = {
   generatedAt: new Date().toISOString(),
@@ -600,6 +609,7 @@ const result = {
   migrationBatch21Consistency,
   migrationBatch22Consistency,
   migrationBatch23Consistency,
+  migrationBatch24Consistency,
   icons: entries,
 };
 const output = await format(JSON.stringify(result), { parser: 'json', printWidth: 120 });
@@ -698,6 +708,10 @@ if (Object.values(migrationBatch22Consistency).some((items) => items.length > 0)
 
 if (Object.values(migrationBatch23Consistency).some((items) => items.length > 0)) {
   throw new Error(`Migration batch 23 mismatch: ${JSON.stringify(migrationBatch23Consistency)}`);
+}
+
+if (Object.values(migrationBatch24Consistency).some((items) => items.length > 0)) {
+  throw new Error(`Migration batch 24 mismatch: ${JSON.stringify(migrationBatch24Consistency)}`);
 }
 
 if (validateOnly) {
