@@ -42,8 +42,9 @@
 - Added the approved infrastructure-storage family `server` and `hardDrive`.
 - Added the approved developer-tools family `terminal` and `code`.
 - Added the approved financial-object family `creditCard`, `wallet`, and `receipt`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 85 approved migrated icons are
-  `outline`, while 31 untouched legacy icons remain `solid`.
+- Added the approved workplace-object family `building` and `briefcase`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 87 approved migrated icons are
+  `outline`, while 29 untouched legacy icons remain `solid`.
 
 ### Fixed
 
