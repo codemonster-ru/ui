@@ -477,12 +477,12 @@
   {
     "icon": "collapse",
     "status": "in_progress",
-    "note": "Solid collapse icon being simplified toward a cleaner inward-diagonal action silhouette."
+    "note": "Batch 19 inward layout-action candidate derived from the shared diagonal keyline."
   },
   {
     "icon": "expand",
     "status": "in_progress",
-    "note": "Solid expand icon being simplified toward a cleaner outward-diagonal action silhouette."
+    "note": "Batch 19 outward layout-action candidate with canonical L-shaped corner heads."
   },
   {
     "icon": "activity",
