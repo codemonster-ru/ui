@@ -304,7 +304,10 @@ On 2026-08-02, the project owner accepted communication-action Batch 25: `share`
 `phone`. The catalog contains 103 approved outline icons.
 
 On 2026-08-02, the project owner accepted system-hardware Batch 26: `cpu` and `plug`. The catalog
-therefore contains 105 approved outline icons and 11 untouched solid icons.
+contains 105 approved outline icons.
+
+On 2026-08-02, the project owner accepted dynamic-signal Batch 27: `activity` and `sparkles`. The
+catalog therefore contains 107 approved outline icons and nine untouched solid icons.
 
 ## Review of the `style` metadata change
 
