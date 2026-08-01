@@ -41,8 +41,9 @@
 - Added the approved filtering-action family `filter` and `funnelX`.
 - Added the approved infrastructure-storage family `server` and `hardDrive`.
 - Added the approved developer-tools family `terminal` and `code`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 82 approved migrated icons are
-  `outline`, while 34 untouched legacy icons remain `solid`.
+- Added the approved financial-object family `creditCard`, `wallet`, and `receipt`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 85 approved migrated icons are
+  `outline`, while 31 untouched legacy icons remain `solid`.
 
 ### Fixed
 
