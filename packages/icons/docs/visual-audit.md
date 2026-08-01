@@ -274,7 +274,10 @@ On 2026-08-01, the project owner accepted infrastructure-storage Batch 15: `serv
 The catalog contains 80 approved outline icons.
 
 On 2026-08-01, the project owner accepted developer-tools Batch 16: `terminal` and `code`. The
-catalog therefore contains 82 approved outline icons and 34 untouched solid icons.
+catalog contains 82 approved outline icons.
+
+On 2026-08-01, the project owner accepted financial-object Batch 17: `creditCard`, `wallet`, and
+`receipt`. The catalog therefore contains 85 approved outline icons and 31 untouched solid icons.
 
 ## Review of the `style` metadata change
 

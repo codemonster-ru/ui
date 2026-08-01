@@ -282,7 +282,7 @@
   "creditCard": {
     "title": "Credit Card",
     "keywords": ["credit", "card"],
-    "style": "solid"
+    "style": "outline"
   },
   "database": {
     "title": "Database",
@@ -307,7 +307,7 @@
   "receipt": {
     "title": "Receipt",
     "keywords": ["receipt"],
-    "style": "solid"
+    "style": "outline"
   },
   "users": {
     "title": "Users",
@@ -317,7 +317,7 @@
   "wallet": {
     "title": "Wallet",
     "keywords": ["wallet"],
-    "style": "solid"
+    "style": "outline"
   },
   "briefcase": {
     "title": "Briefcase",

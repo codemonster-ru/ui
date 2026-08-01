@@ -292,7 +292,7 @@
   {
     "icon": "creditCard",
     "status": "in_progress",
-    "note": "Solid credit-card icon being simplified toward a cleaner stripe-and-details silhouette."
+    "note": "Batch 17 outline payment-card candidate with a stripe and restrained details."
   },
   {
     "icon": "hardDrive",
@@ -307,7 +307,7 @@
   {
     "icon": "receipt",
     "status": "in_progress",
-    "note": "Solid receipt icon being simplified toward a cleaner serrated slip silhouette."
+    "note": "Batch 17 outline receipt candidate with symmetric torn edges and content lines."
   },
   {
     "icon": "server",
@@ -322,7 +322,7 @@
   {
     "icon": "wallet",
     "status": "in_progress",
-    "note": "Solid wallet icon being simplified toward a cleaner flap-and-button silhouette."
+    "note": "Batch 17 outline wallet candidate with a compact clasp pocket."
   },
   {
     "icon": "plug",
