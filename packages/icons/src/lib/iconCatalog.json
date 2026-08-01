@@ -347,7 +347,7 @@
   "sparkles": {
     "title": "Sparkles",
     "keywords": ["sparkles"],
-    "style": "solid"
+    "style": "outline"
   },
   "ban": {
     "title": "Ban",
@@ -367,7 +367,7 @@
   "activity": {
     "title": "Activity",
     "keywords": ["activity"],
-    "style": "solid"
+    "style": "outline"
   },
   "archive": {
     "title": "Archive",
