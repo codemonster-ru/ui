@@ -45,8 +45,9 @@
 - Added the approved workplace-object family `building` and `briefcase`.
 - Added the approved layout-action family `expand` and `collapse`.
 - Added the approved data-control family `sliders` and `sort`.
-- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 91 approved migrated icons are
-  `outline`, while 25 untouched legacy icons remain `solid`.
+- Added the approved navigation-link family `link` and `externalLink`.
+- Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 93 approved migrated icons are
+  `outline`, while 23 untouched legacy icons remain `solid`.
 
 ### Fixed
 

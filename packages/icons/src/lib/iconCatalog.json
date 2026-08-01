@@ -107,7 +107,7 @@
   "externalLink": {
     "title": "External Link",
     "keywords": ["external", "link"],
-    "style": "solid"
+    "style": "outline"
   },
   "eye": {
     "title": "Eye",
@@ -157,7 +157,7 @@
   "link": {
     "title": "Link",
     "keywords": ["link"],
-    "style": "solid"
+    "style": "outline"
   },
   "lock": {
     "title": "Lock",

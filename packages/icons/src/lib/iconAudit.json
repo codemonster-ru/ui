@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-01T04:51:28.253Z",
+  "generatedAt": "2026-08-01T06:17:17.206Z",
   "summary": {
     "iconCount": 116,
-    "fillOnly": 23,
-    "strokeOnly": 89,
+    "fillOnly": 21,
+    "strokeOnly": 91,
     "mixed": 4,
     "opticalOffsetCount": 9,
     "suspiciousCount": 20,
@@ -30,6 +30,7 @@
     { "icons": ["userMinus", "userPlus"], "distance": 8 }
   ],
   "relatedVariantWarnings": [
+    { "icons": ["link", "externalLink"], "reasons": ["bounds area ratio 1.45"] },
     { "icons": ["user", "userPlus", "userMinus", "userCheck"], "reasons": ["bounds area ratio 1.40"] }
   ],
   "showcaseConsistency": {
@@ -60,6 +61,7 @@
   "migrationBatch18Consistency": { "invalidIcons": [], "duplicates": [], "countMismatch": [], "styleMismatch": [] },
   "migrationBatch19Consistency": { "invalidIcons": [], "duplicates": [], "countMismatch": [], "styleMismatch": [] },
   "migrationBatch20Consistency": { "invalidIcons": [], "duplicates": [], "countMismatch": [], "styleMismatch": [] },
+  "migrationBatch21Consistency": { "invalidIcons": [], "duplicates": [], "countMismatch": [], "styleMismatch": [] },
   "icons": [
     {
       "icon": "activity",
@@ -1072,22 +1074,22 @@
     {
       "icon": "externalLink",
       "group": "actions",
-      "bounds": { "x": 2.44, "y": 3, "width": 19.13, "height": 18 },
+      "bounds": { "x": 1.97, "y": 1.97, "width": 20.06, "height": 20.06 },
       "center": { "x": 12, "y": 12, "dx": 0, "dy": 0 },
-      "boundsArea": 344.25,
-      "inkArea": 25.22,
+      "boundsArea": 402.5,
+      "inkArea": 25.47,
       "minimumGap": 0.94,
-      "primitiveTypes": { "path": 2 },
-      "primitiveCount": 2,
-      "usesFill": true,
-      "usesStroke": false,
-      "strokeWidths": [],
-      "linecaps": [],
-      "linejoins": [],
+      "primitiveTypes": { "path": 1, "line": 1, "polyline": 1 },
+      "primitiveCount": 3,
+      "usesFill": false,
+      "usesStroke": true,
+      "strokeWidths": [2],
+      "linecaps": ["round"],
+      "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
       "opticalOffset": { "x": 0, "y": 0 },
-      "perceptualHash": "00000000007c007e3c3e7c7e60e661c461806130603060307ff03fe000000000",
+      "perceptualHash": "0000007e1e7e3f1e603e607660e661c06188600c600c600c600c7ff83ff00000",
       "warnings": []
     },
     {
@@ -1576,22 +1578,22 @@
     {
       "icon": "link",
       "group": "actions",
-      "bounds": { "x": 1.17, "y": 3.56, "width": 21.66, "height": 16.88 },
-      "center": { "x": 12, "y": 12, "dx": 0, "dy": 0 },
-      "boundsArea": 365.45,
-      "inkArea": 24.79,
-      "minimumGap": 0.98,
-      "primitiveTypes": { "path": 1 },
-      "primitiveCount": 1,
-      "usesFill": true,
-      "usesStroke": false,
-      "strokeWidths": [],
-      "linecaps": [],
-      "linejoins": [],
+      "bounds": { "x": 2.72, "y": 4.13, "width": 18.61, "height": 14.95 },
+      "center": { "x": 12.02, "y": 11.6, "dx": 0.02, "dy": -0.4 },
+      "boundsArea": 278.27,
+      "inkArea": 17.69,
+      "minimumGap": 0.94,
+      "primitiveTypes": { "path": 2 },
+      "primitiveCount": 2,
+      "usesFill": false,
+      "usesStroke": true,
+      "strokeWidths": [2],
+      "linecaps": ["round"],
+      "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
       "opticalOffset": { "x": 0, "y": 0 },
-      "perceptualHash": "000000000038007c0f8e1fc638c67266664e631c63f871f03e001c0000000000",
+      "perceptualHash": "0000000000000078034c0fc41ccc3a5c333823f031e03e000e00000000000000",
       "warnings": []
     },
     {

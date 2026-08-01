@@ -382,12 +382,12 @@
   {
     "icon": "externalLink",
     "status": "in_progress",
-    "note": "Solid external-link icon being simplified toward a cleaner box-and-outbound-arrow silhouette."
+    "note": "Batch 21 open-frame external-link candidate with a canonical outbound arrow."
   },
   {
     "icon": "link",
     "status": "in_progress",
-    "note": "Solid link icon being simplified toward a cleaner interlocking-chain silhouette."
+    "note": "Batch 21 diagonal-chain candidate with two interlocking C-shaped links."
   },
   {
     "icon": "refresh",
