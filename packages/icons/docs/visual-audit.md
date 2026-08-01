@@ -307,7 +307,11 @@ On 2026-08-02, the project owner accepted system-hardware Batch 26: `cpu` and `p
 contains 105 approved outline icons.
 
 On 2026-08-02, the project owner accepted dynamic-signal Batch 27: `activity` and `sparkles`. The
-catalog therefore contains 107 approved outline icons and nine untouched solid icons.
+catalog contains 107 approved outline icons.
+
+On 2026-08-02, the project owner accepted spatial-structure Batch 28: `globe` and `layers`. The
+catalog therefore contains 109 approved outline icons and seven intentionally independent solid
+brand marks.
 
 ## Review of the `style` metadata change
 
