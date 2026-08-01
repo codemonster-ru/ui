@@ -432,12 +432,12 @@
   "collapse": {
     "title": "Collapse",
     "keywords": ["collapse"],
-    "style": "solid"
+    "style": "outline"
   },
   "expand": {
     "title": "Expand",
     "keywords": ["expand"],
-    "style": "solid"
+    "style": "outline"
   },
   "file": {
     "title": "File",

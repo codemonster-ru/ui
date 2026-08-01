@@ -280,7 +280,10 @@ On 2026-08-01, the project owner accepted financial-object Batch 17: `creditCard
 `receipt`. The catalog contains 85 approved outline icons.
 
 On 2026-08-01, the project owner accepted workplace-object Batch 18: `building` and `briefcase`.
-The catalog therefore contains 87 approved outline icons and 29 untouched solid icons.
+The catalog contains 87 approved outline icons.
+
+On 2026-08-01, the project owner accepted layout-action Batch 19: `expand` and `collapse`. The
+catalog therefore contains 89 approved outline icons and 27 untouched solid icons.
 
 ## Review of the `style` metadata change
 
