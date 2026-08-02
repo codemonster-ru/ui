@@ -1,48 +1,48 @@
 [
   {
     "icon": "arrowLeft",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Rounded stroke-based left arrow aligned to the current reference direction."
   },
   {
     "icon": "arrowLeftLong",
-    "status": "in_progress",
-    "note": "Batch 11 extended left arrow candidate derived from the approved directional geometry."
+    "status": "approved",
+    "note": "Approved Batch 11 extended left arrow icon derived from the approved directional geometry."
   },
   {
     "icon": "arrowTurnUpLeft",
-    "status": "in_progress",
-    "note": "Batch 12 turn-up-left candidate with the canonical bend and arrowhead."
+    "status": "approved",
+    "note": "Approved Batch 12 turn-up-left icon with the canonical bend and arrowhead."
   },
   {
     "icon": "arrowTurnUpRight",
-    "status": "in_progress",
-    "note": "Batch 12 turn-up-right candidate mirrored from the same construction."
+    "status": "approved",
+    "note": "Approved Batch 12 turn-up-right icon mirrored from the same construction."
   },
   {
     "icon": "arrowTurnRightUp",
-    "status": "in_progress",
-    "note": "Batch 12 turn-right-up candidate rotated from the same construction."
+    "status": "approved",
+    "note": "Approved Batch 12 turn-right-up icon rotated from the same construction."
   },
   {
     "icon": "arrowTurnLeftDown",
-    "status": "in_progress",
-    "note": "Batch 12 turn-left-down candidate rotated from the same construction."
+    "status": "approved",
+    "note": "Approved Batch 12 turn-left-down icon rotated from the same construction."
   },
   {
     "icon": "arrowRight",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Mirrored rounded stroke arrow paired with the current left arrow."
   },
   {
     "icon": "arrowRightLong",
-    "status": "in_progress",
-    "note": "Batch 11 extended right arrow candidate derived from the approved directional geometry."
+    "status": "approved",
+    "note": "Approved Batch 11 extended right arrow icon derived from the approved directional geometry."
   },
   {
     "icon": "arrowUpLong",
-    "status": "in_progress",
-    "note": "Batch 11 extended up arrow candidate derived from the approved directional geometry."
+    "status": "approved",
+    "note": "Approved Batch 11 extended up arrow icon derived from the approved directional geometry."
   },
   {
     "icon": "arrowUp",
@@ -56,123 +56,123 @@
   },
   {
     "icon": "arrowDownLong",
-    "status": "in_progress",
-    "note": "Batch 11 extended down arrow candidate derived from the approved directional geometry."
+    "status": "approved",
+    "note": "Approved Batch 11 extended down arrow icon derived from the approved directional geometry."
   },
   {
     "icon": "check",
-    "status": "in_progress",
-    "note": "Solid-only check mark being aligned to the current rounded reference."
+    "status": "approved",
+    "note": "Approved outline check mark aligned to the current rounded reference."
   },
   {
     "icon": "xmark",
-    "status": "in_progress",
-    "note": "Solid-only rounded x mark aligned to the same stroke-based reference family."
+    "status": "approved",
+    "note": "Approved outline rounded x mark aligned to the same stroke-based reference family."
   },
   {
     "icon": "plus",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Rounded plus mark aligned to the current stroke-based control icon family."
   },
   {
     "icon": "minus",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Rounded minus mark aligned to the same control icon reference family."
   },
   {
     "icon": "copy",
-    "status": "in_progress",
-    "note": "Batch 9 stacked outline file candidate awaiting visual review."
+    "status": "approved",
+    "note": "Approved Batch 9 stacked outline file icon."
   },
   {
     "icon": "clipboard",
-    "status": "in_progress",
-    "note": "Batch 9 outline board-and-clip candidate awaiting visual review."
+    "status": "approved",
+    "note": "Approved Batch 9 outline board-and-clip icon."
   },
   {
     "icon": "magnifyingGlass",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Rounded search icon aligned to the current reference-led stroke family."
   },
   {
     "icon": "chevronDown",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Rounded chevron aligned to the same stroke-based reference family."
   },
   {
     "icon": "chevronUp",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Mirrored rounded chevron paired with the current down chevron."
   },
   {
     "icon": "chevronLeft",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Rounded left chevron aligned to the same stroke-based chevron family."
   },
   {
     "icon": "chevronRight",
-    "status": "in_progress",
+    "status": "approved",
     "note": "Rounded right chevron mirrored from the same family."
   },
   {
     "icon": "bars",
-    "status": "in_progress",
-    "note": "Batch 22 three-line menu candidate with equal reach and vertical spacing."
+    "status": "approved",
+    "note": "Approved Batch 22 three-line menu icon with equal reach and vertical spacing."
   },
   {
     "icon": "calendar",
-    "status": "in_progress",
-    "note": "Solid calendar being simplified toward a cleaner header-and-body silhouette."
+    "status": "approved",
+    "note": "Approved outline calendar with a cleaner header-and-body silhouette."
   },
   {
     "icon": "user",
-    "status": "in_progress",
-    "note": "Solid user icon being simplified toward a cleaner head-and-shoulders silhouette."
+    "status": "approved",
+    "note": "Approved outline user icon with a cleaner head-and-shoulders silhouette."
   },
   {
     "icon": "mail",
-    "status": "in_progress",
-    "note": "Solid mail icon being simplified toward a cleaner envelope silhouette."
+    "status": "approved",
+    "note": "Approved outline mail icon with a cleaner envelope silhouette."
   },
   {
     "icon": "folder",
-    "status": "in_progress",
-    "note": "Solid folder being simplified toward a cleaner tabbed silhouette."
+    "status": "approved",
+    "note": "Approved outline folder with a cleaner tabbed silhouette."
   },
   {
     "icon": "folderOpen",
-    "status": "in_progress",
-    "note": "Solid open-folder icon being simplified toward a cleaner layered folder silhouette."
+    "status": "approved",
+    "note": "Approved outline open-folder icon with a cleaner layered folder silhouette."
   },
   {
     "icon": "file",
-    "status": "in_progress",
-    "note": "Solid file icon being simplified toward a cleaner folded-corner silhouette."
+    "status": "approved",
+    "note": "Approved outline file icon with a cleaner folded-corner silhouette."
   },
   {
     "icon": "fileText",
-    "status": "in_progress",
-    "note": "Solid file-text icon being simplified toward a cleaner document-with-content silhouette."
+    "status": "approved",
+    "note": "Approved outline file-text icon with a cleaner document-with-content silhouette."
   },
   {
     "icon": "house",
-    "status": "in_progress",
-    "note": "Solid house icon being simplified toward a cleaner roof-and-door silhouette."
+    "status": "approved",
+    "note": "Approved outline house icon with a cleaner roof-and-door silhouette."
   },
   {
     "icon": "bookmark",
-    "status": "in_progress",
-    "note": "Batch 23 outline bookmark candidate with a broad centered ribbon notch."
+    "status": "approved",
+    "note": "Approved Batch 23 outline bookmark icon with a broad centered ribbon notch."
   },
   {
     "icon": "star",
-    "status": "in_progress",
-    "note": "Batch 23 balanced five-point outline star candidate."
+    "status": "approved",
+    "note": "Approved Batch 23 balanced five-point outline star icon."
   },
   {
     "icon": "heart",
-    "status": "in_progress",
-    "note": "Batch 23 symmetric outline heart candidate with a stable lower point."
+    "status": "approved",
+    "note": "Approved Batch 23 symmetric outline heart icon with a stable lower point."
   },
   {
     "icon": "sun",
@@ -186,38 +186,38 @@
   },
   {
     "icon": "info",
-    "status": "in_progress",
-    "note": "Solid info icon being simplified toward a cleaner lowercase-i silhouette."
+    "status": "approved",
+    "note": "Approved outline info icon with a cleaner lowercase-i silhouette."
   },
   {
     "icon": "infoCircle",
-    "status": "in_progress",
-    "note": "Solid info-circle icon matching the current filled status-circle construction."
+    "status": "approved",
+    "note": "Approved outline info-circle icon matching the shared outline status-circle construction."
   },
   {
     "icon": "warning",
-    "status": "in_progress",
-    "note": "Solid warning icon being simplified toward a cleaner alert triangle silhouette."
+    "status": "approved",
+    "note": "Approved outline warning icon with a cleaner alert triangle silhouette."
   },
   {
     "icon": "question",
-    "status": "in_progress",
-    "note": "Solid question icon being simplified toward a cleaner standalone question mark silhouette."
+    "status": "approved",
+    "note": "Approved outline question icon with a cleaner standalone question mark silhouette."
   },
   {
     "icon": "questionCircle",
-    "status": "in_progress",
-    "note": "Solid question-circle icon matching the current filled status-circle construction."
+    "status": "approved",
+    "note": "Approved outline question-circle icon matching the shared outline status-circle construction."
   },
   {
     "icon": "checkCircle",
-    "status": "in_progress",
-    "note": "Solid check-circle icon being simplified toward a cleaner confirmed state silhouette."
+    "status": "approved",
+    "note": "Approved outline check-circle icon with a cleaner confirmed state silhouette."
   },
   {
     "icon": "shield",
-    "status": "in_progress",
-    "note": "Batch 24 symmetric outline shield candidate with a stable lower point."
+    "status": "approved",
+    "note": "Approved Batch 24 symmetric outline shield icon with a stable lower point."
   },
   {
     "icon": "eye",
@@ -231,8 +231,8 @@
   },
   {
     "icon": "bell",
-    "status": "in_progress",
-    "note": "Solid bell being simplified toward a cleaner alert silhouette."
+    "status": "approved",
+    "note": "Approved outline bell with a cleaner alert silhouette."
   },
   {
     "icon": "gear",
@@ -241,123 +241,123 @@
   },
   {
     "icon": "message",
-    "status": "in_progress",
-    "note": "Solid message icon being simplified toward a cleaner chat bubble silhouette."
+    "status": "approved",
+    "note": "Approved outline message icon with a cleaner chat bubble silhouette."
   },
   {
     "icon": "lock",
-    "status": "in_progress",
-    "note": "Solid lock being simplified toward a cleaner shackle-and-body silhouette."
+    "status": "approved",
+    "note": "Approved outline lock with a cleaner shackle-and-body silhouette."
   },
   {
     "icon": "unlock",
-    "status": "in_progress",
-    "note": "Solid unlock being simplified to match the new lock body with an open shackle."
+    "status": "approved",
+    "note": "Approved outline unlock matching the shared lock body with an open shackle."
   },
   {
     "icon": "archive",
-    "status": "in_progress",
-    "note": "Batch 10 outline archive candidate with a separate lid and centered handle."
+    "status": "approved",
+    "note": "Approved Batch 10 outline archive icon with a separate lid and centered handle."
   },
   {
     "icon": "inbox",
-    "status": "in_progress",
-    "note": "Batch 10 outline inbox candidate with a centered receiving notch."
+    "status": "approved",
+    "note": "Approved Batch 10 outline inbox icon with a centered receiving notch."
   },
   {
     "icon": "briefcase",
-    "status": "in_progress",
-    "note": "Batch 18 outline briefcase candidate with a centered handle and clasp."
+    "status": "approved",
+    "note": "Approved Batch 18 outline briefcase icon with a centered handle and clasp."
   },
   {
     "icon": "building",
-    "status": "in_progress",
-    "note": "Batch 18 outline building candidate with four square windows and a centered doorway."
+    "status": "approved",
+    "note": "Approved Batch 18 outline building icon with four square windows and a centered doorway."
   },
   {
     "icon": "chartBar",
-    "status": "in_progress",
-    "note": "Solid chart-bar icon being simplified toward a cleaner axis-and-horizontal-bars silhouette."
+    "status": "approved",
+    "note": "Approved outline chart-bar icon with a cleaner axis-and-horizontal-bars silhouette."
   },
   {
     "icon": "database",
-    "status": "in_progress",
-    "note": "Solid database icon being simplified toward a cleaner stacked-cylinder silhouette."
+    "status": "approved",
+    "note": "Approved outline database icon with a cleaner stacked-cylinder silhouette."
   },
   {
     "icon": "layers",
-    "status": "in_progress",
-    "note": "Batch 28 outline layers candidate with three equal-width rhombic levels."
+    "status": "approved",
+    "note": "Approved Batch 28 outline layers icon with three equal-width rhombic levels."
   },
   {
     "icon": "creditCard",
-    "status": "in_progress",
-    "note": "Batch 17 outline payment-card candidate with a stripe and restrained details."
+    "status": "approved",
+    "note": "Approved Batch 17 outline payment-card icon with a stripe and restrained details."
   },
   {
     "icon": "hardDrive",
-    "status": "in_progress",
-    "note": "Batch 15 outline drive candidate with a lower status panel and restrained indicators."
+    "status": "approved",
+    "note": "Approved Batch 15 outline drive icon with a lower status panel and restrained indicators."
   },
   {
     "icon": "globe",
-    "status": "in_progress",
-    "note": "Batch 28 outline globe candidate with one meridian, a central axis, and a clear equator."
+    "status": "approved",
+    "note": "Approved Batch 28 outline globe icon with one meridian, a central axis, and a clear equator."
   },
   {
     "icon": "receipt",
-    "status": "in_progress",
-    "note": "Batch 17 outline receipt candidate with symmetric torn edges and content lines."
+    "status": "approved",
+    "note": "Approved Batch 17 outline receipt icon with symmetric torn edges and content lines."
   },
   {
     "icon": "server",
-    "status": "in_progress",
-    "note": "Batch 15 outline server candidate with two equal rack units and matched indicators."
+    "status": "approved",
+    "note": "Approved Batch 15 outline server icon with two equal rack units and matched indicators."
   },
   {
     "icon": "terminal",
-    "status": "in_progress",
-    "note": "Batch 16 balanced outline terminal prompt candidate awaiting visual review."
+    "status": "approved",
+    "note": "Approved Batch 16 balanced outline terminal prompt icon."
   },
   {
     "icon": "wallet",
-    "status": "in_progress",
-    "note": "Batch 17 outline wallet candidate with a compact clasp pocket."
+    "status": "approved",
+    "note": "Approved Batch 17 outline wallet icon with a compact clasp pocket."
   },
   {
     "icon": "plug",
-    "status": "in_progress",
-    "note": "Batch 26 centered outline plug candidate with equal prongs and a short cable stem."
+    "status": "approved",
+    "note": "Approved Batch 26 centered outline plug icon with equal prongs and a short cable stem."
   },
   {
     "icon": "share",
-    "status": "in_progress",
-    "note": "Batch 25 outline share candidate with three equal connected nodes."
+    "status": "approved",
+    "note": "Approved Batch 25 outline share icon with three equal connected nodes."
   },
   {
     "icon": "code",
-    "status": "in_progress",
-    "note": "Batch 16 symmetric code-operator candidate with a centered slash."
+    "status": "approved",
+    "note": "Approved Batch 16 symmetric code-operator icon with a centered slash."
   },
   {
     "icon": "users",
-    "status": "in_progress",
-    "note": "Solid users icon being simplified toward a cleaner three-person group silhouette."
+    "status": "approved",
+    "note": "Approved outline users icon with a cleaner three-person group silhouette."
   },
   {
     "icon": "userPlus",
-    "status": "in_progress",
-    "note": "Solid user-plus icon being simplified toward a cleaner user silhouette with a separate plus action."
+    "status": "approved",
+    "note": "Approved outline user-plus icon with a cleaner user silhouette and a separate plus action."
   },
   {
     "icon": "userMinus",
-    "status": "in_progress",
-    "note": "Solid user-minus icon being simplified toward a cleaner user silhouette with a separate minus action."
+    "status": "approved",
+    "note": "Approved outline user-minus icon with a cleaner user silhouette and a separate minus action."
   },
   {
     "icon": "userCheck",
-    "status": "in_progress",
-    "note": "Solid user-check icon being simplified toward a cleaner user silhouette with a separate check action."
+    "status": "approved",
+    "note": "Approved outline user-check icon with a cleaner user silhouette and a separate check action."
   },
   {
     "icon": "clock",
@@ -371,23 +371,23 @@
   },
   {
     "icon": "download",
-    "status": "in_progress",
-    "note": "Solid download icon being simplified toward a cleaner arrow-and-tray silhouette."
+    "status": "approved",
+    "note": "Approved outline download icon with a cleaner arrow-and-tray silhouette."
   },
   {
     "icon": "upload",
-    "status": "in_progress",
-    "note": "Solid upload icon being simplified toward a cleaner arrow-and-tray silhouette."
+    "status": "approved",
+    "note": "Approved outline upload icon with a cleaner arrow-and-tray silhouette."
   },
   {
     "icon": "externalLink",
-    "status": "in_progress",
-    "note": "Batch 21 open-frame external-link candidate with a canonical outbound arrow."
+    "status": "approved",
+    "note": "Approved Batch 21 open-frame external-link icon with a canonical outbound arrow."
   },
   {
     "icon": "link",
-    "status": "in_progress",
-    "note": "Batch 21 diagonal-chain candidate with two interlocking C-shaped links."
+    "status": "approved",
+    "note": "Approved Batch 21 diagonal-chain icon with two interlocking C-shaped links."
   },
   {
     "icon": "refresh",
@@ -396,128 +396,128 @@
   },
   {
     "icon": "trash",
-    "status": "in_progress",
-    "note": "Solid trash icon being simplified toward a cleaner lid-and-bin silhouette."
+    "status": "approved",
+    "note": "Approved outline trash icon with a cleaner lid-and-bin silhouette."
   },
   {
     "icon": "filter",
-    "status": "in_progress",
-    "note": "Batch 14 canonical outline funnel candidate awaiting visual review."
+    "status": "approved",
+    "note": "Approved Batch 14 canonical outline funnel icon."
   },
   {
     "icon": "funnelX",
-    "status": "in_progress",
-    "note": "Batch 14 filter-clear candidate derived from the same funnel with a compact x mark."
+    "status": "approved",
+    "note": "Approved Batch 14 filter-clear icon derived from the same funnel with a compact x mark."
   },
   {
     "icon": "sort",
-    "status": "in_progress",
-    "note": "Batch 20 symmetric closed-triangle sort candidate awaiting visual review."
+    "status": "approved",
+    "note": "Approved Batch 20 symmetric closed-triangle sort icon."
   },
   {
     "icon": "sliders",
-    "status": "in_progress",
-    "note": "Batch 20 three-track sliders candidate with separated circular handles."
+    "status": "approved",
+    "note": "Approved Batch 20 three-track sliders icon with separated circular handles."
   },
   {
     "icon": "ellipsis",
-    "status": "in_progress",
-    "note": "Batch 22 overflow-menu candidate with three larger equal stroke circles."
+    "status": "approved",
+    "note": "Approved Batch 22 overflow-menu icon with three larger equal stroke circles."
   },
   {
     "icon": "send",
-    "status": "in_progress",
-    "note": "Batch 25 outline send candidate with a broad paper-plane silhouette and open fold."
+    "status": "approved",
+    "note": "Approved Batch 25 outline send icon with a broad paper-plane silhouette and open fold."
   },
   {
     "icon": "logIn",
-    "status": "in_progress",
-    "note": "Batch 13 log-in candidate with an entering arrow and right-side doorway."
+    "status": "approved",
+    "note": "Approved Batch 13 log-in icon with an entering arrow and right-side doorway."
   },
   {
     "icon": "logOut",
-    "status": "in_progress",
-    "note": "Batch 13 log-out candidate with an exiting arrow and mirrored doorway."
+    "status": "approved",
+    "note": "Approved Batch 13 log-out icon with an exiting arrow and mirrored doorway."
   },
   {
     "icon": "pencil",
-    "status": "in_progress",
-    "note": "Solid pencil icon being simplified toward a cleaner edit-tool silhouette."
+    "status": "approved",
+    "note": "Approved outline pencil icon with a cleaner edit-tool silhouette."
   },
   {
     "icon": "key",
-    "status": "in_progress",
-    "note": "Batch 24 outline key candidate with a large round head, broad shaft, and one strong stepped tooth."
+    "status": "approved",
+    "note": "Approved Batch 24 outline key icon with a large round head, broad shaft, and one strong stepped tooth."
   },
   {
     "icon": "cloud",
-    "status": "in_progress",
-    "note": "Solid cloud icon being simplified toward a cleaner monolithic cloud silhouette."
+    "status": "approved",
+    "note": "Approved outline cloud icon with a cleaner monolithic cloud silhouette."
   },
   {
     "icon": "phone",
-    "status": "in_progress",
-    "note": "Batch 25 outline phone candidate with one continuous handset-call contour."
+    "status": "approved",
+    "note": "Approved Batch 25 outline phone icon with one continuous handset-call contour."
   },
   {
     "icon": "cpu",
-    "status": "in_progress",
-    "note": "Batch 26 outline cpu candidate with a shared chip frame, compact core, and eight symmetric contacts."
+    "status": "approved",
+    "note": "Approved Batch 26 outline cpu icon with a shared chip frame, compact core, and eight symmetric contacts."
   },
   {
     "icon": "grid",
-    "status": "in_progress",
-    "note": "Solid grid icon being simplified toward a cleaner four-cell layout silhouette."
+    "status": "approved",
+    "note": "Approved outline grid icon with a cleaner four-cell layout silhouette."
   },
   {
     "icon": "columns",
-    "status": "in_progress",
-    "note": "Solid columns icon being simplified toward a cleaner two-column layout silhouette."
+    "status": "approved",
+    "note": "Approved outline columns icon with a cleaner two-column layout silhouette."
   },
   {
     "icon": "collapse",
-    "status": "in_progress",
-    "note": "Batch 19 inward layout-action candidate derived from the shared diagonal keyline."
+    "status": "approved",
+    "note": "Approved Batch 19 inward layout-action icon derived from the shared diagonal keyline."
   },
   {
     "icon": "expand",
-    "status": "in_progress",
-    "note": "Batch 19 outward layout-action candidate with canonical L-shaped corner heads."
+    "status": "approved",
+    "note": "Approved Batch 19 outward layout-action icon with canonical L-shaped corner heads."
   },
   {
     "icon": "activity",
-    "status": "in_progress",
-    "note": "Batch 27 outline activity candidate with one centered continuous monitoring pulse."
+    "status": "approved",
+    "note": "Approved Batch 27 outline activity icon with one centered continuous monitoring pulse."
   },
   {
     "icon": "alertCircle",
-    "status": "in_progress",
-    "note": "Solid alert-circle icon being simplified toward a cleaner warning-in-circle silhouette."
+    "status": "approved",
+    "note": "Approved outline alert-circle icon with a cleaner warning-in-circle silhouette."
   },
   {
     "icon": "ban",
-    "status": "in_progress",
-    "note": "Solid ban icon being simplified toward a cleaner prohibition-circle silhouette."
+    "status": "approved",
+    "note": "Approved outline ban icon with a cleaner prohibition-circle silhouette."
   },
   {
     "icon": "caretDown",
-    "status": "in_progress",
-    "note": "Solid caret-down icon being simplified toward a cleaner directional triangle silhouette."
+    "status": "approved",
+    "note": "Approved outline caret-down icon with a cleaner directional triangle silhouette."
   },
   {
     "icon": "caretLeft",
-    "status": "in_progress",
-    "note": "Solid caret-left icon being simplified toward a cleaner directional triangle silhouette."
+    "status": "approved",
+    "note": "Approved outline caret-left icon with a cleaner directional triangle silhouette."
   },
   {
     "icon": "caretRight",
-    "status": "in_progress",
-    "note": "Solid caret-right icon being simplified toward a cleaner directional triangle silhouette."
+    "status": "approved",
+    "note": "Approved outline caret-right icon with a cleaner directional triangle silhouette."
   },
   {
     "icon": "caretUp",
-    "status": "in_progress",
-    "note": "Solid caret-up icon being simplified toward a cleaner directional triangle silhouette."
+    "status": "approved",
+    "note": "Approved outline caret-up icon with a cleaner directional triangle silhouette."
   },
   {
     "icon": "circleHalf",
@@ -536,13 +536,13 @@
   },
   {
     "icon": "sparkles",
-    "status": "in_progress",
-    "note": "Batch 27 outline sparkles candidate with one dominant and one supporting soft starburst."
+    "status": "approved",
+    "note": "Approved Batch 27 outline sparkles icon with one dominant and one supporting soft starburst."
   },
   {
     "icon": "xCircle",
-    "status": "in_progress",
-    "note": "Solid x-circle icon being simplified toward a cleaner error-in-circle silhouette."
+    "status": "approved",
+    "note": "Approved outline x-circle icon with a cleaner error-in-circle silhouette."
   },
   {
     "icon": "github",

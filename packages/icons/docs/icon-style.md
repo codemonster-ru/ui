@@ -3,10 +3,9 @@
 The authoritative geometry and review specification is
 [`icon-design-language.md`](./icon-design-language.md).
 
-VueForge Icons are moving from the legacy 512-unit solid catalog to the 24-unit outline language in
-reviewed batches. `solid` remains a supported catalog value for untouched legacy icons; `outline`
-identifies redesigned or newly authored icons. Do not convert unreviewed icons merely to make the
-metadata uniform.
+The catalog migration is complete. The 109 VueForge product icons use the 24-unit outline language;
+the seven independent brand marks remain solid to preserve their official geometry. The `style`
+catalog field describes geometry and does not select a runtime variant.
 
 ## Working rules
 

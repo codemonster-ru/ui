@@ -1,20 +1,13 @@
 # Changelog
 
-## 2.0.0
+## 3.0.0
 
 ### Added
 
-- Added an explicit CSS-free Node ESM condition and CommonJS declaration facade for SSR consumers.
 - Added the owner-approved 30-icon outline reference set and its internal visual-review workspace.
 
 ### Changed
 
-- Made the package `exports` map authoritative while preserving the documented browser, Node ESM,
-  and CommonJS conditions.
-- Kept browser ESM auto CSS and the explicit `style.css` export while making Node ESM and CommonJS
-  imports DOM-free.
-- Declared Vue 3.5 and Node.js 18 consumer requirements and made CSS side effects explicit.
-- Disabled icon spin animation when reduced motion is requested.
 - Redrew the approved reference icons on a 24-unit canvas with a canonical 2-unit stroke, round
   terminals, and round joins.
 - Updated geometry for `arrowRight`, `arrowDown`, `chevronRight`, `chevronDown`, `check`, `xmark`,
@@ -58,6 +51,27 @@
 - Expanded `IconCatalogEntry.style` to `'solid' | 'outline'`; 109 approved migrated icons are
   `outline`, while 7 independent brand marks remain `solid`.
 
+### Breaking changes
+
+- Consumer code that exhaustively handles `IconCatalogEntry.style` must handle the new `outline`
+  value. Rendered geometry and snapshots change for the 109 non-brand icon names; public icon names
+  are unchanged.
+
+## 2.0.0
+
+### Added
+
+- Added an explicit CSS-free Node ESM condition and CommonJS declaration facade for SSR consumers.
+
+### Changed
+
+- Made the package `exports` map authoritative while preserving the documented browser, Node ESM,
+  and CommonJS conditions.
+- Kept browser ESM auto CSS and the explicit `style.css` export while making Node ESM and CommonJS
+  imports DOM-free.
+- Declared Vue 3.5 and Node.js 18 consumer requirements and made CSS side effects explicit.
+- Disabled icon spin animation when reduced motion is requested.
+
 ### Fixed
 
 - Corrected the previous CommonJS/SSR path that depended on browser CSS injection and a global DOM.
@@ -66,8 +80,7 @@
 
 ### Removed
 
-- Removed the inert `style="solid"` prop from `VueIconify`; style remains catalog metadata and does
-  not select runtime geometry.
+- Removed the inert `style="solid"` prop from `VueIconify`; the catalog remains solid-only.
 - Removed the empty `dualStyleCoreIconNames` export and the obsolete regular-variant generator path.
 - Removed the obsolete icon-generator variant argument.
 - Removed legacy top-level resolver metadata.
@@ -76,8 +89,6 @@
 
 - Remove the `style` prop from `VueIconify` usage, remove imports of `dualStyleCoreIconNames`, and
   use a resolver that honors package `exports`.
-- Consumer code that exhaustively handles `IconCatalogEntry.style` must handle the new `outline`
-  value. Snapshot tests may also change for the 38 redrawn icon names.
 
 ## 1.5.0
 

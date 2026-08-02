@@ -96,6 +96,6 @@
     "vue-tsc": "^3.3.8"
   },
   "dependencies": {
-    "@codemonster-ru/vueforge-icons": "^2.0.0"
+    "@codemonster-ru/vueforge-icons": "^2.0.0 || ^3.0.0"
   }
 }
