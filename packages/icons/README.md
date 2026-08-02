@@ -7,7 +7,7 @@
 
 A lightweight Vue 3 icon library with a unified API for the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-icons@2.0.0`.
+Coordinated release: `@codemonster-ru/vueforge-icons@3.0.0`.
 
 ## Requirements
 
@@ -56,6 +56,12 @@ The package also retains `dist/index.ts.umd.js` for direct CDN consumers that pr
 
 `VueIconify` accepts icon names dynamically, so the generic renderer includes the icon component
 catalog. Metadata-only named imports remain tree-shakeable.
+
+## Visual styles
+
+The catalog contains 109 approved VueForge outline icons and seven independent solid brand marks.
+The `style` catalog field describes each icon's geometry; it does not select a runtime variant.
+Brand marks retain their official geometry and remain subject to their owners' trademark guidance.
 
 ## More documentation
 

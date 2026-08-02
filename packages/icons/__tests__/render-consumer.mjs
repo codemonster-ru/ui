@@ -54,7 +54,7 @@ try {
   assert.doesNotMatch(commonJsBundle, /Blind comparison|vueforge-icons-reference-review-votes-v1/);
   assert.equal(packageJson.exports['./style.css'], './dist/index.css');
   assert.equal(iconCatalog.calendar.style, 'outline');
-  assert.equal(iconCatalog.moon.style, 'solid');
+  assert.equal(iconCatalog.github.style, 'solid');
   assert.match(iconCss, /prefers-reduced-motion:\s*reduce/);
   assert.match(iconCss, /vf-icon-wrapper--spin[^}]*animation:\s*none/);
 
@@ -89,7 +89,8 @@ try {
   assert.match(fallbackMarkup, /<svg/);
   assert.match(fallbackMarkup, /width="2rem"/);
   assert.match(fallbackMarkup, /height="2rem"/);
-  assert.match(fallbackMarkup, /mask="url\(#/);
+  assert.match(fallbackMarkup, /stroke="currentColor"/);
+  assert.doesNotMatch(fallbackMarkup, /mask="url\(#/);
 
   const calendarGenericMarkup = await renderIcon(VueIconify, {
     icon: icons.calendar,
