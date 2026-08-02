@@ -61,8 +61,8 @@ This file defines the preferred semantic choices for the current pack so the set
 
 - `src/lib/iconCore.json` is the preferred starter set for product UIs.
 - New icons do not need to enter the core set automatically.
-- New icons use the `outline` language. Legacy `solid` entries remain until their reviewed family
-  batch is approved.
+- New product icons use the `outline` language. The `solid` style is reserved for the seven
+  independent brand marks whose official geometry is preserved.
 - A core-set addition should satisfy at least one of these:
   - solves a repeated SaaS/admin use case
   - replaces multiple ad hoc icons with one canonical semantic choice

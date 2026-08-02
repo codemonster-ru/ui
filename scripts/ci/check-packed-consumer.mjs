@@ -18,7 +18,7 @@ const packageContracts = [
     directory: 'icons',
     entry: '@codemonster-ru/vueforge-icons',
     name: '@codemonster-ru/vueforge-icons',
-    version: '2.0.0',
+    version: '3.0.0',
   },
   {
     directory: 'core',
