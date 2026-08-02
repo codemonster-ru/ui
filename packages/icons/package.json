@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/vueforge-icons",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Open-source Vue 3 icon library for the VueForge ecosystem.",
   "keywords": [
     "vue",
@@ -54,6 +54,8 @@
     "dev": "vite dev --force --mode development",
     "audit:icons": "node ./scripts/audit-icons.mjs",
     "audit:icons:check": "node ./scripts/audit-icons.mjs --validate-only",
+    "audit:solid": "node ./scripts/audit-solid-icons.mjs",
+    "audit:bundle": "npm run build && node ./scripts/audit-bundle.mjs",
     "audit:centering": "node ./scripts/audit-icon-centering.mjs",
     "snapshot:reference": "node ./scripts/snapshot-reference-icons.mjs",
     "snapshot:batch2": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch02.json --output=src/lib/iconMigrationBatch02Before.json",
@@ -84,9 +86,11 @@
     "snapshot:batch27": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch27.json --output=src/lib/iconMigrationBatch27Before.json",
     "snapshot:batch28": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch28.json --output=src/lib/iconMigrationBatch28Before.json",
     "snapshot:batch29": "node ./scripts/snapshot-reference-icons.mjs --set=src/lib/iconMigrationBatch29.json --output=src/lib/iconMigrationBatch29Before.json",
+    "snapshot:variants:update": "npm run build && node ./scripts/visual-snapshots.mjs --update",
+    "snapshot:variants:check": "npm run build && node ./scripts/visual-snapshots.mjs",
     "create-icon": "node ./scripts/create-icon.mjs",
     "generate": "node ./scripts/generate-icons.mjs",
-    "validate-icons": "node ./scripts/generate-icons.mjs --validate-only && npm run audit:icons:check",
+    "validate-icons": "node ./scripts/generate-icons.mjs --validate-only && npm run audit:icons:check && npm run audit:solid",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
     "format:check": "prettier --ignore-path ../../.prettierignore --check .",
@@ -94,7 +98,7 @@
     "build": "npm run generate && vite build --mode production && node ../../scripts/build/finalize-declarations.mjs dist",
     "build:showcase": "vite build --config vite.showcase.config.mts",
     "typecheck": "vue-tsc --noEmit",
-    "test": "npm run smoke && npm run render",
+    "test": "npm run smoke && npm run render && node ./scripts/visual-snapshots.mjs && node ./scripts/audit-bundle.mjs",
     "render": "node ./__tests__/render-consumer.mjs",
     "smoke": "npm run build && tsc -p tsconfig.smoke.json",
     "prepack": "npm run build"

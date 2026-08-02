@@ -335,6 +335,27 @@
         </p>
       </section>
 
+      <section v-else-if="view === 'variants'" class="variant-review">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Complete system family</p>
+            <h2>Solid and outline weights</h2>
+          </div>
+          <p>Compare each icon at the canonical 24 px size across every supported system variant.</p>
+        </header>
+        <div class="variant-table">
+          <div class="variant-row variant-row--head">
+            <strong>Icon</strong><strong v-for="variant in showcaseVariants" :key="variant">{{ variant }}</strong>
+          </div>
+          <div v-for="iconName in solidIconNames" :key="iconName" class="variant-row">
+            <strong>{{ iconName }}</strong>
+            <span v-for="variant in showcaseVariants" :key="variant">
+              <VueIconify :icon="iconName" :variant="variant" :size="24" />
+            </span>
+          </div>
+        </div>
+      </section>
+
       <section v-else-if="view === 'blind'" class="blind-review">
         <header class="section-heading">
           <div>
@@ -510,7 +531,8 @@ import migrationBatch29BeforeJson from './lib/iconMigrationBatch29Before.json';
 import migrationBatch29Json from './lib/iconMigrationBatch29.json';
 import beforeIconsJson from './lib/iconReferenceBefore.json';
 import referenceSetJson from './lib/iconReferenceSet.json';
-import type { IconName } from './lib/iconMeta';
+import { iconCatalog, iconNames, type IconName } from './lib/iconMeta';
+import type { IconVariant } from './lib/iconVariants';
 
 type View =
   | 'reference'
@@ -546,6 +568,7 @@ type View =
   | 'ui'
   | 'families'
   | 'mass'
+  | 'variants'
   | 'blind'
   | 'catalog';
 type Vote = 'a' | 'b' | 'equal' | 'redraw';
@@ -617,6 +640,10 @@ const strokeWidths = [1.75, 1.8, 2] as const;
 const view = ref<View>('reference');
 const massMode = ref<'outline' | 'silhouette'>('outline');
 const suspiciousOnly = ref(true);
+const showcaseVariants = ['regular', 'light', 'thin', 'solid'] as const satisfies readonly IconVariant[];
+const solidIconNames = iconNames.filter(
+  (iconName) => !iconCatalog[iconName].brand && iconCatalog[iconName].variants.includes('solid'),
+);
 const votes = ref<Votes>({});
 const voteStorageKey = 'vueforge-icons-reference-review-votes-v1';
 const voteRevisionStorageKey = `${voteStorageKey}:revision`;
@@ -657,6 +684,7 @@ const viewOptions: Array<{ id: View; label: string }> = [
   { id: 'ui', label: 'SaaS contexts' },
   { id: 'families', label: 'Families' },
   { id: 'mass', label: 'Optical mass' },
+  { id: 'variants', label: 'Variants' },
   { id: 'blind', label: 'Blind comparison' },
   { id: 'catalog', label: 'Full audit' },
 ];
@@ -1986,6 +2014,46 @@ dd {
 
 .mode-note {
   font-size: 12px;
+}
+
+.variant-table {
+  overflow: hidden;
+  border: var(--vf-layout-border-base, 1px solid var(--audit-border));
+  border-radius: var(--audit-radius);
+  background: var(--vf-layout-surface-base, var(--audit-surface));
+}
+
+.variant-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) repeat(4, minmax(80px, 0.5fr));
+  align-items: center;
+  min-height: 56px;
+  border-top: 1px solid var(--audit-divider);
+}
+
+.variant-row:first-child {
+  border-top: 0;
+}
+
+.variant-row > * {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  border-left: 1px solid var(--audit-divider);
+}
+
+.variant-row > :first-child {
+  justify-content: start;
+  padding-inline: 16px;
+  border-left: 0;
+}
+
+.variant-row--head {
+  min-height: 40px;
+  color: var(--audit-muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .reset-button {

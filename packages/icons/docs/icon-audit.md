@@ -61,8 +61,12 @@ This file defines the preferred semantic choices for the current pack so the set
 
 - `src/lib/iconCore.json` is the preferred starter set for product UIs.
 - New icons do not need to enter the core set automatically.
-- New product icons use the `outline` language. The `solid` style is reserved for the seven
-  independent brand marks whose official geometry is preserved.
+- New system icons use `regular` as the canonical geometry. `light` and `thin` reuse that geometry
+  with their system stroke widths; `solid` is authored separately from the same recognizable
+  anatomy. The seven independent brand marks preserve their official solid-only geometry.
+- Semantic fills may remain constant across outline weights when changing their area would change
+  the meaning of the icon. `circleHalf` is the deliberate exception; its perimeter follows the
+  selected stroke width while the half-circle remains filled.
 - A core-set addition should satisfy at least one of these:
   - solves a repeated SaaS/admin use case
   - replaces multiple ad hoc icons with one canonical semantic choice

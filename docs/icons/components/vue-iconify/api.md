@@ -6,12 +6,13 @@ Public component contract: props, events, slots, and related types.
 
 Component props and their default values.
 
-| Name     | Type                 | Default                                               | Description                                                                        |
-| -------- | -------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `icon?`  | `IconName \| string` | `moon`                                                | Icon name or custom icon identifier.                                               |
-| `size?`  | `number \| string`   | `var(--vf-icon-current-size, var(--vf-icon-size-md))` | Explicit size, or the contextual icon size with the medium icon token as fallback. |
-| `spin?`  | `boolean`            | `false`                                               | Applies continuous rotation animation.                                             |
-| `inset?` | `number`             | `0`                                                   | Scales icon with optical inset compensation.                                       |
+| Name       | Type                 | Default                                               | Description                                                                        |
+| ---------- | -------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `icon?`    | `IconName \| string` | `moon`                                                | Icon name or custom icon identifier.                                               |
+| `size?`    | `number \| string`   | `var(--vf-icon-current-size, var(--vf-icon-size-md))` | Explicit size, or the contextual icon size with the medium icon token as fallback. |
+| `spin?`    | `boolean`            | `false`                                               | Applies continuous rotation animation.                                             |
+| `inset?`   | `number`             | `0`                                                   | Scales icon with optical inset compensation.                                       |
+| `variant?` | `IconVariant`        | `regular` for system icons; `solid` for brands        | Selects `solid`, `regular`, `light`, or `thin` when supported by the icon.         |
 
 ## Emits
 
@@ -49,8 +50,9 @@ Exported interfaces related to this component.
 
 Exported utility and union types.
 
-| Name                | Values                               |
-| ------------------- | ------------------------------------ |
-| `IconName`          | `Union of generated icon names.`     |
-| `IconCatalogEntry`  | `{ title; keywords; style; brand? }` |
-| `IconShowcaseEntry` | `{ icon; status; note }`             |
+| Name                | Values                                                      |
+| ------------------- | ----------------------------------------------------------- |
+| `IconName`          | `Union of generated icon names.`                            |
+| `IconVariant`       | `solid \| regular \| light \| thin`                         |
+| `IconCatalogEntry`  | `{ title; keywords; variants; style (deprecated); brand? }` |
+| `IconShowcaseEntry` | `{ icon; status; note }`                                    |

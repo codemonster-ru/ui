@@ -464,175 +464,175 @@ const showcaseConsistency = {
   invalidReferenceIcons: referenceSet.filter((icon) => !iconNames.includes(icon)),
   duplicateReferenceIcons,
   referenceCountMismatch: referenceSet.length === 30 ? [] : [referenceSet.length],
-  referenceStyleMismatch: referenceSet.filter((icon) => catalog[icon]?.style !== 'outline'),
+  referenceStyleMismatch: referenceSet.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch02Consistency = {
   invalidIcons: migrationBatch02.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch02.filter((icon, index) => migrationBatch02.indexOf(icon) !== index))],
   countMismatch: migrationBatch02.length === 8 ? [] : [migrationBatch02.length],
-  styleMismatch: migrationBatch02.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch02.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch03Consistency = {
   invalidIcons: migrationBatch03.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch03.filter((icon, index) => migrationBatch03.indexOf(icon) !== index))],
   countMismatch: migrationBatch03.length === 7 ? [] : [migrationBatch03.length],
-  styleMismatch: migrationBatch03.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch03.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch04Consistency = {
   invalidIcons: migrationBatch04.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch04.filter((icon, index) => migrationBatch04.indexOf(icon) !== index))],
   countMismatch: migrationBatch04.length === 7 ? [] : [migrationBatch04.length],
-  styleMismatch: migrationBatch04.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch04.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch05Consistency = {
   invalidIcons: migrationBatch05.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch05.filter((icon, index) => migrationBatch05.indexOf(icon) !== index))],
   countMismatch: migrationBatch05.length === 2 ? [] : [migrationBatch05.length],
-  styleMismatch: migrationBatch05.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch05.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch06Consistency = {
   invalidIcons: migrationBatch06.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch06.filter((icon, index) => migrationBatch06.indexOf(icon) !== index))],
   countMismatch: migrationBatch06.length === 3 ? [] : [migrationBatch06.length],
-  styleMismatch: migrationBatch06.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch06.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch07Consistency = {
   invalidIcons: migrationBatch07.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch07.filter((icon, index) => migrationBatch07.indexOf(icon) !== index))],
   countMismatch: migrationBatch07.length === 2 ? [] : [migrationBatch07.length],
-  styleMismatch: migrationBatch07.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch07.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch08Consistency = {
   invalidIcons: migrationBatch08.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch08.filter((icon, index) => migrationBatch08.indexOf(icon) !== index))],
   countMismatch: migrationBatch08.length === 3 ? [] : [migrationBatch08.length],
-  styleMismatch: migrationBatch08.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch08.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch09Consistency = {
   invalidIcons: migrationBatch09.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch09.filter((icon, index) => migrationBatch09.indexOf(icon) !== index))],
   countMismatch: migrationBatch09.length === 2 ? [] : [migrationBatch09.length],
-  styleMismatch: migrationBatch09.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch09.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch10Consistency = {
   invalidIcons: migrationBatch10.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch10.filter((icon, index) => migrationBatch10.indexOf(icon) !== index))],
   countMismatch: migrationBatch10.length === 2 ? [] : [migrationBatch10.length],
-  styleMismatch: migrationBatch10.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch10.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch11Consistency = {
   invalidIcons: migrationBatch11.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch11.filter((icon, index) => migrationBatch11.indexOf(icon) !== index))],
   countMismatch: migrationBatch11.length === 4 ? [] : [migrationBatch11.length],
-  styleMismatch: migrationBatch11.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch11.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch12Consistency = {
   invalidIcons: migrationBatch12.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch12.filter((icon, index) => migrationBatch12.indexOf(icon) !== index))],
   countMismatch: migrationBatch12.length === 4 ? [] : [migrationBatch12.length],
-  styleMismatch: migrationBatch12.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch12.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch13Consistency = {
   invalidIcons: migrationBatch13.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch13.filter((icon, index) => migrationBatch13.indexOf(icon) !== index))],
   countMismatch: migrationBatch13.length === 2 ? [] : [migrationBatch13.length],
-  styleMismatch: migrationBatch13.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch13.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch14Consistency = {
   invalidIcons: migrationBatch14.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch14.filter((icon, index) => migrationBatch14.indexOf(icon) !== index))],
   countMismatch: migrationBatch14.length === 2 ? [] : [migrationBatch14.length],
-  styleMismatch: migrationBatch14.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch14.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch15Consistency = {
   invalidIcons: migrationBatch15.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch15.filter((icon, index) => migrationBatch15.indexOf(icon) !== index))],
   countMismatch: migrationBatch15.length === 2 ? [] : [migrationBatch15.length],
-  styleMismatch: migrationBatch15.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch15.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch16Consistency = {
   invalidIcons: migrationBatch16.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch16.filter((icon, index) => migrationBatch16.indexOf(icon) !== index))],
   countMismatch: migrationBatch16.length === 2 ? [] : [migrationBatch16.length],
-  styleMismatch: migrationBatch16.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch16.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch17Consistency = {
   invalidIcons: migrationBatch17.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch17.filter((icon, index) => migrationBatch17.indexOf(icon) !== index))],
   countMismatch: migrationBatch17.length === 3 ? [] : [migrationBatch17.length],
-  styleMismatch: migrationBatch17.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch17.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch18Consistency = {
   invalidIcons: migrationBatch18.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch18.filter((icon, index) => migrationBatch18.indexOf(icon) !== index))],
   countMismatch: migrationBatch18.length === 2 ? [] : [migrationBatch18.length],
-  styleMismatch: migrationBatch18.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch18.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch19Consistency = {
   invalidIcons: migrationBatch19.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch19.filter((icon, index) => migrationBatch19.indexOf(icon) !== index))],
   countMismatch: migrationBatch19.length === 2 ? [] : [migrationBatch19.length],
-  styleMismatch: migrationBatch19.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch19.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch20Consistency = {
   invalidIcons: migrationBatch20.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch20.filter((icon, index) => migrationBatch20.indexOf(icon) !== index))],
   countMismatch: migrationBatch20.length === 2 ? [] : [migrationBatch20.length],
-  styleMismatch: migrationBatch20.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch20.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch21Consistency = {
   invalidIcons: migrationBatch21.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch21.filter((icon, index) => migrationBatch21.indexOf(icon) !== index))],
   countMismatch: migrationBatch21.length === 2 ? [] : [migrationBatch21.length],
-  styleMismatch: migrationBatch21.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch21.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch22Consistency = {
   invalidIcons: migrationBatch22.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch22.filter((icon, index) => migrationBatch22.indexOf(icon) !== index))],
   countMismatch: migrationBatch22.length === 2 ? [] : [migrationBatch22.length],
-  styleMismatch: migrationBatch22.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch22.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch23Consistency = {
   invalidIcons: migrationBatch23.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch23.filter((icon, index) => migrationBatch23.indexOf(icon) !== index))],
   countMismatch: migrationBatch23.length === 3 ? [] : [migrationBatch23.length],
-  styleMismatch: migrationBatch23.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch23.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch24Consistency = {
   invalidIcons: migrationBatch24.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch24.filter((icon, index) => migrationBatch24.indexOf(icon) !== index))],
   countMismatch: migrationBatch24.length === 2 ? [] : [migrationBatch24.length],
-  styleMismatch: migrationBatch24.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch24.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch25Consistency = {
   invalidIcons: migrationBatch25.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch25.filter((icon, index) => migrationBatch25.indexOf(icon) !== index))],
   countMismatch: migrationBatch25.length === 3 ? [] : [migrationBatch25.length],
-  styleMismatch: migrationBatch25.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch25.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch26Consistency = {
   invalidIcons: migrationBatch26.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch26.filter((icon, index) => migrationBatch26.indexOf(icon) !== index))],
   countMismatch: migrationBatch26.length === 2 ? [] : [migrationBatch26.length],
-  styleMismatch: migrationBatch26.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch26.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch27Consistency = {
   invalidIcons: migrationBatch27.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch27.filter((icon, index) => migrationBatch27.indexOf(icon) !== index))],
   countMismatch: migrationBatch27.length === 2 ? [] : [migrationBatch27.length],
-  styleMismatch: migrationBatch27.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch27.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch28Consistency = {
   invalidIcons: migrationBatch28.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch28.filter((icon, index) => migrationBatch28.indexOf(icon) !== index))],
   countMismatch: migrationBatch28.length === 2 ? [] : [migrationBatch28.length],
-  styleMismatch: migrationBatch28.filter((icon) => catalog[icon]?.style !== 'outline'),
+  styleMismatch: migrationBatch28.filter((icon) => !catalog[icon]?.variants.includes('regular')),
 };
 const migrationBatch29Consistency = {
   invalidIcons: migrationBatch29.filter((icon) => !iconNames.includes(icon)),
   duplicates: [...new Set(migrationBatch29.filter((icon, index) => migrationBatch29.indexOf(icon) !== index))],
   countMismatch: migrationBatch29.length === 7 ? [] : [migrationBatch29.length],
-  styleMismatch: migrationBatch29.filter((icon) => catalog[icon]?.style !== 'solid'),
+  styleMismatch: migrationBatch29.filter((icon) => !catalog[icon]?.variants.includes('solid')),
   missingBaselines: migrationBatch29.filter((icon) => !migrationBatch29Before[icon]),
   geometryMismatch: migrationBatch29.filter((icon) => {
     const source = readFileSync(resolve(componentsDir, `${icon}.vue`), 'utf8');
