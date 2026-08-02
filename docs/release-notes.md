@@ -1,56 +1,75 @@
-# VueForge Core 2.3.0 release notes
+# VueForge Icons 3.0.0 and Core 2.3.0 release notes
 
-VueForge Core 2.3.0 adds constrained, accessible, and persistable column resizing to `VfDataTable`.
-This is a backward-compatible minor release.
+This coordinated release completes the VueForge Icons outline migration, adds the public
+`VfDatePicker`, and completes the current `VfDataTable` interaction set. CodeBlock receives a patch
+release so consumers can resolve either Icons 2.x or 3.x without a nested legacy icon package.
 
 ## Current package versions
 
 | Package                | Version | Published in this release |
 | ---------------------- | ------: | :-----------------------: |
 | Theme                  | `2.0.0` |            No             |
-| Icons                  | `2.0.0` |            No             |
+| Icons                  | `3.0.0` |            Yes            |
 | Core                   | `2.3.0` |            Yes            |
 | Layouts                | `2.1.1` |            No             |
-| CodeBlock              | `4.0.0` |            No             |
+| CodeBlock              | `4.0.1` |            Yes            |
 | Playground Core        | `2.0.0` |            No             |
 | Playground Vite Plugin | `1.0.0` |            No             |
 | Playground             | `3.0.0` |            No             |
 
-## Highlights
+## Icons 3.0.0
 
-- Added pointer resizing from the boundary between adjacent `VfDataTable` columns.
-- Added keyboard resizing with Left and Right Arrow and double-click content autosizing.
-- Added controlled `columnWidths`, uncontrolled `defaultColumnWidths`, `update:columnWidths`, and
-  `column-resize-end` contracts.
-- Added `minWidth`, `maxWidth`, `nowrap`, and `resizable` column options.
-- Added `dataTableColumnResizerColor` for theme-level resize boundary feedback.
-- Added a resizable-column showcase with width reset and constrained-width examples.
+- Migrated all 109 VueForge product icons to the approved 24-unit outline language with a canonical
+  2-unit round stroke.
+- Preserved the seven independent GitHub, Telegram, VK, X, YouTube, Facebook, and Instagram brand
+  marks as solid trademark geometry.
+- Added owner-approved migration baselines, family review records, visual auditing, and review
+  showcase modes.
+- Expanded `IconCatalogEntry.style` from `'solid'` to `'solid' | 'outline'`.
+- Kept every public icon name unchanged.
 
-## Compatibility
+This is a visual and metadata major release. Consumers that exhaustively handle catalog styles must
+support `outline`; rendered snapshots change for the 109 non-brand icons.
 
-This release has no breaking API changes. Applications using the new Core APIs can upgrade Core
-independently:
+## Core 2.3.0
+
+### Date Picker
+
+- Added `VfDatePicker` through the package root, `./date-picker`, and `./date-picker.css` exports.
+- Added date, month, year, time, multiple-selection, and range modes with stable ISO-like values.
+- Added localization, fixed display patterns, configurable week starts, min/max constraints,
+  clearable state, native form values, floating labels, and keyboard-accessible grid navigation.
+
+### Data Table
+
+- Added controlled visibility, pointer/keyboard column reordering, start/end pinned columns, and
+  constrained pointer/keyboard resizing with content autosizing.
+- Added client/manual sorting, optional multi-sort, expandable rows, per-row selection eligibility,
+  localized labels, an error state, and responsive numbered pagination.
+- Added persistable controlled/uncontrolled order and width state plus the corresponding public
+  types and events.
+- Added `dataTableErrorColor` and `dataTableColumnResizerColor` theme tokens and unified table
+  surface styling.
+
+Core 2.3.0 is backward-compatible. It accepts both Icons 2.x and 3.x; install Icons 3 to use the new
+outline geometry throughout Core components.
+
+## CodeBlock 4.0.1
+
+- Declares compatibility with both Icons 2.x and 3.x.
+- Uses the current Vue declaration processor after the build-tool upgrade.
+
+## Upgrade
 
 ```bash
 npm install vue@^3.5.0 \
-  @codemonster-ru/vueforge-core@^2.3.0
+  @codemonster-ru/vueforge-icons@^3.0.0 \
+  @codemonster-ru/vueforge-core@^2.3.0 \
+  @codemonster-ru/vueforge-codeblock@^4.0.1
 ```
 
-Theme, Icons, Layouts, CodeBlock, Playground Core, Playground Vite Plugin, and Playground have no
-runtime or public API changes in this work and are not republished.
-
-## Data table resize behavior
-
-- Resizing changes the two columns adjacent to the dragged boundary.
-- The combined width of those columns and the overall table width remain fixed.
-- The last column and a column followed by `resizable: false` do not expose a resize handle.
-- `minWidth` and `maxWidth` constrain pointer, keyboard, and autosize operations.
-- Controlled width records are serializable and can be persisted by applications.
-
-## Package notes
-
-- **Core 2.3.0:** adds constrained and persistable `VfDataTable` column resizing and its theme token.
-- **Layouts 2.1.1:** unchanged from the previous release.
+Theme, Layouts, Playground Core, Playground Vite Plugin, and Playground have no unreleased runtime
+or public API changes and are not republished.
 
 ## Distribution and verification
 
@@ -62,7 +81,7 @@ The release gates cover:
 - clean tarballs consumed through npm, pnpm, and Yarn;
 - documentation imports, compiled examples, and generated fixtures;
 - production and development dependency audits with zero known vulnerabilities;
-- runtime, component, accessibility, theme-contract, and CSS-contract tests.
+- runtime, component, accessibility, theme-contract, icon-audit, and CSS-contract tests.
 
 Package-specific changes are recorded in each package `CHANGELOG.md` and are used directly by the
 tag-driven release workflow.

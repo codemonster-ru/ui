@@ -4,17 +4,29 @@
 
 ### Added
 
+- Added `VfDatePicker` with date, month, year, time, multiple-selection, and range modes.
+- Added localized display formatting, explicit display-format tokens, configurable week starts,
+  min/max constraints, clearable values, floating-field labels, and form submission support to
+  `VfDatePicker`.
 - Added responsive numbered `VfDataTable` pagination with first/last page access and ellipsis ranges.
 - Added controlled and uncontrolled expandable `VfDataTable` rows with accessible disclosure
   controls and a scoped details slot.
 - Added logical start/end `VfDataTable` pinned columns with measured multi-column offsets.
+- Added controlled column visibility and controlled or uncontrolled pointer/keyboard column
+  reordering to `VfDataTable`.
+- Added controlled or uncontrolled client/manual sorting with optional multi-column sort state.
 - Added per-row `VfDataTable` selection eligibility with select-all support.
 - Added an accessible, localizable `VfDataTable` error state with a consumer-owned retry slot.
 - Added complete `VfDataTable` built-in label localization through the typed `labels` prop.
 - Added constrained, controlled, and persistable `VfDataTable` column widths with pointer and
   keyboard resizing and double-click autosizing.
 - Added `minWidth`, `maxWidth`, `nowrap`, and `resizable` column options.
-- Added the `dataTableColumnResizerColor` theme token for resize boundary feedback.
+- Added `dataTableErrorColor` and `dataTableColumnResizerColor` theme tokens.
+
+### Changed
+
+- Unified `VfTable` and `VfDataTable` header, footer, stripe, and surface styling.
+- Declared compatibility with both VueForge Icons 2.x and 3.x.
 
 ## 2.2.0
 

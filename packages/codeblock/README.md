@@ -7,7 +7,7 @@
 
 A Vue 3 code block component with syntax highlighting and token-based theming for VueForge.
 
-Coordinated release: `@codemonster-ru/vueforge-codeblock@4.0.0`.
+Coordinated release: `@codemonster-ru/vueforge-codeblock@4.0.1`.
 
 ## Requirements
 

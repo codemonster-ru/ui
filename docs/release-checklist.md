@@ -94,7 +94,7 @@ Required scenarios:
 - Node ESM and CommonJS SSR without `document` shims;
 - full CSS and component-subpath auto CSS;
 - direct CSS subpath imports;
-- all 74 explicit CSS exports and representative browser auto-CSS entries;
+- all 76 explicit CSS exports and representative browser auto-CSS entries;
 - one-component packed tree shaking with required CSS retained and unrelated CSS removed;
 - CodeBlock `/view` and `/highlight`;
 - Playground `/ui`, `/runtime`, component mode, and lazy sandbox mode;
@@ -117,9 +117,11 @@ the target once with lifecycle scripts disabled, dry-runs publication of that ex
 publishes the same file. No workspace or package-directory publish may replace the final tarball
 publish, and no rebuild may occur between packing, inspection, and publication.
 
-| Order | Tag                                   |
-| ----: | ------------------------------------- |
-|     1 | `@codemonster-ru/vueforge-core@2.3.0` |
+| Order | Tag                                        |
+| ----: | ------------------------------------------ |
+|     1 | `@codemonster-ru/vueforge-icons@3.0.0`     |
+|     2 | `@codemonster-ru/vueforge-core@2.3.0`      |
+|     3 | `@codemonster-ru/vueforge-codeblock@4.0.1` |
 
 For each row:
 
@@ -132,8 +134,8 @@ For each row:
 Example for the first stable package:
 
 ```bash
-git tag '@codemonster-ru/vueforge-core@2.3.0'
-git push origin '@codemonster-ru/vueforge-core@2.3.0'
+git tag '@codemonster-ru/vueforge-icons@3.0.0'
+git push origin '@codemonster-ru/vueforge-icons@3.0.0'
 ```
 
 For a beta, update the package and changelog to a matching prerelease version first, then use a tag
@@ -144,7 +146,7 @@ such as `@codemonster-ru/vueforge-core@2.3.0-beta.1`. The workflow publishes it 
 After each workflow completes:
 
 ```bash
-npm view @codemonster-ru/vueforge-core@2.3.0 version dist.integrity dist.shasum --json
+npm view @codemonster-ru/vueforge-icons@3.0.0 version dist.integrity dist.shasum --json
 npm dist-tag ls @codemonster-ru/vueforge-core
 ```
 
@@ -175,8 +177,8 @@ For a stable regression:
 Commands use the real package and known-good version:
 
 ```bash
-npm dist-tag add @codemonster-ru/vueforge-core@2.2.0 latest
-npm deprecate @codemonster-ru/vueforge-core@2.3.0 "Use the latest verified release."
+npm dist-tag add @codemonster-ru/vueforge-icons@2.0.0 latest
+npm deprecate @codemonster-ru/vueforge-icons@3.0.0 "Use the latest verified release."
 ```
 
 For a prerelease regression, move `next` to the last verified prerelease:
@@ -196,7 +198,7 @@ the release notes or issue tracker.
 
 ## 9. Complete the release
 
-- Confirm both tags point to the same reviewed release commit.
+- Confirm all release tags point to the same reviewed release commit.
 - Confirm internal dependency ranges resolve to published versions from the registry.
 - Confirm `latest` or `next` is correct for every package.
 - Confirm registry consumers pass with npm, pnpm, and Yarn.
