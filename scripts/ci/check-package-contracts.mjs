@@ -17,7 +17,7 @@ const releaseTrain = [
     directory: 'icons',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-icons',
-    version: '3.0.0',
+    version: '3.1.0',
   },
   {
     directory: 'core',

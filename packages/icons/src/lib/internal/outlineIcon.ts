@@ -1,33 +1,42 @@
 import { defineComponent, h, type PropType, type SVGAttributes } from 'vue';
+import { iconStrokeWidths, iconVariants, type IconVariant } from '../iconVariants';
+import solidIconDataJson from './solidIconData.json';
+
+const solidIconData = solidIconDataJson as Partial<Record<OutlineIconName, { viewBox: string; body: string }>>;
 
 type GeometryNode = {
   tag: 'circle' | 'line' | 'path' | 'polyline' | 'rect';
   attrs: SVGAttributes;
 };
 
+/* @__NO_SIDE_EFFECTS__ */
 const path = (d: string, attrs: SVGAttributes = {}): GeometryNode => ({
   tag: 'path',
   attrs: { d, ...attrs },
 });
+/* @__NO_SIDE_EFFECTS__ */
 const line = (x1: number, y1: number, x2: number, y2: number): GeometryNode => ({
   tag: 'line',
   attrs: { x1, y1, x2, y2 },
 });
+/* @__NO_SIDE_EFFECTS__ */
 const circle = (cx: number, cy: number, r: number, attrs: SVGAttributes = {}): GeometryNode => ({
   tag: 'circle',
   attrs: { cx, cy, r, ...attrs },
 });
+/* @__NO_SIDE_EFFECTS__ */
 const rect = (x: number, y: number, width: number, height: number, rx: number): GeometryNode => ({
   tag: 'rect',
   attrs: { x, y, width, height, rx },
 });
+/* @__NO_SIDE_EFFECTS__ */
 const polyline = (points: string): GeometryNode => ({ tag: 'polyline', attrs: { points } });
 
 export const outlineGeometry = {
-  arrowLeft: [line(20.5, 12, 3.5, 12), polyline('9.25 6.25 3.5 12 9.25 17.75')],
-  arrowRight: [line(3.5, 12, 20.5, 12), polyline('14.75 6.25 20.5 12 14.75 17.75')],
-  arrowUp: [line(12, 20.5, 12, 3.5), polyline('6.25 9.25 12 3.5 17.75 9.25')],
-  arrowDown: [line(12, 3.5, 12, 20.5), polyline('6.25 14.75 12 20.5 17.75 14.75')],
+  arrowLeft: [line(19, 12, 5, 12), polyline('10.25 6.75 5 12 10.25 17.25')],
+  arrowRight: [line(5, 12, 19, 12), polyline('13.75 6.75 19 12 13.75 17.25')],
+  arrowUp: [line(12, 19, 12, 5), polyline('6.75 10.25 12 5 17.25 10.25')],
+  arrowDown: [line(12, 5, 12, 19), polyline('6.75 13.75 12 19 17.25 13.75')],
   arrowLeftLong: [line(21.5, 12, 2.5, 12), polyline('8.25 6.25 2.5 12 8.25 17.75')],
   arrowRightLong: [line(2.5, 12, 21.5, 12), polyline('15.75 6.25 21.5 12 15.75 17.75')],
   arrowUpLong: [line(12, 21.5, 12, 2.5), polyline('6.25 8.25 12 2.5 17.75 8.25')],
@@ -43,7 +52,7 @@ export const outlineGeometry = {
   ],
   logOut: [
     path('M8.5 3.5H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h3.5'),
-    line(8.5, 12, 21, 12),
+    line(7.5, 12, 21, 12),
     polyline('16.5 7.5 21 12 16.5 16.5'),
   ],
   filter: [path('M3 3.5h18l-7 8V20l-4-2v-6.5Z')],
@@ -359,6 +368,7 @@ export const outlineGeometry = {
 
 export type OutlineIconName = keyof typeof outlineGeometry;
 
+/* @__NO_SIDE_EFFECTS__ */
 export const createOutlineIcon = (name: OutlineIconName) => {
   return defineComponent({
     name: `Vf${name.charAt(0).toUpperCase()}${name.slice(1)}Icon`,
@@ -368,10 +378,33 @@ export const createOutlineIcon = (name: OutlineIconName) => {
         type: [Number, String] as PropType<number | string>,
         default: 'var(--vf-icon-current-size, var(--vf-icon-size-md))',
       },
+      variant: {
+        type: String as PropType<IconVariant>,
+        default: 'regular',
+        validator: (value: string) => iconVariants.includes(value as IconVariant),
+      },
     },
     setup(props, { attrs }) {
-      return () =>
-        h(
+      return () => {
+        if (props.variant === 'solid') {
+          const solidIcon = solidIconData[name];
+
+          if (!solidIcon) {
+            throw new Error(`Missing solid geometry for icon "${name}".`);
+          }
+
+          return h('svg', {
+            ...attrs,
+            xmlns: 'http://www.w3.org/2000/svg',
+            viewBox: solidIcon.viewBox,
+            width: props.size,
+            height: props.size,
+            fill: 'none',
+            innerHTML: solidIcon.body,
+          });
+        }
+
+        return h(
           'svg',
           {
             ...attrs,
@@ -381,12 +414,13 @@ export const createOutlineIcon = (name: OutlineIconName) => {
             height: props.size,
             fill: 'none',
             stroke: 'currentColor',
-            'stroke-width': 2,
+            'stroke-width': iconStrokeWidths[props.variant],
             'stroke-linecap': 'round',
             'stroke-linejoin': 'round',
           },
           outlineGeometry[name].map((node) => h(node.tag, node.attrs)),
         );
+      };
     },
   });
 };

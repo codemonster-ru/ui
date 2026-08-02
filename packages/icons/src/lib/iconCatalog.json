@@ -2,622 +2,738 @@
   "arrowLeft": {
     "title": "Arrow Left",
     "keywords": ["arrow", "left"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowRight": {
     "title": "Arrow Right",
     "keywords": ["arrow", "right"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowRightLong": {
     "title": "Arrow Right Long",
     "keywords": ["arrow", "right", "long", "direction", "forward"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "bars": {
     "title": "Bars",
     "keywords": ["bars"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "bell": {
     "title": "Bell",
     "keywords": ["bell"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "bookmark": {
     "title": "Bookmark",
     "keywords": ["bookmark"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "calendar": {
     "title": "Calendar",
     "keywords": ["calendar"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "caretDown": {
     "title": "Caret Down",
     "keywords": ["caret", "down"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "caretLeft": {
     "title": "Caret Left",
     "keywords": ["caret", "left"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "caretRight": {
     "title": "Caret Right",
     "keywords": ["caret", "right"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "caretUp": {
     "title": "Caret Up",
     "keywords": ["caret", "up"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "check": {
     "title": "Check",
     "keywords": ["check"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "chevronDown": {
     "title": "Chevron Down",
     "keywords": ["chevron", "down"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "chevronLeft": {
     "title": "Chevron Left",
     "keywords": ["chevron", "left"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "chevronRight": {
     "title": "Chevron Right",
     "keywords": ["chevron", "right"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "chevronUp": {
     "title": "Chevron Up",
     "keywords": ["chevron", "up"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "circleHalf": {
     "title": "Circle Half",
     "keywords": ["circle", "half"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "circleNotch": {
     "title": "Circle Notch",
     "keywords": ["circle", "notch"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "copy": {
     "title": "Copy",
     "keywords": ["copy"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "download": {
     "title": "Download",
     "keywords": ["download"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "ellipsis": {
     "title": "Ellipsis",
     "keywords": ["ellipsis"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "externalLink": {
     "title": "External Link",
     "keywords": ["external", "link"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "eye": {
     "title": "Eye",
     "keywords": ["eye"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "eyeSlash": {
     "title": "Eye Slash",
     "keywords": ["eye", "slash"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "filter": {
     "title": "Filter",
     "keywords": ["filter"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "folder": {
     "title": "Folder",
     "keywords": ["folder"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "gear": {
     "title": "Gear",
     "keywords": ["gear"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "heart": {
     "title": "Heart",
     "keywords": ["heart"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "house": {
     "title": "House",
     "keywords": ["house"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "info": {
     "title": "Info",
     "keywords": ["info"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "infoCircle": {
     "title": "Info Circle",
     "keywords": ["info", "circle"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "link": {
     "title": "Link",
     "keywords": ["link"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "lock": {
     "title": "Lock",
     "keywords": ["lock"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "magnifyingGlass": {
     "title": "Magnifying Glass",
     "keywords": ["magnifying", "glass"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "minus": {
     "title": "Minus",
     "keywords": ["minus"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "moon": {
     "title": "Moon",
     "keywords": ["moon"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "pencil": {
     "title": "Pencil",
     "keywords": ["pencil"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "plus": {
     "title": "Plus",
     "keywords": ["plus"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "question": {
     "title": "Question",
     "keywords": ["question"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "questionCircle": {
     "title": "Question Circle",
     "keywords": ["question", "circle"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "rotateRight": {
     "title": "Rotate Right",
     "keywords": ["rotate", "right"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "shield": {
     "title": "Shield",
     "keywords": ["shield"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "star": {
     "title": "Star",
     "keywords": ["star"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "sun": {
     "title": "Sun",
     "keywords": ["sun"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "trash": {
     "title": "Trash",
     "keywords": ["trash"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "upload": {
     "title": "Upload",
     "keywords": ["upload"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "user": {
     "title": "User",
     "keywords": ["user"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "warning": {
     "title": "Warning",
     "keywords": ["warning"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "xmark": {
     "title": "Xmark",
     "keywords": ["xmark"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "columns": {
     "title": "Columns",
     "keywords": ["columns"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "grid": {
     "title": "Grid",
     "keywords": ["grid"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "logIn": {
     "title": "Log In",
     "keywords": ["log", "in"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "logOut": {
     "title": "Log Out",
     "keywords": ["log", "out"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "sliders": {
     "title": "Sliders",
     "keywords": ["sliders"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "sort": {
     "title": "Sort",
     "keywords": ["sort"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "chartBar": {
     "title": "Chart Bar",
     "keywords": ["chart", "bar"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "creditCard": {
     "title": "Credit Card",
     "keywords": ["credit", "card"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "database": {
     "title": "Database",
     "keywords": ["database"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "key": {
     "title": "Key",
     "keywords": ["key"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "mail": {
     "title": "Mail",
     "keywords": ["mail"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "message": {
     "title": "Message",
     "keywords": ["message"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "receipt": {
     "title": "Receipt",
     "keywords": ["receipt"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "users": {
     "title": "Users",
     "keywords": ["users"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "wallet": {
     "title": "Wallet",
     "keywords": ["wallet"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "briefcase": {
     "title": "Briefcase",
     "keywords": ["briefcase"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "cloud": {
     "title": "Cloud",
     "keywords": ["cloud"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "server": {
     "title": "Server",
     "keywords": ["server"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "terminal": {
     "title": "Terminal",
     "keywords": ["terminal"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "code": {
     "title": "Code",
     "keywords": ["code"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "sparkles": {
     "title": "Sparkles",
     "keywords": ["sparkles"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "ban": {
     "title": "Ban",
     "keywords": ["ban"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "funnelX": {
     "title": "Funnel X",
     "keywords": ["funnel", "x"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "refresh": {
     "title": "Refresh",
     "keywords": ["refresh"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "activity": {
     "title": "Activity",
     "keywords": ["activity"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "archive": {
     "title": "Archive",
     "keywords": ["archive"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "building": {
     "title": "Building",
     "keywords": ["building"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "clock": {
     "title": "Clock",
     "keywords": ["clock"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "fileText": {
     "title": "File Text",
     "keywords": ["file", "text"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "globe": {
     "title": "Globe",
     "keywords": ["globe"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "history": {
     "title": "History",
     "keywords": ["history"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "userMinus": {
     "title": "User Minus",
     "keywords": ["user", "minus"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "userPlus": {
     "title": "User Plus",
     "keywords": ["user", "plus"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "alertCircle": {
     "title": "Alert Circle",
     "keywords": ["alert", "circle"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowDown": {
     "title": "Arrow Down",
     "keywords": ["arrow", "down"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowUp": {
     "title": "Arrow Up",
     "keywords": ["arrow", "up"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "checkCircle": {
     "title": "Check Circle",
     "keywords": ["check", "circle"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "collapse": {
     "title": "Collapse",
     "keywords": ["collapse"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "expand": {
     "title": "Expand",
     "keywords": ["expand"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "file": {
     "title": "File",
     "keywords": ["file"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "folderOpen": {
     "title": "Folder Open",
     "keywords": ["folder", "open"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "xCircle": {
     "title": "X Circle",
     "keywords": ["x", "circle"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "cpu": {
     "title": "Cpu",
     "keywords": ["cpu"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "hardDrive": {
     "title": "Hard Drive",
     "keywords": ["hard", "drive"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "layers": {
     "title": "Layers",
     "keywords": ["layers"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "share": {
     "title": "Share",
     "keywords": ["share"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "plug": {
     "title": "Plug",
     "keywords": ["plug"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "send": {
     "title": "Send",
     "keywords": ["send"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "inbox": {
     "title": "Inbox",
     "keywords": ["inbox"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "phone": {
     "title": "Phone",
     "keywords": ["phone"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "unlock": {
     "title": "Unlock",
     "keywords": ["unlock"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "userCheck": {
     "title": "User Check",
     "keywords": ["user", "check"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "clipboard": {
     "title": "Clipboard",
     "keywords": ["clipboard"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowTurnUpLeft": {
     "title": "Arrow Turn Up Left",
     "keywords": ["arrow", "turn", "up", "left", "return", "back"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowTurnUpRight": {
     "title": "Arrow Turn Up Right",
     "keywords": ["arrow", "turn", "up", "right", "return", "forward"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowTurnRightUp": {
     "title": "Arrow Turn Right Up",
     "keywords": ["arrow", "turn", "right", "up", "redirect", "upward"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowTurnLeftDown": {
     "title": "Arrow Turn Left Down",
     "keywords": ["arrow", "turn", "left", "down", "redirect", "downward"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "github": {
     "title": "GitHub",
     "keywords": ["github", "brand", "logo", "social", "octocat"],
-    "style": "solid",
     "brand": {
       "source": "https://github.com/logos",
       "guidelines": "https://github.com/logos",
       "license": "Trademark (GitHub, Inc.)",
       "isTrademark": true
-    }
+    },
+    "variants": ["solid"],
+    "style": "solid"
   },
   "telegram": {
     "title": "Telegram",
     "keywords": ["telegram", "brand", "logo", "social", "messenger"],
-    "style": "solid",
     "brand": {
       "source": "https://telegram.org/tour/screenshots",
       "license": "Trademark (Telegram FZ-LLC / Telegram Messenger LLP)",
       "isTrademark": true
-    }
+    },
+    "variants": ["solid"],
+    "style": "solid"
   },
   "vk": {
     "title": "VK",
     "keywords": ["vk", "vkontakte", "brand", "logo", "social"],
-    "style": "solid",
     "brand": {
       "source": "https://vk.com/brand",
       "guidelines": "https://vk.com/brand",
       "license": "Trademark (VK Company Limited)",
       "isTrademark": true
-    }
+    },
+    "variants": ["solid"],
+    "style": "solid"
   },
   "x": {
     "title": "X",
     "keywords": ["x", "twitter", "brand", "logo", "social"],
-    "style": "solid",
     "brand": {
       "source": "https://x.com",
       "guidelines": "https://about.x.com/en/who-we-are/brand-toolkit",
       "license": "Trademark (X Corp.)",
       "isTrademark": true
-    }
+    },
+    "variants": ["solid"],
+    "style": "solid"
   },
   "youtube": {
     "title": "YouTube",
     "keywords": ["youtube", "brand", "logo", "video", "social"],
-    "style": "solid",
     "brand": {
       "source": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors",
       "guidelines": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors",
       "license": "Trademark (Google LLC / YouTube)",
       "isTrademark": true
-    }
+    },
+    "variants": ["solid"],
+    "style": "solid"
   },
   "facebook": {
     "title": "Facebook",
     "keywords": ["facebook", "brand", "logo", "social", "meta"],
-    "style": "solid",
     "brand": {
       "source": "https://about.meta.com/brand/resources/facebook/logo",
       "guidelines": "https://about.meta.com/brand/resources/facebook/logo",
       "license": "Trademark (Meta Platforms, Inc.)",
       "isTrademark": true
-    }
+    },
+    "variants": ["solid"],
+    "style": "solid"
   },
   "instagram": {
     "title": "Instagram",
     "keywords": ["instagram", "brand", "logo", "social", "meta"],
-    "style": "solid",
     "brand": {
       "source": "https://about.meta.com/brand/resources/instagram",
       "guidelines": "https://about.meta.com/brand/resources/instagram",
       "license": "Trademark (Meta Platforms, Inc.)",
       "isTrademark": true
-    }
+    },
+    "variants": ["solid"],
+    "style": "solid"
   },
   "arrowDownLong": {
     "title": "Arrow Down Long",
     "keywords": ["arrow", "down", "long", "direction"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowLeftLong": {
     "title": "Arrow Left Long",
     "keywords": ["arrow", "left", "long", "direction", "back"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   },
   "arrowUpLong": {
     "title": "Arrow Up Long",
     "keywords": ["arrow", "up", "long", "direction"],
+    "variants": ["solid", "regular", "light", "thin"],
     "style": "outline"
   }
 }

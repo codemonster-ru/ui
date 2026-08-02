@@ -7,6 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSSRApp, h } from 'vue';
 import { renderToString } from '@vue/server-renderer';
+import { Resvg } from '@resvg/resvg-js';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const consumerRoot = mkdtempSync(join(tmpdir(), 'vueforge-icons-consumer-'));
@@ -37,7 +38,17 @@ try {
 
   assert.equal(globalThis.document, undefined);
 
-  const { VueIconify, iconCatalog, icons } = consumerRequire('@codemonster-ru/vueforge-icons');
+  const {
+    VueIconify,
+    coreIconNames,
+    iconCatalog,
+    iconGroups,
+    iconNames,
+    icons,
+    iconVariants,
+    outlineIconVariants,
+    showcaseIconEntries,
+  } = consumerRequire('@codemonster-ru/vueforge-icons');
 
   assert.equal(globalThis.document, undefined);
 
@@ -53,17 +64,32 @@ try {
   assert.doesNotMatch(esmBundle, /Blind comparison|vueforge-icons-reference-review-votes-v1/);
   assert.doesNotMatch(commonJsBundle, /Blind comparison|vueforge-icons-reference-review-votes-v1/);
   assert.equal(packageJson.exports['./style.css'], './dist/index.css');
+  assert.deepEqual(iconVariants, ['solid', 'regular', 'light', 'thin']);
+  assert.deepEqual(outlineIconVariants, ['regular', 'light', 'thin']);
+  assert.deepEqual(
+    iconGroups.flatMap((group) => group.icons),
+    iconNames,
+  );
+  assert.equal(iconNames.length, Object.keys(iconCatalog).length);
+  assert.ok(coreIconNames.every((iconName) => iconNames.includes(iconName)));
+  assert.ok(showcaseIconEntries.every(({ icon }) => iconNames.includes(icon)));
+  assert.deepEqual(iconCatalog.calendar.variants, ['solid', 'regular', 'light', 'thin']);
+  assert.deepEqual(iconCatalog.github.variants, ['solid']);
   assert.equal(iconCatalog.calendar.style, 'outline');
   assert.equal(iconCatalog.github.style, 'solid');
   assert.match(iconCss, /prefers-reduced-motion:\s*reduce/);
   assert.match(iconCss, /vf-icon-wrapper--spin[^}]*animation:\s*none/);
 
-  const renderIcon = async (component, props = {}) => {
+  const renderIcon = async (component, props = {}, suppressWarnings = false) => {
     const app = createSSRApp({
       render() {
         return h(component, props);
       },
     });
+
+    if (suppressWarnings) {
+      app.config.warnHandler = () => {};
+    }
 
     return renderToString(app);
   };
@@ -92,6 +118,19 @@ try {
   assert.match(fallbackMarkup, /stroke="currentColor"/);
   assert.doesNotMatch(fallbackMarkup, /mask="url\(#/);
 
+  const kebabCaseMarkup = await renderIcon(VueIconify, {
+    icon: 'check-circle',
+  });
+  const camelCaseMarkup = await renderIcon(VueIconify, {
+    icon: icons.checkCircle,
+  });
+
+  assert.equal(kebabCaseMarkup, camelCaseMarkup);
+  await assert.rejects(
+    () => renderIcon(VueIconify, { icon: icons.github, variant: 'regular' }, true),
+    /Icon "github" does not support the "regular" variant/,
+  );
+
   const calendarGenericMarkup = await renderIcon(VueIconify, {
     icon: icons.calendar,
     size: 22,
@@ -106,6 +145,36 @@ try {
   assert.match(calendarGenericMarkup, /width="22"/);
   assert.match(calendarGenericMarkup, /height="22"/);
 
+  const lightMarkup = await renderIcon(VueIconify, {
+    icon: icons.calendar,
+    variant: 'light',
+  });
+  const thinMarkup = await renderIcon(VueIconify, {
+    icon: icons.calendar,
+    variant: 'thin',
+  });
+  const solidMarkup = await renderIcon(VueIconify, {
+    icon: icons.calendar,
+    variant: 'solid',
+  });
+
+  assert.match(lightMarkup, /stroke-width="1.5"/);
+  assert.match(thinMarkup, /stroke-width="1"/);
+  assert.match(solidMarkup, /fill="currentColor"/);
+  assert.doesNotMatch(solidMarkup, /<svg[^>]*stroke-width=/);
+
+  const heartRegularMarkup = await renderIcon(VueIconify, {
+    icon: icons.heart,
+    variant: 'regular',
+  });
+  const heartSolidMarkup = await renderIcon(VueIconify, {
+    icon: icons.heart,
+    variant: 'solid',
+  });
+
+  assert.match(heartRegularMarkup, /--vf-icon-offset-y:-0\.0508/);
+  assert.match(heartSolidMarkup, /--vf-icon-offset-y:-0\.0508/);
+
   const warningMarkup = await renderIcon(VueIconify, {
     icon: icons.warning,
     size: 18,
@@ -114,6 +183,22 @@ try {
   assert.match(warningMarkup, /<path/);
   assert.match(warningMarkup, /width="18"/);
   assert.match(warningMarkup, /height="18"/);
+
+  for (const [iconName, catalogEntry] of Object.entries(iconCatalog)) {
+    for (const variant of catalogEntry.variants) {
+      const markup = await renderIcon(VueIconify, {
+        icon: iconName,
+        variant,
+        size: 24,
+      });
+
+      assert.match(markup, /<svg/);
+      const svg = markup.match(/<svg[\s\S]*<\/svg>/)?.[0].replace(/\sdata-v-[\w-]+/g, '');
+
+      assert.ok(svg, `${iconName}/${variant} must include SVG markup`);
+      assert.ok(new Resvg(svg).render().asPng().byteLength > 0, `${iconName}/${variant} must render visible SVG`);
+    }
+  }
 } finally {
   rmSync(consumerRoot, { recursive: true, force: true });
 }
