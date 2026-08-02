@@ -7,7 +7,8 @@
 <script setup lang="ts">
 import { computed, useAttrs, type Component } from 'vue';
 import iconOpticalOffsetsJson from '../iconOpticalOffsets.json';
-import { iconNames, type IconName } from '../iconMeta';
+import { iconCatalog, iconNames, type IconName } from '../iconMeta';
+import { iconVariants, type IconVariant } from '../iconVariants';
 
 defineOptions({
   inheritAttrs: false,
@@ -28,12 +29,14 @@ const props = withDefaults(
     spin?: boolean;
     size?: number | string;
     inset?: number;
+    variant?: IconVariant;
   }>(),
   {
     icon: FALLBACK_ICON,
     spin: false,
     size: 'var(--vf-icon-current-size, var(--vf-icon-size-md))',
     inset: 0,
+    variant: undefined,
   },
 );
 const attrs = useAttrs();
@@ -63,16 +66,31 @@ const iconComponent = computed(() => {
   return getIconComponent(normalizedIconName.value);
 });
 
+const resolvedVariant = computed<IconVariant>(() => {
+  const catalogEntry = iconCatalog[normalizedIconName.value];
+  const variant = props.variant ?? (catalogEntry.brand ? 'solid' : 'regular');
+
+  if (!iconVariants.includes(variant) || !catalogEntry.variants.includes(variant)) {
+    throw new Error(`Icon "${normalizedIconName.value}" does not support the "${variant}" variant.`);
+  }
+
+  return variant;
+});
+
 const iconBindings = computed(() => {
+  const catalogEntry = iconCatalog[normalizedIconName.value];
+
   return {
     ...attrs,
     size: props.size,
+    ...(catalogEntry.brand ? {} : { variant: resolvedVariant.value }),
   };
 });
 
 const classes = computed(() => {
   return {
     'vf-icon': true,
+    [`vf-icon--${resolvedVariant.value}`]: true,
   };
 });
 

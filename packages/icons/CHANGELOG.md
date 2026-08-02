@@ -1,5 +1,41 @@
 # Changelog
 
+## 3.1.0
+
+### Added
+
+- Added `solid`, `regular`, `light`, and `thin` runtime variants for all 109 VueForge system icons.
+- Added the public `variant` prop together with `iconVariants`, `outlineIconVariants`,
+  `IconVariant`, and `OutlineIconVariant` exports.
+- Added independently authored solid geometry derived from each icon's recognizable regular
+  anatomy rather than restored legacy artwork.
+- Added deterministic visual reference sheets for every system icon at 16, 20, and 24 px across all
+  four variants.
+- Added solid-geometry and consumer-bundle audits to the package verification workflow.
+
+### Changed
+
+- Made `IconCatalogEntry.variants` the authoritative declaration of supported runtime variants.
+- Retained `IconCatalogEntry.style` as deprecated 3.x compatibility metadata; existing consumers
+  continue to receive `outline` for system icons and `solid` for brand marks.
+- Applied the same optical offsets to every variant so related weights remain aligned.
+- Improved metadata-only tree-shaking and added explicit gzip budgets for lightweight metadata and
+  the complete dynamic `VueIconify` renderer.
+- Refined solid silhouettes, negative details, corner treatment, spacing, and family consistency
+  against the approved regular geometry.
+
+### Fixed
+
+- Kept regular and long arrows visually distinct and normalized related directional families.
+- Preserved recognizable anatomy in solid document, folder, storage, status, visibility, user,
+  developer-tool, and spatial icon families.
+
+### Compatibility
+
+- Existing `VueIconify` calls continue to render `regular` system icons by default.
+- Brand marks continue to render their preserved `solid` geometry by default.
+- No icon names or package entry points were removed.
+
 ## 3.0.0
 
 ### Added

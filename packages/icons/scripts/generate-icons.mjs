@@ -9,6 +9,7 @@ const readmePath = resolve(rootDir, 'README.md');
 const iconMetaPath = resolve(rootDir, 'src/lib/iconMeta.json');
 const iconCatalogPath = resolve(rootDir, 'src/lib/iconCatalog.json');
 const iconCorePath = resolve(rootDir, 'src/lib/iconCore.json');
+const solidIconDataPath = resolve(rootDir, 'src/lib/internal/solidIconData.json');
 const validateOnly = process.argv.includes('--validate-only');
 
 const componentFiles = readdirSync(componentsDir)
@@ -17,7 +18,7 @@ const componentFiles = readdirSync(componentsDir)
 
 const iconNames = componentFiles.map((fileName) => fileName.replace(/\.vue$/, ''));
 
-const indexContent = `export { default as VueIconify } from '@/lib/components/icon.vue';\n\nexport { iconGroups, iconNames, icons, iconCatalog, coreIconNames, showcaseIconEntries } from '@/lib/iconMeta';\nexport type { IconName, IconCatalogEntry, IconShowcaseEntry } from '@/lib/iconMeta';\n`;
+const indexContent = `export { default as VueIconify } from '@/lib/components/icon.vue';\n\nexport { iconGroups, iconNames, icons, iconCatalog, coreIconNames, showcaseIconEntries } from '@/lib/iconMeta';\nexport type { IconName, IconCatalogEntry, IconShowcaseEntry } from '@/lib/iconMeta';\nexport { iconVariants, outlineIconVariants } from '@/lib/iconVariants';\nexport type { IconVariant, OutlineIconVariant } from '@/lib/iconVariants';\n`;
 
 const iconsContent = `${JSON.stringify({ list: iconNames }, null, 2)}\n`;
 
@@ -108,12 +109,54 @@ const compareIconCatalog = (iconNames, iconCatalog) => {
       throw new Error(`Icon catalog entry "${iconName}" contains duplicate keywords.`);
     }
 
-    if (!['solid', 'outline'].includes(entry.style)) {
-      throw new Error(`Icon catalog entry "${iconName}" must use the solid or outline style.`);
+    if (!Array.isArray(entry.variants) || entry.variants.length === 0) {
+      throw new Error(`Icon catalog entry "${iconName}" must include variants.`);
     }
 
-    if (entry.variants !== undefined) {
-      throw new Error(`Icon catalog entry "${iconName}" must not declare removed variant metadata.`);
+    const compatibilityStyle = entry.brand ? 'solid' : 'outline';
+
+    if (entry.style !== compatibilityStyle) {
+      throw new Error(
+        `Icon catalog entry "${iconName}" must keep deprecated style "${compatibilityStyle}" for compatibility.`,
+      );
+    }
+
+    const requiredVariants = entry.brand ? ['solid'] : ['regular', 'light', 'thin'];
+    const allowedVariants = ['solid', 'regular', 'light', 'thin'];
+
+    if (
+      requiredVariants.some((variant) => !entry.variants.includes(variant)) ||
+      entry.variants.some((variant) => !allowedVariants.includes(variant)) ||
+      new Set(entry.variants).size !== entry.variants.length ||
+      (entry.brand && entry.variants.length !== 1)
+    ) {
+      throw new Error(
+        `Icon catalog entry "${iconName}" has an invalid variant set for ${entry.brand ? 'a brand' : 'a system icon'}.`,
+      );
+    }
+  }
+
+  const solidIconData = JSON.parse(readFileSync(solidIconDataPath, 'utf8'));
+  const catalogSolidIcons = iconNames
+    .filter((iconName) => !iconCatalog[iconName].brand && iconCatalog[iconName].variants.includes('solid'))
+    .sort((left, right) => left.localeCompare(right));
+  const authoredSolidIcons = Object.keys(solidIconData).sort((left, right) => left.localeCompare(right));
+
+  if (JSON.stringify(catalogSolidIcons) !== JSON.stringify(authoredSolidIcons)) {
+    throw new Error('Authored solid geometry and catalog variant metadata do not match.');
+  }
+
+  for (const [iconName, solidIcon] of Object.entries(solidIconData)) {
+    if (solidIcon.viewBox !== '0 0 24 24') {
+      throw new Error(`Solid icon "${iconName}" must use the canonical 24-unit viewBox.`);
+    }
+
+    if (typeof solidIcon.body !== 'string' || !solidIcon.body.includes('currentColor')) {
+      throw new Error(`Solid icon "${iconName}" must contain currentColor geometry.`);
+    }
+
+    if (/<script|\son[a-z]+=|javascript:/i.test(solidIcon.body)) {
+      throw new Error(`Solid icon "${iconName}" contains unsafe SVG markup.`);
     }
   }
 };

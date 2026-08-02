@@ -85,6 +85,7 @@ const nextIconCatalog = {
   [iconName]: {
     title: toTitleCase(iconName),
     keywords: toKeywords(iconName),
+    variants: ['regular', 'light', 'thin'],
     style: 'outline',
   },
 };
@@ -93,7 +94,7 @@ writeFileSync(iconCatalogPath, `${JSON.stringify(nextIconCatalog, null, 4)}\n`);
 
 console.log(`Created src/lib/components/${iconName}.vue`);
 console.log(`Added "${iconName}" to src/lib/iconMeta.json under "${categoryId}"`);
-console.log(`Seeded "${iconName}" in src/lib/iconCatalog.json as "${toTitleCase(iconName)}" (outline)`);
+console.log(`Seeded "${iconName}" in src/lib/iconCatalog.json as "${toTitleCase(iconName)}" (outline weights)`);
 console.log('Next steps:');
 console.log(`1. Draw the final SVG path in src/lib/components/${iconName}.vue`);
 console.log('2. Refine title and keywords in src/lib/iconCatalog.json if needed');

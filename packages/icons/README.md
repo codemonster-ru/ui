@@ -7,7 +7,7 @@
 
 A lightweight Vue 3 icon library with a unified API for the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-icons@3.0.0`.
+Current release: `@codemonster-ru/vueforge-icons@3.1.0`.
 
 ## Requirements
 
@@ -37,8 +37,28 @@ import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 
 <template>
   <VueIconify :icon="icons.check" aria-hidden="true" />
+  <VueIconify :icon="icons.check" variant="solid" aria-hidden="true" />
 </template>
 ```
+
+All system icons support `solid`, `regular`, `light`, and `thin`. `regular` remains the default, so
+existing uses keep the VueForge outline rendering. The seven brand marks support only `solid` and
+select it by default. Supported variants are listed per icon in `iconCatalog`; the variant names and
+their TypeScript union are exported as `iconVariants` and `IconVariant`.
+
+### Component API
+
+| Prop      | Type                 | Default                                        | Purpose                                       |
+| --------- | -------------------- | ---------------------------------------------- | --------------------------------------------- |
+| `icon`    | `IconName \| string` | `moon`                                         | Catalog name in camelCase or kebab-case.      |
+| `variant` | `IconVariant`        | `regular` for system icons, `solid` for brands | Selects the supported visual weight.          |
+| `size`    | `number \| string`   | VueForge medium icon size token                | Sets SVG width and height.                    |
+| `spin`    | `boolean`            | `false`                                        | Enables the reduced-motion-aware animation.   |
+| `inset`   | `number`             | `0`                                            | Applies an optical inset inside the icon box. |
+
+Unknown icon names fall back to `moon`. Passing a variant that the selected icon does not support
+throws an explicit runtime error. Native SVG attributes such as `aria-label`, `aria-hidden`,
+`role`, and `data-*` are forwarded to the rendered SVG.
 
 The root entry exports `VueIconify`, icon names, catalog metadata, and related TypeScript types.
 Browser ESM imports automatically load the small component stylesheet. The explicit CSS entry is:
@@ -54,14 +74,47 @@ is available through `require('@codemonster-ru/vueforge-icons')`.
 The package also retains `dist/index.ts.umd.js` for direct CDN consumers that provide the global
 `Vue` runtime. It is a standalone distribution artifact, not a package `exports` subpath.
 
-`VueIconify` accepts icon names dynamically, so the generic renderer includes the icon component
-catalog. Metadata-only named imports remain tree-shakeable.
+`VueIconify` accepts icon names dynamically, so the generic renderer includes the complete runtime
+catalog. Metadata-only named imports remain tree-shakeable and are protected by an automated bundle
+budget. Individual icon entry points are not currently exposed.
 
 ## Visual styles
 
-The catalog contains 109 approved VueForge outline icons and seven independent solid brand marks.
-The `style` catalog field describes each icon's geometry; it does not select a runtime variant.
-Brand marks retain their official geometry and remain subject to their owners' trademark guidance.
+The catalog contains 109 VueForge system icons. Their three outline weights share the approved
+24-unit geometry and use stroke widths of 2, 1.5, and 1. Every system icon also contains newly
+authored solid geometry on the same 24-unit keyline system. Solid availability is explicitly
+represented in each catalog entry.
+
+Solid artwork uses filled silhouettes and transparent detail cutouts. It is authored independently
+from the outline paths, and preserved pre-outline migration snapshots are not used as production
+geometry.
+
+The solid geometry uses sharp corners for directional and command symbols, a 1.25-unit radius for
+tiles, and 2–3-unit radii for containers. Thin structural separators are approximately 0.8 units;
+primary negative details use 1.5–2 units. The solid audit also rejects artwork that touches the
+canvas edge or falls outside the expected optical-mass range.
+
+The seven brand marks support only `solid`, retain their official geometry, and remain subject to
+their owners' trademark guidance. Omitting `variant` selects `solid` for a brand mark. Passing an
+unsupported outline variant to a brand mark raises an explicit runtime error.
+
+`IconCatalogEntry.variants` is the authoritative variant contract. The previous `style` field is
+retained as deprecated compatibility metadata for the 3.x line: it reports the canonical source
+family (`outline` for system icons and `solid` for brand marks), but does not select a runtime
+variant.
+
+## Maintainer checks
+
+```bash
+npm run validate-icons
+npm run snapshot:variants:check
+npm run audit:bundle
+npm run check
+```
+
+Intentional geometry changes require `npm run snapshot:variants:update`. The committed reference
+sheets cover every system icon in all four variants at 16, 20, and 24 px. Bundle auditing separately
+protects metadata-only tree-shaking and the full `VueIconify` runtime budget.
 
 ## More documentation
 
