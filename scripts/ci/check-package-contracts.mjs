@@ -35,7 +35,7 @@ const releaseTrain = [
     directory: 'codeblock',
     enginesNode: '>=20',
     name: '@codemonster-ru/vueforge-codeblock',
-    version: '4.0.0',
+    version: '4.0.1',
   },
   {
     directory: 'playground-core',

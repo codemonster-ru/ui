@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.0.1
+
+### Changed
+
+- Declared compatibility with both VueForge Icons 2.x and 3.x.
+- Updated the declaration build for the current Vue and `vite-plugin-dts` toolchain.
+
 ## 4.0.0
 
 ### Added
