@@ -295,6 +295,10 @@ export interface VfThemeTokens extends BaseVfThemeTokens {
   panelBackground: string;
   panelColor: string;
   panelSubtleBackground: string;
+  groupBoxBorderColor: string;
+  groupBoxBackground: string;
+  groupBoxColor: string;
+  groupBoxTitleColor: string;
   tableBorderColor: string;
   tableBackground: string;
   tableColor: string;

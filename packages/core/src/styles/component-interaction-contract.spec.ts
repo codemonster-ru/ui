@@ -126,6 +126,11 @@ describe('component interaction contract', () => {
     expect(css).toContain(".vf-data-table__pagination-page:not([aria-current='page']),");
   });
 
+  it('uses shared breakpoint aliases for responsive container components', () => {
+    expect(readEntry('page-header')).toContain('@container vf-page-header (--vf-bp-sm-down)');
+    expect(readEntry('form-layout')).toContain('@container vf-form-layout (--vf-bp-md-up)');
+  });
+
   it('keeps secondary actions on distinct base, hover, and active surfaces', () => {
     for (const name of ['button', 'icon-button']) {
       const css = readEntry(name);
