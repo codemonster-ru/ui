@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.1
+
+### Added
+
+- Added a shared build-time breakpoint query registry and resolver for media and named or unnamed
+  container-query aliases.
+
+### Fixed
+
+- Centralized exclusive maximum-width query generation so package builds no longer duplicate or
+  hardcode responsive thresholds.
+
 ## 2.0.0
 
 ### Added

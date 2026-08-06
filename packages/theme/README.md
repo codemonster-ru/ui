@@ -7,7 +7,7 @@
 
 A framework-agnostic token and preset engine for the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-theme@2.0.0`.
+Coordinated release: `@codemonster-ru/vueforge-theme@2.0.1`.
 
 ## Requirements
 
