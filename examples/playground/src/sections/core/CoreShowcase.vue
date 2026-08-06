@@ -13,7 +13,9 @@ import {
   VfCard,
   VfCheckbox,
   VfCommandPalette,
+  VfConfirmDialog,
   VfDataTable,
+  VfDataTableColumnChooser,
   VfDatePicker,
   VfDrawer,
   VfDialog,
@@ -21,6 +23,8 @@ import {
   VfDropdown,
   VfField,
   VfFieldset,
+  VfFormLayout,
+  VfGroupBox,
   VfIconButton,
   VfInput,
   VfLink,
@@ -29,6 +33,7 @@ import {
   VfMenuItem,
   VfNavMenu,
   VfPanel,
+  VfPageHeader,
   VfPopover,
   VfProgressBar,
   VfProgressSpinner,
@@ -65,7 +70,10 @@ const dialogOpen = ref(false);
 const drawerOpen = ref(false);
 const drawerFullscreenOpen = ref(false);
 const commandPaletteOpen = ref(false);
+const confirmDialogOpen = ref(false);
+const confirmDialogResult = ref('No action confirmed yet.');
 const commandPaletteQuery = ref('');
+const groupBoxCollapsed = ref(false);
 const dialogSize = ref<'sm' | 'md' | 'lg'>('md');
 const drawerPlacement = ref<'left' | 'right' | 'top' | 'bottom'>('right');
 const formStackNameValue = ref('');
@@ -285,18 +293,8 @@ function dataTableRowValue(row: VfDataTableRow, key: string) {
   return String((row as Record<string, unknown>)[key] ?? '');
 }
 
-function setDataTableColumnVisible(columnKey: string, visible: boolean) {
-  const visibleKeys = new Set(visibleDataTableColumnKeys.value);
-
-  if (visible) {
-    visibleKeys.add(columnKey);
-  } else {
-    visibleKeys.delete(columnKey);
-  }
-
-  visibleDataTableColumnKeys.value = dataTableConfigurableColumns
-    .filter((column) => column.key === 'member' || visibleKeys.has(column.key))
-    .map((column) => column.key);
+function confirmExampleDeletion() {
+  confirmDialogResult.value = 'Example user deleted.';
 }
 
 onMounted(() => {
@@ -545,7 +543,6 @@ const dataTableConfigurableColumns: VfDataTableColumn[] = [
   { key: 'status', header: 'Status' },
   { key: 'tasks', header: 'Tasks', align: 'end' },
 ];
-const optionalDataTableColumns = dataTableConfigurableColumns.slice(1);
 
 const dataTablePinnedColumns: VfDataTableColumn[] = [
   { key: 'actions', header: 'Actions', pinned: 'end', width: '1%', minWidth: '7rem', nowrap: true },
@@ -662,7 +659,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
         <div class="demo-grid demo-grid--three">
           <div class="demo-example">
-            <p class="demo-label">vf-theme-provider</p>
+            <p class="demo-label">VfThemeProvider</p>
             <div class="demo-stack demo-form-stack">
               <div class="demo-inline">
                 <VfButton size="sm" variant="secondary" @click="setTheme('light')">Light</VfButton>
@@ -677,7 +674,7 @@ const tabContent = computed<Record<string, string>>(() => ({
             </div>
           </div>
           <div class="demo-example">
-            <p class="demo-label">vf-theme-switch</p>
+            <p class="demo-label">VfThemeSwitch</p>
             <div class="demo-stack demo-form-stack">
               <div class="demo-inline">
                 <VfThemeSwitch />
@@ -940,7 +937,7 @@ const tabContent = computed<Record<string, string>>(() => ({
             <p class="demo-label">Actions visual QA matrix</p>
             <div class="demo-component-matrix" data-test="action-geometry-matrix">
               <div class="demo-component-matrix__section">
-                <p class="demo-text">Button variants by size</p>
+                <p class="demo-text">VfButton · variants by size</p>
                 <div class="demo-component-matrix__grid">
                   <div v-for="size in formGeometrySizes" :key="`button-${size}`" class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">{{ size }}</p>
@@ -960,7 +957,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-component-matrix__section">
-                <p class="demo-text">Button loading variants by size</p>
+                <p class="demo-text">VfButton · loading variants by size</p>
                 <div class="demo-component-matrix__grid">
                   <div
                     v-for="size in formGeometrySizes"
@@ -984,7 +981,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-component-matrix__section">
-                <p class="demo-text">Icon button variants by size</p>
+                <p class="demo-text">VfIconButton · variants by size</p>
                 <div class="demo-component-matrix__grid">
                   <div
                     v-for="size in formGeometrySizes"
@@ -1008,7 +1005,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-component-matrix__section">
-                <p class="demo-text">Link tone and underline states</p>
+                <p class="demo-text">VfLink · tone and underline states</p>
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                   <div v-for="tone in linkTones" :key="`link-${tone}`" class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">{{ tone }}</p>
@@ -1047,14 +1044,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                   :key="`tooltip-${placement}`"
                   class="demo-component-matrix__cell"
                 >
-                  <p class="demo-component-matrix__label">tooltip {{ placement }}</p>
+                  <p class="demo-component-matrix__label">VfTooltip · {{ placement }}</p>
                   <VfTooltip :text="`Tooltip placement: ${placement}`" :placement="placement">
                     <VfButton variant="secondary">{{ placement }}</VfButton>
                   </VfTooltip>
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">dropdown default</p>
+                  <p class="demo-component-matrix__label">VfDropdown + VfMenu + VfMenuItem · default</p>
                   <VfDropdown>
                     <template #trigger>
                       <VfButton tabindex="-1" variant="secondary">Open menu</VfButton>
@@ -1067,7 +1064,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">dropdown pills</p>
+                  <p class="demo-component-matrix__label">VfDropdown · pills</p>
                   <VfDropdown variant="pills">
                     <template #trigger>
                       <VfButton tabindex="-1" variant="secondary">Open menu</VfButton>
@@ -1078,7 +1075,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">popover content</p>
+                  <p class="demo-component-matrix__label">VfPopover · content</p>
                   <VfPopover>
                     <template #trigger>
                       <VfButton tabindex="-1" variant="secondary">Open popover</VfButton>
@@ -1106,7 +1103,7 @@ const tabContent = computed<Record<string, string>>(() => ({
             <div class="demo-component-matrix" data-test="surface-geometry-matrix">
               <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">card default</p>
+                  <p class="demo-component-matrix__label">VfCard · default</p>
                   <VfCard title="Release Summary">
                     <p class="demo-m-0">Default card spacing with body and footer.</p>
                     <template #footer>
@@ -1119,7 +1116,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">card compact</p>
+                  <p class="demo-component-matrix__label">VfCard · compact</p>
                   <VfCard title="Compact Release" compact>
                     <p class="demo-m-0">Compact card spacing for dense surfaces.</p>
                     <template #footer>
@@ -1129,21 +1126,35 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">panel default</p>
+                  <p class="demo-component-matrix__label">VfPanel · default</p>
                   <VfPanel title="Supporting Context">
                     <p class="demo-m-0">Panel content with regular treatment.</p>
                   </VfPanel>
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">panel subtle</p>
+                  <p class="demo-component-matrix__label">VfPanel · subtle</p>
                   <VfPanel title="Subtle Context" subtle>
                     <p class="demo-m-0">Subtle panel treatment for quiet grouping.</p>
                   </VfPanel>
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">table caption and footer</p>
+                  <p class="demo-component-matrix__label">VfGroupBox · default</p>
+                  <VfGroupBox title="Shipping address">
+                    <p class="demo-m-0">1234 Elm Street, San Francisco, CA 94102</p>
+                  </VfGroupBox>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">VfGroupBox · collapsible</p>
+                  <VfGroupBox v-model:collapsed="groupBoxCollapsed" title="Invoice details" collapsible>
+                    <p class="demo-m-0">Invoice #1024 · Design service · $120.00</p>
+                  </VfGroupBox>
+                </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">VfTable · caption and footer</p>
                   <VfTable caption="Team availability">
                     <template #header>
                       <tr>
@@ -1180,7 +1191,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">table striped</p>
+                  <p class="demo-component-matrix__label">VfTable · striped</p>
                   <VfTable striped>
                     <template #header>
                       <tr>
@@ -1212,7 +1223,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">table compact</p>
+                  <p class="demo-component-matrix__label">VfTable · compact</p>
                   <VfTable compact>
                     <template #header>
                       <tr>
@@ -1244,7 +1255,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">table column dividers</p>
+                  <p class="demo-component-matrix__label">VfTable · column dividers</p>
                   <VfTable column-dividers>
                     <template #header>
                       <tr>
@@ -1282,7 +1293,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">table sticky header</p>
+                  <p class="demo-component-matrix__label">VfTable · sticky header</p>
                   <VfTable class="demo-table-scroll-y" sticky-header>
                     <template #header>
                       <tr>
@@ -1322,7 +1333,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table</p>
+                  <p class="demo-component-matrix__label">VfDataTable · default</p>
                   <VfDataTable
                     caption="Team roster"
                     :columns="dataTableColumns"
@@ -1334,7 +1345,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table compact aligned</p>
+                  <p class="demo-component-matrix__label">VfDataTable · compact aligned</p>
                   <VfDataTable
                     :columns="dataTableMetricColumns"
                     :rows="dataTableRows"
@@ -1346,28 +1357,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table configurable columns</p>
+                  <p class="demo-component-matrix__label">VfDataTable + VfDataTableColumnChooser</p>
                   <div class="demo-stack">
                     <div class="demo-inline">
-                      <VfPopover placement="bottom-start">
-                        <template #trigger>
-                          <VfIconButton
-                            :icon="icons.columns"
-                            tabindex="-1"
-                            variant="secondary"
-                            aria-label="Choose visible columns"
-                          />
-                        </template>
-                        <div class="demo-stack">
-                          <VfCheckbox
-                            v-for="column in optionalDataTableColumns"
-                            :key="column.key"
-                            :model-value="visibleDataTableColumnKeys.includes(column.key)"
-                            :label="column.header"
-                            @update:model-value="setDataTableColumnVisible(column.key, $event)"
-                          />
-                        </div>
-                      </VfPopover>
+                      <VfDataTableColumnChooser
+                        v-model="visibleDataTableColumnKeys"
+                        :columns="dataTableConfigurableColumns"
+                        :required-column-keys="['member']"
+                      />
                       <span class="demo-text">Member is always visible</span>
                     </div>
                     <VfDataTable
@@ -1383,7 +1380,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell demo-item--full">
-                  <p class="demo-component-matrix__label">data table resizable columns</p>
+                  <p class="demo-component-matrix__label">VfDataTable · resizable columns</p>
                   <div class="demo-stack">
                     <div class="demo-inline">
                       <VfButton
@@ -1413,7 +1410,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell demo-item--full">
-                  <p class="demo-component-matrix__label">data table reorderable columns</p>
+                  <p class="demo-component-matrix__label">VfDataTable · reorderable columns</p>
                   <div class="demo-stack">
                     <div class="demo-inline">
                       <VfButton
@@ -1443,7 +1440,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table selection</p>
+                  <p class="demo-component-matrix__label">VfDataTable · selection</p>
                   <VfDataTable
                     v-model:selected-row-keys="selectedDataTableRowKeys"
                     selectable
@@ -1469,7 +1466,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table slots and footer</p>
+                  <p class="demo-component-matrix__label">VfDataTable · slots and footer</p>
                   <VfDataTable :columns="dataTableMetricColumns" :rows="dataTableRows.slice(0, 5)" row-key="id">
                     <template #header-tasks="{ column }"> {{ column.header }} open </template>
                     <template #cell-status="{ value }">
@@ -1486,7 +1483,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table expandable rows</p>
+                  <p class="demo-component-matrix__label">VfDataTable · expandable rows</p>
                   <VfDataTable
                     v-model:expanded-row-keys="expandedDataTableRowKeys"
                     :columns="dataTableColumns"
@@ -1514,7 +1511,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table sticky header</p>
+                  <p class="demo-component-matrix__label">VfDataTable · sticky header</p>
                   <VfDataTable
                     class="demo-table-scroll-y"
                     :columns="dataTableColumns"
@@ -1525,7 +1522,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table pinned columns</p>
+                  <p class="demo-component-matrix__label">VfDataTable · pinned columns</p>
                   <div class="demo-stack">
                     <p class="demo-text">Scroll horizontally to keep Member and Actions visible.</p>
                     <VfDataTable
@@ -1544,17 +1541,17 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table loading</p>
+                  <p class="demo-component-matrix__label">VfDataTable · loading</p>
                   <VfDataTable :columns="dataTableColumns" :rows="dataTableRows.slice(0, 5)" row-key="id" loading />
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table skeleton</p>
+                  <p class="demo-component-matrix__label">VfDataTable · skeleton</p>
                   <VfDataTable :columns="dataTableMetricColumns" loading loading-variant="skeleton" :loading-rows="4" />
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table error</p>
+                  <p class="demo-component-matrix__label">VfDataTable · error</p>
                   <div class="demo-stack">
                     <VfDataTable
                       :columns="dataTableColumns"
@@ -1582,7 +1579,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell demo-item--full">
-                  <p class="demo-component-matrix__label">data table sorting</p>
+                  <p class="demo-component-matrix__label">VfDataTable · sorting</p>
                   <div class="demo-stack">
                     <p class="demo-text">
                       Click headers to add sort columns in priority order. Sorting is applied to all rows before
@@ -1608,7 +1605,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table pagination</p>
+                  <p class="demo-component-matrix__label">VfDataTable · pagination</p>
                   <VfDataTable
                     :columns="dataTableMetricColumns"
                     :rows="dataTablePaginationRows"
@@ -1621,12 +1618,12 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">data table empty</p>
+                  <p class="demo-component-matrix__label">VfDataTable · empty</p>
                   <VfDataTable :columns="dataTableColumns" empty-text="No team members found" />
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">divider rhythm</p>
+                  <p class="demo-component-matrix__label">VfDivider · rhythm</p>
                   <div class="demo-stack">
                     <span class="demo-text">Above</span>
                     <VfDivider />
@@ -1653,7 +1650,7 @@ const tabContent = computed<Record<string, string>>(() => ({
             <p class="demo-label">Feedback visual QA matrix</p>
             <div class="demo-component-matrix" data-test="feedback-geometry-matrix">
               <div class="demo-component-matrix__section">
-                <p class="demo-text">Alert tones</p>
+                <p class="demo-text">VfAlert · tones</p>
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                   <VfAlert v-for="tone in feedbackTones" :key="`alert-${tone}`" :tone="tone" :title="`${tone} alert`">
                     Consistent icon, border, and content spacing.
@@ -1663,7 +1660,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-component-matrix__section">
-                <p class="demo-text">Avatars</p>
+                <p class="demo-text">VfAvatar</p>
                 <div class="demo-avatar-showcase">
                   <section class="demo-avatar-panel" aria-label="Team member avatars">
                     <div class="demo-avatar-panel__header">
@@ -1764,10 +1761,10 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-component-matrix__section">
-                <p class="demo-text">Badges and tags</p>
+                <p class="demo-text">VfBadge + VfTag · tones</p>
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                   <div class="demo-component-matrix__cell">
-                    <p class="demo-component-matrix__label">badges</p>
+                    <p class="demo-component-matrix__label">VfBadge</p>
                     <div class="demo-inline">
                       <VfBadge>neutral</VfBadge>
                       <VfBadge v-for="tone in feedbackTones" :key="`badge-${tone}`" :tone="tone">
@@ -1777,7 +1774,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   </div>
 
                   <div class="demo-component-matrix__cell">
-                    <p class="demo-component-matrix__label">tags</p>
+                    <p class="demo-component-matrix__label">VfTag</p>
                     <div class="demo-inline">
                       <VfTag>neutral</VfTag>
                       <VfTag v-for="tone in feedbackTones" :key="`tag-${tone}`" :tone="tone">
@@ -1792,7 +1789,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <p class="demo-text">Progress indicators</p>
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                   <div class="demo-component-matrix__cell">
-                    <p class="demo-component-matrix__label">progress bars</p>
+                    <p class="demo-component-matrix__label">VfProgressBar</p>
                     <VfProgressBar :value="42" label="Import progress" />
                     <VfProgressBar :value="7" :max="12" show-value label="Step progress" height="1rem" />
                     <VfProgressBar
@@ -1824,7 +1821,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   </div>
 
                   <div class="demo-component-matrix__cell">
-                    <p class="demo-component-matrix__label">progress spinners</p>
+                    <p class="demo-component-matrix__label">VfProgressSpinner</p>
                     <div class="demo-inline">
                       <VfProgressSpinner label="Loading preview" />
                       <VfProgressSpinner label="Loading large preview" tone="warn" size="2.5rem" :stroke-width="3" />
@@ -1837,14 +1834,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <p class="demo-text">Skeleton loading states</p>
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                   <div class="demo-component-matrix__cell">
-                    <p class="demo-component-matrix__label">skeleton sizes</p>
+                    <p class="demo-component-matrix__label">VfSkeleton · sizes</p>
                     <VfSkeleton min-height="2.5rem" />
                     <VfSkeleton min-height="4rem" radius="var(--vf-radius-surface)" />
                     <VfSkeleton min-height="6rem" :animated="false" />
                   </div>
 
                   <div class="demo-component-matrix__cell">
-                    <p class="demo-component-matrix__label">skeleton gate</p>
+                    <p class="demo-component-matrix__label">VfSkeletonGate</p>
                     <VfSkeletonGate :ready="false" min-height="6rem" reserve-height="6rem">
                       <VfPanel title="Loaded panel">
                         <p class="demo-m-0">Loaded content preserves geometry.</p>
@@ -1870,7 +1867,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
         <div class="demo-grid demo-grid--three">
           <div class="demo-item demo-item--full">
-            <p class="demo-label">Recommended form stack</p>
+            <p class="demo-label">VfStack + VfField · recommended form stack</p>
             <VfStack class="demo-form-stack">
               <p class="demo-text">
                 Use a vertical layout container for form spacing. <code>VfField</code> owns internal label, control,
@@ -1921,7 +1918,56 @@ const tabContent = computed<Record<string, string>>(() => ({
           </div>
 
           <div class="demo-item demo-item--full">
-            <p class="demo-label">Date picker</p>
+            <p class="demo-label">VfFormLayout · responsive</p>
+            <VfCard title="Workspace settings">
+              <VfFormLayout mode="responsive" label-width="12rem">
+                <VfField label="Workspace name" description="Shown to every workspace member." required>
+                  <template #default="{ controlId, describedBy, invalid, required }">
+                    <VfInput
+                      :id="controlId"
+                      v-model="formStackNameValue"
+                      :aria-describedby="describedBy"
+                      :aria-required="required ? 'true' : undefined"
+                      :invalid="invalid"
+                      required
+                      placeholder="Acme Cloud"
+                    />
+                  </template>
+                </VfField>
+
+                <VfField label="Billing email" required>
+                  <template #default="{ controlId, describedBy, invalid, required }">
+                    <VfInput
+                      :id="controlId"
+                      v-model="formStackEmailValue"
+                      type="email"
+                      :aria-describedby="describedBy"
+                      :aria-required="required ? 'true' : undefined"
+                      :invalid="invalid"
+                      required
+                      placeholder="team@acme.test"
+                    />
+                  </template>
+                </VfField>
+
+                <VfField label="Plan">
+                  <template #default="{ controlId, describedBy, invalid }">
+                    <VfSelect
+                      :id="controlId"
+                      v-model="formStackPlanValue"
+                      :aria-describedby="describedBy"
+                      :invalid="invalid"
+                      :options="selectOptions"
+                      placeholder="Choose a plan"
+                    />
+                  </template>
+                </VfField>
+              </VfFormLayout>
+            </VfCard>
+          </div>
+
+          <div class="demo-item demo-item--full">
+            <p class="demo-label">VfDatePicker</p>
             <div class="demo-component-matrix">
               <div class="demo-component-matrix__section">
                 <p class="demo-text">
@@ -2110,7 +2156,7 @@ const tabContent = computed<Record<string, string>>(() => ({
             <p class="demo-label">Forms visual QA matrix</p>
             <div class="demo-form-geometry" data-test="form-geometry-matrix">
               <div class="demo-form-geometry__section">
-                <p class="demo-text">Text controls</p>
+                <p class="demo-text">VfInput + VfSelect + VfTextarea · controls</p>
                 <div class="demo-form-geometry__grid">
                   <div v-for="size in formGeometrySizes" :key="`text-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
@@ -2147,7 +2193,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-form-geometry__section">
-                <p class="demo-text">Text control states</p>
+                <p class="demo-text">VfInput + VfSelect + VfTextarea · states</p>
                 <div class="demo-form-geometry__grid">
                   <div v-for="size in formGeometrySizes" :key="`text-states-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
@@ -2195,7 +2241,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-form-geometry__section">
-                <p class="demo-text">Adornments and actions</p>
+                <p class="demo-text">VfInput + VfSelect · adornments and actions</p>
                 <div class="demo-form-geometry__grid">
                   <div v-for="size in formGeometrySizes" :key="`adornments-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
@@ -2241,7 +2287,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-form-geometry__section">
-                <p class="demo-text">Floating labels</p>
+                <p class="demo-text">VfField · floating labels</p>
                 <div class="demo-form-geometry__grid">
                   <div
                     v-for="variant in formGeometryFloatingVariants"
@@ -2295,7 +2341,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-form-geometry__section">
-                <p class="demo-text">Floating labels by size and fill state</p>
+                <p class="demo-text">VfField · floating labels by size and fill state</p>
                 <div class="demo-form-geometry__grid">
                   <div
                     v-for="size in formGeometrySizes"
@@ -2401,7 +2447,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-form-geometry__section">
-                <p class="demo-text">Selection controls</p>
+                <p class="demo-text">VfCheckbox + VfRadio + VfSwitch · sizes</p>
                 <div class="demo-form-geometry__grid">
                   <div v-for="size in formGeometrySizes" :key="`selection-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
@@ -2424,10 +2470,10 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-form-geometry__section">
-                <p class="demo-text">Field containers</p>
+                <p class="demo-text">VfField + VfFieldset · containers</p>
                 <div class="demo-form-geometry__grid demo-form-geometry__grid--two">
                   <div class="demo-form-geometry__cell">
-                    <p class="demo-form-geometry__label">field</p>
+                    <p class="demo-form-geometry__label">VfField</p>
                     <VfField label="Default field" description="Description text" required>
                       <template #default="{ controlId, describedBy, invalid, required }">
                         <VfInput
@@ -2455,7 +2501,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   </div>
 
                   <div class="demo-form-geometry__cell">
-                    <p class="demo-form-geometry__label">fieldset</p>
+                    <p class="demo-form-geometry__label">VfFieldset</p>
                     <VfFieldset label="Notification channels" description="Grouped checkbox controls">
                       <template #default="{ invalid }">
                         <div class="demo-selection-list">
@@ -2479,7 +2525,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </div>
 
               <div class="demo-form-geometry__section">
-                <p class="demo-text">Selection states and multiline labels</p>
+                <p class="demo-text">VfCheckbox + VfRadio + VfSwitch · states and multiline labels</p>
                 <div class="demo-form-geometry__grid">
                   <div
                     v-for="size in formGeometrySizes"
@@ -2549,7 +2595,7 @@ const tabContent = computed<Record<string, string>>(() => ({
             <div class="demo-component-matrix" data-test="navigation-geometry-matrix">
               <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">breadcrumbs</p>
+                  <p class="demo-component-matrix__label">VfBreadcrumbs</p>
                   <VfBreadcrumbs :items="breadcrumbItems" />
                   <VfBreadcrumbs
                     :items="[
@@ -2564,8 +2610,25 @@ const tabContent = computed<Record<string, string>>(() => ({
                   </VfBreadcrumbs>
                 </div>
 
+                <div class="demo-component-matrix__cell demo-item--full">
+                  <p class="demo-component-matrix__label">VfPageHeader</p>
+                  <VfPageHeader
+                    title="Team members"
+                    description="Manage workspace access, roles, and account status."
+                    :breadcrumbs="[
+                      { label: 'Administration', href: '#demo-navigation' },
+                      { label: 'Users', current: true },
+                    ]"
+                  >
+                    <template #actions>
+                      <VfButton variant="secondary">Export</VfButton>
+                      <VfButton>New user</VfButton>
+                    </template>
+                  </VfPageHeader>
+                </div>
+
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">tabs</p>
+                  <p class="demo-component-matrix__label">VfTabs</p>
                   <VfTabs model-value="overview" :items="releaseTabs.slice(0, 4)">
                     <template #panel="{ activeValue }">
                       <p class="demo-text">{{ tabContent[activeValue] }}</p>
@@ -2579,7 +2642,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">stepper horizontal</p>
+                  <p class="demo-component-matrix__label">VfStepper · horizontal</p>
                   <VfStepper
                     model-value="details"
                     :items="compactOnboardingSteps"
@@ -2595,7 +2658,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">stepper vertical</p>
+                  <p class="demo-component-matrix__label">VfStepper · vertical</p>
                   <VfStepper
                     model-value="billing"
                     :items="onboardingSteps"
@@ -2606,23 +2669,23 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">accordion states</p>
+                  <p class="demo-component-matrix__label">VfAccordion · states</p>
                   <VfAccordion title="Closed section">Closed content.</VfAccordion>
                   <VfAccordion title="Open section" open>Open content.</VfAccordion>
                   <VfAccordion title="Disabled section" disabled> Disabled content. </VfAccordion>
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">menus and toc</p>
+                  <p class="demo-component-matrix__label">VfNavMenu + VfMenuBar</p>
                   <VfNavMenu v-model="navMenuDefaultValue" :items="docsMenuSimpleItems" />
                   <VfNavMenu v-model="navMenuPillsValue" :items="docsMenuSimpleItems" variant="pills" />
                   <div class="demo-component-matrix__grid demo-nav-menu-variants-grid">
                     <div class="demo-component-matrix__cell">
-                      <p class="demo-component-matrix__label">sidebar with icons</p>
+                      <p class="demo-component-matrix__label">VfNavMenu · sidebar with icons</p>
                       <VfNavMenu v-model="navMenuSidebarValue" :items="docsMenuSidebarItems" variant="sidebar" />
                     </div>
                     <div class="demo-component-matrix__cell">
-                      <p class="demo-component-matrix__label">sidebar collapsed</p>
+                      <p class="demo-component-matrix__label">VfNavMenu · collapsed</p>
                       <div class="demo-nav-menu-collapsed-frame">
                         <VfNavMenu
                           v-model="navMenuSidebarValue"
@@ -2633,7 +2696,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       </div>
                     </div>
                     <div class="demo-component-matrix__cell demo-nav-menu-wrapping-labels">
-                      <p class="demo-component-matrix__label">sidebar without icons and wrapping labels</p>
+                      <p class="demo-component-matrix__label">VfNavMenu · wrapping labels without icons</p>
                       <VfNavMenu
                         v-model="navMenuSidebarNoIconsValue"
                         :items="docsMenuSidebarNoIconItems"
@@ -2646,7 +2709,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">table of contents</p>
+                  <p class="demo-component-matrix__label">VfTableOfContents</p>
                   <VfTableOfContents :items="tocItems.slice(0, 5)" active-id="demo-actions" />
                   <VfTableOfContents :items="tocItems.slice(0, 5)" active-id="demo-actions" variant="pills" />
                 </div>
@@ -2667,7 +2730,7 @@ const tabContent = computed<Record<string, string>>(() => ({
             <div class="demo-component-matrix" data-test="modal-launcher-matrix">
               <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">dialog sizes</p>
+                  <p class="demo-component-matrix__label">VfDialog · sizes</p>
                   <div class="demo-inline">
                     <VfButton
                       v-for="size in dialogSizes"
@@ -2684,7 +2747,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">drawer placements</p>
+                  <p class="demo-component-matrix__label">VfDrawer · placements</p>
                   <div class="demo-inline">
                     <VfButton
                       v-for="placement in drawerPlacements"
@@ -2702,7 +2765,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </div>
 
                 <div class="demo-component-matrix__cell">
-                  <p class="demo-component-matrix__label">command palette states</p>
+                  <p class="demo-component-matrix__label">VfCommandPalette · states</p>
                   <div class="demo-inline">
                     <VfButton variant="secondary" @click="commandPaletteOpen = true"> empty query </VfButton>
                     <VfButton
@@ -2716,6 +2779,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </VfButton>
                   </div>
                 </div>
+
+                <div class="demo-component-matrix__cell">
+                  <p class="demo-component-matrix__label">VfConfirmDialog</p>
+                  <div class="demo-stack">
+                    <VfButton variant="danger" @click="confirmDialogOpen = true">Delete example user</VfButton>
+                    <p class="demo-text" aria-live="polite">{{ confirmDialogResult }}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2726,7 +2797,7 @@ const tabContent = computed<Record<string, string>>(() => ({
     <VfDialog v-model:open="dialogOpen" title="Dialog" :size="dialogSize" dividers>
       <template #default>
         <div class="demo-stack">
-          <p>Dialog content.</p>
+          <p class="demo-m-0">Dialog content.</p>
         </div>
       </template>
       <template #footer="{ close }">
@@ -2736,6 +2807,14 @@ const tabContent = computed<Record<string, string>>(() => ({
         </div>
       </template>
     </VfDialog>
+
+    <VfConfirmDialog
+      v-model:open="confirmDialogOpen"
+      title="Delete example user?"
+      description="This action cannot be undone."
+      confirm-label="Delete user"
+      @confirm="confirmExampleDeletion"
+    />
 
     <VfDrawer v-model:open="drawerOpen" title="Drawer" :placement="drawerPlacement" dividers>
       <template #default>

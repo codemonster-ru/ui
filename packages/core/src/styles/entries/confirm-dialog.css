@@ -1,0 +1,14 @@
+@import './button.css';
+@import './dialog.css';
+
+.vf-confirm-dialog__description {
+  margin: 0;
+}
+
+.vf-confirm-dialog__actions {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--vf-dialog-actions-gap);
+}

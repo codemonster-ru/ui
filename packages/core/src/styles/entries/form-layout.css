@@ -1,0 +1,65 @@
+@import './field.css';
+
+.vf-form-layout {
+  --vf-form-layout-label-width: minmax(10rem, 25%);
+
+  container-name: vf-form-layout;
+  container-type: inline-size;
+  display: grid;
+  gap: var(--vf-section-gap);
+  min-width: 0;
+  width: 100%;
+}
+
+.vf-form-layout > .vf-field {
+  width: 100%;
+}
+
+.vf-form-layout--horizontal > .vf-field,
+.vf-form-layout--responsive > .vf-field {
+  min-width: 0;
+}
+
+.vf-form-layout--horizontal > .vf-field {
+  grid-template-columns: var(--vf-form-layout-label-width) minmax(0, 1fr);
+  column-gap: var(--vf-section-gap);
+  align-items: start;
+}
+
+.vf-form-layout--horizontal > .vf-field > .vf-field__label {
+  place-self: start end;
+  padding-block-start: var(--vf-field-padding-block-md);
+  overflow-wrap: anywhere;
+  text-align: end;
+}
+
+.vf-form-layout--horizontal > .vf-field > :is(.vf-field__control, .vf-field__description, .vf-field__error) {
+  grid-column: 2;
+}
+
+.vf-form-layout--horizontal > .vf-field > .vf-field__control {
+  grid-row: 1;
+}
+
+@container vf-form-layout (--vf-bp-md-up) {
+  .vf-form-layout--responsive > .vf-field {
+    grid-template-columns: var(--vf-form-layout-label-width) minmax(0, 1fr);
+    column-gap: var(--vf-section-gap);
+    align-items: start;
+  }
+
+  .vf-form-layout--responsive > .vf-field > .vf-field__label {
+    place-self: start end;
+    padding-block-start: var(--vf-field-padding-block-md);
+    overflow-wrap: anywhere;
+    text-align: end;
+  }
+
+  .vf-form-layout--responsive > .vf-field > :is(.vf-field__control, .vf-field__description, .vf-field__error) {
+    grid-column: 2;
+  }
+
+  .vf-form-layout--responsive > .vf-field > .vf-field__control {
+    grid-row: 1;
+  }
+}
