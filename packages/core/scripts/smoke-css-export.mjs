@@ -150,6 +150,10 @@ try {
       throw new Error(`Broken CSS export: ${exportKey} contains an unresolved @import in the publish artifact.`);
     }
 
+    if (/@(?:media|container)(?:\s+[a-z_][a-z0-9_-]*)?\s*\(\s*--vf-bp-/i.test(cssSource)) {
+      throw new Error(`Broken CSS export: ${exportKey} contains an unresolved breakpoint alias.`);
+    }
+
     for (const snippet of colorArchitectureSnippets[exportKey] ?? []) {
       if (!cssSource.includes(snippet)) {
         throw new Error(`Broken color-token contract: ${exportKey} is missing ${snippet}.`);

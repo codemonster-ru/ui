@@ -6,6 +6,7 @@ import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node
 import { resolve } from 'node:path';
 import { inlineCssFiles, inlineCssImports } from './build/css-imports';
 import { buildThemeCssArtifacts, themeCssArtifactPaths } from './build/theme-css-artifacts';
+import { expandVfBreakpointQueries } from '../theme/src/breakpoint-queries';
 
 const rootDir = __dirname;
 const stylesDir = resolve(rootDir, 'src/styles');
@@ -56,8 +57,30 @@ const componentJsEntries = [
   'tooltip',
 ] as const;
 
+function expandCoreBreakpointQueries(code: string, source: string) {
+  const { transformed, unknownAliases } = expandVfBreakpointQueries(code);
+  if (unknownAliases.size > 0) {
+    throw new Error(`Unknown breakpoint aliases in ${source}: ${[...unknownAliases].sort().join(', ')}`);
+  }
+
+  return transformed;
+}
+
 function vueforgeStyleArtifactsPlugin(): Plugin[] {
   return [
+    {
+      name: 'vueforge-core-expand-breakpoint-queries',
+      enforce: 'pre',
+      transform(code, id) {
+        const normalizedId = id.replace(/\\/g, '/').split('?', 1)[0];
+        if (!normalizedId.includes('/packages/core/src/styles/') || !normalizedId.endsWith('.css')) {
+          return null;
+        }
+
+        const transformed = expandCoreBreakpointQueries(code, normalizedId);
+        return transformed === code ? null : transformed;
+      },
+    },
     {
       name: 'vueforge-generate-theme-css',
       buildStart() {
@@ -79,17 +102,29 @@ function vueforgeStyleArtifactsPlugin(): Plugin[] {
         copyFileSync(themeCssArtifactPaths.generatedTokensPath, resolve(distDir, 'tokens.css'));
         copyFileSync(themeCssArtifactPaths.generatedThemePath, resolve(distDir, 'theme.css'));
         copyFileSync(themeCssArtifactPaths.generatedBreakpointsPath, resolve(distDir, 'generated-breakpoints.css'));
-        writeFileSync(resolve(distDir, 'foundation.css'), inlineCssImports(resolve(stylesDir, 'foundation.css')));
-        writeFileSync(resolve(distDir, 'styles.css'), inlineCssImports(resolve(stylesDir, 'styles.css')));
-        writeFileSync(resolve(distDir, 'base.css'), inlineCssImports(resolve(stylesDir, 'components/base.css')));
+        writeFileSync(
+          resolve(distDir, 'foundation.css'),
+          expandCoreBreakpointQueries(inlineCssImports(resolve(stylesDir, 'foundation.css')), 'foundation.css'),
+        );
+        writeFileSync(
+          resolve(distDir, 'styles.css'),
+          expandCoreBreakpointQueries(inlineCssImports(resolve(stylesDir, 'styles.css')), 'styles.css'),
+        );
+        writeFileSync(
+          resolve(distDir, 'base.css'),
+          expandCoreBreakpointQueries(inlineCssImports(resolve(stylesDir, 'components/base.css')), 'base.css'),
+        );
         for (const entryName of componentJsEntries) {
           writeFileSync(
             resolve(distDir, `${entryName}.css`),
-            inlineCssFiles([
-              themeTransitionGuardPath,
-              accessibilityPreferencesPath,
-              resolve(styleEntriesDir, `${entryName}.css`),
-            ]),
+            expandCoreBreakpointQueries(
+              inlineCssFiles([
+                themeTransitionGuardPath,
+                accessibilityPreferencesPath,
+                resolve(styleEntriesDir, `${entryName}.css`),
+              ]),
+              `${entryName}.css`,
+            ),
           );
         }
 

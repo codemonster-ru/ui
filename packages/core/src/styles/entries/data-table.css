@@ -337,7 +337,7 @@
   block-size: var(--vf-control-height-sm);
 }
 
-@container (max-width: 479.98px) {
+@container (--vf-bp-xs-down) {
   .vf-data-table__pagination-actions {
     flex-basis: 100%;
     justify-content: space-between;

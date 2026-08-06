@@ -162,9 +162,9 @@ try {
     }
 
     const css = readFileSync(join(tempDir, expectedTarPath), 'utf8');
-    if (/@media\s*\(\s*--vf-bp-/.test(css)) {
+    if (/@(?:media|container)(?:\s+[a-z_][a-z0-9_-]*)?\s*\(\s*--vf-bp-/i.test(css)) {
       throw new Error(
-        `Broken CSS export: exports["${exportKey}"] target "${exportTarget}" contains unresolved custom media aliases.`,
+        `Broken CSS export: exports["${exportKey}"] target "${exportTarget}" contains unresolved breakpoint aliases.`,
       );
     }
   }

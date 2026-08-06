@@ -135,7 +135,7 @@
   border-top: var(--vf-layout-footer-border);
 }
 
-@container vf-admin-layout (max-width: 1023.98px) {
+@container vf-admin-layout (--vf-bp-lg-down) {
   .vf-admin-layout__aside {
     inset-block-start: var(--vf-layout-size-zero);
     z-index: calc(var(--vf-layout-admin-layout-sidebar-expanded-z-index) + 2);

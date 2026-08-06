@@ -417,19 +417,19 @@ describe('admin layout', () => {
     expect(adminLayoutCss).toMatch(
       /\.vf-admin-layout\s*\{[^}]*container-name: vf-admin-layout;[^}]*container-type: inline-size;/,
     );
-    expect(adminLayoutCss).toContain('@container vf-admin-layout (max-width: 1023.98px)');
+    expect(adminLayoutCss).toContain('@container vf-admin-layout (--vf-bp-lg-down)');
     expect(adminLayoutCss).toMatch(
       /\.vf-admin-layout--mobile-sidebar-open .vf-admin-layout__aside\s*\{[^}]*visibility: visible;[^}]*transform: translateX\(0\);/,
     );
     expect(adminLayoutCss).not.toContain('visibility var(--vf-layout-size-zero)');
     expect(adminLayoutCss).toMatch(
-      /@container vf-admin-layout \(max-width: 1023\.98px\)\s*\{[\s\S]*?\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside\s*\{[^}]*inline-size: min\(var\(--vf-layout-shell-sidebar-width\), 85cqi\);/,
+      /@container vf-admin-layout \(--vf-bp-lg-down\)\s*\{[\s\S]*?\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside\s*\{[^}]*inline-size: min\(var\(--vf-layout-shell-sidebar-width\), 85cqi\);/,
     );
     expect(adminLayoutCss).toMatch(
-      /@container vf-admin-layout \(max-width: 1023\.98px\)\s*\{[\s\S]*?\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside:is\(:hover, :has\(:focus-visible\)\)\s*\{[^}]*z-index: calc\(var\(--vf-layout-admin-layout-sidebar-expanded-z-index\) \+ 2\);/,
+      /@container vf-admin-layout \(--vf-bp-lg-down\)\s*\{[\s\S]*?\.vf-admin-layout--sidebar-collapsed .vf-admin-layout__aside:is\(:hover, :has\(:focus-visible\)\)\s*\{[^}]*z-index: calc\(var\(--vf-layout-admin-layout-sidebar-expanded-z-index\) \+ 2\);/,
     );
     expect(adminLayoutCss).toMatch(
-      /@container vf-admin-layout \(max-width: 1023\.98px\)\s*\{[\s\S]*?\.vf-admin-layout__aside\s*\{[^}]*inset-block-start: var\(--vf-layout-size-zero\);[^}]*z-index: calc\(var\(--vf-layout-admin-layout-sidebar-expanded-z-index\) \+ 2\);/,
+      /@container vf-admin-layout \(--vf-bp-lg-down\)\s*\{[\s\S]*?\.vf-admin-layout__aside\s*\{[^}]*inset-block-start: var\(--vf-layout-size-zero\);[^}]*z-index: calc\(var\(--vf-layout-admin-layout-sidebar-expanded-z-index\) \+ 2\);/,
     );
     expect(adminLayoutCss).toMatch(
       /\.vf-admin-layout__mobile-backdrop\s*\{[^}]*opacity: 0;[^}]*visibility: hidden;[^}]*transition:/,

@@ -958,6 +958,7 @@ describe('VfPlayground', () => {
     expect(componentSource).toContain('--vf-tabs-tab-active-color: var(--vf-playground-tab-active-text)');
     expect(componentSource).toContain('--vf-tabs-indicator-color: var(--vf-playground-tab-active-border)');
     expect(componentSource).toContain('--vf-tabs-focus-ring-color: var(--vf-playground-focus-ring-color)');
+    expect(componentSource).toContain('@media (--vf-bp-md-down)');
     expect(componentSource).toContain(
       '--vf-control-height-md: calc(var(--vf-playground-bar-height) - var(--vf-tabs-list-padding-bottom))',
     );
