@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.1.2
+
+### Changed
+
+- Made Layouts media and named container queries resolve through the shared VueForge breakpoint
+  registry during development and production builds.
+
+### Fixed
+
+- Added build and CSS export guards that reject unresolved breakpoint aliases in published layout
+  styles.
+
 ## 2.1.1
 
 ### Added

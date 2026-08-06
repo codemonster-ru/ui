@@ -12,7 +12,7 @@ const packageContracts = [
     directory: 'theme',
     entry: '@codemonster-ru/vueforge-theme',
     name: '@codemonster-ru/vueforge-theme',
-    version: '2.0.0',
+    version: '2.0.1',
   },
   {
     directory: 'icons',
@@ -24,13 +24,13 @@ const packageContracts = [
     directory: 'core',
     entry: '@codemonster-ru/vueforge-core',
     name: '@codemonster-ru/vueforge-core',
-    version: '2.3.0',
+    version: '2.4.0',
   },
   {
     directory: 'layouts',
     entry: '@codemonster-ru/vueforge-layouts',
     name: '@codemonster-ru/vueforge-layouts',
-    version: '2.1.1',
+    version: '2.1.2',
   },
   {
     directory: 'codeblock',
@@ -54,7 +54,7 @@ const packageContracts = [
     directory: 'playground',
     entry: '@codemonster-ru/vueforge-playground/runtime',
     name: '@codemonster-ru/vueforge-playground',
-    version: '3.0.0',
+    version: '3.0.1',
   },
 ];
 const runtimeDependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies'];
@@ -256,24 +256,13 @@ function installConsumer(managerVersion) {
 }
 
 function runPackageBinary(binary, arguments_) {
-  if (manager === 'npm') {
-    run('npm', ['exec', '--', binary, ...arguments_]);
-  } else if (manager === 'pnpm') {
-    run('pnpm', ['exec', binary, ...arguments_]);
-  } else {
-    run('yarn', ['exec', binary, '--', ...arguments_]);
-  }
+  const executable = process.platform === 'win32' ? `${binary}.cmd` : binary;
+  run(join(consumerDirectory, 'node_modules', '.bin', executable), arguments_);
 }
 
 function runConsumerNode(scriptPath, nodeArguments = []) {
   const relativeScriptPath = toPortablePath(relative(consumerDirectory, scriptPath));
-  if (manager === 'npm') {
-    run('npm', ['exec', '--', 'node', ...nodeArguments, relativeScriptPath]);
-  } else if (manager === 'pnpm') {
-    run('pnpm', ['exec', 'node', ...nodeArguments, relativeScriptPath]);
-  } else {
-    run('yarn', ['node', ...nodeArguments, relativeScriptPath]);
-  }
+  run(process.execPath, [...nodeArguments, relativeScriptPath]);
 }
 
 function runtimeTarget(exportValue, condition) {

@@ -1,5 +1,28 @@
 # Changelog
 
+## 2.4.0
+
+### Added
+
+- Added `VfConfirmDialog` with safe initial focus, async confirmation locking, optional automatic
+  closure, custom footer actions, and configurable teleport behavior.
+- Added `VfDataTableColumnChooser` for controlled column visibility, required columns, and aggregate
+  mixed-selection state.
+- Added responsive `VfFormLayout` modes for stacked and aligned field composition.
+- Added titled and collapsible `VfGroupBox` form sections with accessible disclosure behavior.
+- Added `VfPageHeader` with breadcrumbs, semantic heading levels, supporting copy, and responsive
+  page actions.
+- Added four public GroupBox theme tokens for its border, background, content, and title colors.
+- Added a disabled state to `VfDropdown`, including pointer, keyboard, ARIA, and scoped-trigger
+  behavior.
+
+### Changed
+
+- Made responsive Core component CSS resolve container queries through the canonical VueForge
+  breakpoint registry during builds.
+- Complete custom `VfThemeTokens` presets must provide the four new GroupBox color tokens; partial
+  theme overrides created through `extend` remain compatible.
+
 ## 2.3.0
 
 ### Added

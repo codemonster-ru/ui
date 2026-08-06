@@ -7,7 +7,7 @@
 
 A Vue 3 UI adapter for running interactive code playground sessions in the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-playground@3.0.0`.
+Coordinated release: `@codemonster-ru/vueforge-playground@3.0.1`.
 
 ## Requirements
 

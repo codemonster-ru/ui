@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.1
+
+### Fixed
+
+- Made responsive Playground tab wrapping use the canonical VueForge breakpoint registry and added
+  a publish guard against unresolved media-query aliases.
+
 ## 3.0.0
 
 ### Added
