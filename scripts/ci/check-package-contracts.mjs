@@ -11,7 +11,7 @@ const releaseTrain = [
     directory: 'theme',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-theme',
-    version: '2.0.0',
+    version: '2.0.1',
   },
   {
     directory: 'icons',
@@ -23,13 +23,13 @@ const releaseTrain = [
     directory: 'core',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-core',
-    version: '2.3.0',
+    version: '2.4.0',
   },
   {
     directory: 'layouts',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-layouts',
-    version: '2.1.1',
+    version: '2.1.2',
   },
   {
     directory: 'codeblock',
@@ -53,7 +53,7 @@ const releaseTrain = [
     directory: 'playground',
     enginesNode: '>=20',
     name: '@codemonster-ru/vueforge-playground',
-    version: '3.0.0',
+    version: '3.0.1',
   },
 ];
 const releaseByName = new Map(releaseTrain.map((packageContract) => [packageContract.name, packageContract]));
