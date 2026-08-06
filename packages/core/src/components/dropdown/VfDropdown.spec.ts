@@ -59,6 +59,36 @@ describe('VfDropdown', () => {
     expect(wrapper.find('.vf-dropdown__menu').classes()).toContain('vf-dropdown__menu--pills');
   });
 
+  it('prevents pointer and keyboard opening while disabled', async () => {
+    const wrapper = mount(VfDropdown, {
+      attachTo: document.body,
+      global: {
+        stubs: {
+          teleport: true,
+        },
+      },
+      props: {
+        open: true,
+        disabled: true,
+      },
+      slots: {
+        trigger: '<button type="button">More</button>',
+        default: '<button role="menuitem">Edit</button>',
+      },
+    });
+
+    const trigger = wrapper.get('.vf-dropdown__trigger');
+    expect(trigger.attributes('aria-disabled')).toBe('true');
+    expect(trigger.attributes('aria-expanded')).toBe('false');
+    expect(trigger.attributes('tabindex')).toBe('-1');
+
+    await trigger.trigger('click');
+    await trigger.trigger('keydown', { key: 'Enter' });
+    await nextTick();
+
+    expect(wrapper.find('[role="menu"]').exists()).toBe(false);
+  });
+
   it('supports keyboard navigation and closes on escape', async () => {
     const wrapper = mount(VfDropdown, {
       attachTo: document.body,
