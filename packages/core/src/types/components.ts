@@ -3,6 +3,8 @@ import type { IconName } from '@codemonster-ru/vueforge-icons';
 export type VfButtonVariant =
   'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'help' | 'danger' | 'contrast' | 'ghost';
 export type VfControlSize = 'sm' | 'md' | 'lg';
+export type VfFormLayoutMode = 'stacked' | 'horizontal' | 'responsive';
+export type VfPageHeaderHeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 export type VfAvatarShape = 'square' | 'circle';
 export type VfSwitchThumbContrast = 'auto' | 'inverse';
 export type VfLinkTone = 'default' | 'muted';
@@ -13,6 +15,7 @@ export type VfDividerOrientation = 'horizontal' | 'vertical';
 export type VfStepperOrientation = 'horizontal' | 'vertical';
 export type VfStepperContentPosition = 'above' | 'below' | 'start' | 'end';
 export type VfDialogSize = 'sm' | 'md' | 'lg';
+export type VfConfirmDialogInitialFocus = 'cancel' | 'confirm' | 'dialog';
 export type VfDrawerSize = VfDialogSize | 'full';
 export type VfDrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
 export type VfDropdownPlacement = 'bottom-start' | 'bottom-end';

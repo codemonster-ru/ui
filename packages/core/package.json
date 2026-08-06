@@ -112,11 +112,25 @@
         "default": "./dist/auto/command-palette.js"
       }
     },
+    "./confirm-dialog": {
+      "import": {
+        "types": "./dist/confirm-dialog.d.ts",
+        "node": "./dist/confirm-dialog.js",
+        "default": "./dist/auto/confirm-dialog.js"
+      }
+    },
     "./data-table": {
       "import": {
         "types": "./dist/data-table.d.ts",
         "node": "./dist/data-table.js",
         "default": "./dist/auto/data-table.js"
+      }
+    },
+    "./data-table-column-chooser": {
+      "import": {
+        "types": "./dist/data-table-column-chooser.d.ts",
+        "node": "./dist/data-table-column-chooser.js",
+        "default": "./dist/auto/data-table-column-chooser.js"
       }
     },
     "./date-picker": {
@@ -168,6 +182,20 @@
         "default": "./dist/auto/fieldset.js"
       }
     },
+    "./form-layout": {
+      "import": {
+        "types": "./dist/form-layout.d.ts",
+        "node": "./dist/form-layout.js",
+        "default": "./dist/auto/form-layout.js"
+      }
+    },
+    "./group-box": {
+      "import": {
+        "types": "./dist/group-box.d.ts",
+        "node": "./dist/group-box.js",
+        "default": "./dist/auto/group-box.js"
+      }
+    },
     "./icon-button": {
       "import": {
         "types": "./dist/icon-button.d.ts",
@@ -215,6 +243,13 @@
         "types": "./dist/panel.d.ts",
         "node": "./dist/panel.js",
         "default": "./dist/auto/panel.js"
+      }
+    },
+    "./page-header": {
+      "import": {
+        "types": "./dist/page-header.d.ts",
+        "node": "./dist/page-header.js",
+        "default": "./dist/auto/page-header.js"
       }
     },
     "./popover": {
@@ -338,7 +373,9 @@
     "./card.css": "./dist/card.css",
     "./checkbox.css": "./dist/checkbox.css",
     "./command-palette.css": "./dist/command-palette.css",
+    "./confirm-dialog.css": "./dist/confirm-dialog.css",
     "./data-table.css": "./dist/data-table.css",
+    "./data-table-column-chooser.css": "./dist/data-table-column-chooser.css",
     "./date-picker.css": "./dist/date-picker.css",
     "./dialog.css": "./dist/dialog.css",
     "./divider.css": "./dist/divider.css",
@@ -346,6 +383,8 @@
     "./dropdown.css": "./dist/dropdown.css",
     "./field.css": "./dist/field.css",
     "./fieldset.css": "./dist/fieldset.css",
+    "./form-layout.css": "./dist/form-layout.css",
+    "./group-box.css": "./dist/group-box.css",
     "./icon-button.css": "./dist/icon-button.css",
     "./input.css": "./dist/input.css",
     "./link.css": "./dist/link.css",
@@ -353,6 +392,7 @@
     "./menu.css": "./dist/menu.css",
     "./nav-menu.css": "./dist/nav-menu.css",
     "./panel.css": "./dist/panel.css",
+    "./page-header.css": "./dist/page-header.css",
     "./popover.css": "./dist/popover.css",
     "./progress-bar.css": "./dist/progress-bar.css",
     "./progress-spinner.css": "./dist/progress-spinner.css",

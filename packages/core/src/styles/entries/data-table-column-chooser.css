@@ -1,0 +1,17 @@
+@import './checkbox.css';
+@import './dropdown.css';
+@import './icon-button.css';
+
+.vf-data-table-column-chooser__options {
+  display: grid;
+  gap: var(--vf-surface-gap-compact);
+  min-width: 12rem;
+  max-height: min(24rem, calc(100vh - var(--vf-overlay-viewport-padding) * 2));
+  padding: var(--vf-field-padding-sm);
+  overflow-y: auto;
+}
+
+.vf-data-table-column-chooser__all {
+  padding-block-end: var(--vf-surface-gap-compact);
+  border-block-end: var(--vf-border-width) solid var(--vf-color-border-divider);
+}
