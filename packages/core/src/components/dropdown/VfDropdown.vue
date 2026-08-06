@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, computed } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { arrow, flip, offset, shift, type MiddlewareType, type PlacementType } from '@codemonster-ru/floater.js';
 import { useClickOutside, useDisclosure, useEscapeKey, useFloating, useId } from '@/composables';
 import { useFocusScopeBranch } from '@/composables/useFocusTrap';
@@ -14,6 +14,7 @@ interface VfDropdownProps {
   disableTeleport?: boolean;
   closeOnSelect?: boolean;
   variant?: 'default' | 'pills';
+  disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<VfDropdownProps>(), {
@@ -24,6 +25,7 @@ const props = withDefaults(defineProps<VfDropdownProps>(), {
   disableTeleport: false,
   closeOnSelect: true,
   variant: 'default',
+  disabled: false,
 });
 
 const emit = defineEmits<{
@@ -64,7 +66,8 @@ const disclosure = useDisclosure({
   },
 });
 
-const isOpen = disclosure.isOpen;
+const disclosureOpen = disclosure.isOpen;
+const isOpen = computed(() => !props.disabled && disclosureOpen.value);
 
 useFocusScopeBranch(menuRef, isOpen);
 
@@ -126,6 +129,10 @@ async function focusFirstItem() {
 }
 
 function openMenu(options: { focusFirstItem?: boolean } = {}) {
+  if (props.disabled) {
+    return;
+  }
+
   disclosure.open();
 
   if (options.focusFirstItem) {
@@ -139,6 +146,10 @@ function closeMenu() {
 }
 
 function toggleMenu() {
+  if (props.disabled) {
+    return;
+  }
+
   if (isOpen.value) {
     closeMenu();
     return;
@@ -148,6 +159,10 @@ function toggleMenu() {
 }
 
 function onTriggerKeydown(event: KeyboardEvent) {
+  if (props.disabled) {
+    return;
+  }
+
   if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
     event.preventDefault();
     openMenu({ focusFirstItem: true });
@@ -188,6 +203,16 @@ function handleItemClick() {
   }
 }
 
+watch(
+  () => props.disabled,
+  (disabled) => {
+    if (disabled && disclosureOpen.value) {
+      disclosure.close();
+    }
+  },
+  { immediate: true },
+);
+
 useClickOutside(
   [triggerRef, menuRef],
   () => {
@@ -223,13 +248,14 @@ useEscapeKey(
       ref="triggerRef"
       class="vf-dropdown__trigger"
       :aria-controls="menuId"
+      :aria-disabled="props.disabled || undefined"
       :aria-expanded="isOpen"
       aria-haspopup="menu"
-      tabindex="0"
+      :tabindex="props.disabled ? -1 : 0"
       @click="toggleMenu"
       @keydown="onTriggerKeydown"
     >
-      <slot name="trigger" :open="isOpen" :toggle="toggleMenu" />
+      <slot name="trigger" :open="isOpen" :toggle="toggleMenu" :disabled="props.disabled" />
     </div>
 
     <Teleport :to="teleportTarget" :disabled="teleportDisabled">
