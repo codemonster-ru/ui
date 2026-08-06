@@ -121,7 +121,7 @@ describe('component interaction contract', () => {
     const css = readEntry('data-table');
 
     expect(extractRule(css, '.vf-data-table__pagination')).toContain('container-type: inline-size;');
-    expect(css).toContain('@container (max-width: 479.98px)');
+    expect(css).toContain('@container (--vf-bp-xs-down)');
     expect(css).toContain('flex-basis: 100%;');
     expect(css).toContain(".vf-data-table__pagination-page:not([aria-current='page']),");
   });

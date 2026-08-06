@@ -5,21 +5,10 @@ import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, write
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import { buildLayoutCssArtifacts, layoutCssArtifactPaths } from './build/layout-css-artifacts';
-import { resolveLayoutCustomMedia } from './src/theme/breakpoint-registry';
+import { expandVfBreakpointQueries } from '../theme/src/breakpoint-queries';
 
 function expandLayoutCustomMedia(code: string) {
-  const mediaAliasPattern = /@media\s*\(\s*(--vf-bp-[a-z0-9-]+)\s*\)/g;
-  const unknownAliases = new Set<string>();
-  const transformed = code.replace(mediaAliasPattern, (fullMatch, alias: string) => {
-    const mediaQuery = resolveLayoutCustomMedia(alias);
-    if (!mediaQuery) {
-      unknownAliases.add(alias);
-      return fullMatch;
-    }
-    return `@media ${mediaQuery}`;
-  });
-
-  return { transformed, unknownAliases };
+  return expandVfBreakpointQueries(code);
 }
 
 function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
@@ -28,7 +17,8 @@ function vueforgeLayoutStyleArtifactsPlugin(): Plugin[] {
       name: 'vueforge-layouts-expand-custom-media',
       enforce: 'pre',
       transform(code, id) {
-        if (!id.includes('/packages/layouts/src/styles.css') && !id.includes('/packages/layouts/src/style-parts/')) {
+        const normalizedId = id.replaceAll('\\', '/').split('?', 1)[0];
+        if (!normalizedId.includes('/packages/layouts/src/') || !normalizedId.endsWith('.css')) {
           return null;
         }
 
