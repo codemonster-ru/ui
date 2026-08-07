@@ -138,6 +138,7 @@
 .vf-stepper--horizontal .vf-stepper__connector {
   width: 100%;
   height: var(--vf-stepper-rail-size);
+  border-radius: 0;
 }
 
 .vf-stepper--vertical .vf-stepper__connector {
