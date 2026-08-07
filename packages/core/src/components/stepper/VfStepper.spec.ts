@@ -24,6 +24,12 @@ describe('VfStepper', () => {
     expect(stepperCss).toContain('color: var(--vf-stepper-disabled-color);');
   });
 
+  it('keeps horizontal connector segments flush at shared seams', () => {
+    const stepperCss = readFileSync(resolve(process.cwd(), 'src/styles/entries/stepper.css'), 'utf8');
+
+    expect(stepperCss).toMatch(/\.vf-stepper--horizontal \.vf-stepper__connector\s*{[^}]*border-radius: 0;/);
+  });
+
   it('renders current and completed steps from uncontrolled state', async () => {
     const wrapper = mount(VfStepper, {
       props: {

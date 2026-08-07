@@ -23,6 +23,10 @@
 - Complete custom `VfThemeTokens` presets must provide the four new GroupBox color tokens; partial
   theme overrides created through `extend` remain compatible.
 
+### Fixed
+
+- Removed visible seams between adjacent connector segments in horizontal `VfStepper` layouts.
+
 ## 2.3.0
 
 ### Added
