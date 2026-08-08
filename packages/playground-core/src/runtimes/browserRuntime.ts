@@ -1,5 +1,3 @@
-import ts from 'typescript';
-
 import type {
   CreatePlaygroundSessionOptions,
   FrameworkType,
@@ -8,6 +6,7 @@ import type {
   PlaygroundError,
   PlaygroundFiles,
 } from '../types';
+import { transpileTypeScript } from '../typescriptWorkerClient';
 
 const CONSOLE_BRIDGE_SCRIPT = `
 <script>
@@ -136,20 +135,22 @@ function __cmInjectLink(href) {
 }
 `;
 
-function transpileTs(content: string): string {
-  return ts.transpileModule(content, {
-    compilerOptions: {
-      target: ts.ScriptTarget.ES2020,
-      module: ts.ModuleKind.ESNext,
-    },
-  }).outputText;
-}
+async function replaceInlineTsScripts(html: string): Promise<string> {
+  const expression = /<script\s+type=["']text\/typescript["']\s*>([\s\S]*?)<\/script>/gi;
+  const matches = [...html.matchAll(expression)];
+  if (matches.length === 0) {
+    return html;
+  }
 
-function replaceInlineTsScripts(html: string): string {
-  return html.replace(
-    /<script\s+type=["']text\/typescript["']\s*>([\s\S]*?)<\/script>/gi,
-    (_, content: string) => `<script>${transpileTs(content)}</script>`,
-  );
+  const outputs = await transpileTypeScript(matches.map((match) => match[1] ?? ''));
+  let result = '';
+  let cursor = 0;
+  for (const [index, match] of matches.entries()) {
+    const start = match.index ?? cursor;
+    result += `${html.slice(cursor, start)}<script>${outputs[index] ?? ''}</script>`;
+    cursor = start + match[0].length;
+  }
+  return result + html.slice(cursor);
 }
 
 function normalizePath(path: string): string {
@@ -242,7 +243,12 @@ interface BuildResult {
   errors: PlaygroundError[];
 }
 
-function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildOptions): BuildResult {
+function buildEntryModule(
+  files: PlaygroundFiles,
+  entry: string,
+  options: BuildOptions,
+  transpiledFiles: ReadonlyMap<string, string>,
+): BuildResult {
   const visited = new Map<string, string>();
   const moduleUrls = new Map<string, string>();
   const compiling: string[] = [];
@@ -311,7 +317,7 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
     }
 
     compiling.push(filePath);
-    const sourceJs = filePath.endsWith('.ts') ? transpileTs(source) : source;
+    const sourceJs = transpiledFiles.get(filePath) ?? source;
     let usesStyleHelpers = false;
 
     const transformed = sourceJs.replace(importRegex, (full, importSpec, exportSpec) => {
@@ -412,11 +418,11 @@ function buildEntryModule(files: PlaygroundFiles, entry: string, options: BuildO
   };
 }
 
-export function renderBrowserHtml(
+export async function renderBrowserHtml(
   files: PlaygroundFiles,
   entry: string,
   options: Pick<CreatePlaygroundSessionOptions, 'framework' | 'resolveImport' | 'bootstrapScript'> = {},
-): { html: string; error?: PlaygroundError } {
+): Promise<{ html: string; error?: PlaygroundError }> {
   const source = files[entry];
 
   if (!source) {
@@ -433,12 +439,25 @@ export function renderBrowserHtml(
 
   let html = source;
   let primaryError: PlaygroundError | undefined;
+  const typeScriptEntries = Object.entries(files).filter(([filePath]) => filePath.endsWith('.ts'));
+  const transpiledFiles = new Map<string, string>();
+  if (typeScriptEntries.length > 0) {
+    const outputs = await transpileTypeScript(typeScriptEntries.map(([, content]) => content));
+    for (const [index, [filePath]] of typeScriptEntries.entries()) {
+      transpiledFiles.set(filePath, outputs[index] ?? '');
+    }
+  }
 
   if (!entry.endsWith('.html')) {
-    const built = buildEntryModule(files, entry, {
-      framework: options.framework,
-      resolveImport: options.resolveImport,
-    });
+    const built = buildEntryModule(
+      files,
+      entry,
+      {
+        framework: options.framework,
+        resolveImport: options.resolveImport,
+      },
+      transpiledFiles,
+    );
 
     if (built.errors.length > 0) {
       primaryError = built.errors[0];
@@ -459,7 +478,7 @@ export function renderBrowserHtml(
 </html>`;
   }
 
-  const withTs = replaceInlineTsScripts(html);
+  const withTs = await replaceInlineTsScripts(html);
   const bridge = `${CONSOLE_BRIDGE_SCRIPT}`;
 
   if (withTs.includes('</head>')) {

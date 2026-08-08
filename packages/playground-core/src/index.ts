@@ -163,7 +163,7 @@ export function createPlaygroundSession(options: CreatePlaygroundSessionOptions)
       return;
     }
 
-    const rendered = renderBrowserHtml(files, entry, {
+    const rendered = await renderBrowserHtml(files, entry, {
       framework: options.framework,
       resolveImport: options.resolveImport,
       bootstrapScript: options.bootstrapScript
