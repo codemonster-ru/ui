@@ -65,7 +65,13 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [vue(), dts(), esOnlyCssInjection(), removeUnnecessaryFiles()],
     resolve: {
-      alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }],
+      alias: [
+        {
+          find: '@codemonster-ru/vueforge-icons',
+          replacement: fileURLToPath(new URL('./src/lib/index.ts', import.meta.url)),
+        },
+        { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+      ],
     },
     build: {
       emptyOutDir: true,

@@ -38,23 +38,28 @@ import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 <template>
   <VueIconify :icon="icons.check" aria-hidden="true" />
   <VueIconify :icon="icons.check" variant="solid" aria-hidden="true" />
+  <VueIconify :icon="icons.house" family="duotone" variant="solid" secondary-color="#94a3b8" aria-hidden="true" />
 </template>
 ```
 
 All system icons support `solid`, `regular`, `light`, and `thin`. `regular` remains the default, so
 existing uses keep the VueForge outline rendering. The seven brand marks support only `solid` and
 select it by default. Supported variants are listed per icon in `iconCatalog`; the variant names and
-their TypeScript union are exported as `iconVariants` and `IconVariant`.
+their TypeScript union are exported as `iconVariants` and `IconVariant`. The available families and
+their union are exported as `iconFamilies` and `IconFamily`.
 
 ### Component API
 
-| Prop      | Type                 | Default                                        | Purpose                                       |
-| --------- | -------------------- | ---------------------------------------------- | --------------------------------------------- |
-| `icon`    | `IconName \| string` | `moon`                                         | Catalog name in camelCase or kebab-case.      |
-| `variant` | `IconVariant`        | `regular` for system icons, `solid` for brands | Selects the supported visual weight.          |
-| `size`    | `number \| string`   | VueForge medium icon size token                | Sets SVG width and height.                    |
-| `spin`    | `boolean`            | `false`                                        | Enables the reduced-motion-aware animation.   |
-| `inset`   | `number`             | `0`                                            | Applies an optical inset inside the icon box. |
+| Prop               | Type                 | Default                                        | Purpose                                       |
+| ------------------ | -------------------- | ---------------------------------------------- | --------------------------------------------- |
+| `icon`             | `IconName \| string` | `moon`                                         | Catalog name in camelCase or kebab-case.      |
+| `family`           | `IconFamily`         | `classic`                                      | Selects `classic` or `duotone`.               |
+| `variant`          | `IconVariant`        | `regular` for system icons, `solid` for brands | Selects the supported visual weight.          |
+| `secondaryColor`   | `string`             | `--vf-icon-secondary-color` or `currentColor`  | Sets the Duotone secondary color.             |
+| `secondaryOpacity` | `number \| string`   | `--vf-icon-secondary-opacity` or `0.4`         | Sets the Duotone secondary opacity.           |
+| `size`             | `number \| string`   | VueForge medium icon size token                | Sets SVG width and height.                    |
+| `spin`             | `boolean`            | `false`                                        | Enables the reduced-motion-aware animation.   |
+| `inset`            | `number`             | `0`                                            | Applies an optical inset inside the icon box. |
 
 Unknown icon names fall back to `moon`. Passing a variant that the selected icon does not support
 throws an explicit runtime error. Native SVG attributes such as `aria-label`, `aria-hidden`,
@@ -79,6 +84,12 @@ catalog. Metadata-only named imports remain tree-shakeable and are protected by 
 budget. Individual icon entry points are not currently exposed.
 
 ## Visual styles
+
+System icons are available in the `classic` and `duotone` families. `classic` is the default and
+preserves the existing rendering. `duotone` divides supported icon silhouettes into primary and
+secondary color regions across Solid, Regular, Light, and Thin without changing Classic. Set the
+secondary region per icon with `secondaryColor` and `secondaryOpacity`, or theme it globally with
+`--vf-icon-secondary-color` and `--vf-icon-secondary-opacity`.
 
 The catalog contains 109 VueForge system icons. Their three outline weights share the approved
 24-unit geometry and use stroke widths of 2, 1.5, and 1. Every system icon also contains newly
