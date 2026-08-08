@@ -25,7 +25,7 @@ const deferredRuntimeMatchers = [
   /node_modules\/@shikijs\//,
   /packages\/playground(?:-core)?\/src\//,
 ];
-const compilerRuntimeMatchers = [/node_modules\/typescript\//, /packages\/playground-core\/src\//];
+const compilerRuntimeMatchers = [/packages\/playground-core\/src\//];
 
 const getByKey = (key) => manifest[key] ?? null;
 
@@ -154,35 +154,67 @@ if (playgroundForbidden) {
   process.exit(1);
 }
 
-const compilerManifestEntry = Object.entries(manifest).find(([, entry]) =>
+const runtimeManifestEntry = Object.entries(manifest).find(([, entry]) =>
   /packages\/playground-core\/src\/index\.ts$/.test(entry.src ?? ''),
 );
-const [compilerKey, compilerEntry] = compilerManifestEntry ?? [];
-if (!compilerEntry?.file) {
-  console.error('[deferred-check] Deferred Playground compiler chunk not found in manifest');
+const [runtimeKey, runtimeEntry] = runtimeManifestEntry ?? [];
+if (!runtimeEntry?.file) {
+  console.error('[deferred-check] Deferred Playground runtime chunk not found in manifest');
   process.exit(1);
 }
 
 const playgroundReachableGraph = collectReachableGraph([routeKeys.playground]);
-if (!playgroundReachableGraph.has(compilerKey)) {
-  console.error('[deferred-check] Playground route does not dynamically reach the compiler runtime');
+if (!playgroundReachableGraph.has(runtimeKey)) {
+  console.error('[deferred-check] Playground route does not dynamically reach the browser runtime');
   process.exit(1);
 }
 
-const compilerStaticGraph = collectStaticImportGraph([compilerKey]);
-const compilerFiles = new Set(
-  [...compilerStaticGraph].map((key) => getByKey(key)?.file).filter((file) => typeof file === 'string'),
-);
-const compilerGzip = [...compilerFiles].reduce(
-  (total, file) => total + gzipSizeOfFile(path.join(rootDir, 'examples/playground/dist', file)),
-  0,
-);
+const runtimePath = path.join(rootDir, 'examples/playground/dist', runtimeEntry.file);
+const runtimeSource = fs.readFileSync(runtimePath, 'utf8');
+const compilerWorkerMatch = runtimeSource.match(/["']([^"']*typescriptWorker-[^"']+\.js)["']/);
+if (!compilerWorkerMatch) {
+  console.error('[deferred-check] Deferred TypeScript compiler worker not found in the browser runtime');
+  process.exit(1);
+}
+
+const compilerFile = path.join('assets', path.basename(compilerWorkerMatch[1]));
+const compilerPath = path.join(rootDir, 'examples/playground/dist', compilerFile);
+if (!fs.existsSync(compilerPath)) {
+  console.error(`[deferred-check] TypeScript compiler worker file not found: ${compilerPath}`);
+  process.exit(1);
+}
+
+const compilerRaw = fs.statSync(compilerPath).size;
+const compilerGzip = gzipSizeOfFile(compilerPath);
+const COMPILER_RAW_BUDGET = 3_700 * 1000;
 const COMPILER_GZIP_BUDGET = 1_100 * 1024;
+if (compilerRaw > COMPILER_RAW_BUDGET) {
+  console.error(
+    `[deferred-check] Compiler raw budget exceeded: ${formatKiB(compilerRaw)} > ${formatKiB(COMPILER_RAW_BUDGET)}`,
+  );
+  process.exit(1);
+}
 if (compilerGzip > COMPILER_GZIP_BUDGET) {
   console.error(
     `[deferred-check] Compiler gzip budget exceeded: ${formatKiB(compilerGzip)} > ${formatKiB(COMPILER_GZIP_BUDGET)}`,
   );
   process.exit(1);
+}
+
+const assetsDirectory = path.join(rootDir, 'examples/playground/dist/assets');
+const MAX_NON_COMPILER_JS_BYTES = 500 * 1000;
+for (const fileName of fs.readdirSync(assetsDirectory)) {
+  if (!fileName.endsWith('.js') || fileName === path.basename(compilerFile)) {
+    continue;
+  }
+
+  const size = fs.statSync(path.join(assetsDirectory, fileName)).size;
+  if (size > MAX_NON_COMPILER_JS_BYTES) {
+    console.error(
+      `[deferred-check] Non-compiler chunk exceeded 500 kB raw: assets/${fileName} (${formatKiB(size)})`,
+    );
+    process.exit(1);
+  }
 }
 
 const routeReport = {};
@@ -201,7 +233,7 @@ for (const [routeName, routeKey] of Object.entries(routeKeys)) {
 console.log('[deferred-check] OK');
 console.log(`[deferred-check] Entry gzip: ${formatKiB(entryGzip)}`);
 console.log(
-  `[deferred-check] Deferred compiler graph: ${compilerEntry.file} + ${compilerFiles.size - 1} static chunk(s) (${formatKiB(compilerGzip)})`,
+  `[deferred-check] Deferred compiler worker: ${compilerFile} (${formatKiB(compilerRaw)} raw, ${formatKiB(compilerGzip)} gzip)`,
 );
 for (const [name, value] of Object.entries(routeReport)) {
   console.log(`[deferred-check] Route ${name}: ${value.file} (${formatKiB(value.gzip)})`);
