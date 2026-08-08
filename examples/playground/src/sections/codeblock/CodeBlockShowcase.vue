@@ -148,6 +148,10 @@ onBeforeUnmount(() => {
       <section class="demo-block">
         <div class="demo-block__header">
           <h2>VfCodeBlock</h2>
+          <p class="demo-text">
+            Render syntax-highlighted, themed source code with filenames, line numbers, copy controls, and constrained
+            long-file scrolling.
+          </p>
           <button class="demo-replay-button" type="button" @click="replayCodeblockSkeleton">Replay skeleton</button>
         </div>
 

@@ -4,6 +4,18 @@
       <div class="demo-container">
         <VfStack>
         <section class="demo-block">
+          <div class="demo-example">
+            <p class="demo-label">Three cooperating packages</p>
+            <h1 class="demo-heading">Interactive code and component previews</h1>
+            <p class="demo-text">
+              <code>@codemonster-ru/vueforge-playground</code> provides the Vue UI,
+              <code>@codemonster-ru/vueforge-playground-core</code> runs browser sessions, and
+              <code>@codemonster-ru/vueforge-playground-vite-plugin</code> builds repository demos as virtual modules.
+            </p>
+          </div>
+        </section>
+
+        <section class="demo-block">
           <div class="demo-block__header">
             <h2>Skeleton Preview Control</h2>
             <button class="demo-replay-button" type="button" @click="replayPlaygroundSkeleton">Replay skeleton</button>
@@ -12,7 +24,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Single File Example</h2>
+            <h2>VfPlayground · single-file HTML</h2>
+            <p class="demo-text">Use this mode for a self-contained browser example with no build step.</p>
           </div>
           <VfSection class="demo-surface" surface>
             <VfSkeletonGate
@@ -43,7 +56,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Multi File Example</h2>
+            <h2>VfPlayground · multi-file runtime</h2>
+            <p class="demo-text">Use this mode when JavaScript imports related source and stylesheet files.</p>
           </div>
           <VfSection class="demo-surface" surface>
             <VfSkeletonGate
@@ -74,7 +88,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Component Mode Example</h2>
+            <h2>VfPlayground · Vue component mode</h2>
+            <p class="demo-text">Render a trusted Vue component directly when iframe isolation is unnecessary.</p>
           </div>
           <VfSection class="demo-surface" surface>
             <VfSkeletonGate
@@ -104,7 +119,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vue Runtime Smoke Test (Vite-built)</h2>
+            <h2>Vite plugin · Vue runtime module</h2>
+            <p class="demo-text">A production-built virtual module resolved by the Playground Vite plugin.</p>
           </div>
           <VfSection class="demo-surface" surface>
             <ViteLikeDemoPreview demo-id="vue-runtime-smoke" :source="vueRuntimeSmokeSource" />
@@ -113,7 +129,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Custom Resolver Smoke Test (Vite-built)</h2>
+            <h2>Vite plugin · custom resolver</h2>
+            <p class="demo-text">A virtual-module example that verifies custom component resolution.</p>
           </div>
           <VfSection class="demo-surface" surface>
             <ViteLikeDemoPreview demo-id="custom-resolver-smoke" :source="customResolverSmokeSource" />
