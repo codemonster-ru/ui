@@ -1,7 +1,6 @@
 # VueForge Showcase
 
-Development showcase for the VueForge color system, Core components, layouts, icons, CodeBlock, and
-Playground packages.
+Development showcase and searchable catalog for all published VueForge packages.
 
 ## Run
 
@@ -9,8 +8,9 @@ Playground packages.
 npm run dev
 ```
 
-The app exposes six sections:
+The app opens with an eight-package overview and exposes seven showcase sections:
 
+- Overview
 - Colors
 - Core
 - Layouts

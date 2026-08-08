@@ -36,7 +36,7 @@ import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch 
 import { VfMenuBar, VfThemeProvider, VfThemeSwitch, type VfNavMenuItem } from '@codemonster-ru/vueforge-core';
 import { VfAppShell, VfInline } from '@codemonster-ru/vueforge-layouts';
 
-type SectionValue = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
+type SectionValue = 'overview' | 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
 
 interface SectionMeta {
   value: SectionValue;
@@ -44,6 +44,10 @@ interface SectionMeta {
 }
 
 const sections: SectionMeta[] = [
+  {
+    value: 'overview',
+    label: 'Overview',
+  },
   {
     value: 'colors',
     label: 'Colors',
@@ -76,6 +80,7 @@ const sectionItems: VfNavMenuItem[] = sections.map((section) => ({
 }));
 
 const sectionComponents = {
+  overview: defineAsyncComponent(() => import('./sections/overview/OverviewShowcase.vue')),
   colors: defineAsyncComponent(() => import('./sections/colors/ColorSystemShowcase.vue')),
   core: defineAsyncComponent(() => import('./sections/core/CoreShowcase.vue')),
   layouts: defineAsyncComponent(() => import('./sections/layouts/LayoutsShowcase.vue')),
@@ -95,7 +100,7 @@ function resolveSectionFromPath(pathname: string): SectionValue {
     return lastSegment as SectionValue;
   }
 
-  return 'core';
+  return 'overview';
 }
 
 function buildPathForSection(section: SectionValue): string {
@@ -171,6 +176,8 @@ watch(activeSection, (nextSection) => {
     flex-basis: 100%;
     margin-left: 0;
     overflow-x: auto;
+    mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+    scrollbar-width: thin;
   }
 
   .showcase-header__actions {
