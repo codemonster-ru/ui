@@ -86,10 +86,13 @@ budget. Individual icon entry points are not currently exposed.
 ## Visual styles
 
 System icons are available in the `classic` and `duotone` families. `classic` is the default and
-preserves the existing rendering. `duotone` divides supported icon silhouettes into primary and
-secondary color regions across Solid, Regular, Light, and Thin without changing Classic. Set the
-secondary region per icon with `secondaryColor` and `secondaryOpacity`, or theme it globally with
-`--vf-icon-secondary-color` and `--vf-icon-secondary-opacity`.
+preserves the canonical geometry. `duotone` uses authored secondary masses or semantic subparts with
+primary contours and details; it never derives the second tone by fading an arbitrary part of a
+Classic stroke. Regular, Light, and Thin select the primary contour/detail weight while the
+secondary anatomy remains visually stable. Indivisible Solid marks remain primary-only instead of being faded
+wholesale; multipart Solid icons divide their existing anatomy between primary and secondary paint.
+Set the secondary region per icon with `secondaryColor` and `secondaryOpacity`, or theme it globally
+with `--vf-icon-secondary-color` and `--vf-icon-secondary-opacity`.
 
 The catalog contains 109 VueForge system icons. Their three outline weights share the approved
 24-unit geometry and use stroke widths of 2, 1.5, and 1. Every system icon also contains newly

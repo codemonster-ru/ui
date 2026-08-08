@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-08-02T19:04:00.648Z",
+  "generatedAt": "2026-08-08T17:18:56.078Z",
   "summary": {
     "iconCount": 116,
     "fillOnly": 7,
     "strokeOnly": 106,
     "mixed": 3,
-    "opticalOffsetCount": 4,
+    "opticalOffsetCount": 13,
     "suspiciousCount": 13,
     "strokeWidths": [2],
     "primitiveTypes": ["circle", "line", "path", "polyline", "rect"]
@@ -474,7 +474,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": -0.0225 },
+      "opticalOffset": { "x": 0, "y": 0 },
       "perceptualHash": "00000ff01ff8300c300c300c300c300c300c300c318c33cc3e7c3c3c10080000",
       "warnings": []
     },
@@ -642,7 +642,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": -0.0108, "y": 0.0204 },
       "perceptualHash": "0000200030003030303030b031b031b03db03db03db030003ffc3ffc00000000",
       "warnings": []
     },
@@ -873,7 +873,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": 0.0108, "y": -0.0254 },
       "perceptualHash": "00000000000003c007e00c303818601c400ec006400660063ffc1ff800000000",
       "warnings": []
     },
@@ -1041,7 +1041,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": 0, "y": 0.0158 },
       "perceptualHash": "00000180018001800180018001800ff007e003c00180300c300c3ffc00000000",
       "warnings": []
     },
@@ -1419,7 +1419,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": -0.0508 },
+      "opticalOffset": { "x": 0, "y": -0.0058 },
       "perceptualHash": "00001c383ffc63c64182c003c00360066006300c18180e7007e003c001800000",
       "warnings": []
     },
@@ -1503,7 +1503,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": 0, "y": 0.0175 },
       "perceptualHash": "0000000000000180018000000780038001800180018007e00000000000000000",
       "warnings": ["bounds-width-outlier", "bounds-area-outlier"]
     },
@@ -1566,7 +1566,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": -0.0175, "y": 0.0196 },
       "perceptualHash": "007001fc030e060306030403040306030c06180e31fc6fe0ce00fc007c000000",
       "warnings": ["bounds-width-outlier", "bounds-area-outlier"]
     },
@@ -1608,7 +1608,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": -0.0008, "y": 0.0167 },
       "perceptualHash": "0000000000000078034c0fc41ccc3a5c333823f031e03e000e00000000000000",
       "warnings": []
     },
@@ -1734,7 +1734,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": 0, "y": -0.0217 },
       "perceptualHash": "000000007ffe7ffec003cff3cff3c003cfc3c783c00373fe3ffc3c0030000000",
       "warnings": []
     },
@@ -1818,7 +1818,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": -0.0108, "y": -0.0158 },
       "perceptualHash": "0000000038003c006600620026003c0036001f701bd80e8c070601fe00780000",
       "warnings": []
     },
@@ -2049,7 +2049,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0.0068, "y": -0.0449 },
+      "opticalOffset": { "x": 0, "y": -0.005 },
       "perceptualHash": "000001800ff03c3c300c300c300c300c300c300c300c18180c3007e003c00000",
       "warnings": []
     },
@@ -2112,7 +2112,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": 0.0204, "y": 0.0108 },
       "perceptualHash": "00000040006000e001f007bc07bc01f000e0186018407e003c00180000000000",
       "warnings": []
     },
@@ -2133,7 +2133,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0.001, "y": 0.043 },
+      "opticalOffset": { "x": 0, "y": 0.0188 },
       "perceptualHash": "00000180018003c003c03e7c7c3e300c18180c300c300bd01ff81c3800000000",
       "warnings": []
     },
@@ -2259,7 +2259,7 @@
       "linejoins": ["round"],
       "hardcodedColors": [],
       "forbiddenFeatures": [],
-      "opticalOffset": { "x": 0, "y": 0 },
+      "opticalOffset": { "x": 0, "y": 0.0158 },
       "perceptualHash": "0000018003c007e00ff00db001800180018001800180300c300c3ffc00000000",
       "warnings": []
     },
