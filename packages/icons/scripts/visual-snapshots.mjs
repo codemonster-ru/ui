@@ -9,25 +9,31 @@ import { VueIconify, iconCatalog } from '../dist/index.node.mjs';
 const rootDir = process.cwd();
 const snapshotDir = resolve(rootDir, '__tests__/visual-snapshots');
 const update = process.argv.includes('--update');
-const sizes = [16, 20, 24];
+const sizes = [16, 20, 24, 32];
 const variants = ['regular', 'light', 'thin', 'solid'];
+const families = ['classic', 'duotone'];
 const columns = 11;
 const padding = 4;
 const background = '#171b23';
 const foreground = '#f2f5fa';
+const secondary = '#8ea8ff';
+const secondaryOpacity = 0.65;
 const systemIconNames = Object.entries(iconCatalog)
   .filter(([, entry]) => !entry.brand)
   .map(([iconName]) => iconName)
   .sort((left, right) => left.localeCompare(right));
 
 const manifest = {
-  version: 1,
+  version: 2,
   sizes,
   variants,
+  families,
   columns,
   padding,
   background,
   foreground,
+  secondary,
+  secondaryOpacity,
   systemIconNames,
 };
 
@@ -41,18 +47,25 @@ const parseOffset = (markup, property) => {
   return Number(value);
 };
 
-const renderIconMarkup = async (iconName, variant, size) => {
+const renderIconMarkup = async (iconName, family, variant, size) => {
   const app = createSSRApp({
     render() {
       return h(VueIconify, {
         icon: iconName,
+        family,
         variant,
         size,
+        secondaryColor: secondary,
+        secondaryOpacity,
       });
     },
   });
   const markup = await renderToString(app);
-  const svg = markup.match(/<svg[\s\S]*<\/svg>/)?.[0].replace(/\sdata-v-[\w-]+/g, '');
+  const svg = markup
+    .match(/<svg[\s\S]*<\/svg>/)?.[0]
+    .replace(/\sdata-v-[\w-]+/g, '')
+    .replaceAll('var(--vf-icon-secondary-paint, currentColor)', secondary)
+    .replaceAll('var(--vf-icon-secondary-part-opacity, 0.4)', String(secondaryOpacity));
 
   if (!svg) {
     throw new Error(`Rendered ${iconName}/${variant} markup does not contain an SVG element.`);
@@ -65,7 +78,7 @@ const renderIconMarkup = async (iconName, variant, size) => {
   };
 };
 
-const renderSheet = async (variant, size) => {
+const renderSheet = async (family, variant, size) => {
   const cellSize = size + padding * 2;
   const rows = Math.ceil(systemIconNames.length / columns);
   const width = columns * cellSize;
@@ -73,7 +86,7 @@ const renderSheet = async (variant, size) => {
   const iconMarkup = [];
 
   for (const [index, iconName] of systemIconNames.entries()) {
-    const { svg, offsetX, offsetY } = await renderIconMarkup(iconName, variant, size);
+    const { svg, offsetX, offsetY } = await renderIconMarkup(iconName, family, variant, size);
     const column = index % columns;
     const row = Math.floor(index / columns);
     const x = column * cellSize + padding + offsetX * size;
@@ -96,10 +109,12 @@ const expectedFiles = [];
 const generatedSnapshots = new Map();
 
 for (const size of sizes) {
-  for (const variant of variants) {
-    const fileName = `${variant}-${size}.png`;
-    expectedFiles.push(fileName);
-    generatedSnapshots.set(fileName, await renderSheet(variant, size));
+  for (const family of families) {
+    for (const variant of variants) {
+      const fileName = family === 'classic' ? `${variant}-${size}.png` : `${family}-${variant}-${size}.png`;
+      expectedFiles.push(fileName);
+      generatedSnapshots.set(fileName, await renderSheet(family, variant, size));
+    }
   }
 }
 

@@ -4,6 +4,15 @@ import { iconStrokeWidths, iconVariants, type IconVariant, type OutlineIconVaria
 import solidIconDataJson from './solidIconData.json';
 
 const solidIconData = solidIconDataJson as Partial<Record<OutlineIconName, { viewBox: string; body: string }>>;
+const classicSolidBodyOverrides: Partial<Record<OutlineIconName, string>> = {
+  key: '<defs><mask id="vf-solid-key"><path d="M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15.5" cy="8.75" r="2.25" fill="black"/></mask></defs><rect width="24" height="24" fill="currentColor" mask="url(#vf-solid-key)"/>',
+  layers:
+    '<path d="m3.5 7.5 8.5-4.25 8.5 4.25L12 11.75Z" fill="currentColor" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M3.5 11.75 12 16l8.5-4.25M3.5 16 12 20.25 20.5 16" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>',
+  magnifyingGlass:
+    '<defs><mask id="vf-solid-magnifying-glass"><rect width="24" height="24" fill="black"/><circle cx="10.25" cy="10.25" r="7.75" fill="white"/><circle cx="10.25" cy="10.25" r="4.25" fill="black"/><path d="m15.5 15.5 5.25 5.25" stroke="white" stroke-width="3.5" stroke-linecap="round"/></mask></defs><rect width="24" height="24" fill="currentColor" mask="url(#vf-solid-magnifying-glass)"/>',
+  users:
+    '<circle cx="12" cy="6.5" r="3.5" fill="currentColor"/><circle cx="4.75" cy="8.75" r="2.5" fill="currentColor"/><circle cx="19.25" cy="8.75" r="2.5" fill="currentColor"/><path fill="currentColor" d="M6 21c.25-5.1 2.45-8 6-8s5.75 2.9 6 8ZM.75 20v-1.5c0-3.7 1.45-6 4-6 1.05 0 1.9.4 2.55 1.15C5.8 15.4 5 17.85 4.9 20Zm18.35 0c-.1-2.15-.9-4.6-2.4-6.35a3.25 3.25 0 0 1 2.55-1.15c2.55 0 4 2.3 4 6V20Z"/>',
+};
 const SECONDARY_PAINT = 'var(--vf-icon-secondary-paint, currentColor)';
 const SECONDARY_OPACITY = 'var(--vf-icon-secondary-part-opacity, 0.4)';
 const SOLID_STROKE_DUOTONE_OUTER_STROKE_WIDTH = 3;
@@ -435,9 +444,9 @@ export const outlineGeometry = {
 export type OutlineIconName = keyof typeof outlineGeometry;
 
 const outlineDuotoneFillIconNames =
-  ' columns grid clipboard copy externalLink filter funnelX pencil send sort trash archive bell bookmark briefcase building calendar cloud cpu creditCard file folderOpen gear globe hardDrive house inbox key lock magnifyingGlass mail message plug receipt server share unlock user userCheck userMinus userPlus users wallet alertCircle ban checkCircle circleHalf clock eye eyeSlash infoCircle moon questionCircle shield sparkles sun warning xCircle ';
+  ' columns grid clipboard copy externalLink filter funnelX pencil send sort trash archive bell bookmark briefcase building calendar cloud cpu creditCard database file fileText folder folderOpen gear globe hardDrive heart house inbox key layers lock magnifyingGlass mail message phone plug receipt server share sliders star unlock user userCheck userMinus userPlus users wallet alertCircle ban checkCircle circleHalf clock eye eyeSlash infoCircle moon questionCircle shield sparkles sun warning xCircle ';
 const outlineDuotoneTwoFillNodeNames =
-  ' clipboard copy sort archive cpu file folderOpen gear globe server user userCheck userMinus userPlus wallet eye eyeSlash sparkles ';
+  ' clipboard copy archive cpu file fileText folderOpen gear globe layers server sliders user userCheck userMinus userPlus wallet eye eyeSlash sparkles ';
 
 const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
   if (name === 'externalLink') {
@@ -456,6 +465,27 @@ const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
     return [h('circle', { cx: 12, cy: 12, r: 9, fill })];
   }
 
+  if (name === 'database') {
+    return [
+      h('path', {
+        d: 'M4.25 6.25c0-2 3.47-3.5 7.75-3.5s7.75 1.5 7.75 3.5v11.5c0 2-3.47 3.5-7.75 3.5s-7.75-1.5-7.75-3.5Z',
+        fill,
+      }),
+    ];
+  }
+
+  if (name === 'key') {
+    return [h('circle', { cx: 15.5, cy: 8.75, r: 6.5, fill })];
+  }
+
+  if (name === 'sliders') {
+    return [1, 4, 7].map((nodeIndex) => {
+      const node = outlineGeometry[name][nodeIndex];
+
+      return h(node.tag, { ...node.attrs, fill, stroke: 'none' });
+    });
+  }
+
   if (!outlineDuotoneFillIconNames.includes(` ${name} `)) {
     return [];
   }
@@ -470,11 +500,13 @@ const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
           ? [0, 1, 3]
           : name === 'share'
             ? [2, 3, 4]
-            : name === 'plug'
-              ? [2]
-              : outlineDuotoneTwoFillNodeNames.includes(` ${name} `)
-                ? [0, 1]
-                : [0];
+            : name === 'layers'
+              ? [0]
+              : name === 'plug'
+                ? [2]
+                : outlineDuotoneTwoFillNodeNames.includes(` ${name} `)
+                  ? [0, 1]
+                  : [0];
 
   return fillNodeIndexes.map((nodeIndex) => {
     const node = nodes[nodeIndex];
@@ -486,6 +518,12 @@ const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
     });
   });
 };
+
+const chartBarDuotoneRects = [
+  { x: 6.25, y: 11.5, width: 3.5, height: 4.5 },
+  { x: 10.75, y: 7.5, width: 3.5, height: 8.5 },
+  { x: 15.25, y: 4.25, width: 3.5, height: 11.75 },
+] as const;
 
 const solidArrowheadPoints: Partial<Record<OutlineIconName, string>> = {
   arrowDown: '5.5 12.5 12 19.5 18.5 12.5',
@@ -502,7 +540,7 @@ const solidArrowheadPoints: Partial<Record<OutlineIconName, string>> = {
   arrowTurnLeftDown: '5.25 14.75 12 21.5 18.75 14.75',
 };
 
-const solidSecondaryOnlyNames = new Set<OutlineIconName>([
+const solidSingleToneNames = new Set<OutlineIconName>([
   'activity',
   'bookmark',
   'check',
@@ -924,7 +962,7 @@ export const createOutlineIcon = (name: OutlineIconName) => {
           if (props.family === 'classic') {
             return h('svg', {
               ...svgAttrs,
-              innerHTML: solidIcon.body,
+              innerHTML: classicSolidBodyOverrides[name] ?? solidIcon.body,
             });
           }
 
@@ -1192,14 +1230,8 @@ export const createOutlineIcon = (name: OutlineIconName) => {
             ]);
           }
 
-          if (solidSecondaryOnlyNames.has(name)) {
-            return h('svg', svgAttrs, [
-              h('g', {
-                color: props.secondaryColor,
-                opacity: props.secondaryOpacity,
-                innerHTML: scopedBody,
-              }),
-            ]);
+          if (solidSingleToneNames.has(name)) {
+            return h('svg', { ...svgAttrs, innerHTML: scopedBody });
           }
 
           if (countSolidPaintParts(scopedBody) > 1 && !solidArrowheadPoints[name] && !solidMaskOnlyNames.has(name)) {
@@ -1262,6 +1294,31 @@ export const createOutlineIcon = (name: OutlineIconName) => {
 
         const outlineVariant = props.variant as OutlineIconVariant;
         const strokeWidth = iconStrokeWidths[outlineVariant];
+
+        if (props.family === 'duotone' && name === 'chartBar') {
+          return h(
+            'svg',
+            {
+              ...attrs,
+              xmlns: 'http://www.w3.org/2000/svg',
+              viewBox: '0 0 24 24',
+              width: props.size,
+              height: props.size,
+              fill: 'none',
+              stroke: 'currentColor',
+              'stroke-width': strokeWidth,
+              'stroke-linecap': 'round',
+              'stroke-linejoin': 'round',
+            },
+            [
+              h('g', { fill: props.secondaryColor, opacity: props.secondaryOpacity, stroke: 'none' }, [
+                ...chartBarDuotoneRects.map((bar) => h('rect', { ...bar, rx: 1 })),
+              ]),
+              h(outlineGeometry.chartBar[0].tag, outlineGeometry.chartBar[0].attrs),
+              ...chartBarDuotoneRects.map((bar) => h('rect', { ...bar, rx: 1, fill: 'none' })),
+            ],
+          );
+        }
 
         if (
           props.family === 'duotone' &&
@@ -1390,8 +1447,20 @@ export const createOutlineIcon = (name: OutlineIconName) => {
             name === 'activity' ||
             name === 'circleNotch');
         const solidDuotonePath =
-          props.family === 'duotone' ? SOLID_DUOTONE_PATHS[name as keyof typeof SOLID_DUOTONE_PATHS] : undefined;
-        const geometry = outlineGeometry[name].map((node) => h(node.tag, node.attrs));
+          props.family === 'duotone' && name !== 'bars' && name !== 'ellipsis'
+            ? SOLID_DUOTONE_PATHS[name as keyof typeof SOLID_DUOTONE_PATHS]
+            : undefined;
+        const geometry =
+          props.family === 'duotone' && name === 'bars'
+            ? [h(outlineGeometry.bars[1].tag, outlineGeometry.bars[1].attrs)]
+            : props.family === 'duotone' && name === 'ellipsis'
+              ? [h('circle', { cx: 12, cy: 12, r: 1.5, fill: 'currentColor', stroke: 'none' })]
+              : [
+                  ...outlineGeometry[name].map((node) => h(node.tag, node.attrs)),
+                  ...(props.family === 'duotone' && name === 'key'
+                    ? [h('circle', { cx: 15.5, cy: 8.75, r: 1.75, fill: 'currentColor', stroke: 'none' })]
+                    : []),
+                ];
         const solidStrokeDuotonePath = SOLID_STROKE_DUOTONE_PATHS[name as keyof typeof SOLID_STROKE_DUOTONE_PATHS];
         const solidStrokeDuotoneSourceGeometry: GeometryNode[] = solidStrokeDuotonePath
           ? [{ tag: 'path', attrs: { d: solidStrokeDuotonePath } }]
@@ -1433,7 +1502,19 @@ export const createOutlineIcon = (name: OutlineIconName) => {
             )
           : [];
         const duotoneFillGeometry =
-          props.family === 'duotone' ? createOutlineDuotoneFillNodes(name, props.secondaryColor) : [];
+          props.family !== 'duotone'
+            ? []
+            : name === 'bars'
+              ? [outlineGeometry.bars[0], outlineGeometry.bars[2]].map((node) =>
+                  h(node.tag, {
+                    ...node.attrs,
+                    stroke: props.secondaryColor,
+                    'stroke-width': strokeWidth,
+                  }),
+                )
+              : name === 'ellipsis'
+                ? [5, 19].map((cx) => h('circle', { cx, cy: 12, r: 1.5, fill: props.secondaryColor }))
+                : createOutlineDuotoneFillNodes(name, props.secondaryColor);
         const solidStrokeDuotoneMaskId = `vf-duotone-${name}-outline-${instanceId}`;
         const solidDuotoneClipId = `vf-duotone-${name}-${instanceId}`;
         const solidDuotoneFillGeometry = solidDuotonePath
