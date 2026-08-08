@@ -60,9 +60,10 @@ synchronous component and plugin, importing this wrapper from `/ui` does not gua
 bundle. Dynamically import the entire `/ui` entry at a route or component boundary when bundle-level
 UI deferral is required.
 
-The sandbox runtime and TypeScript compiler remain deferred until a browser session is created.
-Component mode does not download the compiler; sandbox activation currently adds a compiler chunk
-of about 1 MiB gzip.
+The sandbox runtime remains deferred until a browser session is created. The TypeScript compiler is
+loaded separately only when the sandbox receives a `.ts` file or an inline `text/typescript` script.
+It runs in a dedicated Web Worker so compiler parsing and transpilation do not block the Playground
+UI. Component mode and JavaScript/HTML-only sandboxes do not download its roughly 1 MiB gzip worker.
 
 Use `/runtime` only when creating sessions directly:
 

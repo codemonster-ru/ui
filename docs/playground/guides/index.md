@@ -17,8 +17,10 @@ Practical integration notes, limitations, and related packages for this package.
 `VfPlaygroundAsync` from `@codemonster-ru/vueforge-playground/ui` provides async rendering and a
 skeleton fallback. Because `/ui` also exports the synchronous component and plugin, that import does
 not guarantee a separate UI bundle. Dynamically import the entire `/ui` entry at a route or component
-boundary when bundle-level UI deferral is required. Sandbox mode still defers the TypeScript-based
-runtime until a session is created, and component mode does not need the compiler.
+boundary when bundle-level UI deferral is required. Sandbox mode defers its runtime until a session
+is created, and loads the TypeScript compiler in a dedicated Web Worker only for `.ts` files or
+inline `text/typescript` scripts. Component mode and JavaScript/HTML-only sandboxes do not need the
+compiler.
 
 The current sandbox compiler payload is about 1 MiB gzip. This is an optional lazy payload, not part
 of the base application graph. Keep the `/runtime` entry behind a dynamic import when direct session

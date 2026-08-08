@@ -69,8 +69,9 @@ synchronous component and plugin, importing the wrapper from `/ui` does not guar
 bundle. Dynamically import the entire `/ui` entry at a route or component boundary when bundle-level
 UI deferral is required.
 
-Sandbox mode defers Playground Core and its TypeScript compiler until a session is created.
-Component mode does not download that compiler. The current compiler chunk is about 1 MiB gzip.
+Sandbox mode defers Playground Core until a session is created. Its TypeScript compiler is loaded
+in a dedicated Web Worker only for `.ts` files or inline `text/typescript` scripts. Component mode
+and JavaScript/HTML-only sandboxes do not download the current compiler worker of about 1 MiB gzip.
 
 The package is ESM-only. SSR preserves the initial markup and starts iframe/session work after mount.
 Node ESM `/ui` is CSS-free, so keep Core and Playground CSS imports in the client entry. Use
