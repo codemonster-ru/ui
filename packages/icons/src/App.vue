@@ -3,11 +3,22 @@
     <div class="showcase__container demo-container">
       <header class="page-heading">
         <div>
-          <p class="eyebrow">Complete system family</p>
-          <h2>Classic and duotone variants</h2>
+          <p class="eyebrow">Complete icon catalog</p>
+          <h2>System and brand icons</h2>
         </div>
-        <p>Compare every system icon at 32 px across all supported weights.</p>
+        <p>Find an icon, compare every system weight at 32 px, and copy its typed catalog name.</p>
       </header>
+
+      <div class="catalog-toolbar">
+        <label class="catalog-search">
+          <span>Find an icon</span>
+          <input v-model="query" type="search" placeholder="Search by name or keyword" />
+        </label>
+        <p aria-live="polite">
+          {{ filteredSystemIconNames.length + filteredBrandIconNames.length }} of {{ iconNames.length }} icons
+          <span v-if="copyStatus">· {{ copyStatus }}</span>
+        </p>
+      </div>
 
       <VfTabs class="family-tabs" :items="familyTabs" default-value="classic">
         <template #panel="{ activeValue }">
@@ -23,8 +34,13 @@
                   <strong>Icon</strong>
                   <strong v-for="variant in showcaseVariants" :key="variant">{{ variant }}</strong>
                 </div>
-                <div v-for="iconName in systemIconNames" :key="iconName" class="variant-row">
-                  <strong>{{ iconName }}</strong>
+                <div v-for="iconName in filteredSystemIconNames" :key="iconName" class="variant-row">
+                  <div class="icon-identity">
+                    <strong>{{ iconName }}</strong>
+                    <button type="button" :aria-label="`Copy ${iconName} icon name`" @click="copyIconName(iconName)">
+                      Copy
+                    </button>
+                  </div>
                   <span v-for="variant in showcaseVariants" :key="variant">
                     <VueIconify
                       :icon="iconName"
@@ -36,16 +52,35 @@
                     />
                   </span>
                 </div>
+                <p v-if="filteredSystemIconNames.length === 0" class="catalog-empty">No system icons match.</p>
               </div>
             </section>
           </template>
         </template>
       </VfTabs>
+
+      <section class="brand-section" aria-labelledby="brand-icons-heading">
+        <header class="family-heading">
+          <h3 id="brand-icons-heading">Brands</h3>
+          <p>Trademark assets use their approved single-color shape and the solid variant.</p>
+        </header>
+        <div v-if="filteredBrandIconNames.length" class="brand-grid">
+          <article v-for="iconName in filteredBrandIconNames" :key="iconName" class="brand-card">
+            <VueIconify :icon="iconName" variant="solid" :size="32" />
+            <strong>{{ iconName }}</strong>
+            <button type="button" :aria-label="`Copy ${iconName} icon name`" @click="copyIconName(iconName)">
+              Copy
+            </button>
+          </article>
+        </div>
+        <p v-else class="catalog-empty">No brand icons match.</p>
+      </section>
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import VueIconify from './lib/components/icon.vue';
 import type { IconFamily } from './lib/iconFamilies';
@@ -76,9 +111,38 @@ const showcaseFamilies = [
   secondaryOpacity: number | undefined;
 }>;
 const familyTabs = showcaseFamilies.map(({ id, title }) => ({ value: id, label: title }));
+const query = ref('');
+const copiedIconName = ref('');
+const copyFailed = ref(false);
 const systemIconNames = iconNames.filter(
   (iconName) => !iconCatalog[iconName].brand && iconCatalog[iconName].variants.includes('solid'),
 );
+const brandIconNames = iconNames.filter((iconName) => Boolean(iconCatalog[iconName].brand));
+const normalizedQuery = computed(() => query.value.trim().toLocaleLowerCase());
+const matchesQuery = (iconName: (typeof iconNames)[number]) => {
+  if (!normalizedQuery.value) return true;
+
+  const entry = iconCatalog[iconName];
+  return [iconName, entry.title, ...entry.keywords].join(' ').toLocaleLowerCase().includes(normalizedQuery.value);
+};
+const filteredSystemIconNames = computed(() => systemIconNames.filter(matchesQuery));
+const filteredBrandIconNames = computed(() => brandIconNames.filter(matchesQuery));
+const copyStatus = computed(() => {
+  if (copyFailed.value) return 'Copy failed';
+  return copiedIconName.value ? `Copied ${copiedIconName.value}` : '';
+});
+
+async function copyIconName(iconName: (typeof iconNames)[number]) {
+  copiedIconName.value = '';
+  copyFailed.value = false;
+
+  try {
+    await navigator.clipboard.writeText(iconName);
+    copiedIconName.value = iconName;
+  } catch {
+    copyFailed.value = true;
+  }
+}
 </script>
 
 <style scoped>
@@ -155,6 +219,42 @@ h2 {
   --vf-tabs-panel-padding-top: calc(var(--showcase-space) * 1.5);
 }
 
+.catalog-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--showcase-space);
+  margin-bottom: var(--showcase-space);
+}
+
+.catalog-toolbar p,
+.catalog-empty {
+  margin: 0;
+  color: var(--showcase-muted);
+}
+
+.catalog-search {
+  display: grid;
+  flex: 0 1 24rem;
+  gap: 6px;
+}
+
+.catalog-search span {
+  color: var(--showcase-muted);
+  font-size: var(--vf-text-caption-font-size, 11px);
+  font-weight: var(--vf-text-caption-font-weight, 700);
+}
+
+.catalog-search input {
+  min-height: var(--vf-control-height-md, 40px);
+  padding: var(--vf-field-padding-md, 8px 12px);
+  border: var(--vf-border-width, 1px) solid var(--vf-color-border-interactive, var(--showcase-border));
+  border-radius: var(--vf-radius-control, 8px);
+  color: var(--showcase-text);
+  background: var(--showcase-surface);
+  font: inherit;
+}
+
 .family-heading {
   align-items: baseline;
   margin-bottom: 12px;
@@ -196,6 +296,56 @@ h2 {
   border-left: 0;
 }
 
+.icon-identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.icon-identity button,
+.brand-card button {
+  padding: 4px 8px;
+  border: 1px solid var(--showcase-border);
+  border-radius: var(--vf-radius-control, 8px);
+  color: var(--showcase-text);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.catalog-search input:focus-visible,
+.icon-identity button:focus-visible,
+.brand-card button:focus-visible {
+  border-color: var(--vf-color-border-focus, var(--showcase-accent));
+  outline: var(--vf-focus-ring-width, 2px) solid var(--vf-color-focus-ring, var(--showcase-accent));
+  outline-offset: var(--vf-focus-ring-width, 2px);
+}
+
+.catalog-empty {
+  padding: var(--showcase-space);
+}
+
+.brand-section {
+  margin-top: calc(var(--showcase-space) * 2);
+}
+
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--showcase-space);
+}
+
+.brand-card {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: var(--showcase-space);
+  border: var(--vf-layout-border-base, 1px solid var(--showcase-border));
+  border-radius: var(--showcase-radius);
+  background: var(--vf-layout-surface-base, var(--showcase-surface));
+}
+
 .variant-row--head {
   min-height: 40px;
   color: var(--showcase-muted);
@@ -214,6 +364,15 @@ h2 {
   .page-heading p,
   .family-heading p {
     text-align: left;
+  }
+
+  .catalog-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .catalog-search {
+    flex-basis: auto;
   }
 
   .variant-table {
