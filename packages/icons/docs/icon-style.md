@@ -12,6 +12,11 @@ catalog field describes geometry and does not select a runtime variant.
 - Preserve public names, semantics, accessibility, and `VueIconify` behavior.
 - Author new geometry on `0 0 24 24` with the shared 2-unit round stroke.
 - Reuse canonical primitives from the design-language document.
+- Build Duotone from an authored secondary mass or semantic subpart plus primary contours and details;
+  never split or fade an arbitrary section of a Classic stroke.
+- Let Regular, Light, and Thin control the primary contour/detail weight while keeping the secondary
+  mass visually stable.
+- Use primary-only rendering for indivisible Solid marks rather than reducing the opacity of the whole symbol.
 - Never copy third-party SVG paths.
 - Inspect 16, 20, 24, and 32 px, then compare family neighbors and real SaaS contexts.
 - Run `npm run audit:icons`, `npm run validate-icons`, and the package test/build commands.
