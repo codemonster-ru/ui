@@ -2,9 +2,17 @@
   <div class="demo-page">
     <div class="demo-container">
       <VfStack>
+        <ShowcaseCatalog
+          title="Layout components"
+          description="Choose a primitive for local composition or a responsive shell for a complete application screen."
+          heading-id="layouts-catalog"
+          :items="layoutsCatalog"
+        />
+
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-Container</h2>
+            <h2 id="demo-container">VfContainer</h2>
+            <p class="demo-text">Constrains content width and supplies the standard responsive page gutter.</p>
           </div>
           <div class="demo-container-frame">
             <VfSection surface>
@@ -19,7 +27,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-Stack</h2>
+            <h2 id="demo-stack">VfStack</h2>
+            <p class="demo-text">Arranges related items vertically with a consistent, configurable gap.</p>
           </div>
           <div class="demo-grid demo-grid--two">
             <VfSection surface>
@@ -41,7 +50,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-Inline</h2>
+            <h2 id="demo-inline">VfInline</h2>
+            <p class="demo-text">Arranges compact items horizontally and optionally wraps them onto new rows.</p>
           </div>
           <div class="demo-grid demo-grid--two">
             <VfSection surface>
@@ -64,7 +74,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-Section</h2>
+            <h2 id="demo-section">VfSection</h2>
+            <p class="demo-text">Creates a semantic content region with optional surface treatment and inset.</p>
           </div>
           <div class="demo-grid demo-grid--two">
             <VfSection>
@@ -78,7 +89,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-Grid</h2>
+            <h2 id="demo-grid">VfGrid</h2>
+            <p class="demo-text">Builds a responsive auto-fitting grid for cards, summaries, and listings.</p>
           </div>
           <VfStack>
             <VfSection surface>
@@ -101,7 +113,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Foundation</h2>
+            <h2 id="demo-foundation">Responsive foundation</h2>
+            <p class="demo-text">Inspect shared breakpoints and values that react to the current viewport.</p>
           </div>
           <div class="demo-grid demo-grid--two">
             <VfSection surface>
@@ -129,7 +142,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-ErrorLayout</h2>
+            <h2 id="demo-error-layout">VfErrorLayout</h2>
+            <p class="demo-text">Centers an error status, explanation, and recovery actions on a focused page.</p>
           </div>
           <VfTabs v-if="availableErrorBreakpoints.length" v-model="activeErrorBreakpoint" :items="errorBreakpointTabs">
             <template #panel>
@@ -163,7 +177,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-AuthLayout</h2>
+            <h2 id="demo-auth-layout">VfAuthLayout</h2>
+            <p class="demo-text">Frames sign-in and account forms in a responsive branded panel.</p>
           </div>
           <VfTabs v-if="availableAuthBreakpoints.length" v-model="activeAuthBreakpoint" :items="authBreakpointTabs">
             <template #panel>
@@ -218,7 +233,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-SetupLayout</h2>
+            <h2 id="demo-setup-layout">VfSetupLayout</h2>
+            <p class="demo-text">Structures an initial configuration flow with progress, content, and actions.</p>
           </div>
           <VfTabs v-if="availableSetupBreakpoints.length" v-model="activeSetupBreakpoint" :items="setupBreakpointTabs">
             <template #panel>
@@ -363,7 +379,10 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-AppShell</h2>
+            <h2 id="demo-app-shell">VfAppShell and shell areas</h2>
+            <p class="demo-text">
+              Composes header, sidebar, content, aside, and footer regions into an application frame.
+            </p>
           </div>
 
           <VfTabs v-model="activeShellLayout" :items="shellLayoutTabs">
@@ -518,7 +537,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-AdminLayout</h2>
+            <h2 id="demo-admin-layout">VfAdminLayout</h2>
+            <p class="demo-text">Provides responsive admin navigation with collapsible desktop and mobile sidebars.</p>
           </div>
 
           <VfTabs v-if="availableShellBreakpoints.length" v-model="activeAdminBreakpoint" :items="shellBreakpointTabs">
@@ -614,7 +634,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-AdminShell</h2>
+            <h2 id="demo-admin-shell">VfAdminShell</h2>
+            <p class="demo-text">Provides an opinionated product shell for dense administration workflows.</p>
           </div>
 
           <VfTabs
@@ -707,7 +728,8 @@
 
         <section class="demo-block">
           <div class="demo-block__header">
-            <h2>Vf-DocumentLayout</h2>
+            <h2 id="demo-document-layout">VfDocumentLayout</h2>
+            <p class="demo-text">Organizes documentation with optional navigation, article content, and an aside.</p>
           </div>
           <VfTabs v-model="activeDocumentLayout" :items="documentLayoutTabs">
             <template #panel>
@@ -888,6 +910,113 @@ import {
 import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
+import ShowcaseCatalog, { type ShowcaseCatalogItem } from '../../components/ShowcaseCatalog.vue';
+
+const layoutsDocsBase = 'https://docs.codemonster.net/vueforge/layouts/components';
+const layoutsCatalog = [
+  {
+    name: 'VfContainer',
+    summary: 'Constrains page content to a responsive maximum width and gutter.',
+    sectionId: 'demo-container',
+    docsUrl: `${layoutsDocsBase}/container/`,
+  },
+  {
+    name: 'VfStack',
+    summary: 'Arranges related content vertically with consistent spacing.',
+    sectionId: 'demo-stack',
+    docsUrl: `${layoutsDocsBase}/stack/`,
+  },
+  {
+    name: 'VfInline',
+    summary: 'Arranges compact content horizontally with optional wrapping.',
+    sectionId: 'demo-inline',
+    docsUrl: `${layoutsDocsBase}/inline/`,
+  },
+  {
+    name: 'VfSection',
+    summary: 'Creates a semantic region with optional surface and inset styling.',
+    sectionId: 'demo-section',
+    docsUrl: `${layoutsDocsBase}/section/`,
+  },
+  {
+    name: 'VfGrid',
+    summary: 'Creates a responsive auto-fitting grid for repeated content.',
+    sectionId: 'demo-grid',
+    docsUrl: `${layoutsDocsBase}/grid/`,
+  },
+  {
+    name: 'VfAppShell',
+    summary: 'Composes configurable application regions into a responsive frame.',
+    sectionId: 'demo-app-shell',
+    docsUrl: `${layoutsDocsBase}/app-shell/`,
+  },
+  {
+    name: 'VfHeaderArea',
+    summary: 'Provides the semantic top region used by application shells.',
+    sectionId: 'demo-app-shell',
+    docsUrl: `${layoutsDocsBase}/header-area/`,
+  },
+  {
+    name: 'VfSidebarArea',
+    summary: 'Provides a primary navigation or tools column beside content.',
+    sectionId: 'demo-app-shell',
+    docsUrl: `${layoutsDocsBase}/sidebar-area/`,
+  },
+  {
+    name: 'VfContentArea',
+    summary: 'Provides the main page content region inside a shell.',
+    sectionId: 'demo-app-shell',
+    docsUrl: `${layoutsDocsBase}/content-area/`,
+  },
+  {
+    name: 'VfAsideArea',
+    summary: 'Provides supplementary content alongside the main region.',
+    sectionId: 'demo-app-shell',
+    docsUrl: `${layoutsDocsBase}/aside-area/`,
+  },
+  {
+    name: 'VfFooterArea',
+    summary: 'Provides the semantic bottom region used by application shells.',
+    sectionId: 'demo-app-shell',
+    docsUrl: `${layoutsDocsBase}/footer-area/`,
+  },
+  {
+    name: 'VfAdminLayout',
+    summary: 'Builds responsive admin navigation with collapsible sidebars.',
+    sectionId: 'demo-admin-layout',
+    docsUrl: `${layoutsDocsBase}/admin-layout/`,
+  },
+  {
+    name: 'VfAdminShell',
+    summary: 'Provides an opinionated shell for dense administration products.',
+    sectionId: 'demo-admin-shell',
+    docsUrl: `${layoutsDocsBase}/admin-shell/`,
+  },
+  {
+    name: 'VfDocumentLayout',
+    summary: 'Organizes documentation navigation, article content, and aside.',
+    sectionId: 'demo-document-layout',
+    docsUrl: `${layoutsDocsBase}/document-layout/`,
+  },
+  {
+    name: 'VfAuthLayout',
+    summary: 'Frames authentication and account forms in a branded panel.',
+    sectionId: 'demo-auth-layout',
+    docsUrl: `${layoutsDocsBase}/auth-layout/`,
+  },
+  {
+    name: 'VfErrorLayout',
+    summary: 'Centers an error explanation and recovery actions.',
+    sectionId: 'demo-error-layout',
+    docsUrl: `${layoutsDocsBase}/error-layout/`,
+  },
+  {
+    name: 'VfSetupLayout',
+    summary: 'Structures guided initial configuration and onboarding flows.',
+    sectionId: 'demo-setup-layout',
+    docsUrl: `${layoutsDocsBase}/setup-layout/`,
+  },
+] as const satisfies readonly ShowcaseCatalogItem[];
 
 const resolvedBreakpoints = useCssVarBreakpoints();
 const currentYear = new Date().getFullYear();
