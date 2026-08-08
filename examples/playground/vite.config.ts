@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url';
 import { vueforgePlaygroundVirtualPlugin } from '../../packages/playground-vite-plugin/src/index';
 import { expandVfBreakpointQueries, resolveVfBreakpointQuery } from '../../packages/theme/src/breakpoint-queries';
 
-const showcaseSectionPattern = /^\/(colors|core|layouts|icons|codeblock|playground)\/?$/;
+const showcaseSectionPattern = /^\/(overview|colors|core|layouts|icons|codeblock|playground)\/?$/;
 
 function vueforgeShowcaseHistoryFallback(): Plugin {
   const rewriteShowcaseSection = (req: IncomingMessage, _res: ServerResponse, next: (err?: unknown) => void) => {
