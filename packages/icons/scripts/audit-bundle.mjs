@@ -3,7 +3,7 @@ import { gzipSync } from 'node:zlib';
 import { build } from 'vite';
 
 const METADATA_GZIP_BUDGET = 256;
-const COMPONENT_GZIP_BUDGET = 21 * 1024;
+const COMPONENT_GZIP_BUDGET = 23 * 1024;
 
 const bundleConsumer = async (source) => {
   const result = await build({

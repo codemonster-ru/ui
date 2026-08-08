@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type Component } from 'vue';
 import iconOpticalOffsetsJson from '../iconOpticalOffsets.json';
+import { iconFamilies, type IconFamily } from '../iconFamilies';
 import { iconCatalog, iconNames, type IconName } from '../iconMeta';
 import { iconVariants, type IconVariant } from '../iconVariants';
 
@@ -30,6 +31,9 @@ const props = withDefaults(
     size?: number | string;
     inset?: number;
     variant?: IconVariant;
+    family?: IconFamily;
+    secondaryColor?: string;
+    secondaryOpacity?: number | string;
   }>(),
   {
     icon: FALLBACK_ICON,
@@ -37,6 +41,9 @@ const props = withDefaults(
     size: 'var(--vf-icon-current-size, var(--vf-icon-size-md))',
     inset: 0,
     variant: undefined,
+    family: 'classic',
+    secondaryColor: 'var(--vf-icon-secondary-color, currentColor)',
+    secondaryOpacity: 'var(--vf-icon-secondary-opacity, 0.4)',
   },
 );
 const attrs = useAttrs();
@@ -80,10 +87,25 @@ const resolvedVariant = computed<IconVariant>(() => {
 const iconBindings = computed(() => {
   const catalogEntry = iconCatalog[normalizedIconName.value];
 
+  if (!iconFamilies.includes(props.family)) {
+    throw new Error(`Unknown icon family "${props.family}".`);
+  }
+
+  if (catalogEntry.brand && props.family !== 'classic') {
+    throw new Error(`Icon "${normalizedIconName.value}" does not support the "${props.family}" family.`);
+  }
+
   return {
     ...attrs,
     size: props.size,
-    ...(catalogEntry.brand ? {} : { variant: resolvedVariant.value }),
+    ...(catalogEntry.brand
+      ? {}
+      : {
+          variant: resolvedVariant.value,
+          family: props.family,
+          secondaryColor: props.secondaryColor,
+          secondaryOpacity: props.secondaryOpacity,
+        }),
   };
 });
 
@@ -91,6 +113,7 @@ const classes = computed(() => {
   return {
     'vf-icon': true,
     [`vf-icon--${resolvedVariant.value}`]: true,
+    [`vf-icon--${props.family}`]: true,
   };
 });
 

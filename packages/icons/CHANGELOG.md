@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added the `classic` and `duotone` icon families together with the public `family`,
+  `secondaryColor`, and `secondaryOpacity` props.
+- Added the `iconFamilies` and `IconFamily` exports for typed family selection.
+
+### Changed
+
+- Removed the completed Batch 2–29 migration review screens from the internal showcase while
+  retaining their historical source data and documentation.
+- Removed the completed reference, stroke-comparison, and blind-voting screens from the showcase;
+  the showcase now focuses exclusively on the current `Variants` comparison.
+- Split the Classic and Duotone showcase tables into accessible VueForge `VfTabs` panels.
+- Added primary and secondary color regions to Duotone across Solid, Regular, Light, and Thin while
+  keeping the Classic family unchanged.
+
+### Compatibility
+
+- Existing calls continue to use the visually unchanged `classic` family by default.
+- Brand marks remain `classic`-only so their official geometry is not altered.
+
 ## 3.1.0
 
 ### Added

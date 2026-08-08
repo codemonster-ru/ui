@@ -18,7 +18,7 @@ const componentFiles = readdirSync(componentsDir)
 
 const iconNames = componentFiles.map((fileName) => fileName.replace(/\.vue$/, ''));
 
-const indexContent = `export { default as VueIconify } from '@/lib/components/icon.vue';\n\nexport { iconGroups, iconNames, icons, iconCatalog, coreIconNames, showcaseIconEntries } from '@/lib/iconMeta';\nexport type { IconName, IconCatalogEntry, IconShowcaseEntry } from '@/lib/iconMeta';\nexport { iconVariants, outlineIconVariants } from '@/lib/iconVariants';\nexport type { IconVariant, OutlineIconVariant } from '@/lib/iconVariants';\n`;
+const indexContent = `export { default as VueIconify } from '@/lib/components/icon.vue';\n\nexport { iconFamilies } from '@/lib/iconFamilies';\nexport type { IconFamily } from '@/lib/iconFamilies';\nexport { iconGroups, iconNames, icons, iconCatalog, coreIconNames, showcaseIconEntries } from '@/lib/iconMeta';\nexport type { IconName, IconCatalogEntry, IconShowcaseEntry } from '@/lib/iconMeta';\nexport { iconVariants, outlineIconVariants } from '@/lib/iconVariants';\nexport type { IconVariant, OutlineIconVariant } from '@/lib/iconVariants';\n`;
 
 const iconsContent = `${JSON.stringify({ list: iconNames }, null, 2)}\n`;
 

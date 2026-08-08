@@ -1,8 +1,74 @@
-import { defineComponent, h, type PropType, type SVGAttributes } from 'vue';
-import { iconStrokeWidths, iconVariants, type IconVariant } from '../iconVariants';
+import { defineComponent, h, useId, type PropType, type SVGAttributes } from 'vue';
+import { iconFamilies, type IconFamily } from '../iconFamilies';
+import { iconStrokeWidths, iconVariants, type IconVariant, type OutlineIconVariant } from '../iconVariants';
 import solidIconDataJson from './solidIconData.json';
 
 const solidIconData = solidIconDataJson as Partial<Record<OutlineIconName, { viewBox: string; body: string }>>;
+const SECONDARY_PAINT = 'var(--vf-icon-secondary-paint, currentColor)';
+const SECONDARY_OPACITY = 'var(--vf-icon-secondary-part-opacity, 0.4)';
+const SOLID_STROKE_DUOTONE_OUTER_STROKE_WIDTH = 3;
+const solidStrokeDuotoneInnerStrokeWidths = {
+  regular: 1.25,
+  light: 1.75,
+  thin: 2.25,
+} as const;
+const REFRESH_DUOTONE_ARCS_PATH = 'M3.54 8.92A9 9 0 0 1 18.36 5.64M20.46 15.08A9 9 0 0 1 5.64 18.36';
+const REFRESH_DUOTONE_ARROWHEADS_PATH = 'M22 9.5 13.5 8l7-6.5ZM2 14.5l8.5 1.5-7 6.5Z';
+const ROTATE_RIGHT_DUOTONE_ARC_PATH = 'M18.36 18.36A9 9 0 1 1 18.36 5.64';
+const ROTATE_RIGHT_DUOTONE_ARROWHEAD_PATH = 'M22 9.5 13.5 8l7-6.5Z';
+const HISTORY_DUOTONE_ARC_PATH = 'M5.64 18.36A9 9 0 1 0 5.64 5.64';
+const HISTORY_DUOTONE_ARROWHEAD_PATH = 'M2 9.5 10.5 8l-7-6.5Z';
+const HISTORY_DUOTONE_HANDS_PATH = 'M12 7.25V12l3.75 2.25';
+const INFO_DUOTONE_PATH = 'M9.25 10.25H12v7M9.25 17.25h5.5';
+const QUESTION_DUOTONE_PATH = 'M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16';
+const SOLID_STROKE_DUOTONE_PATHS = {
+  circleNotch: 'M8.56 3.68A9 9 0 1 0 15.44 3.68',
+  code: 'M7 7.25 2.5 12 7 16.75M14 3.5l-4 17m7-13.25 4.5 4.75-4.5 4.75',
+} as const;
+const SOLID_DUOTONE_PATHS = {
+  arrowUp: 'M5.5 11.5 12 4.5l6.5 7h-4.75v8h-3.5v-8Z',
+  arrowUpLong: 'M4.75 9.75 12 1.5l7.25 8.25h-5.5V22.5h-3.5V9.75Z',
+  arrowDown: 'M5.5 12.5 12 19.5l6.5-7h-4.75v-8h-3.5v8Z',
+  arrowDownLong: 'M4.75 14.25 12 22.5l7.25-8.25h-5.5V1.5h-3.5v12.75Z',
+  arrowLeft: 'M11.5 5.5 4.5 12l7 6.5v-4.75h8v-3.5h-8Z',
+  arrowLeftLong: 'M9.75 4.75 1.5 12l8.25 7.25v-5.5H22.5v-3.5H9.75Z',
+  arrowRight: 'M12.5 5.5 19.5 12l-7 6.5v-4.75h-8v-3.5h8Z',
+  arrowRightLong: 'M14.25 4.75 22.5 12l-8.25 7.25v-5.5H1.5v-3.5h12.75Z',
+  arrowTurnUpLeft:
+    'M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z',
+  arrowTurnUpRight:
+    'M14.75 10.5V5.25L21.5 12l-6.75 6.75V13.5H8A5.5 5.5 0 0 1 2.5 8V6.75a1.5 1.5 0 0 1 3 0V8A2.5 2.5 0 0 0 8 10.5Z',
+  arrowTurnLeftDown:
+    'M10.5 14.75H5.25L12 21.5l6.75-6.75H13.5V8A5.5 5.5 0 0 0 8 2.5H6.75a1.5 1.5 0 0 0 0 3H8A2.5 2.5 0 0 1 10.5 8Z',
+  arrowTurnRightUp:
+    'M10.5 9.25H5.25L12 2.5l6.75 6.75H13.5V16A5.5 5.5 0 0 1 8 21.5H6.75a1.5 1.5 0 0 1 0-3H8a2.5 2.5 0 0 0 2.5-2.5Z',
+  caretDown: 'm7.25 9.25 4.75 5.5 4.75-5.5Z',
+  caretLeft: 'm14.75 7.25-5.5 4.75 5.5 4.75Z',
+  caretRight: 'm9.25 7.25 5.5 4.75-5.5 4.75Z',
+  caretUp: 'm7.25 14.75 4.75-5.5 4.75 5.5Z',
+  chevronDown: 'm6.65 7.15-2.3 2.3L12 17.1l7.65-7.65-2.3-2.3L12 12.5Z',
+  chevronLeft: 'm16.85 6.65-2.3-2.3L6.9 12l7.65 7.65 2.3-2.3L11.5 12Z',
+  chevronRight: 'm7.15 6.65 2.3-2.3L17.1 12l-7.65 7.65-2.3-2.3L12.5 12Z',
+  chevronUp: 'm6.65 16.85-2.3-2.3L12 6.9l7.65 7.65-2.3 2.3L12 11.5Z',
+  check: 'm2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z',
+  download: 'M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z',
+  bars: 'M4 4.5h16a1.5 1.5 0 0 1 0 3H4a1.5 1.5 0 0 1 0-3ZM4 10.5h16a1.5 1.5 0 0 1 0 3H4a1.5 1.5 0 0 1 0-3ZM4 16.5h16a1.5 1.5 0 0 1 0 3H4a1.5 1.5 0 0 1 0-3Z',
+  ellipsis:
+    'M5 9.75a2.25 2.25 0 1 1 0 4.5 2.25 2.25 0 1 1 0-4.5ZM12 9.75a2.25 2.25 0 1 1 0 4.5 2.25 2.25 0 1 1 0-4.5ZM19 9.75a2.25 2.25 0 1 1 0 4.5 2.25 2.25 0 1 1 0-4.5Z',
+  logIn:
+    'M15.5 2H19a3.5 3.5 0 0 1 3.5 3.5v13A3.5 3.5 0 0 1 19 22h-3.5a1.5 1.5 0 0 1 0-3H19a.5.5 0 0 0 .5-.5v-13A.5.5 0 0 0 19 5h-3.5a1.5 1.5 0 0 1 0-3ZM3 10.25h9V7.5l4.5 4.5-4.5 4.5v-2.75H3Z',
+  logOut:
+    'M8.5 2H5a3.5 3.5 0 0 0-3.5 3.5v13A3.5 3.5 0 0 0 5 22h3.5a1.5 1.5 0 0 0 0-3H5a.5.5 0 0 1-.5-.5v-13A.5.5 0 0 1 5 5h3.5a1.5 1.5 0 0 0 0-3ZM7.5 10.25h9V7.5L21 12l-4.5 4.5v-2.75h-9Z',
+  minus: 'M3 10.25h18v3.5H3Z',
+  plus: 'M10.25 3h3.5v7.25H21v3.5h-7.25V21h-3.5v-7.25H3v-3.5h7.25Z',
+  upload: 'M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z',
+  xmark: 'm6.2 3.8 5.8 5.8 5.8-5.8 2.4 2.4-5.8 5.8 5.8 5.8-2.4 2.4-5.8-5.8-5.8 5.8-2.4-2.4 5.8-5.8-5.8-5.8Z',
+} as const;
+const solidDuotoneBorderStrokeWidths = {
+  regular: 2.5,
+  light: 1.75,
+  thin: 1,
+} as const;
 
 type GeometryNode = {
   tag: 'circle' | 'line' | 'path' | 'polyline' | 'rect';
@@ -368,6 +434,444 @@ export const outlineGeometry = {
 
 export type OutlineIconName = keyof typeof outlineGeometry;
 
+const outlineDuotoneFillIconNames =
+  ' columns grid clipboard copy externalLink filter funnelX pencil send sort trash archive bell bookmark briefcase building calendar cloud cpu creditCard file folderOpen gear globe hardDrive house inbox key lock magnifyingGlass mail message plug receipt server share unlock user userCheck userMinus userPlus users wallet alertCircle ban checkCircle circleHalf clock eye eyeSlash infoCircle moon questionCircle shield sparkles sun warning xCircle ';
+const outlineDuotoneTwoFillNodeNames =
+  ' clipboard copy sort archive cpu file folderOpen gear globe server user userCheck userMinus userPlus wallet eye eyeSlash sparkles ';
+
+const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
+  if (name === 'externalLink') {
+    return [h('rect', { x: 3, y: 5, width: 16, height: 16, rx: 2, fill })];
+  }
+
+  if (name === 'funnelX') {
+    return [h('path', { d: 'M2.25 2.5h18l-7 8v6l-4-2v-4Z', fill }), h('circle', { cx: 16.75, cy: 16.5, r: 5, fill })];
+  }
+
+  if (name === 'house') {
+    return [h('path', { d: 'M3.5 10.75 12 3.6l8.5 7.15-1.75-1.25v10.25H5.25V9.5Z', fill })];
+  }
+
+  if (name === 'circleHalf') {
+    return [h('circle', { cx: 12, cy: 12, r: 9, fill })];
+  }
+
+  if (!outlineDuotoneFillIconNames.includes(` ${name} `)) {
+    return [];
+  }
+
+  const nodes = outlineGeometry[name];
+  const fillNodeIndexes =
+    name === 'building' || name === 'users'
+      ? nodes.map((_, nodeIndex) => nodeIndex)
+      : name === 'grid'
+        ? [0, 1, 2, 3]
+        : name === 'briefcase'
+          ? [0, 1, 3]
+          : name === 'share'
+            ? [2, 3, 4]
+            : name === 'plug'
+              ? [2]
+              : outlineDuotoneTwoFillNodeNames.includes(` ${name} `)
+                ? [0, 1]
+                : [0];
+
+  return fillNodeIndexes.map((nodeIndex) => {
+    const node = nodes[nodeIndex];
+
+    return h(node.tag, {
+      ...node.attrs,
+      fill,
+      stroke: 'none',
+    });
+  });
+};
+
+const solidArrowheadPoints: Partial<Record<OutlineIconName, string>> = {
+  arrowDown: '5.5 12.5 12 19.5 18.5 12.5',
+  arrowDownLong: '4.75 14.25 12 22.5 19.25 14.25',
+  arrowLeft: '11.5 5.5 4.5 12 11.5 18.5',
+  arrowLeftLong: '9.75 4.75 1.5 12 9.75 19.25',
+  arrowRight: '12.5 5.5 19.5 12 12.5 18.5',
+  arrowRightLong: '14.25 4.75 22.5 12 14.25 19.25',
+  arrowUp: '5.5 11.5 12 4.5 18.5 11.5',
+  arrowUpLong: '4.75 9.75 12 1.5 19.25 9.75',
+  arrowTurnUpLeft: '9.25 5.25 2.5 12 9.25 18.75',
+  arrowTurnUpRight: '14.75 5.25 21.5 12 14.75 18.75',
+  arrowTurnRightUp: '5.25 9.25 12 2.5 18.75 9.25',
+  arrowTurnLeftDown: '5.25 14.75 12 21.5 18.75 14.75',
+};
+
+const solidSecondaryOnlyNames = new Set<OutlineIconName>([
+  'activity',
+  'bookmark',
+  'check',
+  'caretDown',
+  'caretLeft',
+  'caretRight',
+  'caretUp',
+  'chevronDown',
+  'chevronLeft',
+  'chevronRight',
+  'chevronUp',
+  'circleNotch',
+  'cloud',
+  'filter',
+  'gear',
+  'globe',
+  'heart',
+  'house',
+  'mail',
+  'message',
+  'minus',
+  'moon',
+  'phone',
+  'plus',
+  'receipt',
+  'send',
+  'shield',
+  'star',
+  'xmark',
+]);
+const solidMaskOnlyNames = new Set<OutlineIconName>(['briefcase', 'calendar', 'cpu']);
+
+const scopeSvgIds = (body: string, suffix: string) => {
+  const ids = [...body.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
+
+  return ids.reduce(
+    (scopedBody, id) =>
+      scopedBody.replaceAll(`id="${id}"`, `id="${id}-${suffix}"`).replaceAll(`url(#${id})`, `url(#${id}-${suffix})`),
+    body,
+  );
+};
+
+type SecondaryPartPosition = 'first' | 'first-two' | 'middle' | 'last' | 'outer' | 'rear-users';
+
+const applySecondaryPaintToPart = (body: string, position: SecondaryPartPosition) => {
+  const paints = [...body.matchAll(/(fill|stroke)="currentColor"/g)];
+  const targetIndexes = new Set(
+    position === 'outer'
+      ? [paints[0]?.index, paints.at(-1)?.index]
+      : position === 'first-two'
+        ? paints.slice(0, 2).map((paint) => paint.index)
+        : position === 'rear-users'
+          ? paints.slice(1, 4).map((paint) => paint.index)
+          : [
+              position === 'first'
+                ? paints[0]?.index
+                : position === 'middle'
+                  ? paints[Math.floor(paints.length / 2)]?.index
+                  : paints.at(-1)?.index,
+            ],
+  );
+
+  return body.replace(
+    /(fill|stroke)="currentColor"/g,
+    (attribute, paintAttribute: 'fill' | 'stroke', offset: number) => {
+      if (!targetIndexes.has(offset)) {
+        return attribute;
+      }
+
+      return `${paintAttribute}="${SECONDARY_PAINT}" ${paintAttribute}-opacity="${SECONDARY_OPACITY}"`;
+    },
+  );
+};
+
+const countSolidPaintParts = (body: string) =>
+  (body.match(/<(?:circle|ellipse|line|path|polygon|polyline|rect)\b[^>]*(?:fill|stroke)="currentColor"[^>]*>/g) ?? [])
+    .length;
+
+const getSolidSecondaryPartPosition = (name: OutlineIconName): SecondaryPartPosition => {
+  if (name === 'bars' || name === 'ellipsis' || name === 'layers') {
+    return 'middle';
+  }
+
+  if (name === 'grid') {
+    return 'outer';
+  }
+
+  if (name === 'ban' || name === 'key' || name === 'magnifyingGlass' || name === 'question' || name === 'terminal') {
+    return 'last';
+  }
+
+  if (name === 'userCheck' || name === 'userMinus' || name === 'userPlus') {
+    return 'first-two';
+  }
+
+  if (name === 'users') {
+    return 'rear-users';
+  }
+
+  return name.startsWith('arrow') ? 'last' : 'first';
+};
+
+const createSecondaryMaskNodes = (name: OutlineIconName, paint: 'black' | 'white') => {
+  const arrowheadPoints = solidArrowheadPoints[name];
+
+  if (arrowheadPoints) {
+    return [
+      h('polygon', {
+        points: arrowheadPoints,
+        fill: paint,
+        stroke: paint,
+        'stroke-width': 1,
+        'stroke-linejoin': 'round',
+      }),
+    ];
+  }
+
+  if (name === 'archive') {
+    return [h('rect', { x: 0, y: 8.25, width: 24, height: 15.75, fill: paint })];
+  }
+
+  if (name === 'bell') {
+    return [
+      h('path', {
+        transform: 'translate(0 -.75)',
+        d: 'M3 18.5c1.4-1.7 2-3.35 2-5V10a7 7 0 0 1 14 0v3.5c0 1.65.6 3.3 2 5 .55.7.05 1.75-.85 1.75H3.85c-.9 0-1.4-1.05-.85-1.75Z',
+        fill: paint,
+      }),
+    ];
+  }
+
+  if (name === 'chartBar') {
+    return [
+      h('rect', { x: 8, y: 13, width: 3, height: 4, fill: paint }),
+      h('rect', { x: 13, y: 8, width: 3, height: 9, fill: paint }),
+      h('rect', { x: 18, y: 4, width: 3, height: 13, fill: paint }),
+    ];
+  }
+
+  if (name === 'code') {
+    return [
+      h('path', {
+        d: 'M14 3.5l-4 17',
+        fill: 'none',
+        stroke: paint,
+        'stroke-width': 2.75,
+        'stroke-linecap': 'round',
+      }),
+    ];
+  }
+
+  if (name === 'cpu') {
+    return [
+      h('rect', {
+        x: 5,
+        y: 5,
+        width: 14,
+        height: 14,
+        rx: 2,
+        fill: 'none',
+        stroke: paint,
+        'stroke-width': 2.75,
+      }),
+    ];
+  }
+
+  if (name === 'creditCard') {
+    return [h('rect', { x: 0, y: 0, width: 24, height: 9.25, fill: paint })];
+  }
+
+  if (name === 'briefcase') {
+    const inversePaint = paint === 'white' ? 'black' : 'white';
+
+    return [
+      h('rect', { x: 0, y: 6, width: 24, height: 6.5, fill: paint }),
+      h('path', {
+        d: 'M8.5 7V4.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V7',
+        fill: 'none',
+        stroke: inversePaint,
+        'stroke-width': 3,
+        'stroke-linejoin': 'round',
+      }),
+    ];
+  }
+
+  if (name === 'calendar') {
+    return [h('rect', { transform: 'translate(0 -.75)', x: 0, y: 0, width: 24, height: 9, fill: paint })];
+  }
+
+  if (name === 'clipboard') {
+    const inversePaint = paint === 'white' ? 'black' : 'white';
+
+    return [
+      h('rect', { x: 3, y: 4, width: 18, height: 18, rx: 3, fill: paint }),
+      h('rect', {
+        x: 7.5,
+        y: 1.75,
+        width: 9,
+        height: 6,
+        rx: 2,
+        fill: inversePaint,
+        stroke: inversePaint,
+        'stroke-width': 1.5,
+      }),
+    ];
+  }
+
+  if (name === 'copy') {
+    return [
+      h('path', {
+        d: 'M8.5 6.5h7l5 5V19a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V8.5a2 2 0 0 1 2-2Z',
+        fill: paint,
+      }),
+    ];
+  }
+
+  if (name === 'download') {
+    return [
+      h('path', {
+        d: 'M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4Z',
+        fill: paint,
+      }),
+    ];
+  }
+
+  if (name === 'externalLink') {
+    return [
+      h('path', {
+        d: 'M11 13 21 3M15 3h6v6',
+        fill: 'none',
+        stroke: paint,
+        'stroke-width': 3,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      }),
+    ];
+  }
+
+  if (name === 'file' || name === 'fileText') {
+    const inversePaint = paint === 'white' ? 'black' : 'white';
+
+    return [
+      h('path', { d: 'M5 2h9l5 5v15H5Z', fill: paint }),
+      h('path', { d: 'M14 2 19 7v1h-5Z', fill: inversePaint }),
+    ];
+  }
+
+  if (name === 'folder') {
+    return [h('rect', { x: 0, y: 7.75, width: 24, height: 16.25, fill: paint })];
+  }
+
+  if (name === 'folderOpen') {
+    return [
+      h('path', {
+        d: 'M5.5 9h14.25a1.75 1.75 0 0 1 1.7 2.2l-2 7.5a1.75 1.75 0 0 1-1.7 1.3H2.5Z',
+        fill: paint,
+      }),
+    ];
+  }
+
+  if (name === 'hardDrive') {
+    return [h('rect', { x: 0, y: 12, width: 24, height: 12, fill: paint })];
+  }
+
+  if (name === 'inbox') {
+    return [
+      h('path', {
+        d: 'M0 0h24v13.25h-7.5l-1.5 2.5H9l-1.5-2.5H0Z',
+        fill: paint,
+      }),
+    ];
+  }
+
+  if (name === 'funnelX') {
+    return [h('circle', { cx: 16.75, cy: 16.5, r: 5.5, fill: paint })];
+  }
+
+  if (name === 'link') {
+    return [
+      h('path', {
+        d: 'M9.9 12.1c0 1.9 1.6 3.2 3.6 3.2 1 0 1.8-.4 2.5-1.1l2.7-2.7c2.1-2.1 2.1-4.5.1-5.7-1.3-.8-3.3-.9-4.7 0',
+        fill: 'none',
+        stroke: paint,
+        'stroke-width': 3,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      }),
+    ];
+  }
+
+  if (name === 'pencil') {
+    return [
+      h('path', {
+        d: 'M4.15 15.25 15 4.4 19.6 9 8.75 19.85Z',
+        fill: paint,
+      }),
+    ];
+  }
+
+  if (name === 'sort') {
+    return [
+      h('path', {
+        d: 'M4 14.5h16L12 21.5Z',
+        fill: paint,
+        stroke: paint,
+        'stroke-width': 1.5,
+        'stroke-linejoin': 'round',
+      }),
+    ];
+  }
+
+  if (name === 'server') {
+    return [h('rect', { x: 2.5, y: 2.25, width: 19, height: 8.5, rx: 2.5, fill: paint })];
+  }
+
+  if (name === 'upload') {
+    return [h('rect', { x: 3, y: 18.25, width: 18, height: 3, fill: paint })];
+  }
+
+  if (name === 'columns') {
+    return [h('rect', { x: 0, y: 0, width: 24, height: 8, fill: paint })];
+  }
+
+  if (name === 'collapse') {
+    return [
+      h('path', {
+        d: 'M21 3l-6 6m0-6v6h6',
+        fill: 'none',
+        stroke: paint,
+        'stroke-width': 3,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      }),
+    ];
+  }
+
+  if (name === 'expand') {
+    return [
+      h('path', {
+        d: 'M14 10 21 3m-6 0h6v6',
+        fill: 'none',
+        stroke: paint,
+        'stroke-width': 3,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      }),
+    ];
+  }
+
+  const nodes = outlineGeometry[name];
+
+  if (nodes.length === 1) {
+    return [h('rect', { x: 0, y: 0, width: 24, height: 12, fill: paint })];
+  }
+
+  const secondaryNode = name.startsWith('arrow') ? nodes.at(-1)! : nodes[0];
+
+  return [
+    h(secondaryNode.tag, {
+      ...secondaryNode.attrs,
+      fill: 'none',
+      stroke: paint,
+      'stroke-width': 3.5,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    }),
+  ];
+};
+
 /* @__NO_SIDE_EFFECTS__ */
 export const createOutlineIcon = (name: OutlineIconName) => {
   return defineComponent({
@@ -383,8 +887,23 @@ export const createOutlineIcon = (name: OutlineIconName) => {
         default: 'regular',
         validator: (value: string) => iconVariants.includes(value as IconVariant),
       },
+      family: {
+        type: String as PropType<IconFamily>,
+        default: 'classic',
+        validator: (value: string) => iconFamilies.includes(value as IconFamily),
+      },
+      secondaryColor: {
+        type: String,
+        default: 'var(--vf-icon-secondary-color, currentColor)',
+      },
+      secondaryOpacity: {
+        type: [Number, String] as PropType<number | string>,
+        default: 'var(--vf-icon-secondary-opacity, 0.4)',
+      },
     },
     setup(props, { attrs }) {
+      const instanceId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+
       return () => {
         if (props.variant === 'solid') {
           const solidIcon = solidIconData[name];
@@ -393,17 +912,546 @@ export const createOutlineIcon = (name: OutlineIconName) => {
             throw new Error(`Missing solid geometry for icon "${name}".`);
           }
 
-          return h('svg', {
+          const svgAttrs = {
             ...attrs,
             xmlns: 'http://www.w3.org/2000/svg',
             viewBox: solidIcon.viewBox,
             width: props.size,
             height: props.size,
             fill: 'none',
-            innerHTML: solidIcon.body,
+          };
+
+          if (props.family === 'classic') {
+            return h('svg', {
+              ...svgAttrs,
+              innerHTML: solidIcon.body,
+            });
+          }
+
+          const scopedBody = scopeSvgIds(solidIcon.body, instanceId);
+
+          if (name === 'building') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', { fill: 'currentColor' }, [
+                h('rect', { x: 8, y: 6, width: 2.5, height: 2.5, rx: 0.5 }),
+                h('rect', { x: 13.5, y: 6, width: 2.5, height: 2.5, rx: 0.5 }),
+                h('rect', { x: 8, y: 11.5, width: 2.5, height: 2.5, rx: 0.5 }),
+                h('rect', { x: 13.5, y: 11.5, width: 2.5, height: 2.5, rx: 0.5 }),
+                h('rect', { x: 10.5, y: 16.25, width: 3, height: 5.75, rx: 0.5 }),
+              ]),
+            ]);
+          }
+
+          if (name === 'database') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('path', {
+                transform: 'translate(-1.2 -1.2) scale(1.1)',
+                d: 'M4.25 8.5C5.75 10.1 8.5 11 12 11s6.25-.9 7.75-2.5M4.25 13.75c1.5 1.6 4.25 2.5 7.75 2.5s6.25-.9 7.75-2.5',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': 0.9,
+                'stroke-linecap': 'round',
+              }),
+            ]);
+          }
+
+          if (name === 'alertCircle') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', { fill: 'currentColor' }, [
+                h('rect', { x: 10.7, y: 6.5, width: 2.6, height: 7.5, rx: 1.3 }),
+                h('circle', { cx: 12, cy: 17.5, r: 1.35 }),
+              ]),
+            ]);
+          }
+
+          if (name === 'checkCircle') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('path', {
+                d: 'm7.5 12.2 3 3 6-6',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': 2.4,
+                'stroke-linecap': 'round',
+                'stroke-linejoin': 'round',
+              }),
+            ]);
+          }
+
+          if (name === 'circleHalf') {
+            const splitGradientId = `vf-duotone-circle-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h(
+                  'linearGradient',
+                  { id: splitGradientId, x1: 2, y1: 12, x2: 22, y2: 12, gradientUnits: 'userSpaceOnUse' },
+                  [
+                    h('stop', { offset: '0%', 'stop-color': 'currentColor' }),
+                    h('stop', { offset: '50%', 'stop-color': 'currentColor' }),
+                    h('stop', {
+                      offset: '50%',
+                      'stop-color': props.secondaryColor,
+                      'stop-opacity': props.secondaryOpacity,
+                    }),
+                    h('stop', {
+                      offset: '100%',
+                      'stop-color': props.secondaryColor,
+                      'stop-opacity': props.secondaryOpacity,
+                    }),
+                  ],
+                ),
+              ]),
+              h('circle', { cx: 12, cy: 12, r: 10, fill: `url(#${splitGradientId})` }),
+            ]);
+          }
+
+          if (name === 'clock') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('path', {
+                d: 'M12 6.75V12l4 2.5',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': 2.5,
+                'stroke-linecap': 'round',
+                'stroke-linejoin': 'round',
+              }),
+            ]);
+          }
+
+          if (name === 'eye') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('circle', { cx: 12, cy: 12, r: 1.5, fill: 'currentColor' }),
+            ]);
+          }
+
+          if (name === 'history') {
+            return h('svg', svgAttrs, [
+              h('g', { color: props.secondaryColor, opacity: props.secondaryOpacity }, [
+                h('path', {
+                  d: 'M5.64 18.36A9 9 0 1 0 5.64 5.64',
+                  fill: 'none',
+                  stroke: 'currentColor',
+                  'stroke-width': 3,
+                  'stroke-linecap': 'round',
+                }),
+                h('path', {
+                  transform: 'translate(-.75)',
+                  d: 'M2 9.5 10.5 8l-7-6.5Z',
+                  fill: 'currentColor',
+                  stroke: 'currentColor',
+                  'stroke-width': 0.5,
+                  'stroke-linejoin': 'round',
+                }),
+              ]),
+              h('path', {
+                d: 'M12 7.25V12l3.75 2.25',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': 2.5,
+                'stroke-linecap': 'round',
+                'stroke-linejoin': 'round',
+              }),
+            ]);
+          }
+
+          if (name === 'infoCircle') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', { fill: 'currentColor' }, [
+                h('circle', { cx: 12, cy: 7, r: 1.35 }),
+                h('rect', { x: 10.65, y: 10, width: 2.7, height: 7.5, rx: 1.35 }),
+              ]),
+            ]);
+          }
+
+          if (name === 'questionCircle') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('path', {
+                d: 'M8.8 8.7a3.3 3.3 0 1 1 4.8 2.95C12.5 12.25 12 13 12 14',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': 2.2,
+                'stroke-linecap': 'round',
+              }),
+              h('circle', { cx: 12, cy: 17.5, r: 1.25, fill: 'currentColor' }),
+            ]);
+          }
+
+          if (name === 'sparkles') {
+            return h('svg', svgAttrs, [
+              h('path', {
+                d: 'M14.5 3c.5 3.55 2.45 5.5 6 6-3.55.5-5.5 2.45-6 6-.5-3.55-2.45-5.5-6-6 3.55-.5 5.5-2.45 6-6Z',
+                fill: 'currentColor',
+                stroke: 'currentColor',
+                'stroke-width': 1.75,
+                'stroke-linejoin': 'round',
+              }),
+              h('g', { color: props.secondaryColor, opacity: props.secondaryOpacity }, [
+                h('path', {
+                  d: 'M6 14.5c.25 1.75 1.25 2.75 3.5 3-2.25.25-3.25 1.25-3.5 3-.25-1.75-1.25-2.75-3.5-3 2.25-.25 3.25-1.25 3.5-3Z',
+                  fill: 'currentColor',
+                  stroke: 'currentColor',
+                  'stroke-width': 1.75,
+                  'stroke-linejoin': 'round',
+                }),
+              ]),
+            ]);
+          }
+
+          if (name === 'warning') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', { fill: 'currentColor' }, [
+                h('rect', { x: 10.7, y: 8, width: 2.6, height: 7, rx: 1.3 }),
+                h('circle', { cx: 12, cy: 18.25, r: 1.4 }),
+              ]),
+            ]);
+          }
+
+          if (name === 'xCircle') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('path', {
+                d: 'm8.5 8.5 7 7m0-7-7 7',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': 2.4,
+                'stroke-linecap': 'round',
+              }),
+            ]);
+          }
+
+          if (name === 'wallet') {
+            const claspMaskId = `vf-duotone-wallet-clasp-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('mask', { id: claspMaskId }, [
+                  h('path', {
+                    d: 'M21.25 9.25H15a3 3 0 0 0 0 6h6.25Z',
+                    fill: 'white',
+                  }),
+                ]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                mask: `url(#${claspMaskId})`,
+                innerHTML: scopeSvgIds(solidIcon.body, `${instanceId}-clasp`),
+              }),
+            ]);
+          }
+
+          if (solidSecondaryOnlyNames.has(name)) {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+            ]);
+          }
+
+          if (countSolidPaintParts(scopedBody) > 1 && !solidArrowheadPoints[name] && !solidMaskOnlyNames.has(name)) {
+            return h('svg', svgAttrs, [
+              h('g', {
+                style: {
+                  '--vf-icon-secondary-paint': props.secondaryColor,
+                  '--vf-icon-secondary-part-opacity': props.secondaryOpacity,
+                },
+                innerHTML: applySecondaryPaintToPart(scopedBody, getSolidSecondaryPartPosition(name)),
+              }),
+            ]);
+          }
+
+          const primaryMaskId = `vf-duotone-primary-${name}-${instanceId}`;
+          const secondaryMaskId = `vf-duotone-secondary-${name}-${instanceId}`;
+          const primaryLayer = h('g', { mask: `url(#${primaryMaskId})`, innerHTML: scopedBody });
+          const secondaryLayer = h('g', {
+            color: props.secondaryColor,
+            opacity: props.secondaryOpacity,
+            mask: `url(#${secondaryMaskId})`,
+            innerHTML: scopeSvgIds(solidIcon.body, `${instanceId}-secondary`),
           });
+
+          return h('svg', svgAttrs, [
+            h('defs', [
+              h('mask', { id: primaryMaskId }, [
+                h('rect', { x: 0, y: 0, width: 24, height: 24, fill: 'white' }),
+                ...createSecondaryMaskNodes(name, 'black'),
+              ]),
+              h('mask', { id: secondaryMaskId }, createSecondaryMaskNodes(name, 'white')),
+            ]),
+            primaryLayer,
+            secondaryLayer,
+            ...(name === 'calendar'
+              ? [
+                  h('path', {
+                    transform: 'translate(0 -.75)',
+                    d: 'M7 3v3M17 3v3',
+                    fill: 'none',
+                    stroke: 'currentColor',
+                    'stroke-width': 2,
+                    'stroke-linecap': 'round',
+                  }),
+                ]
+              : []),
+            ...(name === 'fileText'
+              ? [
+                  h('path', {
+                    d: 'M8.5 12.25h7m-7 4h7',
+                    fill: 'none',
+                    stroke: 'currentColor',
+                    'stroke-width': 1.5,
+                    'stroke-linecap': 'round',
+                  }),
+                ]
+              : []),
+          ]);
         }
 
+        const outlineVariant = props.variant as OutlineIconVariant;
+        const strokeWidth = iconStrokeWidths[outlineVariant];
+
+        if (
+          props.family === 'duotone' &&
+          (name === 'refresh' || name === 'rotateRight' || name === 'history' || name === 'info' || name === 'question')
+        ) {
+          const isRotateRight = name === 'rotateRight';
+          const isHistory = name === 'history';
+          const isInfo = name === 'info';
+          const isQuestion = name === 'question';
+          const silhouetteMaskId = `vf-duotone-${name}-silhouette-${instanceId}`;
+          const borderMaskId = `vf-duotone-${name}-border-${instanceId}`;
+          const innerMaskId = `vf-duotone-${name}-inner-${instanceId}`;
+          const outerStrokeWidth = isQuestion ? 3.25 : SOLID_STROKE_DUOTONE_OUTER_STROKE_WIDTH;
+          const innerStrokeWidth =
+            isRotateRight || isHistory || isInfo || isQuestion
+              ? outerStrokeWidth - solidDuotoneBorderStrokeWidths[outlineVariant]
+              : solidStrokeDuotoneInnerStrokeWidths[outlineVariant];
+          const arrowheadInsetStrokeWidth = outerStrokeWidth - innerStrokeWidth;
+          const handsInnerStrokeWidth = 2.5 - solidDuotoneBorderStrokeWidths[outlineVariant];
+          const refreshArc = (stroke: string, width: number) =>
+            h('path', {
+              d: isQuestion
+                ? QUESTION_DUOTONE_PATH
+                : isInfo
+                  ? INFO_DUOTONE_PATH
+                  : isRotateRight
+                    ? ROTATE_RIGHT_DUOTONE_ARC_PATH
+                    : isHistory
+                      ? HISTORY_DUOTONE_ARC_PATH
+                      : REFRESH_DUOTONE_ARCS_PATH,
+              fill: 'none',
+              stroke,
+              'stroke-width': width,
+              'stroke-linecap': 'round',
+            });
+          const refreshArrowheads = (fill: string, stroke: string, width: number) =>
+            isInfo || isQuestion
+              ? h('circle', { cx: 12, cy: isQuestion ? 20.5 : 6.25, r: 1.75, fill, stroke, 'stroke-width': width })
+              : h('path', {
+                  d: isHistory
+                    ? HISTORY_DUOTONE_ARROWHEAD_PATH
+                    : isRotateRight
+                      ? ROTATE_RIGHT_DUOTONE_ARROWHEAD_PATH
+                      : REFRESH_DUOTONE_ARROWHEADS_PATH,
+                  fill,
+                  stroke,
+                  'stroke-width': width,
+                  'stroke-linejoin': 'round',
+                  ...(isHistory ? { transform: 'translate(-.75)' } : {}),
+                });
+          const historyHands = (stroke: string, width: number) =>
+            h('path', {
+              d: HISTORY_DUOTONE_HANDS_PATH,
+              fill: 'none',
+              stroke,
+              'stroke-width': width,
+              'stroke-linecap': 'round',
+              'stroke-linejoin': 'round',
+            });
+
+          return h(
+            'svg',
+            {
+              ...attrs,
+              xmlns: 'http://www.w3.org/2000/svg',
+              viewBox: '0 0 24 24',
+              width: props.size,
+              height: props.size,
+              fill: 'none',
+              stroke: 'currentColor',
+              'stroke-width': strokeWidth,
+              'stroke-linecap': 'round',
+              'stroke-linejoin': 'round',
+            },
+            [
+              h('defs', [
+                h('mask', { id: silhouetteMaskId, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 24, height: 24 }, [
+                  refreshArc('white', outerStrokeWidth),
+                  refreshArrowheads('white', 'white', isInfo || isQuestion ? 0 : 0.5),
+                  ...(isHistory ? [historyHands('white', 2.5)] : []),
+                ]),
+                h('mask', { id: borderMaskId, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 24, height: 24 }, [
+                  h('rect', { x: 0, y: 0, width: 24, height: 24, fill: 'white', stroke: 'none' }),
+                  refreshArrowheads('black', 'white', arrowheadInsetStrokeWidth),
+                  refreshArc('black', innerStrokeWidth),
+                  ...(isHistory ? [historyHands('black', handsInnerStrokeWidth)] : []),
+                ]),
+                h('mask', { id: innerMaskId, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 24, height: 24 }, [
+                  refreshArrowheads('white', 'black', arrowheadInsetStrokeWidth),
+                  refreshArc('white', innerStrokeWidth),
+                  ...(isHistory ? [historyHands('white', handsInnerStrokeWidth)] : []),
+                ]),
+              ]),
+              h('g', { mask: `url(#${silhouetteMaskId})` }, [
+                h('rect', {
+                  x: 0,
+                  y: 0,
+                  width: 24,
+                  height: 24,
+                  fill: 'currentColor',
+                  stroke: 'none',
+                  mask: `url(#${borderMaskId})`,
+                }),
+              ]),
+              h('rect', {
+                x: 0,
+                y: 0,
+                width: 24,
+                height: 24,
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                stroke: 'none',
+                mask: `url(#${innerMaskId})`,
+              }),
+            ],
+          );
+        }
+
+        const isSolidStrokeDuotone =
+          props.family === 'duotone' &&
+          (name === 'collapse' ||
+            name === 'expand' ||
+            name === 'link' ||
+            name === 'code' ||
+            name === 'terminal' ||
+            name === 'activity' ||
+            name === 'circleNotch');
+        const solidDuotonePath =
+          props.family === 'duotone' ? SOLID_DUOTONE_PATHS[name as keyof typeof SOLID_DUOTONE_PATHS] : undefined;
+        const geometry = outlineGeometry[name].map((node) => h(node.tag, node.attrs));
+        const solidStrokeDuotonePath = SOLID_STROKE_DUOTONE_PATHS[name as keyof typeof SOLID_STROKE_DUOTONE_PATHS];
+        const solidStrokeDuotoneSourceGeometry: GeometryNode[] = solidStrokeDuotonePath
+          ? [{ tag: 'path', attrs: { d: solidStrokeDuotonePath } }]
+          : outlineGeometry[name];
+        const solidStrokeDuotoneOuterStrokeWidth =
+          name === 'code' ? 2.75 : name === 'circleNotch' ? 3.5 : SOLID_STROKE_DUOTONE_OUTER_STROKE_WIDTH;
+        const solidStrokeDuotoneInnerStrokeWidth =
+          name === 'code' || name === 'terminal' || name === 'activity' || name === 'circleNotch'
+            ? solidStrokeDuotoneOuterStrokeWidth - solidDuotoneBorderStrokeWidths[outlineVariant]
+            : solidStrokeDuotoneInnerStrokeWidths[outlineVariant];
+        const solidStrokeDuotoneMaskGeometry = isSolidStrokeDuotone
+          ? solidStrokeDuotoneSourceGeometry.map((node) =>
+              h(node.tag, {
+                ...node.attrs,
+                fill: 'none',
+                stroke: 'black',
+                'stroke-width': solidStrokeDuotoneInnerStrokeWidth,
+              }),
+            )
+          : [];
+        const solidStrokeDuotoneSecondaryGeometry = isSolidStrokeDuotone
+          ? solidStrokeDuotoneSourceGeometry.map((node) =>
+              h(node.tag, {
+                ...node.attrs,
+                fill: 'none',
+                stroke: props.secondaryColor,
+                'stroke-width': solidStrokeDuotoneOuterStrokeWidth,
+              }),
+            )
+          : [];
+        const solidStrokeDuotonePrimaryGeometry = isSolidStrokeDuotone
+          ? solidStrokeDuotoneSourceGeometry.map((node) =>
+              h(node.tag, {
+                ...node.attrs,
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': solidStrokeDuotoneOuterStrokeWidth,
+              }),
+            )
+          : [];
+        const duotoneFillGeometry =
+          props.family === 'duotone' ? createOutlineDuotoneFillNodes(name, props.secondaryColor) : [];
+        const solidStrokeDuotoneMaskId = `vf-duotone-${name}-outline-${instanceId}`;
+        const solidDuotoneClipId = `vf-duotone-${name}-${instanceId}`;
+        const solidDuotoneFillGeometry = solidDuotonePath
+          ? h('path', {
+              d: solidDuotonePath,
+              fill: props.secondaryColor,
+              'fill-opacity': props.secondaryOpacity,
+              stroke: 'none',
+            })
+          : undefined;
+        const solidDuotoneBorderGeometry = solidDuotonePath
+          ? h('path', {
+              d: solidDuotonePath,
+              fill: 'none',
+              stroke: 'currentColor',
+              'stroke-width': solidDuotoneBorderStrokeWidths[outlineVariant],
+            })
+          : undefined;
         return h(
           'svg',
           {
@@ -414,11 +1462,45 @@ export const createOutlineIcon = (name: OutlineIconName) => {
             height: props.size,
             fill: 'none',
             stroke: 'currentColor',
-            'stroke-width': iconStrokeWidths[props.variant],
+            'stroke-width': strokeWidth,
             'stroke-linecap': 'round',
             'stroke-linejoin': 'round',
           },
-          outlineGeometry[name].map((node) => h(node.tag, node.attrs)),
+          solidDuotoneFillGeometry && solidDuotoneBorderGeometry
+            ? [
+                h('defs', [
+                  h('clipPath', { id: solidDuotoneClipId }, [
+                    h('path', { d: solidDuotonePath, fill: 'white', stroke: 'none' }),
+                  ]),
+                ]),
+                solidDuotoneFillGeometry,
+                h('g', { 'clip-path': `url(#${solidDuotoneClipId})` }, [solidDuotoneBorderGeometry]),
+              ]
+            : solidStrokeDuotoneSecondaryGeometry.length > 0
+              ? [
+                  h('defs', [
+                    h(
+                      'mask',
+                      {
+                        id: solidStrokeDuotoneMaskId,
+                        maskUnits: 'userSpaceOnUse',
+                        x: 0,
+                        y: 0,
+                        width: 24,
+                        height: 24,
+                      },
+                      [
+                        h('rect', { x: 0, y: 0, width: 24, height: 24, fill: 'white', stroke: 'none' }),
+                        ...solidStrokeDuotoneMaskGeometry,
+                      ],
+                    ),
+                  ]),
+                  h('g', { opacity: props.secondaryOpacity, fill: 'none' }, solidStrokeDuotoneSecondaryGeometry),
+                  h('g', { mask: `url(#${solidStrokeDuotoneMaskId})` }, solidStrokeDuotonePrimaryGeometry),
+                ]
+              : duotoneFillGeometry.length > 0
+                ? [h('g', { opacity: props.secondaryOpacity, stroke: 'none' }, duotoneFillGeometry), ...geometry]
+                : geometry,
         );
       };
     },

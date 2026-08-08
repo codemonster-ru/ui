@@ -107,6 +107,7 @@
     "vue": "^3.5.0"
   },
   "devDependencies": {
+    "@codemonster-ru/vueforge-core": "file:../core",
     "@eslint/js": "^10.0.1",
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^20.14.10",

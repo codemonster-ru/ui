@@ -5,7 +5,7 @@
   },
   "key": {
     "viewBox": "0 0 24 24",
-    "body": "<defs><mask id=\"vf-solid-key\"><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\" fill=\"white\" stroke=\"white\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\" fill=\"black\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-key)\"/>"
+    "body": "<defs><mask id=\"vf-solid-key-shaft\"><rect width=\"24\" height=\"24\" fill=\"white\"/><circle cx=\"15.5\" cy=\"8.75\" r=\"8\" fill=\"black\"/></mask><mask id=\"vf-solid-key-head\"><rect width=\"24\" height=\"24\" fill=\"white\"/><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\" fill=\"black\"/></mask></defs><path d=\"M8.75 11.25 12.75 15.5l-2 2H7.5v4H2v-3.75Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\" mask=\"url(#vf-solid-key-shaft)\"/><circle cx=\"15.5\" cy=\"8.75\" r=\"8\" fill=\"currentColor\" mask=\"url(#vf-solid-key-head)\"/>"
   },
   "sparkles": {
     "viewBox": "0 0 24 24",
@@ -21,7 +21,7 @@
   },
   "plug": {
     "viewBox": "0 0 24 24",
-    "body": "<path d=\"M9 3v5m6-5v5M12 18.5V21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M5.5 8h13v4a6.5 6.5 0 0 1-13 0Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>"
+    "body": "<path d=\"M9 3v5m6-5v5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M12 18.5V21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M5.5 8h13v4a6.5 6.5 0 0 1-13 0Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>"
   },
   "send": {
     "viewBox": "0 0 24 24",
@@ -41,7 +41,7 @@
   },
   "terminal": {
     "viewBox": "0 0 24 24",
-    "body": "<path d=\"m3.5 5 6.5 7-6.5 7M12.25 19h8.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
+    "body": "<path d=\"m3.5 5 6.5 7-6.5 7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12.25 19h8.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/>"
   },
   "code": {
     "viewBox": "0 0 24 24",
@@ -61,7 +61,7 @@
   },
   "layers": {
     "viewBox": "0 0 24 24",
-    "body": "<path d=\"m3.5 7.5 8.5-4.25 8.5 4.25L12 11.75Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linejoin=\"round\"/><path d=\"M3.5 11.75 12 16l8.5-4.25M3.5 16 12 20.25 20.5 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
+    "body": "<path d=\"m3.5 7.5 8.5-4.25 8.5 4.25L12 11.75Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linejoin=\"round\"/><path d=\"M3.5 11.75 12 16l8.5-4.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M3.5 16 12 20.25 20.5 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
   },
   "creditCard": {
     "viewBox": "0 0 24 24",
@@ -345,7 +345,7 @@
   },
   "magnifyingGlass": {
     "viewBox": "0 0 24 24",
-    "body": "<defs><mask id=\"vf-solid-magnifying-glass\"><rect width=\"24\" height=\"24\" fill=\"black\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"7.75\" fill=\"white\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"4.25\" fill=\"black\"/><path d=\"m15.5 15.5 5.25 5.25\" stroke=\"white\" stroke-width=\"3.5\" stroke-linecap=\"round\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-magnifying-glass)\"/>"
+    "body": "<defs><mask id=\"vf-solid-magnifying-glass-handle\"><rect width=\"24\" height=\"24\" fill=\"white\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"7.75\" fill=\"black\"/></mask><mask id=\"vf-solid-magnifying-glass-ring\"><rect width=\"24\" height=\"24\" fill=\"white\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"4.25\" fill=\"black\"/></mask></defs><path d=\"m15.5 15.5 5.25 5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.5\" stroke-linecap=\"round\" mask=\"url(#vf-solid-magnifying-glass-handle)\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"7.75\" fill=\"currentColor\" mask=\"url(#vf-solid-magnifying-glass-ring)\"/>"
   },
   "gear": {
     "viewBox": "0 0 24 24",
@@ -361,7 +361,7 @@
   },
   "users": {
     "viewBox": "0 0 24 24",
-    "body": "<circle cx=\"12\" cy=\"6.5\" r=\"3.5\" fill=\"currentColor\"/><circle cx=\"4.75\" cy=\"8.75\" r=\"2.5\" fill=\"currentColor\"/><circle cx=\"19.25\" cy=\"8.75\" r=\"2.5\" fill=\"currentColor\"/><path fill=\"currentColor\" d=\"M6 21c.25-5.1 2.45-8 6-8s5.75 2.9 6 8ZM.75 20v-1.5c0-3.7 1.45-6 4-6 1.05 0 1.9.4 2.55 1.15C5.8 15.4 5 17.85 4.9 20Zm18.35 0c-.1-2.15-.9-4.6-2.4-6.35a3.25 3.25 0 0 1 2.55-1.15c2.55 0 4 2.3 4 6V20Z\"/>"
+    "body": "<circle cx=\"12\" cy=\"6.5\" r=\"3.5\" fill=\"currentColor\"/><circle cx=\"4.75\" cy=\"8.75\" r=\"2.5\" fill=\"currentColor\"/><circle cx=\"19.25\" cy=\"8.75\" r=\"2.5\" fill=\"currentColor\"/><path fill=\"currentColor\" d=\"M.75 20v-1.5c0-3.7 1.45-6 4-6 1.05 0 1.9.4 2.55 1.15C5.8 15.4 5 17.85 4.9 20Zm18.35 0c-.1-2.15-.9-4.6-2.4-6.35a3.25 3.25 0 0 1 2.55-1.15c2.55 0 4 2.3 4 6V20Z\"/><path fill=\"currentColor\" d=\"M6 21c.25-5.1 2.45-8 6-8s5.75 2.9 6 8Z\"/>"
   },
   "file": {
     "viewBox": "0 0 24 24",
