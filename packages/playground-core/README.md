@@ -57,9 +57,11 @@ The browser runtime validates iframe messages and import resolution, and reports
 runtime errors. Importing the module is SSR-safe, but executing the browser runtime requires DOM
 APIs. Call `dispose()` when the host is removed.
 
-TypeScript powers in-browser transpilation. Consumer bundlers therefore emit a compiler chunk of
-about 1 MiB gzip; keep the runtime behind a dynamic import when it is not needed at startup. The
-Vue Playground UI activates this runtime boundary only when a sandbox session is created.
+TypeScript powers in-browser transpilation. Consumer bundlers therefore emit a compiler worker of
+about 1 MiB gzip, but browsers download it only when a `.ts` file or inline `text/typescript` script
+must be transpiled. Compilation runs in a dedicated Web Worker to keep compiler parsing and
+transpilation off the UI thread. JavaScript/HTML-only sessions keep using the lightweight browser
+runtime. The Vue Playground UI activates the runtime boundary only when a sandbox session is created.
 
 ## Package-local documentation
 
