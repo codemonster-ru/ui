@@ -1,6 +1,6 @@
 # VueForge Showcase
 
-Development showcase and searchable catalog for all published VueForge packages.
+Internal visual test bench for VueForge packages.
 
 ## Run
 
@@ -8,11 +8,10 @@ Development showcase and searchable catalog for all published VueForge packages.
 npm run dev
 ```
 
-The app opens with an eight-package overview and exposes seven showcase sections:
+The app opens directly on Core and exposes six focused showcase sections:
 
-- Overview
-- Colors
 - Core
+- Colors
 - Layouts
 - Icons
 - CodeBlock
