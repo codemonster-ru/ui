@@ -17,7 +17,7 @@ const releaseTrain = [
     directory: 'icons',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-icons',
-    version: '3.1.0',
+    version: '3.2.0',
   },
   {
     directory: 'core',
@@ -41,7 +41,7 @@ const releaseTrain = [
     directory: 'playground-core',
     enginesNode: '>=18',
     name: '@codemonster-ru/vueforge-playground-core',
-    version: '2.0.0',
+    version: '2.1.0',
   },
   {
     directory: 'playground-vite-plugin',

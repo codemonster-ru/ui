@@ -18,7 +18,7 @@ const packageContracts = [
     directory: 'icons',
     entry: '@codemonster-ru/vueforge-icons',
     name: '@codemonster-ru/vueforge-icons',
-    version: '3.1.0',
+    version: '3.2.0',
   },
   {
     directory: 'core',
@@ -42,7 +42,7 @@ const packageContracts = [
     directory: 'playground-core',
     entry: '@codemonster-ru/vueforge-playground-core',
     name: '@codemonster-ru/vueforge-playground-core',
-    version: '2.0.0',
+    version: '2.1.0',
   },
   {
     directory: 'playground-vite-plugin',
