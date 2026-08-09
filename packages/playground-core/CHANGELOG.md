@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.1.0
+
+### Changed
+
+- Moved on-demand TypeScript compilation into a dedicated Web Worker so compiler parsing and
+  transpilation no longer block the UI thread.
+- Deferred downloading the TypeScript compiler worker until a session contains a `.ts` file or an
+  inline `text/typescript` script; JavaScript/HTML-only sessions keep the lightweight runtime path.
+
+### Fixed
+
+- Terminated the compiler worker when a session is disposed and rejected pending compilation work
+  when the worker fails or stops unexpectedly.
+
 ## 2.0.0
 
 ### Added
