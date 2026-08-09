@@ -986,19 +986,38 @@ export const createOutlineIcon = (name: OutlineIconName) => {
           }
 
           if (name === 'database') {
+            const separatorClipId = `vf-duotone-database-separators-${instanceId}`;
+
             return h('svg', svgAttrs, [
-              h('g', {
-                color: props.secondaryColor,
-                opacity: props.secondaryOpacity,
-                innerHTML: scopedBody,
-              }),
+              h('defs', [
+                h('clipPath', { id: separatorClipId }, [
+                  h('path', {
+                    d: 'M4.25 6.25c0-2 3.47-3.5 7.75-3.5s7.75 1.5 7.75 3.5v11.5c0 2-3.47 3.5-7.75 3.5s-7.75-1.5-7.75-3.5Z',
+                  }),
+                ]),
+              ]),
+              h(
+                'g',
+                {
+                  color: props.secondaryColor,
+                  opacity: props.secondaryOpacity,
+                },
+                [
+                  h('path', {
+                    transform: 'translate(-1.2 -1.2) scale(1.1)',
+                    fill: 'currentColor',
+                    d: 'M4.25 6.25c0-2 3.47-3.5 7.75-3.5s7.75 1.5 7.75 3.5v11.5c0 2-3.47 3.5-7.75 3.5s-7.75-1.5-7.75-3.5Z',
+                  }),
+                ],
+              ),
               h('path', {
                 transform: 'translate(-1.2 -1.2) scale(1.1)',
                 d: 'M4.25 8.5C5.75 10.1 8.5 11 12 11s6.25-.9 7.75-2.5M4.25 13.75c1.5 1.6 4.25 2.5 7.75 2.5s6.25-.9 7.75-2.5',
                 fill: 'none',
                 stroke: 'currentColor',
-                'stroke-width': 0.9,
-                'stroke-linecap': 'round',
+                'stroke-width': 1.4,
+                'stroke-linecap': 'butt',
+                'clip-path': `url(#${separatorClipId})`,
               }),
             ]);
           }
