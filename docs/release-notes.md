@@ -1,87 +1,76 @@
-# VueForge Icons 3.0.0 and Core 2.3.0 release notes
+# VueForge August 2026 coordinated release notes
 
-This coordinated release completes the VueForge Icons outline migration, adds the public
-`VfDatePicker`, and completes the current `VfDataTable` interaction set. CodeBlock receives a patch
-release so consumers can resolve either Icons 2.x or 3.x without a nested legacy icon package.
+This release adds reusable admin workflow components, a shared responsive-query build contract,
+Classic and Duotone icon families, and non-blocking TypeScript compilation for browser playgrounds.
+All changes are backward-compatible within the current major package lines.
 
-## Current package versions
+## Package versions
 
 | Package                | Version | Published in this release |
 | ---------------------- | ------: | :-----------------------: |
-| Theme                  | `2.0.0` |            No             |
-| Icons                  | `3.0.0` |            Yes            |
-| Core                   | `2.3.0` |            Yes            |
-| Layouts                | `2.1.1` |            No             |
-| CodeBlock              | `4.0.1` |            Yes            |
-| Playground Core        | `2.0.0` |            No             |
+| Theme                  | `2.0.1` |            Yes            |
+| Icons                  | `3.2.0` |            Yes            |
+| Core                   | `2.4.0` |            Yes            |
+| Layouts                | `2.1.2` |            Yes            |
+| CodeBlock              | `4.0.1` |            No             |
+| Playground Core        | `2.1.0` |            Yes            |
 | Playground Vite Plugin | `1.0.0` |            No             |
-| Playground             | `3.0.0` |            No             |
+| Playground             | `3.0.1` |            Yes            |
 
-## Icons 3.0.0
+## Theme 2.0.1, Core 2.4.0, and Layouts 2.1.2
 
-- Migrated all 109 VueForge product icons to the approved 24-unit outline language with a canonical
-  2-unit round stroke.
-- Preserved the seven independent GitHub, Telegram, VK, X, YouTube, Facebook, and Instagram brand
-  marks as solid trademark geometry.
-- Added owner-approved migration baselines, family review records, visual auditing, and review
-  showcase modes.
-- Expanded `IconCatalogEntry.style` from `'solid'` to `'solid' | 'outline'`.
-- Kept every public icon name unchanged.
+- Theme adds a canonical build-time registry and resolver for media and container-query aliases.
+- Core adds `VfConfirmDialog`, `VfDataTableColumnChooser`, `VfFormLayout`, `VfGroupBox`, and
+  `VfPageHeader`, plus a fully disabled `VfDropdown` state.
+- Core adds four GroupBox color tokens. Complete custom `VfThemeTokens` presets must provide them;
+  partial presets created with `extend` remain compatible.
+- Core fixes horizontal Stepper connector seams.
+- Core and Layouts now resolve responsive aliases from the Theme registry during development and
+  production builds. Publish checks reject unresolved aliases.
 
-This is a visual and metadata major release. Consumers that exhaustively handle catalog styles must
-support `outline`; rendered snapshots change for the 109 non-brand icons.
+## Icons 3.2.0
 
-## Core 2.3.0
+- Adds the `classic` and `duotone` families to all 109 system icons without changing the default
+  Classic rendering.
+- Adds the `family`, `secondaryColor`, and `secondaryOpacity` props and the public `iconFamilies`
+  and `IconFamily` exports.
+- Provides authored primary and secondary regions for Solid, Regular, Light, and Thin Duotone
+  variants. The seven official brand marks remain Classic-only.
+- Extends deterministic visual reference sheets to both families at 16, 20, 24, and 32 px.
+- Simplifies the internal showcase to searchable Classic and Duotone variant catalogs.
 
-### Date Picker
+Existing calls continue to select `classic`. Consumers can adopt Duotone incrementally without
+changing icon names or package entry points.
 
-- Added `VfDatePicker` through the package root, `./date-picker`, and `./date-picker.css` exports.
-- Added date, month, year, time, multiple-selection, and range modes with stable ISO-like values.
-- Added localization, fixed display patterns, configurable week starts, min/max constraints,
-  clearable state, native form values, floating labels, and keyboard-accessible grid navigation.
+## Playground Core 2.1.0 and Playground 3.0.1
 
-### Data Table
+- Playground Core moves TypeScript parsing and transpilation into a dedicated Web Worker.
+- The roughly 1 MiB gzip compiler worker is downloaded only when a sandbox contains a `.ts` file or
+  an inline `text/typescript` script.
+- Component mode and JavaScript/HTML-only sandboxes continue to use the lightweight runtime and do
+  not download the compiler.
+- Playground 3.0.1 adopts the Playground Core 2.1 runtime and also resolves its responsive tab
+  wrapping through the shared breakpoint registry.
 
-- Added controlled visibility, pointer/keyboard column reordering, start/end pinned columns, and
-  constrained pointer/keyboard resizing with content autosizing.
-- Added client/manual sorting, optional multi-sort, expandable rows, per-row selection eligibility,
-  localized labels, an error state, and responsive numbered pagination.
-- Added persistable controlled/uncontrolled order and width state plus the corresponding public
-  types and events.
-- Added `dataTableErrorColor` and `dataTableColumnResizerColor` theme tokens and unified table
-  surface styling.
-
-Core 2.3.0 is backward-compatible. It accepts both Icons 2.x and 3.x; install Icons 3 to use the new
-outline geometry throughout Core components.
-
-## CodeBlock 4.0.1
-
-- Declares compatibility with both Icons 2.x and 3.x.
-- Uses the current Vue declaration processor after the build-tool upgrade.
+The public session and Playground component APIs are unchanged.
 
 ## Upgrade
 
 ```bash
 npm install vue@^3.5.0 \
-  @codemonster-ru/vueforge-icons@^3.0.0 \
-  @codemonster-ru/vueforge-core@^2.3.0 \
-  @codemonster-ru/vueforge-codeblock@^4.0.1
+  @codemonster-ru/vueforge-theme@^2.0.1 \
+  @codemonster-ru/vueforge-icons@^3.2.0 \
+  @codemonster-ru/vueforge-core@^2.4.0 \
+  @codemonster-ru/vueforge-layouts@^2.1.2 \
+  @codemonster-ru/vueforge-playground-core@^2.1.0 \
+  @codemonster-ru/vueforge-playground@^3.0.1
 ```
 
-Theme, Layouts, Playground Core, Playground Vite Plugin, and Playground have no unreleased runtime
-or public API changes and are not republished.
+CodeBlock `4.0.1` and Playground Vite Plugin `1.0.0` remain current and are not republished.
 
 ## Distribution and verification
 
-The release gates cover:
-
-- browser ESM, Node ESM, CommonJS, SSR, and declaration consumers;
-- authoritative package exports and CSS entry points;
-- component-subpath tree shaking and deferred runtime budgets;
-- clean tarballs consumed through npm, pnpm, and Yarn;
-- documentation imports, compiled examples, and generated fixtures;
-- production and development dependency audits with zero known vulnerabilities;
-- runtime, component, accessibility, theme-contract, icon-audit, and CSS-contract tests.
-
-Package-specific changes are recorded in each package `CHANGELOG.md` and are used directly by the
-tag-driven release workflow.
+The release gates cover package exports, CSS contracts, browser and server consumers, declarations,
+tree shaking, deferred runtime budgets, deterministic icon snapshots, clean npm/pnpm/Yarn tarball
+installs, documentation examples, and the complete test suite. Package-specific changes are recorded
+in each package `CHANGELOG.md` and are used directly by the tag-driven release workflow.
