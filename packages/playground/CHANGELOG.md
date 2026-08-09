@@ -2,6 +2,11 @@
 
 ## 3.0.1
 
+### Changed
+
+- Updated Playground Core to the 2.1 line so TypeScript compilation runs in a lazily loaded Web
+  Worker while JavaScript/HTML-only sandboxes avoid the compiler download.
+
 ### Fixed
 
 - Made responsive Playground tab wrapping use the canonical VueForge breakpoint registry and added

@@ -47,7 +47,7 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "@codemonster-ru/vueforge-playground-core": "^2.0.0",
+    "@codemonster-ru/vueforge-playground-core": "^2.1.0",
     "@codemonster-ru/vueforge-codeblock": "^4.0.0",
     "@codemonster-ru/vueforge-core": "^2.0.0"
   },
