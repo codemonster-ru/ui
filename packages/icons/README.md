@@ -7,7 +7,7 @@
 
 A lightweight Vue 3 icon library with a unified API for the VueForge ecosystem.
 
-Current release: `@codemonster-ru/vueforge-icons@3.1.0`.
+Current release: `@codemonster-ru/vueforge-icons@3.2.0`.
 
 ## Requirements
 
@@ -127,8 +127,9 @@ npm run check
 ```
 
 Intentional geometry changes require `npm run snapshot:variants:update`. The committed reference
-sheets cover every system icon in all four variants at 16, 20, and 24 px. Bundle auditing separately
-protects metadata-only tree-shaking and the full `VueIconify` runtime budget.
+sheets cover every system icon in both families and all four variants at 16, 20, 24, and 32 px.
+Bundle auditing separately protects metadata-only tree-shaking and the full `VueIconify` runtime
+budget.
 
 ## More documentation
 

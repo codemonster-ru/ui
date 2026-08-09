@@ -1,12 +1,14 @@
 # Changelog
 
-## Unreleased
+## 3.2.0
 
 ### Added
 
 - Added the `classic` and `duotone` icon families together with the public `family`,
   `secondaryColor`, and `secondaryOpacity` props.
 - Added the `iconFamilies` and `IconFamily` exports for typed family selection.
+- Added deterministic Classic and Duotone reference sheets at 16, 20, 24, and 32 px for every
+  system icon and runtime variant.
 
 ### Changed
 
@@ -17,6 +19,8 @@
 - Split the Classic and Duotone showcase tables into accessible VueForge `VfTabs` panels.
 - Added primary and secondary color regions to Duotone across Solid, Regular, Light, and Thin while
   keeping the Classic family unchanged.
+- Refined Duotone geometry and paint separation for database, funnel, gear, key, and user-family
+  icons.
 - Closed the lower contours and corrected the secondary silhouette fills for Duotone `user`,
   `userCheck`, `userMinus`, `userPlus`, and `users` outline variants.
 

@@ -7,7 +7,7 @@
 
 A framework-agnostic runtime core for interactive playground sessions in the VueForge ecosystem.
 
-Coordinated release: `@codemonster-ru/vueforge-playground-core@2.0.0`.
+Coordinated release: `@codemonster-ru/vueforge-playground-core@2.1.0`.
 
 ## Requirements
 
