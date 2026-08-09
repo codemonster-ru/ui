@@ -17,6 +17,8 @@
 - Split the Classic and Duotone showcase tables into accessible VueForge `VfTabs` panels.
 - Added primary and secondary color regions to Duotone across Solid, Regular, Light, and Thin while
   keeping the Classic family unchanged.
+- Closed the lower contours and corrected the secondary silhouette fills for Duotone `user`,
+  `userCheck`, `userMinus`, `userPlus`, and `users` outline variants.
 
 ### Compatibility
 
