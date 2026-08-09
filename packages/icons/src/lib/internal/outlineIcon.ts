@@ -4,8 +4,10 @@ import { iconStrokeWidths, iconVariants, type IconVariant, type OutlineIconVaria
 import solidIconDataJson from './solidIconData.json';
 
 const solidIconData = solidIconDataJson as Partial<Record<OutlineIconName, { viewBox: string; body: string }>>;
+const CLASSIC_SOLID_KEY_BODY =
+  '<defs><mask id="vf-solid-key"><path d="M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15.5" cy="8.75" r="2.25" fill="black"/></mask></defs><rect width="24" height="24" fill="currentColor" mask="url(#vf-solid-key)"/>';
 const classicSolidBodyOverrides: Partial<Record<OutlineIconName, string>> = {
-  key: '<defs><mask id="vf-solid-key"><path d="M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z" fill="white" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15.5" cy="8.75" r="2.25" fill="black"/></mask></defs><rect width="24" height="24" fill="currentColor" mask="url(#vf-solid-key)"/>',
+  key: CLASSIC_SOLID_KEY_BODY,
   layers:
     '<path d="m3.5 7.5 8.5-4.25 8.5 4.25L12 11.75Z" fill="currentColor" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M3.5 11.75 12 16l8.5-4.25M3.5 16 12 20.25 20.5 16" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>',
   magnifyingGlass:
@@ -34,6 +36,7 @@ const SOLID_STROKE_DUOTONE_PATHS = {
   circleNotch: 'M8.56 3.68A9 9 0 1 0 15.44 3.68',
   code: 'M7 7.25 2.5 12 7 16.75M14 3.5l-4 17m7-13.25 4.5 4.75-4.5 4.75',
 } as const;
+const SOLID_DUOTONE_BOOKMARK_PATH = 'M7 3h10a2 2 0 0 1 2 2v16l-7-4.5L5 21V5a2 2 0 0 1 2-2Z';
 const SOLID_DUOTONE_PATHS = {
   arrowUp: 'M5.5 11.5 12 4.5l6.5 7h-4.75v8h-3.5v-8Z',
   arrowUpLong: 'M4.75 9.75 12 1.5l7.25 8.25h-5.5V22.5h-3.5V9.75Z',
@@ -73,6 +76,22 @@ const SOLID_DUOTONE_PATHS = {
   upload: 'M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z',
   xmark: 'm6.2 3.8 5.8 5.8 5.8-5.8 2.4 2.4-5.8 5.8 5.8 5.8-2.4 2.4-5.8-5.8-5.8 5.8-2.4-2.4 5.8-5.8-5.8-5.8Z',
 } as const;
+const SOLID_DUOTONE_CHECK_PRIMARY_PATH = 'M9.4 13.75 18.75 4.45l2.55 2.5L9.4 18.8Z';
+const SOLID_DUOTONE_CHEVRON_PRIMARY_PATHS = {
+  chevronDown: 'M12 12.5v4.6l7.65-7.65-2.3-2.3Z',
+  chevronLeft: 'M11.5 12H6.9l7.65 7.65 2.3-2.3Z',
+  chevronRight: 'M12.5 12h4.6L9.45 4.35l-2.3 2.3Z',
+  chevronUp: 'M12 11.5V6.9l-7.65 7.65 2.3 2.3Z',
+} as const;
+const SOLID_DUOTONE_FILTER_PATH = 'M3 3.5h18l-7 8V20l-4-2v-6.5Z';
+const SOLID_DUOTONE_FILTER_PRIMARY_PATH = 'M10 11.5h4V20l-4-2Z';
+const SOLID_DUOTONE_GLOBE_PRIMARY_CLIP_PATH =
+  'M12 2c-3.35 2.8-5 6.15-5 10s1.65 7.2 5 10c3.35-2.8 5-6.15 5-10S15.35 4.8 12 2Z';
+const SOLID_DUOTONE_KEY_PRIMARY_CLIP_PATH = 'M0 23.842 24 0.474V24H0Z';
+const SOLID_DUOTONE_LOWER_RIGHT_CLIP_PATH = 'M0 24 24 0v24Z';
+const SOLID_DUOTONE_SEND_PRIMARY_CLIP_PATH = 'M11.25 13.25 24-0.1375V24H0Z';
+const SOLID_DUOTONE_XMARK_SECONDARY_PATH = 'M6.2 3.8 20.2 17.8 17.8 20.2 3.8 6.2Z';
+const SOLID_DUOTONE_XMARK_PRIMARY_PATH = 'M17.8 3.8 20.2 6.2 6.2 20.2 3.8 17.8Z';
 const solidDuotoneBorderStrokeWidths = {
   regular: 2.5,
   light: 1.75,
@@ -540,37 +559,6 @@ const solidArrowheadPoints: Partial<Record<OutlineIconName, string>> = {
   arrowTurnLeftDown: '5.25 14.75 12 21.5 18.75 14.75',
 };
 
-const solidSingleToneNames = new Set<OutlineIconName>([
-  'activity',
-  'bookmark',
-  'check',
-  'caretDown',
-  'caretLeft',
-  'caretRight',
-  'caretUp',
-  'chevronDown',
-  'chevronLeft',
-  'chevronRight',
-  'chevronUp',
-  'circleNotch',
-  'cloud',
-  'filter',
-  'gear',
-  'globe',
-  'heart',
-  'house',
-  'mail',
-  'message',
-  'minus',
-  'moon',
-  'phone',
-  'plus',
-  'receipt',
-  'send',
-  'shield',
-  'star',
-  'xmark',
-]);
 const solidMaskOnlyNames = new Set<OutlineIconName>(['briefcase', 'calendar', 'cpu']);
 
 const scopeSvgIds = (body: string, suffix: string) => {
@@ -1249,8 +1237,460 @@ export const createOutlineIcon = (name: OutlineIconName) => {
             ]);
           }
 
-          if (solidSingleToneNames.has(name)) {
-            return h('svg', { ...svgAttrs, innerHTML: scopedBody });
+          if (name === 'caretDown' || name === 'caretLeft' || name === 'caretRight' || name === 'caretUp') {
+            const primaryHalfClipId = `vf-duotone-${name}-half-${instanceId}`;
+            const isVerticalSplit = name === 'caretDown' || name === 'caretUp';
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [
+                  h(
+                    'rect',
+                    isVerticalSplit ? { x: 12, y: 0, width: 12, height: 24 } : { x: 0, y: 12, width: 24, height: 12 },
+                  ),
+                ]),
+              ]),
+              h('path', {
+                d: SOLID_DUOTONE_PATHS[name],
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+              }),
+              h('path', {
+                d: SOLID_DUOTONE_PATHS[name],
+                fill: 'currentColor',
+                'clip-path': `url(#${primaryHalfClipId})`,
+              }),
+            ]);
+          }
+
+          if (name === 'chevronDown' || name === 'chevronLeft' || name === 'chevronRight' || name === 'chevronUp') {
+            return h('svg', svgAttrs, [
+              h('path', {
+                d: SOLID_DUOTONE_PATHS[name],
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+              }),
+              h('path', {
+                d: SOLID_DUOTONE_CHEVRON_PRIMARY_PATHS[name],
+                fill: 'currentColor',
+              }),
+            ]);
+          }
+
+          if (name === 'minus') {
+            const primaryHalfClipId = `vf-duotone-minus-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [h('rect', { x: 12, y: 0, width: 12, height: 24 })]),
+              ]),
+              h('path', {
+                d: SOLID_DUOTONE_PATHS.minus,
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+              }),
+              h('path', {
+                d: SOLID_DUOTONE_PATHS.minus,
+                fill: 'currentColor',
+                'clip-path': `url(#${primaryHalfClipId})`,
+              }),
+            ]);
+          }
+
+          if (name === 'check') {
+            return h('svg', svgAttrs, [
+              h('path', {
+                d: SOLID_DUOTONE_PATHS.check,
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+              }),
+              h('path', {
+                d: SOLID_DUOTONE_CHECK_PRIMARY_PATH,
+                fill: 'currentColor',
+              }),
+            ]);
+          }
+
+          if (name === 'filter') {
+            return h('svg', svgAttrs, [
+              h('path', {
+                d: SOLID_DUOTONE_FILTER_PATH,
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                stroke: props.secondaryColor,
+                'stroke-width': 0.5,
+                'stroke-linejoin': 'round',
+              }),
+              h('path', {
+                d: SOLID_DUOTONE_FILTER_PRIMARY_PATH,
+                fill: 'currentColor',
+                stroke: 'currentColor',
+                'stroke-width': 0.5,
+                'stroke-linejoin': 'round',
+              }),
+            ]);
+          }
+
+          if (name === 'plus') {
+            return h('svg', svgAttrs, [
+              h('path', {
+                d: 'M3 10.25h18v3.5H3Z',
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+              }),
+              h('path', {
+                d: 'M10.25 3h3.5v18h-3.5Z',
+                fill: 'currentColor',
+              }),
+            ]);
+          }
+
+          if (name === 'send') {
+            const primaryFacetClipId = `vf-duotone-send-facet-${instanceId}`;
+            const silhouetteMaskId = `vf-duotone-send-silhouette-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryFacetClipId }, [h('path', { d: SOLID_DUOTONE_SEND_PRIMARY_CLIP_PATH })]),
+                h('mask', { id: silhouetteMaskId }, [
+                  h('path', {
+                    d: 'M3 11 21 3l-6 18-3.5-8Z',
+                    fill: 'white',
+                    stroke: 'white',
+                    'stroke-width': 1.5,
+                    'stroke-linejoin': 'round',
+                  }),
+                ]),
+              ]),
+              h('rect', {
+                width: 24,
+                height: 24,
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                mask: `url(#${silhouetteMaskId})`,
+              }),
+              h('g', { 'clip-path': `url(#${primaryFacetClipId})` }, [
+                h('rect', {
+                  width: 24,
+                  height: 24,
+                  fill: 'currentColor',
+                  mask: `url(#${silhouetteMaskId})`,
+                }),
+              ]),
+            ]);
+          }
+
+          if (name === 'xmark') {
+            return h('svg', svgAttrs, [
+              h('path', {
+                d: SOLID_DUOTONE_XMARK_SECONDARY_PATH,
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+              }),
+              h('path', {
+                d: SOLID_DUOTONE_XMARK_PRIMARY_PATH,
+                fill: 'currentColor',
+              }),
+            ]);
+          }
+
+          if (name === 'bookmark') {
+            const primaryHalfClipId = `vf-duotone-bookmark-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [h('rect', { x: 12, y: 0, width: 12, height: 24 })]),
+              ]),
+              h('path', {
+                d: SOLID_DUOTONE_BOOKMARK_PATH,
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+              }),
+              h('path', {
+                d: SOLID_DUOTONE_BOOKMARK_PATH,
+                fill: 'currentColor',
+                'clip-path': `url(#${primaryHalfClipId})`,
+              }),
+            ]);
+          }
+
+          if (name === 'gear') {
+            const primaryRingMaskId = `vf-duotone-gear-ring-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('mask', { id: primaryRingMaskId }, [
+                  h('circle', { cx: 12, cy: 12, r: 6, fill: 'white' }),
+                  h('circle', { cx: 12, cy: 12, r: 3, fill: 'black' }),
+                ]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('rect', {
+                width: 24,
+                height: 24,
+                fill: 'currentColor',
+                mask: `url(#${primaryRingMaskId})`,
+              }),
+            ]);
+          }
+
+          if (name === 'globe') {
+            const primaryAreaClipId = `vf-duotone-globe-center-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryAreaClipId }, [h('path', { d: SOLID_DUOTONE_GLOBE_PRIMARY_CLIP_PATH })]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryAreaClipId})`,
+                innerHTML: scopeSvgIds(solidIcon.body, `${instanceId}-primary-area`),
+              }),
+            ]);
+          }
+
+          if (name === 'heart') {
+            const primaryHalfClipId = `vf-duotone-heart-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [h('rect', { x: 12, y: 0, width: 12, height: 24 })]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryHalfClipId})`,
+                innerHTML: solidIcon.body,
+              }),
+            ]);
+          }
+
+          if (name === 'house') {
+            const primaryBodyMaskId = `vf-duotone-house-body-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('mask', { id: primaryBodyMaskId }, [
+                  h('rect', { x: 5.5, y: 12.37, width: 13, height: 8.63, fill: 'white' }),
+                  h('rect', { x: 9.5, y: 15, width: 5, height: 6, rx: 0.75, fill: 'black' }),
+                ]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('rect', {
+                width: 24,
+                height: 24,
+                fill: 'currentColor',
+                mask: `url(#${primaryBodyMaskId})`,
+              }),
+            ]);
+          }
+
+          if (name === 'key') {
+            const primaryHalfClipId = `vf-duotone-key-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [h('path', { d: SOLID_DUOTONE_KEY_PRIMARY_CLIP_PATH })]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopeSvgIds(CLASSIC_SOLID_KEY_BODY, `${instanceId}-secondary-half`),
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryHalfClipId})`,
+                innerHTML: scopeSvgIds(CLASSIC_SOLID_KEY_BODY, `${instanceId}-primary-half`),
+              }),
+            ]);
+          }
+
+          if (name === 'phone') {
+            const primaryHalfClipId = `vf-duotone-phone-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [h('path', { d: SOLID_DUOTONE_LOWER_RIGHT_CLIP_PATH })]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryHalfClipId})`,
+                innerHTML: solidIcon.body,
+              }),
+            ]);
+          }
+
+          if (name === 'receipt') {
+            return h('svg', svgAttrs, [
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('path', {
+                d: 'M8 9h8M8 13h8M8 17h5.5',
+                fill: 'none',
+                stroke: 'currentColor',
+                'stroke-width': 1.5,
+                'stroke-linecap': 'round',
+              }),
+            ]);
+          }
+
+          if (name === 'star') {
+            const primaryHalfClipId = `vf-duotone-star-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [h('rect', { x: 12, y: 0, width: 12, height: 24 })]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryHalfClipId})`,
+                innerHTML: solidIcon.body,
+              }),
+            ]);
+          }
+
+          if (name === 'activity') {
+            const primaryHalfClipId = `vf-duotone-activity-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [h('rect', { x: 12, y: 0, width: 12, height: 24 })]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryHalfClipId})`,
+                innerHTML: solidIcon.body,
+              }),
+            ]);
+          }
+
+          if (name === 'circleNotch') {
+            const primaryHalfClipId = `vf-duotone-circle-notch-half-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryHalfClipId }, [h('rect', { x: 12, y: 0, width: 12, height: 24 })]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryHalfClipId})`,
+                innerHTML: solidIcon.body,
+              }),
+            ]);
+          }
+
+          if (name === 'mail') {
+            const bodyClipId = `vf-duotone-mail-body-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: bodyClipId }, [h('rect', { x: 1, y: 4, width: 22, height: 16, rx: 2.5 })]),
+              ]),
+              h('rect', {
+                x: 1,
+                y: 4,
+                width: 22,
+                height: 16,
+                rx: 2.5,
+                fill: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+              }),
+              h('path', {
+                d: 'M1 4h22v2.2h-2.2l-7.4 6.15a2.2 2.2 0 0 1-2.8 0L3.2 6.2H1Z',
+                fill: 'currentColor',
+                'clip-path': `url(#${bodyClipId})`,
+              }),
+            ]);
+          }
+
+          if (name === 'message') {
+            return h('svg', svgAttrs, [
+              h('g', { transform: 'translate(1 1) scale(.9167)' }, [
+                h('path', {
+                  fill: props.secondaryColor,
+                  opacity: props.secondaryOpacity,
+                  d: 'M4 2h16a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4h-8l-7 4v-4H4a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z',
+                }),
+                h('path', {
+                  d: 'M6 8h12M6 13h8',
+                  fill: 'none',
+                  stroke: 'currentColor',
+                  'stroke-width': 2,
+                  'stroke-linecap': 'round',
+                }),
+              ]),
+            ]);
+          }
+
+          if (name === 'moon') {
+            const primaryAreaClipId = `vf-duotone-moon-diagonal-${instanceId}`;
+
+            return h('svg', svgAttrs, [
+              h('defs', [
+                h('clipPath', { id: primaryAreaClipId }, [h('path', { d: SOLID_DUOTONE_LOWER_RIGHT_CLIP_PATH })]),
+              ]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryAreaClipId})`,
+                innerHTML: solidIcon.body,
+              }),
+            ]);
+          }
+
+          if (name === 'cloud' || name === 'shield') {
+            const primaryHalfClipId = `vf-duotone-${name}-half-${instanceId}`;
+            const primaryHalfRect =
+              name === 'cloud' ? { x: 0, y: 14, width: 24, height: 10 } : { x: 12, y: 0, width: 12, height: 24 };
+
+            return h('svg', svgAttrs, [
+              h('defs', [h('clipPath', { id: primaryHalfClipId }, [h('rect', primaryHalfRect)])]),
+              h('g', {
+                color: props.secondaryColor,
+                opacity: props.secondaryOpacity,
+                innerHTML: scopedBody,
+              }),
+              h('g', {
+                'clip-path': `url(#${primaryHalfClipId})`,
+                innerHTML: solidIcon.body,
+              }),
+            ]);
           }
 
           if (countSolidPaintParts(scopedBody) > 1 && !solidArrowheadPoints[name] && !solidMaskOnlyNames.has(name)) {
