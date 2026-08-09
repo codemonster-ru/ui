@@ -151,8 +151,7 @@ export const outlineGeometry = {
   ],
   filter: [path('M3 3.5h18l-7 8V20l-4-2v-6.5Z')],
   funnelX: [
-    path('M2.25 2.5h18l-5.5 6'),
-    path('M2.25 2.5l7 8v6'),
+    path('M2.25 2.5h18l-7 8v6l-4 2v-8Z'),
     circle(16.75, 16.5, 5),
     line(14.81, 14.56, 18.69, 18.44),
     line(18.69, 14.56, 14.81, 18.44),
@@ -473,7 +472,7 @@ const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
   }
 
   if (name === 'funnelX') {
-    return [h('path', { d: 'M2.25 2.5h18l-7 8v6l-4-2v-4Z', fill }), h('circle', { cx: 16.75, cy: 16.5, r: 5, fill })];
+    return [h('path', { ...outlineGeometry.funnelX[0].attrs, fill }), h('circle', { cx: 16.75, cy: 16.5, r: 5, fill })];
   }
 
   if (name === 'house') {
@@ -1909,17 +1908,42 @@ export const createOutlineIcon = (name: OutlineIconName) => {
           props.family === 'duotone' && name !== 'bars' && name !== 'ellipsis'
             ? SOLID_DUOTONE_PATHS[name as keyof typeof SOLID_DUOTONE_PATHS]
             : undefined;
+        const funnelXOutlineMaskId = `vf-${props.family}-funnel-x-outline-${instanceId}`;
         const geometry =
           props.family === 'duotone' && name === 'bars'
             ? [h(outlineGeometry.bars[1].tag, outlineGeometry.bars[1].attrs)]
             : props.family === 'duotone' && name === 'ellipsis'
               ? [h('circle', { cx: 12, cy: 12, r: 1.5, fill: 'currentColor', stroke: 'none' })]
-              : [
-                  ...outlineGeometry[name].map((node) => h(node.tag, node.attrs)),
-                  ...(props.family === 'duotone' && name === 'key'
-                    ? [h('circle', { cx: 15.5, cy: 8.75, r: 1.75, fill: 'currentColor', stroke: 'none' })]
-                    : []),
-                ];
+              : name === 'funnelX'
+                ? [
+                    h('defs', [
+                      h(
+                        'mask',
+                        {
+                          id: funnelXOutlineMaskId,
+                          maskUnits: 'userSpaceOnUse',
+                          x: 0,
+                          y: 0,
+                          width: 24,
+                          height: 24,
+                        },
+                        [
+                          h('rect', { x: 0, y: 0, width: 24, height: 24, fill: 'white', stroke: 'none' }),
+                          h('circle', { cx: 16.75, cy: 16.5, r: 5, fill: 'black', stroke: 'none' }),
+                        ],
+                      ),
+                    ]),
+                    h('g', { mask: `url(#${funnelXOutlineMaskId})` }, [
+                      h(outlineGeometry.funnelX[0].tag, outlineGeometry.funnelX[0].attrs),
+                    ]),
+                    ...outlineGeometry.funnelX.slice(1).map((node) => h(node.tag, node.attrs)),
+                  ]
+                : [
+                    ...outlineGeometry[name].map((node) => h(node.tag, node.attrs)),
+                    ...(props.family === 'duotone' && name === 'key'
+                      ? [h('circle', { cx: 15.5, cy: 8.75, r: 1.75, fill: 'currentColor', stroke: 'none' })]
+                      : []),
+                  ];
         const solidStrokeDuotonePath = SOLID_STROKE_DUOTONE_PATHS[name as keyof typeof SOLID_STROKE_DUOTONE_PATHS];
         const solidStrokeDuotoneSourceGeometry: GeometryNode[] = solidStrokeDuotonePath
           ? [{ tag: 'path', attrs: { d: solidStrokeDuotonePath } }]
