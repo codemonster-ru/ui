@@ -36,7 +36,7 @@ import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch 
 import { VfMenuBar, VfThemeProvider, VfThemeSwitch, type VfNavMenuItem } from '@codemonster-ru/vueforge-core';
 import { VfAppShell, VfInline } from '@codemonster-ru/vueforge-layouts';
 
-type SectionValue = 'overview' | 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
+type SectionValue = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
 
 interface SectionMeta {
   value: SectionValue;
@@ -45,16 +45,12 @@ interface SectionMeta {
 
 const sections: SectionMeta[] = [
   {
-    value: 'overview',
-    label: 'Overview',
+    value: 'core',
+    label: 'Core',
   },
   {
     value: 'colors',
     label: 'Colors',
-  },
-  {
-    value: 'core',
-    label: 'Core',
   },
   {
     value: 'layouts',
@@ -80,7 +76,6 @@ const sectionItems: VfNavMenuItem[] = sections.map((section) => ({
 }));
 
 const sectionComponents = {
-  overview: defineAsyncComponent(() => import('./sections/overview/OverviewShowcase.vue')),
   colors: defineAsyncComponent(() => import('./sections/colors/ColorSystemShowcase.vue')),
   core: defineAsyncComponent(() => import('./sections/core/CoreShowcase.vue')),
   layouts: defineAsyncComponent(() => import('./sections/layouts/LayoutsShowcase.vue')),
@@ -100,7 +95,7 @@ function resolveSectionFromPath(pathname: string): SectionValue {
     return lastSegment as SectionValue;
   }
 
-  return 'overview';
+  return 'core';
 }
 
 function buildPathForSection(section: SectionValue): string {
@@ -117,8 +112,9 @@ function syncSectionFromLocation() {
 onMounted(() => {
   window.addEventListener('popstate', syncSectionFromLocation);
 
-  if (window.location.pathname === '/' || window.location.pathname === '') {
-    window.history.replaceState(null, '', buildPathForSection(activeSection.value));
+  const activePath = buildPathForSection(activeSection.value);
+  if (window.location.pathname !== activePath) {
+    window.history.replaceState(null, '', activePath);
   }
 });
 

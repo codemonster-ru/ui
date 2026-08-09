@@ -2,13 +2,6 @@
   <div class="demo-page">
     <div class="demo-container">
       <VfStack>
-        <ShowcaseCatalog
-          title="Layout components"
-          description="Choose a primitive for local composition or a responsive shell for a complete application screen."
-          heading-id="layouts-catalog"
-          :items="layoutsCatalog"
-        />
-
         <section class="demo-block">
           <div class="demo-block__header">
             <h2 id="demo-container">VfContainer</h2>
@@ -910,113 +903,6 @@ import {
 import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
-import ShowcaseCatalog, { type ShowcaseCatalogItem } from '../../components/ShowcaseCatalog.vue';
-
-const layoutsDocsBase = 'https://docs.codemonster.net/vueforge/layouts/components';
-const layoutsCatalog = [
-  {
-    name: 'VfContainer',
-    summary: 'Constrains page content to a responsive maximum width and gutter.',
-    sectionId: 'demo-container',
-    docsUrl: `${layoutsDocsBase}/container/`,
-  },
-  {
-    name: 'VfStack',
-    summary: 'Arranges related content vertically with consistent spacing.',
-    sectionId: 'demo-stack',
-    docsUrl: `${layoutsDocsBase}/stack/`,
-  },
-  {
-    name: 'VfInline',
-    summary: 'Arranges compact content horizontally with optional wrapping.',
-    sectionId: 'demo-inline',
-    docsUrl: `${layoutsDocsBase}/inline/`,
-  },
-  {
-    name: 'VfSection',
-    summary: 'Creates a semantic region with optional surface and inset styling.',
-    sectionId: 'demo-section',
-    docsUrl: `${layoutsDocsBase}/section/`,
-  },
-  {
-    name: 'VfGrid',
-    summary: 'Creates a responsive auto-fitting grid for repeated content.',
-    sectionId: 'demo-grid',
-    docsUrl: `${layoutsDocsBase}/grid/`,
-  },
-  {
-    name: 'VfAppShell',
-    summary: 'Composes configurable application regions into a responsive frame.',
-    sectionId: 'demo-app-shell',
-    docsUrl: `${layoutsDocsBase}/app-shell/`,
-  },
-  {
-    name: 'VfHeaderArea',
-    summary: 'Provides the semantic top region used by application shells.',
-    sectionId: 'demo-app-shell',
-    docsUrl: `${layoutsDocsBase}/header-area/`,
-  },
-  {
-    name: 'VfSidebarArea',
-    summary: 'Provides a primary navigation or tools column beside content.',
-    sectionId: 'demo-app-shell',
-    docsUrl: `${layoutsDocsBase}/sidebar-area/`,
-  },
-  {
-    name: 'VfContentArea',
-    summary: 'Provides the main page content region inside a shell.',
-    sectionId: 'demo-app-shell',
-    docsUrl: `${layoutsDocsBase}/content-area/`,
-  },
-  {
-    name: 'VfAsideArea',
-    summary: 'Provides supplementary content alongside the main region.',
-    sectionId: 'demo-app-shell',
-    docsUrl: `${layoutsDocsBase}/aside-area/`,
-  },
-  {
-    name: 'VfFooterArea',
-    summary: 'Provides the semantic bottom region used by application shells.',
-    sectionId: 'demo-app-shell',
-    docsUrl: `${layoutsDocsBase}/footer-area/`,
-  },
-  {
-    name: 'VfAdminLayout',
-    summary: 'Builds responsive admin navigation with collapsible sidebars.',
-    sectionId: 'demo-admin-layout',
-    docsUrl: `${layoutsDocsBase}/admin-layout/`,
-  },
-  {
-    name: 'VfAdminShell',
-    summary: 'Provides an opinionated shell for dense administration products.',
-    sectionId: 'demo-admin-shell',
-    docsUrl: `${layoutsDocsBase}/admin-shell/`,
-  },
-  {
-    name: 'VfDocumentLayout',
-    summary: 'Organizes documentation navigation, article content, and aside.',
-    sectionId: 'demo-document-layout',
-    docsUrl: `${layoutsDocsBase}/document-layout/`,
-  },
-  {
-    name: 'VfAuthLayout',
-    summary: 'Frames authentication and account forms in a branded panel.',
-    sectionId: 'demo-auth-layout',
-    docsUrl: `${layoutsDocsBase}/auth-layout/`,
-  },
-  {
-    name: 'VfErrorLayout',
-    summary: 'Centers an error explanation and recovery actions.',
-    sectionId: 'demo-error-layout',
-    docsUrl: `${layoutsDocsBase}/error-layout/`,
-  },
-  {
-    name: 'VfSetupLayout',
-    summary: 'Structures guided initial configuration and onboarding flows.',
-    sectionId: 'demo-setup-layout',
-    docsUrl: `${layoutsDocsBase}/setup-layout/`,
-  },
-] as const satisfies readonly ShowcaseCatalogItem[];
 
 const resolvedBreakpoints = useCssVarBreakpoints();
 const currentYear = new Date().getFullYear();
