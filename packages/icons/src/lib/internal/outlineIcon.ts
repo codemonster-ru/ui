@@ -464,9 +464,9 @@ export const outlineGeometry = {
 export type OutlineIconName = keyof typeof outlineGeometry;
 
 const outlineDuotoneFillIconNames =
-  ' columns grid clipboard copy externalLink filter funnelX pencil send sort trash archive bell bookmark briefcase building calendar cloud cpu creditCard database file fileText folder folderOpen gear globe hardDrive heart house inbox key layers lock magnifyingGlass mail message phone plug receipt server share sliders star unlock user userCheck userMinus userPlus users wallet alertCircle ban checkCircle circleHalf clock eye eyeSlash infoCircle moon questionCircle shield sparkles sun warning xCircle ';
+  ' columns grid clipboard copy externalLink filter funnelX pencil send sort trash archive bell bookmark briefcase building calendar cloud cpu creditCard database file fileText folder folderOpen gear globe hardDrive heart house inbox key layers lock magnifyingGlass mail message phone plug receipt server share sliders star unlock wallet alertCircle ban checkCircle circleHalf clock eye eyeSlash infoCircle moon questionCircle shield sparkles sun warning xCircle ';
 const outlineDuotoneTwoFillNodeNames =
-  ' clipboard copy archive cpu file fileText folderOpen gear globe layers server sliders user userCheck userMinus userPlus wallet eye eyeSlash sparkles ';
+  ' clipboard copy archive cpu file fileText folderOpen gear globe layers server sliders wallet eye eyeSlash sparkles ';
 
 const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
   if (name === 'externalLink') {
@@ -498,6 +498,25 @@ const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
     return [h('path', { d: OUTLINE_DUOTONE_KEY_FILL_PATH, fill, 'fill-rule': 'evenodd' })];
   }
 
+  if (name !== 'users' && name.startsWith('user')) {
+    return outlineGeometry[name]
+      .slice(0, 2)
+      .map((node, index) =>
+        h(node.tag, { ...node.attrs, ...(index === 1 ? { d: `${node.attrs.d}Z` } : {}), fill, stroke: 'none' }),
+      );
+  }
+
+  if (name === 'users') {
+    const sidePath = 'M2.25 20v-1.25c0-3.35 1.25-5.25 3.5-5.25 1.08 0 1.93.44 2.52 1.26C7.43 15.9 7 17.3 7 20Z';
+
+    return [
+      ...outlineGeometry.users.slice(0, 3).map((node) => h(node.tag, { ...node.attrs, fill, stroke: 'none' })),
+      h('path', { d: sidePath, fill, stroke: 'none' }),
+      h('path', { d: sidePath, transform: 'translate(24) scale(-1 1)', fill, stroke: 'none' }),
+      h('path', { d: 'M7 20v-1c0-3.75 1.85-6 5-6s5 2.25 5 6v1Z', fill, stroke: 'none' }),
+    ];
+  }
+
   if (name === 'sliders') {
     return [1, 4, 7].map((nodeIndex) => {
       const node = outlineGeometry[name][nodeIndex];
@@ -512,7 +531,7 @@ const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
 
   const nodes = outlineGeometry[name];
   const fillNodeIndexes =
-    name === 'building' || name === 'users'
+    name === 'building'
       ? nodes.map((_, nodeIndex) => nodeIndex)
       : name === 'grid'
         ? [0, 1, 2, 3]
@@ -537,6 +556,19 @@ const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
       stroke: 'none',
     });
   });
+};
+
+const createOutlineDuotoneUserBorderNodes = (name: OutlineIconName) => {
+  if (name !== 'users' && name.startsWith('user')) {
+    return [
+      h('path', {
+        d: 'M5.5 20H18.5',
+        ...(name === 'user' ? {} : { transform: 'translate(-2.75)' }),
+      }),
+    ];
+  }
+
+  return name === 'users' ? [h('path', { d: 'M2.25 20H21.75' })] : [];
 };
 
 const chartBarDuotoneRects = [
@@ -2093,6 +2125,7 @@ export const createOutlineIcon = (name: OutlineIconName) => {
                       duotoneFillGeometry,
                     ),
                     ...geometry,
+                    ...createOutlineDuotoneUserBorderNodes(name),
                   ]
                 : geometry,
         );

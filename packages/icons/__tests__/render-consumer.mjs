@@ -152,6 +152,38 @@ try {
     );
   }
 
+  for (const variant of outlineIconVariants) {
+    for (const iconName of ['user', 'userCheck', 'userMinus', 'userPlus']) {
+      const duotoneUser = await renderIcon(VueIconify, {
+        icon: icons[iconName],
+        family: 'duotone',
+        variant,
+        secondaryColor: '#8ea8ff',
+      });
+
+      assert.match(
+        duotoneUser,
+        /d="M5\.5 20c\.35-4\.1 2\.75-6\.25 6\.5-6\.25s6\.15 2\.15 6\.5 6\.25Z"/,
+        `${iconName}/duotone/${variant} must use a closed secondary silhouette`,
+      );
+      assert.match(
+        duotoneUser,
+        /d="M5\.5 20H18\.5"/,
+        `${iconName}/duotone/${variant} must include the lower silhouette border`,
+      );
+    }
+
+    const duotoneUsers = await renderIcon(VueIconify, {
+      icon: icons.users,
+      family: 'duotone',
+      variant,
+      secondaryColor: '#8ea8ff',
+    });
+
+    assert.match(duotoneUsers, /d="M7 20v-1c0-3\.75 1\.85-6 5-6s5 2\.25 5 6v1Z"/);
+    assert.match(duotoneUsers, /d="M2\.25 20H21\.75"/);
+  }
+
   const databaseDuotone = await renderIcon(VueIconify, {
     icon: icons.database,
     family: 'duotone',
