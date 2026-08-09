@@ -176,6 +176,20 @@ try {
   assert.match(ellipsisDuotone, /<circle cx="5" cy="12" r="1\.5" fill="#8ea8ff"/);
   assert.match(ellipsisDuotone, /<circle cx="12" cy="12" r="1\.5" fill="currentColor"/);
 
+  for (const variant of outlineIconVariants) {
+    const gearDuotone = await renderIcon(VueIconify, {
+      icon: icons.gear,
+      family: 'duotone',
+      variant,
+      secondaryColor: '#8ea8ff',
+      secondaryOpacity: 0.4,
+    });
+
+    assert.match(gearDuotone, /<mask id="vf-duotone-gear-hole-[^"]+" maskUnits="userSpaceOnUse"/);
+    assert.match(gearDuotone, /<circle cx="12" cy="12" r="2\.72" fill="black"><\/circle>/);
+    assert.match(gearDuotone, /<g opacity="0\.4" stroke="none" mask="url\(#vf-duotone-gear-hole-[^)]+\)">/);
+  }
+
   const databaseSolidDuotone = await renderIcon(VueIconify, {
     icon: icons.database,
     family: 'duotone',

@@ -2000,6 +2000,7 @@ export const createOutlineIcon = (name: OutlineIconName) => {
                 : createOutlineDuotoneFillNodes(name, props.secondaryColor);
         const solidStrokeDuotoneMaskId = `vf-duotone-${name}-outline-${instanceId}`;
         const solidDuotoneClipId = `vf-duotone-${name}-${instanceId}`;
+        const gearDuotoneHoleMaskId = `vf-duotone-gear-hole-${instanceId}`;
         const solidDuotoneFillGeometry = solidDuotonePath
           ? h('path', {
               d: solidDuotonePath,
@@ -2063,7 +2064,39 @@ export const createOutlineIcon = (name: OutlineIconName) => {
                   h('g', { mask: `url(#${solidStrokeDuotoneMaskId})` }, solidStrokeDuotonePrimaryGeometry),
                 ]
               : duotoneFillGeometry.length > 0
-                ? [h('g', { opacity: props.secondaryOpacity, stroke: 'none' }, duotoneFillGeometry), ...geometry]
+                ? [
+                    ...(name === 'gear'
+                      ? [
+                          h('defs', [
+                            h(
+                              'mask',
+                              {
+                                id: gearDuotoneHoleMaskId,
+                                maskUnits: 'userSpaceOnUse',
+                                x: 0,
+                                y: 0,
+                                width: 24,
+                                height: 24,
+                              },
+                              [
+                                h('rect', { x: 0, y: 0, width: 24, height: 24, fill: 'white' }),
+                                h('circle', { cx: 12, cy: 12, r: 2.72, fill: 'black' }),
+                              ],
+                            ),
+                          ]),
+                        ]
+                      : []),
+                    h(
+                      'g',
+                      {
+                        opacity: props.secondaryOpacity,
+                        stroke: 'none',
+                        ...(name === 'gear' ? { mask: `url(#${gearDuotoneHoleMaskId})` } : {}),
+                      },
+                      duotoneFillGeometry,
+                    ),
+                    ...geometry,
+                  ]
                 : geometry,
         );
       };
