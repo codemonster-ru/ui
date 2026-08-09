@@ -1,7 +1,8 @@
-# VueForge Icons 3.0.0 and Core 2.3.0 public release assets
+# VueForge August 2026 public release assets
 
-These copy-ready assets describe the coordinated Icons, Core, and CodeBlock release. Publish them
-only after all three workflows and registry-only consumer smoke tests have passed.
+These copy-ready assets describe the coordinated Theme, Icons, Core, Layouts, Playground Core, and
+Playground release. Publish them only after all six workflows and registry-only consumer smoke tests
+have passed.
 
 ## Short project description
 
@@ -10,69 +11,70 @@ layouts, icons, highlighted code, and secure interactive playgrounds.
 
 ## Key release features
 
-- A complete 109-icon VueForge outline system with seven preserved solid brand marks.
-- A new accessible Date Picker with day, month, year, time, multiple, and range selection.
-- Data Table sorting, visibility, reordering, resizing, pinning, expansion, localization, errors,
-  selection constraints, and responsive pagination.
-- Coordinated Icons 3 compatibility in Core and CodeBlock.
-
-## npm package descriptions
-
-These descriptions match the publication manifests:
-
-| Package                                           | npm description                                                                                                   |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `@codemonster-ru/vueforge-theme`                  | Shared theme engine, tokens, and preset runtime for the VueForge ecosystem.                                       |
-| `@codemonster-ru/vueforge-icons`                  | Open-source Vue 3 icon library for the VueForge ecosystem.                                                        |
-| `@codemonster-ru/vueforge-core`                   | Foundation layer for the VueForge design system.                                                                  |
-| `@codemonster-ru/vueforge-layouts`                | Layout primitives, shell components, and responsive composables for Vue 3 applications.                           |
-| `@codemonster-ru/vueforge-codeblock`              | Standalone Vue 3 code block component for the VueForge ecosystem with syntax highlighting and light/dark theming. |
-| `@codemonster-ru/vueforge-playground-core`        | Framework-agnostic playground core runtime                                                                        |
-| `@codemonster-ru/vueforge-playground-vite-plugin` | Vite plugin for VueForge playground virtual modules                                                               |
-| `@codemonster-ru/vueforge-playground`             | Vue 3 playground UI adapter for the VueForge playground core runtime.                                             |
+- Five reusable Core components for admin forms and workflows, plus disabled Dropdown triggers.
+- One canonical responsive-query build contract shared by Theme, Core, Layouts, and Playground.
+- Classic and Duotone families across all 109 VueForge system icons.
+- Lazily downloaded, worker-based TypeScript compilation for browser playgrounds.
 
 ## Current ecosystem versions
 
 | Package                | Version | Published in this release |
 | ---------------------- | ------: | :-----------------------: |
-| Theme                  | `2.0.0` |            No             |
-| Icons                  | `3.0.0` |            Yes            |
-| Core                   | `2.3.0` |            Yes            |
-| Layouts                | `2.1.1` |            No             |
-| CodeBlock              | `4.0.1` |            Yes            |
-| Playground Core        | `2.0.0` |            No             |
+| Theme                  | `2.0.1` |            Yes            |
+| Icons                  | `3.2.0` |            Yes            |
+| Core                   | `2.4.0` |            Yes            |
+| Layouts                | `2.1.2` |            Yes            |
+| CodeBlock              | `4.0.1` |            No             |
+| Playground Core        | `2.1.0` |            Yes            |
 | Playground Vite Plugin | `1.0.0` |            No             |
-| Playground             | `3.0.0` |            No             |
+| Playground             | `3.0.1` |            Yes            |
 
 ## GitHub Release introductions
 
-Package-specific changelog sections remain the source of truth for the generated GitHub Releases.
+Package-specific changelog sections remain the source of truth for generated GitHub Releases.
 
-### VueForge Icons 3.0.0
+### VueForge Theme 2.0.1
 
-VueForge Icons 3.0 completes the migration of 109 product icons to a consistent 24-unit outline
-language. Seven official brand marks retain their independent solid geometry. Public icon names are
-unchanged.
+VueForge Theme 2.0.1 adds the shared build-time breakpoint query registry used across VueForge
+packages and centralizes exclusive maximum-width query generation.
 
-### VueForge Core 2.3.0
+### VueForge Icons 3.2.0
 
-VueForge Core 2.3 adds `VfDatePicker` and completes the current Data Table interaction set. Date
-Picker supports localized day, month, year, time, multiple, and range workflows. Data Table gains
-sorting, column visibility, reordering, resizing, pinning, expansion, localization, error handling,
-selection constraints, and responsive pagination.
+VueForge Icons 3.2 adds an authored Duotone family across all 109 system icons and all four runtime
+weights. Existing calls keep the unchanged Classic family by default, while new props and exports
+provide typed control over family and secondary paint.
 
-### VueForge CodeBlock 4.0.1
+### VueForge Core 2.4.0
 
-VueForge CodeBlock 4.0.1 adds package-level compatibility with Icons 3 and refreshes its declaration
-build for the current Vue toolchain.
+VueForge Core 2.4 adds Confirm Dialog, Data Table Column Chooser, Form Layout, Group Box, and Page
+Header components, a complete disabled Dropdown state, shared responsive-query resolution, and a
+Stepper connector fix.
+
+### VueForge Layouts 2.1.2
+
+VueForge Layouts 2.1.2 resolves media and container queries through the shared Theme registry and
+adds publish guards against unresolved breakpoint aliases.
+
+### VueForge Playground Core 2.1.0
+
+VueForge Playground Core 2.1 moves TypeScript compilation off the UI thread and downloads the
+compiler worker only for TypeScript-bearing sandbox sessions.
+
+### VueForge Playground 3.0.1
+
+VueForge Playground 3.0.1 adopts the worker-based Playground Core runtime and the shared responsive
+query contract for tab wrapping.
 
 ## Upgrade
 
 ```bash
 npm install vue@^3.5.0 \
-  @codemonster-ru/vueforge-icons@^3.0.0 \
-  @codemonster-ru/vueforge-core@^2.3.0 \
-  @codemonster-ru/vueforge-codeblock@^4.0.1
+  @codemonster-ru/vueforge-theme@^2.0.1 \
+  @codemonster-ru/vueforge-icons@^3.2.0 \
+  @codemonster-ru/vueforge-core@^2.4.0 \
+  @codemonster-ru/vueforge-layouts@^2.1.2 \
+  @codemonster-ru/vueforge-playground-core@^2.1.0 \
+  @codemonster-ru/vueforge-playground@^3.0.1
 ```
 
 ## Release announcement
@@ -80,12 +82,11 @@ npm install vue@^3.5.0 \
 Use this announcement only after registry propagation, provenance, integrity, and fresh-consumer
 checks have passed:
 
-> VueForge Icons 3.0 and Core 2.3 are available for Vue 3.5 applications. The release completes the
-> 109-icon product outline system, adds the new Date Picker, and expands Data Table with sorting,
-> visibility, reordering, resizing, pinning, expansion, localization, and responsive pagination.
-> See
+> The August 2026 VueForge release is available for Vue 3.5 applications. It adds reusable admin
+> workflow components, shared responsive-query builds, a complete Duotone icon family, and
+> worker-based TypeScript compilation that stays out of JavaScript-only playground sessions. See
 > [the release notes](https://github.com/codemonster-ru/vueforge/blob/main/docs/release-notes.md)
-> for package versions and migration details.
+> for package versions and upgrade details.
 
 ## Change list
 
