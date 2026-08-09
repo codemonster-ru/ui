@@ -119,6 +119,7 @@ try {
   assert.match(await renderIcon(VueIconify, { icon: icons.calendar, variant: 'thin' }), /stroke-width="1"/);
   assert.match(await renderIcon(VueIconify, { icon: icons.calendar, variant: 'solid' }), /fill="currentColor"/);
 
+  const outlineStrokeWidths = { regular: 2, light: 1.5, thin: 1 };
   const duotoneBorderWidths = { regular: 2.5, light: 1.75, thin: 1 };
   for (const variant of outlineIconVariants) {
     const classicMarkup = await renderIcon(VueIconify, { icon: icons.arrowDown, variant, size: 32 });
@@ -157,12 +158,6 @@ try {
     variant: 'regular',
     secondaryColor: '#8ea8ff',
   });
-  const keyDuotone = await renderIcon(VueIconify, {
-    icon: icons.key,
-    family: 'duotone',
-    variant: 'regular',
-    secondaryColor: '#8ea8ff',
-  });
   const ellipsisDuotone = await renderIcon(VueIconify, {
     icon: icons.ellipsis,
     family: 'duotone',
@@ -171,12 +166,27 @@ try {
   });
 
   assert.match(databaseDuotone, /v11\.5c0 2-3\.47 3\.5-7\.75 3\.5/);
-  assert.match(keyDuotone, /<circle cx="15\.5" cy="8\.75" r="6\.5" fill="#8ea8ff"/);
-  assert.match(keyDuotone, /<circle cx="15\.5" cy="8\.75" r="1\.75" fill="currentColor"/);
   assert.match(ellipsisDuotone, /<circle cx="5" cy="12" r="1\.5" fill="#8ea8ff"/);
   assert.match(ellipsisDuotone, /<circle cx="12" cy="12" r="1\.5" fill="currentColor"/);
 
   for (const variant of outlineIconVariants) {
+    const keyClassic = await renderIcon(VueIconify, {
+      icon: icons.key,
+      family: 'classic',
+      variant,
+    });
+    const keyDuotone = await renderIcon(VueIconify, {
+      icon: icons.key,
+      family: 'duotone',
+      variant,
+      secondaryColor: '#8ea8ff',
+    });
+    assert.match(keyClassic, new RegExp(`stroke-width="${outlineStrokeWidths[variant]}"`));
+    assert.match(keyClassic, /<circle cx="15\.5" cy="8\.75" r="2\.25"><\/circle>/);
+    assert.match(keyDuotone, new RegExp(`stroke-width="${outlineStrokeWidths[variant]}"`));
+    assert.match(keyDuotone, /<path d="M8\.75 11\.25[^>]+fill="#8ea8ff" fill-rule="evenodd"/);
+    assert.match(keyDuotone, /<circle cx="15\.5" cy="8\.75" r="2\.25"><\/circle>/);
+
     const gearDuotone = await renderIcon(VueIconify, {
       icon: icons.gear,
       family: 'duotone',

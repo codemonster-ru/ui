@@ -87,6 +87,8 @@ const SOLID_DUOTONE_FILTER_PATH = 'M3 3.5h18l-7 8V20l-4-2v-6.5Z';
 const SOLID_DUOTONE_FILTER_PRIMARY_PATH = 'M10 11.5h4V20l-4-2Z';
 const SOLID_DUOTONE_GLOBE_PRIMARY_CLIP_PATH =
   'M12 2c-3.35 2.8-5 6.15-5 10s1.65 7.2 5 10c3.35-2.8 5-6.15 5-10S15.35 4.8 12 2Z';
+const OUTLINE_DUOTONE_KEY_FILL_PATH =
+  'M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75ZM17.75 8.75a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 1 1 4.5 0Z';
 const SOLID_DUOTONE_KEY_PRIMARY_CLIP_PATH = 'M0 23.842 24 0.474V24H0Z';
 const SOLID_DUOTONE_LOWER_RIGHT_CLIP_PATH = 'M0 24 24 0v24Z';
 const SOLID_DUOTONE_SEND_PRIMARY_CLIP_PATH = 'M11.25 13.25 24-0.1375V24H0Z';
@@ -366,7 +368,7 @@ export const outlineGeometry = {
   ],
   star: [path('M12 2.75l2.85 5.78 6.4.93-4.63 4.51 1.09 6.37L12 17.33l-5.71 3.01 1.09-6.37-4.63-4.51 6.4-.93Z')],
   shield: [path('M12 2.75 20 6v5.5c0 5-3.1 8.4-8 10-4.9-1.6-8-5-8-10V6Z')],
-  key: [path('M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z')],
+  key: [path('M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z'), circle(15.5, 8.75, 2.25)],
   share: [
     line(7.75, 10.7, 16.25, 6.55),
     line(7.75, 13.3, 16.25, 17.45),
@@ -493,7 +495,7 @@ const createOutlineDuotoneFillNodes = (name: OutlineIconName, fill: string) => {
   }
 
   if (name === 'key') {
-    return [h('circle', { cx: 15.5, cy: 8.75, r: 6.5, fill })];
+    return [h('path', { d: OUTLINE_DUOTONE_KEY_FILL_PATH, fill, 'fill-rule': 'evenodd' })];
   }
 
   if (name === 'sliders') {
@@ -1938,12 +1940,7 @@ export const createOutlineIcon = (name: OutlineIconName) => {
                     ]),
                     ...outlineGeometry.funnelX.slice(1).map((node) => h(node.tag, node.attrs)),
                   ]
-                : [
-                    ...outlineGeometry[name].map((node) => h(node.tag, node.attrs)),
-                    ...(props.family === 'duotone' && name === 'key'
-                      ? [h('circle', { cx: 15.5, cy: 8.75, r: 1.75, fill: 'currentColor', stroke: 'none' })]
-                      : []),
-                  ];
+                : [...outlineGeometry[name].map((node) => h(node.tag, node.attrs))];
         const solidStrokeDuotonePath = SOLID_STROKE_DUOTONE_PATHS[name as keyof typeof SOLID_STROKE_DUOTONE_PATHS];
         const solidStrokeDuotoneSourceGeometry: GeometryNode[] = solidStrokeDuotonePath
           ? [{ tag: 'path', attrs: { d: solidStrokeDuotonePath } }]
