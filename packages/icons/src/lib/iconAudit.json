@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-09T16:51:23.399Z",
+  "generatedAt": "2026-08-09T17:15:42.156Z",
   "summary": {
     "iconCount": 116,
     "fillOnly": 7,
@@ -1555,10 +1555,10 @@
       "bounds": { "x": 0.98, "y": 0.56, "width": 22.88, "height": 21.94 },
       "center": { "x": 12.42, "y": 11.53, "dx": 0.42, "dy": -0.47 },
       "boundsArea": 501.82,
-      "inkArea": 23.51,
+      "inkArea": 28.43,
       "minimumGap": 0.98,
-      "primitiveTypes": { "path": 1 },
-      "primitiveCount": 1,
+      "primitiveTypes": { "path": 1, "circle": 1 },
+      "primitiveCount": 2,
       "usesFill": false,
       "usesStroke": true,
       "strokeWidths": [2],
@@ -1567,7 +1567,7 @@
       "hardcodedColors": [],
       "forbiddenFeatures": [],
       "opticalOffset": { "x": -0.0175, "y": 0.0196 },
-      "perceptualHash": "007001fc030e060306030403040306030c06180e31fc6fe0ce00fc007c000000",
+      "perceptualHash": "007001fc030e062306f304db04fb06730c06180e31fc6fe0ce00fc007c000000",
       "warnings": ["bounds-width-outlier", "bounds-area-outlier"]
     },
     {
