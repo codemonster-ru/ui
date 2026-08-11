@@ -33,6 +33,7 @@
     "check": "npm run check:docs && npm run lint:docs-imports && npm run check -w @codemonster-ru/vueforge-codeblock && npm run check -w @codemonster-ru/vueforge-core && npm run check -w @codemonster-ru/vueforge-icons && npm run check -w @codemonster-ru/vueforge-layouts && npm run check -w @codemonster-ru/vueforge-playground && npm run check -w @codemonster-ru/vueforge-playground-core && npm run check -w @codemonster-ru/vueforge-playground-vite-plugin && npm run check -w @codemonster-ru/vueforge-theme",
     "check:clean-install": "node ./scripts/ci/check-clean-install.mjs",
     "check:package-contracts": "node ./scripts/ci/check-package-contracts.mjs",
+    "check:ui-package-metadata": "node --test ./scripts/ci/code-monster-ui-package-metadata.test.mjs && node ./scripts/ci/check-code-monster-ui-package-metadata.mjs",
     "check:packed-consumer": "node ./scripts/ci/check-packed-consumer.mjs --manager=npm",
     "check:packed-consumers": "npm run check:packed-consumer && npx --yes --package=pnpm@10.34.5 --call 'node ./scripts/ci/check-packed-consumer.mjs --manager=pnpm' && npx --yes --package=yarn@1.22.22 --call 'node ./scripts/ci/check-packed-consumer.mjs --manager=yarn'",
     "visual:phase2": "node ./scripts/visual/phase-2-color-smoke.mjs",
