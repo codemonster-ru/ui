@@ -72,6 +72,10 @@ Repository validation eventually checks:
 - canonical HTML parsing;
 - adapter coverage for stable cases.
 
+Visual permutations use the shared themes and viewports in `visual.config.json`. A case can narrow or
+disable its visual matrix through its optional `visual` field. Platform harnesses reuse the same
+fixture ID and write snapshots below a platform directory so parity comparisons remain explicit.
+
 Run the current package metadata, fixture, and significant DOM contract suite from the repository
 root:
 
