@@ -11,10 +11,15 @@ node_modules
 
 # Local dependencies and caches
 **/node_modules
+**/vendor
 **/.cache
 **/.vite
 **/.generated
 **/.idea
+**/.phpunit.cache
+**/.phpunit.result.cache
+**/.phpstan.cache
+composer.phar
 
 # Local env files
 .env
