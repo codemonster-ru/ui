@@ -6,7 +6,8 @@ and Annabel Razor adapters.
 
 The product identity and technical names are approved in
 [CodeMonster UI product identity](./architecture/product-identity.md) and
-[CodeMonster UI naming and prefixes](./architecture/naming-and-prefixes.md).
+[CodeMonster UI naming and prefixes](./architecture/naming-and-prefixes.md). Supported platform
+floors are defined in [CodeMonster UI platform support](./architecture/platform-support.md).
 
 ## How to use this roadmap
 
@@ -47,7 +48,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 0 — product and architecture decisions
 - Current milestone: M0 — approved architecture
 - Completed milestones: none
-- Next item: `CMUI-003`
+- Next item: `CMUI-004`
 
 ## Milestones
 
@@ -66,7 +67,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 - [x] `CMUI-001` Approve the product name and repository name.
 - [x] `CMUI-002` Approve npm, Composer, CSS, custom-property, and component prefixes.
-- [ ] `CMUI-003` Define supported platforms and their version floors.
+- [x] `CMUI-003` Define supported platforms and their version floors.
 - [ ] `CMUI-004` Define shared-kernel and adapter ownership boundaries.
 - [ ] `CMUI-005` Define the canonical component contract format.
 - [ ] `CMUI-006` Define canonical HTML and significant DOM parity rules.
@@ -334,6 +335,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-11 | Track the migration in this repository with stable checklist identifiers. | Preserve context and make progress reviewable across sessions. | All |
 | 2026-08-11 | Name the product CodeMonster UI and target repository `codemonster-ui`. | Establish a platform-neutral identity under the existing CodeMonster organization. | `CMUI-001`, `CMUI-164` |
 | 2026-08-11 | Use `ui-*` distribution names and the `cm` technical prefix. | Keep platform ownership explicit while unifying CSS, HTML, and component naming. | `CMUI-002` |
+| 2026-08-11 | Start from Vue 3.5, React 19.2, Angular 22, Annabel Razor 2, and PHP 8.2. | Target maintained platform lines while retaining an adoption path for current Annabel applications. | `CMUI-003` |
 
 ## Cross-repository log
 
