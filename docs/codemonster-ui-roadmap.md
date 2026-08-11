@@ -4,9 +4,9 @@ This document is the canonical implementation tracker for evolving VueForge into
 CodeMonster UI design system. It covers the shared design foundation and the Vue, React, Angular,
 and Annabel Razor adapters.
 
-The product and target repository names are approved in
-[CodeMonster UI product identity](./architecture/product-identity.md). Package names and prefixes
-remain provisional until their phase 0 decisions are complete.
+The product identity and technical names are approved in
+[CodeMonster UI product identity](./architecture/product-identity.md) and
+[CodeMonster UI naming and prefixes](./architecture/naming-and-prefixes.md).
 
 ## How to use this roadmap
 
@@ -47,7 +47,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 0 — product and architecture decisions
 - Current milestone: M0 — approved architecture
 - Completed milestones: none
-- Next item: `CMUI-002`
+- Next item: `CMUI-003`
 
 ## Milestones
 
@@ -65,7 +65,7 @@ An item is complete only when all applicable conditions are satisfied:
 ## Phase 0 — Product and architecture decisions
 
 - [x] `CMUI-001` Approve the product name and repository name.
-- [ ] `CMUI-002` Approve npm, Composer, CSS, custom-property, and component prefixes.
+- [x] `CMUI-002` Approve npm, Composer, CSS, custom-property, and component prefixes.
 - [ ] `CMUI-003` Define supported platforms and their version floors.
 - [ ] `CMUI-004` Define shared-kernel and adapter ownership boundaries.
 - [ ] `CMUI-005` Define the canonical component contract format.
@@ -333,6 +333,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | --- | --- | --- | --- |
 | 2026-08-11 | Track the migration in this repository with stable checklist identifiers. | Preserve context and make progress reviewable across sessions. | All |
 | 2026-08-11 | Name the product CodeMonster UI and target repository `codemonster-ui`. | Establish a platform-neutral identity under the existing CodeMonster organization. | `CMUI-001`, `CMUI-164` |
+| 2026-08-11 | Use `ui-*` distribution names and the `cm` technical prefix. | Keep platform ownership explicit while unifying CSS, HTML, and component naming. | `CMUI-002` |
 
 ## Cross-repository log
 

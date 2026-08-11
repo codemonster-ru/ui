@@ -18,7 +18,8 @@ Use `CodeMonster UI` in product names, documentation headings, and prose. Use `c
 a lowercase repository or project slug is required.
 
 Do not introduce alternative short product names until there is a concrete naming requirement. The
-package, CSS, custom-property, and component prefixes are decided separately by `CMUI-002`.
+distribution names and technical prefixes are defined by
+[CodeMonster UI naming and prefixes](./naming-and-prefixes.md).
 
 ## Repository transition
 
@@ -42,4 +43,4 @@ until the migration policy is approved by `CMUI-014`.
 - New architecture documents use CodeMonster UI as the product name.
 - New framework-independent work must not use VueForge as its public product identity.
 - The current repository and published packages are not renamed as part of this decision.
-- Package and code prefixes remain provisional until `CMUI-002` is approved.
+- Package and code prefixes follow the approved naming and prefixes decision.
