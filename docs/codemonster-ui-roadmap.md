@@ -12,6 +12,8 @@ ownership is defined in [CodeMonster UI package boundaries](./architecture/packa
 Component specifications follow
 [CodeMonster UI component contract format](./architecture/component-contract-format.md), and their
 rendering follows [CodeMonster UI canonical HTML](./architecture/canonical-html.md).
+Public APIs follow
+[CodeMonster UI component API conventions](./architecture/component-api-conventions.md).
 
 ## How to use this roadmap
 
@@ -52,7 +54,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 0 — product and architecture decisions
 - Current milestone: M0 — approved architecture
 - Completed milestones: none
-- Next item: `CMUI-007`
+- Next item: `CMUI-008`
 
 ## Milestones
 
@@ -75,7 +77,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-004` Define shared-kernel and adapter ownership boundaries.
 - [x] `CMUI-005` Define the canonical component contract format.
 - [x] `CMUI-006` Define canonical HTML and significant DOM parity rules.
-- [ ] `CMUI-007` Define props, attributes, events, and slots conventions.
+- [x] `CMUI-007` Define props, attributes, events, and slots conventions.
 - [ ] `CMUI-008` Define component states through classes, native attributes, ARIA, and `data-*`.
 - [ ] `CMUI-009` Define accessibility and keyboard-interaction requirements.
 - [ ] `CMUI-010` Define SSR, progressive-enhancement, and hydration boundaries.
@@ -343,6 +345,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-11 | Separate focused shared packages from thin platform adapters without a generic core package. | Preserve framework independence and keep public ownership explicit. | `CMUI-004` |
 | 2026-08-11 | Describe components with normative prose, JSON manifests, render cases, canonical HTML, and behavior scenarios. | Provide enforceable parity without introducing a cross-platform source generator. | `CMUI-005` |
 | 2026-08-11 | Compare significant semantic DOM instead of byte-identical framework output. | Enforce one HTML contract while ignoring serialization and compiler details. | `CMUI-006` |
+| 2026-08-11 | Share semantic component APIs while mapping binding and events to native platform conventions. | Preserve recognizable parity without fighting each framework's programming model. | `CMUI-007` |
 
 ## Cross-repository log
 
