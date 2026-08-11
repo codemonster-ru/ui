@@ -17,6 +17,7 @@ Public APIs follow
 State representation follows [CodeMonster UI component states](./architecture/component-states.md).
 Accessibility follows
 [CodeMonster UI accessibility requirements](./architecture/accessibility-requirements.md).
+Rendering modes follow [CodeMonster UI rendering strategy](./architecture/rendering-strategy.md).
 
 ## How to use this roadmap
 
@@ -57,7 +58,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 0 — product and architecture decisions
 - Current milestone: M0 — approved architecture
 - Completed milestones: none
-- Next item: `CMUI-010`
+- Next item: `CMUI-011`
 
 ## Milestones
 
@@ -83,7 +84,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-007` Define props, attributes, events, and slots conventions.
 - [x] `CMUI-008` Define component states through classes, native attributes, ARIA, and `data-*`.
 - [x] `CMUI-009` Define accessibility and keyboard-interaction requirements.
-- [ ] `CMUI-010` Define SSR, progressive-enhancement, and hydration boundaries.
+- [x] `CMUI-010` Define SSR, progressive-enhancement, and hydration boundaries.
 - [ ] `CMUI-011` Define escaping, trusted HTML, and slot security rules.
 - [ ] `CMUI-012` Define browser support and CSS feature policy.
 - [ ] `CMUI-013` Define package topology and release ownership.
@@ -351,6 +352,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-11 | Share semantic component APIs while mapping binding and events to native platform conventions. | Preserve recognizable parity without fighting each framework's programming model. | `CMUI-007` |
 | 2026-08-11 | Prefer native and ARIA state, reserve `data-cm-state` for shared non-native state, and use modifiers for visual configuration. | Avoid duplicate state hooks and keep browser semantics authoritative. | `CMUI-008` |
 | 2026-08-11 | Target WCAG 2.2 AA with native HTML first and shared keyboard, focus, and accessibility scenarios. | Make accessibility part of every component contract and adapter parity gate. | `CMUI-009` |
+| 2026-08-11 | Separate CSS-only, server-rendered, progressively enhanced, and framework-hydrated modes. | Keep Razor framework-independent while preserving native framework hydration. | `CMUI-010` |
 
 ## Cross-repository log
 
