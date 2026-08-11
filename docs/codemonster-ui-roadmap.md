@@ -67,7 +67,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 1 — repository and contract infrastructure
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-021`
+- Next item: `CMUI-022`
 
 ## Milestones
 
@@ -111,7 +111,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-018` Add the component contract directory structure.
 - [x] `CMUI-019` Add canonical HTML fixture infrastructure.
 - [x] `CMUI-020` Add normalized DOM comparison utilities.
-- [ ] `CMUI-021` Add a root contract-test command.
+- [x] `CMUI-021` Add a root contract-test command.
 - [ ] `CMUI-022` Add cross-platform accessibility test infrastructure.
 - [ ] `CMUI-023` Add visual parity fixture infrastructure.
 - [ ] `CMUI-024` Add new packages to root lint, typecheck, test, and build orchestration.
