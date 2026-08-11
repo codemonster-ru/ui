@@ -4,8 +4,9 @@ This document is the canonical implementation tracker for evolving VueForge into
 CodeMonster UI design system. It covers the shared design foundation and the Vue, React, Angular,
 and Annabel Razor adapters.
 
-The working product name, package names, and prefixes remain decisions until phase 0 is complete.
-The names in this roadmap are provisional so implementation can proceed consistently.
+The product and target repository names are approved in
+[CodeMonster UI product identity](./architecture/product-identity.md). Package names and prefixes
+remain provisional until their phase 0 decisions are complete.
 
 ## How to use this roadmap
 
@@ -46,7 +47,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 0 — product and architecture decisions
 - Current milestone: M0 — approved architecture
 - Completed milestones: none
-- Next item: `CMUI-001`
+- Next item: `CMUI-002`
 
 ## Milestones
 
@@ -63,7 +64,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Phase 0 — Product and architecture decisions
 
-- [ ] `CMUI-001` Approve the product name and repository name.
+- [x] `CMUI-001` Approve the product name and repository name.
 - [ ] `CMUI-002` Approve npm, Composer, CSS, custom-property, and component prefixes.
 - [ ] `CMUI-003` Define supported platforms and their version floors.
 - [ ] `CMUI-004` Define shared-kernel and adapter ownership boundaries.
@@ -331,6 +332,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | Date | Decision | Reason | Affected items |
 | --- | --- | --- | --- |
 | 2026-08-11 | Track the migration in this repository with stable checklist identifiers. | Preserve context and make progress reviewable across sessions. | All |
+| 2026-08-11 | Name the product CodeMonster UI and target repository `codemonster-ui`. | Establish a platform-neutral identity under the existing CodeMonster organization. | `CMUI-001`, `CMUI-164` |
 
 ## Cross-repository log
 
