@@ -19,6 +19,8 @@ Accessibility follows
 [CodeMonster UI accessibility requirements](./architecture/accessibility-requirements.md).
 Rendering modes follow [CodeMonster UI rendering strategy](./architecture/rendering-strategy.md).
 Escaping and trusted markup follow [CodeMonster UI HTML security](./architecture/html-security.md).
+Browser and CSS support follows
+[CodeMonster UI browser and CSS support](./architecture/browser-and-css-support.md).
 
 ## How to use this roadmap
 
@@ -59,7 +61,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 0 — product and architecture decisions
 - Current milestone: M0 — approved architecture
 - Completed milestones: none
-- Next item: `CMUI-012`
+- Next item: `CMUI-013`
 
 ## Milestones
 
@@ -87,7 +89,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-009` Define accessibility and keyboard-interaction requirements.
 - [x] `CMUI-010` Define SSR, progressive-enhancement, and hydration boundaries.
 - [x] `CMUI-011` Define escaping, trusted HTML, and slot security rules.
-- [ ] `CMUI-012` Define browser support and CSS feature policy.
+- [x] `CMUI-012` Define browser support and CSS feature policy.
 - [ ] `CMUI-013` Define package topology and release ownership.
 - [ ] `CMUI-014` Decide the VueForge maintenance and migration policy.
 - [ ] `CMUI-015` Approve the four pilot components: Button, Card, Input, and Accordion.
@@ -355,6 +357,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-11 | Target WCAG 2.2 AA with native HTML first and shared keyboard, focus, and accessibility scenarios. | Make accessibility part of every component contract and adapter parity gate. | `CMUI-009` |
 | 2026-08-11 | Separate CSS-only, server-rendered, progressively enhanced, and framework-hydrated modes. | Keep Razor framework-independent while preserving native framework hydration. | `CMUI-010` |
 | 2026-08-11 | Escape ordinary values contextually and compose rendered components and slots only through a trusted-markup type. | Preserve Razor composition without turning strings or raw interpolation into an XSS boundary. | `CMUI-011`, `ARAZOR-002`, `ARAZOR-012` |
+| 2026-08-11 | Target maintained evergreen browsers and ship standards-based CSS without a legacy build. | Give CSS-only and framework consumers one modern, testable browser contract. | `CMUI-012` |
 
 ## Cross-repository log
 
