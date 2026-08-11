@@ -20,7 +20,7 @@ function validateCaseData({ basename, componentSlug, data, displayPath }) {
   if (!isPlainObject(data)) {
     return [`${displayPath} must contain a JSON object.`];
   }
-  const allowedKeys = new Set(['attributes', 'description', 'id', 'props', 'schemaVersion', 'slots']);
+  const allowedKeys = new Set(['attributes', 'description', 'id', 'props', 'schemaVersion', 'slots', 'visual']);
   for (const key of Object.keys(data)) {
     if (!allowedKeys.has(key)) {
       errors.push(`${displayPath} contains unsupported field ${key}.`);
@@ -61,6 +61,9 @@ function validateCaseData({ basename, componentSlug, data, displayPath }) {
   }
   if (data.description !== undefined && (typeof data.description !== 'string' || data.description.trim() === '')) {
     errors.push(`${displayPath} description must be a non-empty string when present.`);
+  }
+  if (data.visual !== undefined && !isPlainObject(data.visual)) {
+    errors.push(`${displayPath} visual must be an object when present.`);
   }
 
   return errors;
