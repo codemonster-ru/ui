@@ -62,17 +62,17 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 0 — product and architecture decisions
-- Current milestone: M0 — approved architecture
-- Completed milestones: none
-- Next item: `CMUI-G000`
+- Current phase: Phase 1 — repository and contract infrastructure
+- Current milestone: M1 — framework-independent tokens and CSS
+- Completed milestones: M0 — approved architecture
+- Next item: `CMUI-016`
 
 ## Milestones
 
 | Milestone | Outcome | Status |
 | --- | --- | --- |
-| M0 | Product name, boundaries, contracts, and migration policy approved | In progress |
-| M1 | Framework-independent tokens and CSS packages build and publish correctly | Not started |
+| M0 | Product name, boundaries, contracts, and migration policy approved | Completed |
+| M1 | Framework-independent tokens and CSS packages build and publish correctly | In progress |
 | M2 | Button and Card render with parity in Vue and Annabel Razor | Not started |
 | M3 | Input supports Vue binding and native Razor form submission | Not started |
 | M4 | Accordion proves accessible cross-platform interaction | Not started |
@@ -100,7 +100,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 ### M0 exit gate
 
-- [ ] `CMUI-G000` All phase 0 decisions are approved and recorded as architecture documents.
+- [x] `CMUI-G000` All phase 0 decisions are approved and recorded as architecture documents.
 
 ## Phase 1 — Repository and contract infrastructure
 
@@ -365,6 +365,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-11 | Keep shared packages and adapters in one monorepo with independent SemVer and topological releases. | Coordinate contracts across npm and Composer without publishing unchanged packages. | `CMUI-013` |
 | 2026-08-11 | Launch a clean CodeMonster UI package line and retain VueForge through verified consumer migration. | Avoid misleading in-place renames and permanent compatibility layers. | `CMUI-014`, `CMUI-149`–`CMUI-164` |
 | 2026-08-11 | Prove the architecture with Button, Card, Input, and Accordion before expanding platforms or components. | Cover props, composition, forms, and interaction with the smallest representative set. | `CMUI-015`, M2–M4 |
+| 2026-08-11 | Complete M0 and begin repository and contract infrastructure work. | All product and architecture decisions passed their documented phase gate. | `CMUI-G000`, M0 |
 
 ## Cross-repository log
 
