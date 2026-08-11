@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codemonster.ru/schemas/ui/component-manifest-v1.json",
+  "title": "CodeMonster UI component manifest",
+  "description": "Machine-readable public API for one CodeMonster UI component.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "name", "slug", "razorTag", "props", "slots", "events", "states"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$"
+    },
+    "slug": {
+      "$ref": "#/$defs/kebabIdentifier"
+    },
+    "razorTag": {
+      "type": "string",
+      "pattern": "^cm-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "props": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/camelIdentifier"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/prop"
+      }
+    },
+    "slots": {
+      "type": "object",
+      "propertyNames": {
+        "anyOf": [
+          {
+            "const": "default"
+          },
+          {
+            "$ref": "#/$defs/camelIdentifier"
+          }
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/slot"
+      }
+    },
+    "events": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/camelIdentifier"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/event"
+      }
+    },
+    "states": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/kebabIdentifier"
+      },
+      "uniqueItems": true
+    },
+    "relatedComponents": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Za-z0-9]*$"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "camelIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]*$"
+    },
+    "kebabIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prop": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "required"],
+      "properties": {
+        "type": {
+          "enum": ["boolean", "collection", "enum", "nullable", "number", "string", "structured"]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "default": true,
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": ["string", "number"]
+          }
+        },
+        "description": {
+          "$ref": "#/$defs/description"
+        },
+        "valueContract": {
+          "$ref": "#/$defs/kebabIdentifier"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "enum"
+              }
+            },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["values"]
+          },
+          "else": {
+            "not": {
+              "required": ["values"]
+            }
+          }
+        }
+      ]
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "description": {
+          "$ref": "#/$defs/description"
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": {
+          "$ref": "#/$defs/description"
+        },
+        "payloadContract": {
+          "$ref": "#/$defs/kebabIdentifier"
+        },
+        "native": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}

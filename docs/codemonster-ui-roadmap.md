@@ -67,7 +67,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 1 — repository and contract infrastructure
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-018`
+- Next item: `CMUI-019`
 
 ## Milestones
 
@@ -108,7 +108,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 - [x] `CMUI-016` Add CodeMonster UI workspace conventions.
 - [x] `CMUI-017` Add shared package metadata helpers or validation.
-- [ ] `CMUI-018` Add the component contract directory structure.
+- [x] `CMUI-018` Add the component contract directory structure.
 - [ ] `CMUI-019` Add canonical HTML fixture infrastructure.
 - [ ] `CMUI-020` Add normalized DOM comparison utilities.
 - [ ] `CMUI-021` Add a root contract-test command.
