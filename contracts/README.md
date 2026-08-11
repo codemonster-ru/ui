@@ -71,3 +71,10 @@ Repository validation eventually checks:
 - unique IDs and valid case references;
 - canonical HTML parsing;
 - adapter coverage for stable cases.
+
+Run the current package metadata, fixture, and significant DOM contract suite from the repository
+root:
+
+```bash
+npm run check:ui-contracts
+```

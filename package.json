@@ -32,6 +32,7 @@
     "audit:release": "npm audit --omit=dev && npm audit --audit-level=high",
     "check": "npm run check:docs && npm run lint:docs-imports && npm run check -w @codemonster-ru/vueforge-codeblock && npm run check -w @codemonster-ru/vueforge-core && npm run check -w @codemonster-ru/vueforge-icons && npm run check -w @codemonster-ru/vueforge-layouts && npm run check -w @codemonster-ru/vueforge-playground && npm run check -w @codemonster-ru/vueforge-playground-core && npm run check -w @codemonster-ru/vueforge-playground-vite-plugin && npm run check -w @codemonster-ru/vueforge-theme",
     "check:clean-install": "node ./scripts/ci/check-clean-install.mjs",
+    "check:ui-contracts": "npm run check:ui-package-metadata && npm run check:ui-contract-cases && npm run check:ui-significant-dom",
     "check:ui-contract-cases": "node --test ./scripts/contracts/component-cases.test.mjs && node ./scripts/ci/check-code-monster-ui-contract-cases.mjs",
     "check:package-contracts": "node ./scripts/ci/check-package-contracts.mjs",
     "check:ui-package-metadata": "node --test ./scripts/ci/code-monster-ui-package-metadata.test.mjs && node ./scripts/ci/check-code-monster-ui-package-metadata.mjs",
