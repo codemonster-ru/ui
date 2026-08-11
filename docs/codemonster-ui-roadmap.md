@@ -23,6 +23,7 @@ Browser and CSS support follows
 [CodeMonster UI browser and CSS support](./architecture/browser-and-css-support.md).
 Distribution follows
 [CodeMonster UI package topology and releases](./architecture/package-topology-and-releases.md).
+Migration follows [VueForge migration policy](./architecture/vueforge-migration-policy.md).
 
 ## How to use this roadmap
 
@@ -63,7 +64,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 0 — product and architecture decisions
 - Current milestone: M0 — approved architecture
 - Completed milestones: none
-- Next item: `CMUI-014`
+- Next item: `CMUI-015`
 
 ## Milestones
 
@@ -93,7 +94,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-011` Define escaping, trusted HTML, and slot security rules.
 - [x] `CMUI-012` Define browser support and CSS feature policy.
 - [x] `CMUI-013` Define package topology and release ownership.
-- [ ] `CMUI-014` Decide the VueForge maintenance and migration policy.
+- [x] `CMUI-014` Decide the VueForge maintenance and migration policy.
 - [ ] `CMUI-015` Approve the four pilot components: Button, Card, Input, and Accordion.
 
 ### M0 exit gate
@@ -361,6 +362,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-11 | Escape ordinary values contextually and compose rendered components and slots only through a trusted-markup type. | Preserve Razor composition without turning strings or raw interpolation into an XSS boundary. | `CMUI-011`, `ARAZOR-002`, `ARAZOR-012` |
 | 2026-08-11 | Target maintained evergreen browsers and ship standards-based CSS without a legacy build. | Give CSS-only and framework consumers one modern, testable browser contract. | `CMUI-012` |
 | 2026-08-11 | Keep shared packages and adapters in one monorepo with independent SemVer and topological releases. | Coordinate contracts across npm and Composer without publishing unchanged packages. | `CMUI-013` |
+| 2026-08-11 | Launch a clean CodeMonster UI package line and retain VueForge through verified consumer migration. | Avoid misleading in-place renames and permanent compatibility layers. | `CMUI-014`, `CMUI-149`–`CMUI-164` |
 
 ## Cross-repository log
 
