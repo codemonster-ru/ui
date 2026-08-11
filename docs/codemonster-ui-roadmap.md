@@ -25,6 +25,8 @@ Distribution follows
 [CodeMonster UI package topology and releases](./architecture/package-topology-and-releases.md).
 Migration follows [VueForge migration policy](./architecture/vueforge-migration-policy.md).
 Initial scope follows [CodeMonster UI pilot components](./architecture/pilot-components.md).
+Repository layout follows
+[CodeMonster UI workspace conventions](./architecture/workspace-conventions.md).
 
 ## How to use this roadmap
 
@@ -65,7 +67,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 1 — repository and contract infrastructure
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-016`
+- Next item: `CMUI-017`
 
 ## Milestones
 
@@ -104,7 +106,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Phase 1 — Repository and contract infrastructure
 
-- [ ] `CMUI-016` Add CodeMonster UI workspace conventions.
+- [x] `CMUI-016` Add CodeMonster UI workspace conventions.
 - [ ] `CMUI-017` Add shared package metadata helpers or validation.
 - [ ] `CMUI-018` Add the component contract directory structure.
 - [ ] `CMUI-019` Add canonical HTML fixture infrastructure.
