@@ -5,6 +5,6 @@
   "steps": [
     { "action": "press", "target": "root", "key": "Escape" },
     { "expect": "visible", "target": "root", "value": false },
-    { "expect": "eventCount", "target": "root", "name": "openChange", "count": 1 }
+    { "expect": "eventCount", "target": "root", "name": "cm:dialog-open-change", "count": 1 }
   ]
 }

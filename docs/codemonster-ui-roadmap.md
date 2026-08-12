@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-142c`
+- Next item: `CMUI-142d`
 
 ## Milestones
 
@@ -340,7 +340,7 @@ added to the active scope in the future.
 - [ ] `CMUI-142` Migrate the overlay cohort: Dialog, Drawer, Popover, and Tooltip.
   - [x] `CMUI-142a` Define overlay contracts, canonical fixtures, focus management, and dismissal behavior.
   - [x] `CMUI-142b` Add shared CSS for Dialog, Drawer, Popover, and Tooltip.
-  - [ ] `CMUI-142c` Add shared progressive-enhancement runtime for overlay interaction.
+  - [x] `CMUI-142c` Add shared progressive-enhancement runtime for overlay interaction.
   - [ ] `CMUI-142d` Add Vue overlay adapters and controlled-state verification.
   - [ ] `CMUI-142e` Add Annabel Razor overlay adapters and runtime integration.
   - [ ] `CMUI-142f` Verify overlay DOM, accessibility, interaction, visual, and documentation parity.

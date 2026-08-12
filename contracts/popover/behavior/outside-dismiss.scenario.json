@@ -5,6 +5,6 @@
   "steps": [
     { "action": "click", "target": "outside" },
     { "expect": "visible", "target": "panel", "value": false },
-    { "expect": "eventCount", "target": "root", "name": "openChange", "count": 1 }
+    { "expect": "eventCount", "target": "root", "name": "cm:popover-open-change", "count": 1 }
   ]
 }
