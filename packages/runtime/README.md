@@ -4,9 +4,9 @@ Framework-independent progressive enhancement for canonical CodeMonster UI marku
 
 Current release: `@codemonster-ru/ui-runtime@0.1.0`.
 
-The package is currently a lifecycle scaffold. Controller discovery, initialization, disposal, and
-custom-event APIs are added by their dedicated roadmap items before the first interactive component
-uses this runtime.
+The package provides controller registration, scoped discovery, idempotent lifecycle management,
+optional mutation observation, and typed `cm:*` custom-event helpers. Component-specific
+controllers are added by their dedicated roadmap items.
 
 The runtime does not render application content, import a component framework, or replace native
 HTML behavior.
