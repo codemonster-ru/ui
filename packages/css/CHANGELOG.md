@@ -29,3 +29,4 @@ All notable changes to this package will be documented in this file.
   and logical-placement hooks.
 - Added shared Select, DatePicker, and CommandPalette styles with native control and modal listbox hooks.
 - Added responsive Table and DataTable styles with sorting, selection, state, and pagination hooks.
+- Added responsive Container, Stack, Inline, Section, and Grid layout primitive styles.
