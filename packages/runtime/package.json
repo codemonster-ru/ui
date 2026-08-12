@@ -1,0 +1,51 @@
+{
+  "name": "@codemonster-ru/ui-runtime",
+  "version": "0.1.0",
+  "description": "Framework-independent progressive enhancement runtime for CodeMonster UI.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/runtime#readme",
+  "bugs": {
+    "url": "https://github.com/codemonster-ru/vueforge/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "directory": "packages/runtime"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "lint": "eslint .",
+    "prepack": "npm run build",
+    "test": "npm run build && node --test ./__tests__/*.test.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "codemonster-ui",
+    "dom",
+    "progressive-enhancement"
+  ],
+  "devDependencies": {
+    "eslint": "^10.8.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  }
+}
