@@ -41,7 +41,7 @@ final class CmField implements ComponentInterface
             ->add($this->optionalString($attributes->get('class')))
             ->value();
 
-        return RenderedHtml::fromTrustedString($this->views->render('components.field', [
+        return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.field', [
             'controlId' => $controlId,
             'descriptionId' => "{$controlId}-description",
             'errorId' => "{$controlId}-error",
@@ -54,7 +54,7 @@ final class CmField implements ComponentInterface
             'error' => $context->hasSlot('error') ? $context->slot('error') : $error,
             'hasDescription' => $hasDescription,
             'hasError' => $hasError,
-        ]));
+        ]), "\r\n"));
     }
 
     private function optionalString(mixed $value): ?string
