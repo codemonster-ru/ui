@@ -1,9 +1,9 @@
-import { copyFileSync, mkdirSync, rmSync } from 'node:fs';
+import { cpSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const packageDirectory = resolve(import.meta.dirname, '..');
+const sourceDirectory = resolve(packageDirectory, 'src');
 const distDirectory = resolve(packageDirectory, 'dist');
 
 rmSync(distDirectory, { force: true, recursive: true });
-mkdirSync(distDirectory);
-copyFileSync(resolve(packageDirectory, 'src/styles.css'), resolve(distDirectory, 'styles.css'));
+cpSync(sourceDirectory, distDirectory, { recursive: true });

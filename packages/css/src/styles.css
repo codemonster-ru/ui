@@ -1,1 +1,2 @@
-/* CodeMonster UI stylesheet entry. Foundation styles are added incrementally. */
+@import './foundation/reset.css';
+@import './foundation/document.css';
