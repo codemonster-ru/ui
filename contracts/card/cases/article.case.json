@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "card-article",
+  "description": "Article semantic root with a heading.",
+  "props": {
+    "element": "article",
+    "title": "Release notes"
+  },
+  "slots": {}
+}
