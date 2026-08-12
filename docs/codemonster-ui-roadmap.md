@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 4 — Button vertical slice
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-063`
+- Next item: `CMUI-064`
 
 ## Milestones
 
@@ -169,7 +169,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-060` Scaffold `@codemonster-ru/ui-vue`.
 - [x] `CMUI-061` Add Vue attribute forwarding and class utilities.
 - [x] `CMUI-062` Add Vue `CmButton`.
-- [ ] `CMUI-063` Add Vue Button loading and icon-slot rendering.
+- [x] `CMUI-063` Add Vue Button loading and icon-slot rendering.
 - [ ] `CMUI-064` Add Vue Button link rendering.
 - [ ] `CMUI-065` Verify Vue Button DOM, events, and SSR output.
 
