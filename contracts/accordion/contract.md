@@ -28,7 +28,7 @@ at most the first valid id; multiple mode preserves valid ids in item order.
 
 The root owns `cm-accordion`, `data-cm-controller="accordion"`, and
 `data-cm-accordion-multiple="true"` only in multiple mode. Each item is a
-`section.cm-accordion__item` with `data-cm-accordion-item`.
+`section.cm-accordion__item` with its semantic id in `data-cm-accordion-item`.
 
 Each title is an `h3.cm-accordion__heading` containing one native
 `button.cm-accordion__trigger`. Trigger ids use `{id}-{itemId}-trigger`; panel ids use
