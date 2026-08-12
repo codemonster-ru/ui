@@ -9,5 +9,9 @@ test('publishes a framework-independent ESM entry', async () => {
     'cmSemanticColorTokenNames',
     'cmSemanticDarkColorTokens',
     'cmSemanticLightColorTokens',
+    'cmSizingTokenNames',
+    'cmSizingTokens',
+    'cmSpacingTokenNames',
+    'cmSpacingTokens',
   ]);
 });

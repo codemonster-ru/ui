@@ -4,8 +4,9 @@ Framework-independent design tokens and theme serialization for CodeMonster UI.
 
 ## Status
 
-This package owns the CodeMonster UI primitive color palette and light/dark semantic color roles.
-Theme presets, generated CSS, and serialization APIs are added by their dedicated roadmap items.
+This package owns the CodeMonster UI primitive color palette, light/dark semantic color roles,
+spacing scale, and shared control/icon sizes. Theme presets, generated CSS, and serialization APIs
+are added by their dedicated roadmap items.
 
 The package does not depend on Vue or another UI framework.
 
