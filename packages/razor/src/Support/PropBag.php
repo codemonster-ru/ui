@@ -79,6 +79,17 @@ final class PropBag
         return $value;
     }
 
+    public function stringOrNumber(string $name, string|int|float|null $default = null): string|int|float|null
+    {
+        $value = $this->consume($name, $default);
+
+        if ($value !== null && !is_string($value) && !is_int($value) && !is_float($value)) {
+            throw new InvalidArgumentException("Component prop [{$name}] must be a string, number, or null.");
+        }
+
+        return $value;
+    }
+
     /** @param non-empty-list<string> $allowed */
     public function oneOf(string $name, array $allowed, string $default): string
     {
