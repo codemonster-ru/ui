@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 6 — CodeMonster UI Annabel Razor adapter
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-070`
+- Next item: `CMUI-071`
 
 ## Milestones
 
@@ -201,7 +201,7 @@ and be recorded in the cross-repository log below.
 - [x] `CMUI-067` Add the Annabel UI component provider and `cm` prefix registration.
 - [x] `CMUI-068` Add shared prop validation, attribute bags, and class building.
 - [x] `CMUI-069` Add the shared asset manifest and publishing API.
-- [ ] `CMUI-070` Package the exact shared CSS artifacts for PHP consumers.
+- [x] `CMUI-070` Package the exact shared CSS artifacts for PHP consumers.
 - [ ] `CMUI-071` Add the PHP `CmButton` component.
 - [ ] `CMUI-072` Add the Button Razor template.
 - [ ] `CMUI-073` Add Razor Button loading and link rendering.

@@ -43,6 +43,8 @@ $publishedPaths = $publisher->publish(__DIR__ . '/public/vendor/codemonster-ui')
 ```
 
 Every file is declared by the package manifest and verified by SHA-256 before publication.
+The packaged `css/tokens/tokens.css` and `css/css/styles.css` entries are the complete stylesheet
+pair; keep their relative imported files together when serving them directly.
 
 ## Development
 
