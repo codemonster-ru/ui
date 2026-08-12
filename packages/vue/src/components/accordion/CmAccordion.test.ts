@@ -36,4 +36,51 @@ describe('CmAccordion', () => {
       /Invalid Accordion item/u,
     );
   });
+
+  it('reports controlled state without mutating rendered panels', async () => {
+    const wrapper = mount(CmAccordion, { props: { id: 'faq', items, openItems: ['account'] } });
+
+    await wrapper.get('#faq-billing-trigger').trigger('click');
+
+    expect(wrapper.get('#faq-account-trigger').attributes('aria-expanded')).toBe('true');
+    expect(wrapper.get('#faq-billing-trigger').attributes('aria-expanded')).toBe('false');
+    expect(wrapper.emitted('update:openItems')).toEqual([[['billing']]]);
+  });
+
+  it('keeps independent ordered state in multiple mode', async () => {
+    const wrapper = mount(CmAccordion, { props: { id: 'faq', items, multiple: true } });
+
+    await wrapper.get('#faq-billing-trigger').trigger('click');
+    await wrapper.get('#faq-account-trigger').trigger('click');
+
+    const updates = wrapper.emitted('update:openItems') ?? [];
+    expect(updates[updates.length - 1]).toEqual([['account', 'billing']]);
+    expect(wrapper.findAll('.cm-accordion__panel').every((panel) => panel.attributes('hidden') === undefined)).toBe(
+      true,
+    );
+  });
+
+  it('ignores disabled activation and skips disabled triggers during focus navigation', async () => {
+    const wrapper = mount(CmAccordion, {
+      attachTo: document.body,
+      props: {
+        id: 'faq',
+        items: [items[0], { ...items[1], disabled: true }, { id: 'security', title: 'Security', content: 'Secure.' }],
+      },
+    });
+    const triggers = wrapper.findAll<HTMLButtonElement>('.cm-accordion__trigger');
+
+    await triggers[1].trigger('click');
+    triggers[0].element.focus();
+    await triggers[0].trigger('keydown', { key: 'ArrowDown' });
+
+    expect(wrapper.emitted('openChange')).toBeUndefined();
+    expect(document.activeElement).toBe(triggers[2].element);
+
+    await triggers[2].trigger('keydown', { key: 'Home' });
+    expect(document.activeElement).toBe(triggers[0].element);
+    await triggers[0].trigger('keydown', { key: 'ArrowUp' });
+    expect(document.activeElement).toBe(triggers[2].element);
+    wrapper.unmount();
+  });
 });
