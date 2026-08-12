@@ -67,10 +67,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 6 — CodeMonster UI Annabel Razor adapter
+- Current phase: Phase 7 — Card and composition
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-076`
+- Next item: `CMUI-077`
 
 ## Milestones
 
@@ -207,7 +207,7 @@ and be recorded in the cross-repository log below.
 - [x] `CMUI-073` Add Razor Button loading and link rendering.
 - [x] `CMUI-074` Verify Razor Button escaping and accessibility.
 - [x] `CMUI-075` Compare significant Vue and Razor Button DOM.
-- [ ] `CMUI-076` Document Button usage in Vue and Razor.
+- [x] `CMUI-076` Document Button usage in Vue and Razor.
 
 ## Phase 7 — Card and composition
 
@@ -385,15 +385,15 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 
 Record Annabel work here when an `ARAZOR-*` item is completed.
 
-| Item         | Annabel commit | CodeMonster UI tracking commit | Notes                                |
-| ------------ | -------------- | ------------------------------ | ------------------------------------ |
-| `ARAZOR-001` | `720f2b8`      | This row                       | Component syntax and semantics ADR.  |
-| `ARAZOR-002` | `ce6fe86`      | This row                       | Trusted rendered-HTML value object.  |
-| `ARAZOR-003` | `9eaa7e0`      | This row                       | Component and resolver contracts.    |
-| `ARAZOR-004` | `7f63002`      | This row                       | Component registry and providers.    |
-| `ARAZOR-005` | `68e2287`      | This row                       | Self-closing component parser.       |
-| `ARAZOR-006` | `06d7459`      | This row                       | Paired and nested tag parsing.       |
-| `ARAZOR-007` | `9c800a2`      | This row                       | Static, expression, boolean props.   |
+| Item         | Annabel commit | CodeMonster UI tracking commit | Notes                               |
+| ------------ | -------------- | ------------------------------ | ----------------------------------- |
+| `ARAZOR-001` | `720f2b8`      | This row                       | Component syntax and semantics ADR. |
+| `ARAZOR-002` | `ce6fe86`      | This row                       | Trusted rendered-HTML value object. |
+| `ARAZOR-003` | `9eaa7e0`      | This row                       | Component and resolver contracts.   |
+| `ARAZOR-004` | `7f63002`      | This row                       | Component registry and providers.   |
+| `ARAZOR-005` | `68e2287`      | This row                       | Self-closing component parser.      |
+| `ARAZOR-006` | `06d7459`      | This row                       | Paired and nested tag parsing.      |
+| `ARAZOR-007` | `9c800a2`      | This row                       | Static, expression, boolean props.  |
 | `ARAZOR-008` | `2b70ebe`      | This row                       | Lazy default-slot compilation.      |
 | `ARAZOR-009` | `ce32bc8`      | This row                       | Direct named-slot compilation.      |
 | `ARAZOR-010` | `cebf892`      | This row                       | Recursive nested compilation.       |
