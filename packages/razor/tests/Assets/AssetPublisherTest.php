@@ -7,6 +7,7 @@ namespace Codemonster\Ui\Tests\Assets;
 use Codemonster\Ui\Assets\AssetManifest;
 use Codemonster\Ui\Assets\AssetPublisher;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 final class AssetPublisherTest extends TestCase
 {
@@ -48,6 +49,31 @@ final class AssetPublisherTest extends TestCase
 
         self::assertSame([$this->root . '/public/styles.css'], $published);
         self::assertSame('.cm-test { color: red; }', file_get_contents($published[0]));
+    }
+
+    public function testRejectsNonStringIntegrityMetadata(): void
+    {
+        $manifest = [
+            'schemaVersion' => 1,
+            'artifacts' => [
+                'styles' => [
+                    'path' => 'styles.css',
+                    'mediaType' => 'text/css',
+                    'sha256' => 123,
+                    'source' => [
+                        'package' => '@codemonster-ru/ui-css',
+                        'version' => '0.1.0',
+                        'export' => './styles.css',
+                    ],
+                ],
+            ],
+        ];
+        file_put_contents($this->root . '/manifest.json', json_encode($manifest, JSON_THROW_ON_ERROR));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('UI asset [styles] has invalid metadata.');
+
+        AssetManifest::load($this->root . '/manifest.json');
     }
 
     private function removeDirectory(string $directory): void
