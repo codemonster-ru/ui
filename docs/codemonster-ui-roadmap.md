@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 9 — Shared runtime and Accordion
 - Current milestone: M4 — Accordion interaction parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity
-- Next item: `CMUI-111`
+- Next item: `CMUI-112`
 
 ## Milestones
 
@@ -259,7 +259,7 @@ and be recorded in the cross-repository log below.
 - [x] `CMUI-108` Verify Vue Accordion behavior and SSR output.
 - [x] `CMUI-109` Add PHP/Razor Accordion rendering.
 - [x] `CMUI-110` Verify progressively enhanced Razor Accordion behavior.
-- [ ] `CMUI-111` Compare cross-platform Accordion state transitions.
+- [x] `CMUI-111` Compare cross-platform Accordion state transitions.
 - [ ] `CMUI-112` Document runtime installation and progressive enhancement.
 
 ### M4 exit gate
