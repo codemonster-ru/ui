@@ -75,6 +75,41 @@ function isWithin(parent, child) {
   return path === '' || (path !== '..' && !path.startsWith(`..${sep}`));
 }
 
+function verifyCssImportGraph(entryPath, packageRoot, visited = new Set()) {
+  const canonicalEntryPath = realpathSync(entryPath);
+  if (visited.has(canonicalEntryPath)) {
+    return;
+  }
+  visited.add(canonicalEntryPath);
+
+  const source = readFileSync(canonicalEntryPath, 'utf8');
+  const imports = [...source.matchAll(/@import\s+(?:url\(\s*)?(['"])([^'"]+)\1\s*\)?[^;]*;/g)];
+  assert.equal(
+    imports.length,
+    source.match(/@import\b/g)?.length ?? 0,
+    `${relative(packageRoot, canonicalEntryPath)} contains an unsupported CSS import form.`,
+  );
+
+  for (const [, , specifier] of imports) {
+    if (/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(specifier)) {
+      continue;
+    }
+    assert.ok(
+      specifier.startsWith('.'),
+      `${relative(packageRoot, canonicalEntryPath)} uses non-portable package CSS import ${specifier}.`,
+    );
+    const importedPath = resolve(dirname(canonicalEntryPath), specifier);
+    assert.equal(isWithin(packageRoot, importedPath), true, `${specifier} escapes its installed package.`);
+    assert.ok(
+      existsSync(importedPath),
+      `${relative(packageRoot, canonicalEntryPath)} imports missing CSS ${specifier}.`,
+    );
+    const canonicalImportedPath = realpathSync(importedPath);
+    assert.equal(isWithin(packageRoot, canonicalImportedPath), true, `${specifier} escapes its installed package.`);
+    verifyCssImportGraph(canonicalImportedPath, packageRoot, visited);
+  }
+}
+
 export function verifyInstalledCssConsumer({ consumerDirectory, packages, repositoryRoot }) {
   const canonicalConsumerRoot = realpathSync(consumerDirectory);
   const canonicalRepositoryRoot = realpathSync(repositoryRoot);
@@ -108,6 +143,7 @@ export function verifyInstalledCssConsumer({ consumerDirectory, packages, reposi
         `${specifier} escapes its installed package.`,
       );
       assert.ok(readFileSync(cssPath, 'utf8').trim().length > 0, `${specifier} resolves to empty CSS.`);
+      verifyCssImportGraph(cssPath, canonicalPackageRoot);
       cssExportCount += 1;
     }
   }

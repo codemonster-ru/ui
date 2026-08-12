@@ -15,3 +15,4 @@ All notable changes to this package will be documented in this file.
 - Added shared base, subtle, elevated, and overlay surface primitives.
 - Added complete and foundation-only public stylesheet compositions.
 - Added exact CSS subpath and side-effect export contracts.
+- Added packed-consumer smoke coverage for the complete recursive CSS import graph.
