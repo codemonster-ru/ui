@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "button-default",
+  "description": "Default primary medium button action.",
+  "props": {},
+  "slots": {
+    "default": "Save"
+  }
+}
