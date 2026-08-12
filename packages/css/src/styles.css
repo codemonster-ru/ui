@@ -1,6 +1,3 @@
-@import './foundation/reset.css';
-@import './foundation/document.css';
-@import './foundation/focus.css';
-@import './foundation/preferences.css';
+@import './foundation.css';
 @import './primitives/control.css';
 @import './primitives/surface.css';

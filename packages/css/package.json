@@ -26,6 +26,7 @@
     "./dist/*.css"
   ],
   "exports": {
+    "./foundation.css": "./dist/foundation.css",
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
