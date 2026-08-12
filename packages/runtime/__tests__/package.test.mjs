@@ -7,6 +7,7 @@ test('publishes the framework-independent runtime entry', async () => {
   assert.deepEqual(Object.keys(entry), [
     'CmAccordionController',
     'CmCheckboxController',
+    'CmCommandPaletteController',
     'CmDialogController',
     'CmDrawerController',
     'CmDropdownController',
@@ -17,6 +18,7 @@ test('publishes the framework-independent runtime entry', async () => {
     'CmTooltipController',
     'createCmAccordionController',
     'createCmCheckboxController',
+    'createCmCommandPaletteController',
     'createCmDialogController',
     'createCmDrawerController',
     'createCmDropdownController',
