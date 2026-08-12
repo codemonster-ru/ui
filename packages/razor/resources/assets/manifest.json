@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "ae39251d141239fd77a0728a23a4c1ef60ede70fbb882809518f7af673d311dc",
+      "sha256": "0d779fe89b2cfe1f10d23c90d8b60a03e690fea043a6e3e9d489eac74a3ecad0",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
@@ -191,6 +191,16 @@
         "export": "./divider.css"
       }
     },
+    "css:components/dialog.css": {
+      "path": "css/css/components/dialog.css",
+      "mediaType": "text/css",
+      "sha256": "26acc318e4b1f90914e39dec0b67d164c310a2ca7950c81754650b1d154ead1b",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./dialog.css"
+      }
+    },
     "css:components/dropdown.css": {
       "path": "css/css/components/dropdown.css",
       "mediaType": "text/css",
@@ -199,6 +209,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./dropdown.css"
+      }
+    },
+    "css:components/drawer.css": {
+      "path": "css/css/components/drawer.css",
+      "mediaType": "text/css",
+      "sha256": "ede212922d14e6e6d6517e504a348897bc7408a4dd6ca142dd910c1a6b3f1e5e",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./drawer.css"
       }
     },
     "css:components/field.css": {
@@ -239,6 +259,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./menu.css"
+      }
+    },
+    "css:components/popover.css": {
+      "path": "css/css/components/popover.css",
+      "mediaType": "text/css",
+      "sha256": "b4fe20faf692fd9b35de3f03239fea8c3a12e8c8815a39b286dbbf4e32975b68",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./popover.css"
       }
     },
     "css:components/radio.css": {
@@ -289,6 +319,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./tabs.css"
+      }
+    },
+    "css:components/tooltip.css": {
+      "path": "css/css/components/tooltip.css",
+      "mediaType": "text/css",
+      "sha256": "cc72cac54bb9c3c9942579c9f088d66318cf574b3437a184bf2ab15c784ee1cb",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./tooltip.css"
       }
     }
   }

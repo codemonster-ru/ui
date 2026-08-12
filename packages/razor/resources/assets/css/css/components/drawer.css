@@ -1,0 +1,103 @@
+.cm-drawer,
+.cm-drawer--open {
+  position: fixed;
+  inset-block: 0;
+  max-block-size: none;
+  block-size: 100%;
+  inline-size: min(90%, calc(var(--cm-space-16) * 6));
+  padding: 0;
+  border: 0;
+  background: var(--cm-color-background-surface-elevated);
+  color: var(--cm-color-text-primary);
+  box-shadow: var(--cm-shadow-overlay);
+}
+
+.cm-drawer--start {
+  inset-inline: 0 auto;
+  margin-inline: 0;
+}
+
+.cm-drawer--end {
+  inset-inline: auto 0;
+  margin-inline: 0;
+}
+
+.cm-drawer::backdrop {
+  background: color-mix(in oklch, var(--cm-color-background-inverse) 55%, transparent);
+}
+
+.cm-drawer__surface {
+  display: flex;
+  block-size: 100%;
+  flex-direction: column;
+}
+
+.cm-drawer__header,
+.cm-drawer__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-3);
+  padding: var(--cm-space-4);
+}
+
+.cm-drawer__header {
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-drawer__title {
+  flex: 1;
+  margin: 0;
+  font-family: var(--cm-font-family-heading);
+  font-size: var(--cm-font-size-lg);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
+}
+
+.cm-drawer__close {
+  display: inline-grid;
+  min-block-size: var(--cm-control-height-sm);
+  min-inline-size: var(--cm-control-height-sm);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cm-radius-control);
+  appearance: none;
+  background: transparent;
+  color: var(--cm-color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+}
+
+.cm-drawer__close:hover {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-drawer__close:focus-visible {
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-drawer__description {
+  margin: 0;
+  padding-block-start: var(--cm-space-4);
+  padding-inline: var(--cm-space-4);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
+}
+
+.cm-drawer__body {
+  min-block-size: 0;
+  flex: 1;
+  overflow: auto;
+  padding: var(--cm-space-4);
+}
+
+.cm-drawer__footer {
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+@media (forced-colors: active) {
+  .cm-drawer {
+    border: var(--cm-border-width) solid CanvasText;
+  }
+}
