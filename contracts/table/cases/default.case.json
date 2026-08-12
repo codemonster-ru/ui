@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "table-default",
+  "description": "A captioned table with authored column and row semantics.",
+  "props": { "caption": "Projects" },
+  "slots": {
+    "header": "<tr><th scope=\"col\">Name</th><th scope=\"col\">Status</th></tr>",
+    "default": "<tr><th scope=\"row\">Apollo</th><td>Active</td></tr>"
+  }
+}
