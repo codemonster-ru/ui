@@ -6,8 +6,8 @@ Framework-independent design tokens and theme serialization for CodeMonster UI.
 
 This package owns the CodeMonster UI primitive color palette, light/dark semantic color roles,
 spacing and shared sizing scales, typography foundation, border widths, radii, shadows, and motion
-values, breakpoints, and the default light and dark theme presets. Generated CSS and serialization
-APIs are added by their dedicated roadmap items.
+values, breakpoints, the default light and dark theme presets, and their generated CSS custom
+properties. Serialization APIs are added by their dedicated roadmap item.
 
 The package does not depend on Vue or another UI framework.
 
@@ -38,6 +38,15 @@ console.log(
 ```bash
 npm install @codemonster-ru/ui-tokens
 ```
+
+Import the generated properties once in the application stylesheet:
+
+```css
+@import '@codemonster-ru/ui-tokens/tokens.css';
+```
+
+The light theme is the default. Set `data-cm-theme="dark"` on the document root to apply the dark
+semantic color overrides, or set `data-cm-theme="light"` explicitly.
 
 ## License
 
