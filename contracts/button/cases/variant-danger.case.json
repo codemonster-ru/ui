@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "button-variant-danger",
+  "description": "Danger medium button action.",
+  "props": {
+    "variant": "danger"
+  },
+  "slots": {
+    "default": "Delete"
+  }
+}
