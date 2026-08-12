@@ -35,7 +35,7 @@
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "prepack": "npm run build",
     "test": "npm run build && node --test ./__tests__/*.test.mjs",
-    "typecheck": "node --check ./scripts/build.mjs"
+    "typecheck": "node --check ./scripts/build.mjs && node --check ./src/contract.mjs"
   },
   "keywords": [
     "codemonster-ui",

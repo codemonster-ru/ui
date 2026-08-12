@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 12 — Utility CSS
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-131`
+- Next item: `CMUI-132`
 
 ## Milestones
 
@@ -302,7 +302,7 @@ date and should enter the delivery scope only in response to a concrete product 
 
 - [x] `CMUI-129` Approve the initial utility scope and naming contract.
 - [x] `CMUI-130` Scaffold `@codemonster-ru/ui-utilities`.
-- [ ] `CMUI-131` Generate display utilities from the approved contract.
+- [x] `CMUI-131` Generate display utilities from the approved contract.
 - [ ] `CMUI-132` Generate flex and grid utilities.
 - [ ] `CMUI-133` Generate spacing and sizing utilities from tokens.
 - [ ] `CMUI-134` Generate typography and color utilities from tokens.
