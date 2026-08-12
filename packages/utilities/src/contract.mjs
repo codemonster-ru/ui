@@ -1,0 +1,9 @@
+export const displayUtilities = Object.freeze({
+  block: { display: 'block' },
+  'inline-block': { display: 'inline-block' },
+  inline: { display: 'inline' },
+  flex: { display: 'flex' },
+  'inline-flex': { display: 'inline-flex' },
+  grid: { display: 'grid' },
+  hidden: { display: 'none' },
+});
