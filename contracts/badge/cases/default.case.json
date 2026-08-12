@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "badge-default",
+  "description": "Neutral text badge.",
+  "props": {},
+  "slots": { "default": "Draft" }
+}
