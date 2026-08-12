@@ -19,6 +19,19 @@ composer require codemonster-ru/ui
 Component registration and rendering are added by their dedicated roadmap items. The package does
 not require Node.js in production.
 
+Register the CodeMonster UI provider during application bootstrap:
+
+```php
+use Codemonster\Razor\Components\ComponentRegistry;
+use Codemonster\Ui\UiComponentProvider;
+
+$components = new ComponentRegistry();
+$components->register(new UiComponentProvider());
+```
+
+The provider owns the `cm` prefix. Components are then available through tags such as
+`<cm-button>` as their implementations are added.
+
 ## Development
 
 ```bash
