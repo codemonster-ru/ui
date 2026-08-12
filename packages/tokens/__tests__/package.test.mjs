@@ -13,5 +13,7 @@ test('publishes a framework-independent ESM entry', async () => {
     'cmSizingTokens',
     'cmSpacingTokenNames',
     'cmSpacingTokens',
+    'cmTypographyTokenNames',
+    'cmTypographyTokens',
   ]);
 });
