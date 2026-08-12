@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-empty",
+  "description": "An empty data set preserves table headers and announces its state.",
+  "props": {
+    "id": "audit-log",
+    "caption": "Audit log",
+    "emptyText": "No audit events",
+    "columns": [
+      { "key": "event", "header": "Event" },
+      { "key": "actor", "header": "Actor" }
+    ],
+    "rows": []
+  },
+  "slots": {}
+}
