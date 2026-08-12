@@ -1,0 +1,50 @@
+{
+  "name": "@codemonster-ru/ui-css",
+  "version": "0.1.0",
+  "description": "Framework-independent foundation and component styles for CodeMonster UI.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/css#readme",
+  "bugs": {
+    "url": "https://github.com/codemonster-ru/vueforge/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "directory": "packages/css"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "./dist/*.css"
+  ],
+  "exports": {
+    "./styles.css": "./dist/styles.css"
+  },
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "lint": "eslint . && stylelint \"src/**/*.css\"",
+    "prepack": "npm run build",
+    "test": "npm run build && node --test ./__tests__/*.test.mjs",
+    "typecheck": "node --check ./scripts/build.mjs"
+  },
+  "keywords": [
+    "codemonster-ui",
+    "css",
+    "design-system"
+  ],
+  "devDependencies": {
+    "eslint": "^10.8.0",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.25.0"
+  }
+}

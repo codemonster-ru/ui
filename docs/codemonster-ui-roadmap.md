@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 3 — framework-independent CSS
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-043`
+- Next item: `CMUI-044`
 
 ## Milestones
 
@@ -142,7 +142,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Phase 3 — Framework-independent CSS
 
-- [ ] `CMUI-043` Scaffold `@codemonster-ru/ui-css`.
+- [x] `CMUI-043` Scaffold `@codemonster-ru/ui-css`.
 - [ ] `CMUI-044` Add reset and document foundation styles.
 - [ ] `CMUI-045` Add focus-visible and focus-ring foundations.
 - [ ] `CMUI-046` Add reduced-motion and forced-colors foundations.
