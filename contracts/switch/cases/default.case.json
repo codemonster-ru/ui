@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "switch-default",
+  "description": "Unchecked switch with a visible label.",
+  "props": { "label": "Email notifications" },
+  "slots": {},
+  "attributes": { "name": "notifications", "value": "enabled" }
+}
