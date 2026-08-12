@@ -7,6 +7,14 @@ export type { AccordionOpenChangeDetail } from './accordion.js';
 export { CmCheckboxController, createCmCheckboxController } from './checkbox.js';
 export { CmCommandPaletteController, createCmCommandPaletteController } from './command-palette.js';
 export type { CommandPaletteQueryChangeDetail, CommandPaletteSelectDetail } from './command-palette.js';
+export { CmDataTableController, createCmDataTableController } from './data-table.js';
+export type {
+  DataTablePageChangeDetail,
+  DataTableSelectionChangeDetail,
+  DataTableSort,
+  DataTableSortChangeDetail,
+  DataTableSortDirection,
+} from './data-table.js';
 export { CmDialogController, createCmDialogController } from './dialog.js';
 export { CmDrawerController, createCmDrawerController } from './drawer.js';
 export type { ModalOpenChangeDetail } from './modal.js';

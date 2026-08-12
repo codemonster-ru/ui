@@ -354,7 +354,7 @@ added to the active scope in the future.
 - [ ] `CMUI-144` Migrate the data-display cohort: Table and DataTable.
   - [x] `CMUI-144a` Define Table and DataTable contracts, canonical fixtures, and interaction behavior.
   - [x] `CMUI-144b` Add shared CSS for Table and DataTable.
-  - [ ] `CMUI-144c` Add shared progressive-enhancement runtime for interactive DataTable behavior.
+  - [x] `CMUI-144c` Add shared progressive-enhancement runtime for interactive DataTable behavior.
   - [ ] `CMUI-144d` Add Vue Table and DataTable adapters and controlled-state verification.
   - [ ] `CMUI-144e` Add Annabel Razor Table and DataTable adapters and runtime integration.
   - [ ] `CMUI-144f` Verify data-table DOM, accessibility, interaction, visual, and documentation parity.
