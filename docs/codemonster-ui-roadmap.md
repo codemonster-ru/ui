@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 5 — Generic Annabel Razor component model
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `ARAZOR-002`
+- Next item: `ARAZOR-003`
 
 ## Milestones
 
@@ -179,7 +179,7 @@ These items are implemented in `codemonster-ru/annabel`. Each completed item mus
 and be recorded in the cross-repository log below.
 
 - [x] `ARAZOR-001` Approve Razor component syntax and compilation semantics.
-- [ ] `ARAZOR-002` Add a trusted rendered-HTML value object.
+- [x] `ARAZOR-002` Add a trusted rendered-HTML value object.
 - [ ] `ARAZOR-003` Add component, render-context, and resolver contracts.
 - [ ] `ARAZOR-004` Add the component registry and prefix registration.
 - [ ] `ARAZOR-005` Parse self-closing component tags.
@@ -388,6 +388,7 @@ Record Annabel work here when an `ARAZOR-*` item is completed.
 | Item         | Annabel commit | CodeMonster UI tracking commit | Notes                                |
 | ------------ | -------------- | ------------------------------ | ------------------------------------ |
 | `ARAZOR-001` | `720f2b8`      | This row                       | Component syntax and semantics ADR.  |
+| `ARAZOR-002` | `ce6fe86`      | This row                       | Trusted rendered-HTML value object.  |
 
 ## Scope-change log
 
