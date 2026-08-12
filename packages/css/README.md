@@ -41,6 +41,7 @@ Button styles are included in `styles.css` and are also available through the ex
 
 See [CSS-only consumption](../../docs/css/getting-started.md) for import order, themes, primitives,
 copied assets, and SSR/Razor delivery.
+See the separate [utility CSS guide](../../docs/css/utilities.md) for optional generated helpers.
 
 ## License
 
