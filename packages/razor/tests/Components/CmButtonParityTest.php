@@ -8,17 +8,13 @@ use Codemonster\Razor\Components\ComponentRenderContext;
 use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\Ui\Components\CmButton;
+use Codemonster\Ui\Tests\Support\SignificantDom;
 use Codemonster\View\Locator\DefaultLocator;
-use DOMDocument;
-use DOMElement;
-use DOMNode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class CmButtonParityTest extends TestCase
 {
-    private const BOOLEAN_ATTRIBUTES = ['disabled', 'hidden', 'required', 'readonly', 'multiple', 'checked'];
-
     private string $cache;
 
     protected function setUp(): void
@@ -51,7 +47,7 @@ final class CmButtonParityTest extends TestCase
         $actual = $this->button()->render(new ComponentRenderContext($case['props'], $slots))->value();
         $expected = (string) file_get_contents($htmlPath);
 
-        self::assertSame($this->normalize($expected), $this->normalize($actual));
+        self::assertSame(SignificantDom::normalize($expected), SignificantDom::normalize($actual));
     }
 
     /** @return iterable<string, array{string, string}> */
@@ -73,66 +69,4 @@ final class CmButtonParityTest extends TestCase
         ));
     }
 
-    /** @return list<array<string, mixed>> */
-    private function normalize(string $html): array
-    {
-        $document = new DOMDocument('1.0', 'UTF-8');
-        $previous = libxml_use_internal_errors(true);
-        $document->loadHTML(
-            '<div data-parity-root>' . $html . '</div>',
-            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD,
-        );
-        libxml_clear_errors();
-        libxml_use_internal_errors($previous);
-        $root = $document->documentElement;
-
-        self::assertInstanceOf(DOMElement::class, $root);
-
-        return $this->normalizeChildren($root);
-    }
-
-    /** @return list<array<string, mixed>> */
-    private function normalizeChildren(DOMNode $parent): array
-    {
-        $children = [];
-
-        foreach ($parent->childNodes as $node) {
-            if ($node->nodeType === XML_COMMENT_NODE
-                || ($node->nodeType === XML_TEXT_NODE && trim((string) $node->nodeValue) === '')) {
-                continue;
-            }
-
-            if ($node->nodeType === XML_TEXT_NODE) {
-                $children[] = ['text' => $node->nodeValue];
-                continue;
-            }
-
-            if (!$node instanceof DOMElement) {
-                continue;
-            }
-
-            $attributes = [];
-
-            foreach ($node->attributes as $attribute) {
-                $value = in_array($attribute->name, self::BOOLEAN_ATTRIBUTES, true) ? true : $attribute->value;
-
-                if ($attribute->name === 'class') {
-                    $classes = preg_split('/\s+/', trim($attribute->value), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-                    sort($classes);
-                    $value = implode(' ', array_unique($classes));
-                }
-
-                $attributes[$attribute->name] = $value;
-            }
-
-            ksort($attributes);
-            $children[] = [
-                'tag' => $node->tagName,
-                'attributes' => $attributes,
-                'children' => $this->normalizeChildren($node),
-            ];
-        }
-
-        return $children;
-    }
 }
