@@ -48,6 +48,15 @@ Import the generated properties once in the application stylesheet:
 The light theme is the default. Set `data-cm-theme="dark"` on the document root to apply the dark
 semantic color overrides, or set `data-cm-theme="light"` explicitly.
 
+Consumers that only need the portable breakpoint custom properties can import the smaller entry:
+
+```css
+@import '@codemonster-ru/ui-tokens/breakpoints.css';
+```
+
+The distributed stylesheet uses ordinary custom properties and does not require custom-media
+processing in the consumer build.
+
 ## License
 
 [MIT](./LICENSE)
