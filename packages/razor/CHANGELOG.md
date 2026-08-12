@@ -15,3 +15,4 @@ All notable changes to this package will be documented in this file.
 - Added the package-owned Button Razor template and package view renderer wiring.
 - Added Button loading, icon-slot, enabled-link, and disabled-link rendering.
 - Added Button Razor escaping and accessibility integration verification.
+- Added significant DOM parity checks for all shared Vue and Razor Button cases.
