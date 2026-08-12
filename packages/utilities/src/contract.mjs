@@ -130,6 +130,17 @@ export const colorUtilities = Object.freeze({
   'border-strong': { 'border-color': tokenVariable('colorBorderStrong') },
   'border-divider': { 'border-color': tokenVariable('colorBorderDivider') },
 });
+
+export const borderUtilities = Object.freeze({
+  border: { 'border-width': tokenVariable('borderWidth') },
+  'border-thick': { 'border-width': tokenVariable('borderWidthThick') },
+  'border-0': { 'border-width': '0' },
+  'rounded-control': { 'border-radius': tokenVariable('radiusControl') },
+  'rounded-control-tight': { 'border-radius': tokenVariable('radiusControlTight') },
+  'rounded-surface': { 'border-radius': tokenVariable('radiusSurface') },
+  'rounded-overlay': { 'border-radius': tokenVariable('radiusOverlay') },
+  'rounded-round': { 'border-radius': tokenVariable('radiusRound') },
+});
 import { cmSizingTokenNames, cmSpacingTokenNames, serializeCmThemeTokensToCssVars } from '@codemonster-ru/ui-tokens';
 
 function tokenVariable(name) {
