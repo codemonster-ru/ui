@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "name": "Divider",
+  "slug": "divider",
+  "razorTag": "cm-divider",
+  "description": "A native separator with horizontal or vertical orientation.",
+  "props": {
+    "orientation": {
+      "type": "enum",
+      "required": false,
+      "default": "horizontal",
+      "values": ["horizontal", "vertical"]
+    }
+  },
+  "slots": {},
+  "events": {},
+  "states": ["default"]
+}

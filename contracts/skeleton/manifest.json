@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "name": "Skeleton",
+  "slug": "skeleton",
+  "razorTag": "cm-skeleton",
+  "description": "A decorative loading placeholder with optional motion.",
+  "props": {
+    "minHeight": { "type": "nullable-css-length", "required": false, "default": null },
+    "radius": {
+      "type": "enum",
+      "required": false,
+      "default": "surface",
+      "values": ["control", "surface", "round"]
+    },
+    "animated": { "type": "boolean", "required": false, "default": true }
+  },
+  "slots": {},
+  "events": {},
+  "states": ["default", "animated"]
+}

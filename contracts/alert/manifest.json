@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "name": "Alert",
+  "slug": "alert",
+  "razorTag": "cm-alert",
+  "description": "A text-first status or contextual message.",
+  "props": {
+    "tone": {
+      "type": "enum",
+      "required": false,
+      "default": "info",
+      "values": ["neutral", "primary", "success", "info", "warning", "help", "danger", "contrast"]
+    },
+    "title": { "type": "nullable-string", "required": false, "default": null }
+  },
+  "slots": {
+    "default": { "required": true, "description": "Alert body content." },
+    "title": { "required": false, "description": "Trusted title content overriding the title prop." },
+    "icon": { "required": false, "description": "Decorative trusted leading content." }
+  },
+  "events": {},
+  "states": ["default"]
+}
