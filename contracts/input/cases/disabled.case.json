@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "input-disabled",
+  "description": "Disabled input retains its rendered value but does not submit.",
+  "props": {
+    "disabled": true,
+    "value": "Archived"
+  },
+  "slots": {},
+  "attributes": {
+    "aria-label": "Status",
+    "name": "status"
+  }
+}
