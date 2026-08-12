@@ -9,6 +9,10 @@ A framework-agnostic runtime core for interactive playground sessions in the Vue
 
 Coordinated release: `@codemonster-ru/vueforge-playground-core@2.1.0`.
 
+Playground Core remains part of the dedicated VueForge Playground product family during the
+CodeMonster UI migration. It is not a CodeMonster UI runtime controller. See the repository
+[ownership decision](../../docs/architecture/playground-ownership.md) for the reviewed boundary.
+
 ## Requirements
 
 - Node.js 18 or newer for installation and build tooling.
