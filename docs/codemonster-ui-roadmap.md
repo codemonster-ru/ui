@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 4 — Button vertical slice
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-061`
+- Next item: `CMUI-062`
 
 ## Milestones
 
@@ -78,7 +78,7 @@ An item is complete only when all applicable conditions are satisfied:
 | --------- | ------------------------------------------------------------------------- | -------------------- |
 | M0        | Product name, boundaries, contracts, and migration policy approved        | Completed            |
 | M1        | Framework-independent tokens and CSS packages build and publish correctly | Completed            |
-| M2        | Button and Card render with parity in Vue and Annabel Razor               | Not started          |
+| M2        | Button and Card render with parity in Vue and Annabel Razor               | In progress          |
 | M3        | Input supports Vue binding and native Razor form submission               | Not started          |
 | M4        | Accordion proves accessible cross-platform interaction                    | Not started          |
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
@@ -167,7 +167,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-058` Move Button styles into the shared CSS package.
 - [x] `CMUI-059` Add Button selector and accessibility contracts.
 - [x] `CMUI-060` Scaffold `@codemonster-ru/ui-vue`.
-- [ ] `CMUI-061` Add Vue attribute forwarding and class utilities.
+- [x] `CMUI-061` Add Vue attribute forwarding and class utilities.
 - [ ] `CMUI-062` Add Vue `CmButton`.
 - [ ] `CMUI-063` Add Vue Button loading and icon-slot rendering.
 - [ ] `CMUI-064` Add Vue Button link rendering.
