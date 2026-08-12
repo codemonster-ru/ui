@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-tokens",
-  "version": "0.1.0",
+  "version": "1.0.0-rc.1",
   "description": "Framework-independent design tokens and theme serialization for CodeMonster UI.",
   "type": "module",
   "license": "MIT",

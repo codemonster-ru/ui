@@ -7,7 +7,7 @@
       "sha256": "9b8ba2dd2de7cd95c1631d0e7300e829484944053a50f9fcac6c5eaa18d47fa7",
       "source": {
         "package": "@codemonster-ru/ui-tokens",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./breakpoints.css"
       }
     },
@@ -17,7 +17,7 @@
       "sha256": "59440968ef86a2db63c4e6a89221b437223d71cd20e128d0330a7b3114cd1573",
       "source": {
         "package": "@codemonster-ru/ui-tokens",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./tokens.css"
       }
     },
@@ -27,7 +27,7 @@
       "sha256": "bfed0ba786509a9a7d7491474ee4ce6722d35fc82eed90aba68239dc71b64c48",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./styles.css"
       }
     },
@@ -37,7 +37,7 @@
       "sha256": "3a45abe1048cdfc8d0ca73b44f34aa8717cf135d788fbf723630c3ff497a4e30",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./foundation.css"
       }
     },
@@ -47,7 +47,7 @@
       "sha256": "e53d1d3a9510a7adeef83d4a4ea79c0440d2949aee37aacad8c909475a0ed3f1",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./dist/foundation/reset.css"
       }
     },
@@ -57,7 +57,7 @@
       "sha256": "68dd69bd5b78a6de94c25d421fb39ce1c90105908f8f03d3e40224c489b0bd59",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./dist/foundation/document.css"
       }
     },
@@ -67,7 +67,7 @@
       "sha256": "f27fda139e6a892174989ac4653cde577512173d276db8251ddba271f3fb467b",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./dist/foundation/focus.css"
       }
     },
@@ -77,7 +77,7 @@
       "sha256": "292367b4be9853d38035e13fdb452b4d2c4f8c1432c1cb57842517b6daa1cc2c",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./dist/foundation/preferences.css"
       }
     },
@@ -87,7 +87,7 @@
       "sha256": "0aa87ece70c17ac17ada99787b0199a8b33d026e67a44308092001d680ef2cf4",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./dist/primitives/control.css"
       }
     },
@@ -97,7 +97,7 @@
       "sha256": "d98ed38f66ffa97cca541ae1aa44a9ba5b18a047ce42dda64a1aa5a88d3b48e6",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./dist/primitives/surface.css"
       }
     },
@@ -107,7 +107,7 @@
       "sha256": "d0a4b87cb343992dd9a746c3ab4eda208f5e2bc74de17b12be676db20cc4a3af",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./accordion.css"
       }
     },
@@ -117,7 +117,7 @@
       "sha256": "da511a63d14defaa09506a050359627f2d824d4e9762cda6eee05c4af5b1e82a",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./alert.css"
       }
     },
@@ -127,7 +127,7 @@
       "sha256": "ceaf98c8b0565fefb8aa2b6c8fbdaa4c6c2398d177d256765f872069038f3ab2",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./avatar.css"
       }
     },
@@ -137,7 +137,7 @@
       "sha256": "cf797a6e0191a8f863b2dbfea08ae9a28e9b88b771bc6e34ae1758f43d6ba6c0",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./badge.css"
       }
     },
@@ -147,7 +147,7 @@
       "sha256": "1977a6432c669a5f5a8fa14f9d22d1f44d2feb15fa70a6557b9078a02b357357",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./breadcrumbs.css"
       }
     },
@@ -157,7 +157,7 @@
       "sha256": "f244c99ec14473143dd29793004193666007024ac8bf7098d341569066a308a2",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./button.css"
       }
     },
@@ -167,7 +167,7 @@
       "sha256": "2b05cfc981aff5566c0935bde50f484f80e20837e82d19b3192a4f13b628fdb7",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./card.css"
       }
     },
@@ -177,7 +177,7 @@
       "sha256": "276d8e5496ef29c94761fe6a4c57c7aeef009fed92be18d7e94f208edcfa3934",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./checkbox.css"
       }
     },
@@ -187,7 +187,7 @@
       "sha256": "c05617d19d6b2a140a2243133e54c8f8bdf3dd73a120e64e54448994c1bbab85",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./command-palette.css"
       }
     },
@@ -197,7 +197,7 @@
       "sha256": "5aacb903b5acd8000a798a495ef239c06036149c870a1c9b27948bd87f55d094",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./container.css"
       }
     },
@@ -207,7 +207,7 @@
       "sha256": "3daf14bd6f9fc7d0c93aa528cdfce47628339e28dbea11d8820776c71d87edd1",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./data-table.css"
       }
     },
@@ -217,7 +217,7 @@
       "sha256": "97c7b995488a2b15e9d507091bf7d3a87a12554f42e12c7da4982c2d116c2c1f",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./date-picker.css"
       }
     },
@@ -227,7 +227,7 @@
       "sha256": "1f72e0af0dfea29bd107dd72a16f65476e74d42d48e6573c209fc6e32209a7df",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./divider.css"
       }
     },
@@ -237,7 +237,7 @@
       "sha256": "26acc318e4b1f90914e39dec0b67d164c310a2ca7950c81754650b1d154ead1b",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./dialog.css"
       }
     },
@@ -247,7 +247,7 @@
       "sha256": "267883f08e20a4af11bbc7015a1bff3f3033a0b65567c9117a7bd58ebc373326",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./dropdown.css"
       }
     },
@@ -257,7 +257,7 @@
       "sha256": "ede212922d14e6e6d6517e504a348897bc7408a4dd6ca142dd910c1a6b3f1e5e",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./drawer.css"
       }
     },
@@ -267,7 +267,7 @@
       "sha256": "5ff1c5e1658d34f5b668fd64bd373068b9412da1b4987287eb59cdf2e53abaab",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./field.css"
       }
     },
@@ -277,7 +277,7 @@
       "sha256": "526288e9a0c6f0fad85107e6ae1593c4c2c99fc997c72c922fccf9a31f9a6e71",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./grid.css"
       }
     },
@@ -287,7 +287,7 @@
       "sha256": "8eaf3055a89083e1859bb684b45cb9c17fb92e28e0f2fc31a03efbd6cda56092",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./input.css"
       }
     },
@@ -297,7 +297,7 @@
       "sha256": "22fa8cfc55aaa77e87c9a92611051e49a95aafaaaab8c5402cadebebdf5f1927",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./inline.css"
       }
     },
@@ -307,7 +307,7 @@
       "sha256": "e3858bbee47703e171ff974d44e0e599e40923acfb0b50fd312a191aa2c5464e",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./link.css"
       }
     },
@@ -317,7 +317,7 @@
       "sha256": "baa39eeb6051f14fbaa36d59979a428f36faf93e89e91cf99c1d9e1bc5c31cfa",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./menu.css"
       }
     },
@@ -327,7 +327,7 @@
       "sha256": "b4fe20faf692fd9b35de3f03239fea8c3a12e8c8815a39b286dbbf4e32975b68",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./popover.css"
       }
     },
@@ -337,7 +337,7 @@
       "sha256": "9b3ecfc6310a3c18b8a4791f51df0115760eababcccaf88dcfa3a30e7d57f725",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./radio.css"
       }
     },
@@ -347,7 +347,7 @@
       "sha256": "57ff4b23c7c4c8def82d6c16debd368dba7336ee4851f16606ce9535acc4d399",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./select.css"
       }
     },
@@ -357,7 +357,7 @@
       "sha256": "eda4c11eda180e2edafb011a27a036a3a10225d49809abd112ba4b110eb14389",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./section.css"
       }
     },
@@ -367,7 +367,7 @@
       "sha256": "e140e43827d7528660b152fbf94ff1a53cd9ecabeeba4fa7c33f24499ac55194",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./skeleton.css"
       }
     },
@@ -377,7 +377,7 @@
       "sha256": "62236788f44a6fe12af478d7aca29240d93b1f5a09a01393de7e6d1b7934f52f",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./stack.css"
       }
     },
@@ -387,7 +387,7 @@
       "sha256": "b5adb10e2403a66c6d15a3bc9e9ae72c01005075bb30d20b31b955d04c4e446d",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./switch.css"
       }
     },
@@ -397,7 +397,7 @@
       "sha256": "7424c66858b54cadde3a8de0de625645f727b0f6cafb71fd8b12f28af6cfa783",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./table.css"
       }
     },
@@ -407,7 +407,7 @@
       "sha256": "6809001e60466121aad8d1f7ea1323753aaf0bd8f144b23f5d638ca0cc97b111",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./textarea.css"
       }
     },
@@ -417,7 +417,7 @@
       "sha256": "74f124347623a8f08ad46039059c742dad7851597f8349960fa93882919e2be2",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./tabs.css"
       }
     },
@@ -427,7 +427,7 @@
       "sha256": "cc72cac54bb9c3c9942579c9f088d66318cf574b3437a184bf2ab15c784ee1cb",
       "source": {
         "package": "@codemonster-ru/ui-css",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
         "export": "./tooltip.css"
       }
     }

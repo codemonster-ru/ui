@@ -9,6 +9,7 @@ const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const annabelRepository = resolve(process.env.ANNABEL_REPOSITORY ?? resolve(repositoryRoot, '../../PHP/annabel'));
 const composerCache = resolve(process.env.COMPOSER_CACHE_DIRECTORY ?? `${process.env.HOME}/.cache/composer`);
 const dockerImage = process.env.ANNABEL_PHP_IMAGE ?? 'annabel-php';
+const composerVersion = '1.0.0-rc.1';
 
 if (!existsSync(resolve(annabelRepository, 'packages/razor/composer.json'))) {
   throw new Error(`Annabel repository not found at ${annabelRepository}. Set ANNABEL_REPOSITORY to its absolute path.`);
@@ -39,8 +40,8 @@ composer --working-dir="$package_root" update --no-interaction --prefer-dist
 composer --working-dir="$package_root" check
 
 cp -R /workspace/packages/razor "$archive_package_root"
-composer --working-dir="$archive_package_root" config version 0.1.0
-composer --working-dir="$archive_package_root" archive --format=zip --dir="$artifact_root" --file=codemonster-ui-0.1.0 --no-interaction
+composer --working-dir="$archive_package_root" config version "$CODEMONSTER_UI_COMPOSER_VERSION"
+composer --working-dir="$archive_package_root" archive --format=zip --dir="$artifact_root" --file="codemonster-ui-$CODEMONSTER_UI_COMPOSER_VERSION" --no-interaction
 archive_path=$(find "$artifact_root" -maxdepth 1 -type f -name '*.zip' -print)
 test -n "$archive_path"
 test "$(printf '%s\n' "$archive_path" | wc -l | tr -d ' ')" = 1
@@ -82,6 +83,8 @@ const arguments_ = [
   '--rm',
   '-e',
   'COMPOSER_CACHE_DIR=/composer-cache',
+  '-e',
+  `CODEMONSTER_UI_COMPOSER_VERSION=${composerVersion}`,
   '-v',
   `${composerCache}:/composer-cache`,
   '-v',
