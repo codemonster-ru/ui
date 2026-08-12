@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 2 — framework-independent tokens
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-036`
+- Next item: `CMUI-037`
 
 ## Milestones
 
@@ -132,7 +132,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-033` Move radius, border, and shadow token ownership into the tokens package.
 - [x] `CMUI-034` Move motion token ownership into the tokens package.
 - [x] `CMUI-035` Move breakpoint token ownership into the tokens package.
-- [ ] `CMUI-036` Add the light theme preset.
+- [x] `CMUI-036` Add the light theme preset.
 - [ ] `CMUI-037` Add the dark theme preset.
 - [ ] `CMUI-038` Generate `--cm-*` custom properties.
 - [ ] `CMUI-039` Generate portable breakpoint CSS.
