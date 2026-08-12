@@ -3,6 +3,7 @@
   "id": "tooltip-blur",
   "case": "tooltip-visible",
   "steps": [
+    { "action": "focus", "target": "trigger" },
     { "action": "focus", "target": "outside" },
     { "expect": "visible", "target": "tooltip", "value": false }
   ]
