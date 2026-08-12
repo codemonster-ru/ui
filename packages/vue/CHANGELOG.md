@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## 1.0.0-rc.1
+
+### Added
+
+- Exposes the complete stable Vue component adapter cohort for prerelease consumer validation.
+
 ## 0.1.0
 
 ### Added
