@@ -10,6 +10,7 @@ test('publishes a framework-independent ESM entry', async () => {
     'cmBreakpointTokenNames',
     'cmBreakpointTokens',
     'cmBreakpoints',
+    'cmDarkThemePreset',
     'cmLightThemePreset',
     'cmMotionDurationsMs',
     'cmMotionTokenNames',

@@ -16,3 +16,4 @@ All notable changes to this package will be documented in this file.
 - Added shared motion durations, standard easing, numeric duration values, and a no-motion token.
 - Added the typed breakpoint registry, CSS token values, and safe name lookup.
 - Added the complete immutable light theme preset and composed theme token types.
+- Added the complete immutable dark theme preset with mode-neutral foundation parity.
