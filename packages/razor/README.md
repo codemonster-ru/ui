@@ -46,6 +46,9 @@ Every file is declared by the package manifest and verified by SHA-256 before pu
 The packaged `css/tokens/tokens.css` and `css/css/styles.css` entries are the complete stylesheet
 pair; keep their relative imported files together when serving them directly.
 
+See the cross-platform [Button guide](../../docs/components/button.md) for complete Vue and Annabel
+Razor usage.
+
 ## Development
 
 ```bash
