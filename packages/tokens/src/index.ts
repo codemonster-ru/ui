@@ -1,6 +1,6 @@
-/**
- * Framework-independent CodeMonster UI token contracts.
- *
- * Token groups are introduced by their dedicated roadmap items.
- */
-export {};
+export { cmPrimitiveColorTokenNames, cmPrimitiveColorTokens } from './primitive-colors.js';
+export type {
+  CmPrimitiveColorOverrides,
+  CmPrimitiveColorTokenName,
+  CmPrimitiveColorTokens,
+} from './primitive-colors.js';
