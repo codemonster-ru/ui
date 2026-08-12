@@ -8,6 +8,7 @@ export interface CmButtonProps {
   variant?: CmButtonVariant;
   size?: CmButtonSize;
   type?: CmButtonType;
+  href?: string | null;
   disabled?: boolean;
   loading?: boolean;
 }
