@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import {
+  borderUtilities,
   colorUtilities,
   displayUtilities,
   flexUtilities,
@@ -30,6 +31,7 @@ const utilities = {
   ...sizingUtilities,
   ...typographyUtilities,
   ...colorUtilities,
+  ...borderUtilities,
 };
 const rules = Object.entries(utilities).map(([name, declarations]) => serializeRule(name, declarations));
 const css = `${layerDeclaration.slice(0, -1)} {\n${rules.join('\n\n')}\n}\n`;
