@@ -9,9 +9,10 @@ describe('CmButton', () => {
       slots: { default: 'Save' },
     });
 
-    expect(wrapper.html()).toBe(
-      '<button class="cm-button cm-button--primary cm-button--md" type="button"><span class="cm-button__label">Save</span></button>',
-    );
+    expect(wrapper.element.tagName).toBe('BUTTON');
+    expect(wrapper.classes()).toEqual(['cm-button', 'cm-button--primary', 'cm-button--md']);
+    expect(wrapper.attributes('type')).toBe('button');
+    expect(wrapper.find('.cm-button__label').text()).toBe('Save');
   });
 
   it('renders variants, sizes, types, and disabled state', () => {
@@ -45,5 +46,39 @@ describe('CmButton', () => {
       'featured',
     ]);
     expect(wrapper.attributes()).toMatchObject({ id: 'save', 'data-testid': 'save-button' });
+  });
+
+  it('renders named icon regions around the label', () => {
+    const wrapper = mount(CmButton, {
+      slots: {
+        leading: '<span aria-hidden="true">←</span>',
+        default: 'Move',
+        trailing: '<span aria-hidden="true">→</span>',
+      },
+    });
+
+    expect(wrapper.find('.cm-button__leading').html()).toBe(
+      '<span class="cm-button__leading"><span aria-hidden="true">←</span></span>',
+    );
+    expect(wrapper.find('.cm-button__label').text()).toBe('Move');
+    expect(wrapper.find('.cm-button__trailing').html()).toBe(
+      '<span class="cm-button__trailing"><span aria-hidden="true">→</span></span>',
+    );
+  });
+
+  it('renders loading state in place of leading content', () => {
+    const wrapper = mount(CmButton, {
+      props: { loading: true },
+      attrs: { 'aria-busy': 'false' },
+      slots: {
+        leading: '<span>authored icon</span>',
+        default: 'Save',
+      },
+    });
+
+    expect(wrapper.attributes()).toMatchObject({ disabled: '', 'aria-busy': 'true' });
+    expect(wrapper.find('.cm-button__spinner').attributes('aria-hidden')).toBe('true');
+    expect(wrapper.find('.cm-button__leading').exists()).toBe(false);
+    expect(wrapper.find('.cm-button__label').text()).toBe('Save');
   });
 });

@@ -28,11 +28,13 @@ import { CmButton } from '@codemonster-ru/ui-vue';
 
 `CmButton` renders a native button, forwards consumer attributes and listeners to it, and merges
 consumer classes after the stable `cm-button` contract classes. Its default native `type` is
-`button`; set `type="submit"` explicitly for form submission.
+`button`; set `type="submit"` explicitly for form submission. The optional `leading` and `trailing`
+slots render icon regions. `loading` replaces the leading region with a hidden spinner, disables the
+button, and exposes `aria-busy="true"` while preserving its label.
 
 ## Documentation
 
-Button loading, icon slots, and link rendering are added by the remaining vertical-slice items.
+Button link rendering is added by the remaining vertical-slice items.
 
 ## License
 
