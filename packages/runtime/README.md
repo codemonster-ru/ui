@@ -6,7 +6,7 @@ Current release: `@codemonster-ru/ui-runtime@0.1.0`.
 
 The package provides controller registration, scoped discovery, idempotent lifecycle management,
 optional mutation observation, typed `cm:*` custom-event helpers, Accordion interaction, and native
-indeterminate Checkbox restoration for server-rendered markup.
+indeterminate Checkbox restoration, Tabs, Menu, and Dropdown interaction for server-rendered markup.
 
 The runtime does not render application content, import a component framework, or replace native
 HTML behavior.
@@ -44,6 +44,8 @@ See the cross-platform [Accordion guide](../../docs/components/accordion.md) for
 events, keyboard behavior, and state ownership.
 See the [form components guide](../../docs/components/forms.md) for the narrow Checkbox runtime
 requirement and native submission rules.
+See the [navigation components guide](../../docs/components/navigation.md) for controller
+registration, keyboard behavior, and state ownership.
 
 ## Development
 
