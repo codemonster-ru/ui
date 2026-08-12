@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "name": "Select",
+  "slug": "select",
+  "razorTag": "cm-select",
+  "description": "A styled native single-value select control.",
+  "props": {
+    "options": { "type": "collection", "required": true, "valueContract": "select-option" },
+    "value": { "type": "string", "required": false, "default": "" },
+    "placeholder": { "type": "nullable", "required": false, "default": null },
+    "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg"] },
+    "invalid": { "type": "boolean", "required": false, "default": false },
+    "disabled": { "type": "boolean", "required": false, "default": false },
+    "required": { "type": "boolean", "required": false, "default": false }
+  },
+  "slots": {},
+  "events": {
+    "valueChange": { "description": "Reports the selected native string value.", "payloadContract": "string" }
+  },
+  "states": ["default", "selected", "invalid", "disabled"]
+}
