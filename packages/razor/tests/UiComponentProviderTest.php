@@ -8,8 +8,12 @@ use Codemonster\Razor\Components\ComponentRegistry;
 use Codemonster\Ui\Components\CmAccordion;
 use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
+use Codemonster\Ui\Components\CmCheckbox;
 use Codemonster\Ui\Components\CmField;
 use Codemonster\Ui\Components\CmInput;
+use Codemonster\Ui\Components\CmRadio;
+use Codemonster\Ui\Components\CmSwitch;
+use Codemonster\Ui\Components\CmTextarea;
 use Codemonster\Ui\UiComponentProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -26,14 +30,22 @@ final class UiComponentProviderTest extends TestCase
         self::assertInstanceOf(CmAccordion::class, $provider->components()['accordion']);
         self::assertInstanceOf(CmButton::class, $provider->components()['button']);
         self::assertInstanceOf(CmCard::class, $provider->components()['card']);
+        self::assertInstanceOf(CmCheckbox::class, $provider->components()['checkbox']);
         self::assertInstanceOf(CmField::class, $provider->components()['field']);
         self::assertInstanceOf(CmInput::class, $provider->components()['input']);
+        self::assertInstanceOf(CmRadio::class, $provider->components()['radio']);
+        self::assertInstanceOf(CmSwitch::class, $provider->components()['switch']);
+        self::assertInstanceOf(CmTextarea::class, $provider->components()['textarea']);
         self::assertTrue($registry->handles('cm-button'));
         self::assertInstanceOf(CmAccordion::class, $registry->resolve('cm-accordion'));
         self::assertInstanceOf(CmButton::class, $registry->resolve('cm-button'));
         self::assertInstanceOf(CmCard::class, $registry->resolve('cm-card'));
+        self::assertInstanceOf(CmCheckbox::class, $registry->resolve('cm-checkbox'));
         self::assertInstanceOf(CmField::class, $registry->resolve('cm-field'));
         self::assertInstanceOf(CmInput::class, $registry->resolve('cm-input'));
+        self::assertInstanceOf(CmRadio::class, $registry->resolve('cm-radio'));
+        self::assertInstanceOf(CmSwitch::class, $registry->resolve('cm-switch'));
+        self::assertInstanceOf(CmTextarea::class, $registry->resolve('cm-textarea'));
         self::assertFalse($registry->handles('other-button'));
     }
 }

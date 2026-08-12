@@ -4,3 +4,4 @@ export { createCmEvent, dispatchCmEvent } from './events.js';
 export type { CmCustomEventInit } from './events.js';
 export { CmAccordionController, createCmAccordionController } from './accordion.js';
 export type { AccordionOpenChangeDetail } from './accordion.js';
+export { CmCheckboxController, createCmCheckboxController } from './checkbox.js';

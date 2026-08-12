@@ -55,7 +55,12 @@ function updateChecked(event: Event): void {
 </script>
 
 <template>
-  <label v-bind="rootAttrs" :class="classes">
+  <label
+    v-bind="rootAttrs"
+    :class="classes"
+    :data-cm-controller="props.indeterminate ? 'checkbox' : undefined"
+    :data-cm-checkbox-indeterminate="props.indeterminate ? 'true' : undefined"
+  >
     <input
       ref="input"
       v-bind="controlAttrs"

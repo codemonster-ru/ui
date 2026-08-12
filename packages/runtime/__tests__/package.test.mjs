@@ -6,8 +6,10 @@ test('publishes the framework-independent runtime entry', async () => {
 
   assert.deepEqual(Object.keys(entry), [
     'CmAccordionController',
+    'CmCheckboxController',
     'CmRuntime',
     'createCmAccordionController',
+    'createCmCheckboxController',
     'createCmEvent',
     'dispatchCmEvent',
   ]);

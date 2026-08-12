@@ -26,9 +26,11 @@ used when the default slot is empty; trusted slot content otherwise takes preced
 
 The semantic `checked` value is boolean. Vue exposes it through boolean `modelValue` and emits
 `update:modelValue` after native changes. Annabel Razor renders the current `checked` attribute and
-uses submitted form data for the next render. `indeterminate` sets the native DOM property after
-render; the browser exposes that state to assistive technology. It is a visual mixed state, not a
-third submitted value.
+uses submitted form data for the next render. `indeterminate` adds
+`data-cm-controller="checkbox"` and `data-cm-checkbox-indeterminate="true"` to the root. Vue sets the
+native DOM property directly; Razor consumers register the shared Checkbox controller to restore it
+after server rendering. The browser then exposes the mixed state to assistive technology. It is a
+visual state, not a third submitted value, and degrades to unchecked when enhancement is absent.
 
 ## Validation and submission
 

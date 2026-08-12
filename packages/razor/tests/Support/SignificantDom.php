@@ -45,7 +45,13 @@ final class SignificantDom
             }
 
             if ($node->nodeType === XML_TEXT_NODE) {
-                $children[] = ['text' => $node->nodeValue];
+                $value = (string) $node->nodeValue;
+                if ($parent instanceof DOMElement && $parent->tagName === 'textarea' && $node === $parent->firstChild) {
+                    $value = (string) preg_replace('/^\r?\n/', '', $value, 1);
+                }
+                if ($value !== '') {
+                    $children[] = ['text' => $value];
+                }
                 continue;
             }
 
