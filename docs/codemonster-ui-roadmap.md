@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 4 — Button vertical slice
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-059`
+- Next item: `CMUI-060`
 
 ## Milestones
 
@@ -165,7 +165,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-056` Add Button canonical fixtures for disabled and loading states.
 - [x] `CMUI-057` Add Button canonical fixtures for link rendering and icon slots.
 - [x] `CMUI-058` Move Button styles into the shared CSS package.
-- [ ] `CMUI-059` Add Button selector and accessibility contracts.
+- [x] `CMUI-059` Add Button selector and accessibility contracts.
 - [ ] `CMUI-060` Scaffold `@codemonster-ru/ui-vue`.
 - [ ] `CMUI-061` Add Vue attribute forwarding and class utilities.
 - [ ] `CMUI-062` Add Vue `CmButton`.

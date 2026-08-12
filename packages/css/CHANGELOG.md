@@ -20,3 +20,4 @@ All notable changes to this package will be documented in this file.
 - Documented CSS-only imports, themes, primitives, copied assets, and server rendering.
 - Added shared Button variants, sizes, interaction states, content regions, and loading indicator
   styles.
+- Added Button selector parity and explicit focus-visible and forced-colors contracts.
