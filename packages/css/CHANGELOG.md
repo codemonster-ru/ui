@@ -21,3 +21,4 @@ All notable changes to this package will be documented in this file.
 - Added shared Button variants, sizes, interaction states, content regions, and loading indicator
   styles.
 - Added Button selector parity and explicit focus-visible and forced-colors contracts.
+- Added shared Card surface, compact state, content-region styles, and selector contracts.

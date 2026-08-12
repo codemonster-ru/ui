@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "3c5c7835566e0f0177c7a2b52bd735951d2d00f6be47cb482c4996c36398502c",
+      "sha256": "c49b7ae240a529c02b666fb2818e2e1c0c02d8aa7bc8896313cdc73d2171d562",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
@@ -109,6 +109,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./button.css"
+      }
+    },
+    "css:components/card.css": {
+      "path": "css/css/components/card.css",
+      "mediaType": "text/css",
+      "sha256": "2b05cfc981aff5566c0935bde50f484f80e20837e82d19b3192a4f13b628fdb7",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./card.css"
       }
     }
   }
