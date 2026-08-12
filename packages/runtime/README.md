@@ -5,11 +5,16 @@ Framework-independent progressive enhancement for canonical CodeMonster UI marku
 Current release: `@codemonster-ru/ui-runtime@0.1.0`.
 
 The package provides controller registration, scoped discovery, idempotent lifecycle management,
-optional mutation observation, typed `cm:*` custom-event helpers, and Accordion progressive
-enhancement.
+optional mutation observation, typed `cm:*` custom-event helpers, Accordion interaction, and native
+indeterminate Checkbox restoration for server-rendered markup.
 
 The runtime does not render application content, import a component framework, or replace native
 HTML behavior.
+
+## Requirements
+
+- Node.js `^22.22.3`, `^24.15.0`, or `>=26.0.0` for package tooling.
+- A browser DOM for controller activation; server imports remain side-effect free.
 
 ## Installation
 
@@ -17,11 +22,15 @@ HTML behavior.
 npm install @codemonster-ru/ui-runtime @codemonster-ru/ui-css
 ```
 
+## Quick start
+
 ```ts
 import '@codemonster-ru/ui-css/styles.css';
-import { CmRuntime, createCmAccordionController } from '@codemonster-ru/ui-runtime';
+import { CmRuntime, createCmAccordionController, createCmCheckboxController } from '@codemonster-ru/ui-runtime';
 
-const runtime = new CmRuntime().register('accordion', createCmAccordionController);
+const runtime = new CmRuntime()
+  .register('accordion', createCmAccordionController)
+  .register('checkbox', createCmCheckboxController);
 runtime.start(document);
 ```
 
@@ -29,8 +38,12 @@ Repeated `start()` calls are safe. Call `runtime.stop(container)` before permane
 enhanced subtree, or use `const dispose = runtime.observe(container)` for automatic discovery and
 disposal. Scope runtime initialization away from Vue-owned component trees.
 
+## Documentation
+
 See the cross-platform [Accordion guide](../../docs/components/accordion.md) for Razor rendering,
 events, keyboard behavior, and state ownership.
+See the [form components guide](../../docs/components/forms.md) for the narrow Checkbox runtime
+requirement and native submission rules.
 
 ## Development
 
