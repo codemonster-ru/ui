@@ -16,6 +16,17 @@ export { default as CmCheckbox } from './components/checkbox/CmCheckbox.vue';
 export type { CmCheckboxProps, CmCheckboxSize } from './components/checkbox/checkbox.types';
 export { default as CmCommandPalette } from './components/command-palette/CmCommandPalette.vue';
 export type { CmCommandPaletteItem, CmCommandPaletteProps } from './components/command-palette/command-palette.types';
+export { default as CmDataTable } from './components/data-table/CmDataTable.vue';
+export type {
+  CmDataTableAlign,
+  CmDataTableCellValue,
+  CmDataTableColumn,
+  CmDataTableDensity,
+  CmDataTableProps,
+  CmDataTableRow,
+  CmDataTableSort,
+  CmDataTableSortDirection,
+} from './components/data-table/data-table.types';
 export { default as CmDatePicker } from './components/date-picker/CmDatePicker.vue';
 export type { CmDatePickerProps, CmDatePickerSize } from './components/date-picker/date-picker.types';
 export { default as CmDivider } from './components/divider/CmDivider.vue';
@@ -44,6 +55,8 @@ export { default as CmSkeleton } from './components/skeleton/CmSkeleton.vue';
 export type { CmSkeletonProps, CmSkeletonRadius } from './components/skeleton/skeleton.types';
 export { default as CmSwitch } from './components/switch/CmSwitch.vue';
 export type { CmSwitchProps, CmSwitchSize } from './components/switch/switch.types';
+export { default as CmTable } from './components/table/CmTable.vue';
+export type { CmTableDensity, CmTableProps } from './components/table/table.types';
 export { default as CmTabs } from './components/tabs/CmTabs.vue';
 export type { CmTabItem, CmTabsProps } from './components/tabs/tabs.types';
 export { default as CmTextarea } from './components/textarea/CmTextarea.vue';
