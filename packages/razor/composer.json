@@ -23,7 +23,7 @@
     }
   },
   "scripts": {
-    "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress",
+    "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress --memory-limit=1G",
     "test": "phpunit --configuration=phpunit.xml.dist",
     "check": [
       "@analyse",
