@@ -9,4 +9,5 @@ export interface CmButtonProps {
   size?: CmButtonSize;
   type?: CmButtonType;
   disabled?: boolean;
+  loading?: boolean;
 }
