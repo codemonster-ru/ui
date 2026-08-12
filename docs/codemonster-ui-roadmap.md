@@ -67,10 +67,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 1 — repository and contract infrastructure
+- Current phase: Phase 2 — framework-independent tokens
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-027`
+- Next item: `CMUI-028`
 
 ## Milestones
 
@@ -120,7 +120,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-024` Add new packages to root lint, typecheck, test, and build orchestration.
 - [x] `CMUI-025` Extend package-contract checks for CodeMonster UI packages.
 - [x] `CMUI-026` Add packed-consumer checks for CSS-only consumers.
-- [ ] `CMUI-027` Add bundle and CSS size budgets for new packages.
+- [x] `CMUI-027` Add bundle and CSS size budgets for new packages.
 
 ## Phase 2 — Framework-independent tokens
 
