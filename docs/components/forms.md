@@ -1,11 +1,13 @@
-# Field and Input
+# Form components
 
-`Field` associates one native form control with its visible label, help text, and validation error.
-`Input` is a thin single-line native input adapter. Together they preserve browser forms while Vue
-uses idiomatic model binding and Annabel Razor uses submitted request values during server rerender.
+`Field` associates a control with its label and messages. `Input`, `Textarea`, `Checkbox`, `Radio`,
+and `Switch` preserve native browser editing, focus, validation, events, and form submission. Vue
+uses idiomatic model binding; Annabel Razor renders values from application state or the submitted
+request.
 
 Load the token and complete component stylesheets described in the [Button guide](./button.md).
-Field and Input are also available from the `field.css` and `input.css` npm subpath exports.
+Each component style is also available from the `field.css`, `input.css`, `textarea.css`,
+`checkbox.css`, `radio.css`, and `switch.css` npm subpath exports.
 
 ## Field API
 
@@ -38,14 +40,45 @@ Safe native attributes such as `id`, `name`, `autocomplete`, `placeholder`, `pat
 `inputmode` reach the input. Component-owned value, type, boolean state, and `aria-invalid` cannot
 be overridden through forwarded attributes.
 
+## Textarea and choice APIs
+
+`Textarea` accepts the Input state and size props except `type`; its string `value` maps to Vue
+`modelValue` and renders as escaped textarea content in Razor. Native attributes such as `name`,
+`rows`, `maxlength`, and `wrap` reach the `<textarea>`.
+
+Checkbox and Switch share these props:
+
+| Prop            | Values           | Default | Behavior                                                     |
+| --------------- | ---------------- | ------- | ------------------------------------------------------------ |
+| `checked`       | boolean          | `false` | Current state; Vue maps this to boolean `v-model`.           |
+| `value`         | string           | `on`    | Native submitted value while checked.                        |
+| `label`         | string           | `''`    | Escaped fallback when the default slot is empty.             |
+| `size`          | `sm`, `md`, `lg` | `md`    | Shared label and control size.                               |
+| `invalid`       | boolean          | `false` | Adds invalid presentation and `aria-invalid`.                |
+| `disabled`      | boolean          | `false` | Native disabled state; the control is not submitted.         |
+| `required`      | boolean          | `false` | Native required constraint.                                  |
+| `indeterminate` | boolean          | `false` | Checkbox only: native mixed visual state, not a third value. |
+
+Radio requires a string `value` and otherwise shares `label`, `size`, `invalid`, `disabled`, and
+`required`. Vue compares `modelValue` with each option value. Razor receives `checked` for the
+current option. Give related radios the same non-empty native `name`.
+
+Switch represents an immediate setting and renders a native checkbox with `role="switch"`. Use
+Checkbox for acceptance or multi-selection. Neither component emits a hidden fallback input, so an
+unchecked value is absent from submitted form data.
+
 ## Vue binding
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CmField, CmInput } from '@codemonster-ru/ui-vue';
+import { CmCheckbox, CmField, CmInput, CmRadio, CmSwitch, CmTextarea } from '@codemonster-ru/ui-vue';
 
 const email = ref('');
+const frequency = ref('daily');
+const notes = ref('');
+const updates = ref(false);
+const darkMode = ref(false);
 const error = ref<string>();
 </script>
 
@@ -65,6 +98,11 @@ const error = ref<string>();
         />
       </template>
     </CmField>
+    <CmTextarea v-model="notes" name="notes" aria-label="Notes" />
+    <CmCheckbox v-model="updates" name="topics" value="updates">Product updates</CmCheckbox>
+    <CmRadio v-model="frequency" name="frequency" value="daily">Daily</CmRadio>
+    <CmRadio v-model="frequency" name="frequency" value="weekly">Weekly</CmRadio>
+    <CmSwitch v-model="darkMode" name="theme" value="dark">Dark mode</CmSwitch>
   </form>
 </template>
 ```
@@ -72,6 +110,9 @@ const error = ref<string>();
 `CmInput` emits `update:modelValue` with the current DOM string and preserves the native `input`
 event. It does not keep a second uncontrolled value. Native form serialization reads the DOM value
 and native constraints still govern browser submission.
+
+Textarea follows the same string binding. Checkbox and Switch emit booleans; Radio emits its string
+option value. Keep the model as the single Vue source of truth.
 
 ## Annabel Razor submission
 
@@ -101,6 +142,13 @@ Render the current value and relationships explicitly in the Razor template:
             :aria-describedby="isset($errors['email']) ? 'email-error' : null"
         />
     </cm-field>
+    <cm-textarea name="notes" :value="$submitted['notes'] ?? ''" aria-label="Notes" />
+    <cm-checkbox name="topics" value="updates" :checked="in_array('updates', $submitted['topics'] ?? [], true)">
+        Product updates
+    </cm-checkbox>
+    <cm-radio name="frequency" value="daily" :checked="($submitted['frequency'] ?? 'daily') === 'daily'">Daily</cm-radio>
+    <cm-radio name="frequency" value="weekly" :checked="($submitted['frequency'] ?? '') === 'weekly'">Weekly</cm-radio>
+    <cm-switch name="theme" value="dark" :checked="($submitted['theme'] ?? null) === 'dark'">Dark mode</cm-switch>
     <cm-button type="submit">Save</cm-button>
 </form>
 ```
@@ -108,9 +156,29 @@ Render the current value and relationships explicitly in the Razor template:
 The server-rendered `value` is HTML-escaped. Error text is escaped unless authored as trusted slot
 markup. Never convert request values or validation messages to `RenderedHtml`.
 
+## Indeterminate Checkbox in Razor
+
+HTML cannot serialize the native `indeterminate` DOM property. When Razor renders
+`<cm-checkbox :indeterminate="true">`, register the framework-independent Checkbox controller in
+the frontend bundle:
+
+```ts
+import { CmRuntime, createCmCheckboxController } from '@codemonster-ru/ui-runtime';
+
+new CmRuntime().register('checkbox', createCmCheckboxController).start(document);
+```
+
+Without enhancement the control safely degrades to an ordinary unchecked checkbox. Vue sets the
+property directly and does not need the runtime. Do not initialize the runtime over Vue-owned form
+components.
+
 ## Native form and accessibility rules
 
 - A named enabled input contributes its current value to form submission.
+- Checked named Checkbox, Radio, and Switch controls contribute their string value. Unchecked
+  controls are absent; normalize missing values in application code.
+- Related Radio controls use the same native `name`; browser exclusivity remains authoritative.
+- Textarea submits its current DOM text and preserves native multiline constraints.
 - A readonly input remains successful form data; a disabled input does not submit.
 - Field's required marker is visual-only, so set native `required` on Input as shown.
 - An error implies Field invalid presentation. Input receives `invalid` separately because Field
