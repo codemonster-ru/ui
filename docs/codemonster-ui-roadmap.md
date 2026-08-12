@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-144`
+- Next item: `CMUI-145`
 
 ## Milestones
 
@@ -351,13 +351,13 @@ added to the active scope in the future.
   - [x] `CMUI-143d` Add Vue advanced-input adapters and binding verification.
   - [x] `CMUI-143e` Add Annabel Razor advanced-input adapters and submission integration.
   - [x] `CMUI-143f` Verify advanced-input DOM, accessibility, interaction, visual, and documentation parity.
-- [ ] `CMUI-144` Migrate the data-display cohort: Table and DataTable.
+- [x] `CMUI-144` Migrate the data-display cohort: Table and DataTable.
   - [x] `CMUI-144a` Define Table and DataTable contracts, canonical fixtures, and interaction behavior.
   - [x] `CMUI-144b` Add shared CSS for Table and DataTable.
   - [x] `CMUI-144c` Add shared progressive-enhancement runtime for interactive DataTable behavior.
   - [x] `CMUI-144d` Add Vue Table and DataTable adapters and controlled-state verification.
   - [x] `CMUI-144e` Add Annabel Razor Table and DataTable adapters and runtime integration.
-  - [ ] `CMUI-144f` Verify data-table DOM, accessibility, interaction, visual, and documentation parity.
+  - [x] `CMUI-144f` Verify data-table DOM, accessibility, interaction, visual, and documentation parity.
 - [ ] `CMUI-145` Migrate layout primitives.
 - [ ] `CMUI-146` Review application shells for platform-independent ownership.
 - [ ] `CMUI-147` Decide and implement CodeBlock ownership.

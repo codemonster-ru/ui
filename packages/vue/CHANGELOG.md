@@ -21,3 +21,4 @@ All notable changes to this package will be documented in this file.
 - Added Dialog, Drawer, Popover, and Tooltip adapters with canonical SSR, controlled state, focus,
   and dismissal verification.
 - Added native Select and DatePicker adapters plus controlled searchable CommandPalette interaction.
+- Added semantic Table slots and controlled DataTable sorting, selection, pagination, states, and SSR parity.

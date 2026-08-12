@@ -45,6 +45,7 @@ See the [display components guide](../../docs/components/display.md) for Badge, 
 See the [navigation components guide](../../docs/components/navigation.md) for native links, controlled Tabs, Menu, and Dropdown behavior.
 See the [overlay components guide](../../docs/components/overlays.md) for modal focus, disclosure state, and Tooltip behavior.
 See the [advanced input guide](../../docs/components/advanced-inputs.md) for native Select and DatePicker binding and CommandPalette state.
+See the [Table and DataTable guide](../../docs/components/data-tables.md) for authored table slots and controlled data requests.
 
 ## License
 

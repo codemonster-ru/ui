@@ -30,7 +30,9 @@ function componentClasses(slug) {
 function cssClasses(slug) {
   const css = readFileSync(resolve(repositoryRoot, `packages/css/src/components/${slug}.css`), 'utf8');
   return new Set(
-    [...css.matchAll(new RegExp(`\\.(cm-${slug}(?:--|__)[a-z0-9-]+|cm-${slug})\\b`, 'g'))].map((match) => match[1]),
+    [...css.matchAll(new RegExp(`\\.(cm-${slug}(?:--|__|-wrap)[a-z0-9-]*|cm-${slug})\\b`, 'g'))].map(
+      (match) => match[1],
+    ),
   );
 }
 
@@ -329,6 +331,47 @@ for (const [slug, approved] of [
       'cm-skeleton--radius-control',
       'cm-skeleton--radius-surface',
       'cm-skeleton--radius-round',
+    ],
+  ],
+  [
+    'table',
+    [
+      'cm-table-wrap',
+      'cm-table',
+      'cm-table--compact',
+      'cm-table--striped',
+      'cm-table--column-dividers',
+      'cm-table--sticky-header',
+      'cm-table__scroll',
+      'cm-table__caption',
+      'cm-table__head',
+      'cm-table__body',
+      'cm-table__foot',
+    ],
+  ],
+  [
+    'data-table',
+    [
+      'cm-data-table',
+      'cm-data-table--compact',
+      'cm-data-table--striped',
+      'cm-data-table--column-dividers',
+      'cm-data-table--sticky-header',
+      'cm-data-table__scroll',
+      'cm-data-table__table',
+      'cm-data-table__caption',
+      'cm-data-table__head',
+      'cm-data-table__body',
+      'cm-data-table__selection',
+      'cm-data-table__cell--center',
+      'cm-data-table__cell--end',
+      'cm-data-table__sort',
+      'cm-data-table__sort-indicator',
+      'cm-data-table__row--selected',
+      'cm-data-table__state',
+      'cm-data-table__pagination',
+      'cm-data-table__page-button',
+      'cm-data-table__page-summary',
     ],
   ],
 ]) {

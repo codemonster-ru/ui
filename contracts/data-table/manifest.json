@@ -30,8 +30,14 @@
   },
   "slots": {},
   "events": {
-    "sortChange": { "description": "Reports the next single-column sort state or null.", "payloadContract": "nullable-data-table-sort" },
-    "selectionChange": { "description": "Reports selected row ids in rendered row order.", "payloadContract": "data-table-row-ids" },
+    "sortChange": {
+      "description": "Reports the next single-column sort state or null.",
+      "payloadContract": "nullable-data-table-sort"
+    },
+    "selectionChange": {
+      "description": "Reports selected row ids in rendered row order.",
+      "payloadContract": "data-table-row-ids"
+    },
     "pageChange": { "description": "Reports the requested one-based page.", "payloadContract": "page-number" }
   },
   "states": ["default", "sorted", "selected", "paginated", "empty", "loading", "error"]
