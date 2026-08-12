@@ -50,6 +50,8 @@ See the [overlay components guide](../../docs/components/overlays.md) for modal 
 open-request events, and non-modal dismissal.
 See the [advanced input guide](../../docs/components/advanced-inputs.md) for CommandPalette
 registration, filtering, and selection events.
+See the [Table and DataTable guide](../../docs/components/data-tables.md) for DataTable sorting,
+selection, and server-owned pagination requests.
 
 ## Development
 
