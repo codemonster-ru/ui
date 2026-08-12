@@ -1,0 +1,1 @@
+<span class="{{ $classes }}"{!! $attributes !!}>@if ($image !== null && $image !== '')<img class="cm-avatar__image" src="{{ $image }}" alt="{{ $imageAlt }}">@elseif ($label !== null && $label !== '')<span class="cm-avatar__label">{{ $label }}</span>@elseif ($fallback !== null){{ $fallback }}@endif</span>
