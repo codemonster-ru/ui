@@ -1,3 +1,5 @@
+export { default as CmAccordion } from './components/accordion/CmAccordion.vue';
+export type { CmAccordionItem, CmAccordionOpenChange, CmAccordionProps } from './components/accordion/accordion.types';
 export { default as CmButton } from './components/button/CmButton.vue';
 export type { CmButtonProps, CmButtonSize, CmButtonType, CmButtonVariant } from './components/button/button.types';
 export { default as CmCard } from './components/card/CmCard.vue';
