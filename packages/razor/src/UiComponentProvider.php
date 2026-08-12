@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codemonster\Ui;
 
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
+use Codemonster\Ui\Components\CmButton;
 
 final readonly class UiComponentProvider implements ComponentProviderInterface
 {
@@ -15,6 +16,6 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
 
     public function components(): array
     {
-        return [];
+        return ['button' => new CmButton()];
     }
 }
