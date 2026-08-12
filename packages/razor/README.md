@@ -50,6 +50,7 @@ See the cross-platform [Button guide](../../docs/components/button.md) for compl
 Razor usage.
 See the [Card guide](../../docs/components/card.md) for nested default and named-slot composition.
 See the [Field and Input guide](../../docs/components/forms.md) for native submission and server rerender.
+See the [Accordion guide](../../docs/components/accordion.md) for runtime installation and progressive enhancement.
 
 ## Development
 
