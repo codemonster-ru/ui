@@ -96,3 +96,55 @@ test('disposes one subtree and allows it to reconnect', () => {
     'disconnect:second',
   ]);
 });
+
+test('optionally observes inserted removed and retargeted controllers', async () => {
+  const dom = new JSDOM('<main></main>');
+  const calls = [];
+  const runtime = new CmRuntime()
+    .register('first', controllerFactory('first', calls))
+    .register('second', controllerFactory('second', calls));
+  const main = dom.window.document.querySelector('main');
+  const dispose = runtime.observe(main);
+
+  assert.equal(runtime.observe(main), dispose);
+
+  const element = dom.window.document.createElement('section');
+  element.dataset.cmController = 'first';
+  main.append(element);
+  await mutations(dom);
+
+  element.dataset.cmController = 'second';
+  await mutations(dom);
+
+  element.remove();
+  await mutations(dom);
+  dispose();
+
+  assert.deepEqual(calls, [
+    'connect:first',
+    'disconnect:first',
+    'connect:second',
+    'disconnect:second',
+  ]);
+});
+
+test('reports roots without a MutationObserver implementation', () => {
+  const root = { nodeType: 11, ownerDocument: null, querySelectorAll: () => [] };
+
+  assert.throws(() => new CmRuntime().observe(root), /MutationObserver is not available/u);
+});
+
+function controllerFactory(name, calls) {
+  return () => ({
+    connect() {
+      calls.push(`connect:${name}`);
+    },
+    disconnect() {
+      calls.push(`disconnect:${name}`);
+    },
+  });
+}
+
+function mutations(dom) {
+  return new Promise((resolve) => dom.window.setTimeout(resolve, 0));
+}
