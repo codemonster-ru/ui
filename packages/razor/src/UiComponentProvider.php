@@ -12,10 +12,14 @@ use Codemonster\Ui\Components\CmAvatar;
 use Codemonster\Ui\Components\CmBadge;
 use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
+use Codemonster\Ui\Components\CmCheckbox;
 use Codemonster\Ui\Components\CmDivider;
 use Codemonster\Ui\Components\CmField;
 use Codemonster\Ui\Components\CmInput;
+use Codemonster\Ui\Components\CmRadio;
 use Codemonster\Ui\Components\CmSkeleton;
+use Codemonster\Ui\Components\CmSwitch;
+use Codemonster\Ui\Components\CmTextarea;
 use Codemonster\View\EngineInterface;
 use Codemonster\View\Locator\DefaultLocator;
 
@@ -45,10 +49,14 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'badge' => new CmBadge($this->views),
             'button' => new CmButton($this->views),
             'card' => new CmCard($this->views),
+            'checkbox' => new CmCheckbox($this->views),
             'divider' => new CmDivider($this->views),
             'field' => new CmField($this->views),
             'input' => new CmInput($this->views),
+            'radio' => new CmRadio($this->views),
             'skeleton' => new CmSkeleton($this->views),
+            'switch' => new CmSwitch($this->views),
+            'textarea' => new CmTextarea($this->views),
         ];
     }
 }
