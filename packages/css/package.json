@@ -42,6 +42,9 @@
     "css",
     "design-system"
   ],
+  "dependencies": {
+    "@codemonster-ru/ui-tokens": "^0.1.0"
+  },
   "devDependencies": {
     "eslint": "^10.8.0",
     "prettier": "^3.6.2",
