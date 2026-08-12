@@ -1,0 +1,58 @@
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
+
+import CmDataTable from './data-table/CmDataTable.vue';
+import CmTable from './table/CmTable.vue';
+
+const columns = [
+  { key: 'name', header: 'Name', sortable: true },
+  { key: 'status', header: 'Status' },
+];
+const rows = [
+  { id: 'apollo', cells: { name: 'Apollo', status: 'Active' } },
+  { id: 'zephyr', cells: { name: 'Zephyr', status: 'Paused' } },
+];
+
+describe('Vue data table components', () => {
+  it('renders authored Table groups and consumer root attributes', () => {
+    const wrapper = mount(CmTable, {
+      attrs: { class: 'consumer', 'aria-label': 'Invoices' },
+      props: { density: 'compact', striped: true },
+      slots: { default: '<tr><td>INV-42</td></tr>', header: '<tr><th>Number</th></tr>' },
+    });
+    expect(wrapper.classes()).toEqual(['cm-table-wrap', 'consumer']);
+    expect(wrapper.get('table').classes()).toEqual(['cm-table', 'cm-table--compact', 'cm-table--striped']);
+    expect(wrapper.attributes('aria-label')).toBe('Invoices');
+  });
+
+  it('cycles DataTable sort without reordering application-owned rows', async () => {
+    const wrapper = mount(CmDataTable, { props: { id: 'projects', columns, rows } });
+    await wrapper.get('[data-cm-data-table-sort]').trigger('click');
+    expect(wrapper.emitted('update:sort')).toEqual([[{ key: 'name', direction: 'ascending' }]]);
+    expect(wrapper.findAll('[data-cm-data-table-row]').map((row) => row.attributes('data-cm-data-table-row'))).toEqual([
+      'apollo',
+      'zephyr',
+    ]);
+  });
+
+  it('reports selection in rendered order and page requests', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: { id: 'projects', columns, rows, selectable: true, page: 2, pageCount: 3 },
+    });
+    await wrapper.findAll<HTMLInputElement>('[data-cm-data-table-select-row]')[1]!.setValue(true);
+    await wrapper.get('[data-cm-data-table-page-action="next"]').trigger('click');
+    expect(wrapper.emitted('selectionChange')).toEqual([[['zephyr']]]);
+    expect(wrapper.emitted('pageChange')).toEqual([[3]]);
+  });
+
+  it('rejects duplicate columns and unsafe cell values', () => {
+    expect(() => mount(CmDataTable, { props: { id: 'projects', columns: [columns[0], columns[0]], rows } })).toThrow(
+      /Invalid DataTable column/u,
+    );
+    expect(() =>
+      mount(CmDataTable, {
+        props: { id: 'projects', columns, rows: [{ id: 'bad', cells: { name: Number.NaN } }] },
+      }),
+    ).toThrow(/Invalid DataTable cell/u);
+  });
+});
