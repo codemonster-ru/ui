@@ -76,7 +76,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 14 — VueForge migration and release
 - Current milestone: M7 — VueForge migration and CodeMonster UI 1.0
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort
-- Next item: `CMUI-156`
+- Next item: `CMUI-157`
 
 ## Milestones
 
@@ -387,7 +387,7 @@ added to the active scope in the future.
 - [x] `CMUI-153` Migrate the repository examples to CodeMonster UI.
 - [x] `CMUI-154` Migrate the documentation site to CodeMonster UI.
 - [x] `CMUI-155` Run complete npm packed-consumer verification.
-- [ ] `CMUI-156` Run complete Composer packed-consumer verification.
+- [x] `CMUI-156` Run complete Composer packed-consumer verification.
 - [ ] `CMUI-157` Run Vue/Razor accessibility and visual verification.
 - [ ] `CMUI-158` Publish CodeMonster UI prereleases.
 - [ ] `CMUI-159` Validate real Vue admin and Razor CMS template consumers.

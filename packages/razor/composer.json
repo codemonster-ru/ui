@@ -22,6 +22,13 @@
       "Codemonster\\Ui\\Tests\\": "tests/"
     }
   },
+  "archive": {
+    "exclude": [
+      "/phpstan.neon.dist",
+      "/phpunit.xml.dist",
+      "/tests"
+    ]
+  },
   "scripts": {
     "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress --memory-limit=1G",
     "test": "phpunit --configuration=phpunit.xml.dist",
