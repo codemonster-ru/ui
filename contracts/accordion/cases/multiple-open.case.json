@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-multiple-open",
+  "description": "Multiple mode with both items initially open.",
+  "props": {
+    "id": "faq",
+    "items": [
+      { "id": "account", "title": "Account", "content": "Account answer." },
+      { "id": "billing", "title": "Billing", "content": "Billing answer." }
+    ],
+    "multiple": true,
+    "defaultOpenItems": ["account", "billing"]
+  },
+  "slots": {}
+}
