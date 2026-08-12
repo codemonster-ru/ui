@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 9 — Shared runtime and Accordion
 - Current milestone: M4 — Accordion interaction parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity
-- Next item: `CMUI-100`
+- Next item: `CMUI-101`
 
 ## Milestones
 
@@ -248,7 +248,7 @@ and be recorded in the cross-repository log below.
 
 - [x] `CMUI-098` Scaffold `@codemonster-ru/ui-runtime`.
 - [x] `CMUI-099` Add controller lifecycle and component discovery.
-- [ ] `CMUI-100` Add safe repeated initialization and disposal.
+- [x] `CMUI-100` Add safe repeated initialization and disposal.
 - [ ] `CMUI-101` Add optional mutation-observer initialization.
 - [ ] `CMUI-102` Add shared custom-event helpers.
 - [ ] `CMUI-103` Define the Accordion rendering and behavior contract.
