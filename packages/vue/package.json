@@ -50,6 +50,7 @@
   "devDependencies": {
     "@types/node": "^24.3.1",
     "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/server-renderer": "3.5.35",
     "@vue/test-utils": "2.4.11",
     "eslint": "^10.8.0",
     "jsdom": "^26.1.0",

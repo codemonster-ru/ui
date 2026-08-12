@@ -1,28 +1,50 @@
 <script setup lang="ts">
-import { computed, useAttrs } from 'vue';
+import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
-import type { CmButtonProps } from './button.types';
+import type { CmButtonSize, CmButtonType, CmButtonVariant } from './button.types';
 
 defineOptions({
   inheritAttrs: false,
 });
 
-const props = withDefaults(defineProps<CmButtonProps>(), {
-  variant: 'primary',
-  size: 'md',
-  type: 'button',
-  href: null,
-  disabled: false,
-  loading: false,
+const variants: readonly CmButtonVariant[] = ['primary', 'secondary', 'danger', 'ghost'];
+const sizes: readonly CmButtonSize[] = ['sm', 'md', 'lg'];
+const types: readonly CmButtonType[] = ['button', 'submit', 'reset'];
+
+const props = defineProps({
+  variant: {
+    type: String as PropType<CmButtonVariant>,
+    default: 'primary',
+    validator: (value: string) => ['primary', 'secondary', 'danger', 'ghost'].includes(value),
+  },
+  size: {
+    type: String as PropType<CmButtonSize>,
+    default: 'md',
+    validator: (value: string) => ['sm', 'md', 'lg'].includes(value),
+  },
+  type: {
+    type: String as PropType<CmButtonType>,
+    default: 'button',
+    validator: (value: string) => ['button', 'submit', 'reset'].includes(value),
+  },
+  href: {
+    type: String,
+    default: null,
+  },
+  disabled: Boolean,
+  loading: Boolean,
 });
 
 const attrs = useAttrs();
 
 const isLink = computed(() => Boolean(props.href));
 const isDisabled = computed(() => props.disabled || props.loading);
+const variant = computed(() => (variants.includes(props.variant) ? props.variant : 'primary'));
+const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
+const type = computed(() => (types.includes(props.type) ? props.type : 'button'));
 const classes = computed(() =>
-  mergeCmClasses('cm-button', `cm-button--${props.variant}`, `cm-button--${props.size}`, attrs.class as CmClassValue),
+  mergeCmClasses('cm-button', `cm-button--${variant.value}`, `cm-button--${size.value}`, attrs.class as CmClassValue),
 );
 const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, [
@@ -48,7 +70,7 @@ function preventDisabledLinkActivation(event: MouseEvent): void {
     :is="isLink ? 'a' : 'button'"
     v-bind="rootAttrs"
     :class="classes"
-    :type="isLink ? undefined : props.type"
+    :type="isLink ? undefined : type"
     :href="isLink && !isDisabled ? props.href : undefined"
     :disabled="!isLink && isDisabled ? true : undefined"
     :role="isLink && isDisabled ? 'link' : undefined"

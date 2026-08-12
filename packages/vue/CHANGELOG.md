@@ -11,3 +11,4 @@ All notable changes to this package will be documented in this file.
   and consumer class merging.
 - Added Button loading state and leading and trailing icon slots.
 - Added enabled and disabled Button link rendering.
+- Added canonical SSR, escaping, and native event verification for Button.
