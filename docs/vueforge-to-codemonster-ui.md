@@ -73,3 +73,21 @@ ignored. The checker is read-only and rejects `--write`.
 
 The checker never turns `compose`, `manual`, or `retain` entries into edits. Deterministic write mode
 is implemented separately by `CMUI-152`.
+
+## Deterministic codemod
+
+Preview or apply the approved subset:
+
+```bash
+node scripts/migrate-to-codemonster-ui.mjs src
+node scripts/migrate-to-codemonster-ui.mjs --write src
+```
+
+The codemod migrates named imports for direct component replacements, their TypeScript identifier
+references, matching Vue component tags, and exact component CSS subpath imports. It can split a
+mixed named import so manual APIs remain on VueForge. Aliased imports preserve the local alias.
+
+Default imports, theme APIs and tokens, root stylesheets, props, slots, events, `compose` and
+`manual` components, and retained packages are intentionally unchanged. Run the read-only checker
+again after the codemod, review every remaining finding, format the edited files, and execute the
+consumer's tests and visual/accessibility gates.
