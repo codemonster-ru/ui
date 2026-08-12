@@ -33,6 +33,7 @@ export class CmRuntime {
   readonly #factories = new Map<string, CmControllerFactory>();
   readonly #connections: ConnectedController[] = [];
   readonly #controllersByElement = new WeakMap<Element, Map<string, CmController>>();
+  readonly #observerDisposers = new WeakMap<ParentNode, () => void>();
 
   register(name: string, factory: CmControllerFactory): this {
     if (!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u.test(name)) {
@@ -63,6 +64,56 @@ export class CmRuntime {
         this.#connections.push({ controller, element, name });
       }
     }
+  }
+
+  observe(root: ParentNode = document): () => void {
+    const currentDisposer = this.#observerDisposers.get(root);
+    if (currentDisposer) {
+      return currentDisposer;
+    }
+
+    const ownerDocument = root.nodeType === 9 ? (root as Document) : root.ownerDocument;
+    const MutationObserverConstructor = ownerDocument?.defaultView?.MutationObserver;
+    if (!MutationObserverConstructor) {
+      throw new Error('MutationObserver is not available for the observed root.');
+    }
+
+    this.start(root);
+    const observer = new MutationObserverConstructor((records) => {
+      const removed = new Set<ParentNode>();
+      const added = new Set<ParentNode>();
+
+      for (const record of records) {
+        if (record.type === 'attributes') {
+          removed.add(record.target as Element);
+          added.add(record.target as Element);
+          continue;
+        }
+        record.removedNodes.forEach((node) => {
+          if ('querySelectorAll' in node) removed.add(node as ParentNode);
+        });
+        record.addedNodes.forEach((node) => {
+          if ('querySelectorAll' in node) added.add(node as ParentNode);
+        });
+      }
+
+      removed.forEach((node) => this.stop(node));
+      added.forEach((node) => this.start(node));
+    });
+    observer.observe(root, {
+      attributeFilter: [controllerAttribute],
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+
+    const dispose = (): void => {
+      observer.disconnect();
+      this.#observerDisposers.delete(root);
+      this.stop(root);
+    };
+    this.#observerDisposers.set(root, dispose);
+    return dispose;
   }
 
   stop(root?: ParentNode): void {
