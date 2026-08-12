@@ -34,6 +34,9 @@ is installed as a dependency. The `.cm-control` primitive provides shared contro
 and visual interaction states without owning component semantics. `.cm-surface` and its visual
 modifiers provide shared borders and elevation without owning component layout.
 
+Button styles are included in `styles.css` and are also available through the explicit
+`@codemonster-ru/ui-css/button.css` entry.
+
 ## Documentation
 
 See [CSS-only consumption](../../docs/css/getting-started.md) for import order, themes, primitives,

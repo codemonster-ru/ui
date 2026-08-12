@@ -10,15 +10,7 @@
 }
 
 @media (forced-colors: active) {
-  :where(
-      a[href],
-      button,
-      input,
-      select,
-      textarea,
-      summary,
-      [tabindex]:not([tabindex='-1'])
-    ):focus-visible,
+  :where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible,
   .cm-focus-ring:focus-visible {
     outline-color: Highlight;
     box-shadow: none !important;

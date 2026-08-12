@@ -8,6 +8,7 @@ const manifest = JSON.parse(await readFile(packageUrl, 'utf8'));
 
 test('publishes only the approved CSS subpath exports', async () => {
   assert.deepEqual(manifest.exports, {
+    './button.css': './dist/components/button.css',
     './foundation.css': './dist/foundation.css',
     './styles.css': './dist/styles.css',
   });
@@ -19,6 +20,12 @@ test('publishes only the approved CSS subpath exports', async () => {
 
 test('marks only distributed CSS as side effects', () => {
   assert.deepEqual(manifest.sideEffects, ['./dist/*.css']);
-  assert.equal(Object.keys(manifest.exports).some((name) => name.includes('foundation/')), false);
-  assert.equal(Object.keys(manifest.exports).some((name) => name.includes('primitives/')), false);
+  assert.equal(
+    Object.keys(manifest.exports).some((name) => name.includes('foundation/')),
+    false,
+  );
+  assert.equal(
+    Object.keys(manifest.exports).some((name) => name.includes('primitives/')),
+    false,
+  );
 });

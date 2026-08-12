@@ -4,9 +4,7 @@
   outline-offset: var(--cm-border-width-thick);
 }
 
-:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus:not(
-    :focus-visible
-  ),
+:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus:not(:focus-visible),
 .cm-focus-ring:focus:not(:focus-visible) {
   outline: none;
 }

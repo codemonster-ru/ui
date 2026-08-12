@@ -11,10 +11,7 @@ test('publishes a non-empty framework-independent CSS entry', async () => {
 });
 
 test('separates foundation-only and complete stylesheet compositions', async () => {
-  const foundationCss = await readFile(
-    new URL('../dist/foundation.css', import.meta.url),
-    'utf8',
-  );
+  const foundationCss = await readFile(new URL('../dist/foundation.css', import.meta.url), 'utf8');
   const stylesCss = await readFile(new URL('../dist/styles.css', import.meta.url), 'utf8');
 
   assert.match(foundationCss, /@import '\.\/foundation\/reset\.css';/);
@@ -23,4 +20,5 @@ test('separates foundation-only and complete stylesheet compositions', async () 
   assert.match(stylesCss, /^@import '\.\/foundation\.css';/);
   assert.match(stylesCss, /@import '\.\/primitives\/control\.css';/);
   assert.match(stylesCss, /@import '\.\/primitives\/surface\.css';/);
+  assert.match(stylesCss, /@import '\.\/components\/button\.css';/);
 });
