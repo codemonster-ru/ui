@@ -360,7 +360,7 @@ added to the active scope in the future.
   - [x] `CMUI-144f` Verify data-table DOM, accessibility, interaction, visual, and documentation parity.
 - [ ] `CMUI-145` Migrate layout primitives.
   - [x] `CMUI-145a` Define Container, Stack, Inline, Section, and Grid contracts and canonical fixtures.
-  - [ ] `CMUI-145b` Add shared CSS for the layout primitives.
+  - [x] `CMUI-145b` Add shared CSS for the layout primitives.
   - [ ] `CMUI-145c` Add Vue layout primitive adapters and SSR verification.
   - [ ] `CMUI-145d` Add Annabel Razor layout primitive adapters and trusted composition.
   - [ ] `CMUI-145e` Verify layout primitive DOM, accessibility, visual, and documentation parity.
