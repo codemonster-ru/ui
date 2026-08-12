@@ -1,8 +1,10 @@
 # CodeMonster UI roadmap
 
 This document is the canonical implementation tracker for evolving VueForge into a cross-platform
-CodeMonster UI design system. It covers the shared design foundation and the Vue, React, Angular,
-and Annabel Razor adapters.
+CodeMonster UI design system. The current delivery scope covers the shared design foundation and
+the Vue and Annabel Razor adapters. React and Angular adapters are unscheduled future considerations
+and do not block the current roadmap or any release. They may enter the active scope only when a
+concrete product need is identified.
 
 The product identity and technical names are approved in
 [CodeMonster UI product identity](./architecture/product-identity.md) and
@@ -31,6 +33,7 @@ Repository layout follows
 ## How to use this roadmap
 
 - Complete phases in order unless a documented dependency permits parallel work.
+- Skip the unscheduled React and Angular adapter phases; after Phase 9, continue with Phase 12.
 - Keep every implementation commit buildable and include its tests in the same commit.
 - Mark a checklist item complete in the commit that completes the work.
 - Write commit subjects in the repository style: concise, imperative, sentence case, and without a
@@ -78,7 +81,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M2 | Button and Card render with parity in Vue and Annabel Razor | Not started |
 | M3 | Input supports Vue binding and native Razor form submission | Not started |
 | M4 | Accordion proves accessible cross-platform interaction | Not started |
-| M5 | React and Angular implement the four pilot contracts | Not started |
+| M5 | React and Angular implement the four pilot contracts | Future consideration |
 | M6 | Utility CSS and the first stable component cohort are available | Not started |
 | M7 | VueForge migration and CodeMonster UI 1.0 are complete | Not started |
 
@@ -263,7 +266,10 @@ and be recorded in the cross-repository log below.
 
 - [ ] `CMUI-G004` Accordion proves accessible shared behavior in Vue and Razor consumers.
 
-## Phase 10 — React adapter
+## Phase 10 — React adapter (not scheduled)
+
+This phase is a future consideration outside the active roadmap. It has no target release or start
+date and should enter the delivery scope only in response to a concrete product need.
 
 - [ ] `CMUI-113` Scaffold `@codemonster-ru/ui-react`.
 - [ ] `CMUI-114` Add React shared prop and attribute utilities.
@@ -274,7 +280,10 @@ and be recorded in the cross-repository log below.
 - [ ] `CMUI-119` Include React in parity and packed-consumer checks.
 - [ ] `CMUI-120` Document React installation and pilot components.
 
-## Phase 11 — Angular adapter
+## Phase 11 — Angular adapter (not scheduled)
+
+This phase is a future consideration outside the active roadmap. It has no target release or start
+date and should enter the delivery scope only in response to a concrete product need.
 
 - [ ] `CMUI-121` Scaffold `@codemonster-ru/ui-angular`.
 - [ ] `CMUI-122` Add Angular shared input and attribute utilities.
@@ -285,7 +294,7 @@ and be recorded in the cross-repository log below.
 - [ ] `CMUI-127` Include Angular in parity and packed-consumer checks.
 - [ ] `CMUI-128` Document Angular installation and pilot components.
 
-### M5 exit gate
+### M5 exit gate (not scheduled)
 
 - [ ] `CMUI-G005` All four adapters implement and verify the pilot component contracts.
 
@@ -304,8 +313,10 @@ and be recorded in the cross-repository log below.
 
 ## Phase 13 — Component expansion
 
-Each component follows the same sequence: contract, shared CSS, platform adapters, applicable shared
-runtime, parity tests, and documentation. Add child checklist items before starting a cohort.
+Each component follows the same sequence: contract, shared CSS, Vue and Annabel Razor adapters,
+applicable shared runtime, parity tests, and documentation. Add child checklist items before
+starting a cohort. React and Angular implementations are not required unless they are explicitly
+added to the active scope in the future.
 
 - [ ] `CMUI-139` Migrate the display cohort: Badge, Alert, Avatar, Divider, and Skeleton.
 - [ ] `CMUI-140` Migrate the form cohort: Checkbox, Radio, Textarea, and Switch.
@@ -320,7 +331,7 @@ runtime, parity tests, and documentation. Add child checklist items before start
 
 ### M6 exit gate
 
-- [ ] `CMUI-G006` Utilities and the approved stable component cohort pass all platform gates.
+- [ ] `CMUI-G006` Utilities and the approved stable component cohort pass the Vue and Razor gates.
 
 ## Phase 14 — VueForge migration and release
 
@@ -332,7 +343,7 @@ runtime, parity tests, and documentation. Add child checklist items before start
 - [ ] `CMUI-154` Migrate the documentation site to CodeMonster UI.
 - [ ] `CMUI-155` Run complete npm packed-consumer verification.
 - [ ] `CMUI-156` Run complete Composer packed-consumer verification.
-- [ ] `CMUI-157` Run cross-platform accessibility and visual verification.
+- [ ] `CMUI-157` Run Vue/Razor accessibility and visual verification.
 - [ ] `CMUI-158` Publish CodeMonster UI prereleases.
 - [ ] `CMUI-159` Validate real Vue admin and Razor CMS template consumers.
 - [ ] `CMUI-160` Resolve prerelease contract feedback.
@@ -368,6 +379,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-11 | Launch a clean CodeMonster UI package line and retain VueForge through verified consumer migration. | Avoid misleading in-place renames and permanent compatibility layers. | `CMUI-014`, `CMUI-149`–`CMUI-164` |
 | 2026-08-11 | Prove the architecture with Button, Card, Input, and Accordion before expanding platforms or components. | Cover props, composition, forms, and interaction with the smallest representative set. | `CMUI-015`, M2–M4 |
 | 2026-08-11 | Complete M0 and begin repository and contract infrastructure work. | All product and architecture decisions passed their documented phase gate. | `CMUI-G000`, M0 |
+| 2026-08-12 | Leave React and Angular adapters unscheduled until a concrete product need appears. | Keep implementation focused on Vue and Annabel Razor without committing future releases to adapters that have no current consumers. | M5, `CMUI-113`–`CMUI-128`, `CMUI-G005` |
 
 ## Cross-repository log
 
@@ -383,4 +395,4 @@ Record additions, removals, splits, and reordered dependencies before editing th
 
 | Date | Change | Reason | Decision reference |
 | --- | --- | --- | --- |
-| — | No scope changes recorded. | — | — |
+| 2026-08-12 | Removed React and Angular from the active delivery sequence and all release gates; retained their existing items as unscheduled future considerations. | Focus implementation on Vue and Annabel Razor while preserving stable roadmap identifiers in case a concrete need appears. | 2026-08-12 scope decision |
