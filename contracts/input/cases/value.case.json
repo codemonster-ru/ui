@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "input-value",
+  "description": "Named email input preserves its current value.",
+  "props": {
+    "type": "email",
+    "value": "team@example.com"
+  },
+  "slots": {},
+  "attributes": {
+    "aria-label": "Email",
+    "name": "email"
+  }
+}
