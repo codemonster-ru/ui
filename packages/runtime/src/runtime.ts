@@ -32,6 +32,7 @@ function discoverElements(root: ParentNode): Element[] {
 export class CmRuntime {
   readonly #factories = new Map<string, CmControllerFactory>();
   readonly #connections: ConnectedController[] = [];
+  readonly #controllersByElement = new WeakMap<Element, Map<string, CmController>>();
 
   register(name: string, factory: CmControllerFactory): this {
     if (!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u.test(name)) {
@@ -49,20 +50,41 @@ export class CmRuntime {
     for (const element of discoverElements(root)) {
       for (const name of controllerNames(element)) {
         const factory = this.#factories.get(name);
-        if (!factory) {
+        const controllers = this.#controllersByElement.get(element);
+        if (!factory || controllers?.has(name)) {
           continue;
         }
 
         const controller = factory(element);
         controller.connect();
+        const nextControllers = controllers ?? new Map<string, CmController>();
+        nextControllers.set(name, controller);
+        this.#controllersByElement.set(element, nextControllers);
         this.#connections.push({ controller, element, name });
       }
     }
   }
 
-  stop(): void {
-    for (const connection of this.#connections.splice(0).reverse()) {
+  stop(root?: ParentNode): void {
+    const disconnected = root
+      ? this.#connections.filter(({ element }) => element === root || root.contains(element))
+      : [...this.#connections];
+
+    for (const connection of disconnected.reverse()) {
       connection.controller.disconnect();
+      const controllers = this.#controllersByElement.get(connection.element);
+      controllers?.delete(connection.name);
+      if (controllers?.size === 0) {
+        this.#controllersByElement.delete(connection.element);
+      }
+    }
+
+    if (root) {
+      const disconnectedControllers = new Set(disconnected.map(({ controller }) => controller));
+      const retained = this.#connections.filter(({ controller }) => !disconnectedControllers.has(controller));
+      this.#connections.splice(0, this.#connections.length, ...retained);
+    } else {
+      this.#connections.splice(0);
     }
   }
 }
