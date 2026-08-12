@@ -44,10 +44,7 @@ for (const caseFile of caseFiles) {
 }
 
 test('escapes Card title and root attributes during SSR', async () => {
-  const actual = await renderCard(
-    { title: '<script>unsafe</script>', 'data-note': '"quoted" <note>' },
-    {},
-  );
+  const actual = await renderCard({ title: '<script>unsafe</script>', 'data-note': '"quoted" <note>' }, {});
 
   assert.match(actual, /&lt;script&gt;unsafe&lt;\/script&gt;/u);
   assert.match(actual, /data-note="&quot;quoted&quot; &lt;note&gt;"/u);

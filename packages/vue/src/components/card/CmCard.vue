@@ -32,7 +32,9 @@ const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
 <template>
   <component :is="rootElement" v-bind="rootAttrs" :class="classes">
     <header v-if="$slots.header || props.title" class="cm-card__header">
-      <slot name="header"><h3 class="cm-card__title">{{ props.title }}</h3></slot>
+      <slot name="header"
+        ><h3 class="cm-card__title">{{ props.title }}</h3></slot
+      >
     </header>
     <div v-if="$slots.default" class="cm-card__body"><slot /></div>
     <footer v-if="$slots.footer" class="cm-card__footer"><slot name="footer" /></footer>

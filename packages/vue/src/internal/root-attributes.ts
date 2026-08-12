@@ -12,7 +12,5 @@ export function omitCmOwnedAttrs(
 ): Record<string, unknown> {
   const omittedAttributes = new Set(['class', ...ownedAttributes]);
 
-  return Object.fromEntries(
-    Object.entries(attrs).filter(([attribute]) => !omittedAttributes.has(attribute)),
-  );
+  return Object.fromEntries(Object.entries(attrs).filter(([attribute]) => !omittedAttributes.has(attribute)));
 }
