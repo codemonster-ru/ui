@@ -7,10 +7,16 @@ test('publishes the framework-independent runtime entry', async () => {
   assert.deepEqual(Object.keys(entry), [
     'CmAccordionController',
     'CmCheckboxController',
+    'CmDropdownController',
+    'CmMenuController',
     'CmRuntime',
+    'CmTabsController',
     'createCmAccordionController',
     'createCmCheckboxController',
+    'createCmDropdownController',
     'createCmEvent',
+    'createCmMenuController',
+    'createCmTabsController',
     'dispatchCmEvent',
   ]);
 });
