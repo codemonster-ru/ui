@@ -141,7 +141,26 @@ export const borderUtilities = Object.freeze({
   'rounded-overlay': { 'border-radius': tokenVariable('radiusOverlay') },
   'rounded-round': { 'border-radius': tokenVariable('radiusRound') },
 });
-import { cmSizingTokenNames, cmSpacingTokenNames, serializeCmThemeTokensToCssVars } from '@codemonster-ru/ui-tokens';
+
+export const responsiveBreakpoints = Object.freeze(
+  Object.fromEntries(['sm', 'md', 'lg'].map((name) => [name, cmBreakpoints[name]])),
+);
+
+export const responsiveUtilities = Object.freeze({
+  ...displayUtilities,
+  ...flexUtilities,
+  ...gridUtilities,
+  ...Object.fromEntries(
+    Object.entries(spacingUtilities).filter(([name]) => /^(?:gap|row-gap|column-gap)-/u.test(name)),
+  ),
+});
+
+import {
+  cmBreakpoints,
+  cmSizingTokenNames,
+  cmSpacingTokenNames,
+  serializeCmThemeTokensToCssVars,
+} from '@codemonster-ru/ui-tokens';
 
 function tokenVariable(name) {
   const [variable] = Object.keys(serializeCmThemeTokensToCssVars({ [name]: '' }));
