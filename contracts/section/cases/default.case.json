@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "section-default",
+  "description": "Default semantic section inset.",
+  "props": {},
+  "slots": { "default": "<h2>Overview</h2><p>Summary</p>" }
+}

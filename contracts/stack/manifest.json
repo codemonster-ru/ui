@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "Stack",
+  "slug": "stack",
+  "razorTag": "cm-stack",
+  "description": "A vertical flow primitive with a shared layout gap.",
+  "props": {
+    "element": { "type": "enum", "required": false, "default": "div", "values": ["div", "section", "ul", "ol"] }
+  },
+  "slots": { "default": { "required": true, "description": "Trusted stack items." } },
+  "events": {},
+  "states": ["default"]
+}

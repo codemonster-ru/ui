@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "name": "Grid",
+  "slug": "grid",
+  "razorTag": "cm-grid",
+  "description": "An auto-fitting responsive grid using the shared minimum item size.",
+  "props": {
+    "element": { "type": "enum", "required": false, "default": "div", "values": ["div", "section", "ul", "ol"] }
+  },
+  "slots": { "default": { "required": true, "description": "Trusted grid items." } },
+  "events": {},
+  "states": ["default"]
+}
