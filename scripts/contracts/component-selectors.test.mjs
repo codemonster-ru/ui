@@ -146,6 +146,27 @@ for (const [slug, approved] of [
     ],
   ],
   ['input', ['cm-input', 'cm-input--sm', 'cm-input--md', 'cm-input--lg', 'cm-input--invalid']],
+  ['select', ['cm-select', 'cm-select--sm', 'cm-select--md', 'cm-select--lg', 'cm-select--invalid']],
+  [
+    'date-picker',
+    ['cm-date-picker', 'cm-date-picker--sm', 'cm-date-picker--md', 'cm-date-picker--lg', 'cm-date-picker--invalid'],
+  ],
+  [
+    'command-palette',
+    [
+      'cm-command-palette',
+      'cm-command-palette--open',
+      'cm-command-palette__surface',
+      'cm-command-palette__header',
+      'cm-command-palette__title',
+      'cm-command-palette__close',
+      'cm-command-palette__input',
+      'cm-command-palette__list',
+      'cm-command-palette__option',
+      'cm-command-palette__option--active',
+      'cm-command-palette__empty',
+    ],
+  ],
   ['link', ['cm-link', 'cm-link--underline-hover', 'cm-link--underline-always', 'cm-link--muted']],
   [
     'breadcrumbs',

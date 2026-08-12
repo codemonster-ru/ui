@@ -9,6 +9,8 @@
 @import './components/button.css';
 @import './components/card.css';
 @import './components/checkbox.css';
+@import './components/command-palette.css';
+@import './components/date-picker.css';
 @import './components/divider.css';
 @import './components/dialog.css';
 @import './components/dropdown.css';
@@ -19,6 +21,7 @@
 @import './components/menu.css';
 @import './components/popover.css';
 @import './components/radio.css';
+@import './components/select.css';
 @import './components/skeleton.css';
 @import './components/switch.css';
 @import './components/textarea.css';
