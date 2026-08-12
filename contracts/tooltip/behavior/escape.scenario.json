@@ -3,6 +3,7 @@
   "id": "tooltip-escape",
   "case": "tooltip-visible",
   "steps": [
+    { "action": "focus", "target": "trigger" },
     { "action": "press", "target": "trigger", "key": "Escape" },
     { "expect": "visible", "target": "tooltip", "value": false },
     { "expect": "focus", "target": "trigger", "value": true }

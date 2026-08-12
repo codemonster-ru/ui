@@ -5,6 +5,6 @@
   "steps": [
     { "action": "click", "target": "close" },
     { "expect": "visible", "target": "root", "value": false },
-    { "expect": "eventCount", "target": "root", "name": "openChange", "count": 1 }
+    { "expect": "eventCount", "target": "root", "name": "cm:drawer-open-change", "count": 1 }
   ]
 }
