@@ -226,12 +226,12 @@ function packageExportExists(manifest, exportKey) {
   return Object.hasOwn(manifest.exports, exportKey);
 }
 
-function checkVueForgeSpecifier(specifier, filePath, line) {
-  if (!specifier.startsWith('@codemonster-ru/vueforge-')) {
+function checkPublicPackageSpecifier(specifier, filePath, line) {
+  if (!specifier.startsWith('@codemonster-ru/ui-') && !specifier.startsWith('@codemonster-ru/vueforge-')) {
     return;
   }
 
-  const match = specifier.match(/^(@codemonster-ru\/vueforge-[a-z\d-]+)(\/.*)?$/u);
+  const match = specifier.match(/^(@codemonster-ru\/(?:ui|vueforge)-[a-z\d-]+)(\/.*)?$/u);
   const packageName = match?.[1];
   const subpath = match?.[2];
   const packageRecord = packageName ? publicPackages.get(packageName) : undefined;
@@ -254,7 +254,7 @@ function collectScriptImports(sourceFile, markdownPath, markdownLine) {
     }
 
     const localLine = sourceFile.getLineAndCharacterOfPosition(statement.getStart()).line;
-    checkVueForgeSpecifier(statement.moduleSpecifier.text, markdownPath, markdownLine + localLine + 1);
+    checkPublicPackageSpecifier(statement.moduleSpecifier.text, markdownPath, markdownLine + localLine + 1);
   }
 }
 
@@ -326,9 +326,9 @@ function checkInstallSnippet(code, filePath, line) {
   for (const match of code.matchAll(installPattern)) {
     const packages = match[1].split(/\s+/u).filter((token) => token && !token.startsWith('-'));
     for (const token of packages) {
-      const packageName = token.match(/^(@codemonster-ru\/vueforge-[a-z\d-]+)(?:@.+)?$/u)?.[1];
-      if (token.startsWith('@codemonster-ru/vueforge-') && !packageName) {
-        report(filePath, line, `contains an invalid VueForge install target ${JSON.stringify(token)}.`);
+      const packageName = token.match(/^(@codemonster-ru\/(?:ui|vueforge)-[a-z\d-]+)(?:@.+)?$/u)?.[1];
+      if ((token.startsWith('@codemonster-ru/ui-') || token.startsWith('@codemonster-ru/vueforge-')) && !packageName) {
+        report(filePath, line, `contains an invalid CodeMonster install target ${JSON.stringify(token)}.`);
       } else if (packageName && !publicPackages.has(packageName)) {
         report(filePath, line, `installs unknown package ${JSON.stringify(packageName)}.`);
       }
