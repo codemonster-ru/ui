@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "8bc19b83995565cb74dd2611268e807e0bb53400baff9ed982b40191d193631c",
+      "sha256": "5dd84f371766d5e52f9af9bfcdc15dde1f4c40b8f99393cef0a506b2bcd69b8e",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
@@ -191,6 +191,16 @@
         "export": "./command-palette.css"
       }
     },
+    "css:components/data-table.css": {
+      "path": "css/css/components/data-table.css",
+      "mediaType": "text/css",
+      "sha256": "3daf14bd6f9fc7d0c93aa528cdfce47628339e28dbea11d8820776c71d87edd1",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./data-table.css"
+      }
+    },
     "css:components/date-picker.css": {
       "path": "css/css/components/date-picker.css",
       "mediaType": "text/css",
@@ -329,6 +339,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./switch.css"
+      }
+    },
+    "css:components/table.css": {
+      "path": "css/css/components/table.css",
+      "mediaType": "text/css",
+      "sha256": "7424c66858b54cadde3a8de0de625645f727b0f6cafb71fd8b12f28af6cfa783",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./table.css"
       }
     },
     "css:components/textarea.css": {
