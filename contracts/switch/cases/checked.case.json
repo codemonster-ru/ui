@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "switch-checked",
+  "description": "Checked large switch contributes its explicit value.",
+  "props": { "checked": true, "label": "Dark mode", "size": "lg" },
+  "slots": {},
+  "attributes": { "name": "theme", "value": "dark" }
+}

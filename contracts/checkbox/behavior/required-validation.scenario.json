@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "checkbox-required-validation",
+  "case": "checkbox-indeterminate",
+  "steps": [
+    { "expect": "validity", "target": "control", "value": false },
+    { "action": "click", "target": "control" },
+    { "expect": "validity", "target": "control", "value": true }
+  ]
+}

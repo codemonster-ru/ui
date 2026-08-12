@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "radio-native-selection",
+  "case": "radio-default",
+  "steps": [
+    { "action": "click", "target": "control" },
+    { "expect": "eventCount", "target": "control", "name": "change", "count": 1 },
+    { "action": "submit", "target": "form" },
+    { "expect": "formValue", "target": "form", "name": "frequency", "value": "daily" }
+  ]
+}

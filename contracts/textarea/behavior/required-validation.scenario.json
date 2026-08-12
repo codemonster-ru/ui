@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "textarea-required-validation",
+  "case": "textarea-invalid",
+  "steps": [
+    { "expect": "validity", "target": "control", "value": false },
+    { "action": "setValue", "target": "control", "value": "Ready" },
+    { "expect": "validity", "target": "control", "value": true }
+  ]
+}

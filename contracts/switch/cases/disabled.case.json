@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "switch-disabled",
+  "description": "Disabled invalid switch exposes state without submitting.",
+  "props": { "disabled": true, "invalid": true, "label": "Automatic updates" },
+  "slots": {}
+}

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "textarea-default",
+  "description": "Empty multiline control with an explicit accessible name.",
+  "props": {},
+  "slots": {},
+  "attributes": { "aria-label": "Notes" }
+}

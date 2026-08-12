@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "radio-checked",
+  "description": "Selected compact radio option.",
+  "props": { "checked": true, "label": "Weekly", "size": "sm", "value": "weekly" },
+  "slots": {},
+  "attributes": { "name": "frequency" }
+}

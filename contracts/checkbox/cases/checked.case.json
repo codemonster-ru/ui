@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "checkbox-checked",
+  "description": "Checked large checkbox contributes its explicit value.",
+  "props": { "checked": true, "label": "Release notes", "size": "lg" },
+  "slots": {},
+  "attributes": { "name": "topics", "value": "releases" }
+}
