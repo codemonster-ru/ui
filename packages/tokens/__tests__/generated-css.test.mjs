@@ -3,8 +3,23 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { URL } from 'node:url';
 
+import {
+  cmBreakpointTokenNames,
+  cmBreakpointTokens,
+  cmDarkThemePreset,
+  cmLightThemePreset,
+  serializeCmThemeTokensToCssVars,
+} from '../dist/index.js';
+
 const css = await readFile(new URL('../dist/tokens.css', import.meta.url), 'utf8');
 const breakpointCss = await readFile(new URL('../dist/breakpoints.css', import.meta.url), 'utf8');
+
+function parseDeclarations(source) {
+  const declarations = [...source.matchAll(/(--cm-[a-z0-9-]+): ([^;]+);/g)].map((match) => [match[1], match[2]]);
+
+  assert.equal(new Set(declarations.map(([name]) => name)).size, declarations.length);
+  return Object.fromEntries(declarations);
+}
 
 test('generates the complete light theme and minimal dark overrides', () => {
   const [lightBlock, darkBlock] = css.split("\n\n[data-cm-theme='dark'] {");
@@ -29,4 +44,34 @@ test('generates portable breakpoint custom properties separately', () => {
   assert.match(breakpointCss, /--cm-breakpoint-2xl: 1536px;/);
   assert.doesNotMatch(breakpointCss, /@custom-media|--(?:vf|vueforge)-/);
   assert.ok(breakpointCss.endsWith('\n'));
+});
+
+test('matches the schema-backed serializer exactly', () => {
+  const [lightBlock, darkBlock] = css.split("\n\n[data-cm-theme='dark'] {");
+  const breakpointNames = new Set(cmBreakpointTokenNames);
+  const lightTokens = Object.fromEntries(
+    Object.entries(cmLightThemePreset.tokens).filter(([name]) => !breakpointNames.has(name)),
+  );
+  const darkOverrides = Object.fromEntries(
+    Object.entries(cmDarkThemePreset.tokens).filter(([name, value]) => cmLightThemePreset.tokens[name] !== value),
+  );
+
+  assert.deepEqual(parseDeclarations(lightBlock), serializeCmThemeTokensToCssVars(lightTokens));
+  assert.deepEqual(parseDeclarations(darkBlock), serializeCmThemeTokensToCssVars(darkOverrides));
+  assert.deepEqual(parseDeclarations(breakpointCss), serializeCmThemeTokensToCssVars(cmBreakpointTokens));
+});
+
+test('resolves every generated custom property reference', () => {
+  const [lightBlock, darkBlock] = css.split("\n\n[data-cm-theme='dark'] {");
+  const baseDeclarations = {
+    ...parseDeclarations(breakpointCss),
+    ...parseDeclarations(lightBlock),
+  };
+  const darkDeclarations = parseDeclarations(darkBlock);
+
+  for (const value of [...Object.values(baseDeclarations), ...Object.values(darkDeclarations)]) {
+    for (const [, reference] of value.matchAll(/var\((--cm-[a-z0-9-]+)\)/g)) {
+      assert.ok(reference in baseDeclarations, `Unknown generated CSS variable: ${reference}`);
+    }
+  }
 });
