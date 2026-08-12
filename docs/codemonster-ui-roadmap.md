@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 3 — framework-independent CSS
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-053`
+- Next item: `CMUI-G001`
 
 ## Milestones
 
@@ -152,7 +152,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-050` Add CSS subpath export checks.
 - [x] `CMUI-051` Add CSS-only packed-consumer smoke tests.
 - [x] `CMUI-052` Prevent Vue imports and `vf` selectors in the new CSS package.
-- [ ] `CMUI-053` Document CSS-only usage.
+- [x] `CMUI-053` Document CSS-only usage.
 
 ### M1 exit gate
 
