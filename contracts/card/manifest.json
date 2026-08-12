@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "name": "Card",
+  "slug": "card",
+  "razorTag": "cm-card",
+  "description": "A structural surface with optional header, body, and footer regions.",
+  "props": {
+    "element": {
+      "type": "enum",
+      "required": false,
+      "default": "section",
+      "values": ["section", "article", "div"],
+      "description": "Finite semantic root selection for the grouped content."
+    },
+    "title": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "Fallback header text used only when the header slot is absent."
+    },
+    "compact": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Uses the compact shared surface spacing."
+    }
+  },
+  "slots": {
+    "header": {
+      "required": false,
+      "description": "Header content that takes precedence over the fallback title."
+    },
+    "default": {
+      "required": false,
+      "description": "Primary card body content."
+    },
+    "footer": {
+      "required": false,
+      "description": "Actions or supporting content after the body."
+    }
+  },
+  "events": {},
+  "states": ["default", "compact"]
+}
