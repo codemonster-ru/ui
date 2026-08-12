@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 4 — Button vertical slice
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-056`
+- Next item: `CMUI-057`
 
 ## Milestones
 
@@ -162,7 +162,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 - [x] `CMUI-054` Define the Button component contract.
 - [x] `CMUI-055` Add Button canonical fixtures for variants and sizes.
-- [ ] `CMUI-056` Add Button canonical fixtures for disabled and loading states.
+- [x] `CMUI-056` Add Button canonical fixtures for disabled and loading states.
 - [ ] `CMUI-057` Add Button canonical fixtures for link rendering and icon slots.
 - [ ] `CMUI-058` Move Button styles into the shared CSS package.
 - [ ] `CMUI-059` Add Button selector and accessibility contracts.
