@@ -1,0 +1,94 @@
+.cm-tabs {
+  color: var(--cm-color-text-primary);
+}
+
+.cm-tabs__list {
+  display: flex;
+  overflow-x: auto;
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-tabs__tab {
+  position: relative;
+  display: inline-flex;
+  min-block-size: var(--cm-control-height-lg);
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--cm-space-2);
+  padding-inline: var(--cm-space-4);
+  border: 0;
+  appearance: none;
+  background: transparent;
+  color: var(--cm-color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--cm-font-size-md);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-tight);
+  white-space: nowrap;
+}
+
+.cm-tabs__tab::after {
+  position: absolute;
+  inset-block-end: calc(-1 * var(--cm-border-width));
+  inset-inline: var(--cm-space-2);
+  block-size: var(--cm-border-width-thick);
+  border-radius: var(--cm-radius-round);
+  background: transparent;
+  content: '';
+}
+
+.cm-tabs__tab:focus-visible {
+  z-index: 1;
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: calc(-1 * var(--cm-border-width-thick));
+}
+
+.cm-tabs__tab:disabled {
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.cm-tabs__tab[aria-selected='true'] {
+  color: var(--cm-color-selected-foreground);
+}
+
+.cm-tabs__tab[aria-selected='true']::after {
+  background: var(--cm-color-interactive-primary-background);
+}
+
+.cm-tabs__tab:hover:not(:disabled) {
+  background: var(--cm-color-background-surface-hover);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-tabs__panel {
+  padding-block: var(--cm-space-4);
+  color: var(--cm-color-text-secondary);
+  line-height: var(--cm-line-height-normal);
+}
+
+.cm-tabs__panel[hidden] {
+  display: none;
+}
+
+.cm-tabs__panel:focus-visible {
+  border-radius: var(--cm-radius-control);
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+@media (forced-colors: active) {
+  .cm-tabs__list {
+    border-color: CanvasText;
+  }
+
+  .cm-tabs__tab[aria-selected='true']::after {
+    background: Highlight;
+  }
+
+  .cm-tabs__tab:disabled {
+    color: GrayText;
+  }
+}

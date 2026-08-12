@@ -146,6 +146,25 @@ for (const [slug, approved] of [
     ],
   ],
   ['input', ['cm-input', 'cm-input--sm', 'cm-input--md', 'cm-input--lg', 'cm-input--invalid']],
+  ['link', ['cm-link', 'cm-link--underline-hover', 'cm-link--underline-always', 'cm-link--muted']],
+  [
+    'breadcrumbs',
+    [
+      'cm-breadcrumbs',
+      'cm-breadcrumbs__list',
+      'cm-breadcrumbs__item',
+      'cm-breadcrumbs__link',
+      'cm-breadcrumbs__current',
+      'cm-breadcrumbs__current--disabled',
+      'cm-breadcrumbs__separator',
+    ],
+  ],
+  ['tabs', ['cm-tabs', 'cm-tabs__list', 'cm-tabs__tab', 'cm-tabs__panel']],
+  ['menu', ['cm-menu', 'cm-menu__item', 'cm-menu__item--active', 'cm-menu__item--danger', 'cm-menu__item-label']],
+  [
+    'dropdown',
+    ['cm-dropdown', 'cm-dropdown--bottom-end', 'cm-dropdown--open', 'cm-dropdown__trigger', 'cm-dropdown__menu'],
+  ],
   [
     'checkbox',
     [

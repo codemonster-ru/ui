@@ -20,16 +20,21 @@ const sources = [
   { packageDirectory: 'css', path: 'components/alert.css', export: './alert.css' },
   { packageDirectory: 'css', path: 'components/avatar.css', export: './avatar.css' },
   { packageDirectory: 'css', path: 'components/badge.css', export: './badge.css' },
+  { packageDirectory: 'css', path: 'components/breadcrumbs.css', export: './breadcrumbs.css' },
   { packageDirectory: 'css', path: 'components/button.css', export: './button.css' },
   { packageDirectory: 'css', path: 'components/card.css', export: './card.css' },
   { packageDirectory: 'css', path: 'components/checkbox.css', export: './checkbox.css' },
   { packageDirectory: 'css', path: 'components/divider.css', export: './divider.css' },
+  { packageDirectory: 'css', path: 'components/dropdown.css', export: './dropdown.css' },
   { packageDirectory: 'css', path: 'components/field.css', export: './field.css' },
   { packageDirectory: 'css', path: 'components/input.css', export: './input.css' },
+  { packageDirectory: 'css', path: 'components/link.css', export: './link.css' },
+  { packageDirectory: 'css', path: 'components/menu.css', export: './menu.css' },
   { packageDirectory: 'css', path: 'components/radio.css', export: './radio.css' },
   { packageDirectory: 'css', path: 'components/skeleton.css', export: './skeleton.css' },
   { packageDirectory: 'css', path: 'components/switch.css', export: './switch.css' },
   { packageDirectory: 'css', path: 'components/textarea.css', export: './textarea.css' },
+  { packageDirectory: 'css', path: 'components/tabs.css', export: './tabs.css' },
 ];
 
 await rm(join(assetsDirectory, 'css'), { force: true, recursive: true });
