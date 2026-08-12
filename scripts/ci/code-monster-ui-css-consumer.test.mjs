@@ -9,7 +9,10 @@ import {
   verifyInstalledCssConsumer,
 } from './code-monster-ui-css-consumer.mjs';
 
-function createInstalledConsumer(context, { css = '.cm-button { display: inline-flex; }\n', withVue = false } = {}) {
+function createInstalledConsumer(
+  context,
+  { css = '.cm-button { display: inline-flex; }\n', importedCss, withVue = false } = {},
+) {
   const root = mkdtempSync(join(tmpdir(), 'codemonster-ui-css-consumer-'));
   const repositoryRoot = join(root, 'repository');
   const consumerDirectory = join(root, 'consumer');
@@ -18,6 +21,10 @@ function createInstalledConsumer(context, { css = '.cm-button { display: inline-
   mkdirSync(repositoryRoot);
   mkdirSync(join(packageDirectory, 'dist'), { recursive: true });
   writeFileSync(join(packageDirectory, 'dist/styles.css'), css);
+  if (importedCss !== undefined) {
+    mkdirSync(join(packageDirectory, 'dist/parts'));
+    writeFileSync(join(packageDirectory, 'dist/parts/base.css'), importedCss);
+  }
   writeFileSync(
     join(packageDirectory, 'package.json'),
     `${JSON.stringify({
@@ -68,13 +75,40 @@ test('selects framework-independent CSS packages and their dependencies', () => 
 });
 
 test('verifies isolated non-empty CSS exports without framework installs', (context) => {
-  const paths = createInstalledConsumer(context);
+  const paths = createInstalledConsumer(context, {
+    css: "@import './parts/base.css';\n.cm-button { display: inline-flex; }\n",
+    importedCss: '.cm-control { box-sizing: border-box; }\n',
+  });
   assert.equal(
     verifyInstalledCssConsumer({
       ...paths,
       packages: [{ name: '@codemonster-ru/ui-css' }],
     }),
     1,
+  );
+});
+
+test('rejects missing and non-portable CSS imports', (context) => {
+  const missingPaths = createInstalledConsumer(context, { css: "@import './missing.css';\n" });
+  assert.throws(
+    () =>
+      verifyInstalledCssConsumer({
+        ...missingPaths,
+        packages: [{ name: '@codemonster-ru/ui-css' }],
+      }),
+    /imports missing CSS/,
+  );
+
+  const packagePaths = createInstalledConsumer(context, {
+    css: "@import '@codemonster-ru/ui-tokens/tokens.css';\n",
+  });
+  assert.throws(
+    () =>
+      verifyInstalledCssConsumer({
+        ...packagePaths,
+        packages: [{ name: '@codemonster-ru/ui-css' }],
+      }),
+    /non-portable package CSS import/,
   );
 });
 
