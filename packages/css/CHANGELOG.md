@@ -17,3 +17,4 @@ All notable changes to this package will be documented in this file.
 - Added exact CSS subpath and side-effect export contracts.
 - Added packed-consumer smoke coverage for the complete recursive CSS import graph.
 - Added package-wide framework import and VueForge selector ownership gates.
+- Documented CSS-only imports, themes, primitives, copied assets, and server rendering.

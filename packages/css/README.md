@@ -36,7 +36,8 @@ modifiers provide shared borders and elevation without owning component layout.
 
 ## Documentation
 
-CSS-only consumption documentation is added when the initial public entries are complete.
+See [CSS-only consumption](../../docs/css/getting-started.md) for import order, themes, primitives,
+copied assets, and SSR/Razor delivery.
 
 ## License
 
