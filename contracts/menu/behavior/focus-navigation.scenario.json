@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-focus-navigation",
+  "case": "menu-states",
+  "steps": [
+    { "action": "focus", "target": "item-first" },
+    { "action": "press", "target": "item-first", "key": "ArrowDown" },
+    { "expect": "focus", "target": "item-active", "value": true },
+    { "action": "press", "target": "item-active", "key": "End" },
+    { "expect": "focus", "target": "item-last", "value": true },
+    { "action": "press", "target": "item-last", "key": "Home" },
+    { "expect": "focus", "target": "item-first", "value": true }
+  ]
+}

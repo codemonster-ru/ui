@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "tabs-select-pointer",
+  "case": "tabs-default",
+  "steps": [
+    { "action": "click", "target": "tab-second" },
+    { "expect": "attribute", "target": "tab-second", "name": "aria-selected", "value": "true" },
+    { "expect": "visible", "target": "panel-second", "value": true },
+    { "expect": "eventCount", "target": "root", "name": "cm:tabs-value-change", "count": 1 }
+  ]
+}

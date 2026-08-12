@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "tabs-disabled",
+  "description": "Explicit active tab with a disabled peer.",
+  "props": {
+    "id": "settings",
+    "value": "billing",
+    "items": [
+      { "value": "general", "label": "General", "content": "General settings." },
+      { "value": "advanced", "label": "Advanced", "content": "Advanced settings.", "disabled": true },
+      { "value": "billing", "label": "Billing", "content": "Billing settings." }
+    ]
+  },
+  "slots": {}
+}
