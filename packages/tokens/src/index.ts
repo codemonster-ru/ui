@@ -9,6 +9,20 @@ export {
   cmSemanticDarkColorTokens,
   cmSemanticLightColorTokens,
 } from './semantic-colors.js';
+export {
+  cmSizingTokenNames,
+  cmSizingTokens,
+  cmSpacingTokenNames,
+  cmSpacingTokens,
+} from './spacing-sizing.js';
+export type {
+  CmSizingOverrides,
+  CmSizingTokenName,
+  CmSizingTokens,
+  CmSpacingOverrides,
+  CmSpacingTokenName,
+  CmSpacingTokens,
+} from './spacing-sizing.js';
 export type {
   CmSemanticColorOverrides,
   CmSemanticColorTokenName,
