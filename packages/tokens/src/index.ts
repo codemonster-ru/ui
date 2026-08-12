@@ -15,6 +15,12 @@ export {
   cmSpacingTokenNames,
   cmSpacingTokens,
 } from './spacing-sizing.js';
+export { cmTypographyTokenNames, cmTypographyTokens } from './typography.js';
+export type {
+  CmTypographyOverrides,
+  CmTypographyTokenName,
+  CmTypographyTokens,
+} from './typography.js';
 export type {
   CmSizingOverrides,
   CmSizingTokenName,
