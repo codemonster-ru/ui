@@ -5,7 +5,8 @@
   "license": "MIT",
   "require": {
     "php": ">=8.2",
-    "codemonster-ru/razor": "^2.0"
+    "codemonster-ru/razor": "^2.1",
+    "codemonster-ru/view": "^2.0"
   },
   "require-dev": {
     "phpstan/phpstan": "^2.1",

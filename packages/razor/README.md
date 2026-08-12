@@ -8,7 +8,7 @@ Current release: `codemonster-ru/ui@0.1.0`.
 ## Requirements
 
 - PHP 8.2 or newer.
-- `codemonster-ru/razor` 2.x.
+- `codemonster-ru/razor` 2.1 or newer within the 2.x line.
 
 ## Installation
 

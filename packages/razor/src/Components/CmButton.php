@@ -10,9 +10,14 @@ use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Ui\Support\AttributeBag;
 use Codemonster\Ui\Support\ClassBuilder;
 use Codemonster\Ui\Support\PropBag;
+use Codemonster\View\EngineInterface;
 
 final class CmButton implements ComponentInterface
 {
+    public function __construct(private readonly EngineInterface $views)
+    {
+    }
+
     public function render(ComponentRenderContext $context): RenderedHtml
     {
         $props = new PropBag($context->props());
@@ -26,13 +31,14 @@ final class CmButton implements ComponentInterface
             ->add($this->optionalString($attributes->get('class')))
             ->value();
         $rootAttributes = $attributes->without(['class'])->render();
-        $disabledAttribute = $disabled ? ' disabled' : '';
-        $escapedClasses = htmlspecialchars($classes, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-
         return RenderedHtml::fromTrustedString(
-            '<button class="' . $escapedClasses . '" type="' . $type . '"'
-            . $disabledAttribute . $rootAttributes . '><span class="cm-button__label">'
-            . $context->slot('default')->value() . '</span></button>',
+            $this->views->render('components.button', [
+                'classes' => $classes,
+                'type' => $type,
+                'disabled' => $disabled,
+                'attributes' => $rootAttributes,
+                'label' => $context->slot('default'),
+            ]),
         );
     }
 
