@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "section-surface",
+  "description": "Article section with shared surface treatment.",
+  "props": { "element": "article", "surface": true },
+  "slots": { "default": "<h2>Report</h2><p>Ready</p>" }
+}
