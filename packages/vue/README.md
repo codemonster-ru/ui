@@ -41,6 +41,7 @@ links, accessibility, and matching Annabel Razor usage.
 See the [Card guide](../../docs/components/card.md) for semantic roots and region composition.
 See the [Field and Input guide](../../docs/components/forms.md) for Vue binding and accessible forms.
 See the [Accordion guide](../../docs/components/accordion.md) for controlled state and keyboard behavior.
+See the [display components guide](../../docs/components/display.md) for Badge, Alert, Avatar, Divider, and Skeleton.
 
 ## License
 
