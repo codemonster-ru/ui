@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "button-icon-slots",
+  "description": "Button with trusted decorative content in both icon regions.",
+  "props": {},
+  "slots": {
+    "default": "Move",
+    "leading": "<span aria-hidden=\"true\">←</span>",
+    "trailing": "<span aria-hidden=\"true\">→</span>"
+  }
+}
