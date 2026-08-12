@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 4 — Button vertical slice
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-065`
+- Next item: `CMUI-066`
 
 ## Milestones
 
@@ -171,7 +171,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-062` Add Vue `CmButton`.
 - [x] `CMUI-063` Add Vue Button loading and icon-slot rendering.
 - [x] `CMUI-064` Add Vue Button link rendering.
-- [ ] `CMUI-065` Verify Vue Button DOM, events, and SSR output.
+- [x] `CMUI-065` Verify Vue Button DOM, events, and SSR output.
 
 ## Phase 5 — Generic Annabel Razor component model
 
