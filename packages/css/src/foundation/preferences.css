@@ -1,0 +1,31 @@
+@media (prefers-reduced-motion: reduce) {
+  :where([class^='cm-'], [class*=' cm-']),
+  :where([class^='cm-'], [class*=' cm-'])::before,
+  :where([class^='cm-'], [class*=' cm-'])::after {
+    scroll-behavior: auto !important;
+    transition-duration: var(--cm-motion-duration-none) !important;
+    animation-duration: var(--cm-motion-duration-none) !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(
+      a[href],
+      button,
+      input,
+      select,
+      textarea,
+      summary,
+      [tabindex]:not([tabindex='-1'])
+    ):focus-visible,
+  .cm-focus-ring:focus-visible {
+    outline-color: Highlight;
+    box-shadow: none !important;
+  }
+
+  :where(button, input, select, textarea):disabled,
+  :where([class^='cm-'], [class*=' cm-'])[aria-disabled='true'] {
+    color: GrayText;
+  }
+}

@@ -10,3 +10,4 @@ All notable changes to this package will be documented in this file.
   package verification.
 - Added document reset, theme color, typography, media, and inherited form-control foundations.
 - Added low-specificity native and opt-in focus-visible ring foundations.
+- Added reduced-motion and forced-colors preference foundations.
