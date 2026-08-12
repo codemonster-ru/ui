@@ -13,15 +13,24 @@ use Codemonster\Ui\Components\Card\CmCardHeader;
 use Codemonster\Ui\Support\AttributeBag;
 use Codemonster\Ui\Support\ClassBuilder;
 use Codemonster\Ui\Support\PropBag;
+use Codemonster\View\EngineInterface;
 
-final readonly class CmCard implements ComponentInterface
+final class CmCard implements ComponentInterface
 {
     public function __construct(
-        private CmCardHeader $header = new CmCardHeader(),
-        private CmCardBody $body = new CmCardBody(),
-        private CmCardFooter $footer = new CmCardFooter(),
+        private readonly EngineInterface $views,
+        ?CmCardHeader $header = null,
+        ?CmCardBody $body = null,
+        ?CmCardFooter $footer = null,
     ) {
+        $this->header = $header ?? new CmCardHeader($views);
+        $this->body = $body ?? new CmCardBody($views);
+        $this->footer = $footer ?? new CmCardFooter($views);
     }
+
+    private readonly CmCardHeader $header;
+    private readonly CmCardBody $body;
+    private readonly CmCardFooter $footer;
 
     public function render(ComponentRenderContext $context): RenderedHtml
     {
@@ -35,14 +44,15 @@ final readonly class CmCard implements ComponentInterface
             ->addWhen($compact, 'cm-card--compact')
             ->add($this->optionalString($attributes->get('class')))
             ->value();
-        $escapedClasses = htmlspecialchars($classes, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $content = $this->header->render($title, $context->hasSlot('header') ? $context->slot('header') : null)->value()
-            . $this->body->render($context->hasSlot('default') ? $context->slot('default') : null)->value()
-            . $this->footer->render($context->hasSlot('footer') ? $context->slot('footer') : null)->value();
-
         return RenderedHtml::fromTrustedString(
-            '<' . $element . ' class="' . $escapedClasses . '"'
-            . $attributes->without(['class'])->render() . '>' . $content . '</' . $element . '>',
+            rtrim($this->views->render('components.card', [
+                'element' => $element,
+                'classes' => $classes,
+                'attributes' => $attributes->without(['class'])->render(),
+                'header' => $this->header->render($title, $context->hasSlot('header') ? $context->slot('header') : null),
+                'body' => $this->body->render($context->hasSlot('default') ? $context->slot('default') : null),
+                'footer' => $this->footer->render($context->hasSlot('footer') ? $context->slot('footer') : null),
+            ]), "\r\n"),
         );
     }
 

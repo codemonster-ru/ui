@@ -32,7 +32,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
     {
         return [
             'button' => new CmButton($this->views),
-            'card' => new CmCard(),
+            'card' => new CmCard($this->views),
         ];
     }
 }
