@@ -130,6 +130,16 @@ test('keeps Card selectors aligned with its manifest and canonical HTML', () => 
 
 for (const [slug, approved] of [
   [
+    'accordion',
+    [
+      'cm-accordion',
+      'cm-accordion__item',
+      'cm-accordion__heading',
+      'cm-accordion__trigger',
+      'cm-accordion__panel',
+    ],
+  ],
+  [
     'field',
     [
       'cm-field',
