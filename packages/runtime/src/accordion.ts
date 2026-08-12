@@ -39,11 +39,14 @@ export class CmAccordionController implements CmController {
 
   connect(): void {
     this.#items = accordionItems(this.#root);
+    this.#synchronizePanels();
     this.#root.addEventListener('click', this.#handleClick);
+    this.#root.addEventListener('keydown', this.#handleKeydown);
   }
 
   disconnect(): void {
     this.#root.removeEventListener('click', this.#handleClick);
+    this.#root.removeEventListener('keydown', this.#handleKeydown);
     this.#items = [];
   }
 
@@ -61,6 +64,46 @@ export class CmAccordionController implements CmController {
 
     this.#toggle(item);
   };
+
+  readonly #handleKeydown = (event: Event): void => {
+    if (!(event instanceof this.#root.ownerDocument.defaultView!.KeyboardEvent)) {
+      return;
+    }
+
+    const target = event.target;
+    if (!(target instanceof this.#root.ownerDocument.defaultView!.Element)) {
+      return;
+    }
+
+    const trigger = target.closest<HTMLButtonElement>(triggerSelector);
+    const enabledTriggers = this.#items
+      .filter(({ trigger: candidate }) => !candidate.disabled)
+      .map(({ trigger }) => trigger);
+    const currentIndex = trigger ? enabledTriggers.indexOf(trigger) : -1;
+    if (currentIndex < 0 || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    const lastIndex = enabledTriggers.length - 1;
+    const nextIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? lastIndex
+          : event.key === 'ArrowDown'
+            ? (currentIndex + 1) % enabledTriggers.length
+            : (currentIndex - 1 + enabledTriggers.length) % enabledTriggers.length;
+    enabledTriggers[nextIndex]?.focus();
+  };
+
+  #synchronizePanels(): void {
+    for (const { panel, trigger } of this.#items) {
+      const open = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+    }
+  }
 
   #toggle(item: AccordionItem): void {
     const opening = item.trigger.getAttribute('aria-expanded') !== 'true';
