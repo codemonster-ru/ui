@@ -352,7 +352,7 @@ added to the active scope in the future.
   - [x] `CMUI-143e` Add Annabel Razor advanced-input adapters and submission integration.
   - [x] `CMUI-143f` Verify advanced-input DOM, accessibility, interaction, visual, and documentation parity.
 - [ ] `CMUI-144` Migrate the data-display cohort: Table and DataTable.
-  - [ ] `CMUI-144a` Define Table and DataTable contracts, canonical fixtures, and interaction behavior.
+  - [x] `CMUI-144a` Define Table and DataTable contracts, canonical fixtures, and interaction behavior.
   - [ ] `CMUI-144b` Add shared CSS for Table and DataTable.
   - [ ] `CMUI-144c` Add shared progressive-enhancement runtime for interactive DataTable behavior.
   - [ ] `CMUI-144d` Add Vue Table and DataTable adapters and controlled-state verification.

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "Table",
+  "slug": "table",
+  "razorTag": "cm-table",
+  "description": "A responsive semantic table frame for authored rows and columns.",
+  "props": {
+    "caption": { "type": "string", "required": false, "default": "" },
+    "density": { "type": "enum", "required": false, "default": "default", "values": ["default", "compact"] },
+    "striped": { "type": "boolean", "required": false, "default": false },
+    "columnDividers": { "type": "boolean", "required": false, "default": false },
+    "stickyHeader": { "type": "boolean", "required": false, "default": false }
+  },
+  "slots": {
+    "caption": { "required": false, "description": "Trusted caption content that replaces the caption prop." },
+    "header": { "required": false, "description": "Trusted table header rows." },
+    "default": { "required": false, "description": "Trusted table body rows." },
+    "footer": { "required": false, "description": "Trusted table footer rows." }
+  },
+  "events": {},
+  "states": ["default", "compact", "striped", "column-dividers", "sticky-header"]
+}
