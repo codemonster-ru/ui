@@ -27,6 +27,7 @@
   ],
   "exports": {
     "./button.css": "./dist/components/button.css",
+    "./card.css": "./dist/components/card.css",
     "./foundation.css": "./dist/foundation.css",
     "./styles.css": "./dist/styles.css"
   },
