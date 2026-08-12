@@ -90,6 +90,17 @@ final class PropBag
         return $value;
     }
 
+    public function positiveInt(string $name, int $default): int
+    {
+        $value = $this->consume($name, $default);
+
+        if (!is_int($value) || $value < 1) {
+            throw new InvalidArgumentException("Component prop [{$name}] must be a positive integer.");
+        }
+
+        return $value;
+    }
+
     /** @param non-empty-list<string> $allowed */
     public function oneOf(string $name, array $allowed, string $default): string
     {

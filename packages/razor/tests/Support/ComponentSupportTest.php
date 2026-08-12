@@ -27,6 +27,7 @@ final class ComponentSupportTest extends TestCase
         self::assertSame([], $props->array('items'));
         self::assertNull($props->nullableArray('open-items'));
         self::assertNull($props->stringOrNumber('min-height'));
+        self::assertSame(2, $props->positiveInt('page', 2));
         self::assertSame(['data-id' => 'save'], $props->remaining());
     }
 

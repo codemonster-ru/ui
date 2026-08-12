@@ -11,6 +11,7 @@ use Codemonster\Ui\Components\CmBreadcrumbs;
 use Codemonster\Ui\Components\CmCard;
 use Codemonster\Ui\Components\CmCheckbox;
 use Codemonster\Ui\Components\CmCommandPalette;
+use Codemonster\Ui\Components\CmDataTable;
 use Codemonster\Ui\Components\CmDatePicker;
 use Codemonster\Ui\Components\CmDialog;
 use Codemonster\Ui\Components\CmDropdown;
@@ -23,6 +24,7 @@ use Codemonster\Ui\Components\CmPopover;
 use Codemonster\Ui\Components\CmRadio;
 use Codemonster\Ui\Components\CmSelect;
 use Codemonster\Ui\Components\CmSwitch;
+use Codemonster\Ui\Components\CmTable;
 use Codemonster\Ui\Components\CmTabs;
 use Codemonster\Ui\Components\CmTextarea;
 use Codemonster\Ui\Components\CmTooltip;
@@ -45,6 +47,7 @@ final class UiComponentProviderTest extends TestCase
         self::assertInstanceOf(CmCard::class, $provider->components()['card']);
         self::assertInstanceOf(CmCheckbox::class, $provider->components()['checkbox']);
         self::assertInstanceOf(CmCommandPalette::class, $provider->components()['command-palette']);
+        self::assertInstanceOf(CmDataTable::class, $provider->components()['data-table']);
         self::assertInstanceOf(CmDatePicker::class, $provider->components()['date-picker']);
         self::assertInstanceOf(CmDialog::class, $provider->components()['dialog']);
         self::assertInstanceOf(CmDropdown::class, $provider->components()['dropdown']);
@@ -57,6 +60,7 @@ final class UiComponentProviderTest extends TestCase
         self::assertInstanceOf(CmRadio::class, $provider->components()['radio']);
         self::assertInstanceOf(CmSelect::class, $provider->components()['select']);
         self::assertInstanceOf(CmSwitch::class, $provider->components()['switch']);
+        self::assertInstanceOf(CmTable::class, $provider->components()['table']);
         self::assertInstanceOf(CmTabs::class, $provider->components()['tabs']);
         self::assertInstanceOf(CmTextarea::class, $provider->components()['textarea']);
         self::assertInstanceOf(CmTooltip::class, $provider->components()['tooltip']);
@@ -67,6 +71,7 @@ final class UiComponentProviderTest extends TestCase
         self::assertInstanceOf(CmCard::class, $registry->resolve('cm-card'));
         self::assertInstanceOf(CmCheckbox::class, $registry->resolve('cm-checkbox'));
         self::assertInstanceOf(CmCommandPalette::class, $registry->resolve('cm-command-palette'));
+        self::assertInstanceOf(CmDataTable::class, $registry->resolve('cm-data-table'));
         self::assertInstanceOf(CmDatePicker::class, $registry->resolve('cm-date-picker'));
         self::assertInstanceOf(CmDialog::class, $registry->resolve('cm-dialog'));
         self::assertInstanceOf(CmDropdown::class, $registry->resolve('cm-dropdown'));
@@ -79,6 +84,7 @@ final class UiComponentProviderTest extends TestCase
         self::assertInstanceOf(CmRadio::class, $registry->resolve('cm-radio'));
         self::assertInstanceOf(CmSelect::class, $registry->resolve('cm-select'));
         self::assertInstanceOf(CmSwitch::class, $registry->resolve('cm-switch'));
+        self::assertInstanceOf(CmTable::class, $registry->resolve('cm-table'));
         self::assertInstanceOf(CmTabs::class, $registry->resolve('cm-tabs'));
         self::assertInstanceOf(CmTextarea::class, $registry->resolve('cm-textarea'));
         self::assertInstanceOf(CmTooltip::class, $registry->resolve('cm-tooltip'));
