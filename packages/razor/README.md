@@ -49,6 +49,7 @@ pair; keep their relative imported files together when serving them directly.
 See the cross-platform [Button guide](../../docs/components/button.md) for complete Vue and Annabel
 Razor usage.
 See the [Card guide](../../docs/components/card.md) for nested default and named-slot composition.
+See the [Field and Input guide](../../docs/components/forms.md) for native submission and server rerender.
 
 ## Development
 
