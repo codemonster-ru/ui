@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { cmDarkThemePreset, cmLightThemePreset } from '../dist/index.js';
+import { cmBreakpointTokenNames, cmBreakpointTokens, cmDarkThemePreset, cmLightThemePreset } from '../dist/index.js';
 
 function tokenNameToCssProperty(name) {
   return `--cm-${name
@@ -19,9 +19,17 @@ function serializeDeclarations(tokens, include) {
 
 const lightTokens = cmLightThemePreset.tokens;
 const darkTokens = cmDarkThemePreset.tokens;
-const lightDeclarations = serializeDeclarations(lightTokens, () => true);
+const breakpointTokenNames = new Set(cmBreakpointTokenNames);
+const breakpointDeclarations = serializeDeclarations(cmBreakpointTokens, () => true);
+const lightDeclarations = serializeDeclarations(lightTokens, (name) => !breakpointTokenNames.has(name));
 const darkDeclarations = serializeDeclarations(darkTokens, (name, value) => lightTokens[name] !== value);
-const css = `:root,
+const breakpointCss = `:root {
+${breakpointDeclarations}
+}
+`;
+const tokenCss = `@import './breakpoints.css';
+
+:root,
 [data-cm-theme='light'] {
 ${lightDeclarations}
 }
@@ -31,4 +39,5 @@ ${darkDeclarations}
 }
 `;
 
-writeFileSync(resolve(import.meta.dirname, '../dist/tokens.css'), css);
+writeFileSync(resolve(import.meta.dirname, '../dist/breakpoints.css'), breakpointCss);
+writeFileSync(resolve(import.meta.dirname, '../dist/tokens.css'), tokenCss);
