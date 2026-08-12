@@ -32,11 +32,15 @@
     "./badge.css": "./dist/components/badge.css",
     "./button.css": "./dist/components/button.css",
     "./card.css": "./dist/components/card.css",
+    "./checkbox.css": "./dist/components/checkbox.css",
     "./divider.css": "./dist/components/divider.css",
     "./field.css": "./dist/components/field.css",
     "./foundation.css": "./dist/foundation.css",
     "./input.css": "./dist/components/input.css",
+    "./radio.css": "./dist/components/radio.css",
     "./skeleton.css": "./dist/components/skeleton.css",
+    "./switch.css": "./dist/components/switch.css",
+    "./textarea.css": "./dist/components/textarea.css",
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {

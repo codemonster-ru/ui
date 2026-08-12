@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "9d2b161e8feeeded27137d992c38a56845e333806ddee03e144d43f0bdb2142e",
+      "sha256": "529711da2da0f6e85fde67dd72e35254b425690a2e5fb13f9a6ed0c34b6ccea5",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
@@ -161,6 +161,16 @@
         "export": "./card.css"
       }
     },
+    "css:components/checkbox.css": {
+      "path": "css/css/components/checkbox.css",
+      "mediaType": "text/css",
+      "sha256": "276d8e5496ef29c94761fe6a4c57c7aeef009fed92be18d7e94f208edcfa3934",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./checkbox.css"
+      }
+    },
     "css:components/divider.css": {
       "path": "css/css/components/divider.css",
       "mediaType": "text/css",
@@ -191,6 +201,16 @@
         "export": "./input.css"
       }
     },
+    "css:components/radio.css": {
+      "path": "css/css/components/radio.css",
+      "mediaType": "text/css",
+      "sha256": "9b3ecfc6310a3c18b8a4791f51df0115760eababcccaf88dcfa3a30e7d57f725",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./radio.css"
+      }
+    },
     "css:components/skeleton.css": {
       "path": "css/css/components/skeleton.css",
       "mediaType": "text/css",
@@ -199,6 +219,26 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./skeleton.css"
+      }
+    },
+    "css:components/switch.css": {
+      "path": "css/css/components/switch.css",
+      "mediaType": "text/css",
+      "sha256": "b5adb10e2403a66c6d15a3bc9e9ae72c01005075bb30d20b31b955d04c4e446d",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./switch.css"
+      }
+    },
+    "css:components/textarea.css": {
+      "path": "css/css/components/textarea.css",
+      "mediaType": "text/css",
+      "sha256": "6809001e60466121aad8d1f7ea1323753aaf0bd8f144b23f5d638ca0cc97b111",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./textarea.css"
       }
     }
   }
