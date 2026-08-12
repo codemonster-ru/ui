@@ -63,7 +63,7 @@ function renameScriptIdentifiers(source, renames) {
 function migrateNamedImports(source, directMappings) {
   const renames = new Map();
   const importPattern =
-    /import\s*\{([\s\S]*?)\}\s*from\s*(['"])(@codemonster-ru\/vueforge-(?:core|layouts)(?:\/[^'"]+)?)\2\s*;?/gu;
+    /import\s*\{([^}]*)\}\s*from\s*(['"])(@codemonster-ru\/vueforge-(?:core|layouts)(?:\/[^'"]+)?)\2\s*;?/gu;
   const migrated = source.replace(importPattern, (statement, contents, quote, packageSource) => {
     const remaining = [];
     const replacements = [];
