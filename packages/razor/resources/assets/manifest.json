@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "c49b7ae240a529c02b666fb2818e2e1c0c02d8aa7bc8896313cdc73d2171d562",
+      "sha256": "d302a6c3b7ffbc9c66a7648946142cf08561b79babb4403f86736ef075bb0351",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
@@ -119,6 +119,26 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./card.css"
+      }
+    },
+    "css:components/field.css": {
+      "path": "css/css/components/field.css",
+      "mediaType": "text/css",
+      "sha256": "5ff1c5e1658d34f5b668fd64bd373068b9412da1b4987287eb59cdf2e53abaab",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./field.css"
+      }
+    },
+    "css:components/input.css": {
+      "path": "css/css/components/input.css",
+      "mediaType": "text/css",
+      "sha256": "8eaf3055a89083e1859bb684b45cb9c17fb92e28e0f2fc31a03efbd6cda56092",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./input.css"
       }
     }
   }

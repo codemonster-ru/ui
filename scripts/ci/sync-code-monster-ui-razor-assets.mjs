@@ -18,6 +18,8 @@ const sources = [
   { packageDirectory: 'css', path: 'primitives/surface.css', export: './dist/primitives/surface.css' },
   { packageDirectory: 'css', path: 'components/button.css', export: './button.css' },
   { packageDirectory: 'css', path: 'components/card.css', export: './card.css' },
+  { packageDirectory: 'css', path: 'components/field.css', export: './field.css' },
+  { packageDirectory: 'css', path: 'components/input.css', export: './input.css' },
 ];
 
 await rm(join(assetsDirectory, 'css'), { force: true, recursive: true });

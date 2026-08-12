@@ -10,7 +10,9 @@ test('publishes only the approved CSS subpath exports', async () => {
   assert.deepEqual(manifest.exports, {
     './button.css': './dist/components/button.css',
     './card.css': './dist/components/card.css',
+    './field.css': './dist/components/field.css',
     './foundation.css': './dist/foundation.css',
+    './input.css': './dist/components/input.css',
     './styles.css': './dist/styles.css',
   });
 

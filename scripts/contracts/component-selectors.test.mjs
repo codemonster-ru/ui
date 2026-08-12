@@ -11,6 +11,29 @@ const cardContractDirectory = resolve(repositoryRoot, 'contracts/card');
 const cardManifest = JSON.parse(readFileSync(resolve(cardContractDirectory, 'manifest.json'), 'utf8'));
 const cardCss = readFileSync(resolve(repositoryRoot, 'packages/css/src/components/card.css'), 'utf8');
 
+function componentClasses(slug) {
+  const classes = new Set();
+  const casesDirectory = resolve(repositoryRoot, `contracts/${slug}/cases`);
+
+  for (const fileName of readdirSync(casesDirectory).filter((name) => name.endsWith('.html'))) {
+    const html = readFileSync(resolve(casesDirectory, fileName), 'utf8');
+    for (const [, classNames] of html.matchAll(/class="([^"]+)"/g)) {
+      for (const className of classNames.split(/\s+/)) {
+        if (className.startsWith(`cm-${slug}`)) classes.add(className);
+      }
+    }
+  }
+
+  return classes;
+}
+
+function cssClasses(slug) {
+  const css = readFileSync(resolve(repositoryRoot, `packages/css/src/components/${slug}.css`), 'utf8');
+  return new Set(
+    [...css.matchAll(new RegExp(`\\.(cm-${slug}(?:--|__)[a-z0-9-]+|cm-${slug})\\b`, 'g'))].map((match) => match[1]),
+  );
+}
+
 function canonicalButtonClasses() {
   const classes = new Set();
   const casesDirectory = resolve(buttonContractDirectory, 'cases');
@@ -81,7 +104,9 @@ test('keeps Card selectors aligned with its manifest and canonical HTML', () => 
   );
   const canonicalClasses = new Set();
 
-  for (const fileName of readdirSync(resolve(cardContractDirectory, 'cases')).filter((name) => name.endsWith('.html'))) {
+  for (const fileName of readdirSync(resolve(cardContractDirectory, 'cases')).filter((name) =>
+    name.endsWith('.html'),
+  )) {
     const html = readFileSync(resolve(cardContractDirectory, 'cases', fileName), 'utf8');
     for (const [, classNames] of html.matchAll(/class="([^"]+)"/g)) {
       for (const className of classNames.split(/\s+/)) {
@@ -90,9 +115,49 @@ test('keeps Card selectors aligned with its manifest and canonical HTML', () => 
     }
   }
 
-  assert.deepEqual([...canonicalClasses].filter((name) => !approvedClasses.has(name)), []);
-  assert.deepEqual([...cssClasses].filter((name) => !approvedClasses.has(name)), []);
+  assert.deepEqual(
+    [...canonicalClasses].filter((name) => !approvedClasses.has(name)),
+    [],
+  );
+  assert.deepEqual(
+    [...cssClasses].filter((name) => !approvedClasses.has(name)),
+    [],
+  );
   for (const className of canonicalClasses) {
     assert.ok(cssClasses.has(className), `Canonical Card class has no CSS selector: ${className}`);
   }
 });
+
+for (const [slug, approved] of [
+  [
+    'field',
+    [
+      'cm-field',
+      'cm-field--invalid',
+      'cm-field__label',
+      'cm-field__required',
+      'cm-field__control',
+      'cm-field__description',
+      'cm-field__error',
+    ],
+  ],
+  ['input', ['cm-input', 'cm-input--sm', 'cm-input--md', 'cm-input--lg', 'cm-input--invalid']],
+]) {
+  test(`keeps ${slug} selectors aligned with canonical HTML`, () => {
+    const allowed = new Set(approved);
+    const canonical = componentClasses(slug);
+    const styled = cssClasses(slug);
+
+    assert.deepEqual(
+      [...canonical].filter((name) => !allowed.has(name)),
+      [],
+    );
+    assert.deepEqual(
+      [...styled].filter((name) => !allowed.has(name)),
+      [],
+    );
+    for (const className of canonical) {
+      assert.ok(styled.has(className), `Canonical ${slug} class has no CSS selector: ${className}`);
+    }
+  });
+}
