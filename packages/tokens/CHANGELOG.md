@@ -13,3 +13,4 @@ All notable changes to this package will be documented in this file.
 - Added the framework-independent spacing scale and shared control and icon sizing tokens.
 - Added framework-independent font family, weight, size, and line-height tokens.
 - Added shared border widths, control/surface radii, and reusable surface and overlay shadows.
+- Added shared motion durations, standard easing, numeric duration values, and a no-motion token.

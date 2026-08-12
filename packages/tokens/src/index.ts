@@ -7,6 +7,8 @@ export {
   cmShadowTokenNames,
   cmShadowTokens,
 } from './borders.js';
+export { cmMotionDurationsMs, cmMotionTokenNames, cmMotionTokens } from './motion.js';
+export type { CmMotionOverrides, CmMotionTokenName, CmMotionTokens } from './motion.js';
 export type {
   CmBorderOverrides,
   CmBorderTokenName,
