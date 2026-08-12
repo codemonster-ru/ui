@@ -6,6 +6,9 @@ test('publishes a framework-independent ESM entry', async () => {
   assert.deepEqual(Object.keys(entry), [
     'cmBorderTokenNames',
     'cmBorderTokens',
+    'cmMotionDurationsMs',
+    'cmMotionTokenNames',
+    'cmMotionTokens',
     'cmPrimitiveColorTokenNames',
     'cmPrimitiveColorTokens',
     'cmRadiusTokenNames',
