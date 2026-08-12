@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "input-disabled-submission",
+  "case": "input-disabled",
+  "steps": [
+    { "action": "submit", "target": "form" },
+    { "expect": "formValue", "target": "form", "name": "status", "value": null }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "input-native-submission",
+  "case": "input-value",
+  "steps": [
+    { "action": "setValue", "target": "control", "value": "updated@example.com" },
+    { "expect": "eventCount", "target": "control", "name": "input", "count": 1 },
+    { "action": "submit", "target": "form" },
+    { "expect": "formValue", "target": "form", "name": "email", "value": "updated@example.com" }
+  ]
+}
