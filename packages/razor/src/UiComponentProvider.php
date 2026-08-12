@@ -15,6 +15,7 @@ use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
 use Codemonster\Ui\Components\CmCheckbox;
 use Codemonster\Ui\Components\CmCommandPalette;
+use Codemonster\Ui\Components\CmContainer;
 use Codemonster\Ui\Components\CmDataTable;
 use Codemonster\Ui\Components\CmDatePicker;
 use Codemonster\Ui\Components\CmDivider;
@@ -22,13 +23,17 @@ use Codemonster\Ui\Components\CmDialog;
 use Codemonster\Ui\Components\CmDropdown;
 use Codemonster\Ui\Components\CmDrawer;
 use Codemonster\Ui\Components\CmField;
+use Codemonster\Ui\Components\CmGrid;
 use Codemonster\Ui\Components\CmInput;
+use Codemonster\Ui\Components\CmInline;
 use Codemonster\Ui\Components\CmLink;
 use Codemonster\Ui\Components\CmMenu;
 use Codemonster\Ui\Components\CmPopover;
 use Codemonster\Ui\Components\CmRadio;
 use Codemonster\Ui\Components\CmSelect;
+use Codemonster\Ui\Components\CmSection;
 use Codemonster\Ui\Components\CmSkeleton;
+use Codemonster\Ui\Components\CmStack;
 use Codemonster\Ui\Components\CmSwitch;
 use Codemonster\Ui\Components\CmTable;
 use Codemonster\Ui\Components\CmTabs;
@@ -66,6 +71,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'card' => new CmCard($this->views),
             'checkbox' => new CmCheckbox($this->views),
             'command-palette' => new CmCommandPalette($this->views),
+            'container' => new CmContainer($this->views),
             'data-table' => new CmDataTable($this->views),
             'date-picker' => new CmDatePicker($this->views),
             'divider' => new CmDivider($this->views),
@@ -73,13 +79,17 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'dropdown' => new CmDropdown($this->views),
             'drawer' => new CmDrawer($this->views),
             'field' => new CmField($this->views),
+            'grid' => new CmGrid($this->views),
             'input' => new CmInput($this->views),
+            'inline' => new CmInline($this->views),
             'link' => new CmLink($this->views),
             'menu' => new CmMenu($this->views),
             'popover' => new CmPopover($this->views),
             'radio' => new CmRadio($this->views),
             'select' => new CmSelect($this->views),
+            'section' => new CmSection($this->views),
             'skeleton' => new CmSkeleton($this->views),
+            'stack' => new CmStack($this->views),
             'switch' => new CmSwitch($this->views),
             'table' => new CmTable($this->views),
             'tabs' => new CmTabs($this->views),
