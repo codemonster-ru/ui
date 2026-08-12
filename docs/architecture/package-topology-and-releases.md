@@ -156,6 +156,22 @@ Before publication, affected packages pass:
 - size budgets and tree-shaking checks where applicable;
 - provenance, integrity, license, repository, and changelog checks.
 
+Initial package-level ceilings are measured across built runtime artifacts. Gzip totals are the sum
+of each emitted file compressed independently, so duplicated output is visible rather than hidden
+by archive compression.
+
+| Package | CSS raw | CSS gzip | JavaScript gzip |
+| --- | ---: | ---: | ---: |
+| `ui-tokens` | 64 KiB | 12 KiB | 24 KiB |
+| `ui-icons` | 0 | 0 | 256 KiB |
+| `ui-runtime` | 0 | 0 | 32 KiB |
+| `ui-css` | 320 KiB | 48 KiB | 8 KiB |
+| `ui-utilities` | 256 KiB | 32 KiB | 8 KiB |
+| Platform adapter | 32 KiB | 8 KiB | 128 KiB |
+
+Budgets are ceilings, not targets. Raising one requires a reviewed architecture or product reason;
+normal feature work must stay within the existing limit.
+
 After publication, the same representative consumers install registry artifacts before dependants
 or documentation are released.
 
