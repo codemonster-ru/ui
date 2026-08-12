@@ -41,7 +41,7 @@ final readonly class AssetManifest
             throw new RuntimeException('UI asset manifest must use schema version 1 and define artifacts.');
         }
 
-        /** @var array<string, mixed> $artifacts */
+        /** @var array<mixed, mixed> $artifacts */
         $artifacts = $manifest['artifacts'];
 
         foreach ($artifacts as $name => $artifact) {
@@ -90,6 +90,7 @@ final readonly class AssetManifest
     private static function validateArtifact(string $name, array $artifact): void
     {
         $path = $artifact['path'] ?? null;
+        $sha256 = $artifact['sha256'] ?? null;
         $source = $artifact['source'] ?? null;
 
         if (!is_string($path) || $path === '' || str_starts_with($path, '/') || str_contains($path, '..')) {
@@ -97,7 +98,8 @@ final readonly class AssetManifest
         }
 
         if (!is_string($artifact['mediaType'] ?? null)
-            || preg_match('/^[a-f0-9]{64}$/D', $artifact['sha256'] ?? '') !== 1
+            || !is_string($sha256)
+            || preg_match('/^[a-f0-9]{64}$/D', $sha256) !== 1
             || !is_array($source)
             || !is_string($source['package'] ?? null)
             || !is_string($source['version'] ?? null)
