@@ -30,6 +30,7 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./breakpoints.css": "./dist/breakpoints.css",
     "./tokens.css": "./dist/tokens.css"
   },
   "scripts": {

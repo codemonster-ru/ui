@@ -18,3 +18,4 @@ All notable changes to this package will be documented in this file.
 - Added the complete immutable light theme preset and composed theme token types.
 - Added the complete immutable dark theme preset with mode-neutral foundation parity.
 - Added generated `--cm-*` custom properties with light and dark theme selectors.
+- Added a separate portable breakpoint CSS export without custom-media build requirements.
