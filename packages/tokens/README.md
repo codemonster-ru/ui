@@ -17,6 +17,7 @@ import {
   cmPrimitiveColorTokens,
   cmSemanticDarkColorTokens,
   cmSemanticLightColorTokens,
+  serializeCmThemeTokensToCssVars,
   type CmPrimitiveColorOverrides,
 } from '@codemonster-ru/ui-tokens';
 
@@ -29,6 +30,7 @@ console.log(
   cmPrimitiveColorTokens,
   cmSemanticLightColorTokens,
   cmSemanticDarkColorTokens,
+  serializeCmThemeTokensToCssVars(brandColors),
   brandColors,
 );
 ```
