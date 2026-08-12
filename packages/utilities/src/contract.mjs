@@ -91,11 +91,46 @@ export const sizingUtilities = Object.freeze({
       }),
   ),
 });
-import {
-  cmSizingTokenNames,
-  cmSpacingTokenNames,
-  serializeCmThemeTokensToCssVars,
-} from '@codemonster-ru/ui-tokens';
+
+export const typographyUtilities = Object.freeze({
+  'font-base': { 'font-family': tokenVariable('fontFamilyBase') },
+  'font-heading': { 'font-family': tokenVariable('fontFamilyHeading') },
+  'font-mono': { 'font-family': tokenVariable('fontFamilyMono') },
+  'font-regular': { 'font-weight': tokenVariable('fontWeightRegular') },
+  'font-medium': { 'font-weight': tokenVariable('fontWeightMedium') },
+  'font-semibold': { 'font-weight': tokenVariable('fontWeightSemibold') },
+  'font-bold': { 'font-weight': tokenVariable('fontWeightBold') },
+  ...Object.fromEntries(
+    ['Xs', 'Sm', 'Md', 'Lg', 'Xl', '2xl', '3xl'].map((suffix) => [
+      `text-${suffix.toLowerCase()}`,
+      { 'font-size': tokenVariable(`fontSize${suffix}`) },
+    ]),
+  ),
+  ...Object.fromEntries(
+    ['Tight', 'Normal', 'Relaxed'].map((suffix) => [
+      `leading-${suffix.toLowerCase()}`,
+      { 'line-height': tokenVariable(`lineHeight${suffix}`) },
+    ]),
+  ),
+});
+
+export const colorUtilities = Object.freeze({
+  'text-primary': { color: tokenVariable('colorTextPrimary') },
+  'text-secondary': { color: tokenVariable('colorTextSecondary') },
+  'text-muted': { color: tokenVariable('colorTextMuted') },
+  'text-disabled': { color: tokenVariable('colorTextDisabled') },
+  'text-inverse': { color: tokenVariable('colorTextInverse') },
+  'text-link': { color: tokenVariable('colorTextLink') },
+  'bg-canvas': { background: tokenVariable('colorBackgroundCanvas') },
+  'bg-surface': { background: tokenVariable('colorBackgroundSurface') },
+  'bg-surface-subtle': { background: tokenVariable('colorBackgroundSurfaceSubtle') },
+  'bg-inverse': { background: tokenVariable('colorBackgroundInverse') },
+  'border-subtle': { 'border-color': tokenVariable('colorBorderSubtle') },
+  'border-default': { 'border-color': tokenVariable('colorBorderDefault') },
+  'border-strong': { 'border-color': tokenVariable('colorBorderStrong') },
+  'border-divider': { 'border-color': tokenVariable('colorBorderDivider') },
+});
+import { cmSizingTokenNames, cmSpacingTokenNames, serializeCmThemeTokensToCssVars } from '@codemonster-ru/ui-tokens';
 
 function tokenVariable(name) {
   const [variable] = Object.keys(serializeCmThemeTokensToCssVars({ [name]: '' }));

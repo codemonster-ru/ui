@@ -1,7 +1,15 @@
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { displayUtilities, flexUtilities, gridUtilities, sizingUtilities, spacingUtilities } from '../src/contract.mjs';
+import {
+  colorUtilities,
+  displayUtilities,
+  flexUtilities,
+  gridUtilities,
+  sizingUtilities,
+  spacingUtilities,
+  typographyUtilities,
+} from '../src/contract.mjs';
 
 const packageDirectory = resolve(import.meta.dirname, '..');
 const distDirectory = resolve(packageDirectory, 'dist');
@@ -14,7 +22,15 @@ function serializeRule(name, declarations) {
 }
 
 const layerDeclaration = readFileSync(resolve(packageDirectory, 'src/layer.css'), 'utf8').trim();
-const utilities = { ...displayUtilities, ...flexUtilities, ...gridUtilities, ...spacingUtilities, ...sizingUtilities };
+const utilities = {
+  ...displayUtilities,
+  ...flexUtilities,
+  ...gridUtilities,
+  ...spacingUtilities,
+  ...sizingUtilities,
+  ...typographyUtilities,
+  ...colorUtilities,
+};
 const rules = Object.entries(utilities).map(([name, declarations]) => serializeRule(name, declarations));
 const css = `${layerDeclaration.slice(0, -1)} {\n${rules.join('\n\n')}\n}\n`;
 
