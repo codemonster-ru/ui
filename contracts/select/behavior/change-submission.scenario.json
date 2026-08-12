@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "select-change-submission",
+  "case": "select-default",
+  "steps": [
+    { "action": "setValue", "target": "control", "value": "weekly" },
+    { "expect": "formValue", "target": "form", "name": "frequency", "value": "weekly" },
+    { "expect": "eventCount", "target": "control", "name": "change", "count": 1 }
+  ]
+}

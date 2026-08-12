@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "name": "CommandPalette",
+  "slug": "command-palette",
+  "razorTag": "cm-command-palette",
+  "description": "A modal searchable list of application commands.",
+  "props": {
+    "id": { "type": "string", "required": true },
+    "title": { "type": "string", "required": true },
+    "commands": { "type": "collection", "required": true, "valueContract": "command-palette-item" },
+    "open": { "type": "boolean", "required": false, "default": false },
+    "query": { "type": "string", "required": false, "default": "" },
+    "placeholder": { "type": "string", "required": false, "default": "Search commands" },
+    "emptyText": { "type": "string", "required": false, "default": "No commands found." },
+    "closeLabel": { "type": "string", "required": false, "default": "Close" }
+  },
+  "slots": {},
+  "events": {
+    "openChange": { "description": "Reports the next modal state.", "payloadContract": "boolean" },
+    "queryChange": { "description": "Reports the current plain-text query.", "payloadContract": "string" },
+    "select": { "description": "Reports the selected enabled command id.", "payloadContract": "command-id" }
+  },
+  "states": ["closed", "open", "filtered", "empty"]
+}
