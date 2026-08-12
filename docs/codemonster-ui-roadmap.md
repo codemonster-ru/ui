@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 5 — Generic Annabel Razor component model
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `ARAZOR-012`
+- Next item: `ARAZOR-013`
 
 ## Milestones
 
@@ -189,7 +189,7 @@ and be recorded in the cross-repository log below.
 - [x] `ARAZOR-009` Compile named slots.
 - [x] `ARAZOR-010` Support nested components.
 - [x] `ARAZOR-011` Render registered components through the resolver.
-- [ ] `ARAZOR-012` Preserve trusted component output while escaping user values.
+- [x] `ARAZOR-012` Preserve trusted component output while escaping user values.
 - [ ] `ARAZOR-013` Add diagnostics for unknown and malformed components.
 - [ ] `ARAZOR-014` Verify component cache invalidation.
 - [ ] `ARAZOR-015` Document custom component registration and security.
@@ -398,6 +398,7 @@ Record Annabel work here when an `ARAZOR-*` item is completed.
 | `ARAZOR-009` | `ce32bc8`      | This row                       | Direct named-slot compilation.      |
 | `ARAZOR-010` | `cebf892`      | This row                       | Recursive nested compilation.       |
 | `ARAZOR-011` | `1ec5b97`      | This row                       | Resolver-backed component runtime.  |
+| `ARAZOR-012` | `ff7711e`      | This row                       | Trusted composition boundary.       |
 
 ## Scope-change log
 
