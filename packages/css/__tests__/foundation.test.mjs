@@ -9,6 +9,10 @@ const documentCss = await readFile(
   'utf8',
 );
 const focusCss = await readFile(new URL('../dist/foundation/focus.css', import.meta.url), 'utf8');
+const preferencesCss = await readFile(
+  new URL('../dist/foundation/preferences.css', import.meta.url),
+  'utf8',
+);
 
 test('ships a small predictable document reset', () => {
   assert.match(resetCss, /box-sizing: border-box;/);
@@ -34,4 +38,13 @@ test('shows token-backed focus rings only for focus-visible', () => {
   assert.match(focusCss, /:focus:not\([\s\S]*:focus-visible/);
   assert.doesNotMatch(focusCss, /(^|,)\s*:focus\s*\{[^}]*outline:\s*none/m);
   assert.doesNotMatch(focusCss, /--(?:vf|vueforge)-|\.vf-/);
+});
+
+test('respects reduced motion and forced color preferences', () => {
+  assert.match(preferencesCss, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(preferencesCss, /transition-duration: var\(--cm-motion-duration-none\) !important;/);
+  assert.match(preferencesCss, /@media \(forced-colors: active\)/);
+  assert.match(preferencesCss, /outline-color: Highlight;/);
+  assert.match(preferencesCss, /color: GrayText;/);
+  assert.doesNotMatch(preferencesCss, /--(?:vf|vueforge)-|\.vf-/);
 });
