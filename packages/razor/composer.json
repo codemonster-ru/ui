@@ -1,0 +1,35 @@
+{
+  "name": "codemonster-ru/ui",
+  "description": "CodeMonster UI components and assets for Annabel Razor.",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.2",
+    "codemonster-ru/razor": "^2.0"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^11.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Codemonster\\Ui\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Codemonster\\Ui\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress",
+    "test": "phpunit --configuration=phpunit.xml.dist",
+    "check": [
+      "@analyse",
+      "@test"
+    ]
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
