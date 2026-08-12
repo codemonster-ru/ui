@@ -2,6 +2,9 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import semver from 'semver';
+import { validateCodeMonsterUiPackageCatalog } from './code-monster-ui-package-metadata.mjs';
+import { validateCodeMonsterUiNpmPackageContract } from './code-monster-ui-package-contracts.mjs';
+import { discoverCodeMonsterUiWorkspaces } from './code-monster-ui-workspaces.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const expectedRepositoryUrl = 'git+https://github.com/codemonster-ru/vueforge.git';
@@ -59,7 +62,7 @@ const releaseTrain = [
 const releaseByName = new Map(releaseTrain.map((packageContract) => [packageContract.name, packageContract]));
 const runtimeDependencyFields = ['dependencies', 'optionalDependencies', 'peerDependencies'];
 const obsoleteResolverFields = ['main', 'module', 'types', 'style', 'typesVersions'];
-const errors = [];
+const errors = validateCodeMonsterUiPackageCatalog();
 
 function report(message) {
   errors.push(message);
@@ -490,6 +493,7 @@ function validateInternalDependencies(manifests) {
 }
 
 const manifests = new Map();
+let codeMonsterUiPackageCount = 0;
 
 for (const packageContract of releaseTrain) {
   const packageDirectory = join(repositoryRoot, 'packages', packageContract.directory);
@@ -512,6 +516,21 @@ if (manifests.size !== releaseTrain.length) {
   validateInternalDependencies(manifests);
 }
 
+try {
+  const codeMonsterUiWorkspaces = discoverCodeMonsterUiWorkspaces(join(repositoryRoot, 'packages'));
+  codeMonsterUiPackageCount = codeMonsterUiWorkspaces.length;
+
+  for (const packageContract of codeMonsterUiWorkspaces) {
+    const packageDirectory = join(repositoryRoot, 'packages', packageContract.directory);
+    const manifest = readJson(packageContract.manifestPath);
+    if (manifest) {
+      errors.push(...validateCodeMonsterUiNpmPackageContract(packageContract, packageDirectory, manifest));
+    }
+  }
+} catch (error) {
+  report(error.message);
+}
+
 if (errors.length > 0) {
   console.error(`[package-contracts] FAILED with ${errors.length} contract error(s):`);
   for (const error of errors) {
@@ -519,5 +538,7 @@ if (errors.length > 0) {
   }
   process.exitCode = 1;
 } else {
-  console.log(`[package-contracts] OK: ${releaseTrain.length} manifests and their built exports are publishable.`);
+  console.log(
+    `[package-contracts] OK: ${releaseTrain.length} VueForge and ${codeMonsterUiPackageCount} CodeMonster UI package manifest(s) and their built exports are publishable.`,
+  );
 }
