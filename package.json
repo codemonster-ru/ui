@@ -23,7 +23,7 @@
     "lint:html": "htmlhint \"**/*.html\" --format unix --nocolor",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:docs-imports": "node ./scripts/ci/validate-docs-import-ownership.mjs",
-    "check:docs": "node ./scripts/ci/check-documentation-contracts.mjs",
+    "check:docs": "node --test ./scripts/ci/documentation-fences.test.mjs && node ./scripts/ci/check-documentation-contracts.mjs",
     "check:docs:examples": "node --test ./scripts/ci/documentation-example-paths.test.mjs && node ./scripts/ci/check-documentation-examples.mjs",
     "lint:data": "prettier --check \"**/*.{json,yml,yaml}\"",
     "lint:all": "npm run lint && npm run lint:styles && npm run lint:html && npm run lint:md && npm run lint:data",

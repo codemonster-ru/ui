@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import ts from 'typescript';
 import { compileTemplate, parse as parseSfc } from '@vue/compiler-sfc';
+import { isDocumentationScriptLanguage } from './documentation-fences.mjs';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const ignoredDirectoryNames = new Set(['.git', '.npm-cache', 'build', 'coverage', 'dist', 'node_modules']);
@@ -336,7 +337,7 @@ function checkInstallSnippet(code, filePath, line) {
 }
 
 function checkCodeSnippets(markdownFiles) {
-  const snippetPattern = /^```(ts|typescript|js|javascript|vue|bash|sh|shell)(?:[^\n]*)\n([\s\S]*?)^```\s*$/gmu;
+  const snippetPattern = /^```([a-z][a-z\d-]*)(?:[^\n]*)\n([\s\S]*?)^```\s*$/gmu;
 
   for (const filePath of markdownFiles) {
     const source = readFileSync(filePath, 'utf8');
@@ -344,6 +345,10 @@ function checkCodeSnippets(markdownFiles) {
       const language = match[1];
       const code = match[2];
       const line = lineNumberAt(source, match.index ?? 0);
+
+      if (!isDocumentationScriptLanguage(language)) {
+        continue;
+      }
 
       if (language === 'vue') {
         checkVueSnippet(code, filePath, line);
