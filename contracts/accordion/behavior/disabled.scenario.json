@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-disabled",
+  "case": "accordion-disabled",
+  "steps": [
+    { "action": "click", "target": "trigger-second" },
+    { "expect": "attribute", "target": "trigger-second", "name": "aria-expanded", "value": "false" },
+    { "expect": "visible", "target": "panel-second", "value": false },
+    { "expect": "eventCount", "target": "root", "name": "open-change", "count": 0 }
+  ]
+}

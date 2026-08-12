@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-one-open",
+  "description": "Single mode with the first item initially open.",
+  "props": {
+    "id": "faq",
+    "items": [
+      { "id": "account", "title": "Account", "content": "Account answer." },
+      { "id": "billing", "title": "Billing", "content": "Billing answer." }
+    ],
+    "defaultOpenItems": ["account"]
+  },
+  "slots": {}
+}

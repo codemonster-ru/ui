@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-single-exclusive",
+  "case": "accordion-one-open",
+  "steps": [
+    { "action": "click", "target": "trigger-second" },
+    { "expect": "attribute", "target": "trigger-first", "name": "aria-expanded", "value": "false" },
+    { "expect": "visible", "target": "panel-first", "value": false },
+    { "expect": "attribute", "target": "trigger-second", "name": "aria-expanded", "value": "true" }
+  ]
+}

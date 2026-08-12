@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-disabled",
+  "description": "Disabled item remains closed and unavailable for activation.",
+  "props": {
+    "id": "faq",
+    "items": [
+      { "id": "account", "title": "Account", "content": "Account answer." },
+      { "id": "billing", "title": "Billing", "content": "Billing answer.", "disabled": true }
+    ]
+  },
+  "slots": {}
+}
