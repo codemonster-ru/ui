@@ -67,10 +67,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 12 — Utility CSS
+- Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-138`
+- Next item: `CMUI-139`
 
 ## Milestones
 
@@ -309,7 +309,7 @@ date and should enter the delivery scope only in response to a concrete product 
 - [x] `CMUI-135` Generate border and radius utilities from tokens.
 - [x] `CMUI-136` Add approved responsive variants.
 - [x] `CMUI-137` Add token-reference and CSS-size contract tests.
-- [ ] `CMUI-138` Document utility CSS usage and limitations.
+- [x] `CMUI-138` Document utility CSS usage and limitations.
 
 ## Phase 13 — Component expansion
 
