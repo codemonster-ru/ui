@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "skeleton-static-height",
+  "description": "Static control-radius placeholder with a minimum height.",
+  "props": { "animated": false, "radius": "control", "minHeight": "6rem" },
+  "slots": {}
+}

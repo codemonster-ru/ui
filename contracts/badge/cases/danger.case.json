@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "badge-danger",
+  "description": "Danger tone with a consumer attribute.",
+  "props": { "tone": "danger" },
+  "slots": { "default": "Blocked" },
+  "attributes": { "title": "Requires attention" }
+}

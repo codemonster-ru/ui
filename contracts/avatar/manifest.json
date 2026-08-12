@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "name": "Avatar",
+  "slug": "avatar",
+  "razorTag": "cm-avatar",
+  "description": "A compact image or text identity fallback.",
+  "props": {
+    "image": { "type": "nullable-string", "required": false, "default": null },
+    "imageAlt": { "type": "string", "required": false, "default": "" },
+    "label": { "type": "nullable-string", "required": false, "default": null },
+    "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg"] },
+    "shape": { "type": "enum", "required": false, "default": "square", "values": ["square", "circle"] }
+  },
+  "slots": {
+    "default": { "required": false, "description": "Trusted fallback content after image and label." }
+  },
+  "events": {},
+  "states": ["default"]
+}

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "alert-danger-icon",
+  "description": "Danger alert with trusted title and decorative icon slots.",
+  "props": { "tone": "danger", "title": "Ignored" },
+  "slots": { "default": "Review the failed fields.", "title": "Submission failed", "icon": "!" },
+  "attributes": { "role": "alert" }
+}
