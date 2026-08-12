@@ -1,0 +1,176 @@
+.cm-data-table {
+  max-inline-size: 100%;
+  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-data-table__scroll {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  border-radius: inherit;
+}
+
+.cm-data-table__table {
+  inline-size: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--cm-font-size-md);
+  line-height: var(--cm-line-height-normal);
+  text-align: start;
+}
+
+.cm-data-table__caption {
+  padding: var(--cm-space-3) var(--cm-space-4);
+  color: var(--cm-color-text-secondary);
+  font-weight: var(--cm-font-weight-medium);
+  text-align: start;
+}
+
+.cm-data-table__table :where(th, td) {
+  padding: var(--cm-space-3) var(--cm-space-4);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+  text-align: start;
+  vertical-align: middle;
+}
+
+.cm-data-table__head th {
+  background: var(--cm-color-background-surface-subtle);
+  font-weight: var(--cm-font-weight-semibold);
+}
+
+.cm-data-table__body > tr:last-child > :where(th, td) {
+  border-block-end: 0;
+}
+
+.cm-data-table--compact .cm-data-table__table :where(th, td) {
+  padding: var(--cm-space-2) var(--cm-space-3);
+}
+
+.cm-data-table--striped .cm-data-table__body > tr:nth-child(even) {
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.cm-data-table--column-dividers .cm-data-table__table :where(th, td):not(:last-child) {
+  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-data-table--sticky-header .cm-data-table__head th {
+  position: sticky;
+  z-index: 1;
+  inset-block-start: 0;
+}
+
+.cm-data-table__row--selected {
+  background: var(--cm-color-background-surface-selected);
+}
+
+.cm-data-table__selection {
+  inline-size: var(--cm-control-height-sm);
+  text-align: center;
+}
+
+.cm-data-table__selection input {
+  inline-size: var(--cm-space-4);
+  block-size: var(--cm-space-4);
+  margin: 0;
+  accent-color: var(--cm-color-focus-ring);
+}
+
+.cm-data-table__cell--center {
+  text-align: center;
+}
+
+.cm-data-table__cell--end {
+  text-align: end;
+}
+
+.cm-data-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-1);
+  min-block-size: var(--cm-control-height-sm);
+  padding: 0;
+  border: 0;
+  appearance: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+}
+
+.cm-data-table__sort-indicator::before {
+  content: '↕';
+  color: var(--cm-color-text-muted);
+}
+
+[aria-sort='ascending'] .cm-data-table__sort-indicator::before {
+  content: '↑';
+}
+
+[aria-sort='descending'] .cm-data-table__sort-indicator::before {
+  content: '↓';
+}
+
+.cm-data-table__state {
+  padding-block: var(--cm-space-8);
+  color: var(--cm-color-text-muted);
+  text-align: center;
+}
+
+.cm-data-table__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--cm-space-3);
+  padding: var(--cm-space-3) var(--cm-space-4);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-data-table__page-summary {
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-sm);
+}
+
+.cm-data-table__page-button {
+  min-block-size: var(--cm-control-height-sm);
+  padding-inline: var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control-tight);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  cursor: pointer;
+  font: inherit;
+}
+
+.cm-data-table__page-button:disabled {
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.cm-data-table__sort:focus-visible,
+.cm-data-table__selection input:focus-visible,
+.cm-data-table__page-button:focus-visible {
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-data-table__page-button:hover:not(:disabled) {
+  background: var(--cm-color-background-surface-hover);
+}
+
+@media (forced-colors: active) {
+  .cm-data-table,
+  .cm-data-table__table :where(th, td),
+  .cm-data-table__pagination {
+    border-color: CanvasText;
+  }
+
+  .cm-data-table__row--selected {
+    outline: var(--cm-border-width) solid Highlight;
+    outline-offset: calc(-1 * var(--cm-border-width));
+  }
+}
