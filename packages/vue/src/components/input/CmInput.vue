@@ -61,5 +61,5 @@ function updateValue(event: Event): void {
     :required="props.required || undefined"
     :aria-invalid="props.invalid ? 'true' : undefined"
     @input="updateValue"
-  >
+  />
 </template>
