@@ -57,5 +57,19 @@ ThemeSwitch, all application shells, SetupLayout, and standalone shell areas req
 They have no direct stable component replacement. Native HTML and the listed CodeMonster UI
 primitives are preferred where sufficient.
 
-The read-only checker in `CMUI-151` reports these actions. It must not turn `compose`, `manual`, or
-`retain` entries into automatic edits.
+## Read-only checker
+
+Run the migration checker against one or more source paths:
+
+```bash
+node scripts/check-vueforge-migration.mjs src
+node scripts/check-vueforge-migration.mjs --format=json --allow-findings src templates
+```
+
+Text and JSON findings include file, line, column, reference kind, mapping action, and available
+targets. Findings make the default command fail so it can guard a completed migration;
+`--allow-findings` produces an inventory with exit code zero. Dependency and build directories are
+ignored. The checker is read-only and rejects `--write`.
+
+The checker never turns `compose`, `manual`, or `retain` entries into edits. Deterministic write mode
+is implemented separately by `CMUI-152`.
