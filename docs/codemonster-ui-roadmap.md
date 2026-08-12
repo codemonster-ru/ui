@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 8 — Input and native forms
 - Current milestone: M3 — Input form parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity
-- Next item: `CMUI-091`
+- Next item: `CMUI-092`
 
 ## Milestones
 
@@ -232,7 +232,7 @@ and be recorded in the cross-repository log below.
 - [x] `CMUI-088` Move Field and Input styles into the shared CSS package.
 - [x] `CMUI-089` Add Vue `CmField`.
 - [x] `CMUI-090` Add Vue `CmInput` and model binding.
-- [ ] `CMUI-091` Verify Vue Field/Input DOM, events, and SSR output.
+- [x] `CMUI-091` Verify Vue Field/Input DOM, events, and SSR output.
 - [ ] `CMUI-092` Add PHP Field and Input components.
 - [ ] `CMUI-093` Add Field and Input Razor templates.
 - [ ] `CMUI-094` Preserve submitted values and render validation errors.
