@@ -17,10 +17,15 @@ const sources = [
   { packageDirectory: 'css', path: 'primitives/control.css', export: './dist/primitives/control.css' },
   { packageDirectory: 'css', path: 'primitives/surface.css', export: './dist/primitives/surface.css' },
   { packageDirectory: 'css', path: 'components/accordion.css', export: './accordion.css' },
+  { packageDirectory: 'css', path: 'components/alert.css', export: './alert.css' },
+  { packageDirectory: 'css', path: 'components/avatar.css', export: './avatar.css' },
+  { packageDirectory: 'css', path: 'components/badge.css', export: './badge.css' },
   { packageDirectory: 'css', path: 'components/button.css', export: './button.css' },
   { packageDirectory: 'css', path: 'components/card.css', export: './card.css' },
+  { packageDirectory: 'css', path: 'components/divider.css', export: './divider.css' },
   { packageDirectory: 'css', path: 'components/field.css', export: './field.css' },
   { packageDirectory: 'css', path: 'components/input.css', export: './input.css' },
+  { packageDirectory: 'css', path: 'components/skeleton.css', export: './skeleton.css' },
 ];
 
 await rm(join(assetsDirectory, 'css'), { force: true, recursive: true });

@@ -1,0 +1,23 @@
+.cm-divider {
+  flex: none;
+  margin: 0;
+  border: 0;
+  background: var(--cm-color-border-divider);
+}
+
+.cm-divider--horizontal {
+  inline-size: 100%;
+  block-size: var(--cm-border-width);
+}
+
+.cm-divider--vertical {
+  inline-size: var(--cm-border-width);
+  block-size: auto;
+  align-self: stretch;
+}
+
+@media (forced-colors: active) {
+  .cm-divider {
+    background: CanvasText;
+  }
+}

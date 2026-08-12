@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "b4fe5374adc72dab479149def74ea75d22a5fa7e9d0a34b89213aa905790edd8",
+      "sha256": "9d2b161e8feeeded27137d992c38a56845e333806ddee03e144d43f0bdb2142e",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
@@ -111,6 +111,36 @@
         "export": "./accordion.css"
       }
     },
+    "css:components/alert.css": {
+      "path": "css/css/components/alert.css",
+      "mediaType": "text/css",
+      "sha256": "da511a63d14defaa09506a050359627f2d824d4e9762cda6eee05c4af5b1e82a",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./alert.css"
+      }
+    },
+    "css:components/avatar.css": {
+      "path": "css/css/components/avatar.css",
+      "mediaType": "text/css",
+      "sha256": "ceaf98c8b0565fefb8aa2b6c8fbdaa4c6c2398d177d256765f872069038f3ab2",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./avatar.css"
+      }
+    },
+    "css:components/badge.css": {
+      "path": "css/css/components/badge.css",
+      "mediaType": "text/css",
+      "sha256": "cf797a6e0191a8f863b2dbfea08ae9a28e9b88b771bc6e34ae1758f43d6ba6c0",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./badge.css"
+      }
+    },
     "css:components/button.css": {
       "path": "css/css/components/button.css",
       "mediaType": "text/css",
@@ -131,6 +161,16 @@
         "export": "./card.css"
       }
     },
+    "css:components/divider.css": {
+      "path": "css/css/components/divider.css",
+      "mediaType": "text/css",
+      "sha256": "1f72e0af0dfea29bd107dd72a16f65476e74d42d48e6573c209fc6e32209a7df",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./divider.css"
+      }
+    },
     "css:components/field.css": {
       "path": "css/css/components/field.css",
       "mediaType": "text/css",
@@ -149,6 +189,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./input.css"
+      }
+    },
+    "css:components/skeleton.css": {
+      "path": "css/css/components/skeleton.css",
+      "mediaType": "text/css",
+      "sha256": "e140e43827d7528660b152fbf94ff1a53cd9ecabeeba4fa7c33f24499ac55194",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./skeleton.css"
       }
     }
   }

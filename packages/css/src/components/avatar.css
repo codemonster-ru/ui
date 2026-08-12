@@ -1,0 +1,45 @@
+.cm-avatar {
+  display: inline-flex;
+  flex: none;
+  inline-size: var(--cm-control-height-md);
+  block-size: var(--cm-control-height-md);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-sm);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: 1;
+}
+
+.cm-avatar--sm {
+  inline-size: var(--cm-control-height-sm);
+  block-size: var(--cm-control-height-sm);
+  font-size: var(--cm-font-size-xs);
+}
+
+.cm-avatar--lg {
+  inline-size: var(--cm-control-height-lg);
+  block-size: var(--cm-control-height-lg);
+  font-size: var(--cm-font-size-md);
+}
+
+.cm-avatar--circle {
+  border-radius: var(--cm-radius-round);
+}
+
+.cm-avatar__image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.cm-avatar__label {
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
