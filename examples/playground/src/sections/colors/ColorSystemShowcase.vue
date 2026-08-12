@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import {
-  VfAlert,
-  VfBadge,
-  VfButton,
-  VfCheckbox,
-  VfInput,
-  VfTag,
-  vfSemanticColorTokenNames,
-} from '@codemonster-ru/vueforge-core';
+import { VfTag, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-core';
+import { CmAlert, CmBadge, CmButton, CmCheckbox, CmInput } from '@codemonster-ru/ui-vue';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
-import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
+import { CmSection, CmStack } from '@codemonster-ru/ui-vue';
 import './color-system-showcase.css';
 
 interface PrimitiveFamily {
@@ -33,13 +26,13 @@ const primitiveFamilies: PrimitiveFamily[] = [
 ];
 
 const statusTones = [
-  { tone: 'success', label: 'success' },
-  { tone: 'info', label: 'info' },
-  { tone: 'warn', label: 'warning' },
-  { tone: 'danger', label: 'danger' },
-  { tone: 'help', label: 'help' },
+  { tone: 'success', legacyTone: 'success', label: 'success' },
+  { tone: 'info', legacyTone: 'info', label: 'info' },
+  { tone: 'warning', legacyTone: 'warn', label: 'warning' },
+  { tone: 'danger', legacyTone: 'danger', label: 'danger' },
+  { tone: 'help', legacyTone: 'help', label: 'help' },
 ] as const;
-const actionVariants = ['primary', 'secondary', 'success', 'info', 'warn', 'help', 'danger', 'contrast'] as const;
+const actionVariants = ['primary', 'secondary', 'danger', 'ghost'] as const;
 
 const contrastRows = [
   { label: 'Primary text / surface', light: '15.50', dark: '11.67' },
@@ -68,8 +61,8 @@ const codeSample = [
 </script>
 
 <template>
-  <VfSection class="demo-page">
-    <VfStack class="demo-container color-system" gap="roomy">
+  <CmSection class="demo-page">
+    <CmStack class="demo-container color-system" gap="roomy">
       <header class="color-system__hero">
         <p class="color-system__eyebrow">VueForge color system · Phase 2</p>
         <h1>Perceptual materials, semantic decisions</h1>
@@ -146,39 +139,39 @@ const codeSample = [
             </div>
 
             <div class="color-system__controls">
-              <VfInput model-value="Semantic boundary" aria-label="Semantic boundary example" />
+              <CmInput model-value="Semantic boundary" aria-label="Semantic boundary example" />
               <div class="color-system__field-states">
-                <VfInput
+                <CmInput
                   model-value="Invalid value"
                   invalid
                   aria-label="Invalid color state"
                   data-phase2-state="invalid-input"
                 />
-                <VfInput model-value="Read-only value" readonly aria-label="Read-only color state" />
-                <VfInput model-value="Disabled value" disabled aria-label="Disabled color state" />
+                <CmInput model-value="Read-only value" readonly aria-label="Read-only color state" />
+                <CmInput model-value="Disabled value" disabled aria-label="Disabled color state" />
               </div>
-              <VfCheckbox :model-value="true" label="Selected with a non-color cue" />
+              <CmCheckbox :model-value="true" label="Selected with a non-color cue" />
               <div class="color-system__actions">
-                <VfButton v-for="variant in actionVariants" :key="variant" :variant="variant">{{ variant }}</VfButton>
-                <VfButton loading>Loading</VfButton>
-                <VfButton disabled>Disabled</VfButton>
+                <CmButton v-for="variant in actionVariants" :key="variant" :variant="variant">{{ variant }}</CmButton>
+                <CmButton loading>Loading</CmButton>
+                <CmButton disabled>Disabled</CmButton>
               </div>
             </div>
 
             <div class="color-system__statuses">
-              <VfAlert
+              <CmAlert
                 v-for="status in statusTones"
                 :key="status.tone"
                 :tone="status.tone"
                 :title="`${status.label} status`"
               >
                 Separate background, border, icon, and foreground roles.
-              </VfAlert>
+              </CmAlert>
               <div class="color-system__chips">
-                <VfBadge v-for="status in statusTones" :key="`badge-${status.tone}`" :tone="status.tone">
+                <CmBadge v-for="status in statusTones" :key="`badge-${status.tone}`" :tone="status.tone">
                   {{ status.label }}
-                </VfBadge>
-                <VfTag v-for="status in statusTones" :key="`tag-${status.tone}`" :tone="status.tone">
+                </CmBadge>
+                <VfTag v-for="status in statusTones" :key="`tag-${status.tone}`" :tone="status.legacyTone">
                   {{ status.label }}
                 </VfTag>
               </div>
@@ -221,6 +214,6 @@ const codeSample = [
           </table>
         </div>
       </section>
-    </VfStack>
-  </VfSection>
+    </CmStack>
+  </CmSection>
 </template>

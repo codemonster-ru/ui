@@ -2,7 +2,7 @@
   <VfThemeProvider>
     <main class="demo-page">
       <div class="demo-container">
-        <VfStack>
+        <CmStack>
         <section class="demo-block">
           <div class="demo-example">
             <p class="demo-label">Three cooperating packages</p>
@@ -27,7 +27,7 @@
             <h2>VfPlayground · single-file HTML</h2>
             <p class="demo-text">Use this mode for a self-contained browser example with no build step.</p>
           </div>
-          <VfSection class="demo-surface" surface>
+          <CmSection class="demo-surface" surface>
             <VfSkeletonGate
               :ready="playgroundReady"
               :min-height="260"
@@ -48,10 +48,10 @@
                 @error="onError"
               />
               <template #skeleton>
-                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+                <CmSkeleton :min-height="260" radius="surface" />
               </template>
             </VfSkeletonGate>
-          </VfSection>
+          </CmSection>
         </section>
 
         <section class="demo-block">
@@ -59,7 +59,7 @@
             <h2>VfPlayground · multi-file runtime</h2>
             <p class="demo-text">Use this mode when JavaScript imports related source and stylesheet files.</p>
           </div>
-          <VfSection class="demo-surface" surface>
+          <CmSection class="demo-surface" surface>
             <VfSkeletonGate
               :ready="playgroundReady"
               :min-height="260"
@@ -80,10 +80,10 @@
                 @error="onError"
               />
               <template #skeleton>
-                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+                <CmSkeleton :min-height="260" radius="surface" />
               </template>
             </VfSkeletonGate>
-          </VfSection>
+          </CmSection>
         </section>
 
         <section class="demo-block">
@@ -91,7 +91,7 @@
             <h2>VfPlayground · Vue component mode</h2>
             <p class="demo-text">Render a trusted Vue component directly when iframe isolation is unnecessary.</p>
           </div>
-          <VfSection class="demo-surface" surface>
+          <CmSection class="demo-surface" surface>
             <VfSkeletonGate
               :ready="playgroundReady"
               :min-height="260"
@@ -111,10 +111,10 @@
                 @preview-ready="onPlaygroundReady"
               />
               <template #skeleton>
-                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+                <CmSkeleton :min-height="260" radius="surface" />
               </template>
             </VfSkeletonGate>
-          </VfSection>
+          </CmSection>
         </section>
 
         <section class="demo-block">
@@ -122,9 +122,9 @@
             <h2>Vite plugin · Vue runtime module</h2>
             <p class="demo-text">A production-built virtual module resolved by the Playground Vite plugin.</p>
           </div>
-          <VfSection class="demo-surface" surface>
+          <CmSection class="demo-surface" surface>
             <ViteLikeDemoPreview demo-id="vue-runtime-smoke" :source="vueRuntimeSmokeSource" />
-          </VfSection>
+          </CmSection>
         </section>
 
         <section class="demo-block">
@@ -132,11 +132,11 @@
             <h2>Vite plugin · custom resolver</h2>
             <p class="demo-text">A virtual-module example that verifies custom component resolution.</p>
           </div>
-          <VfSection class="demo-surface" surface>
+          <CmSection class="demo-surface" surface>
             <ViteLikeDemoPreview demo-id="custom-resolver-smoke" :source="customResolverSmokeSource" />
-          </VfSection>
+          </CmSection>
         </section>
-        </VfStack>
+        </CmStack>
       </div>
     </main>
   </VfThemeProvider>
@@ -145,9 +145,9 @@
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
-import { VfSkeleton } from '@codemonster-ru/vueforge-core/skeleton';
+import { CmSkeleton } from '@codemonster-ru/ui-vue';
 import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
-import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
+import { CmSection, CmStack } from '@codemonster-ru/ui-vue';
 import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
