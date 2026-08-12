@@ -8,3 +8,4 @@ All notable changes to this package will be documented in this file.
 
 - Added the initial framework-independent package scaffold, ESM entry, declarations, and package
   verification.
+- Added the complete primitive color token names, strict public types, and immutable OKLCH palette.

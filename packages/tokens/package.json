@@ -35,7 +35,7 @@
     "format": "prettier --ignore-path ../../.prettierignore --write .",
     "lint": "eslint .",
     "prepack": "npm run build",
-    "test": "npm run build && node --test ./__tests__/package.test.mjs",
+    "test": "npm run build && node --test ./__tests__/*.test.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [
