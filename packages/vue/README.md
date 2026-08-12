@@ -43,6 +43,7 @@ See the [form components guide](../../docs/components/forms.md) for Vue binding,
 See the [Accordion guide](../../docs/components/accordion.md) for controlled state and keyboard behavior.
 See the [display components guide](../../docs/components/display.md) for Badge, Alert, Avatar, Divider, and Skeleton.
 See the [navigation components guide](../../docs/components/navigation.md) for native links, controlled Tabs, Menu, and Dropdown behavior.
+See the [overlay components guide](../../docs/components/overlays.md) for modal focus, disclosure state, and Tooltip behavior.
 
 ## License
 

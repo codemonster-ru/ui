@@ -24,3 +24,5 @@ All notable changes to this package will be documented in this file.
   DOM parity verification.
 - Added Link, Breadcrumbs, Tabs, Menu, and Dropdown tags with shared runtime markup and significant
   DOM parity verification.
+- Added Dialog, Drawer, Popover, and Tooltip tags with shared runtime markers, escaping, and
+  significant DOM parity verification.

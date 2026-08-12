@@ -46,6 +46,8 @@ See the [form components guide](../../docs/components/forms.md) for the narrow C
 requirement and native submission rules.
 See the [navigation components guide](../../docs/components/navigation.md) for controller
 registration, keyboard behavior, and state ownership.
+See the [overlay components guide](../../docs/components/overlays.md) for modal focus management,
+open-request events, and non-modal dismissal.
 
 ## Development
 

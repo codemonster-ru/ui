@@ -53,6 +53,7 @@ See the [form components guide](../../docs/components/forms.md) for native submi
 See the [Accordion guide](../../docs/components/accordion.md) for runtime installation and progressive enhancement.
 See the [display components guide](../../docs/components/display.md) for the non-interactive display cohort.
 See the [navigation components guide](../../docs/components/navigation.md) for Link, Breadcrumbs, and progressive enhancement.
+See the [overlay components guide](../../docs/components/overlays.md) for server-rendered Dialog, Drawer, Popover, and Tooltip usage.
 
 ## Development
 
