@@ -25,7 +25,8 @@ The stylesheet includes a predictable document reset, token-backed document colo
 keyboard-visible focus rings for native controls and `.cm-focus-ring`, and reduced-motion and
 forced-colors foundations. Load `@codemonster-ru/ui-tokens/tokens.css` before it; the token package
 is installed as a dependency. The `.cm-control` primitive provides shared control geometry, sizes,
-and visual interaction states without owning component semantics.
+and visual interaction states without owning component semantics. `.cm-surface` and its visual
+modifiers provide shared borders and elevation without owning component layout.
 
 ## Documentation
 
