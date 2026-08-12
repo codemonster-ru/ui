@@ -53,7 +53,8 @@ const defaultSlotProps = computed<CmFieldDefaultSlotProps>(() => ({
 <template>
   <div v-bind="rootAttrs" :class="classes">
     <label v-if="hasLabel" class="cm-field__label" :for="props.controlId">
-      <slot name="label">{{ props.label }}</slot><span v-if="props.required" class="cm-field__required" aria-hidden="true">*</span>
+      <slot name="label">{{ props.label }}</slot
+      ><span v-if="props.required" class="cm-field__required" aria-hidden="true">*</span>
     </label>
     <div class="cm-field__control"><slot v-bind="defaultSlotProps" /></div>
     <p v-if="hasDescription" :id="descriptionId" class="cm-field__description">

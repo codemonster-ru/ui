@@ -25,9 +25,11 @@ describe('CmInput', () => {
   it('emits the current DOM value from native input', async () => {
     const onInput = vi.fn();
     const onUpdate = vi.fn();
-    const wrapper = mount(defineComponent({
-      setup: () => () => h(CmInput, { modelValue: 'before', onInput, 'onUpdate:modelValue': onUpdate }),
-    }));
+    const wrapper = mount(
+      defineComponent({
+        setup: () => () => h(CmInput, { modelValue: 'before', onInput, 'onUpdate:modelValue': onUpdate }),
+      }),
+    );
 
     await wrapper.get('input').setValue('after');
 
