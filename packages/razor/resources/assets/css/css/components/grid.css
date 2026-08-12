@@ -1,0 +1,5 @@
+.cm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--cm-space-16) * 4)), 1fr));
+  gap: var(--cm-space-4);
+}

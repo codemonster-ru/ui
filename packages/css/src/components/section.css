@@ -1,0 +1,17 @@
+.cm-section {
+  padding: var(--cm-space-6);
+}
+
+.cm-section--surface {
+  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  box-shadow: var(--cm-shadow-surface);
+}
+
+@media (forced-colors: active) {
+  .cm-section--surface {
+    border-color: CanvasText;
+  }
+}

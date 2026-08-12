@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "5dd84f371766d5e52f9af9bfcdc15dde1f4c40b8f99393cef0a506b2bcd69b8e",
+      "sha256": "bfed0ba786509a9a7d7491474ee4ce6722d35fc82eed90aba68239dc71b64c48",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
@@ -191,6 +191,16 @@
         "export": "./command-palette.css"
       }
     },
+    "css:components/container.css": {
+      "path": "css/css/components/container.css",
+      "mediaType": "text/css",
+      "sha256": "5aacb903b5acd8000a798a495ef239c06036149c870a1c9b27948bd87f55d094",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./container.css"
+      }
+    },
     "css:components/data-table.css": {
       "path": "css/css/components/data-table.css",
       "mediaType": "text/css",
@@ -261,6 +271,16 @@
         "export": "./field.css"
       }
     },
+    "css:components/grid.css": {
+      "path": "css/css/components/grid.css",
+      "mediaType": "text/css",
+      "sha256": "526288e9a0c6f0fad85107e6ae1593c4c2c99fc997c72c922fccf9a31f9a6e71",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./grid.css"
+      }
+    },
     "css:components/input.css": {
       "path": "css/css/components/input.css",
       "mediaType": "text/css",
@@ -269,6 +289,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./input.css"
+      }
+    },
+    "css:components/inline.css": {
+      "path": "css/css/components/inline.css",
+      "mediaType": "text/css",
+      "sha256": "22fa8cfc55aaa77e87c9a92611051e49a95aafaaaab8c5402cadebebdf5f1927",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./inline.css"
       }
     },
     "css:components/link.css": {
@@ -321,6 +351,16 @@
         "export": "./select.css"
       }
     },
+    "css:components/section.css": {
+      "path": "css/css/components/section.css",
+      "mediaType": "text/css",
+      "sha256": "eda4c11eda180e2edafb011a27a036a3a10225d49809abd112ba4b110eb14389",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./section.css"
+      }
+    },
     "css:components/skeleton.css": {
       "path": "css/css/components/skeleton.css",
       "mediaType": "text/css",
@@ -329,6 +369,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./skeleton.css"
+      }
+    },
+    "css:components/stack.css": {
+      "path": "css/css/components/stack.css",
+      "mediaType": "text/css",
+      "sha256": "62236788f44a6fe12af478d7aca29240d93b1f5a09a01393de7e6d1b7934f52f",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./stack.css"
       }
     },
     "css:components/switch.css": {
