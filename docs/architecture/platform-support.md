@@ -20,7 +20,7 @@ framework a dependency of the shared foundation.
 | Angular adapter | Angular `^22.0.0` | Angular framework packages must use one compatible release line |
 | Shared, Vue, and React declarations | TypeScript `>=5.9` | TypeScript is development and consumer tooling, not a runtime dependency |
 | Angular declarations | TypeScript `>=6.0 <6.1` | Follow the Angular 22 compiler compatibility range |
-| Annabel Razor adapter | `codemonster-ru/razor ^2.0` | Version 2 must provide the approved component API |
+| Annabel Razor adapter | `codemonster-ru/razor ^2.1` | Version 2.1 provides the approved component API |
 | PHP runtime | PHP `>=8.2` | Match Annabel Razor while PHP 8.2 remains security-supported |
 | CSS-only HTML | No framework runtime | Consume published CSS and optional DOM runtime directly |
 
@@ -57,7 +57,7 @@ upstream security fixes.
 PHP 8.2 reaches end of life on 2026-12-31. If CodeMonster UI 1.0 ships after that date, the PHP floor
 must be reviewed and raised to a security-supported release before `CMUI-162` can complete.
 
-The Annabel adapter targets `codemonster-ru/razor ^2.0` because the component registry, props, slots,
+The Annabel adapter targets `codemonster-ru/razor ^2.1` because the component registry, props, slots,
 and trusted-rendered-HTML contract are new public capabilities. The UI adapter must not publish a
 stable release against an unreleased development branch of Annabel.
 
