@@ -50,7 +50,7 @@ export {
   cmSpacingTokenNames,
   cmSpacingTokens,
 } from './spacing-sizing.js';
-export { cmLightThemePreset } from './theme-preset.js';
+export { cmDarkThemePreset, cmLightThemePreset } from './theme-preset.js';
 export type { CmThemeMode, CmThemePreset, CmThemeTokenName, CmThemeTokens } from './theme-preset.js';
 export { cmTypographyTokenNames, cmTypographyTokens } from './typography.js';
 export type {

@@ -2,7 +2,7 @@ import { cmBorderTokens, cmRadiusTokens, cmShadowTokens } from './borders.js';
 import { cmBreakpointTokens } from './breakpoints.js';
 import { cmMotionTokens } from './motion.js';
 import { cmPrimitiveColorTokens } from './primitive-colors.js';
-import { cmSemanticLightColorTokens } from './semantic-colors.js';
+import { cmSemanticDarkColorTokens, cmSemanticLightColorTokens } from './semantic-colors.js';
 import { cmSizingTokens, cmSpacingTokens } from './spacing-sizing.js';
 import { cmTypographyTokens } from './typography.js';
 import type { CmBorderTokens, CmRadiusTokens, CmShadowTokens } from './borders.js';
@@ -32,21 +32,29 @@ export interface CmThemePreset {
   readonly tokens: CmThemeTokens;
 }
 
-const cmLightThemeTokens: CmThemeTokens = Object.freeze({
-  ...cmPrimitiveColorTokens,
-  ...cmSemanticLightColorTokens,
-  ...cmSpacingTokens,
-  ...cmSizingTokens,
-  ...cmTypographyTokens,
-  ...cmBorderTokens,
-  ...cmRadiusTokens,
-  ...cmShadowTokens,
-  ...cmMotionTokens,
-  ...cmBreakpointTokens,
-});
+function createThemeTokens(semanticColorTokens: CmSemanticColorTokens): CmThemeTokens {
+  return Object.freeze({
+    ...cmPrimitiveColorTokens,
+    ...semanticColorTokens,
+    ...cmSpacingTokens,
+    ...cmSizingTokens,
+    ...cmTypographyTokens,
+    ...cmBorderTokens,
+    ...cmRadiusTokens,
+    ...cmShadowTokens,
+    ...cmMotionTokens,
+    ...cmBreakpointTokens,
+  });
+}
 
 export const cmLightThemePreset: CmThemePreset = Object.freeze({
   mode: 'light',
   name: 'codemonster-light',
-  tokens: cmLightThemeTokens,
+  tokens: createThemeTokens(cmSemanticLightColorTokens),
+});
+
+export const cmDarkThemePreset: CmThemePreset = Object.freeze({
+  mode: 'dark',
+  name: 'codemonster-dark',
+  tokens: createThemeTokens(cmSemanticDarkColorTokens),
 });
