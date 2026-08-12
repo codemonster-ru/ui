@@ -20,3 +20,4 @@ All notable changes to this package will be documented in this file.
   interaction verification.
 - Added Dialog, Drawer, Popover, and Tooltip adapters with canonical SSR, controlled state, focus,
   and dismissal verification.
+- Added native Select and DatePicker adapters plus controlled searchable CommandPalette interaction.

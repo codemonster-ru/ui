@@ -27,3 +27,4 @@ All notable changes to this package will be documented in this file.
 - Added shared Link, Breadcrumbs, Tabs, Menu, and Dropdown styles and selector contracts.
 - Added shared Dialog, Drawer, Popover, and Tooltip styles with native backdrop, focus, hidden-state,
   and logical-placement hooks.
+- Added shared Select, DatePicker, and CommandPalette styles with native control and modal listbox hooks.

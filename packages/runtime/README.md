@@ -48,6 +48,8 @@ See the [navigation components guide](../../docs/components/navigation.md) for c
 registration, keyboard behavior, and state ownership.
 See the [overlay components guide](../../docs/components/overlays.md) for modal focus management,
 open-request events, and non-modal dismissal.
+See the [advanced input guide](../../docs/components/advanced-inputs.md) for CommandPalette
+registration, filtering, and selection events.
 
 ## Development
 

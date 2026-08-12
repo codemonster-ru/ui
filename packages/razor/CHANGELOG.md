@@ -26,3 +26,4 @@ All notable changes to this package will be documented in this file.
   DOM parity verification.
 - Added Dialog, Drawer, Popover, and Tooltip tags with shared runtime markers, escaping, and
   significant DOM parity verification.
+- Added native Select and DatePicker tags plus server-rendered CommandPalette filtering and runtime markup.
