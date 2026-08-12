@@ -2,7 +2,7 @@
 
 Framework-independent foundation and component styles for CodeMonster UI.
 
-Current release: `@codemonster-ru/ui-css@0.1.0`.
+Current prerelease: `@codemonster-ru/ui-css@1.0.0-rc.1`.
 
 ## Requirements
 
@@ -12,7 +12,7 @@ Current release: `@codemonster-ru/ui-css@0.1.0`.
 ## Installation
 
 ```bash
-npm install @codemonster-ru/ui-css
+npm install @codemonster-ru/ui-css@next
 ```
 
 ## Quick start
