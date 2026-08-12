@@ -24,6 +24,8 @@ final class ComponentSupportTest extends TestCase
         self::assertSame('secondary', $props->oneOf('variant', ['primary', 'secondary'], 'primary'));
         self::assertTrue($props->bool('disabled'));
         self::assertNull($props->nullableString('href'));
+        self::assertSame([], $props->array('items'));
+        self::assertNull($props->nullableArray('open-items'));
         self::assertSame(['data-id' => 'save'], $props->remaining());
     }
 

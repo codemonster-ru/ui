@@ -49,6 +49,36 @@ final class PropBag
         return $value;
     }
 
+    /**
+     * @param array<mixed> $default
+     * @return array<mixed>
+     */
+    public function array(string $name, array $default = []): array
+    {
+        $value = $this->consume($name, $default);
+
+        if (!is_array($value)) {
+            throw new InvalidArgumentException("Component prop [{$name}] must be an array.");
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param array<mixed>|null $default
+     * @return array<mixed>|null
+     */
+    public function nullableArray(string $name, ?array $default = null): ?array
+    {
+        $value = $this->consume($name, $default);
+
+        if ($value !== null && !is_array($value)) {
+            throw new InvalidArgumentException("Component prop [{$name}] must be an array or null.");
+        }
+
+        return $value;
+    }
+
     /** @param non-empty-list<string> $allowed */
     public function oneOf(string $name, array $allowed, string $default): string
     {
