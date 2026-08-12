@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "card-regions",
+  "description": "Custom header, body, and footer composition.",
+  "props": {
+    "title": "Ignored fallback"
+  },
+  "slots": {
+    "header": "<h2>Project</h2>",
+    "default": "<p>Summary</p>",
+    "footer": "<button type=\"button\">Continue</button>"
+  }
+}

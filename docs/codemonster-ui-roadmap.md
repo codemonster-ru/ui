@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 7 — Card and composition
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-077`
+- Next item: `CMUI-078`
 
 ## Milestones
 
@@ -211,7 +211,7 @@ and be recorded in the cross-repository log below.
 
 ## Phase 7 — Card and composition
 
-- [ ] `CMUI-077` Define the Card component contract and fixtures.
+- [x] `CMUI-077` Define the Card component contract and fixtures.
 - [ ] `CMUI-078` Move Card styles into the shared CSS package.
 - [ ] `CMUI-079` Add Vue `CmCard` with header, default, and footer slots.
 - [ ] `CMUI-080` Verify Vue Card DOM and SSR output.
