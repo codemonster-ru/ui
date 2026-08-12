@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "tooltip-escape",
+  "case": "tooltip-visible",
+  "steps": [
+    { "action": "press", "target": "trigger", "key": "Escape" },
+    { "expect": "visible", "target": "tooltip", "value": false },
+    { "expect": "focus", "target": "trigger", "value": true }
+  ]
+}

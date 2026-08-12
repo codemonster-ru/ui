@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "popover-escape",
+  "case": "popover-open",
+  "steps": [
+    { "action": "press", "target": "panel", "key": "Escape" },
+    { "expect": "visible", "target": "panel", "value": false },
+    { "expect": "focus", "target": "trigger", "value": true }
+  ]
+}
