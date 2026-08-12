@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "popover-open",
+  "description": "Open end-aligned disclosure.",
+  "props": { "id": "shortcuts", "label": "Keyboard shortcuts", "open": true, "placement": "bottom-end" },
+  "slots": { "default": "Press S to save." }
+}

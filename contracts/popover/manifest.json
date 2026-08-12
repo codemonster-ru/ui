@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "name": "Popover",
+  "slug": "popover",
+  "razorTag": "cm-popover",
+  "description": "A non-modal button disclosure for supplemental interactive content.",
+  "props": {
+    "id": { "type": "string", "required": true },
+    "label": { "type": "string", "required": true },
+    "open": { "type": "boolean", "required": false, "default": false },
+    "disabled": { "type": "boolean", "required": false, "default": false },
+    "placement": {
+      "type": "enum",
+      "required": false,
+      "default": "bottom-start",
+      "values": ["top", "bottom-start", "bottom-end"]
+    }
+  },
+  "slots": { "default": { "required": false } },
+  "events": {
+    "openChange": { "description": "Reports the next disclosure state.", "payloadContract": "boolean" }
+  },
+  "states": ["closed", "open", "disabled"]
+}

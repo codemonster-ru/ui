@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "dialog-focus-trap",
+  "case": "dialog-open",
+  "steps": [
+    { "action": "focus", "target": "close" },
+    { "action": "press", "target": "close", "key": "Tab" },
+    { "expect": "focus", "target": "close", "value": true }
+  ]
+}

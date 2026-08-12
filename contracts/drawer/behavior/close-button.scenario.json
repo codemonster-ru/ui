@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "drawer-close-button",
+  "case": "drawer-open",
+  "steps": [
+    { "action": "click", "target": "close" },
+    { "expect": "visible", "target": "root", "value": false },
+    { "expect": "eventCount", "target": "root", "name": "openChange", "count": 1 }
+  ]
+}
