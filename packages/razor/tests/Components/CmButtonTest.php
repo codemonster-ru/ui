@@ -65,6 +65,41 @@ final class CmButtonTest extends TestCase
         );
     }
 
+    public function testRendersLoadingAndIconSlots(): void
+    {
+        $context = new ComponentRenderContext(
+            ['loading' => true],
+            [
+                'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Save'),
+                'leading' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<i>Lead</i>'),
+                'trailing' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<i>Trail</i>'),
+            ],
+        );
+
+        $html = $this->button()->render($context)->value();
+
+        self::assertStringContainsString('type="button" disabled aria-busy="true"', $html);
+        self::assertStringContainsString('<span class="cm-button__spinner" aria-hidden="true"></span>', $html);
+        self::assertStringNotContainsString('cm-button__leading', $html);
+        self::assertStringContainsString('<span class="cm-button__trailing"><i>Trail</i></span>', $html);
+    }
+
+    public function testRendersEnabledAndDisabledLinks(): void
+    {
+        $slot = ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Docs')];
+        $enabled = $this->button()->render(new ComponentRenderContext(['href' => '/docs'], $slot))->value();
+        $disabled = $this->button()->render(new ComponentRenderContext([
+            'href' => '/docs',
+            'disabled' => true,
+            'aria-disabled' => 'false',
+        ], $slot))->value();
+
+        self::assertStringContainsString('<a class="cm-button cm-button--primary cm-button--md" href="/docs">', $enabled);
+        self::assertStringContainsString('role="link" aria-disabled="true"', $disabled);
+        self::assertStringNotContainsString('href=', $disabled);
+        self::assertSame(1, substr_count($disabled, 'aria-disabled='));
+    }
+
     private function button(): CmButton
     {
         return new CmButton(new RazorEngine(

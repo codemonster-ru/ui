@@ -24,20 +24,29 @@ final class CmButton implements ComponentInterface
         $variant = $props->oneOf('variant', ['primary', 'secondary', 'danger', 'ghost'], 'primary');
         $size = $props->oneOf('size', ['sm', 'md', 'lg'], 'md');
         $type = $props->oneOf('type', ['button', 'submit', 'reset'], 'button');
+        $href = $props->nullableString('href');
         $disabled = $props->bool('disabled');
+        $loading = $props->bool('loading');
+        $isLink = $href !== null && $href !== '';
+        $isDisabled = $disabled || $loading;
         $attributes = new AttributeBag($props->remaining());
         $classes = (new ClassBuilder())
             ->add('cm-button', "cm-button--{$variant}", "cm-button--{$size}")
             ->add($this->optionalString($attributes->get('class')))
             ->value();
-        $rootAttributes = $attributes->without(['class'])->render();
+        $rootAttributes = $attributes->without(['class', 'role', 'aria-disabled', 'aria-busy'])->render();
         return RenderedHtml::fromTrustedString(
             $this->views->render('components.button', [
                 'classes' => $classes,
                 'type' => $type,
-                'disabled' => $disabled,
+                'href' => $href,
+                'isLink' => $isLink,
+                'isDisabled' => $isDisabled,
+                'loading' => $loading,
                 'attributes' => $rootAttributes,
                 'label' => $context->slot('default'),
+                'leading' => $context->hasSlot('leading') ? $context->slot('leading') : null,
+                'trailing' => $context->hasSlot('trailing') ? $context->slot('trailing') : null,
             ]),
         );
     }
