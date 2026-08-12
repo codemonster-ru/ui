@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "button-variant-ghost",
+  "description": "Ghost medium button action.",
+  "props": {
+    "variant": "ghost"
+  },
+  "slots": {
+    "default": "More"
+  }
+}
