@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "button-variant-secondary",
+  "description": "Secondary medium button action.",
+  "props": {
+    "variant": "secondary"
+  },
+  "slots": {
+    "default": "Cancel"
+  }
+}
