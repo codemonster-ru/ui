@@ -36,7 +36,8 @@ handlers.
 
 ## Documentation
 
-Complete cross-platform Button guidance is added after the Razor adapter is available.
+See the cross-platform [Button guide](../../docs/components/button.md) for props, slots, forms,
+links, accessibility, and matching Annabel Razor usage.
 
 ## License
 
