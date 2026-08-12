@@ -29,6 +29,8 @@ Migration follows [VueForge migration policy](./architecture/vueforge-migration-
 Initial scope follows [CodeMonster UI pilot components](./architecture/pilot-components.md).
 Repository layout follows
 [CodeMonster UI workspace conventions](./architecture/workspace-conventions.md).
+Application shell ownership follows
+[CodeMonster UI application shell ownership](./architecture/application-shell-ownership.md).
 
 ## How to use this roadmap
 
@@ -70,7 +72,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-145`
+- Next item: `CMUI-147`
 
 ## Milestones
 
@@ -82,7 +84,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M3        | Input supports Vue binding and native Razor form submission               | Completed            |
 | M4        | Accordion proves accessible cross-platform interaction                    | Completed            |
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
-| M6        | Utility CSS and the first stable component cohort are available           | Not started          |
+| M6        | Utility CSS and the first stable component cohort are available           | In progress          |
 | M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | Not started          |
 
 ## Phase 0 — Product and architecture decisions
@@ -364,7 +366,7 @@ added to the active scope in the future.
   - [x] `CMUI-145c` Add Vue layout primitive adapters and SSR verification.
   - [x] `CMUI-145d` Add Annabel Razor layout primitive adapters and trusted composition.
   - [x] `CMUI-145e` Verify layout primitive DOM, accessibility, visual, and documentation parity.
-- [ ] `CMUI-146` Review application shells for platform-independent ownership.
+- [x] `CMUI-146` Review application shells for platform-independent ownership.
 - [ ] `CMUI-147` Decide and implement CodeBlock ownership.
 - [ ] `CMUI-148` Decide and implement Playground ownership.
 
@@ -399,26 +401,27 @@ added to the active scope in the future.
 
 Add decisions chronologically. Do not rewrite old entries; supersede them with a new entry.
 
-| Date       | Decision                                                                                                                       | Reason                                                                                                                              | Affected items                         |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| 2026-08-11 | Track the migration in this repository with stable checklist identifiers.                                                      | Preserve context and make progress reviewable across sessions.                                                                      | All                                    |
-| 2026-08-11 | Name the product CodeMonster UI and target repository `codemonster-ui`.                                                        | Establish a platform-neutral identity under the existing CodeMonster organization.                                                  | `CMUI-001`, `CMUI-164`                 |
-| 2026-08-11 | Use `ui-*` distribution names and the `cm` technical prefix.                                                                   | Keep platform ownership explicit while unifying CSS, HTML, and component naming.                                                    | `CMUI-002`                             |
-| 2026-08-11 | Start from Vue 3.5, React 19.2, Angular 22, Annabel Razor 2, and PHP 8.2.                                                      | Target maintained platform lines while retaining an adoption path for current Annabel applications.                                 | `CMUI-003`                             |
-| 2026-08-11 | Separate focused shared packages from thin platform adapters without a generic core package.                                   | Preserve framework independence and keep public ownership explicit.                                                                 | `CMUI-004`                             |
-| 2026-08-11 | Describe components with normative prose, JSON manifests, render cases, canonical HTML, and behavior scenarios.                | Provide enforceable parity without introducing a cross-platform source generator.                                                   | `CMUI-005`                             |
-| 2026-08-11 | Compare significant semantic DOM instead of byte-identical framework output.                                                   | Enforce one HTML contract while ignoring serialization and compiler details.                                                        | `CMUI-006`                             |
-| 2026-08-11 | Share semantic component APIs while mapping binding and events to native platform conventions.                                 | Preserve recognizable parity without fighting each framework's programming model.                                                   | `CMUI-007`                             |
-| 2026-08-11 | Prefer native and ARIA state, reserve `data-cm-state` for shared non-native state, and use modifiers for visual configuration. | Avoid duplicate state hooks and keep browser semantics authoritative.                                                               | `CMUI-008`                             |
-| 2026-08-11 | Target WCAG 2.2 AA with native HTML first and shared keyboard, focus, and accessibility scenarios.                             | Make accessibility part of every component contract and adapter parity gate.                                                        | `CMUI-009`                             |
-| 2026-08-11 | Separate CSS-only, server-rendered, progressively enhanced, and framework-hydrated modes.                                      | Keep Razor framework-independent while preserving native framework hydration.                                                       | `CMUI-010`                             |
-| 2026-08-11 | Escape ordinary values contextually and compose rendered components and slots only through a trusted-markup type.              | Preserve Razor composition without turning strings or raw interpolation into an XSS boundary.                                       | `CMUI-011`, `ARAZOR-002`, `ARAZOR-012` |
-| 2026-08-11 | Target maintained evergreen browsers and ship standards-based CSS without a legacy build.                                      | Give CSS-only and framework consumers one modern, testable browser contract.                                                        | `CMUI-012`                             |
-| 2026-08-11 | Keep shared packages and adapters in one monorepo with independent SemVer and topological releases.                            | Coordinate contracts across npm and Composer without publishing unchanged packages.                                                 | `CMUI-013`                             |
-| 2026-08-11 | Launch a clean CodeMonster UI package line and retain VueForge through verified consumer migration.                            | Avoid misleading in-place renames and permanent compatibility layers.                                                               | `CMUI-014`, `CMUI-149`–`CMUI-164`      |
-| 2026-08-11 | Prove the architecture with Button, Card, Input, and Accordion before expanding platforms or components.                       | Cover props, composition, forms, and interaction with the smallest representative set.                                              | `CMUI-015`, M2–M4                      |
-| 2026-08-11 | Complete M0 and begin repository and contract infrastructure work.                                                             | All product and architecture decisions passed their documented phase gate.                                                          | `CMUI-G000`, M0                        |
-| 2026-08-12 | Leave React and Angular adapters unscheduled until a concrete product need appears.                                            | Keep implementation focused on Vue and Annabel Razor without committing future releases to adapters that have no current consumers. | M5, `CMUI-113`–`CMUI-128`, `CMUI-G005` |
+| Date       | Decision                                                                                                                       | Reason                                                                                                                                                  | Affected items                         |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| 2026-08-11 | Track the migration in this repository with stable checklist identifiers.                                                      | Preserve context and make progress reviewable across sessions.                                                                                          | All                                    |
+| 2026-08-11 | Name the product CodeMonster UI and target repository `codemonster-ui`.                                                        | Establish a platform-neutral identity under the existing CodeMonster organization.                                                                      | `CMUI-001`, `CMUI-164`                 |
+| 2026-08-11 | Use `ui-*` distribution names and the `cm` technical prefix.                                                                   | Keep platform ownership explicit while unifying CSS, HTML, and component naming.                                                                        | `CMUI-002`                             |
+| 2026-08-11 | Start from Vue 3.5, React 19.2, Angular 22, Annabel Razor 2, and PHP 8.2.                                                      | Target maintained platform lines while retaining an adoption path for current Annabel applications.                                                     | `CMUI-003`                             |
+| 2026-08-11 | Separate focused shared packages from thin platform adapters without a generic core package.                                   | Preserve framework independence and keep public ownership explicit.                                                                                     | `CMUI-004`                             |
+| 2026-08-11 | Describe components with normative prose, JSON manifests, render cases, canonical HTML, and behavior scenarios.                | Provide enforceable parity without introducing a cross-platform source generator.                                                                       | `CMUI-005`                             |
+| 2026-08-11 | Compare significant semantic DOM instead of byte-identical framework output.                                                   | Enforce one HTML contract while ignoring serialization and compiler details.                                                                            | `CMUI-006`                             |
+| 2026-08-11 | Share semantic component APIs while mapping binding and events to native platform conventions.                                 | Preserve recognizable parity without fighting each framework's programming model.                                                                       | `CMUI-007`                             |
+| 2026-08-11 | Prefer native and ARIA state, reserve `data-cm-state` for shared non-native state, and use modifiers for visual configuration. | Avoid duplicate state hooks and keep browser semantics authoritative.                                                                                   | `CMUI-008`                             |
+| 2026-08-11 | Target WCAG 2.2 AA with native HTML first and shared keyboard, focus, and accessibility scenarios.                             | Make accessibility part of every component contract and adapter parity gate.                                                                            | `CMUI-009`                             |
+| 2026-08-11 | Separate CSS-only, server-rendered, progressively enhanced, and framework-hydrated modes.                                      | Keep Razor framework-independent while preserving native framework hydration.                                                                           | `CMUI-010`                             |
+| 2026-08-11 | Escape ordinary values contextually and compose rendered components and slots only through a trusted-markup type.              | Preserve Razor composition without turning strings or raw interpolation into an XSS boundary.                                                           | `CMUI-011`, `ARAZOR-002`, `ARAZOR-012` |
+| 2026-08-11 | Target maintained evergreen browsers and ship standards-based CSS without a legacy build.                                      | Give CSS-only and framework consumers one modern, testable browser contract.                                                                            | `CMUI-012`                             |
+| 2026-08-11 | Keep shared packages and adapters in one monorepo with independent SemVer and topological releases.                            | Coordinate contracts across npm and Composer without publishing unchanged packages.                                                                     | `CMUI-013`                             |
+| 2026-08-11 | Launch a clean CodeMonster UI package line and retain VueForge through verified consumer migration.                            | Avoid misleading in-place renames and permanent compatibility layers.                                                                                   | `CMUI-014`, `CMUI-149`–`CMUI-164`      |
+| 2026-08-11 | Prove the architecture with Button, Card, Input, and Accordion before expanding platforms or components.                       | Cover props, composition, forms, and interaction with the smallest representative set.                                                                  | `CMUI-015`, M2–M4                      |
+| 2026-08-11 | Complete M0 and begin repository and contract infrastructure work.                                                             | All product and architecture decisions passed their documented phase gate.                                                                              | `CMUI-G000`, M0                        |
+| 2026-08-12 | Leave React and Angular adapters unscheduled until a concrete product need appears.                                            | Keep implementation focused on Vue and Annabel Razor without committing future releases to adapters that have no current consumers.                     | M5, `CMUI-113`–`CMUI-128`, `CMUI-G005` |
+| 2026-08-13 | Keep application shells out of the stable cross-platform component catalog.                                                    | Shell landmark, navigation, responsive state, and workflow policies remain application-specific; portable layout is covered by the approved primitives. | `CMUI-146`, `CMUI-151`                 |
 
 ## Cross-repository log
 

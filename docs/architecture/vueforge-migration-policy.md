@@ -34,7 +34,8 @@ product and make incremental migration harder to reason about.
 | `vueforge-theme` | `ui-tokens` | Port framework-independent token and theme ownership |
 | Core component CSS | `ui-css` | Rename to `cm` contracts without `vf` aliases |
 | `vueforge-core` Vue components | `ui-vue` | Reimplement against approved contracts |
-| `vueforge-layouts` | `ui-css` and `ui-vue` | Split styling from Vue rendering where justified |
+| `vueforge-layouts` primitives | `ui-css`, `ui-vue`, and Composer UI | Migrate approved portable primitives |
+| `vueforge-layouts` shells | Application-owned compositions | Report for manual migration; do not add shell aliases |
 | `vueforge-icons` catalog | `ui-icons` | Separate icon data from platform renderers |
 | `vueforge-icons` Vue component | `ui-vue` | Use the shared icon catalog |
 | VueForge browser behavior | `ui-runtime` where applicable | Only progressive, framework-independent controllers |
