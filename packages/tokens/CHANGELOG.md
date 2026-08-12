@@ -11,3 +11,4 @@ All notable changes to this package will be documented in this file.
 - Added the complete primitive color token names, strict public types, and immutable OKLCH palette.
 - Added the complete light and dark semantic color role contracts using `--cm-*` primitive aliases.
 - Added the framework-independent spacing scale and shared control and icon sizing tokens.
+- Added framework-independent font family, weight, size, and line-height tokens.
