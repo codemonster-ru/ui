@@ -31,5 +31,6 @@ test('publishes a framework-independent ESM entry', async () => {
     'cmTypographyTokenNames',
     'cmTypographyTokens',
     'resolveCmBreakpoint',
+    'serializeCmThemeTokensToCssVars',
   ]);
 });

@@ -1,4 +1,6 @@
 export { cmPrimitiveColorTokenNames, cmPrimitiveColorTokens } from './primitive-colors.js';
+export { serializeCmThemeTokensToCssVars } from './css-vars.js';
+export type { CmCssVariableName } from './css-vars.js';
 export {
   cmBorderTokenNames,
   cmBorderTokens,

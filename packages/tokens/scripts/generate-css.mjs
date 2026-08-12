@@ -1,19 +1,19 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { cmBreakpointTokenNames, cmBreakpointTokens, cmDarkThemePreset, cmLightThemePreset } from '../dist/index.js';
-
-function tokenNameToCssProperty(name) {
-  return `--cm-${name
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([a-zA-Z])(\d)/g, '$1-$2')
-    .toLowerCase()}`;
-}
+import {
+  cmBreakpointTokenNames,
+  cmBreakpointTokens,
+  cmDarkThemePreset,
+  cmLightThemePreset,
+  serializeCmThemeTokensToCssVars,
+} from '../dist/index.js';
 
 function serializeDeclarations(tokens, include) {
-  return Object.entries(tokens)
-    .filter(([name, value]) => include(name, value))
-    .map(([name, value]) => `  ${tokenNameToCssProperty(name)}: ${value};`)
+  const includedTokens = Object.fromEntries(Object.entries(tokens).filter(([name, value]) => include(name, value)));
+
+  return Object.entries(serializeCmThemeTokensToCssVars(includedTokens))
+    .map(([name, value]) => `  ${name}: ${value};`)
     .join('\n');
 }
 
