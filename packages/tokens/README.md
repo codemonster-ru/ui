@@ -4,8 +4,8 @@ Framework-independent design tokens and theme serialization for CodeMonster UI.
 
 ## Status
 
-This package owns the CodeMonster UI primitive color palette. Semantic tokens, theme presets,
-generated CSS, and serialization APIs are added by their dedicated roadmap items.
+This package owns the CodeMonster UI primitive color palette and light/dark semantic color roles.
+Theme presets, generated CSS, and serialization APIs are added by their dedicated roadmap items.
 
 The package does not depend on Vue or another UI framework.
 
@@ -13,6 +13,8 @@ The package does not depend on Vue or another UI framework.
 import {
   cmPrimitiveColorTokenNames,
   cmPrimitiveColorTokens,
+  cmSemanticDarkColorTokens,
+  cmSemanticLightColorTokens,
   type CmPrimitiveColorOverrides,
 } from '@codemonster-ru/ui-tokens';
 
@@ -20,7 +22,13 @@ const brandColors: CmPrimitiveColorOverrides = {
   palettePrimary500: 'oklch(58% 0.16 247)',
 };
 
-console.log(cmPrimitiveColorTokenNames.length, cmPrimitiveColorTokens, brandColors);
+console.log(
+  cmPrimitiveColorTokenNames.length,
+  cmPrimitiveColorTokens,
+  cmSemanticLightColorTokens,
+  cmSemanticDarkColorTokens,
+  brandColors,
+);
 ```
 
 ## Installation
