@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 2 — framework-independent tokens
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-028`
+- Next item: `CMUI-029`
 
 ## Milestones
 
@@ -124,7 +124,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Phase 2 — Framework-independent tokens
 
-- [ ] `CMUI-028` Scaffold `@codemonster-ru/ui-tokens`.
+- [x] `CMUI-028` Scaffold `@codemonster-ru/ui-tokens`.
 - [ ] `CMUI-029` Move primitive color token ownership into the tokens package.
 - [ ] `CMUI-030` Move semantic color token ownership into the tokens package.
 - [ ] `CMUI-031` Move spacing and sizing token ownership into the tokens package.
