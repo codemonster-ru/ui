@@ -73,10 +73,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 13 — Component expansion
-- Current milestone: M6 — utilities and stable component cohort
-- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-G006`
+- Current phase: Phase 14 — VueForge migration and release
+- Current milestone: M7 — VueForge migration and CodeMonster UI 1.0
+- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort
+- Next item: `CMUI-149`
 
 ## Milestones
 
@@ -88,7 +88,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M3        | Input supports Vue binding and native Razor form submission               | Completed            |
 | M4        | Accordion proves accessible cross-platform interaction                    | Completed            |
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
-| M6        | Utility CSS and the first stable component cohort are available           | In progress          |
+| M6        | Utility CSS and the first stable component cohort are available           | Completed            |
 | M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | Not started          |
 
 ## Phase 0 — Product and architecture decisions
@@ -376,7 +376,7 @@ added to the active scope in the future.
 
 ### M6 exit gate
 
-- [ ] `CMUI-G006` Utilities and the approved stable component cohort pass the Vue and Razor gates.
+- [x] `CMUI-G006` Utilities and the approved stable component cohort pass the Vue and Razor gates.
 
 ## Phase 14 — VueForge migration and release
 
