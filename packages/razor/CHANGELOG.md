@@ -11,3 +11,4 @@ All notable changes to this package will be documented in this file.
 - Added shared prop validation, safe HTML attribute bags, and deterministic class building.
 - Added integrity-checked shared asset manifests and atomic publication.
 - Packaged the exact shared token and UI CSS artifact graphs for PHP-only consumers.
+- Added the PHP `CmButton` component with native button rendering and shared contract classes.
