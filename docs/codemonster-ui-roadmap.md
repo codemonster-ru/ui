@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-139e`
+- Next item: `CMUI-140`
 
 ## Milestones
 
@@ -318,12 +318,12 @@ applicable shared runtime, parity tests, and documentation. Add child checklist 
 starting a cohort. React and Angular implementations are not required unless they are explicitly
 added to the active scope in the future.
 
-- [ ] `CMUI-139` Migrate the display cohort: Badge, Alert, Avatar, Divider, and Skeleton.
+- [x] `CMUI-139` Migrate the display cohort: Badge, Alert, Avatar, Divider, and Skeleton.
   - [x] `CMUI-139a` Define contracts and canonical fixtures for the display cohort.
   - [x] `CMUI-139b` Add shared CSS for the display cohort.
   - [x] `CMUI-139c` Add Vue adapters for the display cohort.
   - [x] `CMUI-139d` Add Annabel Razor adapters for the display cohort.
-  - [ ] `CMUI-139e` Verify display-cohort parity, accessibility, visual fixtures, and documentation.
+  - [x] `CMUI-139e` Verify display-cohort parity, accessibility, visual fixtures, and documentation.
 - [ ] `CMUI-140` Migrate the form cohort: Checkbox, Radio, Textarea, and Switch.
 - [ ] `CMUI-141` Migrate the navigation cohort: Link, Breadcrumbs, Tabs, Dropdown, and Menu.
 - [ ] `CMUI-142` Migrate the overlay cohort: Dialog, Drawer, Popover, and Tooltip.

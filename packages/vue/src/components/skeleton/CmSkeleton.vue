@@ -37,8 +37,19 @@ const minHeight = computed(() => {
     throw new TypeError('Skeleton minHeight must be a non-negative CSS length.');
   return props.minHeight;
 });
-const rootStyle = computed<CSSProperties>(() => ({ minHeight: minHeight.value }));
+const rootStyle = computed<CSSProperties | undefined>(() =>
+  minHeight.value === undefined ? undefined : { minHeight: minHeight.value },
+);
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'style', 'aria-hidden']));
 </script>
 
-<template><div v-bind="rootAttrs" :class="classes" :style="[attrs.style, rootStyle]" aria-hidden="true" /></template>
+<template>
+  <div
+    v-if="attrs.style || rootStyle"
+    v-bind="rootAttrs"
+    :class="classes"
+    :style="[attrs.style, rootStyle]"
+    aria-hidden="true"
+  />
+  <div v-else v-bind="rootAttrs" :class="classes" aria-hidden="true" />
+</template>
