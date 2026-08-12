@@ -1,4 +1,23 @@
 export { cmPrimitiveColorTokenNames, cmPrimitiveColorTokens } from './primitive-colors.js';
+export {
+  cmBorderTokenNames,
+  cmBorderTokens,
+  cmRadiusTokenNames,
+  cmRadiusTokens,
+  cmShadowTokenNames,
+  cmShadowTokens,
+} from './borders.js';
+export type {
+  CmBorderOverrides,
+  CmBorderTokenName,
+  CmBorderTokens,
+  CmRadiusOverrides,
+  CmRadiusTokenName,
+  CmRadiusTokens,
+  CmShadowOverrides,
+  CmShadowTokenName,
+  CmShadowTokens,
+} from './borders.js';
 export type {
   CmPrimitiveColorOverrides,
   CmPrimitiveColorTokenName,
