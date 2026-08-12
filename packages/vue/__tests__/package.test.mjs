@@ -4,7 +4,8 @@ import test from 'node:test';
 test('publishes the Vue component adapter entries', async () => {
   const entry = await import('../dist/index.js');
 
-  assert.deepEqual(Object.keys(entry), ['CmButton', 'CmCard', 'CmField', 'CmInput']);
+  assert.deepEqual(Object.keys(entry), ['CmAccordion', 'CmButton', 'CmCard', 'CmField', 'CmInput']);
+  assert.equal(entry.CmAccordion.__name, 'CmAccordion');
   assert.equal(entry.CmButton.__name, 'CmButton');
   assert.equal(entry.CmCard.__name, 'CmCard');
   assert.equal(entry.CmField.__name, 'CmField');
