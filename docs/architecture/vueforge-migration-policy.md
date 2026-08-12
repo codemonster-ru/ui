@@ -29,18 +29,18 @@ product and make incremental migration harder to reason about.
 
 ## Package mapping
 
-| VueForge source | CodeMonster UI destination | Notes |
-| --- | --- | --- |
-| `vueforge-theme` | `ui-tokens` | Port framework-independent token and theme ownership |
-| Core component CSS | `ui-css` | Rename to `cm` contracts without `vf` aliases |
-| `vueforge-core` Vue components | `ui-vue` | Reimplement against approved contracts |
-| `vueforge-layouts` primitives | `ui-css`, `ui-vue`, and Composer UI | Migrate approved portable primitives |
-| `vueforge-layouts` shells | Application-owned compositions | Report for manual migration; do not add shell aliases |
-| `vueforge-icons` catalog | `ui-icons` | Separate icon data from platform renderers |
-| `vueforge-icons` Vue component | `ui-vue` | Use the shared icon catalog |
-| VueForge browser behavior | `ui-runtime` where applicable | Only progressive, framework-independent controllers |
-| `vueforge-codeblock` | Deferred to `CMUI-147` | Review as a composed product |
-| Playground packages | Deferred to `CMUI-148` | Review separately from design-system foundations |
+| VueForge source                | CodeMonster UI destination          | Notes                                                 |
+| ------------------------------ | ----------------------------------- | ----------------------------------------------------- |
+| `vueforge-theme`               | `ui-tokens`                         | Port framework-independent token and theme ownership  |
+| Core component CSS             | `ui-css`                            | Rename to `cm` contracts without `vf` aliases         |
+| `vueforge-core` Vue components | `ui-vue`                            | Reimplement against approved contracts                |
+| `vueforge-layouts` primitives  | `ui-css`, `ui-vue`, and Composer UI | Migrate approved portable primitives                  |
+| `vueforge-layouts` shells      | Application-owned compositions      | Report for manual migration; do not add shell aliases |
+| `vueforge-icons` catalog       | `ui-icons`                          | Separate icon data from platform renderers            |
+| `vueforge-icons` Vue component | `ui-vue`                            | Use the shared icon catalog                           |
+| VueForge browser behavior      | `ui-runtime` where applicable       | Only progressive, framework-independent controllers   |
+| `vueforge-codeblock`           | Retained VueForge composed product  | Keep side by side; no automatic rename                |
+| Playground packages            | Deferred to `CMUI-148`              | Review separately from design-system foundations      |
 
 The mapping is architectural, not a requirement to copy every existing public API. Each component
 or package is reviewed before migration.
