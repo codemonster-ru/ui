@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "field-validation-links",
+  "case": "field-help-error",
+  "steps": [
+    { "expect": "attribute", "target": "control", "name": "aria-invalid", "value": "true" },
+    {
+      "expect": "attribute",
+      "target": "control",
+      "name": "aria-describedby",
+      "value": "profile-name-description profile-name-error"
+    },
+    { "expect": "visible", "target": "error", "value": true }
+  ]
+}

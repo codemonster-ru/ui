@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "input-required-validation",
+  "case": "input-invalid",
+  "steps": [
+    { "expect": "validity", "target": "control", "value": false },
+    { "action": "setValue", "target": "control", "value": "CodeMonster" },
+    { "expect": "validity", "target": "control", "value": true }
+  ]
+}

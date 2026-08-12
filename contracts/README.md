@@ -60,8 +60,9 @@ write into `contracts/` without a dedicated reviewed mode.
 ## Validation
 
 `manifest.json` files conform to
-[`component-manifest.schema.json`](./schema/component-manifest.schema.json). Case and behavior schemas
-are introduced with their infrastructure roadmap items.
+[`component-manifest.schema.json`](./schema/component-manifest.schema.json). Case inputs and behavior
+scenarios are validated by the repository contract tooling. Behavior steps intentionally use only
+approved user actions and observable DOM, event, validity, and form-data expectations.
 
 Repository validation eventually checks:
 
