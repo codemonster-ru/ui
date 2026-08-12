@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-select",
+  "case": "menu-default",
+  "steps": [
+    { "action": "click", "target": "item-first" },
+    { "expect": "eventCount", "target": "root", "name": "cm:menu-select", "count": 1 }
+  ]
+}

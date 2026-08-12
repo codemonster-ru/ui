@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "name": "Link",
+  "slug": "link",
+  "razorTag": "cm-link",
+  "description": "A native anchor with finite underline and tone presentation.",
+  "props": {
+    "href": { "type": "string", "required": true },
+    "underline": {
+      "type": "enum",
+      "required": false,
+      "default": "none",
+      "values": ["none", "hover", "always"]
+    },
+    "tone": {
+      "type": "enum",
+      "required": false,
+      "default": "default",
+      "values": ["default", "muted"]
+    }
+  },
+  "slots": {
+    "default": { "required": true, "description": "Accessible trusted link content." }
+  },
+  "events": {
+    "click": { "description": "Native anchor click event.", "native": true }
+  },
+  "states": ["default", "muted"]
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-open",
+  "description": "Open end-aligned dropdown with one disabled item.",
+  "props": {
+    "id": "account-actions",
+    "label": "Account",
+    "open": true,
+    "placement": "bottom-end",
+    "items": [
+      { "id": "profile", "label": "Profile", "href": "/profile" },
+      { "id": "billing", "label": "Billing", "disabled": true }
+    ]
+  },
+  "slots": {}
+}

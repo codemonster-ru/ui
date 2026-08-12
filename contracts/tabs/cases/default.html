@@ -1,0 +1,44 @@
+<div class="cm-tabs" data-cm-controller="tabs" data-cm-tabs-value="profile">
+  <div class="cm-tabs__list" role="tablist" aria-orientation="horizontal">
+    <button
+      class="cm-tabs__tab"
+      id="account-tab-profile"
+      type="button"
+      role="tab"
+      aria-controls="account-panel-profile"
+      aria-selected="true"
+      tabindex="0"
+    >
+      Profile</button
+    ><button
+      class="cm-tabs__tab"
+      id="account-tab-security"
+      type="button"
+      role="tab"
+      aria-controls="account-panel-security"
+      aria-selected="false"
+      tabindex="-1"
+    >
+      Security
+    </button>
+  </div>
+  <div
+    class="cm-tabs__panel"
+    id="account-panel-profile"
+    role="tabpanel"
+    aria-labelledby="account-tab-profile"
+    tabindex="0"
+  >
+    Profile settings.
+  </div>
+  <div
+    class="cm-tabs__panel"
+    id="account-panel-security"
+    role="tabpanel"
+    aria-labelledby="account-tab-security"
+    tabindex="0"
+    hidden
+  >
+    Security settings.
+  </div>
+</div>
