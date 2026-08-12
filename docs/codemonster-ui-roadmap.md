@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 6 — CodeMonster UI Annabel Razor adapter
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-075`
+- Next item: `CMUI-076`
 
 ## Milestones
 
@@ -206,7 +206,7 @@ and be recorded in the cross-repository log below.
 - [x] `CMUI-072` Add the Button Razor template.
 - [x] `CMUI-073` Add Razor Button loading and link rendering.
 - [x] `CMUI-074` Verify Razor Button escaping and accessibility.
-- [ ] `CMUI-075` Compare significant Vue and Razor Button DOM.
+- [x] `CMUI-075` Compare significant Vue and Razor Button DOM.
 - [ ] `CMUI-076` Document Button usage in Vue and Razor.
 
 ## Phase 7 — Card and composition
