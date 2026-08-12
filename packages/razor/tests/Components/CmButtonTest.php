@@ -41,7 +41,7 @@ final class CmButtonTest extends TestCase
 
         self::assertSame(
             '<button class="cm-button cm-button--primary cm-button--md" type="button">'
-            . "<span class=\"cm-button__label\">Save</span></button>\n",
+            . '<span class="cm-button__label">Save</span></button>',
             $button->render($context)->value(),
         );
     }
@@ -60,7 +60,7 @@ final class CmButtonTest extends TestCase
 
         self::assertSame(
             '<button class="cm-button cm-button--danger cm-button--lg consumer" type="submit" disabled'
-            . " data-id=\"&quot;save&quot;\"><span class=\"cm-button__label\"></span></button>\n",
+            . ' data-id="&quot;save&quot;"><span class="cm-button__label"></span></button>',
             $button->render($context)->value(),
         );
     }
