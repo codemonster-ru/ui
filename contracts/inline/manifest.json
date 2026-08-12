@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "name": "Inline",
+  "slug": "inline",
+  "razorTag": "cm-inline",
+  "description": "A wrapping horizontal flow primitive with centered cross-axis alignment.",
+  "props": {
+    "element": { "type": "enum", "required": false, "default": "div", "values": ["div", "nav", "ul"] },
+    "wrap": { "type": "boolean", "required": false, "default": true }
+  },
+  "slots": { "default": { "required": true, "description": "Trusted inline items." } },
+  "events": {},
+  "states": ["default", "nowrap"]
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "name": "Section",
+  "slug": "section",
+  "razorTag": "cm-section",
+  "description": "An inset content region with an optional shared surface treatment.",
+  "props": {
+    "element": {
+      "type": "enum",
+      "required": false,
+      "default": "section",
+      "values": ["section", "div", "article", "aside"]
+    },
+    "surface": { "type": "boolean", "required": false, "default": false }
+  },
+  "slots": { "default": { "required": true, "description": "Trusted section content." } },
+  "events": {},
+  "states": ["default", "surface"]
+}

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "container-fluid",
+  "description": "Fluid container overrides a supplied size.",
+  "props": { "size": "md", "fluid": true },
+  "slots": { "default": "<p>Wide content</p>" }
+}
