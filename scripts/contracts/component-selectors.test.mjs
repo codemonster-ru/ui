@@ -131,13 +131,7 @@ test('keeps Card selectors aligned with its manifest and canonical HTML', () => 
 for (const [slug, approved] of [
   [
     'accordion',
-    [
-      'cm-accordion',
-      'cm-accordion__item',
-      'cm-accordion__heading',
-      'cm-accordion__trigger',
-      'cm-accordion__panel',
-    ],
+    ['cm-accordion', 'cm-accordion__item', 'cm-accordion__heading', 'cm-accordion__trigger', 'cm-accordion__panel'],
   ],
   [
     'field',
@@ -152,6 +146,51 @@ for (const [slug, approved] of [
     ],
   ],
   ['input', ['cm-input', 'cm-input--sm', 'cm-input--md', 'cm-input--lg', 'cm-input--invalid']],
+  [
+    'badge',
+    [
+      'cm-badge',
+      'cm-badge--primary',
+      'cm-badge--success',
+      'cm-badge--info',
+      'cm-badge--warning',
+      'cm-badge--help',
+      'cm-badge--danger',
+      'cm-badge--contrast',
+    ],
+  ],
+  [
+    'alert',
+    [
+      'cm-alert',
+      'cm-alert--neutral',
+      'cm-alert--primary',
+      'cm-alert--success',
+      'cm-alert--warning',
+      'cm-alert--help',
+      'cm-alert--danger',
+      'cm-alert--contrast',
+      'cm-alert__icon',
+      'cm-alert__content',
+      'cm-alert__title',
+      'cm-alert__body',
+    ],
+  ],
+  [
+    'avatar',
+    ['cm-avatar', 'cm-avatar--sm', 'cm-avatar--lg', 'cm-avatar--circle', 'cm-avatar__image', 'cm-avatar__label'],
+  ],
+  ['divider', ['cm-divider', 'cm-divider--horizontal', 'cm-divider--vertical']],
+  [
+    'skeleton',
+    [
+      'cm-skeleton',
+      'cm-skeleton--animated',
+      'cm-skeleton--radius-control',
+      'cm-skeleton--radius-surface',
+      'cm-skeleton--radius-round',
+    ],
+  ],
 ]) {
   test(`keeps ${slug} selectors aligned with canonical HTML`, () => {
     const allowed = new Set(approved);

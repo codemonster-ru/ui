@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-139b`
+- Next item: `CMUI-139c`
 
 ## Milestones
 
@@ -320,7 +320,7 @@ added to the active scope in the future.
 
 - [ ] `CMUI-139` Migrate the display cohort: Badge, Alert, Avatar, Divider, and Skeleton.
   - [x] `CMUI-139a` Define contracts and canonical fixtures for the display cohort.
-  - [ ] `CMUI-139b` Add shared CSS for the display cohort.
+  - [x] `CMUI-139b` Add shared CSS for the display cohort.
   - [ ] `CMUI-139c` Add Vue adapters for the display cohort.
   - [ ] `CMUI-139d` Add Annabel Razor adapters for the display cohort.
   - [ ] `CMUI-139e` Verify display-cohort parity, accessibility, visual fixtures, and documentation.
