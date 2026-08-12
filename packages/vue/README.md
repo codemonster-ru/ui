@@ -39,6 +39,7 @@ handlers.
 See the cross-platform [Button guide](../../docs/components/button.md) for props, slots, forms,
 links, accessibility, and matching Annabel Razor usage.
 See the [Card guide](../../docs/components/card.md) for semantic roots and region composition.
+See the [Field and Input guide](../../docs/components/forms.md) for Vue binding and accessible forms.
 
 ## License
 
