@@ -22,3 +22,4 @@ All notable changes to this package will be documented in this file.
   and dismissal verification.
 - Added native Select and DatePicker adapters plus controlled searchable CommandPalette interaction.
 - Added semantic Table slots and controlled DataTable sorting, selection, pagination, states, and SSR parity.
+- Added semantic Container, Stack, Inline, Section, and Grid adapters with canonical SSR parity.

@@ -46,6 +46,8 @@ See the [navigation components guide](../../docs/components/navigation.md) for n
 See the [overlay components guide](../../docs/components/overlays.md) for modal focus, disclosure state, and Tooltip behavior.
 See the [advanced input guide](../../docs/components/advanced-inputs.md) for native Select and DatePicker binding and CommandPalette state.
 See the [Table and DataTable guide](../../docs/components/data-tables.md) for authored table slots and controlled data requests.
+See the [layout primitives guide](../../docs/components/layout-primitives.md) for semantic,
+responsive page composition without runtime behavior.
 
 ## License
 

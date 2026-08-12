@@ -44,6 +44,8 @@ copied assets, and SSR/Razor delivery.
 See the separate [utility CSS guide](../../docs/css/utilities.md) for optional generated helpers.
 See the [Table and DataTable guide](../../docs/components/data-tables.md) for responsive table
 frames, states, sorting, selection, and pagination styles.
+See the [layout primitives guide](../../docs/components/layout-primitives.md) for responsive
+Container, Stack, Inline, Section, and Grid composition.
 
 ## License
 

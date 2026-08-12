@@ -374,6 +374,21 @@ for (const [slug, approved] of [
       'cm-data-table__page-summary',
     ],
   ],
+  [
+    'container',
+    [
+      'cm-container',
+      'cm-container--md',
+      'cm-container--lg',
+      'cm-container--xl',
+      'cm-container--2xl',
+      'cm-container--fluid',
+    ],
+  ],
+  ['stack', ['cm-stack']],
+  ['inline', ['cm-inline', 'cm-inline--nowrap']],
+  ['section', ['cm-section', 'cm-section--surface']],
+  ['grid', ['cm-grid']],
 ]) {
   test(`keeps ${slug} selectors aligned with canonical HTML`, () => {
     const allowed = new Set(approved);

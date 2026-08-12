@@ -56,6 +56,8 @@ See the [navigation components guide](../../docs/components/navigation.md) for L
 See the [overlay components guide](../../docs/components/overlays.md) for server-rendered Dialog, Drawer, Popover, and Tooltip usage.
 See the [advanced input guide](../../docs/components/advanced-inputs.md) for native form submission and CommandPalette enhancement.
 See the [Table and DataTable guide](../../docs/components/data-tables.md) for trusted table composition and server-owned data requests.
+See the [layout primitives guide](../../docs/components/layout-primitives.md) for trusted semantic
+composition with Container, Stack, Inline, Section, and Grid.
 
 ## Development
 

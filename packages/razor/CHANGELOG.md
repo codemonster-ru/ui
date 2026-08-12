@@ -28,3 +28,4 @@ All notable changes to this package will be documented in this file.
   significant DOM parity verification.
 - Added native Select and DatePicker tags plus server-rendered CommandPalette filtering and runtime markup.
 - Added Table and DataTable tags with trusted row composition, escaped scalar data, and shared runtime markup.
+- Added Container, Stack, Inline, Section, and Grid tags with trusted semantic composition.
