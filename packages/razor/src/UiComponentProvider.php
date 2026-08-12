@@ -7,6 +7,7 @@ namespace Codemonster\Ui;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
 use Codemonster\Ui\Components\CmButton;
+use Codemonster\Ui\Components\CmCard;
 use Codemonster\View\EngineInterface;
 use Codemonster\View\Locator\DefaultLocator;
 
@@ -29,6 +30,9 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
 
     public function components(): array
     {
-        return ['button' => new CmButton($this->views)];
+        return [
+            'button' => new CmButton($this->views),
+            'card' => new CmCard(),
+        ];
     }
 }

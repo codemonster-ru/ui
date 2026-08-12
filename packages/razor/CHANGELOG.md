@@ -16,3 +16,4 @@ All notable changes to this package will be documented in this file.
 - Added Button loading, icon-slot, enabled-link, and disabled-link rendering.
 - Added Button Razor escaping and accessibility integration verification.
 - Added significant DOM parity checks for all shared Vue and Razor Button cases.
+- Added PHP Card and conditional header, body, and footer region renderers.

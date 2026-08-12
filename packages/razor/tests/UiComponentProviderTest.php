@@ -6,6 +6,7 @@ namespace Codemonster\Ui\Tests;
 
 use Codemonster\Razor\Components\ComponentRegistry;
 use Codemonster\Ui\Components\CmButton;
+use Codemonster\Ui\Components\CmCard;
 use Codemonster\Ui\UiComponentProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -20,8 +21,10 @@ final class UiComponentProviderTest extends TestCase
 
         self::assertSame('cm', $provider->prefix());
         self::assertInstanceOf(CmButton::class, $provider->components()['button']);
+        self::assertInstanceOf(CmCard::class, $provider->components()['card']);
         self::assertTrue($registry->handles('cm-button'));
         self::assertInstanceOf(CmButton::class, $registry->resolve('cm-button'));
+        self::assertInstanceOf(CmCard::class, $registry->resolve('cm-card'));
         self::assertFalse($registry->handles('other-button'));
     }
 }
