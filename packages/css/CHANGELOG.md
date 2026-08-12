@@ -13,3 +13,4 @@ All notable changes to this package will be documented in this file.
 - Added reduced-motion and forced-colors preference foundations.
 - Added the shared token-backed control primitive, sizes, and visual states.
 - Added shared base, subtle, elevated, and overlay surface primitives.
+- Added complete and foundation-only public stylesheet compositions.
