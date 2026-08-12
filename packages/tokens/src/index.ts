@@ -4,3 +4,13 @@ export type {
   CmPrimitiveColorTokenName,
   CmPrimitiveColorTokens,
 } from './primitive-colors.js';
+export {
+  cmSemanticColorTokenNames,
+  cmSemanticDarkColorTokens,
+  cmSemanticLightColorTokens,
+} from './semantic-colors.js';
+export type {
+  CmSemanticColorOverrides,
+  CmSemanticColorTokenName,
+  CmSemanticColorTokens,
+} from './semantic-colors.js';
