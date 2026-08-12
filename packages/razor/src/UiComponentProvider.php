@@ -15,6 +15,7 @@ use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
 use Codemonster\Ui\Components\CmCheckbox;
 use Codemonster\Ui\Components\CmCommandPalette;
+use Codemonster\Ui\Components\CmDataTable;
 use Codemonster\Ui\Components\CmDatePicker;
 use Codemonster\Ui\Components\CmDivider;
 use Codemonster\Ui\Components\CmDialog;
@@ -29,6 +30,7 @@ use Codemonster\Ui\Components\CmRadio;
 use Codemonster\Ui\Components\CmSelect;
 use Codemonster\Ui\Components\CmSkeleton;
 use Codemonster\Ui\Components\CmSwitch;
+use Codemonster\Ui\Components\CmTable;
 use Codemonster\Ui\Components\CmTabs;
 use Codemonster\Ui\Components\CmTextarea;
 use Codemonster\Ui\Components\CmTooltip;
@@ -64,6 +66,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'card' => new CmCard($this->views),
             'checkbox' => new CmCheckbox($this->views),
             'command-palette' => new CmCommandPalette($this->views),
+            'data-table' => new CmDataTable($this->views),
             'date-picker' => new CmDatePicker($this->views),
             'divider' => new CmDivider($this->views),
             'dialog' => new CmDialog($this->views),
@@ -78,6 +81,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'select' => new CmSelect($this->views),
             'skeleton' => new CmSkeleton($this->views),
             'switch' => new CmSwitch($this->views),
+            'table' => new CmTable($this->views),
             'tabs' => new CmTabs($this->views),
             'textarea' => new CmTextarea($this->views),
             'tooltip' => new CmTooltip($this->views),
