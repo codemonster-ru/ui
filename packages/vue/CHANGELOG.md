@@ -7,3 +7,5 @@ All notable changes to this package will be documented in this file.
 ### Added
 
 - Added the initial Vue 3 adapter scaffold, ESM entry, declarations, and package verification.
+- Added the native `CmButton` adapter with variants, sizes, disabled state, attribute forwarding,
+  and consumer class merging.

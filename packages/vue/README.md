@@ -12,21 +12,27 @@ Current release: `@codemonster-ru/ui-vue@0.1.0`.
 ## Installation
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-vue
+npm install vue@^3.5.0 @codemonster-ru/ui-vue @codemonster-ru/ui-css
 ```
 
 ## Quick start
 
 ```ts
-import {} from '@codemonster-ru/ui-vue';
+import '@codemonster-ru/ui-css/styles.css';
+import { CmButton } from '@codemonster-ru/ui-vue';
 ```
 
-The adapter is currently scaffolded. Components are added by their dedicated roadmap items rather
-than through speculative placeholder APIs.
+```vue
+<CmButton variant="secondary" size="lg" type="submit">Save</CmButton>
+```
+
+`CmButton` renders a native button, forwards consumer attributes and listeners to it, and merges
+consumer classes after the stable `cm-button` contract classes. Its default native `type` is
+`button`; set `type="submit"` explicitly for form submission.
 
 ## Documentation
 
-Vue adapter documentation is added with the first complete component vertical slice.
+Button loading, icon slots, and link rendering are added by the remaining vertical-slice items.
 
 ## License
 
