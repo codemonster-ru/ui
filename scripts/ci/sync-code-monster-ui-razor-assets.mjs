@@ -25,16 +25,20 @@ const sources = [
   { packageDirectory: 'css', path: 'components/card.css', export: './card.css' },
   { packageDirectory: 'css', path: 'components/checkbox.css', export: './checkbox.css' },
   { packageDirectory: 'css', path: 'components/divider.css', export: './divider.css' },
+  { packageDirectory: 'css', path: 'components/dialog.css', export: './dialog.css' },
   { packageDirectory: 'css', path: 'components/dropdown.css', export: './dropdown.css' },
+  { packageDirectory: 'css', path: 'components/drawer.css', export: './drawer.css' },
   { packageDirectory: 'css', path: 'components/field.css', export: './field.css' },
   { packageDirectory: 'css', path: 'components/input.css', export: './input.css' },
   { packageDirectory: 'css', path: 'components/link.css', export: './link.css' },
   { packageDirectory: 'css', path: 'components/menu.css', export: './menu.css' },
+  { packageDirectory: 'css', path: 'components/popover.css', export: './popover.css' },
   { packageDirectory: 'css', path: 'components/radio.css', export: './radio.css' },
   { packageDirectory: 'css', path: 'components/skeleton.css', export: './skeleton.css' },
   { packageDirectory: 'css', path: 'components/switch.css', export: './switch.css' },
   { packageDirectory: 'css', path: 'components/textarea.css', export: './textarea.css' },
   { packageDirectory: 'css', path: 'components/tabs.css', export: './tabs.css' },
+  { packageDirectory: 'css', path: 'components/tooltip.css', export: './tooltip.css' },
 ];
 
 await rm(join(assetsDirectory, 'css'), { force: true, recursive: true });
