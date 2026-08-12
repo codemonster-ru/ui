@@ -4,3 +4,5 @@ export { default as CmCard } from './components/card/CmCard.vue';
 export type { CmCardElement, CmCardProps } from './components/card/card.types';
 export { default as CmField } from './components/field/CmField.vue';
 export type { CmFieldDefaultSlotProps, CmFieldProps } from './components/field/field.types';
+export { default as CmInput } from './components/input/CmInput.vue';
+export type { CmInputProps, CmInputSize, CmInputType } from './components/input/input.types';
