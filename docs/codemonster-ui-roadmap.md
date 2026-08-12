@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-141c`
+- Next item: `CMUI-141d`
 
 ## Milestones
 
@@ -333,7 +333,7 @@ added to the active scope in the future.
 - [ ] `CMUI-141` Migrate the navigation cohort: Link, Breadcrumbs, Tabs, Dropdown, and Menu.
   - [x] `CMUI-141a` Define navigation contracts, canonical fixtures, and keyboard behavior.
   - [x] `CMUI-141b` Add shared CSS for Link, Breadcrumbs, Tabs, Dropdown, and Menu.
-  - [ ] `CMUI-141c` Add shared progressive-enhancement runtime for interactive navigation.
+  - [x] `CMUI-141c` Add shared progressive-enhancement runtime for interactive navigation.
   - [ ] `CMUI-141d` Add Vue navigation adapters and controlled-state verification.
   - [ ] `CMUI-141e` Add Annabel Razor navigation adapters and runtime integration.
   - [ ] `CMUI-141f` Verify navigation DOM, accessibility, interaction, visual, and documentation parity.
