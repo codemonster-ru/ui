@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-140c`
+- Next item: `CMUI-140d`
 
 ## Milestones
 
@@ -327,7 +327,7 @@ added to the active scope in the future.
 - [ ] `CMUI-140` Migrate the form cohort: Checkbox, Radio, Textarea, and Switch.
   - [x] `CMUI-140a` Define contracts, native form semantics, and fixtures for the form cohort.
   - [x] `CMUI-140b` Add shared CSS for Checkbox, Radio, Textarea, and Switch.
-  - [ ] `CMUI-140c` Add Vue form adapters and binding verification.
+  - [x] `CMUI-140c` Add Vue form adapters and binding verification.
   - [ ] `CMUI-140d` Add Annabel Razor form adapters and submission verification.
   - [ ] `CMUI-140e` Verify form-cohort DOM, accessibility, interaction, and documentation parity.
 - [ ] `CMUI-141` Migrate the navigation cohort: Link, Breadcrumbs, Tabs, Dropdown, and Menu.

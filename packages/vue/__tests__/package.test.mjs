@@ -11,10 +11,14 @@ test('publishes the Vue component adapter entries', async () => {
     'CmBadge',
     'CmButton',
     'CmCard',
+    'CmCheckbox',
     'CmDivider',
     'CmField',
     'CmInput',
+    'CmRadio',
     'CmSkeleton',
+    'CmSwitch',
+    'CmTextarea',
   ]);
   assert.equal(entry.CmAccordion.__name, 'CmAccordion');
   assert.equal(entry.CmButton.__name, 'CmButton');
