@@ -67,10 +67,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 7 — Card and composition
-- Current milestone: M2 — Button and Card parity
-- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-G002`
+- Current phase: Phase 8 — Input and native forms
+- Current milestone: M3 — Input form parity
+- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity
+- Next item: `CMUI-086`
 
 ## Milestones
 
@@ -78,7 +78,7 @@ An item is complete only when all applicable conditions are satisfied:
 | --------- | ------------------------------------------------------------------------- | -------------------- |
 | M0        | Product name, boundaries, contracts, and migration policy approved        | Completed            |
 | M1        | Framework-independent tokens and CSS packages build and publish correctly | Completed            |
-| M2        | Button and Card render with parity in Vue and Annabel Razor               | In progress          |
+| M2        | Button and Card render with parity in Vue and Annabel Razor               | Completed            |
 | M3        | Input supports Vue binding and native Razor form submission               | Not started          |
 | M4        | Accordion proves accessible cross-platform interaction                    | Not started          |
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
@@ -223,7 +223,7 @@ and be recorded in the cross-repository log below.
 
 ### M2 exit gate
 
-- [ ] `CMUI-G002` Button and Card pass Vue/Razor DOM, SSR, accessibility, and visual parity checks.
+- [x] `CMUI-G002` Button and Card pass Vue/Razor DOM, SSR, accessibility, and visual parity checks.
 
 ## Phase 8 — Input and native forms
 
