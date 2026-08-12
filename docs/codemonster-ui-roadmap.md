@@ -67,10 +67,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 8 — Input and native forms
-- Current milestone: M3 — Input form parity
-- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity
-- Next item: `CMUI-G003`
+- Current phase: Phase 9 — Shared runtime and Accordion
+- Current milestone: M4 — Accordion interaction parity
+- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity
+- Next item: `CMUI-098`
 
 ## Milestones
 
@@ -79,7 +79,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M0        | Product name, boundaries, contracts, and migration policy approved        | Completed            |
 | M1        | Framework-independent tokens and CSS packages build and publish correctly | Completed            |
 | M2        | Button and Card render with parity in Vue and Annabel Razor               | Completed            |
-| M3        | Input supports Vue binding and native Razor form submission               | Not started          |
+| M3        | Input supports Vue binding and native Razor form submission               | Completed            |
 | M4        | Accordion proves accessible cross-platform interaction                    | Not started          |
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
 | M6        | Utility CSS and the first stable component cohort are available           | Not started          |
@@ -242,7 +242,7 @@ and be recorded in the cross-repository log below.
 
 ### M3 exit gate
 
-- [ ] `CMUI-G003` Input supports Vue binding and native Razor form submission with parity.
+- [x] `CMUI-G003` Input supports Vue binding and native Razor form submission with parity.
 
 ## Phase 9 — Shared runtime and Accordion
 
