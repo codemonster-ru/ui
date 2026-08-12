@@ -13,3 +13,4 @@ All notable changes to this package will be documented in this file.
 - Packaged the exact shared token and UI CSS artifact graphs for PHP-only consumers.
 - Added the PHP `CmButton` component with native button rendering and shared contract classes.
 - Added the package-owned Button Razor template and package view renderer wiring.
+- Added Button loading, icon-slot, enabled-link, and disabled-link rendering.
