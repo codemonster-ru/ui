@@ -61,6 +61,7 @@ sets `aria-busy="true"`.
 Link mode cannot use a native disabled attribute. When `disabled` or `loading` is true, the anchor:
 
 - omits `href` so no static or server-rendered navigation remains;
+- sets `role="link"` because an anchor without `href` has no implicit link role;
 - sets `aria-disabled="true"`;
 - does not emit or forward an activation caused by the component adapter;
 - sets `aria-busy="true"` only while loading.

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "button-link",
+  "description": "Enabled link action using the explicit href mode.",
+  "props": {
+    "href": "/docs",
+    "variant": "ghost"
+  },
+  "slots": {
+    "default": "Documentation"
+  }
+}
