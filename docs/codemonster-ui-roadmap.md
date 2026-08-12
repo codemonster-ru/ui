@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 5 — Generic Annabel Razor component model
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `ARAZOR-007`
+- Next item: `ARAZOR-008`
 
 ## Milestones
 
@@ -184,7 +184,7 @@ and be recorded in the cross-repository log below.
 - [x] `ARAZOR-004` Add the component registry and prefix registration.
 - [x] `ARAZOR-005` Parse self-closing component tags.
 - [x] `ARAZOR-006` Parse paired component tags.
-- [ ] `ARAZOR-007` Compile static, expression, and boolean props.
+- [x] `ARAZOR-007` Compile static, expression, and boolean props.
 - [ ] `ARAZOR-008` Compile default slots.
 - [ ] `ARAZOR-009` Compile named slots.
 - [ ] `ARAZOR-010` Support nested components.
@@ -393,6 +393,7 @@ Record Annabel work here when an `ARAZOR-*` item is completed.
 | `ARAZOR-004` | `7f63002`      | This row                       | Component registry and providers.    |
 | `ARAZOR-005` | `68e2287`      | This row                       | Self-closing component parser.       |
 | `ARAZOR-006` | `06d7459`      | This row                       | Paired and nested tag parsing.       |
+| `ARAZOR-007` | `9c800a2`      | This row                       | Static, expression, boolean props.   |
 
 ## Scope-change log
 
