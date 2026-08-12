@@ -18,3 +18,5 @@ All notable changes to this package will be documented in this file.
 - Added packed-consumer smoke coverage for the complete recursive CSS import graph.
 - Added package-wide framework import and VueForge selector ownership gates.
 - Documented CSS-only imports, themes, primitives, copied assets, and server rendering.
+- Added shared Button variants, sizes, interaction states, content regions, and loading indicator
+  styles.
