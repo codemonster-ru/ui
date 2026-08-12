@@ -4,5 +4,5 @@ import test from 'node:test';
 test('publishes the framework-independent runtime entry', async () => {
   const entry = await import('../dist/index.js');
 
-  assert.deepEqual(Object.keys(entry), ['CmRuntime']);
+  assert.deepEqual(Object.keys(entry), ['CmRuntime', 'createCmEvent', 'dispatchCmEvent']);
 });
