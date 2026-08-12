@@ -10,3 +10,4 @@ All notable changes to this package will be documented in this file.
 - Added the native `CmButton` adapter with variants, sizes, disabled state, attribute forwarding,
   and consumer class merging.
 - Added Button loading state and leading and trailing icon slots.
+- Added enabled and disabled Button link rendering.
