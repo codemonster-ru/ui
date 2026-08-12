@@ -36,7 +36,7 @@ final class CmInput implements ComponentInterface
             ->add($this->optionalString($attributes->get('class')))
             ->value();
 
-        return RenderedHtml::fromTrustedString($this->views->render('components.input', [
+        return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.input', [
             'value' => $value,
             'type' => $type,
             'classes' => $classes,
@@ -53,7 +53,7 @@ final class CmInput implements ComponentInterface
                 'required',
                 'aria-invalid',
             ])->render(),
-        ]));
+        ]), "\r\n"));
     }
 
     private function optionalString(mixed $value): ?string
