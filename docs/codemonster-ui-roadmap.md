@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 8 — Input and native forms
 - Current milestone: M3 — Input form parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity
-- Next item: `CMUI-086`
+- Next item: `CMUI-087`
 
 ## Milestones
 
@@ -227,7 +227,7 @@ and be recorded in the cross-repository log below.
 
 ## Phase 8 — Input and native forms
 
-- [ ] `CMUI-086` Define Field and Input contracts and fixtures.
+- [x] `CMUI-086` Define Field and Input contracts and fixtures.
 - [ ] `CMUI-087` Define native submission and validation behavior.
 - [ ] `CMUI-088` Move Field and Input styles into the shared CSS package.
 - [ ] `CMUI-089` Add Vue `CmField`.

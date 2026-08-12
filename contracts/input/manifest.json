@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "name": "Input",
+  "slug": "input",
+  "razorTag": "cm-input",
+  "description": "A native single-line input with shared sizing and invalid presentation.",
+  "props": {
+    "value": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Current string value mapped to each platform's native form convention."
+    },
+    "type": {
+      "type": "enum",
+      "required": false,
+      "default": "text",
+      "values": ["text", "email", "password", "search", "tel", "url"],
+      "description": "Approved native single-line input type."
+    },
+    "size": {
+      "type": "enum",
+      "required": false,
+      "default": "md",
+      "values": ["sm", "md", "lg"],
+      "description": "Shared control height and spacing scale."
+    },
+    "invalid": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Exposes invalid presentation and aria-invalid state."
+    },
+    "disabled": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Maps to the native disabled attribute."
+    },
+    "readonly": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Maps to the native readonly attribute."
+    },
+    "required": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Maps to the native required attribute."
+    }
+  },
+  "slots": {},
+  "events": {
+    "input": {
+      "description": "Native input event carrying the current DOM value.",
+      "native": true
+    },
+    "change": {
+      "description": "Native committed-value change event.",
+      "native": true
+    }
+  },
+  "states": ["default", "disabled", "readonly", "invalid"],
+  "relatedComponents": ["Field"]
+}

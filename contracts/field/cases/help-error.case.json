@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "field-help-error",
+  "description": "Help and validation text are associated with an invalid control.",
+  "props": {
+    "controlId": "profile-name",
+    "label": "Display name",
+    "description": "Shown to other members.",
+    "error": "Enter a display name.",
+    "required": true
+  },
+  "slots": {
+    "default": "<input id=\"profile-name\" name=\"display_name\" type=\"text\" required aria-invalid=\"true\" aria-describedby=\"profile-name-description profile-name-error\">"
+  }
+}

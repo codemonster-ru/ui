@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "name": "Field",
+  "slug": "field",
+  "razorTag": "cm-field",
+  "description": "A form-field layout that associates one control with visible label, help, required, and error content.",
+  "props": {
+    "controlId": {
+      "type": "string",
+      "required": true,
+      "description": "Stable id of the single control labelled by this field."
+    },
+    "label": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "Fallback visible label used when the label slot is absent."
+    },
+    "description": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "Fallback help text used when the description slot is absent."
+    },
+    "error": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "Fallback validation message used when the error slot is absent."
+    },
+    "invalid": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Marks the field invalid even when no error content is rendered."
+    },
+    "required": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Displays a visual required marker; native control state remains explicit."
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true,
+      "description": "The single native or component form control."
+    },
+    "label": {
+      "required": false,
+      "description": "Visible label content that takes precedence over the label prop."
+    },
+    "description": {
+      "required": false,
+      "description": "Help content that takes precedence over the description prop."
+    },
+    "error": {
+      "required": false,
+      "description": "Validation content that takes precedence over the error prop."
+    }
+  },
+  "events": {},
+  "states": ["default", "required", "invalid"],
+  "relatedComponents": ["Input"]
+}
