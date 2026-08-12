@@ -28,6 +28,7 @@
     "check:vueforge-baseline": "node --test ./scripts/migration/vueforge-baseline.test.mjs && node ./scripts/migration/vueforge-baseline.mjs",
     "check:vueforge-mapping": "node --test ./scripts/migration/vueforge-mapping.test.mjs && node ./scripts/migration/vueforge-mapping.mjs",
     "check:migration:codemonster": "node --test ./scripts/check-vueforge-migration.test.mjs",
+    "test:migration:codemonster": "node --test ./scripts/check-vueforge-migration.test.mjs ./scripts/migrate-to-codemonster-ui.test.mjs",
     "lint:data": "prettier --check \"**/*.{json,yml,yaml}\"",
     "lint:all": "npm run lint && npm run lint:styles && npm run lint:html && npm run lint:md && npm run lint:data",
     "test": "npm run test --workspaces --if-present --include-workspace-root=false && npm run test:migration && npm run test:ui",
@@ -60,7 +61,7 @@
     "check:deferred-budgets": "npm run build -w @codemonster-ru/vueforge-playground-example -- --manifest && node ./scripts/ci/check-deferred-runtime-budgets.mjs",
     "check:consumer-tree-shaking": "node ./scripts/ci/check-consumer-tree-shaking.mjs",
     "test:release-prep": "node --test ./scripts/ci/prepare-release-from-tag.test.mjs",
-    "test:migration": "node --test ./scripts/migrate-to-v2.test.mjs ./scripts/check-vueforge-migration.test.mjs"
+    "test:migration": "node --test ./scripts/migrate-to-v2.test.mjs ./scripts/check-vueforge-migration.test.mjs ./scripts/migrate-to-codemonster-ui.test.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
