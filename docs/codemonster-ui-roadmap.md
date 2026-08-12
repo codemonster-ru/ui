@@ -31,6 +31,8 @@ Repository layout follows
 [CodeMonster UI workspace conventions](./architecture/workspace-conventions.md).
 Application shell ownership follows
 [CodeMonster UI application shell ownership](./architecture/application-shell-ownership.md).
+CodeBlock ownership follows
+[CodeMonster UI CodeBlock ownership](./architecture/codeblock-ownership.md).
 
 ## How to use this roadmap
 
@@ -72,7 +74,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-147`
+- Next item: `CMUI-148`
 
 ## Milestones
 
@@ -367,7 +369,7 @@ added to the active scope in the future.
   - [x] `CMUI-145d` Add Annabel Razor layout primitive adapters and trusted composition.
   - [x] `CMUI-145e` Verify layout primitive DOM, accessibility, visual, and documentation parity.
 - [x] `CMUI-146` Review application shells for platform-independent ownership.
-- [ ] `CMUI-147` Decide and implement CodeBlock ownership.
+- [x] `CMUI-147` Decide and implement CodeBlock ownership.
 - [ ] `CMUI-148` Decide and implement Playground ownership.
 
 ### M6 exit gate
@@ -422,6 +424,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-11 | Complete M0 and begin repository and contract infrastructure work.                                                             | All product and architecture decisions passed their documented phase gate.                                                                              | `CMUI-G000`, M0                        |
 | 2026-08-12 | Leave React and Angular adapters unscheduled until a concrete product need appears.                                            | Keep implementation focused on Vue and Annabel Razor without committing future releases to adapters that have no current consumers.                     | M5, `CMUI-113`–`CMUI-128`, `CMUI-G005` |
 | 2026-08-13 | Keep application shells out of the stable cross-platform component catalog.                                                    | Shell landmark, navigation, responsive state, and workflow policies remain application-specific; portable layout is covered by the approved primitives. | `CMUI-146`, `CMUI-151`                 |
+| 2026-08-13 | Retain CodeBlock as a separately maintained VueForge composed product.                                                         | Highlighting, trusted generated markup, Vue SSR, theme observation, and clipboard behavior do not yet have a real shared Vue/Razor contract.            | `CMUI-147`, `CMUI-151`, `CMUI-154`     |
 
 ## Cross-repository log
 
