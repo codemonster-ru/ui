@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-change-submission",
+  "case": "date-picker-default",
+  "steps": [
+    { "action": "setValue", "target": "control", "value": "2026-08-13" },
+    { "expect": "formValue", "target": "form", "name": "launch_date", "value": "2026-08-13" },
+    { "expect": "eventCount", "target": "control", "name": "input", "count": 1 }
+  ]
+}

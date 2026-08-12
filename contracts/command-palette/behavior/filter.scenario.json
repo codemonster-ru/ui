@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-filter",
+  "case": "command-palette-default",
+  "steps": [
+    { "action": "setValue", "target": "input", "value": "archive" },
+    { "expect": "visible", "target": "option-first", "value": false },
+    { "expect": "visible", "target": "option-last", "value": true },
+    { "expect": "eventCount", "target": "root", "name": "cm:command-palette-query-change", "count": 1 }
+  ]
+}

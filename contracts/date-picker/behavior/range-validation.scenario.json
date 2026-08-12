@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-range-validation",
+  "case": "date-picker-default",
+  "steps": [
+    { "action": "setValue", "target": "control", "value": "2027-01-01" },
+    { "expect": "validity", "target": "control", "value": false }
+  ]
+}
