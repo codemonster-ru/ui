@@ -49,7 +49,7 @@ pair; keep their relative imported files together when serving them directly.
 See the cross-platform [Button guide](../../docs/components/button.md) for complete Vue and Annabel
 Razor usage.
 See the [Card guide](../../docs/components/card.md) for nested default and named-slot composition.
-See the [Field and Input guide](../../docs/components/forms.md) for native submission and server rerender.
+See the [form components guide](../../docs/components/forms.md) for native submission, choice controls, and server rerender.
 See the [Accordion guide](../../docs/components/accordion.md) for runtime installation and progressive enhancement.
 See the [display components guide](../../docs/components/display.md) for the non-interactive display cohort.
 

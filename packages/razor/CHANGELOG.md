@@ -20,3 +20,5 @@ All notable changes to this package will be documented in this file.
 - Moved Card root and region markup into package-owned Razor templates.
 - Added nested Card/component rendering and escaping integration verification.
 - Added shared significant DOM parity checks for all Vue and Razor Card cases.
+- Added Checkbox, Radio, Textarea, and Switch tags with native submission, escaping, and canonical
+  DOM parity verification.

@@ -22,3 +22,5 @@ All notable changes to this package will be documented in this file.
   styles.
 - Added Button selector parity and explicit focus-visible and forced-colors contracts.
 - Added shared Card surface, compact state, content-region styles, and selector contracts.
+- Added shared Checkbox, Radio, Textarea, and Switch styles with native focus, disabled, invalid,
+  forced-colors, and size states.
