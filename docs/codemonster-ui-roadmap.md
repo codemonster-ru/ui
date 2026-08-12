@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 7 — Card and composition
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `CMUI-081`
+- Next item: `CMUI-082`
 
 ## Milestones
 
@@ -215,7 +215,7 @@ and be recorded in the cross-repository log below.
 - [x] `CMUI-078` Move Card styles into the shared CSS package.
 - [x] `CMUI-079` Add Vue `CmCard` with header, default, and footer slots.
 - [x] `CMUI-080` Verify Vue Card DOM and SSR output.
-- [ ] `CMUI-081` Add PHP Card and Card section components.
+- [x] `CMUI-081` Add PHP Card and Card section components.
 - [ ] `CMUI-082` Add Card Razor templates.
 - [ ] `CMUI-083` Verify nested Razor Card rendering and escaping.
 - [ ] `CMUI-084` Compare significant Vue and Razor Card DOM.
