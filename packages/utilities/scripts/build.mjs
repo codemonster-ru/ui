@@ -7,6 +7,8 @@ import {
   displayUtilities,
   flexUtilities,
   gridUtilities,
+  responsiveBreakpoints,
+  responsiveUtilities,
   sizingUtilities,
   spacingUtilities,
   typographyUtilities,
@@ -15,11 +17,11 @@ import {
 const packageDirectory = resolve(import.meta.dirname, '..');
 const distDirectory = resolve(packageDirectory, 'dist');
 
-function serializeRule(name, declarations) {
+function serializeRule(name, declarations, indentation = '  ') {
   const body = Object.entries(declarations)
-    .map(([property, value]) => `    ${property}: ${value};`)
+    .map(([property, value]) => `${indentation}  ${property}: ${value};`)
     .join('\n');
-  return `  .cm-${name} {\n${body}\n  }`;
+  return `${indentation}.cm-${name} {\n${body}\n${indentation}}`;
 }
 
 const layerDeclaration = readFileSync(resolve(packageDirectory, 'src/layer.css'), 'utf8').trim();
@@ -34,7 +36,13 @@ const utilities = {
   ...borderUtilities,
 };
 const rules = Object.entries(utilities).map(([name, declarations]) => serializeRule(name, declarations));
-const css = `${layerDeclaration.slice(0, -1)} {\n${rules.join('\n\n')}\n}\n`;
+const responsiveRules = Object.entries(responsiveBreakpoints).map(([breakpoint, minWidth]) => {
+  const breakpointRules = Object.entries(responsiveUtilities).map(([name, declarations]) =>
+    serializeRule(`${breakpoint}-${name}`, declarations, '    '),
+  );
+  return `  @media (min-width: ${minWidth}px) {\n${breakpointRules.join('\n\n')}\n  }`;
+});
+const css = `${layerDeclaration.slice(0, -1)} {\n${[...rules, ...responsiveRules].join('\n\n')}\n}\n`;
 
 rmSync(distDirectory, { force: true, recursive: true });
 mkdirSync(distDirectory, { recursive: true });
