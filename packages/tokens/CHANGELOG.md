@@ -20,3 +20,4 @@ All notable changes to this package will be documented in this file.
 - Added generated `--cm-*` custom properties with light and dark theme selectors.
 - Added a separate portable breakpoint CSS export without custom-media build requirements.
 - Added immutable framework-independent serialization from theme tokens to `--cm-*` variables.
+- Added the complete token group schema and generated CSS parity contracts.

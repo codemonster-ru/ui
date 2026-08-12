@@ -28,6 +28,8 @@ test('publishes a framework-independent ESM entry', async () => {
     'cmSizingTokens',
     'cmSpacingTokenNames',
     'cmSpacingTokens',
+    'cmThemeTokenNames',
+    'cmThemeTokenSchema',
     'cmTypographyTokenNames',
     'cmTypographyTokens',
     'resolveCmBreakpoint',

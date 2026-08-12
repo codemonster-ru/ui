@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 2 — framework-independent tokens
 - Current milestone: M1 — framework-independent tokens and CSS
 - Completed milestones: M0 — approved architecture
-- Next item: `CMUI-041`
+- Next item: `CMUI-042`
 
 ## Milestones
 
@@ -137,7 +137,7 @@ An item is complete only when all applicable conditions are satisfied:
 - [x] `CMUI-038` Generate `--cm-*` custom properties.
 - [x] `CMUI-039` Generate portable breakpoint CSS.
 - [x] `CMUI-040` Expose the framework-independent theme serialization API.
-- [ ] `CMUI-041` Add token schema and generated CSS contract tests.
+- [x] `CMUI-041` Add token schema and generated CSS contract tests.
 - [ ] `CMUI-042` Document token and theme consumption.
 
 ## Phase 3 — Framework-independent CSS
