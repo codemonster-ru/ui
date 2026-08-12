@@ -22,3 +22,5 @@ All notable changes to this package will be documented in this file.
 - Added shared significant DOM parity checks for all Vue and Razor Card cases.
 - Added Checkbox, Radio, Textarea, and Switch tags with native submission, escaping, and canonical
   DOM parity verification.
+- Added Link, Breadcrumbs, Tabs, Menu, and Dropdown tags with shared runtime markup and significant
+  DOM parity verification.

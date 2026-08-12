@@ -42,6 +42,7 @@ See the [Card guide](../../docs/components/card.md) for semantic roots and regio
 See the [form components guide](../../docs/components/forms.md) for Vue binding, choice controls, and accessible forms.
 See the [Accordion guide](../../docs/components/accordion.md) for controlled state and keyboard behavior.
 See the [display components guide](../../docs/components/display.md) for Badge, Alert, Avatar, Divider, and Skeleton.
+See the [navigation components guide](../../docs/components/navigation.md) for native links, controlled Tabs, Menu, and Dropdown behavior.
 
 ## License
 
