@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "dialog-default",
+  "description": "Closed confirmation dialog.",
+  "props": { "id": "confirm", "title": "Delete project?", "description": "This cannot be undone." },
+  "slots": { "default": "Choose whether to continue.", "footer": "Cancel Delete" }
+}

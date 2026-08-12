@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "dialog-open-focus",
+  "case": "dialog-open",
+  "steps": [
+    { "expect": "visible", "target": "root", "value": true },
+    { "expect": "focus", "target": "close", "value": true }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "name": "Drawer",
+  "slug": "drawer",
+  "razorTag": "cm-drawer",
+  "description": "A logical-side modal sheet with Dialog focus behavior.",
+  "props": {
+    "id": { "type": "string", "required": true },
+    "title": { "type": "string", "required": true },
+    "description": { "type": "nullable", "required": false, "default": null },
+    "open": { "type": "boolean", "required": false, "default": false },
+    "side": { "type": "enum", "required": false, "default": "end", "values": ["start", "end"] },
+    "closeLabel": { "type": "string", "required": false, "default": "Close" }
+  },
+  "slots": { "default": { "required": false }, "footer": { "required": false } },
+  "events": {
+    "openChange": { "description": "Reports the next modal state.", "payloadContract": "boolean" }
+  },
+  "states": ["closed", "open"]
+}

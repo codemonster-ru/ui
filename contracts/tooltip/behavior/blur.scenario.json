@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "tooltip-blur",
+  "case": "tooltip-visible",
+  "steps": [
+    { "action": "focus", "target": "outside" },
+    { "expect": "visible", "target": "tooltip", "value": false }
+  ]
+}

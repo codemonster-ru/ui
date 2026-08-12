@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "drawer-default",
+  "description": "Closed end-side drawer.",
+  "props": { "id": "filters", "title": "Filters" },
+  "slots": { "default": "Filter controls." }
+}

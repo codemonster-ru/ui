@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "tooltip-focus",
+  "case": "tooltip-default",
+  "steps": [
+    { "action": "focus", "target": "trigger" },
+    { "expect": "visible", "target": "tooltip", "value": true }
+  ]
+}

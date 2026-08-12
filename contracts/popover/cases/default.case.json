@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "popover-default",
+  "description": "Closed supplemental disclosure.",
+  "props": { "id": "profile-help", "label": "More information" },
+  "slots": { "default": "Profile details are visible to your team." }
+}

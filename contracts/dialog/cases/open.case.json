@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "dialog-open",
+  "description": "Open dialog without optional regions.",
+  "props": { "id": "notice", "title": "Session expired", "open": true, "closeLabel": "Dismiss" },
+  "slots": { "default": "Sign in again to continue." }
+}
