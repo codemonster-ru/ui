@@ -6,6 +6,10 @@ test('publishes a framework-independent ESM entry', async () => {
   assert.deepEqual(Object.keys(entry), [
     'cmBorderTokenNames',
     'cmBorderTokens',
+    'cmBreakpointNames',
+    'cmBreakpointTokenNames',
+    'cmBreakpointTokens',
+    'cmBreakpoints',
     'cmMotionDurationsMs',
     'cmMotionTokenNames',
     'cmMotionTokens',
@@ -24,5 +28,6 @@ test('publishes a framework-independent ESM entry', async () => {
     'cmSpacingTokens',
     'cmTypographyTokenNames',
     'cmTypographyTokens',
+    'resolveCmBreakpoint',
   ]);
 });

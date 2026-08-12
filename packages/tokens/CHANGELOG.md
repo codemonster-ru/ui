@@ -14,3 +14,4 @@ All notable changes to this package will be documented in this file.
 - Added framework-independent font family, weight, size, and line-height tokens.
 - Added shared border widths, control/surface radii, and reusable surface and overlay shadows.
 - Added shared motion durations, standard easing, numeric duration values, and a no-motion token.
+- Added the typed breakpoint registry, CSS token values, and safe name lookup.

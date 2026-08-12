@@ -7,6 +7,20 @@ export {
   cmShadowTokenNames,
   cmShadowTokens,
 } from './borders.js';
+export {
+  cmBreakpointNames,
+  cmBreakpoints,
+  cmBreakpointTokenNames,
+  cmBreakpointTokens,
+  resolveCmBreakpoint,
+} from './breakpoints.js';
+export type {
+  CmBreakpointName,
+  CmBreakpointOverrides,
+  CmBreakpointTokenName,
+  CmBreakpointTokens,
+  CmBreakpointValue,
+} from './breakpoints.js';
 export { cmMotionDurationsMs, cmMotionTokenNames, cmMotionTokens } from './motion.js';
 export type { CmMotionOverrides, CmMotionTokenName, CmMotionTokens } from './motion.js';
 export type {
