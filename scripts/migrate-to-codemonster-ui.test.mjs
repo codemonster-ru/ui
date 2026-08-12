@@ -17,7 +17,9 @@ test('checks and writes approved named component and CSS renames', () => {
   const cssFile = resolve(root, 'styles.css');
   const vueSource = `<template><VfButton /><VfConfirmDialog /></template>
 <script setup lang="ts">
+import { ref } from 'vue';
 import { VfButton, VfConfirmDialog, useTheme } from '@codemonster-ru/vueforge-core';
+const state = ref(false);
 const component = VfButton;
 const untouched = 'VfButton';
 </script>
@@ -36,6 +38,8 @@ const untouched = 'VfButton';
     const migrated = readFileSync(vueFile, 'utf8');
     assert.match(migrated, /import \{ VfConfirmDialog, useTheme \} from '@codemonster-ru\/vueforge-core';/u);
     assert.match(migrated, /import \{ CmButton \} from '@codemonster-ru\/ui-vue';/u);
+    assert.match(migrated, /import \{ ref \} from 'vue';/u);
+    assert.match(migrated, /const state = ref\(false\);/u);
     assert.match(migrated, /<CmButton \/>/u);
     assert.match(migrated, /<VfConfirmDialog \/>/u);
     assert.match(migrated, /const component = CmButton;/u);
