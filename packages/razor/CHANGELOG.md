@@ -18,3 +18,4 @@ All notable changes to this package will be documented in this file.
 - Added significant DOM parity checks for all shared Vue and Razor Button cases.
 - Added PHP Card and conditional header, body, and footer region renderers.
 - Moved Card root and region markup into package-owned Razor templates.
+- Added nested Card/component rendering and escaping integration verification.
