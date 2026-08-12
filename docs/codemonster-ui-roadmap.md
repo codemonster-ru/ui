@@ -67,17 +67,17 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 3 — framework-independent CSS
-- Current milestone: M1 — framework-independent tokens and CSS
-- Completed milestones: M0 — approved architecture
-- Next item: `CMUI-G001`
+- Current phase: Phase 4 — Button vertical slice
+- Current milestone: M2 — Button and Card parity
+- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
+- Next item: `CMUI-054`
 
 ## Milestones
 
 | Milestone | Outcome                                                                   | Status               |
 | --------- | ------------------------------------------------------------------------- | -------------------- |
 | M0        | Product name, boundaries, contracts, and migration policy approved        | Completed            |
-| M1        | Framework-independent tokens and CSS packages build and publish correctly | In progress          |
+| M1        | Framework-independent tokens and CSS packages build and publish correctly | Completed            |
 | M2        | Button and Card render with parity in Vue and Annabel Razor               | Not started          |
 | M3        | Input supports Vue binding and native Razor form submission               | Not started          |
 | M4        | Accordion proves accessible cross-platform interaction                    | Not started          |
@@ -156,7 +156,7 @@ An item is complete only when all applicable conditions are satisfied:
 
 ### M1 exit gate
 
-- [ ] `CMUI-G001` Tokens and CSS build without Vue and pass packed-consumer verification.
+- [x] `CMUI-G001` Tokens and CSS build without Vue and pass packed-consumer verification.
 
 ## Phase 4 — Button vertical slice
 
