@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 5 — Generic Annabel Razor component model
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `ARAZOR-003`
+- Next item: `ARAZOR-004`
 
 ## Milestones
 
@@ -180,7 +180,7 @@ and be recorded in the cross-repository log below.
 
 - [x] `ARAZOR-001` Approve Razor component syntax and compilation semantics.
 - [x] `ARAZOR-002` Add a trusted rendered-HTML value object.
-- [ ] `ARAZOR-003` Add component, render-context, and resolver contracts.
+- [x] `ARAZOR-003` Add component, render-context, and resolver contracts.
 - [ ] `ARAZOR-004` Add the component registry and prefix registration.
 - [ ] `ARAZOR-005` Parse self-closing component tags.
 - [ ] `ARAZOR-006` Parse paired component tags.
@@ -389,6 +389,7 @@ Record Annabel work here when an `ARAZOR-*` item is completed.
 | ------------ | -------------- | ------------------------------ | ------------------------------------ |
 | `ARAZOR-001` | `720f2b8`      | This row                       | Component syntax and semantics ADR.  |
 | `ARAZOR-002` | `ce6fe86`      | This row                       | Trusted rendered-HTML value object.  |
+| `ARAZOR-003` | `9eaa7e0`      | This row                       | Component and resolver contracts.    |
 
 ## Scope-change log
 
