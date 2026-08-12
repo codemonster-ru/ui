@@ -21,8 +21,9 @@ npm install @codemonster-ru/ui-css
 @import '@codemonster-ru/ui-css/styles.css';
 ```
 
-The package is currently scaffolded. Foundation and component styles are added by their dedicated
-roadmap items.
+The stylesheet includes a predictable document reset and token-backed document colors and
+typography. Load `@codemonster-ru/ui-tokens/tokens.css` before it; the token package is installed as
+a dependency.
 
 ## Documentation
 
