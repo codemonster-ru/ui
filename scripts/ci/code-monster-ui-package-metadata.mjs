@@ -3,6 +3,7 @@ import {
   codeMonsterUiComposerPackage,
   codeMonsterUiNodeEngine,
   codeMonsterUiNpmPackages,
+  codeMonsterUiPackageSizeBudgets,
 } from './code-monster-ui-package-catalog.mjs';
 
 const requiredNpmScripts = ['build', 'check', 'format', 'lint', 'prepack', 'test', 'typecheck'];
@@ -44,6 +45,16 @@ export function validateCodeMonsterUiPackageCatalog() {
     }
     if (!Number.isInteger(packageContract.releaseOrder) || packageContract.releaseOrder < 1) {
       errors.push(`${packageContract.name} must have a positive integer release order.`);
+    }
+    const budget = codeMonsterUiPackageSizeBudgets[packageContract.name];
+    if (!isPlainObject(budget)) {
+      errors.push(`${packageContract.name} must have an approved package size budget.`);
+    } else {
+      for (const field of ['cssGzip', 'cssRaw', 'jsGzip']) {
+        if (!Number.isInteger(budget[field]) || budget[field] < 0) {
+          errors.push(`${packageContract.name} size budget ${field} must be a non-negative integer.`);
+        }
+      }
     }
   }
 
