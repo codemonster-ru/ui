@@ -16,6 +16,7 @@ const sources = [
   { packageDirectory: 'css', path: 'foundation/preferences.css', export: './dist/foundation/preferences.css' },
   { packageDirectory: 'css', path: 'primitives/control.css', export: './dist/primitives/control.css' },
   { packageDirectory: 'css', path: 'primitives/surface.css', export: './dist/primitives/surface.css' },
+  { packageDirectory: 'css', path: 'components/accordion.css', export: './accordion.css' },
   { packageDirectory: 'css', path: 'components/button.css', export: './button.css' },
   { packageDirectory: 'css', path: 'components/card.css', export: './card.css' },
   { packageDirectory: 'css', path: 'components/field.css', export: './field.css' },

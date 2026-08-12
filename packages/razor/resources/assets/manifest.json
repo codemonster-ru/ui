@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "d302a6c3b7ffbc9c66a7648946142cf08561b79babb4403f86736ef075bb0351",
+      "sha256": "b4fe5374adc72dab479149def74ea75d22a5fa7e9d0a34b89213aa905790edd8",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
@@ -99,6 +99,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "0.1.0",
         "export": "./dist/primitives/surface.css"
+      }
+    },
+    "css:components/accordion.css": {
+      "path": "css/css/components/accordion.css",
+      "mediaType": "text/css",
+      "sha256": "d0a4b87cb343992dd9a746c3ab4eda208f5e2bc74de17b12be676db20cc4a3af",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "0.1.0",
+        "export": "./accordion.css"
       }
     },
     "css:components/button.css": {

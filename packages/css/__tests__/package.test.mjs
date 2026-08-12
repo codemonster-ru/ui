@@ -20,6 +20,7 @@ test('separates foundation-only and complete stylesheet compositions', async () 
   assert.match(stylesCss, /^@import '\.\/foundation\.css';/);
   assert.match(stylesCss, /@import '\.\/primitives\/control\.css';/);
   assert.match(stylesCss, /@import '\.\/primitives\/surface\.css';/);
+  assert.match(stylesCss, /@import '\.\/components\/accordion\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/button\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/field\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/input\.css';/);
