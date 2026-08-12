@@ -21,6 +21,12 @@ npm install @codemonster-ru/ui-css
 @import '@codemonster-ru/ui-css/styles.css';
 ```
 
+Use the narrower entry when component and primitive styles are not needed:
+
+```css
+@import '@codemonster-ru/ui-css/foundation.css';
+```
+
 The stylesheet includes a predictable document reset, token-backed document colors and typography,
 keyboard-visible focus rings for native controls and `.cm-focus-ring`, and reduced-motion and
 forced-colors foundations. Load `@codemonster-ru/ui-tokens/tokens.css` before it; the token package
