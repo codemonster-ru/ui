@@ -9,6 +9,10 @@ A Vue 3 UI adapter for running interactive code playground sessions in the VueFo
 
 Coordinated release: `@codemonster-ru/vueforge-playground@3.0.1`.
 
+Playground remains a dedicated VueForge product that can be used alongside CodeMonster UI. There is
+no `ui-playground` or `CmPlayground` replacement in the CodeMonster UI 1.0 scope. See the repository
+[ownership decision](../../docs/architecture/playground-ownership.md) for details.
+
 ## Requirements
 
 - Node.js 20 or newer for consumer tooling and SSR.
