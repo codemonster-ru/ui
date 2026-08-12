@@ -8,6 +8,7 @@ const documentCss = await readFile(
   new URL('../dist/foundation/document.css', import.meta.url),
   'utf8',
 );
+const focusCss = await readFile(new URL('../dist/foundation/focus.css', import.meta.url), 'utf8');
 
 test('ships a small predictable document reset', () => {
   assert.match(resetCss, /box-sizing: border-box;/);
@@ -22,4 +23,15 @@ test('uses semantic tokens for document colors and typography', () => {
   assert.match(documentCss, /font-family: var\(--cm-font-family-base\);/);
   assert.match(documentCss, /:root\[data-cm-theme='dark'\][\s\S]*color-scheme: dark;/);
   assert.doesNotMatch(documentCss, /--(?:vf|vueforge)-|\.vf-/);
+});
+
+test('shows token-backed focus rings only for focus-visible', () => {
+  assert.match(focusCss, /\.cm-focus-ring:focus-visible/);
+  assert.match(
+    focusCss,
+    /outline: var\(--cm-border-width-thick\) solid var\(--cm-color-focus-ring\);/,
+  );
+  assert.match(focusCss, /:focus:not\([\s\S]*:focus-visible/);
+  assert.doesNotMatch(focusCss, /(^|,)\s*:focus\s*\{[^}]*outline:\s*none/m);
+  assert.doesNotMatch(focusCss, /--(?:vf|vueforge)-|\.vf-/);
 });

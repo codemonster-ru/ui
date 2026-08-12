@@ -21,9 +21,9 @@ npm install @codemonster-ru/ui-css
 @import '@codemonster-ru/ui-css/styles.css';
 ```
 
-The stylesheet includes a predictable document reset and token-backed document colors and
-typography. Load `@codemonster-ru/ui-tokens/tokens.css` before it; the token package is installed as
-a dependency.
+The stylesheet includes a predictable document reset, token-backed document colors and typography,
+and keyboard-visible focus rings for native controls and `.cm-focus-ring`. Load
+`@codemonster-ru/ui-tokens/tokens.css` before it; the token package is installed as a dependency.
 
 ## Documentation
 
