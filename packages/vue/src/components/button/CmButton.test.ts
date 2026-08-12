@@ -122,4 +122,36 @@ describe('CmButton', () => {
     expect(wrapper.element.tagName).toBe('BUTTON');
     expect(wrapper.attributes('type')).toBe('button');
   });
+
+  it('preserves native button click behavior', () => {
+    const enabledClick = vi.fn();
+    const disabledClick = vi.fn();
+    const enabled = mount(CmButton, { attrs: { onClick: enabledClick } });
+    const disabled = mount(CmButton, {
+      props: { disabled: true },
+      attrs: { onClick: disabledClick },
+    });
+
+    (enabled.element as HTMLButtonElement).click();
+    (disabled.element as HTMLButtonElement).click();
+
+    expect(enabledClick).toHaveBeenCalledOnce();
+    expect(disabledClick).not.toHaveBeenCalled();
+  });
+
+  it('diagnoses and safely normalizes invalid finite props', () => {
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const wrapper = mount(CmButton, {
+      props: {
+        variant: 'unknown' as never,
+        size: 'huge' as never,
+        type: 'invalid' as never,
+      },
+    });
+
+    expect(wrapper.classes()).toEqual(['cm-button', 'cm-button--primary', 'cm-button--md']);
+    expect(wrapper.attributes('type')).toBe('button');
+    expect(warning).toHaveBeenCalled();
+    warning.mockRestore();
+  });
 });
