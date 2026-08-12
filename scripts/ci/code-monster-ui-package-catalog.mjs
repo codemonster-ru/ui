@@ -30,7 +30,7 @@ export const codeMonsterUiComposerPackage = Object.freeze({
   directory: 'razor',
   name: 'codemonster-ru/ui',
   php: '>=8.2',
-  razor: '^2.0',
+  razor: '^2.1',
   releaseOrder: 5,
 });
 
