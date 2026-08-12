@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 8 — Input and native forms
 - Current milestone: M3 — Input form parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity
-- Next item: `CMUI-094`
+- Next item: `CMUI-095`
 
 ## Milestones
 
@@ -235,7 +235,7 @@ and be recorded in the cross-repository log below.
 - [x] `CMUI-091` Verify Vue Field/Input DOM, events, and SSR output.
 - [x] `CMUI-092` Add PHP Field and Input components.
 - [x] `CMUI-093` Add Field and Input Razor templates.
-- [ ] `CMUI-094` Preserve submitted values and render validation errors.
+- [x] `CMUI-094` Preserve submitted values and render validation errors.
 - [ ] `CMUI-095` Verify native Razor form submission and escaping.
 - [ ] `CMUI-096` Compare Vue and Razor Field/Input accessibility.
 - [ ] `CMUI-097` Document Vue and Razor form integration.
