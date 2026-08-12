@@ -37,7 +37,7 @@
     "check:ui-accessibility": "node --test ./scripts/contracts/accessibility.test.mjs && node ./scripts/ci/check-code-monster-ui-accessibility.mjs",
     "check:ui-contracts": "npm run check:ui-package-metadata && npm run check:ui-contract-cases && npm run check:ui-significant-dom",
     "check:ui-contract-cases": "node --test ./scripts/contracts/component-cases.test.mjs && node ./scripts/ci/check-code-monster-ui-contract-cases.mjs",
-    "check:package-contracts": "node ./scripts/ci/check-package-contracts.mjs",
+    "check:package-contracts": "node --test ./scripts/ci/code-monster-ui-package-contracts.test.mjs && node ./scripts/ci/check-package-contracts.mjs",
     "check:ui-package-metadata": "node --test ./scripts/ci/code-monster-ui-package-metadata.test.mjs && node ./scripts/ci/check-code-monster-ui-package-metadata.mjs",
     "check:ui-packages": "node ./scripts/ci/run-code-monster-ui-workspaces.mjs check",
     "check:ui-significant-dom": "node --test ./scripts/contracts/significant-dom.test.mjs",
