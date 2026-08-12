@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 5 — Generic Annabel Razor component model
 - Current milestone: M2 — Button and Card parity
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS
-- Next item: `ARAZOR-015`
+- Next item: `ARAZOR-016`
 
 ## Milestones
 
@@ -192,7 +192,7 @@ and be recorded in the cross-repository log below.
 - [x] `ARAZOR-012` Preserve trusted component output while escaping user values.
 - [x] `ARAZOR-013` Add diagnostics for unknown and malformed components.
 - [x] `ARAZOR-014` Verify component cache invalidation.
-- [ ] `ARAZOR-015` Document custom component registration and security.
+- [x] `ARAZOR-015` Document custom component registration and security.
 - [ ] `ARAZOR-016` Prepare the Annabel Razor component API release.
 
 ## Phase 6 — CodeMonster UI Annabel Razor adapter
@@ -401,6 +401,7 @@ Record Annabel work here when an `ARAZOR-*` item is completed.
 | `ARAZOR-012` | `ff7711e`      | This row                       | Trusted composition boundary.       |
 | `ARAZOR-013` | `0bea332`      | This row                       | Component compiler diagnostics.     |
 | `ARAZOR-014` | `d5cf5cf`      | This row                       | Registration cache invalidation.    |
+| `ARAZOR-015` | `e617b7d`      | This row                       | Registration and security guide.    |
 
 ## Scope-change log
 
