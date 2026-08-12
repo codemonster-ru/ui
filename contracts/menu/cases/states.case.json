@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-states",
+  "description": "Link, disabled, active, and danger item states.",
+  "props": {
+    "ariaLabel": "Project actions",
+    "items": [
+      { "id": "open", "label": "Open", "href": "/project" },
+      { "id": "archive", "label": "Archive", "disabled": true },
+      { "id": "details", "label": "Details", "active": true },
+      { "id": "delete", "label": "Delete", "tone": "danger" }
+    ]
+  },
+  "slots": {}
+}

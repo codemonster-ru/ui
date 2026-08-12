@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "Tabs",
+  "slug": "tabs",
+  "razorTag": "cm-tabs",
+  "description": "Automatically activated horizontal tabs with related panels.",
+  "props": {
+    "id": { "type": "string", "required": true },
+    "items": { "type": "collection", "required": true, "valueContract": "tab-item" },
+    "value": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "valueContract": "tab-value"
+    }
+  },
+  "slots": {},
+  "events": {
+    "valueChange": { "description": "Reports the selected enabled tab value.", "payloadContract": "tab-value" }
+  },
+  "states": ["default", "selected", "disabled"]
+}

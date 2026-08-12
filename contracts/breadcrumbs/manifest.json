@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "name": "Breadcrumbs",
+  "slug": "breadcrumbs",
+  "razorTag": "cm-breadcrumbs",
+  "description": "An accessible ordered hierarchy ending at the current page.",
+  "props": {
+    "items": {
+      "type": "collection",
+      "required": true,
+      "valueContract": "breadcrumb-item"
+    },
+    "ariaLabel": { "type": "string", "required": false, "default": "Breadcrumb" }
+  },
+  "slots": {
+    "separator": { "required": false, "description": "Trusted visual separator reused between items." }
+  },
+  "events": {},
+  "states": ["default", "disabled", "current"],
+  "relatedComponents": ["Link"]
+}

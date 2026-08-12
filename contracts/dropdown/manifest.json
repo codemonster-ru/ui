@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "name": "Dropdown",
+  "slug": "dropdown",
+  "razorTag": "cm-dropdown",
+  "description": "A native button disclosure containing an action Menu.",
+  "props": {
+    "id": { "type": "string", "required": true },
+    "label": { "type": "string", "required": true },
+    "items": { "type": "collection", "required": true, "valueContract": "menu-item" },
+    "open": { "type": "boolean", "required": false, "default": false },
+    "disabled": { "type": "boolean", "required": false, "default": false },
+    "placement": {
+      "type": "enum",
+      "required": false,
+      "default": "bottom-start",
+      "values": ["bottom-start", "bottom-end"]
+    }
+  },
+  "slots": {},
+  "events": {
+    "openChange": { "description": "Reports the next disclosure state.", "payloadContract": "boolean" },
+    "select": { "description": "Reports the selected enabled Menu item id.", "payloadContract": "menu-item-id" }
+  },
+  "states": ["closed", "open", "disabled"],
+  "relatedComponents": ["Menu"]
+}

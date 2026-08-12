@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "tabs-focus-navigation",
+  "case": "tabs-disabled",
+  "steps": [
+    { "action": "focus", "target": "tab-first" },
+    { "action": "press", "target": "tab-first", "key": "ArrowRight" },
+    { "expect": "focus", "target": "tab-last", "value": true },
+    { "action": "press", "target": "tab-last", "key": "Home" },
+    { "expect": "focus", "target": "tab-first", "value": true },
+    { "action": "press", "target": "tab-first", "key": "End" },
+    { "expect": "focus", "target": "tab-last", "value": true }
+  ]
+}
