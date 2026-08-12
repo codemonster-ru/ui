@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-143c`
+- Next item: `CMUI-143d`
 
 ## Milestones
 
@@ -347,7 +347,7 @@ added to the active scope in the future.
 - [ ] `CMUI-143` Migrate the advanced-input cohort: Select, DatePicker, and CommandPalette.
   - [x] `CMUI-143a` Define advanced-input contracts, canonical fixtures, and keyboard behavior.
   - [x] `CMUI-143b` Add shared CSS for Select, DatePicker, and CommandPalette.
-  - [ ] `CMUI-143c` Add shared progressive-enhancement runtime for interactive advanced inputs.
+  - [x] `CMUI-143c` Add shared progressive-enhancement runtime for interactive advanced inputs.
   - [ ] `CMUI-143d` Add Vue advanced-input adapters and binding verification.
   - [ ] `CMUI-143e` Add Annabel Razor advanced-input adapters and submission integration.
   - [ ] `CMUI-143f` Verify advanced-input DOM, accessibility, interaction, visual, and documentation parity.
