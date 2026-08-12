@@ -15,16 +15,20 @@ use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
 use Codemonster\Ui\Components\CmCheckbox;
 use Codemonster\Ui\Components\CmDivider;
+use Codemonster\Ui\Components\CmDialog;
 use Codemonster\Ui\Components\CmDropdown;
+use Codemonster\Ui\Components\CmDrawer;
 use Codemonster\Ui\Components\CmField;
 use Codemonster\Ui\Components\CmInput;
 use Codemonster\Ui\Components\CmLink;
 use Codemonster\Ui\Components\CmMenu;
+use Codemonster\Ui\Components\CmPopover;
 use Codemonster\Ui\Components\CmRadio;
 use Codemonster\Ui\Components\CmSkeleton;
 use Codemonster\Ui\Components\CmSwitch;
 use Codemonster\Ui\Components\CmTabs;
 use Codemonster\Ui\Components\CmTextarea;
+use Codemonster\Ui\Components\CmTooltip;
 use Codemonster\View\EngineInterface;
 use Codemonster\View\Locator\DefaultLocator;
 
@@ -57,16 +61,20 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'card' => new CmCard($this->views),
             'checkbox' => new CmCheckbox($this->views),
             'divider' => new CmDivider($this->views),
+            'dialog' => new CmDialog($this->views),
             'dropdown' => new CmDropdown($this->views),
+            'drawer' => new CmDrawer($this->views),
             'field' => new CmField($this->views),
             'input' => new CmInput($this->views),
             'link' => new CmLink($this->views),
             'menu' => new CmMenu($this->views),
+            'popover' => new CmPopover($this->views),
             'radio' => new CmRadio($this->views),
             'skeleton' => new CmSkeleton($this->views),
             'switch' => new CmSwitch($this->views),
             'tabs' => new CmTabs($this->views),
             'textarea' => new CmTextarea($this->views),
+            'tooltip' => new CmTooltip($this->views),
         ];
     }
 }
