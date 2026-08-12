@@ -32,6 +32,18 @@ $components->register(new UiComponentProvider());
 The provider owns the `cm` prefix. Components are then available through tags such as
 `<cm-button>` as their implementations are added.
 
+Packaged frontend artifacts can be copied to an application public directory without Node.js:
+
+```php
+use Codemonster\Ui\Assets\AssetManifest;
+use Codemonster\Ui\Assets\AssetPublisher;
+
+$publisher = new AssetPublisher(AssetManifest::packaged());
+$publishedPaths = $publisher->publish(__DIR__ . '/public/vendor/codemonster-ui');
+```
+
+Every file is declared by the package manifest and verified by SHA-256 before publication.
+
 ## Development
 
 ```bash
