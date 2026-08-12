@@ -26,6 +26,7 @@ final class ComponentSupportTest extends TestCase
         self::assertNull($props->nullableString('href'));
         self::assertSame([], $props->array('items'));
         self::assertNull($props->nullableArray('open-items'));
+        self::assertNull($props->stringOrNumber('min-height'));
         self::assertSame(['data-id' => 'save'], $props->remaining());
     }
 
