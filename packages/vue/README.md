@@ -30,11 +30,13 @@ import { CmButton } from '@codemonster-ru/ui-vue';
 consumer classes after the stable `cm-button` contract classes. Its default native `type` is
 `button`; set `type="submit"` explicitly for form submission. The optional `leading` and `trailing`
 slots render icon regions. `loading` replaces the leading region with a hidden spinner, disables the
-button, and exposes `aria-busy="true"` while preserving its label.
+button, and exposes `aria-busy="true"` while preserving its label. A non-empty `href` renders an
+anchor. Disabled links omit `href`, expose `aria-disabled="true"`, and suppress consumer click
+handlers.
 
 ## Documentation
 
-Button link rendering is added by the remaining vertical-slice items.
+Complete cross-platform Button guidance is added after the Razor adapter is available.
 
 ## License
 
