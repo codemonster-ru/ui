@@ -42,3 +42,14 @@ native `aria-label` or `aria-labelledby` when it stands alone.
 
 Input preserves native keyboard, focus, input, change, and form behavior. Ordinary values and
 attributes are contextually escaped; no prop is a trusted-markup boundary.
+
+## Submission and constraint validation
+
+The native control is a successful form control whenever it has a `name` and is not disabled.
+Readonly controls remain successful; disabled controls do not contribute form data. Editing updates
+the DOM value before the browser serializes `FormData`, independently of another adapter render.
+
+Native constraint attributes remain on the input. An empty required input is invalid and blocks an
+ordinary browser submission until it receives a valid value. Server-provided validation state is
+represented separately by `invalid` and related Field error content; it does not replace native
+constraints. The Input behavior scenarios are normative for every adapter.
