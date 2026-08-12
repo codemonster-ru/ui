@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-toggle-keyboard",
+  "case": "accordion-default",
+  "steps": [
+    { "action": "focus", "target": "trigger-first" },
+    { "action": "press", "target": "trigger-first", "key": "Enter" },
+    { "expect": "attribute", "target": "trigger-first", "name": "aria-expanded", "value": "true" },
+    { "action": "press", "target": "trigger-first", "key": " " },
+    { "expect": "attribute", "target": "trigger-first", "name": "aria-expanded", "value": "false" }
+  ]
+}

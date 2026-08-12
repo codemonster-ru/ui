@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "name": "Accordion",
+  "slug": "accordion",
+  "razorTag": "cm-accordion",
+  "description": "A list of labelled disclosure regions with shared single or multiple expansion behavior.",
+  "props": {
+    "id": {
+      "type": "string",
+      "required": true,
+      "description": "Stable DOM id prefix for trigger and panel relationships."
+    },
+    "items": {
+      "type": "collection",
+      "required": true,
+      "valueContract": "accordion-item",
+      "description": "Ordered serializable disclosure items."
+    },
+    "openItems": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "valueContract": "accordion-item-ids",
+      "description": "Controlled ordered list of open item ids."
+    },
+    "defaultOpenItems": {
+      "type": "collection",
+      "required": false,
+      "default": [],
+      "valueContract": "accordion-item-ids",
+      "description": "Initial open item ids when openItems is omitted."
+    },
+    "multiple": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Allows more than one enabled panel to remain open."
+    }
+  },
+  "slots": {},
+  "events": {
+    "openChange": {
+      "description": "Reports the next ordered open item ids after user activation.",
+      "payloadContract": "accordion-open-change"
+    }
+  },
+  "states": ["default", "open", "disabled"]
+}
