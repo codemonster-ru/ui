@@ -2,6 +2,14 @@
 
 Framework-independent design tokens and theme serialization for CodeMonster UI.
 
+Current release: `@codemonster-ru/ui-tokens@0.1.0`.
+
+## Requirements
+
+- Node.js `^22.22.3`, `^24.15.0`, or `>=26.0.0` for package tooling and programmatic ESM use.
+- A browser with CSS custom-property support for the generated stylesheets.
+- No UI framework runtime.
+
 ## Status
 
 This package owns the CodeMonster UI primitive color palette, light/dark semantic color roles,
@@ -10,6 +18,8 @@ values, breakpoints, the complete token schema, the default light and dark theme
 generated CSS custom properties and serialization API.
 
 The package does not depend on Vue or another UI framework.
+
+## Quick start
 
 ```ts
 import {
@@ -58,6 +68,11 @@ Consumers that only need the portable breakpoint custom properties can import th
 
 The distributed stylesheet uses ordinary custom properties and does not require custom-media
 processing in the consumer build.
+
+## Documentation
+
+See [token and theme consumption](../../docs/tokens/getting-started.md) for theme boundaries,
+application overrides, TypeScript serialization, breakpoint usage, and server rendering.
 
 ## License
 
