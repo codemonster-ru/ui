@@ -8,6 +8,8 @@ use Codemonster\Razor\RazorEngine;
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
 use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
+use Codemonster\Ui\Components\CmField;
+use Codemonster\Ui\Components\CmInput;
 use Codemonster\View\EngineInterface;
 use Codemonster\View\Locator\DefaultLocator;
 
@@ -33,6 +35,8 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
         return [
             'button' => new CmButton($this->views),
             'card' => new CmCard($this->views),
+            'field' => new CmField($this->views),
+            'input' => new CmInput($this->views),
         ];
     }
 }
