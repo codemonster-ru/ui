@@ -18,3 +18,5 @@ All notable changes to this package will be documented in this file.
   idiomatic Vue model binding.
 - Added Link, Breadcrumbs, Tabs, Menu, and Dropdown adapters with canonical SSR and controlled-state
   interaction verification.
+- Added Dialog, Drawer, Popover, and Tooltip adapters with canonical SSR, controlled state, focus,
+  and dismissal verification.
