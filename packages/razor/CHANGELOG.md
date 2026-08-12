@@ -14,3 +14,4 @@ All notable changes to this package will be documented in this file.
 - Added the PHP `CmButton` component with native button rendering and shared contract classes.
 - Added the package-owned Button Razor template and package view renderer wiring.
 - Added Button loading, icon-slot, enabled-link, and disabled-link rendering.
+- Added Button Razor escaping and accessibility integration verification.
