@@ -16,3 +16,5 @@ All notable changes to this package will be documented in this file.
 - Added canonical Card SSR and escaping verification.
 - Added Checkbox, Radio, Textarea, and Switch adapters with canonical SSR, native form behavior, and
   idiomatic Vue model binding.
+- Added Link, Breadcrumbs, Tabs, Menu, and Dropdown adapters with canonical SSR and controlled-state
+  interaction verification.

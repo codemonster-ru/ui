@@ -70,7 +70,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 13 — Component expansion
 - Current milestone: M6 — utilities and stable component cohort
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
-- Next item: `CMUI-141f`
+- Next item: `CMUI-142`
 
 ## Milestones
 
@@ -330,13 +330,13 @@ added to the active scope in the future.
   - [x] `CMUI-140c` Add Vue form adapters and binding verification.
   - [x] `CMUI-140d` Add Annabel Razor form adapters and submission verification.
   - [x] `CMUI-140e` Verify form-cohort DOM, accessibility, interaction, and documentation parity.
-- [ ] `CMUI-141` Migrate the navigation cohort: Link, Breadcrumbs, Tabs, Dropdown, and Menu.
+- [x] `CMUI-141` Migrate the navigation cohort: Link, Breadcrumbs, Tabs, Dropdown, and Menu.
   - [x] `CMUI-141a` Define navigation contracts, canonical fixtures, and keyboard behavior.
   - [x] `CMUI-141b` Add shared CSS for Link, Breadcrumbs, Tabs, Dropdown, and Menu.
   - [x] `CMUI-141c` Add shared progressive-enhancement runtime for interactive navigation.
   - [x] `CMUI-141d` Add Vue navigation adapters and controlled-state verification.
   - [x] `CMUI-141e` Add Annabel Razor navigation adapters and runtime integration.
-  - [ ] `CMUI-141f` Verify navigation DOM, accessibility, interaction, visual, and documentation parity.
+  - [x] `CMUI-141f` Verify navigation DOM, accessibility, interaction, visual, and documentation parity.
 - [ ] `CMUI-142` Migrate the overlay cohort: Dialog, Drawer, Popover, and Tooltip.
 - [ ] `CMUI-143` Migrate the advanced-input cohort: Select, DatePicker, and CommandPalette.
 - [ ] `CMUI-144` Migrate the data-display cohort: Table and DataTable.
