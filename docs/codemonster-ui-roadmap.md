@@ -67,10 +67,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 9 — Shared runtime and Accordion
-- Current milestone: M4 — Accordion interaction parity
-- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity
-- Next item: `CMUI-G004`
+- Current phase: Phase 12 — Utility CSS
+- Current milestone: M6 — utilities and stable component cohort
+- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity
+- Next item: `CMUI-129`
 
 ## Milestones
 
@@ -80,7 +80,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M1        | Framework-independent tokens and CSS packages build and publish correctly | Completed            |
 | M2        | Button and Card render with parity in Vue and Annabel Razor               | Completed            |
 | M3        | Input supports Vue binding and native Razor form submission               | Completed            |
-| M4        | Accordion proves accessible cross-platform interaction                    | Not started          |
+| M4        | Accordion proves accessible cross-platform interaction                    | Completed            |
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
 | M6        | Utility CSS and the first stable component cohort are available           | Not started          |
 | M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | Not started          |
@@ -264,7 +264,7 @@ and be recorded in the cross-repository log below.
 
 ### M4 exit gate
 
-- [ ] `CMUI-G004` Accordion proves accessible shared behavior in Vue and Razor consumers.
+- [x] `CMUI-G004` Accordion proves accessible shared behavior in Vue and Razor consumers.
 
 ## Phase 10 — React adapter (not scheduled)
 
