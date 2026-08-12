@@ -1,0 +1,67 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Codemonster\Ui\Tests\Components;
+
+use Codemonster\Razor\Components\ComponentRenderContext;
+use Codemonster\Razor\RazorEngine;
+use Codemonster\Ui\Components\CmAccordion;
+use Codemonster\Ui\Tests\Support\SignificantDom;
+use Codemonster\View\Locator\DefaultLocator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+
+final class CmAccordionParityTest extends TestCase
+{
+    private string $cache;
+
+    protected function setUp(): void
+    {
+        $this->cache = sys_get_temp_dir() . '/codemonster-ui-accordion-parity-' . bin2hex(random_bytes(6));
+    }
+
+    protected function tearDown(): void
+    {
+        foreach (glob($this->cache . '/*') ?: [] as $file) {
+            unlink($file);
+        }
+        if (is_dir($this->cache)) {
+            rmdir($this->cache);
+        }
+    }
+
+    #[DataProvider('caseProvider')]
+    public function testMatchesCanonicalSignificantDom(string $casePath, string $htmlPath): void
+    {
+        /** @var array{props: array<string, mixed>} $case */
+        $case = json_decode((string) file_get_contents($casePath), true, flags: JSON_THROW_ON_ERROR);
+        $props = $case['props'];
+        $props['open-items'] = $props['openItems'] ?? null;
+        $props['default-open-items'] = $props['defaultOpenItems'] ?? [];
+        unset($props['openItems'], $props['defaultOpenItems']);
+
+        $actual = $this->accordion()->render(new ComponentRenderContext($props, []))->value();
+        $expected = (string) file_get_contents($htmlPath);
+
+        self::assertSame(SignificantDom::normalize($expected), SignificantDom::normalize($actual));
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function caseProvider(): iterable
+    {
+        $cases = dirname(__DIR__, 4) . '/contracts/accordion/cases';
+        foreach (glob($cases . '/*.case.json') ?: [] as $casePath) {
+            $basename = substr(basename($casePath), 0, -strlen('.case.json'));
+            yield $basename => [$casePath, $cases . '/' . $basename . '.html'];
+        }
+    }
+
+    private function accordion(): CmAccordion
+    {
+        return new CmAccordion(new RazorEngine(
+            new DefaultLocator(dirname(__DIR__, 2) . '/resources/views'),
+            cachePath: $this->cache,
+        ));
+    }
+}
