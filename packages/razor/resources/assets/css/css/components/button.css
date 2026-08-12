@@ -1,0 +1,165 @@
+.cm-button {
+  display: inline-flex;
+  min-block-size: var(--cm-control-height-md);
+  align-items: center;
+  justify-content: center;
+  gap: var(--cm-space-2);
+  padding-block: 0;
+  padding-inline: var(--cm-space-3);
+  border: var(--cm-border-width) solid transparent;
+  border-radius: var(--cm-radius-control);
+  appearance: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: var(--cm-font-size-md);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+.cm-button--sm {
+  min-block-size: var(--cm-control-height-sm);
+  padding-inline: var(--cm-space-2);
+  font-size: var(--cm-font-size-sm);
+}
+
+.cm-button--md {
+  min-block-size: var(--cm-control-height-md);
+  padding-inline: var(--cm-space-3);
+  font-size: var(--cm-font-size-md);
+}
+
+.cm-button--lg {
+  min-block-size: var(--cm-control-height-lg);
+  padding-inline: var(--cm-space-4);
+  font-size: var(--cm-font-size-lg);
+}
+
+.cm-button--primary {
+  border-color: var(--cm-color-interactive-primary-border);
+  background: var(--cm-color-interactive-primary-background);
+  color: var(--cm-color-interactive-primary-foreground);
+}
+
+.cm-button--secondary {
+  border-color: var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-button--danger {
+  border-color: var(--cm-color-status-danger-border);
+  background: var(--cm-color-status-danger-solid-background);
+  color: var(--cm-color-status-danger-solid-foreground);
+}
+
+.cm-button--ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+}
+
+.cm-button:disabled,
+.cm-button[aria-disabled='true'] {
+  border-color: var(--cm-color-border-disabled);
+  background: var(--cm-color-background-surface-disabled);
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.cm-button--primary:hover:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-interactive-primary-hover-background);
+}
+
+.cm-button--primary:active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-interactive-primary-active-background);
+}
+
+.cm-button--secondary:hover:not(:disabled, [aria-disabled='true']),
+.cm-button--ghost:hover:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-button--secondary:active:not(:disabled, [aria-disabled='true']),
+.cm-button--ghost:active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-background-surface-active);
+}
+
+.cm-button--danger:hover:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-status-danger-hover-background);
+}
+
+.cm-button--danger:active:not(:disabled, [aria-disabled='true']) {
+  background: var(--cm-color-status-danger-active-background);
+}
+
+.cm-button:focus-visible {
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-button__leading,
+.cm-button__trailing,
+.cm-button__spinner {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--cm-icon-size-md);
+  block-size: var(--cm-icon-size-md);
+}
+
+.cm-button__label {
+  min-inline-size: 0;
+}
+
+.cm-button--sm :where(.cm-button__leading, .cm-button__trailing, .cm-button__spinner) {
+  inline-size: var(--cm-icon-size-sm);
+  block-size: var(--cm-icon-size-sm);
+}
+
+.cm-button--lg :where(.cm-button__leading, .cm-button__trailing, .cm-button__spinner) {
+  inline-size: var(--cm-icon-size-lg);
+  block-size: var(--cm-icon-size-lg);
+}
+
+.cm-button__leading > :where(svg, img),
+.cm-button__trailing > :where(svg, img) {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.cm-button__spinner {
+  border: var(--cm-border-width-thick) solid currentcolor;
+  border-inline-end-color: transparent;
+  border-radius: var(--cm-radius-round);
+  animation: cm-button-spin var(--cm-motion-duration-normal) linear infinite;
+}
+
+@keyframes cm-button-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (forced-colors: active) {
+  .cm-button {
+    border-color: ButtonText;
+  }
+
+  .cm-button:disabled,
+  .cm-button[aria-disabled='true'] {
+    border-color: GrayText;
+  }
+
+  .cm-button:focus-visible {
+    outline-color: Highlight;
+  }
+}

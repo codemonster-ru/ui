@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light;
+  background: var(--cm-color-background-canvas);
+  color: var(--cm-color-text-primary);
+  font-family: var(--cm-font-family-base);
+  font-size: var(--cm-font-size-md);
+  font-synthesis: none;
+  line-height: var(--cm-line-height-normal);
+  text-rendering: optimizelegibility;
+  text-size-adjust: 100%;
+}
+
+:root[data-cm-theme='dark'] {
+  color-scheme: dark;
+}
+
+body {
+  min-block-size: 100vh;
+  background: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--cm-color-text-link);
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--cm-color-text-link-hover);
+}
+
+a:active {
+  color: var(--cm-color-text-link-active);
+}
