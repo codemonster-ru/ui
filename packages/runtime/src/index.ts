@@ -5,6 +5,8 @@ export type { CmCustomEventInit } from './events.js';
 export { CmAccordionController, createCmAccordionController } from './accordion.js';
 export type { AccordionOpenChangeDetail } from './accordion.js';
 export { CmCheckboxController, createCmCheckboxController } from './checkbox.js';
+export { CmCommandPaletteController, createCmCommandPaletteController } from './command-palette.js';
+export type { CommandPaletteQueryChangeDetail, CommandPaletteSelectDetail } from './command-palette.js';
 export { CmDialogController, createCmDialogController } from './dialog.js';
 export { CmDrawerController, createCmDrawerController } from './drawer.js';
 export type { ModalOpenChangeDetail } from './modal.js';
