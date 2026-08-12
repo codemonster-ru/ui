@@ -6,6 +6,7 @@ namespace Codemonster\Ui;
 
 use Codemonster\Razor\RazorEngine;
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
+use Codemonster\Ui\Components\CmAccordion;
 use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
 use Codemonster\Ui\Components\CmField;
@@ -33,6 +34,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
     public function components(): array
     {
         return [
+            'accordion' => new CmAccordion($this->views),
             'button' => new CmButton($this->views),
             'card' => new CmCard($this->views),
             'field' => new CmField($this->views),
