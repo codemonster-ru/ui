@@ -12,7 +12,7 @@ Current release: `@codemonster-ru/ui-vue@1.0.0`.
 ## Installation
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-vue@next @codemonster-ru/ui-css@next
+npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.0.0 @codemonster-ru/ui-css@^1.0.0
 ```
 
 ## Quick start

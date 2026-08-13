@@ -3,6 +3,17 @@
 VueForge is a Vue 3 ecosystem for design-system foundations, theming, accessible components,
 layouts, icons, code presentation, and interactive playgrounds.
 
+## Maintenance status
+
+VueForge design-system foundations are in maintenance. They receive critical security and
+correctness fixes, but no new component families or design-system foundations. Use
+[CodeMonster UI 1.0](./docs/vueforge-to-codemonster-ui.md) for new shared Vue and Annabel Razor UI
+work.
+
+Existing VueForge releases remain installable and are not being unpublished. Icons remain
+supported until a verified replacement exists. CodeBlock and the Playground packages remain
+separately maintained products and can be used alongside CodeMonster UI.
+
 ## Requirements
 
 - Vue `^3.5.0`.
@@ -10,7 +21,7 @@ layouts, icons, code presentation, and interactive playgrounds.
   impose a higher Node.js requirement on the Playground Vite plugin.
 - Node.js 20 or newer when using CodeBlock or Playground.
 
-## Install Core
+## Existing VueForge applications
 
 Use the package manager that owns your application lockfile:
 

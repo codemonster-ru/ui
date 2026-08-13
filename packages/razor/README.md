@@ -13,11 +13,10 @@ Current release: `codemonster-ru/ui@1.0.0`.
 ## Installation
 
 ```bash
-composer require codemonster-ru/ui:^1.0@RC
+composer require codemonster-ru/ui:^1.0
 ```
 
-Component registration and rendering are added by their dedicated roadmap items. The package does
-not require Node.js in production.
+The package does not require Node.js in production.
 
 Register the CodeMonster UI provider during application bootstrap:
 
@@ -29,8 +28,7 @@ $components = new ComponentRegistry();
 $components->register(new UiComponentProvider());
 ```
 
-The provider owns the `cm` prefix. Components are then available through tags such as
-`<cm-button>` as their implementations are added.
+The provider owns the `cm` prefix. Components are available through tags such as `<cm-button>`.
 
 Packaged frontend artifacts can be copied to an application public directory without Node.js:
 
