@@ -76,7 +76,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 14 — VueForge migration and release
 - Current milestone: M7 — VueForge migration and CodeMonster UI 1.0
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort
-- Next item: `CMUI-161`
+- Next item: `CMUI-162`
 
 ## Milestones
 
@@ -397,7 +397,7 @@ added to the active scope in the future.
     - [x] Repeat the Annabel CMS npm installation, production builds, tests, analysis, and audits against exact registry prereleases.
     - [x] Repeat the Composer installation against the Packagist prerelease.
 - [x] `CMUI-160` Resolve local prerelease contract feedback.
-- [ ] `CMUI-161` Publish CodeMonster UI 1.0 migration notes.
+- [x] `CMUI-161` Publish CodeMonster UI 1.0 migration notes.
   - [x] `CMUI-161a` Prepare and verify the migration notes locally.
 - [ ] `CMUI-162` Publish CodeMonster UI 1.0.
 - [ ] `CMUI-163` Move VueForge packages to the approved maintenance state.
