@@ -431,6 +431,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-13 | Retain CodeBlock as a separately maintained VueForge composed product.                                                         | Highlighting, trusted generated markup, Vue SSR, theme observation, and clipboard behavior do not yet have a real shared Vue/Razor contract.                | `CMUI-147`, `CMUI-151`, `CMUI-154`                          |
 | 2026-08-13 | Retain Playground core, Vue UI, and Vite integration as a separate VueForge product family.                                    | Source compilation, executable iframe policy, workers, and virtual modules are product infrastructure rather than design-system component responsibilities. | `CMUI-148`, `CMUI-151`, `CMUI-153`                          |
 | 2026-08-13 | Pause all registry and public-release actions while continuing local Vue and Annabel Razor work.                               | Complete implementation and real-consumer validation without requiring npm/Composer credentials or creating public artifacts before they are needed.        | `CMUI-158`, `CMUI-159a`, `CMUI-161`–`CMUI-164`, `CMUI-G007` |
+| 2026-08-13 | Resume registry and public-release actions after completing local verification.                                                | Proceed with the approved prerelease, registry-consumer, and stable-release sequence now that both integration branches pass their local release gates.     | `CMUI-158`, `CMUI-159a`, `CMUI-161`–`CMUI-164`, `CMUI-G007` |
 
 ## Cross-repository log
 
