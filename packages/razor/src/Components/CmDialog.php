@@ -27,6 +27,7 @@ final class CmDialog implements ComponentInterface
         $description = $props->nullableString('description');
         $open = $props->bool('open');
         $closeLabel = $props->string('close-label', 'Close');
+        $dismissible = $props->bool('dismissible', true);
         if (trim($id) === '' || trim($title) === '' || trim($closeLabel) === '') {
             throw new InvalidArgumentException('Dialog id, title, and close-label must be non-empty strings.');
         }
@@ -43,10 +44,11 @@ final class CmDialog implements ComponentInterface
             'description' => $description,
             'open' => $open,
             'closeLabel' => $closeLabel,
+            'dismissible' => $dismissible,
             'body' => $context->slot('default'),
             'footer' => $context->hasSlot('footer') ? $context->slot('footer') : null,
             'classes' => $classes,
-            'attributes' => $attributes->without(['class', 'id', 'open', 'aria-labelledby', 'aria-describedby', 'data-cm-controller', 'data-cm-dialog-state'])->render(),
+            'attributes' => $attributes->without(['class', 'id', 'open', 'dismissible', 'aria-labelledby', 'aria-describedby', 'data-cm-controller', 'data-cm-dialog-state', 'data-cm-dialog-dismissible'])->render(),
         ]), "\r\n"));
     }
 

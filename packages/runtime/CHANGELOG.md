@@ -4,6 +4,7 @@
 
 - Exposes the complete progressive-enhancement controller contract for prerelease consumer
   validation.
+- Respects server-rendered Dialog dismissal locks for close controls and Escape.
 
 ## 0.1.0
 

@@ -7,6 +7,7 @@ All notable changes to this package will be documented in this file.
 ### Added
 
 - Exposes the complete stable Vue component adapter cohort for prerelease consumer validation.
+- Adds controlled Dialog dismissal locking for asynchronous confirmation flows.
 
 ## 0.1.0
 

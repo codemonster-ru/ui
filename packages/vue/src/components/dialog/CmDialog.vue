@@ -12,6 +12,7 @@ const props = defineProps({
   description: { type: String, default: null },
   open: Boolean,
   closeLabel: { type: String, default: 'Close' },
+  dismissible: { type: Boolean, default: true },
 });
 const emit = defineEmits<{ openChange: [open: boolean]; 'update:open': [open: boolean] }>();
 const attrs = useAttrs();
@@ -37,6 +38,7 @@ const rootAttrs = computed(() =>
     'aria-describedby',
     'data-cm-controller',
     'data-cm-dialog-state',
+    'data-cm-dialog-dismissible',
   ]),
 );
 </script>
@@ -52,14 +54,15 @@ const rootAttrs = computed(() =>
     :aria-describedby="props.description ? `${props.id}-description` : undefined"
     data-cm-controller="dialog"
     :data-cm-dialog-state="localOpen ? 'open' : 'closed'"
-    @cancel="onCancel"
-    @keydown="onKeydown"
+    :data-cm-dialog-dismissible="props.dismissible ? 'true' : 'false'"
+    @cancel="props.dismissible ? onCancel($event) : $event.preventDefault()"
+    @keydown="props.dismissible ? onKeydown($event) : undefined"
   >
     <div class="cm-dialog__surface">
       <header class="cm-dialog__header">
         <h2 :id="`${props.id}-title`" class="cm-dialog__title">{{ props.title }}</h2>
         <!-- prettier-ignore -->
-        <button class="cm-dialog__close" type="button" :aria-label="props.closeLabel" data-cm-dialog-close @click="setOpen(false)">×</button>
+        <button class="cm-dialog__close" type="button" :aria-label="props.closeLabel" :disabled="!props.dismissible" data-cm-dialog-close @click="setOpen(false)">×</button>
       </header>
       <p v-if="props.description" :id="`${props.id}-description`" class="cm-dialog__description">
         {{ props.description }}

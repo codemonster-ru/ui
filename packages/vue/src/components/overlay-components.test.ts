@@ -28,6 +28,17 @@ describe('Vue overlay components', () => {
     wrapper.unmount();
   });
 
+  it('locks user dismissal when Dialog is not dismissible', async () => {
+    const wrapper = mount(CmDialog, {
+      props: { id: 'busy-confirm', title: 'Deleting', open: true, dismissible: false },
+    });
+    await wrapper.get('dialog').trigger('keydown', { key: 'Escape' });
+    await wrapper.get('[data-cm-dialog-close]').trigger('click');
+    expect(wrapper.emitted('update:open')).toBeUndefined();
+    expect(wrapper.get('dialog').attributes('open')).toBe('');
+    expect(wrapper.get('[data-cm-dialog-close]').attributes('disabled')).toBe('');
+  });
+
   it('renders Drawer on a logical side and closes from its button', async () => {
     const wrapper = mount(CmDrawer, {
       props: { id: 'filters', title: 'Filters', open: true, side: 'start' },
