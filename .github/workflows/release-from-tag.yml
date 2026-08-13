@@ -59,7 +59,7 @@ jobs:
           tarball=".release-artifacts/${{ steps.prep.outputs.tarball_name }}"
 
           if npm view "$package_spec" version >/dev/null 2>&1; then
-            npm diff --diff="$package_spec" --diff="$tarball" --diff-name-only > .release-diff
+            npm diff --diff="$package_spec" --diff="$tarball" --diff-name-only | sed '/^[[:space:]]*$/d' > .release-diff
             if test -s .release-diff; then
               cat .release-diff
               exit 1
