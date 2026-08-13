@@ -12,7 +12,7 @@ Current release: `@codemonster-ru/ui-utilities@1.0.0`.
 ## Installation
 
 ```bash
-npm install @codemonster-ru/ui-tokens@next @codemonster-ru/ui-utilities@next
+npm install @codemonster-ru/ui-tokens@^1.0.0 @codemonster-ru/ui-utilities@^1.0.0
 ```
 
 ```css

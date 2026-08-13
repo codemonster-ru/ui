@@ -21,6 +21,17 @@ migration tooling is
 Retained packages are supported side-by-side dependencies, not compatibility aliases inside the new
 packages. Theme migration is manual because token names and ownership changed.
 
+## Lifecycle
+
+VueForge design-system foundations are in maintenance: critical security and correctness fixes
+continue, but new shared components and foundations belong in CodeMonster UI. No existing package
+is unpublished, and maintenance does not imply a blanket npm deprecation. Package deprecation is
+allowed only when every condition in the
+[VueForge migration policy](./architecture/vueforge-migration-policy.md#deprecation) is satisfied.
+
+CodeBlock and the Playground family remain separately maintained products. Icons remain a
+supported side-by-side package because CodeMonster UI 1.0 has no verified icon replacement.
+
 ## Direct component replacements
 
 The following names have one implemented `ui-vue` target. Their props and composition still require

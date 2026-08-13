@@ -47,6 +47,10 @@ or package is reviewed before migration.
 
 ## VueForge lifecycle
 
+Current state: **Maintenance**, effective 2026-08-14 after CodeMonster UI 1.0 publication and
+stable Annabel consumer validation. This state does not by itself deprecate or unpublish an npm
+package; the package-specific deprecation conditions below still apply.
+
 ### Migration development
 
 Until `CMUI-149` freezes the final feature baseline:
