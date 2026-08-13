@@ -108,20 +108,85 @@ const projects: Array<{ name: string; owner: string; icon: IconName }> = [
 </script>
 
 <style scoped>
-.icon-saas-contexts { display: grid; gap: 1.5rem; }
-.icon-saas-context { overflow: hidden; border: 1px solid var(--cm-color-border-default); border-radius: var(--cm-radius-surface); }
-.icon-saas-context__label, .icon-saas-toolbar, .icon-saas-title { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.icon-saas-context__label { padding: 0.75rem 1rem; text-transform: capitalize; }
-.icon-saas-context__label span, .icon-saas-title small { color: var(--cm-color-text-muted); }
-.icon-saas-context__viewport { border: 0; border-radius: 0; }
-.icon-saas-brand, .icon-saas-metric { align-items: center; }
-.icon-saas-search { width: min(22rem, 45%); }
-.icon-saas-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.icon-saas-feedback, .icon-saas-projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.icon-saas-metric span, .icon-saas-empty span { display: grid; }
-.icon-saas-metric span { color: var(--cm-color-text-muted); }
-.icon-saas-metric strong { color: var(--cm-color-text-default); }
-.icon-saas-upload { margin-inline-start: auto; }
-.icon-saas-context--compact .icon-saas-context__viewport { padding: 0.75rem; }
-@container (max-width: 760px) { .icon-saas-metrics, .icon-saas-feedback, .icon-saas-projects { grid-template-columns: 1fr; } }
+.icon-saas-contexts {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.icon-saas-context {
+  overflow: hidden;
+  border: 1px solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+}
+
+.icon-saas-context__label,
+.icon-saas-toolbar,
+.icon-saas-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.icon-saas-context__label {
+  padding: 0.75rem 1rem;
+  text-transform: capitalize;
+}
+
+.icon-saas-context__label span,
+.icon-saas-title small {
+  color: var(--cm-color-text-muted);
+}
+
+.icon-saas-context__viewport {
+  border: 0;
+  border-radius: 0;
+}
+
+.icon-saas-brand,
+.icon-saas-metric {
+  align-items: center;
+}
+
+.icon-saas-search {
+  width: min(22rem, 45%);
+}
+
+.icon-saas-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.icon-saas-feedback,
+.icon-saas-projects {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.icon-saas-metric span,
+.icon-saas-empty span {
+  display: grid;
+}
+
+.icon-saas-metric span {
+  color: var(--cm-color-text-muted);
+}
+
+.icon-saas-metric strong {
+  color: var(--cm-color-text-default);
+}
+
+.icon-saas-upload {
+  margin-inline-start: auto;
+}
+
+.icon-saas-context--compact .icon-saas-context__viewport {
+  padding: 0.75rem;
+}
+
+@container (max-width: 760px) {
+  .icon-saas-metrics,
+  .icon-saas-feedback,
+  .icon-saas-projects {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
