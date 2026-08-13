@@ -52,7 +52,25 @@ jobs:
       - name: Inspect target tarball
         run: npm publish ".release-artifacts/${{ steps.prep.outputs.tarball_name }}" --dry-run --ignore-scripts --tag "${{ steps.prep.outputs.dist_tag }}"
 
+      - name: Check existing registry version
+        id: registry
+        run: |
+          package_spec="${{ steps.prep.outputs.package_name }}@${{ steps.prep.outputs.package_version }}"
+          tarball=".release-artifacts/${{ steps.prep.outputs.tarball_name }}"
+
+          if npm view "$package_spec" version >/dev/null 2>&1; then
+            npm diff --diff="$package_spec" --diff="$tarball" --diff-name-only > .release-diff
+            if test -s .release-diff; then
+              cat .release-diff
+              exit 1
+            fi
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish package to npm
+        if: steps.registry.outputs.published != 'true'
         run: npm publish ".release-artifacts/${{ steps.prep.outputs.tarball_name }}" --access public --provenance --tag "${{ steps.prep.outputs.dist_tag }}"
 
       - name: Create GitHub release
