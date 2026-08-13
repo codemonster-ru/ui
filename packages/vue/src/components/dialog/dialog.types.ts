@@ -4,4 +4,5 @@ export interface CmDialogProps {
   description?: string | null;
   open?: boolean;
   closeLabel?: string;
+  dismissible?: boolean;
 }

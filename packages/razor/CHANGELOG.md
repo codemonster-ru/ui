@@ -8,6 +8,7 @@ All notable changes to this package will be documented in this file.
 
 - Exposes the complete Annabel Razor component adapter and integrity-checked shared asset cohort
   for prerelease consumer validation.
+- Adds Dialog dismissal locking markup for asynchronous confirmation flows.
 
 ## 0.1.0
 

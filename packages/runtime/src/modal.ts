@@ -81,7 +81,7 @@ export class CmModalController implements CmController {
   readonly #handleClick = (event: Event): void => {
     const ElementConstructor = this.#dialog.ownerDocument.defaultView?.Element;
     if (!ElementConstructor || !(event.target instanceof ElementConstructor)) return;
-    if (event.target.closest(this.#options.closeSelector)) this.setOpen(false);
+    if (event.target.closest(this.#options.closeSelector) && this.#isDismissible()) this.setOpen(false);
   };
 
   readonly #handleKeydown = (event: Event): void => {
@@ -89,7 +89,7 @@ export class CmModalController implements CmController {
     if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor)) return;
     if (event.key === 'Escape') {
       event.preventDefault();
-      this.setOpen(false);
+      if (this.#isDismissible()) this.setOpen(false);
       return;
     }
     if (event.key !== 'Tab' || !this.#dialog.open) return;
@@ -114,11 +114,15 @@ export class CmModalController implements CmController {
 
   readonly #handleCancel = (event: Event): void => {
     event.preventDefault();
-    this.setOpen(false);
+    if (this.#isDismissible()) this.setOpen(false);
   };
 
   readonly #handleOpenRequest = (): void => this.setOpen(true);
   readonly #handleCloseRequest = (): void => this.setOpen(false);
+
+  #isDismissible(): boolean {
+    return this.#dialog.getAttribute(`data-cm-${this.#options.eventName}-dismissible`) !== 'false';
+  }
 
   #focusInitial(): void {
     (
