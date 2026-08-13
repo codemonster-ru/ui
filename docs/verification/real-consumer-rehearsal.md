@@ -1,51 +1,51 @@
 # Real consumer prerelease rehearsal
 
-Status: Rehearsed with local archives, not registry-validated  
+Status: Locally validated; registry repeat deferred
 Date: 2026-08-13  
 Roadmap item: `CMUI-159`
 
 ## Consumer
 
-The Vue consumer rehearsal used the real Annabel CMS application at Annabel commit
-`1f28ea63efa79f3116344db51b0f8531e45a32f1`. Its worktree remained unchanged. The rehearsal copied
-the application without dependencies, generated assets, storage, or runtime data into a temporary
-directory.
+The final local rehearsal used the real Annabel CMS application at Annabel commit
+`1b6d1fbf88e7a82a72c27d6eb47153c2b1cfbe1b`. The application consumes exact local npm archives for
+CodeMonster UI tokens, CSS, and Vue, and the local Composer package `codemonster-ru/ui` at
+`1.0.0-rc.1`. No package was published and no registry credentials were used.
 
-The source audit found 725 frozen VueForge references:
-
-- 353 approved direct replacements;
-- 53 compositions;
-- 195 manual migrations;
-- 117 references to partially migrated packages;
-- 7 retained references.
+The completed source audit reports zero replace, compose, or manual findings. The remaining 12
+findings are the explicitly retained `@codemonster-ru/vueforge-icons` package, for which the
+migration policy defines no CodeMonster UI replacement.
 
 ## Vue admin rehearsal
 
-The approved codemod would update 18 real consumer files. The temporary copy installed the five
-exact `1.0.0-rc.1` npm tarballs alongside the explicitly retained or not-yet-composed VueForge
-packages. The first run exposed and fixed an import-boundary defect in the codemod. A repeat run
-then left zero `replace` findings in application source.
+The approved codemod was followed by a complete application migration. Direct portable components
+use `@codemonster-ru/ui-vue`; application-owned shells, navigation, menus, tables, form layout,
+date-time/number/password behavior, and tab-panel composition remain local where the stable shared
+contract intentionally does not own application policy.
 
-Both production entrypoints passed with Vite 8.0.16:
+Both production entrypoints pass with Vite 8.0.16:
 
-- Annabel Admin: 143 transformed modules and a verified admin entry bundle;
-- Annabel Setup: 106 transformed modules and a verified setup entry bundle.
+- Annabel Admin: 69 transformed modules and a verified 225.19 kB / 65.76 kB gzip entry bundle;
+- Annabel Setup: 39 transformed modules and a verified 214.60 kB / 62.45 kB gzip entry bundle.
 
-The remaining 297 source findings are intentionally outside deterministic rename ownership: 53
-compositions, 195 manual migrations, 42 partially migrated package references, and 7 retained
-references. A successful mixed migration build does not prove runtime or visual equivalence for
-those items.
+The npm production dependency audit reports zero vulnerabilities. Local Node 24.14.0 remains one
+patch below the package engine gate of 24.15.0, so the final release verification must run on a
+supported Node line.
 
 ## Razor consumer gap
 
-The Annabel CMS application currently contains no Razor template. The only `.razor.php` file found
-outside dependencies, generated output, storage, and runtime data is
-`packages/razor/tests/views/welcome.razor.php`, which is a framework unit-test fixture rather than a
-real CMS consumer.
+Annabel now has a real CMS Razor consumer at
+`app/Modules/Pages/views/show.razor.php`. The application registers the CodeMonster UI component
+provider, publishes its assets through the CMS boundary, and renders the public page with `cm-*`
+markup.
 
-Consequently this rehearsal does not complete `CMUI-159`. Completion requires:
+Application verification passed locally:
 
-1. installing the published npm prereleases from the registry in the real Vue admin consumer;
-2. nominating or creating a real Annabel CMS Razor template consumer;
-3. installing the published Composer prerelease there without a path repository;
-4. running the consumer's build, render, interaction, and application-level verification.
+- PHPUnit: 68 tests, 182 assertions;
+- PHPStan: no errors with a 512 MiB analysis limit;
+- HTTP smoke: `/`, `/admin/login`, `/admin/forgot-password`, and `/setup` return 200;
+- public Razor output contains CodeMonster UI markup.
+
+This completes the local scope of `CMUI-159` and the contract-feedback work in `CMUI-160`.
+`CMUI-159a` remains open: after publication resumes, repeat npm and Composer installation from the
+registries without file archives or path repositories, then rerun the same build, render,
+interaction, and application checks.
