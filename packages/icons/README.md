@@ -135,10 +135,10 @@ budget.
 
 For full documentation, visit [docs.codemonster.net/vueforge/icons](https://docs.codemonster.net/vueforge/icons/).
 See
-[src/lib/index.ts](https://github.com/codemonster-ru/vueforge/blob/main/packages/icons/src/lib/index.ts)
-and [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/icons/CHANGELOG.md)
+[src/lib/index.ts](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/icons/src/lib/index.ts)
+and [CHANGELOG.md](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/icons/CHANGELOG.md)
 for the package-local public contract and release history.
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/icons/LICENSE)
+[MIT](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/icons/LICENSE)

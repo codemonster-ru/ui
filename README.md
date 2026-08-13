@@ -1,9 +1,27 @@
-# VueForge
+# CodeMonster UI
 
-VueForge is a Vue 3 ecosystem for design-system foundations, theming, accessible components,
-layouts, icons, code presentation, and interactive playgrounds.
+CodeMonster UI is a cross-platform design system with shared tokens, CSS, browser behavior, and
+supported adapters for Vue 3 and Annabel Razor.
 
-## Maintenance status
+## CodeMonster UI 1.0
+
+Install the stable Vue packages:
+
+```bash
+npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.0.0 @codemonster-ru/ui-css@^1.0.0
+```
+
+Install the stable Annabel Razor package:
+
+```bash
+composer require codemonster-ru/ui:^1.0
+```
+
+See the [component documentation](./docs/components/button.md),
+[CSS-only guide](./docs/css/getting-started.md), and
+[VueForge migration guide](./docs/vueforge-to-codemonster-ui.md).
+
+## VueForge maintenance
 
 VueForge design-system foundations are in maintenance. They receive critical security and
 correctness fixes, but no new component families or design-system foundations. Use
@@ -14,14 +32,14 @@ Existing VueForge releases remain installable and are not being unpublished. Ico
 supported until a verified replacement exists. CodeBlock and the Playground packages remain
 separately maintained products and can be used alongside CodeMonster UI.
 
-## Requirements
+### Requirements
 
 - Vue `^3.5.0`.
 - Node.js 18 or newer for packages other than CodeBlock and Playground. A selected Vite version may
   impose a higher Node.js requirement on the Playground Vite plugin.
 - Node.js 20 or newer when using CodeBlock or Playground.
 
-## Existing VueForge applications
+### Existing VueForge applications
 
 Use the package manager that owns your application lockfile:
 
@@ -37,7 +55,7 @@ pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.4.0
 yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.4.0
 ```
 
-## Quick start
+### Quick start
 
 Install the Core plugin once and import its complete stylesheet in the browser entry:
 
@@ -77,7 +95,7 @@ application with its normal production command—for a standard Vite project:
 npm run build
 ```
 
-## Packages
+### Packages
 
 | Package                                                       | Release | Purpose                                    |
 | ------------------------------------------------------------- | ------- | ------------------------------------------ |
@@ -90,7 +108,7 @@ npm run build
 | [`@codemonster-ru/vueforge-playground-core`][npm-pg-core]     | `2.1.0` | Framework-agnostic playground runtime      |
 | [`@codemonster-ru/vueforge-playground-vite-plugin`][npm-vite] | `1.0.0` | Vite playground virtual-module integration |
 
-## Documentation
+### Documentation
 
 For full documentation, visit [docs.codemonster.net/vueforge](https://docs.codemonster.net/vueforge/).
 Use the [VueForge 2 migration guide](./docs/migration-to-v2.md) for breaking changes and the
