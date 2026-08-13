@@ -99,10 +99,32 @@ const projects: Array<{ name: string; status: string; tone: CmBadgeTone }> = [
 </script>
 
 <style scoped>
-.layout-showcase { padding-block: 2rem; }
-.layout-showcase h1, .layout-showcase h2, .layout-showcase h3 { margin: 0; }
-.layout-showcase p { color: var(--cm-color-text-muted); }
-.layout-frame { border: 1px dashed var(--cm-color-border-default); padding: 1rem; }
-.layout-nowrap { overflow-x: auto; }
-.layout-list { margin: 0; padding: 0; list-style: none; }
+.layout-showcase {
+  padding-block: 2rem;
+}
+
+.layout-showcase h1,
+.layout-showcase h2,
+.layout-showcase h3 {
+  margin: 0;
+}
+
+.layout-showcase p {
+  color: var(--cm-color-text-muted);
+}
+
+.layout-frame {
+  padding: 1rem;
+  border: 1px dashed var(--cm-color-border-default);
+}
+
+.layout-nowrap {
+  overflow-x: auto;
+}
+
+.layout-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 </style>
