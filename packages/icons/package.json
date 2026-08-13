@@ -11,14 +11,14 @@
     "design-system",
     "vueforge"
   ],
-  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/icons#readme",
+  "homepage": "https://github.com/codemonster-ru/codemonster-ui/tree/main/packages/icons#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "url": "git+https://github.com/codemonster-ru/codemonster-ui.git",
     "directory": "packages/icons"
   },
   "bugs": {
-    "url": "https://github.com/codemonster-ru/vueforge/issues"
+    "url": "https://github.com/codemonster-ru/codemonster-ui/issues"
   },
   "author": "Kirill Kolesnikov",
   "license": "MIT",
