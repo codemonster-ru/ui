@@ -1,0 +1,1 @@
+<label class="{{ $classes }}"{!! $rootAttributes !!}><input class="cm-switch__input" type="checkbox" role="switch" value="{{ $value }}"{!! $stateAttributes !!}{!! $attributes !!}><span class="cm-switch__control" aria-hidden="true"><span class="cm-switch__thumb"></span></span><span class="cm-switch__content">{{ $content }}</span></label>

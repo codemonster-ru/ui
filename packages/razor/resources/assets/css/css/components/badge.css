@@ -1,0 +1,57 @@
+.cm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-1);
+  padding-block: var(--cm-space-1);
+  padding-inline: var(--cm-space-2);
+  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-round);
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-xs);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-tight);
+  white-space: nowrap;
+}
+
+.cm-badge--primary {
+  border-color: var(--cm-color-interactive-primary-border);
+  background: var(--cm-color-interactive-primary-subtle-background);
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+}
+
+.cm-badge--success {
+  border-color: var(--cm-color-status-success-border);
+  background: var(--cm-color-status-success-subtle-background);
+  color: var(--cm-color-status-success-subtle-foreground);
+}
+
+.cm-badge--info {
+  border-color: var(--cm-color-status-info-border);
+  background: var(--cm-color-status-info-subtle-background);
+  color: var(--cm-color-status-info-subtle-foreground);
+}
+
+.cm-badge--warning {
+  border-color: var(--cm-color-status-warning-border);
+  background: var(--cm-color-status-warning-subtle-background);
+  color: var(--cm-color-status-warning-subtle-foreground);
+}
+
+.cm-badge--help {
+  border-color: var(--cm-color-status-help-border);
+  background: var(--cm-color-status-help-subtle-background);
+  color: var(--cm-color-status-help-subtle-foreground);
+}
+
+.cm-badge--danger {
+  border-color: var(--cm-color-status-danger-border);
+  background: var(--cm-color-status-danger-subtle-background);
+  color: var(--cm-color-status-danger-subtle-foreground);
+}
+
+.cm-badge--contrast {
+  border-color: var(--cm-color-border-inverse);
+  background: var(--cm-color-background-inverse);
+  color: var(--cm-color-text-inverse);
+}

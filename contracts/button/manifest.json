@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "name": "Button",
+  "slug": "button",
+  "razorTag": "cm-button",
+  "description": "A native button or explicit link action with shared variants, sizes, content regions, and busy semantics.",
+  "props": {
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "default": "primary",
+      "values": ["primary", "secondary", "danger", "ghost"],
+      "description": "Visual action emphasis."
+    },
+    "size": {
+      "type": "enum",
+      "required": false,
+      "default": "md",
+      "values": ["sm", "md", "lg"],
+      "description": "Shared control height and spacing scale."
+    },
+    "type": {
+      "type": "enum",
+      "required": false,
+      "default": "button",
+      "values": ["button", "submit", "reset"],
+      "description": "Native button type in button mode; ignored in link mode."
+    },
+    "href": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "A non-empty link destination switches the semantic root to an anchor."
+    },
+    "disabled": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Prevents activation using native or link-mode disabled semantics."
+    },
+    "loading": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Exposes busy state, prevents activation, and renders a progress indicator."
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true,
+      "description": "Accessible action label and primary content."
+    },
+    "leading": {
+      "required": false,
+      "description": "Decorative or labelled content before the action label."
+    },
+    "trailing": {
+      "required": false,
+      "description": "Decorative or labelled content after the action label."
+    }
+  },
+  "events": {
+    "click": {
+      "description": "Native click activation from the enabled semantic root.",
+      "native": true
+    }
+  },
+  "states": ["default", "disabled", "loading"]
+}

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "link-default",
+  "description": "Default internal navigation link.",
+  "props": { "href": "/account" },
+  "slots": { "default": "Account" }
+}

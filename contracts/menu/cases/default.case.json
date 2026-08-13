@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-default",
+  "description": "Two enabled application actions.",
+  "props": {
+    "items": [
+      { "id": "edit", "label": "Edit" },
+      { "id": "duplicate", "label": "Duplicate" }
+    ]
+  },
+  "slots": {}
+}

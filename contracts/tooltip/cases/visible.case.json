@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "tooltip-visible",
+  "description": "Visible bottom tooltip without delay.",
+  "props": {
+    "id": "copy-help",
+    "label": "Copy",
+    "content": "Copy link",
+    "placement": "bottom",
+    "delay": "none",
+    "defaultVisible": true
+  },
+  "slots": {}
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "button-disabled",
+  "description": "Disabled native button action.",
+  "props": {
+    "disabled": true
+  },
+  "slots": {
+    "default": "Save"
+  }
+}

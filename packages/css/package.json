@@ -1,0 +1,87 @@
+{
+  "name": "@codemonster-ru/ui-css",
+  "version": "1.0.0-rc.1",
+  "description": "Framework-independent foundation and component styles for CodeMonster UI.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/css#readme",
+  "bugs": {
+    "url": "https://github.com/codemonster-ru/vueforge/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "directory": "packages/css"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "./dist/*.css"
+  ],
+  "exports": {
+    "./accordion.css": "./dist/components/accordion.css",
+    "./alert.css": "./dist/components/alert.css",
+    "./avatar.css": "./dist/components/avatar.css",
+    "./badge.css": "./dist/components/badge.css",
+    "./breadcrumbs.css": "./dist/components/breadcrumbs.css",
+    "./button.css": "./dist/components/button.css",
+    "./card.css": "./dist/components/card.css",
+    "./checkbox.css": "./dist/components/checkbox.css",
+    "./command-palette.css": "./dist/components/command-palette.css",
+    "./container.css": "./dist/components/container.css",
+    "./data-table.css": "./dist/components/data-table.css",
+    "./date-picker.css": "./dist/components/date-picker.css",
+    "./divider.css": "./dist/components/divider.css",
+    "./dialog.css": "./dist/components/dialog.css",
+    "./dropdown.css": "./dist/components/dropdown.css",
+    "./drawer.css": "./dist/components/drawer.css",
+    "./field.css": "./dist/components/field.css",
+    "./foundation.css": "./dist/foundation.css",
+    "./grid.css": "./dist/components/grid.css",
+    "./input.css": "./dist/components/input.css",
+    "./inline.css": "./dist/components/inline.css",
+    "./link.css": "./dist/components/link.css",
+    "./menu.css": "./dist/components/menu.css",
+    "./popover.css": "./dist/components/popover.css",
+    "./radio.css": "./dist/components/radio.css",
+    "./select.css": "./dist/components/select.css",
+    "./section.css": "./dist/components/section.css",
+    "./skeleton.css": "./dist/components/skeleton.css",
+    "./stack.css": "./dist/components/stack.css",
+    "./switch.css": "./dist/components/switch.css",
+    "./table.css": "./dist/components/table.css",
+    "./textarea.css": "./dist/components/textarea.css",
+    "./tabs.css": "./dist/components/tabs.css",
+    "./tooltip.css": "./dist/components/tooltip.css",
+    "./styles.css": "./dist/styles.css"
+  },
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "lint": "eslint . && stylelint \"src/**/*.css\"",
+    "prepack": "npm run build",
+    "test": "npm run build && node --test ./__tests__/*.test.mjs",
+    "typecheck": "node --check ./scripts/build.mjs"
+  },
+  "keywords": [
+    "codemonster-ui",
+    "css",
+    "design-system"
+  ],
+  "dependencies": {
+    "@codemonster-ru/ui-tokens": "^1.0.0-rc.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.8.0",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.25.0"
+  }
+}

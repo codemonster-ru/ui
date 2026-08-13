@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-pagination",
+  "case": "data-table-interactive",
+  "steps": [
+    { "action": "click", "target": "page-next" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page", "value": "3" },
+    { "expect": "attribute", "target": "page-next", "name": "disabled", "value": "" },
+    { "expect": "eventCount", "target": "root", "name": "cm:data-table-page-change", "count": 1 }
+  ]
+}

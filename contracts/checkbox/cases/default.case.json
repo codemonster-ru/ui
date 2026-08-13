@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "checkbox-default",
+  "description": "Unchecked checkbox with a native submission name.",
+  "props": { "label": "Receive updates" },
+  "slots": {},
+  "attributes": { "name": "updates", "value": "yes" }
+}

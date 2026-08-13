@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "button-size-sm",
+  "description": "Primary small button action.",
+  "props": {
+    "size": "sm"
+  },
+  "slots": {
+    "default": "Compact"
+  }
+}

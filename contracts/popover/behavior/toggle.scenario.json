@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "popover-toggle",
+  "case": "popover-default",
+  "steps": [
+    { "action": "click", "target": "trigger" },
+    { "expect": "visible", "target": "panel", "value": true },
+    { "expect": "attribute", "target": "trigger", "name": "aria-expanded", "value": "true" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-open-keyboard",
+  "case": "dropdown-default",
+  "steps": [
+    { "action": "focus", "target": "trigger" },
+    { "action": "press", "target": "trigger", "key": "ArrowDown" },
+    { "expect": "focus", "target": "item-first", "value": true },
+    { "expect": "visible", "target": "menu", "value": true }
+  ]
+}

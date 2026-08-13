@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "name": "Dialog",
+  "slug": "dialog",
+  "razorTag": "cm-dialog",
+  "description": "A native modal dialog with deterministic focus management.",
+  "props": {
+    "id": { "type": "string", "required": true },
+    "title": { "type": "string", "required": true },
+    "description": { "type": "nullable", "required": false, "default": null },
+    "open": { "type": "boolean", "required": false, "default": false },
+    "closeLabel": { "type": "string", "required": false, "default": "Close" },
+    "dismissible": { "type": "boolean", "required": false, "default": true }
+  },
+  "slots": {
+    "default": { "required": false },
+    "footer": { "required": false }
+  },
+  "events": {
+    "openChange": { "description": "Reports the next modal state.", "payloadContract": "boolean" }
+  },
+  "states": ["closed", "open"]
+}

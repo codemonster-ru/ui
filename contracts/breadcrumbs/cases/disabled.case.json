@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "breadcrumbs-disabled",
+  "description": "Explicit current item and disabled intermediate location with a custom separator.",
+  "props": {
+    "ariaLabel": "Project path",
+    "items": [
+      { "label": "Home", "href": "/" },
+      { "label": "Archive", "href": "/archive", "disabled": true },
+      { "label": "Current", "current": true }
+    ]
+  },
+  "slots": { "separator": "›" }
+}

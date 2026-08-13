@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "textarea-value",
+  "description": "Named textarea preserves escaped multiline content and row count.",
+  "props": { "value": "First line\nSecond line", "size": "lg" },
+  "slots": {},
+  "attributes": { "aria-label": "Description", "name": "description", "rows": 4 }
+}

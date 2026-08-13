@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "avatar-label",
+  "description": "Circular small avatar with a text fallback.",
+  "props": { "label": "AK", "size": "sm", "shape": "circle" },
+  "slots": {}
+}

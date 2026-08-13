@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-interactive",
+  "description": "Selected, sorted, compact data on the second of three server-owned pages.",
+  "props": {
+    "id": "accounts",
+    "caption": "Accounts",
+    "density": "compact",
+    "striped": true,
+    "columnDividers": true,
+    "stickyHeader": true,
+    "selectable": true,
+    "selectedRowIds": ["atlas"],
+    "sort": { "key": "name", "direction": "ascending" },
+    "page": 2,
+    "pageCount": 3,
+    "columns": [
+      { "key": "name", "header": "Name", "sortable": true },
+      { "key": "balance", "header": "Balance", "align": "end" }
+    ],
+    "rows": [
+      { "id": "atlas", "cells": { "name": "Atlas", "balance": "$120" } },
+      { "id": "nova", "cells": { "name": "Nova", "balance": "$80" } }
+    ]
+  },
+  "slots": {}
+}

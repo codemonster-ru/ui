@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "button-loading",
+  "description": "Busy native button with a progress indicator and stable label.",
+  "props": {
+    "loading": true
+  },
+  "slots": {
+    "default": "Save"
+  }
+}

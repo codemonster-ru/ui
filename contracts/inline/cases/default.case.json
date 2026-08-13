@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "inline-default",
+  "description": "Default wrapping inline flow.",
+  "props": {},
+  "slots": { "default": "<button type=\"button\">Save</button><a href=\"/cancel\">Cancel</a>" }
+}

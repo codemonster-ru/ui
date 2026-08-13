@@ -1,0 +1,38 @@
+.cm-link {
+  color: var(--cm-color-text-link);
+  text-decoration: none;
+  text-underline-offset: 0.18em;
+}
+
+.cm-link:hover {
+  color: var(--cm-color-text-link-hover);
+}
+
+.cm-link:active {
+  color: var(--cm-color-text-link-active);
+}
+
+.cm-link:focus-visible {
+  border-radius: var(--cm-radius-control-tight);
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-link--underline-hover:hover,
+.cm-link--underline-always {
+  text-decoration: underline;
+}
+
+.cm-link--muted {
+  color: var(--cm-color-text-secondary);
+}
+
+.cm-link--muted:hover {
+  color: var(--cm-color-text-primary);
+}
+
+@media (forced-colors: active) {
+  .cm-link:focus-visible {
+    outline-color: Highlight;
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "input-readonly",
+  "description": "Readonly input remains successful form data.",
+  "props": { "readonly": true, "value": "fixed" },
+  "slots": {},
+  "attributes": { "aria-label": "Reference", "name": "reference" }
+}

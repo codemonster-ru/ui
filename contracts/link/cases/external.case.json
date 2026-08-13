@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "link-external",
+  "description": "Muted always-underlined link opened in a separate context.",
+  "props": { "href": "https://example.com", "tone": "muted", "underline": "always" },
+  "slots": { "default": "External guide" },
+  "attributes": { "target": "_blank" }
+}

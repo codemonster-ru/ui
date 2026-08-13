@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-value",
+  "description": "Readonly invalid compact date input.",
+  "props": { "value": "2026-08-13", "size": "sm", "invalid": true, "readonly": true },
+  "attributes": { "name": "review_date", "aria-label": "Review date" },
+  "slots": {}
+}

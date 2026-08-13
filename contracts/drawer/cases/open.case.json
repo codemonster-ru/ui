@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "drawer-open",
+  "description": "Open start-side drawer with all regions.",
+  "props": {
+    "id": "navigation",
+    "title": "Navigation",
+    "description": "Choose a destination.",
+    "open": true,
+    "side": "start"
+  },
+  "slots": { "default": "Navigation links.", "footer": "Sign out" }
+}
