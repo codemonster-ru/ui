@@ -12,7 +12,7 @@ Current release: `@codemonster-ru/ui-css@1.0.0`.
 ## Installation
 
 ```bash
-npm install @codemonster-ru/ui-css@next
+npm install @codemonster-ru/ui-css@^1.0.0
 ```
 
 ## Quick start

@@ -90,9 +90,9 @@ the client entry of an SSR application.
 
 For full documentation, visit [docs.codemonster.net/vueforge/core](https://docs.codemonster.net/vueforge/core/).
 Start with the repository
-[installation guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/core/installation.md)
-and [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/core/CHANGELOG.md).
+[installation guide](https://github.com/codemonster-ru/codemonster-ui/blob/main/docs/core/installation.md)
+and [CHANGELOG.md](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/core/CHANGELOG.md).
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/core/LICENSE)
+[MIT](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/core/LICENSE)

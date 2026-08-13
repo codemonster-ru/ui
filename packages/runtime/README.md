@@ -19,7 +19,7 @@ HTML behavior.
 ## Installation
 
 ```bash
-npm install @codemonster-ru/ui-runtime@next @codemonster-ru/ui-css@next
+npm install @codemonster-ru/ui-runtime@^1.0.0 @codemonster-ru/ui-css@^1.0.0
 ```
 
 ## Quick start

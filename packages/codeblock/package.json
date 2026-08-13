@@ -18,12 +18,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "url": "git+https://github.com/codemonster-ru/codemonster-ui.git",
     "directory": "packages/codeblock"
   },
-  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/codeblock#readme",
+  "homepage": "https://github.com/codemonster-ru/codemonster-ui/tree/main/packages/codeblock#readme",
   "bugs": {
-    "url": "https://github.com/codemonster-ru/vueforge/issues"
+    "url": "https://github.com/codemonster-ru/codemonster-ui/issues"
   },
   "type": "module",
   "sideEffects": [

@@ -7,13 +7,13 @@
   "engines": {
     "node": ">=18"
   },
-  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/playground-core#readme",
+  "homepage": "https://github.com/codemonster-ru/codemonster-ui/tree/main/packages/playground-core#readme",
   "bugs": {
-    "url": "https://github.com/codemonster-ru/vueforge/issues"
+    "url": "https://github.com/codemonster-ru/codemonster-ui/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "url": "git+https://github.com/codemonster-ru/codemonster-ui.git",
     "directory": "packages/playground-core"
   },
   "keywords": [
