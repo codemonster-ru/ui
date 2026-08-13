@@ -50,7 +50,7 @@ jobs:
           test -f ".release-artifacts/${{ steps.prep.outputs.tarball_name }}"
 
       - name: Inspect target tarball
-        run: npm publish ".release-artifacts/${{ steps.prep.outputs.tarball_name }}" --dry-run --ignore-scripts
+        run: npm publish ".release-artifacts/${{ steps.prep.outputs.tarball_name }}" --dry-run --ignore-scripts --tag "${{ steps.prep.outputs.dist_tag }}"
 
       - name: Publish package to npm
         run: npm publish ".release-artifacts/${{ steps.prep.outputs.tarball_name }}" --access public --provenance --tag "${{ steps.prep.outputs.dist_tag }}"
