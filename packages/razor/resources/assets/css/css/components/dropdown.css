@@ -1,0 +1,80 @@
+.cm-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.cm-dropdown__trigger {
+  display: inline-flex;
+  min-block-size: var(--cm-control-height-md);
+  align-items: center;
+  justify-content: center;
+  gap: var(--cm-space-2);
+  padding-block: 0;
+  padding-inline: var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  appearance: none;
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--cm-font-size-md);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-tight);
+}
+
+.cm-dropdown__trigger::after {
+  border-block-start: var(--cm-space-1) solid currentcolor;
+  border-inline: var(--cm-space-1) solid transparent;
+  content: '';
+  transform: translateY(25%);
+}
+
+.cm-dropdown__trigger:focus-visible {
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-dropdown__trigger:disabled {
+  border-color: var(--cm-color-border-disabled);
+  background: var(--cm-color-background-surface-disabled);
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.cm-dropdown--open .cm-dropdown__trigger,
+.cm-dropdown__trigger[aria-expanded='true'] {
+  border-color: var(--cm-color-interactive-primary-border);
+  background: var(--cm-color-background-surface-selected);
+}
+
+.cm-dropdown__trigger:hover:not(:disabled) {
+  border-color: var(--cm-color-border-interactive);
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-dropdown__menu {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: calc(100% + var(--cm-space-2));
+  inset-inline-start: 0;
+  min-inline-size: max(100%, var(--cm-space-16));
+}
+
+.cm-dropdown--bottom-end .cm-dropdown__menu {
+  inset-inline: auto 0;
+}
+
+.cm-dropdown__menu[hidden] {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  .cm-dropdown__trigger {
+    border-color: ButtonText;
+  }
+
+  .cm-dropdown__trigger:disabled {
+    border-color: GrayText;
+  }
+}

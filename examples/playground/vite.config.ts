@@ -111,6 +111,18 @@ export default defineConfig({
     dedupe: ['vue'],
     alias: [
       {
+        find: /^@codemonster-ru\/ui-vue$/,
+        replacement: fileURLToPath(new URL('../../packages/vue/src/index.ts', import.meta.url)),
+      },
+      {
+        find: /^@codemonster-ru\/ui-css\/styles\.css$/,
+        replacement: fileURLToPath(new URL('../../packages/css/src/styles.css', import.meta.url)),
+      },
+      {
+        find: /^@codemonster-ru\/ui-tokens\/tokens\.css$/,
+        replacement: fileURLToPath(new URL('../../packages/tokens/dist/tokens.css', import.meta.url)),
+      },
+      {
         find: /^@\//,
         replacement: fileURLToPath(new URL('../../packages/core/src/', import.meta.url)),
       },

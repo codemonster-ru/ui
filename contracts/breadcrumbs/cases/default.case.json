@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "breadcrumbs-default",
+  "description": "Hierarchy with the final item inferred as current.",
+  "props": {
+    "items": [{ "label": "Home", "href": "/" }, { "label": "Projects", "href": "/projects" }, { "label": "VueForge" }]
+  },
+  "slots": {}
+}

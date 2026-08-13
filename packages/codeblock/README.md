@@ -9,6 +9,11 @@ A Vue 3 code block component with syntax highlighting and token-based theming fo
 
 Coordinated release: `@codemonster-ru/vueforge-codeblock@4.0.1`.
 
+CodeBlock remains a dedicated VueForge composed product during the CodeMonster UI migration. It is
+safe to use alongside the namespaced CodeMonster UI packages; there is no `ui-codeblock` or
+`CmCodeBlock` replacement in the 1.0 scope. See the repository
+[ownership decision](../../docs/architecture/codeblock-ownership.md) for the cross-platform review.
+
 ## Requirements
 
 - Node.js 20 or newer for consumer tooling and SSR.

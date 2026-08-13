@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "table-presentation",
+  "description": "Compact striped table with column dividers, sticky headers, and footer content.",
+  "props": { "density": "compact", "striped": true, "columnDividers": true, "stickyHeader": true },
+  "slots": {
+    "caption": "<strong>Invoices</strong>",
+    "header": "<tr><th scope=\"col\">Number</th><th scope=\"col\">Total</th></tr>",
+    "default": "<tr><td>INV-42</td><td>$120</td></tr>",
+    "footer": "<tr><th scope=\"row\">Total</th><td>$120</td></tr>"
+  }
+}

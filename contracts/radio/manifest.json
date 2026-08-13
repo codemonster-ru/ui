@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "name": "Radio",
+  "slug": "radio",
+  "razorTag": "cm-radio",
+  "description": "One labeled native option in a same-name radio group.",
+  "props": {
+    "checked": { "type": "boolean", "required": false, "default": false },
+    "value": { "type": "string", "required": true },
+    "label": { "type": "string", "required": false, "default": "" },
+    "size": {
+      "type": "enum",
+      "required": false,
+      "default": "md",
+      "values": ["sm", "md", "lg"]
+    },
+    "invalid": { "type": "boolean", "required": false, "default": false },
+    "disabled": { "type": "boolean", "required": false, "default": false },
+    "required": { "type": "boolean", "required": false, "default": false }
+  },
+  "slots": {
+    "default": { "required": false, "description": "Visible trusted option label content." }
+  },
+  "events": {
+    "change": { "description": "Native change event emitted when the option becomes selected.", "native": true }
+  },
+  "states": ["default", "checked", "disabled", "invalid"],
+  "relatedComponents": ["Field"]
+}

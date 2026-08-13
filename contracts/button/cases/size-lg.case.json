@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "button-size-lg",
+  "description": "Primary large button action.",
+  "props": {
+    "size": "lg"
+  },
+  "slots": {
+    "default": "Continue"
+  }
+}

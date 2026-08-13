@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "popover-outside-dismiss",
+  "case": "popover-open",
+  "steps": [
+    { "action": "click", "target": "outside" },
+    { "expect": "visible", "target": "panel", "value": false },
+    { "expect": "eventCount", "target": "root", "name": "cm:popover-open-change", "count": 1 }
+  ]
+}

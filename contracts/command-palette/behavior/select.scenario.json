@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-select",
+  "case": "command-palette-filtered",
+  "steps": [
+    { "action": "press", "target": "input", "key": "Enter" },
+    { "expect": "eventCount", "target": "root", "name": "cm:command-palette-select", "count": 1 },
+    { "expect": "visible", "target": "root", "value": false }
+  ]
+}

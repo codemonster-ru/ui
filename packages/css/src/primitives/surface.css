@@ -1,0 +1,23 @@
+.cm-surface {
+  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  box-shadow: var(--cm-shadow-none);
+}
+
+.cm-surface--subtle {
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.cm-surface--elevated {
+  background: var(--cm-color-background-surface-elevated);
+  box-shadow: var(--cm-shadow-surface);
+}
+
+.cm-surface--overlay {
+  border-color: var(--cm-color-border-default);
+  border-radius: var(--cm-radius-overlay);
+  background: var(--cm-color-background-surface-elevated);
+  box-shadow: var(--cm-shadow-overlay);
+}

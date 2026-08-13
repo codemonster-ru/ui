@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useTheme } from "@codemonster-ru/vueforge-core";
-import { VfSkeleton } from "@codemonster-ru/vueforge-core/skeleton";
+import { CmSkeleton } from "@codemonster-ru/ui-vue";
 import { VfSkeletonGate } from "@codemonster-ru/vueforge-core/skeleton-gate";
-import { VfSection } from "@codemonster-ru/vueforge-layouts";
+import { CmSection } from "@codemonster-ru/ui-vue";
 import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock/view";
 
 const { resolvedTheme } = useTheme();
@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
           <button class="demo-replay-button" type="button" @click="replayCodeblockSkeleton">Replay skeleton</button>
         </div>
 
-        <VfSection class="demo-surface" surface>
+        <CmSection class="demo-surface" surface>
           <div class="demo-grid">
             <VfSkeletonGate
               v-for="block in blocks"
@@ -176,11 +176,11 @@ onBeforeUnmount(() => {
                 show-line-numbers
               />
               <template #skeleton>
-                <VfSkeleton :min-height="block.skeletonMinHeight" radius="var(--vf-layout-section-radius)" />
+                <CmSkeleton :min-height="block.skeletonMinHeight" radius="surface" />
               </template>
             </VfSkeletonGate>
           </div>
-        </VfSection>
+        </CmSection>
       </section>
     </div>
   </main>

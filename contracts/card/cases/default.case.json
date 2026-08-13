@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "card-default",
+  "description": "Default section surface with body content only.",
+  "props": {},
+  "slots": {
+    "default": "<p>Project summary</p>"
+  }
+}

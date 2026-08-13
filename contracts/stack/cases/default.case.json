@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "stack-default",
+  "description": "Default vertical content stack.",
+  "props": {},
+  "slots": { "default": "<p>First</p><p>Second</p>" }
+}

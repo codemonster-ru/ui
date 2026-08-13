@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "divider-horizontal",
+  "description": "Horizontal native separator.",
+  "props": {},
+  "slots": {}
+}

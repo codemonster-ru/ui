@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "input-default",
+  "description": "Default empty text input with an explicit accessible name.",
+  "props": {},
+  "slots": {},
+  "attributes": {
+    "aria-label": "Search"
+  }
+}

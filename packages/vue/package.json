@@ -1,0 +1,65 @@
+{
+  "name": "@codemonster-ru/ui-vue",
+  "version": "1.0.0-rc.1",
+  "description": "Vue 3 adapter for CodeMonster UI components.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/vue#readme",
+  "bugs": {
+    "url": "https://github.com/codemonster-ru/vueforge/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "directory": "packages/vue"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "lint": "eslint .",
+    "prepack": "npm run build",
+    "test": "vitest run src && npm run build && node --test ./__tests__/*.test.mjs",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "codemonster-ui",
+    "components",
+    "vue",
+    "vue3"
+  ],
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/server-renderer": "3.5.35",
+    "@vue/test-utils": "2.4.11",
+    "eslint": "^10.8.0",
+    "jsdom": "^26.1.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.3",
+    "vite-plugin-dts": "^5.0.3",
+    "vue": "3.5.35",
+    "vue-tsc": "^3.3.8",
+    "vitest": "^3.2.4"
+  }
+}

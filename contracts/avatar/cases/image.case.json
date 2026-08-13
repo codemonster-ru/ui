@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "avatar-image",
+  "description": "Large image avatar with alternative text.",
+  "props": { "image": "/avatar.png", "imageAlt": "Ada King", "size": "lg" },
+  "slots": {}
+}

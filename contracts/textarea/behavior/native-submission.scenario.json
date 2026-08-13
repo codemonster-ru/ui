@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "textarea-native-submission",
+  "case": "textarea-value",
+  "steps": [
+    { "action": "setValue", "target": "control", "value": "Updated details" },
+    { "expect": "eventCount", "target": "control", "name": "input", "count": 1 },
+    { "action": "submit", "target": "form" },
+    { "expect": "formValue", "target": "form", "name": "description", "value": "Updated details" }
+  ]
+}

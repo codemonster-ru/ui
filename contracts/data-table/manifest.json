@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "name": "DataTable",
+  "slug": "data-table",
+  "razorTag": "cm-data-table",
+  "description": "A server-friendly tabular data view with sorting, row selection, and pagination requests.",
+  "props": {
+    "id": { "type": "string", "required": true },
+    "columns": { "type": "collection", "required": true, "valueContract": "data-table-column" },
+    "rows": { "type": "collection", "required": false, "default": [], "valueContract": "data-table-row" },
+    "caption": { "type": "string", "required": false, "default": "" },
+    "density": { "type": "enum", "required": false, "default": "default", "values": ["default", "compact"] },
+    "striped": { "type": "boolean", "required": false, "default": false },
+    "columnDividers": { "type": "boolean", "required": false, "default": false },
+    "stickyHeader": { "type": "boolean", "required": false, "default": false },
+    "selectable": { "type": "boolean", "required": false, "default": false },
+    "selectedRowIds": { "type": "collection", "required": false, "default": [], "valueContract": "data-table-row-id" },
+    "sort": { "type": "nullable", "required": false, "default": null, "valueContract": "data-table-sort" },
+    "page": { "type": "number", "required": false, "default": 1 },
+    "pageCount": { "type": "number", "required": false, "default": 1 },
+    "loading": { "type": "boolean", "required": false, "default": false },
+    "error": { "type": "boolean", "required": false, "default": false },
+    "emptyText": { "type": "string", "required": false, "default": "No data" },
+    "loadingText": { "type": "string", "required": false, "default": "Loading..." },
+    "errorText": { "type": "string", "required": false, "default": "Failed to load data" },
+    "paginationLabel": { "type": "string", "required": false, "default": "Table pagination" },
+    "previousPageLabel": { "type": "string", "required": false, "default": "Previous page" },
+    "nextPageLabel": { "type": "string", "required": false, "default": "Next page" },
+    "selectAllLabel": { "type": "string", "required": false, "default": "Select all rows" }
+  },
+  "slots": {},
+  "events": {
+    "sortChange": {
+      "description": "Reports the next single-column sort state or null.",
+      "payloadContract": "nullable-data-table-sort"
+    },
+    "selectionChange": {
+      "description": "Reports selected row ids in rendered row order.",
+      "payloadContract": "data-table-row-ids"
+    },
+    "pageChange": { "description": "Reports the requested one-based page.", "payloadContract": "page-number" }
+  },
+  "states": ["default", "sorted", "selected", "paginated", "empty", "loading", "error"]
+}

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "inline-nowrap",
+  "description": "Non-wrapping navigation row.",
+  "props": { "element": "nav", "wrap": false },
+  "slots": { "default": "<a href=\"/one\">One</a><a href=\"/two\">Two</a>" }
+}

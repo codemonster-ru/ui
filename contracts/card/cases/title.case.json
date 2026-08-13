@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "card-title",
+  "description": "Fallback title followed by body content.",
+  "props": {
+    "title": "Project"
+  },
+  "slots": {
+    "default": "Summary"
+  }
+}

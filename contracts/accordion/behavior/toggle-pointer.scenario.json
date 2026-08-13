@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-toggle-pointer",
+  "case": "accordion-default",
+  "steps": [
+    { "action": "click", "target": "trigger-first" },
+    { "expect": "attribute", "target": "trigger-first", "name": "aria-expanded", "value": "true" },
+    { "expect": "visible", "target": "panel-first", "value": true },
+    { "expect": "eventCount", "target": "root", "name": "open-change", "count": 1 }
+  ]
+}

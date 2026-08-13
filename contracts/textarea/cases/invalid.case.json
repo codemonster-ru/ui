@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "textarea-invalid",
+  "description": "Required invalid textarea exposes native and ARIA state.",
+  "props": { "invalid": true, "required": true },
+  "slots": {},
+  "attributes": { "aria-label": "Summary", "name": "summary" }
+}

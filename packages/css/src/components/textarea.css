@@ -1,0 +1,72 @@
+.cm-textarea {
+  display: block;
+  inline-size: 100%;
+  min-block-size: calc(var(--cm-control-height-md) * 2);
+  padding-block: var(--cm-space-2);
+  padding-inline: var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  font: inherit;
+  font-size: var(--cm-font-size-md);
+  line-height: var(--cm-line-height-normal);
+  resize: vertical;
+  transition:
+    background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+.cm-textarea--sm {
+  min-block-size: calc(var(--cm-control-height-sm) * 2);
+  padding-inline: var(--cm-space-2);
+  font-size: var(--cm-font-size-sm);
+}
+
+.cm-textarea--md {
+  min-block-size: calc(var(--cm-control-height-md) * 2);
+}
+
+.cm-textarea--lg {
+  min-block-size: calc(var(--cm-control-height-lg) * 2);
+  padding-inline: var(--cm-space-4);
+  font-size: var(--cm-font-size-lg);
+}
+
+.cm-textarea::placeholder {
+  color: var(--cm-color-text-muted);
+}
+
+.cm-textarea:hover:where(:not(:disabled, :read-only)) {
+  border-color: var(--cm-color-border-interactive);
+}
+
+.cm-textarea:focus-visible {
+  border-color: var(--cm-color-focus-ring);
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-textarea:disabled {
+  border-color: var(--cm-color-border-disabled);
+  background: var(--cm-color-background-surface-disabled);
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.cm-textarea:read-only:not(:disabled) {
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.cm-textarea--invalid,
+.cm-textarea[aria-invalid='true'] {
+  border-color: var(--cm-color-status-danger-border);
+}
+
+@media (forced-colors: active) {
+  .cm-textarea--invalid,
+  .cm-textarea[aria-invalid='true'] {
+    border-color: Mark;
+  }
+}

@@ -59,7 +59,12 @@ function collectPublicImports(code, language, filePath, line) {
     .filter((statement) => ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier))
     .filter((statement) => {
       const specifier = statement.moduleSpecifier.text;
-      return specifier === 'vue' || specifier.startsWith('vue/') || specifier.startsWith('@codemonster-ru/vueforge-');
+      return (
+        specifier === 'vue' ||
+        specifier.startsWith('vue/') ||
+        specifier.startsWith('@codemonster-ru/ui-') ||
+        specifier.startsWith('@codemonster-ru/vueforge-')
+      );
     })
     .map((statement) => statement.getText(sourceFile));
 

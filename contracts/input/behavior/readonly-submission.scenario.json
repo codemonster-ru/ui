@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "input-readonly-submission",
+  "case": "input-readonly",
+  "steps": [
+    { "action": "submit", "target": "form" },
+    { "expect": "formValue", "target": "form", "name": "reference", "value": "fixed" }
+  ]
+}

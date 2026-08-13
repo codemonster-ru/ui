@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "skeleton-default",
+  "description": "Animated surface-radius placeholder.",
+  "props": {},
+  "slots": {}
+}

@@ -83,7 +83,10 @@ npm run build
 
 For full documentation, visit [docs.codemonster.net/vueforge](https://docs.codemonster.net/vueforge/).
 Use the [VueForge 2 migration guide](./docs/migration-to-v2.md) for breaking changes and the
-[release notes](./docs/release-notes.md) for the coordinated package changes.
+[release notes](./docs/release-notes.md) for the coordinated package changes. New applications can
+adopt CodeMonster UI for shared Vue and Annabel Razor components. Existing applications should use
+the [VueForge to CodeMonster UI migration guide](./docs/vueforge-to-codemonster-ui.md) for package
+and component replacements, retained products, manual migrations, and the deterministic codemod.
 
 ## License
 

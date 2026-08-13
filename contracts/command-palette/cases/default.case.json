@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-default",
+  "description": "Closed command palette with ordered commands.",
+  "props": {
+    "id": "workspace",
+    "title": "Commands",
+    "commands": [
+      { "id": "new-project", "label": "New project", "keywords": "create repository" },
+      { "id": "archive-project", "label": "Archive project", "disabled": true }
+    ]
+  },
+  "slots": {}
+}

@@ -1,0 +1,11 @@
+.cm-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--cm-space-4);
+}
+
+.cm-inline--nowrap {
+  flex-wrap: nowrap;
+}

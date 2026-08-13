@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "container-sized",
+  "description": "Large semantic main container.",
+  "props": { "element": "main", "size": "lg" },
+  "slots": { "default": "<h1>Dashboard</h1>" }
+}

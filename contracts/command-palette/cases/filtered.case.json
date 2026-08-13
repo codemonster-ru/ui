@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-filtered",
+  "description": "Open filtered palette with one visible match.",
+  "props": {
+    "id": "navigation",
+    "title": "Go to",
+    "open": true,
+    "query": "settings",
+    "placeholder": "Find a page",
+    "emptyText": "Nothing found.",
+    "commands": [
+      { "id": "dashboard", "label": "Dashboard" },
+      { "id": "settings", "label": "Settings", "keywords": "preferences account" }
+    ]
+  },
+  "slots": {}
+}

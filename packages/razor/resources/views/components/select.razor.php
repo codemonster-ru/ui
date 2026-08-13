@@ -1,0 +1,2 @@
+<!-- prettier-ignore -->
+<select class="{{ $classes }}"@if ($invalid) aria-invalid="true"@endif@if ($disabled) disabled@endif@if ($required) required@endif{!! $attributes !!}>@if ($placeholder !== null)<option value="" disabled@if ($value === '') selected@endif>{{ $placeholder }}</option>@endif@foreach ($options as $option)<option value="{{ $option['value'] }}"@if ($value === $option['value']) selected@endif@if ($option['disabled']) disabled@endif>{{ $option['label'] }}</option>@endforeach</select>

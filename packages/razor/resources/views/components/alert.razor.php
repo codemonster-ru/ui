@@ -1,0 +1,1 @@
+<section class="{{ $classes }}" role="{{ $role }}"{!! $attributes !!}>@if ($icon !== null)<div class="cm-alert__icon" aria-hidden="true">{{ $icon }}</div>@endif<div class="cm-alert__content">@if ($title !== null && $title !== '')<p class="cm-alert__title">{{ $title }}</p>@endif<div class="cm-alert__body">{{ $body }}</div></div></section>

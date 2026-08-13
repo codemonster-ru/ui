@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "checkbox-indeterminate",
+  "description": "Mixed required checkbox exposes its visual and validation states.",
+  "props": { "indeterminate": true, "invalid": true, "required": true, "label": "Select all" },
+  "slots": {}
+}

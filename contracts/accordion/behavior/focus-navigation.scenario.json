@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-focus-navigation",
+  "case": "accordion-default",
+  "steps": [
+    { "action": "focus", "target": "trigger-first" },
+    { "action": "press", "target": "trigger-first", "key": "ArrowDown" },
+    { "expect": "focus", "target": "trigger-second", "value": true },
+    { "action": "press", "target": "trigger-second", "key": "Home" },
+    { "expect": "focus", "target": "trigger-first", "value": true },
+    { "action": "press", "target": "trigger-first", "key": "End" },
+    { "expect": "focus", "target": "trigger-second", "value": true }
+  ]
+}

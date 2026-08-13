@@ -9,6 +9,10 @@ A Vite plugin for resolving VueForge playground virtual modules from local sourc
 
 Coordinated release: `@codemonster-ru/vueforge-playground-vite-plugin@1.0.0`.
 
+This plugin remains build tooling for the dedicated VueForge Playground product family; it is not
+part of the CodeMonster UI package graph. See the repository
+[ownership decision](../../docs/architecture/playground-ownership.md) for the reviewed boundary.
+
 ## Requirements
 
 - Node.js 18 or newer for the plugin itself. The selected Vite major may require a newer Node.js

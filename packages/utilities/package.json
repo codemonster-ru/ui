@@ -1,0 +1,53 @@
+{
+  "name": "@codemonster-ru/ui-utilities",
+  "version": "1.0.0-rc.1",
+  "description": "Generated token-backed utility CSS for CodeMonster UI.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "homepage": "https://github.com/codemonster-ru/vueforge/tree/main/packages/utilities#readme",
+  "bugs": {
+    "url": "https://github.com/codemonster-ru/vueforge/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codemonster-ru/vueforge.git",
+    "directory": "packages/utilities"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "./dist/*.css"
+  ],
+  "exports": {
+    "./utilities.css": "./dist/utilities.css"
+  },
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "lint": "eslint . && stylelint \"src/**/*.css\"",
+    "prepack": "npm run build",
+    "test": "npm run build && node --test ./__tests__/*.test.mjs",
+    "typecheck": "node --check ./scripts/build.mjs && node --check ./src/contract.mjs"
+  },
+  "keywords": [
+    "codemonster-ui",
+    "css",
+    "utilities"
+  ],
+  "dependencies": {
+    "@codemonster-ru/ui-tokens": "^1.0.0-rc.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.8.0",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.25.0"
+  }
+}

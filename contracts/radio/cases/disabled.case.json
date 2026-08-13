@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "radio-disabled",
+  "description": "Disabled radio option remains visible but is not successful form data.",
+  "props": { "disabled": true, "invalid": true, "label": "Archived", "value": "archived" },
+  "slots": {},
+  "attributes": { "name": "status" }
+}

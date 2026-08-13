@@ -1,0 +1,93 @@
+.cm-dialog,
+.cm-dialog--open {
+  inline-size: min(calc(100% - 2 * var(--cm-space-4)), calc(var(--cm-space-16) * 8));
+  max-block-size: calc(100% - 2 * var(--cm-space-8));
+  padding: 0;
+  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-overlay);
+  background: var(--cm-color-background-surface-elevated);
+  color: var(--cm-color-text-primary);
+  box-shadow: var(--cm-shadow-overlay);
+}
+
+.cm-dialog::backdrop {
+  background: color-mix(in oklch, var(--cm-color-background-inverse) 55%, transparent);
+}
+
+.cm-dialog__surface {
+  display: flex;
+  max-block-size: inherit;
+  flex-direction: column;
+}
+
+.cm-dialog__header,
+.cm-dialog__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-3);
+  padding: var(--cm-space-4);
+}
+
+.cm-dialog__header {
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-dialog__title {
+  flex: 1;
+  margin: 0;
+  font-family: var(--cm-font-family-heading);
+  font-size: var(--cm-font-size-lg);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
+}
+
+.cm-dialog__close {
+  display: inline-grid;
+  min-block-size: var(--cm-control-height-sm);
+  min-inline-size: var(--cm-control-height-sm);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cm-radius-control);
+  appearance: none;
+  background: transparent;
+  color: var(--cm-color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+}
+
+.cm-dialog__close:hover {
+  background: var(--cm-color-background-surface-hover);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-dialog__close:focus-visible {
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-dialog__description {
+  margin: 0;
+  padding-block-start: var(--cm-space-4);
+  padding-inline: var(--cm-space-4);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
+}
+
+.cm-dialog__body {
+  min-block-size: 0;
+  flex: 1;
+  overflow: auto;
+  padding: var(--cm-space-4);
+}
+
+.cm-dialog__footer {
+  justify-content: flex-end;
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+@media (forced-colors: active) {
+  .cm-dialog {
+    border-color: CanvasText;
+  }
+}

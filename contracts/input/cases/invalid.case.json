@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "input-invalid",
+  "description": "Invalid required input exposes native and ARIA state.",
+  "props": {
+    "invalid": true,
+    "required": true,
+    "size": "lg"
+  },
+  "slots": {},
+  "attributes": {
+    "aria-label": "Project name"
+  }
+}

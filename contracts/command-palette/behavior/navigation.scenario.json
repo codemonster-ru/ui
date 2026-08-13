@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-navigation",
+  "case": "command-palette-filtered",
+  "steps": [
+    { "action": "press", "target": "input", "key": "ArrowDown" },
+    {
+      "expect": "attribute",
+      "target": "input",
+      "name": "aria-activedescendant",
+      "value": "navigation-option-settings"
+    },
+    { "action": "press", "target": "input", "key": "Escape" },
+    { "expect": "visible", "target": "root", "value": false }
+  ]
+}

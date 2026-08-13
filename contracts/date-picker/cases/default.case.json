@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-default",
+  "description": "Required date input with a bounded range.",
+  "props": { "min": "2026-01-01", "max": "2026-12-31", "required": true },
+  "attributes": { "id": "launch-date", "name": "launch_date", "aria-label": "Launch date" },
+  "slots": {}
+}

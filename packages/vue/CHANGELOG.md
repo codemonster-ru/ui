@@ -1,0 +1,32 @@
+# Changelog
+
+All notable changes to this package will be documented in this file.
+
+## 1.0.0-rc.1
+
+### Added
+
+- Exposes the complete stable Vue component adapter cohort for prerelease consumer validation.
+- Adds controlled Dialog dismissal locking for asynchronous confirmation flows.
+
+## 0.1.0
+
+### Added
+
+- Added the initial Vue 3 adapter scaffold, ESM entry, declarations, and package verification.
+- Added the native `CmButton` adapter with variants, sizes, disabled state, attribute forwarding,
+  and consumer class merging.
+- Added Button loading state and leading and trailing icon slots.
+- Added enabled and disabled Button link rendering.
+- Added canonical SSR, escaping, and native event verification for Button.
+- Added `CmCard` with finite semantic roots and conditional header, body, and footer regions.
+- Added canonical Card SSR and escaping verification.
+- Added Checkbox, Radio, Textarea, and Switch adapters with canonical SSR, native form behavior, and
+  idiomatic Vue model binding.
+- Added Link, Breadcrumbs, Tabs, Menu, and Dropdown adapters with canonical SSR and controlled-state
+  interaction verification.
+- Added Dialog, Drawer, Popover, and Tooltip adapters with canonical SSR, controlled state, focus,
+  and dismissal verification.
+- Added native Select and DatePicker adapters plus controlled searchable CommandPalette interaction.
+- Added semantic Table slots and controlled DataTable sorting, selection, pagination, states, and SSR parity.
+- Added semantic Container, Stack, Inline, Section, and Grid adapters with canonical SSR parity.
