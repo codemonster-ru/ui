@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "select-selected",
+  "description": "Selected invalid compact control with a disabled option.",
+  "props": {
+    "options": [
+      { "value": "draft", "label": "Draft" },
+      { "value": "archived", "label": "Archived", "disabled": true }
+    ],
+    "value": "draft",
+    "size": "sm",
+    "invalid": true
+  },
+  "attributes": { "name": "status", "aria-label": "Status" },
+  "slots": {}
+}

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "alert-default",
+  "description": "Default informational alert with a title.",
+  "props": { "title": "Saved" },
+  "slots": { "default": "Changes were saved." }
+}

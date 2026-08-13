@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "field-default",
+  "description": "A labelled field with one native control.",
+  "props": {
+    "controlId": "account-email",
+    "label": "Email"
+  },
+  "slots": {
+    "default": "<input id=\"account-email\" name=\"email\" type=\"email\">"
+  }
+}

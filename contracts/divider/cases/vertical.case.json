@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "divider-vertical",
+  "description": "Vertical separator with consumer sizing.",
+  "props": { "orientation": "vertical" },
+  "slots": {},
+  "attributes": { "style": "height: 2rem" }
+}

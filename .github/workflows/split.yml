@@ -1,0 +1,112 @@
+name: Split Composer Package
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'ui/v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Split Composer package
+        id: split
+        run: |
+          split_sha=$(git subtree split --prefix=packages/razor "${GITHUB_SHA}")
+          echo "sha=${split_sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate split token
+        run: |
+          if [ -z "${MONOREPO_SPLIT_TOKEN}" ]; then
+            echo "MONOREPO_SPLIT_TOKEN secret is required to push the Composer split repository."
+            exit 1
+          fi
+        env:
+          MONOREPO_SPLIT_TOKEN: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+
+      - name: Sync split main branch
+        run: |
+          remote_url="https://x-access-token:${MONOREPO_SPLIT_TOKEN}@github.com/codemonster-ru/ui.git"
+          remote_main=$(git ls-remote "$remote_url" refs/heads/main | awk '{print $1}')
+
+          if [ "${GITHUB_REF_TYPE}" = "branch" ] || [ -z "$remote_main" ]; then
+            git push "$remote_url" "${SPLIT_SHA}:refs/heads/main" --force
+          fi
+        env:
+          GITHUB_REF_TYPE: ${{ github.ref_type }}
+          MONOREPO_SPLIT_TOKEN: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+          SPLIT_SHA: ${{ steps.split.outputs.sha }}
+
+      - name: Parse package tag
+        id: tag
+        if: github.ref_type == 'tag'
+        run: |
+          version_tag="${GITHUB_REF_NAME#ui/}"
+          echo "version_tag=${version_tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Push package tag
+        if: github.ref_type == 'tag'
+        run: |
+          remote_url="https://x-access-token:${MONOREPO_SPLIT_TOKEN}@github.com/codemonster-ru/ui.git"
+          remote_sha=$(git ls-remote "$remote_url" "refs/tags/${VERSION_TAG}" | awk '{print $1}')
+
+          if [ -z "$remote_sha" ]; then
+            git tag "$VERSION_TAG" "$SPLIT_SHA"
+            git push "$remote_url" "refs/tags/${VERSION_TAG}:refs/tags/${VERSION_TAG}"
+          elif [ "$remote_sha" != "$SPLIT_SHA" ]; then
+            echo "Split tag ${VERSION_TAG} already points to different content."
+            exit 1
+          fi
+        env:
+          MONOREPO_SPLIT_TOKEN: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+          SPLIT_SHA: ${{ steps.split.outputs.sha }}
+          VERSION_TAG: ${{ steps.tag.outputs.version_tag }}
+
+      - name: Extract release notes
+        if: github.ref_type == 'tag'
+        run: |
+          version="${VERSION_TAG#v}"
+          awk "/^## ${version}$/ {flag=1; next} /^## / {flag=0} flag {print}" packages/razor/CHANGELOG.md > RELEASE_NOTES.md
+          test -s RELEASE_NOTES.md
+        env:
+          VERSION_TAG: ${{ steps.tag.outputs.version_tag }}
+
+      - name: Create monorepo GitHub release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body_path: RELEASE_NOTES.md
+          prerelease: ${{ contains(steps.tag.outputs.version_tag, '-') }}
+          make_latest: false
+
+      - name: Create package GitHub release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v3
+        with:
+          repository: codemonster-ru/ui
+          token: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+          tag_name: ${{ steps.tag.outputs.version_tag }}
+          name: ${{ steps.tag.outputs.version_tag }}
+          body_path: RELEASE_NOTES.md
+          prerelease: ${{ contains(steps.tag.outputs.version_tag, '-') }}
+          make_latest: false

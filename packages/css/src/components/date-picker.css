@@ -1,0 +1,63 @@
+.cm-date-picker {
+  display: block;
+  inline-size: 100%;
+  min-block-size: var(--cm-control-height-md);
+  padding-block: 0;
+  padding-inline: var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  font: inherit;
+  font-size: var(--cm-font-size-md);
+  line-height: var(--cm-line-height-tight);
+}
+
+.cm-date-picker--sm {
+  min-block-size: var(--cm-control-height-sm);
+  padding-inline: var(--cm-space-2);
+  font-size: var(--cm-font-size-sm);
+}
+
+.cm-date-picker--md {
+  min-block-size: var(--cm-control-height-md);
+}
+
+.cm-date-picker--lg {
+  min-block-size: var(--cm-control-height-lg);
+  padding-inline: var(--cm-space-4);
+  font-size: var(--cm-font-size-lg);
+}
+
+.cm-date-picker:hover:where(:not(:disabled, :read-only)) {
+  border-color: var(--cm-color-border-interactive);
+}
+
+.cm-date-picker:focus-visible {
+  border-color: var(--cm-color-focus-ring);
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-date-picker:disabled {
+  border-color: var(--cm-color-border-disabled);
+  background: var(--cm-color-background-surface-disabled);
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.cm-date-picker:read-only:not(:disabled) {
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.cm-date-picker--invalid,
+.cm-date-picker[aria-invalid='true'] {
+  border-color: var(--cm-color-status-danger-border);
+}
+
+@media (forced-colors: active) {
+  .cm-date-picker--invalid,
+  .cm-date-picker[aria-invalid='true'] {
+    border-color: Mark;
+  }
+}

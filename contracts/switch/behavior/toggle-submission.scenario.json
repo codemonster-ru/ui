@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "switch-toggle-submission",
+  "case": "switch-default",
+  "steps": [
+    { "action": "click", "target": "control" },
+    { "expect": "eventCount", "target": "control", "name": "change", "count": 1 },
+    { "expect": "attribute", "target": "control", "name": "aria-checked", "value": "true" },
+    { "action": "submit", "target": "form" },
+    { "expect": "formValue", "target": "form", "name": "notifications", "value": "enabled" }
+  ]
+}

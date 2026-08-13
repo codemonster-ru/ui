@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "button-link-disabled",
+  "description": "Disabled link action without a navigable href.",
+  "props": {
+    "href": "/docs",
+    "disabled": true
+  },
+  "slots": {
+    "default": "Documentation"
+  }
+}

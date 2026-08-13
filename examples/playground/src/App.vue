@@ -9,8 +9,8 @@
       :show-content-subheader="false"
     >
       <template #header>
-        <VfInline class="showcase-header" :wrap="false">
-          <div class="showcase-brand">VueForge</div>
+        <CmInline class="showcase-header" :wrap="false">
+          <div class="showcase-brand">CodeMonster UI</div>
 
           <VfMenuBar
             v-model="activeSection"
@@ -20,10 +20,10 @@
             aria-label="Showcase packages"
           />
 
-          <VfInline class="showcase-header__actions" :wrap="false">
+          <CmInline class="showcase-header__actions" :wrap="false">
             <VfThemeSwitch variant="button" button-variant="secondary" />
-          </VfInline>
-        </VfInline>
+          </CmInline>
+        </CmInline>
       </template>
 
       <component :is="activeSectionComponent" />
@@ -34,7 +34,8 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { VfMenuBar, VfThemeProvider, VfThemeSwitch, type VfNavMenuItem } from '@codemonster-ru/vueforge-core';
-import { VfAppShell, VfInline } from '@codemonster-ru/vueforge-layouts';
+import { VfAppShell } from '@codemonster-ru/vueforge-layouts';
+import { CmInline } from '@codemonster-ru/ui-vue';
 
 type SectionValue = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
 
@@ -46,7 +47,7 @@ interface SectionMeta {
 const sections: SectionMeta[] = [
   {
     value: 'core',
-    label: 'Core',
+    label: 'Components',
   },
   {
     value: 'colors',
@@ -54,7 +55,7 @@ const sections: SectionMeta[] = [
   },
   {
     value: 'layouts',
-    label: 'Layouts',
+    label: 'Layout',
   },
   {
     value: 'icons',

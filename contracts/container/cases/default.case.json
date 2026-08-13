@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "container-default",
+  "description": "Default centered container.",
+  "props": {},
+  "slots": { "default": "<p>Content</p>" }
+}

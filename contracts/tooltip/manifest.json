@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "name": "Tooltip",
+  "slug": "tooltip",
+  "razorTag": "cm-tooltip",
+  "description": "A focus and hover explanation for a native button trigger.",
+  "props": {
+    "id": { "type": "string", "required": true },
+    "label": { "type": "string", "required": true },
+    "content": { "type": "string", "required": true },
+    "defaultVisible": { "type": "boolean", "required": false, "default": false },
+    "placement": {
+      "type": "enum",
+      "required": false,
+      "default": "top",
+      "values": ["top", "bottom", "start", "end"]
+    },
+    "delay": {
+      "type": "enum",
+      "required": false,
+      "default": "short",
+      "values": ["none", "short", "long"]
+    }
+  },
+  "slots": {},
+  "events": {},
+  "states": ["hidden", "visible"]
+}

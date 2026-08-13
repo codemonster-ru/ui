@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "name": "Badge",
+  "slug": "badge",
+  "razorTag": "cm-badge",
+  "description": "A compact inline text label for status or categorization.",
+  "props": {
+    "tone": {
+      "type": "enum",
+      "required": false,
+      "default": "neutral",
+      "values": ["neutral", "primary", "success", "info", "warning", "help", "danger", "contrast"]
+    }
+  },
+  "slots": {
+    "default": { "required": true, "description": "Visible badge text or trusted inline content." }
+  },
+  "events": {},
+  "states": ["default"]
+}

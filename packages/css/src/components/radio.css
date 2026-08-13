@@ -1,0 +1,102 @@
+.cm-radio {
+  --cm-radio-control-size: var(--cm-space-5);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-2);
+  color: var(--cm-color-text-primary);
+  cursor: pointer;
+  font-size: var(--cm-font-size-md);
+  line-height: var(--cm-line-height-normal);
+}
+
+.cm-radio--sm {
+  --cm-radio-control-size: var(--cm-space-4);
+
+  font-size: var(--cm-font-size-sm);
+}
+
+.cm-radio--md {
+  --cm-radio-control-size: var(--cm-space-5);
+}
+
+.cm-radio--lg {
+  --cm-radio-control-size: var(--cm-space-6);
+
+  font-size: var(--cm-font-size-lg);
+}
+
+.cm-radio__input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.cm-radio__control {
+  --cm-radio-active-border: var(--cm-color-interactive-primary-border);
+
+  display: inline-flex;
+  flex: none;
+  inline-size: var(--cm-radio-control-size);
+  block-size: var(--cm-radio-control-size);
+  align-items: center;
+  justify-content: center;
+  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
+  border-radius: var(--cm-radius-round);
+  background: var(--cm-color-background-surface);
+  transition:
+    background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+.cm-radio__mark {
+  inline-size: 50%;
+  block-size: 50%;
+  border-radius: var(--cm-radius-round);
+  background: var(--cm-color-interactive-primary-foreground);
+  opacity: 0;
+}
+
+.cm-radio--invalid .cm-radio__control,
+.cm-radio__input[aria-invalid='true'] + .cm-radio__control {
+  --cm-radio-active-border: var(--cm-color-status-danger-border);
+
+  border-color: var(--cm-color-status-danger-border);
+}
+
+.cm-radio__input:checked + .cm-radio__control {
+  border-color: var(--cm-radio-active-border);
+  background: var(--cm-color-interactive-primary-background);
+}
+
+.cm-radio__input:checked + .cm-radio__control .cm-radio__mark {
+  opacity: 1;
+}
+
+.cm-radio__input:focus-visible + .cm-radio__control {
+  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-border-width-thick);
+}
+
+.cm-radio__input:disabled + .cm-radio__control {
+  border-color: var(--cm-color-border-disabled);
+  background: var(--cm-color-background-surface-disabled);
+}
+
+.cm-radio__input:disabled ~ .cm-radio__content {
+  color: var(--cm-color-text-disabled);
+}
+
+.cm-radio:has(.cm-radio__input:disabled) {
+  cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  .cm-radio__input:checked + .cm-radio__control {
+    background: Highlight;
+    color: HighlightText;
+  }
+}

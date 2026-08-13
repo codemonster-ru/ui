@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "card-compact",
+  "description": "Compact card spacing.",
+  "props": {
+    "compact": true
+  },
+  "slots": {
+    "default": "Compact summary"
+  }
+}

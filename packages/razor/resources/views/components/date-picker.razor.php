@@ -1,0 +1,1 @@
+<input class="{{ $classes }}" type="date" value="{{ $value }}"@if ($min !== null) min="{{ $min }}"@endif@if ($max !== null) max="{{ $max }}"@endif@if ($invalid) aria-invalid="true"@endif@if ($disabled) disabled@endif@if ($readonly) readonly@endif@if ($required) required@endif{!! $attributes !!}>

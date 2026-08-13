@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "tabs-default",
+  "description": "First enabled tab selected by default.",
+  "props": {
+    "id": "account",
+    "items": [
+      { "value": "profile", "label": "Profile", "content": "Profile settings." },
+      { "value": "security", "label": "Security", "content": "Security settings." }
+    ]
+  },
+  "slots": {}
+}

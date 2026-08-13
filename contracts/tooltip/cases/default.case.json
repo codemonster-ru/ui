@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "tooltip-default",
+  "description": "Hidden top tooltip.",
+  "props": { "id": "save-help", "label": "Save", "content": "Save changes" },
+  "slots": {}
+}

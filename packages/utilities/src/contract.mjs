@@ -1,0 +1,168 @@
+export const displayUtilities = Object.freeze({
+  block: { display: 'block' },
+  'inline-block': { display: 'inline-block' },
+  inline: { display: 'inline' },
+  flex: { display: 'flex' },
+  'inline-flex': { display: 'inline-flex' },
+  grid: { display: 'grid' },
+  hidden: { display: 'none' },
+});
+
+export const flexUtilities = Object.freeze({
+  'flex-row': { 'flex-direction': 'row' },
+  'flex-col': { 'flex-direction': 'column' },
+  'flex-wrap': { 'flex-wrap': 'wrap' },
+  'flex-nowrap': { 'flex-wrap': 'nowrap' },
+  'items-start': { 'align-items': 'flex-start' },
+  'items-center': { 'align-items': 'center' },
+  'items-end': { 'align-items': 'flex-end' },
+  'items-stretch': { 'align-items': 'stretch' },
+  'justify-start': { 'justify-content': 'flex-start' },
+  'justify-center': { 'justify-content': 'center' },
+  'justify-end': { 'justify-content': 'flex-end' },
+  'justify-between': { 'justify-content': 'space-between' },
+});
+
+export const gridUtilities = Object.freeze(
+  Object.fromEntries(
+    [1, 2, 3, 4, 6, 12].map((columns) => [
+      `grid-cols-${columns}`,
+      { 'grid-template-columns': `repeat(${columns}, minmax(0, 1fr))` },
+    ]),
+  ),
+);
+
+const spacingProperties = Object.freeze({
+  m: 'margin',
+  mt: 'margin-block-start',
+  me: 'margin-inline-end',
+  mb: 'margin-block-end',
+  ms: 'margin-inline-start',
+  mx: 'margin-inline',
+  my: 'margin-block',
+  p: 'padding',
+  pt: 'padding-block-start',
+  pe: 'padding-inline-end',
+  pb: 'padding-block-end',
+  ps: 'padding-inline-start',
+  px: 'padding-inline',
+  py: 'padding-block',
+});
+
+export const spacingUtilities = Object.freeze(
+  Object.fromEntries(
+    cmSpacingTokenNames.flatMap((tokenName) => {
+      const suffix = tokenName.slice('space'.length);
+      const value = tokenVariable(tokenName);
+      return [
+        ...Object.entries(spacingProperties).map(([prefix, property]) => [
+          `${prefix}-${suffix}`,
+          { [property]: value },
+        ]),
+        [`gap-${suffix}`, { gap: value }],
+        [`row-gap-${suffix}`, { 'row-gap': value }],
+        [`column-gap-${suffix}`, { 'column-gap': value }],
+      ];
+    }),
+  ),
+);
+
+export const sizingUtilities = Object.freeze({
+  'w-full': { 'inline-size': '100%' },
+  'min-w-0': { 'min-inline-size': '0' },
+  'h-full': { 'block-size': '100%' },
+  ...Object.fromEntries(
+    cmSizingTokenNames
+      .filter((name) => name.startsWith('controlHeight'))
+      .map((name) => [
+        `h-control-${name.slice('controlHeight'.length).toLowerCase()}`,
+        { 'block-size': tokenVariable(name) },
+      ]),
+  ),
+  ...Object.fromEntries(
+    cmSizingTokenNames
+      .filter((name) => name.startsWith('iconSize'))
+      .map((name) => {
+        const value = tokenVariable(name);
+        return [
+          `size-icon-${name.slice('iconSize'.length).toLowerCase()}`,
+          { 'block-size': value, 'inline-size': value },
+        ];
+      }),
+  ),
+});
+
+export const typographyUtilities = Object.freeze({
+  'font-base': { 'font-family': tokenVariable('fontFamilyBase') },
+  'font-heading': { 'font-family': tokenVariable('fontFamilyHeading') },
+  'font-mono': { 'font-family': tokenVariable('fontFamilyMono') },
+  'font-regular': { 'font-weight': tokenVariable('fontWeightRegular') },
+  'font-medium': { 'font-weight': tokenVariable('fontWeightMedium') },
+  'font-semibold': { 'font-weight': tokenVariable('fontWeightSemibold') },
+  'font-bold': { 'font-weight': tokenVariable('fontWeightBold') },
+  ...Object.fromEntries(
+    ['Xs', 'Sm', 'Md', 'Lg', 'Xl', '2xl', '3xl'].map((suffix) => [
+      `text-${suffix.toLowerCase()}`,
+      { 'font-size': tokenVariable(`fontSize${suffix}`) },
+    ]),
+  ),
+  ...Object.fromEntries(
+    ['Tight', 'Normal', 'Relaxed'].map((suffix) => [
+      `leading-${suffix.toLowerCase()}`,
+      { 'line-height': tokenVariable(`lineHeight${suffix}`) },
+    ]),
+  ),
+});
+
+export const colorUtilities = Object.freeze({
+  'text-primary': { color: tokenVariable('colorTextPrimary') },
+  'text-secondary': { color: tokenVariable('colorTextSecondary') },
+  'text-muted': { color: tokenVariable('colorTextMuted') },
+  'text-disabled': { color: tokenVariable('colorTextDisabled') },
+  'text-inverse': { color: tokenVariable('colorTextInverse') },
+  'text-link': { color: tokenVariable('colorTextLink') },
+  'bg-canvas': { background: tokenVariable('colorBackgroundCanvas') },
+  'bg-surface': { background: tokenVariable('colorBackgroundSurface') },
+  'bg-surface-subtle': { background: tokenVariable('colorBackgroundSurfaceSubtle') },
+  'bg-inverse': { background: tokenVariable('colorBackgroundInverse') },
+  'border-subtle': { 'border-color': tokenVariable('colorBorderSubtle') },
+  'border-default': { 'border-color': tokenVariable('colorBorderDefault') },
+  'border-strong': { 'border-color': tokenVariable('colorBorderStrong') },
+  'border-divider': { 'border-color': tokenVariable('colorBorderDivider') },
+});
+
+export const borderUtilities = Object.freeze({
+  border: { 'border-width': tokenVariable('borderWidth') },
+  'border-thick': { 'border-width': tokenVariable('borderWidthThick') },
+  'border-0': { 'border-width': '0' },
+  'rounded-control': { 'border-radius': tokenVariable('radiusControl') },
+  'rounded-control-tight': { 'border-radius': tokenVariable('radiusControlTight') },
+  'rounded-surface': { 'border-radius': tokenVariable('radiusSurface') },
+  'rounded-overlay': { 'border-radius': tokenVariable('radiusOverlay') },
+  'rounded-round': { 'border-radius': tokenVariable('radiusRound') },
+});
+
+export const responsiveBreakpoints = Object.freeze(
+  Object.fromEntries(['sm', 'md', 'lg'].map((name) => [name, cmBreakpoints[name]])),
+);
+
+export const responsiveUtilities = Object.freeze({
+  ...displayUtilities,
+  ...flexUtilities,
+  ...gridUtilities,
+  ...Object.fromEntries(
+    Object.entries(spacingUtilities).filter(([name]) => /^(?:gap|row-gap|column-gap)-/u.test(name)),
+  ),
+});
+
+import {
+  cmBreakpoints,
+  cmSizingTokenNames,
+  cmSpacingTokenNames,
+  serializeCmThemeTokensToCssVars,
+} from '@codemonster-ru/ui-tokens';
+
+function tokenVariable(name) {
+  const [variable] = Object.keys(serializeCmThemeTokensToCssVars({ [name]: '' }));
+  return `var(${variable})`;
+}

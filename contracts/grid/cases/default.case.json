@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "grid-default",
+  "description": "Default auto-fitting grid.",
+  "props": {},
+  "slots": { "default": "<article>One</article><article>Two</article>" }
+}

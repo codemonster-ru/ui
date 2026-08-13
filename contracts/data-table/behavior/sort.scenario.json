@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-sort",
+  "case": "data-table-interactive",
+  "steps": [
+    { "action": "click", "target": "sort-first" },
+    { "expect": "attribute", "target": "header-first", "name": "aria-sort", "value": "descending" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-data-table-sort-direction", "value": "descending" },
+    { "expect": "eventCount", "target": "root", "name": "cm:data-table-sort-change", "count": 1 }
+  ]
+}

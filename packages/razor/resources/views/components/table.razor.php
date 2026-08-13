@@ -1,0 +1,2 @@
+<!-- prettier-ignore -->
+<div class="{{ $rootClasses }}"{!! $attributes !!}><div class="cm-table__scroll"><table class="{{ $tableClasses }}">@if ($caption !== null && $caption !== '')<caption class="cm-table__caption">{{ $caption }}</caption>@endif@if ($header !== null)<thead class="cm-table__head">{{ $header }}</thead>@endif@if ($body !== null)<tbody class="cm-table__body">{{ $body }}</tbody>@endif@if ($footer !== null)<tfoot class="cm-table__foot">{{ $footer }}</tfoot>@endif</table></div></div>

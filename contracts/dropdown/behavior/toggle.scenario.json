@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-toggle",
+  "case": "dropdown-default",
+  "steps": [
+    { "action": "click", "target": "trigger" },
+    { "expect": "attribute", "target": "trigger", "name": "aria-expanded", "value": "true" },
+    { "expect": "visible", "target": "menu", "value": true },
+    { "expect": "eventCount", "target": "root", "name": "cm:dropdown-open-change", "count": 1 },
+    { "action": "press", "target": "menu", "key": "Escape" },
+    { "expect": "focus", "target": "trigger", "value": true },
+    { "expect": "visible", "target": "menu", "value": false }
+  ]
+}

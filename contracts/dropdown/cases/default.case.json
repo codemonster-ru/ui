@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-default",
+  "description": "Closed action dropdown.",
+  "props": {
+    "id": "project-actions",
+    "label": "Actions",
+    "items": [
+      { "id": "edit", "label": "Edit" },
+      { "id": "delete", "label": "Delete", "tone": "danger" }
+    ]
+  },
+  "slots": {}
+}

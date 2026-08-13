@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "radio-default",
+  "description": "Unselected radio option in a named group.",
+  "props": { "label": "Daily", "value": "daily" },
+  "slots": {},
+  "attributes": { "name": "frequency" }
+}
