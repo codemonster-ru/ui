@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-vue",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Vue 3 adapter for CodeMonster UI components.",
   "type": "module",
   "license": "MIT",

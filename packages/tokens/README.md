@@ -2,7 +2,7 @@
 
 Framework-independent design tokens and theme serialization for CodeMonster UI.
 
-Current prerelease: `@codemonster-ru/ui-tokens@1.0.0-rc.1`.
+Current release: `@codemonster-ru/ui-tokens@1.0.0`.
 
 ## Requirements
 

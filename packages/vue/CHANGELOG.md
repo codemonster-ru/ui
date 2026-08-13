@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## 1.0.0
+
+### Added
+
+- Promotes the registry-validated Vue component adapter from `1.0.0-rc.1` without API changes.
+
 ## 1.0.0-rc.1
 
 ### Added

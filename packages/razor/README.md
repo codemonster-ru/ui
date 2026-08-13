@@ -3,7 +3,7 @@
 Composer adapter providing CodeMonster UI components and packaged frontend assets for Annabel
 Razor.
 
-Current prerelease: `codemonster-ru/ui@1.0.0-rc.1`.
+Current release: `codemonster-ru/ui@1.0.0`.
 
 ## Requirements
 
