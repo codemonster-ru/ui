@@ -76,7 +76,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 14 — VueForge migration and release
 - Current milestone: M7 — VueForge migration and CodeMonster UI 1.0
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort
-- Next item: `CMUI-162`
+- Next item: `CMUI-164`
 
 ## Milestones
 
@@ -399,13 +399,13 @@ added to the active scope in the future.
 - [x] `CMUI-160` Resolve local prerelease contract feedback.
 - [x] `CMUI-161` Publish CodeMonster UI 1.0 migration notes.
   - [x] `CMUI-161a` Prepare and verify the migration notes locally.
-- [ ] `CMUI-162` Publish CodeMonster UI 1.0.
-- [ ] `CMUI-163` Move VueForge packages to the approved maintenance state.
+- [x] `CMUI-162` Publish CodeMonster UI 1.0.
+- [x] `CMUI-163` Move VueForge packages to the approved maintenance state.
 - [ ] `CMUI-164` Rename the repository only after migration gates pass.
 
 ### M7 exit gate
 
-- [ ] `CMUI-G007` CodeMonster UI 1.0 is published and validated by real consumers.
+- [x] `CMUI-G007` CodeMonster UI 1.0 is published and validated by real consumers.
 
 ## Decision log
 
@@ -436,6 +436,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-13 | Retain Playground core, Vue UI, and Vite integration as a separate VueForge product family.                                    | Source compilation, executable iframe policy, workers, and virtual modules are product infrastructure rather than design-system component responsibilities. | `CMUI-148`, `CMUI-151`, `CMUI-153`                          |
 | 2026-08-13 | Pause all registry and public-release actions while continuing local Vue and Annabel Razor work.                               | Complete implementation and real-consumer validation without requiring npm/Composer credentials or creating public artifacts before they are needed.        | `CMUI-158`, `CMUI-159a`, `CMUI-161`–`CMUI-164`, `CMUI-G007` |
 | 2026-08-13 | Resume registry and public-release actions after completing local verification.                                                | Proceed with the approved prerelease, registry-consumer, and stable-release sequence now that both integration branches pass their local release gates.     | `CMUI-158`, `CMUI-159a`, `CMUI-161`–`CMUI-164`, `CMUI-G007` |
+| 2026-08-14 | Move VueForge design-system foundations to maintenance without blanket deprecation or unpublishing.                            | Direct new shared UI work to CodeMonster UI while retaining unsupported and separately maintained VueForge product families.                                | `CMUI-163`                                                  |
 
 ## Cross-repository log
 
@@ -461,6 +462,7 @@ Record Annabel work here when it completes a cross-repository roadmap item.
 | `ARAZOR-016` | `e36724a`      | This row                       | Razor 2.1 component API release.    |
 | `CMUI-159a`  | `a1ce832`      | This row                       | Registry npm consumer validation.   |
 | `CMUI-159a`  | `2b01e3f`      | This row                       | Packagist consumer validation.      |
+| `CMUI-162`   | `2216f5a`      | This row                       | Stable registry validation.         |
 
 ## Scope-change log
 

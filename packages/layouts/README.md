@@ -77,9 +77,9 @@ browser subpaths include it automatically.
 
 For full documentation, visit [docs.codemonster.net/vueforge/layouts](https://docs.codemonster.net/vueforge/layouts/).
 See the repository
-[installation guide](https://github.com/codemonster-ru/vueforge/blob/main/docs/layouts/installation.md)
-and [CHANGELOG.md](https://github.com/codemonster-ru/vueforge/blob/main/packages/layouts/CHANGELOG.md).
+[installation guide](https://github.com/codemonster-ru/codemonster-ui/blob/main/docs/layouts/installation.md)
+and [CHANGELOG.md](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/layouts/CHANGELOG.md).
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/vueforge/blob/main/packages/layouts/LICENSE)
+[MIT](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/layouts/LICENSE)

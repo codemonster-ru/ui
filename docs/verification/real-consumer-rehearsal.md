@@ -87,3 +87,28 @@ The complete Annabel quality gate then passed with the Packagist package:
 - CMS PHPStan and dependency security audits.
 
 Together with the npm registry repeat, this completes `CMUI-159a`.
+
+## Stable registry validation
+
+CodeMonster UI 1.0 was published from monorepo commit
+`3d1b17bff3459c780b62c240dc7fcbe1d965590b`. The npm registry now serves stable `1.0.0` releases
+of `@codemonster-ru/ui-tokens`, `@codemonster-ru/ui-runtime`, `@codemonster-ru/ui-css`,
+`@codemonster-ru/ui-utilities`, and `@codemonster-ru/ui-vue` under the `latest` distribution tag.
+Each release workflow passed the complete repository verification gate, and registry metadata was
+checked for the expected version, integrity, and shasum.
+
+The Composer split workflow published `codemonster-ru/ui@v1.0.0` through Packagist from split
+commit `20349a7ba55f478a2dd74741ba2b61fccf0e6f9e`. Its GitHub release and package tag resolve to the
+same split commit.
+
+Annabel commit `2216f5a` upgrades the real Vue admin and Razor CMS consumer from the registry
+prereleases to the stable npm and Composer constraints. Verification passed with:
+
+- exact npm `1.0.0` registry tarballs and zero production audit vulnerabilities;
+- the Admin production build with 69 transformed modules and a verified
+  225.19 kB / 65.76 kB gzip entry bundle;
+- 68 CMS tests with 182 assertions;
+- PHPStan with no errors and Composer security audits with no advisories;
+- 43 Composer UI assets published through the CMS application boundary.
+
+This completes the stable publication and real-consumer gate in `CMUI-162` and `CMUI-G007`.

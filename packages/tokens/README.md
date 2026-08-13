@@ -48,7 +48,7 @@ console.log(
 ## Installation
 
 ```bash
-npm install @codemonster-ru/ui-tokens@next
+npm install @codemonster-ru/ui-tokens@^1.0.0
 ```
 
 Import the generated properties once in the application stylesheet:
