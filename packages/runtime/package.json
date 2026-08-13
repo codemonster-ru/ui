@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-runtime",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Framework-independent progressive enhancement runtime for CodeMonster UI.",
   "type": "module",
   "license": "MIT",

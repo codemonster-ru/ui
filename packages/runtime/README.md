@@ -2,7 +2,7 @@
 
 Framework-independent progressive enhancement for canonical CodeMonster UI markup.
 
-Current prerelease: `@codemonster-ru/ui-runtime@1.0.0-rc.1`.
+Current release: `@codemonster-ru/ui-runtime@1.0.0`.
 
 The package provides controller registration, scoped discovery, idempotent lifecycle management,
 optional mutation observation, typed `cm:*` custom-event helpers, Accordion interaction, and native

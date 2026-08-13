@@ -9,7 +9,7 @@ const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const annabelRepository = resolve(process.env.ANNABEL_REPOSITORY ?? resolve(repositoryRoot, '../../PHP/annabel'));
 const composerCache = resolve(process.env.COMPOSER_CACHE_DIRECTORY ?? `${process.env.HOME}/.cache/composer`);
 const dockerImage = process.env.ANNABEL_PHP_IMAGE ?? 'annabel-php';
-const composerVersion = '1.0.0-rc.1';
+const composerVersion = '1.0.0';
 
 if (!existsSync(resolve(annabelRepository, 'packages/razor/composer.json'))) {
   throw new Error(`Annabel repository not found at ${annabelRepository}. Set ANNABEL_REPOSITORY to its absolute path.`);
@@ -29,6 +29,7 @@ consumer_root=/tmp/codemonster-ui-consumer
 
 mkdir -p "$workspace_root/packages"
 cp -R /workspace/packages/razor "$package_root"
+rm -rf "$package_root/vendor" "$package_root/composer.lock"
 cp -R /workspace/contracts "$workspace_root/contracts"
 cp -R /workspace/scripts/fixtures/composer-packed-consumer "$consumer_root"
 mkdir -p "$artifact_root"
