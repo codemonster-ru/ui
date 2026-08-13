@@ -37,6 +37,16 @@ for (const [name, factory, html] of [
   });
 }
 
+test('dialog ignores user dismissal while locked', () => {
+  const dom = new JSDOM(modalHtml('dialog').replace('data-cm-dialog-state="closed"', 'data-cm-dialog-state="closed" data-cm-dialog-dismissible="false"'));
+  const root = dom.window.document.querySelector('.cm-dialog');
+  new CmRuntime().register('dialog', createCmDialogController).start(dom.window.document);
+  root.dispatchEvent(new dom.window.CustomEvent('cm:dialog-open-request'));
+  press(dom, root, 'Escape');
+  root.querySelector('[data-cm-dialog-close]').click();
+  assert.equal(root.open, true);
+});
+
 test('popover toggles, focuses panel content, and dismisses outside', () => {
   const dom = new JSDOM(`${popoverHtml()}<button id="outside">Outside</button>`);
   const root = dom.window.document.querySelector('.cm-popover');

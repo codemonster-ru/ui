@@ -47,7 +47,8 @@ const helpOpen = ref(false);
 </template>
 ```
 
-Dialog and Drawer emit `update:open` and `openChange` after Escape or close-button dismissal.
+Dialog and Drawer emit `update:open` and `openChange` after Escape or close-button dismissal. Set
+Dialog `dismissible` to `false` while an asynchronous action must lock user-initiated dismissal.
 Popover emits the same events after trigger, Escape, or outside-pointer changes. Keep the Vue model
 as application state and do not initialize the shared runtime over these components.
 

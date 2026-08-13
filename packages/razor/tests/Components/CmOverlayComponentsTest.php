@@ -32,7 +32,7 @@ final class CmOverlayComponentsTest extends TestCase
 RAZOR);
         $html = $this->engine()->render('overlays');
 
-        self::assertStringContainsString('data-cm-controller="dialog" data-cm-dialog-state="open" open', $html);
+        self::assertStringContainsString('data-cm-controller="dialog" data-cm-dialog-state="open" data-cm-dialog-dismissible="true" open', $html);
         self::assertStringContainsString('class="cm-drawer cm-drawer--start"', $html);
         self::assertStringContainsString('data-cm-controller="popover"', $html);
         self::assertStringContainsString('data-cm-controller="tooltip"', $html);
@@ -49,6 +49,17 @@ RAZOR);
         self::assertStringContainsString('<strong>Trusted body</strong>', $html);
         self::assertStringContainsString('<button>Trusted action</button>', $html);
         self::assertStringNotContainsString('<script>', $html);
+    }
+
+    public function testDialogCanLockUserDismissal(): void
+    {
+        file_put_contents($this->root . '/views/locked.razor.php', <<<'RAZOR'
+<cm-dialog id="busy" title="Deleting" :open="true" :dismissible="false" />
+RAZOR);
+        $html = $this->engine()->render('locked');
+
+        self::assertStringContainsString('data-cm-dialog-dismissible="false"', $html);
+        self::assertStringContainsString('data-cm-dialog-close disabled', $html);
     }
 
     private function engine(): RazorEngine

@@ -9,7 +9,8 @@
     "title": { "type": "string", "required": true },
     "description": { "type": "nullable", "required": false, "default": null },
     "open": { "type": "boolean", "required": false, "default": false },
-    "closeLabel": { "type": "string", "required": false, "default": "Close" }
+    "closeLabel": { "type": "string", "required": false, "default": "Close" },
+    "dismissible": { "type": "boolean", "required": false, "default": true }
   },
   "slots": {
     "default": { "required": false },
