@@ -70,9 +70,9 @@ to the events contract in `CMUI-007`.
 ## Registry verification
 
 On 2026-08-11, the npm registry returned `404 Not Found` for every approved npm package name above,
-and Packagist returned `404` for `codemonster-ru/ui`. This confirms that no public package currently
-occupies those names. It does not reserve them; ownership and publication credentials must still be
-verified before the first release.
+and Packagist returned `404` for `codemonster-ru/ui`. This confirmed that no public package occupied
+those names before the first release. On 2026-08-13, the five active npm package names and the
+Composer package name were claimed by their coordinated `1.0.0-rc.1` prereleases.
 
 ## Rationale
 

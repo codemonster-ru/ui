@@ -76,7 +76,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 14 — VueForge migration and release
 - Current milestone: M7 — VueForge migration and CodeMonster UI 1.0
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort
-- Next item: `CMUI-158`
+- Next item: `CMUI-161`
 
 ## Milestones
 
@@ -89,7 +89,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M4        | Accordion proves accessible cross-platform interaction                    | Completed            |
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
 | M6        | Utility CSS and the first stable component cohort are available           | Completed            |
-| M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | Not started          |
+| M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | In progress          |
 
 ## Phase 0 — Product and architecture decisions
 
@@ -389,13 +389,13 @@ added to the active scope in the future.
 - [x] `CMUI-155` Run complete npm packed-consumer verification.
 - [x] `CMUI-156` Run complete Composer packed-consumer verification.
 - [x] `CMUI-157` Run Vue/Razor accessibility and visual verification.
-- [ ] `CMUI-158` Publish CodeMonster UI prereleases.
+- [x] `CMUI-158` Publish CodeMonster UI prereleases.
   - [x] Publish the five active npm prereleases with the `next` tag and trusted publishing.
-  - [ ] Publish `codemonster-ru/ui@1.0.0-rc.1` from a Composer package repository.
+  - [x] Publish `codemonster-ru/ui@1.0.0-rc.1` from a Composer package repository.
 - [x] `CMUI-159` Validate real Vue admin and Razor CMS template consumers with local prerelease archives.
-  - [ ] `CMUI-159a` Repeat real-consumer validation against registry prereleases after publication resumes.
+  - [x] `CMUI-159a` Repeat real-consumer validation against registry prereleases after publication resumes.
     - [x] Repeat the Annabel CMS npm installation, production builds, tests, analysis, and audits against exact registry prereleases.
-    - [ ] Repeat the Composer installation against the Packagist prerelease.
+    - [x] Repeat the Composer installation against the Packagist prerelease.
 - [x] `CMUI-160` Resolve local prerelease contract feedback.
 - [ ] `CMUI-161` Publish CodeMonster UI 1.0 migration notes.
   - [x] `CMUI-161a` Prepare and verify the migration notes locally.
@@ -439,7 +439,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 
 ## Cross-repository log
 
-Record Annabel work here when an `ARAZOR-*` item is completed.
+Record Annabel work here when it completes a cross-repository roadmap item.
 
 | Item         | Annabel commit | CodeMonster UI tracking commit | Notes                               |
 | ------------ | -------------- | ------------------------------ | ----------------------------------- |
@@ -459,6 +459,8 @@ Record Annabel work here when an `ARAZOR-*` item is completed.
 | `ARAZOR-014` | `d5cf5cf`      | This row                       | Registration cache invalidation.    |
 | `ARAZOR-015` | `e617b7d`      | This row                       | Registration and security guide.    |
 | `ARAZOR-016` | `e36724a`      | This row                       | Razor 2.1 component API release.    |
+| `CMUI-159a`  | `a1ce832`      | This row                       | Registry npm consumer validation.   |
+| `CMUI-159a`  | `2b01e3f`      | This row                       | Packagist consumer validation.      |
 
 ## Scope-change log
 

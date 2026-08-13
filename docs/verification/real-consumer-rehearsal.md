@@ -1,6 +1,6 @@
 # Real consumer prerelease rehearsal
 
-Status: npm registry validated; Composer registry repeat pending
+Status: npm and Composer registries validated
 Date: 2026-08-13  
 Roadmap item: `CMUI-159`
 
@@ -69,7 +69,21 @@ the repository release workflow configured as their trusted publisher, and have 
 prereleases. The npm registry retains an unavoidable `latest` alias while each new package has only
 its bootstrap prerelease; stable `1.0.0` will replace it during the stable release.
 
-The Composer half of `CMUI-159a` remains open. Packagist requires the package `composer.json` at the
-repository root, while `codemonster-ru/ui` lives in `packages/razor`; publication therefore requires
-a public read-only split repository before the path repository can be removed from the CMS
-consumer.
+## Composer registry repeat
+
+The Composer half of `CMUI-159a` passed against public Packagist package
+`codemonster-ru/ui@v1.0.0-rc.1`. The release is generated from `packages/razor` in the Vueforge
+monorepo and published through the read-only `codemonster-ru/ui` split repository. Annabel commit
+`2b01e3f` removes the Vueforge path repository and its Docker mounts; Composer resolves the package
+to split commit `22e423f3974cf96d5f5634c97e562bce1df63714` and installs its GitHub archive.
+
+The complete Annabel quality gate then passed with the Packagist package:
+
+- strict Composer manifest, package, architecture, API, hygiene, and release checks;
+- all package tests and static-analysis gates;
+- Annabel ecosystem acceptance;
+- CMS npm installation and production admin build;
+- 68 CMS tests with 182 assertions;
+- CMS PHPStan and dependency security audits.
+
+Together with the npm registry repeat, this completes `CMUI-159a`.

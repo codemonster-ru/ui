@@ -1,6 +1,6 @@
 # CodeMonster UI prerelease preparation
 
-Status: Prepared, not published  
+Status: Published and registry-validated
 Date: 2026-08-13  
 Roadmap item: `CMUI-158`
 
@@ -33,10 +33,16 @@ All Node.js checks ran on the supported `24.15.0` floor.
   workspace symlink, passed PHPStan, 133 PHPUnit tests with 305 assertions, strict consumer
   validation, provider discovery, component rendering, and asset publication.
 
-## Publication boundary
+## Publication result
 
-Preparation does not complete `CMUI-158`. Completion requires the exact candidates to be available
-from their public registries, followed by fresh registry-only installation and integrity checks.
-At preparation time the npm packages did not exist publicly and the local npm client had no
-authenticated publisher session. The Composer ZIP likewise had no configured public package
-repository. No roadmap checkbox is advanced until those external results exist.
+All five npm candidates were published at exact version `1.0.0-rc.1` with the `next` distribution
+tag and the repository tag workflow configured as their trusted publisher. Matching GitHub
+prereleases were created for each package.
+
+The Composer candidate was split from `packages/razor` into the public read-only
+`codemonster-ru/ui` repository. Its `v1.0.0-rc.1` tag resolves through Packagist to split commit
+`22e423f3974cf96d5f5634c97e562bce1df63714`, and the Packagist GitHub webhook is active.
+
+Fresh registry-only installation and the real Annabel consumer checks are recorded in
+[Real consumer prerelease rehearsal](./real-consumer-rehearsal.md). These results complete
+`CMUI-158`.
