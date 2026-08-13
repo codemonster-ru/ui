@@ -76,7 +76,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 14 — VueForge migration and release
 - Current milestone: M7 — VueForge migration and CodeMonster UI 1.0
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort
-- Next item: `CMUI-162`
+- Next item: `CMUI-163`
 
 ## Milestones
 
@@ -399,13 +399,13 @@ added to the active scope in the future.
 - [x] `CMUI-160` Resolve local prerelease contract feedback.
 - [x] `CMUI-161` Publish CodeMonster UI 1.0 migration notes.
   - [x] `CMUI-161a` Prepare and verify the migration notes locally.
-- [ ] `CMUI-162` Publish CodeMonster UI 1.0.
+- [x] `CMUI-162` Publish CodeMonster UI 1.0.
 - [ ] `CMUI-163` Move VueForge packages to the approved maintenance state.
 - [ ] `CMUI-164` Rename the repository only after migration gates pass.
 
 ### M7 exit gate
 
-- [ ] `CMUI-G007` CodeMonster UI 1.0 is published and validated by real consumers.
+- [x] `CMUI-G007` CodeMonster UI 1.0 is published and validated by real consumers.
 
 ## Decision log
 
@@ -461,6 +461,7 @@ Record Annabel work here when it completes a cross-repository roadmap item.
 | `ARAZOR-016` | `e36724a`      | This row                       | Razor 2.1 component API release.    |
 | `CMUI-159a`  | `a1ce832`      | This row                       | Registry npm consumer validation.   |
 | `CMUI-159a`  | `2b01e3f`      | This row                       | Packagist consumer validation.      |
+| `CMUI-162`   | `2216f5a`      | This row                       | Stable registry validation.         |
 
 ## Scope-change log
 
