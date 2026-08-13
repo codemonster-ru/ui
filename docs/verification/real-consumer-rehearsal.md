@@ -1,6 +1,6 @@
 # Real consumer prerelease rehearsal
 
-Status: Locally validated; registry repeat deferred
+Status: npm registry validated; Composer registry repeat pending
 Date: 2026-08-13  
 Roadmap item: `CMUI-159`
 
@@ -46,6 +46,30 @@ Application verification passed locally:
 - public Razor output contains CodeMonster UI markup.
 
 This completes the local scope of `CMUI-159` and the contract-feedback work in `CMUI-160`.
-`CMUI-159a` remains open: after publication resumes, repeat npm and Composer installation from the
-registries without file archives or path repositories, then rerun the same build, render,
-interaction, and application checks.
+
+## npm registry repeat
+
+The npm half of `CMUI-159a` passed against the exact public `1.0.0-rc.1` versions of
+`@codemonster-ru/ui-tokens`, `@codemonster-ru/ui-css`, and `@codemonster-ru/ui-vue`. The Annabel CMS
+manifest and lock file contain registry versions and registry tarball integrity values instead of
+local `file:` archives.
+
+Verification passed with Node 24.19.0:
+
+- clean npm installation and production dependency audit with zero vulnerabilities;
+- Annabel Admin production build with 69 transformed modules and a verified
+  225.19 kB / 65.76 kB gzip entry bundle;
+- Annabel Setup production build with 39 transformed modules and a verified
+  214.60 kB / 62.45 kB gzip entry bundle;
+- complete Annabel quality gate, including 68 CMS tests with 182 assertions and PHPStan with no
+  errors.
+
+All five active npm packages are published at `1.0.0-rc.1`, use the `next` distribution tag, have
+the repository release workflow configured as their trusted publisher, and have matching GitHub
+prereleases. The npm registry retains an unavoidable `latest` alias while each new package has only
+its bootstrap prerelease; stable `1.0.0` will replace it during the stable release.
+
+The Composer half of `CMUI-159a` remains open. Packagist requires the package `composer.json` at the
+repository root, while `codemonster-ru/ui` lives in `packages/razor`; publication therefore requires
+a public read-only split repository before the path repository can be removed from the CMS
+consumer.

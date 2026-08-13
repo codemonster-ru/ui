@@ -390,8 +390,12 @@ added to the active scope in the future.
 - [x] `CMUI-156` Run complete Composer packed-consumer verification.
 - [x] `CMUI-157` Run Vue/Razor accessibility and visual verification.
 - [ ] `CMUI-158` Publish CodeMonster UI prereleases.
+  - [x] Publish the five active npm prereleases with the `next` tag and trusted publishing.
+  - [ ] Publish `codemonster-ru/ui@1.0.0-rc.1` from a Composer package repository.
 - [x] `CMUI-159` Validate real Vue admin and Razor CMS template consumers with local prerelease archives.
   - [ ] `CMUI-159a` Repeat real-consumer validation against registry prereleases after publication resumes.
+    - [x] Repeat the Annabel CMS npm installation, production builds, tests, analysis, and audits against exact registry prereleases.
+    - [ ] Repeat the Composer installation against the Packagist prerelease.
 - [x] `CMUI-160` Resolve local prerelease contract feedback.
 - [ ] `CMUI-161` Publish CodeMonster UI 1.0 migration notes.
   - [x] `CMUI-161a` Prepare and verify the migration notes locally.
