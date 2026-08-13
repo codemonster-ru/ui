@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0
+
+- Promotes the registry-validated progressive-enhancement contract from `1.0.0-rc.1` without API
+  changes.
+
 ## 1.0.0-rc.1
 
 - Exposes the complete progressive-enhancement controller contract for prerelease consumer

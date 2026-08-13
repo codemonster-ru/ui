@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-utilities",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Generated token-backed utility CSS for CodeMonster UI.",
   "type": "module",
   "license": "MIT",
@@ -43,7 +43,7 @@
     "utilities"
   ],
   "dependencies": {
-    "@codemonster-ru/ui-tokens": "^1.0.0-rc.1"
+    "@codemonster-ru/ui-tokens": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^10.8.0",
