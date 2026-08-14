@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 17 — Direct replacement maturity
 - Current milestone: M10 — Mature direct replacements
-- Next item: `CMUI-178` Mature the display and native-form direct-replacement cohort.
+- Next item: `CMUI-179` Mature the navigation and overlay direct-replacement cohort.
 
 ## Milestones
 
@@ -103,7 +103,7 @@ Work in this phase is driven by the inventory from `CMUI-172`. A cohort is compl
 approved stable use cases work in both Vue and Razor; identical framework APIs are not required.
 
 - [x] `CMUI-177` Close Button, Card, Field, Input, and Accordion capability gaps.
-- [ ] `CMUI-178` Close display and native-form cohort capability gaps.
+- [x] `CMUI-178` Close display and native-form cohort capability gaps.
 - [ ] `CMUI-179` Close navigation and overlay cohort capability gaps, including keyboard, focus,
   dismissal, controlled-state, and progressive-enhancement behavior.
 - [ ] `CMUI-180` Close Select, DatePicker, and CommandPalette capability gaps, including native

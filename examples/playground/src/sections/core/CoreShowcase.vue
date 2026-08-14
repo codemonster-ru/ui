@@ -158,7 +158,10 @@
           </CmGrid>
           <CmInline>
             <CmCheckbox v-model="notifications" name="preferences" value="notifications">Notifications</CmCheckbox>
-            <CmSwitch v-model="automaticRelease" name="automatic-release">Automatic release</CmSwitch>
+            <CmSwitch v-model="automaticRelease" name="automatic-release">
+              <template #thumb="{ checked }">{{ checked ? '●' : '○' }}</template>
+              Automatic release
+            </CmSwitch>
             <CmRadio v-model="channel" name="channel" value="stable">Stable</CmRadio>
             <CmRadio v-model="channel" name="channel" value="preview">Preview</CmRadio>
           </CmInline>
