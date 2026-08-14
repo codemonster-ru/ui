@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-loading",
+  "description": "Busy palette with localized trusted loading content.",
+  "props": {
+    "id": "global",
+    "title": "Global search",
+    "commands": [],
+    "loading": true,
+    "loadingText": "Loading…"
+  },
+  "slots": { "loading": "<strong>Finding commands…</strong>" }
+}

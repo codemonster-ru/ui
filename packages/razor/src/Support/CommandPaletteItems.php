@@ -14,7 +14,6 @@ final class CommandPaletteItems
      */
     public static function normalize(array $values): array
     {
-        if ($values === []) throw new InvalidArgumentException('Component prop [commands] must not be empty.');
         $commands = [];
         $seen = [];
         foreach ($values as $value) {

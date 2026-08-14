@@ -24,4 +24,6 @@ test('preserves native control and command interaction hooks', async () => {
   assert.match(datePicker, /\.cm-date-picker:read-only/u);
   assert.match(palette, /\.cm-command-palette::backdrop/u);
   assert.match(palette, /\.cm-command-palette__option\[hidden\]/u);
+  assert.match(palette, /\.cm-command-palette__idle\[hidden\]/u);
+  assert.match(palette, /\.cm-command-palette__footer/u);
 });

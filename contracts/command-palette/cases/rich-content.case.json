@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-rich-content",
+  "description": "Trusted header, command, and footer content inside component-owned regions.",
+  "props": {
+    "id": "project",
+    "title": "Project commands",
+    "commands": [{ "id": "open-settings", "label": "Open settings" }]
+  },
+  "slots": {
+    "actions": "<kbd>⌘K</kbd>",
+    "commandOpenSettings": "<strong>Open</strong> settings <kbd>S</kbd>",
+    "footer": "Type to filter"
+  }
+}

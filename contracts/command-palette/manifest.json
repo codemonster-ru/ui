@@ -10,15 +10,28 @@
     "commands": { "type": "collection", "required": true, "valueContract": "command-palette-item" },
     "open": { "type": "boolean", "required": false, "default": false },
     "query": { "type": "string", "required": false, "default": "" },
+    "loading": { "type": "boolean", "required": false, "default": false },
     "placeholder": { "type": "string", "required": false, "default": "Search commands" },
+    "loadingText": { "type": "string", "required": false, "default": "Loading commands…" },
+    "idleText": { "type": "string", "required": false, "default": "Start typing to search." },
     "emptyText": { "type": "string", "required": false, "default": "No commands found." },
     "closeLabel": { "type": "string", "required": false, "default": "Close" }
   },
-  "slots": {},
+  "slots": {
+    "actions": { "description": "Trusted header actions beside the title." },
+    "command{UpperCamelId}": {
+      "description": "Trusted per-command content inside the component-owned option.",
+      "scopeContract": "command-palette-item-state"
+    },
+    "loading": { "description": "Trusted loading status content." },
+    "idle": { "description": "Trusted idle status content." },
+    "empty": { "description": "Trusted no-results content." },
+    "footer": { "description": "Trusted footer content after results." }
+  },
   "events": {
     "openChange": { "description": "Reports the next modal state.", "payloadContract": "boolean" },
     "queryChange": { "description": "Reports the current plain-text query.", "payloadContract": "string" },
     "select": { "description": "Reports the selected enabled command id.", "payloadContract": "command-id" }
   },
-  "states": ["closed", "open", "filtered", "empty"]
+  "states": ["closed", "open", "loading", "idle", "filtered", "empty"]
 }
