@@ -150,8 +150,8 @@
       "roadmapItem": "CMUI-191",
       "destination": "phase-18",
       "priority": "P1",
-      "summary": "Publish the matured cohort and exact migration notes",
-      "reason": "Release only verified shared changes while leaving retained VueForge products available.",
+      "summary": "Matured cohort and exact migration notes published",
+      "reason": "The independently versioned npm cohort and codemonster-ru/ui-razor 1.1.0 are published with exact migration guidance while retained VueForge products remain available.",
       "gaps": []
     }
   ],

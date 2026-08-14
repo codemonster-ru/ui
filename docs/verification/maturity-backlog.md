@@ -1,7 +1,8 @@
 # CodeMonster UI ordered maturity backlog
 
-Status: Active
+Status: Complete
 Date: 2026-08-14
+Completed: 2026-08-15
 Roadmap item: `CMUI-176`
 
 The canonical backlog is
@@ -28,7 +29,7 @@ capability to appear exactly once with the same roadmap assignment.
 |    12 | `CMUI-188` | P0       | Application-owned | Application shell ownership verified                             |         0 |
 |    13 | `CMUI-189` | P0       | Phase 18          | Playground legacy design-system dependencies removed             |         0 |
 |    14 | `CMUI-190` | P0       | Phase 18          | Complete parity and real-consumer verification passed            |         0 |
-|    15 | `CMUI-191` | P1       | Phase 18          | Publish the matured cohort and migration notes                   |         0 |
+|    15 | `CMUI-191` | P1       | Phase 18          | Matured cohort and exact migration notes published               |         0 |
 
 Priority expresses consumer impact inside the dependency order; it does not permit Phase 18
 implementation to bypass the M10 exit gate. `CMUI-183` is listed once but runs alongside every
@@ -55,3 +56,6 @@ A backlog item closes only when each assigned gap changes from `missing` to an e
 status, or when its non-gap verification and migration outcome passes. Removing a gap from the
 coverage inventory or changing its roadmap assignment without updating this backlog fails the
 coverage gate.
+
+All 15 ordered items are complete, and the canonical coverage inventory records no unresolved
+gaps.
