@@ -10,9 +10,19 @@
     "description": { "type": "nullable", "required": false, "default": null },
     "open": { "type": "boolean", "required": false, "default": false },
     "side": { "type": "enum", "required": false, "default": "end", "values": ["start", "end"] },
-    "closeLabel": { "type": "string", "required": false, "default": "Close" }
+    "closeLabel": { "type": "string", "required": false, "default": "Close" },
+    "dismissible": { "type": "boolean", "required": false, "default": true },
+    "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg", "full"] },
+    "dividers": { "type": "boolean", "required": false, "default": false },
+    "rounded": { "type": "boolean", "required": false, "default": false }
   },
-  "slots": { "default": { "required": false }, "footer": { "required": false } },
+  "slots": {
+    "default": { "required": false },
+    "header": { "required": false },
+    "description": { "required": false },
+    "actions": { "required": false },
+    "footer": { "required": false }
+  },
   "events": {
     "openChange": { "description": "Reports the next modal state.", "payloadContract": "boolean" }
   },

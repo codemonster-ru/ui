@@ -1,3 +1,5 @@
+export type CmDialogSize = 'sm' | 'md' | 'lg';
+
 export interface CmDialogProps {
   id: string;
   title: string;
@@ -5,4 +7,6 @@ export interface CmDialogProps {
   open?: boolean;
   closeLabel?: string;
   dismissible?: boolean;
+  size?: CmDialogSize;
+  dividers?: boolean;
 }

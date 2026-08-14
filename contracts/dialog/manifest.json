@@ -10,10 +10,15 @@
     "description": { "type": "nullable", "required": false, "default": null },
     "open": { "type": "boolean", "required": false, "default": false },
     "closeLabel": { "type": "string", "required": false, "default": "Close" },
-    "dismissible": { "type": "boolean", "required": false, "default": true }
+    "dismissible": { "type": "boolean", "required": false, "default": true },
+    "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg"] },
+    "dividers": { "type": "boolean", "required": false, "default": false }
   },
   "slots": {
     "default": { "required": false },
+    "header": { "required": false },
+    "description": { "required": false },
+    "actions": { "required": false },
     "footer": { "required": false }
   },
   "events": {

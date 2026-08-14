@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "drawer-composed",
+  "description": "Large rounded divided drawer with trusted header regions and locked dismissal.",
+  "props": {
+    "id": "account",
+    "title": "Account",
+    "side": "end",
+    "size": "lg",
+    "dividers": true,
+    "rounded": true,
+    "dismissible": false
+  },
+  "slots": {
+    "header": "Account <strong>settings</strong>",
+    "description": "Changes apply to the <strong>workspace</strong>.",
+    "actions": "<button type=\"button\">Reset</button>",
+    "default": "Settings form.",
+    "footer": "Save"
+  }
+}

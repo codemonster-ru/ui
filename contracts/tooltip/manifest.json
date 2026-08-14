@@ -22,7 +22,7 @@
       "values": ["none", "short", "long"]
     }
   },
-  "slots": {},
+  "slots": { "trigger": { "required": false }, "content": { "required": false } },
   "events": {},
   "states": ["hidden", "visible"]
 }

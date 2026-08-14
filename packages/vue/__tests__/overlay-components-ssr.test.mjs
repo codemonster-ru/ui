@@ -11,6 +11,24 @@ import { CmDialog, CmDrawer, CmPopover, CmTooltip } from '../dist/index.js';
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const components = { dialog: CmDialog, drawer: CmDrawer, popover: CmPopover, tooltip: CmTooltip };
 
+function slotContent(content) {
+  const richContent = {
+    'Publish <strong>release</strong>?': () => ['Publish ', h('strong', 'release'), '?'],
+    'Review the <strong>public changes</strong>.': () => ['Review the ', h('strong', 'public changes'), '.'],
+    '<button type="button">Preview</button>': () => h('button', { type: 'button' }, 'Preview'),
+    'Account <strong>settings</strong>': () => ['Account ', h('strong', 'settings')],
+    'Changes apply to the <strong>workspace</strong>.': () => ['Changes apply to the ', h('strong', 'workspace'), '.'],
+    '<button type="button">Reset</button>': () => h('button', { type: 'button' }, 'Reset'),
+    '<span aria-hidden="true">●</span><span>Profile</span>': () => [
+      h('span', { 'aria-hidden': 'true' }, '●'),
+      h('span', 'Profile'),
+    ],
+    '<span aria-hidden="true">×</span>': () => h('span', { 'aria-hidden': 'true' }, '×'),
+    'Archive <strong>this project</strong>': () => ['Archive ', h('strong', 'this project')],
+  };
+  return richContent[content]?.() ?? content;
+}
+
 for (const [slug, component] of Object.entries(components)) {
   const casesDirectory = resolve(packageDirectory, `../../contracts/${slug}/cases`);
   const caseFiles = (await readdir(casesDirectory)).filter((file) => file.endsWith('.case.json')).sort();
@@ -22,7 +40,7 @@ for (const [slug, component] of Object.entries(components)) {
       const expected = await readFile(resolve(casesDirectory, `${basename}.html`), 'utf8');
       const props = { ...definition.attributes, ...definition.props };
       const slots = Object.fromEntries(
-        Object.entries(definition.slots).map(([name, content]) => [name, () => content]),
+        Object.entries(definition.slots).map(([name, content]) => [name, () => slotContent(content)]),
       );
       const actual = await renderToString(createSSRApp({ render: () => h(component, props, slots) }));
       const comparison = compareSignificantDom(expected, actual);

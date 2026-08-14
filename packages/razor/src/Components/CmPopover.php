@@ -42,6 +42,7 @@ final class CmPopover implements ComponentInterface
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.popover', [
             'id' => $id,
             'label' => $label,
+            'trigger' => $context->hasSlot('trigger') ? $context->slot('trigger') : $label,
             'open' => $open,
             'disabled' => $disabled,
             'content' => $context->slot('default'),

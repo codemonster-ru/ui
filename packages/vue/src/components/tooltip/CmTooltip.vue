@@ -73,6 +73,7 @@ onBeforeUnmount(clearTimer);
     <button
       class="cm-tooltip__trigger"
       type="button"
+      :aria-label="props.label"
       :aria-describedby="`${props.id}-tooltip`"
       @focus="show"
       @blur="hide"
@@ -80,10 +81,10 @@ onBeforeUnmount(clearTimer);
       @pointerleave="hide"
       @keydown="onKeydown"
     >
-      {{ props.label }}
+      <slot name="trigger">{{ props.label }}</slot>
     </button>
-    <span :id="`${props.id}-tooltip`" class="cm-tooltip__content" role="tooltip" :hidden="!visible">{{
-      props.content
-    }}</span>
+    <span :id="`${props.id}-tooltip`" class="cm-tooltip__content" role="tooltip" :hidden="!visible">
+      <slot name="content">{{ props.content }}</slot>
+    </span>
   </span>
 </template>
