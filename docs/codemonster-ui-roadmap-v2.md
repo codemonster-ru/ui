@@ -80,7 +80,7 @@ or intentionally drops.
   component and capability.
 - [ ] `CMUI-171` Add a coverage validator that reconciles the inventory with the frozen baseline,
   migration map, contracts, Vue exports, Razor provider registrations, documentation, and showcase.
-- [ ] `CMUI-172` Audit the 33 direct replacements against frozen VueForge types, documentation,
+- [x] `CMUI-172` Audit the 33 direct replacements against frozen VueForge types, documentation,
   tests, and representative examples; classify every material capability.
 - [ ] `CMUI-173` Audit all `compose` and `manual` dispositions and record the evidence for keeping,
   changing, or splitting each decision.
