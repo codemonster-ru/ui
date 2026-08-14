@@ -64,9 +64,10 @@ those API changes against the component guides after every codemod run.
 ## Composition and manual review
 
 The compose and manual cohorts have also completed their initial review; they are not safe rename
-targets. ConfirmDialog, FormLayout, Panel, PageHeader, AuthLayout, and ErrorLayout require maintained
-application recipes. GroupBox and SkeletonGate split portable composition from application-owned
-behavior. Fieldset, IconButton, ProgressBar, and ProgressSpinner are now direct replacements with
+targets. ConfirmDialog, FormLayout, Panel, PageHeader, AuthLayout, ErrorLayout, GroupBox,
+SkeletonGate, and ThemeSwitch have [maintained recipes](./index.md#maintained-recipes) that preserve
+their portable composition and document application-owned policy. Fieldset, IconButton,
+ProgressBar, and ProgressSpinner are now direct replacements with
 bounded portable contracts. DataTable column choice, Menubar, navigation trees, Stepper, and Table
 of Contents have final manual outcomes
 because their state and enhancement policy remain application-owned. ThemeSwitch, application

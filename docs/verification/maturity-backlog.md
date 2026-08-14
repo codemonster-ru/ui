@@ -6,9 +6,9 @@ Roadmap item: `CMUI-176`
 
 The canonical backlog is
 [`migration/codemonster-ui-maturity-backlog.json`](../../migration/codemonster-ui-maturity-backlog.json).
-Its order combines the 9 unresolved coverage gaps with the consumer evidence recorded by
-[`CMUI-175`](./consumer-usage-inventory.md). The coverage gate requires every missing capability to
-appear exactly once and to retain the same roadmap assignment.
+It now records no unresolved coverage gaps. Its preserved order reflects the consumer evidence from
+[`CMUI-175`](./consumer-usage-inventory.md), and the coverage gate requires any future missing
+capability to appear exactly once with the same roadmap assignment.
 
 ## Execution order
 
@@ -24,7 +24,7 @@ appear exactly once and to retain the same roadmap assignment.
 |     8 | `CMUI-184` | P1       | Phase 18          | Small portable candidate decisions complete                      |         0 |
 |     9 | `CMUI-185` | P2       | Phase 18          | Behavior-rich candidate decisions complete                       |         0 |
 |    10 | `CMUI-186` | P2       | Phase 18          | Approved small portable components delivered                     |         0 |
-|    11 | `CMUI-187` | P0       | Recipe            | Maintained application composition recipes                       |         9 |
+|    11 | `CMUI-187` | P0       | Recipe            | Maintained application composition recipes published             |         0 |
 |    12 | `CMUI-188` | P0       | Application-owned | Preserve shell and workflow ownership                            |         0 |
 |    13 | `CMUI-189` | P0       | Phase 18          | Remove playground legacy design-system dependencies              |         0 |
 |    14 | `CMUI-190` | P0       | Phase 18          | Complete parity and real-consumer verification                   |         0 |

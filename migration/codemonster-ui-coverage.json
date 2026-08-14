@@ -338,10 +338,10 @@
         },
         {
           "id": "maintained-recipe",
-          "status": "missing",
-          "notes": "Publish a maintained recipe covering focus, loading lock, confirm, and cancel in `CMUI-187`",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained Dialog and Button recipe covers cancel focus, busy locking, confirm/cancel flow, error retention, and explicit application ownership of destructive async policy",
           "evidence": [
+            "docs/recipes/confirm-dialog.md",
             "docs/core/components/confirm-dialog/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/dialog/contract.md",
@@ -740,10 +740,10 @@
         },
         {
           "id": "maintained-recipe",
-          "status": "missing",
-          "notes": "Publish a maintained recipe in `CMUI-187`",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained Stack, Field, and application CSS recipe covers stacked, horizontal, and responsive form arrangements without a permanent layout wrapper",
           "evidence": [
+            "docs/recipes/form-layout.md",
             "docs/core/components/form-layout/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/stack/contract.md",
@@ -767,10 +767,10 @@
         },
         {
           "id": "remaining-migration-outcome",
-          "status": "missing",
-          "notes": "Publish a recipe in `CMUI-187`, dependent on the approved Fieldset and Accordion outcomes",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained recipe uses Fieldset for static form groups, Fieldset plus Accordion for collapsible groups, and Card or Section for non-form grouping",
           "evidence": [
+            "docs/recipes/group-box.md",
             "docs/core/components/group-box/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/section/contract.md"
@@ -1016,10 +1016,10 @@
         },
         {
           "id": "maintained-recipe",
-          "status": "missing",
-          "notes": "Publish subtle/default panel recipes in `CMUI-187`",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained recipe maps bounded panels to Card and ordinary or inset regions to Section while keeping heading hierarchy and presentation application-owned",
           "evidence": [
+            "docs/recipes/panel.md",
             "docs/core/components/panel/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/card/contract.md",
@@ -1044,10 +1044,10 @@
         },
         {
           "id": "maintained-recipe",
-          "status": "missing",
-          "notes": "Publish a maintained recipe in `CMUI-187`",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained semantic header recipe composes Breadcrumbs, Stack, Inline, native headings, and actions while routing, authorization, and sticky shell behavior remain application-owned",
           "evidence": [
+            "docs/recipes/page-header.md",
             "docs/core/components/page-header/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/stack/contract.md",
@@ -1290,10 +1290,10 @@
         },
         {
           "id": "remaining-migration-outcome",
-          "status": "missing",
-          "notes": "Publish the portable recipe in `CMUI-187`; keep measurement behavior application-owned unless two adapters need it",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained busy-region recipe composes Skeleton with hidden/inert content; async readiness, errors, announcements, and measured-height lifecycle remain application-owned",
           "evidence": [
+            "docs/recipes/skeleton-gate.md",
             "docs/core/components/skeleton-gate/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/skeleton/contract.md"
@@ -1423,10 +1423,10 @@
         },
         {
           "id": "maintained-recipe",
-          "status": "missing",
-          "notes": "Publish a Vue/Razor application recipe in `CMUI-187` rather than a shared stateful component",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained Vue and Razor recipe uses Button as the control while SSR bootstrap, persistence, system mode, root mutation, and cross-tab synchronization remain application-owned",
           "evidence": [
+            "docs/recipes/theme-switch.md",
             "docs/core/components/theme-switch/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/button/contract.md"
@@ -1851,10 +1851,10 @@
         },
         {
           "id": "maintained-recipe",
-          "status": "missing",
-          "notes": "Publish a maintained recipe in `CMUI-187`",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained semantic shell recipe composes Container, Stack, Section, form content, and secondary links while authentication, routing, focus, and responsive policy remain application-owned",
           "evidence": [
+            "docs/recipes/auth-layout.md",
             "docs/layouts/components/auth-layout/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/container/contract.md",
@@ -1883,10 +1883,10 @@
         },
         {
           "id": "maintained-recipe",
-          "status": "missing",
-          "notes": "Publish a maintained recipe in `CMUI-187`",
-          "roadmapItem": "CMUI-187",
+          "status": "supported",
+          "notes": "Maintained semantic error shell recipe composes Container, Stack, Section, recovery actions, and product copy while routing, logging, and focus policy remain application-owned",
           "evidence": [
+            "docs/recipes/error-layout.md",
             "docs/layouts/components/error-layout/api.md",
             "docs/verification/component-disposition-audit.md",
             "contracts/container/contract.md",

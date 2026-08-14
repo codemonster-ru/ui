@@ -32,6 +32,15 @@ Every component guide documents both Vue and Razor. Interactive Razor examples i
 specific `@codemonster-ru/ui-runtime` controller required for progressive enhancement; Vue
 components own their interaction directly.
 
+## Maintained recipes
+
+- [Confirm dialog](./recipes/confirm-dialog.md), [Group box](./recipes/group-box.md), and
+  [Panel](./recipes/panel.md).
+- [Form layout](./recipes/form-layout.md), [Page header](./recipes/page-header.md), and
+  [Theme switch](./recipes/theme-switch.md).
+- [Auth layout](./recipes/auth-layout.md), [Error layout](./recipes/error-layout.md), and
+  [Skeleton gate](./recipes/skeleton-gate.md).
+
 ## Architecture and support
 
 - [Package boundaries](./architecture/package-boundaries.md) and

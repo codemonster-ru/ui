@@ -110,19 +110,9 @@
       "roadmapItem": "CMUI-187",
       "destination": "recipe",
       "priority": "P0",
-      "summary": "Publish maintained application composition recipes",
-      "reason": "Theme and SkeletonGate recipes unblock the playground; the real Vue consumer proves demand for the remaining compositions.",
-      "gaps": [
-        "VfAuthLayout:maintained-recipe",
-        "VfConfirmDialog:maintained-recipe",
-        "VfErrorLayout:maintained-recipe",
-        "VfFormLayout:maintained-recipe",
-        "VfGroupBox:remaining-migration-outcome",
-        "VfPageHeader:maintained-recipe",
-        "VfPanel:maintained-recipe",
-        "VfSkeletonGate:remaining-migration-outcome",
-        "VfThemeSwitch:maintained-recipe"
-      ]
+      "summary": "Maintained application composition recipes published",
+      "reason": "Nine executable Vue recipes with equivalent Razor guidance now preserve the portable composition while explicitly assigning shell, async, theme, and lifecycle policy to applications.",
+      "gaps": []
     },
     {
       "id": "CMUI-B012",
