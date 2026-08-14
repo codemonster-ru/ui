@@ -1,5 +1,5 @@
 <template>
-  <VfThemeProvider>
+  <VfThemeProvider attribute="data-cm-theme">
     <VfAppShell
       class="showcase-shell"
       layout="content"
