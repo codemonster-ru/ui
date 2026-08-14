@@ -1,7 +1,8 @@
-# VueForge release checklist
+# Package release checklist
 
-This is the canonical checklist for the coordinated npm package release. Run it from the repository
-root on the exact commit that will receive all package tags.
+This is the canonical checklist for VueForge and CodeMonster UI npm releases plus the CodeMonster
+UI Razor split release. Run it from the repository root on the exact commit that will receive the
+package tags.
 
 ## 1. Choose the release channel
 
@@ -41,6 +42,7 @@ npm run build
 npm run check:packed-consumers
 npm run build:demo
 npm run prepublish:all
+npm run check:composer-packed-consumer
 ```
 
 All commands must pass on the release commit. Also confirm:
@@ -58,7 +60,8 @@ All commands must pass on the release commit. Also confirm:
 
 ## 4. Inspect tarballs
 
-`npm run prepublish:all` builds and runs dry-run packs for every package. Dry runs print proposed
+`npm run prepublish:all` builds and runs dry-run packs for every npm package. For a CodeMonster UI
+only train, `npm run prepublish:ui` provides the focused build and dry run. Dry runs print proposed
 archive contents but do not create `.tgz` files. Review those file lists and inspect each target
 explicitly when release metadata changes:
 
@@ -71,6 +74,11 @@ npm pack --workspace @codemonster-ru/vueforge-core --dry-run --ignore-scripts
 npm pack --workspace @codemonster-ru/vueforge-codeblock --dry-run --ignore-scripts
 npm pack --workspace @codemonster-ru/vueforge-layouts --dry-run --ignore-scripts
 npm pack --workspace @codemonster-ru/vueforge-playground --dry-run --ignore-scripts
+npm pack --workspace @codemonster-ru/ui-tokens --dry-run --ignore-scripts
+npm pack --workspace @codemonster-ru/ui-runtime --dry-run --ignore-scripts
+npm pack --workspace @codemonster-ru/ui-css --dry-run --ignore-scripts
+npm pack --workspace @codemonster-ru/ui-utilities --dry-run --ignore-scripts
+npm pack --workspace @codemonster-ru/ui-vue --dry-run --ignore-scripts
 ```
 
 For every proposed archive and generated consumer tarball, verify:
@@ -112,19 +120,24 @@ The release workflow publishes one package from one scoped tag. Create and push 
 wait for each workflow and registry smoke to pass, then continue. Never use `git push --tags` for
 this release.
 
+CodeMonster UI packages use independent SemVer. Publish only packages included in the reviewed
+cohort, in dependency order: tokens, runtime, CSS, utilities, then Vue. The Razor package uses the
+separate `ui-razor/vX.Y.Z` split tag after its npm dependencies are verified. Historical aggregate
+`ui/vX.Y.Z` tags do not trigger either current publication workflow.
+
 The workflow treats the packed archive as immutable: after verification builds the package, it packs
 the target once with lifecycle scripts disabled, dry-runs publication of that exact `.tgz`, and then
 publishes the same file. No workspace or package-directory publish may replace the final tarball
 publish, and no rebuild may occur between packing, inspection, and publication.
 
-| Order | Tag                                                |
-| ----: | -------------------------------------------------- |
-|     1 | `@codemonster-ru/vueforge-theme@2.0.1`             |
-|     2 | `@codemonster-ru/vueforge-icons@3.2.0`             |
-|     3 | `@codemonster-ru/vueforge-playground-core@2.1.0`   |
-|     4 | `@codemonster-ru/vueforge-core@2.4.0`              |
-|     5 | `@codemonster-ru/vueforge-layouts@2.1.2`           |
-|     6 | `@codemonster-ru/vueforge-playground@3.0.1`        |
+| Order | Tag                                              |
+| ----: | ------------------------------------------------ |
+|     1 | `@codemonster-ru/vueforge-theme@2.0.1`           |
+|     2 | `@codemonster-ru/vueforge-icons@3.2.0`           |
+|     3 | `@codemonster-ru/vueforge-playground-core@2.1.0` |
+|     4 | `@codemonster-ru/vueforge-core@2.4.0`            |
+|     5 | `@codemonster-ru/vueforge-layouts@2.1.2`         |
+|     6 | `@codemonster-ru/vueforge-playground@3.0.1`      |
 
 For each row:
 
