@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-core';
-import { CmAlert, CmBadge, CmButton, CmCheckbox, CmInput } from '@codemonster-ru/ui-vue';
+import { cmSemanticColorTokenNames } from '@codemonster-ru/ui-tokens';
+import { CmAlert, CmBadge, CmButton, CmCheckbox, CmInput, CmSection, CmStack } from '@codemonster-ru/ui-vue';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
-import { CmSection, CmStack } from '@codemonster-ru/ui-vue';
 import './color-system-showcase.css';
 
 interface PrimitiveFamily {
@@ -43,8 +42,8 @@ const contrastRows = [
   { label: 'Selected strongest state', light: '4.59', dark: '5.35' },
 ];
 
-const semanticSwatches = vfSemanticColorTokenNames.map((name) => {
-  const variable = `--vf-${name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)}`;
+const semanticSwatches = cmSemanticColorTokenNames.map((name) => {
+  const variable = `--cm-${name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)}`;
   const label = name
     .replace(/^color/, '')
     .replace(/([a-z])([A-Z])/g, '$1 $2')
@@ -64,11 +63,11 @@ const codeSample = [
   <CmSection class="demo-page">
     <CmStack class="demo-container color-system" gap="roomy">
       <header class="color-system__hero">
-        <p class="color-system__eyebrow">VueForge color system · Phase 2</p>
+        <p class="color-system__eyebrow">CodeMonster UI color system</p>
         <h1>Perceptual materials, semantic decisions</h1>
         <p>
-          Primitive OKLCH scales feed semantic roles. Components consume only the canonical VueForge 2 semantic token
-          layer.
+          Primitive OKLCH scales feed semantic roles. Components consume only the canonical CodeMonster UI semantic
+          token layer.
         </p>
       </header>
 
@@ -85,7 +84,7 @@ const codeSample = [
               <div v-for="step in family.steps" :key="step" class="color-system__primitive">
                 <span
                   class="color-system__primitive-color"
-                  :style="{ background: `var(--vf-palette-${family.prefix}-${step})` }"
+                  :style="{ background: `var(--cm-palette-${family.prefix}-${step})` }"
                   aria-hidden="true"
                 />
                 <span>{{ step }}</span>
@@ -106,7 +105,7 @@ const codeSample = [
             v-for="mode in ['light', 'dark'] as const"
             :key="mode"
             class="color-system__theme"
-            :data-vf-theme="mode"
+            :data-cm-theme="mode"
           >
             <header class="color-system__theme-header">
               <h3>{{ mode }}</h3>

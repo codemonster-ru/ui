@@ -63,7 +63,7 @@ const demoComponent = computed(() => demoComponentMap[props.demoId]);
   overflow: visible;
   display: grid;
   place-items: center;
-  padding: var(--vf-layout-space-layout-lg) 0;
+  padding: var(--cm-space-6) 0;
 }
 
 .vf-playground__panel.preview > * {
