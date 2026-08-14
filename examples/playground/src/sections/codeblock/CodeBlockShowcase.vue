@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { useTheme } from "@codemonster-ru/vueforge-core";
-import { CmSkeleton } from "@codemonster-ru/ui-vue";
-import { VfSkeletonGate } from "@codemonster-ru/vueforge-core/skeleton-gate";
-import { CmSection } from "@codemonster-ru/ui-vue";
+import { CmSection, CmSkeleton } from "@codemonster-ru/ui-vue";
 import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock/view";
 
-const { resolvedTheme } = useTheme();
+const resolvedTheme = ref<"light" | "dark">("light");
+let rootThemeObserver: MutationObserver | null = null;
+
+const syncRootTheme = () => {
+  resolvedTheme.value = document.documentElement.getAttribute("data-cm-theme") === "dark" ? "dark" : "light";
+};
 const longSnippetLineCount = 1000;
 const longTsSnippet = Array.from({ length: longSnippetLineCount }, (_, index) => {
   const line = index + 1;
@@ -131,10 +133,19 @@ const replayCodeblockSkeleton = () => {
 };
 
 onMounted(() => {
+  syncRootTheme();
+  rootThemeObserver = new MutationObserver(syncRootTheme);
+  rootThemeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-cm-theme"],
+  });
   scheduleCodeblockReady();
 });
 
 onBeforeUnmount(() => {
+  rootThemeObserver?.disconnect();
+  rootThemeObserver = null;
+
   if (codeblockReadyTimer) {
     clearTimeout(codeblockReadyTimer);
     codeblockReadyTimer = null;
@@ -157,28 +168,27 @@ onBeforeUnmount(() => {
 
         <CmSection class="demo-surface" surface>
           <div class="demo-grid">
-            <VfSkeletonGate
+            <div
               v-for="block in blocks"
-              :key="`gate-${block.filename}`"
-              :ready="codeblockReady"
-              :min-height="block.skeletonMinHeight"
-              :preserve-last-height="true"
-              :normalize-content-spacing="true"
-              radius="var(--vf-layout-section-radius)"
+              :key="block.filename"
+              class="demo-loading-gate"
+              :aria-busy="codeblockReady ? 'false' : 'true'"
             >
-              <VfCodeBlock
-                :language="block.language"
-                :filename="block.filename"
-                :code="block.code"
-                :max-height="block.maxHeight"
-                theme="inherit"
-                :container-min-height="`${block.skeletonMinHeight}px`"
-                show-line-numbers
-              />
-              <template #skeleton>
+              <div v-if="!codeblockReady" class="demo-loading-gate__placeholder">
                 <CmSkeleton :min-height="block.skeletonMinHeight" radius="surface" />
-              </template>
-            </VfSkeletonGate>
+              </div>
+              <div :hidden="!codeblockReady" :inert="!codeblockReady">
+                <VfCodeBlock
+                  :language="block.language"
+                  :filename="block.filename"
+                  :code="block.code"
+                  :max-height="block.maxHeight"
+                  theme="inherit"
+                  :container-min-height="`${block.skeletonMinHeight}px`"
+                  show-line-numbers
+                />
+              </div>
+            </div>
           </div>
         </CmSection>
       </section>
