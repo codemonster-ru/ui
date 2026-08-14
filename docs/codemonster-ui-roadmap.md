@@ -78,6 +78,9 @@ An item is complete only when all applicable conditions are satisfied:
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort; M7 — migration and CodeMonster UI 1.0; M8 — concise repository and Razor package names
 - Next item: None; React and Angular remain unscheduled future considerations.
 
+Post-1.0 component maturity and migration completion continue in the
+[CodeMonster UI maturity roadmap](./codemonster-ui-roadmap-v2.md).
+
 ## Milestones
 
 | Milestone | Outcome                                                                   | Status               |
