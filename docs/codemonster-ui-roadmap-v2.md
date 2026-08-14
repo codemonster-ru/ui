@@ -82,7 +82,7 @@ or intentionally drops.
   migration map, contracts, Vue exports, Razor provider registrations, documentation, and showcase.
 - [x] `CMUI-172` Audit the 33 direct replacements against frozen VueForge types, documentation,
   tests, and representative examples; classify every material capability.
-- [ ] `CMUI-173` Audit all `compose` and `manual` dispositions and record the evidence for keeping,
+- [x] `CMUI-173` Audit all `compose` and `manual` dispositions and record the evidence for keeping,
   changing, or splitting each decision.
 - [ ] `CMUI-174` Restore a complete CodeMonster UI catalog in the playground: every stable component
   must have a discoverable example, and unresolved migration gaps must be visible rather than
