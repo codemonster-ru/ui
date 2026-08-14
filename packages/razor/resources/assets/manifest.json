@@ -184,7 +184,7 @@
     "css:components/command-palette.css": {
       "path": "css/css/components/command-palette.css",
       "mediaType": "text/css",
-      "sha256": "c05617d19d6b2a140a2243133e54c8f8bdf3dd73a120e64e54448994c1bbab85",
+      "sha256": "ef40f261514fa8204e0579a9c4568b199a446a84a0d8bad013c71640d0e7d4ad",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
@@ -214,7 +214,7 @@
     "css:components/date-picker.css": {
       "path": "css/css/components/date-picker.css",
       "mediaType": "text/css",
-      "sha256": "97c7b995488a2b15e9d507091bf7d3a87a12554f42e12c7da4982c2d116c2c1f",
+      "sha256": "0ebeafd01b12719f4d85c04c39e4857ec510fade2283b15b34eb00dd8c9bd1e2",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
@@ -344,7 +344,7 @@
     "css:components/select.css": {
       "path": "css/css/components/select.css",
       "mediaType": "text/css",
-      "sha256": "57ff4b23c7c4c8def82d6c16debd368dba7336ee4851f16606ce9535acc4d399",
+      "sha256": "2647ae235209037b96eb421fb49b85cbc0988a87fb45e2bd08692dfb3a9e6600",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
