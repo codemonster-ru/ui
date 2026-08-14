@@ -14,8 +14,9 @@ submission semantics.
 
 ## Native control
 
-The semantic root is always `<input>`, owns `cm-input` plus one of `cm-input--sm`,
-`cm-input--md`, or `cm-input--lg`, and has no wrapper. It allows only the approved text-like types:
+The semantic form control is always `<input>` and owns `cm-input` plus one of `cm-input--sm`,
+`cm-input--md`, or `cm-input--lg`. Without authored adornments or actions it remains the only
+element. Enhanced inputs use a `cm-input-wrap` presentation wrapper. It allows only the approved text-like types:
 `text`, `email`, `password`, `search`, `tel`, and `url`. Invalid finite values produce a development
 diagnostic and fall back to `text` in production.
 
@@ -30,8 +31,23 @@ The semantic `value` is always a string. Vue exposes it through `modelValue` and
 native value attribute, and relies on the submitted request value for the next render. Both mappings
 must produce the same significant DOM for the same current value.
 
-The shared contract does not add local uncontrolled state, clearing controls, password reveal, or
-input masking. Those behaviors require separate contracts because they add interaction and markup.
+## Adornments and actions
+
+The optional `leading` and `trailing` slots render trusted component content in
+`cm-input__leading` and `cm-input__trailing`. Their content does not name the input
+automatically; consumers must hide decorative content or supply appropriate accessible semantics.
+
+`clearable` adds a localized clear button for editable inputs. Activating it sets the native value
+to an empty string, dispatches the ordinary bubbling input event, and restores focus to the input.
+The button is hidden while the value is empty and omitted for disabled or readonly controls.
+
+`passwordReveal` is effective only with `type="password"`. Its button toggles the native input type,
+preserves the value, focus, and selection, and exposes the current state with `aria-pressed` and the
+localized `showPasswordLabel` / `hidePasswordLabel`. These actions use the `input` progressive
+enhancement controller in server-rendered markup; Vue provides the same behavior directly.
+
+Input masking and arbitrary icon-name lookup stay outside the shared contract. Adornments are
+framework-native slots so the contract does not depend on one icon registry.
 
 ## State and accessibility
 

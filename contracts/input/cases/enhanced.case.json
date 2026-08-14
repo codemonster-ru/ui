@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "input-enhanced",
+  "description": "Password input with trusted adornments, clearing, and localized visibility control.",
+  "props": {
+    "type": "password",
+    "value": "secret",
+    "clearable": true,
+    "passwordReveal": true,
+    "clearLabel": "Clear password",
+    "showPasswordLabel": "Show secret",
+    "hidePasswordLabel": "Hide secret"
+  },
+  "slots": {
+    "leading": "<span aria-hidden=\"true\">@</span>",
+    "trailing": "<span aria-hidden=\"true\">required</span>"
+  },
+  "attributes": {
+    "aria-label": "Password",
+    "name": "password"
+  }
+}

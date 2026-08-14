@@ -284,7 +284,7 @@
     "css:components/input.css": {
       "path": "css/css/components/input.css",
       "mediaType": "text/css",
-      "sha256": "8eaf3055a89083e1859bb684b45cb9c17fb92e28e0f2fc31a03efbd6cda56092",
+      "sha256": "67456109968ad9c377c9042087be1c6a8a3f15838d6e61bc23cee40149705791",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",

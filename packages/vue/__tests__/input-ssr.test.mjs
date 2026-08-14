@@ -11,8 +11,15 @@ import { CmInput } from '../dist/index.js';
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const casesDirectory = resolve(packageDirectory, '../../contracts/input/cases');
 
-async function renderInput(props) {
-  return renderToString(createSSRApp({ render: () => h(CmInput, props) }));
+function createSlots(definition) {
+  const slots = {};
+  if (definition.slots.leading) slots.leading = () => h('span', { 'aria-hidden': 'true' }, '@');
+  if (definition.slots.trailing) slots.trailing = () => h('span', { 'aria-hidden': 'true' }, 'required');
+  return slots;
+}
+
+async function renderInput(props, slots = {}) {
+  return renderToString(createSSRApp({ render: () => h(CmInput, props, slots) }));
 }
 
 const caseFiles = (await readdir(casesDirectory)).filter((file) => file.endsWith('.case.json')).sort();
@@ -23,7 +30,10 @@ for (const caseFile of caseFiles) {
     const definition = JSON.parse(await readFile(resolve(casesDirectory, caseFile), 'utf8'));
     const expected = await readFile(resolve(casesDirectory, `${basename}.html`), 'utf8');
     const { value = '', ...props } = definition.props;
-    const actual = await renderInput({ ...definition.attributes, ...props, modelValue: value });
+    const actual = await renderInput(
+      { ...definition.attributes, ...props, modelValue: value },
+      createSlots(definition),
+    );
     const comparison = compareSignificantDom(expected, actual);
 
     assert.equal(comparison.equal, true, comparison.difference);
