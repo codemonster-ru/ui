@@ -4,10 +4,55 @@
       <header class="demo-block__header">
         <CmBadge tone="primary">CodeMonster UI</CmBadge>
         <h1>Vue component showcase</h1>
-        <p class="demo-text">The stable cross-platform component API rendered by the Vue adapter.</p>
+        <p class="demo-text">
+          All stable cross-platform components rendered by the Vue adapter, with unresolved VueForge migration gaps kept
+          visible.
+        </p>
       </header>
 
-      <CmSection surface>
+      <CmSection id="component-catalog" surface>
+        <CmStack>
+          <h2>Stable component catalog</h2>
+          <p class="demo-text">
+            {{ catalog.components.length }} components share canonical contracts across Vue and Annabel Razor.
+          </p>
+          <ul class="component-catalog" aria-label="Stable CodeMonster UI components">
+            <li v-for="component in catalog.components" :key="component.name" class="component-catalog__item">
+              <CmLink :href="component.demoHref" underline="hover">
+                <code>{{ component.name }}</code>
+              </CmLink>
+              <span>{{ component.group }}</span>
+            </li>
+          </ul>
+        </CmStack>
+      </CmSection>
+
+      <CmSection id="migration-gaps" surface>
+        <CmStack>
+          <h2>Unresolved migration gaps</h2>
+          <p class="demo-text">
+            These capabilities remain intentionally visible until their roadmap destination is implemented or rejected.
+          </p>
+          <ul class="migration-gap-list" aria-label="Unresolved VueForge migration gaps">
+            <li
+              v-for="gap in catalog.migrationGaps"
+              :key="`${gap.source}-${gap.capabilityId}`"
+              class="migration-gap-list__item"
+            >
+              <div class="migration-gap-list__header">
+                <code>{{ gap.source }}</code>
+                <span aria-hidden="true">→</span>
+                <span>{{ formatTargets(gap.targets) }}</span>
+                <CmBadge tone="warning">{{ gap.roadmapItem }}</CmBadge>
+              </div>
+              <p>{{ gap.summary }}</p>
+              <small>{{ gap.disposition }}</small>
+            </li>
+          </ul>
+        </CmStack>
+      </CmSection>
+
+      <CmSection id="demo-actions-feedback" surface>
         <CmStack>
           <h2>Actions and feedback</h2>
           <CmInline>
@@ -28,7 +73,7 @@
         </CmStack>
       </CmSection>
 
-      <CmSection surface>
+      <CmSection id="demo-content" surface>
         <CmStack>
           <h2>Content</h2>
           <CmBreadcrumbs :items="breadcrumbs" />
@@ -49,10 +94,12 @@
               </CmStack>
             </CmCard>
           </CmGrid>
+          <p class="demo-text">Divider</p>
+          <CmDivider />
         </CmStack>
       </CmSection>
 
-      <CmSection surface>
+      <CmSection id="demo-forms" surface>
         <CmStack>
           <h2>Forms</h2>
           <CmGrid>
@@ -71,13 +118,7 @@
             </CmField>
             <CmField control-id="showcase-plan" label="Plan">
               <template #default="{ controlId, describedBy }">
-                <CmSelect
-                  :id="controlId"
-                  v-model="plan"
-                  name="plan"
-                  :aria-describedby="describedBy"
-                  :options="plans"
-                />
+                <CmSelect :id="controlId" v-model="plan" name="plan" :aria-describedby="describedBy" :options="plans" />
               </template>
             </CmField>
             <CmField control-id="showcase-date" label="Release date">
@@ -92,13 +133,7 @@
             </CmField>
             <CmField control-id="showcase-notes" label="Notes">
               <template #default="{ controlId, describedBy }">
-                <CmTextarea
-                  :id="controlId"
-                  v-model="notes"
-                  name="notes"
-                  rows="3"
-                  :aria-describedby="describedBy"
-                />
+                <CmTextarea :id="controlId" v-model="notes" name="notes" rows="3" :aria-describedby="describedBy" />
               </template>
             </CmField>
           </CmGrid>
@@ -111,18 +146,13 @@
         </CmStack>
       </CmSection>
 
-      <CmSection surface>
+      <CmSection id="demo-navigation" surface>
         <CmStack>
           <h2>Navigation and disclosure</h2>
           <CmTabs id="showcase-tabs" v-model="activeTab" :items="tabs" />
           <CmAccordion id="showcase-faq" v-model:open-items="openItems" :items="accordionItems" multiple />
           <CmInline>
-            <CmDropdown
-              id="showcase-actions"
-              v-model:open="dropdownOpen"
-              label="Project actions"
-              :items="menuItems"
-            />
+            <CmDropdown id="showcase-actions" v-model:open="dropdownOpen" label="Project actions" :items="menuItems" />
             <CmPopover id="showcase-popover" v-model:open="popoverOpen" label="Release help">
               Choose preview while validating a prerelease consumer.
             </CmPopover>
@@ -132,15 +162,24 @@
         </CmStack>
       </CmSection>
 
-      <CmSection surface>
+      <CmSection id="demo-data" surface>
         <CmStack>
           <h2>Data display</h2>
           <CmTable caption="Release channels" striped>
             <template #header>
-              <tr><th scope="col">Channel</th><th scope="col">Audience</th></tr>
+              <tr>
+                <th scope="col">Channel</th>
+                <th scope="col">Audience</th>
+              </tr>
             </template>
-            <tr><th scope="row">Stable</th><td>Production</td></tr>
-            <tr><th scope="row">Preview</th><td>Validation</td></tr>
+            <tr>
+              <th scope="row">Stable</th>
+              <td>Production</td>
+            </tr>
+            <tr>
+              <th scope="row">Preview</th>
+              <td>Validation</td>
+            </tr>
           </CmTable>
           <CmDataTable
             id="showcase-projects"
@@ -157,7 +196,7 @@
         </CmStack>
       </CmSection>
 
-      <CmSection surface>
+      <CmSection id="demo-overlays" surface>
         <CmStack>
           <h2>Overlays</h2>
           <CmInline>
@@ -181,14 +220,13 @@
           />
         </CmStack>
       </CmSection>
-
-      <CmDivider />
     </CmStack>
   </CmContainer>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import catalog from './component-catalog.json';
 import {
   CmAccordion,
   CmAlert,
@@ -237,8 +275,14 @@ import {
 
 const buttonVariants: CmButtonVariant[] = ['primary', 'secondary', 'danger', 'ghost'];
 const feedbackTones: CmAlertTone[] = ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'];
-const breadcrumbs = [{ label: 'Home', href: '/' }, { label: 'Components', current: true }];
-const plans: CmSelectOption[] = [{ value: 'team', label: 'Team' }, { value: 'enterprise', label: 'Enterprise' }];
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Components', current: true },
+];
+const plans: CmSelectOption[] = [
+  { value: 'team', label: 'Team' },
+  { value: 'enterprise', label: 'Enterprise' },
+];
 const tabs: CmTabItem[] = [
   { value: 'overview', label: 'Overview', content: 'Portable component contracts.' },
   { value: 'api', label: 'API', content: 'Thin Vue and Razor adapters.' },
@@ -283,10 +327,70 @@ const dialogOpen = ref(false);
 const drawerOpen = ref(false);
 const commandPaletteOpen = ref(false);
 const commandQuery = ref('');
+
+function formatTargets(targets: readonly string[]): string {
+  return targets.length > 0 ? targets.join(' + ') : 'No direct target';
+}
 </script>
 
 <style scoped>
-.demo-page { padding-block: 2rem; }
-.demo-block__header h1, h2 { margin: 0; }
-.demo-text { color: var(--cm-color-text-muted); }
+.demo-page {
+  padding-block: 2rem;
+}
+
+.demo-block__header h1,
+h2 {
+  margin: 0;
+}
+
+.demo-text {
+  color: var(--cm-color-text-muted);
+}
+
+.component-catalog,
+.migration-gap-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--cm-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.component-catalog__item,
+.migration-gap-list__item {
+  padding: var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+}
+
+.component-catalog__item {
+  display: grid;
+  gap: var(--cm-space-1);
+}
+
+.component-catalog__item span,
+.migration-gap-list__item small {
+  color: var(--cm-color-text-muted);
+}
+
+.migration-gap-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+.migration-gap-list__item {
+  display: grid;
+  gap: var(--cm-space-2);
+}
+
+.migration-gap-list__item p {
+  margin: 0;
+}
+
+.migration-gap-list__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cm-space-2);
+}
 </style>

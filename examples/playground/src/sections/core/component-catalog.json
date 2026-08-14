@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {
+      "name": "CmAccordion",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-navigation"
+    },
+    {
+      "name": "CmAlert",
+      "group": "Actions and feedback",
+      "demoHref": "#demo-actions-feedback"
+    },
+    {
+      "name": "CmAvatar",
+      "group": "Content",
+      "demoHref": "#demo-content"
+    },
+    {
+      "name": "CmBadge",
+      "group": "Actions and feedback",
+      "demoHref": "#demo-actions-feedback"
+    },
+    {
+      "name": "CmBreadcrumbs",
+      "group": "Content",
+      "demoHref": "#demo-content"
+    },
+    {
+      "name": "CmButton",
+      "group": "Actions and feedback",
+      "demoHref": "#demo-actions-feedback"
+    },
+    {
+      "name": "CmCard",
+      "group": "Content",
+      "demoHref": "#demo-content"
+    },
+    {
+      "name": "CmCheckbox",
+      "group": "Forms",
+      "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmCommandPalette",
+      "group": "Overlays",
+      "demoHref": "#demo-overlays"
+    },
+    {
+      "name": "CmContainer",
+      "group": "Layout primitives",
+      "demoHref": "/layouts"
+    },
+    {
+      "name": "CmDataTable",
+      "group": "Data display",
+      "demoHref": "#demo-data"
+    },
+    {
+      "name": "CmDatePicker",
+      "group": "Forms",
+      "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmDialog",
+      "group": "Overlays",
+      "demoHref": "#demo-overlays"
+    },
+    {
+      "name": "CmDivider",
+      "group": "Content",
+      "demoHref": "#demo-content"
+    },
+    {
+      "name": "CmDrawer",
+      "group": "Overlays",
+      "demoHref": "#demo-overlays"
+    },
+    {
+      "name": "CmDropdown",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-navigation"
+    },
+    {
+      "name": "CmField",
+      "group": "Forms",
+      "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmGrid",
+      "group": "Layout primitives",
+      "demoHref": "/layouts"
+    },
+    {
+      "name": "CmInline",
+      "group": "Layout primitives",
+      "demoHref": "/layouts"
+    },
+    {
+      "name": "CmInput",
+      "group": "Forms",
+      "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmLink",
+      "group": "Actions and feedback",
+      "demoHref": "#demo-actions-feedback"
+    },
+    {
+      "name": "CmMenu",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-navigation"
+    },
+    {
+      "name": "CmPopover",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-navigation"
+    },
+    {
+      "name": "CmRadio",
+      "group": "Forms",
+      "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmSection",
+      "group": "Layout primitives",
+      "demoHref": "/layouts"
+    },
+    {
+      "name": "CmSelect",
+      "group": "Forms",
+      "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmSkeleton",
+      "group": "Content",
+      "demoHref": "#demo-content"
+    },
+    {
+      "name": "CmStack",
+      "group": "Layout primitives",
+      "demoHref": "/layouts"
+    },
+    {
+      "name": "CmSwitch",
+      "group": "Forms",
+      "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmTable",
+      "group": "Data display",
+      "demoHref": "#demo-data"
+    },
+    {
+      "name": "CmTabs",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-navigation"
+    },
+    {
+      "name": "CmTextarea",
+      "group": "Forms",
+      "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmTooltip",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-navigation"
+    }
+  ],
+  "migrationGaps": [
+    {
+      "source": "VfAccordion",
+      "disposition": "replace",
+      "targets": ["CmAccordion"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-177",
+      "summary": "Trusted rich trigger and panel content; current items accept text only"
+    },
+    {
+      "source": "VfAuthLayout",
+      "disposition": "compose",
+      "targets": ["CmContainer", "CmStack", "CmSection"],
+      "capabilityId": "maintained-recipe",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish a maintained recipe in `CMUI-187`"
+    },
+    {
+      "source": "VfCommandPalette",
+      "disposition": "replace",
+      "targets": ["CmCommandPalette"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-180",
+      "summary": "Loading/idle states, match highlighting, custom actions/results/items/empty/footer content, submit-without-selection, close policy controls, default state, maximum height, and footer hints"
+    },
+    {
+      "source": "VfConfirmDialog",
+      "disposition": "compose",
+      "targets": ["CmDialog", "CmButton"],
+      "capabilityId": "maintained-recipe",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish a maintained recipe covering focus, loading lock, confirm, and cancel in `CMUI-187`"
+    },
+    {
+      "source": "VfDataTable",
+      "disposition": "replace",
+      "targets": ["CmDataTable"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-181",
+      "summary": "Page-size controls and pagination summaries; row-select constraints and row expansion; custom header/cell/state/footer rendering; column visibility/order/reordering/resizing/pinning; multi-sort; skeleton loading modes; complete localization labels"
+    },
+    {
+      "source": "VfDataTableColumnChooser",
+      "disposition": "manual",
+      "targets": ["CmCheckbox", "CmPopover"],
+      "capabilityId": "reviewed-disposition",
+      "roadmapItem": "CMUI-185",
+      "summary": "Portable candidate: Required columns, ordered visibility state, aggregate selection, and an accessible trigger can be expressed for both adapters, but depend on the DataTable column-visibility contract"
+    },
+    {
+      "source": "VfDatePicker",
+      "disposition": "replace",
+      "targets": ["CmDatePicker"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-180",
+      "summary": "Multiple and range selection, month/year picker modes, time selection and minute steps, locale/display formatting, first-day configuration, clear action, and custom labels"
+    },
+    {
+      "source": "VfDialog",
+      "disposition": "replace",
+      "targets": ["CmDialog"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-179",
+      "summary": "Custom header, title/description markup, header actions, sizes, and divided presentation"
+    },
+    {
+      "source": "VfDrawer",
+      "disposition": "replace",
+      "targets": ["CmDrawer"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-179",
+      "summary": "Custom header/actions, size, offsets, padding/divider/rounded variants, and configurable dismissal policy"
+    },
+    {
+      "source": "VfDropdown",
+      "disposition": "replace",
+      "targets": ["CmDropdown"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-179",
+      "summary": "Arbitrary trigger and menu-body slots, plus the pills presentation variant"
+    },
+    {
+      "source": "VfErrorLayout",
+      "disposition": "compose",
+      "targets": ["CmContainer", "CmStack", "CmSection"],
+      "capabilityId": "maintained-recipe",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish a maintained recipe in `CMUI-187`"
+    },
+    {
+      "source": "VfFieldset",
+      "disposition": "compose",
+      "targets": ["CmStack"],
+      "capabilityId": "reviewed-disposition",
+      "roadmapItem": "CMUI-184",
+      "summary": "Portable candidate: Native `fieldset`/`legend`, shared description/error IDs, invalid state, and scoped metadata form a small cross-platform accessibility contract not provided by Stack"
+    },
+    {
+      "source": "VfFormLayout",
+      "disposition": "compose",
+      "targets": ["CmStack", "CmGrid"],
+      "capabilityId": "maintained-recipe",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish a maintained recipe in `CMUI-187`"
+    },
+    {
+      "source": "VfGroupBox",
+      "disposition": "compose",
+      "targets": ["CmSection"],
+      "capabilityId": "remaining-migration-outcome",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish a recipe in `CMUI-187`, dependent on the approved Fieldset and Accordion outcomes"
+    },
+    {
+      "source": "VfIconButton",
+      "disposition": "compose",
+      "targets": ["CmButton"],
+      "capabilityId": "reviewed-disposition",
+      "roadmapItem": "CMUI-184",
+      "summary": "Portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract"
+    },
+    {
+      "source": "VfInput",
+      "disposition": "replace",
+      "targets": ["CmInput"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-177",
+      "summary": "Leading/trailing adornments, built-in clear action, and password reveal"
+    },
+    {
+      "source": "VfMenu",
+      "disposition": "replace",
+      "targets": ["CmMenu"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-179",
+      "summary": "Rich item content and per-link `target`/`rel` metadata"
+    },
+    {
+      "source": "VfMenuBar",
+      "disposition": "manual",
+      "targets": ["CmMenu", "CmInline"],
+      "capabilityId": "reviewed-disposition",
+      "roadmapItem": "CMUI-185",
+      "summary": "Portable candidate: Nested menubar semantics and two-axis keyboard navigation are portable behavior, but current consumers and Razor demand are not yet established"
+    },
+    {
+      "source": "VfMenuItem",
+      "disposition": "manual",
+      "targets": ["CmMenu"],
+      "capabilityId": "remaining-migration-outcome",
+      "roadmapItem": "CMUI-179",
+      "summary": "Resolve the remaining direct-menu gap in `CMUI-179`; do not add a standalone item component unless the collection contract proves insufficient"
+    },
+    {
+      "source": "VfNavMenu",
+      "disposition": "manual",
+      "targets": ["CmMenu", "CmLink"],
+      "capabilityId": "remaining-migration-outcome",
+      "roadmapItem": "CMUI-185",
+      "summary": "Re-evaluate only the portable tree behavior in `CMUI-185`"
+    },
+    {
+      "source": "VfPageHeader",
+      "disposition": "compose",
+      "targets": ["CmStack", "CmInline"],
+      "capabilityId": "maintained-recipe",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish a maintained recipe in `CMUI-187`"
+    },
+    {
+      "source": "VfPanel",
+      "disposition": "compose",
+      "targets": ["CmCard", "CmSection"],
+      "capabilityId": "maintained-recipe",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish subtle/default panel recipes in `CMUI-187`"
+    },
+    {
+      "source": "VfPopover",
+      "disposition": "replace",
+      "targets": ["CmPopover"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-179",
+      "summary": "Arbitrary trigger content and trigger semantics"
+    },
+    {
+      "source": "VfProgressBar",
+      "disposition": "manual",
+      "targets": [],
+      "capabilityId": "reviewed-disposition",
+      "roadmapItem": "CMUI-184",
+      "summary": "Portable candidate: Determinate/indeterminate progress semantics, bounded values, labels, tones, and reduced motion form a small framework-independent contract"
+    },
+    {
+      "source": "VfProgressSpinner",
+      "disposition": "manual",
+      "targets": [],
+      "capabilityId": "reviewed-disposition",
+      "roadmapItem": "CMUI-184",
+      "summary": "Portable candidate: An indeterminate labelled progress indicator has stable semantic HTML and no framework lifecycle requirement"
+    },
+    {
+      "source": "VfSelect",
+      "disposition": "replace",
+      "targets": ["CmSelect"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-180",
+      "summary": "Built-in clear action"
+    },
+    {
+      "source": "VfSkeletonGate",
+      "disposition": "compose",
+      "targets": ["CmSkeleton"],
+      "capabilityId": "remaining-migration-outcome",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish the portable recipe in `CMUI-187`; keep measurement behavior application-owned unless two adapters need it"
+    },
+    {
+      "source": "VfStepper",
+      "disposition": "manual",
+      "targets": [],
+      "capabilityId": "reviewed-disposition",
+      "roadmapItem": "CMUI-185",
+      "summary": "Portable candidate: Ordered step state, orientation, current-step semantics, disabled steps, and roving keyboard behavior are portable, but workflow navigation ownership needs real-consumer validation"
+    },
+    {
+      "source": "VfSwitch",
+      "disposition": "replace",
+      "targets": ["CmSwitch"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-178",
+      "summary": "Custom thumb content"
+    },
+    {
+      "source": "VfTableOfContents",
+      "disposition": "manual",
+      "targets": ["CmLink", "CmStack"],
+      "capabilityId": "reviewed-disposition",
+      "roadmapItem": "CMUI-185",
+      "summary": "Portable candidate: Semantic navigation, active location, levels, and links are portable; heading discovery, scroll observation, smooth scrolling, and offsets may remain application-owned"
+    },
+    {
+      "source": "VfTabs",
+      "disposition": "replace",
+      "targets": ["CmTabs"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-179",
+      "summary": "Rich tab labels and panel content, externally owned panels, and explicit uncontrolled default selection"
+    },
+    {
+      "source": "VfTag",
+      "disposition": "manual",
+      "targets": ["CmBadge"],
+      "capabilityId": "remaining-migration-outcome",
+      "roadmapItem": "CMUI-184",
+      "summary": "Re-evaluate the distinct visual contract in `CMUI-184`; otherwise migrate to Badge"
+    },
+    {
+      "source": "VfThemeSwitch",
+      "disposition": "manual",
+      "targets": ["CmButton"],
+      "capabilityId": "maintained-recipe",
+      "roadmapItem": "CMUI-187",
+      "summary": "Publish a Vue/Razor application recipe in `CMUI-187` rather than a shared stateful component"
+    },
+    {
+      "source": "VfTooltip",
+      "disposition": "replace",
+      "targets": ["CmTooltip"],
+      "capabilityId": "material-portable-gap",
+      "roadmapItem": "CMUI-179",
+      "summary": "Arbitrary trigger elements and rich tooltip content"
+    }
+  ]
+}
