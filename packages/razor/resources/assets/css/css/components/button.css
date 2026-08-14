@@ -1,4 +1,6 @@
 .cm-button {
+  --cm-button-spinner-duration: 1.4s;
+
   display: inline-flex;
   min-block-size: var(--cm-control-height-md);
   align-items: center;
@@ -140,7 +142,7 @@
   border: var(--cm-border-width-thick) solid currentcolor;
   border-inline-end-color: transparent;
   border-radius: var(--cm-radius-round);
-  animation: cm-button-spin var(--cm-motion-duration-normal) linear infinite;
+  animation: cm-button-spin var(--cm-button-spinner-duration) linear infinite;
 }
 
 @keyframes cm-button-spin {

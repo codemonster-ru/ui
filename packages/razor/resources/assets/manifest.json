@@ -54,7 +54,7 @@
     "css:foundation/document.css": {
       "path": "css/css/foundation/document.css",
       "mediaType": "text/css",
-      "sha256": "68dd69bd5b78a6de94c25d421fb39ce1c90105908f8f03d3e40224c489b0bd59",
+      "sha256": "9b72b68845262bf2d9670f3e341f92ce8bab439344a390d4f95cfc58c7b53032",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
@@ -154,7 +154,7 @@
     "css:components/button.css": {
       "path": "css/css/components/button.css",
       "mediaType": "text/css",
-      "sha256": "f244c99ec14473143dd29793004193666007024ac8bf7098d341569066a308a2",
+      "sha256": "ba995288a0301db2b9866a93701da51d05524ef32c03882688dab6d4b5691aec",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
@@ -364,7 +364,7 @@
     "css:components/skeleton.css": {
       "path": "css/css/components/skeleton.css",
       "mediaType": "text/css",
-      "sha256": "e140e43827d7528660b152fbf94ff1a53cd9ecabeeba4fa7c33f24499ac55194",
+      "sha256": "dec1d85a76ddc86d213648dbabd188f07e43e7bdd4dd76a7c35c28c9aea1b699",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
