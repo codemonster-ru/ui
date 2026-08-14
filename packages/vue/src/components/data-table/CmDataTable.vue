@@ -33,6 +33,7 @@ const props = defineProps({
   pageCount: { type: Number, default: 1 },
   pageSize: { type: Number, default: 10 },
   pageSizeOptions: { type: Array as PropType<readonly number[]>, default: () => [] },
+  totalRows: { type: Number as PropType<number | null>, default: null },
   loading: Boolean,
   error: Boolean,
   emptyText: { type: String, default: 'No data' },
@@ -40,6 +41,11 @@ const props = defineProps({
   errorText: { type: String, default: 'Failed to load data' },
   paginationLabel: { type: String, default: 'Table pagination' },
   rowsPerPageLabel: { type: String, default: 'Rows per page' },
+  pageSummaryTemplate: { type: String, default: 'Page {page} of {pageCount}' },
+  paginationSummaryTemplate: { type: String, default: '{firstRow}-{lastRow} of {totalRows}' },
+  emptyPaginationSummaryText: { type: String, default: '0 rows' },
+  previousPageText: { type: String, default: 'Previous' },
+  nextPageText: { type: String, default: 'Next' },
   previousPageLabel: { type: String, default: 'Previous page' },
   nextPageLabel: { type: String, default: 'Next page' },
   selectAllLabel: { type: String, default: 'Select all rows' },
@@ -107,11 +113,11 @@ const normalizedPageSizeOptions = computed(() => {
   return props.pageSizeOptions;
 });
 
-if (
-  ![props.page, props.pageCount, props.pageSize].every((value) => Number.isInteger(value) && value > 0) ||
-  props.page > props.pageCount
-) {
-  throw new TypeError('DataTable page must be within its positive pageCount.');
+if (![props.page, props.pageCount, props.pageSize].every((value) => Number.isInteger(value) && value > 0)) {
+  throw new TypeError('DataTable page, pageCount, and pageSize must be positive integers.');
+}
+if (props.totalRows !== null && (!Number.isInteger(props.totalRows) || props.totalRows < 0)) {
+  throw new TypeError('DataTable totalRows must be a non-negative integer or null.');
 }
 if (
   [
@@ -120,12 +126,25 @@ if (
     props.errorText,
     props.paginationLabel,
     props.rowsPerPageLabel,
+    props.emptyPaginationSummaryText,
+    props.previousPageText,
+    props.nextPageText,
     props.previousPageLabel,
     props.nextPageLabel,
     props.selectAllLabel,
   ].some((value) => !value.trim())
 ) {
   throw new TypeError('DataTable labels must be non-empty strings.');
+}
+if (!props.pageSummaryTemplate.includes('{page}') || !props.pageSummaryTemplate.includes('{pageCount}')) {
+  throw new TypeError('DataTable pageSummaryTemplate must contain {page} and {pageCount}.');
+}
+if (
+  !props.paginationSummaryTemplate.includes('{firstRow}') ||
+  !props.paginationSummaryTemplate.includes('{lastRow}') ||
+  !props.paginationSummaryTemplate.includes('{totalRows}')
+) {
+  throw new TypeError('DataTable paginationSummaryTemplate must contain first, last, and total row placeholders.');
 }
 
 function normalizeSort(sort: CmDataTableSort | null): CmDataTableSort | null {
@@ -143,6 +162,12 @@ const localSort = ref<CmDataTableSort | null>(normalizeSort(props.sort));
 const localSelectedRowIds = ref([...props.selectedRowIds]);
 const localPage = ref(props.page);
 const localPageSize = ref(props.pageSize);
+const resolvedPageCount = computed(() =>
+  props.totalRows === null ? props.pageCount : Math.max(1, Math.ceil(props.totalRows / localPageSize.value)),
+);
+if (props.page > resolvedPageCount.value) {
+  throw new TypeError('DataTable page must be within its resolved pageCount.');
+}
 watch(
   () => props.sort,
   (sort) => (localSort.value = normalizeSort(sort)),
@@ -193,6 +218,7 @@ const rootAttrs = computed(() =>
     'data-cm-data-table-page',
     'data-cm-data-table-page-count',
     'data-cm-data-table-page-size',
+    'data-cm-data-table-total-rows',
     'data-cm-data-table-selected-count',
   ]),
 );
@@ -205,6 +231,16 @@ const stateText = computed(() =>
         ? props.emptyText
         : '',
 );
+const pageSummary = computed(() =>
+  formatTemplate(props.pageSummaryTemplate, { page: localPage.value, pageCount: resolvedPageCount.value }),
+);
+const paginationSummary = computed(() => {
+  if (props.totalRows === null) return '';
+  if (props.totalRows === 0) return props.emptyPaginationSummaryText;
+  const firstRow = (localPage.value - 1) * localPageSize.value + 1;
+  const lastRow = Math.min(localPage.value * localPageSize.value, props.totalRows);
+  return formatTemplate(props.paginationSummaryTemplate, { firstRow, lastRow, totalRows: props.totalRows });
+});
 const columnCount = computed(() => normalizedColumns.value.length + (props.selectable ? 1 : 0));
 
 function cellAttrs(column: CmDataTableColumn): Record<string, string> {
@@ -216,6 +252,13 @@ function rowLabel(id: string): string {
     .split('-')
     .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
     .join(' ');
+}
+
+function formatTemplate(template: string, values: Readonly<Record<string, number>>): string {
+  return Object.entries(values).reduce(
+    (result, [name, value]) => result.split(`{${name}}`).join(String(value)),
+    template,
+  );
 }
 
 function sortLabel(column: CmDataTableColumn): string {
@@ -256,7 +299,7 @@ function changeAllSelection(checked: boolean): void {
 }
 
 function changePage(page: number): void {
-  const next = Math.min(props.pageCount, Math.max(1, page));
+  const next = Math.min(resolvedPageCount.value, Math.max(1, page));
   if (next === localPage.value) return;
   localPage.value = next;
   emit('update:page', next);
@@ -281,8 +324,9 @@ function changePageSize(pageSize: number): void {
     :data-cm-data-table-sort-key="localSort?.key ?? ''"
     :data-cm-data-table-sort-direction="localSort?.direction ?? ''"
     :data-cm-data-table-page="localPage"
-    :data-cm-data-table-page-count="props.pageCount"
+    :data-cm-data-table-page-count="resolvedPageCount"
     :data-cm-data-table-page-size="localPageSize"
+    :data-cm-data-table-total-rows="props.totalRows ?? undefined"
     :data-cm-data-table-selected-count="localSelectedRowIds.length"
   >
     <div class="cm-data-table__scroll">
@@ -354,7 +398,7 @@ function changePageSize(pageSize: number): void {
       </table>
     </div>
     <nav
-      v-if="props.pageCount > 1 || normalizedPageSizeOptions.length > 0"
+      v-if="resolvedPageCount > 1 || normalizedPageSizeOptions.length > 0 || props.totalRows !== null"
       class="cm-data-table__pagination"
       :aria-label="props.paginationLabel"
     >
@@ -374,11 +418,25 @@ function changePageSize(pageSize: number): void {
           </option>
         </select>
       </label>
+      <span
+        v-if="props.totalRows !== null"
+        class="cm-data-table__pagination-summary"
+        aria-live="polite"
+        :data-cm-data-table-pagination-summary-template="props.paginationSummaryTemplate"
+        :data-cm-data-table-empty-pagination-summary="props.emptyPaginationSummaryText"
+      >
+        {{ paginationSummary }}
+      </span>
       <!-- prettier-ignore -->
-      <button class="cm-data-table__page-button" type="button" :aria-label="props.previousPageLabel" data-cm-data-table-page-action="previous" :disabled="localPage <= 1" @click="changePage(localPage - 1)">Previous</button>
-      <span class="cm-data-table__page-summary" aria-live="polite">Page {{ localPage }} of {{ props.pageCount }}</span>
+      <button class="cm-data-table__page-button" type="button" :aria-label="props.previousPageLabel" data-cm-data-table-page-action="previous" :disabled="localPage <= 1" @click="changePage(localPage - 1)">{{ props.previousPageText }}</button>
+      <span
+        class="cm-data-table__page-summary"
+        aria-live="polite"
+        :data-cm-data-table-page-summary-template="props.pageSummaryTemplate"
+        >{{ pageSummary }}</span
+      >
       <!-- prettier-ignore -->
-      <button class="cm-data-table__page-button" type="button" :aria-label="props.nextPageLabel" data-cm-data-table-page-action="next" :disabled="localPage >= props.pageCount" @click="changePage(localPage + 1)">Next</button>
+      <button class="cm-data-table__page-button" type="button" :aria-label="props.nextPageLabel" data-cm-data-table-page-action="next" :disabled="localPage >= resolvedPageCount" @click="changePage(localPage + 1)">{{ props.nextPageText }}</button>
     </nav>
   </div>
 </template>

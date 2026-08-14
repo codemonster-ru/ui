@@ -24,6 +24,7 @@ test('collects a scenario tied to a canonical case', () => {
       steps: [
         { action: 'submit', target: 'form' },
         { expect: 'formValue', target: 'form', name: 'value', value: 'saved' },
+        { expect: 'text', target: 'status', value: 'Saved' },
       ],
     }));
 

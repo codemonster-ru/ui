@@ -63,7 +63,7 @@ const rows = [
     caption="Accounts"
     :columns="columns"
     :rows="rows"
-    :page-count="3"
+    :total-rows="25"
     selectable
   />
 </template>
@@ -108,7 +108,10 @@ document.querySelector('#accounts')?.addEventListener('cm:data-table-sort-change
 Pass `page-size` and an ordered `page-size-options` array to render a native page-size selector.
 Changing it reports `pageSizeChange` in Vue or `cm:data-table-page-size-change` through the shared
 runtime and requests page one when the current page is not already the first. The application still
-owns row fetching, `page-count`, and the rows supplied for the requested page.
+owns row fetching and the rows supplied for the requested page. Pass `total-rows` to derive the page
+count and render `firstRow-lastRow of totalRows`; omit it when the application owns `page-count`.
+The page and range summary templates plus visible previous/next text can be localized independently
+from the buttons' accessible labels.
 
 The controller cycles one sortable column through ascending, descending, and unsorted states. It
 synchronizes native row checkboxes and clamps previous/next page requests. It does not reorder,

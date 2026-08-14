@@ -24,9 +24,10 @@ portable contract rather than callbacks or framework-only slots.
 The root owns `cm-data-table`, the shared controller marker, current sort/page data attributes, and
 selected-count state. It contains a responsive table scroll region and, when `pageCount > 1`, a
 pagination navigation region. An optional ordered `pageSizeOptions` collection renders a native
-page-size select and must contain the current positive `pageSize`. Caption, headers, cells, state
-messages, labels, and attributes are escaped. Loading takes precedence over error; error takes
-precedence over empty rows.
+page-size select and must contain the current positive `pageSize`. When non-negative `totalRows` is
+provided, DataTable derives `pageCount`, renders the visible row range, and keeps both summaries in
+sync with page-size requests. Caption, headers, cells, state messages, labels, templates, and
+attributes are escaped. Loading takes precedence over error; error takes precedence over empty rows.
 
 Presentation props map to the same stable table modifiers as Table. `density="compact"` is the only
 non-default density. Sorting uses `aria-sort` on the owning `<th>` and a native button. Selection uses
@@ -41,7 +42,9 @@ application supplies rows in the requested order. Selection updates native contr
 `selectionChange` in rendered row order. Previous and next buttons clamp to `1...pageCount`, update
 the requested page, and report `pageChange`; applications replace rows for that page. Changing the
 page-size select reports `pageSizeChange`, resets the requested page to one, and reports that page
-change when necessary. DataTable still does not slice rows or calculate a page count.
+change when necessary. DataTable calculates page count only when `totalRows` is supplied; it never
+slices or fetches rows. Summary templates require their documented placeholders. Visible previous
+and next text is independent from the buttons' accessible labels so both can be localized.
 
 Vue owns interaction directly. Server-rendered Razor markup uses the shared DataTable controller.
 The initial HTML remains a readable native table without JavaScript. Controlled Vue props are

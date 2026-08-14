@@ -36,6 +36,18 @@ function positiveInteger(value: string | null, fallback: number): number {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+function nonNegativeInteger(value: string | null): number | null {
+  const parsed = Number(value);
+  return value !== null && Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function formatTemplate(template: string, values: Readonly<Record<string, number>>): string {
+  return Object.entries(values).reduce(
+    (result, [name, value]) => result.split(`{${name}}`).join(String(value)),
+    template,
+  );
+}
+
 export class CmDataTableController implements CmController {
   readonly #root: Element;
 
@@ -195,27 +207,50 @@ export class CmDataTableController implements CmController {
     const pageSize = positiveInteger(control.value, 0);
     const current = positiveInteger(this.#root.getAttribute('data-cm-data-table-page-size'), 0);
     if (pageSize === 0 || pageSize === current) return;
+    const page = positiveInteger(this.#root.getAttribute('data-cm-data-table-page'), 1);
     this.#root.setAttribute('data-cm-data-table-page-size', String(pageSize));
+    if (page !== 1) this.#root.setAttribute('data-cm-data-table-page', '1');
+    this.#synchronizePage();
     dispatchCmEvent<DataTablePageSizeChangeDetail>(this.#root, 'data-table-page-size-change', { pageSize });
 
-    const page = positiveInteger(this.#root.getAttribute('data-cm-data-table-page'), 1);
     if (page !== 1) {
-      this.#root.setAttribute('data-cm-data-table-page', '1');
-      this.#synchronizePage();
       dispatchCmEvent<DataTablePageChangeDetail>(this.#root, 'data-table-page-change', { page: 1 });
     }
   }
 
   #synchronizePage(): void {
-    const pageCount = positiveInteger(this.#root.getAttribute('data-cm-data-table-page-count'), 1);
+    const totalRows = nonNegativeInteger(this.#root.getAttribute('data-cm-data-table-total-rows'));
+    const pageSize = positiveInteger(this.#root.getAttribute('data-cm-data-table-page-size'), 1);
+    const pageCount =
+      totalRows === null
+        ? positiveInteger(this.#root.getAttribute('data-cm-data-table-page-count'), 1)
+        : Math.max(1, Math.ceil(totalRows / pageSize));
+    this.#root.setAttribute('data-cm-data-table-page-count', String(pageCount));
     const page = Math.min(positiveInteger(this.#root.getAttribute('data-cm-data-table-page'), 1), pageCount);
     this.#root.setAttribute('data-cm-data-table-page', String(page));
     for (const button of this.#root.querySelectorAll<HTMLButtonElement>(pageSelector)) {
       const action = button.dataset.cmDataTablePageAction;
       button.disabled = action === 'previous' ? page <= 1 : action === 'next' ? page >= pageCount : true;
     }
-    const summary = this.#root.querySelector<HTMLElement>('.cm-data-table__page-summary');
-    if (summary) summary.textContent = `Page ${page} of ${pageCount}`;
+    const pageSummary = this.#root.querySelector<HTMLElement>('.cm-data-table__page-summary');
+    if (pageSummary) {
+      const template = pageSummary.dataset.cmDataTablePageSummaryTemplate ?? 'Page {page} of {pageCount}';
+      pageSummary.textContent = formatTemplate(template, { page, pageCount });
+    }
+    const paginationSummary = this.#root.querySelector<HTMLElement>('.cm-data-table__pagination-summary');
+    if (paginationSummary && totalRows !== null) {
+      if (totalRows === 0) {
+        paginationSummary.textContent = paginationSummary.dataset.cmDataTableEmptyPaginationSummary ?? '0 rows';
+      } else {
+        const template =
+          paginationSummary.dataset.cmDataTablePaginationSummaryTemplate ?? '{firstRow}-{lastRow} of {totalRows}';
+        paginationSummary.textContent = formatTemplate(template, {
+          firstRow: (page - 1) * pageSize + 1,
+          lastRow: Math.min(page * pageSize, totalRows),
+          totalRows,
+        });
+      }
+    }
   }
 }
 

@@ -47,12 +47,44 @@ describe('Vue data table components', () => {
 
   it('reports a page-size request and resets the requested page', async () => {
     const wrapper = mount(CmDataTable, {
-      props: { id: 'projects', columns, rows, page: 2, pageCount: 3, pageSize: 10, pageSizeOptions: [10, 25, 50] },
+      props: {
+        id: 'projects',
+        columns,
+        rows,
+        page: 2,
+        pageSize: 10,
+        pageSizeOptions: [10, 25, 50],
+        totalRows: 25,
+      },
     });
     await wrapper.get<HTMLSelectElement>('[data-cm-data-table-page-size-control]').setValue('25');
     expect(wrapper.emitted('pageSizeChange')).toEqual([[25]]);
     expect(wrapper.emitted('pageChange')).toEqual([[1]]);
     expect(wrapper.attributes('data-cm-data-table-page-size')).toBe('25');
+    expect(wrapper.attributes('data-cm-data-table-page-count')).toBe('1');
+    expect(wrapper.get('.cm-data-table__pagination-summary').text()).toBe('1-25 of 25');
+    expect(wrapper.get('.cm-data-table__page-summary').text()).toBe('Page 1 of 1');
+  });
+
+  it('renders localized pagination summaries and visible button text', () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns,
+        rows,
+        page: 2,
+        pageSize: 10,
+        totalRows: 25,
+        pageSummaryTemplate: 'Страница {page} из {pageCount}',
+        paginationSummaryTemplate: '{firstRow}–{lastRow} из {totalRows}',
+        previousPageText: 'Назад',
+        nextPageText: 'Вперёд',
+      },
+    });
+    expect(wrapper.get('.cm-data-table__pagination-summary').text()).toBe('11–20 из 25');
+    expect(wrapper.get('.cm-data-table__page-summary').text()).toBe('Страница 2 из 3');
+    expect(wrapper.get('[data-cm-data-table-page-action="previous"]').text()).toBe('Назад');
+    expect(wrapper.get('[data-cm-data-table-page-action="next"]').text()).toBe('Вперёд');
   });
 
   it('rejects duplicate columns and unsafe cell values', () => {
