@@ -5,8 +5,8 @@
         <CmBadge tone="primary">CodeMonster UI</CmBadge>
         <h1>Vue component showcase</h1>
         <p class="demo-text">
-          All stable cross-platform components rendered by the Vue adapter, with unresolved VueForge migration gaps kept
-          visible.
+          All stable cross-platform components rendered by the Vue adapter, with VueForge migration coverage tracked in
+          the canonical inventory.
         </p>
       </header>
 
@@ -30,10 +30,15 @@
       <CmSection id="migration-gaps" surface>
         <CmStack>
           <h2>Unresolved migration gaps</h2>
-          <p class="demo-text">
+          <p v-if="catalog.migrationGaps.length === 0" class="demo-text">No unresolved migration gaps remain.</p>
+          <p v-else class="demo-text">
             These capabilities remain intentionally visible until their roadmap destination is implemented or rejected.
           </p>
-          <ul class="migration-gap-list" aria-label="Unresolved VueForge migration gaps">
+          <ul
+            v-if="catalog.migrationGaps.length > 0"
+            class="migration-gap-list"
+            aria-label="Unresolved VueForge migration gaps"
+          >
             <li
               v-for="gap in catalog.migrationGaps"
               :key="`${gap.source}-${gap.capabilityId}`"
@@ -336,7 +341,21 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import catalog from './component-catalog.json';
+import catalogData from './component-catalog.json';
+
+interface ComponentCatalog {
+  components: Array<{ name: string; group: string; demoHref: string }>;
+  migrationGaps: Array<{
+    source: string;
+    disposition: string;
+    targets: string[];
+    capabilityId: string;
+    roadmapItem: string;
+    summary: string;
+  }>;
+}
+
+const catalog = catalogData as ComponentCatalog;
 import {
   CmAccordion,
   CmAlert,
