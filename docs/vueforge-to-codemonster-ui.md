@@ -67,11 +67,15 @@ application recipes. GroupBox and SkeletonGate split portable composition from a
 behavior. Fieldset and IconButton remain portable candidates rather than approved Stack or Button
 substitutions.
 
-DataTable column choice, Menubar, navigation-tree behavior, progress, Stepper, Table of Contents,
-and Tag retain explicit candidate decisions in the maturity backlog. ThemeSwitch, application
-shells, SetupLayout, and shell-internal areas remain application-owned. Native HTML and the listed
+DataTable column choice, Menubar, navigation-tree behavior, progress, Stepper, and Table of Contents
+retain explicit candidate decisions in the maturity backlog. ThemeSwitch, application shells,
+SetupLayout, and shell-internal areas remain application-owned. Native HTML and the listed
 CodeMonster UI primitives are preferred where sufficient; the codemod reports these entries for
 manual migration and never rewrites them.
+
+`VfTag` is superseded by `CmBadge`; the only representative usage was the color showcase and did
+not justify a distinct outlined component contract. Migrate it manually and rename the legacy
+`warn` tone to `warning`; the other shared semantic tone names carry across directly.
 
 The complete reasons and remaining roadmap destinations are recorded in the
 [component disposition audit](./verification/component-disposition-audit.md) and the
