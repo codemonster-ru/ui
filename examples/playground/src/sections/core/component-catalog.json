@@ -209,30 +209,6 @@
       "summary": "Multiple and range selection, month/year picker modes, time selection and minute steps, locale/display formatting, first-day configuration, clear action, and custom labels"
     },
     {
-      "source": "VfDialog",
-      "disposition": "replace",
-      "targets": ["CmDialog"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-179",
-      "summary": "Custom header, title/description markup, header actions, sizes, and divided presentation"
-    },
-    {
-      "source": "VfDrawer",
-      "disposition": "replace",
-      "targets": ["CmDrawer"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-179",
-      "summary": "Custom header/actions, size, offsets, padding/divider/rounded variants, and configurable dismissal policy"
-    },
-    {
-      "source": "VfDropdown",
-      "disposition": "replace",
-      "targets": ["CmDropdown"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-179",
-      "summary": "Arbitrary trigger and menu-body slots, plus the pills presentation variant"
-    },
-    {
       "source": "VfErrorLayout",
       "disposition": "compose",
       "targets": ["CmContainer", "CmStack", "CmSection"],
@@ -273,28 +249,12 @@
       "summary": "Portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract"
     },
     {
-      "source": "VfMenu",
-      "disposition": "replace",
-      "targets": ["CmMenu"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-179",
-      "summary": "Rich item content and per-link `target`/`rel` metadata"
-    },
-    {
       "source": "VfMenuBar",
       "disposition": "manual",
       "targets": ["CmMenu", "CmInline"],
       "capabilityId": "reviewed-disposition",
       "roadmapItem": "CMUI-185",
       "summary": "Portable candidate: Nested menubar semantics and two-axis keyboard navigation are portable behavior, but current consumers and Razor demand are not yet established"
-    },
-    {
-      "source": "VfMenuItem",
-      "disposition": "manual",
-      "targets": ["CmMenu"],
-      "capabilityId": "remaining-migration-outcome",
-      "roadmapItem": "CMUI-179",
-      "summary": "Resolve the remaining direct-menu gap in `CMUI-179`; do not add a standalone item component unless the collection contract proves insufficient"
     },
     {
       "source": "VfNavMenu",
@@ -319,14 +279,6 @@
       "capabilityId": "maintained-recipe",
       "roadmapItem": "CMUI-187",
       "summary": "Publish subtle/default panel recipes in `CMUI-187`"
-    },
-    {
-      "source": "VfPopover",
-      "disposition": "replace",
-      "targets": ["CmPopover"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-179",
-      "summary": "Arbitrary trigger content and trigger semantics"
     },
     {
       "source": "VfProgressBar",
@@ -377,14 +329,6 @@
       "summary": "Portable candidate: Semantic navigation, active location, levels, and links are portable; heading discovery, scroll observation, smooth scrolling, and offsets may remain application-owned"
     },
     {
-      "source": "VfTabs",
-      "disposition": "replace",
-      "targets": ["CmTabs"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-179",
-      "summary": "Rich tab labels and panel content, externally owned panels, and explicit uncontrolled default selection"
-    },
-    {
       "source": "VfTag",
       "disposition": "manual",
       "targets": ["CmBadge"],
@@ -399,14 +343,6 @@
       "capabilityId": "maintained-recipe",
       "roadmapItem": "CMUI-187",
       "summary": "Publish a Vue/Razor application recipe in `CMUI-187` rather than a shared stateful component"
-    },
-    {
-      "source": "VfTooltip",
-      "disposition": "replace",
-      "targets": ["CmTooltip"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-179",
-      "summary": "Arbitrary trigger elements and rich tooltip content"
     }
   ]
 }

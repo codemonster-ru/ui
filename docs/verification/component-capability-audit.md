@@ -69,18 +69,18 @@ not evidence of parity.
 | --- | --- | --- | --- |
 | `VfLink` → `CmLink` | Native `href`, target/rel forwarding, safe `_blank` relationship, underline modes, tones, and content | Router `to` and custom router component selection are application-owned; applications can apply `cm-link` styling to their router link | None identified |
 | `VfBreadcrumbs` → `CmBreadcrumbs` | Native links, current/disabled items, accessible navigation label, and custom separator content | Router destinations and router component resolution are application-owned | None identified |
-| `VfMenu` → `CmMenu` | Action/link items, disabled/active/danger states, selection events, roving focus, Home/End/arrows, and Escape requests | Vue component instances are replaced by a portable data collection; icons remain application-owned with the retained icon product | Rich item content and per-link `target`/`rel` metadata |
-| `VfDropdown` → `CmDropdown` | Controlled open state, disabled state, two placements, menu selection, outside dismissal, keyboard opening, and focus restoration | In-place portable rendering replaces teleport configuration; explicit application state replaces `defaultOpen` | Arbitrary trigger and menu-body slots, plus the pills presentation variant |
-| `VfPopover` → `CmPopover` | Controlled open state, disabled state, placement, outside/Escape dismissal, focus restoration, and rich panel body | In-place portable rendering and fixed dismissal behavior replace teleport and policy toggles | Arbitrary trigger content and trigger semantics |
-| `VfTabs` → `CmTabs` | Tab semantics, controlled selection, disabled items, panels, roving keyboard selection, and Razor enhancement | Stable component/item IDs replace caller-provided `tabId` and `panelId` | Rich tab labels and panel content, externally owned panels, and explicit uncontrolled default selection |
+| `VfMenu` → `CmMenu` | Action/link items, rich per-item content, safe target/rel metadata, disabled/active/danger states, selection events, roving focus, Home/End/arrows, and Escape requests | Vue component instances are replaced by a portable collection with adapter-native authored content; icons remain a retained product | None identified |
+| `VfDropdown` → `CmDropdown` | Controlled open state, owned rich trigger, disabled state, two placements, menu selection, outside dismissal, keyboard opening, and focus restoration | In-place rendering and an owned Menu replace teleport, arbitrary menu bodies, and pills presentation; explicit state replaces `defaultOpen` | None identified |
+| `VfPopover` → `CmPopover` | Controlled open state, owned rich trigger, disabled state, placement, outside/Escape dismissal, focus restoration, and rich panel body | In-place rendering, fixed dismissal, and an owned accessible button replace teleport, policy toggles, and arbitrary trigger roots | None identified |
+| `VfTabs` → `CmTabs` | Tab semantics, controlled/default selection, rich labels and owned panels, disabled items, roving keyboard selection, and Razor enhancement | Stable IDs and internally owned panels replace caller IDs and externally owned panel relationships | None identified |
 
 ### Overlay components
 
 | Replacement | Supported | Superseded or application-owned | Missing portable capability |
 | --- | --- | --- | --- |
-| `VfDialog` → `CmDialog` | Native modal semantics, title/description, controlled state, body/footer content, focus trap/restoration, Escape, and optional dismissal lock | Native `<dialog>` and in-place rendering replace teleport/scroll-lock targets; `dismissible` replaces several close flags | Custom header, title/description markup, header actions, sizes, and divided presentation |
-| `VfDrawer` → `CmDrawer` | Modal drawer semantics, start/end side, title/description, controlled state, body/footer content, focus handling, and dismissal | `side` replaces physical placement; native `<dialog>` and in-place rendering replace teleport/scroll-lock targets | Custom header/actions, size, offsets, padding/divider/rounded variants, and configurable dismissal policy |
-| `VfTooltip` → `CmTooltip` | Labelled trigger, tooltip semantics, focus/hover lifecycle, Escape dismissal, logical placements, and tokenized delays | Token delays replace arbitrary milliseconds; in-place rendering replaces teleport configuration | Arbitrary trigger elements and rich tooltip content |
+| `VfDialog` → `CmDialog` | Native modal semantics, trusted heading/description/actions/body/footer, finite sizes/dividers, controlled state, focus trap/restoration, Escape, and optional dismissal lock | Native `<dialog>`, in-place rendering, and explicit state replace teleport/scroll-lock targets and `defaultOpen`; backdrop activation never dismisses | None identified |
+| `VfDrawer` → `CmDrawer` | Modal drawer semantics, trusted regions, finite sizes/dividers/rounding, start/end side, controlled state, focus handling, and dismissal lock | Logical start/end replace left/right; block-axis drawers, arbitrary offsets/padding, teleport targets, and default state are not retained | None identified |
+| `VfTooltip` → `CmTooltip` | Owned rich trigger, trusted non-interactive content, tooltip semantics, focus/hover lifecycle, Escape dismissal, logical placements, and tokenized delays | Token delays and in-place rendering replace arbitrary timing/teleport configuration; an owned button replaces arbitrary trigger roots | None identified |
 
 ### Advanced input and data components
 
@@ -104,11 +104,10 @@ not evidence of parity.
 
 ## Outcome
 
-All 33 direct replacements have a verified cross-platform baseline. Thirteen replacements also have
+All 33 direct replacements have a verified cross-platform baseline. Six replacements also have
 either a missing portable capability or an application-owned integration that must remain visible
 during migration. DataTable's approved gap is closed with explicit advanced-grid ownership; the
-remaining highest-risk gaps are concentrated in DatePicker, CommandPalette, and rich-content
-composition for navigation and overlay components.
+remaining direct-replacement gaps are concentrated in Select, DatePicker, and CommandPalette.
 
 This audit does not approve every missing capability for implementation. `CMUI-176` prioritizes the
 gaps using real-consumer evidence; Phase 17 closes approved direct-replacement gaps. Application-owned

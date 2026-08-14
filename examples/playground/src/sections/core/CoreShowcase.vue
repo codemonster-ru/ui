@@ -171,19 +171,30 @@
       <CmSection id="demo-navigation" surface>
         <CmStack>
           <h2>Navigation and disclosure</h2>
-          <CmTabs id="showcase-tabs" v-model="activeTab" :items="tabs" />
+          <CmTabs id="showcase-tabs" :items="tabs" default-value="api">
+            <template #tabOverview><strong>Overview</strong></template>
+            <template #panelOverview><strong>Portable</strong> component contracts with owned panels.</template>
+          </CmTabs>
           <CmAccordion id="showcase-faq" v-model:open-items="openItems" :items="accordionItems" multiple>
             <template #triggerVue><strong>Vue</strong> interaction</template>
             <template #panelVue><strong>Vue</strong> owns hydrated interaction and authored panel content.</template>
           </CmAccordion>
           <CmInline>
-            <CmDropdown id="showcase-actions" v-model:open="dropdownOpen" label="Project actions" :items="menuItems" />
+            <CmDropdown id="showcase-actions" v-model:open="dropdownOpen" label="Project actions" :items="menuItems">
+              <template #trigger>•••</template>
+            </CmDropdown>
             <CmPopover id="showcase-popover" v-model:open="popoverOpen" label="Release help">
+              <template #trigger>?</template>
               Choose preview while validating a prerelease consumer.
             </CmPopover>
-            <CmTooltip id="showcase-tooltip" label="Status" content="All migration checks passed." />
+            <CmTooltip id="showcase-tooltip" label="Status" content="All migration checks passed.">
+              <template #trigger>✓</template>
+              <template #content><strong>All</strong> migration checks passed.</template>
+            </CmTooltip>
           </CmInline>
-          <CmMenu :items="menuItems" aria-label="Project menu" />
+          <CmMenu :items="menuItems" aria-label="Project menu">
+            <template #itemEdit><strong>Edit</strong> project</template>
+          </CmMenu>
         </CmStack>
       </CmSection>
 
@@ -231,11 +242,24 @@
             <CmButton variant="secondary" @click="drawerOpen = true">Open drawer</CmButton>
             <CmButton variant="ghost" @click="commandPaletteOpen = true">Open command palette</CmButton>
           </CmInline>
-          <CmDialog id="showcase-dialog" v-model:open="dialogOpen" title="Publish preview?">
+          <CmDialog id="showcase-dialog" v-model:open="dialogOpen" title="Publish preview?" size="lg" dividers>
+            <template #header>Publish <em>preview</em>?</template>
+            <template #description>Confirm the <strong>portable</strong> release gates.</template>
+            <template #actions="{ close }"><CmButton variant="ghost" @click="close">Cancel</CmButton></template>
             Validate the packed consumers before publishing.
             <template #footer><CmButton @click="dialogOpen = false">Done</CmButton></template>
           </CmDialog>
-          <CmDrawer id="showcase-drawer" v-model:open="drawerOpen" title="Release checklist" side="end">
+          <CmDrawer
+            id="showcase-drawer"
+            v-model:open="drawerOpen"
+            title="Release checklist"
+            side="end"
+            size="lg"
+            dividers
+            rounded
+          >
+            <template #header>Release <strong>checklist</strong></template>
+            <template #actions="{ close }"><CmButton variant="ghost" @click="close">Done</CmButton></template>
             Contracts, accessibility, visuals, and consumers are required gates.
           </CmDrawer>
           <CmCommandPalette
@@ -344,7 +368,6 @@ const notes = ref('Validate both adapters.');
 const notifications = ref(true);
 const automaticRelease = ref(false);
 const channel = ref('stable');
-const activeTab = ref('overview');
 const openItems = ref<string[]>(['vue']);
 const dropdownOpen = ref(false);
 const popoverOpen = ref(false);

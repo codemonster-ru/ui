@@ -508,7 +508,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "`side` replaces physical placement; native `<dialog>` and in-place rendering replace teleport/scroll-lock targets",
+          "notes": "Logical start/end replace left/right; block-axis drawers, arbitrary offsets/padding, teleport targets, and default state remain application-owned or superseded",
           "evidence": [
             "docs/core/components/drawer/api.md",
             "contracts/drawer/contract.md",
@@ -516,14 +516,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Custom header/actions, size, offsets, padding/divider/rounded variants, and configurable dismissal policy",
-          "roadmapItem": "CMUI-179",
+          "id": "rich-regions-and-presentation",
+          "status": "supported",
+          "notes": "Trusted heading, description, action, body, and footer content with finite sizes, dividers, rounding, and a dismissal lock",
           "evidence": [
-            "docs/core/components/drawer/api.md",
             "contracts/drawer/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/drawer/cases/composed.case.json",
+            "packages/vue/src/components/overlay-components.test.ts",
+            "packages/razor/tests/Components/CmOverlayComponentsTest.php"
           ]
         }
       ],
@@ -551,7 +551,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Native `<dialog>` and in-place rendering replace teleport/scroll-lock targets; `dismissible` replaces several close flags",
+          "notes": "Native `<dialog>`, in-place rendering, and explicit state replace teleport/scroll-lock targets and `defaultOpen`; backdrop activation never dismisses, while one `dismissible` lock replaces separate close flags",
           "evidence": [
             "docs/core/components/dialog/api.md",
             "contracts/dialog/contract.md",
@@ -559,14 +559,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Custom header, title/description markup, header actions, sizes, and divided presentation",
-          "roadmapItem": "CMUI-179",
+          "id": "rich-regions-and-presentation",
+          "status": "supported",
+          "notes": "Trusted heading, description, action, body, and footer content with scoped closing, finite sizes, and dividers",
           "evidence": [
-            "docs/core/components/dialog/api.md",
             "contracts/dialog/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/dialog/cases/composed.case.json",
+            "packages/vue/src/components/overlay-components.test.ts",
+            "packages/razor/tests/Components/CmOverlayComponentsTest.php"
           ]
         }
       ],
@@ -626,7 +626,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "In-place portable rendering replaces teleport configuration; explicit application state replaces `defaultOpen`",
+          "notes": "In-place rendering and an owned Menu collection replace teleport, arbitrary menu bodies, and pills presentation; explicit state replaces `defaultOpen`",
           "evidence": [
             "docs/core/components/dropdown/api.md",
             "contracts/dropdown/contract.md",
@@ -634,14 +634,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Arbitrary trigger and menu-body slots, plus the pills presentation variant",
-          "roadmapItem": "CMUI-179",
+          "id": "owned-trigger-content",
+          "status": "supported",
+          "notes": "Trusted trigger content inside the component-owned accessible button with a component-owned Menu collection",
           "evidence": [
-            "docs/core/components/dropdown/api.md",
             "contracts/dropdown/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/dropdown/cases/composed.case.json",
+            "packages/vue/src/components/navigation-components.test.ts",
+            "packages/razor/tests/Components/CmNavigationComponentsParityTest.php"
           ]
         }
       ],
@@ -880,7 +880,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Vue component instances are replaced by a portable data collection; icons remain application-owned with the retained icon product",
+          "notes": "Vue component instances are replaced by a portable data collection; authored item content uses adapter-native slots and icons remain a retained product",
           "evidence": [
             "docs/core/components/menu/api.md",
             "contracts/menu/contract.md",
@@ -888,14 +888,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Rich item content and per-link `target`/`rel` metadata",
-          "roadmapItem": "CMUI-179",
+          "id": "rich-items-and-link-metadata",
+          "status": "supported",
+          "notes": "Trusted per-item content plus target/rel metadata with safe blank-target defaults",
           "evidence": [
-            "docs/core/components/menu/api.md",
             "contracts/menu/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/menu/cases/rich-link.case.json",
+            "packages/vue/src/components/navigation-components.test.ts",
+            "packages/razor/tests/Components/CmNavigationComponentsParityTest.php"
           ]
         }
       ],
@@ -913,7 +913,7 @@
         {
           "id": "reviewed-disposition",
           "status": "superseded",
-          "notes": "Split: CmMenu covers action/link selection and basic states through its item collection; retained icons and rich item/link metadata are not fully covered",
+          "notes": "CmMenu covers action/link states, rich item content, safe link metadata, and selection through its portable collection",
           "evidence": [
             "docs/core/components/menu/api.md",
             "docs/verification/component-disposition-audit.md",
@@ -921,10 +921,9 @@
           ]
         },
         {
-          "id": "remaining-migration-outcome",
-          "status": "missing",
-          "notes": "Resolve the remaining direct-menu gap in `CMUI-179`; do not add a standalone item component unless the collection contract proves insufficient",
-          "roadmapItem": "CMUI-179",
+          "id": "standalone-item-component",
+          "status": "superseded",
+          "notes": "A standalone MenuItem adapter is unnecessary because the matured CmMenu collection owns item semantics and composition",
           "evidence": [
             "docs/core/components/menu/api.md",
             "docs/verification/component-disposition-audit.md",
@@ -1033,7 +1032,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "In-place portable rendering and fixed dismissal behavior replace teleport and policy toggles",
+          "notes": "In-place rendering, fixed dismissal, and an owned accessible button replace teleport, policy toggles, and arbitrary trigger roots",
           "evidence": [
             "docs/core/components/popover/api.md",
             "contracts/popover/contract.md",
@@ -1041,14 +1040,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Arbitrary trigger content and trigger semantics",
-          "roadmapItem": "CMUI-179",
+          "id": "owned-trigger-content",
+          "status": "supported",
+          "notes": "Trusted trigger content inside the component-owned accessible button",
           "evidence": [
-            "docs/core/components/popover/api.md",
             "contracts/popover/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/popover/cases/composed.case.json",
+            "packages/vue/src/components/overlay-components.test.ts",
+            "packages/razor/tests/Components/CmOverlayComponentsTest.php"
           ]
         }
       ],
@@ -1392,7 +1391,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Stable component/item IDs replace caller-provided `tabId` and `panelId`",
+          "notes": "Stable IDs and internally owned panels replace caller IDs and externally owned panel relationships",
           "evidence": [
             "docs/core/components/tabs/api.md",
             "contracts/tabs/contract.md",
@@ -1400,14 +1399,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Rich tab labels and panel content, externally owned panels, and explicit uncontrolled default selection",
-          "roadmapItem": "CMUI-179",
+          "id": "rich-owned-content-and-default",
+          "status": "supported",
+          "notes": "Trusted per-item labels and owned panel content plus explicit uncontrolled default selection",
           "evidence": [
-            "docs/core/components/tabs/api.md",
             "contracts/tabs/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/tabs/cases/rich-content.case.json",
+            "packages/vue/src/components/navigation-components.test.ts",
+            "packages/razor/tests/Components/CmNavigationComponentsParityTest.php"
           ]
         }
       ],
@@ -1467,7 +1466,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Token delays replace arbitrary milliseconds; in-place rendering replaces teleport configuration",
+          "notes": "Token delays and in-place rendering replace arbitrary timing/teleport configuration; an owned button replaces arbitrary trigger roots and rich tooltip content remains non-interactive",
           "evidence": [
             "docs/core/components/tooltip/api.md",
             "contracts/tooltip/contract.md",
@@ -1475,14 +1474,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Arbitrary trigger elements and rich tooltip content",
-          "roadmapItem": "CMUI-179",
+          "id": "owned-trigger-and-rich-content",
+          "status": "supported",
+          "notes": "Trusted trigger content inside an owned accessible button and trusted non-interactive tooltip content",
           "evidence": [
-            "docs/core/components/tooltip/api.md",
             "contracts/tooltip/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/tooltip/cases/composed.case.json",
+            "packages/vue/src/components/overlay-components.test.ts",
+            "packages/razor/tests/Components/CmOverlayComponentsTest.php"
           ]
         }
       ],

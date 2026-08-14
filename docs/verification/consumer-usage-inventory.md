@@ -74,8 +74,8 @@ shared components. In particular:
   or DataTable-specific skeleton rows;
 - auth, setup, admin shell, form-layout, group-box, panel, page-header, and theme compositions are
   real recipe demand for `CMUI-187` and application-ownership evidence for `CMUI-188`;
-- the application-owned menu and navigation wrappers are demand to evaluate during `CMUI-180` and
-  `CMUI-185`, but they do not establish matching Razor demand.
+- menu and tab wrapper demand informed the owned-semantic content contracts completed in `CMUI-179`;
+  portable navigation-tree behavior remains for evaluation in `CMUI-185` and still lacks matching Razor demand.
 
 ## Real Annabel Razor demand
 
