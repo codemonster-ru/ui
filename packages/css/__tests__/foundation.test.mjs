@@ -19,6 +19,8 @@ test('uses semantic tokens for document colors and typography', () => {
   assert.match(documentCss, /background: var\(--cm-color-background-canvas\);/);
   assert.match(documentCss, /color: var\(--cm-color-text-primary\);/);
   assert.match(documentCss, /font-family: var\(--cm-font-family-base\);/);
+  assert.match(documentCss, /font-size: 100%;/);
+  assert.doesNotMatch(documentCss, /:root\s*\{[^}]*font-size: var\(--cm-font-size-/s);
   assert.match(documentCss, /:root\[data-cm-theme='dark'\][\s\S]*color-scheme: dark;/);
   assert.doesNotMatch(documentCss, /--(?:vf|vueforge)-|\.vf-/);
 });
