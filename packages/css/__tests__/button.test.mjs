@@ -22,6 +22,8 @@ test('styles canonical Button state and content hooks', () => {
   assert.match(css, /\.cm-button__leading/);
   assert.match(css, /\.cm-button__trailing/);
   assert.match(css, /\.cm-button__spinner/);
+  assert.match(css, /--cm-button-spinner-duration: 1\.4s;/);
+  assert.match(css, /animation: cm-button-spin var\(--cm-button-spinner-duration\)/);
   assert.match(css, /@keyframes cm-button-spin/);
   assert.doesNotMatch(css, /--(?:vf|vueforge)-|\.vf-/);
 });

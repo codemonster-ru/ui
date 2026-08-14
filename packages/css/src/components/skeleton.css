@@ -1,4 +1,6 @@
 .cm-skeleton {
+  --cm-skeleton-shimmer-duration: 1.2s;
+
   position: relative;
   overflow: hidden;
   inline-size: 100%;
@@ -34,7 +36,7 @@
 }
 
 .cm-skeleton--animated::after {
-  animation: cm-skeleton-shimmer var(--cm-motion-duration-normal) var(--cm-motion-ease-standard) infinite;
+  animation: cm-skeleton-shimmer var(--cm-skeleton-shimmer-duration) var(--cm-motion-ease-standard) infinite;
 }
 
 @keyframes cm-skeleton-shimmer {
