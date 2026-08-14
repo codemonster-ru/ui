@@ -34,6 +34,7 @@ function maturityBacklog(gaps = []) {
 
 function cloneArtifacts(artifacts) {
   return {
+    contractManifests: new Map(artifacts.contractManifests),
     contracts: new Set(artifacts.contracts),
     files: new Map(artifacts.files),
     razorComponents: new Map(artifacts.razorComponents),
@@ -83,6 +84,10 @@ test('reports mapping, capability, and delivery drift', () => {
     ],
   };
   const artifacts = {
+    contractManifests: new Map([
+      ['button', { name: 'Button', razorTag: 'cm-button', slug: 'button' }],
+      ['orphan', { name: 'Orphan', razorTag: 'cm-orphan', slug: 'orphan' }],
+    ]),
     contracts: new Set(['button', 'orphan']),
     files: new Map([
       ['backlog.json', maturityBacklog()],
@@ -145,6 +150,7 @@ test('rejects pending entries after the compose and manual audit is complete', (
     componentMappings: [{ source: 'VfLegacy', action: 'manual', targets: [] }],
   };
   const artifacts = {
+    contractManifests: new Map(),
     contracts: new Set(),
     files: new Map([
       ['backlog.json', maturityBacklog()],
@@ -211,6 +217,26 @@ test('enforces the M10 direct-replacement maturity exit gate', () => {
   );
 });
 
+test('links direct-replacement delivery to contract manifest metadata', () => {
+  const coverage = readCodeMonsterCoverage();
+  const mapping = readVueForgeMapping();
+  const artifacts = discoverCoverageArtifacts(coverage);
+  const drifted = cloneArtifacts(artifacts);
+  drifted.contractManifests.set('button', {
+    ...drifted.contractManifests.get('button'),
+    name: 'Action',
+    slug: 'action',
+    razorTag: 'cm-action',
+  });
+
+  const issues = validateCodeMonsterCoverage(coverage, mapping, drifted);
+  assert.ok(issues.includes('VfButton contract button manifest name Action does not match target CmButton.'));
+  assert.ok(issues.includes('VfButton contract button manifest slug action does not match its delivery contract.'));
+  assert.ok(
+    issues.includes('VfButton contract button manifest razorTag cm-action does not match delivery Razor tag button.'),
+  );
+});
+
 test('requires stable components and unresolved gaps in the playground catalog', () => {
   const coverage = {
     schemaVersion: 1,
@@ -246,6 +272,7 @@ test('requires stable components and unresolved gaps in the playground catalog',
     componentMappings: [{ source: 'VfButton', action: 'replace', targets: ['CmButton'] }],
   };
   const artifacts = {
+    contractManifests: new Map([['button', { name: 'Button', razorTag: 'cm-button', slug: 'button' }]]),
     contracts: new Set(['button']),
     files: new Map([
       ['backlog.json', maturityBacklog(['VfButton:material-portable-gap'])],

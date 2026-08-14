@@ -1,6 +1,7 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { collectComponentManifests } from '../contracts/component-manifests.mjs';
 import { readVueForgeMapping } from './vueforge-mapping.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -25,11 +26,8 @@ function razorComponentRegistrations(source) {
 
 export function discoverCoverageArtifacts(coverage, root = repositoryRoot) {
   const contractsRoot = resolve(root, 'contracts');
-  const contracts = new Set(
-    readdirSync(contractsRoot, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory() && entry.name !== 'schema')
-      .filter((entry) => existsSync(resolve(contractsRoot, entry.name, 'manifest.json')))
-      .map((entry) => entry.name),
+  const contractManifests = new Map(
+    collectComponentManifests(contractsRoot).map(({ manifest, slug }) => [slug, manifest]),
   );
   const referencedFiles = new Set();
 
@@ -57,7 +55,8 @@ export function discoverCoverageArtifacts(coverage, root = repositoryRoot) {
   }
 
   return {
-    contracts,
+    contractManifests,
+    contracts: new Set(contractManifests.keys()),
     files: new Map(
       [...referencedFiles].map((path) => {
         const absolutePath = resolve(root, path);
@@ -183,6 +182,27 @@ export function validateCodeMonsterCoverage(coverage, mapping, artifacts) {
     deliveredContracts.add(delivery.contract);
     if (!artifacts.contracts.has(delivery.contract)) {
       issues.push(`${mappingEntry.source} references missing contract ${delivery.contract}.`);
+    } else {
+      const manifest = artifacts.contractManifests?.get(delivery.contract);
+      if (!manifest) {
+        issues.push(`${mappingEntry.source} contract ${delivery.contract} is missing manifest metadata.`);
+      } else {
+        if (`Cm${manifest.name}` !== target) {
+          issues.push(
+            `${mappingEntry.source} contract ${delivery.contract} manifest name ${manifest.name} does not match target ${target}.`,
+          );
+        }
+        if (manifest.slug !== delivery.contract) {
+          issues.push(
+            `${mappingEntry.source} contract ${delivery.contract} manifest slug ${manifest.slug} does not match its delivery contract.`,
+          );
+        }
+        if (manifest.razorTag !== `cm-${delivery.razorTag}`) {
+          issues.push(
+            `${mappingEntry.source} contract ${delivery.contract} manifest razorTag ${manifest.razorTag} does not match delivery Razor tag ${delivery.razorTag}.`,
+          );
+        }
+      }
     }
     if (!artifacts.vueComponents.has(target)) {
       issues.push(`${mappingEntry.source} target ${target} is not exported by the Vue adapter.`);
