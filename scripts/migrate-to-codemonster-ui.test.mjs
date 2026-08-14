@@ -5,6 +5,9 @@ import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
+import { migrateCodeMonsterSource } from './migrate-to-codemonster-ui.mjs';
+import { readVueForgeMapping } from './migration/vueforge-mapping.mjs';
+
 const script = resolve('scripts/migrate-to-codemonster-ui.mjs');
 
 function run(args) {
@@ -73,5 +76,37 @@ test('preserves aliases and leaves default and retained imports unchanged', () =
     assert.match(migrated, /const view = ProductCard;/u);
   } finally {
     rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('deterministically renames every approved direct replacement without transforming props', () => {
+  const mapping = readVueForgeMapping();
+  const replacements = mapping.componentMappings.filter(({ action }) => action === 'replace');
+  const layoutComponents = new Set(['VfContainer', 'VfGrid', 'VfInline', 'VfSection', 'VfStack']);
+
+  assert.equal(replacements.length, 33);
+
+  for (const replacement of replacements) {
+    const packageName = layoutComponents.has(replacement.source) ? 'layouts' : 'core';
+    const slug = replacement.source
+      .replace(/^Vf/u, '')
+      .replace(/([a-z0-9])([A-Z])/gu, '$1-$2')
+      .toLowerCase();
+    const target = replacement.targets[0];
+    const source = `<template><${replacement.source} legacy-prop="kept" /></template>
+<script setup lang="ts">
+import { ${replacement.source} } from '@codemonster-ru/vueforge-${packageName}/${slug}';
+const component = ${replacement.source};
+</script>
+<style>@import '@codemonster-ru/vueforge-${packageName}/${slug}.css';</style>
+`;
+
+    const migrated = migrateCodeMonsterSource(source, '.vue', mapping);
+
+    assert.match(migrated, new RegExp(`import \\{ ${target} \\} from '@codemonster-ru/ui-vue';`, 'u'));
+    assert.match(migrated, new RegExp(`<${target} legacy-prop="kept" />`, 'u'));
+    assert.match(migrated, new RegExp(`const component = ${target};`, 'u'));
+    assert.match(migrated, new RegExp(`@import '@codemonster-ru/ui-css/${slug}\\.css';`, 'u'));
+    assert.equal(migrateCodeMonsterSource(migrated, '.vue', mapping), migrated);
   }
 });
