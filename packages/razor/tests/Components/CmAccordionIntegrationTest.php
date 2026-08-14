@@ -23,7 +23,10 @@ final class CmAccordionIntegrationTest extends TestCase
         $this->cache = $this->root . '/cache';
         mkdir($this->views, 0775, true);
         file_put_contents($this->views . '/accordion.razor.php', <<<'RAZOR'
-<cm-accordion id="faq" :items="$items" :default-open-items="$open" class="consumer" />
+<cm-accordion id="faq" :items="$items" :default-open-items="$open" class="consumer">
+    <razor-slot name="triggerAccount">Account <small>recommended</small></razor-slot>
+    <razor-slot name="panelAccount"><p>Manage your <a href="/account">account</a>.</p></razor-slot>
+</cm-accordion>
 RAZOR);
     }
 
@@ -46,8 +49,8 @@ RAZOR);
         self::assertStringContainsString('data-cm-accordion-item="account"', $html);
         self::assertStringContainsString('aria-expanded="true" aria-controls="faq-account-panel"', $html);
         self::assertStringContainsString('aria-expanded="false" aria-controls="faq-billing-panel" disabled', $html);
-        self::assertStringContainsString('&lt;Account&gt;', $html);
-        self::assertStringContainsString('&lt;Account answer&gt;', $html);
+        self::assertStringContainsString('<small>recommended</small>', $html);
+        self::assertStringContainsString('<a href="/account">account</a>', $html);
         self::assertStringNotContainsString('<Account>', $html);
     }
 

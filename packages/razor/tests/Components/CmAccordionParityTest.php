@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codemonster\Ui\Tests\Components;
 
 use Codemonster\Razor\Components\ComponentRenderContext;
+use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\Ui\Components\CmAccordion;
 use Codemonster\Ui\Tests\Support\SignificantDom;
@@ -34,14 +35,19 @@ final class CmAccordionParityTest extends TestCase
     #[DataProvider('caseProvider')]
     public function testMatchesCanonicalSignificantDom(string $casePath, string $htmlPath): void
     {
-        /** @var array{props: array<string, mixed>} $case */
+        /** @var array{props: array<string, mixed>, slots: array<string, string>} $case */
         $case = json_decode((string) file_get_contents($casePath), true, flags: JSON_THROW_ON_ERROR);
         $props = $case['props'];
         $props['open-items'] = $props['openItems'] ?? null;
         $props['default-open-items'] = $props['defaultOpenItems'] ?? [];
         unset($props['openItems'], $props['defaultOpenItems']);
 
-        $actual = $this->accordion()->render(new ComponentRenderContext($props, []))->value();
+        $slots = [];
+        foreach ($case['slots'] as $name => $content) {
+            $slots[$name] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($content);
+        }
+
+        $actual = $this->accordion()->render(new ComponentRenderContext($props, $slots))->value();
         $expected = (string) file_get_contents($htmlPath);
 
         self::assertSame(SignificantDom::normalize($expected), SignificantDom::normalize($actual));

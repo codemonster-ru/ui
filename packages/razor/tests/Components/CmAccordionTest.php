@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codemonster\Ui\Tests\Components;
 
 use Codemonster\Razor\Components\ComponentRenderContext;
+use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\Ui\Components\CmAccordion;
 use Codemonster\View\Locator\DefaultLocator;
@@ -56,6 +57,28 @@ final class CmAccordionTest extends TestCase
             'id' => 'faq',
             'items' => [$this->items()[0], $this->items()[0]],
         ], []));
+    }
+
+    public function testComposesTrustedPerItemSlotsAndEscapesFallbacks(): void
+    {
+        $items = $this->items();
+        $items[1]['content'] = '<Billing answer>';
+        $html = $this->accordion()->render(new ComponentRenderContext(
+            ['id' => 'faq', 'items' => $items, 'default-open-items' => ['account']],
+            [
+                'triggerAccount' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString(
+                    '<span>Account <small>recommended</small></span>',
+                ),
+                'panelAccount' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString(
+                    '<p>Manage your <a href="/account">account</a>.</p>',
+                ),
+            ],
+        ))->value();
+
+        self::assertStringContainsString('<small>recommended</small>', $html);
+        self::assertStringContainsString('<a href="/account">account</a>', $html);
+        self::assertStringContainsString('&lt;Billing answer&gt;', $html);
+        self::assertStringNotContainsString('<Billing answer>', $html);
     }
 
     /** @return list<array{id: string, title: string, content: string}> */

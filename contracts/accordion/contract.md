@@ -24,6 +24,12 @@ markup.
 `defaultOpenItems` supplies initial state. Unknown and disabled ids are ignored. Single mode keeps
 at most the first valid id; multiple mode preserves valid ids in item order.
 
+Each item has optional `trigger{ItemId}` and `panel{ItemId}` trusted composition slots. The
+kebab-case item id becomes UpperCamelCase, so `account-details` maps to `triggerAccountDetails` and
+`panelAccountDetails`. A trigger slot replaces the escaped title; a panel slot replaces the escaped
+content. Trigger slots must contain phrasing content without nested interactive controls because the
+component owns the surrounding button. Ordinary item strings remain escaped fallbacks.
+
 ## Canonical markup
 
 The root owns `cm-accordion`, `data-cm-controller="accordion"`, and

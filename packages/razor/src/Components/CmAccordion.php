@@ -42,10 +42,19 @@ final class CmAccordion implements ComponentInterface
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.accordion', [
             'id' => $id,
             'items' => array_map(
-                static function (array $item) use ($open): array {
+                function (array $item) use ($context, $open): array {
                     $isOpen = in_array($item['id'], $open, true);
 
-                    return [...$item, 'open' => $isOpen, 'expanded' => $isOpen ? 'true' : 'false'];
+                    $triggerSlot = $this->itemSlotName('trigger', $item['id']);
+                    $panelSlot = $this->itemSlotName('panel', $item['id']);
+
+                    return [
+                        ...$item,
+                        'trigger' => $context->hasSlot($triggerSlot) ? $context->slot($triggerSlot) : $item['title'],
+                        'panel' => $context->hasSlot($panelSlot) ? $context->slot($panelSlot) : $item['content'],
+                        'open' => $isOpen,
+                        'expanded' => $isOpen ? 'true' : 'false',
+                    ];
                 },
                 $items,
             ),
@@ -125,5 +134,13 @@ final class CmAccordion implements ComponentInterface
         }
 
         throw new InvalidArgumentException('Component attribute [class] must be a string.');
+    }
+
+    private function itemSlotName(string $region, string $id): string
+    {
+        return $region . implode('', array_map(
+            static fn (string $part): string => ucfirst($part),
+            explode('-', $id),
+        ));
     }
 }

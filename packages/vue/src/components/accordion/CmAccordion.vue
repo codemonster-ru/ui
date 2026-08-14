@@ -58,6 +58,13 @@ function isOpen(id: string): boolean {
   return renderedOpenItems.value.includes(id);
 }
 
+function itemSlotName(region: 'trigger' | 'panel', id: string): string {
+  return `${region}${id
+    .split('-')
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join('')}`;
+}
+
 function toggle(item: CmAccordionItem): void {
   if (item.disabled) return;
 
@@ -122,7 +129,9 @@ function moveFocus(event: KeyboardEvent): void {
           :disabled="item.disabled || undefined"
           @click="toggle(item)"
         >
-          {{ item.title }}
+          <slot :name="itemSlotName('trigger', item.id)" :item="item" :open="isOpen(item.id)">
+            {{ item.title }}
+          </slot>
         </button>
       </h3>
       <div
@@ -132,7 +141,9 @@ function moveFocus(event: KeyboardEvent): void {
         :aria-labelledby="`${props.id}-${item.id}-trigger`"
         :hidden="!isOpen(item.id)"
       >
-        {{ item.content }}
+        <slot :name="itemSlotName('panel', item.id)" :item="item" :open="isOpen(item.id)">
+          {{ item.content }}
+        </slot>
       </div>
     </section>
   </div>
