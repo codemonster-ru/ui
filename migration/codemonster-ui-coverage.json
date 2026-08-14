@@ -291,7 +291,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "A typed command collection and fixed safe renderer replace arbitrary item values; native `<dialog>` replaces teleport configuration",
+          "notes": "A typed collection, owned option renderer, and native `<dialog>` replace arbitrary values/results, highlighting, unmatched submit, teleport/max-height, default state, and close-policy controls",
           "evidence": [
             "docs/core/components/command-palette/api.md",
             "contracts/command-palette/contract.md",
@@ -299,14 +299,15 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Loading/idle states, match highlighting, custom actions/results/items/empty/footer content, submit-without-selection, close policy controls, default state, maximum height, and footer hints",
-          "roadmapItem": "CMUI-180",
+          "id": "async-states-and-trusted-content",
+          "status": "supported",
+          "notes": "Localized loading/idle states, empty async collections, trusted actions/status/footer regions, and per-command content inside owned options",
           "evidence": [
-            "docs/core/components/command-palette/api.md",
             "contracts/command-palette/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/command-palette/cases/rich-content.case.json",
+            "contracts/command-palette/cases/loading.case.json",
+            "packages/vue/src/components/advanced-input-components.test.ts",
+            "packages/razor/tests/Components/CmAdvancedInputComponentsParityTest.php"
           ]
         }
       ],
@@ -465,7 +466,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Native `input[type=date]` replaces locale-specific popup positioning and teleport behavior for the baseline",
+          "notes": "Native `input[type=date]` replaces the custom calendar, multiple/range, month/year/time modes, formatting, first-day policy, calendar labels, popup positioning, and teleport behavior",
           "evidence": [
             "docs/core/components/date-picker/api.md",
             "contracts/date-picker/contract.md",
@@ -473,14 +474,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Multiple and range selection, month/year picker modes, time selection and minute steps, locale/display formatting, first-day configuration, clear action, and custom labels",
-          "roadmapItem": "CMUI-180",
+          "id": "localized-clear-action",
+          "status": "supported",
+          "notes": "Localized clear action with native input events and Vue/Razor focus-preserving behavior",
           "evidence": [
-            "docs/core/components/date-picker/api.md",
             "contracts/date-picker/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/date-picker/cases/clearable.case.json",
+            "packages/vue/src/components/date-picker/CmDatePicker.test.ts",
+            "packages/razor/tests/Components/CmAdvancedInputComponentsParityTest.php"
           ]
         }
       ],
@@ -1142,14 +1143,15 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Built-in clear action",
-          "roadmapItem": "CMUI-180",
+          "id": "localized-clear-action",
+          "status": "supported",
+          "notes": "Localized clear action with native change events and Vue/Razor focus-preserving behavior",
           "evidence": [
-            "docs/core/components/select/api.md",
             "contracts/select/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/select/cases/clearable.case.json",
+            "packages/vue/src/components/advanced-input-components.test.ts",
+            "packages/runtime/__tests__/select.test.mjs",
+            "packages/razor/tests/Components/CmAdvancedInputComponentsParityTest.php"
           ]
         }
       ],

@@ -6,29 +6,29 @@ Roadmap item: `CMUI-176`
 
 The canonical backlog is
 [`migration/codemonster-ui-maturity-backlog.json`](../../migration/codemonster-ui-maturity-backlog.json).
-Its order combines the 22 unresolved coverage gaps with the consumer evidence recorded by
+Its order combines the 19 unresolved coverage gaps with the consumer evidence recorded by
 [`CMUI-175`](./consumer-usage-inventory.md). The coverage gate requires every missing capability to
 appear exactly once and to retain the same roadmap assignment.
 
 ## Execution order
 
-| Order | Item       | Priority | Destination       | Outcome                                                           | Gap count |
-| ----: | ---------- | -------- | ----------------- | ----------------------------------------------------------------- | --------: |
-|     1 | `CMUI-181` | P0       | Phase 17          | Portable DataTable controls and explicit advanced-grid ownership  |         0 |
-|     2 | `CMUI-177` | P0       | Phase 17          | Foundation cohort content and input affordances delivered         |         0 |
-|     3 | `CMUI-178` | P1       | Phase 17          | Display and native-form cohort maturity delivered                 |         0 |
-|     4 | `CMUI-179` | P1       | Phase 17          | Navigation and overlay composition maturity delivered             |         0 |
-|     5 | `CMUI-180` | P1       | Phase 17          | Advanced inputs and server-rendered fallback                      |         3 |
-|     6 | `CMUI-182` | P1       | Phase 17          | Layout primitive and shell-boundary verification                  |         0 |
-|     7 | `CMUI-183` | P1       | Phase 17          | Contract, migration, documentation, and example synchronization   |         0 |
-|     8 | `CMUI-184` | P1       | Phase 18          | Small portable candidate decisions                                |         5 |
-|     9 | `CMUI-185` | P2       | Phase 18          | Behavior-rich candidate decisions                                 |         5 |
-|    10 | `CMUI-186` | P2       | Phase 18          | Full delivery for approved candidates only                        |         0 |
-|    11 | `CMUI-187` | P0       | Recipe            | Maintained application composition recipes                        |         9 |
-|    12 | `CMUI-188` | P0       | Application-owned | Preserve shell and workflow ownership                             |         0 |
-|    13 | `CMUI-189` | P0       | Phase 18          | Remove playground legacy design-system dependencies               |         0 |
-|    14 | `CMUI-190` | P0       | Phase 18          | Complete parity and real-consumer verification                    |         0 |
-|    15 | `CMUI-191` | P1       | Phase 18          | Publish the matured cohort and migration notes                    |         0 |
+| Order | Item       | Priority | Destination       | Outcome                                                          | Gap count |
+| ----: | ---------- | -------- | ----------------- | ---------------------------------------------------------------- | --------: |
+|     1 | `CMUI-181` | P0       | Phase 17          | Portable DataTable controls and explicit advanced-grid ownership |         0 |
+|     2 | `CMUI-177` | P0       | Phase 17          | Foundation cohort content and input affordances delivered        |         0 |
+|     3 | `CMUI-178` | P1       | Phase 17          | Display and native-form cohort maturity delivered                |         0 |
+|     4 | `CMUI-179` | P1       | Phase 17          | Navigation and overlay composition maturity delivered            |         0 |
+|     5 | `CMUI-180` | P1       | Phase 17          | Advanced input and server-rendered fallback maturity delivered   |         0 |
+|     6 | `CMUI-182` | P1       | Phase 17          | Layout primitive and shell-boundary verification                 |         0 |
+|     7 | `CMUI-183` | P1       | Phase 17          | Contract, migration, documentation, and example synchronization  |         0 |
+|     8 | `CMUI-184` | P1       | Phase 18          | Small portable candidate decisions                               |         5 |
+|     9 | `CMUI-185` | P2       | Phase 18          | Behavior-rich candidate decisions                                |         5 |
+|    10 | `CMUI-186` | P2       | Phase 18          | Full delivery for approved candidates only                       |         0 |
+|    11 | `CMUI-187` | P0       | Recipe            | Maintained application composition recipes                       |         9 |
+|    12 | `CMUI-188` | P0       | Application-owned | Preserve shell and workflow ownership                            |         0 |
+|    13 | `CMUI-189` | P0       | Phase 18          | Remove playground legacy design-system dependencies              |         0 |
+|    14 | `CMUI-190` | P0       | Phase 18          | Complete parity and real-consumer verification                   |         0 |
+|    15 | `CMUI-191` | P1       | Phase 18          | Publish the matured cohort and migration notes                   |         0 |
 
 Priority expresses consumer impact inside the dependency order; it does not permit Phase 18
 implementation to bypass the M10 exit gate. `CMUI-183` is listed once but runs alongside every
