@@ -42,6 +42,29 @@ final class DataTableData
     }
 
     /**
+     * @param array<mixed>|null $keys
+     * @param list<array{key: string, header: string, sortable: bool, align: string}> $columns
+     * @return list<array{key: string, header: string, sortable: bool, align: string}>
+     */
+    public static function visibleColumns(?array $keys, array $columns): array
+    {
+        if ($keys === null) return $columns;
+        if ($keys === []) {
+            throw new InvalidArgumentException('Component prop [visible-column-keys] must not be empty.');
+        }
+        $columnsByKey = [];
+        foreach ($columns as $column) $columnsByKey[$column['key']] = $column;
+        $visible = [];
+        foreach ($keys as $key) {
+            if (!is_string($key) || !isset($columnsByKey[$key]) || isset($visible[$key])) {
+                throw new InvalidArgumentException('Component prop [visible-column-keys] contains an invalid column key.');
+            }
+            $visible[$key] = $columnsByKey[$key];
+        }
+        return array_values($visible);
+    }
+
+    /**
      * @param array<mixed> $values
      * @param list<array{key: string, header: string, sortable: bool, align: string}> $columns
      * @return list<array{id: string, cells: array<string, string|int|float|null>, selectable: bool}>

@@ -35,6 +35,14 @@ describe('Vue data table components', () => {
     ]);
   });
 
+  it('renders the requested visible column order', () => {
+    const wrapper = mount(CmDataTable, {
+      props: { id: 'projects', columns, rows, visibleColumnKeys: ['status'] },
+    });
+    expect(wrapper.findAll('thead th').map((header) => header.text())).toEqual(['Status']);
+    expect(wrapper.findAll('tbody td').map((cell) => cell.text())).toEqual(['Active', 'Paused']);
+  });
+
   it('reports selection in rendered order and page requests', async () => {
     const wrapper = mount(CmDataTable, {
       props: { id: 'projects', columns, rows, selectable: true, page: 2, pageCount: 3 },
@@ -121,5 +129,8 @@ describe('Vue data table components', () => {
         props: { id: 'projects', columns, rows: [{ ...rows[0]!, selectable: 'no' as unknown as boolean }] },
       }),
     ).toThrow(/Invalid DataTable row/u);
+    expect(() =>
+      mount(CmDataTable, { props: { id: 'projects', columns, rows, visibleColumnKeys: ['missing'] } }),
+    ).toThrow(/Invalid DataTable visible column/u);
   });
 });

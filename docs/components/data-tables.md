@@ -37,6 +37,8 @@ Columns have a unique kebab-case `key`, non-empty `header`, optional `sortable`,
 values are strings, finite numbers, or null. Values are rendered as escaped text.
 Set a row's `selectable` field to `false` when it must remain visible but cannot be added to or
 removed from the current selection.
+Pass `visibleColumnKeys` in the desired display order to hide or rearrange columns without changing
+the complete column and row data. The application owns the chooser UI and persistence.
 
 ```vue
 <script setup lang="ts">

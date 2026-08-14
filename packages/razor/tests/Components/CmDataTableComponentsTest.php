@@ -74,6 +74,21 @@ RAZOR);
         ], []));
     }
 
+    public function testRejectsUnknownVisibleColumn(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('visible-column-keys');
+        $component = new CmDataTable(new RazorEngine(
+            new DefaultLocator(dirname(__DIR__, 2) . '/resources/views'),
+            cachePath: $this->root . '/component-cache',
+        ));
+        $component->render(new ComponentRenderContext([
+            'id' => 'projects',
+            'columns' => [['key' => 'name', 'header' => 'Name']],
+            'visible-column-keys' => ['missing'],
+        ], []));
+    }
+
     public function testRejectsPageSizeMissingFromOptions(): void
     {
         $this->expectException(InvalidArgumentException::class);

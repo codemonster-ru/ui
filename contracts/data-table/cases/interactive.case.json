@@ -9,6 +9,7 @@
     "striped": true,
     "columnDividers": true,
     "stickyHeader": true,
+    "visibleColumnKeys": ["balance", "name"],
     "selectable": true,
     "selectedRowIds": ["atlas"],
     "sort": { "key": "name", "direction": "ascending" },

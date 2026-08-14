@@ -14,10 +14,13 @@ kebab-case `key`, non-empty escaped `header`, optional `sortable`, and optional 
 `center`, or `end`). `rows` contains unique kebab-case `id` values and a `cells` record keyed by
 columns. Cell values are strings, finite numbers, or null and are rendered as escaped text.
 Rows may set `selectable` to false to declare that their selection checkbox is disabled.
+An optional non-empty `visibleColumnKeys` collection of unique keys selects and orders rendered
+columns. Every key must identify a declared column; row cells remain validated against the complete
+column collection.
 
 Applications format dates, numbers, status labels, and links before or around this baseline. The
 shared data API deliberately excludes arbitrary HTML cells, client-side query execution, multi-sort,
-row expansion, column pinning, resizing, and reordering. Those capabilities require a separate
+row expansion, interactive column reordering, pinning, and resizing. Those capabilities require a separate
 portable contract rather than callbacks or framework-only slots.
 
 ## Structure and states

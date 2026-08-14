@@ -13,6 +13,12 @@
     "striped": { "type": "boolean", "required": false, "default": false },
     "columnDividers": { "type": "boolean", "required": false, "default": false },
     "stickyHeader": { "type": "boolean", "required": false, "default": false },
+    "visibleColumnKeys": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "valueContract": "ordered-data-table-column-keys"
+    },
     "selectable": { "type": "boolean", "required": false, "default": false },
     "selectedRowIds": { "type": "collection", "required": false, "default": [], "valueContract": "data-table-row-id" },
     "sort": { "type": "nullable", "required": false, "default": null, "valueContract": "data-table-sort" },
