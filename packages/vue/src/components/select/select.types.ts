@@ -14,4 +14,6 @@ export interface CmSelectProps {
   invalid?: boolean;
   disabled?: boolean;
   required?: boolean;
+  clearable?: boolean;
+  clearLabel?: string;
 }

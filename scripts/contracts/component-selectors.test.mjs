@@ -161,7 +161,10 @@ for (const [slug, approved] of [
       'cm-input__action',
     ],
   ],
-  ['select', ['cm-select', 'cm-select--sm', 'cm-select--md', 'cm-select--lg', 'cm-select--invalid']],
+  [
+    'select',
+    ['cm-select', 'cm-select--sm', 'cm-select--md', 'cm-select--lg', 'cm-select--invalid', 'cm-select-wrap', 'cm-select__clear'],
+  ],
   [
     'date-picker',
     ['cm-date-picker', 'cm-date-picker--sm', 'cm-date-picker--md', 'cm-date-picker--lg', 'cm-date-picker--invalid'],

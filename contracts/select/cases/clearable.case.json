@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "select-clearable",
+  "description": "Selected native control with a localized clear action.",
+  "props": {
+    "options": [
+      { "value": "daily", "label": "Daily" },
+      { "value": "weekly", "label": "Weekly" }
+    ],
+    "value": "weekly",
+    "clearable": true,
+    "clearLabel": "Clear frequency"
+  },
+  "attributes": { "name": "frequency", "aria-label": "Frequency" },
+  "slots": {}
+}

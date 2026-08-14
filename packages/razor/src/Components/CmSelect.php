@@ -28,6 +28,10 @@ final class CmSelect implements ComponentInterface
         $invalid = $props->bool('invalid');
         $disabled = $props->bool('disabled');
         $required = $props->bool('required');
+        $clearable = $props->bool('clearable');
+        $clearLabel = $props->string('clearLabel', 'Clear selection');
+        $hasClear = $clearable && !$disabled;
+        $hasEmptyOption = in_array('', array_column($options, 'value'), true);
         $attributes = new AttributeBag($props->remaining());
         $classes = (new ClassBuilder())->add('cm-select', "cm-select--{$size}")
             ->addWhen($invalid, 'cm-select--invalid')->add($this->optionalString($attributes->get('class')))->value();
@@ -35,6 +39,8 @@ final class CmSelect implements ComponentInterface
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.select', [
             'options' => $options, 'value' => $value, 'placeholder' => $placeholder, 'invalid' => $invalid,
             'disabled' => $disabled, 'required' => $required, 'classes' => $classes,
+            'hasClear' => $hasClear, 'clearLabel' => $clearLabel,
+            'hasEmptyOption' => $hasEmptyOption,
             'attributes' => $attributes->without(['class', 'value', 'disabled', 'required', 'aria-invalid'])->render(),
         ]), "\r\n"));
     }
