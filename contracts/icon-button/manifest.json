@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "name": "IconButton",
+  "slug": "icon-button",
+  "razorTag": "cm-icon-button",
+  "description": "A square native button for one trusted icon with a required accessible label.",
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "description": "Non-empty accessible name owned by the button."
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "default": "ghost",
+      "values": ["primary", "secondary", "danger", "ghost"],
+      "description": "Visual action emphasis."
+    },
+    "size": {
+      "type": "enum",
+      "required": false,
+      "default": "md",
+      "values": ["sm", "md", "lg"],
+      "description": "Square control and icon size."
+    },
+    "type": {
+      "type": "enum",
+      "required": false,
+      "default": "button",
+      "values": ["button", "submit", "reset"],
+      "description": "Native button type."
+    },
+    "disabled": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Prevents activation using the native disabled state."
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true,
+      "description": "Trusted icon content hidden from assistive technology by the component-owned wrapper."
+    }
+  },
+  "events": {
+    "click": {
+      "description": "Native click activation from the enabled button.",
+      "native": true
+    }
+  },
+  "states": ["default", "disabled"]
+}
