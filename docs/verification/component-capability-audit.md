@@ -6,7 +6,7 @@ Roadmap item: `CMUI-172`
 
 ## Purpose
 
-This audit compares the 33 direct replacements in the frozen VueForge migration map with the
+This audit compares the 37 direct replacements in the frozen VueForge migration map with the
 current CodeMonster UI contracts and Vue and Annabel Razor adapters. It distinguishes a working
 cross-platform baseline from the complete VueForge feature surface.
 
@@ -102,9 +102,18 @@ not evidence of parity.
 | `VfSection` → `CmSection`     | Section flow, optional surface, semantic content, and forwarded attributes           | `element` restricts arbitrary `as` to the approved semantic set                              | None identified             |
 | `VfGrid` → `CmGrid`           | Responsive grid flow, semantic content, and forwarded attributes                     | `element` restricts arbitrary `as` to the approved semantic set                              | None identified             |
 
+### Portable expansion components
+
+| Replacement                               | Supported                                                                                                                                                        | Superseded or application-owned                                                                                                                | Missing portable capability |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `VfFieldset` → `CmFieldset`               | Native named groups, trusted legend and supporting content, deterministic description/error relationships, invalid state, and adapter-native control composition | Caller-owned stable IDs and a required visible legend replace generated IDs and unnamed groups                                                 | None identified             |
+| `VfIconButton` → `CmIconButton`           | Square native action, mandatory accessible label, trusted decorative icon content, finite variants and sizes, native type/disabled behavior, and root attributes | Authored icon content replaces the VueForge icon-name registry; link, loading, feedback variants, and implicit tooltip policy are not retained | None identified             |
+| `VfProgressBar` → `CmProgressBar`         | Labelled determinate/indeterminate progress, bounded values, optional percentage text, semantic tones, reduced motion, and root attributes                       | Token-backed presentation replaces arbitrary height, stripes, and animation controls; `warning` replaces `warn`                                | None identified             |
+| `VfProgressSpinner` → `CmProgressSpinner` | Labelled indeterminate progress, finite sizes and semantic tones, owned SVG geometry, reduced motion, and root attributes                                        | Finite token sizes and internal stroke geometry replace arbitrary size and stroke controls; `warning` replaces `warn`                          | None identified             |
+
 ## Outcome
 
-All 33 direct replacements have a verified cross-platform baseline. Three replacements have an
+All 37 direct replacements have a verified cross-platform baseline. Three replacements have an
 application-owned integration that must remain visible during migration. The approved DataTable and
 advanced-input gaps are closed; no direct replacement retains a missing portable capability.
 

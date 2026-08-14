@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 18 — Portable expansion and consumer migration
 - Current milestone: M11 — Portable expansion and consumer migration
-- Next item: `CMUI-186` Implement the approved portable component cohort.
+- Next item: `CMUI-187` Publish the maintained application composition recipes.
 
 ## Milestones
 
@@ -126,7 +126,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
       starting with Fieldset, IconButton, ProgressBar, ProgressSpinner, and Tag.
 - [x] `CMUI-185` Re-evaluate behavior-rich candidates only with shared Vue and Razor demand,
       including Stepper, TableOfContents, menu-bar/navigation patterns, and data-table column controls.
-- [ ] `CMUI-186` Implement each approved new component through contract, canonical fixtures, shared
+- [x] `CMUI-186` Implement each approved new component through contract, canonical fixtures, shared
       CSS, optional runtime, Vue adapter, Razor adapter, parity tests, documentation, and showcase.
 - [ ] `CMUI-187` Publish and test maintained recipes for approved compositions such as ConfirmDialog,
       FormLayout, GroupBox, Panel, PageHeader, SkeletonGate, AuthLayout, and ErrorLayout.
