@@ -34,8 +34,10 @@ supported side-by-side package because CodeMonster UI 1.0 has no verified icon r
 
 ## Direct component replacements
 
-The following names have one implemented `ui-vue` target. Their props and composition still require
-contract review before an import/name codemod is applied.
+The following 33 names have reviewed cross-platform contracts and implemented `ui-vue` and Annabel
+Razor targets. The import/name codemod can establish their CodeMonster UI names, but it deliberately
+does not rewrite props, slots, events, state ownership, or progressive-enhancement setup. Review
+those API changes against the component guides after every codemod run.
 
 | VueForge           | CodeMonster UI     | VueForge      | CodeMonster UI |
 | ------------------ | ------------------ | ------------- | -------------- |
@@ -59,14 +61,46 @@ contract review before an import/name codemod is applied.
 
 ## Composition and manual review
 
-`VfConfirmDialog`, `VfFieldset`, `VfFormLayout`, `VfGroupBox`, `VfIconButton`, `VfPanel`,
-`VfPageHeader`, `VfSkeletonGate`, `VfAuthLayout`, and `VfErrorLayout` become application compositions
-of the targets listed in the machine map.
+The compose and manual cohorts have also completed their initial review; they are not safe rename
+targets. ConfirmDialog, FormLayout, Panel, PageHeader, AuthLayout, and ErrorLayout require maintained
+application recipes. GroupBox and SkeletonGate split portable composition from application-owned
+behavior. Fieldset and IconButton remain portable candidates rather than approved Stack or Button
+substitutions.
 
-DataTable column choice, menu-bar and nav-menu policy, progress, Stepper, Table of Contents, Tag,
-ThemeSwitch, all application shells, SetupLayout, and standalone shell areas require manual review.
-They have no direct stable component replacement. Native HTML and the listed CodeMonster UI
-primitives are preferred where sufficient.
+DataTable column choice, Menubar, navigation-tree behavior, progress, Stepper, Table of Contents,
+and Tag retain explicit candidate decisions in the maturity backlog. ThemeSwitch, application
+shells, SetupLayout, and shell-internal areas remain application-owned. Native HTML and the listed
+CodeMonster UI primitives are preferred where sufficient; the codemod reports these entries for
+manual migration and never rewrites them.
+
+The complete reasons and remaining roadmap destinations are recorded in the
+[component disposition audit](./verification/component-disposition-audit.md) and the
+[machine-readable coverage inventory](../migration/codemonster-ui-coverage.json).
+
+## Direct replacement API migration
+
+Use the focused component guides as the public migration boundary instead of treating a successful
+rename as API compatibility:
+
+- [Button](./components/button.md), [Card](./components/card.md),
+  [forms](./components/forms.md), and [Accordion](./components/accordion.md) cover native action and
+  form behavior, trusted regions, stable caller-owned ids, collection state, and required Razor
+  enhancement.
+- [Display components](./components/display.md) document semantic tones, status behavior, native
+  separators, safe Skeleton sizing, and explicit content composition in place of icon-name props.
+- [Navigation](./components/navigation.md) and [overlays](./components/overlays.md) define owned
+  triggers and panels, controlled state, keyboard and focus behavior, and the boundary around
+  routers, teleportation, and application dismissal policy.
+- [Advanced inputs](./components/advanced-inputs.md) preserve native Select and DatePicker
+  submission while documenting localized clear actions and typed CommandPalette async content.
+  [Table and DataTable](./components/data-tables.md) separates portable scalar controls from
+  application-owned queries and rich table composition.
+- [Layout primitives](./components/layout-primitives.md) replace the portable layout vocabulary;
+  semantic landmarks, responsive shell state, routing, and theme bootstrap remain application-owned
+  under the [shell decision](./architecture/application-shell-ownership.md).
+
+The component guides name every `ui-runtime` controller required by server-rendered interactive
+markup. Do not initialize those controllers over Vue-owned component trees.
 
 `CmDataTable` now covers portable page-size controls and summaries, eligible-row selection, ordered
 visible columns, and localizable interaction labels. Migrate rich cells and expanded content to an
