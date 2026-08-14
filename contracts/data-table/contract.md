@@ -13,6 +13,7 @@ requests. `id` is a stable kebab-case prefix. `columns` is a non-empty ordered c
 kebab-case `key`, non-empty escaped `header`, optional `sortable`, and optional `align` (`start`,
 `center`, or `end`). `rows` contains unique kebab-case `id` values and a `cells` record keyed by
 columns. Cell values are strings, finite numbers, or null and are rendered as escaped text.
+Rows may set `selectable` to false to declare that their selection checkbox is disabled.
 
 Applications format dates, numbers, status labels, and links before or around this baseline. The
 shared data API deliberately excludes arbitrary HTML cells, client-side query execution, multi-sort,
@@ -32,7 +33,8 @@ attributes are escaped. Loading takes precedence over error; error takes precede
 Presentation props map to the same stable table modifiers as Table. `density="compact"` is the only
 non-default density. Sorting uses `aria-sort` on the owning `<th>` and a native button. Selection uses
 native checkboxes with row-specific accessible names. The select-all checkbox covers only enabled
-rendered rows and exposes native checked or indeterminate state.
+rendered rows and exposes native checked, indeterminate, or disabled state. Selection changes retain
+already selected disabled rows while adding or removing only eligible rows.
 
 ## Interaction and ownership
 

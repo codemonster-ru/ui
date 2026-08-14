@@ -22,7 +22,7 @@
       { "key": "balance", "header": "Balance", "align": "end" }
     ],
     "rows": [
-      { "id": "atlas", "cells": { "name": "Atlas", "balance": "$120" } },
+      { "id": "atlas", "cells": { "name": "Atlas", "balance": "$120" }, "selectable": false },
       { "id": "nova", "cells": { "name": "Nova", "balance": "$80" } }
     ]
   },

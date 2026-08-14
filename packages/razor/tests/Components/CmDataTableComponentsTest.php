@@ -59,6 +59,21 @@ RAZOR);
         ], []));
     }
 
+    public function testRejectsInvalidRowSelectionConstraint(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('invalid DataTable row');
+        $component = new CmDataTable(new RazorEngine(
+            new DefaultLocator(dirname(__DIR__, 2) . '/resources/views'),
+            cachePath: $this->root . '/component-cache',
+        ));
+        $component->render(new ComponentRenderContext([
+            'id' => 'projects',
+            'columns' => [['key' => 'name', 'header' => 'Name']],
+            'rows' => [['id' => 'apollo', 'cells' => ['name' => 'Apollo'], 'selectable' => 'no']],
+        ], []));
+    }
+
     public function testRejectsPageSizeMissingFromOptions(): void
     {
         $this->expectException(InvalidArgumentException::class);

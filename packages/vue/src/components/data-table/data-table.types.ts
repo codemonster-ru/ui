@@ -13,6 +13,7 @@ export interface CmDataTableColumn {
 export interface CmDataTableRow {
   id: string;
   cells: Readonly<Record<string, CmDataTableCellValue>>;
+  selectable?: boolean;
 }
 
 export interface CmDataTableSort {

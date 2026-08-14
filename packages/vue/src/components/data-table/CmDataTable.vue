@@ -83,7 +83,13 @@ const normalizedRows = computed(() => {
   const ids = new Set<string>();
   const keys = new Set(normalizedColumns.value.map(({ key }) => key));
   for (const row of props.rows) {
-    if (!idPattern.test(row.id) || ids.has(row.id)) throw new TypeError(`Invalid DataTable row: ${row.id}.`);
+    if (
+      !idPattern.test(row.id) ||
+      ids.has(row.id) ||
+      (row.selectable !== undefined && typeof row.selectable !== 'boolean')
+    ) {
+      throw new TypeError(`Invalid DataTable row: ${row.id}.`);
+    }
     for (const [key, value] of Object.entries(row.cells)) {
       if (
         !keys.has(key) ||
@@ -187,7 +193,9 @@ watch(
 );
 
 const selectedIds = computed(() => new Set(localSelectedRowIds.value));
-const enabledRowIds = computed(() => normalizedRows.value.map(({ id }) => id));
+const enabledRowIds = computed(() =>
+  normalizedRows.value.filter(({ selectable }) => selectable !== false).map(({ id }) => id),
+);
 const allSelected = computed(
   () => enabledRowIds.value.length > 0 && enabledRowIds.value.every((id) => selectedIds.value.has(id)),
 );
@@ -288,6 +296,7 @@ function reportSelection(ids: string[]): void {
 }
 
 function changeRowSelection(rowId: string, checked: boolean): void {
+  if (!enabledRowIds.value.includes(rowId)) return;
   const next = new Set(localSelectedRowIds.value);
   if (checked) next.add(rowId);
   else next.delete(rowId);
@@ -295,7 +304,13 @@ function changeRowSelection(rowId: string, checked: boolean): void {
 }
 
 function changeAllSelection(checked: boolean): void {
-  reportSelection(checked ? [...enabledRowIds.value] : []);
+  const enabled = new Set(enabledRowIds.value);
+  const next = new Set(localSelectedRowIds.value);
+  for (const rowId of enabled) {
+    if (checked) next.add(rowId);
+    else next.delete(rowId);
+  }
+  reportSelection(normalizedRows.value.map(({ id }) => id).filter((id) => next.has(id)));
 }
 
 function changePage(page: number): void {
@@ -344,6 +359,7 @@ function changePageSize(pageSize: number): void {
                 type="checkbox"
                 :aria-label="props.selectAllLabel"
                 :checked="allSelected"
+                :disabled="enabledRowIds.length === 0"
                 data-cm-data-table-select-all
                 @change="changeAllSelection(($event.target as HTMLInputElement).checked)"
               />
@@ -386,6 +402,7 @@ function changePageSize(pageSize: number): void {
                 :aria-label="`Select ${rowLabel(row.id)}`"
                 :value="row.id"
                 :checked="selectedIds.has(row.id)"
+                :disabled="row.selectable === false"
                 data-cm-data-table-select-row
                 @change="changeRowSelection(row.id, ($event.target as HTMLInputElement).checked)"
               />

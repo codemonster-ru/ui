@@ -35,6 +35,8 @@ needed.
 Columns have a unique kebab-case `key`, non-empty `header`, optional `sortable`, and optional
 `align` (`start`, `center`, or `end`). Rows have a unique kebab-case `id` and a `cells` record whose
 values are strings, finite numbers, or null. Values are rendered as escaped text.
+Set a row's `selectable` field to `false` when it must remain visible but cannot be added to or
+removed from the current selection.
 
 ```vue
 <script setup lang="ts">
@@ -72,6 +74,8 @@ const rows = [
 DataTable does not reorder or fetch rows after an interaction. Handle `sortChange`,
 `selectionChange`, and `pageChange` or their Vue models, then supply the authoritative rows and
 state. This keeps remote queries, authorization, caching, and error handling in the application.
+Select-all affects only eligible rendered rows. A disabled row that is already selected remains
+selected until the application changes the controlled selection.
 
 ## Razor and progressive enhancement
 

@@ -70,6 +70,7 @@ function resolveTarget(root, name) {
     'page-size': '[data-cm-data-table-page-size-control]',
     'page-summary': '.cm-data-table__page-summary',
     'pagination-summary': '.cm-data-table__pagination-summary',
+    'select-first': 'tbody tr:first-child [data-cm-data-table-select-row]',
     'select-last': 'tbody tr:last-child [data-cm-data-table-select-row]',
     'sort-first': '[data-cm-data-table-sort]',
   };

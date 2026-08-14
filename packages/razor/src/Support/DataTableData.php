@@ -44,7 +44,7 @@ final class DataTableData
     /**
      * @param array<mixed> $values
      * @param list<array{key: string, header: string, sortable: bool, align: string}> $columns
-     * @return list<array{id: string, cells: array<string, string|int|float|null>}>
+     * @return list<array{id: string, cells: array<string, string|int|float|null>, selectable: bool}>
      */
     public static function rows(array $values, array $columns): array
     {
@@ -56,7 +56,8 @@ final class DataTableData
             $rawCells = is_array($value) ? ($value['cells'] ?? null) : null;
             if (!is_array($value) || !is_string($id)
                 || preg_match('/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/D', $id) !== 1
-                || isset($seen[$id]) || !is_array($rawCells)) {
+                || isset($seen[$id]) || !is_array($rawCells)
+                || (array_key_exists('selectable', $value) && !is_bool($value['selectable']))) {
                 throw new InvalidArgumentException('Component prop [rows] contains an invalid DataTable row.');
             }
             $cells = [];
@@ -69,14 +70,14 @@ final class DataTableData
                 $cells[$key] = $cell;
             }
             $seen[$id] = true;
-            $rows[] = ['id' => $id, 'cells' => $cells];
+            $rows[] = ['id' => $id, 'cells' => $cells, 'selectable' => $value['selectable'] ?? true];
         }
         return $rows;
     }
 
     /**
      * @param array<mixed> $values
-     * @param list<array{id: string, cells: array<string, string|int|float|null>}> $rows
+     * @param list<array{id: string, cells: array<string, string|int|float|null>, selectable: bool}> $rows
      * @return list<string>
      */
     public static function selectedIds(array $values, array $rows): array
