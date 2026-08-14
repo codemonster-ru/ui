@@ -30,6 +30,35 @@ final class CmLayoutPrimitivesParityTest extends TestCase
         self::assertSame(SignificantDom::normalize((string) file_get_contents($htmlPath)), SignificantDom::normalize($actual));
     }
 
+    #[DataProvider('semanticRootProvider')]
+    public function testRendersApprovedSemanticRootsAndForwardsConsumerAttributes(
+        string $slug,
+        string $element,
+    ): void {
+        $actual = $this->component($slug)->render(new ComponentRenderContext([
+            'element' => $element,
+            'class' => 'consumer',
+            'data-layout' => $element,
+        ], [
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Content'),
+        ]))->value();
+
+        self::assertStringContainsString("<{$element} class=\"cm-{$slug} consumer\" data-layout=\"{$element}\">", $actual);
+        self::assertStringContainsString("Content</{$element}>", $actual);
+    }
+
+    #[DataProvider('containerSizeProvider')]
+    public function testRendersEveryContainerSize(string $size): void
+    {
+        $actual = $this->component('container')->render(new ComponentRenderContext([
+            'size' => $size,
+        ], [
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Content'),
+        ]))->value();
+
+        self::assertStringContainsString("class=\"cm-container cm-container--{$size}\"", $actual);
+    }
+
     /** @return iterable<string, array{string, string, string}> */
     public static function caseProvider(): iterable
     {
@@ -39,6 +68,32 @@ final class CmLayoutPrimitivesParityTest extends TestCase
                 $basename = substr(basename($casePath), 0, -strlen('.case.json'));
                 yield "{$slug}-{$basename}" => [$slug, $casePath, $cases . '/' . $basename . '.html'];
             }
+        }
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function semanticRootProvider(): iterable
+    {
+        $elements = [
+            'container' => ['div', 'main', 'section'],
+            'stack' => ['div', 'section', 'ul', 'ol'],
+            'inline' => ['div', 'nav', 'ul'],
+            'section' => ['section', 'div', 'article', 'aside'],
+            'grid' => ['div', 'section', 'ul', 'ol'],
+        ];
+
+        foreach ($elements as $slug => $supported) {
+            foreach ($supported as $element) {
+                yield "{$slug}-{$element}" => [$slug, $element];
+            }
+        }
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function containerSizeProvider(): iterable
+    {
+        foreach (['md', 'lg', 'xl', '2xl'] as $size) {
+            yield $size => [$size];
         }
     }
 
