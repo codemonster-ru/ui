@@ -2,7 +2,8 @@
 
 Status: Accepted  
 Date: 2026-08-11  
-Roadmap item: `CMUI-002`
+Amended: 2026-08-14
+Roadmap items: `CMUI-002`, `CMUI-165`
 
 ## Decision
 
@@ -28,10 +29,11 @@ The approved npm package family is:
 The approved Composer package is:
 
 ```text
-codemonster-ru/ui
+codemonster-ru/ui-razor
 ```
 
-The PHP namespace root is `Codemonster\Ui`. The package provides the Annabel Razor adapter and
+The `ui-razor` suffix makes the platform boundary explicit and leaves `codemonster-ru/ui` available
+as the canonical monorepo path. The PHP namespace root remains `Codemonster\Ui`. The package provides the Annabel Razor adapter and
 packages the same built CSS and runtime artifacts used by npm consumers; it does not own a separate
 style implementation.
 
@@ -41,18 +43,18 @@ proposed later only with a concrete consumer need.
 
 ## Code and markup prefixes
 
-| Surface | Convention | Example |
-| --- | --- | --- |
-| Vue and React components | `Cm` PascalCase prefix | `CmButton` |
-| Angular selectors | `cm-` kebab-case prefix | `<cm-button>` |
-| Annabel Razor tags | `cm-` kebab-case prefix | `<cm-button>` |
-| CSS blocks | `cm-` prefix | `.cm-button` |
-| CSS elements | BEM `__` separator | `.cm-button__content` |
-| CSS modifiers | BEM `--` separator | `.cm-button--primary` |
-| Utility classes | `cm-` prefix | `.cm-flex`, `.cm-gap-3` |
-| Custom properties | `--cm-` prefix | `--cm-color-primary` |
-| Runtime hooks | `data-cm-` prefix | `data-cm-accordion` |
-| Theme attribute | `data-cm-theme` | `data-cm-theme="dark"` |
+| Surface                  | Convention              | Example                 |
+| ------------------------ | ----------------------- | ----------------------- |
+| Vue and React components | `Cm` PascalCase prefix  | `CmButton`              |
+| Angular selectors        | `cm-` kebab-case prefix | `<cm-button>`           |
+| Annabel Razor tags       | `cm-` kebab-case prefix | `<cm-button>`           |
+| CSS blocks               | `cm-` prefix            | `.cm-button`            |
+| CSS elements             | BEM `__` separator      | `.cm-button__content`   |
+| CSS modifiers            | BEM `--` separator      | `.cm-button--primary`   |
+| Utility classes          | `cm-` prefix            | `.cm-flex`, `.cm-gap-3` |
+| Custom properties        | `--cm-` prefix          | `--cm-color-primary`    |
+| Runtime hooks            | `data-cm-` prefix       | `data-cm-accordion`     |
+| Theme attribute          | `data-cm-theme`         | `data-cm-theme="dark"`  |
 
 Native HTML attributes and ARIA remain unprefixed. Component states prefer native attributes and
 ARIA first, then the shared `data-*` state contract defined by `CMUI-008`. Event naming is deferred
@@ -72,7 +74,8 @@ to the events contract in `CMUI-007`.
 On 2026-08-11, the npm registry returned `404 Not Found` for every approved npm package name above,
 and Packagist returned `404` for `codemonster-ru/ui`. This confirmed that no public package occupied
 those names before the first release. On 2026-08-13, the five active npm package names and the
-Composer package name were claimed by their coordinated `1.0.0-rc.1` prereleases.
+original Composer package name were claimed by their coordinated `1.0.0-rc.1` prereleases. The
+Razor-specific Composer name supersedes that original package after the 1.0 migration.
 
 ## Rationale
 

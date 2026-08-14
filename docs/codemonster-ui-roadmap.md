@@ -73,10 +73,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Complete — Vue and Annabel Razor roadmap
-- Current milestone: M7 — Completed
+- Current phase: Phase 15 — Concise repository and Razor package names
+- Current milestone: M8 — Naming cleanup
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort; M7 — migration and CodeMonster UI 1.0
-- Next item: None; React and Angular remain unscheduled future considerations.
+- Next item: `CMUI-166`; React and Angular remain unscheduled future considerations.
 
 ## Milestones
 
@@ -90,6 +90,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
 | M6        | Utility CSS and the first stable component cohort are available           | Completed            |
 | M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | Completed            |
+| M8        | Repository and Razor package names are concise and validated              | In progress          |
 
 ## Phase 0 — Product and architecture decisions
 
@@ -407,6 +408,18 @@ added to the active scope in the future.
 
 - [x] `CMUI-G007` CodeMonster UI 1.0 is published and validated by real consumers.
 
+## Phase 15 — Concise repository and Razor package names
+
+- [x] `CMUI-165` Approve `codemonster-ru/ui` for the monorepo and `ui-razor` for the Razor distribution.
+- [ ] `CMUI-166` Move the Composer split repository to `codemonster-ru/ui-razor`.
+- [ ] `CMUI-167` Publish `codemonster-ru/ui-razor` and mark `codemonster-ru/ui` replaced.
+- [ ] `CMUI-168` Migrate Annabel to the Razor-specific Composer package.
+- [ ] `CMUI-169` Move the monorepo to `codemonster-ru/ui` and update trusted publishers.
+
+### M8 exit gate
+
+- [ ] `CMUI-G008` Canonical repository, registry metadata, and real consumers use the concise names.
+
 ## Decision log
 
 Add decisions chronologically. Do not rewrite old entries; supersede them with a new entry.
@@ -438,6 +451,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-13 | Resume registry and public-release actions after completing local verification.                                                | Proceed with the approved prerelease, registry-consumer, and stable-release sequence now that both integration branches pass their local release gates.     | `CMUI-158`, `CMUI-159a`, `CMUI-161`–`CMUI-164`, `CMUI-G007` |
 | 2026-08-14 | Move VueForge design-system foundations to maintenance without blanket deprecation or unpublishing.                            | Direct new shared UI work to CodeMonster UI while retaining unsupported and separately maintained VueForge product families.                                | `CMUI-163`                                                  |
 | 2026-08-14 | Rename the repository to `codemonster-ru/codemonster-ui` after all migration and release gates passed.                         | Complete the platform-neutral identity while preserving Git history, redirects, releases, package identities, and trusted publishing.                       | `CMUI-164`, M7                                              |
+| 2026-08-14 | Use `codemonster-ru/ui` for the monorepo and `ui-razor` for the Razor split and Composer package.                              | Avoid repeating the organization name and make the platform-specific Composer boundary explicit.                                                            | `CMUI-165`–`CMUI-169`, M8                                   |
 
 ## Cross-repository log
 
@@ -469,6 +483,7 @@ Record Annabel work here when it completes a cross-repository roadmap item.
 
 Record additions, removals, splits, and reordered dependencies before editing the numbered checklist.
 
-| Date       | Change                                                                                                                                                 | Reason                                                                                                                     | Decision reference        |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| 2026-08-12 | Removed React and Angular from the active delivery sequence and all release gates; retained their existing items as unscheduled future considerations. | Focus implementation on Vue and Annabel Razor while preserving stable roadmap identifiers in case a concrete need appears. | 2026-08-12 scope decision |
+| Date       | Change                                                                                                                                                 | Reason                                                                                                                     | Decision reference         |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| 2026-08-12 | Removed React and Angular from the active delivery sequence and all release gates; retained their existing items as unscheduled future considerations. | Focus implementation on Vue and Annabel Razor while preserving stable roadmap identifiers in case a concrete need appears. | 2026-08-12 scope decision  |
+| 2026-08-14 | Added a final naming-cleanup phase for the monorepo, Composer split, and Razor package.                                                                | Remove the redundant repository slug and expose the Razor platform boundary in Composer.                                   | 2026-08-14 naming decision |

@@ -46,17 +46,17 @@ orchestrate both npm and Composer commands without forcing PHP consumers to inst
 
 ## Public distributions
 
-| Directory | Distribution | Runtime responsibility |
-| --- | --- | --- |
-| `packages/tokens` | `@codemonster-ru/ui-tokens` | Token data, theme APIs, generated token CSS |
-| `packages/css` | `@codemonster-ru/ui-css` | Foundation and semantic component CSS |
-| `packages/utilities` | `@codemonster-ru/ui-utilities` | Generated utility CSS |
-| `packages/icons` | `@codemonster-ru/ui-icons` | Framework-independent icon data and rendering primitives |
-| `packages/runtime` | `@codemonster-ru/ui-runtime` | Optional progressive-enhancement DOM controllers |
-| `packages/vue` | `@codemonster-ru/ui-vue` | Vue adapter |
-| `packages/react` | `@codemonster-ru/ui-react` | React adapter |
-| `packages/angular` | `@codemonster-ru/ui-angular` | Angular adapter |
-| `packages/razor` | `codemonster-ru/ui` | PHP components, Razor templates, registration, and static assets |
+| Directory            | Distribution                   | Runtime responsibility                                           |
+| -------------------- | ------------------------------ | ---------------------------------------------------------------- |
+| `packages/tokens`    | `@codemonster-ru/ui-tokens`    | Token data, theme APIs, generated token CSS                      |
+| `packages/css`       | `@codemonster-ru/ui-css`       | Foundation and semantic component CSS                            |
+| `packages/utilities` | `@codemonster-ru/ui-utilities` | Generated utility CSS                                            |
+| `packages/icons`     | `@codemonster-ru/ui-icons`     | Framework-independent icon data and rendering primitives         |
+| `packages/runtime`   | `@codemonster-ru/ui-runtime`   | Optional progressive-enhancement DOM controllers                 |
+| `packages/vue`       | `@codemonster-ru/ui-vue`       | Vue adapter                                                      |
+| `packages/react`     | `@codemonster-ru/ui-react`     | React adapter                                                    |
+| `packages/angular`   | `@codemonster-ru/ui-angular`   | Angular adapter                                                  |
+| `packages/razor`     | `codemonster-ru/ui-razor`      | PHP components, Razor templates, registration, and static assets |
 
 Contracts and test harnesses remain private repository tooling initially. No umbrella npm package is
 part of the approved topology.
@@ -118,7 +118,7 @@ Publish only changed packages and their required dependants in this topological 
 2. `ui-icons` and `ui-runtime` where changed;
 3. `ui-css` and `ui-utilities`;
 4. `ui-vue`, `ui-react`, and `ui-angular`;
-5. Composer `codemonster-ru/ui`;
+5. Composer `codemonster-ru/ui-razor`;
 6. examples and documentation after registry consumers pass.
 
 Independent packages at the same level may verify in parallel, but dependent publication waits for
@@ -160,14 +160,14 @@ Initial package-level ceilings are measured across built runtime artifacts. Gzip
 of each emitted file compressed independently, so duplicated output is visible rather than hidden
 by archive compression.
 
-| Package | CSS raw | CSS gzip | JavaScript gzip |
-| --- | ---: | ---: | ---: |
-| `ui-tokens` | 64 KiB | 12 KiB | 24 KiB |
-| `ui-icons` | 0 | 0 | 256 KiB |
-| `ui-runtime` | 0 | 0 | 32 KiB |
-| `ui-css` | 320 KiB | 48 KiB | 8 KiB |
-| `ui-utilities` | 256 KiB | 32 KiB | 8 KiB |
-| Platform adapter | 32 KiB | 8 KiB | 128 KiB |
+| Package          | CSS raw | CSS gzip | JavaScript gzip |
+| ---------------- | ------: | -------: | --------------: |
+| `ui-tokens`      |  64 KiB |   12 KiB |          24 KiB |
+| `ui-icons`       |       0 |        0 |         256 KiB |
+| `ui-runtime`     |       0 |        0 |          32 KiB |
+| `ui-css`         | 320 KiB |   48 KiB |           8 KiB |
+| `ui-utilities`   | 256 KiB |   32 KiB |           8 KiB |
+| Platform adapter |  32 KiB |    8 KiB |         128 KiB |
 
 Budgets are ceilings, not targets. Raising one requires a reviewed architecture or product reason;
 normal feature work must stay within the existing limit.

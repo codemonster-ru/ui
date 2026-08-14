@@ -14,16 +14,16 @@ root orchestration are implemented by their later roadmap items.
 
 ## Top-level ownership
 
-| Path | Responsibility |
-| --- | --- |
-| `contracts/` | Framework-independent component manifests, cases, canonical HTML, and scenarios |
-| `packages/` | Publishable npm packages and the Composer UI package |
-| `examples/` | Runnable consumer examples by platform |
-| `docs/architecture/` | Accepted product and engineering decisions |
-| `docs/` | User guides, migration documentation, audits, and the roadmap |
-| `scripts/build/` | Deterministic artifact generation and finalization |
-| `scripts/ci/` | Repository, package, contract, and consumer validation |
-| `scripts/visual/` | Shared visual fixture and regression tooling |
+| Path                 | Responsibility                                                                  |
+| -------------------- | ------------------------------------------------------------------------------- |
+| `contracts/`         | Framework-independent component manifests, cases, canonical HTML, and scenarios |
+| `packages/`          | Publishable npm packages and the Composer UI package                            |
+| `examples/`          | Runnable consumer examples by platform                                          |
+| `docs/architecture/` | Accepted product and engineering decisions                                      |
+| `docs/`              | User guides, migration documentation, audits, and the roadmap                   |
+| `scripts/build/`     | Deterministic artifact generation and finalization                              |
+| `scripts/ci/`        | Repository, package, contract, and consumer validation                          |
+| `scripts/visual/`    | Shared visual fixture and regression tooling                                    |
 
 Do not add a new top-level directory when one of these owners fits. A new owner requires a documented
 reason and a roadmap update.
@@ -80,22 +80,22 @@ Public npm packages:
 
 Standard scripts are:
 
-| Script | Responsibility |
-| --- | --- |
-| `build` | Produce clean publishable artifacts |
-| `check` | Run the package's complete pre-merge validation |
-| `lint` | Run source linting owned by the package |
-| `test` | Run deterministic package tests |
-| `typecheck` | Validate public and internal types without emitting |
-| `format` | Apply repository formatting conventions where supported |
-| `prepack` | Rebuild or validate the exact archive inputs |
+| Script      | Responsibility                                          |
+| ----------- | ------------------------------------------------------- |
+| `build`     | Produce clean publishable artifacts                     |
+| `check`     | Run the package's complete pre-merge validation         |
+| `lint`      | Run source linting owned by the package                 |
+| `test`      | Run deterministic package tests                         |
+| `typecheck` | Validate public and internal types without emitting     |
+| `format`    | Apply repository formatting conventions where supported |
+| `prepack`   | Rebuild or validate the exact archive inputs            |
 
 A package may add focused smoke or generation scripts. Root orchestration is added only after the
 package can run independently.
 
 ## Composer workspace conventions
 
-`packages/razor` is the publishable `codemonster-ru/ui` Composer library. It has no `package.json`
+`packages/razor` is the publishable `codemonster-ru/ui-razor` Composer library. It has no `package.json`
 unless a later decision gives it an independently justified npm responsibility; copied frontend
 artifacts do not justify making it an npm package.
 
