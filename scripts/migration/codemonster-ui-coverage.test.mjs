@@ -32,6 +32,15 @@ function maturityBacklog(gaps = []) {
   });
 }
 
+function cloneArtifacts(artifacts) {
+  return {
+    contracts: new Set(artifacts.contracts),
+    files: new Map(artifacts.files),
+    razorComponents: new Map(artifacts.razorComponents),
+    vueComponents: new Set(artifacts.vueComponents),
+  };
+}
+
 test('tracks every mapped component and delivered artifact', () => {
   const coverage = readCodeMonsterCoverage();
   assert.deepEqual(
@@ -219,4 +228,64 @@ test('requires every coverage gap exactly once in the maturity backlog', () => {
     ),
   );
   assert.ok(issues.includes('Maturity backlog references unknown coverage gap: VfUnknown:unknown-gap.'));
+});
+
+test('enforces the M9 migration coverage exit gate', async (context) => {
+  const coverage = readCodeMonsterCoverage();
+  const mapping = readVueForgeMapping();
+  const artifacts = discoverCoverageArtifacts(coverage);
+  const buttonDelivery = coverage.components.VfButton.delivery;
+
+  await context.test('rejects an unclassified baseline capability', () => {
+    const unclassifiedCoverage = structuredClone(coverage);
+    unclassifiedCoverage.components.VfButton.capabilities = [];
+
+    assert.ok(
+      validateCodeMonsterCoverage(unclassifiedCoverage, mapping, cloneArtifacts(artifacts)).includes(
+        'VfButton must declare at least one capability.',
+      ),
+    );
+  });
+
+  await context.test('rejects a missing Vue or Razor adapter', () => {
+    const missingVue = cloneArtifacts(artifacts);
+    missingVue.vueComponents.delete(buttonDelivery.target);
+    assert.ok(
+      validateCodeMonsterCoverage(coverage, mapping, missingVue).includes(
+        'VfButton target CmButton is not exported by the Vue adapter.',
+      ),
+    );
+
+    const missingRazor = cloneArtifacts(artifacts);
+    missingRazor.razorComponents.delete(buttonDelivery.target);
+    assert.ok(
+      validateCodeMonsterCoverage(coverage, mapping, missingRazor).includes(
+        'VfButton target CmButton is not registered as Razor tag button.',
+      ),
+    );
+  });
+
+  await context.test('rejects a missing contract', () => {
+    const missingContract = cloneArtifacts(artifacts);
+    missingContract.contracts.delete(buttonDelivery.contract);
+
+    assert.ok(
+      validateCodeMonsterCoverage(coverage, mapping, missingContract).includes(
+        'VfButton references missing contract button.',
+      ),
+    );
+  });
+
+  await context.test('rejects a stable component without a showcase target', () => {
+    const missingShowcase = cloneArtifacts(artifacts);
+    const catalog = JSON.parse(missingShowcase.files.get(coverage.catalog));
+    catalog.components.find(({ name }) => name === buttonDelivery.target).demoHref = '#missing-showcase';
+    missingShowcase.files.set(coverage.catalog, JSON.stringify(catalog));
+
+    assert.ok(
+      validateCodeMonsterCoverage(coverage, mapping, missingShowcase).includes(
+        'Catalog component CmButton references missing showcase anchor #missing-showcase.',
+      ),
+    );
+  });
 });
