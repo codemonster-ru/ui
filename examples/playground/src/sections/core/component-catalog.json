@@ -205,8 +205,8 @@
       "disposition": "compose",
       "targets": ["CmStack"],
       "capabilityId": "reviewed-disposition",
-      "roadmapItem": "CMUI-184",
-      "summary": "Portable candidate: Native `fieldset`/`legend`, shared description/error IDs, invalid state, and scoped metadata form a small cross-platform accessibility contract not provided by Stack"
+      "roadmapItem": "CMUI-186",
+      "summary": "Approved portable candidate: Native `fieldset`/`legend`, shared description/error IDs, invalid state, and scoped metadata form a small cross-platform accessibility contract not provided by Stack"
     },
     {
       "source": "VfFormLayout",
@@ -229,8 +229,8 @@
       "disposition": "compose",
       "targets": ["CmButton"],
       "capabilityId": "reviewed-disposition",
-      "roadmapItem": "CMUI-184",
-      "summary": "Portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract"
+      "roadmapItem": "CMUI-186",
+      "summary": "Approved portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract"
     },
     {
       "source": "VfMenuBar",
@@ -269,16 +269,16 @@
       "disposition": "manual",
       "targets": [],
       "capabilityId": "reviewed-disposition",
-      "roadmapItem": "CMUI-184",
-      "summary": "Portable candidate: Determinate/indeterminate progress semantics, bounded values, labels, tones, and reduced motion form a small framework-independent contract"
+      "roadmapItem": "CMUI-186",
+      "summary": "Approved portable candidate: Determinate/indeterminate progress semantics, bounded values, labels, tones, and reduced motion form a small framework-independent contract"
     },
     {
       "source": "VfProgressSpinner",
       "disposition": "manual",
       "targets": [],
       "capabilityId": "reviewed-disposition",
-      "roadmapItem": "CMUI-184",
-      "summary": "Portable candidate: An indeterminate labelled progress indicator has stable semantic HTML and no framework lifecycle requirement"
+      "roadmapItem": "CMUI-186",
+      "summary": "Approved portable candidate: An indeterminate labelled progress indicator has stable semantic HTML and no framework lifecycle requirement"
     },
     {
       "source": "VfSkeletonGate",
@@ -303,14 +303,6 @@
       "capabilityId": "reviewed-disposition",
       "roadmapItem": "CMUI-185",
       "summary": "Portable candidate: Semantic navigation, active location, levels, and links are portable; heading discovery, scroll observation, smooth scrolling, and offsets may remain application-owned"
-    },
-    {
-      "source": "VfTag",
-      "disposition": "manual",
-      "targets": ["CmBadge"],
-      "capabilityId": "remaining-migration-outcome",
-      "roadmapItem": "CMUI-184",
-      "summary": "Re-evaluate the distinct visual contract in `CMUI-184`; otherwise migrate to Badge"
     },
     {
       "source": "VfThemeSwitch",

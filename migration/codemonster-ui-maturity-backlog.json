@@ -80,15 +80,9 @@
       "roadmapItem": "CMUI-184",
       "destination": "phase-18",
       "priority": "P1",
-      "summary": "Decide small portable component candidates",
-      "reason": "Fieldset, IconButton, and progress patterns have real Vue compositions; Tag remains showcase-only.",
-      "gaps": [
-        "VfFieldset:reviewed-disposition",
-        "VfIconButton:reviewed-disposition",
-        "VfProgressBar:reviewed-disposition",
-        "VfProgressSpinner:reviewed-disposition",
-        "VfTag:remaining-migration-outcome"
-      ]
+      "summary": "Small portable candidate decisions complete",
+      "reason": "Fieldset, IconButton, ProgressBar, and ProgressSpinner advance to implementation; the showcase-only Tag is superseded by Badge.",
+      "gaps": []
     },
     {
       "id": "CMUI-B009",
@@ -113,8 +107,13 @@
       "destination": "phase-18",
       "priority": "P2",
       "summary": "Implement only candidates approved by the two-platform gate",
-      "reason": "An approval creates the full contract, CSS, runtime, Vue, Razor, parity, documentation, and showcase workstream.",
-      "gaps": []
+      "reason": "Approved Fieldset, IconButton, ProgressBar, and ProgressSpinner require the full contract, CSS, Vue, Razor, parity, documentation, and showcase workstream.",
+      "gaps": [
+        "VfFieldset:reviewed-disposition",
+        "VfIconButton:reviewed-disposition",
+        "VfProgressBar:reviewed-disposition",
+        "VfProgressSpinner:reviewed-disposition"
+      ]
     },
     {
       "id": "CMUI-B011",
