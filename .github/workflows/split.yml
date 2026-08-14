@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'ui/v*.*.*'
+      - 'ui-razor/v*.*.*'
   workflow_dispatch:
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
 
       - name: Sync split main branch
         run: |
-          remote_url="https://x-access-token:${MONOREPO_SPLIT_TOKEN}@github.com/codemonster-ru/ui.git"
+          remote_url="https://x-access-token:${MONOREPO_SPLIT_TOKEN}@github.com/codemonster-ru/ui-razor.git"
           remote_main=$(git ls-remote "$remote_url" refs/heads/main | awk '{print $1}')
 
           if [ "${GITHUB_REF_TYPE}" = "branch" ] || [ -z "$remote_main" ]; then
@@ -59,13 +59,13 @@ jobs:
         id: tag
         if: github.ref_type == 'tag'
         run: |
-          version_tag="${GITHUB_REF_NAME#ui/}"
+          version_tag="${GITHUB_REF_NAME#ui-razor/}"
           echo "version_tag=${version_tag}" >> "$GITHUB_OUTPUT"
 
       - name: Push package tag
         if: github.ref_type == 'tag'
         run: |
-          remote_url="https://x-access-token:${MONOREPO_SPLIT_TOKEN}@github.com/codemonster-ru/ui.git"
+          remote_url="https://x-access-token:${MONOREPO_SPLIT_TOKEN}@github.com/codemonster-ru/ui-razor.git"
           remote_sha=$(git ls-remote "$remote_url" "refs/tags/${VERSION_TAG}" | awk '{print $1}')
 
           if [ -z "$remote_sha" ]; then
@@ -103,7 +103,7 @@ jobs:
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v3
         with:
-          repository: codemonster-ru/ui
+          repository: codemonster-ru/ui-razor
           token: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
           tag_name: ${{ steps.tag.outputs.version_tag }}
           name: ${{ steps.tag.outputs.version_tag }}

@@ -7,18 +7,18 @@ const composerManifest = JSON.parse(readFileSync(resolve(repositoryRoot, 'packag
 const errors = [];
 
 for (const requiredFragment of [
-  "- 'ui/v*.*.*'",
+  "- 'ui-razor/v*.*.*'",
   'git subtree split --prefix=packages/razor',
-  'github.com/codemonster-ru/ui.git',
-  'repository: codemonster-ru/ui',
+  'github.com/codemonster-ru/ui-razor.git',
+  'repository: codemonster-ru/ui-razor',
 ]) {
   if (!workflow.includes(requiredFragment)) {
     errors.push(`split workflow is missing: ${requiredFragment}`);
   }
 }
 
-if (composerManifest.support?.source !== 'https://github.com/codemonster-ru/ui') {
-  errors.push('codemonster-ru/ui support.source must reference the public split repository.');
+if (composerManifest.support?.source !== 'https://github.com/codemonster-ru/ui-razor') {
+  errors.push('codemonster-ru/ui-razor support.source must reference the public split repository.');
 }
 
 if (errors.length > 0) {
@@ -28,5 +28,7 @@ if (errors.length > 0) {
   }
   process.exitCode = 1;
 } else {
-  console.log('[ui-composer-split] OK: packages/razor maps to codemonster-ru/ui with ui/v* release tags.');
+  console.log(
+    '[ui-composer-split] OK: packages/razor maps to codemonster-ru/ui-razor with ui-razor/v* release tags.',
+  );
 }

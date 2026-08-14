@@ -1,10 +1,10 @@
 {
-  "name": "codemonster-ru/ui",
+  "name": "codemonster-ru/ui-razor",
   "description": "CodeMonster UI components and assets for Annabel Razor.",
   "type": "library",
   "license": "MIT",
   "support": {
-    "source": "https://github.com/codemonster-ru/ui"
+    "source": "https://github.com/codemonster-ru/ui-razor"
   },
   "require": {
     "php": ">=8.2",

@@ -66,7 +66,7 @@ start the shared DOM runtime over Vue-owned component trees.
 Install the Composer adapter:
 
 ```bash
-composer require codemonster-ru/ui
+composer require codemonster-ru/ui-razor
 ```
 
 Register its component provider during application bootstrap:
