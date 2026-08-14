@@ -69,7 +69,7 @@ They cover:
 - native name, value, type, required, disabled, readonly, and autocomplete behavior;
 - Vue model binding;
 - Razor server values and native form submission;
-- labels, descriptions, errors, invalid state, and generated IDs;
+- labels, descriptions, errors, invalid state, and explicit deterministic control relationships;
 - leading and trailing adornments where the contract approves them;
 - SSR and hydration preservation of user-entered values;
 - application validation integration without owning a validation framework.

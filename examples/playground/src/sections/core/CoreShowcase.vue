@@ -116,6 +116,25 @@
                 />
               </template>
             </CmField>
+            <CmField control-id="showcase-password" label="Deployment password">
+              <template #default="{ controlId, describedBy }">
+                <CmInput
+                  :id="controlId"
+                  v-model="password"
+                  type="password"
+                  name="password"
+                  :aria-describedby="describedBy"
+                  clearable
+                  password-reveal
+                  clear-label="Clear deployment password"
+                  show-password-label="Show deployment password"
+                  hide-password-label="Hide deployment password"
+                >
+                  <template #leading><span aria-hidden="true">#</span></template>
+                  <template #trailing><span aria-hidden="true">required</span></template>
+                </CmInput>
+              </template>
+            </CmField>
             <CmField control-id="showcase-plan" label="Plan">
               <template #default="{ controlId, describedBy }">
                 <CmSelect :id="controlId" v-model="plan" name="plan" :aria-describedby="describedBy" :options="plans" />
@@ -150,7 +169,10 @@
         <CmStack>
           <h2>Navigation and disclosure</h2>
           <CmTabs id="showcase-tabs" v-model="activeTab" :items="tabs" />
-          <CmAccordion id="showcase-faq" v-model:open-items="openItems" :items="accordionItems" multiple />
+          <CmAccordion id="showcase-faq" v-model:open-items="openItems" :items="accordionItems" multiple>
+            <template #triggerVue><strong>Vue</strong> interaction</template>
+            <template #panelVue><strong>Vue</strong> owns hydrated interaction and authored panel content.</template>
+          </CmAccordion>
           <CmInline>
             <CmDropdown id="showcase-actions" v-model:open="dropdownOpen" label="Project actions" :items="menuItems" />
             <CmPopover id="showcase-popover" v-model:open="popoverOpen" label="Release help">
@@ -312,6 +334,7 @@ const commands: CmCommandPaletteItem[] = [
 ];
 
 const email = ref('maya@example.com');
+const password = ref('portable-secret');
 const plan = ref('team');
 const releaseDate = ref('2026-08-13');
 const notes = ref('Validate both adapters.');

@@ -219,16 +219,12 @@ test('requires every coverage gap exactly once in the maturity backlog', () => {
   const artifacts = discoverCoverageArtifacts(coverage);
   const backlog = JSON.parse(artifacts.files.get(coverage.backlog));
   backlog.items[0].gaps = ['VfUnknown:unknown-gap'];
-  backlog.items[1].gaps = backlog.items[1].gaps.filter(
-    (gap) => gap !== 'VfAccordion:material-portable-gap',
-  );
+  backlog.items[2].gaps = backlog.items[2].gaps.filter((gap) => gap !== 'VfSwitch:material-portable-gap');
   artifacts.files.set(coverage.backlog, JSON.stringify(backlog));
 
   const issues = validateCodeMonsterCoverage(coverage, mapping, artifacts);
   assert.ok(
-    issues.includes(
-      'Coverage gap must appear exactly once in the maturity backlog: VfAccordion:material-portable-gap.',
-    ),
+    issues.includes('Coverage gap must appear exactly once in the maturity backlog: VfSwitch:material-portable-gap.'),
   );
   assert.ok(issues.includes('Maturity backlog references unknown coverage gap: VfUnknown:unknown-gap.'));
 });

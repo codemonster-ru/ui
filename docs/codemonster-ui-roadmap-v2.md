@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 17 — Direct replacement maturity
 - Current milestone: M10 — Mature direct replacements
-- Next item: `CMUI-177` Mature the foundation direct-replacement cohort.
+- Next item: `CMUI-178` Mature the display and native-form direct-replacement cohort.
 
 ## Milestones
 
@@ -102,7 +102,7 @@ or intentionally drops.
 Work in this phase is driven by the inventory from `CMUI-172`. A cohort is complete only when its
 approved stable use cases work in both Vue and Razor; identical framework APIs are not required.
 
-- [ ] `CMUI-177` Close Button, Card, Field, Input, and Accordion capability gaps.
+- [x] `CMUI-177` Close Button, Card, Field, Input, and Accordion capability gaps.
 - [ ] `CMUI-178` Close display and native-form cohort capability gaps.
 - [ ] `CMUI-179` Close navigation and overlay cohort capability gaps, including keyboard, focus,
   dismissal, controlled-state, and progressive-enhancement behavior.
@@ -156,6 +156,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-14 | Separate catalog presence from capability parity. | Matching component names and files do not prove that stable VueForge use cases survived migration. | `CMUI-170`–`CMUI-183` |
 | 2026-08-14 | Make unresolved migration gaps visible in the playground. | The 1.0 example migration removed much of the old showcase and made omitted functionality look deleted or completed. | `CMUI-174` |
 | 2026-08-14 | Keep DataTable scalar and assign rich rendering and advanced-grid policy to applications. | Vue callbacks and trusted rich content do not form a safe Razor data contract; representative demand is satisfied by portable pagination, selection, ordered visibility, and localization plus explicit CmTable composition. | `CMUI-181` |
+| 2026-08-14 | Use adapter-native trusted slots for portable authored content. | Input adornments and Accordion item content need rich composition in Vue and Razor without coupling the contract to the VueForge icon registry or accepting untrusted strings as markup. | `CMUI-177` |
 
 ## Scope-change log
 
