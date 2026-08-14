@@ -102,6 +102,32 @@ Vue SSR and interaction tests, Razor rendering parity, accessibility cases, shar
 fixtures before any migration mapping changes from `compose` or `manual` to `replace`. Progress
 animation must additionally prove `prefers-reduced-motion` behavior.
 
+## CMUI-185 follow-up decision
+
+Date: 2026-08-15
+
+Status: Complete
+
+`CMUI-185` re-evaluated the five behavior-rich candidates from the original `CMUI-173` audit.
+The table below is an append-only follow-up and does not rewrite the historical candidate
+classifications above. None of these candidates demonstrates current shared Vue and Annabel Razor
+demand, so none advances to portable component delivery in `CMUI-186`.
+
+| VueForge API | Final decision | Stable migration boundary | Destination and exclusions |
+| --- | --- | --- | --- |
+| `VfDataTableColumnChooser` | Application-owned composition | `CmDataTable` owns validated and ordered `visibleColumnKeys`; `CmCheckbox` and `CmPopover` can compose the application control that edits that state | Keep required-column policy, aggregate selection, persistence, and chooser presentation with the application. The real Annabel implementation establishes Vue composition demand but no matching Razor component demand. Do not add `CmDataTableColumnChooser`. |
+| `VfMenuBar` | Application-owned native site navigation | The repository playground needs a flat URL-backed site-navigation row, expressible with native `nav`, `CmInline`, and `CmLink` plus application-owned history state | Do not translate that consumer into ARIA menubar semantics or treat `CmMenu`, which owns application actions rather than site navigation, as a direct replacement. Nested popup ownership, two-axis keyboard behavior, hover switching, floating placement, and focus restoration have no current two-platform demand. Do not add `CmMenuBar`. |
+| `VfNavMenu` | Application-owned navigation tree | Native `nav` and list landmarks plus `CmLink` cover portable leaf semantics; the application owns recursive nodes and expanded state | Annabel's admin sidebar and setup flow mix tree rendering with routing, active ancestry, workflow selection, authorization, icon, compact-sidebar, and shell policy. There is no matching Razor navigation-tree demand, and `CmMenu` is not site navigation. Keep `AppNavMenu` application-owned and do not add `CmNavMenu`. |
+| `VfStepper` | Supersede static presentation; keep workflow application-owned | An ordered list, native current-step text, and existing layout primitives cover a non-interactive progress summary | Step availability, validation gates, navigation commands, current-state mutation, and focus policy belong to the owning workflow. The real setup flow is Vue-owned and the Razor surface establishes no Stepper demand. Do not add `CmStepper`. |
+| `VfTableOfContents` | Supersede static presentation; keep enhancement application-owned | Native `nav`, a list, heading anchors, `CmLink`, and layout primitives cover a static table of contents | Heading discovery, active-section observation, scroll containers, sticky offsets, smooth scrolling, URL mutation, and focus behavior depend on the document application. No current Razor consumer requires a shared enhanced contract. Do not add `CmTableOfContents`. |
+
+These decisions apply the Phase 18 two-platform demand gate to behavior-rich APIs, whose shared
+runtime, state, and accessibility obligations are materially larger than their static markup. A
+future Vue and Razor consumer pair may reopen a narrowly specified contract, but frozen VueForge
+behavior or one Vue application composition alone is not approval evidence. The migration remains
+manual where application state is involved and uses semantic HTML plus existing CodeMonster UI
+components where the static portion is already covered.
+
 ## Outcome
 
 The original broad `compose` and `manual` buckets are now actionable:
