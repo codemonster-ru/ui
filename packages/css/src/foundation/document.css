@@ -3,7 +3,7 @@
   background: var(--cm-color-background-canvas);
   color: var(--cm-color-text-primary);
   font-family: var(--cm-font-family-base);
-  font-size: var(--cm-font-size-md);
+  font-size: 100%;
   font-synthesis: none;
   line-height: var(--cm-line-height-normal);
   text-rendering: optimizelegibility;
