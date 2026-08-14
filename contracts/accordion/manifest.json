@@ -37,7 +37,16 @@
       "description": "Allows more than one enabled panel to remain open."
     }
   },
-  "slots": {},
+  "slots": {
+    "trigger{ItemId}": {
+      "required": false,
+      "description": "Trusted trigger content for one item, where a kebab-case item id becomes UpperCamelCase."
+    },
+    "panel{ItemId}": {
+      "required": false,
+      "description": "Trusted panel content for one item, where a kebab-case item id becomes UpperCamelCase."
+    }
+  },
   "events": {
     "openChange": {
       "description": "Reports the next ordered open item ids after user activation.",

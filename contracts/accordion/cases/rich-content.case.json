@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "accordion-rich-content",
+  "description": "Open item with trusted trigger and panel composition slots.",
+  "props": {
+    "id": "faq",
+    "items": [
+      { "id": "account", "title": "Account", "content": "Account answer." },
+      { "id": "billing", "title": "Billing", "content": "Billing answer." }
+    ],
+    "defaultOpenItems": ["account"]
+  },
+  "slots": {
+    "triggerAccount": "<span>Account <small>recommended</small></span>",
+    "panelAccount": "<p>Manage your <a href=\"/account\">account</a>.</p>"
+  }
+}

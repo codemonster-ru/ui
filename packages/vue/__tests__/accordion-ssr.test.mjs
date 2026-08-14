@@ -11,8 +11,18 @@ import { CmAccordion } from '../dist/index.js';
 const packageDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const casesDirectory = resolve(packageDirectory, '../../contracts/accordion/cases');
 
-async function renderAccordion(props) {
-  return renderToString(createSSRApp({ render: () => h(CmAccordion, props) }));
+function slotContent(content) {
+  if (content === '<span>Account <small>recommended</small></span>') {
+    return h('span', ['Account ', h('small', 'recommended')]);
+  }
+  if (content === '<p>Manage your <a href="/account">account</a>.</p>') {
+    return h('p', ['Manage your ', h('a', { href: '/account' }, 'account'), '.']);
+  }
+  return content;
+}
+
+async function renderAccordion(props, slots = {}) {
+  return renderToString(createSSRApp({ render: () => h(CmAccordion, props, slots) }));
 }
 
 const caseFiles = (await readdir(casesDirectory)).filter((file) => file.endsWith('.case.json')).sort();
@@ -22,7 +32,10 @@ for (const caseFile of caseFiles) {
     const basename = caseFile.slice(0, -'.case.json'.length);
     const definition = JSON.parse(await readFile(resolve(casesDirectory, caseFile), 'utf8'));
     const expected = await readFile(resolve(casesDirectory, `${basename}.html`), 'utf8');
-    const actual = await renderAccordion(definition.props);
+    const slots = Object.fromEntries(
+      Object.entries(definition.slots).map(([name, content]) => [name, () => slotContent(content)]),
+    );
+    const actual = await renderAccordion(definition.props, slots);
     const comparison = compareSignificantDom(expected, actual);
 
     assert.equal(comparison.equal, true, comparison.difference);

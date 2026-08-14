@@ -9,6 +9,12 @@ Each item has a unique kebab-case `id`, a non-empty `title`, plain-text `content
 disabled ids in an initial open list are ignored; single mode keeps the first valid id in item
 order.
 
+Trusted rich content uses per-item slots derived from the item id. For example, `account-details`
+uses `triggerAccountDetails` and `panelAccountDetails`. This keeps ordinary collection values
+escaped while allowing authored markup and component composition where needed. Trigger slots must
+contain phrasing content and must not nest links, buttons, or other interactive controls inside the
+Accordion button.
+
 ## Vue
 
 ```vue
@@ -25,7 +31,10 @@ const openItems = ref<string[]>(['account']);
 </script>
 
 <template>
-  <CmAccordion id="faq" v-model:open-items="openItems" :items="items" />
+  <CmAccordion id="faq" v-model:open-items="openItems" :items="items">
+    <template #triggerAccount>Account <small>recommended</small></template>
+    <template #panelAccount><p>Manage your <a href="/account">account</a>.</p></template>
+  </CmAccordion>
 </template>
 ```
 
@@ -45,8 +54,14 @@ $items = [
 $openItems = ['account'];
 ?>
 
-<cm-accordion id="faq" :items="$items" :open-items="$openItems" />
+<cm-accordion id="faq" :items="$items" :open-items="$openItems">
+    <razor-slot name="triggerAccount">Account <small>recommended</small></razor-slot>
+    <razor-slot name="panelAccount"><p>Manage your <a href="/account">account</a>.</p></razor-slot>
+</cm-accordion>
 ```
+
+Razor slot output is trusted rendered markup. Keep request data in the escaped `title` and
+`content` item fields; never promote untrusted values with `RenderedHtml::fromTrustedString()`.
 
 Razor renders the complete current server state. Add the shared runtime to the frontend bundle to
 progressively enhance that markup:

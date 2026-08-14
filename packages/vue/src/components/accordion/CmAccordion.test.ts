@@ -20,6 +20,21 @@ describe('CmAccordion', () => {
     expect(wrapper.get('#faq-account-panel').attributes('aria-labelledby')).toBe('faq-account-trigger');
   });
 
+  it('composes trusted per-item trigger and panel content', () => {
+    const wrapper = mount(CmAccordion, {
+      props: { id: 'faq', items, defaultOpenItems: ['account'] },
+      slots: {
+        triggerAccount: '<span>Account <small>recommended</small></span>',
+        panelAccount: '<p>Manage your <a href="/account">account</a>.</p>',
+      },
+    });
+
+    expect(wrapper.get('#faq-account-trigger').html()).toContain('<small>recommended</small>');
+    expect(wrapper.get('#faq-account-panel').html()).toContain('<a href="/account">account</a>');
+    expect(wrapper.get('#faq-billing-trigger').text()).toBe('Billing');
+    expect(wrapper.get('#faq-billing-panel').text()).toBe('Billing answer.');
+  });
+
   it('updates uncontrolled state and emits ordered item ids', async () => {
     const wrapper = mount(CmAccordion, { props: { id: 'faq', items } });
 
