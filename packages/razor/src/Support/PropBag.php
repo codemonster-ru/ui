@@ -101,6 +101,17 @@ final class PropBag
         return $value;
     }
 
+    public function nullableNonNegativeInt(string $name, ?int $default = null): ?int
+    {
+        $value = $this->consume($name, $default);
+
+        if ($value !== null && (!is_int($value) || $value < 0)) {
+            throw new InvalidArgumentException("Component prop [{$name}] must be a non-negative integer or null.");
+        }
+
+        return $value;
+    }
+
     /** @param non-empty-list<string> $allowed */
     public function oneOf(string $name, array $allowed, string $default): string
     {

@@ -39,6 +39,8 @@ final readonly class CmDataTable implements ComponentInterface
         $pageCount = $props->positiveInt('page-count', 1);
         $pageSize = $props->positiveInt('page-size', 10);
         $pageSizeOptions = DataTableData::pageSizes($props->array('page-size-options'), $pageSize);
+        $totalRows = $props->nullableNonNegativeInt('total-rows');
+        if ($totalRows !== null) $pageCount = max(1, (int) ceil($totalRows / $pageSize));
         if ($page > $pageCount) throw new InvalidArgumentException('Component prop [page] must not exceed [page-count].');
         $loading = $props->bool('loading');
         $error = $props->bool('error');
@@ -47,12 +49,24 @@ final readonly class CmDataTable implements ComponentInterface
         $errorText = $props->string('error-text', 'Failed to load data');
         $paginationLabel = $props->string('pagination-label', 'Table pagination');
         $rowsPerPageLabel = $props->string('rows-per-page-label', 'Rows per page');
+        $pageSummaryTemplate = $props->string('page-summary-template', 'Page {page} of {pageCount}');
+        $paginationSummaryTemplate = $props->string('pagination-summary-template', '{firstRow}-{lastRow} of {totalRows}');
+        $emptyPaginationSummaryText = $props->string('empty-pagination-summary-text', '0 rows');
+        $previousPageText = $props->string('previous-page-text', 'Previous');
+        $nextPageText = $props->string('next-page-text', 'Next');
         $previousPageLabel = $props->string('previous-page-label', 'Previous page');
         $nextPageLabel = $props->string('next-page-label', 'Next page');
         $selectAllLabel = $props->string('select-all-label', 'Select all rows');
-        foreach ([$emptyText, $loadingText, $errorText, $paginationLabel, $rowsPerPageLabel, $previousPageLabel, $nextPageLabel, $selectAllLabel] as $label) {
+        foreach ([$emptyText, $loadingText, $errorText, $paginationLabel, $rowsPerPageLabel, $emptyPaginationSummaryText, $previousPageText, $nextPageText, $previousPageLabel, $nextPageLabel, $selectAllLabel] as $label) {
             if (trim($label) === '') throw new InvalidArgumentException('DataTable labels must be non-empty strings.');
         }
+        $this->requirePlaceholders($pageSummaryTemplate, ['{page}', '{pageCount}'], 'page-summary-template');
+        $this->requirePlaceholders($paginationSummaryTemplate, ['{firstRow}', '{lastRow}', '{totalRows}'], 'pagination-summary-template');
+        $pageSummary = strtr($pageSummaryTemplate, ['{page}' => (string) $page, '{pageCount}' => (string) $pageCount]);
+        $paginationSummary = $totalRows === null ? null : ($totalRows === 0 ? $emptyPaginationSummaryText : strtr(
+            $paginationSummaryTemplate,
+            ['{firstRow}' => (string) (($page - 1) * $pageSize + 1), '{lastRow}' => (string) min($page * $pageSize, $totalRows), '{totalRows}' => (string) $totalRows],
+        ));
         $renderRows = array_map(static fn (array $row): array => [
             ...$row, 'selected' => in_array($row['id'], $selected, true),
         ], $rows);
@@ -68,13 +82,27 @@ final readonly class CmDataTable implements ComponentInterface
             'selectable' => $selectable, 'selected' => $selected, 'sort' => $sort, 'page' => $page,
             'pageCount' => $pageCount, 'paginationLabel' => $paginationLabel,
             'pageSize' => $pageSize, 'pageSizeOptions' => $pageSizeOptions, 'rowsPerPageLabel' => $rowsPerPageLabel,
+            'totalRows' => $totalRows, 'pageSummaryTemplate' => $pageSummaryTemplate, 'pageSummary' => $pageSummary,
+            'paginationSummaryTemplate' => $paginationSummaryTemplate, 'paginationSummary' => $paginationSummary,
+            'emptyPaginationSummaryText' => $emptyPaginationSummaryText,
+            'previousPageText' => $previousPageText, 'nextPageText' => $nextPageText,
             'previousPageLabel' => $previousPageLabel, 'nextPageLabel' => $nextPageLabel,
             'selectAllLabel' => $selectAllLabel, 'classes' => $classes, 'stateText' => $stateText,
             'columnCount' => count($columns) + ($selectable ? 1 : 0),
             'attributes' => $attributes->without(['class', 'id', 'data-cm-controller', 'data-cm-data-table-sort-key',
                 'data-cm-data-table-sort-direction', 'data-cm-data-table-page', 'data-cm-data-table-page-count',
-                'data-cm-data-table-page-size', 'data-cm-data-table-selected-count'])->render(),
+                'data-cm-data-table-page-size', 'data-cm-data-table-total-rows', 'data-cm-data-table-selected-count'])->render(),
         ]), "\r\n"));
+    }
+
+    /** @param non-empty-list<string> $placeholders */
+    private function requirePlaceholders(string $template, array $placeholders, string $prop): void
+    {
+        foreach ($placeholders as $placeholder) {
+            if (!str_contains($template, $placeholder)) {
+                throw new InvalidArgumentException("Component prop [{$prop}] must contain " . implode(', ', $placeholders) . '.');
+            }
+        }
     }
 
     private function className(AttributeBag $attributes): ?string

@@ -75,6 +75,22 @@ RAZOR);
         ], []));
     }
 
+    public function testRejectsPaginationSummaryWithoutRequiredPlaceholders(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('pagination-summary-template');
+        $component = new CmDataTable(new RazorEngine(
+            new DefaultLocator(dirname(__DIR__, 2) . '/resources/views'),
+            cachePath: $this->root . '/component-cache',
+        ));
+        $component->render(new ComponentRenderContext([
+            'id' => 'projects',
+            'columns' => [['key' => 'name', 'header' => 'Name']],
+            'total-rows' => 25,
+            'pagination-summary-template' => '{totalRows}',
+        ], []));
+    }
+
     private function engine(): RazorEngine
     {
         $components = new ComponentRegistry();

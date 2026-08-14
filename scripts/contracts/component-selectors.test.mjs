@@ -373,6 +373,7 @@ for (const [slug, approved] of [
       'cm-data-table__page-size',
       'cm-data-table__page-button',
       'cm-data-table__page-summary',
+      'cm-data-table__pagination-summary',
     ],
   ],
   [

@@ -4,7 +4,7 @@ import { collectComponentCases } from './component-cases.mjs';
 
 const identifierPattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
 const actionNames = new Set(['click', 'focus', 'press', 'setValue', 'submit']);
-const expectationNames = new Set(['attribute', 'eventCount', 'focus', 'formValue', 'validity', 'visible']);
+const expectationNames = new Set(['attribute', 'eventCount', 'focus', 'formValue', 'text', 'validity', 'visible']);
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -51,6 +51,9 @@ function validateStep(step, path, index) {
   if (step.expect === 'formValue'
     && (typeof step.name !== 'string' || (step.value !== null && typeof step.value !== 'string'))) {
     errors.push(`${label} formValue expectation requires a name and string or null value.`);
+  }
+  if (step.expect === 'text' && typeof step.value !== 'string') {
+    errors.push(`${label} text expectation requires a string value.`);
   }
   if (['focus', 'validity', 'visible'].includes(step.expect) && typeof step.value !== 'boolean') {
     errors.push(`${label} ${step.expect} expectation requires a boolean value.`);

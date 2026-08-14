@@ -57,6 +57,7 @@ function executeStep({ events, root, step }) {
   }
   if (step.action === 'click') return target.click();
   if (step.expect === 'attribute') return assert.equal(target.getAttribute(step.name), step.value);
+  if (step.expect === 'text') return assert.equal(target.textContent.trim(), step.value);
   if (step.expect === 'eventCount') return assert.equal(events.get(step.name) ?? 0, step.count);
   assert.fail(`Unsupported DataTable scenario step: ${JSON.stringify(step)}`);
 }
@@ -67,6 +68,8 @@ function resolveTarget(root, name) {
     'header-first': 'th[aria-sort]',
     'page-next': '[data-cm-data-table-page-action="next"]',
     'page-size': '[data-cm-data-table-page-size-control]',
+    'page-summary': '.cm-data-table__page-summary',
+    'pagination-summary': '.cm-data-table__pagination-summary',
     'select-last': 'tbody tr:last-child [data-cm-data-table-select-row]',
     'sort-first': '[data-cm-data-table-sort]',
   };

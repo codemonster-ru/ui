@@ -130,7 +130,8 @@
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
 }
 
-.cm-data-table__page-summary {
+.cm-data-table__page-summary,
+.cm-data-table__pagination-summary {
   color: var(--cm-color-text-secondary);
   font-size: var(--cm-font-size-sm);
 }

@@ -36,6 +36,7 @@ export interface CmDataTableProps {
   pageCount?: number;
   pageSize?: number;
   pageSizeOptions?: readonly number[];
+  totalRows?: number | null;
   loading?: boolean;
   error?: boolean;
   emptyText?: string;
@@ -43,6 +44,11 @@ export interface CmDataTableProps {
   errorText?: string;
   paginationLabel?: string;
   rowsPerPageLabel?: string;
+  pageSummaryTemplate?: string;
+  paginationSummaryTemplate?: string;
+  emptyPaginationSummaryText?: string;
+  previousPageText?: string;
+  nextPageText?: string;
   previousPageLabel?: string;
   nextPageLabel?: string;
   selectAllLabel?: string;

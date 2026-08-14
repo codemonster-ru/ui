@@ -6,6 +6,9 @@
     { "action": "setValue", "target": "page-size", "value": "25" },
     { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page-size", "value": "25" },
     { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page", "value": "1" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page-count", "value": "1" },
+    { "expect": "text", "target": "pagination-summary", "value": "1-25 of 25" },
+    { "expect": "text", "target": "page-summary", "value": "Page 1 of 1" },
     { "expect": "eventCount", "target": "root", "name": "cm:data-table-page-size-change", "count": 1 },
     { "expect": "eventCount", "target": "root", "name": "cm:data-table-page-change", "count": 1 }
   ]
