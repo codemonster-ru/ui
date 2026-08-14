@@ -1,74 +1,54 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
-import { CmSection, CmSkeleton } from "@codemonster-ru/ui-vue";
-import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock/view";
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { CmSection, CmSkeleton } from '@codemonster-ru/ui-vue';
+import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 
-const resolvedTheme = ref<"light" | "dark">("light");
+const resolvedTheme = ref<'light' | 'dark'>('light');
 let rootThemeObserver: MutationObserver | null = null;
 
 const syncRootTheme = () => {
-  resolvedTheme.value = document.documentElement.getAttribute("data-cm-theme") === "dark" ? "dark" : "light";
+  resolvedTheme.value = document.documentElement.getAttribute('data-cm-theme') === 'dark' ? 'dark' : 'light';
 };
 const longSnippetLineCount = 1000;
 const longTsSnippet = Array.from({ length: longSnippetLineCount }, (_, index) => {
   const line = index + 1;
 
-  return `const row${line.toString().padStart(4, "0")} = { id: ${line}, title: "Item ${line}" };`;
-}).join("\n");
+  return `const row${line.toString().padStart(4, '0')} = { id: ${line}, title: "Item ${line}" };`;
+}).join('\n');
 
 const snippets = {
-  plain: [
-    "Plain text sample",
-    "Path: src/components/VfCodeBlock.vue",
-    "URL: https://example.test/docs",
-  ].join("\n"),
-  js: [
-    "const greet = (name = 'world') => `Hello, ${name}`;",
-    "console.log(greet('Vue'));",
-  ].join("\n"),
-  ts: [
-    "type User = { id: number; name: string };",
-    "const user: User = { id: 1, name: 'Ada' };",
-  ].join("\n"),
+  plain: ['Plain text sample', 'Path: src/components/VfCodeBlock.vue', 'URL: https://example.test/docs'].join('\n'),
+  js: ["const greet = (name = 'world') => `Hello, ${name}`;", "console.log(greet('Vue'));"].join('\n'),
+  ts: ['type User = { id: number; name: string };', "const user: User = { id: 1, name: 'Ada' };"].join('\n'),
   vue: [
     '<script setup lang="ts">',
     "const label = 'Save';",
-    "</scr" + "ipt>",
-    "",
-    "<template>",
+    '</scr' + 'ipt>',
+    '',
+    '<template>',
     '  <button>{{ label }}</button>',
-    "</template>",
-  ].join("\n"),
-  html: [
-    "<!doctype html>",
-    "<html>",
-    "  <body><h1>Hello</h1></body>",
-    "</html>",
-  ].join("\n"),
-  json: ['{', '  "name": "@codemonster-ru/vueforge-codeblock"', '}'].join("\n"),
+    '</template>',
+  ].join('\n'),
+  html: ['<!doctype html>', '<html>', '  <body><h1>Hello</h1></body>', '</html>'].join('\n'),
+  json: ['{', '  "name": "@codemonster-ru/vueforge-codeblock"', '}'].join('\n'),
   dotenv: [
-    "# Application environment",
-    "APP_ENV=production",
-    "APP_DEBUG=false",
+    '# Application environment',
+    'APP_ENV=production',
+    'APP_DEBUG=false',
     'DATABASE_URL="postgres://localhost/vueforge"',
-  ].join("\n"),
-  php: [
-    "<?php",
-    "",
-    "final readonly class User",
-    "{",
-    "    public function __construct(public int $id) {}",
-    "}",
-  ].join("\n"),
+  ].join('\n'),
+  php: ['<?php', '', 'final readonly class User', '{', '    public function __construct(public int $id) {}', '}'].join(
+    '\n',
+  ),
   cron: [
-    "# Run the scheduler every five minutes",
-    "*/5 * * * * php artisan schedule:run",
-    "0 2 * * * npm run backup",
-  ].join("\n"),
-  bash: ["#!/usr/bin/env bash", "npm install", "npm run build"].join("\n"),
-  css: [".card {", "  border: 1px solid #d9dde3;", "}"].join("\n"),
-  scss: ["$brand: #0e639c;", ".btn { color: $brand; }"] .join("\n"),
-  sass: ["$brand: #0e639c", ".btn", "  color: $brand"].join("\n"),
+    '# Run the scheduler every five minutes',
+    '*/5 * * * * php artisan schedule:run',
+    '0 2 * * * npm run backup',
+  ].join('\n'),
+  bash: ['#!/usr/bin/env bash', 'npm install', 'npm run build'].join('\n'),
+  css: ['.card {', '  border: 1px solid #d9dde3;', '}'].join('\n'),
+  scss: ['$brand: #0e639c;', '.btn { color: $brand; }'].join('\n'),
+  sass: ['$brand: #0e639c', '.btn', '  color: $brand'].join('\n'),
 };
 
 const estimateSkeletonMinHeight = (code: string, hasMaxHeight: boolean): number => {
@@ -76,7 +56,7 @@ const estimateSkeletonMinHeight = (code: string, hasMaxHeight: boolean): number 
     return 420;
   }
 
-  const lineCount = code.split("\n").length;
+  const lineCount = code.split('\n').length;
   const visibleLines = Math.min(lineCount, 12);
   const estimated = 112 + visibleLines * 28;
 
@@ -85,31 +65,126 @@ const estimateSkeletonMinHeight = (code: string, hasMaxHeight: boolean): number 
 
 const blocks = [
   {
-    language: "ts",
-    filename: "long-1000-lines.ts",
+    language: 'ts',
+    filename: 'long-1000-lines.ts',
     code: longTsSnippet,
-    maxHeight: "var(--vf-breakpoint-xs)",
+    maxHeight: 'var(--cm-breakpoint-xs)',
     skeletonMinHeight: estimateSkeletonMinHeight(longTsSnippet, true),
   },
-  { language: "plaintext", filename: "plain.txt", code: snippets.plain, skeletonMinHeight: estimateSkeletonMinHeight(snippets.plain, false) },
-  { language: "text", filename: "note.text", code: snippets.plain, skeletonMinHeight: estimateSkeletonMinHeight(snippets.plain, false) },
-  { language: "txt", filename: "readme.txt", code: snippets.plain, skeletonMinHeight: estimateSkeletonMinHeight(snippets.plain, false) },
-  { language: "js", filename: "demo.js", code: snippets.js, skeletonMinHeight: estimateSkeletonMinHeight(snippets.js, false) },
-  { language: "javascript", filename: "demo.javascript", code: snippets.js, skeletonMinHeight: estimateSkeletonMinHeight(snippets.js, false) },
-  { language: "ts", filename: "demo.ts", code: snippets.ts, skeletonMinHeight: estimateSkeletonMinHeight(snippets.ts, false) },
-  { language: "typescript", filename: "demo.typescript", code: snippets.ts, skeletonMinHeight: estimateSkeletonMinHeight(snippets.ts, false) },
-  { language: "vue", filename: "Demo.vue", code: snippets.vue, skeletonMinHeight: estimateSkeletonMinHeight(snippets.vue, false) },
-  { language: "html", filename: "index.html", code: snippets.html, skeletonMinHeight: estimateSkeletonMinHeight(snippets.html, false) },
-  { language: "json", filename: "package.json", code: snippets.json, skeletonMinHeight: estimateSkeletonMinHeight(snippets.json, false) },
-  { language: "dotenv", filename: ".env", code: snippets.dotenv, skeletonMinHeight: estimateSkeletonMinHeight(snippets.dotenv, false) },
-  { language: "php", filename: "User.php", code: snippets.php, skeletonMinHeight: estimateSkeletonMinHeight(snippets.php, false) },
-  { language: "cron", filename: "schedule.cron", code: snippets.cron, skeletonMinHeight: estimateSkeletonMinHeight(snippets.cron, false) },
-  { language: "bash", filename: "script.bash", code: snippets.bash, skeletonMinHeight: estimateSkeletonMinHeight(snippets.bash, false) },
-  { language: "shell", filename: "script.shell", code: snippets.bash, skeletonMinHeight: estimateSkeletonMinHeight(snippets.bash, false) },
-  { language: "sh", filename: "script.sh", code: snippets.bash, skeletonMinHeight: estimateSkeletonMinHeight(snippets.bash, false) },
-  { language: "css", filename: "demo.css", code: snippets.css, skeletonMinHeight: estimateSkeletonMinHeight(snippets.css, false) },
-  { language: "scss", filename: "demo.scss", code: snippets.scss, skeletonMinHeight: estimateSkeletonMinHeight(snippets.scss, false) },
-  { language: "sass", filename: "demo.sass", code: snippets.sass, skeletonMinHeight: estimateSkeletonMinHeight(snippets.sass, false) },
+  {
+    language: 'plaintext',
+    filename: 'plain.txt',
+    code: snippets.plain,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.plain, false),
+  },
+  {
+    language: 'text',
+    filename: 'note.text',
+    code: snippets.plain,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.plain, false),
+  },
+  {
+    language: 'txt',
+    filename: 'readme.txt',
+    code: snippets.plain,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.plain, false),
+  },
+  {
+    language: 'js',
+    filename: 'demo.js',
+    code: snippets.js,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.js, false),
+  },
+  {
+    language: 'javascript',
+    filename: 'demo.javascript',
+    code: snippets.js,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.js, false),
+  },
+  {
+    language: 'ts',
+    filename: 'demo.ts',
+    code: snippets.ts,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.ts, false),
+  },
+  {
+    language: 'typescript',
+    filename: 'demo.typescript',
+    code: snippets.ts,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.ts, false),
+  },
+  {
+    language: 'vue',
+    filename: 'Demo.vue',
+    code: snippets.vue,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.vue, false),
+  },
+  {
+    language: 'html',
+    filename: 'index.html',
+    code: snippets.html,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.html, false),
+  },
+  {
+    language: 'json',
+    filename: 'package.json',
+    code: snippets.json,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.json, false),
+  },
+  {
+    language: 'dotenv',
+    filename: '.env',
+    code: snippets.dotenv,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.dotenv, false),
+  },
+  {
+    language: 'php',
+    filename: 'User.php',
+    code: snippets.php,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.php, false),
+  },
+  {
+    language: 'cron',
+    filename: 'schedule.cron',
+    code: snippets.cron,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.cron, false),
+  },
+  {
+    language: 'bash',
+    filename: 'script.bash',
+    code: snippets.bash,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.bash, false),
+  },
+  {
+    language: 'shell',
+    filename: 'script.shell',
+    code: snippets.bash,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.bash, false),
+  },
+  {
+    language: 'sh',
+    filename: 'script.sh',
+    code: snippets.bash,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.bash, false),
+  },
+  {
+    language: 'css',
+    filename: 'demo.css',
+    code: snippets.css,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.css, false),
+  },
+  {
+    language: 'scss',
+    filename: 'demo.scss',
+    code: snippets.scss,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.scss, false),
+  },
+  {
+    language: 'sass',
+    filename: 'demo.sass',
+    code: snippets.sass,
+    skeletonMinHeight: estimateSkeletonMinHeight(snippets.sass, false),
+  },
 ];
 
 const CODEBLOCK_SKELETON_DELAY_MS = 2200;
@@ -137,7 +212,7 @@ onMounted(() => {
   rootThemeObserver = new MutationObserver(syncRootTheme);
   rootThemeObserver.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ["data-cm-theme"],
+    attributeFilter: ['data-cm-theme'],
   });
   scheduleCodeblockReady();
 });
@@ -199,7 +274,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .demo-page {
   min-height: 100vh;
-  background: var(--vf-color-background-canvas);
+  background: var(--cm-color-background-canvas);
 }
 
 .demo-grid {
@@ -224,10 +299,10 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--vf-color-border-default);
-  border-radius: var(--vf-radius-control);
-  background: var(--vf-color-background-surface);
-  color: var(--vf-color-text-primary);
+  border: 1px solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
   padding: 0.35rem 0.65rem;
   font: inherit;
   cursor: pointer;
