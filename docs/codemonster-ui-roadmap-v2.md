@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 16 — Coverage truth and restored catalog
 - Current milestone: M9 — Enforced migration coverage
-- Next item: `CMUI-171` Add the migration coverage validator.
+- Next item: `CMUI-175` Inventory real Vue and Annabel Razor consumer usage.
 
 ## Milestones
 
@@ -78,7 +78,7 @@ or intentionally drops.
 
 - [x] `CMUI-170` Define a machine-readable migration coverage inventory keyed by VueForge public
   component and capability.
-- [ ] `CMUI-171` Add a coverage validator that reconciles the inventory with the frozen baseline,
+- [x] `CMUI-171` Add a coverage validator that reconciles the inventory with the frozen baseline,
   migration map, contracts, Vue exports, Razor provider registrations, documentation, and showcase.
 - [x] `CMUI-172` Audit the 33 direct replacements against frozen VueForge types, documentation,
   tests, and representative examples; classify every material capability.
