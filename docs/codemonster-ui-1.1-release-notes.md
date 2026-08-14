@@ -71,3 +71,20 @@ outcomes, and the deterministic codemod workflow.
 VueForge releases are not unpublished by this release. Keep VueForge Icons, CodeBlock, and
 Playground where their dedicated behavior is still required, and migrate design-system foundations
 incrementally using the documented destination for each frozen capability.
+
+## Published release validation
+
+The complete cohort is available from the public npm and Composer registries. A clean npm consumer
+installed all five exact releases, completed TypeScript, Vite, Vue SSR, runtime, token, and CSS
+checks, and verified registry signatures for all 41 installed packages plus 27 provenance
+attestations. A separate clean Composer consumer verified the Packagist and GitHub archive identity,
+all 37 public Razor component registrations, representative rendering, Composer audit, and all 47
+integrity-checked assets.
+
+Annabel commit `f037701378fc92ec311f29f30f7130711f3471a7` consumes tokens `1.0.1`, CSS and Vue `1.1.0`,
+and `codemonster-ru/ui-razor:^1.1.0` from the public registries. Its PHP 8.2–8.4 CMS matrix passed
+the Admin production build, 68 tests with 182 assertions per job, static analysis, dependency
+audits, and application-level asset publication; the release rehearsal also passed the Setup
+production build. See the
+[CodeMonster UI 1.1 registry validation](./verification/codemonster-ui-1.1-registry-validation.md)
+for exact versions, integrity values, archive references, workflow runs, and reproduction commands.

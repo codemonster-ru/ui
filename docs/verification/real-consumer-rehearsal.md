@@ -1,6 +1,6 @@
 # Real consumer prerelease rehearsal
 
-Status: npm and Composer registries validated
+Status: CodeMonster UI 1.1 npm, Composer, and real-consumer validation complete
 Date: 2026-08-13  
 Roadmap item: `CMUI-159`
 
@@ -149,3 +149,30 @@ The monorepo retains its history, tags, releases, and completed Actions runs at
 publishers use that canonical repository and `release-from-tag.yml`.
 
 This completes `CMUI-167` through `CMUI-169`, the `CMUI-G008` exit gate, and M8.
+
+## CodeMonster UI 1.1 registry and consumer validation
+
+The matured release cohort was published from CodeMonster UI commit
+`0a780db7ff8869c371ec9326ad96916e6179d743`. A clean npm consumer installed all five exact public
+versions from `registry.npmjs.org`: tokens and utilities at `1.0.1`, and runtime, CSS, and Vue at
+`1.1.0`. TypeScript, Vite, Vue SSR, runtime and token imports, and the complete stylesheet passed.
+The signature audit verified all 41 installed packages and 27 provenance attestations.
+
+A separate clean Composer consumer installed `codemonster-ru/ui-razor@v1.1.0` from Packagist and
+the GitHub split archive. Composer validation and audit passed, source and dist references matched,
+all 37 public component registrations were present, rendering passed, and all 47 integrity-checked
+assets were published without a local path or development dependency leaking into the install.
+
+Annabel commit `f037701378fc92ec311f29f30f7130711f3471a7` then upgraded the representative application to
+the exact public npm cohort and `codemonster-ru/ui-razor:^1.1.0`. Its CMS matrix passed on PHP 8.2,
+8.3, and 8.4 with 68 tests and 182 assertions per job, PHPStan without errors, dependency audits
+without advisories or vulnerabilities, the Admin production Vite build, and 47 CodeMonster UI
+assets published through the application boundary. The release rehearsal separately passed the
+Setup production build. Neither CMS manifest reintroduced a local UI package source.
+
+Exact package versions, archive identities, integrity values, workflow runs, and reproduction
+commands are recorded in the
+[CodeMonster UI 1.1 registry validation](./codemonster-ui-1.1-registry-validation.md).
+
+This completes the public-registry and representative-consumer evidence for `CMUI-191` and
+`CMUI-G011`.

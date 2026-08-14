@@ -39,3 +39,11 @@ The real Annabel Razor surface continues to require only Container, Stack, and C
 shell/navigation demand is evidence for the application-owned boundary, not a reason to invent an
 adapter API. The packed-consumer gate separately proves that the complete current Razor package can
 be archived, installed, rendered, and publish its exact CSS assets.
+
+## Stable cohort publication
+
+The matured cohort was subsequently published to npm and Packagist, then installed from those
+registries by clean synthetic consumers and the real Annabel CMS. Exact versions, registry hashes,
+release and workflow URLs, signature and provenance counts, Razor dependency evidence, and final
+Annabel results are recorded in
+[CodeMonster UI 1.1 registry validation](./codemonster-ui-1.1-registry-validation.md).

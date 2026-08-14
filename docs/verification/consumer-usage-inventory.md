@@ -20,8 +20,8 @@ This inventory separates three kinds of evidence that must not be conflated:
 | Consumer                  | Baseline                                           | Source root                                        |
 | ------------------------- | -------------------------------------------------- | -------------------------------------------------- |
 | Repository Vue playground | CodeMonster UI `529d338`                           | `examples/playground`                              |
-| Annabel CMS Vue admin     | Annabel `b23a367e8a791f069d6c6130f41dd08cb0387d89` | `applications/annabel-cms/app`                     |
-| Annabel CMS Razor page    | Annabel `b23a367e8a791f069d6c6130f41dd08cb0387d89` | `applications/annabel-cms/app/Modules/Pages/views` |
+| Annabel CMS Vue admin     | Annabel `f037701378fc92ec311f29f30f7130711f3471a7` | `applications/annabel-cms/app`                     |
+| Annabel CMS Razor page    | Annabel `f037701378fc92ec311f29f30f7130711f3471a7` | `applications/annabel-cms/app/Modules/Pages/views` |
 
 Generated files under `dist`, `public/admin/assets`, dependencies, lockfiles, tests, and package
 fixtures are excluded from usage counts.
@@ -141,6 +141,24 @@ consumers:
 The playground's legacy shell and bootstrap dependencies were removed in `CMUI-189` after recipes
 and ownership were settled by `CMUI-187` and `CMUI-188`. Retained VueForge products remain
 side-by-side dependencies and do not create a layout-primitive gap.
+
+## Stable 1.1 consumer confirmation
+
+Annabel commit `f037701378fc92ec311f29f30f7130711f3471a7` preserves the demand inventory above while
+moving the representative application to the public stable cohort. Its npm manifest and lock file
+pin tokens `1.0.1`, CSS `1.1.0`, and Vue `1.1.0` to `registry.npmjs.org`; both Composer manifests
+require `codemonster-ru/ui-razor:^1.1.0` from Packagist. The application retains only
+`@codemonster-ru/vueforge-icons` from the explicitly retained VueForge products and has no direct
+`vueforge-core` or `vueforge-layouts` dependency.
+
+The CMS CI matrix passed on PHP 8.2, 8.3, and 8.4. Each job completed the Admin Vite production
+build, 68 tests with 182 assertions, PHPStan, npm and Composer audits, and publication of all 47
+packaged UI assets; the release rehearsal separately passed the Setup production build. The
+independent registry gates additionally verified five exact npm releases across 41 signed installed
+packages with 27 attestations, plus the Composer package's 37 component registrations, rendering,
+and archive provenance. See the
+[CodeMonster UI 1.1 registry validation](./codemonster-ui-1.1-registry-validation.md) for exact
+release evidence and reproduction commands.
 
 ## Reproduction
 

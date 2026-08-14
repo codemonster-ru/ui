@@ -62,9 +62,10 @@ or intentionally drops.
 
 ## Progress
 
-- Current phase: Phase 18 — Portable expansion and consumer migration
-- Current milestone: M11 — Portable expansion and consumer migration
-- Next item: `CMUI-191` Publish the stable cohort and exact migration notes.
+- Current phase: Complete — Phase 18 delivered
+- Current milestone: M11 — Completed
+- Completed milestones: M9, M10, and M11
+- Next item: None. React and Angular remain unscheduled future work.
 
 ## Milestones
 
@@ -72,7 +73,7 @@ or intentionally drops.
 | --------- | ------------------------------------------------------------------------------------------------- | --------- |
 | M9        | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status | Completed |
 | M10       | Existing direct replacements cover their approved stable use cases in Vue and Razor               | Completed |
-| M11       | Missing portable components and recipes are delivered, and real consumers complete migration      | Pending   |
+| M11       | Missing portable components and recipes are delivered, and real consumers complete migration      | Completed |
 
 ## Phase 16 — Coverage truth and restored catalog
 
@@ -138,12 +139,12 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
       component contracts.
 - [x] `CMUI-190` Run complete package, packed-consumer, SSR/server-rendering, accessibility,
       interaction, visual, migration, and real-consumer verification.
-- [ ] `CMUI-191` Publish the resulting stable package cohort and exact migration notes without
+- [x] `CMUI-191` Publish the resulting stable package cohort and exact migration notes without
       unpublishing retained VueForge packages.
 
 ### M11 exit gate
 
-- [ ] `CMUI-G011` Representative Vue and Razor consumers pass, the Vue consumer no longer depends on
+- [x] `CMUI-G011` Representative Vue and Razor consumers pass, the Vue consumer no longer depends on
       `vueforge-core` or `vueforge-layouts`, and every frozen disposition has a verified destination.
 
 ## Decision log
@@ -165,6 +166,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-15 | Keep behavior-rich candidates application-owned without shared demand.                            | Column chooser persistence, command navigation, navigation trees, workflow steps, and document observation all combine static semantic composition with product policy; none has matching Razor demand.                                                 | `CMUI-185`              |
 | 2026-08-15 | Re-verify application shell ownership after portable delivery.                                    | The real Vue consumers own different shell policies, the real Razor consumer has no matching shell demand, and native landmarks plus primitives remain smaller than a speculative cross-platform shell API.                                             | `CMUI-188`              |
 | 2026-08-15 | Remove direct legacy design-system ownership from the representative Vue playground.              | Native landmarks, maintained recipes, CodeMonster UI tokens/CSS, and an application-owned theme bootstrap preserve the approved use cases; retained Icons, CodeBlock, and Playground products keep only their explicit side-by-side hooks.              | `CMUI-189`              |
+| 2026-08-15 | Publish the matured cohort with independent package versions while retaining VueForge products.   | The verified cohort is available as npm patch and minor releases plus `codemonster-ru/ui-razor@1.1.0`; exact install and migration notes are published, while retained VueForge releases remain available.                                              | `CMUI-191`, `CMUI-G011` |
 
 ## Scope-change log
 
