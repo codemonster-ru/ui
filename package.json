@@ -27,7 +27,7 @@
     "check:docs:examples": "node --test ./scripts/ci/documentation-example-paths.test.mjs && node ./scripts/ci/check-documentation-examples.mjs",
     "check:vueforge-baseline": "node --test ./scripts/migration/vueforge-baseline.test.mjs && node ./scripts/migration/vueforge-baseline.mjs",
     "check:vueforge-mapping": "node --test ./scripts/migration/vueforge-mapping.test.mjs && node ./scripts/migration/vueforge-mapping.mjs",
-    "check:codemonster-coverage": "node --test ./scripts/migration/codemonster-ui-coverage.test.mjs && node ./scripts/migration/codemonster-ui-coverage.mjs",
+    "check:codemonster-coverage": "node --test ./scripts/migration/codemonster-ui-coverage.test.mjs ./scripts/migration/playground-design-system-exit.test.mjs && node ./scripts/migration/codemonster-ui-coverage.mjs",
     "check:migration:codemonster": "node --test ./scripts/check-vueforge-migration.test.mjs",
     "test:migration:codemonster": "node --test ./scripts/check-vueforge-migration.test.mjs ./scripts/migrate-to-codemonster-ui.test.mjs",
     "lint:data": "prettier --check \"**/*.{json,yml,yaml}\"",
