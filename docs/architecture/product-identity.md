@@ -23,13 +23,10 @@ distribution names and technical prefixes are defined by
 
 ## Repository transition
 
-The current repository remains `vueforge` during development and migration. Renaming it before the
-new packages and consumer migration are ready would break repository metadata and documentation
-without providing architectural value.
-
-The repository rename is gated by `CMUI-164`, after CodeMonster UI 1.0 and the VueForge migration
-requirements have passed. Existing published VueForge packages retain their current identities
-until the migration policy is approved by `CMUI-014`.
+The repository was renamed from `codemonster-ru/vueforge` to
+`codemonster-ru/codemonster-ui` on 2026-08-14, after CodeMonster UI 1.0 and the VueForge migration
+requirements passed. GitHub preserves the old repository URL as a redirect. Existing published
+VueForge packages retain their package names and identities under the approved migration policy.
 
 ## Rationale
 
@@ -42,5 +39,5 @@ until the migration policy is approved by `CMUI-014`.
 
 - New architecture documents use CodeMonster UI as the product name.
 - New framework-independent work must not use VueForge as its public product identity.
-- The current repository and published packages are not renamed as part of this decision.
+- The repository uses the platform-neutral slug; published VueForge packages retain their names.
 - Package and code prefixes follow the approved naming and prefixes decision.

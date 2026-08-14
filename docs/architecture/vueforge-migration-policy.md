@@ -126,9 +126,10 @@ Migration tools default to read-only reporting and require an explicit write fla
 
 ## Repository transition
 
-Development continues in the existing Git history and integration branch. Renaming the GitHub
-repository is the final `CMUI-164` transition after release and migration gates pass. Package
-repository metadata changes only when the target repository exists and redirects are verified.
+The existing Git history moved from `codemonster-ru/vueforge` to
+`codemonster-ru/codemonster-ui` as the final `CMUI-164` transition after release and migration gates
+passed. Package repository metadata uses the new canonical URL, and the old GitHub URL redirects to
+it. Published VueForge package names remain unchanged.
 
 ## Consequences
 
