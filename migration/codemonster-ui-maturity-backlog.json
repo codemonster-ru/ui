@@ -60,8 +60,8 @@
       "roadmapItem": "CMUI-182",
       "destination": "phase-17",
       "priority": "P1",
-      "summary": "Verify layout primitives in both consumers",
-      "reason": "The Razor page uses Container and Stack, while both Vue consumers own their shell compositions.",
+      "summary": "Layout primitives and shell ownership verified",
+      "reason": "The Razor page verifies Container and Stack, the Vue consumers verify primitive composition, and each application retains its shell policy.",
       "gaps": []
     },
     {

@@ -1505,7 +1505,11 @@
           "evidence": [
             "contracts/container/contract.md",
             "packages/vue/src/components/layout-primitives.test.ts",
-            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+            "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
+            "packages/css/__tests__/layout-primitives.test.mjs",
+            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "docs/verification/consumer-usage-inventory.md"
           ]
         },
         {
@@ -1537,7 +1541,11 @@
           "evidence": [
             "contracts/stack/contract.md",
             "packages/vue/src/components/layout-primitives.test.ts",
-            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+            "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
+            "packages/css/__tests__/layout-primitives.test.mjs",
+            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "docs/verification/consumer-usage-inventory.md"
           ]
         },
         {
@@ -1569,7 +1577,11 @@
           "evidence": [
             "contracts/inline/contract.md",
             "packages/vue/src/components/layout-primitives.test.ts",
-            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+            "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
+            "packages/css/__tests__/layout-primitives.test.mjs",
+            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "docs/verification/consumer-usage-inventory.md"
           ]
         },
         {
@@ -1601,7 +1613,11 @@
           "evidence": [
             "contracts/section/contract.md",
             "packages/vue/src/components/layout-primitives.test.ts",
-            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+            "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
+            "packages/css/__tests__/layout-primitives.test.mjs",
+            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "docs/verification/consumer-usage-inventory.md"
           ]
         },
         {
@@ -1633,7 +1649,11 @@
           "evidence": [
             "contracts/grid/contract.md",
             "packages/vue/src/components/layout-primitives.test.ts",
-            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+            "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
+            "packages/css/__tests__/layout-primitives.test.mjs",
+            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "docs/verification/consumer-usage-inventory.md"
           ]
         },
         {

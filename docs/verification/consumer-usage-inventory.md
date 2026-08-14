@@ -92,14 +92,30 @@ component can claim real Razor demand from this baseline.
 
 ## Demand signal for the maturity backlog
 
-| Demand                                         | Evidence                                              | Backlog consequence                                                                                         |
-| ---------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Remove playground legacy runtime and CSS       | Repository Vue playground                             | Required for `CMUI-189`; schedule its theme and skeleton recipes before migration.                          |
-| Mature table pagination and column controls    | Annabel Vue admin compositions                        | Delivered in `CMUI-181`; fetching, rich rendering, and advanced grid policy remain application-owned.        |
-| Publish application composition recipes        | Both Vue consumers own shell/theme/layout composition | Prioritize `CMUI-187` and retain the ownership boundary in `CMUI-188`.                                      |
-| Preserve Container, Stack, and Card parity     | Real Annabel Razor page                               | Treat regressions as blockers; no expansion is required.                                                    |
-| Add Menubar or another behavior-rich component | Playground-only Vue usage, no current Razor usage     | Keep behind the two-platform demand rule in `CMUI-185`.                                                     |
-| Add a distinct Tag component                   | Color showcase only                                   | Prefer migration to Badge unless `CMUI-184` finds product demand beyond the showcase.                       |
+| Demand                                         | Evidence                                              | Backlog consequence                                                                                   |
+| ---------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Remove playground legacy runtime and CSS       | Repository Vue playground                             | Required for `CMUI-189`; schedule its theme and skeleton recipes before migration.                    |
+| Mature table pagination and column controls    | Annabel Vue admin compositions                        | Delivered in `CMUI-181`; fetching, rich rendering, and advanced grid policy remain application-owned. |
+| Publish application composition recipes        | Both Vue consumers own shell/theme/layout composition | Prioritize `CMUI-187` and retain the ownership boundary in `CMUI-188`.                                |
+| Preserve Container, Stack, and Card parity     | Real Annabel Razor page                               | Treat regressions as blockers; no expansion is required.                                              |
+| Add Menubar or another behavior-rich component | Playground-only Vue usage, no current Razor usage     | Keep behind the two-platform demand rule in `CMUI-185`.                                               |
+| Add a distinct Tag component                   | Color showcase only                                   | Prefer migration to Badge unless `CMUI-184` finds product demand beyond the showcase.                 |
+
+## CMUI-182 layout verification
+
+The Phase 17 layout review found no missing primitive capability and did not broaden shell
+ownership. The same finite semantic and layout contracts remain appropriate across the verified
+consumers:
+
+| Consumer                  | Verified use                                                                                                                | Outcome                                                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Repository Vue playground | Container, Stack, Inline, Section, and Grid compose the component and layout showcases                                      | All five primitives are exercised; the application still owns navigation, history, theme bootstrap, and shell CSS |
+| Annabel CMS Vue admin     | Container participates in the application-owned auth layout; other admin, auth, and setup shells remain `App*` compositions | No shared shell API is justified by the Vue composition                                                           |
+| Annabel CMS Razor page    | Container owns the `main` width and Stack owns vertical flow around the article card                                        | Real server-rendered demand verifies the primitive contract without creating Razor shell demand                   |
+
+The playground's remaining `vueforge-layouts` shell and `vueforge-core` bootstrap dependencies are
+tracked migration debt. Recipes and ownership are handled by `CMUI-187` and `CMUI-188`; dependency
+removal remains `CMUI-189` and is not a layout-primitive gap.
 
 ## Reproduction
 

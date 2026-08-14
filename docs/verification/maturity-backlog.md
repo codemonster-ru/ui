@@ -19,7 +19,7 @@ appear exactly once and to retain the same roadmap assignment.
 |     3 | `CMUI-178` | P1       | Phase 17          | Display and native-form cohort maturity delivered                |         0 |
 |     4 | `CMUI-179` | P1       | Phase 17          | Navigation and overlay composition maturity delivered            |         0 |
 |     5 | `CMUI-180` | P1       | Phase 17          | Advanced input and server-rendered fallback maturity delivered   |         0 |
-|     6 | `CMUI-182` | P1       | Phase 17          | Layout primitive and shell-boundary verification                 |         0 |
+|     6 | `CMUI-182` | P1       | Phase 17          | Layout primitives and shell ownership verified                   |         0 |
 |     7 | `CMUI-183` | P1       | Phase 17          | Contract, migration, documentation, and example synchronization  |         0 |
 |     8 | `CMUI-184` | P1       | Phase 18          | Small portable candidate decisions                               |         5 |
 |     9 | `CMUI-185` | P2       | Phase 18          | Behavior-rich candidate decisions                                |         5 |

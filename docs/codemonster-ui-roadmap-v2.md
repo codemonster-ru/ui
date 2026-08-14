@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 17 — Direct replacement maturity
 - Current milestone: M10 — Mature direct replacements
-- Next item: `CMUI-182` Verify layout primitives and shell-composition boundaries.
+- Next item: `CMUI-183` Synchronize direct-replacement migration evidence.
 
 ## Milestones
 
@@ -110,7 +110,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
       submission and server-rendered fallback behavior.
 - [x] `CMUI-181` Close Table and DataTable capability gaps, including the approved sorting,
       pagination, selection, empty, error, and column-management use cases.
-- [ ] `CMUI-182` Close layout primitive gaps and verify the documented shell-composition boundary in
+- [x] `CMUI-182` Close layout primitive gaps and verify the documented shell-composition boundary in
       both representative consumers.
 - [ ] `CMUI-183` Update contracts, migration transforms, documentation, and playground examples as
       each direct-replacement cohort matures.
@@ -159,6 +159,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-14 | Use adapter-native trusted slots for portable authored content.                                   | Input adornments and Accordion item content need rich composition in Vue and Razor without coupling the contract to the VueForge icon registry or accepting untrusted strings as markup.                                                                | `CMUI-177`            |
 | 2026-08-15 | Keep navigation and overlay semantics component-owned while allowing trusted content inside them. | Owned buttons, menu items, tab panels, headings, and deterministic ARIA relationships preserve Vue/Razor parity; arbitrary trigger roots and external panels would move accessibility ownership back to consumers.                                      | `CMUI-179`            |
 | 2026-08-15 | Keep advanced inputs native-first and bound rich content to component-owned structures.           | Native Select and DatePicker controls preserve submission and validation while localized clear actions enhance them; typed CommandPalette states and trusted inner regions add async composition without exposing arbitrary result or dialog ownership. | `CMUI-180`            |
+| 2026-08-15 | Verify primitives independently from application-shell migration.                                 | All five primitives have Vue composition evidence and Container/Stack have real Razor demand; routing, landmarks, responsive state, theme bootstrap, and legacy shell removal remain application work under CMUI-187–189.                               | `CMUI-182`            |
 
 ## Scope-change log
 
