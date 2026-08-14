@@ -29,9 +29,13 @@ test('separates foundation-only and complete stylesheet compositions', async () 
   assert.match(stylesCss, /@import '\.\/components\/container\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/divider\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/field\.css';/);
+  assert.match(stylesCss, /@import '\.\/components\/fieldset\.css';/);
+  assert.match(stylesCss, /@import '\.\/components\/icon-button\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/input\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/grid\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/inline\.css';/);
+  assert.match(stylesCss, /@import '\.\/components\/progress-bar\.css';/);
+  assert.match(stylesCss, /@import '\.\/components\/progress-spinner\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/section\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/skeleton\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/stack\.css';/);
