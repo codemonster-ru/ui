@@ -1,4 +1,5 @@
 .cm-dialog,
+.cm-dialog--md,
 .cm-dialog--open {
   inline-size: min(calc(100% - 2 * var(--cm-space-4)), calc(var(--cm-space-16) * 8));
   max-block-size: calc(100% - 2 * var(--cm-space-8));
@@ -29,7 +30,7 @@
 }
 
 .cm-dialog__header {
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+  justify-content: space-between;
 }
 
 .cm-dialog__title {
@@ -39,6 +40,12 @@
   font-size: var(--cm-font-size-lg);
   font-weight: var(--cm-font-weight-semibold);
   line-height: var(--cm-line-height-tight);
+}
+
+.cm-dialog__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-2);
 }
 
 .cm-dialog__close {
@@ -83,7 +90,22 @@
 
 .cm-dialog__footer {
   justify-content: flex-end;
+}
+
+.cm-dialog--dividers .cm-dialog__header {
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-dialog--dividers .cm-dialog__footer {
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-dialog--sm {
+  inline-size: min(calc(100% - 2 * var(--cm-space-4)), calc(var(--cm-space-16) * 6));
+}
+
+.cm-dialog--lg {
+  inline-size: min(calc(100% - 2 * var(--cm-space-4)), calc(var(--cm-space-16) * 10));
 }
 
 @media (forced-colors: active) {

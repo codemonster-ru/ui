@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "dialog-composed",
+  "description": "Large divided dialog with trusted header, description, and actions.",
+  "props": { "id": "publish", "title": "Publish", "size": "lg", "dividers": true },
+  "slots": {
+    "header": "Publish <strong>release</strong>?",
+    "description": "Review the <strong>public changes</strong>.",
+    "actions": "<button type=\"button\">Preview</button>",
+    "default": "Release details.",
+    "footer": "Cancel Publish"
+  }
+}

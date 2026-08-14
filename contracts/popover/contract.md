@@ -9,7 +9,9 @@ Razor tag: `cm-popover`
 ## Purpose and structure
 
 Popover is a non-modal button disclosure for supplemental interactive content. `id` is a stable
-prefix, `label` is escaped trigger text, and the default slot is the panel. The native trigger owns
+prefix, `label` is escaped trigger text, the trusted `trigger` slot can replace its visible content,
+and the default slot is the panel. The component always owns the native button semantics; arbitrary
+interactive trigger roots are intentionally not accepted. The native trigger owns
 `aria-expanded` and `aria-controls`; the panel has `role="dialog"`, is labelled by the trigger, and
 remains in the DOM. `placement` is `top`, `bottom-start`, or `bottom-end` and controls only a finite
 CSS modifier. Popover does not calculate coordinates or teleport content.

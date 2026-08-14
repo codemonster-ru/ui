@@ -42,6 +42,8 @@ final class CmTooltip implements ComponentInterface
             'id' => $id,
             'label' => $label,
             'content' => $content,
+            'trigger' => $context->hasSlot('trigger') ? $context->slot('trigger') : $label,
+            'contentBody' => $context->hasSlot('content') ? $context->slot('content') : $content,
             'visible' => $visible,
             'classes' => $classes,
             'attributes' => $attributes->without(['class', 'data-cm-controller'])->render(),

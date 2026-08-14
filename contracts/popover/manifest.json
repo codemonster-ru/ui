@@ -16,7 +16,7 @@
       "values": ["top", "bottom-start", "bottom-end"]
     }
   },
-  "slots": { "default": { "required": false } },
+  "slots": { "default": { "required": false }, "trigger": { "required": false } },
   "events": {
     "openChange": { "description": "Reports the next disclosure state.", "payloadContract": "boolean" }
   },

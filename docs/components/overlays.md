@@ -10,14 +10,19 @@ Individual styles are also available from the `dialog.css`, `drawer.css`, `popov
 
 ## APIs
 
-- `Dialog` requires a stable `id` and non-empty `title`. It accepts `description`, `open`, and
-  `closeLabel`; the default and `footer` slots compose its body and actions.
-- `Drawer` shares the Dialog API and adds logical `side` (`start` or `end`, default `end`).
+- `Dialog` requires a stable `id` and non-empty fallback `title`. It accepts `description`, `open`,
+  `closeLabel`, `size` (`sm`, `md`, or `lg`), and `dividers`; the default, `header`, `description`,
+  `actions`, and `footer` slots compose its trusted regions.
+- `Drawer` shares the Dialog composition API and adds logical `side` (`start` or `end`, default
+  `end`), `size` (`sm`, `md`, `lg`, or `full`), `rounded`, and `dividers`. It also supports
+  `dismissible=false` while application work must lock user dismissal.
 - `Popover` requires `id` and trigger `label`. It accepts `open`, `disabled`, and `placement`
-  (`top`, `bottom-start`, or `bottom-end`); the default slot is its non-modal panel.
-- `Tooltip` requires `id`, trigger `label`, and plain-text `content`. `placement` is `top`, `bottom`,
-  `start`, or `end`; `delay` is `none`, `short`, or `long`. `defaultVisible` is only an initial
-  rendering state, not a controlled API.
+  (`top`, `bottom-start`, or `bottom-end`); the trusted `trigger` slot stays inside the
+  component-owned labelled button and the default slot is its non-modal panel.
+- `Tooltip` requires `id`, trigger `label`, and fallback `content`. Trusted `trigger` and `content`
+  slots can replace their visible content, but tooltip content must stay non-interactive.
+  `placement` is `top`, `bottom`, `start`, or `end`; `delay` is `none`, `short`, or `long`.
+  `defaultVisible` is only an initial rendering state, not a controlled API.
 
 ## Vue
 
@@ -32,7 +37,9 @@ const helpOpen = ref(false);
 
 <template>
   <button type="button" @click="confirmOpen = true">Delete project</button>
-  <CmDialog id="delete-project" v-model:open="confirmOpen" title="Delete project?">
+  <CmDialog id="delete-project" v-model:open="confirmOpen" title="Delete project?" size="lg" dividers>
+    <template #header>Delete <strong>project</strong>?</template>
+    <template #actions><button type="button">Preview impact</button></template>
     This action cannot be undone.
     <template #footer>
       <button type="button" @click="confirmOpen = false">Cancel</button>
@@ -41,9 +48,12 @@ const helpOpen = ref(false);
   </CmDialog>
 
   <CmPopover id="profile-help" v-model:open="helpOpen" label="Profile help">
+    <template #trigger><span aria-hidden="true">?</span></template>
     Profile details are visible to your team.
   </CmPopover>
-  <CmTooltip id="save-help" label="Save" content="Save changes" />
+  <CmTooltip id="save-help" label="Save" content="Save changes">
+    <template #content>Save <strong>all changes</strong></template>
+  </CmTooltip>
 </template>
 ```
 
@@ -56,13 +66,15 @@ as application state and do not initialize the shared runtime over these compone
 
 ```razor
 <button id="open-confirm" type="button">Delete project</button>
-<cm-dialog id="delete-project" title="Delete project?">
+<cm-dialog id="delete-project" title="Delete project?" size="lg" :dividers="true">
+    <razor-slot name="header">Delete <strong>project</strong>?</razor-slot>
+    <razor-slot name="actions"><button type="button">Preview impact</button></razor-slot>
     This action cannot be undone.
     <razor-slot name="footer"><button type="button">Delete</button></razor-slot>
 </cm-dialog>
 <cm-drawer id="filters" title="Filters" side="end">Filter controls.</cm-drawer>
-<cm-popover id="profile-help" label="Profile help">Profile details are visible to your team.</cm-popover>
-<cm-tooltip id="save-help" label="Save" content="Save changes" />
+<cm-popover id="profile-help" label="Profile help"><razor-slot name="trigger"><span aria-hidden="true">?</span></razor-slot>Profile details are visible to your team.</cm-popover>
+<cm-tooltip id="save-help" label="Save" content="Save changes"><razor-slot name="content">Save <strong>all changes</strong></razor-slot></cm-tooltip>
 ```
 
 Register all four controllers once in a frontend entry:
@@ -104,11 +116,16 @@ it must survive navigation; runtime state is intentionally page-local.
 ## Accessibility and ownership
 
 - Dialog and Drawer use native `<dialog>`, move focus inside when opened, contain Tab focus, close
-  on Escape, and restore the invoking focus when known. Backdrop clicks do not dismiss them.
+  on Escape, and restore the invoking focus when known. Backdrop clicks never dismiss them; this
+  stable policy replaces VueForge's backdrop toggle. Drawer offsets and arbitrary body padding are
+  application styling concerns through the root class/style hooks rather than component props.
 - Keep modal titles specific and visible. Use `description` for concise supporting text.
 - Popover is non-modal: it does not trap focus, teleport content, or calculate floating
   coordinates. Escape and outside pointer activation dismiss it.
-- Tooltip content must remain brief plain text and cannot contain controls. Never place required
+- Rich Tooltip content must remain brief and cannot contain controls. Never place required
   instructions exclusively in a Tooltip.
+- Popover and Tooltip retain their native button roots even with a `trigger` slot. Do not place a
+  link, button, or other interactive root inside that slot; arbitrary `asChild` trigger ownership is
+  deliberately outside the portable contract.
 - Closed server markup remains in the DOM with native `open` or `hidden` state, providing safe SSR
   before JavaScript enhancement.

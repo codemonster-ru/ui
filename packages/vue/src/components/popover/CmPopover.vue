@@ -79,12 +79,13 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
       ref="trigger"
       class="cm-popover__trigger"
       type="button"
+      :aria-label="props.label"
       :aria-expanded="localOpen"
       :aria-controls="`${props.id}-panel`"
       :disabled="props.disabled || undefined"
       @click="setOpen(!localOpen)"
     >
-      {{ props.label }}
+      <slot name="trigger" :open="localOpen" :toggle="() => setOpen(!localOpen)">{{ props.label }}</slot>
     </button>
     <div
       :id="`${props.id}-panel`"

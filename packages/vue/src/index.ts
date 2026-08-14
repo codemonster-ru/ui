@@ -34,11 +34,11 @@ export type { CmDatePickerProps, CmDatePickerSize } from './components/date-pick
 export { default as CmDivider } from './components/divider/CmDivider.vue';
 export type { CmDividerOrientation, CmDividerProps } from './components/divider/divider.types';
 export { default as CmDialog } from './components/dialog/CmDialog.vue';
-export type { CmDialogProps } from './components/dialog/dialog.types';
+export type { CmDialogProps, CmDialogSize } from './components/dialog/dialog.types';
 export { default as CmDropdown } from './components/dropdown/CmDropdown.vue';
 export type { CmDropdownPlacement, CmDropdownProps } from './components/dropdown/dropdown.types';
 export { default as CmDrawer } from './components/drawer/CmDrawer.vue';
-export type { CmDrawerProps, CmDrawerSide } from './components/drawer/drawer.types';
+export type { CmDrawerProps, CmDrawerSide, CmDrawerSize } from './components/drawer/drawer.types';
 export { default as CmField } from './components/field/CmField.vue';
 export type { CmFieldDefaultSlotProps, CmFieldProps } from './components/field/field.types';
 export { default as CmGrid } from './components/grid/CmGrid.vue';

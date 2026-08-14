@@ -234,7 +234,7 @@
     "css:components/dialog.css": {
       "path": "css/css/components/dialog.css",
       "mediaType": "text/css",
-      "sha256": "26acc318e4b1f90914e39dec0b67d164c310a2ca7950c81754650b1d154ead1b",
+      "sha256": "379217b27f87e9652271cbf762097ae337e085d0d4a7892b75672594fc053173",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
@@ -254,7 +254,7 @@
     "css:components/drawer.css": {
       "path": "css/css/components/drawer.css",
       "mediaType": "text/css",
-      "sha256": "ede212922d14e6e6d6517e504a348897bc7408a4dd6ca142dd910c1a6b3f1e5e",
+      "sha256": "f9fdc3b9279bae23a5d2d72057e27ded7db7a26a97d25cc2918dfb518aa3d501",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",

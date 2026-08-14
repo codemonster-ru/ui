@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "popover-composed",
+  "description": "Popover with trusted trigger content inside the owned button.",
+  "props": { "id": "profile", "label": "Open profile details" },
+  "slots": {
+    "trigger": "<span aria-hidden=\"true\">●</span><span>Profile</span>",
+    "default": "Profile details."
+  }
+}

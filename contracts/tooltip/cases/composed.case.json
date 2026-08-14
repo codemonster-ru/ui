@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "tooltip-composed",
+  "description": "Tooltip with trusted trigger and non-interactive rich content.",
+  "props": { "id": "archive-help", "label": "Archive", "content": "Archive project", "delay": "none" },
+  "slots": {
+    "trigger": "<span aria-hidden=\"true\">×</span>",
+    "content": "Archive <strong>this project</strong>"
+  }
+}

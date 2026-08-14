@@ -1,4 +1,5 @@
 .cm-drawer,
+.cm-drawer--md,
 .cm-drawer--open {
   position: fixed;
   inset-block: 0;
@@ -41,7 +42,7 @@
 }
 
 .cm-drawer__header {
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+  justify-content: space-between;
 }
 
 .cm-drawer__title {
@@ -51,6 +52,12 @@
   font-size: var(--cm-font-size-lg);
   font-weight: var(--cm-font-weight-semibold);
   line-height: var(--cm-line-height-tight);
+}
+
+.cm-drawer__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-2);
 }
 
 .cm-drawer__close {
@@ -93,7 +100,37 @@
 }
 
 .cm-drawer__footer {
+  justify-content: flex-end;
+}
+
+.cm-drawer--dividers .cm-drawer__header {
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-drawer--dividers .cm-drawer__footer {
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-drawer--sm {
+  inline-size: min(90%, calc(var(--cm-space-16) * 5));
+}
+
+.cm-drawer--lg {
+  inline-size: min(90%, calc(var(--cm-space-16) * 8));
+}
+
+.cm-drawer--full {
+  inline-size: 100%;
+}
+
+.cm-drawer--rounded.cm-drawer--start {
+  border-start-end-radius: var(--cm-radius-overlay);
+  border-end-end-radius: var(--cm-radius-overlay);
+}
+
+.cm-drawer--rounded.cm-drawer--end {
+  border-start-start-radius: var(--cm-radius-overlay);
+  border-end-start-radius: var(--cm-radius-overlay);
 }
 
 @media (forced-colors: active) {
