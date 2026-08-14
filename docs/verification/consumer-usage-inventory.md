@@ -30,18 +30,18 @@ The playground declares both `@codemonster-ru/vueforge-core` and
 `@codemonster-ru/vueforge-layouts`. The audited source evidence is finite and concentrated in seven
 files; resolved rows remain recorded alongside the remaining migration work.
 
-| Legacy API                   | Source evidence                                                              | Required outcome                                                                                                                                      |
-| ---------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `VfAppShell`                 | `src/App.vue`                                                                | Replace with semantic application landmarks and CodeMonster UI layout primitives; keep shell state application-owned under `CMUI-188`.                |
-| `VfMenuBar`, `VfNavMenuItem` | `src/App.vue`                                                                | Re-evaluate the portable menubar behavior only under `CMUI-185`; the showcase can use simpler application navigation if the behavior is not approved. |
-| `VfThemeSwitch`              | `src/App.vue`                                                                | Publish and consume the application-owned theme preference recipe tracked by `CMUI-187`.                                                              |
-| `VfThemeProvider`            | `src/App.vue`, `src/PlaygroundShowcase.vue`                                  | Move theme attribute ownership to application bootstrap as part of the same `CMUI-187` recipe.                                                        |
-| `VfSkeletonGate`             | `src/PlaygroundShowcase.vue`, `src/sections/codeblock/CodeBlockShowcase.vue` | Compose `CmSkeleton` and busy content using the recipe tracked by `CMUI-187`; measured-height preservation remains application-owned.                 |
-| `VfTag`                      | Removed from `src/sections/colors/ColorSystemShowcase.vue` in `CMUI-184`     | Superseded by `CmBadge`; the showcase-only outlined treatment did not justify a distinct cross-platform component.                                    |
-| `vfSemanticColorTokenNames`  | `src/sections/colors/ColorSystemShowcase.vue`                                | Replace with `cmSemanticColorTokenNames` from `ui-tokens`.                                                                                            |
-| `useTheme`                   | `src/sections/codeblock/CodeBlockShowcase.vue`                               | Read the application-owned resolved theme through the `CMUI-187` recipe.                                                                              |
-| `VueForgeLayouts` plugin     | `src/main.ts`                                                                | Remove after theme bootstrap no longer comes from the layouts package.                                                                                |
-| `vueforge-core/styles.css`   | `src/main.ts` and two Vite demo fixtures                                     | Remove after legacy selectors and variables are migrated to the already imported CodeMonster UI CSS.                                                  |
+| Legacy API                   | Source evidence                                                              | Required outcome                                                                                                                       |
+| ---------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `VfAppShell`                 | `src/App.vue`                                                                | Replace with semantic application landmarks and CodeMonster UI layout primitives; keep shell state application-owned under `CMUI-188`. |
+| `VfMenuBar`, `VfNavMenuItem` | `src/App.vue`                                                                | Replace with application-owned flat navigation; native links or buttons and `CmInline` are sufficient without ARIA menubar behavior.   |
+| `VfThemeSwitch`              | `src/App.vue`                                                                | Publish and consume the application-owned theme preference recipe tracked by `CMUI-187`.                                               |
+| `VfThemeProvider`            | `src/App.vue`, `src/PlaygroundShowcase.vue`                                  | Move theme attribute ownership to application bootstrap as part of the same `CMUI-187` recipe.                                         |
+| `VfSkeletonGate`             | `src/PlaygroundShowcase.vue`, `src/sections/codeblock/CodeBlockShowcase.vue` | Compose `CmSkeleton` and busy content using the recipe tracked by `CMUI-187`; measured-height preservation remains application-owned.  |
+| `VfTag`                      | Removed from `src/sections/colors/ColorSystemShowcase.vue` in `CMUI-184`     | Superseded by `CmBadge`; the showcase-only outlined treatment did not justify a distinct cross-platform component.                     |
+| `vfSemanticColorTokenNames`  | `src/sections/colors/ColorSystemShowcase.vue`                                | Replace with `cmSemanticColorTokenNames` from `ui-tokens`.                                                                             |
+| `useTheme`                   | `src/sections/codeblock/CodeBlockShowcase.vue`                               | Read the application-owned resolved theme through the `CMUI-187` recipe.                                                               |
+| `VueForgeLayouts` plugin     | `src/main.ts`                                                                | Remove after theme bootstrap no longer comes from the layouts package.                                                                 |
+| `vueforge-core/styles.css`   | `src/main.ts` and two Vite demo fixtures                                     | Remove after legacy selectors and variables are migrated to the already imported CodeMonster UI CSS.                                   |
 
 The remaining styling dependency is broader than the import list: nine source files contain 107
 references to `--vf-*` variables or legacy `vf-*` selectors. This is migration work, not evidence
@@ -75,7 +75,7 @@ shared components. In particular:
 - auth, setup, admin shell, form-layout, group-box, panel, page-header, and theme compositions are
   real recipe demand for `CMUI-187` and application-ownership evidence for `CMUI-188`;
 - menu and tab wrapper demand informed the owned-semantic content contracts completed in `CMUI-179`;
-  portable navigation-tree behavior remains for evaluation in `CMUI-185` and still lacks matching Razor demand.
+  routing, authorization, active location, and navigation-tree disclosure remain application-owned.
 
 ## Real Annabel Razor demand
 
@@ -98,8 +98,32 @@ component can claim real Razor demand from this baseline.
 | Mature table pagination and column controls    | Annabel Vue admin compositions                        | Delivered in `CMUI-181`; fetching, rich rendering, and advanced grid policy remain application-owned. |
 | Publish application composition recipes        | Both Vue consumers own shell/theme/layout composition | Prioritize `CMUI-187` and retain the ownership boundary in `CMUI-188`.                                |
 | Preserve Container, Stack, and Card parity     | Real Annabel Razor page                               | Treat regressions as blockers; no expansion is required.                                              |
-| Add Menubar or another behavior-rich component | Playground-only Vue usage, no current Razor usage     | Keep behind the two-platform demand rule in `CMUI-185`.                                               |
+| Add Menubar or another behavior-rich component | Playground-only Vue usage, no current Razor usage     | No shared component; migrate to native flat navigation or an application-owned navigation tree.       |
 | Add a distinct Tag component                   | Color showcase only                                   | Superseded by `CmBadge`; migrate `warn` to `warning` and keep no separate Tag contract.               |
+
+## CMUI-185 manual migration outcomes
+
+The behavior-rich candidate review found no matching Razor demand and no portable component whose
+state could be separated from the owning application. The five frozen APIs therefore retain
+manual migration with these final boundaries:
+
+- `VfDataTableColumnChooser` becomes an application-owned Checkbox, Popover, or Dialog composition.
+  Keep required-column policy and preference persistence in the application, then pass the ordered
+  result to `CmDataTable.visibleColumnKeys`.
+- `VfMenuBar` becomes ordinary flat navigation built from native links or buttons and `CmInline`.
+  The playground owns its current section and history updates; ARIA menubar behavior is not
+  appropriate for this site-navigation use case.
+- `VfNavMenu` becomes an application-owned tree of native `nav`, nested lists, links, and disclosure
+  buttons. Routing, authorization, active location, compact/collapsed presentation, and responsive
+  state do not move into `CmMenu`, which remains an application action menu.
+- `VfStepper` becomes a native ordered-list recipe. Use `aria-current="step"` for the current item
+  and add links or buttons only when the workflow permits navigation; use a `nav` landmark only for
+  that navigable form. Completion, branching, validation, routing, and focus after navigation
+  remain application-owned.
+- `VfTableOfContents` becomes native labelled navigation with nested lists and links, optionally
+  styled with `CmLink` and layout primitives. The application supplies `aria-current="location"`.
+  Native fragment navigation is the fallback; heading discovery, active-section observation,
+  history, smooth scrolling, and sticky offsets remain document-application policy.
 
 ## CMUI-182 layout verification
 
