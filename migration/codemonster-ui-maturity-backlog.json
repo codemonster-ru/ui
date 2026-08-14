@@ -40,18 +40,9 @@
       "roadmapItem": "CMUI-179",
       "destination": "phase-17",
       "priority": "P1",
-      "summary": "Mature navigation and overlay composition contracts",
-      "reason": "Application wrappers prove Vue demand; portable rich content and behavior still require Vue and Razor parity.",
-      "gaps": [
-        "VfDialog:material-portable-gap",
-        "VfDrawer:material-portable-gap",
-        "VfDropdown:material-portable-gap",
-        "VfMenu:material-portable-gap",
-        "VfMenuItem:remaining-migration-outcome",
-        "VfPopover:material-portable-gap",
-        "VfTabs:material-portable-gap",
-        "VfTooltip:material-portable-gap"
-      ]
+      "summary": "Navigation and overlay composition maturity delivered",
+      "reason": "Owned semantic triggers, panels, modal regions, rich collection content, and explicit superseded boundaries now have Vue and Razor evidence.",
+      "gaps": []
     },
     {
       "id": "CMUI-B005",

@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 17 — Direct replacement maturity
 - Current milestone: M10 — Mature direct replacements
-- Next item: `CMUI-179` Mature the navigation and overlay direct-replacement cohort.
+- Next item: `CMUI-180` Mature the advanced-input direct-replacement cohort.
 
 ## Milestones
 
@@ -104,7 +104,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
 
 - [x] `CMUI-177` Close Button, Card, Field, Input, and Accordion capability gaps.
 - [x] `CMUI-178` Close display and native-form cohort capability gaps.
-- [ ] `CMUI-179` Close navigation and overlay cohort capability gaps, including keyboard, focus,
+- [x] `CMUI-179` Close navigation and overlay cohort capability gaps, including keyboard, focus,
   dismissal, controlled-state, and progressive-enhancement behavior.
 - [ ] `CMUI-180` Close Select, DatePicker, and CommandPalette capability gaps, including native
   submission and server-rendered fallback behavior.
@@ -157,6 +157,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-14 | Make unresolved migration gaps visible in the playground. | The 1.0 example migration removed much of the old showcase and made omitted functionality look deleted or completed. | `CMUI-174` |
 | 2026-08-14 | Keep DataTable scalar and assign rich rendering and advanced-grid policy to applications. | Vue callbacks and trusted rich content do not form a safe Razor data contract; representative demand is satisfied by portable pagination, selection, ordered visibility, and localization plus explicit CmTable composition. | `CMUI-181` |
 | 2026-08-14 | Use adapter-native trusted slots for portable authored content. | Input adornments and Accordion item content need rich composition in Vue and Razor without coupling the contract to the VueForge icon registry or accepting untrusted strings as markup. | `CMUI-177` |
+| 2026-08-15 | Keep navigation and overlay semantics component-owned while allowing trusted content inside them. | Owned buttons, menu items, tab panels, headings, and deterministic ARIA relationships preserve Vue/Razor parity; arbitrary trigger roots and external panels would move accessibility ownership back to consumers. | `CMUI-179` |
 
 ## Scope-change log
 
