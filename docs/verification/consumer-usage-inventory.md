@@ -27,8 +27,8 @@ fixtures are excluded from usage counts.
 ## Repository Vue migration usage
 
 The playground declares both `@codemonster-ru/vueforge-core` and
-`@codemonster-ru/vueforge-layouts`. The remaining source imports are finite and concentrated in
-seven files.
+`@codemonster-ru/vueforge-layouts`. The audited source evidence is finite and concentrated in seven
+files; resolved rows remain recorded alongside the remaining migration work.
 
 | Legacy API                   | Source evidence                                                              | Required outcome                                                                                                                                      |
 | ---------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -37,7 +37,7 @@ seven files.
 | `VfThemeSwitch`              | `src/App.vue`                                                                | Publish and consume the application-owned theme preference recipe tracked by `CMUI-187`.                                                              |
 | `VfThemeProvider`            | `src/App.vue`, `src/PlaygroundShowcase.vue`                                  | Move theme attribute ownership to application bootstrap as part of the same `CMUI-187` recipe.                                                        |
 | `VfSkeletonGate`             | `src/PlaygroundShowcase.vue`, `src/sections/codeblock/CodeBlockShowcase.vue` | Compose `CmSkeleton` and busy content using the recipe tracked by `CMUI-187`; measured-height preservation remains application-owned.                 |
-| `VfTag`                      | `src/sections/colors/ColorSystemShowcase.vue`                                | Use `CmBadge` unless `CMUI-184` approves a distinct outlined Tag contract.                                                                            |
+| `VfTag`                      | Removed from `src/sections/colors/ColorSystemShowcase.vue` in `CMUI-184`     | Superseded by `CmBadge`; the showcase-only outlined treatment did not justify a distinct cross-platform component.                                    |
 | `vfSemanticColorTokenNames`  | `src/sections/colors/ColorSystemShowcase.vue`                                | Replace with `cmSemanticColorTokenNames` from `ui-tokens`.                                                                                            |
 | `useTheme`                   | `src/sections/codeblock/CodeBlockShowcase.vue`                               | Read the application-owned resolved theme through the `CMUI-187` recipe.                                                                              |
 | `VueForgeLayouts` plugin     | `src/main.ts`                                                                | Remove after theme bootstrap no longer comes from the layouts package.                                                                                |
@@ -99,7 +99,7 @@ component can claim real Razor demand from this baseline.
 | Publish application composition recipes        | Both Vue consumers own shell/theme/layout composition | Prioritize `CMUI-187` and retain the ownership boundary in `CMUI-188`.                                |
 | Preserve Container, Stack, and Card parity     | Real Annabel Razor page                               | Treat regressions as blockers; no expansion is required.                                              |
 | Add Menubar or another behavior-rich component | Playground-only Vue usage, no current Razor usage     | Keep behind the two-platform demand rule in `CMUI-185`.                                               |
-| Add a distinct Tag component                   | Color showcase only                                   | Prefer migration to Badge unless `CMUI-184` finds product demand beyond the showcase.                 |
+| Add a distinct Tag component                   | Color showcase only                                   | Superseded by `CmBadge`; migrate `warn` to `warning` and keep no separate Tag contract.               |
 
 ## CMUI-182 layout verification
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VfTag, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-core';
+import { vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-core';
 import { CmAlert, CmBadge, CmButton, CmCheckbox, CmInput } from '@codemonster-ru/ui-vue';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 import { CmSection, CmStack } from '@codemonster-ru/ui-vue';
@@ -26,11 +26,11 @@ const primitiveFamilies: PrimitiveFamily[] = [
 ];
 
 const statusTones = [
-  { tone: 'success', legacyTone: 'success', label: 'success' },
-  { tone: 'info', legacyTone: 'info', label: 'info' },
-  { tone: 'warning', legacyTone: 'warn', label: 'warning' },
-  { tone: 'danger', legacyTone: 'danger', label: 'danger' },
-  { tone: 'help', legacyTone: 'help', label: 'help' },
+  { tone: 'success', label: 'success' },
+  { tone: 'info', label: 'info' },
+  { tone: 'warning', label: 'warning' },
+  { tone: 'danger', label: 'danger' },
+  { tone: 'help', label: 'help' },
 ] as const;
 const actionVariants = ['primary', 'secondary', 'danger', 'ghost'] as const;
 
@@ -171,9 +171,6 @@ const codeSample = [
                 <CmBadge v-for="status in statusTones" :key="`badge-${status.tone}`" :tone="status.tone">
                   {{ status.label }}
                 </CmBadge>
-                <VfTag v-for="status in statusTones" :key="`tag-${status.tone}`" :tone="status.legacyTone">
-                  {{ status.label }}
-                </VfTag>
               </div>
             </div>
 
