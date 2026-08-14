@@ -7,13 +7,13 @@
   "engines": {
     "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
   },
-  "homepage": "https://github.com/codemonster-ru/codemonster-ui/tree/main/packages/css#readme",
+  "homepage": "https://github.com/codemonster-ru/ui/tree/main/packages/css#readme",
   "bugs": {
-    "url": "https://github.com/codemonster-ru/codemonster-ui/issues"
+    "url": "https://github.com/codemonster-ru/ui/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codemonster-ru/codemonster-ui.git",
+    "url": "git+https://github.com/codemonster-ru/ui.git",
     "directory": "packages/css"
   },
   "publishConfig": {

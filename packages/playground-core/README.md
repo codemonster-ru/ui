@@ -70,13 +70,13 @@ runtime. The Vue Playground UI activates the runtime boundary only when a sandbo
 ## Package-local documentation
 
 See
-[src/index.ts](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground-core/src/index.ts),
-[src/types.ts](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground-core/src/types.ts),
+[src/index.ts](https://github.com/codemonster-ru/ui/blob/main/packages/playground-core/src/index.ts),
+[src/types.ts](https://github.com/codemonster-ru/ui/blob/main/packages/playground-core/src/types.ts),
 and
-[CHANGELOG.md](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground-core/CHANGELOG.md).
+[CHANGELOG.md](https://github.com/codemonster-ru/ui/blob/main/packages/playground-core/CHANGELOG.md).
 The higher-level Vue integration is documented in
-[`@codemonster-ru/vueforge-playground`](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground/README.md).
+[`@codemonster-ru/vueforge-playground`](https://github.com/codemonster-ru/ui/blob/main/packages/playground/README.md).
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground-core/LICENSE)
+[MIT](https://github.com/codemonster-ru/ui/blob/main/packages/playground-core/LICENSE)

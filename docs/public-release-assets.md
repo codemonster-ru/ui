@@ -85,7 +85,7 @@ checks have passed:
 > The August 2026 VueForge release is available for Vue 3.5 applications. It adds reusable admin
 > workflow components, shared responsive-query builds, a complete Duotone icon family, and
 > worker-based TypeScript compilation that stays out of JavaScript-only playground sessions. See
-> [the release notes](https://github.com/codemonster-ru/codemonster-ui/blob/main/docs/release-notes.md)
+> [the release notes](https://github.com/codemonster-ru/ui/blob/main/docs/release-notes.md)
 > for package versions and upgrade details.
 
 ## Change list

@@ -18,12 +18,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codemonster-ru/codemonster-ui.git",
+    "url": "git+https://github.com/codemonster-ru/ui.git",
     "directory": "packages/codeblock"
   },
-  "homepage": "https://github.com/codemonster-ru/codemonster-ui/tree/main/packages/codeblock#readme",
+  "homepage": "https://github.com/codemonster-ru/ui/tree/main/packages/codeblock#readme",
   "bugs": {
-    "url": "https://github.com/codemonster-ru/codemonster-ui/issues"
+    "url": "https://github.com/codemonster-ru/ui/issues"
   },
   "type": "module",
   "sideEffects": [
