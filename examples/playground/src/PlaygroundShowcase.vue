@@ -1,7 +1,7 @@
 <template>
   <main class="demo-page">
-      <div class="demo-container">
-        <CmStack>
+    <div class="demo-container">
+      <CmStack>
         <section class="demo-block">
           <div class="demo-example">
             <p class="demo-label">Three cooperating packages</p>
@@ -123,8 +123,8 @@
             <ViteLikeDemoPreview demo-id="custom-resolver-smoke" :source="customResolverSmokeSource" />
           </CmSection>
         </section>
-        </CmStack>
-      </div>
+      </CmStack>
+    </div>
   </main>
 </template>
 
@@ -144,12 +144,12 @@ const componentModeDemo = defineComponent({
         h('h3', { style: 'margin:0;' }, 'Vue Component Preview'),
         h(
           'p',
-          { style: 'margin:0;color:var(--vf-color-text-muted);' },
-          'This preview is rendered directly as a Vue component without iframe sandbox.'
+          { style: 'margin:0;color:var(--cm-color-text-muted);' },
+          'This preview is rendered directly as a Vue component without iframe sandbox.',
         ),
-        h('button', { class: 'vf-button vf-button--secondary', type: 'button' }, 'Action')
+        h('button', { class: 'cm-button cm-button--secondary cm-button--md', type: 'button' }, 'Action'),
       ]);
-  }
+  },
 });
 
 const componentModeFiles = {
@@ -164,9 +164,9 @@ import DemoCard from './DemoCard.vue';
   <div class="component-mode-demo">
     <h3>Vue Component Preview</h3>
     <p>This preview is rendered directly as a Vue component without iframe sandbox.</p>
-    <button class="vf-button vf-button--secondary" type="button">Action</button>
+    <button class="cm-button cm-button--secondary cm-button--md" type="button">Action</button>
   </div>
-</template>`
+</template>`,
 };
 
 const singleFileExample = {
@@ -202,7 +202,7 @@ const singleFileExample = {
       document.body.appendChild(root);
     </${'script'}>
   </body>
-</html>`
+</html>`,
 };
 
 const multiFileExample = {
@@ -235,7 +235,7 @@ document.getElementById('app')?.append(title, line);`,
   body {
           color-scheme: dark;
   }
-}`
+}`,
 };
 
 const PLAYGROUND_SKELETON_DELAY_MS = 2500;
@@ -294,7 +294,7 @@ function onError(error: {
     message: error.message,
     source: error.source,
     code: error.code,
-    details: error.details
+    details: error.details,
   });
 }
 </script>
@@ -312,10 +312,10 @@ function onError(error: {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--vf-color-border-default);
-  border-radius: var(--vf-radius-control);
-  background: var(--vf-color-background-surface);
-  color: var(--vf-color-text-primary);
+  border: 1px solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
   padding: 0.35rem 0.65rem;
   font: inherit;
   cursor: pointer;
