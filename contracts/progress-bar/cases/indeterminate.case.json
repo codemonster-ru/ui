@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "progress-bar-indeterminate",
+  "description": "A labelled indeterminate warning progress bar without numeric ARIA values.",
+  "props": { "label": "Synchronizing", "indeterminate": true, "tone": "warning" },
+  "slots": {}
+}

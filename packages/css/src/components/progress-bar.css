@@ -1,0 +1,97 @@
+.cm-progress-bar {
+  --cm-progress-bar-value-color: var(--cm-color-interactive-primary-background);
+  --cm-progress-bar-label-color: var(--cm-color-interactive-primary-foreground);
+  --cm-progress-bar-duration: 1.4s;
+
+  position: relative;
+  overflow: hidden;
+  inline-size: 100%;
+  block-size: var(--cm-space-2);
+  border-radius: var(--cm-radius-round);
+  background: var(--cm-color-background-surface-active);
+}
+
+.cm-progress-bar__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  min-inline-size: 0;
+  border-radius: inherit;
+  background: var(--cm-progress-bar-value-color);
+  color: var(--cm-progress-bar-label-color);
+  transition: inline-size var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+.cm-progress-bar__label {
+  overflow: hidden;
+  padding-inline: var(--cm-space-1);
+  font-size: var(--cm-font-size-xs);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-tight);
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.cm-progress-bar--neutral {
+  --cm-progress-bar-value-color: var(--cm-color-text-secondary);
+  --cm-progress-bar-label-color: var(--cm-color-text-inverse);
+}
+
+.cm-progress-bar--success {
+  --cm-progress-bar-value-color: var(--cm-color-status-success-subtle-foreground);
+  --cm-progress-bar-label-color: var(--cm-color-text-inverse);
+}
+
+.cm-progress-bar--info {
+  --cm-progress-bar-value-color: var(--cm-color-status-info-subtle-foreground);
+  --cm-progress-bar-label-color: var(--cm-color-text-inverse);
+}
+
+.cm-progress-bar--warning {
+  --cm-progress-bar-value-color: var(--cm-color-status-warning-subtle-foreground);
+  --cm-progress-bar-label-color: var(--cm-color-text-inverse);
+}
+
+.cm-progress-bar--help {
+  --cm-progress-bar-value-color: var(--cm-color-status-help-subtle-foreground);
+  --cm-progress-bar-label-color: var(--cm-color-text-inverse);
+}
+
+.cm-progress-bar--danger {
+  --cm-progress-bar-value-color: var(--cm-color-status-danger-solid-background);
+  --cm-progress-bar-label-color: var(--cm-color-status-danger-solid-foreground);
+}
+
+.cm-progress-bar--contrast {
+  --cm-progress-bar-value-color: var(--cm-color-background-inverse);
+  --cm-progress-bar-label-color: var(--cm-color-text-inverse);
+}
+
+.cm-progress-bar--indeterminate .cm-progress-bar__value {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 35%;
+  animation: cm-progress-bar-indeterminate var(--cm-progress-bar-duration) var(--cm-motion-ease-standard) infinite;
+}
+
+@keyframes cm-progress-bar-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-progress-bar__value {
+    transition: none;
+  }
+
+  .cm-progress-bar--indeterminate .cm-progress-bar__value {
+    animation: none;
+  }
+}

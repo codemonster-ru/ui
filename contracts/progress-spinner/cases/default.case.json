@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "progress-spinner-default",
+  "description": "A medium primary indeterminate progress spinner.",
+  "props": { "label": "Loading reports" },
+  "slots": {}
+}

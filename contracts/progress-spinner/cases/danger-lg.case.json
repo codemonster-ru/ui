@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "progress-spinner-danger-lg",
+  "description": "A large danger-tone indeterminate progress spinner.",
+  "props": { "label": "Removing project", "size": "lg", "tone": "danger" },
+  "slots": {}
+}
