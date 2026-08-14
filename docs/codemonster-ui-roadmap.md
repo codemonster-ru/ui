@@ -54,7 +54,7 @@ Playground ownership follows
 
 | Repository                      | Integration branch      | Responsibility                          |
 | ------------------------------- | ----------------------- | --------------------------------------- |
-| `codemonster-ru/codemonster-ui` | `main`                  | Shared foundation and platform adapters |
+| `codemonster-ru/ui`             | `main`                  | Shared foundation and platform adapters |
 | `codemonster-ru/annabel`        | `feat/razor-components` | Generic Razor component model           |
 
 Short-lived branches may be created from the relevant integration branch. Merge or rebase them
@@ -73,10 +73,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 15 — Concise repository and Razor package names
-- Current milestone: M8 — Naming cleanup
-- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort; M7 — migration and CodeMonster UI 1.0
-- Next item: `CMUI-167`; React and Angular remain unscheduled future considerations.
+- Current phase: Complete — Phase 15 delivered
+- Current milestone: M8 — Naming cleanup completed
+- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort; M7 — migration and CodeMonster UI 1.0; M8 — concise repository and Razor package names
+- Next item: None; React and Angular remain unscheduled future considerations.
 
 ## Milestones
 
@@ -90,7 +90,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
 | M6        | Utility CSS and the first stable component cohort are available           | Completed            |
 | M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | Completed            |
-| M8        | Repository and Razor package names are concise and validated              | In progress          |
+| M8        | Repository and Razor package names are concise and validated              | Completed            |
 
 ## Phase 0 — Product and architecture decisions
 
@@ -412,13 +412,13 @@ added to the active scope in the future.
 
 - [x] `CMUI-165` Approve `codemonster-ru/ui` for the monorepo and `ui-razor` for the Razor distribution.
 - [x] `CMUI-166` Move the Composer split repository to `codemonster-ru/ui-razor`.
-- [ ] `CMUI-167` Publish `codemonster-ru/ui-razor` and mark `codemonster-ru/ui` replaced.
-- [ ] `CMUI-168` Migrate Annabel to the Razor-specific Composer package.
-- [ ] `CMUI-169` Move the monorepo to `codemonster-ru/ui` and update trusted publishers.
+- [x] `CMUI-167` Publish `codemonster-ru/ui-razor` and mark `codemonster-ru/ui` replaced.
+- [x] `CMUI-168` Migrate Annabel to the Razor-specific Composer package.
+- [x] `CMUI-169` Move the monorepo to `codemonster-ru/ui` and update trusted publishers.
 
 ### M8 exit gate
 
-- [ ] `CMUI-G008` Canonical repository, registry metadata, and real consumers use the concise names.
+- [x] `CMUI-G008` Canonical repository, registry metadata, and real consumers use the concise names.
 
 ## Decision log
 
@@ -478,6 +478,7 @@ Record Annabel work here when it completes a cross-repository roadmap item.
 | `CMUI-159a`  | `a1ce832`      | This row                       | Registry npm consumer validation.   |
 | `CMUI-159a`  | `2b01e3f`      | This row                       | Packagist consumer validation.      |
 | `CMUI-162`   | `2216f5a`      | This row                       | Stable registry validation.         |
+| `CMUI-168`   | `b23a367`      | This row                       | Razor-specific package migration.   |
 
 ## Scope-change log
 

@@ -126,3 +126,26 @@ After all release, consumer, and CI gates passed, the monorepo was renamed from
   `codemonster-ru/codemonster-ui` for future publishes.
 
 This completes the repository transition in `CMUI-164` and the M7 roadmap milestone.
+
+## Concise repository and Razor package validation
+
+The final topology uses `codemonster-ru/ui` for the monorepo and
+`codemonster-ru/ui-razor` for the read-only Composer split. Packagist serves
+`codemonster-ru/ui-razor@v1.0.1` from split commit
+`d1e61c05635d2c1e22295b4cd53d18d23cda3d99`; the old `codemonster-ru/ui` package remains
+installable but is marked abandoned with `codemonster-ru/ui-razor` as its replacement.
+
+Annabel commit `b23a367` moves both CMS Composer manifests to
+`codemonster-ru/ui-razor:^1.0.1`. The complete Annabel quality gate passed with the public package:
+
+- package, architecture, API, hygiene, and ecosystem checks passed;
+- the Admin production build transformed 69 modules and npm reported zero vulnerabilities;
+- 68 CMS tests passed with 182 assertions;
+- PHPStan completed without errors and Composer reported no security advisories;
+- 43 CodeMonster UI assets were published through the CMS application boundary.
+
+The monorepo retains its history, tags, releases, and completed Actions runs at
+`codemonster-ru/ui`. Its local `origin`, package repository metadata, and all five npm trusted
+publishers use that canonical repository and `release-from-tag.yml`.
+
+This completes `CMUI-167` through `CMUI-169`, the `CMUI-G008` exit gate, and M8.
