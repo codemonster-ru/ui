@@ -21,6 +21,25 @@ migration tooling is
 Retained packages are supported side-by-side dependencies, not compatibility aliases inside the new
 packages. Theme migration is manual because token names and ownership changed.
 
+## Migration sequence and dependency cleanup
+
+For a Vue application, install or link `@codemonster-ru/ui-tokens`,
+`@codemonster-ru/ui-css`, and `@codemonster-ru/ui-vue`. For an Annabel Razor application, install
+`codemonster-ru/ui-razor` through Composer. Add `@codemonster-ru/ui-runtime` only when
+server-rendered Razor or plain HTML needs progressive enhancement; do not attach its controllers to
+roots already owned by Vue.
+
+Run the checker and codemod, then migrate the reported direct, composition, and manual outcomes,
+including theme attributes, token names, stylesheet ownership, and application-owned state. Re-run
+the migration checker together with the relevant package and consumer tests before removing direct
+application dependencies on `vueforge-core`, `vueforge-layouts`, or `vueforge-theme`. Remove them
+only after source imports, legacy styles, theme bootstrap code, and manual findings are gone.
+
+Retained products remain valid side-by-side dependencies. In particular,
+`vueforge-playground` can keep `vueforge-core` transitively; migration completion means the
+application no longer owns the migrated foundations directly, not that every legacy package has
+disappeared from the lockfile.
+
 ## Lifecycle
 
 VueForge design-system foundations are in maintenance: critical security and correctness fixes
@@ -63,7 +82,7 @@ those API changes against the component guides after every codemod run.
 
 ## Composition and manual review
 
-The compose and manual cohorts have also completed their initial review; they are not safe rename
+The compose and manual cohort review is complete; these entries are not safe rename
 targets. ConfirmDialog, FormLayout, Panel, PageHeader, AuthLayout, ErrorLayout, GroupBox,
 SkeletonGate, and ThemeSwitch have [maintained recipes](./index.md#maintained-recipes) that preserve
 their portable composition and document application-owned policy. Fieldset, IconButton,
