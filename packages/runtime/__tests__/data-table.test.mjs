@@ -20,7 +20,12 @@ for (const scenarioFile of scenarioFiles) {
     const dom = new JSDOM(html);
     const root = dom.window.document.querySelector('.cm-data-table');
     const events = new Map();
-    for (const name of ['cm:data-table-page-change', 'cm:data-table-selection-change', 'cm:data-table-sort-change']) {
+    for (const name of [
+      'cm:data-table-page-change',
+      'cm:data-table-page-size-change',
+      'cm:data-table-selection-change',
+      'cm:data-table-sort-change',
+    ]) {
       root.addEventListener(name, () => events.set(name, (events.get(name) ?? 0) + 1));
     }
     new CmRuntime().register('data-table', createCmDataTableController).start(dom.window.document);
@@ -45,6 +50,11 @@ test('reports selected ids in rendered order and keeps select-all state synchron
 
 function executeStep({ events, root, step }) {
   const target = resolveTarget(root, step.target);
+  if (step.action === 'setValue') {
+    target.value = step.value;
+    target.dispatchEvent(new root.ownerDocument.defaultView.Event('change', { bubbles: true }));
+    return;
+  }
   if (step.action === 'click') return target.click();
   if (step.expect === 'attribute') return assert.equal(target.getAttribute(step.name), step.value);
   if (step.expect === 'eventCount') return assert.equal(events.get(step.name) ?? 0, step.count);
@@ -56,6 +66,7 @@ function resolveTarget(root, name) {
   const selectors = {
     'header-first': 'th[aria-sort]',
     'page-next': '[data-cm-data-table-page-action="next"]',
+    'page-size': '[data-cm-data-table-page-size-control]',
     'select-last': 'tbody tr:last-child [data-cm-data-table-select-row]',
     'sort-first': '[data-cm-data-table-sort]',
   };

@@ -59,6 +59,22 @@ RAZOR);
         ], []));
     }
 
+    public function testRejectsPageSizeMissingFromOptions(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('must contain [page-size]');
+        $component = new CmDataTable(new RazorEngine(
+            new DefaultLocator(dirname(__DIR__, 2) . '/resources/views'),
+            cachePath: $this->root . '/component-cache',
+        ));
+        $component->render(new ComponentRenderContext([
+            'id' => 'projects',
+            'columns' => [['key' => 'name', 'header' => 'Name']],
+            'page-size' => 10,
+            'page-size-options' => [25, 50],
+        ], []));
+    }
+
     private function engine(): RazorEngine
     {
         $components = new ComponentRegistry();

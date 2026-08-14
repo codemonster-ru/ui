@@ -14,6 +14,8 @@
     "sort": { "key": "name", "direction": "ascending" },
     "page": 2,
     "pageCount": 3,
+    "pageSize": 10,
+    "pageSizeOptions": [10, 25, 50],
     "columns": [
       { "key": "name", "header": "Name", "sortable": true },
       { "key": "balance", "header": "Balance", "align": "end" }

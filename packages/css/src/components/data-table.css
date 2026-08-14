@@ -135,6 +135,25 @@
   font-size: var(--cm-font-size-sm);
 }
 
+.cm-data-table__page-size {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-2);
+  margin-inline-end: auto;
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-sm);
+}
+
+.cm-data-table__page-size select {
+  min-block-size: var(--cm-control-height-sm);
+  padding-inline: var(--cm-space-2);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control-tight);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  font: inherit;
+}
+
 .cm-data-table__page-button {
   min-block-size: var(--cm-control-height-sm);
   padding-inline: var(--cm-space-3);
@@ -153,6 +172,7 @@
 
 .cm-data-table__sort:focus-visible,
 .cm-data-table__selection input:focus-visible,
+.cm-data-table__page-size select:focus-visible,
 .cm-data-table__page-button:focus-visible {
   outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
   outline-offset: var(--cm-border-width-thick);

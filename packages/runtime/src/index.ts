@@ -10,6 +10,7 @@ export type { CommandPaletteQueryChangeDetail, CommandPaletteSelectDetail } from
 export { CmDataTableController, createCmDataTableController } from './data-table.js';
 export type {
   DataTablePageChangeDetail,
+  DataTablePageSizeChangeDetail,
   DataTableSelectionChangeDetail,
   DataTableSort,
   DataTableSortChangeDetail,

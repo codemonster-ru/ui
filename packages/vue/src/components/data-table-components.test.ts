@@ -45,6 +45,16 @@ describe('Vue data table components', () => {
     expect(wrapper.emitted('pageChange')).toEqual([[3]]);
   });
 
+  it('reports a page-size request and resets the requested page', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: { id: 'projects', columns, rows, page: 2, pageCount: 3, pageSize: 10, pageSizeOptions: [10, 25, 50] },
+    });
+    await wrapper.get<HTMLSelectElement>('[data-cm-data-table-page-size-control]').setValue('25');
+    expect(wrapper.emitted('pageSizeChange')).toEqual([[25]]);
+    expect(wrapper.emitted('pageChange')).toEqual([[1]]);
+    expect(wrapper.attributes('data-cm-data-table-page-size')).toBe('25');
+  });
+
   it('rejects duplicate columns and unsafe cell values', () => {
     expect(() => mount(CmDataTable, { props: { id: 'projects', columns: [columns[0], columns[0]], rows } })).toThrow(
       /Invalid DataTable column/u,
@@ -54,5 +64,8 @@ describe('Vue data table components', () => {
         props: { id: 'projects', columns, rows: [{ id: 'bad', cells: { name: Number.NaN } }] },
       }),
     ).toThrow(/Invalid DataTable cell/u);
+    expect(() =>
+      mount(CmDataTable, { props: { id: 'projects', columns, rows, pageSize: 10, pageSizeOptions: [25, 50] } }),
+    ).toThrow(/pageSizeOptions must contain pageSize/u);
   });
 });

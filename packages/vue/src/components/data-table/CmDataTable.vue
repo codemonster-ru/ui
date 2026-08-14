@@ -31,21 +31,26 @@ const props = defineProps({
   sort: { type: Object as PropType<CmDataTableSort | null>, default: null },
   page: { type: Number, default: 1 },
   pageCount: { type: Number, default: 1 },
+  pageSize: { type: Number, default: 10 },
+  pageSizeOptions: { type: Array as PropType<readonly number[]>, default: () => [] },
   loading: Boolean,
   error: Boolean,
   emptyText: { type: String, default: 'No data' },
   loadingText: { type: String, default: 'Loading...' },
   errorText: { type: String, default: 'Failed to load data' },
   paginationLabel: { type: String, default: 'Table pagination' },
+  rowsPerPageLabel: { type: String, default: 'Rows per page' },
   previousPageLabel: { type: String, default: 'Previous page' },
   nextPageLabel: { type: String, default: 'Next page' },
   selectAllLabel: { type: String, default: 'Select all rows' },
 });
 const emit = defineEmits<{
   pageChange: [page: number];
+  pageSizeChange: [pageSize: number];
   selectionChange: [selectedRowIds: string[]];
   sortChange: [sort: CmDataTableSort | null];
   'update:page': [page: number];
+  'update:pageSize': [pageSize: number];
   'update:selectedRowIds': [selectedRowIds: string[]];
   'update:sort': [sort: CmDataTableSort | null];
 }>();
@@ -88,8 +93,22 @@ const normalizedRows = computed(() => {
 });
 
 if (!idPattern.test(props.id)) throw new TypeError('DataTable id must use lowercase kebab-case.');
+const normalizedPageSizeOptions = computed(() => {
+  const seen = new Set<number>();
+  for (const option of props.pageSizeOptions) {
+    if (!Number.isInteger(option) || option < 1 || seen.has(option)) {
+      throw new TypeError('DataTable pageSizeOptions must contain unique positive integers.');
+    }
+    seen.add(option);
+  }
+  if (seen.size > 0 && !seen.has(props.pageSize)) {
+    throw new TypeError('DataTable pageSizeOptions must contain pageSize.');
+  }
+  return props.pageSizeOptions;
+});
+
 if (
-  ![props.page, props.pageCount].every((value) => Number.isInteger(value) && value > 0) ||
+  ![props.page, props.pageCount, props.pageSize].every((value) => Number.isInteger(value) && value > 0) ||
   props.page > props.pageCount
 ) {
   throw new TypeError('DataTable page must be within its positive pageCount.');
@@ -100,6 +119,7 @@ if (
     props.loadingText,
     props.errorText,
     props.paginationLabel,
+    props.rowsPerPageLabel,
     props.previousPageLabel,
     props.nextPageLabel,
     props.selectAllLabel,
@@ -122,6 +142,7 @@ function normalizeSort(sort: CmDataTableSort | null): CmDataTableSort | null {
 const localSort = ref<CmDataTableSort | null>(normalizeSort(props.sort));
 const localSelectedRowIds = ref([...props.selectedRowIds]);
 const localPage = ref(props.page);
+const localPageSize = ref(props.pageSize);
 watch(
   () => props.sort,
   (sort) => (localSort.value = normalizeSort(sort)),
@@ -134,6 +155,10 @@ watch(
 watch(
   () => props.page,
   (page) => (localPage.value = page),
+);
+watch(
+  () => props.pageSize,
+  (pageSize) => (localPageSize.value = pageSize),
 );
 
 const selectedIds = computed(() => new Set(localSelectedRowIds.value));
@@ -167,6 +192,7 @@ const rootAttrs = computed(() =>
     'data-cm-data-table-sort-direction',
     'data-cm-data-table-page',
     'data-cm-data-table-page-count',
+    'data-cm-data-table-page-size',
     'data-cm-data-table-selected-count',
   ]),
 );
@@ -236,6 +262,14 @@ function changePage(page: number): void {
   emit('update:page', next);
   emit('pageChange', next);
 }
+
+function changePageSize(pageSize: number): void {
+  if (!normalizedPageSizeOptions.value.includes(pageSize) || pageSize === localPageSize.value) return;
+  localPageSize.value = pageSize;
+  emit('update:pageSize', pageSize);
+  emit('pageSizeChange', pageSize);
+  if (localPage.value !== 1) changePage(1);
+}
 </script>
 
 <template>
@@ -248,6 +282,7 @@ function changePage(page: number): void {
     :data-cm-data-table-sort-direction="localSort?.direction ?? ''"
     :data-cm-data-table-page="localPage"
     :data-cm-data-table-page-count="props.pageCount"
+    :data-cm-data-table-page-size="localPageSize"
     :data-cm-data-table-selected-count="localSelectedRowIds.length"
   >
     <div class="cm-data-table__scroll">
@@ -318,7 +353,27 @@ function changePage(page: number): void {
         </tbody>
       </table>
     </div>
-    <nav v-if="props.pageCount > 1" class="cm-data-table__pagination" :aria-label="props.paginationLabel">
+    <nav
+      v-if="props.pageCount > 1 || normalizedPageSizeOptions.length > 0"
+      class="cm-data-table__pagination"
+      :aria-label="props.paginationLabel"
+    >
+      <label v-if="normalizedPageSizeOptions.length > 0" class="cm-data-table__page-size">
+        <span>{{ props.rowsPerPageLabel }}</span>
+        <select
+          data-cm-data-table-page-size-control
+          @change="changePageSize(Number(($event.target as HTMLSelectElement).value))"
+        >
+          <option
+            v-for="option in normalizedPageSizeOptions"
+            :key="option"
+            :value="option"
+            :selected="option === localPageSize"
+          >
+            {{ option }}
+          </option>
+        </select>
+      </label>
       <!-- prettier-ignore -->
       <button class="cm-data-table__page-button" type="button" :aria-label="props.previousPageLabel" data-cm-data-table-page-action="previous" :disabled="localPage <= 1" @click="changePage(localPage - 1)">Previous</button>
       <span class="cm-data-table__page-summary" aria-live="polite">Page {{ localPage }} of {{ props.pageCount }}</span>

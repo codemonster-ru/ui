@@ -18,12 +18,15 @@
     "sort": { "type": "nullable", "required": false, "default": null, "valueContract": "data-table-sort" },
     "page": { "type": "number", "required": false, "default": 1 },
     "pageCount": { "type": "number", "required": false, "default": 1 },
+    "pageSize": { "type": "number", "required": false, "default": 10 },
+    "pageSizeOptions": { "type": "collection", "required": false, "default": [], "valueContract": "positive-integers" },
     "loading": { "type": "boolean", "required": false, "default": false },
     "error": { "type": "boolean", "required": false, "default": false },
     "emptyText": { "type": "string", "required": false, "default": "No data" },
     "loadingText": { "type": "string", "required": false, "default": "Loading..." },
     "errorText": { "type": "string", "required": false, "default": "Failed to load data" },
     "paginationLabel": { "type": "string", "required": false, "default": "Table pagination" },
+    "rowsPerPageLabel": { "type": "string", "required": false, "default": "Rows per page" },
     "previousPageLabel": { "type": "string", "required": false, "default": "Previous page" },
     "nextPageLabel": { "type": "string", "required": false, "default": "Next page" },
     "selectAllLabel": { "type": "string", "required": false, "default": "Select all rows" }
@@ -38,7 +41,8 @@
       "description": "Reports selected row ids in rendered row order.",
       "payloadContract": "data-table-row-ids"
     },
-    "pageChange": { "description": "Reports the requested one-based page.", "payloadContract": "page-number" }
+    "pageChange": { "description": "Reports the requested one-based page.", "payloadContract": "page-number" },
+    "pageSizeChange": { "description": "Reports the requested positive page size.", "payloadContract": "page-size" }
   },
   "states": ["default", "sorted", "selected", "paginated", "empty", "loading", "error"]
 }
