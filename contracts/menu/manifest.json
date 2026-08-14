@@ -10,6 +10,7 @@
   },
   "slots": {
     "item{UpperCamelId}": {
+      "required": false,
       "description": "Trusted per-item content inside the component-owned action or link shell.",
       "scopeContract": "menu-item"
     }

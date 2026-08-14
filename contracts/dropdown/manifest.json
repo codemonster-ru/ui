@@ -19,6 +19,7 @@
   },
   "slots": {
     "trigger": {
+      "required": false,
       "description": "Trusted visible content inside the owned trigger button.",
       "scopeContract": "dropdown-state"
     }

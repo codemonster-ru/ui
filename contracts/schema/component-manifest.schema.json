@@ -37,14 +37,7 @@
     "slots": {
       "type": "object",
       "propertyNames": {
-        "anyOf": [
-          {
-            "const": "default"
-          },
-          {
-            "$ref": "#/$defs/camelIdentifier"
-          }
-        ]
+        "$ref": "#/$defs/slotIdentifier"
       },
       "additionalProperties": {
         "$ref": "#/$defs/slot"
@@ -62,7 +55,7 @@
     "states": {
       "type": "array",
       "items": {
-        "$ref": "#/$defs/kebabIdentifier"
+        "$ref": "#/$defs/stateIdentifier"
       },
       "uniqueItems": true
     },
@@ -84,6 +77,13 @@
       "type": "string",
       "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
     },
+    "slotIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]*(?:\\{[A-Z][A-Za-z0-9]*\\})?$"
+    },
+    "stateIdentifier": {
+      "anyOf": [{ "$ref": "#/$defs/kebabIdentifier" }, { "const": "2xl" }]
+    },
     "description": {
       "type": "string",
       "minLength": 1
@@ -94,7 +94,18 @@
       "required": ["type", "required"],
       "properties": {
         "type": {
-          "enum": ["boolean", "collection", "enum", "nullable", "number", "string", "structured"]
+          "enum": [
+            "boolean",
+            "collection",
+            "enum",
+            "nullable",
+            "nullable-css-length",
+            "nullable-number",
+            "nullable-string",
+            "number",
+            "string",
+            "structured"
+          ]
         },
         "required": {
           "type": "boolean"
@@ -105,7 +116,7 @@
           "minItems": 1,
           "uniqueItems": true,
           "items": {
-            "type": ["string", "number"]
+            "anyOf": [{ "type": "string" }, { "type": "number" }]
           }
         },
         "description": {
@@ -146,6 +157,9 @@
         },
         "description": {
           "$ref": "#/$defs/description"
+        },
+        "scopeContract": {
+          "$ref": "#/$defs/kebabIdentifier"
         }
       }
     },
