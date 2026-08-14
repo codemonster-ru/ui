@@ -37,6 +37,8 @@ final readonly class CmDataTable implements ComponentInterface
         $sort = DataTableData::sort($props->nullableArray('sort'), $columns);
         $page = $props->positiveInt('page', 1);
         $pageCount = $props->positiveInt('page-count', 1);
+        $pageSize = $props->positiveInt('page-size', 10);
+        $pageSizeOptions = DataTableData::pageSizes($props->array('page-size-options'), $pageSize);
         if ($page > $pageCount) throw new InvalidArgumentException('Component prop [page] must not exceed [page-count].');
         $loading = $props->bool('loading');
         $error = $props->bool('error');
@@ -44,10 +46,11 @@ final readonly class CmDataTable implements ComponentInterface
         $loadingText = $props->string('loading-text', 'Loading...');
         $errorText = $props->string('error-text', 'Failed to load data');
         $paginationLabel = $props->string('pagination-label', 'Table pagination');
+        $rowsPerPageLabel = $props->string('rows-per-page-label', 'Rows per page');
         $previousPageLabel = $props->string('previous-page-label', 'Previous page');
         $nextPageLabel = $props->string('next-page-label', 'Next page');
         $selectAllLabel = $props->string('select-all-label', 'Select all rows');
-        foreach ([$emptyText, $loadingText, $errorText, $paginationLabel, $previousPageLabel, $nextPageLabel, $selectAllLabel] as $label) {
+        foreach ([$emptyText, $loadingText, $errorText, $paginationLabel, $rowsPerPageLabel, $previousPageLabel, $nextPageLabel, $selectAllLabel] as $label) {
             if (trim($label) === '') throw new InvalidArgumentException('DataTable labels must be non-empty strings.');
         }
         $renderRows = array_map(static fn (array $row): array => [
@@ -64,12 +67,13 @@ final readonly class CmDataTable implements ComponentInterface
             'id' => $id, 'columns' => $columns, 'rows' => $renderRows, 'caption' => $caption,
             'selectable' => $selectable, 'selected' => $selected, 'sort' => $sort, 'page' => $page,
             'pageCount' => $pageCount, 'paginationLabel' => $paginationLabel,
+            'pageSize' => $pageSize, 'pageSizeOptions' => $pageSizeOptions, 'rowsPerPageLabel' => $rowsPerPageLabel,
             'previousPageLabel' => $previousPageLabel, 'nextPageLabel' => $nextPageLabel,
             'selectAllLabel' => $selectAllLabel, 'classes' => $classes, 'stateText' => $stateText,
             'columnCount' => count($columns) + ($selectable ? 1 : 0),
             'attributes' => $attributes->without(['class', 'id', 'data-cm-controller', 'data-cm-data-table-sort-key',
                 'data-cm-data-table-sort-direction', 'data-cm-data-table-page', 'data-cm-data-table-page-count',
-                'data-cm-data-table-selected-count'])->render(),
+                'data-cm-data-table-page-size', 'data-cm-data-table-selected-count'])->render(),
         ]), "\r\n"));
     }
 

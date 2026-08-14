@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "data-table-page-size",
+  "case": "data-table-interactive",
+  "steps": [
+    { "action": "setValue", "target": "page-size", "value": "25" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page-size", "value": "25" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-data-table-page", "value": "1" },
+    { "expect": "eventCount", "target": "root", "name": "cm:data-table-page-size-change", "count": 1 },
+    { "expect": "eventCount", "target": "root", "name": "cm:data-table-page-change", "count": 1 }
+  ]
+}

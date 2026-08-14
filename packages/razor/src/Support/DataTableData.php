@@ -111,4 +111,23 @@ final class DataTableData
         return ['key' => $value['key'], 'direction' => $direction];
     }
 
+    /**
+     * @param array<mixed> $values
+     * @return list<int>
+     */
+    public static function pageSizes(array $values, int $pageSize): array
+    {
+        $options = [];
+        foreach ($values as $value) {
+            if (!is_int($value) || $value < 1 || in_array($value, $options, true)) {
+                throw new InvalidArgumentException('Component prop [page-size-options] must contain unique positive integers.');
+            }
+            $options[] = $value;
+        }
+        if ($options !== [] && !in_array($pageSize, $options, true)) {
+            throw new InvalidArgumentException('Component prop [page-size-options] must contain [page-size].');
+        }
+        return $options;
+    }
+
 }

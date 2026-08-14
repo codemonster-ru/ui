@@ -105,6 +105,11 @@ document.querySelector('#accounts')?.addEventListener('cm:data-table-sort-change
 });
 ```
 
+Pass `page-size` and an ordered `page-size-options` array to render a native page-size selector.
+Changing it reports `pageSizeChange` in Vue or `cm:data-table-page-size-change` through the shared
+runtime and requests page one when the current page is not already the first. The application still
+owns row fetching, `page-count`, and the rows supplied for the requested page.
+
 The controller cycles one sortable column through ascending, descending, and unsorted states. It
 synchronizes native row checkboxes and clamps previous/next page requests. It does not reorder,
 hide, or replace rows. Without JavaScript, users retain a readable semantic table.

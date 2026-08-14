@@ -34,12 +34,15 @@ export interface CmDataTableProps {
   sort?: CmDataTableSort | null;
   page?: number;
   pageCount?: number;
+  pageSize?: number;
+  pageSizeOptions?: readonly number[];
   loading?: boolean;
   error?: boolean;
   emptyText?: string;
   loadingText?: string;
   errorText?: string;
   paginationLabel?: string;
+  rowsPerPageLabel?: string;
   previousPageLabel?: string;
   nextPageLabel?: string;
   selectAllLabel?: string;

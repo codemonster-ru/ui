@@ -204,7 +204,7 @@
     "css:components/data-table.css": {
       "path": "css/css/components/data-table.css",
       "mediaType": "text/css",
-      "sha256": "3daf14bd6f9fc7d0c93aa528cdfce47628339e28dbea11d8820776c71d87edd1",
+      "sha256": "6549ff59a977280a279806137d058e9743d296399c33ab0242adbee057272dec",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",

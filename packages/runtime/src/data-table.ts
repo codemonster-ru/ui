@@ -20,11 +20,16 @@ export interface DataTablePageChangeDetail {
   page: number;
 }
 
+export interface DataTablePageSizeChangeDetail {
+  pageSize: number;
+}
+
 const sortSelector = '[data-cm-data-table-sort]';
 const rowSelector = '[data-cm-data-table-row]';
 const rowInputSelector = '[data-cm-data-table-select-row]';
 const selectAllSelector = '[data-cm-data-table-select-all]';
 const pageSelector = '[data-cm-data-table-page-action]';
+const pageSizeSelector = '[data-cm-data-table-page-size-control]';
 
 function positiveInteger(value: string | null, fallback: number): number {
   const parsed = Number(value);
@@ -84,7 +89,13 @@ export class CmDataTableController implements CmController {
     }
 
     const rowInput = target.closest<HTMLInputElement>(rowInputSelector);
-    if (rowInput && this.#root.contains(rowInput)) this.#reportSelection();
+    if (rowInput && this.#root.contains(rowInput)) {
+      this.#reportSelection();
+      return;
+    }
+
+    const pageSize = target.closest<HTMLSelectElement>(pageSizeSelector);
+    if (pageSize && this.#root.contains(pageSize)) this.#requestPageSize(pageSize);
   };
 
   #eventElement(event: Event): Element | null {
@@ -178,6 +189,21 @@ export class CmDataTableController implements CmController {
     this.#root.setAttribute('data-cm-data-table-page', String(page));
     this.#synchronizePage();
     dispatchCmEvent<DataTablePageChangeDetail>(this.#root, 'data-table-page-change', { page });
+  }
+
+  #requestPageSize(control: HTMLSelectElement): void {
+    const pageSize = positiveInteger(control.value, 0);
+    const current = positiveInteger(this.#root.getAttribute('data-cm-data-table-page-size'), 0);
+    if (pageSize === 0 || pageSize === current) return;
+    this.#root.setAttribute('data-cm-data-table-page-size', String(pageSize));
+    dispatchCmEvent<DataTablePageSizeChangeDetail>(this.#root, 'data-table-page-size-change', { pageSize });
+
+    const page = positiveInteger(this.#root.getAttribute('data-cm-data-table-page'), 1);
+    if (page !== 1) {
+      this.#root.setAttribute('data-cm-data-table-page', '1');
+      this.#synchronizePage();
+      dispatchCmEvent<DataTablePageChangeDetail>(this.#root, 'data-table-page-change', { page: 1 });
+    }
   }
 
   #synchronizePage(): void {
