@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 18 — Portable expansion and consumer migration
 - Current milestone: M11 — Portable expansion and consumer migration
-- Next item: `CMUI-189` Remove the playground legacy design-system dependencies.
+- Next item: `CMUI-190` Run complete package and real-consumer verification.
 
 ## Milestones
 
@@ -133,7 +133,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
 - [x] `CMUI-188` Keep application shells application-owned unless the reconsideration criteria in
       [Application shell ownership](./architecture/application-shell-ownership.md) are satisfied by two
       real consumers.
-- [ ] `CMUI-189` Migrate the representative Vue application off `vueforge-core` and
+- [x] `CMUI-189` Migrate the representative Vue application off `vueforge-core` and
       `vueforge-layouts`; validate the representative Annabel Razor application against the same shared
       component contracts.
 - [ ] `CMUI-190` Run complete package, packed-consumer, SSR/server-rendering, accessibility,
@@ -164,6 +164,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-15 | Approve four finite semantic components and supersede Tag with Badge.                             | Fieldset, IconButton, ProgressBar, and ProgressSpinner have bounded Vue/Razor contracts and real composition demand; Tag adds only an unrequested outlined presentation over Badge.                                                                     | `CMUI-184`, `CMUI-186`  |
 | 2026-08-15 | Keep behavior-rich candidates application-owned without shared demand.                            | Column chooser persistence, command navigation, navigation trees, workflow steps, and document observation all combine static semantic composition with product policy; none has matching Razor demand.                                                 | `CMUI-185`              |
 | 2026-08-15 | Re-verify application shell ownership after portable delivery.                                    | The real Vue consumers own different shell policies, the real Razor consumer has no matching shell demand, and native landmarks plus primitives remain smaller than a speculative cross-platform shell API.                                             | `CMUI-188`              |
+| 2026-08-15 | Remove direct legacy design-system ownership from the representative Vue playground.              | Native landmarks, maintained recipes, CodeMonster UI tokens/CSS, and an application-owned theme bootstrap preserve the approved use cases; retained Icons, CodeBlock, and Playground products keep only their explicit side-by-side hooks.              | `CMUI-189`              |
 
 ## Scope-change log
 

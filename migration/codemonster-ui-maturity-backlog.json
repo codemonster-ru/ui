@@ -130,8 +130,8 @@
       "roadmapItem": "CMUI-189",
       "destination": "phase-18",
       "priority": "P0",
-      "summary": "Remove the playground legacy design-system dependencies",
-      "reason": "This is the concrete consumer exit condition after required component and recipe work lands.",
+      "summary": "Playground legacy design-system dependencies removed",
+      "reason": "The representative Vue playground now uses semantic application landmarks, CodeMonster UI components/tokens/CSS, and maintained recipes without direct vueforge-core or vueforge-layouts dependencies.",
       "gaps": []
     },
     {
