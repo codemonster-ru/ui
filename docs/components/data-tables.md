@@ -125,7 +125,13 @@ The page and range summary templates plus visible previous/next text can be loca
 from the buttons' accessible labels.
 
 The Razor adapter accepts `visible-column-keys` in the same ordered form as Vue. The application can
-render a checkbox, popover, or dialog chooser and persist that array wherever its product requires.
+render `CmCheckbox` controls inside a `CmPopover` or dialog and persist that array wherever its
+product requires. Keep required column keys in every update, normalize selected keys back to the
+original column order, and derive the chooser's checked/indeterminate aggregate state from the
+optional columns. The application owns the trigger and placement, required-column policy,
+authorization, persistence, optimistic updates, rollback, and any server rerender. This composition
+is intentionally not a standalone DataTableColumnChooser contract without matching Vue and Razor
+product demand.
 
 The controller cycles one sortable column through ascending, descending, and unsorted states. It
 synchronizes native row checkboxes and clamps previous/next page requests. It does not reorder,

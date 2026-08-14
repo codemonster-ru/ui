@@ -67,11 +67,28 @@ application recipes. GroupBox and SkeletonGate split portable composition from a
 behavior. Fieldset and IconButton remain portable candidates rather than approved Stack or Button
 substitutions.
 
-DataTable column choice, Menubar, navigation-tree behavior, progress, Stepper, and Table of Contents
-retain explicit candidate decisions in the maturity backlog. ThemeSwitch, application shells,
-SetupLayout, and shell-internal areas remain application-owned. Native HTML and the listed
+Progress indicators retain an explicit candidate decision in the maturity backlog. DataTable
+column choice, Menubar, navigation trees, Stepper, and Table of Contents have final manual outcomes
+because their state and enhancement policy remain application-owned. ThemeSwitch, application
+shells, SetupLayout, and shell-internal areas remain application-owned. Native HTML and the listed
 CodeMonster UI primitives are preferred where sufficient; the codemod reports these entries for
 manual migration and never rewrites them.
+
+Apply the final manual migrations as follows:
+
+- compose `VfDataTableColumnChooser` from Checkbox plus Popover or Dialog, persist the ordered
+  choice in the application, and pass it to `CmDataTable.visibleColumnKeys`;
+- replace `VfMenuBar` with flat native links or buttons arranged by `CmInline`; the application owns
+  current location and history, and ordinary site navigation does not adopt ARIA menubar behavior;
+- rebuild `VfNavMenu` as an application-owned native navigation tree; routing, authorization,
+  active location, disclosure, compact mode, and responsive state do not belong to `CmMenu`;
+- render `VfStepper` as an ordered list with `aria-current="step"`, adding links or buttons only
+  when workflow validation and navigation policy permit them and a `nav` landmark only in that
+  navigable form;
+- render `VfTableOfContents` as labelled native navigation and links with application-supplied
+  `aria-current="location"`. Keep fragment navigation functional without JavaScript; heading
+  discovery, active-section observation, history, smooth scrolling, and sticky offsets stay in the
+  document application.
 
 `VfTag` is superseded by `CmBadge`; the only representative usage was the color showcase and did
 not justify a distinct outlined component contract. Migrate it manually and rename the legacy
