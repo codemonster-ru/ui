@@ -90,6 +90,10 @@ Apply the final manual migrations as follows:
   `aria-current="location"`. Keep fragment navigation functional without JavaScript; heading
   discovery, active-section observation, history, smooth scrolling, and sticky offsets stay in the
   document application.
+- rebuild App, Admin, Document, and Setup shells from native landmarks, layout primitives, and the
+  maintained recipes. The application retains routing, authorization, responsive navigation,
+  focus restoration, sticky measurements, workflow commands, and shell-area placement; the legacy
+  Header/Sidebar/Content/Aside/Footer wrappers do not become standalone components.
 
 `VfTag` is superseded by `CmBadge`; the only representative usage was the color showcase and did
 not justify a distinct outlined component contract. Migrate it manually and rename the legacy

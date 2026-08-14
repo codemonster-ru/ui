@@ -120,8 +120,8 @@
       "roadmapItem": "CMUI-188",
       "destination": "application-owned",
       "priority": "P0",
-      "summary": "Keep product shells and workflow state application-owned",
-      "reason": "The consumers use different landmarks, navigation, persistence, and workflow policies; no shared Razor shell demand exists.",
+      "summary": "Application shell ownership verified",
+      "reason": "The four reconsideration criteria remain unmet: consumers need different landmarks, navigation, persistence, and workflow policy, and the real Razor consumer has no matching shell demand.",
       "gaps": []
     },
     {

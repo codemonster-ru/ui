@@ -25,7 +25,7 @@ capability to appear exactly once with the same roadmap assignment.
 |     9 | `CMUI-185` | P2       | Phase 18          | Behavior-rich candidate decisions complete                       |         0 |
 |    10 | `CMUI-186` | P2       | Phase 18          | Approved small portable components delivered                     |         0 |
 |    11 | `CMUI-187` | P0       | Recipe            | Maintained application composition recipes published             |         0 |
-|    12 | `CMUI-188` | P0       | Application-owned | Preserve shell and workflow ownership                            |         0 |
+|    12 | `CMUI-188` | P0       | Application-owned | Application shell ownership verified                             |         0 |
 |    13 | `CMUI-189` | P0       | Phase 18          | Remove playground legacy design-system dependencies              |         0 |
 |    14 | `CMUI-190` | P0       | Phase 18          | Complete parity and real-consumer verification                   |         0 |
 |    15 | `CMUI-191` | P1       | Phase 18          | Publish the matured cohort and migration notes                   |         0 |
