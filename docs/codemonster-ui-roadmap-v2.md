@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 16 — Coverage truth and restored catalog
 - Current milestone: M9 — Enforced migration coverage
-- Next item: `CMUI-176` Publish the ordered maturity backlog.
+- Next item: `CMUI-G009` Verify the enforced migration coverage exit gate.
 
 ## Milestones
 
@@ -89,7 +89,7 @@ or intentionally drops.
   silently omitted.
 - [x] `CMUI-175` Inventory actual `vueforge-core` and `vueforge-layouts` usage in the representative
   Vue consumer and actual shared-UI needs in the Annabel Razor consumer.
-- [ ] `CMUI-176` Publish the ordered maturity backlog from coverage gaps and real-consumer demand;
+- [x] `CMUI-176` Publish the ordered maturity backlog from coverage gaps and real-consumer demand;
   assign each gap to Phase 17, Phase 18, an application recipe, or an explicitly retained product.
 
 ### M9 exit gate

@@ -7,6 +7,31 @@ import {
 } from './codemonster-ui-coverage.mjs';
 import { readVueForgeMapping } from './vueforge-mapping.mjs';
 
+function maturityBacklog(gaps = []) {
+  return JSON.stringify({
+    schemaVersion: 1,
+    coverage: 'migration/codemonster-ui-coverage.json',
+    consumerInventory: 'consumer.md',
+    documentation: 'backlog.md',
+    items:
+      gaps.length === 0
+        ? []
+        : [
+            {
+              id: 'CMUI-B001',
+              order: 1,
+              roadmapItem: 'CMUI-177',
+              destination: 'phase-17',
+              priority: 'P0',
+              summary: 'Test backlog item.',
+              reason: 'Test consumer evidence.',
+              gaps,
+            },
+          ],
+    retainedProducts: [],
+  });
+}
+
 test('tracks every mapped component and delivered artifact', () => {
   const coverage = readCodeMonsterCoverage();
   assert.deepEqual(
@@ -20,6 +45,7 @@ test('reports mapping, capability, and delivery drift', () => {
     schemaVersion: 2,
     baseline: 'other',
     audits: { composeAndManual: 'complete', directReplacements: 'complete' },
+    backlog: 'backlog.json',
     catalog: 'catalog.json',
     components: {
       VfButton: {
@@ -49,6 +75,9 @@ test('reports mapping, capability, and delivery drift', () => {
   const artifacts = {
     contracts: new Set(['button', 'orphan']),
     files: new Map([
+      ['backlog.json', maturityBacklog()],
+      ['backlog.md', 'Maturity backlog'],
+      ['consumer.md', 'Consumer inventory'],
       [
         'catalog.json',
         JSON.stringify({
@@ -91,6 +120,7 @@ test('rejects pending entries after the compose and manual audit is complete', (
     schemaVersion: 1,
     baseline: 'vueforge-test',
     audits: { composeAndManual: 'complete', directReplacements: 'complete' },
+    backlog: 'backlog.json',
     catalog: 'catalog.json',
     components: {
       VfLegacy: {
@@ -105,7 +135,12 @@ test('rejects pending entries after the compose and manual audit is complete', (
   };
   const artifacts = {
     contracts: new Set(),
-    files: new Map([['catalog.json', JSON.stringify({ schemaVersion: 1, components: [], migrationGaps: [] })]]),
+    files: new Map([
+      ['backlog.json', maturityBacklog()],
+      ['backlog.md', 'Maturity backlog'],
+      ['catalog.json', JSON.stringify({ schemaVersion: 1, components: [], migrationGaps: [] })],
+      ['consumer.md', 'Consumer inventory'],
+    ]),
     razorComponents: new Map(),
     vueComponents: new Set(),
   };
@@ -120,6 +155,7 @@ test('requires stable components and unresolved gaps in the playground catalog',
     schemaVersion: 1,
     baseline: 'vueforge-test',
     audits: { composeAndManual: 'complete', directReplacements: 'complete' },
+    backlog: 'backlog.json',
     catalog: 'catalog.json',
     components: {
       VfButton: {
@@ -150,8 +186,11 @@ test('requires stable components and unresolved gaps in the playground catalog',
   const artifacts = {
     contracts: new Set(['button']),
     files: new Map([
+      ['backlog.json', maturityBacklog(['VfButton:material-portable-gap'])],
+      ['backlog.md', 'Maturity backlog'],
       ['button.md', 'CmButton'],
       ['catalog.json', JSON.stringify({ schemaVersion: 1, components: [], migrationGaps: [] })],
+      ['consumer.md', 'Consumer inventory'],
       ['evidence.md', 'Evidence'],
       ['showcase.vue', 'CmButton ./component-catalog.json catalog.components catalog.migrationGaps'],
     ]),
@@ -163,4 +202,21 @@ test('requires stable components and unresolved gaps in the playground catalog',
     'Stable component must appear exactly once in the catalog: CmButton.',
     'Migration gap must appear exactly once in the catalog: VfButton:material-portable-gap.',
   ]);
+});
+
+test('requires every coverage gap exactly once in the maturity backlog', () => {
+  const coverage = readCodeMonsterCoverage();
+  const mapping = readVueForgeMapping();
+  const artifacts = discoverCoverageArtifacts(coverage);
+  const backlog = JSON.parse(artifacts.files.get(coverage.backlog));
+  backlog.items[0].gaps = ['VfUnknown:unknown-gap'];
+  artifacts.files.set(coverage.backlog, JSON.stringify(backlog));
+
+  const issues = validateCodeMonsterCoverage(coverage, mapping, artifacts);
+  assert.ok(
+    issues.includes(
+      'Coverage gap must appear exactly once in the maturity backlog: VfDataTable:material-portable-gap.',
+    ),
+  );
+  assert.ok(issues.includes('Maturity backlog references unknown coverage gap: VfUnknown:unknown-gap.'));
 });

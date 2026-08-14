@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "coverage": "migration/codemonster-ui-coverage.json",
+  "consumerInventory": "docs/verification/consumer-usage-inventory.md",
+  "documentation": "docs/verification/maturity-backlog.md",
+  "items": [
+    {
+      "id": "CMUI-B001",
+      "order": 1,
+      "roadmapItem": "CMUI-181",
+      "destination": "phase-17",
+      "priority": "P0",
+      "summary": "Mature DataTable pagination, selection, rendering, and column management",
+      "reason": "Annabel CMS already owns pagination and column-selection compositions around CmTable.",
+      "gaps": ["VfDataTable:material-portable-gap"]
+    },
+    {
+      "id": "CMUI-B002",
+      "order": 2,
+      "roadmapItem": "CMUI-177",
+      "destination": "phase-17",
+      "priority": "P0",
+      "summary": "Close foundation cohort content and input-affordance gaps",
+      "reason": "Input is used broadly by the real Vue consumer and Accordion is shared runtime proof.",
+      "gaps": ["VfAccordion:material-portable-gap", "VfInput:material-portable-gap"]
+    },
+    {
+      "id": "CMUI-B003",
+      "order": 3,
+      "roadmapItem": "CMUI-178",
+      "destination": "phase-17",
+      "priority": "P1",
+      "summary": "Resolve the remaining native-form and display cohort gap",
+      "reason": "The real Vue consumer uses Switch, while custom thumb content still needs a two-adapter decision.",
+      "gaps": ["VfSwitch:material-portable-gap"]
+    },
+    {
+      "id": "CMUI-B004",
+      "order": 4,
+      "roadmapItem": "CMUI-179",
+      "destination": "phase-17",
+      "priority": "P1",
+      "summary": "Mature navigation and overlay composition contracts",
+      "reason": "Application wrappers prove Vue demand; portable rich content and behavior still require Vue and Razor parity.",
+      "gaps": [
+        "VfDialog:material-portable-gap",
+        "VfDrawer:material-portable-gap",
+        "VfDropdown:material-portable-gap",
+        "VfMenu:material-portable-gap",
+        "VfMenuItem:remaining-migration-outcome",
+        "VfPopover:material-portable-gap",
+        "VfTabs:material-portable-gap",
+        "VfTooltip:material-portable-gap"
+      ]
+    },
+    {
+      "id": "CMUI-B005",
+      "order": 5,
+      "roadmapItem": "CMUI-180",
+      "destination": "phase-17",
+      "priority": "P1",
+      "summary": "Mature advanced inputs without weakening server-rendered fallback",
+      "reason": "These controls need explicit native submission, localization, and progressive-enhancement boundaries.",
+      "gaps": [
+        "VfCommandPalette:material-portable-gap",
+        "VfDatePicker:material-portable-gap",
+        "VfSelect:material-portable-gap"
+      ]
+    },
+    {
+      "id": "CMUI-B006",
+      "order": 6,
+      "roadmapItem": "CMUI-182",
+      "destination": "phase-17",
+      "priority": "P1",
+      "summary": "Verify layout primitives in both consumers",
+      "reason": "The Razor page uses Container and Stack, while both Vue consumers own their shell compositions.",
+      "gaps": []
+    },
+    {
+      "id": "CMUI-B007",
+      "order": 7,
+      "roadmapItem": "CMUI-183",
+      "destination": "phase-17",
+      "priority": "P1",
+      "summary": "Synchronize contracts, migration tooling, documentation, and examples",
+      "reason": "Every matured cohort must update its consumer-facing evidence before Phase 18 expansion.",
+      "gaps": []
+    },
+    {
+      "id": "CMUI-B008",
+      "order": 8,
+      "roadmapItem": "CMUI-184",
+      "destination": "phase-18",
+      "priority": "P1",
+      "summary": "Decide small portable component candidates",
+      "reason": "Fieldset, IconButton, and progress patterns have real Vue compositions; Tag remains showcase-only.",
+      "gaps": [
+        "VfFieldset:reviewed-disposition",
+        "VfIconButton:reviewed-disposition",
+        "VfProgressBar:reviewed-disposition",
+        "VfProgressSpinner:reviewed-disposition",
+        "VfTag:remaining-migration-outcome"
+      ]
+    },
+    {
+      "id": "CMUI-B009",
+      "order": 9,
+      "roadmapItem": "CMUI-185",
+      "destination": "phase-18",
+      "priority": "P2",
+      "summary": "Decide behavior-rich candidates only from shared demand",
+      "reason": "Column selection has real Vue demand; Menubar and the other candidates have no current Razor usage.",
+      "gaps": [
+        "VfDataTableColumnChooser:reviewed-disposition",
+        "VfMenuBar:reviewed-disposition",
+        "VfNavMenu:remaining-migration-outcome",
+        "VfStepper:reviewed-disposition",
+        "VfTableOfContents:reviewed-disposition"
+      ]
+    },
+    {
+      "id": "CMUI-B010",
+      "order": 10,
+      "roadmapItem": "CMUI-186",
+      "destination": "phase-18",
+      "priority": "P2",
+      "summary": "Implement only candidates approved by the two-platform gate",
+      "reason": "An approval creates the full contract, CSS, runtime, Vue, Razor, parity, documentation, and showcase workstream.",
+      "gaps": []
+    },
+    {
+      "id": "CMUI-B011",
+      "order": 11,
+      "roadmapItem": "CMUI-187",
+      "destination": "recipe",
+      "priority": "P0",
+      "summary": "Publish maintained application composition recipes",
+      "reason": "Theme and SkeletonGate recipes unblock the playground; the real Vue consumer proves demand for the remaining compositions.",
+      "gaps": [
+        "VfAuthLayout:maintained-recipe",
+        "VfConfirmDialog:maintained-recipe",
+        "VfErrorLayout:maintained-recipe",
+        "VfFormLayout:maintained-recipe",
+        "VfGroupBox:remaining-migration-outcome",
+        "VfPageHeader:maintained-recipe",
+        "VfPanel:maintained-recipe",
+        "VfSkeletonGate:remaining-migration-outcome",
+        "VfThemeSwitch:maintained-recipe"
+      ]
+    },
+    {
+      "id": "CMUI-B012",
+      "order": 12,
+      "roadmapItem": "CMUI-188",
+      "destination": "application-owned",
+      "priority": "P0",
+      "summary": "Keep product shells and workflow state application-owned",
+      "reason": "The consumers use different landmarks, navigation, persistence, and workflow policies; no shared Razor shell demand exists.",
+      "gaps": []
+    },
+    {
+      "id": "CMUI-B013",
+      "order": 13,
+      "roadmapItem": "CMUI-189",
+      "destination": "phase-18",
+      "priority": "P0",
+      "summary": "Remove the playground legacy design-system dependencies",
+      "reason": "This is the concrete consumer exit condition after required component and recipe work lands.",
+      "gaps": []
+    },
+    {
+      "id": "CMUI-B014",
+      "order": 14,
+      "roadmapItem": "CMUI-190",
+      "destination": "phase-18",
+      "priority": "P0",
+      "summary": "Run complete package, parity, and real-consumer verification",
+      "reason": "Migration completion requires both adapters and both representative consumers to pass together.",
+      "gaps": []
+    },
+    {
+      "id": "CMUI-B015",
+      "order": 15,
+      "roadmapItem": "CMUI-191",
+      "destination": "phase-18",
+      "priority": "P1",
+      "summary": "Publish the matured cohort and exact migration notes",
+      "reason": "Release only verified shared changes while leaving retained VueForge products available.",
+      "gaps": []
+    }
+  ],
+  "retainedProducts": [
+    {
+      "package": "@codemonster-ru/vueforge-icons",
+      "reason": "Icon rendering is a separately maintained product used by both Vue consumers."
+    },
+    {
+      "package": "@codemonster-ru/vueforge-codeblock",
+      "reason": "Highlighting and trusted generated markup do not have a current shared Vue and Razor contract."
+    },
+    {
+      "package": "@codemonster-ru/vueforge-playground",
+      "reason": "Executable preview infrastructure is a retained Vue product rather than design-system UI."
+    },
+    {
+      "package": "@codemonster-ru/vueforge-playground-core",
+      "reason": "Browser compilation sessions remain framework-independent Playground infrastructure."
+    },
+    {
+      "package": "@codemonster-ru/vueforge-playground-vite-plugin",
+      "reason": "Virtual demo module generation remains build-tool infrastructure for the retained Playground product."
+    }
+  ]
+}
