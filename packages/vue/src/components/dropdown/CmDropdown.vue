@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
 import CmMenu from '../menu/CmMenu.vue';
@@ -26,6 +26,7 @@ const emit = defineEmits<{
   'update:open': [open: boolean];
 }>();
 const attrs = useAttrs();
+const slots = useSlots();
 const root = ref<HTMLElement>();
 const trigger = ref<HTMLButtonElement>();
 const localOpen = ref(props.open && !props.disabled);
@@ -74,6 +75,10 @@ function onSelect(value: string): void {
   setOpen(false, true);
 }
 
+function toggle(): void {
+  setOpen(!localOpen.value);
+}
+
 function onDocumentClick(event: MouseEvent): void {
   if (event.target instanceof Node && !root.value?.contains(event.target)) setOpen(false);
 }
@@ -90,13 +95,14 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
       class="cm-dropdown__trigger"
       type="button"
       aria-haspopup="menu"
+      :aria-label="slots.trigger ? props.label : undefined"
       :aria-controls="`${props.id}-menu`"
       :aria-expanded="localOpen"
       :disabled="props.disabled || undefined"
-      @click="setOpen(!localOpen)"
+      @click="toggle"
       @keydown="onTriggerKeydown"
     >
-      {{ props.label }}
+      <slot name="trigger" :open="localOpen" :disabled="props.disabled" :toggle="toggle">{{ props.label }}</slot>
     </button>
     <CmMenu
       :id="`${props.id}-menu`"

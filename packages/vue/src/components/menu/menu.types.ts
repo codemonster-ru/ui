@@ -4,6 +4,8 @@ export interface CmMenuItem {
   id: string;
   label: string;
   href?: string;
+  target?: string;
+  rel?: string;
   disabled?: boolean;
   active?: boolean;
   tone?: CmMenuItemTone;

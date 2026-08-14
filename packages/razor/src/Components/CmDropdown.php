@@ -46,10 +46,13 @@ final class CmDropdown implements ComponentInterface
             'aria-labelledby' => "{$id}-trigger",
             'hidden' => !$open,
         ], []));
+        $trigger = $context->hasSlot('trigger') ? $context->slot('trigger') : $label;
 
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.dropdown', [
             'id' => $id,
             'label' => $label,
+            'trigger' => $trigger,
+            'customTrigger' => $context->hasSlot('trigger'),
             'open' => $open,
             'disabled' => $disabled,
             'menu' => $menu,

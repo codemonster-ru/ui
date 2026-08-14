@@ -29,6 +29,10 @@ final class CmNavigationComponentsParityTest extends TestCase
             $props['aria-label'] = $props['ariaLabel'];
             unset($props['ariaLabel']);
         }
+        if (isset($props['defaultValue'])) {
+            $props['default-value'] = $props['defaultValue'];
+            unset($props['defaultValue']);
+        }
         $slots = [];
         foreach ($case['slots'] as $name => $content) {
             $slots[$name] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($content);

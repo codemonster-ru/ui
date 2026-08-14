@@ -12,9 +12,24 @@
       "required": false,
       "default": null,
       "valueContract": "tab-value"
+    },
+    "defaultValue": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "valueContract": "tab-value"
     }
   },
-  "slots": {},
+  "slots": {
+    "tab{UpperCamelValue}": {
+      "description": "Trusted content inside an item tab.",
+      "scopeContract": "tab-item-state"
+    },
+    "panel{UpperCamelValue}": {
+      "description": "Trusted content inside an item panel.",
+      "scopeContract": "tab-item-state"
+    }
+  },
   "events": {
     "valueChange": { "description": "Reports the selected enabled tab value.", "payloadContract": "tab-value" }
   },

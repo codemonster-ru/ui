@@ -24,6 +24,8 @@ const normalizedItems = computed(() => {
       !idPattern.test(item.id) ||
       !item.label.trim() ||
       (item.href !== undefined && !item.href.trim()) ||
+      (item.target !== undefined && !item.target.trim()) ||
+      (item.rel !== undefined && !item.rel.trim()) ||
       (item.tone !== undefined && !['default', 'danger'].includes(item.tone)) ||
       ids.has(item.id)
     ) {
@@ -44,6 +46,17 @@ function itemClasses(item: CmMenuItem): string {
     item.active ? 'cm-menu__item--active' : undefined,
     item.tone === 'danger' ? 'cm-menu__item--danger' : undefined,
   );
+}
+
+function itemSlotName(id: string): string {
+  return `item${id
+    .split('-')
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join('')}`;
+}
+
+function itemRel(item: CmMenuItem): string | undefined {
+  return item.rel ?? (item.target === '_blank' ? 'noopener noreferrer' : undefined);
 }
 
 function activate(event: MouseEvent, item: CmMenuItem): void {
@@ -90,6 +103,8 @@ function move(event: KeyboardEvent): void {
       :class="itemClasses(item)"
       :type="item.href ? undefined : 'button'"
       :href="item.href && !item.disabled ? item.href : undefined"
+      :target="item.href ? item.target : undefined"
+      :rel="item.href ? itemRel(item) : undefined"
       role="menuitem"
       :tabindex="!item.disabled && normalizedItems.findIndex((candidate) => !candidate.disabled) === index ? 0 : -1"
       data-cm-menu-item
@@ -99,7 +114,9 @@ function move(event: KeyboardEvent): void {
       :aria-current="item.active ? 'true' : undefined"
       @click="activate($event, item)"
     >
-      <span class="cm-menu__item-label">{{ item.label }}</span>
+      <span class="cm-menu__item-label">
+        <slot :name="itemSlotName(item.id)" :item="item">{{ item.label }}</slot>
+      </span>
     </component>
   </div>
 </template>

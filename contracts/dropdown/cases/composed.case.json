@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "dropdown-composed",
+  "description": "Dropdown with trusted trigger content inside the owned button.",
+  "props": {
+    "id": "project-tools",
+    "label": "Project tools",
+    "open": true,
+    "items": [{ "id": "refresh", "label": "Refresh" }]
+  },
+  "slots": {
+    "trigger": "<span aria-hidden=\"true\">•••</span>"
+  }
+}

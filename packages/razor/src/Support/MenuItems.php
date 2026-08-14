@@ -10,7 +10,7 @@ final class MenuItems
 {
     /**
      * @param array<mixed> $values
-     * @return list<array{id: string, label: string, href: ?string, disabled: bool, active: bool, tone: string, tabindex: int}>
+     * @return list<array{id: string, label: string, href: ?string, target: ?string, rel: ?string, disabled: bool, active: bool, tone: string, tabindex: int}>
      */
     public static function normalize(array $values): array
     {
@@ -30,6 +30,8 @@ final class MenuItems
                 || !is_string($value['label'] ?? null)
                 || trim($value['label']) === ''
                 || (isset($value['href']) && (!is_string($value['href']) || trim($value['href']) === ''))
+                || (isset($value['target']) && (!is_string($value['target']) || trim($value['target']) === ''))
+                || (isset($value['rel']) && (!is_string($value['rel']) || trim($value['rel']) === ''))
                 || (isset($value['disabled']) && !is_bool($value['disabled']))
                 || (isset($value['active']) && !is_bool($value['active']))
                 || (isset($value['tone']) && !in_array($value['tone'], ['default', 'danger'], true))) {
@@ -46,6 +48,8 @@ final class MenuItems
                 'id' => $value['id'],
                 'label' => $value['label'],
                 'href' => $value['href'] ?? null,
+                'target' => $value['target'] ?? null,
+                'rel' => $value['rel'] ?? (($value['target'] ?? null) === '_blank' ? 'noopener noreferrer' : null),
                 'disabled' => $disabled,
                 'active' => $value['active'] ?? false,
                 'tone' => $value['tone'] ?? 'default',

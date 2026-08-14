@@ -25,13 +25,14 @@ final class CmTabs implements ComponentInterface
         $id = $props->string('id');
         $items = $this->items($props->array('items'));
         $requested = $props->nullableString('value');
+        $defaultValue = $props->nullableString('default-value');
         if (trim($id) === '') throw new InvalidArgumentException('Component prop [id] must be non-empty.');
         $active = null;
         foreach ($items as $item) {
             if ($active === null && !$item['disabled']) {
                 $active = $item;
             }
-            if (!$item['disabled'] && $item['value'] === $requested) {
+            if (!$item['disabled'] && $item['value'] === ($requested ?? $defaultValue)) {
                 $active = $item;
                 break;
             }
@@ -42,7 +43,18 @@ final class CmTabs implements ComponentInterface
 
         $renderItems = [];
         foreach ($items as $item) {
-            $renderItems[] = [...$item, 'active' => $item['value'] === $active['value']];
+            $tabSlot = $this->itemSlotName('tab', $item['value']);
+            $panelSlot = $this->itemSlotName('panel', $item['value']);
+            if ($item['content'] === null && !$context->hasSlot($panelSlot)) {
+                throw new InvalidArgumentException('Tab items require content or a panel slot.');
+            }
+            $renderItems[] = [
+                ...$item,
+                'active' => $item['value'] === $active['value'],
+                'panelId' => "{$id}-panel-{$item['value']}",
+                'tab' => $context->hasSlot($tabSlot) ? $context->slot($tabSlot) : $item['label'],
+                'panel' => $context->hasSlot($panelSlot) ? $context->slot($panelSlot) : ($item['content'] ?? ''),
+            ];
         }
 
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.tabs', [
@@ -56,7 +68,7 @@ final class CmTabs implements ComponentInterface
 
     /**
      * @param array<mixed> $values
-     * @return list<array{value: string, label: string, content: string, disabled: bool}>
+     * @return list<array{value: string, label: string, content: ?string, disabled: bool}>
      */
     private function items(array $values): array
     {
@@ -69,7 +81,7 @@ final class CmTabs implements ComponentInterface
                 || isset($ids[$value['value']])
                 || !is_string($value['label'] ?? null)
                 || trim($value['label']) === ''
-                || !is_string($value['content'] ?? null)
+                || (isset($value['content']) && !is_string($value['content']))
                 || (isset($value['disabled']) && !is_bool($value['disabled']))) {
                 throw new InvalidArgumentException('Component prop [items] contains an invalid Tab item.');
             }
@@ -77,7 +89,7 @@ final class CmTabs implements ComponentInterface
             $items[] = [
                 'value' => $value['value'],
                 'label' => $value['label'],
-                'content' => $value['content'],
+                'content' => $value['content'] ?? null,
                 'disabled' => $value['disabled'] ?? false,
             ];
         }
@@ -98,5 +110,13 @@ final class CmTabs implements ComponentInterface
     {
         if ($value === null || is_string($value)) return $value;
         throw new InvalidArgumentException('Component attribute [class] must be a string.');
+    }
+
+    private function itemSlotName(string $region, string $value): string
+    {
+        return $region . implode('', array_map(
+            static fn (string $part): string => ucfirst($part),
+            explode('-', $value),
+        ));
     }
 }
