@@ -1,6 +1,5 @@
 <template>
-  <VfThemeProvider>
-    <main class="demo-page">
+  <main class="demo-page">
       <div class="demo-container">
         <CmStack>
         <section class="demo-block">
@@ -28,29 +27,25 @@
             <p class="demo-text">Use this mode for a self-contained browser example with no build step.</p>
           </div>
           <CmSection class="demo-surface" surface>
-            <VfSkeletonGate
-              :ready="playgroundReady"
-              :min-height="260"
-              :preserve-last-height="true"
-              :normalize-content-spacing="true"
-              radius="var(--vf-layout-section-radius)"
-            >
-              <VfPlaygroundAsync
-                :files="singleFileExample"
-                entry="/index.html"
-                framework="html"
-                :autorun="true"
-                :show-code="true"
-                theme="inherit"
-                @ready="onPlaygroundReady"
-                @preview-ready="onPlaygroundReady"
-                @run="onRun"
-                @error="onError"
-              />
-              <template #skeleton>
+            <div class="demo-loading-gate" :aria-busy="playgroundReady ? 'false' : 'true'">
+              <div v-if="!playgroundReady" class="demo-loading-gate__placeholder">
                 <CmSkeleton :min-height="260" radius="surface" />
-              </template>
-            </VfSkeletonGate>
+              </div>
+              <div :hidden="!playgroundReady" :inert="!playgroundReady">
+                <VfPlaygroundAsync
+                  :files="singleFileExample"
+                  entry="/index.html"
+                  framework="html"
+                  :autorun="true"
+                  :show-code="true"
+                  theme="inherit"
+                  @ready="onPlaygroundReady"
+                  @preview-ready="onPlaygroundReady"
+                  @run="onRun"
+                  @error="onError"
+                />
+              </div>
+            </div>
           </CmSection>
         </section>
 
@@ -60,29 +55,25 @@
             <p class="demo-text">Use this mode when JavaScript imports related source and stylesheet files.</p>
           </div>
           <CmSection class="demo-surface" surface>
-            <VfSkeletonGate
-              :ready="playgroundReady"
-              :min-height="260"
-              :preserve-last-height="true"
-              :normalize-content-spacing="true"
-              radius="var(--vf-layout-section-radius)"
-            >
-              <VfPlaygroundAsync
-                :files="multiFileExample"
-                entry="/main.js"
-                framework="vanilla"
-                :autorun="true"
-                :show-code="true"
-                theme="inherit"
-                @ready="onPlaygroundReady"
-                @preview-ready="onPlaygroundReady"
-                @run="onRun"
-                @error="onError"
-              />
-              <template #skeleton>
+            <div class="demo-loading-gate" :aria-busy="playgroundReady ? 'false' : 'true'">
+              <div v-if="!playgroundReady" class="demo-loading-gate__placeholder">
                 <CmSkeleton :min-height="260" radius="surface" />
-              </template>
-            </VfSkeletonGate>
+              </div>
+              <div :hidden="!playgroundReady" :inert="!playgroundReady">
+                <VfPlaygroundAsync
+                  :files="multiFileExample"
+                  entry="/main.js"
+                  framework="vanilla"
+                  :autorun="true"
+                  :show-code="true"
+                  theme="inherit"
+                  @ready="onPlaygroundReady"
+                  @preview-ready="onPlaygroundReady"
+                  @run="onRun"
+                  @error="onError"
+                />
+              </div>
+            </div>
           </CmSection>
         </section>
 
@@ -92,28 +83,24 @@
             <p class="demo-text">Render a trusted Vue component directly when iframe isolation is unnecessary.</p>
           </div>
           <CmSection class="demo-surface" surface>
-            <VfSkeletonGate
-              :ready="playgroundReady"
-              :min-height="260"
-              :preserve-last-height="true"
-              :normalize-content-spacing="true"
-              radius="var(--vf-layout-section-radius)"
-            >
-              <VfPlaygroundAsync
-                mode="component"
-                :component="componentModeDemo"
-                :component-files="componentModeFiles"
-                component-entry="DemoCard.vue"
-                theme="inherit"
-                :component-padding="24"
-                component-min-height="220px"
-                @ready="onPlaygroundReady"
-                @preview-ready="onPlaygroundReady"
-              />
-              <template #skeleton>
+            <div class="demo-loading-gate" :aria-busy="playgroundReady ? 'false' : 'true'">
+              <div v-if="!playgroundReady" class="demo-loading-gate__placeholder">
                 <CmSkeleton :min-height="260" radius="surface" />
-              </template>
-            </VfSkeletonGate>
+              </div>
+              <div :hidden="!playgroundReady" :inert="!playgroundReady">
+                <VfPlaygroundAsync
+                  mode="component"
+                  :component="componentModeDemo"
+                  :component-files="componentModeFiles"
+                  component-entry="DemoCard.vue"
+                  theme="inherit"
+                  :component-padding="24"
+                  component-min-height="220px"
+                  @ready="onPlaygroundReady"
+                  @preview-ready="onPlaygroundReady"
+                />
+              </div>
+            </div>
           </CmSection>
         </section>
 
@@ -138,16 +125,12 @@
         </section>
         </CmStack>
       </div>
-    </main>
-  </VfThemeProvider>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
-import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
-import { CmSkeleton } from '@codemonster-ru/ui-vue';
-import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
-import { CmSection, CmStack } from '@codemonster-ru/ui-vue';
+import { CmSection, CmSkeleton, CmStack } from '@codemonster-ru/ui-vue';
 import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
