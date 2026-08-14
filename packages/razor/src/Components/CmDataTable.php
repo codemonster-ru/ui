@@ -70,6 +70,8 @@ final readonly class CmDataTable implements ComponentInterface
         $renderRows = array_map(static fn (array $row): array => [
             ...$row, 'selected' => in_array($row['id'], $selected, true),
         ], $rows);
+        $selectableRows = array_filter($renderRows, static fn (array $row): bool => $row['selectable']);
+        $selectedSelectableRows = array_filter($selectableRows, static fn (array $row): bool => $row['selected']);
         $attributes = new AttributeBag($props->remaining());
         $classes = (new ClassBuilder())->add('cm-data-table')
             ->addWhen($density === 'compact', 'cm-data-table--compact')->addWhen($striped, 'cm-data-table--striped')
@@ -88,6 +90,8 @@ final readonly class CmDataTable implements ComponentInterface
             'previousPageText' => $previousPageText, 'nextPageText' => $nextPageText,
             'previousPageLabel' => $previousPageLabel, 'nextPageLabel' => $nextPageLabel,
             'selectAllLabel' => $selectAllLabel, 'classes' => $classes, 'stateText' => $stateText,
+            'selectableRowCount' => count($selectableRows),
+            'selectedSelectableRowCount' => count($selectedSelectableRows),
             'columnCount' => count($columns) + ($selectable ? 1 : 0),
             'attributes' => $attributes->without(['class', 'id', 'data-cm-controller', 'data-cm-data-table-sort-key',
                 'data-cm-data-table-sort-direction', 'data-cm-data-table-page', 'data-cm-data-table-page-count',

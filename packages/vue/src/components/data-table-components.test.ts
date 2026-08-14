@@ -45,6 +45,23 @@ describe('Vue data table components', () => {
     expect(wrapper.emitted('pageChange')).toEqual([[3]]);
   });
 
+  it('preserves disabled selections when selecting eligible rows', async () => {
+    const constrainedRows = [{ ...rows[0]!, selectable: false }, rows[1]!];
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns,
+        rows: constrainedRows,
+        selectable: true,
+        selectedRowIds: ['apollo'],
+      },
+    });
+    const inputs = wrapper.findAll<HTMLInputElement>('[data-cm-data-table-select-row]');
+    expect(inputs[0]!.attributes('disabled')).toBeDefined();
+    await wrapper.get<HTMLInputElement>('[data-cm-data-table-select-all]').setValue(true);
+    expect(wrapper.emitted('selectionChange')).toEqual([[['apollo', 'zephyr']]]);
+  });
+
   it('reports a page-size request and resets the requested page', async () => {
     const wrapper = mount(CmDataTable, {
       props: {
@@ -99,5 +116,10 @@ describe('Vue data table components', () => {
     expect(() =>
       mount(CmDataTable, { props: { id: 'projects', columns, rows, pageSize: 10, pageSizeOptions: [25, 50] } }),
     ).toThrow(/pageSizeOptions must contain pageSize/u);
+    expect(() =>
+      mount(CmDataTable, {
+        props: { id: 'projects', columns, rows: [{ ...rows[0]!, selectable: 'no' as unknown as boolean }] },
+      }),
+    ).toThrow(/Invalid DataTable row/u);
   });
 });

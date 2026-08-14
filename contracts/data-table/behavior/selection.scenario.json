@@ -3,6 +3,7 @@
   "id": "data-table-selection",
   "case": "data-table-interactive",
   "steps": [
+    { "expect": "attribute", "target": "select-first", "name": "disabled", "value": "" },
     { "action": "click", "target": "select-last" },
     { "expect": "attribute", "target": "root", "name": "data-cm-data-table-selected-count", "value": "2" },
     { "expect": "eventCount", "target": "root", "name": "cm:data-table-selection-change", "count": 1 }
