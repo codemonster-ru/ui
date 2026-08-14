@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 17 — Direct replacement maturity
 - Current milestone: M10 — Mature direct replacements
-- Next item: `CMUI-181` Mature DataTable from real-consumer demand.
+- Next item: `CMUI-177` Mature the foundation direct-replacement cohort.
 
 ## Milestones
 
@@ -108,7 +108,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
   dismissal, controlled-state, and progressive-enhancement behavior.
 - [ ] `CMUI-180` Close Select, DatePicker, and CommandPalette capability gaps, including native
   submission and server-rendered fallback behavior.
-- [ ] `CMUI-181` Close Table and DataTable capability gaps, including the approved sorting,
+- [x] `CMUI-181` Close Table and DataTable capability gaps, including the approved sorting,
   pagination, selection, empty, error, and column-management use cases.
 - [ ] `CMUI-182` Close layout primitive gaps and verify the documented shell-composition boundary in
   both representative consumers.
@@ -155,6 +155,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-14 | Mature Vue and Annabel Razor before scheduling React or Angular. | Validate the cross-platform model and close known migration gaps with the two active consumers before multiplying adapter work. | All |
 | 2026-08-14 | Separate catalog presence from capability parity. | Matching component names and files do not prove that stable VueForge use cases survived migration. | `CMUI-170`–`CMUI-183` |
 | 2026-08-14 | Make unresolved migration gaps visible in the playground. | The 1.0 example migration removed much of the old showcase and made omitted functionality look deleted or completed. | `CMUI-174` |
+| 2026-08-14 | Keep DataTable scalar and assign rich rendering and advanced-grid policy to applications. | Vue callbacks and trusted rich content do not form a safe Razor data contract; representative demand is satisfied by portable pagination, selection, ordered visibility, and localization plus explicit CmTable composition. | `CMUI-181` |
 
 ## Scope-change log
 

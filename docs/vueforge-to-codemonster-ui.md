@@ -68,6 +68,11 @@ ThemeSwitch, all application shells, SetupLayout, and standalone shell areas req
 They have no direct stable component replacement. Native HTML and the listed CodeMonster UI
 primitives are preferred where sufficient.
 
+`CmDataTable` now covers portable page-size controls and summaries, eligible-row selection, ordered
+visible columns, and localizable interaction labels. Migrate rich cells and expanded content to an
+application-owned `CmTable` composition; keep multi-sort and interactive column layout policy in
+the application.
+
 ## Read-only checker
 
 Run the migration checker against one or more source paths:

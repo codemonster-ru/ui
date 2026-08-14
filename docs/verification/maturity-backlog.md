@@ -6,7 +6,7 @@ Roadmap item: `CMUI-176`
 
 The canonical backlog is
 [`migration/codemonster-ui-maturity-backlog.json`](../../migration/codemonster-ui-maturity-backlog.json).
-Its order combines the 34 unresolved coverage gaps with the consumer evidence recorded by
+Its order combines the 33 unresolved coverage gaps with the consumer evidence recorded by
 [`CMUI-175`](./consumer-usage-inventory.md). The coverage gate requires every missing capability to
 appear exactly once and to retain the same roadmap assignment.
 
@@ -14,7 +14,7 @@ appear exactly once and to retain the same roadmap assignment.
 
 | Order | Item       | Priority | Destination       | Outcome                                                           | Gap count |
 | ----: | ---------- | -------- | ----------------- | ----------------------------------------------------------------- | --------: |
-|     1 | `CMUI-181` | P0       | Phase 17          | DataTable pagination, selection, rendering, and column management |         1 |
+|     1 | `CMUI-181` | P0       | Phase 17          | Portable DataTable controls and explicit advanced-grid ownership  |         0 |
 |     2 | `CMUI-177` | P0       | Phase 17          | Foundation cohort content and input affordances                   |         2 |
 |     3 | `CMUI-178` | P1       | Phase 17          | Remaining display and native-form behavior                        |         1 |
 |     4 | `CMUI-179` | P1       | Phase 17          | Navigation and overlay composition contracts                      |         8 |
@@ -37,8 +37,9 @@ their gap through an explicit superseded, application-owned, or retained decisio
 
 ## Consumer-driven decisions
 
-- DataTable moves first because the real Annabel Vue admin already owns pagination and column
-  controls around the shared table primitives.
+- DataTable moved first because the real Annabel Vue admin owns pagination and column controls.
+  The shared scalar contract now covers those controls; rich rendering and advanced grid policy
+  remain application-owned.
 - Theme and SkeletonGate recipes are P0 because they block removal of the playground's legacy
   runtime. The remaining recipe set is backed by real Vue application compositions.
 - Menubar, Stepper, TableOfContents, and navigation-tree expansion remain P2 because current Razor

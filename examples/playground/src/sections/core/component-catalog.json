@@ -201,14 +201,6 @@
       "summary": "Publish a maintained recipe covering focus, loading lock, confirm, and cancel in `CMUI-187`"
     },
     {
-      "source": "VfDataTable",
-      "disposition": "replace",
-      "targets": ["CmDataTable"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-181",
-      "summary": "Page-size controls and pagination summaries; row-select constraints and row expansion; custom header/cell/state/footer rendering; column visibility/order/reordering/resizing/pinning; multi-sort; skeleton loading modes; complete localization labels"
-    },
-    {
       "source": "VfDataTableColumnChooser",
       "disposition": "manual",
       "targets": ["CmCheckbox", "CmPopover"],
