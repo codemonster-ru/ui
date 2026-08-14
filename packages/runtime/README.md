@@ -2,7 +2,7 @@
 
 Framework-independent progressive enhancement for canonical CodeMonster UI markup.
 
-Current release: `@codemonster-ru/ui-runtime@1.0.0`.
+Current release: `@codemonster-ru/ui-runtime@1.1.0`.
 
 The package provides controller registration, scoped discovery, idempotent lifecycle management,
 optional mutation observation, typed `cm:*` custom-event helpers, Accordion interaction, and native
@@ -19,7 +19,7 @@ HTML behavior.
 ## Installation
 
 ```bash
-npm install @codemonster-ru/ui-runtime@^1.0.0 @codemonster-ru/ui-css@^1.0.0
+npm install @codemonster-ru/ui-runtime@^1.1.0 @codemonster-ru/ui-css@^1.1.0
 ```
 
 ## Quick start

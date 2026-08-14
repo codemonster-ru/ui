@@ -2,6 +2,25 @@
 
 All notable changes to this package will be documented in this file.
 
+## 1.1.0
+
+### Added
+
+- Adds Fieldset, IconButton, ProgressBar, and ProgressSpinner styles, standalone exports, and
+  complete-bundle integration.
+- Adds shared styles for Input inline actions, Select and DatePicker clear actions, Switch thumb
+  content, CommandPalette asynchronous states, and expanded DataTable controls.
+
+### Changed
+
+- Aligns overlay composition and loading animation timing with the reviewed portable contracts.
+- Points repository, issue tracker, and homepage metadata at the dedicated CodeMonster UI
+  repository.
+
+### Fixed
+
+- Restores document font scaling instead of overriding the browser text-size preference.
+
 ## 1.0.0
 
 ### Added

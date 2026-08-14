@@ -13,6 +13,7 @@ adapters aligned without hiding their native composition models.
 ## Start here
 
 - [Install CodeMonster UI for Vue or Razor](./getting-started.md).
+- [Review the CodeMonster UI 1.1 release cohort](./codemonster-ui-1.1-release-notes.md).
 - [Configure design tokens and themes](./tokens/getting-started.md).
 - [Load the shared CSS](./css/getting-started.md) or review its [utility contract](./css/utilities.md).
 

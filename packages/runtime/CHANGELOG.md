@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.1.0
+
+### Added
+
+- Adds progressive enhancement for Input clearing and password visibility plus Select clearing.
+- Adds DataTable page-size requests, pagination summaries, selection eligibility, and localizable
+  interaction labels.
+- Adds CommandPalette loading and idle-state synchronization for asynchronous results.
+
+### Changed
+
+- Points repository, issue tracker, and homepage metadata at the dedicated CodeMonster UI
+  repository.
+
 ## 1.0.0
 
 - Promotes the registry-validated progressive-enhancement contract from `1.0.0-rc.1` without API

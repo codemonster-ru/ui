@@ -2,7 +2,7 @@
 
 Framework-independent design tokens and theme serialization for CodeMonster UI.
 
-Current release: `@codemonster-ru/ui-tokens@1.0.0`.
+Current release: `@codemonster-ru/ui-tokens@1.0.1`.
 
 ## Requirements
 
@@ -48,7 +48,7 @@ console.log(
 ## Installation
 
 ```bash
-npm install @codemonster-ru/ui-tokens@^1.0.0
+npm install @codemonster-ru/ui-tokens@^1.0.1
 ```
 
 Import the generated properties once in the application stylesheet:

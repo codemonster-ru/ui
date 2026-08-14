@@ -9,7 +9,7 @@ const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const annabelRepository = resolve(process.env.ANNABEL_REPOSITORY ?? resolve(repositoryRoot, '../../PHP/annabel'));
 const composerCache = resolve(process.env.COMPOSER_CACHE_DIRECTORY ?? `${process.env.HOME}/.cache/composer`);
 const dockerImage = process.env.ANNABEL_PHP_IMAGE ?? 'annabel-php';
-const composerVersion = '1.0.1';
+const composerVersion = '1.1.0';
 
 if (!existsSync(resolve(annabelRepository, 'packages/razor/composer.json'))) {
   throw new Error(`Annabel repository not found at ${annabelRepository}. Set ANNABEL_REPOSITORY to its absolute path.`);

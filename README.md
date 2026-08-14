@@ -3,21 +3,22 @@
 CodeMonster UI is a cross-platform design system with shared tokens, CSS, browser behavior, and
 supported adapters for Vue 3 and Annabel Razor.
 
-## CodeMonster UI 1.0
+## CodeMonster UI 1.1
 
 Install the stable Vue packages:
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.0.0 @codemonster-ru/ui-css@^1.0.0
+npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.1.0 @codemonster-ru/ui-css@^1.1.0
 ```
 
 Install the stable Annabel Razor package:
 
 ```bash
-composer require codemonster-ru/ui-razor:^1.0.1
+composer require codemonster-ru/ui-razor:^1.1.0
 ```
 
-See the [component documentation](./docs/components/button.md),
+See the [CodeMonster UI 1.1 release notes](./docs/codemonster-ui-1.1-release-notes.md),
+[component documentation](./docs/components/button.md),
 [CSS-only guide](./docs/css/getting-started.md), and
 [VueForge migration guide](./docs/vueforge-to-codemonster-ui.md).
 
@@ -25,7 +26,7 @@ See the [component documentation](./docs/components/button.md),
 
 VueForge design-system foundations are in maintenance. They receive critical security and
 correctness fixes, but no new component families or design-system foundations. Use
-[CodeMonster UI 1.0](./docs/vueforge-to-codemonster-ui.md) for new shared Vue and Annabel Razor UI
+[CodeMonster UI 1.1](./docs/codemonster-ui-1.1-release-notes.md) for new shared Vue and Annabel Razor UI
 work.
 
 Existing VueForge releases remain installable and are not being unpublished. Icons remain

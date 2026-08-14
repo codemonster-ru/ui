@@ -2,6 +2,13 @@
 
 All notable changes to this package will be documented in this file.
 
+## 1.0.1
+
+### Changed
+
+- Points repository, issue tracker, and homepage metadata at the dedicated CodeMonster UI
+  repository.
+
 ## 1.0.0
 
 ### Added
