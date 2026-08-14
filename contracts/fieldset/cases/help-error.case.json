@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "fieldset-help-error",
+  "description": "Trusted legend and supporting content describe an invalid group.",
+  "props": {
+    "id": "contact-method",
+    "label": "Ignored fallback",
+    "description": "Choose every acceptable method.",
+    "error": "Choose at least one method."
+  },
+  "slots": {
+    "legend": "Contact <strong>method</strong>",
+    "default": "<label><input name=\"contact_method\" type=\"radio\" value=\"email\"> Email</label>",
+    "description": "Choose every <em>acceptable</em> method.",
+    "error": "Choose <strong>at least one</strong> method."
+  }
+}

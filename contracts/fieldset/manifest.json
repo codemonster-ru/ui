@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "name": "Fieldset",
+  "slug": "fieldset",
+  "razorTag": "cm-fieldset",
+  "description": "A named native fieldset with shared description and validation relationships.",
+  "props": {
+    "id": {
+      "type": "string",
+      "required": true,
+      "description": "Stable native id used to derive supporting-region ids."
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "description": "Fallback visible legend used when the legend slot is absent."
+    },
+    "description": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "Fallback help text used when the description slot is absent."
+    },
+    "error": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "Fallback validation message used when the error slot is absent."
+    },
+    "invalid": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Marks the group invalid even when no error content is rendered."
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true,
+      "description": "Trusted grouped form controls with derived accessibility metadata.",
+      "scopeContract": "fieldset-state"
+    },
+    "legend": {
+      "required": false,
+      "description": "Trusted visible legend content that takes precedence over label."
+    },
+    "description": {
+      "required": false,
+      "description": "Trusted help content that takes precedence over description."
+    },
+    "error": {
+      "required": false,
+      "description": "Trusted validation content that takes precedence over error."
+    }
+  },
+  "events": {},
+  "states": ["default", "invalid"],
+  "relatedComponents": ["Field"]
+}
