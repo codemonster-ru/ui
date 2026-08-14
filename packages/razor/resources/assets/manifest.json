@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "bfed0ba786509a9a7d7491474ee4ce6722d35fc82eed90aba68239dc71b64c48",
+      "sha256": "fd8513621204cf5032bc4c914587df3d1e59f5f9d040a1ec95042ef273067c25",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
@@ -271,6 +271,16 @@
         "export": "./field.css"
       }
     },
+    "css:components/fieldset.css": {
+      "path": "css/css/components/fieldset.css",
+      "mediaType": "text/css",
+      "sha256": "673c95328e8e8e753e886bb12803d0e16a7c9de1fe3f2fe5ec0c01645a6887d6",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "1.0.0",
+        "export": "./fieldset.css"
+      }
+    },
     "css:components/grid.css": {
       "path": "css/css/components/grid.css",
       "mediaType": "text/css",
@@ -279,6 +289,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
         "export": "./grid.css"
+      }
+    },
+    "css:components/icon-button.css": {
+      "path": "css/css/components/icon-button.css",
+      "mediaType": "text/css",
+      "sha256": "6aa45f579ef1a05934755d21dd3ca35e3c29018a4e6868517d3e112db11f92e2",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "1.0.0",
+        "export": "./icon-button.css"
       }
     },
     "css:components/input.css": {
@@ -329,6 +349,26 @@
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",
         "export": "./popover.css"
+      }
+    },
+    "css:components/progress-bar.css": {
+      "path": "css/css/components/progress-bar.css",
+      "mediaType": "text/css",
+      "sha256": "47f61e2c0b2986b48531fe7397f223af6574b0752c5fa7357abbe1968c92dac8",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "1.0.0",
+        "export": "./progress-bar.css"
+      }
+    },
+    "css:components/progress-spinner.css": {
+      "path": "css/css/components/progress-spinner.css",
+      "mediaType": "text/css",
+      "sha256": "feea558678f78ec8d5ea79193eeb718f8666ecc3d108dbfe1a087414c52974dd",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "1.0.0",
+        "export": "./progress-spinner.css"
       }
     },
     "css:components/radio.css": {

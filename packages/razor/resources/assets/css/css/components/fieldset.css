@@ -1,0 +1,42 @@
+.cm-fieldset {
+  display: grid;
+  gap: var(--cm-space-2);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--cm-color-text-primary);
+}
+
+.cm-fieldset__legend {
+  margin: 0;
+  padding: 0;
+  font-size: var(--cm-font-size-sm);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-tight);
+}
+
+.cm-fieldset--invalid .cm-fieldset__legend {
+  color: var(--cm-color-status-danger-subtle-foreground);
+}
+
+.cm-fieldset__content {
+  display: grid;
+  gap: var(--cm-space-2);
+  min-inline-size: 0;
+}
+
+.cm-fieldset__description,
+.cm-fieldset__error {
+  margin: 0;
+  font-size: var(--cm-font-size-sm);
+  line-height: var(--cm-line-height-normal);
+}
+
+.cm-fieldset__description {
+  color: var(--cm-color-text-secondary);
+}
+
+.cm-fieldset__error {
+  color: var(--cm-color-status-danger-subtle-foreground);
+}
