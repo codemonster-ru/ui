@@ -2,14 +2,16 @@
 
 Status: Complete
 Date: 2026-08-14
+Last verified: 2026-08-15
 Roadmap item: `CMUI-175`
 
 ## Scope and baselines
 
 This inventory separates three kinds of evidence that must not be conflated:
 
-1. `examples/playground` is the repository-owned Vue migration consumer. It still exercises the
-   remaining `vueforge-core` and `vueforge-layouts` dependencies and is the concrete removal target.
+1. `examples/playground` is the repository-owned Vue migration consumer. `CMUI-189` removed its
+   direct `vueforge-core` and `vueforge-layouts` dependencies after the approved replacements and
+   recipes landed.
 2. Annabel CMS admin is the real cross-repository Vue consumer previously approved by `CMUI-159`.
    It establishes application demand but has already removed both legacy runtime dependencies.
 3. The Annabel CMS public page template is the real Annabel Razor consumer. Only server-rendered
@@ -26,27 +28,26 @@ fixtures are excluded from usage counts.
 
 ## Repository Vue migration usage
 
-The playground declares both `@codemonster-ru/vueforge-core` and
-`@codemonster-ru/vueforge-layouts`. The audited source evidence is finite and concentrated in seven
-files; resolved rows remain recorded alongside the remaining migration work.
+The original playground dependency and source inventory was finite and concentrated in seven
+files. `CMUI-189` completed every row below; they remain recorded as migration evidence.
 
-| Legacy API                   | Source evidence                                                              | Required outcome                                                                                                                       |
-| ---------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `VfAppShell`                 | `src/App.vue`                                                                | Replace with semantic application landmarks and CodeMonster UI layout primitives; keep shell state application-owned under `CMUI-188`. |
-| `VfMenuBar`, `VfNavMenuItem` | `src/App.vue`                                                                | Replace with application-owned flat navigation; native links or buttons and `CmInline` are sufficient without ARIA menubar behavior.   |
-| `VfThemeSwitch`              | `src/App.vue`                                                                | Publish and consume the application-owned theme preference recipe tracked by `CMUI-187`.                                               |
-| `VfThemeProvider`            | `src/App.vue`, `src/PlaygroundShowcase.vue`                                  | Move theme attribute ownership to application bootstrap as part of the same `CMUI-187` recipe.                                         |
-| `VfSkeletonGate`             | `src/PlaygroundShowcase.vue`, `src/sections/codeblock/CodeBlockShowcase.vue` | Compose `CmSkeleton` and busy content using the recipe tracked by `CMUI-187`; measured-height preservation remains application-owned.  |
-| `VfTag`                      | Removed from `src/sections/colors/ColorSystemShowcase.vue` in `CMUI-184`     | Superseded by `CmBadge`; the showcase-only outlined treatment did not justify a distinct cross-platform component.                     |
-| `vfSemanticColorTokenNames`  | `src/sections/colors/ColorSystemShowcase.vue`                                | Replace with `cmSemanticColorTokenNames` from `ui-tokens`.                                                                             |
-| `useTheme`                   | `src/sections/codeblock/CodeBlockShowcase.vue`                               | Read the application-owned resolved theme through the `CMUI-187` recipe.                                                               |
-| `VueForgeLayouts` plugin     | `src/main.ts`                                                                | Remove after theme bootstrap no longer comes from the layouts package.                                                                 |
-| `vueforge-core/styles.css`   | `src/main.ts` and two Vite demo fixtures                                     | Remove after legacy selectors and variables are migrated to the already imported CodeMonster UI CSS.                                   |
+| Legacy API                   | Source evidence                                                              | Required outcome                                                                                                   |
+| ---------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `VfAppShell`                 | `src/App.vue`                                                                | Replaced by native `header`/`nav`/`main`, CodeMonster UI primitives, and application-owned shell CSS/state.        |
+| `VfMenuBar`, `VfNavMenuItem` | `src/App.vue`                                                                | Replaced by native links, `aria-current`, `CmInline`, and application-owned History API state.                     |
+| `VfThemeSwitch`              | `src/App.vue`, `src/app-shell.ts`, `src/theme-bootstrap.ts`                  | Replaced by `CmButton` plus early application bootstrap and explicit light/dark persistence.                       |
+| `VfThemeProvider`            | `src/App.vue`, `src/PlaygroundShowcase.vue`                                  | Removed; the application now owns `data-cm-theme` and mirrors `data-vf-theme` only for retained products.          |
+| `VfSkeletonGate`             | `src/PlaygroundShowcase.vue`, `src/sections/codeblock/CodeBlockShowcase.vue` | Replaced by the maintained `CmSkeleton` busy-region recipe; measured-height lifecycle was not retained.            |
+| `VfTag`                      | Removed from `src/sections/colors/ColorSystemShowcase.vue` in `CMUI-184`     | Superseded by `CmBadge`; the showcase-only outlined treatment did not justify a distinct cross-platform component. |
+| `vfSemanticColorTokenNames`  | `src/sections/colors/ColorSystemShowcase.vue`                                | Replaced by `cmSemanticColorTokenNames` and canonical `--cm-*` tokens.                                             |
+| `useTheme`                   | `src/sections/codeblock/CodeBlockShowcase.vue`                               | Replaced by observation of the application-owned `data-cm-theme` root attribute.                                   |
+| `VueForgeLayouts` plugin     | `src/main.ts`                                                                | Removed; Vue mounts without a legacy design-system plugin.                                                         |
+| `vueforge-core/styles.css`   | `src/main.ts` and two Vite demo fixtures                                     | Removed in favor of CodeMonster UI tokens, breakpoints, and complete shared CSS.                                   |
 
-The remaining styling dependency is broader than the import list: nine source files contain 107
-references to `--vf-*` variables or legacy `vf-*` selectors. This is migration work, not evidence
-for new cross-platform components. It belongs with the affected showcase and recipe updates in
-`CMUI-183`, `CMUI-187`, and `CMUI-189`.
+The `CMUI-189` exit gate now rejects direct core/layout dependencies, migrated VueForge APIs, and
+legacy design-system token references in playground source. Remaining `.vf-codeblock`,
+`.vf-playground`, `--vf-codeblock-*`, and `data-vf-theme` hooks belong only to the explicitly
+retained CodeBlock, Playground, and Icons products.
 
 Retained VueForge Icons, CodeBlock, and Playground imports are outside the design-system removal
 target established by the roadmap.
@@ -94,7 +95,7 @@ component can claim real Razor demand from this baseline.
 
 | Demand                                         | Evidence                                              | Backlog consequence                                                                                   |
 | ---------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Remove playground legacy runtime and CSS       | Repository Vue playground                             | Required for `CMUI-189`; schedule its theme and skeleton recipes before migration.                    |
+| Remove playground legacy runtime and CSS       | Repository Vue playground                             | Delivered in `CMUI-189`; a machine gate prevents direct core/layout or migrated API regression.       |
 | Mature table pagination and column controls    | Annabel Vue admin compositions                        | Delivered in `CMUI-181`; fetching, rich rendering, and advanced grid policy remain application-owned. |
 | Publish application composition recipes        | Both Vue consumers own shell/theme/layout composition | Prioritize `CMUI-187` and retain the ownership boundary in `CMUI-188`.                                |
 | Preserve Container, Stack, and Card parity     | Real Annabel Razor page                               | Treat regressions as blockers; no expansion is required.                                              |
@@ -137,9 +138,9 @@ consumers:
 | Annabel CMS Vue admin     | Container participates in the application-owned auth layout; other admin, auth, and setup shells remain `App*` compositions | No shared shell API is justified by the Vue composition                                                           |
 | Annabel CMS Razor page    | Container owns the `main` width and Stack owns vertical flow around the article card                                        | Real server-rendered demand verifies the primitive contract without creating Razor shell demand                   |
 
-The playground's remaining `vueforge-layouts` shell and `vueforge-core` bootstrap dependencies are
-tracked migration debt. Recipes and ownership are handled by `CMUI-187` and `CMUI-188`; dependency
-removal remains `CMUI-189` and is not a layout-primitive gap.
+The playground's legacy shell and bootstrap dependencies were removed in `CMUI-189` after recipes
+and ownership were settled by `CMUI-187` and `CMUI-188`. Retained VueForge products remain
+side-by-side dependencies and do not create a layout-primitive gap.
 
 ## Reproduction
 
