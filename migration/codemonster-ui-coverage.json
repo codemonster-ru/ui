@@ -695,13 +695,14 @@
         {
           "id": "reviewed-disposition",
           "status": "missing",
-          "notes": "Portable candidate: Native `fieldset`/`legend`, shared description/error IDs, invalid state, and scoped metadata form a small cross-platform accessibility contract not provided by Stack",
+          "notes": "Approved portable candidate: Native `fieldset`/`legend`, shared description/error IDs, invalid state, and scoped metadata form a small cross-platform accessibility contract not provided by Stack",
           "evidence": [
             "docs/core/components/fieldset/api.md",
             "docs/verification/component-disposition-audit.md",
-            "contracts/stack/contract.md"
+            "contracts/stack/contract.md",
+            "docs/verification/consumer-usage-inventory.md"
           ],
-          "roadmapItem": "CMUI-184"
+          "roadmapItem": "CMUI-186"
         }
       ]
     },
@@ -765,13 +766,14 @@
         {
           "id": "reviewed-disposition",
           "status": "missing",
-          "notes": "Portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract",
+          "notes": "Approved portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract",
           "evidence": [
             "docs/core/components/icon-button/api.md",
             "docs/verification/component-disposition-audit.md",
-            "contracts/button/contract.md"
+            "contracts/button/contract.md",
+            "docs/verification/consumer-usage-inventory.md"
           ],
-          "roadmapItem": "CMUI-184"
+          "roadmapItem": "CMUI-186"
         }
       ]
     },
@@ -1069,9 +1071,13 @@
         {
           "id": "reviewed-disposition",
           "status": "missing",
-          "notes": "Portable candidate: Determinate/indeterminate progress semantics, bounded values, labels, tones, and reduced motion form a small framework-independent contract",
-          "evidence": ["docs/core/components/progress-bar/api.md", "docs/verification/component-disposition-audit.md"],
-          "roadmapItem": "CMUI-184"
+          "notes": "Approved portable candidate: Determinate/indeterminate progress semantics, bounded values, labels, tones, and reduced motion form a small framework-independent contract",
+          "evidence": [
+            "docs/core/components/progress-bar/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "docs/verification/consumer-usage-inventory.md"
+          ],
+          "roadmapItem": "CMUI-186"
         }
       ]
     },
@@ -1081,12 +1087,13 @@
         {
           "id": "reviewed-disposition",
           "status": "missing",
-          "notes": "Portable candidate: An indeterminate labelled progress indicator has stable semantic HTML and no framework lifecycle requirement",
+          "notes": "Approved portable candidate: An indeterminate labelled progress indicator has stable semantic HTML and no framework lifecycle requirement",
           "evidence": [
             "docs/core/components/progress-spinner/api.md",
-            "docs/verification/component-disposition-audit.md"
+            "docs/verification/component-disposition-audit.md",
+            "docs/verification/consumer-usage-inventory.md"
           ],
-          "roadmapItem": "CMUI-184"
+          "roadmapItem": "CMUI-186"
         }
       ]
     },
@@ -1360,22 +1367,23 @@
         {
           "id": "reviewed-disposition",
           "status": "superseded",
-          "notes": "Split: Badge already covers the non-interactive status/category semantics and tones; the outlined Tag appearance remains a distinct visual question",
+          "notes": "CmBadge supersedes the non-interactive status/category semantics and tones; `warn` migrates to `warning`, while a distinct outlined presentation has no product demand",
           "evidence": [
             "docs/core/components/tag/api.md",
             "docs/verification/component-disposition-audit.md",
-            "contracts/badge/contract.md"
+            "contracts/badge/contract.md",
+            "docs/verification/consumer-usage-inventory.md"
           ]
         },
         {
           "id": "remaining-migration-outcome",
-          "status": "missing",
-          "notes": "Re-evaluate the distinct visual contract in `CMUI-184`; otherwise migrate to Badge",
-          "roadmapItem": "CMUI-184",
+          "status": "superseded",
+          "notes": "The distinct Tag component is rejected as a visual-only duplicate; migrate manually to CmBadge",
           "evidence": [
             "docs/core/components/tag/api.md",
             "docs/verification/component-disposition-audit.md",
-            "contracts/badge/contract.md"
+            "contracts/badge/contract.md",
+            "docs/verification/consumer-usage-inventory.md"
           ]
         }
       ]
