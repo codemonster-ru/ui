@@ -1,6 +1,6 @@
 import { defineComponent, h } from 'vue';
 import { CmBadge, CmButton, CmCard } from '@codemonster-ru/ui-vue';
-import '@codemonster-ru/vueforge-core/styles.css';
+import '@codemonster-ru/ui-css/styles.css';
 
 export default defineComponent({
   name: 'CustomResolverSmokeDemo',
@@ -11,17 +11,17 @@ export default defineComponent({
         {
           style:
             [
-              'padding: var(--vf-layout-space-layout-lg)',
+              'padding: var(--cm-space-6)',
               'display: grid',
               'align-content: start',
-              'gap: var(--vf-layout-space-layout-base)',
-              'background: linear-gradient(180deg, color-mix(in oklab, var(--vf-color-background-canvas) 94%, var(--vf-color-brand-secondary) 6%), var(--vf-color-background-canvas))'
+              'gap: var(--cm-space-4)',
+              'background: linear-gradient(180deg, color-mix(in oklab, var(--cm-color-background-canvas) 94%, var(--cm-color-status-help-solid-background) 6%), var(--cm-color-background-canvas))'
             ].join(';')
         },
         [
           h(CmCard, { style: 'width: min(100%, 840px); margin-inline: auto;' }, {
             default: () =>
-              h('div', { style: 'display:grid;gap:calc(var(--vf-layout-space-layout-base) * 0.75);' }, [
+              h('div', { style: 'display:grid;gap:var(--cm-space-3);' }, [
                 h('h2', { style: 'margin:0;' }, 'Custom resolver smoke'),
                 h('p', { style: 'margin:0;' }, 'Vite-built preview path (vitepress-like).'),
                 h(CmBadge, { tone: 'neutral' }, { default: () => 'resolveImport' }),
