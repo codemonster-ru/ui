@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "icon-button-default",
+  "description": "Ghost icon button with the default medium size and native button type.",
+  "props": { "label": "Search" },
+  "slots": { "default": "<svg></svg>" }
+}

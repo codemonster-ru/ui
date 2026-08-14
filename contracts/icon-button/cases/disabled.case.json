@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "icon-button-disabled",
+  "description": "Disabled primary small icon button.",
+  "props": { "label": "Delete", "variant": "primary", "size": "sm", "disabled": true },
+  "slots": { "default": "<svg></svg>" }
+}
