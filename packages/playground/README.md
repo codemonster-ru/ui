@@ -82,9 +82,9 @@ until mount. Node ESM `/ui` is CSS-free; import Core and Playground styles from 
 
 For full documentation, visit [docs.codemonster.net/vueforge/playground](https://docs.codemonster.net/vueforge/playground/).
 See the repository
-[installation guide](https://github.com/codemonster-ru/codemonster-ui/blob/main/docs/playground/installation.md)
-and [CHANGELOG.md](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground/CHANGELOG.md).
+[installation guide](https://github.com/codemonster-ru/ui/blob/main/docs/playground/installation.md)
+and [CHANGELOG.md](https://github.com/codemonster-ru/ui/blob/main/packages/playground/CHANGELOG.md).
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground/LICENSE)
+[MIT](https://github.com/codemonster-ru/ui/blob/main/packages/playground/LICENSE)

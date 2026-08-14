@@ -7,8 +7,8 @@ import { validateCodeMonsterUiNpmPackageContract } from './code-monster-ui-packa
 import { discoverCodeMonsterUiWorkspaces } from './code-monster-ui-workspaces.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const expectedRepositoryUrl = 'git+https://github.com/codemonster-ru/codemonster-ui.git';
-const expectedBugsUrl = 'https://github.com/codemonster-ru/codemonster-ui/issues';
+const expectedRepositoryUrl = 'git+https://github.com/codemonster-ru/ui.git';
+const expectedBugsUrl = 'https://github.com/codemonster-ru/ui/issues';
 const releaseTrain = [
   {
     directory: 'theme',
@@ -292,7 +292,7 @@ function validateExports(packageContract, packageDirectory, manifest) {
 }
 
 function validateMetadata(packageContract, manifest) {
-  const expectedHomepage = `https://github.com/codemonster-ru/codemonster-ui/tree/main/packages/${packageContract.directory}#readme`;
+  const expectedHomepage = `https://github.com/codemonster-ru/ui/tree/main/packages/${packageContract.directory}#readme`;
 
   if (manifest.name !== packageContract.name) {
     report(`${packageContract.directory} package name must be ${packageContract.name}.`);

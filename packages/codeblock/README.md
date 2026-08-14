@@ -71,9 +71,9 @@ are CSS-free, so import `style.css` in the client stylesheet of an SSR applicati
 
 For full documentation, visit [docs.codemonster.net/vueforge/codeblock](https://docs.codemonster.net/vueforge/codeblock/).
 See the repository
-[installation guide](https://github.com/codemonster-ru/codemonster-ui/blob/main/docs/codeblock/installation.md)
-and [CHANGELOG.md](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/codeblock/CHANGELOG.md).
+[installation guide](https://github.com/codemonster-ru/ui/blob/main/docs/codeblock/installation.md)
+and [CHANGELOG.md](https://github.com/codemonster-ru/ui/blob/main/packages/codeblock/CHANGELOG.md).
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/codeblock/LICENSE)
+[MIT](https://github.com/codemonster-ru/ui/blob/main/packages/codeblock/LICENSE)

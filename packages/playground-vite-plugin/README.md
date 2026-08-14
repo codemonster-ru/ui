@@ -64,12 +64,12 @@ Public option types use the `VueForge*` prefix.
 ## Package-local documentation
 
 See
-[src/index.ts](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground-vite-plugin/src/index.ts)
+[src/index.ts](https://github.com/codemonster-ru/ui/blob/main/packages/playground-vite-plugin/src/index.ts)
 and
-[CHANGELOG.md](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground-vite-plugin/CHANGELOG.md).
+[CHANGELOG.md](https://github.com/codemonster-ru/ui/blob/main/packages/playground-vite-plugin/CHANGELOG.md).
 Playground UI and runtime setup is documented in
-[`@codemonster-ru/vueforge-playground`](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground/README.md).
+[`@codemonster-ru/vueforge-playground`](https://github.com/codemonster-ru/ui/blob/main/packages/playground/README.md).
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/playground-vite-plugin/LICENSE)
+[MIT](https://github.com/codemonster-ru/ui/blob/main/packages/playground-vite-plugin/LICENSE)

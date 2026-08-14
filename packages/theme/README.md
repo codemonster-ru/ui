@@ -55,12 +55,12 @@ call it only in a browser or pass an explicit DOM document.
 ## Package-local documentation
 
 The public contract is available directly in
-[src/index.ts](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/theme/src/index.ts),
-[src/types.ts](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/theme/src/types.ts), and
-[CHANGELOG.md](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/theme/CHANGELOG.md).
+[src/index.ts](https://github.com/codemonster-ru/ui/blob/main/packages/theme/src/index.ts),
+[src/types.ts](https://github.com/codemonster-ru/ui/blob/main/packages/theme/src/types.ts), and
+[CHANGELOG.md](https://github.com/codemonster-ru/ui/blob/main/packages/theme/CHANGELOG.md).
 Ecosystem upgrade requirements are documented in the repository
-[VueForge 2 migration guide](https://github.com/codemonster-ru/codemonster-ui/blob/main/docs/migration-to-v2.md).
+[VueForge 2 migration guide](https://github.com/codemonster-ru/ui/blob/main/docs/migration-to-v2.md).
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/codemonster-ui/blob/main/packages/theme/LICENSE)
+[MIT](https://github.com/codemonster-ru/ui/blob/main/packages/theme/LICENSE)
