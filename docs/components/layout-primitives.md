@@ -74,3 +74,12 @@ Ordinary interpolated values inside those slots remain escaped by Vue or Razor.
 Layout primitives do not add accessible names or repair document hierarchy. Give `nav` landmarks
 an accessible name when more than one is present, keep heading levels meaningful, and use list
 elements only when their children are valid list items.
+
+## Application shell boundary
+
+The primitives may compose inside an application shell, but they do not own routing, authorization,
+landmark placement, responsive navigation state, sticky measurements, or workflow shortcuts. Keep
+those decisions in the application as described by the accepted
+[application shell ownership decision](../architecture/application-shell-ownership.md). A remaining
+legacy `VfAppShell` or theme-bootstrap dependency is migration work, not evidence for a new portable
+layout API.
