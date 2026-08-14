@@ -18,15 +18,16 @@
     "closeLabel": { "type": "string", "required": false, "default": "Close" }
   },
   "slots": {
-    "actions": { "description": "Trusted header actions beside the title." },
+    "actions": { "required": false, "description": "Trusted header actions beside the title." },
     "command{UpperCamelId}": {
+      "required": false,
       "description": "Trusted per-command content inside the component-owned option.",
       "scopeContract": "command-palette-item-state"
     },
-    "loading": { "description": "Trusted loading status content." },
-    "idle": { "description": "Trusted idle status content." },
-    "empty": { "description": "Trusted no-results content." },
-    "footer": { "description": "Trusted footer content after results." }
+    "loading": { "required": false, "description": "Trusted loading status content." },
+    "idle": { "required": false, "description": "Trusted idle status content." },
+    "empty": { "required": false, "description": "Trusted no-results content." },
+    "footer": { "required": false, "description": "Trusted footer content after results." }
   },
   "events": {
     "openChange": { "description": "Reports the next modal state.", "payloadContract": "boolean" },

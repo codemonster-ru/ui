@@ -22,10 +22,12 @@
   },
   "slots": {
     "tab{UpperCamelValue}": {
+      "required": false,
       "description": "Trusted content inside an item tab.",
       "scopeContract": "tab-item-state"
     },
     "panel{UpperCamelValue}": {
+      "required": false,
       "description": "Trusted content inside an item panel.",
       "scopeContract": "tab-item-state"
     }
