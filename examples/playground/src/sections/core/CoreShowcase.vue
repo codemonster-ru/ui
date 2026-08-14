@@ -60,6 +60,7 @@
               {{ variant }}
             </CmButton>
             <CmButton loading>Saving</CmButton>
+            <CmIconButton label="Refresh release status" variant="secondary"><span>↻</span></CmIconButton>
             <CmLink href="/core" underline="hover">Native navigation</CmLink>
           </CmInline>
           <CmGrid>
@@ -70,6 +71,22 @@
           <CmInline>
             <CmBadge v-for="tone in feedbackTones" :key="tone" :tone="tone">{{ tone }}</CmBadge>
           </CmInline>
+          <CmStack>
+            <span class="demo-text">Packed consumer validation</span>
+            <CmProgressBar label="Packed consumer validation" :value="7" :max="12" show-value tone="success" />
+            <span class="demo-text">Synchronizing release metadata</span>
+            <CmProgressBar label="Synchronizing release metadata" indeterminate tone="warning" />
+            <CmInline>
+              <span class="demo-progress-state">
+                <CmProgressSpinner label="Checking Vue package" size="sm" />
+                Checking Vue package
+              </span>
+              <span class="demo-progress-state">
+                <CmProgressSpinner label="Removing failed artifact" tone="danger" />
+                Removing failed artifact
+              </span>
+            </CmInline>
+          </CmStack>
         </CmStack>
       </CmSection>
 
@@ -172,9 +189,31 @@
               <template #thumb="{ checked }">{{ checked ? '●' : '○' }}</template>
               Automatic release
             </CmSwitch>
-            <CmRadio v-model="channel" name="channel" value="stable">Stable</CmRadio>
-            <CmRadio v-model="channel" name="channel" value="preview">Preview</CmRadio>
           </CmInline>
+          <CmFieldset id="showcase-channel" label="Release channel" description="Choose the audience for this release.">
+            <template #default="{ describedBy, invalid }">
+              <CmInline>
+                <CmRadio
+                  v-model="channel"
+                  name="channel"
+                  value="stable"
+                  :aria-describedby="describedBy"
+                  :aria-invalid="invalid || undefined"
+                >
+                  Stable
+                </CmRadio>
+                <CmRadio
+                  v-model="channel"
+                  name="channel"
+                  value="preview"
+                  :aria-describedby="describedBy"
+                  :aria-invalid="invalid || undefined"
+                >
+                  Preview
+                </CmRadio>
+              </CmInline>
+            </template>
+          </CmFieldset>
         </CmStack>
       </CmSection>
 
@@ -316,12 +355,16 @@ import {
   CmDrawer,
   CmDropdown,
   CmField,
+  CmFieldset,
   CmGrid,
+  CmIconButton,
   CmInline,
   CmInput,
   CmLink,
   CmMenu,
   CmPopover,
+  CmProgressBar,
+  CmProgressSpinner,
   CmRadio,
   CmSection,
   CmSelect,
@@ -417,6 +460,12 @@ h2 {
 
 .demo-text {
   color: var(--cm-color-text-muted);
+}
+
+.demo-progress-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-2);
 }
 
 .component-catalog,
