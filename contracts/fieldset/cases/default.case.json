@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "fieldset-default",
+  "description": "A named group containing related native controls.",
+  "props": {
+    "id": "notification-preferences",
+    "label": "Notifications"
+  },
+  "slots": {
+    "default": "<label><input name=\"email_updates\" type=\"checkbox\"> Email updates</label>"
+  }
+}
