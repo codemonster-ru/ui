@@ -691,21 +691,38 @@
       }
     },
     "VfFieldset": {
-      "disposition": "compose",
+      "disposition": "replace",
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "missing",
-          "notes": "Approved portable candidate: Native `fieldset`/`legend`, shared description/error IDs, invalid state, and scoped metadata form a small cross-platform accessibility contract not provided by Stack",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Native named fieldset, trusted legend and supporting regions, deterministic description/error relationships, invalid state, root attributes, and Vue/Razor composition",
+          "evidence": [
+            "contracts/fieldset/contract.md",
+            "contracts/fieldset/cases/help-error.case.json",
+            "packages/vue/src/components/fieldset/CmFieldset.test.ts",
+            "packages/razor/tests/Components/CmFieldsetTest.php",
+            "packages/css/__tests__/fieldset.test.mjs"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Caller-owned stable ids and a required visible legend replace Vue-generated ids and unnamed fieldsets; application controls consume deterministic relationships in each adapter",
           "evidence": [
             "docs/core/components/fieldset/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/stack/contract.md",
-            "docs/verification/consumer-usage-inventory.md"
-          ],
-          "roadmapItem": "CMUI-186"
+            "contracts/fieldset/contract.md",
+            "docs/verification/component-disposition-audit.md"
+          ]
         }
-      ]
+      ],
+      "delivery": {
+        "target": "CmFieldset",
+        "contract": "fieldset",
+        "razorTag": "fieldset",
+        "documentation": "docs/components/fieldset.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
     },
     "VfFormLayout": {
       "disposition": "compose",
@@ -762,21 +779,38 @@
       ]
     },
     "VfIconButton": {
-      "disposition": "compose",
+      "disposition": "replace",
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "missing",
-          "notes": "Approved portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Square native action, mandatory accessible label, trusted decorative icon content, finite variants and sizes, native type/disabled behavior, and root attributes",
+          "evidence": [
+            "contracts/icon-button/contract.md",
+            "contracts/icon-button/cases/default.case.json",
+            "packages/vue/src/components/icon-button/CmIconButton.test.ts",
+            "packages/razor/tests/Components/CmIconButtonTest.php",
+            "packages/css/__tests__/icon-button.test.mjs"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "A trusted icon slot replaces the VueForge icon-name registry; unsupported feedback variants, links, loading, and implicit tooltip policy are not retained",
           "evidence": [
             "docs/core/components/icon-button/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/button/contract.md",
-            "docs/verification/consumer-usage-inventory.md"
-          ],
-          "roadmapItem": "CMUI-186"
+            "contracts/icon-button/contract.md",
+            "docs/verification/component-disposition-audit.md"
+          ]
         }
-      ]
+      ],
+      "delivery": {
+        "target": "CmIconButton",
+        "contract": "icon-button",
+        "razorTag": "icon-button",
+        "documentation": "docs/components/icon-button.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
     },
     "VfInput": {
       "disposition": "replace",
@@ -1066,36 +1100,72 @@
       }
     },
     "VfProgressBar": {
-      "disposition": "manual",
+      "disposition": "replace",
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "missing",
-          "notes": "Approved portable candidate: Determinate/indeterminate progress semantics, bounded values, labels, tones, and reduced motion form a small framework-independent contract",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Labelled determinate/indeterminate progress, bounded values, optional percentage text, semantic tones, reduced motion, root attributes, and Vue/Razor parity",
+          "evidence": [
+            "contracts/progress-bar/contract.md",
+            "contracts/progress-bar/cases/determinate.case.json",
+            "packages/vue/src/components/progress-bar/CmProgressBar.test.ts",
+            "packages/razor/tests/Components/CmProgressComponentsTest.php",
+            "packages/css/__tests__/progress-components.test.mjs"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Token-backed finite presentation replaces arbitrary height, stripes, and animation controls; `warning` replaces `warn`",
           "evidence": [
             "docs/core/components/progress-bar/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md"
-          ],
-          "roadmapItem": "CMUI-186"
+            "contracts/progress-bar/contract.md",
+            "docs/verification/component-disposition-audit.md"
+          ]
         }
-      ]
+      ],
+      "delivery": {
+        "target": "CmProgressBar",
+        "contract": "progress-bar",
+        "razorTag": "progress-bar",
+        "documentation": "docs/components/progress.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
     },
     "VfProgressSpinner": {
-      "disposition": "manual",
+      "disposition": "replace",
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "missing",
-          "notes": "Approved portable candidate: An indeterminate labelled progress indicator has stable semantic HTML and no framework lifecycle requirement",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Labelled indeterminate progress, finite sizes and semantic tones, owned SVG geometry, reduced motion, root attributes, and Vue/Razor parity",
+          "evidence": [
+            "contracts/progress-spinner/contract.md",
+            "contracts/progress-spinner/cases/default.case.json",
+            "packages/vue/src/components/progress-spinner/CmProgressSpinner.test.ts",
+            "packages/razor/tests/Components/CmProgressComponentsTest.php",
+            "packages/css/__tests__/progress-components.test.mjs"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Finite token sizes and internal stroke geometry replace arbitrary size and strokeWidth controls; `warning` replaces `warn`",
           "evidence": [
             "docs/core/components/progress-spinner/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md"
-          ],
-          "roadmapItem": "CMUI-186"
+            "contracts/progress-spinner/contract.md",
+            "docs/verification/component-disposition-audit.md"
+          ]
         }
-      ]
+      ],
+      "delivery": {
+        "target": "CmProgressSpinner",
+        "contract": "progress-spinner",
+        "razorTag": "progress-spinner",
+        "documentation": "docs/components/progress.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
     },
     "VfRadio": {
       "disposition": "replace",

@@ -34,41 +34,41 @@ supported side-by-side package because CodeMonster UI 1.0 has no verified icon r
 
 ## Direct component replacements
 
-The following 33 names have reviewed cross-platform contracts and implemented `ui-vue` and Annabel
+The following 37 names have reviewed cross-platform contracts and implemented `ui-vue` and Annabel
 Razor targets. The import/name codemod can establish their CodeMonster UI names, but it deliberately
 does not rewrite props, slots, events, state ownership, or progressive-enhancement setup. Review
 those API changes against the component guides after every codemod run.
 
-| VueForge           | CodeMonster UI     | VueForge      | CodeMonster UI |
-| ------------------ | ------------------ | ------------- | -------------- |
-| `VfAccordion`      | `CmAccordion`      | `VfAlert`     | `CmAlert`      |
-| `VfAvatar`         | `CmAvatar`         | `VfBadge`     | `CmBadge`      |
-| `VfBreadcrumbs`    | `CmBreadcrumbs`    | `VfButton`    | `CmButton`     |
-| `VfCard`           | `CmCard`           | `VfCheckbox`  | `CmCheckbox`   |
-| `VfCommandPalette` | `CmCommandPalette` | `VfDataTable` | `CmDataTable`  |
-| `VfDatePicker`     | `CmDatePicker`     | `VfDialog`    | `CmDialog`     |
-| `VfDivider`        | `CmDivider`        | `VfDrawer`    | `CmDrawer`     |
-| `VfDropdown`       | `CmDropdown`       | `VfField`     | `CmField`      |
-| `VfInput`          | `CmInput`          | `VfLink`      | `CmLink`       |
-| `VfMenu`           | `CmMenu`           | `VfPopover`   | `CmPopover`    |
-| `VfRadio`          | `CmRadio`          | `VfSelect`    | `CmSelect`     |
-| `VfSkeleton`       | `CmSkeleton`       | `VfSwitch`    | `CmSwitch`     |
-| `VfTable`          | `CmTable`          | `VfTabs`      | `CmTabs`       |
-| `VfTextarea`       | `CmTextarea`       | `VfTooltip`   | `CmTooltip`    |
-| `VfContainer`      | `CmContainer`      | `VfStack`     | `CmStack`      |
-| `VfInline`         | `CmInline`         | `VfSection`   | `CmSection`    |
-| `VfGrid`           | `CmGrid`           |               |                |
+| VueForge           | CodeMonster UI     | VueForge            | CodeMonster UI      |
+| ------------------ | ------------------ | ------------------- | ------------------- |
+| `VfAccordion`      | `CmAccordion`      | `VfAlert`           | `CmAlert`           |
+| `VfAvatar`         | `CmAvatar`         | `VfBadge`           | `CmBadge`           |
+| `VfBreadcrumbs`    | `CmBreadcrumbs`    | `VfButton`          | `CmButton`          |
+| `VfCard`           | `CmCard`           | `VfCheckbox`        | `CmCheckbox`        |
+| `VfCommandPalette` | `CmCommandPalette` | `VfDataTable`       | `CmDataTable`       |
+| `VfDatePicker`     | `CmDatePicker`     | `VfDialog`          | `CmDialog`          |
+| `VfDivider`        | `CmDivider`        | `VfDrawer`          | `CmDrawer`          |
+| `VfDropdown`       | `CmDropdown`       | `VfField`           | `CmField`           |
+| `VfFieldset`       | `CmFieldset`       | `VfIconButton`      | `CmIconButton`      |
+| `VfInput`          | `CmInput`          | `VfLink`            | `CmLink`            |
+| `VfMenu`           | `CmMenu`           | `VfPopover`         | `CmPopover`         |
+| `VfProgressBar`    | `CmProgressBar`    | `VfProgressSpinner` | `CmProgressSpinner` |
+| `VfRadio`          | `CmRadio`          | `VfSelect`          | `CmSelect`          |
+| `VfSkeleton`       | `CmSkeleton`       | `VfSwitch`          | `CmSwitch`          |
+| `VfTable`          | `CmTable`          | `VfTabs`            | `CmTabs`            |
+| `VfTextarea`       | `CmTextarea`       | `VfTooltip`         | `CmTooltip`         |
+| `VfContainer`      | `CmContainer`      | `VfStack`           | `CmStack`           |
+| `VfInline`         | `CmInline`         | `VfSection`         | `CmSection`         |
+| `VfGrid`           | `CmGrid`           |                     |                     |
 
 ## Composition and manual review
 
 The compose and manual cohorts have also completed their initial review; they are not safe rename
 targets. ConfirmDialog, FormLayout, Panel, PageHeader, AuthLayout, and ErrorLayout require maintained
 application recipes. GroupBox and SkeletonGate split portable composition from application-owned
-behavior. Fieldset and IconButton remain portable candidates rather than approved Stack or Button
-substitutions.
-
-Progress indicators retain an explicit candidate decision in the maturity backlog. DataTable
-column choice, Menubar, navigation trees, Stepper, and Table of Contents have final manual outcomes
+behavior. Fieldset, IconButton, ProgressBar, and ProgressSpinner are now direct replacements with
+bounded portable contracts. DataTable column choice, Menubar, navigation trees, Stepper, and Table
+of Contents have final manual outcomes
 because their state and enhancement policy remain application-owned. ThemeSwitch, application
 shells, SetupLayout, and shell-internal areas remain application-owned. Native HTML and the listed
 CodeMonster UI primitives are preferred where sufficient; the codemod reports these entries for
@@ -107,6 +107,9 @@ rename as API compatibility:
   [forms](./components/forms.md), and [Accordion](./components/accordion.md) cover native action and
   form behavior, trusted regions, stable caller-owned ids, collection state, and required Razor
   enhancement.
+- [Fieldset](./components/fieldset.md), [IconButton](./components/icon-button.md), and
+  [progress indicators](./components/progress.md) document the finite semantic replacements for
+  grouped controls, icon-only native actions, and labelled progress states.
 - [Display components](./components/display.md) document semantic tones, status behavior, native
   separators, safe Skeleton sizing, and explicit content composition in place of icon-name props.
 - [Navigation](./components/navigation.md) and [overlays](./components/overlays.md) define owned

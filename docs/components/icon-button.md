@@ -8,13 +8,13 @@ has no client runtime, icon registry, link mode, or loading state.
 
 ## Props and content
 
-| Prop | Values | Default | Behavior |
-| --- | --- | --- | --- |
-| `label` | non-empty string | required | Component-owned accessible name. |
-| `variant` | `primary`, `secondary`, `danger`, `ghost` | `ghost` | Visual action emphasis. |
-| `size` | `sm`, `md`, `lg` | `md` | Square control and icon dimensions. |
-| `type` | `button`, `submit`, `reset` | `button` | Native button type. |
-| `disabled` | boolean | `false` | Native disabled state. |
+| Prop       | Values                                    | Default  | Behavior                            |
+| ---------- | ----------------------------------------- | -------- | ----------------------------------- |
+| `label`    | non-empty string                          | required | Component-owned accessible name.    |
+| `variant`  | `primary`, `secondary`, `danger`, `ghost` | `ghost`  | Visual action emphasis.             |
+| `size`     | `sm`, `md`, `lg`                          | `md`     | Square control and icon dimensions. |
+| `type`     | `button`, `submit`, `reset`               | `button` | Native button type.                 |
+| `disabled` | boolean                                   | `false`  | Native disabled state.              |
 
 The required default slot supplies trusted icon markup. The component wraps it in
 `cm-icon-button__icon` with `aria-hidden="true"`; the icon never replaces the required `label`.
@@ -26,13 +26,10 @@ Unknown safe attributes and native listeners reach the root, while `type`, `disa
 ```vue
 <script setup lang="ts">
 import { CmIconButton } from '@codemonster-ru/ui-vue';
-import SettingsIcon from './SettingsIcon.vue';
 </script>
 
 <template>
-  <CmIconButton label="Settings" variant="ghost" @click="openSettings">
-    <SettingsIcon />
-  </CmIconButton>
+  <CmIconButton label="Refresh release status" variant="ghost">↻</CmIconButton>
 </template>
 ```
 

@@ -100,14 +100,9 @@
       "roadmapItem": "CMUI-186",
       "destination": "phase-18",
       "priority": "P2",
-      "summary": "Implement only candidates approved by the two-platform gate",
-      "reason": "Approved Fieldset, IconButton, ProgressBar, and ProgressSpinner require the full contract, CSS, Vue, Razor, parity, documentation, and showcase workstream.",
-      "gaps": [
-        "VfFieldset:reviewed-disposition",
-        "VfIconButton:reviewed-disposition",
-        "VfProgressBar:reviewed-disposition",
-        "VfProgressSpinner:reviewed-disposition"
-      ]
+      "summary": "Approved small portable components delivered",
+      "reason": "Fieldset, IconButton, ProgressBar, and ProgressSpinner now have complete contracts, CSS, Vue, Razor, parity, documentation, and showcase evidence.",
+      "gaps": []
     },
     {
       "id": "CMUI-B011",
