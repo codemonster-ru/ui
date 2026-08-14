@@ -23,12 +23,16 @@ use Codemonster\Ui\Components\CmDialog;
 use Codemonster\Ui\Components\CmDropdown;
 use Codemonster\Ui\Components\CmDrawer;
 use Codemonster\Ui\Components\CmField;
+use Codemonster\Ui\Components\CmFieldset;
 use Codemonster\Ui\Components\CmGrid;
+use Codemonster\Ui\Components\CmIconButton;
 use Codemonster\Ui\Components\CmInput;
 use Codemonster\Ui\Components\CmInline;
 use Codemonster\Ui\Components\CmLink;
 use Codemonster\Ui\Components\CmMenu;
 use Codemonster\Ui\Components\CmPopover;
+use Codemonster\Ui\Components\CmProgressBar;
+use Codemonster\Ui\Components\CmProgressSpinner;
 use Codemonster\Ui\Components\CmRadio;
 use Codemonster\Ui\Components\CmSelect;
 use Codemonster\Ui\Components\CmSection;
@@ -79,12 +83,16 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'dropdown' => new CmDropdown($this->views),
             'drawer' => new CmDrawer($this->views),
             'field' => new CmField($this->views),
+            'fieldset' => new CmFieldset($this->views),
             'grid' => new CmGrid($this->views),
+            'icon-button' => new CmIconButton($this->views),
             'input' => new CmInput($this->views),
             'inline' => new CmInline($this->views),
             'link' => new CmLink($this->views),
             'menu' => new CmMenu($this->views),
             'popover' => new CmPopover($this->views),
+            'progress-bar' => new CmProgressBar($this->views),
+            'progress-spinner' => new CmProgressSpinner($this->views),
             'radio' => new CmRadio($this->views),
             'select' => new CmSelect($this->views),
             'section' => new CmSection($this->views),

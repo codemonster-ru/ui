@@ -28,7 +28,7 @@ final readonly class CmProgressBar implements ComponentInterface
         $normalizedValue = !is_finite($value) ? 0.0 : min(max($value, 0.0), $normalizedMax);
         $percentage = ($normalizedValue / $normalizedMax) * 100;
         $indeterminate = $props->bool('indeterminate');
-        $showValue = $props->bool('show-value');
+        $showValue = $props->bool('showValue', $props->bool('show-value'));
         $tone = $props->oneOf(
             'tone',
             ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'],

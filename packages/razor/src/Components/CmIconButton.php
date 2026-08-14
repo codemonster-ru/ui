@@ -35,7 +35,7 @@ final class CmIconButton implements ComponentInterface
             ->add($this->optionalString($attributes->get('class')))
             ->value();
 
-        return RenderedHtml::fromTrustedString($this->views->render('components.icon-button', [
+        return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.icon-button', [
             'label' => $label,
             'variant' => $variant,
             'size' => $size,
@@ -44,7 +44,7 @@ final class CmIconButton implements ComponentInterface
             'classes' => $classes,
             'attributes' => $attributes->without(['class', 'type', 'disabled', 'aria-label'])->render(),
             'icon' => $context->slot('default'),
-        ]));
+        ]), "\r\n"));
     }
 
     private function optionalString(mixed $value): ?string
