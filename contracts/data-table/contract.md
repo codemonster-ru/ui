@@ -20,8 +20,9 @@ column collection.
 
 Applications format dates, numbers, status labels, and links before or around this baseline. The
 shared data API deliberately excludes arbitrary HTML cells, client-side query execution, multi-sort,
-row expansion, interactive column reordering, pinning, and resizing. Those capabilities require a separate
-portable contract rather than callbacks or framework-only slots.
+row expansion, interactive column reordering, pinning, and resizing. Rich row content belongs in an
+application-owned `Table` composition; advanced query, layout, and persistence policy remains with
+the application rather than crossing the scalar boundary through callbacks or framework-only slots.
 
 ## Structure and states
 
@@ -65,3 +66,6 @@ Supply `caption` unless nearby context already names the data. Do not add `role=
 interaction remains native buttons and checkboxes inside a semantic table. Loading and error states
 use a polite status cell without hiding an already focused control. All collection data is untrusted
 plain data and is contextually escaped; executable accessors and raw markup are rejected.
+
+The stable loading status is the portable DataTable fallback. Applications that require skeleton
+rows compose `Skeleton` with an authored `Table`; DataTable does not own a second layout model.

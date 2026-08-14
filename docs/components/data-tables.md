@@ -124,6 +124,9 @@ count and render `firstRow-lastRow of totalRows`; omit it when the application o
 The page and range summary templates plus visible previous/next text can be localized independently
 from the buttons' accessible labels.
 
+The Razor adapter accepts `visible-column-keys` in the same ordered form as Vue. The application can
+render a checkbox, popover, or dialog chooser and persist that array wherever its product requires.
+
 The controller cycles one sortable column through ascending, descending, and unsorted states. It
 synchronizes native row checkboxes and clamps previous/next page requests. It does not reorder,
 hide, or replace rows. Without JavaScript, users retain a readable semantic table.
@@ -137,7 +140,10 @@ hide, or replace rows. Without JavaScript, users retain a readable semantic tabl
 - Format dates, money, links, and status text before passing the shared scalar data model.
 - Treat row and column values as untrusted. Both adapters escape them and reject arbitrary HTML,
   executable accessors, unknown cell keys, duplicate identifiers, and non-finite numbers.
-- Multi-sort, client query execution, expansion, pinning, resizing, and column reordering are not in
-  the stable cross-platform contract. Applications may compose those features outside DataTable
-  until a portable contract is approved.
+- Rich cells, headers, state actions, footers, and expanded rows belong in an application-owned
+  `CmTable` composition, where trusted Vue or Razor markup remains explicit.
+- Multi-sort query semantics and interactive column pinning, resizing, and reordering remain
+  application-owned policy. `visibleColumnKeys` covers the stable shared visibility/order state.
+- For skeleton rows, compose `CmSkeleton` with `CmTable`; DataTable's portable loading state remains
+  a semantic status row.
 - Do not initialize shared runtime over Vue-owned DataTable markup.

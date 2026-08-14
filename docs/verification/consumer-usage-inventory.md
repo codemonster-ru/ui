@@ -67,6 +67,11 @@ These wrappers are evidence for recipes and capability gaps, not automatic candi
 shared components. In particular:
 
 - data-table pagination and column selection are real application demand for `CMUI-181`;
+- Annabel's rich data cells contain actions, links, statuses, formatted dates, checkboxes, and form
+  controls, so they remain an application-owned `CmTable` composition rather than entering the
+  scalar `CmDataTable` contract;
+- no representative consumer requires row expansion, multi-sort, interactive reorder/resize/pin,
+  or DataTable-specific skeleton rows;
 - auth, setup, admin shell, form-layout, group-box, panel, page-header, and theme compositions are
   real recipe demand for `CMUI-187` and application-ownership evidence for `CMUI-188`;
 - the application-owned menu and navigation wrappers are demand to evaluate during `CMUI-180` and
@@ -90,7 +95,7 @@ component can claim real Razor demand from this baseline.
 | Demand                                         | Evidence                                              | Backlog consequence                                                                                         |
 | ---------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | Remove playground legacy runtime and CSS       | Repository Vue playground                             | Required for `CMUI-189`; schedule its theme and skeleton recipes before migration.                          |
-| Mature table pagination and column controls    | Annabel Vue admin compositions                        | Prioritize the approved shared portions in `CMUI-181`; preserve application-owned fetching and persistence. |
+| Mature table pagination and column controls    | Annabel Vue admin compositions                        | Delivered in `CMUI-181`; fetching, rich rendering, and advanced grid policy remain application-owned.        |
 | Publish application composition recipes        | Both Vue consumers own shell/theme/layout composition | Prioritize `CMUI-187` and retain the ownership boundary in `CMUI-188`.                                      |
 | Preserve Container, Stack, and Card parity     | Real Annabel Razor page                               | Treat regressions as blockers; no expansion is required.                                                    |
 | Add Menubar or another behavior-rich component | Playground-only Vue usage, no current Razor usage     | Keep behind the two-platform demand rule in `CMUI-185`.                                                     |

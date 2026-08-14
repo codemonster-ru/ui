@@ -370,14 +370,57 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Page-size controls and pagination summaries; row-select constraints and row expansion; custom header/cell/state/footer rendering; column visibility/order/reordering/resizing/pinning; multi-sort; skeleton loading modes; complete localization labels",
-          "roadmapItem": "CMUI-181",
+          "id": "matured-portable-capabilities",
+          "status": "supported",
+          "notes": "Page-size controls and summaries, row eligibility constraints, ordered visible columns, and complete sorting, selection, and pagination localization work across Vue and Razor",
           "evidence": [
-            "docs/core/components/data-table/api.md",
             "contracts/data-table/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/data-table/behavior/page-size.scenario.json",
+            "packages/vue/src/components/data-table-components.test.ts",
+            "packages/runtime/__tests__/data-table.test.mjs",
+            "packages/razor/tests/Components/CmDataTableComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "rich-row-composition",
+          "status": "application-owned",
+          "notes": "Row expansion and custom header, cell, state, and footer rendering remain application-owned CmTable compositions because trusted interactive content cannot cross DataTable's scalar data boundary",
+          "evidence": [
+            "contracts/data-table/contract.md",
+            "contracts/table/contract.md",
+            "docs/components/data-tables.md",
+            "docs/verification/consumer-usage-inventory.md"
+          ]
+        },
+        {
+          "id": "advanced-column-layout",
+          "status": "application-owned",
+          "notes": "Interactive column reordering, resizing, and pinning remain application-owned layout and persistence policy; visibleColumnKeys covers the approved shared ordering use case",
+          "evidence": [
+            "contracts/data-table/contract.md",
+            "docs/components/data-tables.md",
+            "docs/verification/consumer-usage-inventory.md"
+          ]
+        },
+        {
+          "id": "multi-sort-query-policy",
+          "status": "application-owned",
+          "notes": "CmDataTable reports one controlled sort request; multi-sort priority and query semantics remain application-owned because no representative consumer requires a shared contract",
+          "evidence": [
+            "contracts/data-table/contract.md",
+            "docs/components/data-tables.md",
+            "docs/verification/consumer-usage-inventory.md"
+          ]
+        },
+        {
+          "id": "data-table-skeleton-loading",
+          "status": "superseded",
+          "notes": "The stable loading status plus CmSkeleton and CmTable composition supersede DataTable-specific mask and skeleton-row modes",
+          "evidence": [
+            "contracts/data-table/contract.md",
+            "contracts/table/contract.md",
+            "contracts/skeleton/contract.md",
+            "docs/components/data-tables.md"
           ]
         }
       ],

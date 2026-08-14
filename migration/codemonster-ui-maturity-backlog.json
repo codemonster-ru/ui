@@ -10,9 +10,9 @@
       "roadmapItem": "CMUI-181",
       "destination": "phase-17",
       "priority": "P0",
-      "summary": "Mature DataTable pagination, selection, rendering, and column management",
-      "reason": "Annabel CMS already owns pagination and column-selection compositions around CmTable.",
-      "gaps": ["VfDataTable:material-portable-gap"]
+      "summary": "Deliver portable DataTable controls and define advanced-grid ownership",
+      "reason": "The shared scalar contract now covers Annabel's pagination and column-selection demand; rich rendering and advanced grid policy remain application-owned.",
+      "gaps": []
     },
     {
       "id": "CMUI-B002",

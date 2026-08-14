@@ -189,7 +189,9 @@
             caption="Migration projects"
             :columns="tableColumns"
             :rows="tableRows"
-            :page-count="2"
+            :page-size-options="[10, 25, 50]"
+            :total-rows="25"
+            :visible-column-keys="['status', 'name']"
             selectable
             striped
           />
@@ -301,7 +303,7 @@ const tableColumns: CmDataTableColumn[] = [
   { key: 'status', header: 'Status' },
 ];
 const tableRows: CmDataTableRow[] = [
-  { id: 'atlas', cells: { name: 'Atlas', status: 'Ready' } },
+  { id: 'atlas', cells: { name: 'Atlas', status: 'Ready' }, selectable: false },
   { id: 'nova', cells: { name: 'Nova', status: 'Preview' } },
 ];
 const commands: CmCommandPaletteItem[] = [

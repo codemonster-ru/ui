@@ -90,7 +90,7 @@ not evidence of parity.
 | `VfDatePicker` → `CmDatePicker` | Native single-date value, min/max, binding/submission, size, invalid, disabled, readonly, and required state | Native `input[type=date]` replaces locale-specific popup positioning and teleport behavior for the baseline | Multiple and range selection, month/year picker modes, time selection and minute steps, locale/display formatting, first-day configuration, clear action, and custom labels |
 | `VfCommandPalette` → `CmCommandPalette` | Controlled open/query state, filtering, disabled commands, keyboard navigation, selection, modal focus, and Razor enhancement | A typed command collection and fixed safe renderer replace arbitrary item values; native `<dialog>` replaces teleport configuration | Loading/idle states, match highlighting, custom actions/results/items/empty/footer content, submit-without-selection, close policy controls, default state, maximum height, and footer hints |
 | `VfTable` → `CmTable` | Caption/header/body/footer composition, density, stripes, dividers, sticky header, semantic table structure, and responsive wrapper | `density="compact"` replaces `compact` | None identified |
-| `VfDataTable` → `CmDataTable` | Portable text cells, caption, density/presentation, loading/error/empty states, controlled sorting, row selection, page requests, Vue behavior, and Razor enhancement | Application-owned data operations replace built-in client sorting/pagination; string row IDs replace callback row keys | Page-size controls and pagination summaries; row-select constraints and row expansion; custom header/cell/state/footer rendering; column visibility/order/reordering/resizing/pinning; multi-sort; skeleton loading modes; complete localization labels |
+| `VfDataTable` → `CmDataTable` | Portable text cells, caption, density/presentation, loading/error/empty states, controlled sorting, row eligibility and selection, page/page-size requests and summaries, ordered visible columns, complete interaction labels, Vue behavior, and Razor enhancement | Application-owned data operations replace built-in client sorting/pagination; string row IDs replace callback row keys; rich row composition, multi-sort query policy, and interactive reorder/resize/pin remain application-owned; CmTable plus CmSkeleton supersedes DataTable-specific skeleton modes | None identified |
 
 ### Layout primitives
 
@@ -106,8 +106,9 @@ not evidence of parity.
 
 All 33 direct replacements have a verified cross-platform baseline. Sixteen replacements also have
 either a missing portable capability or an application-owned integration that must remain visible
-during migration. The highest-risk gaps are concentrated in DataTable, DatePicker, CommandPalette,
-and rich-content composition for interactive components.
+during migration. DataTable's approved gap is closed with explicit advanced-grid ownership; the
+remaining highest-risk gaps are concentrated in DatePicker, CommandPalette, and rich-content
+composition for interactive components.
 
 This audit does not approve every missing capability for implementation. `CMUI-176` prioritizes the
 gaps using real-consumer evidence; Phase 17 closes approved direct-replacement gaps. Application-owned
