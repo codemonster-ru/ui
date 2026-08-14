@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "progress-bar-determinate",
+  "description": "A labelled determinate progress bar with a visible rounded percentage.",
+  "props": { "label": "Upload progress", "value": 42, "showValue": true },
+  "slots": {}
+}

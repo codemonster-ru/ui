@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "name": "ProgressBar",
+  "slug": "progress-bar",
+  "razorTag": "cm-progress-bar",
+  "description": "A labelled linear indicator for determinate or indeterminate progress.",
+  "props": {
+    "label": { "type": "string", "required": true },
+    "value": { "type": "number", "required": false, "default": 0 },
+    "max": { "type": "number", "required": false, "default": 100 },
+    "indeterminate": { "type": "boolean", "required": false, "default": false },
+    "showValue": { "type": "boolean", "required": false, "default": false },
+    "tone": {
+      "type": "enum",
+      "required": false,
+      "default": "primary",
+      "values": ["neutral", "primary", "success", "info", "warning", "help", "danger", "contrast"]
+    }
+  },
+  "slots": {},
+  "events": {},
+  "states": ["determinate", "indeterminate"]
+}

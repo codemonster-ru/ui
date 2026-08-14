@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "name": "ProgressSpinner",
+  "slug": "progress-spinner",
+  "razorTag": "cm-progress-spinner",
+  "description": "A labelled circular indicator for indeterminate progress.",
+  "props": {
+    "label": { "type": "string", "required": true },
+    "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg"] },
+    "tone": {
+      "type": "enum",
+      "required": false,
+      "default": "primary",
+      "values": ["neutral", "primary", "success", "info", "warning", "help", "danger", "contrast"]
+    }
+  },
+  "slots": {},
+  "events": {},
+  "states": ["indeterminate"]
+}
