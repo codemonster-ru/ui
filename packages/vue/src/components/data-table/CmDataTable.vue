@@ -26,6 +26,7 @@ const props = defineProps({
   striped: Boolean,
   columnDividers: Boolean,
   stickyHeader: Boolean,
+  visibleColumnKeys: { type: Array as PropType<readonly string[] | null>, default: null },
   selectable: Boolean,
   selectedRowIds: { type: Array as PropType<readonly string[]>, default: () => [] },
   sort: { type: Object as PropType<CmDataTableSort | null>, default: null },
@@ -102,6 +103,21 @@ const normalizedRows = computed(() => {
     ids.add(row.id);
   }
   return props.rows;
+});
+
+const visibleColumns = computed(() => {
+  if (props.visibleColumnKeys === null) return normalizedColumns.value;
+  if (props.visibleColumnKeys.length === 0) {
+    throw new TypeError('DataTable visibleColumnKeys must not be empty.');
+  }
+  const columns = new Map(normalizedColumns.value.map((column) => [column.key, column]));
+  const seen = new Set<string>();
+  return props.visibleColumnKeys.map((key) => {
+    const column = typeof key === 'string' ? columns.get(key) : undefined;
+    if (!column || seen.has(key)) throw new TypeError(`Invalid DataTable visible column: ${String(key)}.`);
+    seen.add(key);
+    return column;
+  });
 });
 
 if (!idPattern.test(props.id)) throw new TypeError('DataTable id must use lowercase kebab-case.');
@@ -249,7 +265,7 @@ const paginationSummary = computed(() => {
   const lastRow = Math.min(localPage.value * localPageSize.value, props.totalRows);
   return formatTemplate(props.paginationSummaryTemplate, { firstRow, lastRow, totalRows: props.totalRows });
 });
-const columnCount = computed(() => normalizedColumns.value.length + (props.selectable ? 1 : 0));
+const columnCount = computed(() => visibleColumns.value.length + (props.selectable ? 1 : 0));
 
 function cellAttrs(column: CmDataTableColumn): Record<string, string> {
   return column.align && column.align !== 'start' ? { class: `cm-data-table__cell--${column.align}` } : {};
@@ -365,7 +381,7 @@ function changePageSize(pageSize: number): void {
               />
             </th>
             <th
-              v-for="column in normalizedColumns"
+              v-for="column in visibleColumns"
               :key="column.key"
               v-bind="cellAttrs(column)"
               scope="col"
@@ -407,7 +423,7 @@ function changePageSize(pageSize: number): void {
                 @change="changeRowSelection(row.id, ($event.target as HTMLInputElement).checked)"
               />
             </td>
-            <td v-for="column in normalizedColumns" :key="column.key" v-bind="cellAttrs(column)">
+            <td v-for="column in visibleColumns" :key="column.key" v-bind="cellAttrs(column)">
               {{ row.cells[column.key] ?? '' }}
             </td>
           </tr>

@@ -27,6 +27,7 @@ final readonly class CmDataTable implements ComponentInterface
         }
         $columns = DataTableData::columns($props->array('columns'));
         $rows = DataTableData::rows($props->array('rows'), $columns);
+        $visibleColumns = DataTableData::visibleColumns($props->nullableArray('visible-column-keys'), $columns);
         $caption = $props->string('caption');
         $density = $props->oneOf('density', ['default', 'compact'], 'default');
         $striped = $props->bool('striped');
@@ -80,7 +81,7 @@ final readonly class CmDataTable implements ComponentInterface
         $stateText = $loading ? $loadingText : ($error ? $errorText : ($rows === [] ? $emptyText : null));
 
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.data-table', [
-            'id' => $id, 'columns' => $columns, 'rows' => $renderRows, 'caption' => $caption,
+            'id' => $id, 'columns' => $visibleColumns, 'rows' => $renderRows, 'caption' => $caption,
             'selectable' => $selectable, 'selected' => $selected, 'sort' => $sort, 'page' => $page,
             'pageCount' => $pageCount, 'paginationLabel' => $paginationLabel,
             'pageSize' => $pageSize, 'pageSizeOptions' => $pageSizeOptions, 'rowsPerPageLabel' => $rowsPerPageLabel,
@@ -92,7 +93,7 @@ final readonly class CmDataTable implements ComponentInterface
             'selectAllLabel' => $selectAllLabel, 'classes' => $classes, 'stateText' => $stateText,
             'selectableRowCount' => count($selectableRows),
             'selectedSelectableRowCount' => count($selectedSelectableRows),
-            'columnCount' => count($columns) + ($selectable ? 1 : 0),
+            'columnCount' => count($visibleColumns) + ($selectable ? 1 : 0),
             'attributes' => $attributes->without(['class', 'id', 'data-cm-controller', 'data-cm-data-table-sort-key',
                 'data-cm-data-table-sort-direction', 'data-cm-data-table-page', 'data-cm-data-table-page-count',
                 'data-cm-data-table-page-size', 'data-cm-data-table-total-rows', 'data-cm-data-table-selected-count'])->render(),

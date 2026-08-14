@@ -30,6 +30,7 @@ export interface CmDataTableProps {
   striped?: boolean;
   columnDividers?: boolean;
   stickyHeader?: boolean;
+  visibleColumnKeys?: readonly string[] | null;
   selectable?: boolean;
   selectedRowIds?: readonly string[];
   sort?: CmDataTableSort | null;
