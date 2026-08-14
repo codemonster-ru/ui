@@ -11,8 +11,8 @@ Individual styles are available from the `select.css`, `date-picker.css`, and
 ## Select
 
 Select requires `options` with unique string `value`, non-empty `label`, and optional `disabled`.
-It accepts `value`, `placeholder`, `size` (`sm`, `md`, or `lg`), `invalid`, `disabled`, and
-`required`. Safe native attributes such as `id`, `name`, `autocomplete`, and
+It accepts `value`, `placeholder`, `clearable`, localized `clearLabel`, `size` (`sm`, `md`, or
+`lg`), `invalid`, `disabled`, and `required`. Safe native attributes such as `id`, `name`, `autocomplete`, and
 `aria-describedby` reach the `<select>`.
 
 ```vue
@@ -28,39 +28,64 @@ const options = [
 </script>
 
 <template>
-  <CmSelect v-model="frequency" name="frequency" aria-label="Frequency" :options="options" placeholder="Choose" required />
+  <CmSelect
+    v-model="frequency"
+    name="frequency"
+    aria-label="Frequency"
+    :options="options"
+    placeholder="Choose"
+    clearable
+    clear-label="Clear frequency"
+    required
+  />
 </template>
 ```
 
 ```razor
-<cm-select name="frequency" aria-label="Frequency" :options="$options" :value="$submitted['frequency'] ?? ''" placeholder="Choose" :required="true" />
+<cm-select name="frequency" aria-label="Frequency" :options="$options" :value="$submitted['frequency'] ?? ''" placeholder="Choose" :clearable="true" clear-label="Clear frequency" :required="true" />
 ```
 
 Vue emits `update:modelValue` and `valueChange` from the native `change` event. Razor expects the
-current submitted or application value. No runtime is needed.
+current submitted or application value. The clear action selects the empty native value, emits the
+same bubbling `change`, and restores focus. Register `createCmSelectController` for this progressive
+enhancement in Razor; without runtime the select and form submission remain native and the clear
+button is inert.
 
 ## DatePicker
 
 DatePicker renders `<input type="date">`. `value`, `min`, and `max` are empty or real calendar dates
-in `YYYY-MM-DD` syntax. It accepts the same sizes and state props as Input, including `readonly`.
+in `YYYY-MM-DD` syntax. It accepts the same sizes and state props as Input, including `readonly`,
+plus `clearable` and localized `clearLabel`.
 
 ```vue
-<CmDatePicker v-model="launchDate" name="launch_date" aria-label="Launch date" min="2026-01-01" required />
+<CmDatePicker
+  v-model="launchDate"
+  name="launch_date"
+  aria-label="Launch date"
+  min="2026-01-01"
+  clearable
+  clear-label="Clear launch date"
+  required
+/>
 ```
 
 ```razor
-<cm-date-picker name="launch_date" aria-label="Launch date" :value="$submitted['launch_date'] ?? ''" min="2026-01-01" :required="true" />
+<cm-date-picker name="launch_date" aria-label="Launch date" :value="$submitted['launch_date'] ?? ''" min="2026-01-01" :clearable="true" clear-label="Clear launch date" :required="true" />
 ```
 
 The browser owns calendar UI and localized presentation, so its popup appearance can differ by
-platform. The successful form value remains ISO `YYYY-MM-DD`. DatePicker does not parse time zones,
-support date ranges, or require runtime. Validate submitted dates again on the server.
+platform. The successful form value remains ISO `YYYY-MM-DD`. The portable contract does not add a
+custom calendar, multiple/range or month/year/time modes, display formatting, first-day policy, or
+calendar labels. Register the existing `createCmInputController` in Razor to enhance the clear
+action; the date input and submission remain native without it. Validate submitted dates again on
+the server.
 
 ## CommandPalette
 
 CommandPalette requires `id`, `title`, and ordered `commands` with unique kebab-case `id`, `label`,
-optional plain-text `keywords`, and optional `disabled`. It accepts `open`, `query`, `placeholder`,
-`emptyText`, and `closeLabel`.
+optional plain-text `keywords`, and optional `disabled`. The collection may be empty while commands
+load. It accepts `open`, `query`, `loading`, `placeholder`, `emptyText`, `idleText`, `loadingText`,
+and `closeLabel`.
 
 ```vue
 <script setup lang="ts">
@@ -81,7 +106,19 @@ function runCommand(command: string): void {
 
 <template>
   <button type="button" @click="open = true">Commands</button>
-  <CmCommandPalette id="workspace" v-model:open="open" v-model:query="query" title="Commands" :commands="commands" @select="runCommand" />
+  <CmCommandPalette
+    id="workspace"
+    v-model:open="open"
+    v-model:query="query"
+    title="Commands"
+    :commands="commands"
+    loading-text="Loading commands"
+    idle-text="Start typing"
+    @select="runCommand"
+  >
+    <template #commandNewProject="{ active }"><strong>New project</strong>{{ active ? ' — selected' : '' }}</template>
+    <template #footer>Results are filtered locally.</template>
+  </CmCommandPalette>
 </template>
 ```
 
@@ -110,7 +147,11 @@ palette?.addEventListener('cm:command-palette-select', (event) => {
 The search keeps focus in the combobox. Arrow keys, Home, and End update its active descendant;
 Enter reports the enabled command id and closes. Escape and the close button dismiss and restore
 focus. Filtering is case-insensitive substring matching over labels and keywords, in original
-order. Applications own command execution, authorization, global shortcuts, and persistence.
+order. `actions`, `loading`, `idle`, `empty`, and `footer` accept trusted authored content;
+`command{UpperCamelId}` replaces one label inside its component-owned option and receives
+`{ command, active }` in Vue. Razor accepts the same named regions as trusted `RenderedHtml`.
+Applications own command execution, authorization, global shortcuts, persistence, arbitrary result
+renderers, fuzzy highlighting, unmatched-query submission, and dialog sizing or close policy.
 
 ## Accessibility and security
 
@@ -118,5 +159,6 @@ order. Applications own command execution, authorization, global shortcuts, and 
 - Keep native required and range validation unless an equivalent accessible flow is tested.
 - Treat submitted Select and DatePicker values as untrusted even when options and constraints were
   rendered by the server.
-- Command labels, keywords, and queries are escaped strings; they are not HTML slots.
+- Command labels, keywords, and queries are escaped strings. Pass only trusted authored markup to
+  the explicit content regions; never turn remote command strings into raw HTML.
 - Do not initialize shared runtime over Vue-owned CommandPalette markup.

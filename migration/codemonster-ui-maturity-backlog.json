@@ -50,13 +50,9 @@
       "roadmapItem": "CMUI-180",
       "destination": "phase-17",
       "priority": "P1",
-      "summary": "Mature advanced inputs without weakening server-rendered fallback",
-      "reason": "These controls need explicit native submission, localization, and progressive-enhancement boundaries.",
-      "gaps": [
-        "VfCommandPalette:material-portable-gap",
-        "VfDatePicker:material-portable-gap",
-        "VfSelect:material-portable-gap"
-      ]
+      "summary": "Advanced input maturity delivered",
+      "reason": "Localized clear actions and typed asynchronous command states now preserve native submission, trusted content, and progressive-enhancement boundaries in Vue and Razor.",
+      "gaps": []
     },
     {
       "id": "CMUI-B006",

@@ -137,7 +137,15 @@
             </CmField>
             <CmField control-id="showcase-plan" label="Plan">
               <template #default="{ controlId, describedBy }">
-                <CmSelect :id="controlId" v-model="plan" name="plan" :aria-describedby="describedBy" :options="plans" />
+                <CmSelect
+                  :id="controlId"
+                  v-model="plan"
+                  name="plan"
+                  :aria-describedby="describedBy"
+                  :options="plans"
+                  clearable
+                  clear-label="Clear plan"
+                />
               </template>
             </CmField>
             <CmField control-id="showcase-date" label="Release date">
@@ -147,6 +155,8 @@
                   v-model="releaseDate"
                   name="release-date"
                   :aria-describedby="describedBy"
+                  clearable
+                  clear-label="Clear release date"
                 />
               </template>
             </CmField>
@@ -241,6 +251,7 @@
             <CmButton @click="dialogOpen = true">Open dialog</CmButton>
             <CmButton variant="secondary" @click="drawerOpen = true">Open drawer</CmButton>
             <CmButton variant="ghost" @click="commandPaletteOpen = true">Open command palette</CmButton>
+            <CmButton variant="ghost" @click="commandLoading = !commandLoading">Toggle command loading</CmButton>
           </CmInline>
           <CmDialog id="showcase-dialog" v-model:open="dialogOpen" title="Publish preview?" size="lg" dividers>
             <template #header>Publish <em>preview</em>?</template>
@@ -268,7 +279,16 @@
             v-model:query="commandQuery"
             title="Go to"
             :commands="commands"
-          />
+            :loading="commandLoading"
+            loading-text="Loading destinations"
+            idle-text="No destinations loaded"
+          >
+            <template #actions><span>Workspace</span></template>
+            <template #commandComponents="{ active }"
+              ><strong>Components</strong>{{ active ? ' — active' : '' }}</template
+            >
+            <template #footer>Use arrows to choose a destination.</template>
+          </CmCommandPalette>
         </CmStack>
       </CmSection>
     </CmStack>
@@ -378,6 +398,7 @@ const dialogOpen = ref(false);
 const drawerOpen = ref(false);
 const commandPaletteOpen = ref(false);
 const commandQuery = ref('');
+const commandLoading = ref(false);
 
 function formatTargets(targets: readonly string[]): string {
   return targets.length > 0 ? targets.join(' + ') : 'No direct target';

@@ -177,14 +177,6 @@
       "summary": "Publish a maintained recipe in `CMUI-187`"
     },
     {
-      "source": "VfCommandPalette",
-      "disposition": "replace",
-      "targets": ["CmCommandPalette"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-180",
-      "summary": "Loading/idle states, match highlighting, custom actions/results/items/empty/footer content, submit-without-selection, close policy controls, default state, maximum height, and footer hints"
-    },
-    {
       "source": "VfConfirmDialog",
       "disposition": "compose",
       "targets": ["CmDialog", "CmButton"],
@@ -199,14 +191,6 @@
       "capabilityId": "reviewed-disposition",
       "roadmapItem": "CMUI-185",
       "summary": "Portable candidate: Required columns, ordered visibility state, aggregate selection, and an accessible trigger can be expressed for both adapters, but depend on the DataTable column-visibility contract"
-    },
-    {
-      "source": "VfDatePicker",
-      "disposition": "replace",
-      "targets": ["CmDatePicker"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-180",
-      "summary": "Multiple and range selection, month/year picker modes, time selection and minute steps, locale/display formatting, first-day configuration, clear action, and custom labels"
     },
     {
       "source": "VfErrorLayout",
@@ -295,14 +279,6 @@
       "capabilityId": "reviewed-disposition",
       "roadmapItem": "CMUI-184",
       "summary": "Portable candidate: An indeterminate labelled progress indicator has stable semantic HTML and no framework lifecycle requirement"
-    },
-    {
-      "source": "VfSelect",
-      "disposition": "replace",
-      "targets": ["CmSelect"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-180",
-      "summary": "Built-in clear action"
     },
     {
       "source": "VfSkeletonGate",
