@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 18 — Portable expansion and consumer migration
 - Current milestone: M11 — Portable expansion and consumer migration
-- Next item: `CMUI-190` Run complete package and real-consumer verification.
+- Next item: `CMUI-191` Publish the stable cohort and exact migration notes.
 
 ## Milestones
 
@@ -136,7 +136,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
 - [x] `CMUI-189` Migrate the representative Vue application off `vueforge-core` and
       `vueforge-layouts`; validate the representative Annabel Razor application against the same shared
       component contracts.
-- [ ] `CMUI-190` Run complete package, packed-consumer, SSR/server-rendering, accessibility,
+- [x] `CMUI-190` Run complete package, packed-consumer, SSR/server-rendering, accessibility,
       interaction, visual, migration, and real-consumer verification.
 - [ ] `CMUI-191` Publish the resulting stable package cohort and exact migration notes without
       unpublishing retained VueForge packages.
