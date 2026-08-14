@@ -62,16 +62,16 @@ or intentionally drops.
 
 ## Progress
 
-- Current phase: Phase 16 — Coverage truth and restored catalog
-- Current milestone: M9 — Enforced migration coverage
-- Next item: `CMUI-G009` Verify the enforced migration coverage exit gate.
+- Current phase: Phase 17 — Direct replacement maturity
+- Current milestone: M10 — Mature direct replacements
+- Next item: `CMUI-181` Mature DataTable from real-consumer demand.
 
 ## Milestones
 
 | Milestone | Outcome | Status |
 | --- | --- | --- |
-| M9 | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status | In progress |
-| M10 | Existing direct replacements cover their approved stable use cases in Vue and Razor | Pending |
+| M9 | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status | Completed |
+| M10 | Existing direct replacements cover their approved stable use cases in Vue and Razor | In progress |
 | M11 | Missing portable components and recipes are delivered, and real consumers complete migration | Pending |
 
 ## Phase 16 — Coverage truth and restored catalog
@@ -94,7 +94,7 @@ or intentionally drops.
 
 ### M9 exit gate
 
-- [ ] `CMUI-G009` Coverage validation fails for an unclassified baseline capability, an adapter or
+- [x] `CMUI-G009` Coverage validation fails for an unclassified baseline capability, an adapter or
   contract missing from the catalog, and a stable component missing from the showcase.
 
 ## Phase 17 — Direct replacement maturity
