@@ -79,6 +79,11 @@ state. This keeps remote queries, authorization, caching, and error handling in 
 Select-all affects only eligible rendered rows. A disabled row that is already selected remains
 selected until the application changes the controlled selection.
 
+Localize selection and sorting accessible names with `selectAllLabel`, `selectRowLabelTemplate`,
+`sortAscendingLabelTemplate`, `sortDescendingLabelTemplate`, and `clearSortLabelTemplate`. The row
+template must contain `{row}`; each sort template must contain `{column}`. Razor uses the equivalent
+kebab-case props and the shared runtime preserves those labels as sorting cycles.
+
 ## Razor and progressive enhancement
 
 Razor renders the current server-owned page and state:

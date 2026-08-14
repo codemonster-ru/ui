@@ -121,6 +121,29 @@ RAZOR);
         ], []));
     }
 
+    public function testRendersLocalizedSortAndSelectionLabels(): void
+    {
+        $component = new CmDataTable(new RazorEngine(
+            new DefaultLocator(dirname(__DIR__, 2) . '/resources/views'),
+            cachePath: $this->root . '/component-cache',
+        ));
+        $html = $component->render(new ComponentRenderContext([
+            'id' => 'projects',
+            'columns' => [['key' => 'name', 'header' => 'Имя', 'sortable' => true]],
+            'rows' => [['id' => 'ivan-petrov', 'cells' => ['name' => 'Иван Петров']]],
+            'selectable' => true,
+            'select-all-label' => 'Выбрать все строки',
+            'select-row-label-template' => 'Выбрать строку {row}',
+            'sort-ascending-label-template' => 'Сортировать {column} по возрастанию',
+            'sort-descending-label-template' => 'Сортировать {column} по убыванию',
+            'clear-sort-label-template' => 'Сбросить сортировку {column}',
+        ], []))->value();
+
+        self::assertStringContainsString('aria-label="Сортировать Имя по возрастанию"', $html);
+        self::assertStringContainsString('aria-label="Выбрать строку Ivan Petrov"', $html);
+        self::assertStringContainsString('data-cm-data-table-sort-descending-label-template="Сортировать {column} по убыванию"', $html);
+    }
+
     private function engine(): RazorEngine
     {
         $components = new ComponentRegistry();

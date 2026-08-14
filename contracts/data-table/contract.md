@@ -38,6 +38,10 @@ non-default density. Sorting uses `aria-sort` on the owning `<th>` and a native 
 native checkboxes with row-specific accessible names. The select-all checkbox covers only enabled
 rendered rows and exposes native checked, indeterminate, or disabled state. Selection changes retain
 already selected disabled rows while adding or removing only eligible rows.
+Selection and sorting accessible names are localizable through required-placeholder templates:
+`selectRowLabelTemplate` uses `{row}`, while the ascending, descending, and clear-sort templates use
+`{column}`. Razor carries the sort templates in data attributes so the shared runtime can preserve
+the localized name throughout the sort cycle.
 
 ## Interaction and ownership
 

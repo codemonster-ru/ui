@@ -50,6 +50,10 @@ const props = defineProps({
   previousPageLabel: { type: String, default: 'Previous page' },
   nextPageLabel: { type: String, default: 'Next page' },
   selectAllLabel: { type: String, default: 'Select all rows' },
+  selectRowLabelTemplate: { type: String, default: 'Select {row}' },
+  sortAscendingLabelTemplate: { type: String, default: 'Sort {column} ascending' },
+  sortDescendingLabelTemplate: { type: String, default: 'Sort {column} descending' },
+  clearSortLabelTemplate: { type: String, default: 'Clear sorting for {column}' },
 });
 const emit = defineEmits<{
   pageChange: [page: number];
@@ -168,6 +172,16 @@ if (
 ) {
   throw new TypeError('DataTable paginationSummaryTemplate must contain first, last, and total row placeholders.');
 }
+if (!props.selectRowLabelTemplate.includes('{row}')) {
+  throw new TypeError('DataTable selectRowLabelTemplate must contain {row}.');
+}
+if (
+  [props.sortAscendingLabelTemplate, props.sortDescendingLabelTemplate, props.clearSortLabelTemplate].some(
+    (template) => !template.includes('{column}'),
+  )
+) {
+  throw new TypeError('DataTable sort label templates must contain {column}.');
+}
 
 function normalizeSort(sort: CmDataTableSort | null): CmDataTableSort | null {
   if (
@@ -278,7 +292,7 @@ function rowLabel(id: string): string {
     .join(' ');
 }
 
-function formatTemplate(template: string, values: Readonly<Record<string, number>>): string {
+function formatTemplate(template: string, values: Readonly<Record<string, number | string>>): string {
   return Object.entries(values).reduce(
     (result, [name, value]) => result.split(`{${name}}`).join(String(value)),
     template,
@@ -286,10 +300,13 @@ function formatTemplate(template: string, values: Readonly<Record<string, number
 }
 
 function sortLabel(column: CmDataTableColumn): string {
-  if (localSort.value?.key !== column.key) return `Sort ${column.header} ascending`;
-  return localSort.value.direction === 'ascending'
-    ? `Sort ${column.header} descending`
-    : `Clear sorting for ${column.header}`;
+  const template =
+    localSort.value?.key !== column.key
+      ? props.sortAscendingLabelTemplate
+      : localSort.value.direction === 'ascending'
+        ? props.sortDescendingLabelTemplate
+        : props.clearSortLabelTemplate;
+  return formatTemplate(template, { column: column.header });
 }
 
 function changeSort(column: CmDataTableColumn): void {
@@ -393,6 +410,9 @@ function changePageSize(pageSize: number): void {
                 type="button"
                 :aria-label="sortLabel(column)"
                 :data-cm-data-table-sort="column.key"
+                :data-cm-data-table-sort-ascending-label-template="props.sortAscendingLabelTemplate"
+                :data-cm-data-table-sort-descending-label-template="props.sortDescendingLabelTemplate"
+                :data-cm-data-table-clear-sort-label-template="props.clearSortLabelTemplate"
                 @click="changeSort(column)"
               >
                 {{ column.header }}<span class="cm-data-table__sort-indicator" aria-hidden="true"></span>
@@ -415,7 +435,7 @@ function changePageSize(pageSize: number): void {
             <td v-if="props.selectable" class="cm-data-table__selection">
               <input
                 type="checkbox"
-                :aria-label="`Select ${rowLabel(row.id)}`"
+                :aria-label="formatTemplate(props.selectRowLabelTemplate, { row: rowLabel(row.id) })"
                 :value="row.id"
                 :checked="selectedIds.has(row.id)"
                 :disabled="row.selectable === false"
