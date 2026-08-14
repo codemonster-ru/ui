@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 18 — Portable expansion and consumer migration
 - Current milestone: M11 — Portable expansion and consumer migration
-- Next item: `CMUI-187` Publish the maintained application composition recipes.
+- Next item: `CMUI-188` Verify the application-owned shell boundary.
 
 ## Milestones
 
@@ -128,7 +128,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
       including Stepper, TableOfContents, menu-bar/navigation patterns, and data-table column controls.
 - [x] `CMUI-186` Implement each approved new component through contract, canonical fixtures, shared
       CSS, optional runtime, Vue adapter, Razor adapter, parity tests, documentation, and showcase.
-- [ ] `CMUI-187` Publish and test maintained recipes for approved compositions such as ConfirmDialog,
+- [x] `CMUI-187` Publish and test maintained recipes for approved compositions such as ConfirmDialog,
       FormLayout, GroupBox, Panel, PageHeader, SkeletonGate, AuthLayout, and ErrorLayout.
 - [ ] `CMUI-188` Keep application shells application-owned unless the reconsideration criteria in
       [Application shell ownership](./architecture/application-shell-ownership.md) are satisfied by two

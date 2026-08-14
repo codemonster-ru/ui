@@ -294,15 +294,14 @@ test('requires stable components and unresolved gaps in the playground catalog',
 });
 
 test('requires every coverage gap exactly once in the maturity backlog', () => {
-  const coverage = readCodeMonsterCoverage();
+  const coverage = structuredClone(readCodeMonsterCoverage());
   const mapping = readVueForgeMapping();
   const artifacts = discoverCoverageArtifacts(coverage);
   const backlog = JSON.parse(artifacts.files.get(coverage.backlog));
-  const gap = backlog.items.flatMap((item) => item.gaps)[0];
-  const item = backlog.items.find((candidate) => candidate.gaps.includes(gap));
-  assert.ok(gap);
-  assert.ok(item);
-  item.gaps = item.gaps.filter((candidate) => candidate !== gap);
+  const gap = 'VfAuthLayout:maintained-recipe';
+  const capability = coverage.components.VfAuthLayout.capabilities.find(({ id }) => id === 'maintained-recipe');
+  capability.status = 'missing';
+  capability.roadmapItem = 'CMUI-187';
   backlog.items[0].gaps = ['VfUnknown:unknown-gap'];
   artifacts.files.set(coverage.backlog, JSON.stringify(backlog));
 
