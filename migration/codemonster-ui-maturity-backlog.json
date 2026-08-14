@@ -90,15 +90,9 @@
       "roadmapItem": "CMUI-185",
       "destination": "phase-18",
       "priority": "P2",
-      "summary": "Decide behavior-rich candidates only from shared demand",
-      "reason": "Column selection has real Vue demand; Menubar and the other candidates have no current Razor usage.",
-      "gaps": [
-        "VfDataTableColumnChooser:reviewed-disposition",
-        "VfMenuBar:reviewed-disposition",
-        "VfNavMenu:remaining-migration-outcome",
-        "VfStepper:reviewed-disposition",
-        "VfTableOfContents:reviewed-disposition"
-      ]
+      "summary": "Behavior-rich candidate decisions complete",
+      "reason": "Static subsets compose from native semantics and existing primitives; behavior-rich navigation, workflow, discovery, and chooser policy remain application-owned without shared Razor demand.",
+      "gaps": []
     },
     {
       "id": "CMUI-B010",

@@ -441,15 +441,16 @@
       "capabilities": [
         {
           "id": "reviewed-disposition",
-          "status": "missing",
-          "notes": "Portable candidate: Required columns, ordered visibility state, aggregate selection, and an accessible trigger can be expressed for both adapters, but depend on the DataTable column-visibility contract",
+          "status": "application-owned",
+          "notes": "CmDataTable visibleColumnKeys plus CmCheckbox and CmPopover cover the portable visibility boundary; required-column policy, chooser placement, persistence, optimistic updates, and rollback remain application-owned",
           "evidence": [
             "docs/core/components/data-table-column-chooser/api.md",
             "docs/verification/component-disposition-audit.md",
+            "docs/verification/consumer-usage-inventory.md",
+            "contracts/data-table/contract.md",
             "contracts/checkbox/contract.md",
             "contracts/popover/contract.md"
-          ],
-          "roadmapItem": "CMUI-185"
+          ]
         }
       ]
     },
@@ -858,15 +859,15 @@
       "capabilities": [
         {
           "id": "reviewed-disposition",
-          "status": "missing",
-          "notes": "Portable candidate: Nested menubar semantics and two-axis keyboard navigation are portable behavior, but current consumers and Razor demand are not yet established",
+          "status": "application-owned",
+          "notes": "Native navigation with CmInline and CmLink supersedes the static flat site-navigation subset; nested command-menubar structure, two-axis keyboard behavior, shortcuts, routing, and authorization remain application-owned without shared Razor demand",
           "evidence": [
             "docs/core/components/menu-bar/api.md",
             "docs/verification/component-disposition-audit.md",
-            "contracts/menu/contract.md",
-            "contracts/inline/contract.md"
-          ],
-          "roadmapItem": "CMUI-185"
+            "docs/verification/consumer-usage-inventory.md",
+            "contracts/inline/contract.md",
+            "contracts/link/contract.md"
+          ]
         }
       ]
     },
@@ -954,13 +955,12 @@
         },
         {
           "id": "remaining-migration-outcome",
-          "status": "missing",
-          "notes": "Re-evaluate only the portable tree behavior in `CMUI-185`",
-          "roadmapItem": "CMUI-185",
+          "status": "application-owned",
+          "notes": "Native navigation and CmLink composition supersede the static link-list subset; nested disclosure state, routing, authorization, active location, and compact sidebar policy remain application-owned without shared Razor demand",
           "evidence": [
             "docs/core/components/nav-menu/api.md",
             "docs/verification/component-disposition-audit.md",
-            "contracts/menu/contract.md",
+            "docs/verification/consumer-usage-inventory.md",
             "contracts/link/contract.md"
           ]
         }
@@ -1236,10 +1236,13 @@
       "capabilities": [
         {
           "id": "reviewed-disposition",
-          "status": "missing",
-          "notes": "Portable candidate: Ordered step state, orientation, current-step semantics, disabled steps, and roving keyboard behavior are portable, but workflow navigation ownership needs real-consumer validation",
-          "evidence": ["docs/core/components/stepper/api.md", "docs/verification/component-disposition-audit.md"],
-          "roadmapItem": "CMUI-185"
+          "status": "application-owned",
+          "notes": "A semantic ordered list supersedes static step progress; current-step transitions, disabled policy, validation, routing, and keyboard workflow remain application-owned without shared Razor demand",
+          "evidence": [
+            "docs/core/components/stepper/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "docs/verification/consumer-usage-inventory.md"
+          ]
         }
       ]
     },
@@ -1323,15 +1326,15 @@
       "capabilities": [
         {
           "id": "reviewed-disposition",
-          "status": "missing",
-          "notes": "Portable candidate: Semantic navigation, active location, levels, and links are portable; heading discovery, scroll observation, smooth scrolling, and offsets may remain application-owned",
+          "status": "application-owned",
+          "notes": "Native navigation with CmLink and CmStack supersedes the static authored outline; heading discovery, active-location observation, smooth scrolling, offsets, and document synchronization remain application-owned without shared Razor demand",
           "evidence": [
             "docs/core/components/table-of-contents/api.md",
             "docs/verification/component-disposition-audit.md",
+            "docs/verification/consumer-usage-inventory.md",
             "contracts/link/contract.md",
             "contracts/stack/contract.md"
-          ],
-          "roadmapItem": "CMUI-185"
+          ]
         }
       ]
     },
