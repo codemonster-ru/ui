@@ -24,6 +24,10 @@ const emit = defineEmits<{
   change: [event: Event];
   'update:modelValue': [value: boolean];
 }>();
+defineSlots<{
+  default?(): unknown;
+  thumb?(props: { checked: boolean }): unknown;
+}>();
 const attrs = useAttrs();
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const classes = computed(() =>
@@ -70,7 +74,9 @@ function updateChecked(event: Event): void {
       :aria-invalid="props.invalid ? 'true' : undefined"
       @change="updateChecked"
     />
-    <span class="cm-switch__control" aria-hidden="true"><span class="cm-switch__thumb" /></span>
+    <span class="cm-switch__control" aria-hidden="true">
+      <span class="cm-switch__thumb"><slot name="thumb" :checked="props.modelValue" /></span>
+    </span>
     <span class="cm-switch__content"
       ><slot>{{ props.label }}</slot></span
     >

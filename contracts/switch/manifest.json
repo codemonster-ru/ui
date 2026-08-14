@@ -19,7 +19,11 @@
     "required": { "type": "boolean", "required": false, "default": false }
   },
   "slots": {
-    "default": { "required": false, "description": "Visible trusted setting label content." }
+    "default": { "required": false, "description": "Visible trusted setting label content." },
+    "thumb": {
+      "required": false,
+      "description": "Decorative trusted thumb content. Vue receives the current checked state."
+    }
   },
   "events": {
     "change": { "description": "Native change event carrying the current checked state.", "native": true }

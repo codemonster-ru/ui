@@ -384,7 +384,7 @@
     "css:components/switch.css": {
       "path": "css/css/components/switch.css",
       "mediaType": "text/css",
-      "sha256": "b5adb10e2403a66c6d15a3bc9e9ae72c01005075bb30d20b31b955d04c4e446d",
+      "sha256": "24779c088ea67816eca39ef07c838cf4bf54e4b6f912cb18d1d2ef7bea377bd5",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.0.0",

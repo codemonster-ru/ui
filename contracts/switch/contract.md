@@ -17,6 +17,11 @@ Safe form-control attributes and listeners are forwarded to the input; consumer 
 target the root. The default slot takes precedence over the escaped `label` prop. Switch is not a
 replacement for Checkbox when the action represents multi-selection or acceptance.
 
+The optional trusted `thumb` slot renders decorative content inside `span.cm-switch__thumb`; the
+control wrapper continues to expose `aria-hidden="true"`. Vue provides `{ checked: boolean }` to the
+slot so its content can follow the current model. Annabel Razor resolves the same named slot from the
+current server-rendered state without adding client behavior.
+
 ## Checked state and platform mapping
 
 The semantic `checked` value is boolean and is mirrored through `aria-checked` because the native

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "switch-custom-thumb",
+  "description": "Checked switch renders trusted decorative thumb content.",
+  "props": { "checked": true, "label": "Dark mode" },
+  "slots": { "thumb": "<span class=\"theme-indicator\">on</span>" },
+  "attributes": { "name": "theme" }
+}

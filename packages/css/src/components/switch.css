@@ -59,8 +59,12 @@
 }
 
 .cm-switch__thumb {
+  display: inline-flex;
   inline-size: var(--cm-switch-thumb-size);
   block-size: var(--cm-switch-thumb-size);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   border-radius: var(--cm-radius-round);
   background: var(--cm-color-text-secondary);
   transform: translateX(0);

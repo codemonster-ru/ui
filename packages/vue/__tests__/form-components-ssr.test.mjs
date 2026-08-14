@@ -16,6 +16,14 @@ const components = {
   textarea: CmTextarea,
 };
 
+function slotContent(content) {
+  if (content === '<span class="theme-indicator">on</span>') {
+    return h('span', { class: 'theme-indicator' }, 'on');
+  }
+
+  return content;
+}
+
 for (const [slug, component] of Object.entries(components)) {
   const casesDirectory = resolve(packageDirectory, `../../contracts/${slug}/cases`);
   const caseFiles = (await readdir(casesDirectory)).filter((file) => file.endsWith('.case.json')).sort();
@@ -39,7 +47,7 @@ for (const [slug, component] of Object.entries(components)) {
       }
 
       const slots = Object.fromEntries(
-        Object.entries(definition.slots).map(([name, content]) => [name, () => content]),
+        Object.entries(definition.slots).map(([name, content]) => [name, () => slotContent(content)]),
       );
       const actual = await renderToString(createSSRApp({ render: () => h(component, props, slots) }));
       const comparison = compareSignificantDom(expected, actual);
