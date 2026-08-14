@@ -112,3 +112,17 @@ prereleases to the stable npm and Composer constraints. Verification passed with
 - 43 Composer UI assets published through the CMS application boundary.
 
 This completes the stable publication and real-consumer gate in `CMUI-162` and `CMUI-G007`.
+
+## Repository transition validation
+
+After all release, consumer, and CI gates passed, the monorepo was renamed from
+`codemonster-ru/vueforge` to `codemonster-ru/codemonster-ui`. Validation confirmed that:
+
+- the old GitHub repository URL responds with a permanent redirect to the canonical URL;
+- `main`, the stable `ui/v1.0.0` tag, GitHub releases, and completed Actions runs remain available;
+- the local `origin` uses the canonical repository URL;
+- package metadata uses the canonical repository, issue, and package-homepage URLs;
+- all five npm trusted publishers authorize `release-from-tag.yml` in
+  `codemonster-ru/codemonster-ui` for future publishes.
+
+This completes the repository transition in `CMUI-164` and the M7 roadmap milestone.

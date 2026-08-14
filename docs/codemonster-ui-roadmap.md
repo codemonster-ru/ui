@@ -52,10 +52,10 @@ Playground ownership follows
 
 ## Branches
 
-| Repository                | Integration branch      | Responsibility                          |
-| ------------------------- | ----------------------- | --------------------------------------- |
-| `codemonster-ru/vueforge` | `feat/codemonster-ui`   | Shared foundation and platform adapters |
-| `codemonster-ru/annabel`  | `feat/razor-components` | Generic Razor component model           |
+| Repository                      | Integration branch      | Responsibility                          |
+| ------------------------------- | ----------------------- | --------------------------------------- |
+| `codemonster-ru/codemonster-ui` | `main`                  | Shared foundation and platform adapters |
+| `codemonster-ru/annabel`        | `feat/razor-components` | Generic Razor component model           |
 
 Short-lived branches may be created from the relevant integration branch. Merge or rebase them
 without squashing so each completed roadmap item remains visible.
@@ -73,10 +73,10 @@ An item is complete only when all applicable conditions are satisfied:
 
 ## Progress
 
-- Current phase: Phase 14 — VueForge migration and release
-- Current milestone: M7 — VueForge migration and CodeMonster UI 1.0
-- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort
-- Next item: `CMUI-164`
+- Current phase: Complete — Vue and Annabel Razor roadmap
+- Current milestone: M7 — Completed
+- Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort; M7 — migration and CodeMonster UI 1.0
+- Next item: None; React and Angular remain unscheduled future considerations.
 
 ## Milestones
 
@@ -89,7 +89,7 @@ An item is complete only when all applicable conditions are satisfied:
 | M4        | Accordion proves accessible cross-platform interaction                    | Completed            |
 | M5        | React and Angular implement the four pilot contracts                      | Future consideration |
 | M6        | Utility CSS and the first stable component cohort are available           | Completed            |
-| M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | In progress          |
+| M7        | VueForge migration and CodeMonster UI 1.0 are complete                    | Completed            |
 
 ## Phase 0 — Product and architecture decisions
 
@@ -401,7 +401,7 @@ added to the active scope in the future.
   - [x] `CMUI-161a` Prepare and verify the migration notes locally.
 - [x] `CMUI-162` Publish CodeMonster UI 1.0.
 - [x] `CMUI-163` Move VueForge packages to the approved maintenance state.
-- [ ] `CMUI-164` Rename the repository only after migration gates pass.
+- [x] `CMUI-164` Rename the repository only after migration gates pass.
 
 ### M7 exit gate
 
@@ -437,6 +437,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-13 | Pause all registry and public-release actions while continuing local Vue and Annabel Razor work.                               | Complete implementation and real-consumer validation without requiring npm/Composer credentials or creating public artifacts before they are needed.        | `CMUI-158`, `CMUI-159a`, `CMUI-161`–`CMUI-164`, `CMUI-G007` |
 | 2026-08-13 | Resume registry and public-release actions after completing local verification.                                                | Proceed with the approved prerelease, registry-consumer, and stable-release sequence now that both integration branches pass their local release gates.     | `CMUI-158`, `CMUI-159a`, `CMUI-161`–`CMUI-164`, `CMUI-G007` |
 | 2026-08-14 | Move VueForge design-system foundations to maintenance without blanket deprecation or unpublishing.                            | Direct new shared UI work to CodeMonster UI while retaining unsupported and separately maintained VueForge product families.                                | `CMUI-163`                                                  |
+| 2026-08-14 | Rename the repository to `codemonster-ru/codemonster-ui` after all migration and release gates passed.                         | Complete the platform-neutral identity while preserving Git history, redirects, releases, package identities, and trusted publishing.                       | `CMUI-164`, M7                                              |
 
 ## Cross-repository log
 
