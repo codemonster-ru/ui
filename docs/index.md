@@ -21,6 +21,8 @@ adapters aligned without hiding their native composition models.
 - [Button](./components/button.md), [Card](./components/card.md), and
   [display components](./components/display.md).
 - [Forms](./components/forms.md) and [advanced inputs](./components/advanced-inputs.md).
+- [Fieldset](./components/fieldset.md), [IconButton](./components/icon-button.md), and
+  [progress indicators](./components/progress.md).
 - [Navigation](./components/navigation.md) and [Accordion](./components/accordion.md).
 - [Overlays](./components/overlays.md).
 - [Table and DataTable](./components/data-tables.md).
