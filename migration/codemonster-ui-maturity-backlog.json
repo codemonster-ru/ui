@@ -70,8 +70,8 @@
       "roadmapItem": "CMUI-183",
       "destination": "phase-17",
       "priority": "P1",
-      "summary": "Synchronize contracts, migration tooling, documentation, and examples",
-      "reason": "Every matured cohort must update its consumer-facing evidence before Phase 18 expansion.",
+      "summary": "Direct-replacement evidence synchronized",
+      "reason": "Published manifests, migration guidance, machine maturity gates, documentation, and examples now agree before Phase 18 expansion.",
       "gaps": []
     },
     {

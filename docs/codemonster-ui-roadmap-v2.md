@@ -62,17 +62,17 @@ or intentionally drops.
 
 ## Progress
 
-- Current phase: Phase 17 — Direct replacement maturity
-- Current milestone: M10 — Mature direct replacements
-- Next item: `CMUI-183` Synchronize direct-replacement migration evidence.
+- Current phase: Phase 18 — Portable expansion and consumer migration
+- Current milestone: M11 — Portable expansion and consumer migration
+- Next item: `CMUI-184` Re-evaluate small portable component candidates.
 
 ## Milestones
 
-| Milestone | Outcome                                                                                           | Status      |
-| --------- | ------------------------------------------------------------------------------------------------- | ----------- |
-| M9        | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status | Completed   |
-| M10       | Existing direct replacements cover their approved stable use cases in Vue and Razor               | In progress |
-| M11       | Missing portable components and recipes are delivered, and real consumers complete migration      | Pending     |
+| Milestone | Outcome                                                                                           | Status    |
+| --------- | ------------------------------------------------------------------------------------------------- | --------- |
+| M9        | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status | Completed |
+| M10       | Existing direct replacements cover their approved stable use cases in Vue and Razor               | Completed |
+| M11       | Missing portable components and recipes are delivered, and real consumers complete migration      | Pending   |
 
 ## Phase 16 — Coverage truth and restored catalog
 
@@ -112,12 +112,12 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
       pagination, selection, empty, error, and column-management use cases.
 - [x] `CMUI-182` Close layout primitive gaps and verify the documented shell-composition boundary in
       both representative consumers.
-- [ ] `CMUI-183` Update contracts, migration transforms, documentation, and playground examples as
+- [x] `CMUI-183` Update contracts, migration transforms, documentation, and playground examples as
       each direct-replacement cohort matures.
 
 ### M10 exit gate
 
-- [ ] `CMUI-G010` Every direct replacement capability is classified with passing evidence; no
+- [x] `CMUI-G010` Every direct replacement capability is classified with passing evidence; no
       approved stable use case remains `missing` in either active adapter.
 
 ## Phase 18 — Portable expansion and consumer migration
@@ -150,16 +150,17 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
 
 Add decisions chronologically. Do not rewrite old entries; supersede them with a new entry.
 
-| Date       | Decision                                                                                          | Reason                                                                                                                                                                                                                                                  | Affected items        |
-| ---------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| 2026-08-14 | Mature Vue and Annabel Razor before scheduling React or Angular.                                  | Validate the cross-platform model and close known migration gaps with the two active consumers before multiplying adapter work.                                                                                                                         | All                   |
-| 2026-08-14 | Separate catalog presence from capability parity.                                                 | Matching component names and files do not prove that stable VueForge use cases survived migration.                                                                                                                                                      | `CMUI-170`–`CMUI-183` |
-| 2026-08-14 | Make unresolved migration gaps visible in the playground.                                         | The 1.0 example migration removed much of the old showcase and made omitted functionality look deleted or completed.                                                                                                                                    | `CMUI-174`            |
-| 2026-08-14 | Keep DataTable scalar and assign rich rendering and advanced-grid policy to applications.         | Vue callbacks and trusted rich content do not form a safe Razor data contract; representative demand is satisfied by portable pagination, selection, ordered visibility, and localization plus explicit CmTable composition.                            | `CMUI-181`            |
-| 2026-08-14 | Use adapter-native trusted slots for portable authored content.                                   | Input adornments and Accordion item content need rich composition in Vue and Razor without coupling the contract to the VueForge icon registry or accepting untrusted strings as markup.                                                                | `CMUI-177`            |
-| 2026-08-15 | Keep navigation and overlay semantics component-owned while allowing trusted content inside them. | Owned buttons, menu items, tab panels, headings, and deterministic ARIA relationships preserve Vue/Razor parity; arbitrary trigger roots and external panels would move accessibility ownership back to consumers.                                      | `CMUI-179`            |
-| 2026-08-15 | Keep advanced inputs native-first and bound rich content to component-owned structures.           | Native Select and DatePicker controls preserve submission and validation while localized clear actions enhance them; typed CommandPalette states and trusted inner regions add async composition without exposing arbitrary result or dialog ownership. | `CMUI-180`            |
-| 2026-08-15 | Verify primitives independently from application-shell migration.                                 | All five primitives have Vue composition evidence and Container/Stack have real Razor demand; routing, landmarks, responsive state, theme bootstrap, and legacy shell removal remain application work under CMUI-187–189.                               | `CMUI-182`            |
+| Date       | Decision                                                                                          | Reason                                                                                                                                                                                                                                                  | Affected items          |
+| ---------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| 2026-08-14 | Mature Vue and Annabel Razor before scheduling React or Angular.                                  | Validate the cross-platform model and close known migration gaps with the two active consumers before multiplying adapter work.                                                                                                                         | All                     |
+| 2026-08-14 | Separate catalog presence from capability parity.                                                 | Matching component names and files do not prove that stable VueForge use cases survived migration.                                                                                                                                                      | `CMUI-170`–`CMUI-183`   |
+| 2026-08-14 | Make unresolved migration gaps visible in the playground.                                         | The 1.0 example migration removed much of the old showcase and made omitted functionality look deleted or completed.                                                                                                                                    | `CMUI-174`              |
+| 2026-08-14 | Keep DataTable scalar and assign rich rendering and advanced-grid policy to applications.         | Vue callbacks and trusted rich content do not form a safe Razor data contract; representative demand is satisfied by portable pagination, selection, ordered visibility, and localization plus explicit CmTable composition.                            | `CMUI-181`              |
+| 2026-08-14 | Use adapter-native trusted slots for portable authored content.                                   | Input adornments and Accordion item content need rich composition in Vue and Razor without coupling the contract to the VueForge icon registry or accepting untrusted strings as markup.                                                                | `CMUI-177`              |
+| 2026-08-15 | Keep navigation and overlay semantics component-owned while allowing trusted content inside them. | Owned buttons, menu items, tab panels, headings, and deterministic ARIA relationships preserve Vue/Razor parity; arbitrary trigger roots and external panels would move accessibility ownership back to consumers.                                      | `CMUI-179`              |
+| 2026-08-15 | Keep advanced inputs native-first and bound rich content to component-owned structures.           | Native Select and DatePicker controls preserve submission and validation while localized clear actions enhance them; typed CommandPalette states and trusted inner regions add async composition without exposing arbitrary result or dialog ownership. | `CMUI-180`              |
+| 2026-08-15 | Verify primitives independently from application-shell migration.                                 | All five primitives have Vue composition evidence and Container/Stack have real Razor demand; routing, landmarks, responsive state, theme bootstrap, and legacy shell removal remain application work under CMUI-187–189.                               | `CMUI-182`              |
+| 2026-08-15 | Enforce direct-replacement maturity separately from the capability audit.                         | Completing classification did not mean all approved gaps were delivered; a dedicated machine gate now prevents direct replacements from returning to missing or pending after M10.                                                                      | `CMUI-183`, `CMUI-G010` |
 
 ## Scope-change log
 
