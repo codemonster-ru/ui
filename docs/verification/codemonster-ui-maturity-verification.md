@@ -22,7 +22,7 @@ compositions, 18 manual/application-owned outcomes, and no unresolved coverage o
 | Real Annabel CMS baseline     | Read-only unit suite against the recorded real consumer checkout                                                        | 42 tests; 94 assertions                                                        |
 | Representative Vue playground | ESLint, Vue typecheck, application shell/theme tests, and production build                                              | 4 tests; 579 transformed modules; build passed                                 |
 | Documentation and migration   | Documentation contracts/examples, import ownership, frozen baseline, mapping, coverage, codemod/checker, and formatting | 469 Markdown files; 257 executable fixtures; 63 dispositions; all gates passed |
-| Retained products             | Core, Layouts, Icons, Theme, CodeBlock, and Playground package checks                                                   | All retained package suites passed                                             |
+| VueForge regression suites    | Migrated Core, Layouts, and Theme foundations plus retained Icons, CodeBlock, and Playground product checks             | All VueForge package suites passed                                             |
 | Packed npm consumers          | Retained products, CodeMonster UI packages, CSS exports, tree-shaking, and deferred budgets                             | 8 retained and 5 UI tarballs consumed; all budgets passed                      |
 
 The package and contract gates must run sequentially when they both rebuild shared `dist` trees;
