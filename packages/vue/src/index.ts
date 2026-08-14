@@ -41,8 +41,17 @@ export { default as CmDrawer } from './components/drawer/CmDrawer.vue';
 export type { CmDrawerProps, CmDrawerSide, CmDrawerSize } from './components/drawer/drawer.types';
 export { default as CmField } from './components/field/CmField.vue';
 export type { CmFieldDefaultSlotProps, CmFieldProps } from './components/field/field.types';
+export { default as CmFieldset } from './components/fieldset/CmFieldset.vue';
+export type { CmFieldsetDefaultSlotProps, CmFieldsetProps } from './components/fieldset/fieldset.types';
 export { default as CmGrid } from './components/grid/CmGrid.vue';
 export type { CmGridElement, CmGridProps } from './components/grid/grid.types';
+export { default as CmIconButton } from './components/icon-button/CmIconButton.vue';
+export type {
+  CmIconButtonProps,
+  CmIconButtonSize,
+  CmIconButtonType,
+  CmIconButtonVariant,
+} from './components/icon-button/icon-button.types';
 export { default as CmInput } from './components/input/CmInput.vue';
 export type { CmInputProps, CmInputSize, CmInputType } from './components/input/input.types';
 export { default as CmInline } from './components/inline/CmInline.vue';
@@ -53,6 +62,14 @@ export { default as CmMenu } from './components/menu/CmMenu.vue';
 export type { CmMenuItem, CmMenuItemTone, CmMenuProps } from './components/menu/menu.types';
 export { default as CmPopover } from './components/popover/CmPopover.vue';
 export type { CmPopoverPlacement, CmPopoverProps } from './components/popover/popover.types';
+export { default as CmProgressBar } from './components/progress-bar/CmProgressBar.vue';
+export type { CmProgressBarProps, CmProgressBarTone } from './components/progress-bar/progress-bar.types';
+export { default as CmProgressSpinner } from './components/progress-spinner/CmProgressSpinner.vue';
+export type {
+  CmProgressSpinnerProps,
+  CmProgressSpinnerSize,
+  CmProgressSpinnerTone,
+} from './components/progress-spinner/progress-spinner.types';
 export { default as CmRadio } from './components/radio/CmRadio.vue';
 export type { CmRadioProps, CmRadioSize } from './components/radio/radio.types';
 export { default as CmSelect } from './components/select/CmSelect.vue';

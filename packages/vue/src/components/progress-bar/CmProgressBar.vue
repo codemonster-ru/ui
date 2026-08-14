@@ -62,7 +62,10 @@ const rootAttrs = computed(() =>
     :aria-valuemax="props.indeterminate ? undefined : normalizedMax"
     :aria-valuenow="props.indeterminate ? undefined : normalizedValue"
   >
-    <span class="cm-progress-bar__value" :style="props.indeterminate ? undefined : { inlineSize: `${percentage}%` }">
+    <span
+      class="cm-progress-bar__value"
+      v-bind="props.indeterminate ? {} : { style: { inlineSize: `${percentage}%` } }"
+    >
       <span v-if="props.showValue && !props.indeterminate" class="cm-progress-bar__label">{{ valueLabel }}</span>
     </span>
   </div>
