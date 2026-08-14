@@ -11,7 +11,7 @@ controller, not add those policies to `CmButton`.
 ## Vue recipe
 
 The server renders the same neutral initial button content for hydration. A small bootstrap script
-should set `data-theme` before the stylesheets load; the component then reads the resolved attribute
+should set `data-cm-theme` before the stylesheets load; the component then reads the resolved attribute
 after mount and owns subsequent changes.
 
 ```vue
@@ -27,12 +27,12 @@ const nextTheme = computed<Theme>(() => (theme.value === 'dark' ? 'light' : 'dar
 const actionLabel = computed(() => `Switch to ${nextTheme.value} theme`);
 
 onMounted(() => {
-  theme.value = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+  theme.value = document.documentElement.getAttribute('data-cm-theme') === 'dark' ? 'dark' : 'light';
 });
 
 function setTheme(value: Theme): void {
   theme.value = value;
-  document.documentElement.dataset.theme = value;
+  document.documentElement.setAttribute('data-cm-theme', value);
   window.localStorage.setItem(storageKey, value);
 }
 </script>
@@ -57,11 +57,11 @@ const storageKey = 'app-theme';
 const stored = window.localStorage.getItem(storageKey);
 const theme: Theme = stored === 'dark' ? 'dark' : 'light';
 
-document.documentElement.dataset.theme = theme;
+document.documentElement.setAttribute('data-cm-theme', theme);
 ```
 
 If the product supports a `system` preference, store `system` as the preference but write the
-resolved `light` or `dark` value to `data-theme`. Listen to `matchMedia` only while that preference
+resolved `light` or `dark` value to `data-cm-theme`. Listen to `matchMedia` only while that preference
 is active. This distinction prevents a system change from overwriting an explicit user choice.
 
 ## Annabel Razor recipe
@@ -77,7 +77,7 @@ echo $razor->render('layout', ['theme' => $preference]);
 
 ```razor
 <!doctype html>
-<html lang="en" data-theme="{{ $theme }}">
+<html lang="en" data-cm-theme="{{ $theme }}">
     <head>
         <link rel="stylesheet" href="/vendor/codemonster-ui/css/tokens/tokens.css" />
         <link rel="stylesheet" href="/vendor/codemonster-ui/css/css/styles.css" />
@@ -115,9 +115,9 @@ document.addEventListener('click', (event) => {
   const button = target.closest<HTMLButtonElement>('[data-theme-toggle]');
   if (!button) return;
 
-  const current: Theme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+  const current: Theme = document.documentElement.getAttribute('data-cm-theme') === 'dark' ? 'dark' : 'light';
   const next = opposite(current);
-  document.documentElement.dataset.theme = next;
+  document.documentElement.setAttribute('data-cm-theme', next);
   button.setAttribute('aria-label', `Switch to ${opposite(next)} theme`);
   document.cookie = `app_theme=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
 });
@@ -126,6 +126,11 @@ document.addEventListener('click', (event) => {
 Use HTTPS and add `Secure` to the cookie in production. If the preference belongs to an account,
 persist it through the application's authenticated endpoint instead of treating this example cookie
 as the source of truth.
+
+During a migration that still renders retained VueForge CodeBlock or Playground products, mirror
+the resolved value to their separate `data-vf-theme` boundary as application compatibility state.
+Remove that mirror when those retained products no longer share the page; CodeMonster UI itself
+reads only `data-cm-theme`.
 
 ## Ownership and accessibility
 
