@@ -12,9 +12,11 @@
     "invalid": { "type": "boolean", "required": false, "default": false },
     "disabled": { "type": "boolean", "required": false, "default": false },
     "readonly": { "type": "boolean", "required": false, "default": false },
-    "required": { "type": "boolean", "required": false, "default": false }
+    "required": { "type": "boolean", "required": false, "default": false },
+    "clearable": { "type": "boolean", "required": false, "default": false },
+    "clearLabel": { "type": "string", "required": false, "default": "Clear date" }
   },
   "slots": {},
   "events": { "valueChange": { "description": "Reports the native ISO date string.", "payloadContract": "string" } },
-  "states": ["default", "value", "invalid", "disabled", "readonly"]
+  "states": ["default", "value", "clearable", "invalid", "disabled", "readonly"]
 }

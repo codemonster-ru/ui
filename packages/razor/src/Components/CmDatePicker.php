@@ -31,6 +31,9 @@ final class CmDatePicker implements ComponentInterface
         $disabled = $props->bool('disabled');
         $readonly = $props->bool('readonly');
         $required = $props->bool('required');
+        $clearable = $props->bool('clearable');
+        $clearLabel = $props->string('clearLabel', 'Clear date');
+        $hasClear = $clearable && !$disabled && !$readonly;
         $attributes = new AttributeBag($props->remaining());
         $classes = (new ClassBuilder())->add('cm-date-picker', "cm-date-picker--{$size}")
             ->addWhen($invalid, 'cm-date-picker--invalid')->add($this->optionalString($attributes->get('class')))->value();
@@ -38,7 +41,8 @@ final class CmDatePicker implements ComponentInterface
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.date-picker', [
             'value' => $value, 'min' => $min, 'max' => $max, 'invalid' => $invalid, 'disabled' => $disabled,
             'readonly' => $readonly, 'required' => $required, 'classes' => $classes,
-            'attributes' => $attributes->without(['class', 'type', 'value', 'min', 'max', 'disabled', 'readonly', 'required', 'aria-invalid'])->render(),
+            'hasClear' => $hasClear, 'clearLabel' => $clearLabel,
+            'attributes' => $attributes->without(['class', 'type', 'value', 'min', 'max', 'disabled', 'readonly', 'required', 'aria-invalid', 'data-cm-input-control'])->render(),
         ]), "\r\n"));
     }
 

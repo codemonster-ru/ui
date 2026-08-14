@@ -9,4 +9,6 @@ export interface CmDatePickerProps {
   disabled?: boolean;
   readonly?: boolean;
   required?: boolean;
+  clearable?: boolean;
+  clearLabel?: string;
 }
