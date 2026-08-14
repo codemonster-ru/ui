@@ -2,6 +2,14 @@
 
 All notable changes to this package will be documented in this file.
 
+## 1.0.1
+
+### Changed
+
+- Renames the Composer distribution from `codemonster-ru/ui` to
+  `codemonster-ru/ui-razor` so the platform boundary is explicit.
+- Moves the read-only package source to `codemonster-ru/ui-razor`.
+
 ## 1.0.0
 
 ### Added

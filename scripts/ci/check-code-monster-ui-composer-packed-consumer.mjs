@@ -9,7 +9,7 @@ const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const annabelRepository = resolve(process.env.ANNABEL_REPOSITORY ?? resolve(repositoryRoot, '../../PHP/annabel'));
 const composerCache = resolve(process.env.COMPOSER_CACHE_DIRECTORY ?? `${process.env.HOME}/.cache/composer`);
 const dockerImage = process.env.ANNABEL_PHP_IMAGE ?? 'annabel-php';
-const composerVersion = '1.0.0';
+const composerVersion = '1.0.1';
 
 if (!existsSync(resolve(annabelRepository, 'packages/razor/composer.json'))) {
   throw new Error(`Annabel repository not found at ${annabelRepository}. Set ANNABEL_REPOSITORY to its absolute path.`);
@@ -66,7 +66,7 @@ composer --working-dir="$consumer_root" update --no-interaction --prefer-dist --
 composer --working-dir="$consumer_root" validate --strict
 php "$consumer_root/smoke.php"
 
-installed_root="$consumer_root/vendor/codemonster-ru/ui"
+installed_root="$consumer_root/vendor/codemonster-ru/ui-razor"
 test -f "$installed_root/composer.json"
 test ! -d "$installed_root/tests"
 test ! -f "$installed_root/phpunit.xml.dist"

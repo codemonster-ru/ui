@@ -4,7 +4,7 @@
   "type": "project",
   "license": "proprietary",
   "require": {
-    "codemonster-ru/ui": "^1.0.0"
+    "codemonster-ru/ui-razor": "^1.0.1"
   },
   "repositories": [
     {

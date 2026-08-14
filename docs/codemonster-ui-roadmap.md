@@ -76,7 +76,7 @@ An item is complete only when all applicable conditions are satisfied:
 - Current phase: Phase 15 — Concise repository and Razor package names
 - Current milestone: M8 — Naming cleanup
 - Completed milestones: M0 — approved architecture; M1 — framework-independent tokens and CSS; M2 — Button and Card parity; M3 — Input form parity; M4 — Accordion interaction parity; M6 — utilities and stable component cohort; M7 — migration and CodeMonster UI 1.0
-- Next item: `CMUI-166`; React and Angular remain unscheduled future considerations.
+- Next item: `CMUI-167`; React and Angular remain unscheduled future considerations.
 
 ## Milestones
 
@@ -411,7 +411,7 @@ added to the active scope in the future.
 ## Phase 15 — Concise repository and Razor package names
 
 - [x] `CMUI-165` Approve `codemonster-ru/ui` for the monorepo and `ui-razor` for the Razor distribution.
-- [ ] `CMUI-166` Move the Composer split repository to `codemonster-ru/ui-razor`.
+- [x] `CMUI-166` Move the Composer split repository to `codemonster-ru/ui-razor`.
 - [ ] `CMUI-167` Publish `codemonster-ru/ui-razor` and mark `codemonster-ru/ui` replaced.
 - [ ] `CMUI-168` Migrate Annabel to the Razor-specific Composer package.
 - [ ] `CMUI-169` Move the monorepo to `codemonster-ru/ui` and update trusted publishers.

@@ -28,7 +28,7 @@ export const codeMonsterUiNpmPackages = Object.freeze([
 
 export const codeMonsterUiComposerPackage = Object.freeze({
   directory: 'razor',
-  name: 'codemonster-ru/ui',
+  name: 'codemonster-ru/ui-razor',
   php: '>=8.2',
   razor: '^2.1',
   releaseOrder: 5,

@@ -14,7 +14,7 @@ npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.0.0 @codemonster-ru/ui-css@^1.0
 Install the stable Annabel Razor package:
 
 ```bash
-composer require codemonster-ru/ui:^1.0
+composer require codemonster-ru/ui-razor:^1.0.1
 ```
 
 See the [component documentation](./docs/components/button.md),

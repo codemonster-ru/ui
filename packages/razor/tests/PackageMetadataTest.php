@@ -19,7 +19,7 @@ final class PackageMetadataTest extends TestCase
         /** @var array{name: string, autoload: array{'psr-4': array<string, string>}} $manifest */
         $manifest = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
 
-        self::assertSame('codemonster-ru/ui', $manifest['name']);
+        self::assertSame('codemonster-ru/ui-razor', $manifest['name']);
         self::assertSame('src/', $manifest['autoload']['psr-4']['Codemonster\\Ui\\']);
     }
 }

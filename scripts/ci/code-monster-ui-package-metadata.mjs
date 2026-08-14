@@ -58,8 +58,8 @@ export function validateCodeMonsterUiPackageCatalog() {
     }
   }
 
-  if (codeMonsterUiComposerPackage.name !== 'codemonster-ru/ui') {
-    errors.push('The Composer adapter must use the approved codemonster-ru/ui package name.');
+  if (codeMonsterUiComposerPackage.name !== 'codemonster-ru/ui-razor') {
+    errors.push('The Composer adapter must use the approved codemonster-ru/ui-razor package name.');
   }
 
   return errors;
