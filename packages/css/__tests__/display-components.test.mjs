@@ -16,5 +16,7 @@ for (const slug of ['alert', 'avatar', 'badge', 'divider', 'skeleton']) {
 test('disables Skeleton shimmer for reduced motion', async () => {
   const css = await readFile(new URL('../src/components/skeleton.css', import.meta.url), 'utf8');
 
+  assert.match(css, /--cm-skeleton-shimmer-duration: 1\.2s;/u);
+  assert.match(css, /animation: cm-skeleton-shimmer var\(--cm-skeleton-shimmer-duration\)/u);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*animation: none;/u);
 });
