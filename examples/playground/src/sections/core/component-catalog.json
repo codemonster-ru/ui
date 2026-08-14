@@ -185,14 +185,6 @@
       "summary": "Publish a maintained recipe covering focus, loading lock, confirm, and cancel in `CMUI-187`"
     },
     {
-      "source": "VfDataTableColumnChooser",
-      "disposition": "manual",
-      "targets": ["CmCheckbox", "CmPopover"],
-      "capabilityId": "reviewed-disposition",
-      "roadmapItem": "CMUI-185",
-      "summary": "Portable candidate: Required columns, ordered visibility state, aggregate selection, and an accessible trigger can be expressed for both adapters, but depend on the DataTable column-visibility contract"
-    },
-    {
       "source": "VfErrorLayout",
       "disposition": "compose",
       "targets": ["CmContainer", "CmStack", "CmSection"],
@@ -233,22 +225,6 @@
       "summary": "Approved portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract"
     },
     {
-      "source": "VfMenuBar",
-      "disposition": "manual",
-      "targets": ["CmMenu", "CmInline"],
-      "capabilityId": "reviewed-disposition",
-      "roadmapItem": "CMUI-185",
-      "summary": "Portable candidate: Nested menubar semantics and two-axis keyboard navigation are portable behavior, but current consumers and Razor demand are not yet established"
-    },
-    {
-      "source": "VfNavMenu",
-      "disposition": "manual",
-      "targets": ["CmMenu", "CmLink"],
-      "capabilityId": "remaining-migration-outcome",
-      "roadmapItem": "CMUI-185",
-      "summary": "Re-evaluate only the portable tree behavior in `CMUI-185`"
-    },
-    {
       "source": "VfPageHeader",
       "disposition": "compose",
       "targets": ["CmStack", "CmInline"],
@@ -287,22 +263,6 @@
       "capabilityId": "remaining-migration-outcome",
       "roadmapItem": "CMUI-187",
       "summary": "Publish the portable recipe in `CMUI-187`; keep measurement behavior application-owned unless two adapters need it"
-    },
-    {
-      "source": "VfStepper",
-      "disposition": "manual",
-      "targets": [],
-      "capabilityId": "reviewed-disposition",
-      "roadmapItem": "CMUI-185",
-      "summary": "Portable candidate: Ordered step state, orientation, current-step semantics, disabled steps, and roving keyboard behavior are portable, but workflow navigation ownership needs real-consumer validation"
-    },
-    {
-      "source": "VfTableOfContents",
-      "disposition": "manual",
-      "targets": ["CmLink", "CmStack"],
-      "capabilityId": "reviewed-disposition",
-      "roadmapItem": "CMUI-185",
-      "summary": "Portable candidate: Semantic navigation, active location, levels, and links are portable; heading discovery, scroll observation, smooth scrolling, and offsets may remain application-owned"
     },
     {
       "source": "VfThemeSwitch",
