@@ -84,7 +84,7 @@ or intentionally drops.
   tests, and representative examples; classify every material capability.
 - [x] `CMUI-173` Audit all `compose` and `manual` dispositions and record the evidence for keeping,
   changing, or splitting each decision.
-- [ ] `CMUI-174` Restore a complete CodeMonster UI catalog in the playground: every stable component
+- [x] `CMUI-174` Restore a complete CodeMonster UI catalog in the playground: every stable component
   must have a discoverable example, and unresolved migration gaps must be visible rather than
   silently omitted.
 - [ ] `CMUI-175` Inventory actual `vueforge-core` and `vueforge-layouts` usage in the representative
