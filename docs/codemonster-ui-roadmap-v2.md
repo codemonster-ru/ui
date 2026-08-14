@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 18 — Portable expansion and consumer migration
 - Current milestone: M11 — Portable expansion and consumer migration
-- Next item: `CMUI-188` Verify the application-owned shell boundary.
+- Next item: `CMUI-189` Remove the playground legacy design-system dependencies.
 
 ## Milestones
 
@@ -130,7 +130,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
       CSS, optional runtime, Vue adapter, Razor adapter, parity tests, documentation, and showcase.
 - [x] `CMUI-187` Publish and test maintained recipes for approved compositions such as ConfirmDialog,
       FormLayout, GroupBox, Panel, PageHeader, SkeletonGate, AuthLayout, and ErrorLayout.
-- [ ] `CMUI-188` Keep application shells application-owned unless the reconsideration criteria in
+- [x] `CMUI-188` Keep application shells application-owned unless the reconsideration criteria in
       [Application shell ownership](./architecture/application-shell-ownership.md) are satisfied by two
       real consumers.
 - [ ] `CMUI-189` Migrate the representative Vue application off `vueforge-core` and
@@ -163,6 +163,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-15 | Enforce direct-replacement maturity separately from the capability audit.                         | Completing classification did not mean all approved gaps were delivered; a dedicated machine gate now prevents direct replacements from returning to missing or pending after M10.                                                                      | `CMUI-183`, `CMUI-G010` |
 | 2026-08-15 | Approve four finite semantic components and supersede Tag with Badge.                             | Fieldset, IconButton, ProgressBar, and ProgressSpinner have bounded Vue/Razor contracts and real composition demand; Tag adds only an unrequested outlined presentation over Badge.                                                                     | `CMUI-184`, `CMUI-186`  |
 | 2026-08-15 | Keep behavior-rich candidates application-owned without shared demand.                            | Column chooser persistence, command navigation, navigation trees, workflow steps, and document observation all combine static semantic composition with product policy; none has matching Razor demand.                                                 | `CMUI-185`              |
+| 2026-08-15 | Re-verify application shell ownership after portable delivery.                                    | The real Vue consumers own different shell policies, the real Razor consumer has no matching shell demand, and native landmarks plus primitives remain smaller than a speculative cross-platform shell API.                                             | `CMUI-188`              |
 
 ## Scope-change log
 

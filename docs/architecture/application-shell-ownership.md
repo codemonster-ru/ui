@@ -19,16 +19,16 @@ period; this decision does not remove or deprecate them.
 
 ## Reviewed inventory
 
-| VueForge API | Current responsibility | CodeMonster UI outcome |
-| --- | --- | --- |
-| `VfAppShell` | Responsive columns, sticky measured offsets, optional regions, and controlled sidebar state | Application-owned composition |
-| `VfAdminLayout` | Collapsible desktop navigation, hover preview, mobile drawer state, keyboard dismissal, and scoped commands | Application-owned behavior and composition |
-| `VfAdminShell` | Fixed admin topbar, brand, sidebar, workspace, and footer structure | Application-owned composition |
-| `VfDocumentLayout` | Documentation-specific columns, edge treatment, measured sticky offsets, and optional regions | Documentation-site composition |
-| `VfAuthLayout` | Product branding, page heading, form panel, and account-flow footer | Recipe composed from primitives and semantic HTML |
-| `VfErrorLayout` | Product error copy, actions, centering, and surface treatment | Recipe composed from primitives and semantic HTML |
-| `VfSetupLayout` | Setup workflow regions plus application-specific Enter/Escape actions | Application-owned workflow |
-| `VfHeaderArea`, `VfSidebarArea`, `VfContentArea`, `VfAsideArea`, `VfFooterArea` | Shell-internal region geometry and appearance | No standalone cross-platform component |
+| VueForge API                                                                    | Current responsibility                                                                                      | CodeMonster UI outcome                            |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `VfAppShell`                                                                    | Responsive columns, sticky measured offsets, optional regions, and controlled sidebar state                 | Application-owned composition                     |
+| `VfAdminLayout`                                                                 | Collapsible desktop navigation, hover preview, mobile drawer state, keyboard dismissal, and scoped commands | Application-owned behavior and composition        |
+| `VfAdminShell`                                                                  | Fixed admin topbar, brand, sidebar, workspace, and footer structure                                         | Application-owned composition                     |
+| `VfDocumentLayout`                                                              | Documentation-specific columns, edge treatment, measured sticky offsets, and optional regions               | Documentation-site composition                    |
+| `VfAuthLayout`                                                                  | Product branding, page heading, form panel, and account-flow footer                                         | Recipe composed from primitives and semantic HTML |
+| `VfErrorLayout`                                                                 | Product error copy, actions, centering, and surface treatment                                               | Recipe composed from primitives and semantic HTML |
+| `VfSetupLayout`                                                                 | Setup workflow regions plus application-specific Enter/Escape actions                                       | Application-owned workflow                        |
+| `VfHeaderArea`, `VfSidebarArea`, `VfContentArea`, `VfAsideArea`, `VfFooterArea` | Shell-internal region geometry and appearance                                                               | No standalone cross-platform component            |
 
 ## Why shells are not component contracts
 
@@ -69,6 +69,23 @@ A shell may return to the component roadmap only when all of the following evide
 
 Meeting these criteria starts a new contract item; it does not retroactively make a VueForge shell
 canonical.
+
+## CMUI-188 verification
+
+The boundary was re-verified on 2026-08-15 against the
+[representative consumer inventory](../verification/consumer-usage-inventory.md) after the portable
+components and maintained recipes were delivered.
+
+| Reconsideration criterion                | Consumer evidence                                                                                                                                                                                                                                                                                       | Result  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Matching real Vue and Razor shell demand | The Vue playground owns a header, pathname/history state, dynamic sections, responsive navigation CSS, and theme state. Annabel Vue owns materially different admin/auth/setup shells. The real Annabel Razor page renders only Container, Stack, and Card, with no shell navigation or theme behavior. | Not met |
+| Platform-neutral landmarks and behavior  | Responsive drawers, authorization, active navigation, focus restoration, measured sticky offsets, and setup workflow keys remain tied to each application and lifecycle.                                                                                                                                | Not met |
+| An API smaller than composition          | Native `header`, `nav`, `main`, `aside`, and `footer` landmarks plus Container, Stack, Inline, Section, Grid, and the maintained recipes already form the smaller boundary.                                                                                                                             | Not met |
+| Approved contract evidence               | No proposed shared shell has cleared the first three criteria, so no canonical DOM, accessibility scenarios, visual fixtures, or migration surface has been approved.                                                                                                                                   | Not met |
+
+The criteria are conjunctive. Documentation recipes are migration guidance rather than evidence of
+a real Razor shell consumer, so they do not reopen the component decision. A future materially
+matching Vue and Razor demand starts a new contract review.
 
 ## Consequences
 
