@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-css",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Framework-independent foundation and component styles for CodeMonster UI.",
   "type": "module",
   "license": "MIT",

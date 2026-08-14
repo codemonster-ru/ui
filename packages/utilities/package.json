@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-utilities",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generated token-backed utility CSS for CodeMonster UI.",
   "type": "module",
   "license": "MIT",

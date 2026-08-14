@@ -4,19 +4,21 @@ This is the public migration map for the frozen
 [VueForge feature baseline](./vueforge-feature-baseline.md). The machine-readable source used by
 migration tooling is
 [`migration/vueforge-to-codemonster-ui.json`](../migration/vueforge-to-codemonster-ui.json).
+The stable package versions for this migration are listed in the
+[CodeMonster UI 1.1 release notes](./codemonster-ui-1.1-release-notes.md).
 
 ## Package mapping
 
-| VueForge package                  | Action                             | CodeMonster UI destination                       |
-| --------------------------------- | ---------------------------------- | ------------------------------------------------ |
-| `vueforge-theme`                  | Replace manually                   | `ui-tokens` and `ui-css`                         |
-| `vueforge-core`                   | Migrate by component               | `ui-vue`, `ui-css`, and optional `ui-runtime`    |
-| `vueforge-layouts`                | Migrate primitives; compose shells | `ui-vue` and `ui-css`                            |
-| `vueforge-icons`                  | Retain                             | No CodeMonster UI 1.0 replacement is implemented |
-| `vueforge-codeblock`              | Retain                             | Dedicated VueForge composed product              |
-| `vueforge-playground-core`        | Retain                             | Dedicated VueForge Playground product            |
-| `vueforge-playground`             | Retain                             | Dedicated VueForge Playground product            |
-| `vueforge-playground-vite-plugin` | Retain                             | Dedicated VueForge build integration             |
+| VueForge package                  | Action                             | CodeMonster UI destination                    |
+| --------------------------------- | ---------------------------------- | --------------------------------------------- |
+| `vueforge-theme`                  | Replace manually                   | `ui-tokens` and `ui-css`                      |
+| `vueforge-core`                   | Migrate by component               | `ui-vue`, `ui-css`, and optional `ui-runtime` |
+| `vueforge-layouts`                | Migrate primitives; compose shells | `ui-vue` and `ui-css`                         |
+| `vueforge-icons`                  | Retain                             | No CodeMonster UI replacement is implemented  |
+| `vueforge-codeblock`              | Retain                             | Dedicated VueForge composed product           |
+| `vueforge-playground-core`        | Retain                             | Dedicated VueForge Playground product         |
+| `vueforge-playground`             | Retain                             | Dedicated VueForge Playground product         |
+| `vueforge-playground-vite-plugin` | Retain                             | Dedicated VueForge build integration          |
 
 Retained packages are supported side-by-side dependencies, not compatibility aliases inside the new
 packages. Theme migration is manual because token names and ownership changed.
@@ -49,7 +51,7 @@ allowed only when every condition in the
 [VueForge migration policy](./architecture/vueforge-migration-policy.md#deprecation) is satisfied.
 
 CodeBlock and the Playground family remain separately maintained products. Icons remain a
-supported side-by-side package because CodeMonster UI 1.0 has no verified icon replacement.
+supported side-by-side package because the current stable cohort has no verified icon replacement.
 
 ## Direct component replacements
 

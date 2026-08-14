@@ -2,6 +2,22 @@
 
 All notable changes to this package will be documented in this file.
 
+## 1.1.0
+
+### Added
+
+- Adds registered Fieldset, IconButton, ProgressBar, and ProgressSpinner tags with packaged shared
+  styles.
+- Adds Input clear and password actions, Switch thumb content, Select and DatePicker clear actions,
+  and CommandPalette asynchronous states.
+- Adds DataTable page-size requests, pagination summaries, selection eligibility, visible-column
+  ordering, and localizable interaction labels.
+
+### Changed
+
+- Expands Accordion item content, navigation and overlay composition, and layout root-attribute
+  parity while preserving canonical Vue/Razor markup.
+
 ## 1.0.1
 
 ### Changed

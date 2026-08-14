@@ -3,7 +3,7 @@
 Composer adapter providing CodeMonster UI components and packaged frontend assets for Annabel
 Razor.
 
-Current release: `codemonster-ru/ui-razor@1.0.1`.
+Current release: `codemonster-ru/ui-razor@1.1.0`.
 
 ## Requirements
 
@@ -13,7 +13,7 @@ Current release: `codemonster-ru/ui-razor@1.0.1`.
 ## Installation
 
 ```bash
-composer require codemonster-ru/ui-razor:^1.0.1
+composer require codemonster-ru/ui-razor:^1.1.0
 ```
 
 The package does not require Node.js in production.

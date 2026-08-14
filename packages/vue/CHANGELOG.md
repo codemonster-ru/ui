@@ -2,6 +2,23 @@
 
 All notable changes to this package will be documented in this file.
 
+## 1.1.0
+
+### Added
+
+- Adds the portable Fieldset, IconButton, ProgressBar, and ProgressSpinner adapters.
+- Adds Input clear and password actions, Switch thumb content, Select and DatePicker clear actions,
+  and CommandPalette asynchronous states.
+- Adds DataTable page-size requests, pagination summaries, selection eligibility, visible-column
+  ordering, and localizable interaction labels.
+
+### Changed
+
+- Expands Accordion item content, navigation and overlay composition, and layout root-attribute
+  parity without adding framework-specific shared APIs.
+- Points repository, issue tracker, and homepage metadata at the dedicated CodeMonster UI
+  repository.
+
 ## 1.0.0
 
 ### Added
