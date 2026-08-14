@@ -53,6 +53,25 @@ test('opens on request, focuses search, navigates enabled matches, and restores 
   assert.equal(dom.window.document.activeElement, opener);
 });
 
+test('enhances an empty command collection from idle to no-results state', () => {
+  const dom = new JSDOM(`
+    <dialog class="cm-command-palette" data-cm-controller="command-palette">
+      <button data-cm-command-palette-close>Close</button>
+      <input data-cm-command-palette-input>
+      <ul role="listbox"></ul>
+      <p class="cm-command-palette__idle">Start typing.</p>
+      <p class="cm-command-palette__empty" hidden>No commands.</p>
+    </dialog>`);
+  const root = dom.window.document.querySelector('.cm-command-palette');
+  const input = root.querySelector('[data-cm-command-palette-input]');
+  new CmRuntime().register('command-palette', createCmCommandPaletteController).start(dom.window.document);
+
+  input.value = 'missing';
+  input.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+  assert.equal(root.querySelector('.cm-command-palette__idle').hidden, true);
+  assert.equal(root.querySelector('.cm-command-palette__empty').hidden, false);
+});
+
 function executeStep({ dom, events, root, step }) {
   const target = resolveTarget(root, step.target);
   if (step.action === 'setValue') {

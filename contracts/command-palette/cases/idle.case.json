@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "command-palette-idle",
+  "description": "Idle palette before an asynchronous query starts.",
+  "props": {
+    "id": "search",
+    "title": "Search",
+    "commands": [],
+    "idleText": "Enter a search term."
+  },
+  "slots": {}
+}

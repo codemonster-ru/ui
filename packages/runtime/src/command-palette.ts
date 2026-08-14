@@ -14,6 +14,7 @@ const optionSelector = '[data-cm-command-palette-option][role="option"]';
 export class CmCommandPaletteController implements CmController {
   readonly #empty: HTMLElement;
   readonly #input: HTMLInputElement;
+  readonly #idle: HTMLElement | null;
   readonly #modal: CmModalController;
   readonly #options: HTMLElement[];
   readonly #root: Element;
@@ -21,12 +22,14 @@ export class CmCommandPaletteController implements CmController {
   constructor(root: Element) {
     const input = root.querySelector<HTMLInputElement>('[data-cm-command-palette-input]');
     const empty = root.querySelector<HTMLElement>('.cm-command-palette__empty');
+    const idle = root.querySelector<HTMLElement>('.cm-command-palette__idle');
     const options = [...root.querySelectorAll<HTMLElement>(optionSelector)];
-    if (!input || !empty || options.length === 0) {
-      throw new TypeError('CommandPalette controller requires an input, options, and empty region.');
+    if (!input || !empty) {
+      throw new TypeError('CommandPalette controller requires an input and empty region.');
     }
     this.#root = root;
     this.#input = input;
+    this.#idle = idle;
     this.#empty = empty;
     this.#options = options;
     this.#modal = new CmModalController(root, {
@@ -101,6 +104,7 @@ export class CmCommandPaletteController implements CmController {
   };
 
   #filter(query: string): void {
+    if (this.#root.getAttribute('data-cm-command-palette-loading') === 'true') return;
     const needle = query.trim().toLocaleLowerCase();
     let visibleCount = 0;
     for (const option of this.#options) {
@@ -108,7 +112,8 @@ export class CmCommandPaletteController implements CmController {
       option.hidden = needle !== '' && !haystack.includes(needle);
       if (!option.hidden) visibleCount += 1;
     }
-    this.#empty.hidden = visibleCount > 0;
+    this.#empty.hidden = needle === '' || visibleCount > 0;
+    if (this.#idle) this.#idle.hidden = needle !== '' || this.#options.length > 0;
     const active = this.#enabledVisibleOptions()[0];
     if (active) this.#activate(active);
     else {

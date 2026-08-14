@@ -13,7 +13,10 @@ const props = defineProps({
   commands: { type: Array as PropType<readonly CmCommandPaletteItem[]>, required: true },
   open: Boolean,
   query: { type: String, default: '' },
+  loading: Boolean,
   placeholder: { type: String, default: 'Search commands' },
+  loadingText: { type: String, default: 'Loading commands…' },
+  idleText: { type: String, default: 'Start typing to search.' },
   emptyText: { type: String, default: 'No commands found.' },
   closeLabel: { type: String, default: 'Close' },
 });
@@ -25,11 +28,20 @@ const emit = defineEmits<{
   'update:query': [query: string];
 }>();
 const attrs = useAttrs();
-if (![props.id, props.title, props.placeholder, props.emptyText, props.closeLabel].every((value) => value.trim())) {
+if (
+  ![
+    props.id,
+    props.title,
+    props.placeholder,
+    props.loadingText,
+    props.idleText,
+    props.emptyText,
+    props.closeLabel,
+  ].every((value) => value.trim())
+) {
   throw new TypeError('CommandPalette text props must be non-empty strings.');
 }
 const normalizedCommands = computed(() => {
-  if (props.commands.length === 0) throw new TypeError('CommandPalette requires commands.');
   const ids = new Set<string>();
   for (const command of props.commands) {
     if (!idPattern.test(command.id) || !command.label.trim() || ids.has(command.id)) {
@@ -41,12 +53,16 @@ const normalizedCommands = computed(() => {
 });
 const localQuery = ref(props.query);
 const visibleCommands = computed(() => {
+  if (props.loading) return [];
   const needle = localQuery.value.trim().toLocaleLowerCase();
   return normalizedCommands.value.filter((command) =>
     needle === '' ? true : `${command.label} ${command.keywords ?? ''}`.toLocaleLowerCase().includes(needle),
   );
 });
 const enabledCommands = computed(() => visibleCommands.value.filter(({ disabled }) => !disabled));
+const hasQuery = computed(() => localQuery.value.trim() !== '');
+const isIdle = computed(() => !props.loading && !hasQuery.value && normalizedCommands.value.length === 0);
+const isEmpty = computed(() => !props.loading && hasQuery.value && visibleCommands.value.length === 0);
 const activeId = ref(enabledCommands.value[0]?.id ?? '');
 watch(
   () => props.query,
@@ -72,7 +88,14 @@ const classes = computed(() =>
   ),
 );
 const rootAttrs = computed(() =>
-  omitCmOwnedAttrs(attrs, ['id', 'open', 'aria-labelledby', 'data-cm-controller', 'data-cm-command-palette-state']),
+  omitCmOwnedAttrs(attrs, [
+    'id',
+    'open',
+    'aria-labelledby',
+    'data-cm-controller',
+    'data-cm-command-palette-state',
+    'data-cm-command-palette-loading',
+  ]),
 );
 
 function updateQuery(event: Event): void {
@@ -85,6 +108,13 @@ function select(command: CmCommandPaletteItem): void {
   if (command.disabled) return;
   emit('select', command.id);
   setOpen(false);
+}
+
+function commandSlotName(id: string): string {
+  return `command${id
+    .split('-')
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join('')}`;
 }
 
 function onInputKeydown(event: KeyboardEvent): void {
@@ -130,12 +160,14 @@ function onKeydown(event: KeyboardEvent): void {
     :aria-labelledby="`${props.id}-title`"
     data-cm-controller="command-palette"
     :data-cm-command-palette-state="localOpen ? 'open' : 'closed'"
+    :data-cm-command-palette-loading="props.loading ? 'true' : undefined"
     @cancel="onCancel"
     @keydown="onModalKeydown"
   >
     <div class="cm-command-palette__surface">
       <header class="cm-command-palette__header">
         <h2 :id="`${props.id}-title`" class="cm-command-palette__title">{{ props.title }}</h2>
+        <div v-if="$slots.actions" class="cm-command-palette__actions"><slot name="actions" /></div>
         <!-- prettier-ignore -->
         <button class="cm-command-palette__close" type="button" :aria-label="props.closeLabel" data-cm-command-palette-close @click="setOpen(false)">×</button>
       </header>
@@ -147,6 +179,7 @@ function onKeydown(event: KeyboardEvent): void {
         :aria-expanded="localOpen"
         :aria-controls="`${props.id}-listbox`"
         :aria-activedescendant="activeId ? `${props.id}-option-${activeId}` : undefined"
+        :aria-busy="props.loading ? 'true' : undefined"
         :placeholder="props.placeholder"
         :value="localQuery"
         data-cm-command-palette-input
@@ -154,7 +187,10 @@ function onKeydown(event: KeyboardEvent): void {
         @input="updateQuery"
         @keydown.stop="onKeydown"
       />
-      <ul :id="`${props.id}-listbox`" class="cm-command-palette__list" role="listbox">
+      <p v-if="props.loading" class="cm-command-palette__status" role="status">
+        <slot name="loading">{{ props.loadingText }}</slot>
+      </p>
+      <ul :id="`${props.id}-listbox`" class="cm-command-palette__list" role="listbox" :hidden="props.loading">
         <li
           v-for="command in normalizedCommands"
           :id="`${props.id}-option-${command.id}`"
@@ -170,10 +206,18 @@ function onKeydown(event: KeyboardEvent): void {
           :hidden="!visibleCommands.includes(command)"
           @click="select(command)"
         >
-          {{ command.label }}
+          <slot :name="commandSlotName(command.id)" :command="command" :active="activeId === command.id">{{
+            command.label
+          }}</slot>
         </li>
       </ul>
-      <p class="cm-command-palette__empty" :hidden="visibleCommands.length > 0">{{ props.emptyText }}</p>
+      <p v-if="normalizedCommands.length === 0" class="cm-command-palette__idle" :hidden="!isIdle">
+        <slot name="idle">{{ props.idleText }}</slot>
+      </p>
+      <p class="cm-command-palette__empty" :hidden="!isEmpty">
+        <slot name="empty">{{ props.emptyText }}</slot>
+      </p>
+      <footer v-if="$slots.footer" class="cm-command-palette__footer"><slot name="footer" /></footer>
     </div>
   </dialog>
 </template>

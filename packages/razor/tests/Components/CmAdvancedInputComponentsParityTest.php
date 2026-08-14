@@ -6,6 +6,7 @@ namespace Codemonster\Ui\Tests\Components;
 
 use Codemonster\Razor\Components\ComponentRenderContext;
 use Codemonster\Razor\Components\Contracts\ComponentInterface;
+use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\Ui\Components\CmCommandPalette;
 use Codemonster\Ui\Components\CmDatePicker;
@@ -20,16 +21,25 @@ final class CmAdvancedInputComponentsParityTest extends TestCase
     #[DataProvider('caseProvider')]
     public function testMatchesCanonicalSignificantDom(string $slug, string $casePath, string $htmlPath): void
     {
-        /** @var array{props: array<string, mixed>, attributes?: array<string, mixed>} $case */
+        /** @var array{props: array<string, mixed>, slots: array<string, string>, attributes?: array<string, mixed>} $case */
         $case = json_decode((string) file_get_contents($casePath), true, flags: JSON_THROW_ON_ERROR);
         $props = [...$case['props'], ...($case['attributes'] ?? [])];
-        foreach (['emptyText' => 'empty-text', 'closeLabel' => 'close-label'] as $source => $target) {
+        foreach ([
+            'loadingText' => 'loading-text',
+            'idleText' => 'idle-text',
+            'emptyText' => 'empty-text',
+            'closeLabel' => 'close-label',
+        ] as $source => $target) {
             if (array_key_exists($source, $props)) {
                 $props[$target] = $props[$source];
                 unset($props[$source]);
             }
         }
-        $actual = $this->component($slug)->render(new ComponentRenderContext($props, []))->value();
+        $slots = [];
+        foreach ($case['slots'] as $name => $content) {
+            $slots[$name] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($content);
+        }
+        $actual = $this->component($slug)->render(new ComponentRenderContext($props, $slots))->value();
         self::assertSame(SignificantDom::normalize((string) file_get_contents($htmlPath)), SignificantDom::normalize($actual));
     }
 

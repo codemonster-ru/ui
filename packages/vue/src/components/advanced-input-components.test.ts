@@ -105,4 +105,15 @@ describe('Vue advanced input components', () => {
     expect(input.attributes('aria-activedescendant')).toBe('commands-option-second');
   });
 
+  it('renders localized CommandPalette loading and idle states', async () => {
+    const wrapper = mount(CmCommandPalette, {
+      props: { id: 'commands', title: 'Commands', commands: [], idleText: 'Enter a query.' },
+    });
+    expect(wrapper.get('.cm-command-palette__idle').text()).toBe('Enter a query.');
+    expect(wrapper.get('.cm-command-palette__idle').attributes('hidden')).toBeUndefined();
+    await wrapper.setProps({ loading: true, loadingText: 'Loading…' });
+    expect(wrapper.get('[role="status"]').text()).toBe('Loading…');
+    expect(wrapper.get('[role="combobox"]').attributes('aria-busy')).toBe('true');
+    expect(wrapper.get('[role="listbox"]').attributes('hidden')).toBe('');
+  });
 });

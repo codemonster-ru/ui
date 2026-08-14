@@ -11,7 +11,10 @@ export interface CmCommandPaletteProps {
   commands: readonly CmCommandPaletteItem[];
   open?: boolean;
   query?: string;
+  loading?: boolean;
   placeholder?: string;
+  loadingText?: string;
+  idleText?: string;
   emptyText?: string;
   closeLabel?: string;
 }

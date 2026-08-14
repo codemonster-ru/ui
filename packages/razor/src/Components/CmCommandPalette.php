@@ -26,10 +26,14 @@ final class CmCommandPalette implements ComponentInterface
         $commands = CommandPaletteItems::normalize($props->array('commands'));
         $open = $props->bool('open');
         $query = $props->string('query');
+        $loading = $props->bool('loading');
         $placeholder = $props->string('placeholder', 'Search commands');
+        $loadingText = $props->string('loading-text', 'Loading commands…');
+        $idleText = $props->string('idle-text', 'Start typing to search.');
         $emptyText = $props->string('empty-text', 'No commands found.');
         $closeLabel = $props->string('close-label', 'Close');
-        if (trim($id) === '' || trim($title) === '' || trim($placeholder) === '' || trim($emptyText) === '' || trim($closeLabel) === '') {
+        if (trim($id) === '' || trim($title) === '' || trim($placeholder) === '' || trim($loadingText) === ''
+            || trim($idleText) === '' || trim($emptyText) === '' || trim($closeLabel) === '') {
             throw new InvalidArgumentException('CommandPalette text props must be non-empty strings.');
         }
         $activeAssigned = false;
@@ -37,11 +41,17 @@ final class CmCommandPalette implements ComponentInterface
         $renderCommands = [];
         foreach ($commands as $command) {
             $haystack = $command['label'] . ' ' . ($command['keywords'] ?? '');
-            $visible = trim($query) === '' || preg_match('/' . preg_quote(trim($query), '/') . '/iu', $haystack) === 1;
+            $visible = !$loading && (trim($query) === '' || preg_match('/' . preg_quote(trim($query), '/') . '/iu', $haystack) === 1);
             $active = $visible && !$command['disabled'] && !$activeAssigned;
             $activeAssigned = $activeAssigned || $active;
             $visibleCount += $visible ? 1 : 0;
-            $renderCommands[] = [...$command, 'visible' => $visible, 'active' => $active];
+            $slot = $this->commandSlotName($command['id']);
+            $renderCommands[] = [
+                ...$command,
+                'visible' => $visible,
+                'active' => $active,
+                'content' => $context->hasSlot($slot) ? $context->slot($slot) : $command['label'],
+            ];
         }
         $attributes = new AttributeBag($props->remaining());
         $classes = (new ClassBuilder())->add('cm-command-palette')->addWhen($open, 'cm-command-palette--open')
@@ -49,9 +59,20 @@ final class CmCommandPalette implements ComponentInterface
 
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.command-palette', [
             'id' => $id, 'title' => $title, 'commands' => $renderCommands, 'open' => $open, 'query' => $query,
-            'placeholder' => $placeholder, 'emptyText' => $emptyText, 'closeLabel' => $closeLabel,
-            'activeId' => $this->activeId($renderCommands), 'empty' => $visibleCount === 0, 'classes' => $classes,
-            'attributes' => $attributes->without(['class', 'id', 'open', 'aria-labelledby', 'data-cm-controller', 'data-cm-command-palette-state'])->render(),
+            'loading' => $loading, 'placeholder' => $placeholder, 'closeLabel' => $closeLabel,
+            'loadingContent' => $context->hasSlot('loading') ? $context->slot('loading') : $loadingText,
+            'idleContent' => $context->hasSlot('idle') ? $context->slot('idle') : $idleText,
+            'emptyContent' => $context->hasSlot('empty') ? $context->slot('empty') : $emptyText,
+            'actions' => $context->hasSlot('actions') ? $context->slot('actions') : null,
+            'footer' => $context->hasSlot('footer') ? $context->slot('footer') : null,
+            'activeId' => $this->activeId($renderCommands),
+            'idle' => !$loading && trim($query) === '' && $commands === [],
+            'empty' => !$loading && trim($query) !== '' && $visibleCount === 0,
+            'classes' => $classes,
+            'attributes' => $attributes->without([
+                'class', 'id', 'open', 'aria-labelledby', 'data-cm-controller',
+                'data-cm-command-palette-state', 'data-cm-command-palette-loading',
+            ])->render(),
         ]), "\r\n"));
     }
 
@@ -66,5 +87,13 @@ final class CmCommandPalette implements ComponentInterface
     {
         if ($value === null || is_string($value)) return $value;
         throw new InvalidArgumentException('Component attribute [class] must be a string.');
+    }
+
+    private function commandSlotName(string $id): string
+    {
+        return 'command' . implode('', array_map(
+            static fn (string $part): string => ucfirst($part),
+            explode('-', $id),
+        ));
     }
 }
