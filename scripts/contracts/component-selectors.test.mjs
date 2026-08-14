@@ -167,7 +167,15 @@ for (const [slug, approved] of [
   ],
   [
     'date-picker',
-    ['cm-date-picker', 'cm-date-picker--sm', 'cm-date-picker--md', 'cm-date-picker--lg', 'cm-date-picker--invalid'],
+    [
+      'cm-date-picker',
+      'cm-date-picker--sm',
+      'cm-date-picker--md',
+      'cm-date-picker--lg',
+      'cm-date-picker--invalid',
+      'cm-date-picker-wrap',
+      'cm-date-picker__clear',
+    ],
   ],
   [
     'command-palette',

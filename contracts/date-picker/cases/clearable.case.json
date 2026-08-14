@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "date-picker-clearable",
+  "description": "Editable date with a localized clear action.",
+  "props": { "value": "2026-08-13", "clearable": true, "clearLabel": "Remove launch date" },
+  "attributes": { "id": "launch-date", "name": "launch_date", "aria-label": "Launch date" },
+  "slots": {}
+}
