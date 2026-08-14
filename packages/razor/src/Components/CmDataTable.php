@@ -58,11 +58,19 @@ final readonly class CmDataTable implements ComponentInterface
         $previousPageLabel = $props->string('previous-page-label', 'Previous page');
         $nextPageLabel = $props->string('next-page-label', 'Next page');
         $selectAllLabel = $props->string('select-all-label', 'Select all rows');
+        $selectRowLabelTemplate = $props->string('select-row-label-template', 'Select {row}');
+        $sortAscendingLabelTemplate = $props->string('sort-ascending-label-template', 'Sort {column} ascending');
+        $sortDescendingLabelTemplate = $props->string('sort-descending-label-template', 'Sort {column} descending');
+        $clearSortLabelTemplate = $props->string('clear-sort-label-template', 'Clear sorting for {column}');
         foreach ([$emptyText, $loadingText, $errorText, $paginationLabel, $rowsPerPageLabel, $emptyPaginationSummaryText, $previousPageText, $nextPageText, $previousPageLabel, $nextPageLabel, $selectAllLabel] as $label) {
             if (trim($label) === '') throw new InvalidArgumentException('DataTable labels must be non-empty strings.');
         }
         $this->requirePlaceholders($pageSummaryTemplate, ['{page}', '{pageCount}'], 'page-summary-template');
         $this->requirePlaceholders($paginationSummaryTemplate, ['{firstRow}', '{lastRow}', '{totalRows}'], 'pagination-summary-template');
+        $this->requirePlaceholders($selectRowLabelTemplate, ['{row}'], 'select-row-label-template');
+        $this->requirePlaceholders($sortAscendingLabelTemplate, ['{column}'], 'sort-ascending-label-template');
+        $this->requirePlaceholders($sortDescendingLabelTemplate, ['{column}'], 'sort-descending-label-template');
+        $this->requirePlaceholders($clearSortLabelTemplate, ['{column}'], 'clear-sort-label-template');
         $pageSummary = strtr($pageSummaryTemplate, ['{page}' => (string) $page, '{pageCount}' => (string) $pageCount]);
         $paginationSummary = $totalRows === null ? null : ($totalRows === 0 ? $emptyPaginationSummaryText : strtr(
             $paginationSummaryTemplate,
@@ -90,7 +98,11 @@ final readonly class CmDataTable implements ComponentInterface
             'emptyPaginationSummaryText' => $emptyPaginationSummaryText,
             'previousPageText' => $previousPageText, 'nextPageText' => $nextPageText,
             'previousPageLabel' => $previousPageLabel, 'nextPageLabel' => $nextPageLabel,
-            'selectAllLabel' => $selectAllLabel, 'classes' => $classes, 'stateText' => $stateText,
+            'selectAllLabel' => $selectAllLabel, 'selectRowLabelTemplate' => $selectRowLabelTemplate,
+            'sortAscendingLabelTemplate' => $sortAscendingLabelTemplate,
+            'sortDescendingLabelTemplate' => $sortDescendingLabelTemplate,
+            'clearSortLabelTemplate' => $clearSortLabelTemplate,
+            'classes' => $classes, 'stateText' => $stateText,
             'selectableRowCount' => count($selectableRows),
             'selectedSelectableRowCount' => count($selectedSelectableRows),
             'columnCount' => count($visibleColumns) + ($selectable ? 1 : 0),

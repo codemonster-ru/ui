@@ -112,6 +112,31 @@ describe('Vue data table components', () => {
     expect(wrapper.get('[data-cm-data-table-page-action="next"]').text()).toBe('Вперёд');
   });
 
+  it('preserves localized sort and row-selection labels through interaction', async () => {
+    const wrapper = mount(CmDataTable, {
+      props: {
+        id: 'projects',
+        columns,
+        rows,
+        selectable: true,
+        selectAllLabel: 'Выбрать все строки',
+        selectRowLabelTemplate: 'Выбрать строку {row}',
+        sortAscendingLabelTemplate: 'Сортировать {column} по возрастанию',
+        sortDescendingLabelTemplate: 'Сортировать {column} по убыванию',
+        clearSortLabelTemplate: 'Сбросить сортировку {column}',
+      },
+    });
+    const sort = wrapper.get('[data-cm-data-table-sort]');
+    expect(sort.attributes('aria-label')).toBe('Сортировать Name по возрастанию');
+    expect(wrapper.findAll('[data-cm-data-table-select-row]')[0]!.attributes('aria-label')).toBe(
+      'Выбрать строку Apollo',
+    );
+    await sort.trigger('click');
+    expect(sort.attributes('aria-label')).toBe('Сортировать Name по убыванию');
+    await sort.trigger('click');
+    expect(sort.attributes('aria-label')).toBe('Сбросить сортировку Name');
+  });
+
   it('rejects duplicate columns and unsafe cell values', () => {
     expect(() => mount(CmDataTable, { props: { id: 'projects', columns: [columns[0], columns[0]], rows } })).toThrow(
       /Invalid DataTable column/u,
@@ -132,5 +157,8 @@ describe('Vue data table components', () => {
     expect(() =>
       mount(CmDataTable, { props: { id: 'projects', columns, rows, visibleColumnKeys: ['missing'] } }),
     ).toThrow(/Invalid DataTable visible column/u);
+    expect(() =>
+      mount(CmDataTable, { props: { id: 'projects', columns, rows, selectRowLabelTemplate: 'Выбрать строку' } }),
+    ).toThrow(/selectRowLabelTemplate must contain \{row\}/u);
   });
 });

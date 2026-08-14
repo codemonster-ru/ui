@@ -54,4 +54,8 @@ export interface CmDataTableProps {
   previousPageLabel?: string;
   nextPageLabel?: string;
   selectAllLabel?: string;
+  selectRowLabelTemplate?: string;
+  sortAscendingLabelTemplate?: string;
+  sortDescendingLabelTemplate?: string;
+  clearSortLabelTemplate?: string;
 }

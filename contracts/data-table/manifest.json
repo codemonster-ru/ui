@@ -45,7 +45,15 @@
     "nextPageText": { "type": "string", "required": false, "default": "Next" },
     "previousPageLabel": { "type": "string", "required": false, "default": "Previous page" },
     "nextPageLabel": { "type": "string", "required": false, "default": "Next page" },
-    "selectAllLabel": { "type": "string", "required": false, "default": "Select all rows" }
+    "selectAllLabel": { "type": "string", "required": false, "default": "Select all rows" },
+    "selectRowLabelTemplate": { "type": "string", "required": false, "default": "Select {row}" },
+    "sortAscendingLabelTemplate": { "type": "string", "required": false, "default": "Sort {column} ascending" },
+    "sortDescendingLabelTemplate": {
+      "type": "string",
+      "required": false,
+      "default": "Sort {column} descending"
+    },
+    "clearSortLabelTemplate": { "type": "string", "required": false, "default": "Clear sorting for {column}" }
   },
   "slots": {},
   "events": {

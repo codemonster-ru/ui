@@ -41,7 +41,7 @@ function nonNegativeInteger(value: string | null): number | null {
   return value !== null && Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
 }
 
-function formatTemplate(template: string, values: Readonly<Record<string, number>>): string {
+function formatTemplate(template: string, values: Readonly<Record<string, number | string>>): string {
   return Object.entries(values).reduce(
     (result, [name, value]) => result.split(`{${name}}`).join(String(value)),
     template,
@@ -143,13 +143,13 @@ export class CmDataTableController implements CmController {
       const resolved = active && (direction === 'ascending' || direction === 'descending') ? direction : 'none';
       button.closest('th')?.setAttribute('aria-sort', resolved);
       const label = this.#sortLabel(button);
-      const action =
+      const template =
         resolved === 'none'
-          ? `Sort ${label} ascending`
+          ? (button.dataset.cmDataTableSortAscendingLabelTemplate ?? 'Sort {column} ascending')
           : resolved === 'ascending'
-            ? `Sort ${label} descending`
-            : `Clear sorting for ${label}`;
-      button.setAttribute('aria-label', action);
+            ? (button.dataset.cmDataTableSortDescendingLabelTemplate ?? 'Sort {column} descending')
+            : (button.dataset.cmDataTableClearSortLabelTemplate ?? 'Clear sorting for {column}');
+      button.setAttribute('aria-label', formatTemplate(template, { column: label }));
     }
   }
 
