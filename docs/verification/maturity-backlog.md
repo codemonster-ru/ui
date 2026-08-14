@@ -27,7 +27,7 @@ capability to appear exactly once with the same roadmap assignment.
 |    11 | `CMUI-187` | P0       | Recipe            | Maintained application composition recipes published             |         0 |
 |    12 | `CMUI-188` | P0       | Application-owned | Application shell ownership verified                             |         0 |
 |    13 | `CMUI-189` | P0       | Phase 18          | Playground legacy design-system dependencies removed             |         0 |
-|    14 | `CMUI-190` | P0       | Phase 18          | Complete parity and real-consumer verification                   |         0 |
+|    14 | `CMUI-190` | P0       | Phase 18          | Complete parity and real-consumer verification passed            |         0 |
 |    15 | `CMUI-191` | P1       | Phase 18          | Publish the matured cohort and migration notes                   |         0 |
 
 Priority expresses consumer impact inside the dependency order; it does not permit Phase 18

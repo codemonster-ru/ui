@@ -49,6 +49,7 @@ components own their interaction directly.
   [browser and CSS support](./architecture/browser-and-css-support.md).
 - [Accessibility requirements](./architecture/accessibility-requirements.md) and
   [HTML security](./architecture/html-security.md).
+- [Maturity verification](./verification/codemonster-ui-maturity-verification.md).
 
 ## Migrating from VueForge
 

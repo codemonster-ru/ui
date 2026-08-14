@@ -140,8 +140,8 @@
       "roadmapItem": "CMUI-190",
       "destination": "phase-18",
       "priority": "P0",
-      "summary": "Run complete package, parity, and real-consumer verification",
-      "reason": "Migration completion requires both adapters and both representative consumers to pass together.",
+      "summary": "Complete package, parity, and real-consumer verification passed",
+      "reason": "All UI and retained package suites, contracts, accessibility, visuals, packed consumers, migration gates, the Vue playground, and the real Annabel Razor baseline pass together.",
       "gaps": []
     },
     {
