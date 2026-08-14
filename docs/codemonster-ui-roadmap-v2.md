@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 16 — Coverage truth and restored catalog
 - Current milestone: M9 — Enforced migration coverage
-- Next item: `CMUI-170` Define the machine-readable migration coverage inventory.
+- Next item: `CMUI-171` Add the migration coverage validator.
 
 ## Milestones
 
@@ -76,7 +76,7 @@ or intentionally drops.
 
 ## Phase 16 — Coverage truth and restored catalog
 
-- [ ] `CMUI-170` Define a machine-readable migration coverage inventory keyed by VueForge public
+- [x] `CMUI-170` Define a machine-readable migration coverage inventory keyed by VueForge public
   component and capability.
 - [ ] `CMUI-171` Add a coverage validator that reconciles the inventory with the frozen baseline,
   migration map, contracts, Vue exports, Razor provider registrations, documentation, and showcase.

@@ -1,0 +1,1835 @@
+{
+  "schemaVersion": 1,
+  "baseline": "vueforge-2026-08-13",
+  "audits": {
+    "directReplacements": "complete",
+    "composeAndManual": "complete"
+  },
+  "catalog": "examples/playground/src/sections/core/component-catalog.json",
+  "components": {
+    "VfAccordion": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Disclosure semantics, disabled items, controlled/uncontrolled open state, single/multiple mode, keyboard navigation, Vue interaction, and Razor enhancement",
+          "evidence": [
+            "contracts/accordion/contract.md",
+            "packages/vue/src/components/accordion/CmAccordion.test.ts",
+            "packages/razor/tests/Components/CmAccordionParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "A collection contract replaces nested one-section component instances",
+          "evidence": [
+            "docs/core/components/accordion/api.md",
+            "contracts/accordion/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Trusted rich trigger and panel content; current items accept text only",
+          "roadmapItem": "CMUI-177",
+          "evidence": [
+            "docs/core/components/accordion/api.md",
+            "contracts/accordion/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmAccordion",
+        "contract": "accordion",
+        "razorTag": "accordion",
+        "documentation": "docs/components/accordion.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfAlert": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Tones, title/body content, custom title and icon slots, semantic status content",
+          "evidence": [
+            "contracts/alert/contract.md",
+            "packages/vue/src/components/display-components.test.ts",
+            "packages/razor/tests/Components/CmDisplayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "The `icon` name and `hideIcon` props are replaced by explicit optional icon composition; `warn` is named `warning`",
+          "evidence": [
+            "docs/core/components/alert/api.md",
+            "contracts/alert/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmAlert",
+        "contract": "alert",
+        "razorTag": "alert",
+        "documentation": "docs/components/display.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfAvatar": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Image/alt, label fallback, custom fallback content, sizes, and shapes",
+          "evidence": [
+            "contracts/avatar/contract.md",
+            "packages/vue/src/components/display-components.test.ts",
+            "packages/razor/tests/Components/CmDisplayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "retained-product-integration",
+          "status": "retained",
+          "notes": "The VueForge icon-name prop is replaced by the default composition boundary because icons remain a side-by-side product",
+          "evidence": [
+            "docs/core/components/avatar/api.md",
+            "contracts/avatar/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmAvatar",
+        "contract": "avatar",
+        "razorTag": "avatar",
+        "documentation": "docs/components/display.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfBadge": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Text content and all approved semantic tones",
+          "evidence": [
+            "contracts/badge/contract.md",
+            "packages/vue/src/components/display-components.test.ts",
+            "packages/razor/tests/Components/CmDisplayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`warn` is named `warning`",
+          "evidence": [
+            "docs/core/components/badge/api.md",
+            "contracts/badge/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmBadge",
+        "contract": "badge",
+        "razorTag": "badge",
+        "documentation": "docs/components/display.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfBreadcrumbs": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Native links, current/disabled items, accessible navigation label, and custom separator content",
+          "evidence": [
+            "contracts/breadcrumbs/contract.md",
+            "packages/vue/src/components/navigation-components.test.ts",
+            "packages/razor/tests/Components/CmNavigationComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "application-integration",
+          "status": "application-owned",
+          "notes": "Router destinations and router component resolution are application-owned",
+          "evidence": [
+            "docs/core/components/breadcrumbs/api.md",
+            "contracts/breadcrumbs/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmBreadcrumbs",
+        "contract": "breadcrumbs",
+        "razorTag": "breadcrumbs",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfButton": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Native actions, submit/reset behavior, loading/disabled state, sizes, primary/secondary/danger/ghost variants, and icon regions",
+          "evidence": [
+            "contracts/button/contract.md",
+            "packages/vue/src/components/button/CmButton.test.ts",
+            "packages/razor/tests/Components/CmButtonParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`block` moves to layout/width utilities; feedback-only success/info/warn/help/contrast action colors are not Button variants; link mode is now explicit through `href`",
+          "evidence": [
+            "docs/core/components/button/api.md",
+            "contracts/button/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmButton",
+        "contract": "button",
+        "razorTag": "button",
+        "documentation": "docs/components/button.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfCard": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Title, header/body/footer composition, compact density, forwarded attributes, and semantic root selection",
+          "evidence": [
+            "contracts/card/contract.md",
+            "packages/vue/src/components/card/CmCard.test.ts",
+            "packages/razor/tests/Components/CmCardParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`element` replaces an unrestricted wrapper assumption with an approved semantic set",
+          "evidence": [
+            "docs/core/components/card/api.md",
+            "contracts/card/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmCard",
+        "contract": "card",
+        "razorTag": "card",
+        "documentation": "docs/components/card.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfCheckbox": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Boolean binding, value submission, label slot, size, invalid, disabled, required, indeterminate, and change behavior",
+          "evidence": [
+            "contracts/checkbox/contract.md",
+            "packages/vue/src/components/form-components.test.ts",
+            "packages/razor/tests/Components/CmFormComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Native form submission is authoritative",
+          "evidence": [
+            "docs/core/components/checkbox/api.md",
+            "contracts/checkbox/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmCheckbox",
+        "contract": "checkbox",
+        "razorTag": "checkbox",
+        "documentation": "docs/components/forms.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfCommandPalette": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Controlled open/query state, filtering, disabled commands, keyboard navigation, selection, modal focus, and Razor enhancement",
+          "evidence": [
+            "contracts/command-palette/contract.md",
+            "packages/vue/src/components/advanced-input-components.test.ts",
+            "packages/razor/tests/Components/CmAdvancedInputComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "A typed command collection and fixed safe renderer replace arbitrary item values; native `<dialog>` replaces teleport configuration",
+          "evidence": [
+            "docs/core/components/command-palette/api.md",
+            "contracts/command-palette/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Loading/idle states, match highlighting, custom actions/results/items/empty/footer content, submit-without-selection, close policy controls, default state, maximum height, and footer hints",
+          "roadmapItem": "CMUI-180",
+          "evidence": [
+            "docs/core/components/command-palette/api.md",
+            "contracts/command-palette/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmCommandPalette",
+        "contract": "command-palette",
+        "razorTag": "command-palette",
+        "documentation": "docs/components/advanced-inputs.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfConfirmDialog": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Keep composition: Confirmation policy is a small composition of Dialog and Buttons; the application owns the destructive action, async request, and close decision",
+          "evidence": [
+            "docs/core/components/confirm-dialog/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/dialog/contract.md",
+            "contracts/button/contract.md"
+          ]
+        },
+        {
+          "id": "maintained-recipe",
+          "status": "missing",
+          "notes": "Publish a maintained recipe covering focus, loading lock, confirm, and cancel in `CMUI-187`",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/core/components/confirm-dialog/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/dialog/contract.md",
+            "contracts/button/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfDataTable": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Portable text cells, caption, density/presentation, loading/error/empty states, controlled sorting, row selection, page requests, Vue behavior, and Razor enhancement",
+          "evidence": [
+            "contracts/data-table/contract.md",
+            "packages/vue/src/components/data-table-components.test.ts",
+            "packages/razor/tests/Components/CmDataTableComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Application-owned data operations replace built-in client sorting/pagination; string row IDs replace callback row keys",
+          "evidence": [
+            "docs/core/components/data-table/api.md",
+            "contracts/data-table/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Page-size controls and pagination summaries; row-select constraints and row expansion; custom header/cell/state/footer rendering; column visibility/order/reordering/resizing/pinning; multi-sort; skeleton loading modes; complete localization labels",
+          "roadmapItem": "CMUI-181",
+          "evidence": [
+            "docs/core/components/data-table/api.md",
+            "contracts/data-table/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmDataTable",
+        "contract": "data-table",
+        "razorTag": "data-table",
+        "documentation": "docs/components/data-tables.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfDataTableColumnChooser": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "missing",
+          "notes": "Portable candidate: Required columns, ordered visibility state, aggregate selection, and an accessible trigger can be expressed for both adapters, but depend on the DataTable column-visibility contract",
+          "evidence": [
+            "docs/core/components/data-table-column-chooser/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/checkbox/contract.md",
+            "contracts/popover/contract.md"
+          ],
+          "roadmapItem": "CMUI-185"
+        }
+      ]
+    },
+    "VfDatePicker": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Native single-date value, min/max, binding/submission, size, invalid, disabled, readonly, and required state",
+          "evidence": [
+            "contracts/date-picker/contract.md",
+            "packages/vue/src/components/advanced-input-components.test.ts",
+            "packages/razor/tests/Components/CmAdvancedInputComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Native `input[type=date]` replaces locale-specific popup positioning and teleport behavior for the baseline",
+          "evidence": [
+            "docs/core/components/date-picker/api.md",
+            "contracts/date-picker/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Multiple and range selection, month/year picker modes, time selection and minute steps, locale/display formatting, first-day configuration, clear action, and custom labels",
+          "roadmapItem": "CMUI-180",
+          "evidence": [
+            "docs/core/components/date-picker/api.md",
+            "contracts/date-picker/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmDatePicker",
+        "contract": "date-picker",
+        "razorTag": "date-picker",
+        "documentation": "docs/components/advanced-inputs.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfDrawer": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Modal drawer semantics, start/end side, title/description, controlled state, body/footer content, focus handling, and dismissal",
+          "evidence": [
+            "contracts/drawer/contract.md",
+            "packages/vue/src/components/overlay-components.test.ts",
+            "packages/razor/tests/Components/CmOverlayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`side` replaces physical placement; native `<dialog>` and in-place rendering replace teleport/scroll-lock targets",
+          "evidence": [
+            "docs/core/components/drawer/api.md",
+            "contracts/drawer/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Custom header/actions, size, offsets, padding/divider/rounded variants, and configurable dismissal policy",
+          "roadmapItem": "CMUI-179",
+          "evidence": [
+            "docs/core/components/drawer/api.md",
+            "contracts/drawer/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmDrawer",
+        "contract": "drawer",
+        "razorTag": "drawer",
+        "documentation": "docs/components/overlays.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfDialog": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Native modal semantics, title/description, controlled state, body/footer content, focus trap/restoration, Escape, and optional dismissal lock",
+          "evidence": [
+            "contracts/dialog/contract.md",
+            "packages/vue/src/components/overlay-components.test.ts",
+            "packages/razor/tests/Components/CmOverlayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Native `<dialog>` and in-place rendering replace teleport/scroll-lock targets; `dismissible` replaces several close flags",
+          "evidence": [
+            "docs/core/components/dialog/api.md",
+            "contracts/dialog/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Custom header, title/description markup, header actions, sizes, and divided presentation",
+          "roadmapItem": "CMUI-179",
+          "evidence": [
+            "docs/core/components/dialog/api.md",
+            "contracts/dialog/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmDialog",
+        "contract": "dialog",
+        "razorTag": "dialog",
+        "documentation": "docs/components/overlays.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfDivider": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Horizontal and vertical semantic separators",
+          "evidence": [
+            "contracts/divider/contract.md",
+            "packages/vue/src/components/display-components.test.ts",
+            "packages/razor/tests/Components/CmDisplayComponentsParityTest.php"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmDivider",
+        "contract": "divider",
+        "razorTag": "divider",
+        "documentation": "docs/components/display.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfDropdown": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Controlled open state, disabled state, two placements, menu selection, outside dismissal, keyboard opening, and focus restoration",
+          "evidence": [
+            "contracts/dropdown/contract.md",
+            "packages/vue/src/components/navigation-components.test.ts",
+            "packages/razor/tests/Components/CmNavigationComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "In-place portable rendering replaces teleport configuration; explicit application state replaces `defaultOpen`",
+          "evidence": [
+            "docs/core/components/dropdown/api.md",
+            "contracts/dropdown/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Arbitrary trigger and menu-body slots, plus the pills presentation variant",
+          "roadmapItem": "CMUI-179",
+          "evidence": [
+            "docs/core/components/dropdown/api.md",
+            "contracts/dropdown/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmDropdown",
+        "contract": "dropdown",
+        "razorTag": "dropdown",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfField": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Label, description, error, invalid/required state, named content, and accessible control linkage",
+          "evidence": [
+            "contracts/field/contract.md",
+            "packages/vue/src/components/field/CmField.test.ts",
+            "packages/razor/tests/Components/CmFieldParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Floating/side label presentation is replaced by the single stable label structure",
+          "evidence": [
+            "docs/core/components/field/api.md",
+            "contracts/field/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmField",
+        "contract": "field",
+        "razorTag": "field",
+        "documentation": "docs/components/forms.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfFieldset": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "missing",
+          "notes": "Portable candidate: Native `fieldset`/`legend`, shared description/error IDs, invalid state, and scoped metadata form a small cross-platform accessibility contract not provided by Stack",
+          "evidence": [
+            "docs/core/components/fieldset/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/stack/contract.md"
+          ],
+          "roadmapItem": "CMUI-184"
+        }
+      ]
+    },
+    "VfFormLayout": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Keep composition: Stacked/horizontal/responsive arrangement is layout policy expressible with Stack, Grid, CSS, and semantic form markup",
+          "evidence": [
+            "docs/core/components/form-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/stack/contract.md",
+            "contracts/grid/contract.md"
+          ]
+        },
+        {
+          "id": "maintained-recipe",
+          "status": "missing",
+          "notes": "Publish a maintained recipe in `CMUI-187`",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/core/components/form-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/stack/contract.md",
+            "contracts/grid/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfGroupBox": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Split: Static grouping belongs with the Fieldset candidate; collapsible fieldset behavior can compose Fieldset and Accordion once rich content is available",
+          "evidence": [
+            "docs/core/components/group-box/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/section/contract.md"
+          ]
+        },
+        {
+          "id": "remaining-migration-outcome",
+          "status": "missing",
+          "notes": "Publish a recipe in `CMUI-187`, dependent on the approved Fieldset and Accordion outcomes",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/core/components/group-box/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/section/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfIconButton": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "missing",
+          "notes": "Portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract",
+          "evidence": [
+            "docs/core/components/icon-button/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/button/contract.md"
+          ],
+          "roadmapItem": "CMUI-184"
+        }
+      ]
+    },
+    "VfInput": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Native text-like input types, Vue binding, server form values, sizes, disabled/readonly/required/invalid state",
+          "evidence": [
+            "contracts/input/contract.md",
+            "packages/vue/src/components/input/CmInput.test.ts",
+            "packages/razor/tests/Components/CmInputParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Native attributes are forwarded instead of duplicating their complete surface as props",
+          "evidence": [
+            "docs/core/components/input/api.md",
+            "contracts/input/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Leading/trailing adornments, built-in clear action, and password reveal",
+          "roadmapItem": "CMUI-177",
+          "evidence": [
+            "docs/core/components/input/api.md",
+            "contracts/input/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmInput",
+        "contract": "input",
+        "razorTag": "input",
+        "documentation": "docs/components/forms.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfLink": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Native `href`, target/rel forwarding, safe `_blank` relationship, underline modes, tones, and content",
+          "evidence": [
+            "contracts/link/contract.md",
+            "packages/vue/src/components/navigation-components.test.ts",
+            "packages/razor/tests/Components/CmNavigationComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "application-integration",
+          "status": "application-owned",
+          "notes": "Router `to` and custom router component selection are application-owned; applications can apply `cm-link` styling to their router link",
+          "evidence": [
+            "docs/core/components/link/api.md",
+            "contracts/link/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmLink",
+        "contract": "link",
+        "razorTag": "link",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfMenuBar": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "missing",
+          "notes": "Portable candidate: Nested menubar semantics and two-axis keyboard navigation are portable behavior, but current consumers and Razor demand are not yet established",
+          "evidence": [
+            "docs/core/components/menu-bar/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/menu/contract.md",
+            "contracts/inline/contract.md"
+          ],
+          "roadmapItem": "CMUI-185"
+        }
+      ]
+    },
+    "VfMenu": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Action/link items, disabled/active/danger states, selection events, roving focus, Home/End/arrows, and Escape requests",
+          "evidence": [
+            "contracts/menu/contract.md",
+            "packages/vue/src/components/navigation-components.test.ts",
+            "packages/razor/tests/Components/CmNavigationComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Vue component instances are replaced by a portable data collection; icons remain application-owned with the retained icon product",
+          "evidence": [
+            "docs/core/components/menu/api.md",
+            "contracts/menu/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Rich item content and per-link `target`/`rel` metadata",
+          "roadmapItem": "CMUI-179",
+          "evidence": [
+            "docs/core/components/menu/api.md",
+            "contracts/menu/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmMenu",
+        "contract": "menu",
+        "razorTag": "menu",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfMenuItem": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Split: CmMenu covers action/link selection and basic states through its item collection; retained icons and rich item/link metadata are not fully covered",
+          "evidence": [
+            "docs/core/components/menu/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/menu/contract.md"
+          ]
+        },
+        {
+          "id": "remaining-migration-outcome",
+          "status": "missing",
+          "notes": "Resolve the remaining direct-menu gap in `CMUI-179`; do not add a standalone item component unless the collection contract proves insufficient",
+          "roadmapItem": "CMUI-179",
+          "evidence": [
+            "docs/core/components/menu/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/menu/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfNavMenu": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Split: Routing, authorization, active location, and compact sidebar policy are application-owned; a generic nested disclosure navigation pattern may still be portable",
+          "evidence": [
+            "docs/core/components/nav-menu/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/menu/contract.md",
+            "contracts/link/contract.md"
+          ]
+        },
+        {
+          "id": "remaining-migration-outcome",
+          "status": "missing",
+          "notes": "Re-evaluate only the portable tree behavior in `CMUI-185`",
+          "roadmapItem": "CMUI-185",
+          "evidence": [
+            "docs/core/components/nav-menu/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/menu/contract.md",
+            "contracts/link/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfPanel": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Keep composition: Card and Section cover the surface, heading, header action, and content structure without another permanent wrapper",
+          "evidence": [
+            "docs/core/components/panel/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/card/contract.md",
+            "contracts/section/contract.md"
+          ]
+        },
+        {
+          "id": "maintained-recipe",
+          "status": "missing",
+          "notes": "Publish subtle/default panel recipes in `CMUI-187`",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/core/components/panel/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/card/contract.md",
+            "contracts/section/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfPageHeader": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Keep composition: Heading level, breadcrumbs, description, and actions remain semantic page composition using Stack, Inline, and Breadcrumbs",
+          "evidence": [
+            "docs/core/components/page-header/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/stack/contract.md",
+            "contracts/inline/contract.md"
+          ]
+        },
+        {
+          "id": "maintained-recipe",
+          "status": "missing",
+          "notes": "Publish a maintained recipe in `CMUI-187`",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/core/components/page-header/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/stack/contract.md",
+            "contracts/inline/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfPopover": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Controlled open state, disabled state, placement, outside/Escape dismissal, focus restoration, and rich panel body",
+          "evidence": [
+            "contracts/popover/contract.md",
+            "packages/vue/src/components/overlay-components.test.ts",
+            "packages/razor/tests/Components/CmOverlayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "In-place portable rendering and fixed dismissal behavior replace teleport and policy toggles",
+          "evidence": [
+            "docs/core/components/popover/api.md",
+            "contracts/popover/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Arbitrary trigger content and trigger semantics",
+          "roadmapItem": "CMUI-179",
+          "evidence": [
+            "docs/core/components/popover/api.md",
+            "contracts/popover/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmPopover",
+        "contract": "popover",
+        "razorTag": "popover",
+        "documentation": "docs/components/overlays.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfProgressBar": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "missing",
+          "notes": "Portable candidate: Determinate/indeterminate progress semantics, bounded values, labels, tones, and reduced motion form a small framework-independent contract",
+          "evidence": ["docs/core/components/progress-bar/api.md", "docs/verification/component-disposition-audit.md"],
+          "roadmapItem": "CMUI-184"
+        }
+      ]
+    },
+    "VfProgressSpinner": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "missing",
+          "notes": "Portable candidate: An indeterminate labelled progress indicator has stable semantic HTML and no framework lifecycle requirement",
+          "evidence": [
+            "docs/core/components/progress-spinner/api.md",
+            "docs/verification/component-disposition-audit.md"
+          ],
+          "roadmapItem": "CMUI-184"
+        }
+      ]
+    },
+    "VfRadio": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Group value binding/submission, label slot, size, invalid, disabled, required, and change behavior",
+          "evidence": [
+            "contracts/radio/contract.md",
+            "packages/vue/src/components/form-components.test.ts",
+            "packages/razor/tests/Components/CmFormComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Native radio grouping is authoritative",
+          "evidence": [
+            "docs/core/components/radio/api.md",
+            "contracts/radio/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmRadio",
+        "contract": "radio",
+        "razorTag": "radio",
+        "documentation": "docs/components/forms.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfSelect": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Native options, disabled options, placeholder, binding/submission, size, invalid, disabled, and required state",
+          "evidence": [
+            "contracts/select/contract.md",
+            "packages/vue/src/components/advanced-input-components.test.ts",
+            "packages/razor/tests/Components/CmAdvancedInputComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Native `<select>` replaces the custom teleported listbox, its placement API, and custom leading/trailing icons",
+          "evidence": [
+            "docs/core/components/select/api.md",
+            "contracts/select/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Built-in clear action",
+          "roadmapItem": "CMUI-180",
+          "evidence": [
+            "docs/core/components/select/api.md",
+            "contracts/select/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmSelect",
+        "contract": "select",
+        "razorTag": "select",
+        "documentation": "docs/components/advanced-inputs.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfSkeleton": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Minimum height, animation, reduced-motion behavior, and radius variants",
+          "evidence": [
+            "contracts/skeleton/contract.md",
+            "packages/vue/src/components/display-components.test.ts",
+            "packages/razor/tests/Components/CmDisplayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Arbitrary radius strings are replaced by shared radius tokens",
+          "evidence": [
+            "docs/core/components/skeleton/api.md",
+            "contracts/skeleton/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmSkeleton",
+        "contract": "skeleton",
+        "razorTag": "skeleton",
+        "documentation": "docs/components/display.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfSkeletonGate": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Split: Busy/inert placeholder composition is portable, while preserving measured previous height is DOM lifecycle policy",
+          "evidence": [
+            "docs/core/components/skeleton-gate/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/skeleton/contract.md"
+          ]
+        },
+        {
+          "id": "remaining-migration-outcome",
+          "status": "missing",
+          "notes": "Publish the portable recipe in `CMUI-187`; keep measurement behavior application-owned unless two adapters need it",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/core/components/skeleton-gate/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/skeleton/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfStepper": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "missing",
+          "notes": "Portable candidate: Ordered step state, orientation, current-step semantics, disabled steps, and roving keyboard behavior are portable, but workflow navigation ownership needs real-consumer validation",
+          "evidence": ["docs/core/components/stepper/api.md", "docs/verification/component-disposition-audit.md"],
+          "roadmapItem": "CMUI-185"
+        }
+      ]
+    },
+    "VfSwitch": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Boolean binding/submission, label slot, size, invalid, disabled, required, and switch semantics",
+          "evidence": [
+            "contracts/switch/contract.md",
+            "packages/vue/src/components/form-components.test.ts",
+            "packages/razor/tests/Components/CmFormComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Reduced-motion CSS replaces `static`; shared tokens replace `thumbContrast`",
+          "evidence": [
+            "docs/core/components/switch/api.md",
+            "contracts/switch/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Custom thumb content",
+          "roadmapItem": "CMUI-178",
+          "evidence": [
+            "docs/core/components/switch/api.md",
+            "contracts/switch/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmSwitch",
+        "contract": "switch",
+        "razorTag": "switch",
+        "documentation": "docs/components/forms.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfTable": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Caption/header/body/footer composition, density, stripes, dividers, sticky header, semantic table structure, and responsive wrapper",
+          "evidence": [
+            "contracts/table/contract.md",
+            "packages/vue/src/components/data-table-components.test.ts",
+            "packages/razor/tests/Components/CmDataTableComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`density=\"compact\"` replaces `compact`",
+          "evidence": [
+            "docs/core/components/table/api.md",
+            "contracts/table/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmTable",
+        "contract": "table",
+        "razorTag": "table",
+        "documentation": "docs/components/data-tables.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfTableOfContents": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "missing",
+          "notes": "Portable candidate: Semantic navigation, active location, levels, and links are portable; heading discovery, scroll observation, smooth scrolling, and offsets may remain application-owned",
+          "evidence": [
+            "docs/core/components/table-of-contents/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/link/contract.md",
+            "contracts/stack/contract.md"
+          ],
+          "roadmapItem": "CMUI-185"
+        }
+      ]
+    },
+    "VfThemeSwitch": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "application-owned",
+          "notes": "Application-owned: Theme preference, persistence, system-mode policy, initial SSR attributes, and mutation ownership belong to application bootstrap; Switch or Button supplies the control",
+          "evidence": [
+            "docs/core/components/theme-switch/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/button/contract.md"
+          ]
+        },
+        {
+          "id": "maintained-recipe",
+          "status": "missing",
+          "notes": "Publish a Vue/Razor application recipe in `CMUI-187` rather than a shared stateful component",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/core/components/theme-switch/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/button/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfTag": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Split: Badge already covers the non-interactive status/category semantics and tones; the outlined Tag appearance remains a distinct visual question",
+          "evidence": [
+            "docs/core/components/tag/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/badge/contract.md"
+          ]
+        },
+        {
+          "id": "remaining-migration-outcome",
+          "status": "missing",
+          "notes": "Re-evaluate the distinct visual contract in `CMUI-184`; otherwise migrate to Badge",
+          "roadmapItem": "CMUI-184",
+          "evidence": [
+            "docs/core/components/tag/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/badge/contract.md"
+          ]
+        }
+      ]
+    },
+    "VfTabs": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Tab semantics, controlled selection, disabled items, panels, roving keyboard selection, and Razor enhancement",
+          "evidence": [
+            "contracts/tabs/contract.md",
+            "packages/vue/src/components/navigation-components.test.ts",
+            "packages/razor/tests/Components/CmNavigationComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Stable component/item IDs replace caller-provided `tabId` and `panelId`",
+          "evidence": [
+            "docs/core/components/tabs/api.md",
+            "contracts/tabs/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Rich tab labels and panel content, externally owned panels, and explicit uncontrolled default selection",
+          "roadmapItem": "CMUI-179",
+          "evidence": [
+            "docs/core/components/tabs/api.md",
+            "contracts/tabs/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmTabs",
+        "contract": "tabs",
+        "razorTag": "tabs",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfTextarea": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "String binding/submission, size, invalid, disabled, readonly, required, and forwarded native attributes",
+          "evidence": [
+            "contracts/textarea/contract.md",
+            "packages/vue/src/components/form-components.test.ts",
+            "packages/razor/tests/Components/CmFormComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Native textarea attributes are authoritative",
+          "evidence": [
+            "docs/core/components/textarea/api.md",
+            "contracts/textarea/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmTextarea",
+        "contract": "textarea",
+        "razorTag": "textarea",
+        "documentation": "docs/components/forms.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfTooltip": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Labelled trigger, tooltip semantics, focus/hover lifecycle, Escape dismissal, logical placements, and tokenized delays",
+          "evidence": [
+            "contracts/tooltip/contract.md",
+            "packages/vue/src/components/overlay-components.test.ts",
+            "packages/razor/tests/Components/CmOverlayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "Token delays replace arbitrary milliseconds; in-place rendering replaces teleport configuration",
+          "evidence": [
+            "docs/core/components/tooltip/api.md",
+            "contracts/tooltip/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        },
+        {
+          "id": "material-portable-gap",
+          "status": "missing",
+          "notes": "Arbitrary trigger elements and rich tooltip content",
+          "roadmapItem": "CMUI-179",
+          "evidence": [
+            "docs/core/components/tooltip/api.md",
+            "contracts/tooltip/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmTooltip",
+        "contract": "tooltip",
+        "razorTag": "tooltip",
+        "documentation": "docs/components/overlays.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfContainer": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Default/fluid widths, md/lg/xl/2xl sizes, semantic content, and forwarded attributes",
+          "evidence": [
+            "contracts/container/contract.md",
+            "packages/vue/src/components/layout-primitives.test.ts",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`element` restricts the old arbitrary `as` value to the approved cross-platform semantic set",
+          "evidence": [
+            "docs/layouts/components/container/api.md",
+            "contracts/container/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmContainer",
+        "contract": "container",
+        "razorTag": "container",
+        "documentation": "docs/components/layout-primitives.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfStack": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Vertical flow, semantic content, and forwarded attributes",
+          "evidence": [
+            "contracts/stack/contract.md",
+            "packages/vue/src/components/layout-primitives.test.ts",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`element` restricts arbitrary `as` to the approved semantic set",
+          "evidence": [
+            "docs/layouts/components/stack/api.md",
+            "contracts/stack/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmStack",
+        "contract": "stack",
+        "razorTag": "stack",
+        "documentation": "docs/components/layout-primitives.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfInline": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Inline flow, optional wrapping, semantic content, and forwarded attributes",
+          "evidence": [
+            "contracts/inline/contract.md",
+            "packages/vue/src/components/layout-primitives.test.ts",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`element` restricts arbitrary `as` to the approved semantic set",
+          "evidence": [
+            "docs/layouts/components/inline/api.md",
+            "contracts/inline/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmInline",
+        "contract": "inline",
+        "razorTag": "inline",
+        "documentation": "docs/components/layout-primitives.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfSection": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Section flow, optional surface, semantic content, and forwarded attributes",
+          "evidence": [
+            "contracts/section/contract.md",
+            "packages/vue/src/components/layout-primitives.test.ts",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`element` restricts arbitrary `as` to the approved semantic set",
+          "evidence": [
+            "docs/layouts/components/section/api.md",
+            "contracts/section/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmSection",
+        "contract": "section",
+        "razorTag": "section",
+        "documentation": "docs/components/layout-primitives.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfGrid": {
+      "disposition": "replace",
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Responsive grid flow, semantic content, and forwarded attributes",
+          "evidence": [
+            "contracts/grid/contract.md",
+            "packages/vue/src/components/layout-primitives.test.ts",
+            "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "`element` restricts arbitrary `as` to the approved semantic set",
+          "evidence": [
+            "docs/layouts/components/grid/api.md",
+            "contracts/grid/contract.md",
+            "docs/verification/component-capability-audit.md"
+          ]
+        }
+      ],
+      "delivery": {
+        "target": "CmGrid",
+        "contract": "grid",
+        "razorTag": "grid",
+        "documentation": "docs/components/layout-primitives.md",
+        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+      }
+    },
+    "VfAppShell": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "application-owned",
+          "notes": "Application-owned: Responsive landmarks, sticky measured offsets, navigation state, and optional regions depend on the surrounding application",
+          "evidence": [
+            "docs/layouts/components/app-shell/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/container/contract.md",
+            "contracts/grid/contract.md",
+            "contracts/stack/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ],
+          "roadmapItem": "CMUI-188"
+        }
+      ]
+    },
+    "VfAdminLayout": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "application-owned",
+          "notes": "Application-owned: Routing, authorization, collapse/preview behavior, mobile drawer state, focus restoration, and commands are admin-application policy",
+          "evidence": [
+            "docs/layouts/components/admin-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/drawer/contract.md",
+            "contracts/menu/contract.md",
+            "contracts/grid/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ],
+          "roadmapItem": "CMUI-188"
+        }
+      ]
+    },
+    "VfAdminShell": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "application-owned",
+          "notes": "Application-owned: Global topbar, brand, navigation, workspace, and footer structure encode product information architecture",
+          "evidence": [
+            "docs/layouts/components/admin-shell/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/container/contract.md",
+            "contracts/grid/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ],
+          "roadmapItem": "CMUI-188"
+        }
+      ]
+    },
+    "VfDocumentLayout": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "application-owned",
+          "notes": "Application-owned: Documentation rails, sticky measurements, edge treatment, and optional regions are documentation-site policy",
+          "evidence": [
+            "docs/layouts/components/document-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/container/contract.md",
+            "contracts/grid/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ],
+          "roadmapItem": "CMUI-188"
+        }
+      ]
+    },
+    "VfAuthLayout": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Keep composition: Branding, heading, form surface, and secondary links are product content arranged with semantic landmarks and layout primitives",
+          "evidence": [
+            "docs/layouts/components/auth-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/container/contract.md",
+            "contracts/stack/contract.md",
+            "contracts/section/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        },
+        {
+          "id": "maintained-recipe",
+          "status": "missing",
+          "notes": "Publish a maintained recipe in `CMUI-187`",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/layouts/components/auth-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/container/contract.md",
+            "contracts/stack/contract.md",
+            "contracts/section/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        }
+      ]
+    },
+    "VfErrorLayout": {
+      "disposition": "compose",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "Keep composition: Error code, message, and recovery actions are product copy and semantic composition rather than component behavior",
+          "evidence": [
+            "docs/layouts/components/error-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/container/contract.md",
+            "contracts/stack/contract.md",
+            "contracts/section/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        },
+        {
+          "id": "maintained-recipe",
+          "status": "missing",
+          "notes": "Publish a maintained recipe in `CMUI-187`",
+          "roadmapItem": "CMUI-187",
+          "evidence": [
+            "docs/layouts/components/error-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/container/contract.md",
+            "contracts/stack/contract.md",
+            "contracts/section/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        }
+      ]
+    },
+    "VfSetupLayout": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "application-owned",
+          "notes": "Application-owned: Enter/Escape workflow commands, validation sequencing, step navigation, and responsive regions belong to the setup application",
+          "evidence": [
+            "docs/layouts/components/setup-layout/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "contracts/container/contract.md",
+            "contracts/grid/contract.md",
+            "contracts/stack/contract.md",
+            "docs/architecture/application-shell-ownership.md"
+          ],
+          "roadmapItem": "CMUI-188"
+        }
+      ]
+    },
+    "VfHeaderArea": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "No standalone replacement: Native `header`, application sticky CSS, and layout primitives cover the wrapper",
+          "evidence": [
+            "docs/layouts/components/header-area/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        }
+      ]
+    },
+    "VfSidebarArea": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "No standalone replacement: Native `aside`, Section, and application appearance CSS cover the wrapper",
+          "evidence": [
+            "docs/layouts/components/sidebar-area/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        }
+      ]
+    },
+    "VfContentArea": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "No standalone replacement: Native `main`, Container/Section, and spacing utilities cover the wrapper",
+          "evidence": [
+            "docs/layouts/components/content-area/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        }
+      ]
+    },
+    "VfAsideArea": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "No standalone replacement: Native `aside`, Section, and application appearance CSS cover the wrapper",
+          "evidence": [
+            "docs/layouts/components/aside-area/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        }
+      ]
+    },
+    "VfFooterArea": {
+      "disposition": "manual",
+      "capabilities": [
+        {
+          "id": "reviewed-disposition",
+          "status": "superseded",
+          "notes": "No standalone replacement: Native `footer` and layout primitives cover the wrapper",
+          "evidence": [
+            "docs/layouts/components/footer-area/api.md",
+            "docs/verification/component-disposition-audit.md",
+            "docs/architecture/application-shell-ownership.md"
+          ]
+        }
+      ]
+    }
+  }
+}
