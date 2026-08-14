@@ -54,6 +54,7 @@ test('reports mapping, capability, and delivery drift', () => {
     schemaVersion: 2,
     baseline: 'other',
     audits: { composeAndManual: 'complete', directReplacements: 'complete' },
+    maturity: { directReplacements: 'pending' },
     backlog: 'backlog.json',
     catalog: 'catalog.json',
     components: {
@@ -129,6 +130,7 @@ test('rejects pending entries after the compose and manual audit is complete', (
     schemaVersion: 1,
     baseline: 'vueforge-test',
     audits: { composeAndManual: 'complete', directReplacements: 'complete' },
+    maturity: { directReplacements: 'pending' },
     backlog: 'backlog.json',
     catalog: 'catalog.json',
     components: {
@@ -159,11 +161,62 @@ test('rejects pending entries after the compose and manual audit is complete', (
   ]);
 });
 
+test('enforces the M10 direct-replacement maturity exit gate', () => {
+  const coverage = readCodeMonsterCoverage();
+  const mapping = readVueForgeMapping();
+  const artifacts = discoverCoverageArtifacts(coverage);
+  const unmarked = structuredClone(coverage);
+  delete unmarked.maturity;
+  assert.ok(
+    validateCodeMonsterCoverage(unmarked, mapping, cloneArtifacts(artifacts)).includes(
+      'Coverage directReplacements maturity must be pending or complete.',
+    ),
+  );
+
+  const incomplete = structuredClone(coverage);
+  incomplete.components.VfButton.capabilities.push({
+    id: 'regressed-capability',
+    status: 'missing',
+    roadmapItem: 'CMUI-183',
+    notes: 'Regression fixture.',
+    evidence: ['contracts/button/contract.md'],
+  });
+  const backlog = JSON.parse(artifacts.files.get(coverage.backlog));
+  backlog.items.find(({ roadmapItem }) => roadmapItem === 'CMUI-183').gaps.push('VfButton:regressed-capability');
+  artifacts.files.set(coverage.backlog, JSON.stringify(backlog));
+  const catalog = JSON.parse(artifacts.files.get(coverage.catalog));
+  catalog.migrationGaps.push({
+    source: 'VfButton',
+    disposition: 'replace',
+    targets: ['CmButton'],
+    capabilityId: 'regressed-capability',
+    roadmapItem: 'CMUI-183',
+    summary: 'Regression fixture.',
+  });
+  artifacts.files.set(coverage.catalog, JSON.stringify(catalog));
+
+  assert.ok(
+    validateCodeMonsterCoverage(incomplete, mapping, artifacts).includes(
+      'VfButton has an incomplete direct-replacement maturity outcome.',
+    ),
+  );
+
+  const pending = structuredClone(coverage);
+  pending.components.VfButton.capabilities[0].status = 'pending';
+  pending.components.VfButton.capabilities[0].roadmapItem = 'CMUI-183';
+  assert.ok(
+    validateCodeMonsterCoverage(pending, mapping, cloneArtifacts(artifacts)).includes(
+      'VfButton has an incomplete direct-replacement maturity outcome.',
+    ),
+  );
+});
+
 test('requires stable components and unresolved gaps in the playground catalog', () => {
   const coverage = {
     schemaVersion: 1,
     baseline: 'vueforge-test',
     audits: { composeAndManual: 'complete', directReplacements: 'complete' },
+    maturity: { directReplacements: 'pending' },
     backlog: 'backlog.json',
     catalog: 'catalog.json',
     components: {

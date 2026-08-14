@@ -83,6 +83,9 @@ export function validateCodeMonsterCoverage(coverage, mapping, artifacts) {
   if (!['pending', 'complete'].includes(coverage?.audits?.composeAndManual)) {
     issues.push('Coverage composeAndManual audit must be pending or complete.');
   }
+  if (!['pending', 'complete'].includes(coverage?.maturity?.directReplacements)) {
+    issues.push('Coverage directReplacements maturity must be pending or complete.');
+  }
 
   const components = coverage?.components && typeof coverage.components === 'object' ? coverage.components : {};
   const mappings = Array.isArray(mapping?.componentMappings) ? mapping.componentMappings : [];
@@ -149,6 +152,13 @@ export function validateCodeMonsterCoverage(coverage, mapping, artifacts) {
       )
     ) {
       issues.push(`${mappingEntry.source} has an incomplete direct-replacement capability audit.`);
+    }
+    if (
+      coverage?.maturity?.directReplacements === 'complete' &&
+      mappingEntry.action === 'replace' &&
+      component.capabilities.some((capability) => capability.status === 'missing' || capability.status === 'pending')
+    ) {
+      issues.push(`${mappingEntry.source} has an incomplete direct-replacement maturity outcome.`);
     }
     if (
       coverage?.audits?.composeAndManual === 'complete' &&
