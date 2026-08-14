@@ -52,6 +52,7 @@ final class CmSwitch implements ComponentInterface
             ])->render(),
             'checked' => $checked,
             'value' => $value,
+            'thumb' => $context->hasSlot('thumb') ? $context->slot('thumb') : '',
             'content' => $context->hasSlot('default') ? $context->slot('default') : $label,
         ]), "\r\n"));
     }

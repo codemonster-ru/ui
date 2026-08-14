@@ -77,6 +77,11 @@ Switch represents an immediate setting and renders a native checkbox with `role=
 Checkbox for acceptance or multi-selection. Neither component emits a hidden fallback input, so an
 unchecked value is absent from submitted form data.
 
+Switch accepts trusted decorative content through its `thumb` slot. The wrapper is hidden from
+assistive technology, so keep the visible setting name in the default slot or `label` prop. Vue
+provides the current `{ checked }` state to the thumb slot; Razor renders the named slot for the
+current server response.
+
 ## Vue binding
 
 ```vue
@@ -113,6 +118,10 @@ const error = ref<string>();
     <CmRadio v-model="frequency" name="frequency" value="daily">Daily</CmRadio>
     <CmRadio v-model="frequency" name="frequency" value="weekly">Weekly</CmRadio>
     <CmSwitch v-model="darkMode" name="theme" value="dark">Dark mode</CmSwitch>
+    <CmSwitch v-model="darkMode" name="theme-preview">
+      <template #thumb="{ checked }">{{ checked ? '●' : '○' }}</template>
+      Theme preview
+    </CmSwitch>
   </form>
 </template>
 ```
@@ -159,6 +168,10 @@ Render the current value and relationships explicitly in the Razor template:
     <cm-radio name="frequency" value="daily" :checked="($submitted['frequency'] ?? 'daily') === 'daily'">Daily</cm-radio>
     <cm-radio name="frequency" value="weekly" :checked="($submitted['frequency'] ?? '') === 'weekly'">Weekly</cm-radio>
     <cm-switch name="theme" value="dark" :checked="($submitted['theme'] ?? null) === 'dark'">Dark mode</cm-switch>
+    <cm-switch name="theme-preview" :checked="($submitted['theme-preview'] ?? null) === 'on'">
+        <razor-slot name="thumb"><span aria-hidden="true">●</span></razor-slot>
+        Theme preview
+    </cm-switch>
     <cm-button type="submit">Save</cm-button>
 </form>
 ```
