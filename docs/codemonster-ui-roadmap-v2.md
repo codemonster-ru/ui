@@ -64,7 +64,7 @@ or intentionally drops.
 
 - Current phase: Phase 18 — Portable expansion and consumer migration
 - Current milestone: M11 — Portable expansion and consumer migration
-- Next item: `CMUI-185` Re-evaluate behavior-rich portable candidates.
+- Next item: `CMUI-186` Implement the approved portable component cohort.
 
 ## Milestones
 
@@ -124,7 +124,7 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
 
 - [x] `CMUI-184` Re-evaluate small portable candidates currently marked `compose` or `manual`,
       starting with Fieldset, IconButton, ProgressBar, ProgressSpinner, and Tag.
-- [ ] `CMUI-185` Re-evaluate behavior-rich candidates only with shared Vue and Razor demand,
+- [x] `CMUI-185` Re-evaluate behavior-rich candidates only with shared Vue and Razor demand,
       including Stepper, TableOfContents, menu-bar/navigation patterns, and data-table column controls.
 - [ ] `CMUI-186` Implement each approved new component through contract, canonical fixtures, shared
       CSS, optional runtime, Vue adapter, Razor adapter, parity tests, documentation, and showcase.
@@ -162,6 +162,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-15 | Verify primitives independently from application-shell migration.                                 | All five primitives have Vue composition evidence and Container/Stack have real Razor demand; routing, landmarks, responsive state, theme bootstrap, and legacy shell removal remain application work under CMUI-187–189.                               | `CMUI-182`              |
 | 2026-08-15 | Enforce direct-replacement maturity separately from the capability audit.                         | Completing classification did not mean all approved gaps were delivered; a dedicated machine gate now prevents direct replacements from returning to missing or pending after M10.                                                                      | `CMUI-183`, `CMUI-G010` |
 | 2026-08-15 | Approve four finite semantic components and supersede Tag with Badge.                             | Fieldset, IconButton, ProgressBar, and ProgressSpinner have bounded Vue/Razor contracts and real composition demand; Tag adds only an unrequested outlined presentation over Badge.                                                                     | `CMUI-184`, `CMUI-186`  |
+| 2026-08-15 | Keep behavior-rich candidates application-owned without shared demand.                            | Column chooser persistence, command navigation, navigation trees, workflow steps, and document observation all combine static semantic composition with product policy; none has matching Razor demand.                                                 | `CMUI-185`              |
 
 ## Scope-change log
 
