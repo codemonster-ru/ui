@@ -16,26 +16,26 @@ distribution responsibility.
 
 ## Shared kernel ownership
 
-| Package or repository area | Owns | Must not own |
-| --- | --- | --- |
-| Component contracts | Props, slots, states, canonical HTML, accessibility, behavior fixtures | Framework source code or package wiring |
-| `ui-tokens` | Token schemas, theme data, CSS-variable generation, breakpoint definitions | Component markup, DOM access, or framework APIs |
-| `ui-css` | Foundation CSS, semantic component CSS, selectors, visual states | Component state management or framework imports |
-| `ui-utilities` | Generated token-backed utility classes | Semantic component behavior or framework integrations |
-| `ui-icons` | Canonical icon data, metadata, raw SVG rendering primitives | Vue, React, Angular, or Razor component lifecycles |
-| `ui-runtime` | Optional DOM controllers, lifecycle, events, focus, keyboard behavior | Server rendering, virtual DOM adapters, or component styling |
+| Package or repository area | Owns                                                                       | Must not own                                                 |
+| -------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Component contracts        | Props, slots, states, canonical HTML, accessibility, behavior fixtures     | Framework source code or package wiring                      |
+| `ui-tokens`                | Token schemas, theme data, CSS-variable generation, breakpoint definitions | Component markup, DOM access, or framework APIs              |
+| `ui-css`                   | Foundation CSS, semantic component CSS, selectors, visual states           | Component state management or framework imports              |
+| `ui-utilities`             | Generated token-backed utility classes                                     | Semantic component behavior or framework integrations        |
+| `ui-icons`                 | Canonical icon data, metadata, raw SVG rendering primitives                | Vue, React, Angular, or Razor component lifecycles           |
+| `ui-runtime`               | Optional DOM controllers, lifecycle, events, focus, keyboard behavior      | Server rendering, virtual DOM adapters, or component styling |
 
 Component contracts are repository-owned test and documentation inputs initially. They do not
 become a public runtime package until at least two concrete consumers need the same executable API.
 
 ## Adapter ownership
 
-| Adapter | Owns | Must not own |
-| --- | --- | --- |
-| `ui-vue` | Vue props, emits, slots, reactivity, SSR-safe Vue rendering | Canonical styling or React/Angular dependencies |
-| `ui-react` | React props, callbacks, children, refs, SSR-safe React rendering | Canonical styling or Vue/Angular dependencies |
-| `ui-angular` | Angular inputs, outputs, templates, forms, and lifecycle | Canonical styling or Vue/React dependencies |
-| `codemonster-ru/ui` | PHP component classes, Razor templates, Annabel registration, asset publication | A separate CSS implementation or generic Razor compiler features |
+| Adapter                   | Owns                                                                            | Must not own                                                     |
+| ------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `ui-vue`                  | Vue props, emits, slots, reactivity, SSR-safe Vue rendering                     | Canonical styling or React/Angular dependencies                  |
+| `ui-react`                | React props, callbacks, children, refs, SSR-safe React rendering                | Canonical styling or Vue/Angular dependencies                    |
+| `ui-angular`              | Angular inputs, outputs, templates, forms, and lifecycle                        | Canonical styling or Vue/React dependencies                      |
+| `codemonster-ru/ui-razor` | PHP component classes, Razor templates, Annabel registration, asset publication | A separate CSS implementation or generic Razor compiler features |
 
 Every adapter translates its native API into the same significant DOM, shared classes, native
 attributes, ARIA state, and behavior contract. Platform syntax may differ where the platform model
