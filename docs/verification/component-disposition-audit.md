@@ -75,6 +75,33 @@ The outcomes mean:
 | `VfAsideArea` | No standalone replacement | Native `aside`, Section, and application appearance CSS cover the wrapper | Document as shell-internal migration guidance; no component contract |
 | `VfFooterArea` | No standalone replacement | Native `footer` and layout primitives cover the wrapper | Document as shell-internal migration guidance; no component contract |
 
+## CMUI-184 follow-up decision
+
+Date: 2026-08-15
+
+Status: Approved
+
+`CMUI-184` re-evaluated the five small candidates from the original `CMUI-173` audit. The table
+below is an append-only follow-up: it does not rewrite the historical candidate classifications
+above. An approved boundary remains a missing delivery until its contract, CSS, Vue adapter,
+Annabel Razor adapter, tests, documentation, and showcase land through `CMUI-186`.
+
+| VueForge API | Final decision | Approved portable boundary | Destination and exclusions |
+| --- | --- | --- | --- |
+| `VfFieldset` | Approve with API split | A named native `fieldset`/`legend` group with a caller-owned stable id, escaped fallback label, description and error content, deterministic relationships, invalid state, trusted regions, and forwarded root attributes | Implement `CmFieldset` in `CMUI-186`. Do not preserve generated ids, unnamed group policy, or Vue-only scoped metadata. A single-control error wrapper should use `CmField`; static `VfGroupBox` grouping can migrate to Fieldset, while collapsible behavior remains a Fieldset and Accordion recipe. |
+| `VfIconButton` | Approve with asset split | A square native action button with a required accessible label, trusted decorative icon content, the shared `sm`/`md`/`lg` sizes and approved Button variants, native disabled/type behavior, and forwarded root attributes | Implement `CmIconButton` in `CMUI-186`. Do not add an icon-name prop, own an icon catalog, infer a tooltip, or preserve unsupported VueForge feedback variants; retained icon products or authored Razor markup supply the icon. |
+| `VfProgressBar` | Approve with presentation split | A labelled native progressbar with clamped determinate `value`/`max`, an explicit indeterminate mode that omits value ARIA, approved feedback tones, logical sizing, and reduced-motion behavior | Implement `CmProgressBar` in `CMUI-186`. Arbitrary heights, independently combinable stripes/animation, and application progress orchestration stay outside the stable contract. |
+| `VfProgressSpinner` | Approve with presentation split | A compact labelled indeterminate progress indicator with finite shared sizes, approved feedback tones, hidden SVG decoration, and a non-animated reduced-motion presentation | Implement `CmProgressSpinner` in `CMUI-186`. Keep it distinct from ProgressBar so compact loading indicators do not create invalid Bar variant combinations; arbitrary CSS sizes and public SVG stroke geometry are not portable API. |
+| `VfTag` | Supersede with Badge | Non-interactive status and category content already has the required native inline semantics, trusted content boundary, and complete feedback-tone vocabulary in `CmBadge` | Migrate to `CmBadge`; an outlined appearance alone does not justify another component contract. Close the `CMUI-184` Tag gap without adding a `CmTag` target. |
+
+The approved components are supported by repeated Vue compositions, including Annabel grouped-form,
+icon-action, and setup-progress patterns, plus framework-independent native semantics. No external
+Annabel Razor page currently consumes these patterns. That Vue-led demand is a delivery risk, not
+permission to weaken the two-adapter gate: `CMUI-186` must provide canonical significant DOM,
+Vue SSR and interaction tests, Razor rendering parity, accessibility cases, shared CSS and visual
+fixtures before any migration mapping changes from `compose` or `manual` to `replace`. Progress
+animation must additionally prove `prefers-reduced-motion` behavior.
+
 ## Outcome
 
 The original broad `compose` and `manual` buckets are now actionable:
