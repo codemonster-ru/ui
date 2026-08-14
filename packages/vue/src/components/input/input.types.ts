@@ -9,4 +9,9 @@ export interface CmInputProps {
   disabled?: boolean;
   readonly?: boolean;
   required?: boolean;
+  clearable?: boolean;
+  passwordReveal?: boolean;
+  clearLabel?: string;
+  showPasswordLabel?: string;
+  hidePasswordLabel?: string;
 }

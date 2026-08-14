@@ -29,6 +29,16 @@ final class CmInput implements ComponentInterface
         $disabled = $props->bool('disabled');
         $readonly = $props->bool('readonly');
         $required = $props->bool('required');
+        $clearable = $props->bool('clearable');
+        $passwordReveal = $props->bool('passwordReveal');
+        $clearLabel = $props->string('clearLabel', 'Clear input');
+        $showPasswordLabel = $props->string('showPasswordLabel', 'Show password');
+        $hidePasswordLabel = $props->string('hidePasswordLabel', 'Hide password');
+        $leading = $context->hasSlot('leading') ? $context->slot('leading') : null;
+        $trailing = $context->hasSlot('trailing') ? $context->slot('trailing') : null;
+        $hasClear = $clearable && !$disabled && !$readonly;
+        $hasPasswordReveal = $passwordReveal && $type === 'password';
+        $hasWrapper = $leading !== null || $trailing !== null || $hasClear || $hasPasswordReveal;
         $attributes = new AttributeBag($props->remaining());
         $classes = (new ClassBuilder())
             ->add('cm-input', "cm-input--{$size}")
@@ -44,6 +54,14 @@ final class CmInput implements ComponentInterface
             'disabled' => $disabled,
             'readonly' => $readonly,
             'required' => $required,
+            'hasWrapper' => $hasWrapper,
+            'hasClear' => $hasClear,
+            'hasPasswordReveal' => $hasPasswordReveal,
+            'clearLabel' => $clearLabel,
+            'showPasswordLabel' => $showPasswordLabel,
+            'hidePasswordLabel' => $hidePasswordLabel,
+            'leading' => $leading,
+            'trailing' => $trailing,
             'attributes' => $attributes->without([
                 'class',
                 'value',
@@ -52,6 +70,7 @@ final class CmInput implements ComponentInterface
                 'readonly',
                 'required',
                 'aria-invalid',
+                'data-cm-input-control',
             ])->render(),
         ]), "\r\n"));
     }

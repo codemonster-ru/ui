@@ -26,19 +26,29 @@ in that order; the control references only the regions that are actually rendere
 
 ## Input API
 
-| Prop       | Values                                              | Default | Behavior                               |
-| ---------- | --------------------------------------------------- | ------- | -------------------------------------- |
-| `value`    | string                                              | `''`    | Current value; Vue maps to `v-model`.  |
-| `type`     | `text`, `email`, `password`, `search`, `tel`, `url` | `text`  | Approved native single-line type.      |
-| `size`     | `sm`, `md`, `lg`                                    | `md`    | Shared control size.                   |
-| `invalid`  | boolean                                             | `false` | Adds `aria-invalid` and invalid style. |
-| `disabled` | boolean                                             | `false` | Native disabled state.                 |
-| `readonly` | boolean                                             | `false` | Native readonly state.                 |
-| `required` | boolean                                             | `false` | Native required constraint.            |
+| Prop                | Values                                              | Default         | Behavior                                     |
+| ------------------- | --------------------------------------------------- | --------------- | -------------------------------------------- |
+| `value`             | string                                              | `''`            | Current value; Vue maps to `v-model`.        |
+| `type`              | `text`, `email`, `password`, `search`, `tel`, `url` | `text`          | Approved native single-line type.            |
+| `size`              | `sm`, `md`, `lg`                                    | `md`            | Shared control size.                         |
+| `invalid`           | boolean                                             | `false`         | Adds `aria-invalid` and invalid style.       |
+| `disabled`          | boolean                                             | `false`         | Native disabled state.                       |
+| `readonly`          | boolean                                             | `false`         | Native readonly state.                       |
+| `required`          | boolean                                             | `false`         | Native required constraint.                  |
+| `clearable`         | boolean                                             | `false`         | Clears an editable value and restores focus. |
+| `passwordReveal`    | boolean                                             | `false`         | Toggles visibility for password inputs.      |
+| `clearLabel`        | string                                              | `Clear input`   | Accessible clear-action label.               |
+| `showPasswordLabel` | string                                              | `Show password` | Accessible reveal-action label.              |
+| `hidePasswordLabel` | string                                              | `Hide password` | Accessible conceal-action label.             |
 
 Safe native attributes such as `id`, `name`, `autocomplete`, `placeholder`, `pattern`, and
 `inputmode` reach the input. Component-owned value, type, boolean state, and `aria-invalid` cannot
 be overridden through forwarded attributes.
+
+The `leading` and `trailing` slots accept framework-native trusted content, including icons. Hide
+decorative content from assistive technology; slots do not replace the input's label. The shared
+API intentionally accepts content instead of VueForge icon registry names so Vue and Razor use the
+same contract without coupling to one renderer.
 
 ## Textarea and choice APIs
 
@@ -167,6 +177,17 @@ import { CmRuntime, createCmCheckboxController } from '@codemonster-ru/ui-runtim
 
 new CmRuntime().register('checkbox', createCmCheckboxController).start(document);
 ```
+
+Clear and password-reveal actions in Razor use the same progressive enhancement pattern:
+
+```ts
+import { CmRuntime, createCmInputController } from '@codemonster-ru/ui-runtime';
+
+new CmRuntime().register('input', createCmInputController).start(document);
+```
+
+Vue handles these actions in the adapter. Both platforms dispatch or preserve the ordinary input
+event on clear, retain focus, and keep the current selection when password visibility changes.
 
 Without enhancement the control safely degrades to an ordinary unchecked checkbox. Vue sets the
 property directly and does not need the runtime. Do not initialize the runtime over Vue-owned form

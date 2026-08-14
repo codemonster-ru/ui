@@ -13,5 +13,9 @@ test('styles canonical Input sizes and native states from shared tokens', () => 
   assert.match(css, /\.cm-input:read-only/);
   assert.match(css, /\.cm-input:focus-visible/);
   assert.match(css, /\.cm-input\[aria-invalid='true'\]/);
+  assert.match(css, /\.cm-input-wrap/);
+  assert.match(css, /\.cm-input__leading/);
+  assert.match(css, /\.cm-input__trailing/);
+  assert.match(css, /\.cm-input__action/);
   assert.doesNotMatch(css, /pointer-events:\s*none|--(?:vf|vueforge)-|\.vf-/);
 });

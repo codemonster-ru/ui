@@ -48,9 +48,48 @@
       "required": false,
       "default": false,
       "description": "Maps to the native required attribute."
+    },
+    "clearable": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Adds an accessible action that clears an editable non-empty value."
+    },
+    "passwordReveal": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Adds a visibility toggle when type is password."
+    },
+    "clearLabel": {
+      "type": "string",
+      "required": false,
+      "default": "Clear input",
+      "description": "Accessible label for the clear action."
+    },
+    "showPasswordLabel": {
+      "type": "string",
+      "required": false,
+      "default": "Show password",
+      "description": "Accessible label for revealing a password."
+    },
+    "hidePasswordLabel": {
+      "type": "string",
+      "required": false,
+      "default": "Hide password",
+      "description": "Accessible label for concealing a revealed password."
     }
   },
-  "slots": {},
+  "slots": {
+    "leading": {
+      "required": false,
+      "description": "Trusted decorative or labelled content before the input."
+    },
+    "trailing": {
+      "required": false,
+      "description": "Trusted decorative or labelled content after the input and before actions."
+    }
+  },
   "events": {
     "input": {
       "description": "Native input event carrying the current DOM value.",
@@ -61,6 +100,6 @@
       "native": true
     }
   },
-  "states": ["default", "disabled", "readonly", "invalid"],
+  "states": ["default", "disabled", "readonly", "invalid", "password-visible"],
   "relatedComponents": ["Field"]
 }

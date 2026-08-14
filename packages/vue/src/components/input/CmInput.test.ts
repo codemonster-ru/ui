@@ -52,4 +52,47 @@ describe('CmInput', () => {
     });
     expect(wrapper.classes()).toContain('cm-input--invalid');
   });
+
+  it('renders adornments and clears the native value through model events', async () => {
+    const wrapper = mount(CmInput, {
+      attachTo: document.body,
+      props: { modelValue: 'query', clearable: true },
+      slots: { leading: '<span>@</span>', trailing: '<span>required</span>' },
+    });
+
+    expect(wrapper.find('.cm-input__leading').text()).toBe('@');
+    expect(wrapper.find('.cm-input__trailing').text()).toBe('required');
+    await wrapper.get('[data-cm-input-clear]').trigger('click');
+
+    const updates = wrapper.emitted('update:modelValue');
+    expect(updates?.[updates.length - 1]).toEqual(['']);
+    expect(wrapper.get('input').element).toBe(document.activeElement);
+    expect(wrapper.get('[data-cm-input-clear]').attributes()).toHaveProperty('hidden');
+    wrapper.unmount();
+  });
+
+  it('reveals passwords without changing their value or selection', async () => {
+    const wrapper = mount(CmInput, {
+      props: {
+        modelValue: 'secret',
+        type: 'password',
+        passwordReveal: true,
+        showPasswordLabel: 'Show secret',
+        hidePasswordLabel: 'Hide secret',
+      },
+    });
+    const input = wrapper.get('input').element;
+    input.setSelectionRange(1, 4);
+
+    await wrapper.get('[data-cm-input-password]').trigger('click');
+
+    expect(input.type).toBe('text');
+    expect(input.value).toBe('secret');
+    expect([input.selectionStart, input.selectionEnd]).toEqual([1, 4]);
+    expect(wrapper.get('[data-cm-input-password]').attributes()).toMatchObject({
+      'aria-label': 'Hide secret',
+      'aria-pressed': 'true',
+    });
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined();
+  });
 });
