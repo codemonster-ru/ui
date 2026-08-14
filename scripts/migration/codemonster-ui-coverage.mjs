@@ -7,6 +7,7 @@ const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 export const coveragePath = resolve(repositoryRoot, 'migration/codemonster-ui-coverage.json');
 
 const capabilityStatuses = new Set(['pending', 'supported', 'superseded', 'application-owned', 'retained', 'missing']);
+const backlogDestinations = new Set(['phase-17', 'phase-18', 'recipe', 'application-owned', 'retained-product']);
 
 export function readCodeMonsterCoverage(path = coveragePath) {
   return JSON.parse(readFileSync(path, 'utf8'));
@@ -33,6 +34,19 @@ export function discoverCoverageArtifacts(coverage, root = repositoryRoot) {
   const referencedFiles = new Set();
 
   if (coverage?.catalog) referencedFiles.add(coverage.catalog);
+  if (coverage?.backlog) {
+    referencedFiles.add(coverage.backlog);
+    const backlogPath = resolve(root, coverage.backlog);
+    if (existsSync(backlogPath)) {
+      try {
+        const backlog = JSON.parse(readFileSync(backlogPath, 'utf8'));
+        if (backlog?.consumerInventory) referencedFiles.add(backlog.consumerInventory);
+        if (backlog?.documentation) referencedFiles.add(backlog.documentation);
+      } catch {
+        // Validation reports malformed backlog JSON below.
+      }
+    }
+  }
 
   for (const component of Object.values(coverage?.components ?? {})) {
     if (component?.delivery?.documentation) referencedFiles.add(component.delivery.documentation);
@@ -192,6 +206,130 @@ export function validateCodeMonsterCoverage(coverage, mapping, artifacts) {
     if (!deliveredContracts.has(contract)) issues.push(`Contract is missing from coverage delivery: ${contract}.`);
   }
 
+  const expectedGaps = new Map();
+  for (const [source, component] of Object.entries(components)) {
+    for (const capability of component.capabilities ?? []) {
+      if (capability.status === 'missing') expectedGaps.set(`${source}:${capability.id}`, capability);
+    }
+  }
+
+  const backlogPath = coverage?.backlog;
+  const backlogSource = typeof backlogPath === 'string' ? artifacts.files.get(backlogPath) : undefined;
+  if (typeof backlogPath !== 'string' || backlogPath.length === 0) {
+    issues.push('Coverage must name the maturity backlog path.');
+  } else if (backlogSource === null || backlogSource === undefined) {
+    issues.push(`Coverage references missing maturity backlog ${backlogPath}.`);
+  } else {
+    let backlog;
+    try {
+      backlog = JSON.parse(backlogSource);
+    } catch {
+      issues.push(`Maturity backlog ${backlogPath} must contain valid JSON.`);
+    }
+
+    if (backlog) {
+      if (backlog.schemaVersion !== 1) issues.push('Maturity backlog schemaVersion must be 1.');
+      if (backlog.coverage !== 'migration/codemonster-ui-coverage.json') {
+        issues.push('Maturity backlog must reference the canonical coverage inventory.');
+      }
+      if (
+        typeof backlog.consumerInventory !== 'string' ||
+        backlog.consumerInventory.length === 0 ||
+        artifacts.files.get(backlog.consumerInventory) === null ||
+        artifacts.files.get(backlog.consumerInventory) === undefined
+      ) {
+        issues.push('Maturity backlog must reference the consumer usage inventory.');
+      }
+      if (
+        typeof backlog.documentation !== 'string' ||
+        backlog.documentation.length === 0 ||
+        artifacts.files.get(backlog.documentation) === null ||
+        artifacts.files.get(backlog.documentation) === undefined
+      ) {
+        issues.push('Maturity backlog must reference its published documentation.');
+      }
+
+      const backlogItems = Array.isArray(backlog.items) ? backlog.items : [];
+      const backlogIds = new Set();
+      const assignedGaps = new Map();
+      for (const [index, item] of backlogItems.entries()) {
+        if (typeof item?.id !== 'string' || !/^CMUI-B\d{3}$/u.test(item.id) || backlogIds.has(item.id)) {
+          issues.push(`Maturity backlog item at order ${item?.order} must have a unique CMUI-Bxxx id.`);
+        } else {
+          backlogIds.add(item.id);
+        }
+        if (item?.order !== index + 1) issues.push(`Maturity backlog order must be contiguous at ${index + 1}.`);
+        if (!/^CMUI-\d+$/u.test(item?.roadmapItem ?? '')) {
+          issues.push(`Maturity backlog item ${item?.id} must name a roadmap item.`);
+        }
+        if (!backlogDestinations.has(item?.destination)) {
+          issues.push(`Maturity backlog item ${item?.id} has unknown destination ${item?.destination}.`);
+        }
+        const roadmapNumber = Number.parseInt(item?.roadmapItem?.slice(5) ?? '', 10);
+        const expectedDestination =
+          roadmapNumber >= 177 && roadmapNumber <= 183
+            ? 'phase-17'
+            : roadmapNumber === 187
+              ? 'recipe'
+              : roadmapNumber === 188
+                ? 'application-owned'
+                : roadmapNumber >= 184 && roadmapNumber <= 191
+                  ? 'phase-18'
+                  : undefined;
+        if (expectedDestination && item?.destination !== expectedDestination) {
+          issues.push(`Maturity backlog item ${item?.id} must use destination ${expectedDestination}.`);
+        }
+        if (!['P0', 'P1', 'P2'].includes(item?.priority)) {
+          issues.push(`Maturity backlog item ${item?.id} has unknown priority ${item?.priority}.`);
+        }
+        for (const field of ['summary', 'reason']) {
+          if (typeof item?.[field] !== 'string' || item[field].length === 0) {
+            issues.push(`Maturity backlog item ${item?.id} must provide ${field}.`);
+          }
+        }
+        if (!Array.isArray(item?.gaps)) {
+          issues.push(`Maturity backlog item ${item?.id} must provide a gaps array.`);
+          continue;
+        }
+        for (const gap of item.gaps) {
+          if (!assignedGaps.has(gap)) assignedGaps.set(gap, []);
+          assignedGaps.get(gap).push(item);
+        }
+      }
+
+      for (const [gap, capability] of expectedGaps) {
+        const assignments = assignedGaps.get(gap) ?? [];
+        if (assignments.length !== 1) {
+          issues.push(`Coverage gap must appear exactly once in the maturity backlog: ${gap}.`);
+        } else if (assignments[0].roadmapItem !== capability.roadmapItem) {
+          issues.push(`Maturity backlog roadmap assignment is stale: ${gap}.`);
+        }
+      }
+      for (const gap of assignedGaps.keys()) {
+        if (!expectedGaps.has(gap)) issues.push(`Maturity backlog references unknown coverage gap: ${gap}.`);
+      }
+
+      const expectedRetainedPackages = new Set(
+        (mapping?.packageMappings ?? []).filter(({ action }) => action === 'retain').map(({ source }) => source),
+      );
+      const retainedProducts = Array.isArray(backlog.retainedProducts) ? backlog.retainedProducts : [];
+      const retainedNames = retainedProducts.map((entry) => entry?.package);
+      for (const packageName of expectedRetainedPackages) {
+        if (retainedNames.filter((name) => name === packageName).length !== 1) {
+          issues.push(`Retained product must appear exactly once in the maturity backlog: ${packageName}.`);
+        }
+      }
+      for (const entry of retainedProducts) {
+        if (!expectedRetainedPackages.has(entry?.package)) {
+          issues.push(`Maturity backlog references unknown retained product: ${entry?.package}.`);
+        }
+        if (typeof entry?.reason !== 'string' || entry.reason.length === 0) {
+          issues.push(`Retained product ${entry?.package} must provide a reason.`);
+        }
+      }
+    }
+  }
+
   const catalogPath = coverage?.catalog;
   const catalogSource = typeof catalogPath === 'string' ? artifacts.files.get(catalogPath) : undefined;
   if (typeof catalogPath !== 'string' || catalogPath.length === 0) {
@@ -235,12 +373,6 @@ export function validateCodeMonsterCoverage(coverage, mapping, artifacts) {
         }
       }
 
-      const expectedGaps = new Map();
-      for (const [source, component] of Object.entries(components)) {
-        for (const capability of component.capabilities ?? []) {
-          if (capability.status === 'missing') expectedGaps.set(`${source}:${capability.id}`, capability);
-        }
-      }
       const catalogGaps = Array.isArray(catalog.migrationGaps) ? catalog.migrationGaps : [];
       const catalogGapKeys = catalogGaps.map(({ source, capabilityId }) => `${source}:${capabilityId}`);
       for (const [key, capability] of expectedGaps) {

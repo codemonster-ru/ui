@@ -6,6 +6,7 @@
     "composeAndManual": "complete"
   },
   "catalog": "examples/playground/src/sections/core/component-catalog.json",
+  "backlog": "migration/codemonster-ui-maturity-backlog.json",
   "components": {
     "VfAccordion": {
       "disposition": "replace",
