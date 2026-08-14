@@ -32,14 +32,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Trusted rich trigger and panel content; current items accept text only",
-          "roadmapItem": "CMUI-177",
+          "id": "rich-item-content",
+          "status": "supported",
+          "notes": "Trusted per-item trigger and panel content with escaped text fallbacks in Vue and Razor",
           "evidence": [
-            "docs/core/components/accordion/api.md",
             "contracts/accordion/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/accordion/cases/rich-content.case.json",
+            "packages/vue/src/components/accordion/CmAccordion.test.ts",
+            "packages/razor/tests/Components/CmAccordionParityTest.php"
           ]
         }
       ],
@@ -227,7 +227,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "`element` replaces an unrestricted wrapper assumption with an approved semantic set",
+          "notes": "Approved semantic element selection extends the legacy fixed section root",
           "evidence": [
             "docs/core/components/card/api.md",
             "contracts/card/contract.md",
@@ -659,7 +659,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Floating/side label presentation is replaced by the single stable label structure",
+          "notes": "Caller-owned stable control IDs replace Vue-generated IDs; floating labels are replaced by the single stable label structure",
           "evidence": [
             "docs/core/components/field/api.md",
             "contracts/field/contract.md",
@@ -785,14 +785,15 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Leading/trailing adornments, built-in clear action, and password reveal",
-          "roadmapItem": "CMUI-177",
+          "id": "adornments-and-inline-actions",
+          "status": "supported",
+          "notes": "Leading/trailing trusted content, localized clear action, and password reveal in Vue and Razor enhancement",
           "evidence": [
-            "docs/core/components/input/api.md",
             "contracts/input/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/input/cases/enhanced.case.json",
+            "packages/vue/src/components/input/CmInput.test.ts",
+            "packages/razor/tests/Components/CmInputParityTest.php",
+            "packages/runtime/__tests__/input.test.mjs"
           ]
         }
       ],

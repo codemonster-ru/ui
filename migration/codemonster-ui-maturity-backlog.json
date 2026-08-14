@@ -20,9 +20,9 @@
       "roadmapItem": "CMUI-177",
       "destination": "phase-17",
       "priority": "P0",
-      "summary": "Close foundation cohort content and input-affordance gaps",
-      "reason": "Input is used broadly by the real Vue consumer and Accordion is shared runtime proof.",
-      "gaps": ["VfAccordion:material-portable-gap", "VfInput:material-portable-gap"]
+      "summary": "Foundation cohort content and input affordances delivered",
+      "reason": "Input adornments and actions plus Accordion rich item content now have portable Vue and Razor contracts.",
+      "gaps": []
     },
     {
       "id": "CMUI-B003",

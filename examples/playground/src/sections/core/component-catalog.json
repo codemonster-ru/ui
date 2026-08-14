@@ -169,14 +169,6 @@
   ],
   "migrationGaps": [
     {
-      "source": "VfAccordion",
-      "disposition": "replace",
-      "targets": ["CmAccordion"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-177",
-      "summary": "Trusted rich trigger and panel content; current items accept text only"
-    },
-    {
       "source": "VfAuthLayout",
       "disposition": "compose",
       "targets": ["CmContainer", "CmStack", "CmSection"],
@@ -279,14 +271,6 @@
       "capabilityId": "reviewed-disposition",
       "roadmapItem": "CMUI-184",
       "summary": "Portable candidate: Icon-only geometry and mandatory accessible naming are reusable across Vue and Razor; plain Button composition does not currently provide the square control contract"
-    },
-    {
-      "source": "VfInput",
-      "disposition": "replace",
-      "targets": ["CmInput"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-177",
-      "summary": "Leading/trailing adornments, built-in clear action, and password reveal"
     },
     {
       "source": "VfMenu",

@@ -39,10 +39,10 @@ not evidence of parity.
 | Replacement | Supported | Superseded or application-owned | Missing portable capability |
 | --- | --- | --- | --- |
 | `VfButton` → `CmButton` | Native actions, submit/reset behavior, loading/disabled state, sizes, primary/secondary/danger/ghost variants, and icon regions | `block` moves to layout/width utilities; feedback-only success/info/warn/help/contrast action colors are not Button variants; link mode is now explicit through `href` | None identified |
-| `VfCard` → `CmCard` | Title, header/body/footer composition, compact density, forwarded attributes, and semantic root selection | `element` replaces an unrestricted wrapper assumption with an approved semantic set | None identified |
-| `VfField` → `CmField` | Label, description, error, invalid/required state, named content, and accessible control linkage | Floating/side label presentation is replaced by the single stable label structure | None identified |
-| `VfInput` → `CmInput` | Native text-like input types, Vue binding, server form values, sizes, disabled/readonly/required/invalid state | Native attributes are forwarded instead of duplicating their complete surface as props | Leading/trailing adornments, built-in clear action, and password reveal |
-| `VfAccordion` → `CmAccordion` | Disclosure semantics, disabled items, controlled/uncontrolled open state, single/multiple mode, keyboard navigation, Vue interaction, and Razor enhancement | A collection contract replaces nested one-section component instances | Trusted rich trigger and panel content; current items accept text only |
+| `VfCard` → `CmCard` | Title, header/body/footer composition, compact density, forwarded attributes, and semantic root selection | Approved semantic element selection extends the legacy fixed `section` root | None identified |
+| `VfField` → `CmField` | Label, description, error, invalid/required state, named content, and accessible control linkage | Caller-owned stable control IDs replace Vue-generated IDs; floating labels are replaced by the single stable label structure | None identified |
+| `VfInput` → `CmInput` | Native text-like input types, Vue binding, server form values, sizes, disabled/readonly/required/invalid state, trusted leading/trailing content, localized clearing, and password reveal | Native attributes are forwarded instead of duplicating their complete surface as props; masking and renderer-specific icon lookup remain outside the shared contract | None identified |
+| `VfAccordion` → `CmAccordion` | Disclosure semantics, disabled items, controlled/uncontrolled open state, single/multiple mode, keyboard navigation, trusted per-item trigger/panel content, Vue interaction, and Razor enhancement | A collection contract replaces nested one-section component instances | None identified |
 
 ### Display components
 
@@ -104,11 +104,11 @@ not evidence of parity.
 
 ## Outcome
 
-All 33 direct replacements have a verified cross-platform baseline. Sixteen replacements also have
+All 33 direct replacements have a verified cross-platform baseline. Fourteen replacements also have
 either a missing portable capability or an application-owned integration that must remain visible
 during migration. DataTable's approved gap is closed with explicit advanced-grid ownership; the
 remaining highest-risk gaps are concentrated in DatePicker, CommandPalette, and rich-content
-composition for interactive components.
+composition for navigation and overlay components.
 
 This audit does not approve every missing capability for implementation. `CMUI-176` prioritizes the
 gaps using real-consumer evidence; Phase 17 closes approved direct-replacement gaps. Application-owned
