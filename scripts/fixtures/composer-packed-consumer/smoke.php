@@ -24,7 +24,7 @@ $registry = new ComponentRegistry();
 $registry->register($provider);
 
 ensure($provider->prefix() === 'cm', 'Unexpected component prefix.');
-ensure(count($components) === 33, 'Unexpected public component count.');
+ensure(count($components) === 37, 'Unexpected public component count.');
 ensure($registry->handles('cm-button'), 'Component provider was not registered.');
 
 $button = $components['button']->render(new ComponentRenderContext(
