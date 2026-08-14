@@ -6,7 +6,7 @@ Roadmap item: `CMUI-176`
 
 The canonical backlog is
 [`migration/codemonster-ui-maturity-backlog.json`](../../migration/codemonster-ui-maturity-backlog.json).
-Its order combines the 31 unresolved coverage gaps with the consumer evidence recorded by
+Its order combines the 30 unresolved coverage gaps with the consumer evidence recorded by
 [`CMUI-175`](./consumer-usage-inventory.md). The coverage gate requires every missing capability to
 appear exactly once and to retain the same roadmap assignment.
 
@@ -16,7 +16,7 @@ appear exactly once and to retain the same roadmap assignment.
 | ----: | ---------- | -------- | ----------------- | ----------------------------------------------------------------- | --------: |
 |     1 | `CMUI-181` | P0       | Phase 17          | Portable DataTable controls and explicit advanced-grid ownership  |         0 |
 |     2 | `CMUI-177` | P0       | Phase 17          | Foundation cohort content and input affordances delivered         |         0 |
-|     3 | `CMUI-178` | P1       | Phase 17          | Remaining display and native-form behavior                        |         1 |
+|     3 | `CMUI-178` | P1       | Phase 17          | Display and native-form cohort maturity delivered                 |         0 |
 |     4 | `CMUI-179` | P1       | Phase 17          | Navigation and overlay composition contracts                      |         8 |
 |     5 | `CMUI-180` | P1       | Phase 17          | Advanced inputs and server-rendered fallback                      |         3 |
 |     6 | `CMUI-182` | P1       | Phase 17          | Layout primitive and shell-boundary verification                  |         0 |

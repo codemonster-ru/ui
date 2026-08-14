@@ -67,7 +67,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "The `icon` name and `hideIcon` props are replaced by explicit optional icon composition; `warn` is named `warning`",
+          "notes": "Explicit icon composition replaces icon-name props; `warn` is named `warning`; the default moves from primary/alert to info/polite status with explicit urgent-role opt-in",
           "evidence": [
             "docs/core/components/alert/api.md",
             "contracts/alert/contract.md",
@@ -259,7 +259,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Native form submission is authoritative",
+          "notes": "Native form submission and change events are authoritative; indeterminate uses the native property plus Razor enhancement",
           "evidence": [
             "docs/core/components/checkbox/api.md",
             "contracts/checkbox/contract.md",
@@ -589,6 +589,16 @@
             "contracts/divider/contract.md",
             "packages/vue/src/components/display-components.test.ts",
             "packages/razor/tests/Components/CmDisplayComponentsParityTest.php"
+          ]
+        },
+        {
+          "id": "reviewed-api-change",
+          "status": "superseded",
+          "notes": "A native separator root replaces the legacy div and decorative horizontal mode",
+          "evidence": [
+            "docs/core/components/divider/api.md",
+            "contracts/divider/contract.md",
+            "docs/verification/component-capability-audit.md"
           ]
         }
       ],
@@ -1093,7 +1103,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Native radio grouping is authoritative",
+          "notes": "Native radio grouping, string serialization, and change events replace arbitrary scalar values and payloads",
           "evidence": [
             "docs/core/components/radio/api.md",
             "contracts/radio/contract.md",
@@ -1168,7 +1178,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Arbitrary radius strings are replaced by shared radius tokens",
+          "notes": "Arbitrary radius strings are replaced by shared radius tokens and minimum height is restricted to safe non-negative CSS lengths",
           "evidence": [
             "docs/core/components/skeleton/api.md",
             "contracts/skeleton/contract.md",
@@ -1238,7 +1248,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Reduced-motion CSS replaces `static`; shared tokens replace `thumbContrast`",
+          "notes": "Reduced-motion CSS replaces `static`; shared tokens replace `thumbContrast`; native change events replace scalar payloads",
           "evidence": [
             "docs/core/components/switch/api.md",
             "contracts/switch/contract.md",
@@ -1246,14 +1256,14 @@
           ]
         },
         {
-          "id": "material-portable-gap",
-          "status": "missing",
-          "notes": "Custom thumb content",
-          "roadmapItem": "CMUI-178",
+          "id": "custom-thumb-content",
+          "status": "supported",
+          "notes": "Trusted decorative thumb content in Vue and Razor, with current checked state exposed to Vue",
           "evidence": [
-            "docs/core/components/switch/api.md",
             "contracts/switch/contract.md",
-            "docs/verification/component-capability-audit.md"
+            "contracts/switch/cases/custom-thumb.case.json",
+            "packages/vue/src/components/switch/CmSwitch.test.ts",
+            "packages/razor/tests/Components/CmFormComponentsParityTest.php"
           ]
         }
       ],
@@ -1425,7 +1435,7 @@
         {
           "id": "reviewed-api-change",
           "status": "superseded",
-          "notes": "Native textarea attributes are authoritative",
+          "notes": "Native textarea attributes are authoritative; legacy floating-field context is replaced by the stable Field label structure",
           "evidence": [
             "docs/core/components/textarea/api.md",
             "contracts/textarea/contract.md",

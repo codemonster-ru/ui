@@ -369,14 +369,6 @@
       "summary": "Portable candidate: Ordered step state, orientation, current-step semantics, disabled steps, and roving keyboard behavior are portable, but workflow navigation ownership needs real-consumer validation"
     },
     {
-      "source": "VfSwitch",
-      "disposition": "replace",
-      "targets": ["CmSwitch"],
-      "capabilityId": "material-portable-gap",
-      "roadmapItem": "CMUI-178",
-      "summary": "Custom thumb content"
-    },
-    {
       "source": "VfTableOfContents",
       "disposition": "manual",
       "targets": ["CmLink", "CmStack"],

@@ -30,9 +30,9 @@
       "roadmapItem": "CMUI-178",
       "destination": "phase-17",
       "priority": "P1",
-      "summary": "Resolve the remaining native-form and display cohort gap",
-      "reason": "The real Vue consumer uses Switch, while custom thumb content still needs a two-adapter decision.",
-      "gaps": ["VfSwitch:material-portable-gap"]
+      "summary": "Display and native-form cohort maturity delivered",
+      "reason": "Switch now supports trusted custom thumb content in Vue and Razor while retaining native form semantics.",
+      "gaps": []
     },
     {
       "id": "CMUI-B004",

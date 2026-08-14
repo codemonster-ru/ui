@@ -48,20 +48,20 @@ not evidence of parity.
 
 | Replacement | Supported | Superseded or application-owned | Missing portable capability |
 | --- | --- | --- | --- |
-| `VfAlert` → `CmAlert` | Tones, title/body content, custom title and icon slots, semantic status content | The `icon` name and `hideIcon` props are replaced by explicit optional icon composition; `warn` is named `warning` | None identified |
+| `VfAlert` → `CmAlert` | Tones, title/body content, custom title and icon slots, semantic status content | Explicit icon composition replaces icon-name props; `warn` is named `warning`; the default moves from primary/alert to info/polite status with explicit urgent-role opt-in | None identified |
 | `VfAvatar` → `CmAvatar` | Image/alt, label fallback, custom fallback content, sizes, and shapes | The VueForge icon-name prop is replaced by the default composition boundary because icons remain a side-by-side product | None identified |
 | `VfBadge` → `CmBadge` | Text content and all approved semantic tones | `warn` is named `warning` | None identified |
-| `VfDivider` → `CmDivider` | Horizontal and vertical semantic separators | None | None identified |
-| `VfSkeleton` → `CmSkeleton` | Minimum height, animation, reduced-motion behavior, and radius variants | Arbitrary radius strings are replaced by shared radius tokens | None identified |
+| `VfDivider` → `CmDivider` | Horizontal and vertical semantic separators | A native separator root replaces the legacy `div` and decorative horizontal mode | None identified |
+| `VfSkeleton` → `CmSkeleton` | Minimum height, animation, reduced-motion behavior, and radius variants | Arbitrary radius strings are replaced by shared radius tokens; minimum height accepts only safe non-negative CSS lengths | None identified |
 
 ### Native form components
 
 | Replacement | Supported | Superseded or application-owned | Missing portable capability |
 | --- | --- | --- | --- |
-| `VfCheckbox` → `CmCheckbox` | Boolean binding, value submission, label slot, size, invalid, disabled, required, indeterminate, and change behavior | Native form submission is authoritative | None identified |
-| `VfRadio` → `CmRadio` | Group value binding/submission, label slot, size, invalid, disabled, required, and change behavior | Native radio grouping is authoritative | None identified |
-| `VfTextarea` → `CmTextarea` | String binding/submission, size, invalid, disabled, readonly, required, and forwarded native attributes | Native textarea attributes are authoritative | None identified |
-| `VfSwitch` → `CmSwitch` | Boolean binding/submission, label slot, size, invalid, disabled, required, and switch semantics | Reduced-motion CSS replaces `static`; shared tokens replace `thumbContrast` | Custom thumb content |
+| `VfCheckbox` → `CmCheckbox` | Boolean binding, value submission, label slot, size, invalid, disabled, required, indeterminate, and change behavior | Native form submission and change events are authoritative; indeterminate uses the native property plus Razor enhancement | None identified |
+| `VfRadio` → `CmRadio` | Group value binding/submission, label slot, size, invalid, disabled, required, and change behavior | Native grouping, string serialization, and change events replace arbitrary scalar values and payloads | None identified |
+| `VfTextarea` → `CmTextarea` | String binding/submission, size, invalid, disabled, readonly, required, and forwarded native attributes | Native textarea attributes are authoritative; legacy floating-field context is replaced by the stable Field label structure | None identified |
+| `VfSwitch` → `CmSwitch` | Boolean binding/submission, label slot, trusted decorative thumb content, size, invalid, disabled, required, and switch semantics | Reduced-motion CSS replaces `static`; shared tokens replace `thumbContrast`; native change events replace scalar payloads | None identified |
 
 ### Navigation components
 
@@ -104,7 +104,7 @@ not evidence of parity.
 
 ## Outcome
 
-All 33 direct replacements have a verified cross-platform baseline. Fourteen replacements also have
+All 33 direct replacements have a verified cross-platform baseline. Thirteen replacements also have
 either a missing portable capability or an application-owned integration that must remain visible
 during migration. DataTable's approved gap is closed with explicit advanced-grid ownership; the
 remaining highest-risk gaps are concentrated in DatePicker, CommandPalette, and rich-content
