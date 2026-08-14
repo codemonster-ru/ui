@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-rich-link",
+  "description": "Rich link item content with secured blank-target metadata.",
+  "props": {
+    "items": [{ "id": "open-project", "label": "Open project", "href": "/project", "target": "_blank" }]
+  },
+  "slots": {
+    "itemOpenProject": "<strong>Open <span>project</span></strong>"
+  }
+}

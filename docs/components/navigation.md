@@ -16,15 +16,20 @@ Individual styles are also available from the `link.css`, `breadcrumbs.css`, `ta
 - `Breadcrumbs` requires ordered `items` with `label` and optional `href`, `disabled`, and
   `current`. At most one item is current; otherwise the last item is inferred. `ariaLabel`
   defaults to `Breadcrumb`, and the `separator` slot replaces the visual `/`.
-- `Tabs` requires a stable `id` and items with unique kebab-case `value`, non-empty `label`, string
-  `content`, and optional `disabled`. Vue binds the active value with `v-model`; Razor receives
-  `value`. Invalid or missing values fall back to the first enabled tab.
-- `Menu` requires items with unique kebab-case `id`, `label`, and optional `href`, `disabled`,
-  `active`, and `tone` (`default` or `danger`). It represents application actions, not ordinary
-  site navigation. Vue emits `select` and `closeRequest`.
+- `Tabs` requires a stable `id` and items with unique kebab-case `value`, non-empty `label`, optional
+  `content`, and `disabled`. Vue binds the active value with `v-model`; Razor receives `value`.
+  `defaultValue` initializes uncontrolled state. Per-item
+  `tab{UpperCamelValue}`/`panel{UpperCamelValue}` slots provide trusted rich content inside owned
+  panels. Invalid or missing values fall back to the first enabled tab.
+- `Menu` requires items with unique kebab-case `id`, `label`, and optional `href`, `target`, `rel`,
+  `disabled`, `active`, and `tone` (`default` or `danger`). A blank target is secured like Link.
+  `item{UpperCamelId}` slots add trusted rich content without a standalone item component. It
+  represents application actions, not ordinary site navigation. Vue emits `select` and
+  `closeRequest`.
 - `Dropdown` requires `id`, `label`, and Menu items. It accepts `disabled` and `placement`
-  (`bottom-start` or `bottom-end`). Vue binds disclosure state with `v-model:open` and emits
-  `select`; Razor receives `open` as its initial state.
+  (`bottom-start` or `bottom-end`). Its `trigger` slot stays inside the owned button and `label`
+  remains its accessible name. Vue binds disclosure state with `v-model:open` and emits `select`;
+  Razor receives `open` as its initial state.
 
 ## Vue
 
@@ -94,7 +99,7 @@ page load.
 
 - Use Link only for navigation and native buttons for actions that do not navigate.
 - Keep Breadcrumb labels concise and provide a specific `ariaLabel` when multiple trails exist.
-- Keep every Tabs panel in the DOM and use stable ids; do not duplicate a Tabs `id` on a page.
+- Keep Tabs panel ids stable and unique; do not duplicate a Tabs `id` on a page.
 - Menu implements the ARIA application-menu keyboard model. Use ordinary links for a persistent
   navigation list.
 - Dropdown is a disclosure, not a modal: it does not trap focus, teleport content, or calculate

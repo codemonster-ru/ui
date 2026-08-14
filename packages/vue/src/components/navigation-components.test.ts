@@ -71,6 +71,16 @@ describe('Vue navigation components', () => {
     wrapper.unmount();
   });
 
+  it('renders rich Menu items and secures blank-target links', () => {
+    const wrapper = mount(CmMenu, {
+      props: { items: [{ id: 'open-project', label: 'Open project', href: '/project', target: '_blank' }] },
+      slots: { itemOpenProject: ({ item }) => `<strong>${item.label}</strong>` },
+    });
+    const link = wrapper.get('a');
+    expect(link.attributes()).toMatchObject({ target: '_blank', rel: 'noopener noreferrer' });
+    expect(link.get('.cm-menu__item-label').text()).toBe('<strong>Open project</strong>');
+  });
+
   it('opens Dropdown from keyboard and closes after Menu selection', async () => {
     const wrapper = mount(CmDropdown, {
       attachTo: document.body,
@@ -84,5 +94,32 @@ describe('Vue navigation components', () => {
     expect(wrapper.get('.cm-dropdown__menu').attributes('hidden')).toBe('');
     expect(wrapper.emitted('select')).toEqual([['edit']]);
     wrapper.unmount();
+  });
+
+  it('keeps trusted Dropdown trigger content inside the owned accessible button', () => {
+    const wrapper = mount(CmDropdown, {
+      props: { id: 'tools', label: 'Project tools', items: [{ id: 'refresh', label: 'Refresh' }] },
+      slots: { trigger: '<span aria-hidden="true">•••</span>' },
+    });
+    expect(wrapper.get('.cm-dropdown__trigger').attributes('aria-label')).toBe('Project tools');
+    expect(wrapper.get('.cm-dropdown__menu').attributes('role')).toBe('menu');
+  });
+
+  it('uses an uncontrolled Tabs default with rich owned content', () => {
+    const wrapper = mount(CmTabs, {
+      props: {
+        id: 'workspace',
+        defaultValue: 'details',
+        items: [
+          { value: 'overview', label: 'Overview', content: 'Overview.' },
+          { value: 'details', label: 'Details', content: 'Details.' },
+        ],
+      },
+      slots: { tabDetails: '<strong>Details</strong>', panelDetails: '<p>Rich details.</p>' },
+    });
+    expect(wrapper.get('[data-cm-tabs-value]').attributes('data-cm-tabs-value')).toBe('details');
+    expect(wrapper.get('#workspace-tab-overview').attributes('aria-controls')).toBe('workspace-panel-overview');
+    expect(wrapper.get('#workspace-panel-overview').attributes('hidden')).toBe('');
+    expect(wrapper.get('#workspace-panel-details').html()).toContain('<p>Rich details.</p>');
   });
 });

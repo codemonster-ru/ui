@@ -10,8 +10,15 @@ Razor tag: `cm-menu`
 
 Menu presents application actions using the ARIA menu pattern. It is not site navigation. `items`
 is a non-empty ordered collection with unique kebab-case `id`, non-empty escaped `label`, optional
-`href`, `disabled`, `active`, and `tone` (`default` or `danger`). Items with href render anchors;
+`href`, `target`, `rel`, `disabled`, `active`, and `tone` (`default` or `danger`). Items with href render anchors;
 other items render native buttons. Disabled anchors omit href and use `aria-disabled="true"`.
+Links opened with `target="_blank"` receive `rel="noopener noreferrer"` unless the caller supplies
+an explicit relationship.
+
+Each item accepts trusted platform content through `item{UpperCamelId}`, such as `itemAccountDetails`.
+Vue receives `{ item }`; Razor receives `RenderedHtml`. The escaped label remains the fallback and
+accessible item shell, states, and keyboard behavior remain component-owned. This collection slot
+replaces the legacy standalone MenuItem component rather than introducing another public adapter.
 
 The root owns `cm-menu`, `role="menu"`, an accessible label, and `data-cm-controller="menu"`.
 Items own `role="menuitem"` and `data-cm-menu-item`. The first enabled item starts in the tab order;

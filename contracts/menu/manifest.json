@@ -8,7 +8,12 @@
     "items": { "type": "collection", "required": true, "valueContract": "menu-item" },
     "ariaLabel": { "type": "string", "required": false, "default": "Actions" }
   },
-  "slots": {},
+  "slots": {
+    "item{UpperCamelId}": {
+      "description": "Trusted per-item content inside the component-owned action or link shell.",
+      "scopeContract": "menu-item"
+    }
+  },
   "events": {
     "select": { "description": "Reports the activated enabled item id.", "payloadContract": "menu-item-id" },
     "closeRequest": { "description": "Requests closure after Escape without owning disclosure state." }

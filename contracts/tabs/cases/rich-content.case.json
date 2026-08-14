@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "tabs-rich-content",
+  "description": "Uncontrolled default tab with trusted label and panel composition.",
+  "props": {
+    "id": "workspace",
+    "defaultValue": "details",
+    "items": [
+      { "value": "overview", "label": "Overview", "content": "Overview." },
+      { "value": "details", "label": "Details", "content": "Details." }
+    ]
+  },
+  "slots": {
+    "tabDetails": "<span>Details <small>new</small></span>",
+    "panelDetails": "<p>Rich <strong>details</strong>.</p>"
+  }
+}

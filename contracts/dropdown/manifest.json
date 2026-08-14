@@ -17,7 +17,12 @@
       "values": ["bottom-start", "bottom-end"]
     }
   },
-  "slots": {},
+  "slots": {
+    "trigger": {
+      "description": "Trusted visible content inside the owned trigger button.",
+      "scopeContract": "dropdown-state"
+    }
+  },
   "events": {
     "openChange": { "description": "Reports the next disclosure state.", "payloadContract": "boolean" },
     "select": { "description": "Reports the selected enabled Menu item id.", "payloadContract": "menu-item-id" }

@@ -35,8 +35,13 @@ final class CmMenu implements ComponentInterface
         }
         $classes = (new ClassBuilder())->add('cm-menu', $this->optionalString($attributes->get('class')))->value();
 
+        $renderItems = array_map(function (array $item) use ($context): array {
+            $slot = $this->itemSlotName($item['id']);
+            return [...$item, 'content' => $context->hasSlot($slot) ? $context->slot($slot) : $item['label']];
+        }, $items);
+
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('components.menu', [
-            'items' => $items,
+            'items' => $renderItems,
             'ariaLabel' => $labelledBy === null ? $ariaLabel : null,
             'classes' => $classes,
             'attributes' => $attributes->without(['class', 'role', 'aria-label', 'data-cm-controller'])->render(),
@@ -47,5 +52,13 @@ final class CmMenu implements ComponentInterface
     {
         if ($value === null || is_string($value)) return $value;
         throw new InvalidArgumentException('Component attribute [class] must be a string.');
+    }
+
+    private function itemSlotName(string $id): string
+    {
+        return 'item' . implode('', array_map(
+            static fn (string $part): string => ucfirst($part),
+            explode('-', $id),
+        ));
     }
 }
