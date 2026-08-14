@@ -11,7 +11,9 @@
     "size": { "type": "enum", "required": false, "default": "md", "values": ["sm", "md", "lg"] },
     "invalid": { "type": "boolean", "required": false, "default": false },
     "disabled": { "type": "boolean", "required": false, "default": false },
-    "required": { "type": "boolean", "required": false, "default": false }
+    "required": { "type": "boolean", "required": false, "default": false },
+    "clearable": { "type": "boolean", "required": false, "default": false },
+    "clearLabel": { "type": "string", "required": false, "default": "Clear selection" }
   },
   "slots": {},
   "events": {

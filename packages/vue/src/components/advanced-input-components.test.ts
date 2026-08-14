@@ -28,6 +28,33 @@ describe('Vue advanced input components', () => {
     expect(new FormData(form).get('frequency')).toBe('weekly');
   });
 
+  it('clears Select through native change and preserves focus and submission', async () => {
+    const wrapper = mount(CmSelect, {
+      attachTo: document.body,
+      props: {
+        modelValue: 'weekly',
+        clearable: true,
+        clearLabel: 'Clear frequency',
+        options: [
+          { value: 'daily', label: 'Daily' },
+          { value: 'weekly', label: 'Weekly' },
+        ],
+      },
+      attrs: { name: 'frequency', 'aria-label': 'Frequency' },
+    });
+    const form = document.createElement('form');
+    document.body.append(form);
+    form.append(wrapper.element);
+    const select = wrapper.get<HTMLSelectElement>('select');
+    await wrapper.get('button').trigger('click');
+    expect(wrapper.emitted('update:modelValue')).toEqual([['']]);
+    expect(wrapper.emitted('valueChange')).toEqual([['']]);
+    expect(select.element).toBe(document.activeElement);
+    expect(wrapper.get('button').attributes('hidden')).toBe('');
+    expect(new FormData(form).get('frequency')).toBe('');
+    wrapper.unmount();
+  });
+
   it('binds DatePicker to native input and ISO form values', async () => {
     const wrapper = mount(CmDatePicker, { props: { modelValue: '' }, attrs: { name: 'date', 'aria-label': 'Date' } });
     const form = document.createElement('form');
@@ -77,4 +104,5 @@ describe('Vue advanced input components', () => {
     await input.trigger('keydown', { key: 'ArrowUp' });
     expect(input.attributes('aria-activedescendant')).toBe('commands-option-second');
   });
+
 });
