@@ -151,16 +151,20 @@
                   :style="{ maxWidth: activeErrorBreakpointConfig.value }"
                 >
                   <div class="demo-shell-frame">
-                    <VfErrorLayout
-                      code="404"
-                      title="Page not found"
-                      description="The page you requested does not exist or has been moved."
-                      :fill-viewport="false"
-                    >
-                      <template #actions>
-                        <VfButton variant="primary" type="button"> Go to home page </VfButton>
-                      </template>
-                    </VfErrorLayout>
+                    <section class="demo-error-recipe">
+                      <VfContainer size="md" class="demo-error-recipe__container">
+                        <div class="demo-error-recipe__panel">
+                          <p class="demo-error-recipe__code">404</p>
+                          <h1 class="demo-error-recipe__title">Page not found</h1>
+                          <p class="demo-error-recipe__description">
+                            The page you requested does not exist or has been moved.
+                          </p>
+                          <div class="demo-error-recipe__actions">
+                            <VfButton variant="primary" type="button"> Go to home page </VfButton>
+                          </div>
+                        </div>
+                      </VfContainer>
+                    </section>
                   </div>
                 </div>
               </article>
@@ -189,34 +193,43 @@
                     class="demo-auth-frame"
                     :class="activeAuthBreakpointConfig.name === 'min' && 'demo-auth-frame--min-preview'"
                   >
-                    <VfAuthLayout
-                      :class="activeAuthBreakpointConfig.name === 'min' && 'demo-auth-layout--min-preview'"
-                      title="Sign in"
-                      :fill-viewport="false"
+                    <main
+                      :class="[
+                        'demo-auth-recipe',
+                        activeAuthBreakpointConfig.name === 'min' && 'demo-auth-layout--min-preview',
+                      ]"
                     >
-                      <template #brand>
-                        <img class="demo-auth-brand" :src="vueForgeLogoIcon" alt="VueForge" />
-                      </template>
+                      <VfContainer size="md" class="demo-auth-recipe__container">
+                        <div class="demo-auth-recipe__panel">
+                          <header class="demo-auth-recipe__header">
+                            <div class="demo-auth-recipe__brand">
+                              <img class="demo-auth-brand" :src="vueForgeLogoIcon" alt="VueForge" />
+                            </div>
+                            <h1 class="demo-auth-recipe__title">Sign in</h1>
+                            <p class="demo-auth-recipe__description">
+                              Don't have an account?
+                              <VfLink href="/" underline="none"> Click here to sign up </VfLink>
+                            </p>
+                          </header>
 
-                      <template #description>
-                        Don't have an account?
-                        <VfLink href="/" underline="none"> Click here to sign up </VfLink>
-                      </template>
-
-                      <form class="demo-auth-form">
-                        <VfInput placeholder="Email" type="email" />
-                        <VfPasswordInput placeholder="Password" type="password" password-reveal />
-                        <div class="demo-auth-options">
-                          <VfCheckbox class="demo-auth-remember"> Remember me </VfCheckbox>
-                          <VfLink class="demo-auth-forgot" href="/" underline="none"> Forgot password? </VfLink>
+                          <div class="demo-auth-recipe__body">
+                            <form class="demo-auth-form">
+                              <VfInput placeholder="Email" type="email" />
+                              <VfPasswordInput placeholder="Password" type="password" password-reveal />
+                              <div class="demo-auth-options">
+                                <VfCheckbox class="demo-auth-remember"> Remember me </VfCheckbox>
+                                <VfLink class="demo-auth-forgot" href="/" underline="none"> Forgot password? </VfLink>
+                              </div>
+                              <VfButton variant="primary" type="submit"> Sign in </VfButton>
+                              <p class="demo-auth-copyright">
+                                <span>© 2026 VueForge.</span>
+                                <span class="demo-auth-copyright__rights"> All rights reserved. </span>
+                              </p>
+                            </form>
+                          </div>
                         </div>
-                        <VfButton variant="primary" type="submit"> Sign in </VfButton>
-                        <p class="demo-auth-copyright">
-                          <span>© 2026 VueForge.</span>
-                          <span class="demo-auth-copyright__rights"> All rights reserved. </span>
-                        </p>
-                      </form>
-                    </VfAuthLayout>
+                      </VfContainer>
+                    </main>
                   </div>
                 </div>
               </article>
@@ -905,9 +918,7 @@ import {
   VfAppShell,
   VfAdminLayout,
   VfAdminShell,
-  VfAuthLayout,
   VfDocumentLayout,
-  VfErrorLayout,
   VfSetupLayout,
 } from '@codemonster-ru/vueforge-layouts';
 import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
@@ -1299,3 +1310,129 @@ const demoAsideItems = buildDemoItems(
   'Auxiliary column content is repeated to guarantee overflow and make sticky alignment regressions immediately visible.',
 );
 </script>
+
+<style scoped>
+.demo-error-recipe,
+.demo-auth-recipe {
+  display: flex;
+  min-width: 20rem;
+  inline-size: 100%;
+  justify-content: center;
+  color: var(--cm-color-text-primary);
+}
+
+.demo-error-recipe {
+  padding-block: var(--cm-space-12);
+}
+
+.demo-error-recipe__container,
+.demo-auth-recipe__container {
+  display: flex;
+  min-width: 0;
+  inline-size: 100%;
+  flex: 1 1 auto;
+  align-items: center;
+}
+
+.demo-error-recipe__panel,
+.demo-auth-recipe__panel {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  margin-inline: auto;
+}
+
+.demo-error-recipe__panel {
+  gap: var(--cm-space-4);
+  padding: calc(var(--cm-space-6) * 1.5);
+  border-radius: var(--cm-radius-surface);
+  box-shadow: var(--cm-shadow-none);
+  text-align: center;
+}
+
+.demo-error-recipe__code,
+.demo-error-recipe__title,
+.demo-error-recipe__description,
+.demo-auth-recipe__title,
+.demo-auth-recipe__description {
+  margin: 0;
+}
+
+.demo-error-recipe__code {
+  font-size: clamp(2.25rem, 8vw, 5.5rem);
+  font-weight: var(--cm-font-weight-bold);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.demo-error-recipe__title {
+  font-size: clamp(1.375rem, 3vw, 2rem);
+  font-weight: inherit;
+  line-height: var(--cm-line-height-tight);
+}
+
+.demo-error-recipe__description,
+.demo-auth-recipe__description {
+  color: var(--cm-color-text-muted);
+  line-height: var(--cm-line-height-normal);
+}
+
+.demo-error-recipe__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--cm-space-4);
+}
+
+.demo-auth-recipe {
+  padding-block: var(--cm-space-4);
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.demo-auth-recipe__panel {
+  max-inline-size: 28rem;
+  gap: var(--cm-space-6);
+  padding: calc(var(--cm-space-6) * 1.5);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+  box-shadow: var(--cm-shadow-none);
+}
+
+.demo-auth-recipe__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-2);
+  text-align: center;
+}
+
+.demo-auth-recipe__brand {
+  display: flex;
+  justify-content: center;
+}
+
+.demo-auth-recipe__title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: inherit;
+  line-height: var(--cm-line-height-tight);
+}
+
+.demo-auth-recipe__body {
+  min-width: 0;
+}
+
+.demo-auth-layout--min-preview {
+  padding-block: 0;
+}
+
+.demo-auth-layout--min-preview .demo-auth-recipe__container {
+  padding-inline: 0;
+}
+
+.demo-auth-layout--min-preview .demo-auth-recipe__panel {
+  padding: var(--cm-space-6);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+</style>
