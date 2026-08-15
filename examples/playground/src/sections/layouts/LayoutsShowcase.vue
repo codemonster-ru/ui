@@ -255,131 +255,156 @@
                   :style="{ maxWidth: activeSetupBreakpointConfig.value }"
                 >
                   <div class="demo-shell-frame">
-                    <VfSetupLayout
-                      :title="activeSetupStepConfig.label"
-                      description="Configure the CMS environment before the first administrator account is created."
-                      :fill-viewport="false"
-                      aside-position="left"
-                      @next="goToNextSetupStep"
-                      @back="goToPreviousSetupStep"
+                    <main
+                      :class="[
+                        'demo-setup-recipe',
+                        !activeSetupBreakpointHidesAside && 'demo-setup-recipe--with-aside',
+                      ]"
+                      @keydown="handleSetupKeydown"
                     >
-                      <template #brand>
-                        <div class="demo-setup-brand-stack">
-                          <div class="demo-setup-brand">
-                            <img class="demo-setup-brand__mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
-                            <span class="demo-setup-brand__name">Annabel</span>
+                      <VfContainer size="lg" class="demo-setup-recipe__container">
+                        <div class="demo-setup-recipe__panel">
+                          <div class="demo-setup-recipe__brand">
+                            <div class="demo-setup-brand-stack">
+                              <div class="demo-setup-brand">
+                                <img
+                                  class="demo-setup-brand__mark"
+                                  :src="annabelLogoIcon"
+                                  alt=""
+                                  aria-hidden="true"
+                                />
+                                <span class="demo-setup-brand__name">Annabel</span>
+                              </div>
+                              <div
+                                v-if="activeSetupBreakpointHidesAside"
+                                class="demo-setup-progress"
+                                :aria-label="`Step ${activeSetupStepNumber} of ${setupSteps.length}`"
+                              >
+                                <span>Step {{ activeSetupStepNumber }} of {{ setupSteps.length }}</span>
+                                <VfProgressBar
+                                  class="demo-setup-progress__bar"
+                                  :value="activeSetupStepNumber"
+                                  :max="setupSteps.length"
+                                  label="Setup progress"
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <div
-                            v-if="activeSetupBreakpointHidesAside"
-                            class="demo-setup-progress"
-                            :aria-label="`Step ${activeSetupStepNumber} of ${setupSteps.length}`"
-                          >
-                            <span>Step {{ activeSetupStepNumber }} of {{ setupSteps.length }}</span>
-                            <VfProgressBar
-                              :value="activeSetupStepNumber"
-                              :max="setupSteps.length"
-                              label="Setup progress"
-                              style="--cm-progress-bar-height: 0.25rem"
+
+                          <aside v-if="!activeSetupBreakpointHidesAside" class="demo-setup-recipe__aside">
+                            <VfNavMenu
+                              v-model="activeSetupStep"
+                              :items="setupSteps"
+                              variant="pills"
+                              aria-label="Installation steps"
                             />
-                          </div>
+                          </aside>
+
+                          <header class="demo-setup-recipe__header">
+                            <div class="demo-setup-recipe__heading">
+                              <h1 class="demo-setup-recipe__title">{{ activeSetupStepConfig.label }}</h1>
+                              <p class="demo-setup-recipe__description">
+                                Configure the CMS environment before the first administrator account is created.
+                              </p>
+                            </div>
+                          </header>
+
+                          <section class="demo-setup-recipe__main">
+                            <div class="demo-setup-recipe__body">
+                              <form
+                                :id="setupFormId"
+                                class="cm-stack demo-setup-form"
+                                @submit.prevent="goToNextSetupStep"
+                              >
+                                <div class="demo-setup-fields demo-setup-fields--split">
+                                  <VfField
+                                    :control-id="`${setupFormId}-host`"
+                                    label="Host"
+                                    description="Hostname, socket, or private address."
+                                  >
+                                    <template #default="{ controlId, describedBy, invalid }">
+                                      <VfInput
+                                        :id="controlId"
+                                        :aria-describedby="describedBy"
+                                        :invalid="invalid"
+                                        placeholder="127.0.0.1"
+                                        model-value="127.0.0.1"
+                                      />
+                                    </template>
+                                  </VfField>
+
+                                  <VfField :control-id="`${setupFormId}-port`" label="Port">
+                                    <template #default="{ controlId, describedBy, invalid }">
+                                      <VfInput
+                                        :id="controlId"
+                                        :aria-describedby="describedBy"
+                                        :invalid="invalid"
+                                        placeholder="3306"
+                                        model-value="3306"
+                                      />
+                                    </template>
+                                  </VfField>
+                                </div>
+
+                                <VfField :control-id="`${setupFormId}-database`" label="Database name">
+                                  <template #default="{ controlId, describedBy, invalid }">
+                                    <VfInput
+                                      :id="controlId"
+                                      :aria-describedby="describedBy"
+                                      :invalid="invalid"
+                                      placeholder="annabel"
+                                      model-value="annabel"
+                                    />
+                                  </template>
+                                </VfField>
+
+                                <div class="demo-setup-fields demo-setup-fields--even">
+                                  <VfField :control-id="`${setupFormId}-user`" label="Database user">
+                                    <template #default="{ controlId, describedBy, invalid }">
+                                      <VfInput
+                                        :id="controlId"
+                                        :aria-describedby="describedBy"
+                                        :invalid="invalid"
+                                        placeholder="annabel_user"
+                                        model-value="annabel_user"
+                                      />
+                                    </template>
+                                  </VfField>
+
+                                  <VfField :control-id="`${setupFormId}-password`" label="Database password">
+                                    <template #default="{ controlId, describedBy, invalid }">
+                                      <VfPasswordInput
+                                        :id="controlId"
+                                        :aria-describedby="describedBy"
+                                        :invalid="invalid"
+                                        placeholder="Password"
+                                        type="password"
+                                        password-reveal
+                                      />
+                                    </template>
+                                  </VfField>
+                                </div>
+                              </form>
+                            </div>
+
+                            <div class="demo-setup-recipe__actions">
+                              <VfButton
+                                class="demo-setup-action-back"
+                                variant="secondary"
+                                type="button"
+                                :disabled="isFirstSetupStep"
+                                @click="goToPreviousSetupStep"
+                              >
+                                Back
+                              </VfButton>
+                              <VfButton variant="primary" type="submit" :form="setupFormId">
+                                {{ isLastSetupStep ? 'Finish' : 'Continue' }}
+                              </VfButton>
+                            </div>
+                          </section>
                         </div>
-                      </template>
-
-                      <template v-if="!activeSetupBreakpointHidesAside" #aside>
-                        <VfNavMenu
-                          v-model="activeSetupStep"
-                          :items="setupSteps"
-                          variant="pills"
-                          aria-label="Installation steps"
-                        />
-                      </template>
-
-                      <form :id="setupFormId" class="cm-stack demo-setup-form" @submit.prevent="goToNextSetupStep">
-                        <div class="demo-setup-fields demo-setup-fields--split">
-                          <VfField
-                            :control-id="`${setupFormId}-host`"
-                            label="Host"
-                            description="Hostname, socket, or private address."
-                          >
-                            <template #default="{ controlId, describedBy, invalid }">
-                              <VfInput
-                                :id="controlId"
-                                :aria-describedby="describedBy"
-                                :invalid="invalid"
-                                placeholder="127.0.0.1"
-                                model-value="127.0.0.1"
-                              />
-                            </template>
-                          </VfField>
-
-                          <VfField :control-id="`${setupFormId}-port`" label="Port">
-                            <template #default="{ controlId, describedBy, invalid }">
-                              <VfInput
-                                :id="controlId"
-                                :aria-describedby="describedBy"
-                                :invalid="invalid"
-                                placeholder="3306"
-                                model-value="3306"
-                              />
-                            </template>
-                          </VfField>
-                        </div>
-
-                        <VfField :control-id="`${setupFormId}-database`" label="Database name">
-                          <template #default="{ controlId, describedBy, invalid }">
-                            <VfInput
-                              :id="controlId"
-                              :aria-describedby="describedBy"
-                              :invalid="invalid"
-                              placeholder="annabel"
-                              model-value="annabel"
-                            />
-                          </template>
-                        </VfField>
-
-                        <div class="demo-setup-fields demo-setup-fields--even">
-                          <VfField :control-id="`${setupFormId}-user`" label="Database user">
-                            <template #default="{ controlId, describedBy, invalid }">
-                              <VfInput
-                                :id="controlId"
-                                :aria-describedby="describedBy"
-                                :invalid="invalid"
-                                placeholder="annabel_user"
-                                model-value="annabel_user"
-                              />
-                            </template>
-                          </VfField>
-
-                          <VfField :control-id="`${setupFormId}-password`" label="Database password">
-                            <template #default="{ controlId, describedBy, invalid }">
-                              <VfPasswordInput
-                                :id="controlId"
-                                :aria-describedby="describedBy"
-                                :invalid="invalid"
-                                placeholder="Password"
-                                type="password"
-                                password-reveal
-                              />
-                            </template>
-                          </VfField>
-                        </div>
-                      </form>
-
-                      <template #actions>
-                        <VfButton
-                          class="demo-setup-action-back"
-                          variant="secondary"
-                          type="button"
-                          :disabled="isFirstSetupStep"
-                          @click="goToPreviousSetupStep"
-                        >
-                          Back
-                        </VfButton>
-                        <VfButton variant="primary" type="submit" :form="setupFormId">
-                          {{ isLastSetupStep ? 'Finish' : 'Continue' }}
-                        </VfButton>
-                      </template>
-                    </VfSetupLayout>
+                      </VfContainer>
+                    </main>
                   </div>
                 </div>
               </article>
@@ -919,7 +944,6 @@ import {
   VfAdminLayout,
   VfAdminShell,
   VfDocumentLayout,
-  VfSetupLayout,
 } from '@codemonster-ru/vueforge-layouts';
 import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
@@ -1069,6 +1093,34 @@ function goToNextSetupStep() {
 
 function goToPreviousSetupStep() {
   setSetupStep(activeSetupStepIndex.value - 1);
+}
+
+function handleSetupKeydown(event: KeyboardEvent) {
+  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    goToPreviousSetupStep();
+    return;
+  }
+
+  if (event.key !== 'Enter' || event.shiftKey) return;
+
+  const target = event.target;
+  if (!(target instanceof HTMLElement) || target.isContentEditable || target.closest('[contenteditable="true"]')) {
+    return;
+  }
+  if (target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return;
+  if (
+    target instanceof HTMLInputElement &&
+    ['button', 'checkbox', 'color', 'file', 'radio', 'range', 'reset', 'submit'].includes(target.type)
+  ) {
+    return;
+  }
+  if (target.closest('button,a,[role="button"],[role="link"]')) return;
+
+  event.preventDefault();
+  goToNextSetupStep();
 }
 
 const activeAuthBreakpoint = ref<string>(getPreferredBreakpointName(availableAuthBreakpoints.value));
@@ -1434,5 +1486,180 @@ const demoAsideItems = buildDemoItems(
   border: 0;
   border-radius: 0;
   box-shadow: none;
+}
+
+.demo-setup-recipe {
+  display: flex;
+  align-items: center;
+  min-width: 20rem;
+  inline-size: 100%;
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+}
+
+.demo-setup-recipe__container {
+  padding-block: var(--cm-space-4);
+}
+
+.demo-setup-recipe__panel {
+  display: grid;
+  grid-template-areas:
+    'brand'
+    'header'
+    'main';
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--cm-space-4);
+  inline-size: 100%;
+  margin-inline: auto;
+  padding: calc(var(--cm-space-6) * 1.5);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+  box-shadow: var(--cm-shadow-none);
+}
+
+.demo-setup-recipe--with-aside .demo-setup-recipe__panel {
+  grid-template-areas:
+    'brand'
+    'header'
+    'main'
+    'aside';
+}
+
+.demo-setup-recipe__aside,
+.demo-setup-recipe__brand,
+.demo-setup-recipe__header,
+.demo-setup-recipe__main,
+.demo-setup-recipe__body {
+  min-width: 0;
+}
+
+.demo-setup-recipe__aside {
+  grid-area: aside;
+  align-self: start;
+  color: var(--cm-color-text-muted);
+}
+
+.demo-setup-recipe__main,
+.demo-setup-recipe__header,
+.demo-setup-recipe__heading {
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-setup-recipe__main {
+  grid-area: main;
+  align-self: stretch;
+  gap: var(--cm-space-6);
+}
+
+.demo-setup-recipe__header {
+  grid-area: header;
+  align-self: start;
+  gap: var(--cm-space-4);
+}
+
+.demo-setup-recipe__brand {
+  display: flex;
+  grid-area: brand;
+  align-self: start;
+}
+
+.demo-setup-recipe__heading {
+  gap: var(--cm-space-2);
+}
+
+.demo-setup-recipe__title,
+.demo-setup-recipe__description {
+  margin: 0;
+}
+
+.demo-setup-recipe__title {
+  font-size: 1.1875rem;
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: 1.35;
+}
+
+.demo-setup-recipe__description {
+  color: var(--cm-color-text-muted);
+  line-height: var(--cm-line-height-normal);
+}
+
+.demo-setup-recipe__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--cm-space-4);
+  margin-block-start: auto;
+}
+
+.demo-setup-progress__bar {
+  --cm-progress-bar-height: 0.25rem;
+}
+
+.demo-shell-preview--min .demo-setup-recipe__container {
+  padding: 0;
+}
+
+.demo-shell-preview--min .demo-setup-recipe__panel {
+  padding: var(--cm-space-4);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .demo-setup-recipe--with-aside
+  .demo-setup-recipe__panel {
+  position: relative;
+  grid-template-areas:
+    'brand header'
+    'aside main';
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .demo-setup-recipe--with-aside
+  .demo-setup-recipe__panel::before {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 16rem;
+  inline-size: var(--cm-border-width);
+  background: color-mix(in srgb, var(--cm-color-border-default) 70%, transparent);
+  content: '';
+  pointer-events: none;
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .demo-setup-recipe--with-aside
+  :is(
+    .demo-setup-recipe__brand,
+    .demo-setup-recipe__header,
+    .demo-setup-recipe__aside,
+    .demo-setup-recipe__main
+  ) {
+  padding-block-start: calc(var(--cm-space-6) * 1.5);
+  padding-inline: calc(var(--cm-space-6) * 1.5);
+}
+
+:is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
+  .demo-setup-recipe--with-aside
+  :is(.demo-setup-recipe__aside, .demo-setup-recipe__main) {
+  padding-block-end: calc(var(--cm-space-6) * 1.5);
+}
+
+@media (width <= 479.98px) {
+  .demo-setup-recipe__container {
+    padding: 0;
+  }
+
+  .demo-setup-recipe__panel {
+    padding: var(--cm-space-4);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 </style>
