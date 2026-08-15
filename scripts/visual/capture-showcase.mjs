@@ -141,10 +141,10 @@ for (const viewport of config.viewports) {
       })()`);
       await sleep(route === 'playground' || route === 'codeblock' ? 3_000 : 500);
       if (route === 'codeblock') {
-        await waitFor('document.querySelector(".vf-skeleton-gate__content--ready .vf-codeblock") !== null');
+        await waitFor('document.querySelector("[data-showcase-loading-content=ready] .vf-codeblock") !== null');
       }
       if (route === 'playground') {
-        await waitFor('document.querySelector(".vf-skeleton-gate__content--ready .vf-playground") !== null');
+        await waitFor('document.querySelector("[data-showcase-loading-content=ready] .vf-playground") !== null');
       }
 
       const pageHeight = await evaluate(
