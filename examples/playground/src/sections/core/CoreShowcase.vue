@@ -51,7 +51,6 @@ import '@codemonster-ru/ui-css/progress-spinner.css';
 import '@codemonster-ru/ui-css/table.css';
 import '@codemonster-ru/ui-css/tooltip.css';
 import {
-  VfCommandPalette,
   VfDataTable,
   VfDatePicker,
   VfDrawer as VfLegacyDrawer,
@@ -76,6 +75,9 @@ import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
   type CoreDataTableRecipeRow,
 } from './CoreDataTableRecipe.vue';
+import CoreCommandPaletteRecipe, {
+  type CoreCommandPaletteRecipeItem,
+} from './CoreCommandPaletteRecipe.vue';
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe, { isCoreDrawerSupportedPlacement } from './CoreDrawerRecipe.vue';
 import CoreSelectableDataTableRecipe, {
@@ -327,15 +329,7 @@ const compactOnboardingAboveSteps = createStepperSummary(compactOnboardingSteps,
 const compactOnboardingBelowSteps = createStepperSummary(compactOnboardingSteps, 'plan');
 const onboardingVerticalSteps = createStepperSummary(onboardingSteps, 'billing');
 
-interface CommandItem {
-  title: string;
-  label: string;
-  section: string;
-  snippet: string;
-  type: string;
-}
-
-const commandPaletteDataset: CommandItem[] = [
+const commandPaletteDataset: CoreCommandPaletteRecipeItem[] = [
   {
     title: 'Getting Started',
     label: 'Getting Started',
@@ -414,22 +408,6 @@ const commandPaletteDataset: CommandItem[] = [
     type: 'Foundation',
   },
 ];
-
-const commandPaletteItems = computed(() => {
-  const query = commandPaletteQuery.value.trim().toLowerCase();
-
-  if (!query) {
-    return [];
-  }
-
-  return commandPaletteDataset.filter(
-    (item) =>
-      item.label.toLowerCase().includes(query) ||
-      item.section.toLowerCase().includes(query) ||
-      item.snippet.toLowerCase().includes(query) ||
-      item.type.toLowerCase().includes(query),
-  );
-});
 
 function handleCommandPaletteSelect(item: unknown) {
   if (item == null) {
@@ -3563,12 +3541,12 @@ const tabContent = computed<Record<string, string>>(() => ({
 
     <CoreDrawerRecipe v-model:open="drawerFullscreenOpen" placement="left" fullscreen />
 
-    <VfCommandPalette
+    <CoreCommandPaletteRecipe
       v-model:open="commandPaletteOpen"
       v-model="commandPaletteQuery"
       title="Search Documentation"
       placeholder="Search components, guides, and API..."
-      :items="commandPaletteItems"
+      :items="commandPaletteDataset"
       @select="handleCommandPaletteSelect"
     />
   </div>
