@@ -70,6 +70,27 @@
   transition: opacity var(--cm-motion-duration-fast) var(--demo-application-busy-fade-easing);
 }
 
+.demo-application-confirm-dialog__actions {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--cm-space-2);
+}
+
+.demo-application-confirm-dialog .cm-dialog__description {
+  padding-block-end: var(--cm-space-4);
+  color: var(--cm-color-text-primary);
+}
+
+.demo-application-confirm-dialog .cm-dialog__body:empty {
+  display: none;
+}
+
+.demo-application-confirm-dialog > .cm-dialog__surface > .cm-dialog__header > .cm-dialog__close {
+  display: none;
+}
+
 .demo-application-group-box {
   box-sizing: border-box;
   min-width: 0;
@@ -114,6 +135,10 @@
   gap: var(--cm-space-3);
   min-width: 0;
   width: 100%;
+}
+
+.demo-application-form-layout--wide-label {
+  --demo-application-form-layout-label-width: 12rem;
 }
 
 .demo-application-form-layout > .vf-field {

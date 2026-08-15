@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import {
   CmAvatar as VfAvatar,
   CmAlert as VfAlert,
@@ -9,6 +9,7 @@ import {
   CmCard as VfCard,
   CmCheckbox as VfCheckbox,
   CmDivider as VfDivider,
+  CmDialog,
   CmIconButton,
   CmLink,
   CmProgressBar,
@@ -26,6 +27,7 @@ import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
 import '@codemonster-ru/ui-css/button.css';
 import '@codemonster-ru/ui-css/alert.css';
 import '@codemonster-ru/ui-css/breadcrumbs.css';
+import '@codemonster-ru/ui-css/dialog.css';
 import '@codemonster-ru/ui-css/icon-button.css';
 import '@codemonster-ru/ui-css/link.css';
 import '@codemonster-ru/ui-css/progress-bar.css';
@@ -35,7 +37,6 @@ import {
   VfAccordion,
   VfButton as VfLegacyButton,
   VfCommandPalette,
-  VfConfirmDialog,
   VfDataTable,
   VfDataTableColumnChooser,
   VfDatePicker,
@@ -84,6 +85,8 @@ const drawerOpen = ref(false);
 const drawerFullscreenOpen = ref(false);
 const commandPaletteOpen = ref(false);
 const confirmDialogOpen = ref(false);
+const confirmDialogBusy = ref(false);
+const confirmDialogError = ref('');
 const confirmDialogResult = ref('No action confirmed yet.');
 const commandPaletteQuery = ref('');
 const groupBoxCollapsed = ref(false);
@@ -119,6 +122,7 @@ const dataTableSort = ref<VfDataTableSort[]>([]);
 const dataTableError = ref(true);
 const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
+let confirmDialogPreviousBodyOverflow: string | undefined;
 
 const formGeometrySizes = ['sm', 'md', 'lg'] as const;
 const formGeometryFloatingVariants = ['in', 'on', 'over'] as const;
@@ -325,9 +329,50 @@ function dataTableRowValue(row: VfDataTableRow, key: string) {
   return String((row as Record<string, unknown>)[key] ?? '');
 }
 
-function confirmExampleDeletion() {
-  confirmDialogResult.value = 'Example user deleted.';
+function cancelExampleDeletion(): void {
+  if (confirmDialogBusy.value) return;
+  confirmDialogOpen.value = false;
+  confirmDialogError.value = '';
 }
+
+function handleConfirmDialogOpenChange(open: boolean): void {
+  if (!open && confirmDialogBusy.value) return;
+  confirmDialogOpen.value = open;
+  if (!open) confirmDialogError.value = '';
+}
+
+async function confirmExampleDeletion(): Promise<void> {
+  if (confirmDialogBusy.value) return;
+
+  confirmDialogBusy.value = true;
+  confirmDialogError.value = '';
+  try {
+    await Promise.resolve();
+    confirmDialogResult.value = 'Example user deleted.';
+    confirmDialogOpen.value = false;
+  } catch {
+    confirmDialogError.value = 'The example user could not be deleted. Try again.';
+  } finally {
+    confirmDialogBusy.value = false;
+  }
+}
+
+watch(
+  confirmDialogOpen,
+  (open) => {
+    if (typeof document === 'undefined') return;
+    if (open) {
+      confirmDialogPreviousBodyOverflow ??= document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return;
+    }
+    if (confirmDialogPreviousBodyOverflow !== undefined) {
+      document.body.style.overflow = confirmDialogPreviousBodyOverflow;
+      confirmDialogPreviousBodyOverflow = undefined;
+    }
+  },
+  { flush: 'sync' },
+);
 
 onMounted(() => {
   window.addEventListener('keydown', handleGlobalCommandPaletteShortcut);
@@ -341,6 +386,11 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleGlobalCommandPaletteShortcut);
+
+  if (confirmDialogPreviousBodyOverflow !== undefined) {
+    document.body.style.overflow = confirmDialogPreviousBodyOverflow;
+    confirmDialogPreviousBodyOverflow = undefined;
+  }
 
   if (dynamicProgressTimer) {
     clearInterval(dynamicProgressTimer);
@@ -2011,7 +2061,7 @@ const tabContent = computed<Record<string, string>>(() => ({
           <div class="demo-item demo-item--full">
             <p class="demo-label">VfFormLayout · responsive</p>
             <VfCard title="Workspace settings">
-              <div class="demo-application-form-layout" style="--demo-application-form-layout-label-width: 12rem">
+              <div class="demo-application-form-layout demo-application-form-layout--wide-label">
                 <VfField label="Workspace name" description="Shown to every workspace member." required>
                   <template #default="{ controlId, describedBy, invalid, required }">
                     <VfInput
@@ -2924,13 +2974,34 @@ const tabContent = computed<Record<string, string>>(() => ({
       </template>
     </VfDialog>
 
-    <VfConfirmDialog
-      v-model:open="confirmDialogOpen"
+    <CmDialog
+      id="delete-example-user"
+      class="demo-application-confirm-dialog"
+      :open="confirmDialogOpen"
       title="Delete example user?"
       description="This action cannot be undone."
-      confirm-label="Delete user"
-      @confirm="confirmExampleDeletion"
-    />
+      size="sm"
+      dividers
+      :dismissible="!confirmDialogBusy"
+      @update:open="handleConfirmDialogOpenChange"
+    >
+      <p v-if="confirmDialogError" class="demo-m-0" role="alert">{{ confirmDialogError }}</p>
+      <template #actions="{ close }">
+        <CmIconButton label="Close dialog" variant="ghost" :disabled="confirmDialogBusy" @click="close">
+          <VueIconify :icon="icons.xmark" size="var(--cm-icon-size-md)" />
+        </CmIconButton>
+      </template>
+      <template #footer>
+        <div class="demo-application-confirm-dialog__actions">
+          <CmButton variant="secondary" :disabled="confirmDialogBusy" autofocus @click="cancelExampleDeletion">
+            Cancel
+          </CmButton>
+          <CmButton variant="danger" :loading="confirmDialogBusy" @click="confirmExampleDeletion">
+            Delete user
+          </CmButton>
+        </div>
+      </template>
+    </CmDialog>
 
     <VfDrawer v-model:open="drawerOpen" title="Drawer" :placement="drawerPlacement" dividers>
       <template #default>
