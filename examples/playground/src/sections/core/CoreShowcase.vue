@@ -77,6 +77,9 @@ import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
   type CoreDataTableRecipeRow,
 } from './CoreDataTableRecipe.vue';
+import CoreSelectableDataTableRecipe, {
+  type CoreSelectableDataTableRecipeRow,
+} from './CoreSelectableDataTableRecipe.vue';
 import CoreTabsRecipe from './CoreTabsRecipe.vue';
 import ShowcaseThemeSwitch from '../../components/ShowcaseThemeSwitch.vue';
 import { useShowcaseTheme } from '../../showcase-theme';
@@ -921,6 +924,10 @@ function createCoreDataTableRows(
 
 const coreDataTableColumns = createCoreDataTableColumns(dataTableColumns);
 const coreDataTableRows = createCoreDataTableRows(coreDataTableColumns, dataTableRows);
+const coreSelectableDataTableRows: CoreSelectableDataTableRecipeRow[] = coreDataTableRows.map((row, index) => ({
+  ...row,
+  selectable: isDataTableRowSelectable(dataTableRows[index]),
+}));
 const coreDataTableMetricColumns = createCoreDataTableColumns(dataTableMetricColumns);
 const coreDataTableMetricRows = createCoreDataTableRows(coreDataTableMetricColumns, dataTableRows);
 const coreDataTableConfigurableColumns = createCoreDataTableColumns(dataTableConfigurableColumns);
@@ -1898,13 +1905,12 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · selection</p>
-                  <VfDataTable
-                    v-model:selected-row-keys="selectedDataTableRowKeys"
-                    selectable
-                    :row-selectable="isDataTableRowSelectable"
-                    :columns="dataTableColumns"
-                    :rows="dataTableRows"
-                    row-key="id"
+                  <CoreSelectableDataTableRecipe
+                    id="core-selectable-data-table"
+                    v-model:selected-row-ids="selectedDataTableRowKeys"
+                    label="Selectable team roster"
+                    :columns="coreDataTableColumns"
+                    :rows="coreSelectableDataTableRows"
                     striped
                     column-dividers
                   />
