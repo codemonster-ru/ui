@@ -54,7 +54,7 @@ import {
   VfCommandPalette,
   VfDataTable,
   VfDatePicker,
-  VfDrawer,
+  VfDrawer as VfLegacyDrawer,
   VfField,
   VfInput,
   VfMenuBar,
@@ -77,6 +77,7 @@ import CoreDataTableRecipe, {
   type CoreDataTableRecipeRow,
 } from './CoreDataTableRecipe.vue';
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
+import CoreDrawerRecipe, { isCoreDrawerSupportedPlacement } from './CoreDrawerRecipe.vue';
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
@@ -3539,7 +3540,13 @@ const tabContent = computed<Record<string, string>>(() => ({
       </template>
     </CmDialog>
 
-    <VfDrawer v-model:open="drawerOpen" title="Drawer" :placement="drawerPlacement" dividers>
+    <CoreDrawerRecipe
+      v-if="isCoreDrawerSupportedPlacement(drawerPlacement)"
+      v-model:open="drawerOpen"
+      :placement="drawerPlacement"
+    />
+
+    <VfLegacyDrawer v-else v-model:open="drawerOpen" title="Drawer" :placement="drawerPlacement" dividers>
       <template #default>
         <div class="demo-stack">
           <p class="demo-mt-0">Drawer content.</p>
@@ -3552,22 +3559,9 @@ const tabContent = computed<Record<string, string>>(() => ({
           <CmButton variant="secondary" @click="drawerOpen = false">Close</CmButton>
         </div>
       </template>
-    </VfDrawer>
+    </VfLegacyDrawer>
 
-    <VfDrawer v-model:open="drawerFullscreenOpen" title="Fullscreen Drawer" size="full" placement="left" dividers>
-      <template #default>
-        <div class="demo-stack">
-          <p class="demo-mt-0">Fullscreen drawer content.</p>
-          <CmInput placeholder="Search in fullscreen drawer" />
-        </div>
-      </template>
-      <template #footer="{ close }">
-        <div class="demo-inline">
-          <CmButton data-autofocus @click="close">Apply</CmButton>
-          <CmButton variant="secondary" @click="drawerFullscreenOpen = false">Close</CmButton>
-        </div>
-      </template>
-    </VfDrawer>
+    <CoreDrawerRecipe v-model:open="drawerFullscreenOpen" placement="left" fullscreen />
 
     <VfCommandPalette
       v-model:open="commandPaletteOpen"
