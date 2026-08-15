@@ -1,14 +1,5 @@
 <script lang="ts">
 export type CoreDrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
-export type CoreDrawerSupportedPlacement = Extract<CoreDrawerPlacement, 'left' | 'right'>;
-
-export const coreDrawerUnsupportedPlacements = ['top', 'bottom'] as const satisfies readonly CoreDrawerPlacement[];
-
-export function isCoreDrawerSupportedPlacement(
-  placement: CoreDrawerPlacement,
-): placement is CoreDrawerSupportedPlacement {
-  return placement === 'left' || placement === 'right';
-}
 </script>
 
 <script setup lang="ts">
@@ -19,9 +10,9 @@ import '@codemonster-ru/ui-css/drawer.css';
 const props = defineProps({
   open: Boolean,
   placement: {
-    type: String as PropType<CoreDrawerSupportedPlacement>,
+    type: String as PropType<CoreDrawerPlacement>,
     default: 'right',
-    validator: (value: string) => ['left', 'right'].includes(value),
+    validator: (value: string) => ['left', 'right', 'top', 'bottom'].includes(value),
   },
   fullscreen: Boolean,
 });
@@ -32,7 +23,7 @@ const emit = defineEmits<{
 
 const drawerId = computed(() => (props.fullscreen ? 'core-showcase-fullscreen-drawer' : 'core-showcase-drawer'));
 const drawerTitle = computed(() => (props.fullscreen ? 'Fullscreen Drawer' : 'Drawer'));
-const drawerSide = computed(() => (props.placement === 'left' ? 'start' : 'end'));
+const drawerSide = computed(() => (props.placement === 'right' ? 'end' : 'start'));
 let previousBodyOverflow: string | undefined;
 
 function setScrollLock(locked: boolean): void {
@@ -67,7 +58,7 @@ onBeforeUnmount(() => setScrollLock(false));
 <template>
   <CmDrawer
     :id="drawerId"
-    class="demo-application-drawer"
+    :class="['demo-application-drawer', `demo-application-drawer--${props.placement}`]"
     :open="props.open"
     :title="drawerTitle"
     close-label="Close drawer"
@@ -115,6 +106,29 @@ onBeforeUnmount(() => setScrollLock(false));
 :deep(.demo-application-drawer.cm-drawer) {
   overflow: hidden;
   transform: translate3d(0, 0, 0);
+}
+
+:deep(.demo-application-drawer--top.cm-drawer),
+:deep(.demo-application-drawer--bottom.cm-drawer) {
+  inset-inline: 0;
+  inline-size: 100dvw;
+  min-block-size: min(100dvh, calc(var(--cm-space-16) * 6 + var(--cm-space-2) * 4));
+  max-block-size: 100dvh;
+  block-size: min(100dvh, calc(var(--cm-space-16) * 6 + var(--cm-space-2) * 4));
+  margin: 0;
+  border-inline: 0;
+}
+
+:deep(.demo-application-drawer--top.cm-drawer) {
+  inset-block: 0 auto;
+  border-block-start: 0;
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-strong);
+}
+
+:deep(.demo-application-drawer--bottom.cm-drawer) {
+  inset-block: auto 0;
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-strong);
+  border-block-end: 0;
 }
 
 :deep(.demo-application-drawer > .cm-drawer__surface > .cm-drawer__header > .cm-drawer__close) {

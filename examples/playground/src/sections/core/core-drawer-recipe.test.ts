@@ -6,11 +6,7 @@ import { resolve } from 'node:path';
 import { createApp, defineComponent, h, nextTick, ref } from 'vue';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import CoreDrawerRecipe, {
-  coreDrawerUnsupportedPlacements,
-  isCoreDrawerSupportedPlacement,
-  type CoreDrawerPlacement,
-} from './CoreDrawerRecipe.vue';
+import CoreDrawerRecipe, { type CoreDrawerPlacement } from './CoreDrawerRecipe.vue';
 
 describe('CoreDrawerRecipe', () => {
   let host: HTMLDivElement;
@@ -40,7 +36,7 @@ describe('CoreDrawerRecipe', () => {
     vi.restoreAllMocks();
   });
 
-  function mountDrawer(options: { fullscreen?: boolean; placement?: 'left' | 'right' } = {}) {
+  function mountDrawer(options: { fullscreen?: boolean; placement?: CoreDrawerPlacement } = {}) {
     const open = ref(false);
     const app = createApp(
       defineComponent(
@@ -82,6 +78,21 @@ describe('CoreDrawerRecipe', () => {
       app.unmount();
     },
   );
+
+  it.each(['top', 'bottom'] as const)('owns frozen %s placement without a legacy component', async (placement) => {
+    const { app } = mountDrawer({ placement });
+    host.querySelector<HTMLButtonElement>('#launcher')!.click();
+    await nextTick();
+    await nextTick();
+
+    const drawer = host.querySelector<HTMLDialogElement>('#core-showcase-drawer-drawer')!;
+    expect(drawer.open).toBe(true);
+    expect(drawer.classList).toContain(`demo-application-drawer--${placement}`);
+    expect(drawer.classList).toContain('cm-drawer--md');
+    expect(drawer.textContent).toContain('Drawer content.');
+    expect(drawer.querySelector('input')?.placeholder).toBe('Search in drawer');
+    app.unmount();
+  });
 
   it('renders the frozen fullscreen-left content and exact actions', async () => {
     const { app, open } = mountDrawer({ fullscreen: true, placement: 'left' });
@@ -136,17 +147,34 @@ describe('CoreDrawerRecipe', () => {
     app.unmount();
   });
 
-  it('makes unsupported vertical placements explicit without emulating them', () => {
-    expect(coreDrawerUnsupportedPlacements).toEqual(['top', 'bottom']);
-    expect(
-      (['left', 'right', 'top', 'bottom'] as CoreDrawerPlacement[]).filter(isCoreDrawerSupportedPlacement),
-    ).toEqual(['left', 'right']);
+  it('dismisses a vertical drawer through Escape and restores scroll and launcher focus', async () => {
+    const { app, open } = mountDrawer({ placement: 'top' });
+    const launcher = host.querySelector<HTMLButtonElement>('#launcher')!;
+    launcher.focus();
+    launcher.click();
+    await nextTick();
+    await nextTick();
+
+    const drawer = host.querySelector<HTMLDialogElement>('dialog')!;
+    drawer.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Escape' }));
+    await nextTick();
+    expect(open.value).toBe(false);
+    expect(drawer.open).toBe(false);
+    expect(document.activeElement).toBe(launcher);
+    expect(document.body.style.overflow).toBe('');
+    app.unmount();
+  });
+
+  it('keeps every placement route-owned and CM-only', () => {
+    const placements: CoreDrawerPlacement[] = ['left', 'right', 'top', 'bottom'];
+    expect(placements).toHaveLength(4);
 
     const source = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreDrawerRecipe.vue'), 'utf8');
     expect(source).not.toContain('--vf-');
     expect(source).not.toContain('vueforge-core');
-    expect(source).not.toContain("placement === 'top'");
-    expect(source).not.toContain("placement === 'bottom'");
+    expect(source).toContain('demo-application-drawer--top');
+    expect(source).toContain('demo-application-drawer--bottom');
+    expect(source).toContain('inline-size: 100dvw');
     expect(source).toContain('<CmDrawer');
   });
 });
