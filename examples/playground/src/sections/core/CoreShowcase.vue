@@ -55,8 +55,6 @@ import {
   VfInput,
   VfMenuBar,
   VfNavMenu,
-  VfProgressBar,
-  VfProgressSpinner,
   VfSelect,
   VfTable as VfLegacyTable,
   VfTabs,
@@ -2236,31 +2234,38 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">VfProgressBar</p>
                     <CmProgressBar :value="42" label="Import progress" />
-                    <VfProgressBar :value="7" :max="12" show-value label="Step progress" height="1rem" />
-                    <VfProgressBar
+                    <CmProgressBar
+                      class="demo-application-progress-bar--tall"
+                      :value="7"
+                      :max="12"
+                      show-value
+                      label="Step progress"
+                    />
+                    <CmProgressBar
+                      class="demo-application-progress-bar--tall"
                       :value="dynamicProgressValue"
                       show-value
                       tone="success"
                       label="Dynamic progress"
-                      height="1rem"
                     />
-                    <VfProgressBar :value="64" striped tone="info" label="Striped progress" height="1rem" />
-                    <VfProgressBar
+                    <CmProgressBar
+                      class="cm-progress-bar--striped demo-application-progress-bar--tall"
                       :value="64"
-                      striped
-                      animated
+                      tone="info"
+                      label="Striped progress"
+                    />
+                    <CmProgressBar
+                      class="cm-progress-bar--striped cm-progress-bar--animated demo-application-progress-bar--tall"
+                      :value="64"
                       tone="info"
                       label="Animated striped progress"
-                      height="1rem"
                     />
-                    <VfProgressBar
+                    <CmProgressBar
+                      class="cm-progress-bar--striped cm-progress-bar--animated demo-application-progress-bar--tall"
                       :value="dynamicProgressValue"
-                      striped
-                      animated
                       show-value
                       tone="info"
                       label="Installing module progress"
-                      height="1rem"
                     />
                     <CmProgressBar indeterminate tone="info" label="Background sync progress" />
                   </div>
@@ -2269,7 +2274,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">VfProgressSpinner</p>
                     <div class="demo-inline">
                       <CmProgressSpinner label="Loading preview" />
-                      <VfProgressSpinner label="Loading large preview" tone="warn" size="2.5rem" :stroke-width="3" />
+                      <CmProgressSpinner
+                        class="demo-application-progress-spinner--large-warning"
+                        label="Loading large preview"
+                        tone="warning"
+                      />
                     </div>
                   </div>
                 </div>

@@ -1033,6 +1033,19 @@
   padding: var(--cm-border-width);
 }
 
+.cm-progress-bar.demo-application-progress-bar--tall {
+  block-size: 1rem;
+}
+
+.cm-progress-spinner.demo-application-progress-spinner--large-warning {
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+}
+
+.demo-application-progress-spinner--large-warning :is(.cm-progress-spinner__track, .cm-progress-spinner__value) {
+  stroke-width: 3;
+}
+
 .demo-avatar-showcase {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
