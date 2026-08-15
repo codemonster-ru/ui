@@ -51,7 +51,7 @@ import '@codemonster-ru/ui-css/progress-bar.css';
 import '@codemonster-ru/ui-css/progress-spinner.css';
 import '@codemonster-ru/ui-css/table.css';
 import '@codemonster-ru/ui-css/tooltip.css';
-import { VfDataTable, VfDatePicker, VfField } from '@codemonster-ru/vueforge-core';
+import { VfDatePicker, VfField } from '@codemonster-ru/vueforge-core';
 import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
   type CoreDataTableRecipeRow,
@@ -83,6 +83,7 @@ import CoreSlotsDataTableRecipe from './CoreSlotsDataTableRecipe.vue';
 import CoreSortableDataTableRecipe, {
   type CoreSortableDataTableSort,
 } from './CoreSortableDataTableRecipe.vue';
+import CoreStickyDataTableRecipe from './CoreStickyDataTableRecipe.vue';
 import CoreStickyTableRecipe from './CoreStickyTableRecipe.vue';
 import CoreTabsRecipe from './CoreTabsRecipe.vue';
 import type { CoreNavigationRecipeItem } from './core-navigation-recipes.types';
@@ -1828,13 +1829,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · sticky header</p>
-                  <VfDataTable
-                    class="demo-table-scroll-y"
-                    :columns="dataTableColumns"
-                    :rows="dataTableRows"
-                    row-key="id"
-                    sticky-header
-                  />
+                  <CoreStickyDataTableRecipe />
                 </div>
 
                 <div class="demo-component-matrix__cell">
