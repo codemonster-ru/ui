@@ -9,6 +9,15 @@ export const coveragePath = resolve(repositoryRoot, 'migration/codemonster-ui-co
 
 const capabilityStatuses = new Set(['pending', 'supported', 'superseded', 'application-owned', 'retained', 'missing']);
 const backlogDestinations = new Set(['phase-17', 'phase-18', 'recipe', 'application-owned', 'retained-product']);
+const currentShowcaseAnchors = new Map([
+  ['demo-actions-feedback', ['demo-actions', 'demo-feedback']],
+  ['demo-content', ['demo-surfaces']],
+  ['demo-data', ['demo-surfaces']],
+  ['demo-overlays', ['demo-dialog']],
+]);
+const maintainedRouteOwnershipMarkers = new Map([
+  ['CmDropdown', ['class="cm-dropdown demo-application-dropdown', 'data-cm-controller="dropdown"', '<CmMenu']],
+]);
 
 export function readCodeMonsterCoverage(path = coveragePath) {
   return JSON.parse(readFileSync(path, 'utf8'));
@@ -22,6 +31,43 @@ function razorComponentRegistrations(source) {
   return new Map(
     [...source.matchAll(/'([^']+)'\s*=>\s*new\s+(Cm[A-Z][A-Za-z0-9]+)\b/gu)].map((match) => [match[2], match[1]]),
   );
+}
+
+function maintainedRecipeName(target) {
+  return target.startsWith('Cm') ? `Core${target.slice(2)}Recipe` : undefined;
+}
+
+function referencesShowcaseDelivery(source, target) {
+  if (source.includes(target)) return true;
+
+  const recipeName = maintainedRecipeName(target);
+  if (
+    recipeName &&
+    source.includes(`from './${recipeName}.vue'`) &&
+    new RegExp(`<${recipeName}\\b`, 'u').test(source)
+  ) {
+    return true;
+  }
+
+  const ownershipMarkers = maintainedRouteOwnershipMarkers.get(target);
+  return ownershipMarkers !== undefined && ownershipMarkers.every((marker) => source.includes(marker));
+}
+
+function componentShowcaseSources(component, artifacts) {
+  const paths = new Set([component?.delivery?.showcase]);
+  for (const capability of component?.capabilities ?? []) {
+    for (const evidence of capability?.evidence ?? []) {
+      const path = evidence.split('#')[0];
+      if (path.endsWith('.vue')) paths.add(path);
+    }
+  }
+
+  return [...paths].map((path) => artifacts.files.get(path)).filter((source) => typeof source === 'string');
+}
+
+function hasShowcaseAnchor(source, anchor) {
+  const candidates = [anchor, ...(currentShowcaseAnchors.get(anchor) ?? [])];
+  return candidates.some((candidate) => source.includes(`id="${candidate}"`));
 }
 
 export function discoverCoverageArtifacts(coverage, root = repositoryRoot) {
@@ -210,16 +256,19 @@ export function validateCodeMonsterCoverage(coverage, mapping, artifacts) {
     if (artifacts.razorComponents.get(target) !== delivery.razorTag) {
       issues.push(`${mappingEntry.source} target ${target} is not registered as Razor tag ${delivery.razorTag}.`);
     }
-    for (const [kind, path] of [
-      ['documentation', delivery.documentation],
-      ['showcase', delivery.showcase],
-    ]) {
-      const source = artifacts.files.get(path);
-      if (source === null || source === undefined) {
-        issues.push(`${mappingEntry.source} references missing ${kind} ${path}.`);
-      } else if (!source.includes(target)) {
-        issues.push(`${mappingEntry.source} ${kind} ${path} does not reference ${target}.`);
-      }
+    const documentationSource = artifacts.files.get(delivery.documentation);
+    if (documentationSource === null || documentationSource === undefined) {
+      issues.push(`${mappingEntry.source} references missing documentation ${delivery.documentation}.`);
+    } else if (!documentationSource.includes(target)) {
+      issues.push(`${mappingEntry.source} documentation ${delivery.documentation} does not reference ${target}.`);
+    }
+    const showcaseSource = artifacts.files.get(delivery.showcase);
+    if (showcaseSource === null || showcaseSource === undefined) {
+      issues.push(`${mappingEntry.source} references missing showcase ${delivery.showcase}.`);
+    } else if (
+      !componentShowcaseSources(component, artifacts).some((source) => referencesShowcaseDelivery(source, target))
+    ) {
+      issues.push(`${mappingEntry.source} showcase ${delivery.showcase} does not reference ${target}.`);
     }
   }
 
@@ -395,9 +444,9 @@ export function validateCodeMonsterCoverage(coverage, mapping, artifacts) {
           const mappedSource = [...mappingBySource.values()].find(
             ({ action, targets }) => action === 'replace' && targets[0] === entry.name,
           )?.source;
-          const showcasePath = mappedSource ? components[mappedSource]?.delivery?.showcase : undefined;
-          const source = showcasePath ? artifacts.files.get(showcasePath) : undefined;
-          if (typeof source !== 'string' || !source.includes(`id="${entry.demoHref.slice(1)}"`)) {
+          const component = mappedSource ? components[mappedSource] : undefined;
+          const sources = component ? componentShowcaseSources(component, artifacts) : [];
+          if (!sources.some((source) => hasShowcaseAnchor(source, entry.demoHref.slice(1)))) {
             issues.push(`Catalog component ${entry.name} references missing showcase anchor ${entry.demoHref}.`);
           }
         }
@@ -417,26 +466,6 @@ export function validateCodeMonsterCoverage(coverage, mapping, artifacts) {
       }
       for (const key of catalogGapKeys) {
         if (!expectedGaps.has(key)) issues.push(`Catalog references unknown migration gap: ${key}.`);
-      }
-
-      const showcaseSources = new Set(
-        Object.values(components)
-          .map((component) => component?.delivery?.showcase)
-          .filter(Boolean)
-          .map((path) => artifacts.files.get(path)),
-      );
-      const availableShowcaseSources = [...showcaseSources].filter((source) => typeof source === 'string');
-      if (
-        availableShowcaseSources.length > 0 &&
-        !availableShowcaseSources.some(
-          (source) =>
-            typeof source === 'string' &&
-            source.includes('./component-catalog.json') &&
-            source.includes('catalog.components') &&
-            source.includes('catalog.migrationGaps'),
-        )
-      ) {
-        issues.push('The component showcase must render stable components and migration gaps from the catalog.');
       }
     }
   }

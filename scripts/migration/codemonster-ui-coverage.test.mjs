@@ -50,6 +50,66 @@ test('tracks every mapped component and delivered artifact', () => {
   );
 });
 
+test('recognizes maintained route recipes without accepting an import-only ownership claim', () => {
+  const coverage = readCodeMonsterCoverage();
+  const mapping = readVueForgeMapping();
+  const artifacts = discoverCoverageArtifacts(coverage);
+  const showcasePath = coverage.components.VfTabs.delivery.showcase;
+  const showcase = artifacts.files.get(showcasePath);
+
+  assert.doesNotMatch(showcase, /\bCmTabs\b/u);
+  assert.deepEqual(validateCodeMonsterCoverage(coverage, mapping, artifacts), []);
+
+  const importOnly = cloneArtifacts(artifacts);
+  importOnly.files.set(showcasePath, showcase.replaceAll('<CoreTabsRecipe', '<UnownedTabsRecipe'));
+  assert.ok(
+    validateCodeMonsterCoverage(coverage, mapping, importOnly).includes(
+      `VfTabs showcase ${showcasePath} does not reference CmTabs.`,
+    ),
+  );
+
+  const missingStableCatalogEntry = cloneArtifacts(artifacts);
+  const catalog = JSON.parse(missingStableCatalogEntry.files.get(coverage.catalog));
+  catalog.components = catalog.components.filter(({ name }) => name !== 'CmTabs');
+  missingStableCatalogEntry.files.set(coverage.catalog, JSON.stringify(catalog));
+  assert.ok(
+    validateCodeMonsterCoverage(coverage, mapping, missingStableCatalogEntry).includes(
+      'Stable component must appear exactly once in the catalog: CmTabs.',
+    ),
+  );
+});
+
+test('resolves current showcase anchors and declared Vue showcase evidence', () => {
+  const coverage = readCodeMonsterCoverage();
+  const mapping = readVueForgeMapping();
+  const artifacts = discoverCoverageArtifacts(coverage);
+  const coreShowcasePath = coverage.components.VfDialog.delivery.showcase;
+  const coreShowcase = artifacts.files.get(coreShowcasePath);
+
+  assert.match(coreShowcase, /id="demo-dialog"/u);
+  assert.doesNotMatch(coreShowcase, /id="demo-overlays"/u);
+
+  const missingCurrentAnchor = cloneArtifacts(artifacts);
+  missingCurrentAnchor.files.set(coreShowcasePath, coreShowcase.replace('id="demo-dialog"', 'id="missing-dialog"'));
+  assert.ok(
+    validateCodeMonsterCoverage(coverage, mapping, missingCurrentAnchor).includes(
+      'Catalog component CmDialog references missing showcase anchor #demo-overlays.',
+    ),
+  );
+
+  const layoutsShowcasePath = 'examples/playground/src/sections/layouts/LayoutsShowcase.vue';
+  const missingDeclaredEvidence = cloneArtifacts(artifacts);
+  missingDeclaredEvidence.files.set(
+    layoutsShowcasePath,
+    artifacts.files.get(layoutsShowcasePath).replaceAll('CmContainer', 'MissingContainer'),
+  );
+  assert.ok(
+    validateCodeMonsterCoverage(coverage, mapping, missingDeclaredEvidence).includes(
+      `VfContainer showcase ${coverage.components.VfContainer.delivery.showcase} does not reference CmContainer.`,
+    ),
+  );
+});
+
 test('reports mapping, capability, and delivery drift', () => {
   const coverage = {
     schemaVersion: 2,
