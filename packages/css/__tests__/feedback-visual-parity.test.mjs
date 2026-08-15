@@ -10,8 +10,11 @@ test('preserves the reference Badge and Avatar geometry', async () => {
 
   assert.match(badge, /min-block-size: 1\.375rem;/u);
   assert.match(badge, /padding: 0\.0625rem 0\.25rem;/u);
+  assert.match(badge, /border: var\(--cm-border-width\) solid/u);
   assert.match(badge, /border-radius: var\(--cm-radius-control-tight\);/u);
+  assert.match(badge, /font-size: var\(--cm-font-size-md\);/u);
   assert.match(badge, /font-weight: var\(--cm-font-weight-regular\);/u);
+  assert.match(badge, /line-height: var\(--cm-line-height-tight\);/u);
   assert.match(avatar, /--cm-avatar-current-size: var\(--cm-control-height-md\);/u);
   assert.match(avatar, /--cm-avatar-current-font-size: var\(--cm-font-size-xl\);/u);
   assert.match(avatar, /\.cm-avatar--circle[\s\S]*border-radius: 50%;/u);

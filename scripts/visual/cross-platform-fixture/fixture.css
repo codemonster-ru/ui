@@ -9,4 +9,5 @@
   min-block-size: 100vh;
   padding: 1.5rem;
   background: var(--cm-color-background-canvas);
+  line-height: normal;
 }

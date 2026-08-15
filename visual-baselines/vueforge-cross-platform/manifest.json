@@ -2,14 +2,20 @@
   "label": "vueforge-cross-platform-reference",
   "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
   "sourceFixture": {
-    "caseIds": ["alert-danger-icon", "button-default", "card-title"],
+    "caseIds": ["alert-danger-icon", "badge-danger", "button-default", "card-title"],
     "componentPackage": "@codemonster-ru/vueforge-core",
     "renderer": "Vue createApp at the reference commit"
   },
-  "routes": ["alert-danger-icon", "button-default", "card-title"],
+  "routes": ["alert-danger-icon", "badge-danger", "button-default", "card-title"],
   "screenshots": [
     {
       "filename": "alert-danger-icon--light--mobile.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "badge-danger--light--mobile.png",
       "platform": "reference",
       "theme": "light",
       "viewport": "mobile"
@@ -33,6 +39,12 @@
       "viewport": "mobile"
     },
     {
+      "filename": "badge-danger--dark--mobile.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
       "filename": "button-default--dark--mobile.png",
       "platform": "reference",
       "theme": "dark",
@@ -51,6 +63,12 @@
       "viewport": "desktop"
     },
     {
+      "filename": "badge-danger--light--desktop.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
       "filename": "button-default--light--desktop.png",
       "platform": "reference",
       "theme": "light",
@@ -64,6 +82,12 @@
     },
     {
       "filename": "alert-danger-icon--dark--desktop.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "badge-danger--dark--desktop.png",
       "platform": "reference",
       "theme": "dark",
       "viewport": "desktop"
