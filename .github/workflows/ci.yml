@@ -61,6 +61,8 @@ jobs:
         env:
           SHOWCASE_CAPTURE: ${{ runner.temp }}/codemonster-showcase-current
           SHOWCASE_DIFF: ${{ runner.temp }}/codemonster-showcase-diff
+          SHOWCASE_STATE_CAPTURE: ${{ runner.temp }}/codemonster-showcase-state-current
+          SHOWCASE_STATE_DIFF: ${{ runner.temp }}/codemonster-showcase-state-diff
         run: |
           set -euo pipefail
 
@@ -88,6 +90,8 @@ jobs:
 
           node scripts/visual/capture-showcase.mjs --origin=http://127.0.0.1:5175 --output="${SHOWCASE_CAPTURE}" --label=ci-current
           node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-showcase --current="${SHOWCASE_CAPTURE}" --diff="${SHOWCASE_DIFF}"
+          npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${SHOWCASE_STATE_CAPTURE}" --label=ci-state-current
+          npm run visual:showcase:states:compare -- --current="${SHOWCASE_STATE_CAPTURE}" --diff="${SHOWCASE_STATE_DIFF}"
 
       - name: Upload showcase visual differences
         if: failure()
@@ -97,6 +101,8 @@ jobs:
           path: |
             ${{ runner.temp }}/codemonster-showcase-current
             ${{ runner.temp }}/codemonster-showcase-diff
+            ${{ runner.temp }}/codemonster-showcase-state-current
+            ${{ runner.temp }}/codemonster-showcase-state-diff
             ${{ runner.temp }}/codemonster-showcase-vite.log
             ${{ runner.temp }}/codemonster-showcase-chrome.log
           if-no-files-found: ignore
