@@ -65,6 +65,11 @@ describe('LayoutsDataTable', () => {
     await nextTick();
     const select = host.querySelector<HTMLSelectElement>('[aria-label="Rows per page"]');
     expect(select?.options).toHaveLength(2);
+    const pageSizeIcon = host.querySelector<HTMLElement>('.layouts-data-table__page-size-visual > .vf-icon-wrapper');
+    expect(pageSizeIcon).not.toBeNull();
+    expect(pageSizeIcon?.querySelector<SVGElement>('svg')?.getAttribute('width')).toBe(
+      'calc(var(--cm-icon-size-md) - var(--cm-border-width))',
+    );
     if (select) {
       select.value = '10';
       select.dispatchEvent(new Event('change', { bubbles: true }));

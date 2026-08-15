@@ -94,7 +94,7 @@ function setPageSize(event: Event) {
           </select>
           <span class="layouts-data-table__page-size-visual" aria-hidden="true">
             <span>{{ pageSize }}</span>
-            <VueIconify :icon="icons.chevronDown" size="var(--cm-icon-size-md)" />
+            <VueIconify :icon="icons.chevronDown" size="calc(var(--cm-icon-size-md) - var(--cm-border-width))" />
           </span>
         </span>
       </div>

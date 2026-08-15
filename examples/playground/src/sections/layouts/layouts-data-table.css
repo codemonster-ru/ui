@@ -50,8 +50,7 @@
 }
 
 .layouts-data-table__page-size-visual > .vf-icon-wrapper {
-  position: relative;
-  inset-block-start: -1px;
+  color: var(--cm-color-icon-secondary);
 }
 
 .layouts-data-table__page-size-control:focus-within .layouts-data-table__page-size-visual {
