@@ -8,7 +8,7 @@ import { PNG } from 'pngjs';
 
 const scriptPath = resolve(import.meta.dirname, 'compare-showcase.mjs');
 
-function writeCapture(directory, { channel = 0, routes = ['core'] } = {}) {
+function writeCapture(directory, { channel = 0, routes = ['core'], stateCases, suite } = {}) {
   mkdirSync(directory, { recursive: true });
   const image = new PNG({ height: 1, width: 1 });
   image.data.set([channel, 0, 0, 255]);
@@ -20,6 +20,8 @@ function writeCapture(directory, { channel = 0, routes = ['core'] } = {}) {
       referenceCommit: 'fd793696f50d3be0fcd3788f0f8f751c63869963',
       routes,
       screenshots: [{ filename: 'core--light--desktop--01.png' }],
+      ...(stateCases ? { stateCases } : {}),
+      ...(suite ? { suite } : {}),
       themes: ['light'],
       viewports: [{ height: 800, name: 'desktop', width: 1280 }],
     })}\n`,
@@ -86,4 +88,23 @@ test('rejects captures from different route matrices', () => {
 
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /different routes/u);
+});
+
+test('rejects state captures with different deterministic target manifests', () => {
+  const root = mkdtempSync(join(tmpdir(), 'cm-showcase-compare-'));
+  const baseline = join(root, 'baseline');
+  const current = join(root, 'current');
+  writeCapture(baseline, {
+    stateCases: [{ id: 'hover', route: 'core', selector: '.cm-button', pseudoClasses: ['hover'] }],
+    suite: 'states',
+  });
+  writeCapture(current, {
+    stateCases: [{ id: 'hover', route: 'core', selector: '.cm-link', pseudoClasses: ['hover'] }],
+    suite: 'states',
+  });
+
+  const result = compare(baseline, current, join(root, 'diff'));
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /different stateCases/u);
 });

@@ -27,7 +27,7 @@ if (!Number.isFinite(channelThreshold) || channelThreshold < 0 || channelThresho
 const baselineManifest = JSON.parse(readFileSync(resolve(baselineDirectory, 'manifest.json'), 'utf8'));
 const currentManifest = JSON.parse(readFileSync(resolve(currentDirectory, 'manifest.json'), 'utf8'));
 
-for (const field of ['referenceCommit', 'routes', 'themes', 'viewports']) {
+for (const field of ['referenceCommit', 'routes', 'suite', 'stateCases', 'themes', 'viewports']) {
   if (JSON.stringify(baselineManifest[field]) !== JSON.stringify(currentManifest[field])) {
     throw new Error(`Showcase manifests use different ${field}.`);
   }

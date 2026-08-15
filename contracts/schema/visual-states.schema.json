@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codemonster.ru/schemas/ui/visual-states-v1.json",
+  "title": "CodeMonster UI showcase state capture configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "states"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "states": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/state"
+      }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "route", "selector"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "route": {
+          "$ref": "#/$defs/identifier"
+        },
+        "selector": {
+          "type": "string",
+          "minLength": 1
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "padding": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 256
+        },
+        "pseudoClasses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["active", "focus", "focus-visible", "hover"]
+          }
+        },
+        "media": {
+          "enum": ["no-preference", "reduce"]
+        },
+        "assertReducedMotion": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
