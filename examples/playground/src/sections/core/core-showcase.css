@@ -827,6 +827,126 @@
   text-transform: uppercase;
 }
 
+.demo-feedback-action--success:is(.cm-button, .cm-icon-button) {
+  background: var(--cm-color-status-success-solid-background);
+  color: var(--cm-color-status-success-solid-foreground);
+}
+
+.demo-feedback-action--info:is(.cm-button, .cm-icon-button) {
+  background: var(--cm-color-status-info-solid-background);
+  color: var(--cm-color-status-info-solid-foreground);
+}
+
+.demo-feedback-action--warn:is(.cm-button, .cm-icon-button) {
+  background: var(--cm-color-status-warning-solid-background);
+  color: var(--cm-color-status-warning-solid-foreground);
+}
+
+.demo-feedback-action--help:is(.cm-button, .cm-icon-button) {
+  background: var(--cm-color-status-help-solid-background);
+  color: var(--cm-color-status-help-solid-foreground);
+}
+
+.demo-feedback-action--contrast:is(.cm-button, .cm-icon-button) {
+  background: var(--cm-color-background-inverse);
+  color: var(--cm-color-text-inverse);
+}
+
+.demo-feedback-action--contrast.cm-icon-button {
+  color: var(--cm-color-icon-inverse);
+}
+
+.demo-feedback-action--success:is(.cm-button, .cm-icon-button):hover:not(:disabled) {
+  background: var(--cm-color-status-success-hover-background);
+}
+
+.demo-feedback-action--info:is(.cm-button, .cm-icon-button):hover:not(:disabled) {
+  background: var(--cm-color-status-info-hover-background);
+}
+
+.demo-feedback-action--warn:is(.cm-button, .cm-icon-button):hover:not(:disabled) {
+  background: var(--cm-color-status-warning-hover-background);
+}
+
+.demo-feedback-action--help:is(.cm-button, .cm-icon-button):hover:not(:disabled) {
+  background: var(--cm-color-status-help-hover-background);
+}
+
+.demo-feedback-action--contrast:is(.cm-button, .cm-icon-button):hover:not(:disabled) {
+  background: var(--cm-color-background-inverse-hover);
+}
+
+.demo-feedback-action--success:is(.cm-button, .cm-icon-button):active:not(:disabled) {
+  background: var(--cm-color-status-success-active-background);
+}
+
+.demo-feedback-action--info:is(.cm-button, .cm-icon-button):active:not(:disabled) {
+  background: var(--cm-color-status-info-active-background);
+}
+
+.demo-feedback-action--warn:is(.cm-button, .cm-icon-button):active:not(:disabled) {
+  background: var(--cm-color-status-warning-active-background);
+}
+
+.demo-feedback-action--help:is(.cm-button, .cm-icon-button):active:not(:disabled) {
+  background: var(--cm-color-status-help-active-background);
+}
+
+.demo-feedback-action--contrast:is(.cm-button, .cm-icon-button):active:not(:disabled) {
+  background: var(--cm-color-background-inverse-active);
+}
+
+.demo-application-tag {
+  display: inline-flex;
+  min-height: var(--cm-icon-size-xl);
+  align-items: center;
+  padding: 0.125rem 0.3125rem;
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control-tight);
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-md);
+  font-weight: var(--cm-font-weight-regular);
+  letter-spacing: 0.01em;
+  line-height: var(--cm-line-height-tight);
+  white-space: nowrap;
+}
+
+.demo-application-tag--primary {
+  border-color: var(--cm-color-interactive-primary-border);
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+}
+
+.demo-application-tag--success {
+  border-color: var(--cm-color-status-success-border);
+  color: var(--cm-color-status-success-subtle-foreground);
+}
+
+.demo-application-tag--info {
+  border-color: var(--cm-color-status-info-border);
+  color: var(--cm-color-status-info-subtle-foreground);
+}
+
+.demo-application-tag--warn {
+  border-color: var(--cm-color-status-warning-border);
+  color: var(--cm-color-status-warning-subtle-foreground);
+}
+
+.demo-application-tag--help {
+  border-color: var(--cm-color-status-help-border);
+  color: var(--cm-color-status-help-subtle-foreground);
+}
+
+.demo-application-tag--danger {
+  border-color: var(--cm-color-status-danger-border);
+  color: var(--cm-color-status-danger-subtle-foreground);
+}
+
+.demo-application-tag--contrast {
+  border-color: var(--cm-color-border-inverse);
+  color: var(--cm-color-text-primary);
+}
+
 .demo-nav-menu-collapsed-frame {
   width: var(--vf-nav-menu-sidebar-compact-item-width);
 }

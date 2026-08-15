@@ -39,7 +39,6 @@ import '@codemonster-ru/ui-css/progress-spinner.css';
 import '@codemonster-ru/ui-css/table.css';
 import {
   VfAccordion,
-  VfButton as VfLegacyButton,
   VfCommandPalette,
   VfDataTable,
   VfDatePicker,
@@ -48,7 +47,6 @@ import {
   VfDropdown,
   VfField,
   VfFieldset,
-  VfIconButton as VfLegacyIconButton,
   VfInput,
   VfMenu,
   VfMenuBar,
@@ -59,7 +57,6 @@ import {
   VfProgressSpinner,
   VfSelect,
   VfTable as VfLegacyTable,
-  VfTag,
   VfTabs,
   VfTextarea as VfFloatingTextarea,
   VfTooltip,
@@ -146,6 +143,10 @@ const supportedActionVariants: ReadonlySet<ActionVariant> = new Set<SupportedAct
 ]);
 const isSupportedActionVariant = (variant: ActionVariant): variant is SupportedActionVariant =>
   supportedActionVariants.has(variant);
+const resolveActionVariant = (variant: ActionVariant): SupportedActionVariant =>
+  isSupportedActionVariant(variant) ? variant : 'primary';
+const resolveFeedbackActionClass = (variant: ActionVariant): string | undefined =>
+  isSupportedActionVariant(variant) ? undefined : `demo-feedback-action--${variant}`;
 const feedbackTones = ['primary', 'success', 'info', 'warn', 'help', 'danger', 'contrast'] as const;
 const alertIconByTone = {
   primary: 'infoCircle',
@@ -827,8 +828,8 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <CmButton size="sm" @click="toggleTheme">Toggle</CmButton>
               </div>
               <div class="demo-inline">
-                <VfTag tone="primary">mode: {{ theme }}</VfTag>
-                <VfTag tone="contrast">resolved: {{ resolvedTheme }}</VfTag>
+                <span class="demo-application-tag demo-application-tag--primary">mode: {{ theme }}</span>
+                <span class="demo-application-tag demo-application-tag--contrast">resolved: {{ resolvedTheme }}</span>
               </div>
             </div>
           </div>
@@ -1104,10 +1105,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">{{ size }}</p>
                     <div class="demo-inline">
                       <template v-for="variant in actionVariants" :key="`${size}-${variant}`">
-                        <CmButton v-if="isSupportedActionVariant(variant)" :size="size" :variant="variant">
+                        <CmButton
+                          :class="resolveFeedbackActionClass(variant)"
+                          :size="size"
+                          :variant="resolveActionVariant(variant)"
+                        >
                           {{ variant }}
                         </CmButton>
-                        <VfLegacyButton v-else :size="size" :variant="variant">{{ variant }}</VfLegacyButton>
                       </template>
                       <CmButton :size="size" disabled>disabled</CmButton>
                     </div>
@@ -1126,10 +1130,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">{{ size }}</p>
                     <div class="demo-inline">
                       <template v-for="variant in actionVariants" :key="`${size}-${variant}-loading`">
-                        <CmButton v-if="isSupportedActionVariant(variant)" :size="size" :variant="variant" loading>
+                        <CmButton
+                          :class="resolveFeedbackActionClass(variant)"
+                          :size="size"
+                          :variant="resolveActionVariant(variant)"
+                          loading
+                        >
                           {{ variant }}
                         </CmButton>
-                        <VfLegacyButton v-else :size="size" :variant="variant" loading>{{ variant }}</VfLegacyButton>
                       </template>
                     </div>
                   </div>
@@ -1148,20 +1156,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <div class="demo-inline">
                       <template v-for="variant in actionVariants" :key="`${size}-${variant}`">
                         <CmIconButton
-                          v-if="isSupportedActionVariant(variant)"
+                          :class="resolveFeedbackActionClass(variant)"
                           :label="`${variant} ${size} settings`"
                           :size="size"
-                          :variant="variant"
+                          :variant="resolveActionVariant(variant)"
                         >
                           <VueIconify :icon="icons.gear" :size="`var(--cm-icon-size-${size})`" />
                         </CmIconButton>
-                        <VfLegacyIconButton
-                          v-else
-                          :icon="icons.gear"
-                          :size="size"
-                          :variant="variant"
-                          :aria-label="`${variant} ${size} settings`"
-                        />
                       </template>
                       <CmIconButton label="Disabled settings" :size="size" disabled>
                         <VueIconify :icon="icons.gear" :size="`var(--cm-icon-size-${size})`" />
@@ -1289,7 +1290,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <VfCard title="Compact Release" compact>
                     <p class="demo-m-0">Compact card spacing for dense surfaces.</p>
                     <template #footer>
-                      <VfTag tone="info">Dense</VfTag>
+                      <span class="demo-application-tag demo-application-tag--info">Dense</span>
                     </template>
                   </VfCard>
                 </div>
@@ -2030,10 +2031,15 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">VfTag</p>
                     <div class="demo-inline">
-                      <VfTag>neutral</VfTag>
-                      <VfTag v-for="tone in feedbackTones" :key="`tag-${tone}`" :tone="tone">
+                      <span class="demo-application-tag">neutral</span>
+                      <span
+                        v-for="tone in feedbackTones"
+                        :key="`tag-${tone}`"
+                        class="demo-application-tag"
+                        :class="`demo-application-tag--${tone}`"
+                      >
                         {{ tone }}
-                      </VfTag>
+                      </span>
                     </div>
                   </div>
                 </div>
