@@ -458,6 +458,71 @@
   padding-block-start: var(--cm-space-2);
 }
 
+.demo-application-group-box--collapsible > .demo-application-group-box__legend {
+  margin-inline-start: calc(var(--cm-space-3) * -1);
+  padding-inline: var(--cm-space-3);
+}
+
+.demo-application-group-box__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cm-space-2);
+  min-block-size: var(--cm-control-height-md);
+  margin-block: 0;
+  margin-inline: calc(var(--cm-space-3) * -1);
+  padding: var(--cm-field-padding-md);
+  border: var(--cm-border-width) solid transparent;
+  border-radius: var(--cm-radius-control);
+  appearance: none;
+  background: transparent;
+  color: var(--cm-color-text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-regular);
+  line-height: var(--cm-line-height-tight);
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  transition:
+    background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+.demo-application-group-box__trigger:hover {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.demo-application-group-box__trigger:active {
+  background: var(--cm-color-background-surface-active);
+}
+
+.demo-application-group-box__trigger:focus-visible {
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+}
+
+.demo-application-group-box__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.demo-application-group-box--collapsed .demo-application-group-box__icon {
+  transform: rotate(-90deg);
+}
+
+.demo-application-group-box__content--collapsible {
+  padding-block-start: 0;
+}
+
 .demo-application-form-layout {
   --demo-application-form-layout-label-width: minmax(10rem, 25%);
 
