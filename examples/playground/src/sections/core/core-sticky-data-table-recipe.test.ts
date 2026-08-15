@@ -104,4 +104,13 @@ describe('CoreStickyDataTableRecipe', () => {
     expect(source).not.toContain('cm-data-table');
     expect(source).toContain('--cm-');
   });
+
+  it('owns the sole frozen sticky-DataTable showcase boundary without the legacy runtime', () => {
+    const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
+    expect(showcase.match(/<CoreStickyDataTableRecipe\s*\/>/gu)).toHaveLength(1);
+    expect(showcase).toContain("import CoreStickyDataTableRecipe from './CoreStickyDataTableRecipe.vue';");
+    expect(showcase).not.toContain('<VfDataTable');
+    expect(showcase).not.toMatch(/import\s*\{[^}]*\bVfDataTable\b[^}]*\}\s*from '@codemonster-ru\/vueforge-core'/su);
+    expect(showcase).toContain('VfDataTable · sticky header');
+  });
 });
