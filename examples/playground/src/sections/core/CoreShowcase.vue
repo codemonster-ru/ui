@@ -74,6 +74,10 @@ import type {
   VfDataTableSort,
   VfNavMenuItem,
 } from '@codemonster-ru/vueforge-core';
+import CoreDataTableRecipe, {
+  type CoreDataTableRecipeColumn,
+  type CoreDataTableRecipeRow,
+} from './CoreDataTableRecipe.vue';
 import ShowcaseThemeSwitch from '../../components/ShowcaseThemeSwitch.vue';
 import { useShowcaseTheme } from '../../showcase-theme';
 
@@ -888,6 +892,39 @@ const dataTableRows: VfDataTableRow[] = [
     note: 'Investigating deployment metrics.',
   },
 ];
+
+function createCoreDataTableColumns(columns: readonly VfDataTableColumn[]): CoreDataTableRecipeColumn[] {
+  return columns.map(({ align, header, key }) => ({
+    key,
+    header: header || key,
+    ...(align ? { align } : {}),
+  }));
+}
+
+function createCoreDataTableRows(
+  columns: readonly CoreDataTableRecipeColumn[],
+  rows: readonly VfDataTableRow[],
+): CoreDataTableRecipeRow[] {
+  return rows.map((row) => {
+    const source = row as Record<string, unknown>;
+    const rowId = source.id;
+    const cells = Object.fromEntries(
+      columns.map(({ key }) => {
+        const value = source[key];
+        return [key, typeof value === 'string' || (typeof value === 'number' && Number.isFinite(value)) ? value : null];
+      }),
+    );
+
+    return { id: typeof rowId === 'string' || typeof rowId === 'number' ? rowId : String(rowId), cells };
+  });
+}
+
+const coreDataTableColumns = createCoreDataTableColumns(dataTableColumns);
+const coreDataTableRows = createCoreDataTableRows(coreDataTableColumns, dataTableRows);
+const coreDataTableMetricColumns = createCoreDataTableColumns(dataTableMetricColumns);
+const coreDataTableMetricRows = createCoreDataTableRows(coreDataTableMetricColumns, dataTableRows);
+const coreDataTableConfigurableColumns = createCoreDataTableColumns(dataTableConfigurableColumns);
+const coreDataTableConfigurableRows = createCoreDataTableRows(coreDataTableConfigurableColumns, dataTableRows);
 
 const dataTablePaginationRows: VfDataTableRow[] = Array.from({ length: 42 }, (_, index) => {
   const source = dataTableRows[index % dataTableRows.length] as Record<string, unknown>;
@@ -1725,11 +1762,11 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · default</p>
-                  <VfDataTable
+                  <CoreDataTableRecipe
+                    id="core-data-table-default"
                     caption="Team roster"
-                    :columns="dataTableColumns"
-                    :rows="dataTableRows"
-                    row-key="id"
+                    :columns="coreDataTableColumns"
+                    :rows="coreDataTableRows"
                     striped
                     column-dividers
                   />
@@ -1737,10 +1774,11 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · compact aligned</p>
-                  <VfDataTable
-                    :columns="dataTableMetricColumns"
-                    :rows="dataTableRows"
-                    row-key="id"
+                  <CoreDataTableRecipe
+                    id="core-data-table-compact"
+                    label="Team metrics"
+                    :columns="coreDataTableMetricColumns"
+                    :rows="coreDataTableMetricRows"
                     density="compact"
                     striped
                     column-dividers
@@ -1786,12 +1824,12 @@ const tabContent = computed<Record<string, string>>(() => ({
                       </CmPopover>
                       <span class="demo-text">Member is always visible</span>
                     </div>
-                    <VfDataTable
+                    <CoreDataTableRecipe
+                      id="core-data-table-column-chooser"
                       :visible-column-keys="visibleDataTableColumnKeys"
                       caption="Configurable team roster"
-                      :columns="dataTableConfigurableColumns"
-                      :rows="dataTableRows"
-                      row-key="id"
+                      :columns="coreDataTableConfigurableColumns"
+                      :rows="coreDataTableConfigurableRows"
                       striped
                       column-dividers
                     />
@@ -2038,7 +2076,12 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · empty</p>
-                  <VfDataTable :columns="dataTableColumns" empty-text="No team members found" />
+                  <CoreDataTableRecipe
+                    id="core-data-table-empty"
+                    label="Empty team roster"
+                    :columns="coreDataTableColumns"
+                    empty-text="No team members found"
+                  />
                 </div>
 
                 <div class="demo-component-matrix__cell">
