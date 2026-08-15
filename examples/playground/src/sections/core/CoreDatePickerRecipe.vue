@@ -4,6 +4,7 @@ import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 
 import {
   addCoreDays,
+  combineCoreDateTime,
   coreMonthHasSelectableDate,
   createCoreDateGrid,
   createCoreMonthGrid,
@@ -75,6 +76,14 @@ const displayValue = computed(() => {
   if (props.selectionMode === 'single') return formatCorePickerDisplay(selectedValues.value[0]!, props.pickerMode);
   return formatCoreDateSelection(selectedValues.value, props.selectionMode);
 });
+const dateTimeHour = computed(() =>
+  props.pickerMode === 'datetime' && selectedValues.value[0] ? selectedValues.value[0].slice(11, 13) : '00',
+);
+const dateTimeMinute = computed(() =>
+  props.pickerMode === 'datetime' && selectedValues.value[0] ? selectedValues.value[0].slice(14, 16) : '00',
+);
+const hourOptions = Array.from({ length: 24 }, (_, hour) => String(hour).padStart(2, '0'));
+const minuteOptions = Array.from({ length: 60 }, (_, minute) => String(minute).padStart(2, '0'));
 const showClear = computed(
   () => props.clearable && selectedValues.value.length > 0 && !props.disabled && !props.readonly,
 );
@@ -84,7 +93,7 @@ const cells = computed(() =>
     min: props.min ?? undefined,
     mode: props.selectionMode,
     month: visibleMonth.value,
-    selected: selectedValues.value,
+    selected: selectedValues.value.map(pickerValueAsDate),
     today: props.today,
   }),
 );
@@ -203,6 +212,7 @@ function initialFocusDate(): string {
 }
 
 function pickerValueAsDate(value: string): string {
+  if (props.pickerMode === 'datetime') return value.slice(0, 10);
   if (props.pickerMode === 'year') return `${value}-01-01`;
   if (props.pickerMode === 'month') return `${value}-01`;
   return value;
@@ -263,7 +273,7 @@ async function openCalendar(): Promise<void> {
   open.value = true;
   await nextTick();
   updatePanelPosition();
-  if (props.pickerMode === 'date') await focusDate(value);
+  if (props.pickerMode === 'date' || props.pickerMode === 'datetime') await focusDate(value);
   else await focusPeriod(props.pickerMode === 'year' ? value.slice(0, 4) : value.slice(0, 7));
 }
 
@@ -289,6 +299,10 @@ function clearValue(event: MouseEvent): void {
 
 function selectDate(value: string, disabled: boolean): void {
   if (disabled || props.readonly) return;
+  if (props.pickerMode === 'datetime') {
+    emit('update:modelValue', combineCoreDateTime(value, dateTimeHour.value, dateTimeMinute.value));
+    return;
+  }
   if (props.selectionMode === 'multiple') {
     emit('update:modelValue', toggleCoreMultipleDate(selectedValues.value, value));
     return;
@@ -301,6 +315,14 @@ function selectDate(value: string, disabled: boolean): void {
   }
   emit('update:modelValue', value);
   closeCalendar();
+}
+
+function updateDateTimePart(part: 'hour' | 'minute', event: Event): void {
+  if (!(event.target instanceof HTMLSelectElement) || props.disabled || props.readonly) return;
+  const date = selectedValues.value[0]?.slice(0, 10) ?? focusedDate.value;
+  const hour = part === 'hour' ? event.target.value : dateTimeHour.value;
+  const minute = part === 'minute' ? event.target.value : dateTimeMinute.value;
+  emit('update:modelValue', combineCoreDateTime(date, hour, minute));
 }
 
 function selectPeriod(value: string, disabled: boolean): void {
@@ -482,7 +504,11 @@ onBeforeUnmount(() => {
             <VueIconify :icon="icons.caretRight" size="var(--cm-icon-size-md)" aria-hidden="true" />
           </button>
         </header>
-        <div v-if="props.pickerMode !== 'date'" class="core-date-picker-recipe__periods" role="grid">
+        <div
+          v-if="props.pickerMode === 'month' || props.pickerMode === 'year'"
+          class="core-date-picker-recipe__periods"
+          role="grid"
+        >
           <div
             v-for="(row, rowIndex) in periodRows"
             :key="rowIndex"
@@ -554,6 +580,28 @@ onBeforeUnmount(() => {
                 {{ day.day }}
               </button>
             </div>
+          </div>
+        </div>
+        <div v-if="props.pickerMode === 'datetime'" class="core-date-picker-recipe__time">
+          <span class="core-date-picker-recipe__time-label">Time</span>
+          <div class="core-date-picker-recipe__time-controls">
+            <select
+              class="core-date-picker-recipe__time-select"
+              aria-label="Hour"
+              :value="dateTimeHour"
+              @change="updateDateTimePart('hour', $event)"
+            >
+              <option v-for="hour in hourOptions" :key="hour" :value="hour">{{ hour }}</option>
+            </select>
+            <span aria-hidden="true">:</span>
+            <select
+              class="core-date-picker-recipe__time-select"
+              aria-label="Minute"
+              :value="dateTimeMinute"
+              @change="updateDateTimePart('minute', $event)"
+            >
+              <option v-for="minute in minuteOptions" :key="minute" :value="minute">{{ minute }}</option>
+            </select>
           </div>
         </div>
       </section>
@@ -874,6 +922,45 @@ onBeforeUnmount(() => {
   border-color: transparent;
   background: var(--cm-color-background-surface-selected);
   color: var(--cm-color-selected-foreground);
+}
+
+.core-date-picker-recipe__time {
+  display: grid;
+  gap: var(--cm-space-1);
+  padding-block-start: var(--cm-space-2);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.core-date-picker-recipe__time-label {
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-normal);
+}
+
+.core-date-picker-recipe__time-controls {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--cm-space-2);
+}
+
+.core-date-picker-recipe__time-select {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  block-size: var(--cm-control-height-md);
+  padding-inline: var(--cm-space-2);
+  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  font: inherit;
+}
+
+.core-date-picker-recipe__time-select:focus-visible {
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 @media (prefers-reduced-motion: reduce) {

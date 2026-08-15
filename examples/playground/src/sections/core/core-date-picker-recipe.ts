@@ -11,7 +11,7 @@ export interface CoreDateGridCell {
 }
 
 export type CoreDateSelectionMode = 'multiple' | 'range' | 'single';
-export type CoreDatePickerMode = 'date' | 'month' | 'year';
+export type CoreDatePickerMode = 'date' | 'datetime' | 'month' | 'year';
 export type CoreDatePickerValue = string | string[];
 
 export interface CoreDatePeriodCell {
@@ -34,6 +34,7 @@ interface CoreDateGridOptions {
 const datePattern = /^(\d{4})-(\d{2})-(\d{2})$/u;
 const monthPattern = /^(\d{4})-(\d{2})$/u;
 const yearPattern = /^\d{4}$/u;
+const dateTimePattern = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})$/u;
 
 export function parseCoreDate(value: string): Date | null {
   const match = datePattern.exec(value);
@@ -50,6 +51,13 @@ export function requireCoreDate(value: string, label: string): Date {
 
 export function parseCorePickerValue(value: string, mode: CoreDatePickerMode): Date | null {
   if (mode === 'date') return parseCoreDate(value);
+  if (mode === 'datetime') {
+    const match = dateTimePattern.exec(value);
+    if (!match || !parseCoreDate(match[1]!)) return null;
+    const hour = Number(match[2]);
+    const minute = Number(match[3]);
+    return hour < 24 && minute < 60 ? new Date(`${match[1]}T${match[2]}:${match[3]}:00`) : null;
+  }
   if (mode === 'year') {
     if (!yearPattern.test(value)) return null;
     const date = new Date(0, 0, 1);
@@ -98,7 +106,15 @@ export function formatCorePickerDisplay(value: string, mode: CoreDatePickerMode)
   if (mode === 'month') {
     return new Intl.DateTimeFormat('en-US', { month: '2-digit', year: '2-digit' }).format(date);
   }
+  if (mode === 'datetime') return `${formatCoreDateDisplay(value.slice(0, 10))} ${value.slice(11)}`;
   return formatCoreDateDisplay(value);
+}
+
+export function combineCoreDateTime(date: string, hour: string, minute: string): string {
+  requireCoreDate(date, 'DatePicker date');
+  const value = `${date}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+  requireCorePickerValue(value, 'datetime');
+  return value;
 }
 
 export function normalizeCoreDateSelection(
