@@ -155,20 +155,39 @@
 }
 
 .cm-button__spinner {
-  border: var(--cm-border-width-thick) solid currentcolor;
-  border-inline-end-color: transparent;
-  border-radius: var(--cm-radius-round);
-  animation: cm-button-spin var(--cm-button-spinner-duration) linear infinite;
+  position: relative;
+  color: currentcolor;
+  vertical-align: middle;
 }
 
-@keyframes cm-button-spin {
+.cm-button__spinner::before,
+.cm-button__spinner::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+}
+
+.cm-button__spinner::before {
+  background: color-mix(in srgb, currentcolor 30%, transparent);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='black' stroke-width='5'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+}
+
+.cm-button__spinner::after {
+  background: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='black' stroke-width='5' stroke-linecap='round' stroke-dasharray='88 200'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  animation: cm-button-spinner-rotate var(--cm-button-spinner-duration) linear infinite;
+}
+
+@keyframes cm-button-spinner-rotate {
   to {
     transform: rotate(1turn);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cm-button__spinner {
+  .cm-button__spinner::after {
     animation: none;
   }
 }
