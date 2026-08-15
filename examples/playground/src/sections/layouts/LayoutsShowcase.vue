@@ -138,7 +138,11 @@
             <h2 id="demo-error-layout">VfErrorLayout</h2>
             <p class="demo-text">Centers an error status, explanation, and recovery actions on a focused page.</p>
           </div>
-          <VfTabs v-if="availableErrorBreakpoints.length" v-model="activeErrorBreakpoint" :items="errorBreakpointTabs">
+          <LayoutsTabs
+            v-if="availableErrorBreakpoints.length"
+            v-model="activeErrorBreakpoint"
+            :items="errorBreakpointTabs"
+          >
             <template #panel>
               <article v-if="activeErrorBreakpointConfig" class="demo-shell-card">
                 <div class="demo-shell-card__title">
@@ -169,7 +173,7 @@
                 </div>
               </article>
             </template>
-          </VfTabs>
+          </LayoutsTabs>
         </section>
 
         <section class="demo-block">
@@ -177,7 +181,11 @@
             <h2 id="demo-auth-layout">VfAuthLayout</h2>
             <p class="demo-text">Frames sign-in and account forms in a responsive branded panel.</p>
           </div>
-          <VfTabs v-if="availableAuthBreakpoints.length" v-model="activeAuthBreakpoint" :items="authBreakpointTabs">
+          <LayoutsTabs
+            v-if="availableAuthBreakpoints.length"
+            v-model="activeAuthBreakpoint"
+            :items="authBreakpointTabs"
+          >
             <template #panel>
               <article v-if="activeAuthBreakpointConfig" class="demo-shell-card">
                 <div class="demo-shell-card__title">
@@ -234,7 +242,7 @@
                 </div>
               </article>
             </template>
-          </VfTabs>
+          </LayoutsTabs>
         </section>
 
         <section class="demo-block">
@@ -242,7 +250,11 @@
             <h2 id="demo-setup-layout">VfSetupLayout</h2>
             <p class="demo-text">Structures an initial configuration flow with progress, content, and actions.</p>
           </div>
-          <VfTabs v-if="availableSetupBreakpoints.length" v-model="activeSetupBreakpoint" :items="setupBreakpointTabs">
+          <LayoutsTabs
+            v-if="availableSetupBreakpoints.length"
+            v-model="activeSetupBreakpoint"
+            :items="setupBreakpointTabs"
+          >
             <template #panel>
               <article v-if="activeSetupBreakpointConfig" class="demo-shell-card">
                 <div class="demo-shell-card__title">
@@ -404,7 +416,7 @@
                 </div>
               </article>
             </template>
-          </VfTabs>
+          </LayoutsTabs>
         </section>
 
         <section class="demo-block">
@@ -415,7 +427,7 @@
             </p>
           </div>
 
-          <VfTabs v-model="activeShellLayout" :items="shellLayoutTabs">
+          <LayoutsTabs v-model="activeShellLayout" :items="shellLayoutTabs">
             <template #panel>
               <section v-if="activeShellLayoutConfig" class="demo-shell-layout">
                 <div class="demo-shell-layout__header">
@@ -436,7 +448,7 @@
                     </VfSwitch>
                   </VfInline>
                 </div>
-                <VfTabs
+                <LayoutsTabs
                   v-if="availableShellBreakpoints.length"
                   v-model="activeShellBreakpoint"
                   :items="shellBreakpointTabs"
@@ -596,10 +608,10 @@
                       </div>
                     </article>
                   </template>
-                </VfTabs>
+                </LayoutsTabs>
               </section>
             </template>
-          </VfTabs>
+          </LayoutsTabs>
         </section>
 
         <section class="demo-block">
@@ -608,7 +620,11 @@
             <p class="demo-text">Provides responsive admin navigation with collapsible desktop and mobile sidebars.</p>
           </div>
 
-          <VfTabs v-if="availableShellBreakpoints.length" v-model="activeAdminBreakpoint" :items="shellBreakpointTabs">
+          <LayoutsTabs
+            v-if="availableShellBreakpoints.length"
+            v-model="activeAdminBreakpoint"
+            :items="shellBreakpointTabs"
+          >
             <template #panel>
               <article v-if="activeAdminBreakpointConfig" class="demo-shell-card">
                 <div class="demo-shell-card__title">
@@ -746,7 +762,7 @@
                 </div>
               </article>
             </template>
-          </VfTabs>
+          </LayoutsTabs>
         </section>
 
         <section class="demo-block">
@@ -755,7 +771,7 @@
             <p class="demo-text">Provides an opinionated product shell for dense administration workflows.</p>
           </div>
 
-          <VfTabs
+          <LayoutsTabs
             v-if="availableShellBreakpoints.length"
             v-model="activeAdminShellBreakpoint"
             :items="shellBreakpointTabs"
@@ -855,7 +871,7 @@
                 </div>
               </article>
             </template>
-          </VfTabs>
+          </LayoutsTabs>
         </section>
 
         <section class="demo-block">
@@ -863,7 +879,7 @@
             <h2 id="demo-document-layout">VfDocumentLayout</h2>
             <p class="demo-text">Organizes documentation with optional navigation, article content, and an aside.</p>
           </div>
-          <VfTabs v-model="activeDocumentLayout" :items="documentLayoutTabs">
+          <LayoutsTabs v-model="activeDocumentLayout" :items="documentLayoutTabs">
             <template #panel>
               <section v-if="activeDocumentLayoutConfig" class="demo-document-layouts">
                 <div class="demo-document-layouts__header">
@@ -885,7 +901,7 @@
                     </VfSwitch>
                   </VfInline>
                 </div>
-                <VfTabs
+                <LayoutsTabs
                   v-if="availableDocumentBreakpoints.length"
                   v-model="activeDocumentBreakpoint"
                   :items="documentBreakpointTabs"
@@ -1030,10 +1046,10 @@
                       </div>
                     </article>
                   </template>
-                </VfTabs>
+                </LayoutsTabs>
               </section>
             </template>
-          </VfTabs>
+          </LayoutsTabs>
         </section>
       </VfStack>
     </div>
@@ -1041,7 +1057,7 @@
 </template>
 
 <script setup lang="ts">
-import { VfDataTable, VfDrawer, VfInput as VfPasswordInput, VfNavMenu, VfTabs } from '@codemonster-ru/vueforge-core';
+import { VfDataTable, VfDrawer, VfInput as VfPasswordInput, VfNavMenu } from '@codemonster-ru/vueforge-core';
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
 import { cmBreakpoints, type CmBreakpointName } from '@codemonster-ru/ui-tokens';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -1066,6 +1082,7 @@ import {
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
+import LayoutsTabs from './LayoutsTabs.vue';
 import '@codemonster-ru/ui-css/button.css';
 import '@codemonster-ru/ui-css/icon-button.css';
 import '@codemonster-ru/ui-css/input.css';
