@@ -24,8 +24,8 @@
 }
 
 .cm-tooltip__trigger:focus-visible {
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-focus-ring-width);
 }
 
 .cm-tooltip__content {

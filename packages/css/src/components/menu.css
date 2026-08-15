@@ -59,7 +59,7 @@
 .cm-menu__item:focus-visible:not(:disabled, [aria-disabled='true']) {
   border-color: var(--cm-color-border-focus);
   outline: none;
-  box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
   color: var(--cm-color-selected-foreground);
 }
 

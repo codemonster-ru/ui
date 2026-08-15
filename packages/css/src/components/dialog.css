@@ -8,7 +8,6 @@
   border-radius: var(--cm-radius-overlay);
   background: var(--cm-color-background-surface-elevated);
   color: var(--cm-color-text-primary);
-  box-shadow: var(--cm-shadow-overlay);
   line-height: var(--cm-line-height-normal);
 }
 
@@ -72,8 +71,8 @@
 }
 
 .cm-dialog__close:focus-visible {
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
+  outline-offset: var(--cm-focus-ring-width);
 }
 
 .cm-dialog__description {
