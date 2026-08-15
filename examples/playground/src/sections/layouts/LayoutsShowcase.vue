@@ -869,7 +869,6 @@
 <script setup lang="ts">
 import {
   VfButton,
-  VfCheckbox,
   VfDataTable,
   VfDrawer,
   VfField,
@@ -878,7 +877,6 @@ import {
   VfLink,
   VfNavMenu,
   VfProgressBar,
-  VfSwitch,
   VfTabs,
 } from '@codemonster-ru/vueforge-core';
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
@@ -887,11 +885,13 @@ import {
   CmAvatar as VfAvatar,
   CmBadge as VfBadge,
   CmCard as VfCard,
+  CmCheckbox as VfCheckbox,
   CmContainer as VfContainer,
   CmGrid as VfGrid,
   CmInline as VfInline,
   CmSection as VfSection,
   CmStack as VfStack,
+  CmSwitch as VfSwitch,
 } from '@codemonster-ru/ui-vue';
 import {
   VfAppShell,
