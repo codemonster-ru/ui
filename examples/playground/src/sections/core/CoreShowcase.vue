@@ -55,7 +55,6 @@ import {
   VfDataTable,
   VfDatePicker,
   VfDrawer,
-  VfDialog,
   VfField,
   VfInput,
   VfMenuBar,
@@ -77,6 +76,7 @@ import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
   type CoreDataTableRecipeRow,
 } from './CoreDataTableRecipe.vue';
+import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
@@ -3508,19 +3508,7 @@ const tabContent = computed<Record<string, string>>(() => ({
       </section>
     </div>
 
-    <VfDialog v-model:open="dialogOpen" title="Dialog" :size="dialogSize" dividers>
-      <template #default>
-        <div class="demo-stack">
-          <p class="demo-m-0">Dialog content.</p>
-        </div>
-      </template>
-      <template #footer="{ close }">
-        <div class="demo-inline">
-          <CmButton data-autofocus @click="close">Looks good</CmButton>
-          <CmButton variant="secondary" @click="dialogOpen = false">Close</CmButton>
-        </div>
-      </template>
-    </VfDialog>
+    <CoreDialogRecipe v-model:open="dialogOpen" :size="dialogSize" />
 
     <CmDialog
       id="delete-example-user"
