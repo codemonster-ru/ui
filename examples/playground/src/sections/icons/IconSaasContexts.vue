@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import {
-  VfDataTable,
-  VfDropdown,
-  VfMenu,
-  VfMenuItem,
+  VfDataTable as LegacyDataTable,
+  VfDropdown as LegacyDropdown,
+  VfMenu as LegacyMenu,
+  VfMenuItem as LegacyMenuItem,
   VfNavMenu,
   VfPanel,
-  VfTabs,
-  type VfDataTableColumn,
-  type VfDataTableRow,
+  VfTabs as LegacyTabs,
+  type VfDataTableColumn as LegacyDataTableColumn,
+  type VfDataTableRow as LegacyDataTableRow,
   type VfNavMenuItem,
-  type VfTabItem,
+  type VfTabItem as LegacyTabItem,
 } from '@codemonster-ru/vueforge-core';
 import {
   CmAlert as VfAlert,
@@ -30,13 +30,16 @@ import '@codemonster-ru/ui-css/button.css';
 import '@codemonster-ru/ui-css/icon-button.css';
 import '@codemonster-ru/ui-css/input.css';
 
+// This showcase uses a panel-less tablist, rich table cells, and an icon menu inside an arbitrary
+// dropdown trigger. Those structures are intentionally outside the current owned Cm contracts.
+
 type UiVariant = {
   id: string;
   theme: 'light' | 'dark';
   density: 'normal' | 'compact';
 };
 
-type ProjectRow = VfDataTableRow & {
+type ProjectRow = LegacyDataTableRow & {
   id: string;
   project: string;
   projectIcon: IconName;
@@ -59,13 +62,13 @@ const navigationItems: VfNavMenuItem[] = [
   { value: 'settings', label: 'Settings', leadingIcon: 'gear' },
 ];
 
-const tabs: Array<VfTabItem & { icon: IconName }> = [
+const tabs: Array<LegacyTabItem & { icon: IconName }> = [
   { value: 'overview', label: 'Overview', icon: 'grid' },
   { value: 'analytics', label: 'Analytics', icon: 'chartBar' },
   { value: 'data', label: 'Data', icon: 'columns' },
 ];
 
-const columns: VfDataTableColumn[] = [
+const columns: LegacyDataTableColumn[] = [
   { key: 'project', header: 'Project' },
   { key: 'owner', header: 'Owner' },
   { key: 'status', header: 'Status' },
@@ -89,9 +92,9 @@ const rows: ProjectRow[] = [
   },
 ];
 
-const projectRow = (row: VfDataTableRow): ProjectRow => row as ProjectRow;
-const rowIcon = (row: VfDataTableRow): IconName => projectRow(row).projectIcon;
-const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): string => projectRow(row)[key];
+const projectRow = (row: LegacyDataTableRow): ProjectRow => row as ProjectRow;
+const rowIcon = (row: LegacyDataTableRow): IconName => projectRow(row).projectIcon;
+const rowText = (row: LegacyDataTableRow, key: 'project' | 'owner' | 'status'): string => projectRow(row)[key];
 </script>
 
 <template>
@@ -185,14 +188,14 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
               </VfIconButton>
             </VfInline>
 
-            <VfTabs default-value="overview" :items="tabs">
+            <LegacyTabs default-value="overview" :items="tabs">
               <template #tab="{ item }">
                 <VfInline class="icon-saas-tab" :wrap="false">
                   <VueIconify :icon="tabs.find((tab) => tab.value === item.value)?.icon ?? 'grid'" :size="16" />
                   <span>{{ item.label }}</span>
                 </VfInline>
               </template>
-            </VfTabs>
+            </LegacyTabs>
 
             <VfGrid class="icon-saas-metrics">
               <VfCard :compact="variant.density === 'compact'">
@@ -230,7 +233,7 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
               <template #header>
                 <VfInline class="icon-saas-data-panel__header" :wrap="false">
                   <strong>Recent projects</strong>
-                  <VfDropdown placement="bottom-end" :disable-teleport="true">
+                  <LegacyDropdown placement="bottom-end" :disable-teleport="true">
                     <template #trigger>
                       <VfButton
                         class="icon-saas-button"
@@ -242,15 +245,15 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
                         <VueIconify icon="chevronDown" :size="14" />
                       </VfButton>
                     </template>
-                    <VfMenu>
-                      <VfMenuItem icon="check" label="Active" active />
-                      <VfMenuItem icon="xmark" label="Archived" />
-                    </VfMenu>
-                  </VfDropdown>
+                    <LegacyMenu>
+                      <LegacyMenuItem icon="check" label="Active" active />
+                      <LegacyMenuItem icon="xmark" label="Archived" />
+                    </LegacyMenu>
+                  </LegacyDropdown>
                 </VfInline>
               </template>
 
-              <VfDataTable
+              <LegacyDataTable
                 :columns="columns"
                 :rows="rows"
                 row-key="id"
@@ -282,7 +285,7 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
                     </VfIconButton>
                   </VfInline>
                 </template>
-              </VfDataTable>
+              </LegacyDataTable>
 
               <VfInline class="icon-saas-pagination" :wrap="false">
                 <span>1–2 of 24</span>
