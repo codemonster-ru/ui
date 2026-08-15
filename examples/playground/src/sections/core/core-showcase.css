@@ -1019,15 +1019,6 @@
   margin-top: 0;
 }
 
-.vf-table-wrap.demo-table-scroll-y {
-  max-height: 13rem;
-  overflow: auto;
-}
-
-.vf-table-wrap.demo-data-table-pinned {
-  max-inline-size: 32rem;
-}
-
 .demo-data-table-details {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

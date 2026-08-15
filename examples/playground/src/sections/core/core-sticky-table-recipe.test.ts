@@ -86,4 +86,11 @@ describe('CoreStickyTableRecipe', () => {
     expect(showcase).not.toContain('VfLegacyTable');
     expect(showcase).toContain('VfTable · sticky header');
   });
+
+  it('leaves no legacy VfTable wrapper overrides in route CSS', () => {
+    const routeStyles = readFileSync(resolve(process.cwd(), 'src/sections/core/core-showcase.css'), 'utf8');
+    expect(routeStyles).not.toContain('.vf-table-wrap');
+    expect(routeStyles).not.toContain('demo-table-scroll-y');
+    expect(routeStyles).not.toContain('demo-data-table-pinned');
+  });
 });
