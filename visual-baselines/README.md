@@ -7,6 +7,8 @@ declared in `contracts/visual.config.json`.
 
 The capture disables animation and transition rendering. The two randomized progress examples are
 normalized to 50% by `scripts/visual/capture-showcase.mjs`; application source is not modified.
+Comparison is exact by default (`--threshold=0`). A non-zero per-channel tolerance must be supplied
+explicitly and is not accepted for the M12 exit gate.
 
 Capture a running candidate and compare it with the reference:
 
