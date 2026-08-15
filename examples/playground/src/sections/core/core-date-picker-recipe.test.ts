@@ -12,9 +12,14 @@ import {
   createCoreDateGrid,
   formatCoreDateDisplay,
   formatCoreDateLabel,
+  formatCoreDateSelection,
   getCoreWeekBoundary,
   moveCoreDateByMonth,
+  selectCoreDateRange,
   parseCoreDate,
+  toggleCoreMultipleDate,
+  type CoreDatePickerValue,
+  type CoreDateSelectionMode,
 } from './core-date-picker-recipe';
 
 describe('CoreDatePickerRecipe date foundation', () => {
@@ -39,10 +44,11 @@ describe('CoreDatePickerRecipe date foundation', () => {
       min?: string;
       placeholder?: string;
       readonly?: boolean;
-      value?: string;
+      selectionMode?: CoreDateSelectionMode;
+      value?: CoreDatePickerValue;
     } = {},
   ) {
-    const value = ref(options.value ?? '2026-07-30');
+    const value = ref<CoreDatePickerValue>(options.value ?? '2026-07-30');
     const app = createApp(
       defineComponent(
         () => () =>
@@ -57,8 +63,9 @@ describe('CoreDatePickerRecipe date foundation', () => {
             min: options.min,
             placeholder: options.placeholder,
             readonly: options.readonly,
+            selectionMode: options.selectionMode,
             'aria-describedby': 'release-date-help',
-            'onUpdate:modelValue': (next: string) => (value.value = next),
+            'onUpdate:modelValue': (next: CoreDatePickerValue) => (value.value = next),
           }),
       ),
     );
@@ -70,6 +77,8 @@ describe('CoreDatePickerRecipe date foundation', () => {
     expect(parseCoreDate('2026-02-29')).toBeNull();
     expect(formatCoreDateDisplay('2026-07-30')).toBe('07/30/26');
     expect(formatCoreDateLabel('2026-07-30')).toBe('Thursday, July 30, 2026');
+    expect(formatCoreDateSelection(['2026-07-15', '2026-07-30'], 'multiple')).toBe('07/15/26; 07/30/26');
+    expect(formatCoreDateSelection(['2026-07-15', '2026-07-30'], 'range')).toBe('07/15/26 – 07/30/26');
     expect(addCoreDays('2026-07-31', 1)).toBe('2026-08-01');
     expect(moveCoreDateByMonth('2026-01-31', 1)).toBe('2026-02-28');
     expect(getCoreWeekBoundary('2026-07-30', 'start')).toBe('2026-07-27');
@@ -90,6 +99,79 @@ describe('CoreDatePickerRecipe date foundation', () => {
       inCurrentMonth: false,
     });
     expect(cells.find(({ date }) => date === '2026-07-30')).toMatchObject({ selected: true, today: false });
+  });
+
+  it('preserves multiple ordering while toggling dates', async () => {
+    expect(toggleCoreMultipleDate(['2026-07-20', '2026-07-15'], '2026-07-20')).toEqual(['2026-07-15']);
+    expect(toggleCoreMultipleDate(['2026-07-20', '2026-07-15'], '2026-07-30')).toEqual([
+      '2026-07-20',
+      '2026-07-15',
+      '2026-07-30',
+    ]);
+
+    const { app, value } = mountPicker({
+      clearable: true,
+      selectionMode: 'multiple',
+      value: ['2026-07-15', '2026-07-20'],
+    });
+    const trigger = host.querySelector<HTMLButtonElement>('#release-date')!;
+    expect(trigger.textContent).toContain('07/15/26; 07/20/26');
+    trigger.click();
+    await nextTick();
+    await nextTick();
+
+    const selected = document.body.querySelector<HTMLButtonElement>('[data-date="2026-07-20"]')!;
+    expect(selected.getAttribute('aria-selected')).toBe('true');
+    selected.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' }));
+    await nextTick();
+    expect(value.value).toEqual(['2026-07-15']);
+    expect(document.body.querySelector('#release-date-calendar')).not.toBeNull();
+
+    document.body.querySelector<HTMLButtonElement>('[data-date="2026-07-30"]')!.click();
+    await nextTick();
+    expect(value.value).toEqual(['2026-07-15', '2026-07-30']);
+    expect(document.body.querySelector('#release-date-calendar')).not.toBeNull();
+
+    host.querySelector<HTMLButtonElement>('[aria-label="Clear date"]')!.click();
+    await nextTick();
+    expect(value.value).toEqual([]);
+    app.unmount();
+  });
+
+  it('starts, sorts, renders, and closes a completed range', async () => {
+    expect(selectCoreDateRange(['2026-07-20', '2026-07-25'], '2026-07-15')).toEqual(['2026-07-15']);
+    expect(selectCoreDateRange(['2026-07-20'], '2026-07-15')).toEqual(['2026-07-15', '2026-07-20']);
+
+    const { app, value } = mountPicker({ selectionMode: 'range', value: ['2026-07-15', '2026-07-20'] });
+    const trigger = host.querySelector<HTMLButtonElement>('#release-date')!;
+    expect(trigger.textContent).toContain('07/15/26 – 07/20/26');
+    trigger.click();
+    await nextTick();
+    await nextTick();
+
+    expect(document.body.querySelector('[data-date="2026-07-15"]')?.className).toContain(
+      'core-date-picker-recipe__day--range-start',
+    );
+    expect(document.body.querySelector('[data-date="2026-07-16"]')?.className).toContain(
+      'core-date-picker-recipe__day--in-range',
+    );
+    expect(document.body.querySelector('[data-date="2026-07-20"]')?.className).toContain(
+      'core-date-picker-recipe__day--range-end',
+    );
+
+    document.body.querySelector<HTMLButtonElement>('[data-date="2026-07-20"]')!.click();
+    await nextTick();
+    expect(value.value).toEqual(['2026-07-20']);
+    expect(document.body.querySelector('#release-date-calendar')).not.toBeNull();
+
+    document.body
+      .querySelector<HTMLButtonElement>('[data-date="2026-07-15"]')!
+      .dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' }));
+    await nextTick();
+    expect(value.value).toEqual(['2026-07-15', '2026-07-20']);
+    expect(document.body.querySelector('#release-date-calendar')).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+    app.unmount();
   });
 
   it('opens an accessible date grid and moves roving focus with frozen keyboard rules', async () => {
@@ -185,9 +267,10 @@ describe('CoreDatePickerRecipe date foundation', () => {
     expect(component).not.toContain('--vf-');
     expect(component).not.toContain('vueforge-core');
     expect(helper).not.toContain('vueforge-core');
-    expect(component).not.toContain('multiple');
-    expect(component).not.toContain('range');
     expect(component).not.toContain('showTime');
+    expect(component).not.toContain('monthPicker');
+    expect(component).not.toContain('yearPicker');
+    expect(helper).toContain("export type CoreDateSelectionMode = 'multiple' | 'range' | 'single'");
     expect(component).toContain('today: { type: String, required: true }');
   });
 
