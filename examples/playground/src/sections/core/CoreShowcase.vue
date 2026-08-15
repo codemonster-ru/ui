@@ -56,7 +56,6 @@ import {
   VfProgressBar,
   VfProgressSpinner,
   VfSelect,
-  VfStepper,
   VfTable as VfLegacyTable,
   VfThemeSwitch,
   VfTag,
@@ -73,7 +72,6 @@ import type {
   VfDataTableRow,
   VfDataTableSort,
   VfNavMenuItem,
-  VfStepperItem,
 } from '@codemonster-ru/vueforge-core';
 
 const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
@@ -174,19 +172,45 @@ const releaseTabs = [
   { value: 'community', label: 'Community' },
 ];
 
-const compactOnboardingSteps: VfStepperItem[] = [
+interface DemoStepperItem {
+  value: string;
+  label: string;
+  description: string;
+  disabled?: boolean;
+}
+
+type DemoStepperState = 'complete' | 'current' | 'disabled' | 'upcoming';
+
+interface DemoStepperSummaryItem extends DemoStepperItem {
+  state: DemoStepperState;
+}
+
+const compactOnboardingSteps: DemoStepperItem[] = [
   { value: 'start', label: 'Start', description: 'Create account' },
   { value: 'details', label: 'Details', description: 'Add product info' },
   { value: 'plan', label: 'Plan', description: 'Choose rollout' },
   { value: 'launch', label: 'Launch', description: 'Review and publish' },
 ];
 
-const onboardingSteps: VfStepperItem[] = [
+const onboardingSteps: DemoStepperItem[] = [
   { value: 'account', label: 'Account', description: 'Create workspace owner' },
   { value: 'profile', label: 'Profile', description: 'Add product and brand details' },
   { value: 'billing', label: 'Billing', description: 'Choose plan and payment method' },
   { value: 'launch', label: 'Launch', description: 'Review configuration and publish' },
 ];
+
+function createStepperSummary(items: DemoStepperItem[], activeValue: string): DemoStepperSummaryItem[] {
+  const activeIndex = items.findIndex((item) => item.value === activeValue);
+
+  return items.map((item, index) => ({
+    ...item,
+    state: item.disabled ? 'disabled' : index === activeIndex ? 'current' : index < activeIndex ? 'complete' : 'upcoming',
+  }));
+}
+
+const compactOnboardingAboveSteps = createStepperSummary(compactOnboardingSteps, 'details');
+const compactOnboardingBelowSteps = createStepperSummary(compactOnboardingSteps, 'plan');
+const onboardingVerticalSteps = createStepperSummary(onboardingSteps, 'billing');
 
 interface CommandItem {
   title: string;
@@ -2810,29 +2834,89 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfStepper · horizontal</p>
-                  <VfStepper
-                    model-value="details"
-                    :items="compactOnboardingSteps"
-                    content-position="above"
+                  <nav
+                    class="demo-application-stepper demo-application-stepper--horizontal demo-application-stepper--content-above"
                     aria-label="Matrix horizontal stepper above"
-                  />
-                  <VfStepper
-                    model-value="plan"
-                    :items="compactOnboardingSteps"
-                    content-position="below"
+                  >
+                    <ol class="demo-application-stepper__list">
+                      <li
+                        v-for="(item, index) in compactOnboardingAboveSteps"
+                        :key="item.value"
+                        class="demo-application-stepper__item"
+                        :data-state="item.state"
+                        :aria-current="item.state === 'current' ? 'step' : undefined"
+                        :aria-disabled="item.state === 'disabled' ? 'true' : undefined"
+                      >
+                        <div class="demo-application-stepper__summary">
+                          <span class="demo-application-stepper__rail" aria-hidden="true">
+                            <span class="demo-application-stepper__connector demo-application-stepper__connector--before" />
+                            <span class="demo-application-stepper__marker">{{ index + 1 }}</span>
+                            <span class="demo-application-stepper__connector demo-application-stepper__connector--after" />
+                          </span>
+                          <span class="demo-application-stepper__content">
+                            <span class="demo-application-stepper__label">{{ item.label }}</span>
+                            <span class="demo-application-stepper__description">{{ item.description }}</span>
+                          </span>
+                        </div>
+                      </li>
+                    </ol>
+                  </nav>
+                  <nav
+                    class="demo-application-stepper demo-application-stepper--horizontal demo-application-stepper--content-below"
                     aria-label="Matrix horizontal stepper below"
-                  />
+                  >
+                    <ol class="demo-application-stepper__list">
+                      <li
+                        v-for="(item, index) in compactOnboardingBelowSteps"
+                        :key="item.value"
+                        class="demo-application-stepper__item"
+                        :data-state="item.state"
+                        :aria-current="item.state === 'current' ? 'step' : undefined"
+                        :aria-disabled="item.state === 'disabled' ? 'true' : undefined"
+                      >
+                        <div class="demo-application-stepper__summary">
+                          <span class="demo-application-stepper__rail" aria-hidden="true">
+                            <span class="demo-application-stepper__connector demo-application-stepper__connector--before" />
+                            <span class="demo-application-stepper__marker">{{ index + 1 }}</span>
+                            <span class="demo-application-stepper__connector demo-application-stepper__connector--after" />
+                          </span>
+                          <span class="demo-application-stepper__content">
+                            <span class="demo-application-stepper__label">{{ item.label }}</span>
+                            <span class="demo-application-stepper__description">{{ item.description }}</span>
+                          </span>
+                        </div>
+                      </li>
+                    </ol>
+                  </nav>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfStepper · vertical</p>
-                  <VfStepper
-                    model-value="billing"
-                    :items="onboardingSteps"
-                    orientation="vertical"
-                    content-position="end"
+                  <nav
+                    class="demo-application-stepper demo-application-stepper--vertical demo-application-stepper--content-end"
                     aria-label="Matrix vertical stepper"
-                  />
+                  >
+                    <ol class="demo-application-stepper__list">
+                      <li
+                        v-for="(item, index) in onboardingVerticalSteps"
+                        :key="item.value"
+                        class="demo-application-stepper__item"
+                        :data-state="item.state"
+                        :aria-current="item.state === 'current' ? 'step' : undefined"
+                        :aria-disabled="item.state === 'disabled' ? 'true' : undefined"
+                      >
+                        <div class="demo-application-stepper__summary">
+                          <span class="demo-application-stepper__rail" aria-hidden="true">
+                            <span class="demo-application-stepper__marker">{{ index + 1 }}</span>
+                          </span>
+                          <span class="demo-application-stepper__content">
+                            <span class="demo-application-stepper__label">{{ item.label }}</span>
+                            <span class="demo-application-stepper__description">{{ item.description }}</span>
+                          </span>
+                        </div>
+                      </li>
+                    </ol>
+                  </nav>
                 </div>
 
                 <div class="demo-component-matrix__cell">
