@@ -239,6 +239,11 @@ onBeforeUnmount(() => tabResizeObserver?.disconnect());
     box-shadow var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
+.vite-demo-tabs__tab:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+}
+
 .vite-demo-tabs__tab:hover:not([aria-selected='true']),
 .vite-demo-tabs__tab:active:not([aria-selected='true']) {
   background: var(--cm-color-background-surface-subtle);
@@ -248,11 +253,6 @@ onBeforeUnmount(() => tabResizeObserver?.disconnect());
 .vite-demo-tabs__tab[aria-selected='true'] {
   background: transparent;
   color: var(--cm-color-selected-foreground);
-}
-
-.vite-demo-tabs__tab:focus-visible {
-  outline: none;
-  box-shadow: inset 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .vite-demo-tabs__indicator {
