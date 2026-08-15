@@ -25,5 +25,18 @@ test('styles canonical Button state and content hooks', () => {
   assert.match(css, /--cm-button-spinner-duration: 1\.4s;/);
   assert.match(css, /animation: cm-button-spin var\(--cm-button-spinner-duration\)/);
   assert.match(css, /@keyframes cm-button-spin/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.doesNotMatch(css, /--(?:vf|vueforge)-|\.vf-/);
+});
+
+test('preserves the reference Button geometry and shared variant states', () => {
+  assert.match(css, /gap: var\(--cm-button-gap\);/);
+  assert.match(css, /padding: var\(--cm-button-padding-md\);/);
+  assert.match(css, /font-size: var\(--cm-control-font-size-md\);/);
+  assert.match(css, /font-weight: var\(--cm-font-weight-regular\);/);
+  assert.match(css, /line-height: var\(--cm-control-line-height\);/);
+  assert.match(css, /border-color: var\(--cm-color-border-focus\);/);
+  assert.match(css, /box-shadow: 0 0 0 var\(--cm-focus-ring-width\) var\(--cm-color-focus-ring\);/);
+  assert.match(css, /\.cm-button--secondary:active[\s\S]*border-color: var\(--cm-color-border-strong\);/);
+  assert.match(css, /\.cm-button--ghost[\s\S]*color: var\(--cm-color-text-primary\);/);
 });
