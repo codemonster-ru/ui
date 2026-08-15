@@ -12,6 +12,8 @@ import {
   CmCheckbox as VfCheckbox,
   CmDivider as VfDivider,
   CmDialog,
+  CmField,
+  CmFieldset,
   CmIconButton,
   CmLink,
   CmMenu,
@@ -36,6 +38,8 @@ import '@codemonster-ru/ui-css/breadcrumbs.css';
 import '@codemonster-ru/ui-css/checkbox.css';
 import '@codemonster-ru/ui-css/dialog.css';
 import '@codemonster-ru/ui-css/dropdown.css';
+import '@codemonster-ru/ui-css/field.css';
+import '@codemonster-ru/ui-css/fieldset.css';
 import '@codemonster-ru/ui-css/icon-button.css';
 import '@codemonster-ru/ui-css/link.css';
 import '@codemonster-ru/ui-css/menu.css';
@@ -51,7 +55,6 @@ import {
   VfDrawer,
   VfDialog,
   VfField,
-  VfFieldset,
   VfInput,
   VfMenuBar,
   VfNavMenu,
@@ -2345,7 +2348,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 description, and error spacing; the form layout should own the gap between fields.
               </p>
 
-              <VfField label="Workspace name" required>
+              <CmField control-id="core-form-stack-workspace-name" label="Workspace name" required>
                 <template #default="{ controlId, describedBy, invalid, required }">
                   <VfInput
                     :id="controlId"
@@ -2357,7 +2360,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     placeholder="Acme Cloud"
                   />
                 </template>
-              </VfField>
+              </CmField>
 
               <VfField label="Billing email" label-placement="floating" required>
                 <template #default="{ controlId, describedBy, invalid, required }">
@@ -2392,7 +2395,12 @@ const tabContent = computed<Record<string, string>>(() => ({
             <p class="demo-label">VfFormLayout · responsive</p>
             <VfCard title="Workspace settings">
               <div class="demo-application-form-layout demo-application-form-layout--wide-label">
-                <VfField label="Workspace name" description="Shown to every workspace member." required>
+                <CmField
+                  control-id="core-form-layout-workspace-name"
+                  label="Workspace name"
+                  description="Shown to every workspace member."
+                  required
+                >
                   <template #default="{ controlId, describedBy, invalid, required }">
                     <VfInput
                       :id="controlId"
@@ -2404,9 +2412,9 @@ const tabContent = computed<Record<string, string>>(() => ({
                       placeholder="Acme Cloud"
                     />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField label="Billing email" required>
+                <CmField control-id="core-form-layout-billing-email" label="Billing email" required>
                   <template #default="{ controlId, describedBy, invalid, required }">
                     <VfInput
                       :id="controlId"
@@ -2419,9 +2427,9 @@ const tabContent = computed<Record<string, string>>(() => ({
                       placeholder="team@acme.test"
                     />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField label="Plan">
+                <CmField control-id="core-form-layout-plan" label="Plan">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfSelect
                       :id="controlId"
@@ -2432,7 +2440,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       placeholder="Choose a plan"
                     />
                   </template>
-                </VfField>
+                </CmField>
               </div>
             </VfCard>
           </div>
@@ -2448,7 +2456,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-component-matrix__grid">
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">Interactive</p>
-                    <VfField label="Release date">
+                    <CmField control-id="core-date-picker-release-date" label="Release date">
                       <template #default="{ controlId, describedBy, invalid }">
                         <VfDatePicker
                           :id="controlId"
@@ -2460,7 +2468,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Choose a date"
                         />
                       </template>
-                    </VfField>
+                    </CmField>
                     <p class="demo-text">
                       Model: <code>{{ datePickerValue || 'empty' }}</code>
                     </p>
@@ -2468,7 +2476,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">Date and time</p>
-                    <VfField label="Starts at">
+                    <CmField control-id="core-date-picker-starts-at" label="Starts at">
                       <template #default="{ controlId, describedBy, invalid }">
                         <VfDatePicker
                           :id="controlId"
@@ -2481,7 +2489,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :aria-describedby="describedBy"
                         />
                       </template>
-                    </VfField>
+                    </CmField>
                     <p class="demo-text">
                       Model: <code>{{ dateTimePickerValue || 'empty' }}</code>
                     </p>
@@ -2489,7 +2497,11 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">Min and max</p>
-                    <VfField label="Booking date" description="Available from August 10 through August 20, 2026.">
+                    <CmField
+                      control-id="core-date-picker-booking-date"
+                      label="Booking date"
+                      description="Available from August 10 through August 20, 2026."
+                    >
                       <template #default="{ controlId, describedBy, invalid }">
                         <VfDatePicker
                           :id="controlId"
@@ -2502,7 +2514,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :aria-describedby="describedBy"
                         />
                       </template>
-                    </VfField>
+                    </CmField>
                     <p class="demo-text">
                       Model: <code>{{ constrainedDatePickerValue || 'empty' }}</code>
                     </p>
@@ -2510,7 +2522,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">Multiple</p>
-                    <VfField label="Release dates">
+                    <CmField control-id="core-date-picker-release-dates" label="Release dates">
                       <template #default="{ controlId, describedBy, invalid }">
                         <VfDatePicker
                           :id="controlId"
@@ -2522,7 +2534,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :aria-describedby="describedBy"
                         />
                       </template>
-                    </VfField>
+                    </CmField>
                     <p class="demo-text">
                       Model: <code>{{ JSON.stringify(multipleDatePickerValue) }}</code>
                     </p>
@@ -2530,7 +2542,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">Range</p>
-                    <VfField label="Booking period">
+                    <CmField control-id="core-date-picker-booking-period" label="Booking period">
                       <template #default="{ controlId, describedBy, invalid }">
                         <VfDatePicker
                           :id="controlId"
@@ -2542,7 +2554,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :aria-describedby="describedBy"
                         />
                       </template>
-                    </VfField>
+                    </CmField>
                     <p class="demo-text">
                       Model: <code>{{ JSON.stringify(rangeDatePickerValue) }}</code>
                     </p>
@@ -2550,7 +2562,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">Month</p>
-                    <VfField label="Billing month">
+                    <CmField control-id="core-date-picker-billing-month" label="Billing month">
                       <template #default="{ controlId, describedBy, invalid }">
                         <VfDatePicker
                           :id="controlId"
@@ -2562,7 +2574,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :aria-describedby="describedBy"
                         />
                       </template>
-                    </VfField>
+                    </CmField>
                     <p class="demo-text">
                       Model: <code>{{ monthPickerValue || 'empty' }}</code>
                     </p>
@@ -2570,7 +2582,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">Year</p>
-                    <VfField label="Fiscal year">
+                    <CmField control-id="core-date-picker-fiscal-year" label="Fiscal year">
                       <template #default="{ controlId, describedBy, invalid }">
                         <VfDatePicker
                           :id="controlId"
@@ -2582,7 +2594,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :aria-describedby="describedBy"
                         />
                       </template>
-                    </VfField>
+                    </CmField>
                     <p class="demo-text">
                       Model: <code>{{ yearPickerValue || 'empty' }}</code>
                     </p>
@@ -2945,7 +2957,12 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-form-geometry__grid demo-form-geometry__grid--two">
                   <div class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">VfField</p>
-                    <VfField label="Default field" description="Description text" required>
+                    <CmField
+                      control-id="core-form-geometry-default-field"
+                      label="Default field"
+                      description="Description text"
+                      required
+                    >
                       <template #default="{ controlId, describedBy, invalid, required }">
                         <VfInput
                           :id="controlId"
@@ -2957,8 +2974,8 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Default field"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Invalid field" error="Error text">
+                    </CmField>
+                    <CmField control-id="core-form-geometry-invalid-field" label="Invalid field" error="Error text">
                       <template #default="{ controlId, describedBy, invalid }">
                         <VfInput
                           :id="controlId"
@@ -2968,20 +2985,24 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Invalid field"
                         />
                       </template>
-                    </VfField>
+                    </CmField>
                   </div>
 
                   <div class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">VfFieldset</p>
-                    <VfFieldset label="Notification channels" description="Grouped checkbox controls">
+                    <CmFieldset
+                      id="core-form-geometry-notification-channels"
+                      label="Notification channels"
+                      description="Grouped checkbox controls"
+                    >
                       <template #default="{ invalid }">
                         <div class="demo-selection-list">
                           <VfCheckbox :model-value="true" :invalid="invalid"> Email alerts </VfCheckbox>
                           <VfCheckbox :invalid="invalid">Slack alerts</VfCheckbox>
                         </div>
                       </template>
-                    </VfFieldset>
-                    <VfFieldset label="Workspace plan" error="Select one option">
+                    </CmFieldset>
+                    <CmFieldset id="core-form-geometry-workspace-plan" label="Workspace plan" error="Select one option">
                       <template #default="{ invalid }">
                         <div class="demo-selection-list">
                           <VfRadio model-value="pro" name="fieldset-plan" value="starter" :invalid="invalid">
@@ -2990,7 +3011,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           <VfRadio model-value="pro" name="fieldset-plan" value="pro" :invalid="invalid"> Pro </VfRadio>
                         </div>
                       </template>
-                    </VfFieldset>
+                    </CmFieldset>
                   </div>
                 </div>
               </div>
