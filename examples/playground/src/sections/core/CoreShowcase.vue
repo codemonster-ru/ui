@@ -2,11 +2,14 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import {
   CmAvatar as VfAvatar,
+  CmAlert as VfAlert,
   CmBadge as VfBadge,
+  CmBreadcrumbs as VfBreadcrumbs,
   CmButton,
   CmCard as VfCard,
   CmCheckbox as VfCheckbox,
   CmDivider as VfDivider,
+  CmIconButton,
   CmLink,
   CmProgressBar,
   CmProgressSpinner,
@@ -14,19 +17,23 @@ import {
   CmSkeleton as VfSkeleton,
   CmStack as VfStack,
   CmSwitch as VfSwitch,
+  CmTable as VfTable,
   CmTextarea as VfTextarea,
+  type CmBreadcrumbItem,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
 import '@codemonster-ru/ui-css/button.css';
+import '@codemonster-ru/ui-css/alert.css';
+import '@codemonster-ru/ui-css/breadcrumbs.css';
+import '@codemonster-ru/ui-css/icon-button.css';
 import '@codemonster-ru/ui-css/link.css';
 import '@codemonster-ru/ui-css/progress-bar.css';
 import '@codemonster-ru/ui-css/progress-spinner.css';
+import '@codemonster-ru/ui-css/table.css';
 import {
   VfAccordion,
-  VfAlert,
-  VfBreadcrumbs,
-  VfButton,
+  VfButton as VfLegacyButton,
   VfCommandPalette,
   VfConfirmDialog,
   VfDataTable,
@@ -39,7 +46,7 @@ import {
   VfFieldset,
   VfFormLayout,
   VfGroupBox,
-  VfIconButton,
+  VfIconButton as VfLegacyIconButton,
   VfInput,
   VfMenu,
   VfMenuBar,
@@ -53,7 +60,7 @@ import {
   VfSelect,
   VfSkeletonGate,
   VfStepper,
-  VfTable,
+  VfTable as VfLegacyTable,
   VfTableOfContents,
   VfThemeSwitch,
   VfTag,
@@ -64,7 +71,6 @@ import {
   useTheme,
 } from '@codemonster-ru/vueforge-core';
 import type {
-  VfBreadcrumbItem,
   VfDataTableColumn,
   VfDataTableColumnOrder,
   VfDataTableColumnWidths,
@@ -131,7 +137,26 @@ const actionVariants = [
   'contrast',
   'ghost',
 ] as const;
+type ActionVariant = (typeof actionVariants)[number];
+type SupportedActionVariant = Extract<ActionVariant, 'primary' | 'secondary' | 'danger' | 'ghost'>;
+const supportedActionVariants: ReadonlySet<ActionVariant> = new Set<SupportedActionVariant>([
+  'primary',
+  'secondary',
+  'danger',
+  'ghost',
+]);
+const isSupportedActionVariant = (variant: ActionVariant): variant is SupportedActionVariant =>
+  supportedActionVariants.has(variant);
 const feedbackTones = ['primary', 'success', 'info', 'warn', 'help', 'danger', 'contrast'] as const;
+const alertIconByTone = {
+  primary: 'infoCircle',
+  success: 'checkCircle',
+  info: 'infoCircle',
+  warn: 'alertCircle',
+  help: 'questionCircle',
+  danger: 'xCircle',
+  contrast: 'infoCircle',
+} as const;
 const linkTones = ['default', 'muted'] as const;
 const linkUnderlines = ['none', 'hover', 'always'] as const;
 const overlayPlacements = ['top', 'bottom'] as const;
@@ -497,7 +522,7 @@ const topMenuItems: VfNavMenuItem[] = [
   { value: 'about', label: 'About' },
 ];
 
-const breadcrumbItems: VfBreadcrumbItem[] = [
+const breadcrumbItems: CmBreadcrumbItem[] = [
   { label: 'Docs', href: '#demo-navigation' },
   { label: 'Components', href: '#demo-navigation' },
   { label: 'Navigation', href: '#demo-navigation' },
@@ -956,15 +981,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <div v-for="size in formGeometrySizes" :key="`button-${size}`" class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">{{ size }}</p>
                     <div class="demo-inline">
-                      <VfButton
-                        v-for="variant in actionVariants"
-                        :key="`${size}-${variant}`"
-                        :size="size"
-                        :variant="variant"
-                      >
-                        {{ variant }}
-                      </VfButton>
-                      <VfButton :size="size" disabled>disabled</VfButton>
+                      <template v-for="variant in actionVariants" :key="`${size}-${variant}`">
+                        <CmButton v-if="isSupportedActionVariant(variant)" :size="size" :variant="variant">
+                          {{ variant }}
+                        </CmButton>
+                        <VfLegacyButton v-else :size="size" :variant="variant">{{ variant }}</VfLegacyButton>
+                      </template>
+                      <CmButton :size="size" disabled>disabled</CmButton>
                     </div>
                   </div>
                 </div>
@@ -980,15 +1003,12 @@ const tabContent = computed<Record<string, string>>(() => ({
                   >
                     <p class="demo-component-matrix__label">{{ size }}</p>
                     <div class="demo-inline">
-                      <VfButton
-                        v-for="variant in actionVariants"
-                        :key="`${size}-${variant}-loading`"
-                        :size="size"
-                        :variant="variant"
-                        loading
-                      >
-                        {{ variant }}
-                      </VfButton>
+                      <template v-for="variant in actionVariants" :key="`${size}-${variant}-loading`">
+                        <CmButton v-if="isSupportedActionVariant(variant)" :size="size" :variant="variant" loading>
+                          {{ variant }}
+                        </CmButton>
+                        <VfLegacyButton v-else :size="size" :variant="variant" loading>{{ variant }}</VfLegacyButton>
+                      </template>
                     </div>
                   </div>
                 </div>
@@ -1004,15 +1024,26 @@ const tabContent = computed<Record<string, string>>(() => ({
                   >
                     <p class="demo-component-matrix__label">{{ size }}</p>
                     <div class="demo-inline">
-                      <VfIconButton
-                        v-for="variant in actionVariants"
-                        :key="`${size}-${variant}`"
-                        :icon="icons.gear"
-                        :size="size"
-                        :variant="variant"
-                        :aria-label="`${variant} ${size} settings`"
-                      />
-                      <VfIconButton :icon="icons.gear" :size="size" aria-label="Disabled settings" disabled />
+                      <template v-for="variant in actionVariants" :key="`${size}-${variant}`">
+                        <CmIconButton
+                          v-if="isSupportedActionVariant(variant)"
+                          :label="`${variant} ${size} settings`"
+                          :size="size"
+                          :variant="variant"
+                        >
+                          <VueIconify :icon="icons.gear" :size="`var(--cm-icon-size-${size})`" />
+                        </CmIconButton>
+                        <VfLegacyIconButton
+                          v-else
+                          :icon="icons.gear"
+                          :size="size"
+                          :variant="variant"
+                          :aria-label="`${variant} ${size} settings`"
+                        />
+                      </template>
+                      <CmIconButton label="Disabled settings" :size="size" disabled>
+                        <VueIconify :icon="icons.gear" :size="`var(--cm-icon-size-${size})`" />
+                      </CmIconButton>
                     </div>
                   </div>
                 </div>
@@ -1061,7 +1092,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 >
                   <p class="demo-component-matrix__label">VfTooltip · {{ placement }}</p>
                   <VfTooltip :text="`Tooltip placement: ${placement}`" :placement="placement">
-                    <VfButton variant="secondary">{{ placement }}</VfButton>
+                    <CmButton variant="secondary">{{ placement }}</CmButton>
                   </VfTooltip>
                 </div>
 
@@ -1069,7 +1100,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">VfDropdown + VfMenu + VfMenuItem · default</p>
                   <VfDropdown>
                     <template #trigger>
-                      <VfButton tabindex="-1" variant="secondary">Open menu</VfButton>
+                      <CmButton tabindex="-1" variant="secondary">Open menu</CmButton>
                     </template>
                     <VfMenu>
                       <VfMenuItem :icon="icons.pencil" label="Edit" />
@@ -1082,7 +1113,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">VfDropdown · pills</p>
                   <VfDropdown variant="pills">
                     <template #trigger>
-                      <VfButton tabindex="-1" variant="secondary">Open menu</VfButton>
+                      <CmButton tabindex="-1" variant="secondary">Open menu</CmButton>
                     </template>
                     <button class="vf-dropdown__item" role="menuitem">Action one</button>
                     <button class="vf-dropdown__item" role="menuitem">Action two</button>
@@ -1093,11 +1124,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">VfPopover · content</p>
                   <VfPopover>
                     <template #trigger>
-                      <VfButton tabindex="-1" variant="secondary">Open popover</VfButton>
+                      <CmButton tabindex="-1" variant="secondary">Open popover</CmButton>
                     </template>
                     <div class="demo-stack">
                       <p class="demo-text">Compact content block.</p>
-                      <VfButton size="sm">Apply</VfButton>
+                      <CmButton size="sm">Apply</CmButton>
                     </div>
                   </VfPopover>
                 </div>
@@ -1240,7 +1271,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfTable · compact</p>
-                  <VfTable compact>
+                  <VfTable density="compact">
                     <template #header>
                       <tr>
                         <th>Name</th>
@@ -1310,7 +1341,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfTable · sticky header</p>
-                  <VfTable class="demo-table-scroll-y" sticky-header>
+                  <VfLegacyTable class="demo-table-scroll-y" sticky-header>
                     <template #header>
                       <tr>
                         <th>Name</th>
@@ -1345,7 +1376,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       <td>Progress</td>
                       <td>Review</td>
                     </tr>
-                  </VfTable>
+                  </VfLegacyTable>
                 </div>
 
                 <div class="demo-component-matrix__cell">
@@ -1399,14 +1430,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">VfDataTable · resizable columns</p>
                   <div class="demo-stack">
                     <div class="demo-inline">
-                      <VfButton
+                      <CmButton
                         size="sm"
                         variant="secondary"
                         :disabled="Object.keys(dataTableColumnWidths).length === 0"
                         @click="resetDataTableColumnWidths"
                       >
                         Reset widths
-                      </VfButton>
+                      </CmButton>
                     </div>
                     <p class="demo-text">
                       Drag a divider to resize both adjacent columns without changing the table width. Reset restores
@@ -1429,14 +1460,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">VfDataTable · reorderable columns</p>
                   <div class="demo-stack">
                     <div class="demo-inline">
-                      <VfButton
+                      <CmButton
                         size="sm"
                         variant="secondary"
                         :disabled="dataTableColumnOrder.length === 0"
                         @click="resetDataTableColumnOrder"
                       >
                         Reset order
-                      </VfButton>
+                      </CmButton>
                     </div>
                     <p class="demo-text">
                       Drag anywhere in a column header to preview the animated new order, then release to commit. You
@@ -1470,14 +1501,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <div class="demo-inline">
                     <span class="demo-text">{{ selectedDataTableRowKeys.length }} rows selected</span>
                     <span class="demo-text">Offline rows are unavailable</span>
-                    <VfButton
+                    <CmButton
                       size="sm"
                       variant="secondary"
                       :disabled="selectedDataTableRowKeys.length === 0"
                       @click="selectedDataTableRowKeys = []"
                     >
                       Clear selection
-                    </VfButton>
+                    </CmButton>
                   </div>
                 </div>
 
@@ -1550,7 +1581,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       column-dividers
                     >
                       <template #cell-actions>
-                        <VfButton size="sm" variant="ghost">Edit</VfButton>
+                        <CmButton size="sm" variant="ghost">Edit</CmButton>
                       </template>
                     </VfDataTable>
                   </div>
@@ -1579,17 +1610,17 @@ const tabContent = computed<Record<string, string>>(() => ({
                         <div class="demo-stack demo-stack--center">
                           <span>Could not load team members.</span>
                           <div class="demo-inline">
-                            <VfButton size="sm" variant="secondary" @click="dataTableError = false">
+                            <CmButton size="sm" variant="secondary" @click="dataTableError = false">
                               Try again
-                            </VfButton>
+                            </CmButton>
                           </div>
                         </div>
                       </template>
                     </VfDataTable>
                     <div v-if="!dataTableError" class="demo-inline">
-                      <VfButton size="sm" variant="secondary" @click="dataTableError = true">
+                      <CmButton size="sm" variant="secondary" @click="dataTableError = true">
                         Show error state
-                      </VfButton>
+                      </CmButton>
                     </div>
                   </div>
                 </div>
@@ -1671,10 +1702,21 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-component-matrix__section">
                 <p class="demo-text">VfAlert · tones</p>
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
-                  <VfAlert v-for="tone in feedbackTones" :key="`alert-${tone}`" :tone="tone" :title="`${tone} alert`">
+                  <VfAlert
+                    v-for="tone in feedbackTones"
+                    :key="`alert-${tone}`"
+                    :tone="tone === 'warn' ? 'warning' : tone"
+                    :title="`${tone} alert`"
+                    role="alert"
+                  >
+                    <template #icon>
+                      <VueIconify :icon="alertIconByTone[tone]" size="var(--vf-icon-size-lg)" />
+                    </template>
                     Consistent icon, border, and content spacing.
                   </VfAlert>
-                  <VfAlert title="without icon" hide-icon> Text-first alert content alignment. </VfAlert>
+                  <VfAlert tone="primary" title="without icon" role="alert">
+                    Text-first alert content alignment.
+                  </VfAlert>
                 </div>
               </div>
 
@@ -2625,7 +2667,11 @@ const tabContent = computed<Record<string, string>>(() => ({
               <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfBreadcrumbs</p>
-                  <VfBreadcrumbs :items="breadcrumbItems" />
+                  <VfBreadcrumbs :items="breadcrumbItems">
+                    <template #separator>
+                      <VueIconify :icon="icons.chevronRight" size="var(--cm-icon-size-sm)" />
+                    </template>
+                  </VfBreadcrumbs>
                   <VfBreadcrumbs
                     :items="[
                       { label: 'Docs', href: '#demo-navigation' },
@@ -2633,7 +2679,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                       { label: 'Forms', href: '#demo-forms' },
                       { label: 'Field geometry', current: true },
                     ]"
-                  />
+                  >
+                    <template #separator>
+                      <VueIconify :icon="icons.chevronRight" size="var(--cm-icon-size-sm)" />
+                    </template>
+                  </VfBreadcrumbs>
                   <VfBreadcrumbs :items="breadcrumbItems">
                     <template #separator>/</template>
                   </VfBreadcrumbs>
@@ -2650,8 +2700,8 @@ const tabContent = computed<Record<string, string>>(() => ({
                     ]"
                   >
                     <template #actions>
-                      <VfButton variant="secondary">Export</VfButton>
-                      <VfButton>New user</VfButton>
+                      <CmButton variant="secondary">Export</CmButton>
+                      <CmButton>New user</CmButton>
                     </template>
                   </VfPageHeader>
                 </div>
@@ -2832,8 +2882,8 @@ const tabContent = computed<Record<string, string>>(() => ({
       </template>
       <template #footer="{ close }">
         <div class="demo-inline">
-          <VfButton data-autofocus @click="close">Looks good</VfButton>
-          <VfButton variant="secondary" @click="dialogOpen = false">Close</VfButton>
+          <CmButton data-autofocus @click="close">Looks good</CmButton>
+          <CmButton variant="secondary" @click="dialogOpen = false">Close</CmButton>
         </div>
       </template>
     </VfDialog>
@@ -2855,8 +2905,8 @@ const tabContent = computed<Record<string, string>>(() => ({
       </template>
       <template #footer="{ close }">
         <div class="demo-inline">
-          <VfButton data-autofocus @click="close">Apply</VfButton>
-          <VfButton variant="secondary" @click="drawerOpen = false">Close</VfButton>
+          <CmButton data-autofocus @click="close">Apply</CmButton>
+          <CmButton variant="secondary" @click="drawerOpen = false">Close</CmButton>
         </div>
       </template>
     </VfDrawer>
@@ -2870,8 +2920,8 @@ const tabContent = computed<Record<string, string>>(() => ({
       </template>
       <template #footer="{ close }">
         <div class="demo-inline">
-          <VfButton data-autofocus @click="close">Apply</VfButton>
-          <VfButton variant="secondary" @click="drawerFullscreenOpen = false">Close</VfButton>
+          <CmButton data-autofocus @click="close">Apply</CmButton>
+          <CmButton variant="secondary" @click="drawerFullscreenOpen = false">Close</CmButton>
         </div>
       </template>
     </VfDrawer>
