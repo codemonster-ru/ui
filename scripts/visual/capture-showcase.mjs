@@ -140,6 +140,12 @@ for (const viewport of config.viewports) {
         return true;
       })()`);
       await sleep(route === 'playground' || route === 'codeblock' ? 3_000 : 500);
+      if (route === 'codeblock') {
+        await waitFor('document.querySelector(".vf-skeleton-gate__content--ready .vf-codeblock") !== null');
+      }
+      if (route === 'playground') {
+        await waitFor('document.querySelector(".vf-skeleton-gate__content--ready .vf-playground") !== null');
+      }
 
       const pageHeight = await evaluate(
         'Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight ?? 0)',
