@@ -916,7 +916,7 @@
   --demo-application-form-layout-label-width: 12rem;
 }
 
-.demo-application-form-layout > :is(.vf-field, .cm-field) {
+.demo-application-form-layout > .cm-field {
   width: 100%;
   min-width: 0;
 }
@@ -973,33 +973,24 @@
 }
 
 @container demo-application-form-layout (min-width: 768px) {
-  .demo-application-form-layout > :is(.vf-field, .cm-field) {
+  .demo-application-form-layout > .cm-field {
     grid-template-columns: var(--demo-application-form-layout-label-width) minmax(0, 1fr);
     column-gap: var(--cm-space-3);
     align-items: start;
   }
 
-  .demo-application-form-layout > :is(.vf-field, .cm-field) > :is(.vf-field__label, .cm-field__label) {
+  .demo-application-form-layout > .cm-field > .cm-field__label {
     place-self: start end;
     padding-block-start: var(--cm-field-padding-block-md);
     overflow-wrap: anywhere;
     text-align: end;
   }
 
-  .demo-application-form-layout
-    > :is(.vf-field, .cm-field)
-    > :is(
-      .vf-field__control,
-      .vf-field__description,
-      .vf-field__error,
-      .cm-field__control,
-      .cm-field__description,
-      .cm-field__error
-    ) {
+  .demo-application-form-layout > .cm-field > :is(.cm-field__control, .cm-field__description, .cm-field__error) {
     grid-column: 2;
   }
 
-  .demo-application-form-layout > :is(.vf-field, .cm-field) > :is(.vf-field__control, .cm-field__control) {
+  .demo-application-form-layout > .cm-field > .cm-field__control {
     grid-row: 1;
   }
 }
