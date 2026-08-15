@@ -74,15 +74,15 @@ jobs:
           SHOWCASE_STATE_DIFF: ${{ runner.temp }}/codemonster-showcase-state-diff
           CROSS_PLATFORM_CAPTURE: ${{ runner.temp }}/codemonster-cross-platform-current
           CROSS_PLATFORM_RAZOR_DIFF: ${{ runner.temp }}/codemonster-cross-platform-razor-diff
-          CROSS_PLATFORM_RAZOR_HTML: ${{ runner.temp }}/codemonster-cross-platform-button.html
+          CROSS_PLATFORM_RAZOR_FIXTURES: ${{ runner.temp }}/codemonster-cross-platform-razor.json
           CROSS_PLATFORM_VUE_DIFF: ${{ runner.temp }}/codemonster-cross-platform-vue-diff
         run: |
           set -euo pipefail
 
           npm run dev -w @codemonster-ru/vueforge-playground-example -- --host 127.0.0.1 --port 5175 > "${RUNNER_TEMP}/codemonster-showcase-vite.log" 2>&1 &
           vite_pid=$!
-          npm run visual:cross-platform:razor-render -- --output="${CROSS_PLATFORM_RAZOR_HTML}"
-          npm run visual:cross-platform:serve -- --razor-html="${CROSS_PLATFORM_RAZOR_HTML}" --port=5176 > "${RUNNER_TEMP}/codemonster-cross-platform-vite.log" 2>&1 &
+          npm run visual:cross-platform:razor-render -- --output="${CROSS_PLATFORM_RAZOR_FIXTURES}"
+          npm run visual:cross-platform:serve -- --razor-fixtures="${CROSS_PLATFORM_RAZOR_FIXTURES}" --port=5176 > "${RUNNER_TEMP}/codemonster-cross-platform-vite.log" 2>&1 &
           adapter_pid=$!
           "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --remote-debugging-port=9226 --user-data-dir="${RUNNER_TEMP}/codemonster-showcase-chrome" --disable-gpu --no-first-run --no-default-browser-check about:blank > "${RUNNER_TEMP}/codemonster-showcase-chrome.log" 2>&1 &
           chrome_pid=$!
@@ -93,7 +93,7 @@ jobs:
           trap cleanup EXIT
 
           for attempt in {1..60}; do
-            if curl --fail --silent http://127.0.0.1:5175/ >/dev/null && curl --fail --silent 'http://127.0.0.1:5176/?platform=vue&theme=light' >/dev/null && curl --fail --silent http://127.0.0.1:9226/json/version >/dev/null; then
+            if curl --fail --silent http://127.0.0.1:5175/ >/dev/null && curl --fail --silent 'http://127.0.0.1:5176/?case=button-default&platform=vue&theme=light' >/dev/null && curl --fail --silent http://127.0.0.1:9226/json/version >/dev/null; then
               break
             fi
             if [ "${attempt}" -eq 60 ]; then
@@ -110,8 +110,8 @@ jobs:
           npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${SHOWCASE_STATE_CAPTURE}" --label=ci-state-current
           npm run visual:showcase:states:compare -- --current="${SHOWCASE_STATE_CAPTURE}" --diff="${SHOWCASE_STATE_DIFF}"
           npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${CROSS_PLATFORM_CAPTURE}" --label=ci-actual-adapters
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-button-default --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}"
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-button-default --current="${CROSS_PLATFORM_CAPTURE}/razor" --diff="${CROSS_PLATFORM_RAZOR_DIFF}"
+          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}"
+          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/razor" --diff="${CROSS_PLATFORM_RAZOR_DIFF}"
 
       - name: Upload showcase visual differences
         if: failure()

@@ -1,0 +1,97 @@
+{
+  "label": "vueforge-cross-platform-reference",
+  "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "sourceFixture": {
+    "caseIds": ["alert-danger-icon", "button-default", "card-title"],
+    "componentPackage": "@codemonster-ru/vueforge-core",
+    "renderer": "Vue createApp at the reference commit"
+  },
+  "routes": ["alert-danger-icon", "button-default", "card-title"],
+  "screenshots": [
+    {
+      "filename": "alert-danger-icon--light--mobile.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "button-default--light--mobile.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "card-title--light--mobile.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "alert-danger-icon--dark--mobile.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "button-default--dark--mobile.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "card-title--dark--mobile.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "alert-danger-icon--light--desktop.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "button-default--light--desktop.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "card-title--light--desktop.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "alert-danger-icon--dark--desktop.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "button-default--dark--desktop.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "card-title--dark--desktop.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "desktop"
+    }
+  ],
+  "themes": ["light", "dark"],
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    }
+  ]
+}

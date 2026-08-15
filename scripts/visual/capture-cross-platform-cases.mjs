@@ -15,11 +15,15 @@ const chromeEndpoint = options.chrome ?? process.env.CHROME_REMOTE_ENDPOINT ?? '
 
 if (!origin || !outputDirectory || !label || !['adapters', 'vueforge'].includes(source)) {
   throw new Error(
-    'Usage: node scripts/visual/capture-cross-platform-button.mjs --origin=URL --output=DIR --label=LABEL [--source=adapters|vueforge]',
+    'Usage: node scripts/visual/capture-cross-platform-cases.mjs --origin=URL --output=DIR --label=LABEL [--source=adapters|vueforge]',
   );
 }
 
 const config = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../contracts/visual.config.json'), 'utf8'));
+const crossPlatformManifest = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, '../../contracts/cross-platform-visual-baselines.json'), 'utf8'),
+);
+const caseIds = crossPlatformManifest.caseIds;
 const platforms = source === 'vueforge' ? ['reference'] : ['vue', 'razor'];
 const sleep = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
 
@@ -96,14 +100,13 @@ for (const platform of platforms) {
     ...(source === 'vueforge'
       ? {
           sourceFixture: {
-            component: '@codemonster-ru/vueforge-core/VfButton',
-            props: {},
+            caseIds,
+            componentPackage: '@codemonster-ru/vueforge-core',
             renderer: 'Vue createApp at the reference commit',
-            slots: { default: 'Save' },
           },
         }
       : {}),
-    routes: ['button-default'],
+    routes: caseIds,
     screenshots: [],
     themes: config.themes.map(({ name }) => name),
     viewports: config.viewports,
@@ -117,61 +120,63 @@ for (const platform of platforms) {
       width: viewport.width,
     });
     for (const theme of config.themes) {
-      if (source === 'vueforge') {
-        const url = `${origin.replace(/\/$/u, '')}/?theme=${theme.name}`;
-        await send('Page.navigate', { url });
-        await waitFor(
-          'document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualRenderer === "vueforge-fd-mounted" && document.querySelector("#visual-root")?.dataset.visualReady === "true"',
-        );
-      } else {
-        const url = `${origin.replace(/\/$/u, '')}/?platform=${platform}&theme=${theme.name}`;
-        await send('Page.navigate', { url });
-        await waitFor(
-          `document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualRenderer === ${JSON.stringify(platform === 'vue' ? 'vue-mounted' : 'razor-rendered')} && document.querySelector("#visual-root")?.dataset.visualReady === "true"`,
-        );
-      }
+      for (const caseId of caseIds) {
+        if (source === 'vueforge') {
+          const url = `${origin.replace(/\/$/u, '')}/?case=${caseId}&theme=${theme.name}`;
+          await send('Page.navigate', { url });
+          await waitFor(
+            `document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualCase === ${JSON.stringify(caseId)} && document.querySelector("#visual-root")?.dataset.visualRenderer === "vueforge-fd-mounted" && document.querySelector("#visual-root")?.dataset.visualReady === "true"`,
+          );
+        } else {
+          const url = `${origin.replace(/\/$/u, '')}/?case=${caseId}&platform=${platform}&theme=${theme.name}`;
+          await send('Page.navigate', { url });
+          await waitFor(
+            `document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualCase === ${JSON.stringify(caseId)} && document.querySelector("#visual-root")?.dataset.visualRenderer === ${JSON.stringify(platform === 'vue' ? 'vue-mounted' : 'razor-rendered')} && document.querySelector("#visual-root")?.dataset.visualReady === "true"`,
+          );
+        }
 
-      await evaluate('document.fonts?.ready ?? Promise.resolve()');
-      await evaluate(`(() => {
+        await evaluate('document.fonts?.ready ?? Promise.resolve()');
+        await evaluate(`(() => {
         const style = document.createElement('style');
         style.dataset.visualCapture = 'true';
         style.textContent = '*,*::before,*::after{animation:none!important;caret-color:transparent!important;scroll-behavior:auto!important;transition:none!important}';
         document.head.append(style);
         return true;
       })()`);
-      await sleep(100);
+        await sleep(100);
 
-      const selector = source === 'vueforge' ? '#visual-root .vf-button' : '#visual-root .cm-button';
-      await evaluate(`(() => {
+        const selector = '#visual-root > :first-child';
+        await evaluate(`(() => {
         const target = document.querySelector(${JSON.stringify(selector)});
-        if (!target) throw new Error('button-default visual target is unavailable.');
+        if (!target) throw new Error(${JSON.stringify(`${caseId} visual target is unavailable.`)});
         target.scrollIntoView({ block: 'center', inline: 'nearest' });
         return true;
       })()`);
-      const { root } = await send('DOM.getDocument');
-      const { nodeId } = await send('DOM.querySelector', { nodeId: root.nodeId, selector });
-      if (!nodeId) throw new Error('button-default visual target is unavailable.');
+        const { root } = await send('DOM.getDocument');
+        const { nodeId } = await send('DOM.querySelector', { nodeId: root.nodeId, selector });
+        if (!nodeId) throw new Error(`${caseId} visual target is unavailable.`);
 
-      const { scrollLeft, scrollTop } = await evaluate('({ scrollLeft: window.scrollX, scrollTop: window.scrollY })');
-      const { model } = await send('DOM.getBoxModel', { nodeId });
-      const horizontal = model.border.filter((_, index) => index % 2 === 0);
-      const vertical = model.border.filter((_, index) => index % 2 === 1);
-      const padding = 4;
-      const viewportX = Math.round(Math.min(...horizontal) - padding);
-      const viewportY = Math.round(Math.min(...vertical) - padding);
-      const x = Math.max(0, viewportX + scrollLeft);
-      const y = Math.max(0, viewportY + scrollTop);
-      const width = Math.ceil(Math.max(...horizontal) + padding + scrollLeft - x);
-      const height = Math.ceil(Math.max(...vertical) + padding + scrollTop - y);
-      const { data } = await send('Page.captureScreenshot', {
-        captureBeyondViewport: true,
-        clip: { height, scale: 1, width, x, y },
-        format: 'png',
-        fromSurface: true,
-      });
-      const filename = `button-default--${theme.name}--${viewport.name}.png`;
-      writeFileSync(resolve(platformDirectory, filename), Buffer.from(data, 'base64'));
-      manifest.screenshots.push({ filename, platform, theme: theme.name, viewport: viewport.name });
+        const { scrollLeft, scrollTop } = await evaluate('({ scrollLeft: window.scrollX, scrollTop: window.scrollY })');
+        const { model } = await send('DOM.getBoxModel', { nodeId });
+        const horizontal = model.border.filter((_, index) => index % 2 === 0);
+        const vertical = model.border.filter((_, index) => index % 2 === 1);
+        const padding = 4;
+        const viewportX = Math.round(Math.min(...horizontal) - padding);
+        const viewportY = Math.round(Math.min(...vertical) - padding);
+        const x = Math.max(0, viewportX + scrollLeft);
+        const y = Math.max(0, viewportY + scrollTop);
+        const width = Math.ceil(Math.max(...horizontal) + padding + scrollLeft - x);
+        const height = Math.ceil(Math.max(...vertical) + padding + scrollTop - y);
+        const { data } = await send('Page.captureScreenshot', {
+          captureBeyondViewport: true,
+          clip: { height, scale: 1, width, x, y },
+          format: 'png',
+          fromSurface: true,
+        });
+        const filename = `${caseId}--${theme.name}--${viewport.name}.png`;
+        writeFileSync(resolve(platformDirectory, filename), Buffer.from(data, 'base64'));
+        manifest.screenshots.push({ filename, platform, theme: theme.name, viewport: viewport.name });
+      }
     }
   }
 
@@ -180,5 +185,5 @@ for (const platform of platforms) {
 
 socket.close();
 console.log(
-  `Captured ${platforms.length * config.themes.length * config.viewports.length} ${label} Button screenshots.`,
+  `Captured ${platforms.length * caseIds.length * config.themes.length * config.viewports.length} ${label} cross-platform screenshots.`,
 );

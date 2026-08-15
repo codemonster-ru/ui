@@ -1,5 +1,5 @@
 {
   "schemaVersion": 1,
   "platforms": ["vue", "razor"],
-  "caseIds": ["button-default"]
+  "caseIds": ["alert-danger-icon", "button-default", "card-title"]
 }
