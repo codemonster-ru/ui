@@ -46,6 +46,30 @@
   line-height: var(--cm-line-height-normal);
 }
 
+.demo-application-busy {
+  --demo-application-busy-fade-easing: ease;
+
+  position: relative;
+  min-height: 6rem;
+  overflow: hidden;
+}
+
+.demo-application-busy__content {
+  opacity: 0;
+  transition: opacity var(--cm-motion-duration-fast) var(--demo-application-busy-fade-easing);
+}
+
+.demo-application-busy__content--ready {
+  opacity: 1;
+}
+
+.demo-application-busy__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity var(--cm-motion-duration-fast) var(--demo-application-busy-fade-easing);
+}
+
 .demo-application-group-box {
   box-sizing: border-box;
   min-width: 0;
