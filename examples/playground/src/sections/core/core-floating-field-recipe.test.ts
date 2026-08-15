@@ -142,11 +142,12 @@ describe('CoreFloatingFieldRecipe', () => {
     expect(source).toContain(':deep(textarea)');
   });
 
-  it('owns only floating Input, Select, and Textarea showcase fields', () => {
+  it('owns all floating showcase fields including the date recipe', () => {
     const showcase = readFileSync(resolve(__dirname, 'CoreShowcase.vue'), 'utf8');
-    expect(showcase.match(/<CoreFloatingFieldRecipe\b/gu)).toHaveLength(12);
-    expect(showcase.match(/<VfField\b/gu)).toHaveLength(1);
-    expect(showcase).toContain('<VfField label="Release date" label-placement="floating"');
+    expect(showcase.match(/<CoreFloatingFieldRecipe\b/gu)).toHaveLength(13);
+    expect(showcase.match(/<VfField\b/gu)).toBeNull();
+    expect(showcase).toContain('<CoreFloatingFieldRecipe label="Release date" :variant="variant">');
+    expect(showcase).toContain('@open-change="setOpen"');
     expect(showcase).not.toMatch(/<Vf(?:Input|Select|FloatingTextarea)\b/u);
     expect(showcase.match(/<CmTextarea\b/gu)).toHaveLength(3);
   });
