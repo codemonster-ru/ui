@@ -56,7 +56,6 @@ import {
   VfDatePicker,
   VfField,
   VfTable as VfLegacyTable,
-  VfSwitch as VfIconSwitch,
 } from '@codemonster-ru/vueforge-core';
 import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
@@ -71,6 +70,7 @@ import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe from './CoreDrawerRecipe.vue';
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
 import CoreFloatingFieldRecipe from './CoreFloatingFieldRecipe.vue';
+import CoreIconSwitchRecipe from './CoreIconSwitchRecipe.vue';
 import CoreInputRecipe from './CoreInputRecipe.vue';
 import CoreMenuBarRecipe from './CoreMenuBarRecipe.vue';
 import CoreNavMenuRecipe from './CoreNavMenuRecipe.vue';
@@ -2871,12 +2871,12 @@ const tabContent = computed<Record<string, string>>(() => ({
                         Active radio
                       </VfRadio>
                       <VfSwitch :size="size" :model-value="true"> Active switch </VfSwitch>
-                      <VfIconSwitch :size="size" :model-value="true">
+                      <CoreIconSwitchRecipe :size="size" :model-value="true">
                         <template #thumb="{ checked }">
                           <VueIconify :icon="checked ? icons.check : icons.xmark" />
                         </template>
                         Icon switch
-                      </VfIconSwitch>
+                      </CoreIconSwitchRecipe>
                     </div>
                   </div>
                 </div>
