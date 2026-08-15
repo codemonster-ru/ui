@@ -1,7 +1,9 @@
 .cm-fieldset {
   display: grid;
-  gap: var(--cm-space-2);
+  box-sizing: border-box;
+  inline-size: 100%;
   min-inline-size: 0;
+  row-gap: var(--cm-space-2);
   margin: 0;
   padding: 0;
   border: 0;
@@ -11,18 +13,18 @@
 .cm-fieldset__legend {
   margin: 0;
   padding: 0;
-  font-size: var(--cm-font-size-sm);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-md);
   font-weight: var(--cm-font-weight-medium);
   line-height: var(--cm-line-height-tight);
 }
 
 .cm-fieldset--invalid .cm-fieldset__legend {
-  color: var(--cm-color-status-danger-subtle-foreground);
+  color: var(--cm-color-text-primary);
 }
 
 .cm-fieldset__content {
   display: grid;
-  gap: var(--cm-space-2);
   min-inline-size: 0;
 }
 
@@ -30,6 +32,7 @@
 .cm-fieldset__error {
   margin: 0;
   font-size: var(--cm-font-size-sm);
+  font-weight: var(--cm-font-weight-medium);
   line-height: var(--cm-line-height-normal);
 }
 

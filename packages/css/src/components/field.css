@@ -1,17 +1,21 @@
 .cm-field {
   display: grid;
-  gap: var(--cm-space-2);
+  box-sizing: border-box;
+  inline-size: 100%;
+  row-gap: var(--cm-space-2);
   color: var(--cm-color-text-primary);
 }
 
 .cm-field__label {
-  font-size: var(--cm-font-size-sm);
+  margin: 0;
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-xl);
   font-weight: var(--cm-font-weight-medium);
   line-height: var(--cm-line-height-tight);
 }
 
 .cm-field--invalid .cm-field__label {
-  color: var(--cm-color-status-danger-subtle-foreground);
+  color: var(--cm-color-text-primary);
 }
 
 .cm-field__required {
@@ -20,6 +24,7 @@
 }
 
 .cm-field__control {
+  display: grid;
   min-inline-size: 0;
 }
 
@@ -27,6 +32,7 @@
 .cm-field__error {
   margin: 0;
   font-size: var(--cm-font-size-sm);
+  font-weight: var(--cm-font-weight-medium);
   line-height: var(--cm-line-height-normal);
 }
 
