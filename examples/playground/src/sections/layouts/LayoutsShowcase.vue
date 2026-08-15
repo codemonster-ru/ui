@@ -463,19 +463,14 @@
                             'demo-shell-frame--scroll': true,
                           }"
                         >
-                          <VfAppShell
-                            :layout="activeShellLayoutConfig.name"
-                            :show-subheader="showShellSubheader"
-                            :show-content-subheader="showShellContentSubheader"
-                            :sticky-header="stickyShellHeader"
-                            :sticky-sidebar="stickyShellSidebar"
-                            :sticky-aside="stickyShellAside"
-                            :sidebar-appearance="
-                              plainShellAreas && !activeShellBreakpointHidesSidebar ? 'plain' : 'default'
-                            "
-                            :aside-appearance="plainShellAreas ? 'plain' : 'default'"
-                            :content-appearance="plainShellAreas ? 'plain' : 'default'"
+                          <div
                             :class="{
+                              'demo-app-shell-recipe': true,
+                              [`demo-app-shell-recipe--${activeShellLayoutConfig.name}`]: true,
+                              'demo-app-shell-recipe--with-subheader': showShellSubheader,
+                              'demo-app-shell-recipe--header-sticky': stickyShellHeader,
+                              'demo-app-shell-recipe--sidebar-sticky': stickyShellSidebar,
+                              'demo-app-shell-recipe--aside-sticky': stickyShellAside,
                               'demo-shell-app--compact-aside':
                                 activeShellLayoutConfig.name === 'sidebar-content-aside' &&
                                 activeShellBreakpointHidesAside,
@@ -483,83 +478,125 @@
                                 activeShellLayoutConfig.name !== 'content' && activeShellBreakpointHidesSidebar,
                             }"
                           >
-                            <template #header>
-                              <div class="demo-shell-header">
-                                <div class="demo-shell-header__start">
-                                  <div class="demo-shell-heading">
-                                    <strong>Header</strong>
+                            <header class="demo-app-shell-recipe__header">
+                              <VfContainer class="demo-app-shell-recipe__header-container">
+                                <div class="demo-shell-header">
+                                  <div class="demo-shell-header__start">
+                                    <div class="demo-shell-heading">
+                                      <strong>Header</strong>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </template>
+                              </VfContainer>
+                            </header>
 
-                            <template #subheader>
-                              <div class="demo-shell-header">
-                                <div class="demo-shell-header__start">
-                                  <div class="demo-shell-heading">
-                                    <strong>Subheader</strong>
+                            <div v-if="showShellSubheader" class="demo-app-shell-recipe__subheader">
+                              <VfContainer class="demo-app-shell-recipe__subheader-container">
+                                <div class="demo-shell-header">
+                                  <div class="demo-shell-header__start">
+                                    <div class="demo-shell-heading">
+                                      <strong>Subheader</strong>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </template>
+                              </VfContainer>
+                            </div>
 
-                            <template v-if="activeShellLayoutConfig.name !== 'content'" #sidebar>
-                              <VfStack class="demo-scroll-column">
-                                <strong>Sidebar</strong>
-                                <p
-                                  v-for="item in demoSidebarItems"
-                                  :key="`shell-sidebar-${item.id}`"
-                                  class="demo-scroll-copy"
-                                >
-                                  {{ item.title }}. {{ item.text }}
-                                </p>
-                              </VfStack>
-                            </template>
+                            <div class="demo-app-shell-recipe__body">
+                              <VfContainer class="demo-app-shell-recipe__body-container">
+                                <div class="demo-app-shell-recipe__body-grid">
+                                  <aside
+                                    v-if="activeShellLayoutConfig.name !== 'content'"
+                                    :class="[
+                                      'demo-app-shell-recipe__sidebar',
+                                      plainShellAreas &&
+                                        !activeShellBreakpointHidesSidebar &&
+                                        'demo-app-shell-recipe__sidebar--plain',
+                                    ]"
+                                  >
+                                    <div class="demo-app-shell-recipe__sidebar-inner">
+                                      <VfStack class="demo-scroll-column">
+                                        <strong>Sidebar</strong>
+                                        <p
+                                          v-for="item in demoSidebarItems"
+                                          :key="`shell-sidebar-${item.id}`"
+                                          class="demo-scroll-copy"
+                                        >
+                                          {{ item.title }}. {{ item.text }}
+                                        </p>
+                                      </VfStack>
+                                    </div>
+                                  </aside>
 
-                            <template #content-subheader>
-                              <div class="demo-shell-header">
-                                <div class="demo-shell-header__start">
-                                  <div class="demo-shell-heading">
-                                    <strong>Content subheader</strong>
-                                  </div>
+                                  <main
+                                    :class="[
+                                      'demo-app-shell-recipe__content',
+                                      plainShellAreas && 'demo-app-shell-recipe__content--plain',
+                                    ]"
+                                  >
+                                    <div
+                                      v-if="showShellContentSubheader"
+                                      class="demo-app-shell-recipe__content-subheader"
+                                    >
+                                      <div class="demo-shell-header">
+                                        <div class="demo-shell-header__start">
+                                          <div class="demo-shell-heading">
+                                            <strong>Content subheader</strong>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div class="demo-app-shell-recipe__content-body">
+                                      <VfStack
+                                        :class="{
+                                          'demo-shell-content-area': true,
+                                          'demo-shell-content-area--plain': plainShellAreas,
+                                          'demo-scroll-column': true,
+                                        }"
+                                      >
+                                        <strong>Content</strong>
+                                        <p
+                                          v-for="item in demoContentItems"
+                                          :key="`shell-content-${item.id}`"
+                                          class="demo-scroll-copy"
+                                        >
+                                          {{ item.title }}. {{ item.text }}
+                                        </p>
+                                      </VfStack>
+                                    </div>
+                                  </main>
+
+                                  <aside
+                                    v-if="activeShellLayoutConfig.name === 'sidebar-content-aside'"
+                                    :class="[
+                                      'demo-app-shell-recipe__aside',
+                                      plainShellAreas && 'demo-app-shell-recipe__aside--plain',
+                                    ]"
+                                  >
+                                    <div class="demo-app-shell-recipe__aside-inner">
+                                      <VfStack class="demo-scroll-column">
+                                        <strong>Aside</strong>
+                                        <p
+                                          v-for="item in demoAsideItems"
+                                          :key="`shell-aside-${item.id}`"
+                                          class="demo-scroll-copy"
+                                        >
+                                          {{ item.title }}. {{ item.text }}
+                                        </p>
+                                      </VfStack>
+                                    </div>
+                                  </aside>
                                 </div>
-                              </div>
-                            </template>
+                              </VfContainer>
+                            </div>
 
-                            <VfStack
-                              :class="{
-                                'demo-shell-content-area': true,
-                                'demo-shell-content-area--plain': plainShellAreas,
-                                'demo-scroll-column': true,
-                              }"
-                            >
-                              <strong>Content</strong>
-                              <p
-                                v-for="item in demoContentItems"
-                                :key="`shell-content-${item.id}`"
-                                class="demo-scroll-copy"
-                              >
-                                {{ item.title }}. {{ item.text }}
-                              </p>
-                            </VfStack>
-
-                            <template v-if="activeShellLayoutConfig.name === 'sidebar-content-aside'" #aside>
-                              <VfStack class="demo-scroll-column">
-                                <strong>Aside</strong>
-                                <p
-                                  v-for="item in demoAsideItems"
-                                  :key="`shell-aside-${item.id}`"
-                                  class="demo-scroll-copy"
-                                >
-                                  {{ item.title }}. {{ item.text }}
-                                </p>
-                              </VfStack>
-                            </template>
-
-                            <template #footer>
-                              <strong>Footer</strong>
-                            </template>
-                          </VfAppShell>
+                            <footer class="demo-app-shell-recipe__footer">
+                              <VfContainer class="demo-app-shell-recipe__footer-container">
+                                <strong>Footer</strong>
+                              </VfContainer>
+                            </footer>
+                          </div>
                         </div>
                       </div>
                     </article>
@@ -940,7 +977,6 @@ import {
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import {
-  VfAppShell,
   VfAdminLayout,
   VfAdminShell,
   VfDocumentLayout,
@@ -1660,6 +1696,258 @@ const demoAsideItems = buildDemoItems(
     border: 0;
     border-radius: 0;
     box-shadow: none;
+  }
+}
+
+.demo-app-shell-recipe {
+  --demo-app-shell-sidebar-width: 18rem;
+  --demo-app-shell-aside-width: 20rem;
+  --demo-app-shell-header-offset: 4rem;
+  --demo-app-shell-subheader-offset: 0rem;
+  --demo-app-shell-sticky-offset: var(--demo-app-shell-header-offset);
+
+  display: grid;
+  grid-template:
+    'header' auto
+    'subheader' auto
+    'body' minmax(0, 1fr)
+    'footer' auto / minmax(0, 1fr);
+  min-width: 20rem;
+  min-height: 30rem;
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+}
+
+.demo-app-shell-recipe--with-subheader {
+  --demo-app-shell-subheader-offset: 2.75rem;
+  --demo-app-shell-sticky-offset: calc(
+    var(--demo-app-shell-header-offset) + var(--demo-app-shell-subheader-offset)
+  );
+}
+
+.demo-app-shell-recipe__header {
+  position: relative;
+  z-index: 20;
+  top: 0;
+  display: flex;
+  grid-area: header;
+  box-sizing: border-box;
+  align-items: center;
+  gap: var(--cm-space-4);
+  block-size: var(--demo-app-shell-header-offset);
+  padding-block: var(--cm-space-3);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+.demo-app-shell-recipe__header-container,
+.demo-app-shell-recipe__subheader-container,
+.demo-app-shell-recipe__footer-container,
+.demo-app-shell-recipe__body,
+.demo-app-shell-recipe__body-grid,
+.demo-app-shell-recipe__sidebar,
+.demo-app-shell-recipe__content,
+.demo-app-shell-recipe__content-body,
+.demo-app-shell-recipe__aside {
+  min-width: 0;
+}
+
+.demo-app-shell-recipe--header-sticky > .demo-app-shell-recipe__header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.demo-app-shell-recipe__subheader {
+  position: relative;
+  top: 0;
+  display: flex;
+  grid-area: subheader;
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+  align-items: center;
+  gap: var(--cm-space-4);
+  inline-size: 100%;
+  block-size: var(--demo-app-shell-subheader-offset);
+  padding-block: 0.375rem;
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+.demo-app-shell-recipe--header-sticky > .demo-app-shell-recipe__subheader {
+  position: sticky;
+  top: var(--demo-app-shell-header-offset);
+  z-index: 19;
+}
+
+.demo-app-shell-recipe__body {
+  grid-area: body;
+  min-height: 0;
+}
+
+.demo-app-shell-recipe__body-container {
+  block-size: 100%;
+  padding-inline: 0;
+}
+
+.demo-app-shell-recipe__body-grid {
+  display: grid;
+  grid-template:
+    'sidebar content aside' minmax(0, 1fr) / minmax(0, var(--demo-app-shell-sidebar-width)) minmax(0, 1fr)
+    minmax(0, var(--demo-app-shell-aside-width));
+  min-height: 100%;
+}
+
+.demo-app-shell-recipe--sidebar-content > .demo-app-shell-recipe__body .demo-app-shell-recipe__body-grid {
+  grid-template-areas: 'sidebar content';
+  grid-template-columns: minmax(0, var(--demo-app-shell-sidebar-width)) minmax(0, 1fr);
+}
+
+.demo-app-shell-recipe--content > .demo-app-shell-recipe__body .demo-app-shell-recipe__body-grid {
+  grid-template-areas: 'content';
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.demo-app-shell-recipe__sidebar {
+  grid-area: sidebar;
+  overflow-y: auto;
+  border-right: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+.demo-app-shell-recipe__sidebar--plain {
+  border-right: 0;
+  background: transparent;
+}
+
+.demo-app-shell-recipe__sidebar-inner,
+.demo-app-shell-recipe__aside-inner {
+  min-width: 0;
+  padding: var(--cm-space-4);
+}
+
+.demo-app-shell-recipe__content {
+  display: grid;
+  grid-area: content;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+  padding: var(--cm-space-4);
+  background: var(--cm-color-background-surface);
+}
+
+.demo-app-shell-recipe__content--plain {
+  background: transparent;
+}
+
+.demo-app-shell-recipe__content-subheader {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-4);
+  min-height: 2.75rem;
+  margin-block: calc(-1 * var(--cm-space-4)) var(--cm-space-4);
+  margin-inline: calc(-1 * var(--cm-space-4));
+  padding: 0.375rem var(--cm-space-4);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+.demo-app-shell-recipe__content--plain > .demo-app-shell-recipe__content-subheader {
+  border-bottom: 0;
+  background: transparent;
+}
+
+.demo-app-shell-recipe--header-sticky .demo-app-shell-recipe__content-subheader {
+  position: sticky;
+  z-index: 18;
+  top: var(--demo-app-shell-sticky-offset);
+  margin-block-start: 0;
+}
+
+.demo-app-shell-recipe--header-sticky .demo-app-shell-recipe__content:has(> .demo-app-shell-recipe__content-subheader) {
+  padding-block-start: 0;
+}
+
+.demo-app-shell-recipe__content-body {
+  min-height: 0;
+}
+
+.demo-app-shell-recipe__aside {
+  grid-area: aside;
+  border-left: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+.demo-app-shell-recipe__aside--plain {
+  border-left: 0;
+  background: transparent;
+}
+
+.demo-shell-app--compact-aside > .demo-app-shell-recipe__body .demo-app-shell-recipe__body-grid {
+  grid-template-areas: 'sidebar content';
+  grid-template-columns: minmax(0, var(--demo-app-shell-sidebar-width)) minmax(0, 1fr);
+}
+
+.demo-shell-app--compact-aside .demo-app-shell-recipe__aside,
+.demo-shell-app--compact-sidebar .demo-app-shell-recipe__sidebar,
+.demo-shell-app--compact-sidebar .demo-app-shell-recipe__aside {
+  display: none;
+}
+
+.demo-shell-app--compact-sidebar > .demo-app-shell-recipe__body .demo-app-shell-recipe__body-grid {
+  grid-template-areas: 'content';
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.demo-app-shell-recipe--sidebar-sticky .demo-app-shell-recipe__sidebar,
+.demo-app-shell-recipe--aside-sticky .demo-app-shell-recipe__aside {
+  overflow: visible;
+}
+
+.demo-app-shell-recipe--sidebar-sticky .demo-app-shell-recipe__sidebar-inner,
+.demo-app-shell-recipe--aside-sticky .demo-app-shell-recipe__aside-inner {
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow: auto;
+}
+
+.demo-app-shell-recipe--header-sticky.demo-app-shell-recipe--sidebar-sticky
+  .demo-app-shell-recipe__sidebar-inner,
+.demo-app-shell-recipe--header-sticky.demo-app-shell-recipe--aside-sticky .demo-app-shell-recipe__aside-inner {
+  top: var(--demo-app-shell-sticky-offset);
+  max-height: calc(100vh - var(--demo-app-shell-sticky-offset));
+}
+
+.demo-app-shell-recipe__footer {
+  grid-area: footer;
+  min-width: 0;
+  padding-block: var(--cm-space-4);
+  border-top: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+@media (width <= 1279.98px) {
+  .demo-app-shell-recipe--sidebar-content-aside > .demo-app-shell-recipe__body .demo-app-shell-recipe__body-grid {
+    grid-template-areas: 'sidebar content';
+    grid-template-columns: minmax(0, var(--demo-app-shell-sidebar-width)) minmax(0, 1fr);
+  }
+
+  .demo-app-shell-recipe--sidebar-content-aside .demo-app-shell-recipe__aside {
+    display: none;
+  }
+}
+
+@media (width <= 1023.98px) {
+  :is(.demo-app-shell-recipe--sidebar-content, .demo-app-shell-recipe--sidebar-content-aside)
+    > .demo-app-shell-recipe__body
+    .demo-app-shell-recipe__body-grid {
+    grid-template-areas: 'content';
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :is(.demo-app-shell-recipe--sidebar-content, .demo-app-shell-recipe--sidebar-content-aside)
+    :is(.demo-app-shell-recipe__sidebar, .demo-app-shell-recipe__aside) {
+    display: none;
   }
 }
 </style>
