@@ -5,7 +5,6 @@ import {
   VfMenu as LegacyMenu,
   VfMenuItem as LegacyMenuItem,
   VfNavMenu,
-  VfPanel,
   VfTabs as LegacyTabs,
   type VfDataTableColumn as LegacyDataTableColumn,
   type VfDataTableRow as LegacyDataTableRow,
@@ -24,7 +23,6 @@ import {
   CmStack as VfStack,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
-import { VfAppShell } from '@codemonster-ru/vueforge-layouts';
 import '@codemonster-ru/ui-css/alert.css';
 import '@codemonster-ru/ui-css/button.css';
 import '@codemonster-ru/ui-css/icon-button.css';
@@ -112,213 +110,230 @@ const rowText = (row: LegacyDataTableRow, key: 'project' | 'owner' | 'status'): 
       </header>
 
       <div class="icon-saas-context__viewport">
-        <VfAppShell class="icon-saas-shell" layout="sidebar-content" :content-padded="false" :sticky-header="false">
-          <template #header>
-            <VfInline class="icon-saas-toolbar" :wrap="false">
-              <VfInline class="icon-saas-brand" :wrap="false">
-                <VueIconify icon="grid" :size="18" />
-                <strong>VueForge</strong>
-              </VfInline>
-              <div class="icon-saas-search">
-                <VfInput
-                  :size="variant.density === 'compact' ? 'sm' : 'md'"
-                  placeholder="Search projects"
-                  readonly
-                  aria-label="Search projects"
-                >
-                  <template #leading>
-                    <VueIconify icon="magnifyingGlass" size="var(--vf-field-icon-size)" aria-hidden="true" />
-                  </template>
-                </VfInput>
-              </div>
-              <VfInline class="icon-saas-toolbar__actions" :wrap="false">
-                <VfIconButton
-                  label="Notifications"
-                  :size="variant.density === 'compact' ? 'sm' : 'md'"
-                  variant="secondary"
-                >
-                  <VueIconify
-                    icon="bell"
-                    :size="variant.density === 'compact' ? 'var(--cm-icon-size-sm)' : 'var(--cm-icon-size-md)'"
-                  />
-                </VfIconButton>
-                <VfButton
-                  class="icon-saas-button"
-                  :size="variant.density === 'compact' ? 'sm' : 'md'"
-                  variant="secondary"
-                >
-                  <VueIconify icon="plus" :size="16" />
-                  New project
-                </VfButton>
-              </VfInline>
-            </VfInline>
-          </template>
-
-          <template #sidebar>
-            <VfStack class="icon-saas-sidebar">
-              <VfNavMenu
-                default-value="overview"
-                :items="navigationItems"
-                variant="sidebar"
-                :compact="false"
-                aria-label="Workspace navigation"
-              />
-              <VfInline class="icon-saas-sidebar__user" :wrap="false">
-                <VueIconify icon="user" :size="18" />
-                <span>Ada Lovelace</span>
-              </VfInline>
-            </VfStack>
-          </template>
-
-          <VfStack class="icon-saas-content">
-            <VfInline class="icon-saas-title" :wrap="false">
-              <div>
-                <small>Workspace</small>
-                <h3>Operations overview</h3>
-              </div>
-              <VfIconButton
-                label="Download report"
-                :size="variant.density === 'compact' ? 'sm' : 'md'"
-                variant="secondary"
-              >
-                <VueIconify
-                  icon="download"
-                  :size="variant.density === 'compact' ? 'var(--cm-icon-size-sm)' : 'var(--cm-icon-size-md)'"
-                />
-              </VfIconButton>
-            </VfInline>
-
-            <LegacyTabs default-value="overview" :items="tabs">
-              <template #tab="{ item }">
-                <VfInline class="icon-saas-tab" :wrap="false">
-                  <VueIconify :icon="tabs.find((tab) => tab.value === item.value)?.icon ?? 'grid'" :size="16" />
-                  <span>{{ item.label }}</span>
+        <div class="icon-saas-shell">
+          <header class="icon-saas-shell__header">
+            <div class="icon-saas-shell__header-container">
+              <VfInline class="icon-saas-toolbar" :wrap="false">
+                <VfInline class="icon-saas-brand" :wrap="false">
+                  <VueIconify icon="grid" :size="18" />
+                  <strong>VueForge</strong>
                 </VfInline>
-              </template>
-            </LegacyTabs>
-
-            <VfGrid class="icon-saas-metrics">
-              <VfCard :compact="variant.density === 'compact'">
-                <VfInline class="icon-saas-metric" :wrap="false">
-                  <VueIconify icon="users" :size="19" />
-                  <span>Active users<strong>12,480</strong></span>
-                </VfInline>
-              </VfCard>
-              <VfCard :compact="variant.density === 'compact'">
-                <VfInline class="icon-saas-metric" :wrap="false">
-                  <VueIconify icon="database" :size="19" />
-                  <span>Storage<strong>68%</strong></span>
-                </VfInline>
-              </VfCard>
-              <VfCard :compact="variant.density === 'compact'">
-                <VfInline class="icon-saas-metric" :wrap="false">
-                  <VueIconify icon="cloud" :size="19" />
-                  <span>Uptime<strong>99.98%</strong></span>
-                </VfInline>
-              </VfCard>
-            </VfGrid>
-
-            <VfGrid class="icon-saas-feedback">
-              <VfAlert tone="warning" role="alert">
-                <template #icon><VueIconify icon="warning" size="var(--vf-icon-size-lg)" /></template>
-                Backup requires attention.
-              </VfAlert>
-              <VfAlert tone="info" role="alert">
-                <template #icon><VueIconify icon="infoCircle" size="var(--vf-icon-size-lg)" /></template>
-                3 updates are ready.
-              </VfAlert>
-            </VfGrid>
-
-            <VfPanel class="icon-saas-data-panel">
-              <template #header>
-                <VfInline class="icon-saas-data-panel__header" :wrap="false">
-                  <strong>Recent projects</strong>
-                  <LegacyDropdown placement="bottom-end" :disable-teleport="true">
-                    <template #trigger>
-                      <VfButton
-                        class="icon-saas-button"
-                        tabindex="-1"
-                        :size="variant.density === 'compact' ? 'sm' : 'md'"
-                        variant="secondary"
-                      >
-                        Status
-                        <VueIconify icon="chevronDown" :size="14" />
-                      </VfButton>
+                <div class="icon-saas-search">
+                  <VfInput
+                    :size="variant.density === 'compact' ? 'sm' : 'md'"
+                    placeholder="Search projects"
+                    readonly
+                    aria-label="Search projects"
+                  >
+                    <template #leading>
+                      <VueIconify icon="magnifyingGlass" size="var(--vf-field-icon-size)" aria-hidden="true" />
                     </template>
-                    <LegacyMenu>
-                      <LegacyMenuItem icon="check" label="Active" active />
-                      <LegacyMenuItem icon="xmark" label="Archived" />
-                    </LegacyMenu>
-                  </LegacyDropdown>
-                </VfInline>
-              </template>
-
-              <LegacyDataTable
-                :columns="columns"
-                :rows="rows"
-                row-key="id"
-                :density="variant.density === 'compact' ? 'compact' : 'default'"
-                :column-widths="{ project: '280px', owner: '180px', status: '130px', actions: '100px' }"
-              >
-                <template #cell-project="{ row }">
-                  <VfInline class="icon-saas-cell" :wrap="false">
-                    <VueIconify :icon="rowIcon(row)" :size="16" />
-                    <span>{{ rowText(row, 'project') }}</span>
-                  </VfInline>
-                </template>
-                <template #cell-owner="{ row }">
-                  <VfInline class="icon-saas-cell" :wrap="false">
-                    <VueIconify icon="user" :size="16" />
-                    <span>{{ rowText(row, 'owner') }}</span>
-                  </VfInline>
-                </template>
-                <template #cell-status="{ row }">
-                  <span class="icon-saas-status">{{ rowText(row, 'status') }}</span>
-                </template>
-                <template #cell-actions>
-                  <VfInline class="icon-saas-row-actions" :wrap="false">
-                    <VfIconButton label="Edit project" size="sm" variant="secondary">
-                      <VueIconify icon="pencil" size="var(--cm-icon-size-sm)" />
-                    </VfIconButton>
-                    <VfIconButton label="Delete project" size="sm" variant="secondary">
-                      <VueIconify icon="trash" size="var(--cm-icon-size-sm)" />
-                    </VfIconButton>
-                  </VfInline>
-                </template>
-              </LegacyDataTable>
-
-              <VfInline class="icon-saas-pagination" :wrap="false">
-                <span>1–2 of 24</span>
-                <VfInline class="icon-saas-pagination__actions" :wrap="false">
+                  </VfInput>
+                </div>
+                <VfInline class="icon-saas-toolbar__actions" :wrap="false">
                   <VfIconButton
-                    class="icon-saas-pagination__previous"
-                    label="Previous page"
-                    size="sm"
+                    label="Notifications"
+                    :size="variant.density === 'compact' ? 'sm' : 'md'"
                     variant="secondary"
                   >
-                    <VueIconify icon="chevronRight" size="var(--cm-icon-size-sm)" />
+                    <VueIconify
+                      icon="bell"
+                      :size="variant.density === 'compact' ? 'var(--cm-icon-size-sm)' : 'var(--cm-icon-size-md)'"
+                    />
                   </VfIconButton>
-                  <VfIconButton label="Next page" size="sm" variant="secondary">
-                    <VueIconify icon="chevronRight" size="var(--cm-icon-size-sm)" />
-                  </VfIconButton>
+                  <VfButton
+                    class="icon-saas-button"
+                    :size="variant.density === 'compact' ? 'sm' : 'md'"
+                    variant="secondary"
+                  >
+                    <VueIconify icon="plus" :size="16" />
+                    New project
+                  </VfButton>
                 </VfInline>
               </VfInline>
-            </VfPanel>
+            </div>
+          </header>
 
-            <VfSection class="icon-saas-empty" surface>
-              <VfInline class="icon-saas-empty__row" :wrap="false">
-                <VueIconify icon="message" :size="24" />
-                <div class="icon-saas-empty__copy">
-                  <strong>No pending messages</strong>
-                  <span>New activity will appear here.</span>
-                </div>
-                <VfIconButton label="Upload a message" size="sm" variant="secondary">
-                  <VueIconify icon="upload" size="var(--cm-icon-size-sm)" />
-                </VfIconButton>
-              </VfInline>
-            </VfSection>
-          </VfStack>
-        </VfAppShell>
+          <div class="icon-saas-shell__body">
+            <div class="icon-saas-shell__body-container">
+              <div class="icon-saas-shell__body-grid">
+                <aside class="icon-saas-shell__sidebar">
+                  <div class="icon-saas-shell__sidebar-inner">
+                    <VfStack class="icon-saas-sidebar">
+                      <VfNavMenu
+                        default-value="overview"
+                        :items="navigationItems"
+                        variant="sidebar"
+                        :compact="false"
+                        aria-label="Workspace navigation"
+                      />
+                      <VfInline class="icon-saas-sidebar__user" :wrap="false">
+                        <VueIconify icon="user" :size="18" />
+                        <span>Ada Lovelace</span>
+                      </VfInline>
+                    </VfStack>
+                  </div>
+                </aside>
+
+                <main class="icon-saas-shell__content">
+                  <div class="icon-saas-shell__content-body">
+                    <VfStack class="icon-saas-content">
+                      <VfInline class="icon-saas-title" :wrap="false">
+                        <div>
+                          <small>Workspace</small>
+                          <h3>Operations overview</h3>
+                        </div>
+                        <VfIconButton
+                          label="Download report"
+                          :size="variant.density === 'compact' ? 'sm' : 'md'"
+                          variant="secondary"
+                        >
+                          <VueIconify
+                            icon="download"
+                            :size="variant.density === 'compact' ? 'var(--cm-icon-size-sm)' : 'var(--cm-icon-size-md)'"
+                          />
+                        </VfIconButton>
+                      </VfInline>
+
+                      <LegacyTabs default-value="overview" :items="tabs">
+                        <template #tab="{ item }">
+                          <VfInline class="icon-saas-tab" :wrap="false">
+                            <VueIconify
+                              :icon="tabs.find((tab) => tab.value === item.value)?.icon ?? 'grid'"
+                              :size="16"
+                            />
+                            <span>{{ item.label }}</span>
+                          </VfInline>
+                        </template>
+                      </LegacyTabs>
+
+                      <VfGrid class="icon-saas-metrics">
+                        <VfCard :compact="variant.density === 'compact'">
+                          <VfInline class="icon-saas-metric" :wrap="false">
+                            <VueIconify icon="users" :size="19" />
+                            <span>Active users<strong>12,480</strong></span>
+                          </VfInline>
+                        </VfCard>
+                        <VfCard :compact="variant.density === 'compact'">
+                          <VfInline class="icon-saas-metric" :wrap="false">
+                            <VueIconify icon="database" :size="19" />
+                            <span>Storage<strong>68%</strong></span>
+                          </VfInline>
+                        </VfCard>
+                        <VfCard :compact="variant.density === 'compact'">
+                          <VfInline class="icon-saas-metric" :wrap="false">
+                            <VueIconify icon="cloud" :size="19" />
+                            <span>Uptime<strong>99.98%</strong></span>
+                          </VfInline>
+                        </VfCard>
+                      </VfGrid>
+
+                      <VfGrid class="icon-saas-feedback">
+                        <VfAlert tone="warning" role="alert">
+                          <template #icon><VueIconify icon="warning" size="var(--vf-icon-size-lg)" /></template>
+                          Backup requires attention.
+                        </VfAlert>
+                        <VfAlert tone="info" role="alert">
+                          <template #icon><VueIconify icon="infoCircle" size="var(--vf-icon-size-lg)" /></template>
+                          3 updates are ready.
+                        </VfAlert>
+                      </VfGrid>
+
+                      <section class="icon-saas-data-panel">
+                        <header>
+                          <VfInline class="icon-saas-data-panel__header" :wrap="false">
+                            <strong>Recent projects</strong>
+                            <LegacyDropdown placement="bottom-end" :disable-teleport="true">
+                              <template #trigger>
+                                <VfButton
+                                  class="icon-saas-button"
+                                  tabindex="-1"
+                                  :size="variant.density === 'compact' ? 'sm' : 'md'"
+                                  variant="secondary"
+                                >
+                                  Status
+                                  <VueIconify icon="chevronDown" :size="14" />
+                                </VfButton>
+                              </template>
+                              <LegacyMenu>
+                                <LegacyMenuItem icon="check" label="Active" active />
+                                <LegacyMenuItem icon="xmark" label="Archived" />
+                              </LegacyMenu>
+                            </LegacyDropdown>
+                          </VfInline>
+                        </header>
+
+                        <LegacyDataTable
+                          :columns="columns"
+                          :rows="rows"
+                          row-key="id"
+                          :density="variant.density === 'compact' ? 'compact' : 'default'"
+                          :column-widths="{ project: '280px', owner: '180px', status: '130px', actions: '100px' }"
+                        >
+                          <template #cell-project="{ row }">
+                            <VfInline class="icon-saas-cell" :wrap="false">
+                              <VueIconify :icon="rowIcon(row)" :size="16" />
+                              <span>{{ rowText(row, 'project') }}</span>
+                            </VfInline>
+                          </template>
+                          <template #cell-owner="{ row }">
+                            <VfInline class="icon-saas-cell" :wrap="false">
+                              <VueIconify icon="user" :size="16" />
+                              <span>{{ rowText(row, 'owner') }}</span>
+                            </VfInline>
+                          </template>
+                          <template #cell-status="{ row }">
+                            <span class="icon-saas-status">{{ rowText(row, 'status') }}</span>
+                          </template>
+                          <template #cell-actions>
+                            <VfInline class="icon-saas-row-actions" :wrap="false">
+                              <VfIconButton label="Edit project" size="sm" variant="secondary">
+                                <VueIconify icon="pencil" size="var(--cm-icon-size-sm)" />
+                              </VfIconButton>
+                              <VfIconButton label="Delete project" size="sm" variant="secondary">
+                                <VueIconify icon="trash" size="var(--cm-icon-size-sm)" />
+                              </VfIconButton>
+                            </VfInline>
+                          </template>
+                        </LegacyDataTable>
+
+                        <VfInline class="icon-saas-pagination" :wrap="false">
+                          <span>1–2 of 24</span>
+                          <VfInline class="icon-saas-pagination__actions" :wrap="false">
+                            <VfIconButton
+                              class="icon-saas-pagination__previous"
+                              label="Previous page"
+                              size="sm"
+                              variant="secondary"
+                            >
+                              <VueIconify icon="chevronRight" size="var(--cm-icon-size-sm)" />
+                            </VfIconButton>
+                            <VfIconButton label="Next page" size="sm" variant="secondary">
+                              <VueIconify icon="chevronRight" size="var(--cm-icon-size-sm)" />
+                            </VfIconButton>
+                          </VfInline>
+                        </VfInline>
+                      </section>
+
+                      <VfSection class="icon-saas-empty" surface>
+                        <VfInline class="icon-saas-empty__row" :wrap="false">
+                          <VueIconify icon="message" :size="24" />
+                          <div class="icon-saas-empty__copy">
+                            <strong>No pending messages</strong>
+                            <span>New activity will appear here.</span>
+                          </div>
+                          <VfIconButton label="Upload a message" size="sm" variant="secondary">
+                            <VueIconify icon="upload" size="var(--cm-icon-size-sm)" />
+                          </VfIconButton>
+                        </VfInline>
+                      </VfSection>
+                    </VfStack>
+                  </div>
+                </main>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </article>
   </div>
@@ -359,26 +374,100 @@ const rowText = (row: LegacyDataTableRow, key: 'project' | 'owner' | 'status'): 
 }
 
 .icon-saas-shell {
-  --vf-layout-container-max-width: none;
-  --vf-layout-container-padding: 0;
-  --vf-layout-shell-sidebar-width: 180px;
-  --vf-layout-header-height: 58px;
-  --vf-layout-header-padding-inline: 14px;
-  --vf-layout-content-padding-block: 16px;
-  --vf-layout-content-padding-inline: 16px;
-  --vf-layout-sidebar-padding-block: 12px;
-  --vf-layout-sidebar-padding-inline: 10px;
+  --icon-saas-sidebar-width: 180px;
+  --icon-saas-header-height: 58px;
+  --icon-saas-content-padding-block: 16px;
+  --icon-saas-content-padding-inline: 16px;
+  --icon-saas-sidebar-padding-block: 12px;
+  --icon-saas-sidebar-padding-inline: 10px;
 
+  display: grid;
+  grid-template:
+    'header' auto
+    'body' minmax(0, 1fr) / minmax(0, 1fr);
+  min-width: 0;
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+}
+
+.icon-saas-shell__header {
+  position: relative;
+  z-index: 20;
+  grid-area: header;
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  gap: var(--cm-space-4);
+  block-size: var(--icon-saas-header-height);
+  padding-block: var(--cm-space-3);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+.icon-saas-shell__header-container,
+.icon-saas-shell__body-container {
+  width: 100%;
+  max-width: none;
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+.icon-saas-shell__header-container,
+.icon-saas-shell__body,
+.icon-saas-shell__body-grid,
+.icon-saas-shell__sidebar,
+.icon-saas-shell__content,
+.icon-saas-shell__content-body {
   min-width: 0;
 }
 
+.icon-saas-shell__body {
+  grid-area: body;
+  min-height: 0;
+}
+
+.icon-saas-shell__body-container {
+  height: 100%;
+}
+
+.icon-saas-shell__body-grid {
+  display: grid;
+  grid-template: 'sidebar content' minmax(0, 1fr) / minmax(0, var(--icon-saas-sidebar-width)) minmax(0, 1fr);
+  min-height: 100%;
+}
+
+.icon-saas-shell__sidebar {
+  grid-area: sidebar;
+  overflow-y: auto;
+  border-right: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+.icon-saas-shell__sidebar-inner {
+  min-width: 0;
+  padding: var(--icon-saas-sidebar-padding-block) var(--icon-saas-sidebar-padding-inline);
+}
+
+.icon-saas-shell__content {
+  display: grid;
+  grid-area: content;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+  padding: 0;
+  background: var(--cm-color-background-surface);
+}
+
+.icon-saas-shell__content-body {
+  min-height: 0;
+}
+
 .icon-saas-context--compact .icon-saas-shell {
-  --vf-layout-shell-sidebar-width: 164px;
-  --vf-layout-header-height: 50px;
-  --vf-layout-content-padding-block: 10px;
-  --vf-layout-content-padding-inline: 12px;
-  --vf-layout-sidebar-padding-block: 8px;
-  --vf-layout-sidebar-padding-inline: 8px;
+  --icon-saas-sidebar-width: 164px;
+  --icon-saas-header-height: 50px;
+  --icon-saas-content-padding-block: 10px;
+  --icon-saas-content-padding-inline: 12px;
+  --icon-saas-sidebar-padding-block: 8px;
+  --icon-saas-sidebar-padding-inline: 8px;
 }
 
 .icon-saas-toolbar,
@@ -431,7 +520,7 @@ const rowText = (row: LegacyDataTableRow, key: 'project' | 'owner' | 'status'): 
 }
 
 .icon-saas-content {
-  padding: var(--vf-layout-content-padding-block) var(--vf-layout-content-padding-inline);
+  padding: var(--icon-saas-content-padding-block) var(--icon-saas-content-padding-inline);
 }
 
 .icon-saas-title h3 {
@@ -468,16 +557,20 @@ const rowText = (row: LegacyDataTableRow, key: 'project' | 'owner' | 'status'): 
 }
 
 .icon-saas-data-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-3);
   padding: 0;
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
+  line-height: var(--cm-line-height-normal);
 }
 
 .icon-saas-data-panel__header {
   padding: 10px 12px;
   border-bottom: 1px solid var(--vf-color-border-divider);
-}
-
-.icon-saas-data-panel :deep(.vf-panel__title) {
-  margin: 0;
 }
 
 .icon-saas-data-panel :deep(.vf-table-wrap) {
@@ -535,9 +628,19 @@ const rowText = (row: LegacyDataTableRow, key: 'project' | 'owner' | 'status'): 
   padding-block: 6px;
 }
 
+@media (width <= 1023.98px) {
+  .icon-saas-shell__body-grid {
+    grid-template: 'content' minmax(0, 1fr) / minmax(0, 1fr);
+  }
+
+  .icon-saas-shell__sidebar {
+    display: none;
+  }
+}
+
 @container (max-width: 760px) {
   .icon-saas-shell {
-    --vf-layout-shell-sidebar-width: 150px;
+    --icon-saas-sidebar-width: 150px;
   }
 
   .icon-saas-brand {
