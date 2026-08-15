@@ -6,19 +6,19 @@ body,
 }
 
 body {
-  font-family: var(--cm-font-family-base);
-  color: var(--cm-color-text-primary);
-  background: var(--cm-color-background-canvas);
+  font-family: var(--vf-font-family-base);
+  color: var(--vf-color-text-primary);
+  background: var(--vf-color-background-canvas);
 }
 
 .demo-page {
   min-height: 100vh;
-  padding-block: var(--cm-space-4);
+  padding-block: var(--vf-layout-space-layout-base);
 }
 
 .demo-container {
   width: 100%;
-  max-width: var(--cm-breakpoint-2xl);
+  max-width: var(--vf-breakpoint-2xl);
   margin-inline: auto;
 }
 
@@ -27,30 +27,30 @@ body {
 .demo-example,
 .demo-item {
   display: grid;
-  gap: var(--cm-space-4);
+  gap: var(--vf-layout-space-layout-base);
 }
 
 .demo-block + .demo-block {
-  margin-top: var(--cm-space-4);
+  margin-top: var(--vf-layout-space-layout-base);
 }
 
 .demo-block__header {
   display: grid;
-  gap: var(--cm-space-1);
+  gap: calc(var(--vf-layout-space-layout-base) * 0.25);
 }
 
 .demo-block__header h2 {
-  scroll-margin-top: var(--cm-space-16);
+  scroll-margin-top: calc(var(--vf-layout-space-layout-base) * 4);
 }
 
 .demo-block__header h2,
 .demo-heading {
   margin: 0;
   font: inherit;
-  font-family: var(--cm-font-family-heading);
-  font-size: var(--cm-font-size-3xl);
-  font-weight: var(--cm-font-weight-bold);
-  line-height: var(--cm-line-height-tight);
+  font-family: var(--vf-font-family-heading);
+  font-size: var(--vf-heading-h-3-font-size);
+  font-weight: var(--vf-heading-font-weight);
+  line-height: var(--vf-heading-h-3-line-height);
 }
 
 .demo-grid--two {
@@ -64,17 +64,17 @@ body {
 .demo-example,
 .demo-item {
   align-content: start;
-  padding: var(--cm-space-5);
-  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
-  border-radius: var(--cm-radius-surface);
-  background: var(--cm-color-background-surface);
+  padding: var(--vf-layout-section-inset-default);
+  border: var(--vf-layout-border-base);
+  border-radius: var(--vf-layout-section-radius);
+  background: var(--vf-layout-surface-base);
 }
 
 .demo-label {
   margin: 0;
-  color: var(--cm-color-text-muted);
-  font-size: var(--cm-font-size-sm);
-  font-weight: var(--cm-font-weight-semibold);
+  color: var(--vf-color-text-muted);
+  font-size: var(--vf-text-label-font-size);
+  font-weight: var(--vf-text-label-font-weight);
 }
 
 @media (width <= 960px) {
