@@ -80,6 +80,7 @@ import CoreCommandPaletteRecipe, {
 } from './CoreCommandPaletteRecipe.vue';
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe, { isCoreDrawerSupportedPlacement } from './CoreDrawerRecipe.vue';
+import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
@@ -439,10 +440,6 @@ function resetDataTableColumnOrder() {
 
 function isDataTableRowSelectable(row: VfDataTableRow) {
   return (row as { status?: string }).status !== 'Offline';
-}
-
-function dataTableRowValue(row: VfDataTableRow, key: string) {
-  return String((row as Record<string, unknown>)[key] ?? '');
 }
 
 function cancelExampleDeletion(): void {
@@ -1915,30 +1912,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · expandable rows</p>
-                  <VfDataTable
-                    v-model:expanded-row-keys="expandedDataTableRowKeys"
-                    :columns="dataTableColumns"
-                    :rows="dataTableRows.slice(0, 5)"
-                    row-key="id"
-                    striped
-                  >
-                    <template #expanded-row="{ row }">
-                      <dl class="demo-data-table-details">
-                        <div>
-                          <dt>Email</dt>
-                          <dd>{{ dataTableRowValue(row, 'email') }}</dd>
-                        </div>
-                        <div>
-                          <dt>Last activity</dt>
-                          <dd>{{ dataTableRowValue(row, 'lastActivity') }}</dd>
-                        </div>
-                        <div>
-                          <dt>Note</dt>
-                          <dd>{{ dataTableRowValue(row, 'note') }}</dd>
-                        </div>
-                      </dl>
-                    </template>
-                  </VfDataTable>
+                  <CoreExpandableDataTableRecipe v-model:expanded-ids="expandedDataTableRowKeys" />
                 </div>
 
                 <div class="demo-component-matrix__cell">
