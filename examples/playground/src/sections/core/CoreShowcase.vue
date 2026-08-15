@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { CmStack as VfStack } from '@codemonster-ru/ui-vue';
+import { CmBadge as VfBadge, CmDivider as VfDivider, CmStack as VfStack } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
 import {
   VfAccordion,
   VfAlert,
   VfAvatar,
-  VfBadge,
   VfBreadcrumbs,
   VfButton,
   VfCard,
@@ -19,7 +18,6 @@ import {
   VfDatePicker,
   VfDrawer,
   VfDialog,
-  VfDivider,
   VfDropdown,
   VfField,
   VfFieldset,
@@ -1475,7 +1473,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <VfDataTable :columns="dataTableMetricColumns" :rows="dataTableRows.slice(0, 5)" row-key="id">
                     <template #header-tasks="{ column }"> {{ column.header }} open </template>
                     <template #cell-status="{ value }">
-                      <VfBadge :tone="value === 'Available' ? 'success' : value === 'Busy' ? 'warn' : 'neutral'">
+                      <VfBadge :tone="value === 'Available' ? 'success' : value === 'Busy' ? 'warning' : 'neutral'">
                         {{ value }}
                       </VfBadge>
                     </template>
@@ -1775,7 +1773,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">VfBadge</p>
                     <div class="demo-inline">
                       <VfBadge>neutral</VfBadge>
-                      <VfBadge v-for="tone in feedbackTones" :key="`badge-${tone}`" :tone="tone">
+                      <VfBadge
+                        v-for="tone in feedbackTones"
+                        :key="`badge-${tone}`"
+                        :tone="tone === 'warn' ? 'warning' : tone"
+                      >
                         {{ tone }}
                       </VfBadge>
                     </div>

@@ -96,6 +96,7 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
       v-for="variant in variants"
       :key="variant.id"
       :data-vf-theme="variant.theme"
+      :data-cm-theme="variant.theme"
       :class="['icon-saas-context', `icon-saas-context--${variant.density}`]"
     >
       <header class="icon-saas-context__label">
