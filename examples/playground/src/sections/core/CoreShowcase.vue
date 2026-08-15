@@ -51,7 +51,6 @@ import '@codemonster-ru/ui-css/progress-bar.css';
 import '@codemonster-ru/ui-css/progress-spinner.css';
 import '@codemonster-ru/ui-css/table.css';
 import '@codemonster-ru/ui-css/tooltip.css';
-import { VfDatePicker, VfField } from '@codemonster-ru/vueforge-core';
 import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
   type CoreDataTableRecipeRow,
@@ -2458,19 +2457,20 @@ const tabContent = computed<Record<string, string>>(() => ({
                     class="demo-component-matrix__cell"
                   >
                     <p class="demo-component-matrix__label">Floating {{ variant }}</p>
-                    <VfField label="Release date" label-placement="floating" :floating-variant="variant">
-                      <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker
+                    <CoreFloatingFieldRecipe label="Release date" :variant="variant">
+                      <template #default="{ controlId, describedBy, invalid, setOpen }">
+                        <CoreDatePickerRecipe
                           :id="controlId"
                           v-model="floatingDatePickerValues[variant]"
-                          locale="en-US"
+                          today="2026-08-15"
                           clearable
                           :invalid="invalid"
                           :aria-describedby="describedBy"
                           placeholder="Choose a date"
+                          @open-change="setOpen"
                         />
                       </template>
-                    </VfField>
+                    </CoreFloatingFieldRecipe>
                     <p class="demo-text">
                       Model: <code>{{ floatingDatePickerValues[variant] || 'empty' }}</code>
                     </p>

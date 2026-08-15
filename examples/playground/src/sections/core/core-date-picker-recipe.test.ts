@@ -57,6 +57,7 @@ describe('CoreDatePickerRecipe date foundation', () => {
     } = {},
   ) {
     const value = ref<CoreDatePickerValue>(options.value ?? '2026-07-30');
+    const openChanges: boolean[] = [];
     const app = createApp(
       defineComponent(
         () => () =>
@@ -74,12 +75,13 @@ describe('CoreDatePickerRecipe date foundation', () => {
             readonly: options.readonly,
             selectionMode: options.selectionMode,
             'aria-describedby': 'release-date-help',
+            onOpenChange: (open: boolean) => openChanges.push(open),
             'onUpdate:modelValue': (next: CoreDatePickerValue) => (value.value = next),
           }),
       ),
     );
     app.mount(host);
-    return { app, value };
+    return { app, openChanges, value };
   }
 
   it('parses, formats, moves, and grids local dates deterministically', () => {
@@ -318,8 +320,9 @@ describe('CoreDatePickerRecipe date foundation', () => {
   });
 
   it('opens an accessible date grid and moves roving focus with frozen keyboard rules', async () => {
-    const { app } = mountPicker();
+    const { app, openChanges } = mountPicker();
     const trigger = host.querySelector<HTMLButtonElement>('#release-date')!;
+    expect(host.querySelector('.core-date-picker-recipe')?.getAttribute('data-cm-filled')).toBe('true');
     expect(trigger.textContent).toContain('07/30/26');
     expect(trigger.getAttribute('aria-describedby')).toBe('release-date-help');
     expect(trigger.getAttribute('aria-haspopup')).toBe('dialog');
@@ -330,6 +333,7 @@ describe('CoreDatePickerRecipe date foundation', () => {
 
     const calendar = document.body.querySelector<HTMLElement>('#release-date-calendar')!;
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    expect(openChanges).toEqual([true]);
     expect(calendar.getAttribute('role')).toBe('dialog');
     expect(calendar.querySelectorAll('[role="columnheader"]')).toHaveLength(7);
     expect(calendar.querySelectorAll('[role="gridcell"]')).toHaveLength(35);
@@ -351,6 +355,7 @@ describe('CoreDatePickerRecipe date foundation', () => {
     await nextTick();
     expect(document.body.querySelector('#release-date-calendar')).toBeNull();
     expect(document.activeElement).toBe(trigger);
+    expect(openChanges).toEqual([true, false]);
     app.unmount();
   });
 
@@ -418,15 +423,16 @@ describe('CoreDatePickerRecipe date foundation', () => {
     expect(component).toContain('today: { type: String, required: true }');
   });
 
-  it('owns all non-floating date modes while leaving only floating composition at the legacy boundary', () => {
+  it('owns every date mode and floating composition without a legacy component boundary', () => {
     const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
 
-    expect(showcase.match(/<CoreDatePickerRecipe\b/gu)).toHaveLength(10);
-    expect(showcase.match(/<VfDatePicker\b/gu)).toHaveLength(1);
+    expect(showcase.match(/<CoreDatePickerRecipe\b/gu)).toHaveLength(11);
+    expect(showcase.match(/<VfDatePicker\b/gu)).toBeNull();
     expect(showcase.match(/selection-mode="(?:multiple|range)"/gu)).toHaveLength(2);
     expect(showcase.match(/picker-mode="(?:month|year)"/gu)).toHaveLength(2);
     expect(showcase.match(/picker-mode="datetime"/gu)).toHaveLength(1);
-    expect(showcase).toMatch(/<VfField[\s\S]*?<VfDatePicker/gu);
-    expect(showcase.match(/today="2026-08-15"/gu)).toHaveLength(10);
+    expect(showcase.match(/@open-change="setOpen"/gu)).toHaveLength(1);
+    expect(showcase.match(/today="2026-08-15"/gu)).toHaveLength(11);
+    expect(showcase).not.toContain('@codemonster-ru/vueforge-core');
   });
 });

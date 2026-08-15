@@ -44,7 +44,10 @@ const props = defineProps({
   clearable: Boolean,
   placeholder: { type: String, default: '' },
 });
-const emit = defineEmits<{ 'update:modelValue': [value: CoreDatePickerValue] }>();
+const emit = defineEmits<{
+  'open-change': [open: boolean];
+  'update:modelValue': [value: CoreDatePickerValue];
+}>();
 const attrs = useAttrs();
 const rootRef = ref<HTMLElement | null>(null);
 const triggerRef = ref<HTMLButtonElement | null>(null);
@@ -271,6 +274,7 @@ async function openCalendar(): Promise<void> {
   focusedDate.value = value;
   visibleMonth.value = startOfCoreMonth(value);
   open.value = true;
+  emit('open-change', true);
   await nextTick();
   updatePanelPosition();
   if (props.pickerMode === 'date' || props.pickerMode === 'datetime') await focusDate(value);
@@ -280,6 +284,7 @@ async function openCalendar(): Promise<void> {
 function closeCalendar(restoreFocus = true): void {
   if (!open.value) return;
   open.value = false;
+  emit('open-change', false);
   if (restoreFocus) void nextTick(() => triggerRef.value?.focus());
 }
 
@@ -435,7 +440,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="rootRef" v-bind="rootAttrs" class="core-date-picker-recipe" :class="$attrs.class">
+  <div
+    ref="rootRef"
+    v-bind="rootAttrs"
+    class="core-date-picker-recipe"
+    :class="$attrs.class"
+    :data-cm-filled="selectedValues.length > 0 || undefined"
+  >
     <button
       :id="props.id"
       ref="triggerRef"

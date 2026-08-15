@@ -163,8 +163,12 @@ describe('CoreSelectRecipe', () => {
 
   it('keeps eight non-floating selects and owns the floating select boundary', () => {
     const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
+    const floatingFields = Array.from(
+      showcase.matchAll(/<CoreFloatingFieldRecipe\b[^>]*>([\s\S]*?)<\/CoreFloatingFieldRecipe>/gu),
+      (match) => match[1]!,
+    );
     expect(showcase.match(/<CoreSelectRecipe\b/gu)).toHaveLength(12);
     expect(showcase).not.toContain('<VfSelect');
-    expect(showcase.match(/<CoreFloatingFieldRecipe\b/gu)).toHaveLength(12);
+    expect(floatingFields.filter((field) => field.includes('<CoreSelectRecipe'))).toHaveLength(4);
   });
 });
