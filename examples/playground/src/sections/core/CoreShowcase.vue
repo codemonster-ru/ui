@@ -66,7 +66,6 @@ import {
 import type {
   VfDataTableColumn,
   VfDataTableColumnOrder,
-  VfDataTableColumnWidths,
   VfDataTableRow,
   VfNavMenuItem,
 } from '@codemonster-ru/vueforge-core';
@@ -83,6 +82,9 @@ import CoreDrawerRecipe, { isCoreDrawerSupportedPlacement } from './CoreDrawerRe
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
 import CorePaginationDataTableRecipe from './CorePaginationDataTableRecipe.vue';
 import CorePinnedDataTableRecipe from './CorePinnedDataTableRecipe.vue';
+import CoreResizableDataTableRecipe, {
+  type CoreResizableDataTableWidths,
+} from './CoreResizableDataTableRecipe.vue';
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
@@ -133,7 +135,7 @@ const menuBarPillsValue = ref('about');
 const selectedDataTableRowKeys = ref<Array<string | number>>([]);
 const expandedDataTableRowKeys = ref<Array<string | number>>([2]);
 const dataTableColumnOrder = ref<VfDataTableColumnOrder>([]);
-const dataTableColumnWidths = ref<VfDataTableColumnWidths>({});
+const dataTableColumnWidths = ref<CoreResizableDataTableWidths>({});
 const dataTableSort = ref<CoreSortableDataTableSort[]>([]);
 const dataTableError = ref(true);
 const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
@@ -435,10 +437,6 @@ function handleGlobalCommandPaletteShortcut(event: KeyboardEvent) {
   commandPaletteOpen.value = true;
 }
 
-function resetDataTableColumnWidths() {
-  dataTableColumnWidths.value = {};
-}
-
 function resetDataTableColumnOrder() {
   dataTableColumnOrder.value = [];
 }
@@ -728,13 +726,6 @@ const dataTableSortLabel = computed(() =>
     ? dataTableSort.value.map(({ key, direction }) => `${key} ${direction}`).join(', ')
     : 'none',
 );
-
-const dataTableResizableColumns: VfDataTableColumn[] = [
-  { key: 'member', header: 'Member', width: '35%', minWidth: '8rem' },
-  { key: 'role', header: 'Role', width: '25%', minWidth: '7rem' },
-  { key: 'status', header: 'Status', width: '25%', minWidth: '7rem', nowrap: true },
-  { key: 'tasks', header: 'Tasks', width: '15%', minWidth: '6rem', nowrap: true, align: 'end' },
-];
 
 const dataTableConfigurableColumns: VfDataTableColumn[] = [
   { key: 'member', header: 'Member' },
@@ -1802,32 +1793,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell demo-item--full">
                   <p class="demo-component-matrix__label">VfDataTable · resizable columns</p>
-                  <div class="demo-stack">
-                    <div class="demo-inline">
-                      <CmButton
-                        size="sm"
-                        variant="secondary"
-                        :disabled="Object.keys(dataTableColumnWidths).length === 0"
-                        @click="resetDataTableColumnWidths"
-                      >
-                        Reset widths
-                      </CmButton>
-                    </div>
-                    <p class="demo-text">
-                      Drag a divider to resize both adjacent columns without changing the table width. Reset restores
-                      the starting widths.
-                    </p>
-                    <VfDataTable
-                      v-model:column-widths="dataTableColumnWidths"
-                      caption="Resizable team roster"
-                      :columns="dataTableResizableColumns"
-                      :rows="dataTableRows"
-                      row-key="id"
-                      resizable-columns
-                      striped
-                      column-dividers
-                    />
-                  </div>
+                  <CoreResizableDataTableRecipe v-model:widths="dataTableColumnWidths" />
                 </div>
 
                 <div class="demo-component-matrix__cell demo-item--full">
