@@ -418,15 +418,15 @@ describe('CoreDatePickerRecipe date foundation', () => {
     expect(component).toContain('today: { type: String, required: true }');
   });
 
-  it('owns all calendar units while leaving datetime and floating composition at the legacy boundary', () => {
+  it('owns all non-floating date modes while leaving only floating composition at the legacy boundary', () => {
     const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
 
-    expect(showcase.match(/<CoreDatePickerRecipe\b/gu)).toHaveLength(9);
-    expect(showcase.match(/<VfDatePicker\b/gu)).toHaveLength(2);
+    expect(showcase.match(/<CoreDatePickerRecipe\b/gu)).toHaveLength(10);
+    expect(showcase.match(/<VfDatePicker\b/gu)).toHaveLength(1);
     expect(showcase.match(/selection-mode="(?:multiple|range)"/gu)).toHaveLength(2);
     expect(showcase.match(/picker-mode="(?:month|year)"/gu)).toHaveLength(2);
-    expect(showcase).toMatch(/<VfDatePicker[\s\S]*?show-time/gu);
+    expect(showcase.match(/picker-mode="datetime"/gu)).toHaveLength(1);
     expect(showcase).toMatch(/<VfField[\s\S]*?<VfDatePicker/gu);
-    expect(showcase.match(/today="2026-08-15"/gu)).toHaveLength(9);
+    expect(showcase.match(/today="2026-08-15"/gu)).toHaveLength(10);
   });
 });
