@@ -34,7 +34,8 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { VfMenuBar, VfThemeProvider, VfThemeSwitch, type VfNavMenuItem } from '@codemonster-ru/vueforge-core';
-import { VfAppShell, VfInline } from '@codemonster-ru/vueforge-layouts';
+import { CmInline as VfInline } from '@codemonster-ru/ui-vue';
+import { VfAppShell } from '@codemonster-ru/vueforge-layouts';
 
 type SectionValue = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
 

@@ -17,8 +17,14 @@ import {
   type VfNavMenuItem,
   type VfTabItem,
 } from '@codemonster-ru/vueforge-core';
+import {
+  CmGrid as VfGrid,
+  CmInline as VfInline,
+  CmSection as VfSection,
+  CmStack as VfStack,
+} from '@codemonster-ru/ui-vue';
 import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
-import { VfAppShell, VfGrid, VfInline, VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
+import { VfAppShell } from '@codemonster-ru/vueforge-layouts';
 
 type UiVariant = {
   id: string;

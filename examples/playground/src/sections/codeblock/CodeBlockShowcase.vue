@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import { CmSection as VfSection } from "@codemonster-ru/ui-vue";
 import { useTheme } from "@codemonster-ru/vueforge-core";
 import { VfSkeleton } from "@codemonster-ru/vueforge-core/skeleton";
 import { VfSkeletonGate } from "@codemonster-ru/vueforge-core/skeleton-gate";
-import { VfSection } from "@codemonster-ru/vueforge-layouts";
 import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock/view";
 
 const { resolvedTheme } = useTheme();

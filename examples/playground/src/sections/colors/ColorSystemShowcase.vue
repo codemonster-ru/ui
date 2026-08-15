@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CmSection as VfSection, CmStack as VfStack } from '@codemonster-ru/ui-vue';
 import {
   VfAlert,
   VfBadge,
@@ -9,7 +10,6 @@ import {
   vfSemanticColorTokenNames,
 } from '@codemonster-ru/vueforge-core';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
-import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
 import './color-system-showcase.css';
 
 interface PrimitiveFamily {

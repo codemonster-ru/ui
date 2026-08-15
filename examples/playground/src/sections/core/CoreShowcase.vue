@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { CmStack as VfStack } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
-import { VfStack } from '@codemonster-ru/vueforge-layouts';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
 import {
   VfAccordion,
@@ -65,7 +65,6 @@ import type {
 } from '@codemonster-ru/vueforge-core';
 
 const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
-
 
 const dialogOpen = ref(false);
 const drawerOpen = ref(false);
