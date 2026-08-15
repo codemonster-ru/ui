@@ -53,7 +53,6 @@ import '@codemonster-ru/ui-css/tooltip.css';
 import {
   VfDataTable,
   VfDatePicker,
-  VfDrawer as VfLegacyDrawer,
   VfField,
   VfInput,
   VfMenuBar,
@@ -77,7 +76,7 @@ import CoreCommandPaletteRecipe, {
   type CoreCommandPaletteRecipeItem,
 } from './CoreCommandPaletteRecipe.vue';
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
-import CoreDrawerRecipe, { isCoreDrawerSupportedPlacement } from './CoreDrawerRecipe.vue';
+import CoreDrawerRecipe from './CoreDrawerRecipe.vue';
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
 import CorePaginationDataTableRecipe from './CorePaginationDataTableRecipe.vue';
 import CorePinnedDataTableRecipe from './CorePinnedDataTableRecipe.vue';
@@ -3379,26 +3378,7 @@ const tabContent = computed<Record<string, string>>(() => ({
       </template>
     </CmDialog>
 
-    <CoreDrawerRecipe
-      v-if="isCoreDrawerSupportedPlacement(drawerPlacement)"
-      v-model:open="drawerOpen"
-      :placement="drawerPlacement"
-    />
-
-    <VfLegacyDrawer v-else v-model:open="drawerOpen" title="Drawer" :placement="drawerPlacement" dividers>
-      <template #default>
-        <div class="demo-stack">
-          <p class="demo-mt-0">Drawer content.</p>
-          <CmInput placeholder="Search in drawer" />
-        </div>
-      </template>
-      <template #footer="{ close }">
-        <div class="demo-inline">
-          <CmButton data-autofocus @click="close">Apply</CmButton>
-          <CmButton variant="secondary" @click="drawerOpen = false">Close</CmButton>
-        </div>
-      </template>
-    </VfLegacyDrawer>
+    <CoreDrawerRecipe v-model:open="drawerOpen" :placement="drawerPlacement" />
 
     <CoreDrawerRecipe v-model:open="drawerFullscreenOpen" placement="left" fullscreen />
 
