@@ -160,4 +160,16 @@ describe('CoreSelectRecipe', () => {
     expect(source).toContain('coreSelectRecipeFieldContextKey');
     expect(source).toContain('--cm-');
   });
+
+  it('keeps the migration boundary at eight non-floating selects', () => {
+    const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
+    const floatingFields = [...showcase.matchAll(/<VfField\b[^>]*label-placement="floating"[\s\S]*?<\/VfField>/gu)];
+    const floatingSelectFields = floatingFields.filter(([field]) => field.includes('<VfSelect'));
+    const outsideFloatingFields = floatingFields.reduce((source, [field]) => source.replace(field, ''), showcase);
+
+    expect(showcase.match(/<CoreSelectRecipe\b/gu)).toHaveLength(8);
+    expect(showcase.match(/<VfSelect\b/gu)).toHaveLength(4);
+    expect(floatingSelectFields).toHaveLength(4);
+    expect(outsideFloatingFields).not.toContain('<VfSelect');
+  });
 });
