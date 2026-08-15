@@ -171,6 +171,9 @@
 .cm-checkbox__input:disabled + .cm-checkbox__control .cm-checkbox__mark {
   border-inline-end-color: var(--cm-color-text-disabled);
   border-block-end-color: var(--cm-color-text-disabled);
+}
+
+.cm-checkbox__input:disabled:indeterminate + .cm-checkbox__control .cm-checkbox__mark {
   background: var(--cm-color-text-disabled);
 }
 
