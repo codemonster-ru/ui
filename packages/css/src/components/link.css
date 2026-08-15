@@ -1,7 +1,23 @@
 .cm-link {
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  align-self: flex-start;
+  border: var(--cm-border-width) solid transparent;
   color: var(--cm-color-text-link);
+  cursor: pointer;
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-regular);
+  line-height: var(--cm-line-height-normal);
   text-decoration: none;
-  text-underline-offset: 0.18em;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition:
+    color 0.18s ease,
+    text-decoration-color 0.18s ease,
+    text-decoration-thickness 0.18s ease,
+    opacity 0.18s ease;
 }
 
 .cm-link:hover {
@@ -12,27 +28,31 @@
   color: var(--cm-color-text-link-active);
 }
 
-.cm-link:focus-visible {
-  border-radius: var(--cm-radius-control-tight);
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
-}
-
 .cm-link--underline-hover:hover,
 .cm-link--underline-always {
   text-decoration: underline;
+  text-decoration-color: currentcolor;
+}
+
+.cm-link:focus-visible {
+  border-color: var(--cm-color-border-focus);
+  border-radius: var(--cm-radius-control);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
+}
+
+.cm-link--underline-always:focus-visible,
+.cm-link--underline-hover:focus-visible {
+  text-decoration: none;
 }
 
 .cm-link--muted {
-  color: var(--cm-color-text-secondary);
-}
-
-.cm-link--muted:hover {
-  color: var(--cm-color-text-primary);
+  color: var(--cm-color-text-muted);
 }
 
 @media (forced-colors: active) {
   .cm-link:focus-visible {
-    outline-color: Highlight;
+    border-color: Highlight;
+    box-shadow: 0 0 0 var(--cm-border-width-thick) Highlight;
   }
 }
