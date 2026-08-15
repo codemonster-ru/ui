@@ -82,6 +82,7 @@ import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe, { isCoreDrawerSupportedPlacement } from './CoreDrawerRecipe.vue';
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
 import CorePaginationDataTableRecipe from './CorePaginationDataTableRecipe.vue';
+import CorePinnedDataTableRecipe from './CorePinnedDataTableRecipe.vue';
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
@@ -788,14 +789,6 @@ function handleDataTableColumnChooserKeydown(event: KeyboardEvent): void {
   event.stopPropagation();
   dataTableColumnChooserOpen.value = true;
 }
-
-const dataTablePinnedColumns: VfDataTableColumn[] = [
-  { key: 'actions', header: 'Actions', pinned: 'end', width: '1%', minWidth: '7rem', nowrap: true },
-  { key: 'member', header: 'Member', pinned: 'start', minWidth: '12rem', nowrap: true },
-  { key: 'role', header: 'Role', minWidth: '12rem' },
-  { key: 'status', header: 'Status', minWidth: '10rem' },
-  { key: 'tasks', header: 'Tasks', minWidth: '8rem', align: 'end' },
-];
 
 const dataTableRows: VfDataTableRow[] = [
   {
@@ -1917,18 +1910,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">VfDataTable · pinned columns</p>
                   <div class="demo-stack">
                     <p class="demo-text">Scroll horizontally to keep Member and Actions visible.</p>
-                    <VfDataTable
-                      class="demo-data-table-pinned"
-                      :columns="dataTablePinnedColumns"
-                      :rows="dataTableRows.slice(0, 5)"
-                      row-key="id"
-                      striped
-                      column-dividers
-                    >
-                      <template #cell-actions>
-                        <CmButton size="sm" variant="ghost">Edit</CmButton>
-                      </template>
-                    </VfDataTable>
+                    <CorePinnedDataTableRecipe />
                   </div>
                 </div>
 
