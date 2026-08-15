@@ -71,6 +71,7 @@ import CoreCommandPaletteRecipe, {
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe from './CoreDrawerRecipe.vue';
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
+import CoreInputRecipe from './CoreInputRecipe.vue';
 import CoreMenuBarRecipe from './CoreMenuBarRecipe.vue';
 import CoreNavMenuRecipe from './CoreNavMenuRecipe.vue';
 import CorePaginationDataTableRecipe from './CorePaginationDataTableRecipe.vue';
@@ -2537,14 +2538,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-form-geometry__grid">
                   <div v-for="size in formGeometrySizes" :key="`text-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
-                    <VfInput
+                    <CoreInputRecipe
                       :size="size"
                       model-value="Search query"
                       leading-icon="magnifyingGlass"
                       clearable
                       placeholder="Search"
                     />
-                    <VfInput
+                    <CoreInputRecipe
                       :size="size"
                       model-value="Filtered result"
                       trailing-icon="filter"
@@ -2578,7 +2579,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <CmInput :size="size" model-value="Invalid value" invalid placeholder="Invalid" />
                     <CmInput :size="size" model-value="Disabled value" disabled placeholder="Disabled" />
                     <CmInput :size="size" model-value="Readonly value" readonly placeholder="Readonly" />
-                    <VfInput
+                    <CoreInputRecipe
                       :size="size"
                       model-value="secret-value"
                       type="password"
@@ -2622,12 +2623,22 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-form-geometry__grid">
                   <div v-for="size in formGeometrySizes" :key="`adornments-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
-                    <VfInput :size="size" model-value="Leading" leading-icon="magnifyingGlass" />
-                    <VfInput :size="size" model-value="Trailing" trailing-icon="filter" />
-                    <VfInput :size="size" model-value="Clear" clearable />
-                    <VfInput :size="size" model-value="Lead clear" leading-icon="magnifyingGlass" clearable />
-                    <VfInput :size="size" model-value="Trail clear" trailing-icon="filter" clearable />
-                    <VfInput
+                    <CoreInputRecipe :size="size" model-value="Leading" leading-icon="magnifyingGlass" />
+                    <CoreInputRecipe :size="size" model-value="Trailing" trailing-icon="filter" />
+                    <CoreInputRecipe :size="size" model-value="Clear" clearable />
+                    <CoreInputRecipe
+                      :size="size"
+                      model-value="Lead clear"
+                      leading-icon="magnifyingGlass"
+                      clearable
+                    />
+                    <CoreInputRecipe
+                      :size="size"
+                      model-value="Trail clear"
+                      trailing-icon="filter"
+                      clearable
+                    />
+                    <CoreInputRecipe
                       :size="size"
                       model-value="all-actions"
                       type="password"

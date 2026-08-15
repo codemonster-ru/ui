@@ -138,4 +138,15 @@ describe('CoreInputRecipe', () => {
     expect(source).toContain("passwordVisible ? 'eyeSlash' : 'eye'");
     expect(source).toContain('<slot name="action" />');
   });
+
+  it('integrates only the nine non-floating Core input examples', () => {
+    const showcase = readFileSync(resolve(__dirname, 'CoreShowcase.vue'), 'utf8');
+    expect(showcase.match(/<CoreInputRecipe\b/gu)).toHaveLength(9);
+    expect(showcase.match(/<VfInput\b/gu)).toHaveLength(5);
+    expect(showcase).toContain('model-value="Search query"\n                      leading-icon="magnifyingGlass"');
+    expect(showcase).toContain('model-value="secret-value"\n                      type="password"');
+    expect(showcase).toContain('model-value="all-actions"\n                      type="password"');
+    expect(showcase).toContain('<VfField label="Search" label-placement="floating"');
+    expect(showcase).toContain('<VfInput\n                          :id="controlId"');
+  });
 });
