@@ -15,6 +15,7 @@ import {
   CmField,
   CmFieldset,
   CmIconButton,
+  CmInput,
   CmLink,
   CmMenu,
   CmTooltip,
@@ -41,6 +42,7 @@ import '@codemonster-ru/ui-css/dropdown.css';
 import '@codemonster-ru/ui-css/field.css';
 import '@codemonster-ru/ui-css/fieldset.css';
 import '@codemonster-ru/ui-css/icon-button.css';
+import '@codemonster-ru/ui-css/input.css';
 import '@codemonster-ru/ui-css/link.css';
 import '@codemonster-ru/ui-css/menu.css';
 import '@codemonster-ru/ui-css/popover.css';
@@ -2350,7 +2352,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
               <CmField control-id="core-form-stack-workspace-name" label="Workspace name" required>
                 <template #default="{ controlId, describedBy, invalid, required }">
-                  <VfInput
+                  <CmInput
                     :id="controlId"
                     v-model="formStackNameValue"
                     required
@@ -2402,7 +2404,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   required
                 >
                   <template #default="{ controlId, describedBy, invalid, required }">
-                    <VfInput
+                    <CmInput
                       :id="controlId"
                       v-model="formStackNameValue"
                       :aria-describedby="describedBy"
@@ -2416,7 +2418,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <CmField control-id="core-form-layout-billing-email" label="Billing email" required>
                   <template #default="{ controlId, describedBy, invalid, required }">
-                    <VfInput
+                    <CmInput
                       :id="controlId"
                       v-model="formStackEmailValue"
                       type="email"
@@ -2680,10 +2682,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-form-geometry__grid">
                   <div v-for="size in formGeometrySizes" :key="`text-states-${size}`" class="demo-form-geometry__cell">
                     <p class="demo-form-geometry__label">{{ size }}</p>
-                    <VfInput :size="size" model-value="Default value" placeholder="Default" />
-                    <VfInput :size="size" model-value="Invalid value" invalid placeholder="Invalid" />
-                    <VfInput :size="size" model-value="Disabled value" disabled placeholder="Disabled" />
-                    <VfInput :size="size" model-value="Readonly value" readonly placeholder="Readonly" />
+                    <CmInput :size="size" model-value="Default value" placeholder="Default" />
+                    <CmInput :size="size" model-value="Invalid value" invalid placeholder="Invalid" />
+                    <CmInput :size="size" model-value="Disabled value" disabled placeholder="Disabled" />
+                    <CmInput :size="size" model-value="Readonly value" readonly placeholder="Readonly" />
                     <VfInput
                       :size="size"
                       model-value="secret-value"
@@ -2964,7 +2966,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       required
                     >
                       <template #default="{ controlId, describedBy, invalid, required }">
-                        <VfInput
+                        <CmInput
                           :id="controlId"
                           model-value="Field value"
                           required
@@ -2977,7 +2979,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </CmField>
                     <CmField control-id="core-form-geometry-invalid-field" label="Invalid field" error="Error text">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfInput
+                        <CmInput
                           :id="controlId"
                           model-value="Invalid value"
                           :invalid="invalid"
@@ -3508,7 +3510,7 @@ const tabContent = computed<Record<string, string>>(() => ({
       <template #default>
         <div class="demo-stack">
           <p class="demo-mt-0">Drawer content.</p>
-          <VfInput placeholder="Search in drawer" />
+          <CmInput placeholder="Search in drawer" />
         </div>
       </template>
       <template #footer="{ close }">
@@ -3523,7 +3525,7 @@ const tabContent = computed<Record<string, string>>(() => ({
       <template #default>
         <div class="demo-stack">
           <p class="demo-mt-0">Fullscreen drawer content.</p>
-          <VfInput placeholder="Search in fullscreen drawer" />
+          <CmInput placeholder="Search in fullscreen drawer" />
         </div>
       </template>
       <template #footer="{ close }">
