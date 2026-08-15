@@ -274,17 +274,16 @@ describe('CoreDatePickerRecipe date foundation', () => {
     expect(component).toContain('today: { type: String, required: true }');
   });
 
-  it('owns only ordinary showcase dates and leaves advanced and floating modes at the legacy boundary', () => {
+  it('owns ordinary, multiple, and range showcase dates while leaving advanced modes at the legacy boundary', () => {
     const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
 
-    expect(showcase.match(/<CoreDatePickerRecipe\b/gu)).toHaveLength(5);
-    expect(showcase.match(/<VfDatePicker\b/gu)).toHaveLength(6);
+    expect(showcase.match(/<CoreDatePickerRecipe\b/gu)).toHaveLength(7);
+    expect(showcase.match(/<VfDatePicker\b/gu)).toHaveLength(4);
+    expect(showcase.match(/selection-mode="(?:multiple|range)"/gu)).toHaveLength(2);
     expect(showcase).toMatch(/<VfDatePicker[\s\S]*?show-time/gu);
-    expect(showcase).toMatch(/<VfDatePicker[\s\S]*?multiple/gu);
-    expect(showcase).toMatch(/<VfDatePicker[\s\S]*?\brange/gu);
     expect(showcase).toMatch(/<VfDatePicker[\s\S]*?month-picker/gu);
     expect(showcase).toMatch(/<VfDatePicker[\s\S]*?year-picker/gu);
     expect(showcase).toMatch(/<VfField[\s\S]*?<VfDatePicker/gu);
-    expect(showcase.match(/today="2026-08-15"/gu)).toHaveLength(5);
+    expect(showcase.match(/today="2026-08-15"/gu)).toHaveLength(7);
   });
 });

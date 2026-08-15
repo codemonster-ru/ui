@@ -2421,11 +2421,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">Multiple</p>
                     <CmField control-id="core-date-picker-release-dates" label="Release dates">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker
+                        <CoreDatePickerRecipe
                           :id="controlId"
                           v-model="multipleDatePickerValue"
-                          multiple
-                          locale="en-US"
+                          selection-mode="multiple"
+                          today="2026-08-15"
                           clearable
                           :invalid="invalid"
                           :aria-describedby="describedBy"
@@ -2441,11 +2441,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">Range</p>
                     <CmField control-id="core-date-picker-booking-period" label="Booking period">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker
+                        <CoreDatePickerRecipe
                           :id="controlId"
                           v-model="rangeDatePickerValue"
-                          range
-                          locale="en-US"
+                          selection-mode="range"
+                          today="2026-08-15"
                           clearable
                           :invalid="invalid"
                           :aria-describedby="describedBy"
