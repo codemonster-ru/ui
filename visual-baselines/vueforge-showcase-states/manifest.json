@@ -1,0 +1,761 @@
+{
+  "label": "vueforge-state-reference",
+  "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "routes": [
+    "core"
+  ],
+  "screenshots": [
+    {
+      "filename": "state--hover--light--mobile.png",
+      "clip": {
+        "height": 76,
+        "width": 116,
+        "x": 9,
+        "y": 5965
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 5581,
+      "state": "hover",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--active--light--mobile.png",
+      "clip": {
+        "height": 76,
+        "width": 116,
+        "x": 9,
+        "y": 5965
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 5581,
+      "state": "active",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--focus-visible--light--mobile.png",
+      "clip": {
+        "height": 76,
+        "width": 116,
+        "x": 9,
+        "y": 5965
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 5581,
+      "state": "focus-visible",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--disabled--light--mobile.png",
+      "clip": {
+        "height": 76,
+        "width": 121,
+        "x": 80,
+        "y": 6053
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 5669,
+      "state": "disabled",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--invalid--light--mobile.png",
+      "clip": {
+        "height": 77,
+        "width": 372,
+        "x": 9,
+        "y": 24023
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 23639,
+      "state": "invalid",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--selected--light--mobile.png",
+      "clip": {
+        "height": 84,
+        "width": 142,
+        "x": 9,
+        "y": 34471
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 34091,
+      "state": "selected",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--open--light--mobile.png",
+      "clip": {
+        "height": 357,
+        "width": 516,
+        "x": 0,
+        "y": 35158
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 34914,
+      "state": "open",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--closed--light--mobile.png",
+      "clip": {
+        "height": 197,
+        "width": 436,
+        "x": 0,
+        "y": 35188
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 34864,
+      "state": "closed",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--loading--light--mobile.png",
+      "clip": {
+        "height": 77,
+        "width": 138,
+        "x": 9,
+        "y": 6619
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 6235,
+      "state": "loading",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--indeterminate--light--mobile.png",
+      "clip": {
+        "height": 57,
+        "width": 372,
+        "x": 9,
+        "y": 19600
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 19206,
+      "state": "indeterminate",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--reduced-motion--light--mobile.png",
+      "clip": {
+        "height": 65,
+        "width": 372,
+        "x": 9,
+        "y": 19544
+      },
+      "media": "reduce",
+      "route": "core",
+      "reducedMotionVerified": true,
+      "scrollTop": 19154,
+      "state": "reduced-motion",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--hover--dark--mobile.png",
+      "clip": {
+        "height": 76,
+        "width": 116,
+        "x": 9,
+        "y": 5965
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 5581,
+      "state": "hover",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--active--dark--mobile.png",
+      "clip": {
+        "height": 76,
+        "width": 116,
+        "x": 9,
+        "y": 5965
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 5581,
+      "state": "active",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--focus-visible--dark--mobile.png",
+      "clip": {
+        "height": 76,
+        "width": 116,
+        "x": 9,
+        "y": 5965
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 5581,
+      "state": "focus-visible",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--disabled--dark--mobile.png",
+      "clip": {
+        "height": 76,
+        "width": 121,
+        "x": 80,
+        "y": 6053
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 5669,
+      "state": "disabled",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--invalid--dark--mobile.png",
+      "clip": {
+        "height": 77,
+        "width": 372,
+        "x": 9,
+        "y": 24023
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 23639,
+      "state": "invalid",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--selected--dark--mobile.png",
+      "clip": {
+        "height": 84,
+        "width": 142,
+        "x": 9,
+        "y": 34471
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 34091,
+      "state": "selected",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--open--dark--mobile.png",
+      "clip": {
+        "height": 357,
+        "width": 516,
+        "x": 0,
+        "y": 35158
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 34914,
+      "state": "open",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--closed--dark--mobile.png",
+      "clip": {
+        "height": 197,
+        "width": 436,
+        "x": 0,
+        "y": 35188
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 34864,
+      "state": "closed",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--loading--dark--mobile.png",
+      "clip": {
+        "height": 77,
+        "width": 138,
+        "x": 9,
+        "y": 6619
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 6235,
+      "state": "loading",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--indeterminate--dark--mobile.png",
+      "clip": {
+        "height": 57,
+        "width": 372,
+        "x": 9,
+        "y": 19600
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 19206,
+      "state": "indeterminate",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--reduced-motion--dark--mobile.png",
+      "clip": {
+        "height": 65,
+        "width": 372,
+        "x": 9,
+        "y": 19544
+      },
+      "media": "reduce",
+      "route": "core",
+      "reducedMotionVerified": true,
+      "scrollTop": 19154,
+      "state": "reduced-motion",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "state--hover--light--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 116,
+        "x": 9,
+        "y": 4627
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4265,
+      "state": "hover",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--active--light--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 116,
+        "x": 9,
+        "y": 4627
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4265,
+      "state": "active",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--focus-visible--light--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 116,
+        "x": 9,
+        "y": 4627
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4265,
+      "state": "focus-visible",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--disabled--light--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 122,
+        "x": 308,
+        "y": 4671
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4309,
+      "state": "disabled",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--invalid--light--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 442,
+        "x": 9,
+        "y": 14801
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 14439,
+      "state": "invalid",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--selected--light--desktop.png",
+      "clip": {
+        "height": 85,
+        "width": 142,
+        "x": 9,
+        "y": 19055
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 18697,
+      "state": "selected",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--open--light--desktop.png",
+      "clip": {
+        "height": 356,
+        "width": 917,
+        "x": 489,
+        "y": 19209
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 18987,
+      "state": "open",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--closed--light--desktop.png",
+      "clip": {
+        "height": 196,
+        "width": 757,
+        "x": 569,
+        "y": 19239
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 18937,
+      "state": "closed",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--loading--light--desktop.png",
+      "clip": {
+        "height": 76,
+        "width": 138,
+        "x": 9,
+        "y": 4875
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4513,
+      "state": "loading",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--indeterminate--light--desktop.png",
+      "clip": {
+        "height": 57,
+        "width": 647,
+        "x": 9,
+        "y": 12369
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 11997,
+      "state": "indeterminate",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--reduced-motion--light--desktop.png",
+      "clip": {
+        "height": 65,
+        "width": 647,
+        "x": 9,
+        "y": 12313
+      },
+      "media": "reduce",
+      "route": "core",
+      "reducedMotionVerified": true,
+      "scrollTop": 11945,
+      "state": "reduced-motion",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--hover--dark--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 116,
+        "x": 9,
+        "y": 4627
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4265,
+      "state": "hover",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--active--dark--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 116,
+        "x": 9,
+        "y": 4627
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4265,
+      "state": "active",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--focus-visible--dark--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 116,
+        "x": 9,
+        "y": 4627
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4265,
+      "state": "focus-visible",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--disabled--dark--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 122,
+        "x": 308,
+        "y": 4671
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4309,
+      "state": "disabled",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--invalid--dark--desktop.png",
+      "clip": {
+        "height": 77,
+        "width": 442,
+        "x": 9,
+        "y": 14801
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 14439,
+      "state": "invalid",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--selected--dark--desktop.png",
+      "clip": {
+        "height": 85,
+        "width": 142,
+        "x": 9,
+        "y": 19055
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 18697,
+      "state": "selected",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--open--dark--desktop.png",
+      "clip": {
+        "height": 356,
+        "width": 917,
+        "x": 489,
+        "y": 19209
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 18987,
+      "state": "open",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--closed--dark--desktop.png",
+      "clip": {
+        "height": 196,
+        "width": 757,
+        "x": 569,
+        "y": 19239
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 18937,
+      "state": "closed",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--loading--dark--desktop.png",
+      "clip": {
+        "height": 76,
+        "width": 138,
+        "x": 9,
+        "y": 4875
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 4513,
+      "state": "loading",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--indeterminate--dark--desktop.png",
+      "clip": {
+        "height": 57,
+        "width": 647,
+        "x": 9,
+        "y": 12369
+      },
+      "media": "reduce",
+      "route": "core",
+      "scrollTop": 11997,
+      "state": "indeterminate",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "state--reduced-motion--dark--desktop.png",
+      "clip": {
+        "height": 65,
+        "width": 647,
+        "x": 9,
+        "y": 12313
+      },
+      "media": "reduce",
+      "route": "core",
+      "reducedMotionVerified": true,
+      "scrollTop": 11945,
+      "state": "reduced-motion",
+      "theme": "dark",
+      "viewport": "desktop"
+    }
+  ],
+  "stateCases": [
+    {
+      "id": "hover",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
+      "pseudoClasses": [
+        "hover"
+      ]
+    },
+    {
+      "id": "active",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
+      "pseudoClasses": [
+        "active"
+      ]
+    },
+    {
+      "id": "focus-visible",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
+      "pseudoClasses": [
+        "focus",
+        "focus-visible"
+      ]
+    },
+    {
+      "id": "disabled",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):disabled"
+    },
+    {
+      "id": "invalid",
+      "route": "core",
+      "selector": "[data-test=\"form-geometry-matrix\"] [aria-invalid=\"true\"]"
+    },
+    {
+      "id": "selected",
+      "route": "core",
+      "selector": "[role=\"tab\"][aria-selected=\"true\"]"
+    },
+    {
+      "id": "open",
+      "route": "core",
+      "selector": ":is(.vf-accordion__trigger, .cm-accordion__trigger)[aria-expanded=\"true\"]",
+      "padding": 160
+    },
+    {
+      "id": "closed",
+      "route": "core",
+      "selector": ":is(.vf-accordion__trigger, .cm-accordion__trigger)[aria-expanded=\"false\"]",
+      "padding": 80
+    },
+    {
+      "id": "loading",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] [aria-busy=\"true\"]"
+    },
+    {
+      "id": "indeterminate",
+      "route": "core",
+      "selector": "[role=\"progressbar\"][aria-label=\"Background sync progress\"]"
+    },
+    {
+      "id": "reduced-motion",
+      "route": "core",
+      "selector": ":is(.vf-progress-bar--animated, .cm-progress-bar--animated)",
+      "media": "reduce",
+      "assertReducedMotion": true
+    }
+  ],
+  "suite": "states",
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    }
+  ]
+}

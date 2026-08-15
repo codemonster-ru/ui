@@ -37,13 +37,13 @@
     {
       "id": "open",
       "route": "core",
-      "selector": "[aria-expanded=\"true\"]",
+      "selector": ":is(.vf-accordion__trigger, .cm-accordion__trigger)[aria-expanded=\"true\"]",
       "padding": 160
     },
     {
       "id": "closed",
       "route": "core",
-      "selector": "[aria-expanded=\"false\"]",
+      "selector": ":is(.vf-accordion__trigger, .cm-accordion__trigger)[aria-expanded=\"false\"]",
       "padding": 80
     },
     {
@@ -54,7 +54,7 @@
     {
       "id": "indeterminate",
       "route": "core",
-      "selector": "[role=\"progressbar\"]:not([aria-valuenow])"
+      "selector": "[role=\"progressbar\"][aria-label=\"Background sync progress\"]"
     },
     {
       "id": "reduced-motion",

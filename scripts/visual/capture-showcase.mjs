@@ -188,10 +188,11 @@ if (suite === 'states') {
         const target = document.querySelectorAll(${JSON.stringify(stateCase.selector)})[${stateCase.index}];
         const nodes = [target, ...target.querySelectorAll('*')];
         const pseudoElements = [null, '::before', '::after'];
-        const hasDuration = (value) => value.split(',').some((duration) => Number.parseFloat(duration) > 0);
+        const hasActiveDuration = (value) => value.split(',').some((duration) => Number.parseFloat(duration) > 1);
         const moving = nodes.some((node) => pseudoElements.some((pseudoElement) => {
           const style = getComputedStyle(node, pseudoElement);
-          return style.animationName !== 'none' || hasDuration(style.transitionDuration);
+          return (style.animationName !== 'none' && hasActiveDuration(style.animationDuration)) ||
+            hasActiveDuration(style.transitionDuration);
         }));
         if (moving) throw new Error(${JSON.stringify(`Showcase state ${stateCase.id} retained active motion.`)});
         return true;
@@ -202,8 +203,8 @@ if (suite === 'states') {
     const { model } = await send('DOM.getBoxModel', { nodeId });
     const horizontal = model.border.filter((_, index) => index % 2 === 0);
     const vertical = model.border.filter((_, index) => index % 2 === 1);
-    const viewportX = Math.floor(Math.min(...horizontal) - stateCase.padding);
-    const viewportY = Math.floor(Math.min(...vertical) - stateCase.padding);
+    const viewportX = Math.round(Math.min(...horizontal) - stateCase.padding);
+    const viewportY = Math.round(Math.min(...vertical) - stateCase.padding);
     const x = Math.max(0, viewportX + scrollLeft);
     const y = Math.max(0, viewportY + scrollTop);
     const width = Math.ceil(Math.max(...horizontal) + stateCase.padding + scrollLeft - x);
