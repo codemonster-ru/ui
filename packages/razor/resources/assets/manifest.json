@@ -14,7 +14,7 @@
     "tokens:tokens.css": {
       "path": "css/tokens/tokens.css",
       "mediaType": "text/css",
-      "sha256": "59440968ef86a2db63c4e6a89221b437223d71cd20e128d0330a7b3114cd1573",
+      "sha256": "0b556c283ca21bbce0e0df531b4d5c57ea228fd2be13b6937265d85f476938fb",
       "source": {
         "package": "@codemonster-ru/ui-tokens",
         "version": "1.0.1",
@@ -64,7 +64,7 @@
     "css:foundation/focus.css": {
       "path": "css/css/foundation/focus.css",
       "mediaType": "text/css",
-      "sha256": "f27fda139e6a892174989ac4653cde577512173d276db8251ddba271f3fb467b",
+      "sha256": "84fbb2712ef354371b88e9a16730c886e0d48cdd32346b6fa394cf39be650aaf",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -104,7 +104,7 @@
     "css:components/accordion.css": {
       "path": "css/css/components/accordion.css",
       "mediaType": "text/css",
-      "sha256": "d0a4b87cb343992dd9a746c3ab4eda208f5e2bc74de17b12be676db20cc4a3af",
+      "sha256": "135e42a98f042597a690ca0004047352d2ab277281fc9e6f33516e54f7e9d0c9",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -114,7 +114,7 @@
     "css:components/alert.css": {
       "path": "css/css/components/alert.css",
       "mediaType": "text/css",
-      "sha256": "da511a63d14defaa09506a050359627f2d824d4e9762cda6eee05c4af5b1e82a",
+      "sha256": "67260ac042bb29980ba04729a06fc462f74186f05068c4d11312fa37f6e3a3e8",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -124,7 +124,7 @@
     "css:components/avatar.css": {
       "path": "css/css/components/avatar.css",
       "mediaType": "text/css",
-      "sha256": "ceaf98c8b0565fefb8aa2b6c8fbdaa4c6c2398d177d256765f872069038f3ab2",
+      "sha256": "bdfd7e82b2375df449d69ec818e2547a24fd8c63d3940f3091aaabb9930f5534",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -134,7 +134,7 @@
     "css:components/badge.css": {
       "path": "css/css/components/badge.css",
       "mediaType": "text/css",
-      "sha256": "cf797a6e0191a8f863b2dbfea08ae9a28e9b88b771bc6e34ae1758f43d6ba6c0",
+      "sha256": "3ee64db2001e64f7933029adb8ed5afb1bd5e1cc3e20f3de6e6c91c6d9cd25cf",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -144,7 +144,7 @@
     "css:components/breadcrumbs.css": {
       "path": "css/css/components/breadcrumbs.css",
       "mediaType": "text/css",
-      "sha256": "1977a6432c669a5f5a8fa14f9d22d1f44d2feb15fa70a6557b9078a02b357357",
+      "sha256": "c3e9de54ba570d8dc0d56d52f074eb58a58673370044e6a6fef173d13469efb3",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -154,7 +154,7 @@
     "css:components/button.css": {
       "path": "css/css/components/button.css",
       "mediaType": "text/css",
-      "sha256": "ba995288a0301db2b9866a93701da51d05524ef32c03882688dab6d4b5691aec",
+      "sha256": "c29e68d563e6e60033c0cd3fb8ac40227514a2d48c43b1987b33df62ee97a31c",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -164,7 +164,7 @@
     "css:components/card.css": {
       "path": "css/css/components/card.css",
       "mediaType": "text/css",
-      "sha256": "2b05cfc981aff5566c0935bde50f484f80e20837e82d19b3192a4f13b628fdb7",
+      "sha256": "5fc7d7f8519b4d6b5f0c7f1c2a3c3af3b9265183441f3444bc6872e936e78057",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -174,7 +174,7 @@
     "css:components/checkbox.css": {
       "path": "css/css/components/checkbox.css",
       "mediaType": "text/css",
-      "sha256": "276d8e5496ef29c94761fe6a4c57c7aeef009fed92be18d7e94f208edcfa3934",
+      "sha256": "fabe0aee942393ae7faf9647beb1060314e59a9d424a32b9406d7c8364018150",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -184,7 +184,7 @@
     "css:components/command-palette.css": {
       "path": "css/css/components/command-palette.css",
       "mediaType": "text/css",
-      "sha256": "ef40f261514fa8204e0579a9c4568b199a446a84a0d8bad013c71640d0e7d4ad",
+      "sha256": "fe08eacc34af6df5d75521ded509477f4680a31911912ed54568f4073b5156b1",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -204,7 +204,7 @@
     "css:components/data-table.css": {
       "path": "css/css/components/data-table.css",
       "mediaType": "text/css",
-      "sha256": "0556d221fbde430d304782bf075ea91965cfbd05bb67b831cec69a9625d4582f",
+      "sha256": "42f80fa1de67d8dc2cfafbac542bea4d885e82b6faebcf46de99fb914ef3dd8f",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -214,7 +214,7 @@
     "css:components/date-picker.css": {
       "path": "css/css/components/date-picker.css",
       "mediaType": "text/css",
-      "sha256": "0ebeafd01b12719f4d85c04c39e4857ec510fade2283b15b34eb00dd8c9bd1e2",
+      "sha256": "ad11819a5a132b1b797c4dca821eb701adf43907d1cc754627a44b7b49ede269",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -234,7 +234,7 @@
     "css:components/dialog.css": {
       "path": "css/css/components/dialog.css",
       "mediaType": "text/css",
-      "sha256": "379217b27f87e9652271cbf762097ae337e085d0d4a7892b75672594fc053173",
+      "sha256": "5127830217c3fa0f60aef9f390e6e3c52153296aea52c1247652030f74087687",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -244,7 +244,7 @@
     "css:components/dropdown.css": {
       "path": "css/css/components/dropdown.css",
       "mediaType": "text/css",
-      "sha256": "267883f08e20a4af11bbc7015a1bff3f3033a0b65567c9117a7bd58ebc373326",
+      "sha256": "9da72687d0a375e95682325c8c7236388f7bafbfe44b0c9449fb4b3cf61c6c01",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -254,7 +254,7 @@
     "css:components/drawer.css": {
       "path": "css/css/components/drawer.css",
       "mediaType": "text/css",
-      "sha256": "f9fdc3b9279bae23a5d2d72057e27ded7db7a26a97d25cc2918dfb518aa3d501",
+      "sha256": "e5dc387a80990c3ffb965fccb4ec71922db324f5555b7c6fd41e2c0e36f87fc8",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -264,7 +264,7 @@
     "css:components/field.css": {
       "path": "css/css/components/field.css",
       "mediaType": "text/css",
-      "sha256": "5ff1c5e1658d34f5b668fd64bd373068b9412da1b4987287eb59cdf2e53abaab",
+      "sha256": "98889cd77547f6368669717b6f4bf5fdac0973fbc9c6c5b1faf38ec4fc18b9b6",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -274,7 +274,7 @@
     "css:components/fieldset.css": {
       "path": "css/css/components/fieldset.css",
       "mediaType": "text/css",
-      "sha256": "673c95328e8e8e753e886bb12803d0e16a7c9de1fe3f2fe5ec0c01645a6887d6",
+      "sha256": "b1c7e2b0387e29137c9b998a3530c8910b8a1b9adcbda1dcfcdf560e6bfecc88",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -284,7 +284,7 @@
     "css:components/grid.css": {
       "path": "css/css/components/grid.css",
       "mediaType": "text/css",
-      "sha256": "526288e9a0c6f0fad85107e6ae1593c4c2c99fc997c72c922fccf9a31f9a6e71",
+      "sha256": "7a409fb6dec3dac0d68363c348111f2acc3add7f95cf8f7018556f39def24d7f",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -294,7 +294,7 @@
     "css:components/icon-button.css": {
       "path": "css/css/components/icon-button.css",
       "mediaType": "text/css",
-      "sha256": "6aa45f579ef1a05934755d21dd3ca35e3c29018a4e6868517d3e112db11f92e2",
+      "sha256": "5ee2e474bdc74ad9b23a349ebed297d6f91c65c2c895cb697567eeac7cdc82cd",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -304,7 +304,7 @@
     "css:components/input.css": {
       "path": "css/css/components/input.css",
       "mediaType": "text/css",
-      "sha256": "67456109968ad9c377c9042087be1c6a8a3f15838d6e61bc23cee40149705791",
+      "sha256": "5d52197d8309eb55e9f999f772c61f6ae13cc8021ca65e12d7abfaf815f01202",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -324,7 +324,7 @@
     "css:components/link.css": {
       "path": "css/css/components/link.css",
       "mediaType": "text/css",
-      "sha256": "e3858bbee47703e171ff974d44e0e599e40923acfb0b50fd312a191aa2c5464e",
+      "sha256": "871712ed84ab7663af857cb050c9f5aabdde4a26f84cd6ac9f1738f42b05f1f8",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -334,7 +334,7 @@
     "css:components/menu.css": {
       "path": "css/css/components/menu.css",
       "mediaType": "text/css",
-      "sha256": "baa39eeb6051f14fbaa36d59979a428f36faf93e89e91cf99c1d9e1bc5c31cfa",
+      "sha256": "d390ada543f317e717625c1e4634bbbb8439d3b11b0f49edfed5312f96fe7de9",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -344,7 +344,7 @@
     "css:components/popover.css": {
       "path": "css/css/components/popover.css",
       "mediaType": "text/css",
-      "sha256": "b4fe20faf692fd9b35de3f03239fea8c3a12e8c8815a39b286dbbf4e32975b68",
+      "sha256": "fdab8cacb244c0b310facce159ee1ac7aa25fa4091ae1db0f597035aae68490f",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -354,7 +354,7 @@
     "css:components/progress-bar.css": {
       "path": "css/css/components/progress-bar.css",
       "mediaType": "text/css",
-      "sha256": "47f61e2c0b2986b48531fe7397f223af6574b0752c5fa7357abbe1968c92dac8",
+      "sha256": "56205d35fc85c9c216048ae63f13e001f0ec4ebf318a5eda3c8f2513107d1a9d",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -364,7 +364,7 @@
     "css:components/progress-spinner.css": {
       "path": "css/css/components/progress-spinner.css",
       "mediaType": "text/css",
-      "sha256": "feea558678f78ec8d5ea79193eeb718f8666ecc3d108dbfe1a087414c52974dd",
+      "sha256": "742dcb2bb45a64667c06e9806a38912b279602bb393e9584d6a86ed062bc28cc",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -374,7 +374,7 @@
     "css:components/radio.css": {
       "path": "css/css/components/radio.css",
       "mediaType": "text/css",
-      "sha256": "9b3ecfc6310a3c18b8a4791f51df0115760eababcccaf88dcfa3a30e7d57f725",
+      "sha256": "b21006585e74ee26ffb17d6c6bc6ecf769906592624523ff23d8436414fbaedf",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -384,7 +384,7 @@
     "css:components/select.css": {
       "path": "css/css/components/select.css",
       "mediaType": "text/css",
-      "sha256": "2647ae235209037b96eb421fb49b85cbc0988a87fb45e2bd08692dfb3a9e6600",
+      "sha256": "9763f5bc3b0877577dae04c164fd3916ff35ebb309f1b30faaaea66244b8b15e",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -394,7 +394,7 @@
     "css:components/section.css": {
       "path": "css/css/components/section.css",
       "mediaType": "text/css",
-      "sha256": "eda4c11eda180e2edafb011a27a036a3a10225d49809abd112ba4b110eb14389",
+      "sha256": "adbc765c9b506d8005e5bb494fd4b09c2af4b67c45bb34fb122222bbbdbb75bb",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -404,7 +404,7 @@
     "css:components/skeleton.css": {
       "path": "css/css/components/skeleton.css",
       "mediaType": "text/css",
-      "sha256": "dec1d85a76ddc86d213648dbabd188f07e43e7bdd4dd76a7c35c28c9aea1b699",
+      "sha256": "3d4d411311b81373bc05ecbd753947bb6fd80ec1e40f05d492e8f1423817c793",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -424,7 +424,7 @@
     "css:components/switch.css": {
       "path": "css/css/components/switch.css",
       "mediaType": "text/css",
-      "sha256": "24779c088ea67816eca39ef07c838cf4bf54e4b6f912cb18d1d2ef7bea377bd5",
+      "sha256": "ef29eb6550e27fb1c38086b789b5c462e790e3c701b90fb9c1e03c8e28eab830",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -434,7 +434,7 @@
     "css:components/table.css": {
       "path": "css/css/components/table.css",
       "mediaType": "text/css",
-      "sha256": "7424c66858b54cadde3a8de0de625645f727b0f6cafb71fd8b12f28af6cfa783",
+      "sha256": "ec430b2c2ae7ee121958739b569e6b821c1f456ddc01c0973c3ee393e9a33e3c",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -444,7 +444,7 @@
     "css:components/textarea.css": {
       "path": "css/css/components/textarea.css",
       "mediaType": "text/css",
-      "sha256": "6809001e60466121aad8d1f7ea1323753aaf0bd8f144b23f5d638ca0cc97b111",
+      "sha256": "d5557370773fded5bb1e77912d871b2cacf885f6ede91c660ac182d4bce4483c",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -454,7 +454,7 @@
     "css:components/tabs.css": {
       "path": "css/css/components/tabs.css",
       "mediaType": "text/css",
-      "sha256": "74f124347623a8f08ad46039059c742dad7851597f8349960fa93882919e2be2",
+      "sha256": "65386454fbcfae69f54893436602d3d44c63fbde2a9f3cdfe99838c61974a113",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -464,7 +464,7 @@
     "css:components/tooltip.css": {
       "path": "css/css/components/tooltip.css",
       "mediaType": "text/css",
-      "sha256": "cc72cac54bb9c3c9942579c9f088d66318cf574b3437a184bf2ab15c784ee1cb",
+      "sha256": "0ef93a6b4d705b64d9067d4cb5c108bd58486f8cdd762e9bbda85d72b5319b3a",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",

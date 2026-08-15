@@ -2,14 +2,15 @@
   display: inline-flex;
   align-items: center;
   gap: var(--cm-space-1);
-  padding-block: var(--cm-space-1);
-  padding-inline: var(--cm-space-2);
-  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
-  border-radius: var(--cm-radius-round);
+  min-block-size: 1.375rem;
+  padding: 0.0625rem 0.25rem;
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control-tight);
   background: var(--cm-color-background-surface-subtle);
-  color: var(--cm-color-text-secondary);
-  font-size: var(--cm-font-size-xs);
-  font-weight: var(--cm-font-weight-medium);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-md);
+  font-weight: var(--cm-font-weight-regular);
+  letter-spacing: 0.01em;
   line-height: var(--cm-line-height-tight);
   white-space: nowrap;
 }
@@ -52,6 +53,6 @@
 
 .cm-badge--contrast {
   border-color: var(--cm-color-border-inverse);
-  background: var(--cm-color-background-inverse);
-  color: var(--cm-color-text-inverse);
+  background: var(--cm-color-background-inverse-subtle);
+  color: var(--cm-color-text-primary);
 }

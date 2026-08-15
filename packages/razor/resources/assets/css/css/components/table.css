@@ -1,65 +1,78 @@
 .cm-table-wrap {
-  max-inline-size: 100%;
-  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  display: flex;
+  inline-size: 100%;
+  min-inline-size: 0;
+  overflow: hidden;
+  border: var(--cm-border-width) solid var(--cm-color-border-divider);
   border-radius: var(--cm-radius-surface);
   background: var(--cm-color-background-surface);
   color: var(--cm-color-text-primary);
 }
 
 .cm-table__scroll {
-  max-inline-size: 100%;
+  inline-size: 100%;
   overflow-x: auto;
-  border-radius: inherit;
 }
 
 .cm-table {
   inline-size: 100%;
+  min-inline-size: calc(var(--cm-space-16) * 9);
   border-collapse: separate;
   border-spacing: 0;
-  font-size: var(--cm-font-size-md);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-regular);
   line-height: var(--cm-line-height-normal);
-  text-align: start;
 }
 
 .cm-table__caption {
-  padding: var(--cm-space-3) var(--cm-space-4);
+  padding: var(--cm-field-padding-lg);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
   color: var(--cm-color-text-secondary);
   font-weight: var(--cm-font-weight-medium);
   text-align: start;
 }
 
 .cm-table :where(th, td) {
-  padding: var(--cm-space-3) var(--cm-space-4);
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+  padding: var(--cm-field-padding-lg);
   text-align: start;
-  vertical-align: middle;
+  vertical-align: top;
 }
 
 .cm-table__head th {
-  background: var(--cm-color-background-surface-subtle);
-  font-weight: var(--cm-font-weight-semibold);
-}
-
-.cm-table__body > tr:last-child > :where(th, td),
-.cm-table__foot > tr:last-child > :where(th, td) {
-  border-block-end: 0;
-}
-
-.cm-table__foot {
-  background: var(--cm-color-background-surface-subtle);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
   font-weight: var(--cm-font-weight-medium);
 }
 
+.cm-table__body > tr + tr > td {
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
+.cm-table__foot {
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-secondary);
+}
+
+.cm-table__foot > tr:first-child > td {
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
 .cm-table--compact :where(th, td) {
-  padding: var(--cm-space-2) var(--cm-space-3);
+  padding: var(--cm-field-padding-md);
 }
 
-.cm-table--striped .cm-table__body > tr:nth-child(even) {
-  background: var(--cm-color-background-surface-subtle);
+.cm-table--striped .cm-table__body > tr:nth-child(even) > td {
+  background: color-mix(
+    in srgb,
+    var(--cm-color-background-surface) 65%,
+    var(--cm-color-background-surface-hover) 35%
+  );
 }
 
-.cm-table--column-dividers :where(th, td):not(:last-child) {
-  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+.cm-table--column-dividers :where(th, td) + :where(th, td) {
+  border-inline-start: var(--cm-border-width) solid var(--cm-color-border-divider);
 }
 
 .cm-table--sticky-header .cm-table__head th {
