@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 const identifierPattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
+const commitPattern = /^[0-9a-f]{40}$/u;
 
 function escapeAttribute(value) {
   return String(value)
@@ -25,8 +26,29 @@ export function validateVisualConfig(config) {
   if (!config || typeof config !== 'object' || Array.isArray(config)) {
     return ['Visual fixture configuration must be an object.'];
   }
-  if (config.schemaVersion !== 1) {
-    errors.push('Visual fixture schemaVersion must be 1.');
+  if (config.schemaVersion !== 2) {
+    errors.push('Visual fixture schemaVersion must be 2.');
+  }
+  if (!config.reference || typeof config.reference !== 'object' || Array.isArray(config.reference)) {
+    errors.push('Visual fixture configuration requires a reference object.');
+  } else {
+    if (!commitPattern.test(config.reference.commit)) {
+      errors.push('Visual fixture reference commit must be a full lowercase Git SHA.');
+    }
+    if (!Array.isArray(config.reference.routes) || config.reference.routes.length === 0) {
+      errors.push('Visual fixture reference requires at least one route.');
+    } else {
+      const routes = new Set();
+      for (const route of config.reference.routes) {
+        if (!identifierPattern.test(route)) {
+          errors.push('Each visual reference route must use a kebab-case identifier.');
+        }
+        if (routes.has(route)) {
+          errors.push(`Duplicate visual reference route: ${route}.`);
+        }
+        routes.add(route);
+      }
+    }
   }
   if (!Array.isArray(config.themes) || config.themes.length === 0) {
     errors.push('Visual fixture configuration requires at least one theme.');

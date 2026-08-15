@@ -3,7 +3,11 @@ import test from 'node:test';
 import { createVisualFixtureMatrix, validateVisualConfig } from './code-monster-ui-fixtures.mjs';
 
 const config = {
-  schemaVersion: 1,
+  schemaVersion: 2,
+  reference: {
+    commit: 'fd793696f50d3be0fcd3788f0f8f751c63869963',
+    routes: ['core', 'colors', 'layouts', 'icons', 'codeblock', 'playground'],
+  },
   themes: [
     { name: 'light', attribute: 'light' },
     { name: 'dark', attribute: 'dark' },
@@ -60,5 +64,18 @@ test('rejects duplicate visual dimensions and unknown selections', () => {
   assert.throws(
     () => createVisualFixtureMatrix([createCase({ themes: ['contrast'] })], config),
     /selects unknown visual theme contrast/u,
+  );
+});
+
+test('requires an immutable visual reference commit and unique routes', () => {
+  assert.ok(
+    validateVisualConfig({ ...config, reference: { ...config.reference, commit: 'fd79369' } }).includes(
+      'Visual fixture reference commit must be a full lowercase Git SHA.',
+    ),
+  );
+  assert.ok(
+    validateVisualConfig({ ...config, reference: { ...config.reference, routes: ['core', 'core'] } }).includes(
+      'Duplicate visual reference route: core.',
+    ),
   );
 });

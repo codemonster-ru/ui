@@ -3,7 +3,7 @@
 This document continues the completed
 [CodeMonster UI 1.0 roadmap](./codemonster-ui-roadmap.md). CodeMonster UI 1.0 proved the shared
 contract, CSS, runtime, Vue, and Annabel Razor architecture. This roadmap closes the remaining
-functional and migration gaps before another platform adapter is scheduled.
+functional, migration, and visual-compatibility gaps before another platform adapter is scheduled.
 
 ## Scope
 
@@ -11,6 +11,9 @@ functional and migration gaps before another platform adapter is scheduled.
 - Do not schedule React or Angular without a concrete consumer and an approved scope change.
 - Treat the frozen VueForge surface as migration evidence, not as an API that must be copied
   mechanically.
+- Preserve the VueForge 2 visual language exactly for every migrated component and maintained
+  application composition. Product renaming and cross-platform contracts do not authorize a visual
+  redesign.
 - Prefer native HTML and small application compositions where they provide the same stable use
   cases with less public API.
 - Add a cross-platform component only when its semantic DOM, behavior, accessibility, and fallback
@@ -21,11 +24,11 @@ functional and migration gaps before another platform adapter is scheduled.
 The roadmap is complete when a representative Vue application and a representative Annabel Razor
 application can use CodeMonster UI for their shared design-system needs, and the Vue application can
 remove `@codemonster-ru/vueforge-core` and `@codemonster-ru/vueforge-layouts` without losing any
-approved stable use case.
+approved stable use case or changing its VueForge 2 rendering.
 
 Retained products such as VueForge Icons, CodeBlock, and Playground do not block that outcome.
 Application-owned shells do not block it when their required recipes and migration guidance are
-verified in real consumers.
+verified in real consumers and reproduce the frozen VueForge showcase presentation.
 
 ## Current baseline
 
@@ -47,6 +50,19 @@ presence, not feature completeness. The current migration map does not record wh
 slots, events, interaction modes, or application use cases each replacement preserves, supersedes,
 or intentionally drops.
 
+### Frozen visual baseline
+
+The sole visual authority is commit `fd793696f50d3be0fcd3788f0f8f751c63869963`. The baseline
+includes the complete browser rendering of `examples/playground`, every stylesheet and default theme
+token consumed by that application, and every component state displayed by its Core, Colors,
+Layouts, Icons, CodeBlock, and Playground routes. Later commits are migration evidence only and must
+not be used to update expected images.
+
+CodeMonster UI may use different package names, selectors, component implementations, and semantic
+DOM where its contracts require them. Those internal differences must not create a product-level
+visual difference. Screenshot comparison may tolerate only deterministic browser rasterization noise;
+there is no design-change tolerance.
+
 ## Working rules
 
 - Complete phases in order unless a dependency recorded below permits parallel work.
@@ -57,23 +73,29 @@ or intentionally drops.
   `missing`, with evidence for the decision.
 - A `supported` capability requires tests at the appropriate contract, adapter, accessibility,
   interaction, SSR or server-rendering, and visual layers.
+- A visual claim requires rendered screenshot comparison. Generating an HTML fixture matrix without
+  capturing and comparing pixels is fixture coverage, not visual verification.
+- Use commit `fd793696f50d3be0fcd3788f0f8f751c63869963` as the frozen VueForge repository,
+  showcase, token, and component-style reference. Compare equivalent routes, states, themes, and
+  viewports; do not approve a new design merely because Vue and Razor match each other.
 - Do not weaken canonical HTML or accessibility contracts solely to reproduce a VueForge API.
 - Record material scope changes in the decision log before changing the numbered checklist.
 
 ## Progress
 
-- Current phase: Complete — Phase 18 delivered
-- Current milestone: M11 — Completed
+- Current phase: Phase 19 — VueForge visual compatibility
+- Current milestone: M12 — In progress
 - Completed milestones: M9, M10, and M11
-- Next item: None. React and Angular remain unscheduled future work.
+- Next item: `CMUI-193` — compare current CodeMonster UI rendering with the frozen reference
 
 ## Milestones
 
-| Milestone | Outcome                                                                                           | Status    |
-| --------- | ------------------------------------------------------------------------------------------------- | --------- |
-| M9        | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status | Completed |
-| M10       | Existing direct replacements cover their approved stable use cases in Vue and Razor               | Completed |
-| M11       | Missing portable components and recipes are delivered, and real consumers complete migration      | Completed |
+| Milestone | Outcome                                                                                              | Status      |
+| --------- | ---------------------------------------------------------------------------------------------------- | ----------- |
+| M9        | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status    | Completed   |
+| M10       | Existing direct replacements cover their approved stable use cases in Vue and Razor                  | Completed   |
+| M11       | Missing portable components and recipes are delivered, and real consumers complete migration         | Completed   |
+| M12       | CodeMonster UI reproduces the frozen VueForge visual language and showcase without image regressions | In progress |
 
 ## Phase 16 — Coverage truth and restored catalog
 
@@ -147,32 +169,75 @@ approved stable use cases work in both Vue and Razor; identical framework APIs a
 - [x] `CMUI-G011` Representative Vue and Razor consumers pass, the Vue consumer no longer depends on
       `vueforge-core` or `vueforge-layouts`, and every frozen disposition has a verified destination.
 
+## Phase 19 — VueForge visual compatibility
+
+Phases 16–18 established functional destinations but did not prove visual compatibility. The
+existing CodeMonster UI visual command validates generated fixture metadata and HTML; it does not
+capture screenshots or compare them with VueForge. This phase reopens the migration release gate
+for presentation while retaining the completed semantic, accessibility, and cross-platform work.
+
+- [x] `CMUI-192` Freeze an executable reference from commit
+      `fd793696f50d3be0fcd3788f0f8f751c63869963` for the VueForge Core, Colors, Layouts, Icons,
+      CodeBlock, and Playground showcase routes, including the exact package styles, deterministic
+      fonts, animation settings, content, data, themes, and viewport sizes. The reviewed 312-image
+      baseline is stored in `visual-baselines/vueforge-showcase`.
+- [ ] `CMUI-193` Add a browser screenshot harness that renders frozen VueForge and current
+      CodeMonster UI references side by side, stores reviewed baselines, produces image diffs, and
+      fails CI above an explicitly documented anti-aliasing tolerance.
+- [ ] `CMUI-194` Restore VueForge 2 token parity for palette, semantic colors, typography, control
+      sizing, spacing, radii, borders, shadows, focus treatment, and motion under `--cm-*` names.
+- [ ] `CMUI-195` Restore default, variant, size, state, and responsive visual parity for every
+      direct replacement in both light and dark themes without adding `.vf-*` selectors or a
+      VueForge runtime dependency to CodeMonster UI packages.
+- [ ] `CMUI-196` Restore the frozen visual presentation for approved compositions and
+      application-owned shell recipes while preserving their current semantic and accessibility
+      ownership.
+- [ ] `CMUI-197` Restore the complete showcase information architecture and representative example
+      matrix from the frozen VueForge reference. Product names and intentional API migration notes
+      may change; layout, density, component appearance, and responsive behavior may not.
+- [ ] `CMUI-198` Add visual regression coverage for hover, active, focus-visible, disabled, invalid,
+      selected, open, loading, and indeterminate states at desktop and mobile viewports.
+- [ ] `CMUI-199` Run the same reviewed visual baselines against Vue-rendered and Razor-rendered
+      canonical cases so cross-platform parity cannot converge on a design that differs from
+      VueForge.
+- [ ] `CMUI-200` Re-run real-consumer migration and release verification, publish the visual-parity
+      release, and verify that no product-level pixel differences remain.
+
+### M12 exit gate
+
+- [ ] `CMUI-G012` The restored showcase and all migrated visual cases pass browser screenshot
+      comparison against commit `fd793696f50d3be0fcd3788f0f8f751c63869963` in light/dark and
+      desktop/mobile matrices with no product-level visual differences.
+
 ## Decision log
 
 Add decisions chronologically. Do not rewrite old entries; supersede them with a new entry.
 
-| Date       | Decision                                                                                          | Reason                                                                                                                                                                                                                                                  | Affected items          |
-| ---------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| 2026-08-14 | Mature Vue and Annabel Razor before scheduling React or Angular.                                  | Validate the cross-platform model and close known migration gaps with the two active consumers before multiplying adapter work.                                                                                                                         | All                     |
-| 2026-08-14 | Separate catalog presence from capability parity.                                                 | Matching component names and files do not prove that stable VueForge use cases survived migration.                                                                                                                                                      | `CMUI-170`–`CMUI-183`   |
-| 2026-08-14 | Make unresolved migration gaps visible in the playground.                                         | The 1.0 example migration removed much of the old showcase and made omitted functionality look deleted or completed.                                                                                                                                    | `CMUI-174`              |
-| 2026-08-14 | Keep DataTable scalar and assign rich rendering and advanced-grid policy to applications.         | Vue callbacks and trusted rich content do not form a safe Razor data contract; representative demand is satisfied by portable pagination, selection, ordered visibility, and localization plus explicit CmTable composition.                            | `CMUI-181`              |
-| 2026-08-14 | Use adapter-native trusted slots for portable authored content.                                   | Input adornments and Accordion item content need rich composition in Vue and Razor without coupling the contract to the VueForge icon registry or accepting untrusted strings as markup.                                                                | `CMUI-177`              |
-| 2026-08-15 | Keep navigation and overlay semantics component-owned while allowing trusted content inside them. | Owned buttons, menu items, tab panels, headings, and deterministic ARIA relationships preserve Vue/Razor parity; arbitrary trigger roots and external panels would move accessibility ownership back to consumers.                                      | `CMUI-179`              |
-| 2026-08-15 | Keep advanced inputs native-first and bound rich content to component-owned structures.           | Native Select and DatePicker controls preserve submission and validation while localized clear actions enhance them; typed CommandPalette states and trusted inner regions add async composition without exposing arbitrary result or dialog ownership. | `CMUI-180`              |
-| 2026-08-15 | Verify primitives independently from application-shell migration.                                 | All five primitives have Vue composition evidence and Container/Stack have real Razor demand; routing, landmarks, responsive state, theme bootstrap, and legacy shell removal remain application work under CMUI-187–189.                               | `CMUI-182`              |
-| 2026-08-15 | Enforce direct-replacement maturity separately from the capability audit.                         | Completing classification did not mean all approved gaps were delivered; a dedicated machine gate now prevents direct replacements from returning to missing or pending after M10.                                                                      | `CMUI-183`, `CMUI-G010` |
-| 2026-08-15 | Approve four finite semantic components and supersede Tag with Badge.                             | Fieldset, IconButton, ProgressBar, and ProgressSpinner have bounded Vue/Razor contracts and real composition demand; Tag adds only an unrequested outlined presentation over Badge.                                                                     | `CMUI-184`, `CMUI-186`  |
-| 2026-08-15 | Keep behavior-rich candidates application-owned without shared demand.                            | Column chooser persistence, command navigation, navigation trees, workflow steps, and document observation all combine static semantic composition with product policy; none has matching Razor demand.                                                 | `CMUI-185`              |
-| 2026-08-15 | Re-verify application shell ownership after portable delivery.                                    | The real Vue consumers own different shell policies, the real Razor consumer has no matching shell demand, and native landmarks plus primitives remain smaller than a speculative cross-platform shell API.                                             | `CMUI-188`              |
-| 2026-08-15 | Remove direct legacy design-system ownership from the representative Vue playground.              | Native landmarks, maintained recipes, CodeMonster UI tokens/CSS, and an application-owned theme bootstrap preserve the approved use cases; retained Icons, CodeBlock, and Playground products keep only their explicit side-by-side hooks.              | `CMUI-189`              |
-| 2026-08-15 | Publish the matured cohort with independent package versions while retaining VueForge products.   | The verified cohort is available as npm patch and minor releases plus `codemonster-ru/ui-razor@1.1.0`; exact install and migration notes are published, while retained VueForge releases remain available.                                              | `CMUI-191`, `CMUI-G011` |
+| Date       | Decision                                                                                          | Reason                                                                                                                                                                                                                                                  | Affected items                     |
+| ---------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| 2026-08-14 | Mature Vue and Annabel Razor before scheduling React or Angular.                                  | Validate the cross-platform model and close known migration gaps with the two active consumers before multiplying adapter work.                                                                                                                         | All                                |
+| 2026-08-14 | Separate catalog presence from capability parity.                                                 | Matching component names and files do not prove that stable VueForge use cases survived migration.                                                                                                                                                      | `CMUI-170`–`CMUI-183`              |
+| 2026-08-14 | Make unresolved migration gaps visible in the playground.                                         | The 1.0 example migration removed much of the old showcase and made omitted functionality look deleted or completed.                                                                                                                                    | `CMUI-174`                         |
+| 2026-08-14 | Keep DataTable scalar and assign rich rendering and advanced-grid policy to applications.         | Vue callbacks and trusted rich content do not form a safe Razor data contract; representative demand is satisfied by portable pagination, selection, ordered visibility, and localization plus explicit CmTable composition.                            | `CMUI-181`                         |
+| 2026-08-14 | Use adapter-native trusted slots for portable authored content.                                   | Input adornments and Accordion item content need rich composition in Vue and Razor without coupling the contract to the VueForge icon registry or accepting untrusted strings as markup.                                                                | `CMUI-177`                         |
+| 2026-08-15 | Keep navigation and overlay semantics component-owned while allowing trusted content inside them. | Owned buttons, menu items, tab panels, headings, and deterministic ARIA relationships preserve Vue/Razor parity; arbitrary trigger roots and external panels would move accessibility ownership back to consumers.                                      | `CMUI-179`                         |
+| 2026-08-15 | Keep advanced inputs native-first and bound rich content to component-owned structures.           | Native Select and DatePicker controls preserve submission and validation while localized clear actions enhance them; typed CommandPalette states and trusted inner regions add async composition without exposing arbitrary result or dialog ownership. | `CMUI-180`                         |
+| 2026-08-15 | Verify primitives independently from application-shell migration.                                 | All five primitives have Vue composition evidence and Container/Stack have real Razor demand; routing, landmarks, responsive state, theme bootstrap, and legacy shell removal remain application work under CMUI-187–189.                               | `CMUI-182`                         |
+| 2026-08-15 | Enforce direct-replacement maturity separately from the capability audit.                         | Completing classification did not mean all approved gaps were delivered; a dedicated machine gate now prevents direct replacements from returning to missing or pending after M10.                                                                      | `CMUI-183`, `CMUI-G010`            |
+| 2026-08-15 | Approve four finite semantic components and supersede Tag with Badge.                             | Fieldset, IconButton, ProgressBar, and ProgressSpinner have bounded Vue/Razor contracts and real composition demand; Tag adds only an unrequested outlined presentation over Badge.                                                                     | `CMUI-184`, `CMUI-186`             |
+| 2026-08-15 | Keep behavior-rich candidates application-owned without shared demand.                            | Column chooser persistence, command navigation, navigation trees, workflow steps, and document observation all combine static semantic composition with product policy; none has matching Razor demand.                                                 | `CMUI-185`                         |
+| 2026-08-15 | Re-verify application shell ownership after portable delivery.                                    | The real Vue consumers own different shell policies, the real Razor consumer has no matching shell demand, and native landmarks plus primitives remain smaller than a speculative cross-platform shell API.                                             | `CMUI-188`                         |
+| 2026-08-15 | Remove direct legacy design-system ownership from the representative Vue playground.              | Native landmarks, maintained recipes, CodeMonster UI tokens/CSS, and an application-owned theme bootstrap preserve the approved use cases; retained Icons, CodeBlock, and Playground products keep only their explicit side-by-side hooks.              | `CMUI-189`                         |
+| 2026-08-15 | Publish the matured cohort with independent package versions while retaining VueForge products.   | The verified cohort is available as npm patch and minor releases plus `codemonster-ru/ui-razor@1.1.0`; exact install and migration notes are published, while retained VueForge releases remain available.                                              | `CMUI-191`, `CMUI-G011`            |
+| 2026-08-15 | Reopen migration completion for VueForge 2 visual compatibility.                                  | The replacement changed showcase content, shell geometry, component spacing, typography, focus treatment, and other presentation while the existing visual gate only generated fixtures and never compared screenshots.                                 | `CMUI-192`–`CMUI-200`, `CMUI-G012` |
+| 2026-08-15 | Use `fd793696f50d3be0fcd3788f0f8f751c63869963` as the sole visual baseline.                       | This is the last accepted showcase before the substantial monorepository and package migration; later commits cannot define expected presentation even when their relevant files happen to match.                                                       | `CMUI-192`–`CMUI-200`, `CMUI-G012` |
 
 ## Scope-change log
 
 Record additions, removals, splits, and reordered dependencies before editing the numbered
 checklist.
 
-| Date       | Change                                                          | Reason                                                                                     | Decision reference           |
-| ---------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------- |
-| 2026-08-14 | Added the post-1.0 maturity sequence for Vue and Annabel Razor. | Continue the original multi-platform goal after the minimum viable cross-platform release. | 2026-08-14 maturity decision |
+| Date       | Change                                                          | Reason                                                                                     | Decision reference                       |
+| ---------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| 2026-08-14 | Added the post-1.0 maturity sequence for Vue and Annabel Razor. | Continue the original multi-platform goal after the minimum viable cross-platform release. | 2026-08-14 maturity decision             |
+| 2026-08-15 | Added Phase 19 and M12 for exact VueForge visual compatibility. | Functional and adapter parity did not preserve the approved VueForge presentation.         | 2026-08-15 visual compatibility decision |
