@@ -267,12 +267,7 @@
                           <div class="demo-setup-recipe__brand">
                             <div class="demo-setup-brand-stack">
                               <div class="demo-setup-brand">
-                                <img
-                                  class="demo-setup-brand__mark"
-                                  :src="annabelLogoIcon"
-                                  alt=""
-                                  aria-hidden="true"
-                                />
+                                <img class="demo-setup-brand__mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
                                 <span class="demo-setup-brand__name">Annabel</span>
                               </div>
                               <div
@@ -622,82 +617,131 @@
                 <div
                   class="demo-shell-preview"
                   :class="`demo-shell-preview--${activeAdminBreakpointConfig.name}`"
-                  :style="{ maxWidth: `calc(${activeAdminBreakpointConfig.value} + 2 * var(--vf-border-width))` }"
+                  :style="{ maxWidth: `calc(${activeAdminBreakpointConfig.value} + 2 * var(--cm-border-width))` }"
                 >
                   <div class="demo-shell-frame demo-shell-frame--scroll demo-shell-frame--fixed-preview">
-                    <VfAdminLayout
+                    <div
                       :key="activeAdminBreakpointConfig.name"
-                      v-model:sidebar-collapsed="adminLayoutSidebarCollapsed"
-                      v-model:mobile-sidebar-open="adminLayoutMobileSidebarOpen"
-                      class="demo-admin-layout"
+                      :class="[
+                        'demo-admin-layout-recipe',
+                        adminLayoutSidebarCollapsed && 'demo-admin-layout-recipe--sidebar-collapsed',
+                        adminLayoutSidebarCompact && 'demo-admin-layout-recipe--sidebar-compact',
+                        adminLayoutMobileSidebarOpen && 'demo-admin-layout-recipe--mobile-sidebar-open',
+                      ]"
+                      @keydown="handleAdminLayoutKeydown"
                     >
-                      <template #brand>
-                        <div class="demo-admin-layout__brand">
-                          <img class="demo-admin-layout__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
-                          <strong class="demo-admin-layout__brand-label">Annabel</strong>
+                      <aside
+                        :id="adminLayoutSidebarId"
+                        class="demo-admin-layout-recipe__aside"
+                        @mouseenter="adminLayoutSidebarPreviewExpanded = true"
+                        @mouseleave="adminLayoutSidebarPreviewExpanded = false"
+                        @focusin="adminLayoutSidebarPreviewExpanded = true"
+                        @focusout="handleAdminLayoutAsideFocusOut"
+                      >
+                        <div class="demo-admin-layout-recipe__brand">
+                          <div class="demo-admin-layout__brand">
+                            <img
+                              class="demo-admin-layout__brand-mark"
+                              :src="annabelLogoIcon"
+                              alt=""
+                              aria-hidden="true"
+                            />
+                            <strong class="demo-admin-layout__brand-label">Annabel</strong>
+                          </div>
                         </div>
-                      </template>
-
-                      <template #mobile-brand>
-                        <div class="demo-admin-layout__mobile-brand">
-                          <img class="demo-admin-layout__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
-                          <strong>Annabel</strong>
+                        <div class="demo-admin-layout-recipe__aside-content">
+                          <VfNavMenu
+                            v-model="activeAdminNavigation"
+                            :items="adminNavigationItems"
+                            variant="sidebar"
+                            :compact="adminLayoutSidebarCompact && !activeAdminBreakpointUsesMobileSidebar"
+                            aria-label="Admin navigation"
+                          />
                         </div>
-                      </template>
+                      </aside>
 
-                      <template #header="{ toggleSidebarCollapsed }">
-                        <VfInline class="demo-admin-layout__header" :wrap="false">
-                          <VfIconButton
-                            class="demo-admin-layout__desktop-toggle"
-                            :label="adminLayoutSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-                            variant="ghost"
-                            @click="toggleSidebarCollapsed"
-                          >
-                            <VueIconify :icon="icons.bars" />
-                          </VfIconButton>
-                        </VfInline>
-                      </template>
+                      <div
+                        class="demo-admin-layout-recipe__mobile-backdrop"
+                        aria-hidden="true"
+                        @click="adminLayoutMobileSidebarOpen = false"
+                      />
 
-                      <template #aside="{ isSidebarCompact }">
-                        <VfNavMenu
-                          v-model="activeAdminNavigation"
-                          :items="adminNavigationItems"
-                          variant="sidebar"
-                          :compact="isSidebarCompact && !activeAdminBreakpointUsesMobileSidebar"
-                          aria-label="Admin navigation"
-                        />
-                      </template>
+                      <div class="demo-admin-layout-recipe__main">
+                        <header class="demo-admin-layout-recipe__header">
+                          <div class="demo-admin-layout-recipe__mobile-toggle">
+                            <button
+                              class="demo-admin-layout-recipe__mobile-toggle-button"
+                              type="button"
+                              :aria-label="adminLayoutMobileSidebarOpen ? 'Close navigation' : 'Open navigation'"
+                              :aria-controls="adminLayoutSidebarId"
+                              :aria-expanded="adminLayoutMobileSidebarOpen"
+                              @click="adminLayoutMobileSidebarOpen = !adminLayoutMobileSidebarOpen"
+                            >
+                              <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 6h16M4 12h16M4 18h16" />
+                              </svg>
+                            </button>
+                          </div>
 
-                      <VfStack class="demo-admin-layout__content">
-                        <VfInline class="demo-admin-layout__content-header" :wrap="false">
-                          <strong>Dashboard</strong>
-                          <VfButton variant="primary" size="sm"> Create post </VfButton>
-                        </VfInline>
-                        <VfGrid>
-                          <VfCard>Published: 24</VfCard>
-                          <VfCard>Drafts: 8</VfCard>
-                          <VfCard>Views: 12,480</VfCard>
-                        </VfGrid>
+                          <div class="demo-admin-layout-recipe__mobile-brand">
+                            <div class="demo-admin-layout__mobile-brand">
+                              <img
+                                class="demo-admin-layout__brand-mark"
+                                :src="annabelLogoIcon"
+                                alt=""
+                                aria-hidden="true"
+                              />
+                              <strong>Annabel</strong>
+                            </div>
+                          </div>
 
-                        <VfCard v-for="panel in adminLayoutPanels" :key="panel.title">
-                          <template #header>
-                            <VfInline class="demo-admin-layout__content-header" :wrap="false">
-                              <strong>{{ panel.title }}</strong>
-                              <VfButton size="sm" variant="secondary">{{ panel.action }}</VfButton>
+                          <div class="demo-admin-layout-recipe__header-content">
+                            <VfInline class="demo-admin-layout__header" :wrap="false">
+                              <VfIconButton
+                                class="demo-admin-layout__desktop-toggle"
+                                :label="adminLayoutSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+                                variant="ghost"
+                                @click="adminLayoutSidebarCollapsed = !adminLayoutSidebarCollapsed"
+                              >
+                                <VueIconify :icon="icons.bars" />
+                              </VfIconButton>
                             </VfInline>
-                          </template>
-                          <VfStack>
-                            <span v-for="item in panel.items" :key="item">{{ item }}</span>
-                          </VfStack>
-                        </VfCard>
-                      </VfStack>
+                          </div>
+                        </header>
 
-                      <template #footer>
-                        <span class="demo-admin-layout__footer"
-                          >© {{ currentYear }} VueForge. All rights reserved.</span
-                        >
-                      </template>
-                    </VfAdminLayout>
+                        <main class="demo-admin-layout-recipe__content">
+                          <VfStack class="demo-admin-layout__content">
+                            <VfInline class="demo-admin-layout__content-header" :wrap="false">
+                              <strong>Dashboard</strong>
+                              <VfButton variant="primary" size="sm"> Create post </VfButton>
+                            </VfInline>
+                            <VfGrid>
+                              <VfCard>Published: 24</VfCard>
+                              <VfCard>Drafts: 8</VfCard>
+                              <VfCard>Views: 12,480</VfCard>
+                            </VfGrid>
+
+                            <VfCard v-for="panel in adminLayoutPanels" :key="panel.title">
+                              <template #header>
+                                <VfInline class="demo-admin-layout__content-header" :wrap="false">
+                                  <strong>{{ panel.title }}</strong>
+                                  <VfButton size="sm" variant="secondary">{{ panel.action }}</VfButton>
+                                </VfInline>
+                              </template>
+                              <VfStack>
+                                <span v-for="item in panel.items" :key="item">{{ item }}</span>
+                              </VfStack>
+                            </VfCard>
+                          </VfStack>
+                        </main>
+
+                        <footer class="demo-admin-layout-recipe__footer">
+                          <span class="demo-admin-layout__footer"
+                            >© {{ currentYear }} VueForge. All rights reserved.</span
+                          >
+                        </footer>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -948,13 +992,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  VfDataTable,
-  VfDrawer,
-  VfInput as VfPasswordInput,
-  VfNavMenu,
-  VfTabs,
-} from '@codemonster-ru/vueforge-core';
+import { VfDataTable, VfDrawer, VfInput as VfPasswordInput, VfNavMenu, VfTabs } from '@codemonster-ru/vueforge-core';
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
 import { computed, ref, watch } from 'vue';
 import {
@@ -976,11 +1014,7 @@ import {
   CmSwitch as VfSwitch,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
-import {
-  VfAdminLayout,
-  VfAdminShell,
-  VfDocumentLayout,
-} from '@codemonster-ru/vueforge-layouts';
+import { VfAdminShell, VfDocumentLayout } from '@codemonster-ru/vueforge-layouts';
 import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
@@ -1168,6 +1202,11 @@ const activeAdminShellBreakpoint = ref<string>(getPreferredBreakpointName(availa
 const activeAdminNavigation = ref('warehouse-availability');
 const adminLayoutSidebarCollapsed = ref(false);
 const adminLayoutMobileSidebarOpen = ref(false);
+const adminLayoutSidebarPreviewExpanded = ref(false);
+const adminLayoutSidebarId = 'demo-admin-layout-sidebar';
+const adminLayoutSidebarCompact = computed(
+  () => adminLayoutSidebarCollapsed.value && !adminLayoutSidebarPreviewExpanded.value,
+);
 const adminShellDrawerOpen = ref(false);
 const adminNavigationItems = [
   { value: 'dashboard', label: 'Dashboard', leadingIcon: 'grid' },
@@ -1284,8 +1323,24 @@ const activeAdminBreakpointUsesMobileSidebar = computed(
   () => Number.parseFloat(activeAdminBreakpointConfig.value?.value ?? '0') < resolvedBreakpoints.value.lg,
 );
 
+function handleAdminLayoutAsideFocusOut(event: FocusEvent) {
+  const aside = event.currentTarget as HTMLElement;
+
+  if (event.relatedTarget instanceof Node && aside.contains(event.relatedTarget)) return;
+
+  adminLayoutSidebarPreviewExpanded.value = false;
+}
+
+function handleAdminLayoutKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Escape' || event.defaultPrevented || !adminLayoutMobileSidebarOpen.value) return;
+
+  event.preventDefault();
+  adminLayoutMobileSidebarOpen.value = false;
+}
+
 watch(activeAdminBreakpoint, () => {
   adminLayoutMobileSidebarOpen.value = false;
+  adminLayoutSidebarPreviewExpanded.value = false;
 });
 const activeAdminShellBreakpointConfig = computed(
   () =>
@@ -1670,12 +1725,7 @@ const demoAsideItems = buildDemoItems(
 
 :is(.demo-shell-preview--md, .demo-shell-preview--lg, .demo-shell-preview--xl, .demo-shell-preview--2xl)
   .demo-setup-recipe--with-aside
-  :is(
-    .demo-setup-recipe__brand,
-    .demo-setup-recipe__header,
-    .demo-setup-recipe__aside,
-    .demo-setup-recipe__main
-  ) {
+  :is(.demo-setup-recipe__brand, .demo-setup-recipe__header, .demo-setup-recipe__aside, .demo-setup-recipe__main) {
   padding-block-start: calc(var(--cm-space-6) * 1.5);
   padding-inline: calc(var(--cm-space-6) * 1.5);
 }
@@ -1696,6 +1746,314 @@ const demoAsideItems = buildDemoItems(
     border: 0;
     border-radius: 0;
     box-shadow: none;
+  }
+}
+
+.demo-admin-layout-recipe {
+  --demo-admin-layout-sidebar-width: 18rem;
+  --demo-admin-layout-sidebar-collapsed-width: 4.75rem;
+  --demo-admin-layout-header-height: 4rem;
+
+  min-width: 20rem;
+  container-name: demo-admin-layout;
+  container-type: inline-size;
+  color: var(--cm-color-text-primary);
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.demo-admin-layout-recipe__aside {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 20;
+  inline-size: var(--demo-admin-layout-sidebar-width);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--cm-color-background-surface);
+  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  visibility: visible;
+  transform: translateX(0);
+  transition:
+    inline-size var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    visibility 0s;
+}
+
+.demo-admin-layout-recipe__brand {
+  box-sizing: border-box;
+  block-size: var(--demo-admin-layout-header-height);
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-4);
+  padding: var(--cm-space-3) var(--cm-space-4);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  container-type: inline-size;
+}
+
+.demo-admin-layout-recipe__aside-content {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--cm-space-4);
+}
+
+.demo-admin-layout-recipe__main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-inline-start: var(--demo-admin-layout-sidebar-width);
+  transition: margin-inline-start var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.demo-admin-layout-recipe__header {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  inset-inline-start: var(--demo-admin-layout-sidebar-width);
+  z-index: 21;
+  box-sizing: border-box;
+  block-size: var(--demo-admin-layout-header-height);
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-4);
+  padding: var(--cm-space-3) var(--cm-space-4);
+  background: var(--cm-color-background-surface);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+  transition: inset-inline-start var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.demo-admin-layout-recipe__header-content {
+  min-width: 0;
+  inline-size: 100%;
+}
+
+.demo-admin-layout-recipe__mobile-toggle,
+.demo-admin-layout-recipe__mobile-brand,
+.demo-admin-layout-recipe__mobile-backdrop {
+  display: none;
+}
+
+.demo-admin-layout-recipe--sidebar-collapsed .demo-admin-layout-recipe__aside {
+  inline-size: var(--demo-admin-layout-sidebar-collapsed-width);
+}
+
+.demo-admin-layout-recipe--sidebar-collapsed .demo-admin-layout-recipe__main {
+  margin-inline-start: var(--demo-admin-layout-sidebar-collapsed-width);
+}
+
+.demo-admin-layout-recipe--sidebar-collapsed .demo-admin-layout-recipe__header {
+  inset-inline-start: var(--demo-admin-layout-sidebar-collapsed-width);
+}
+
+.demo-admin-layout-recipe--sidebar-collapsed .demo-admin-layout-recipe__aside:is(:hover, :has(:focus-visible)) {
+  z-index: 22;
+  inline-size: var(--demo-admin-layout-sidebar-width);
+}
+
+.demo-admin-layout-recipe__content {
+  flex: 1 0 auto;
+  min-width: 0;
+  padding: calc(var(--demo-admin-layout-header-height) + var(--cm-space-4)) var(--cm-space-4) var(--cm-space-4);
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.demo-admin-layout-recipe__footer {
+  margin-top: auto;
+  padding: var(--cm-space-4);
+  background: var(--cm-color-background-surface);
+  border-top: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.demo-admin-layout__header,
+.demo-admin-layout__content-header {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.demo-admin-layout__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-2);
+  width: 100%;
+  padding-inline-start: 0.625rem;
+}
+
+.demo-admin-layout__brand-mark {
+  width: var(--cm-icon-size-xl);
+  height: var(--cm-icon-size-xl);
+  display: block;
+}
+
+.demo-admin-layout__mobile-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-2);
+  white-space: nowrap;
+}
+
+.demo-admin-layout__brand-label {
+  min-width: 0;
+  max-width: 20rem;
+  overflow: hidden;
+  opacity: 1;
+  white-space: nowrap;
+  transition:
+    max-width var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    opacity var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+}
+
+.demo-admin-layout-recipe--sidebar-compact .demo-admin-layout__brand-label {
+  max-width: 0;
+  opacity: 0;
+}
+
+.demo-admin-layout__footer {
+  color: var(--cm-color-text-muted);
+}
+
+@container demo-admin-layout (width <= 1023.98px) {
+  .demo-admin-layout-recipe__aside {
+    inset-block-start: 0;
+    z-index: 24;
+    inline-size: min(var(--demo-admin-layout-sidebar-width), 85cqi);
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition:
+      transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+      visibility 0s var(--cm-motion-duration-normal);
+  }
+
+  [dir='rtl'] .demo-admin-layout-recipe__aside {
+    transform: translateX(100%);
+  }
+
+  .demo-admin-layout-recipe--mobile-sidebar-open .demo-admin-layout-recipe__aside {
+    visibility: visible;
+    transform: translateX(0);
+    transition:
+      transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+      visibility 0s;
+  }
+
+  .demo-admin-layout-recipe--sidebar-collapsed .demo-admin-layout-recipe__aside {
+    inline-size: min(var(--demo-admin-layout-sidebar-width), 85cqi);
+  }
+
+  .demo-admin-layout-recipe__main,
+  .demo-admin-layout-recipe--sidebar-collapsed .demo-admin-layout-recipe__main {
+    margin-inline-start: 0;
+  }
+
+  .demo-admin-layout-recipe__header {
+    inset-inline-start: 0;
+    z-index: 22;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .demo-admin-layout-recipe--sidebar-collapsed .demo-admin-layout-recipe__header {
+    inset-inline-start: 0;
+  }
+
+  .demo-admin-layout-recipe__mobile-toggle {
+    display: flex;
+    justify-self: start;
+  }
+
+  .demo-admin-layout-recipe__mobile-toggle-button {
+    box-sizing: border-box;
+    inline-size: var(--cm-control-height-md);
+    block-size: var(--cm-control-height-md);
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: var(--cm-radius-surface);
+    cursor: pointer;
+  }
+
+  .demo-admin-layout-recipe__mobile-toggle-button:hover {
+    background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  .demo-admin-layout-recipe__mobile-toggle-button:focus-visible {
+    outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
+    outline-offset: calc(var(--cm-focus-ring-width) * -1);
+  }
+
+  .demo-admin-layout-recipe__mobile-toggle-button svg {
+    inline-size: var(--cm-icon-size-md);
+    block-size: var(--cm-icon-size-md);
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 2;
+  }
+
+  .demo-admin-layout-recipe__mobile-brand {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    grid-column: 2;
+  }
+
+  .demo-admin-layout-recipe__header-content {
+    inline-size: auto;
+    display: flex;
+    min-width: 0;
+    justify-self: end;
+    grid-column: 3;
+  }
+
+  .demo-admin-layout-recipe__mobile-backdrop {
+    position: fixed;
+    inset-block: 0;
+    inset-inline: 0;
+    z-index: 23;
+    display: block;
+    background: var(--cm-color-background-backdrop);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+      visibility 0s var(--cm-motion-duration-normal);
+  }
+
+  .demo-admin-layout-recipe--mobile-sidebar-open .demo-admin-layout-recipe__mobile-backdrop {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+      visibility 0s;
+  }
+
+  .demo-admin-layout-recipe--sidebar-collapsed .demo-admin-layout-recipe__aside:is(:hover, :has(:focus-visible)) {
+    z-index: 24;
+    inline-size: min(var(--demo-admin-layout-sidebar-width), 85cqi);
+  }
+
+  .demo-admin-layout__desktop-toggle {
+    display: none;
+  }
+
+  .demo-admin-layout-recipe--sidebar-compact .demo-admin-layout__brand-label {
+    max-width: 20rem;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-admin-layout-recipe__aside,
+  .demo-admin-layout-recipe__main,
+  .demo-admin-layout-recipe__header,
+  .demo-admin-layout-recipe__mobile-backdrop {
+    transition: none;
   }
 }
 
@@ -1720,9 +2078,7 @@ const demoAsideItems = buildDemoItems(
 
 .demo-app-shell-recipe--with-subheader {
   --demo-app-shell-subheader-offset: 2.75rem;
-  --demo-app-shell-sticky-offset: calc(
-    var(--demo-app-shell-header-offset) + var(--demo-app-shell-subheader-offset)
-  );
+  --demo-app-shell-sticky-offset: calc(var(--demo-app-shell-header-offset) + var(--demo-app-shell-subheader-offset));
 }
 
 .demo-app-shell-recipe__header {
@@ -1911,8 +2267,7 @@ const demoAsideItems = buildDemoItems(
   overflow: auto;
 }
 
-.demo-app-shell-recipe--header-sticky.demo-app-shell-recipe--sidebar-sticky
-  .demo-app-shell-recipe__sidebar-inner,
+.demo-app-shell-recipe--header-sticky.demo-app-shell-recipe--sidebar-sticky .demo-app-shell-recipe__sidebar-inner,
 .demo-app-shell-recipe--header-sticky.demo-app-shell-recipe--aside-sticky .demo-app-shell-recipe__aside-inner {
   top: var(--demo-app-shell-sticky-offset);
   max-height: calc(100vh - var(--demo-app-shell-sticky-offset));
