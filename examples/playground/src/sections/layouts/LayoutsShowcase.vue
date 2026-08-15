@@ -283,7 +283,11 @@
 
                       <form :id="setupFormId" class="cm-stack demo-setup-form" @submit.prevent="goToNextSetupStep">
                         <div class="demo-setup-fields demo-setup-fields--split">
-                          <VfField label="Host" description="Hostname, socket, or private address.">
+                          <VfField
+                            :control-id="`${setupFormId}-host`"
+                            label="Host"
+                            description="Hostname, socket, or private address."
+                          >
                             <template #default="{ controlId, describedBy, invalid }">
                               <VfInput
                                 :id="controlId"
@@ -295,7 +299,7 @@
                             </template>
                           </VfField>
 
-                          <VfField label="Port">
+                          <VfField :control-id="`${setupFormId}-port`" label="Port">
                             <template #default="{ controlId, describedBy, invalid }">
                               <VfInput
                                 :id="controlId"
@@ -308,7 +312,7 @@
                           </VfField>
                         </div>
 
-                        <VfField label="Database name">
+                        <VfField :control-id="`${setupFormId}-database`" label="Database name">
                           <template #default="{ controlId, describedBy, invalid }">
                             <VfInput
                               :id="controlId"
@@ -321,7 +325,7 @@
                         </VfField>
 
                         <div class="demo-setup-fields demo-setup-fields--even">
-                          <VfField label="Database user">
+                          <VfField :control-id="`${setupFormId}-user`" label="Database user">
                             <template #default="{ controlId, describedBy, invalid }">
                               <VfInput
                                 :id="controlId"
@@ -333,7 +337,7 @@
                             </template>
                           </VfField>
 
-                          <VfField label="Database password">
+                          <VfField :control-id="`${setupFormId}-password`" label="Database password">
                             <template #default="{ controlId, describedBy, invalid }">
                               <VfInput
                                 :id="controlId"
@@ -871,7 +875,6 @@ import {
   VfButton,
   VfDataTable,
   VfDrawer,
-  VfField,
   VfIconButton,
   VfInput,
   VfLink,
@@ -887,6 +890,7 @@ import {
   CmCard as VfCard,
   CmCheckbox as VfCheckbox,
   CmContainer as VfContainer,
+  CmField as VfField,
   CmGrid as VfGrid,
   CmInline as VfInline,
   CmSection as VfSection,
