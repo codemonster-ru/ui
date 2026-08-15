@@ -58,6 +58,8 @@ final class CmButtonIntegrationTest extends TestCase
         self::assertStringContainsString(' disabled', $html);
         self::assertStringContainsString('aria-busy="true"', $html);
         self::assertStringContainsString('class="cm-button__spinner" aria-hidden="true"', $html);
+        self::assertStringContainsString('class="cm-button__spinner-track"', $html);
+        self::assertStringContainsString('class="cm-button__spinner-value"', $html);
         self::assertStringContainsString('<span class="cm-button__label">Save</span>', $html);
     }
 

@@ -78,6 +78,22 @@ describe('CmButton', () => {
 
     expect(wrapper.attributes()).toMatchObject({ disabled: '', 'aria-busy': 'true' });
     expect(wrapper.find('.cm-button__spinner').attributes('aria-hidden')).toBe('true');
+    expect(wrapper.find('.cm-button__spinner-svg').attributes()).toMatchObject({
+      viewBox: '0 0 50 50',
+      focusable: 'false',
+    });
+    expect(wrapper.find('.cm-button__spinner-track').attributes()).toMatchObject({
+      cx: '25',
+      cy: '25',
+      r: '20',
+      'stroke-width': '5',
+    });
+    expect(wrapper.find('.cm-button__spinner-value').attributes()).toMatchObject({
+      cx: '25',
+      cy: '25',
+      r: '20',
+      'stroke-width': '5',
+    });
     expect(wrapper.find('.cm-button__leading').exists()).toBe(false);
     expect(wrapper.find('.cm-button__label').text()).toBe('Save');
   });

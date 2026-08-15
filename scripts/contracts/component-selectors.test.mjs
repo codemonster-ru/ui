@@ -63,6 +63,9 @@ test('keeps Button selectors aligned with its manifest and canonical HTML', () =
     'cm-button__leading',
     'cm-button__trailing',
     'cm-button__spinner',
+    'cm-button__spinner-svg',
+    'cm-button__spinner-track',
+    'cm-button__spinner-value',
   ]);
   const cssClasses = new Set(
     [...buttonCss.matchAll(/\.(cm-button(?:--|__)[a-z0-9-]+|cm-button)\b/g)].map((match) => match[1]),
