@@ -2417,11 +2417,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">Month</p>
                     <CmField control-id="core-date-picker-billing-month" label="Billing month">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker
+                        <CoreDatePickerRecipe
                           :id="controlId"
                           v-model="monthPickerValue"
-                          month-picker
-                          locale="en-US"
+                          picker-mode="month"
+                          today="2026-08-15"
                           clearable
                           :invalid="invalid"
                           :aria-describedby="describedBy"
@@ -2437,11 +2437,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">Year</p>
                     <CmField control-id="core-date-picker-fiscal-year" label="Fiscal year">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker
+                        <CoreDatePickerRecipe
                           :id="controlId"
                           v-model="yearPickerValue"
-                          year-picker
-                          locale="en-US"
+                          picker-mode="year"
+                          today="2026-08-15"
                           clearable
                           :invalid="invalid"
                           :aria-describedby="describedBy"
