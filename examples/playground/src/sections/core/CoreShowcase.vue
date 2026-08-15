@@ -2062,7 +2062,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     role="alert"
                   >
                     <template #icon>
-                      <VueIconify :icon="alertIconByTone[tone]" size="var(--vf-icon-size-lg)" />
+                      <VueIconify :icon="alertIconByTone[tone]" size="var(--cm-icon-size-lg)" />
                     </template>
                     Consistent icon, border, and content spacing.
                   </VfAlert>
