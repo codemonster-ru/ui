@@ -2,7 +2,6 @@
 import {
   VfAlert,
   VfButton,
-  VfCard,
   VfDataTable,
   VfDropdown,
   VfIconButton,
@@ -18,6 +17,7 @@ import {
   type VfTabItem,
 } from '@codemonster-ru/vueforge-core';
 import {
+  CmCard as VfCard,
   CmGrid as VfGrid,
   CmInline as VfInline,
   CmSection as VfSection,

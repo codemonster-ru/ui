@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import {
   CmAvatar as VfAvatar,
   CmBadge as VfBadge,
+  CmCard as VfCard,
   CmDivider as VfDivider,
   CmSkeleton as VfSkeleton,
   CmStack as VfStack,
@@ -14,7 +15,6 @@ import {
   VfAlert,
   VfBreadcrumbs,
   VfButton,
-  VfCard,
   VfCheckbox,
   VfCommandPalette,
   VfConfirmDialog,
