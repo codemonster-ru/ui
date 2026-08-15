@@ -66,6 +66,7 @@ import CoreDataTableStateRecipe from './CoreDataTableStateRecipe.vue';
 import CoreCommandPaletteRecipe, {
   type CoreCommandPaletteRecipeItem,
 } from './CoreCommandPaletteRecipe.vue';
+import CoreDatePickerRecipe from './CoreDatePickerRecipe.vue';
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe from './CoreDrawerRecipe.vue';
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
@@ -2354,10 +2355,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">Interactive</p>
                     <CmField control-id="core-date-picker-release-date" label="Release date">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker
+                        <CoreDatePickerRecipe
                           :id="controlId"
                           v-model="datePickerValue"
-                          locale="en-US"
+                          today="2026-08-15"
                           clearable
                           :invalid="invalid"
                           :aria-describedby="describedBy"
@@ -2399,10 +2400,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                       description="Available from August 10 through August 20, 2026."
                     >
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker
+                        <CoreDatePickerRecipe
                           :id="controlId"
                           v-model="constrainedDatePickerValue"
-                          locale="en-US"
+                          today="2026-08-15"
                           min="2026-08-10"
                           max="2026-08-20"
                           clearable
@@ -2522,9 +2523,28 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">States</p>
-                    <VfDatePicker model-value="" invalid placeholder="Invalid date" aria-label="Invalid date" />
-                    <VfDatePicker model-value="2026-07-30" disabled locale="en-US" aria-label="Disabled date" />
-                    <VfDatePicker model-value="2026-07-30" readonly locale="en-US" aria-label="Readonly date" />
+                    <CoreDatePickerRecipe
+                      id="core-date-picker-invalid"
+                      model-value=""
+                      today="2026-08-15"
+                      invalid
+                      placeholder="Invalid date"
+                      aria-label="Invalid date"
+                    />
+                    <CoreDatePickerRecipe
+                      id="core-date-picker-disabled"
+                      model-value="2026-07-30"
+                      today="2026-08-15"
+                      disabled
+                      aria-label="Disabled date"
+                    />
+                    <CoreDatePickerRecipe
+                      id="core-date-picker-readonly"
+                      model-value="2026-07-30"
+                      today="2026-08-15"
+                      readonly
+                      aria-label="Readonly date"
+                    />
                   </div>
                 </div>
               </div>
