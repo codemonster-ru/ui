@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import {
-  VfButton,
   VfDataTable,
   VfDropdown,
-  VfIconButton,
-  VfInput,
   VfMenu,
   VfMenuItem,
   VfNavMenu,
@@ -17,15 +14,21 @@ import {
 } from '@codemonster-ru/vueforge-core';
 import {
   CmAlert as VfAlert,
+  CmButton as VfButton,
   CmCard as VfCard,
   CmGrid as VfGrid,
+  CmIconButton as VfIconButton,
   CmInline as VfInline,
+  CmInput as VfInput,
   CmSection as VfSection,
   CmStack as VfStack,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
 import { VfAppShell } from '@codemonster-ru/vueforge-layouts';
 import '@codemonster-ru/ui-css/alert.css';
+import '@codemonster-ru/ui-css/button.css';
+import '@codemonster-ru/ui-css/icon-button.css';
+import '@codemonster-ru/ui-css/input.css';
 
 type UiVariant = {
   id: string;
@@ -113,22 +116,34 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
                 <VueIconify icon="grid" :size="18" />
                 <strong>VueForge</strong>
               </VfInline>
-              <VfInput
-                class="icon-saas-search"
-                :size="variant.density === 'compact' ? 'sm' : 'md'"
-                leading-icon="magnifyingGlass"
-                placeholder="Search projects"
-                readonly
-                aria-label="Search projects"
-              />
+              <div class="icon-saas-search">
+                <VfInput
+                  :size="variant.density === 'compact' ? 'sm' : 'md'"
+                  placeholder="Search projects"
+                  readonly
+                  aria-label="Search projects"
+                >
+                  <template #leading>
+                    <VueIconify icon="magnifyingGlass" size="var(--vf-field-icon-size)" aria-hidden="true" />
+                  </template>
+                </VfInput>
+              </div>
               <VfInline class="icon-saas-toolbar__actions" :wrap="false">
                 <VfIconButton
-                  icon="bell"
+                  label="Notifications"
                   :size="variant.density === 'compact' ? 'sm' : 'md'"
                   variant="secondary"
-                  aria-label="Notifications"
-                />
-                <VfButton :size="variant.density === 'compact' ? 'sm' : 'md'" variant="secondary">
+                >
+                  <VueIconify
+                    icon="bell"
+                    :size="variant.density === 'compact' ? 'var(--cm-icon-size-sm)' : 'var(--cm-icon-size-md)'"
+                  />
+                </VfIconButton>
+                <VfButton
+                  class="icon-saas-button"
+                  :size="variant.density === 'compact' ? 'sm' : 'md'"
+                  variant="secondary"
+                >
                   <VueIconify icon="plus" :size="16" />
                   New project
                 </VfButton>
@@ -159,11 +174,15 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
                 <h3>Operations overview</h3>
               </div>
               <VfIconButton
-                icon="download"
+                label="Download report"
                 :size="variant.density === 'compact' ? 'sm' : 'md'"
                 variant="secondary"
-                aria-label="Download report"
-              />
+              >
+                <VueIconify
+                  icon="download"
+                  :size="variant.density === 'compact' ? 'var(--cm-icon-size-sm)' : 'var(--cm-icon-size-md)'"
+                />
+              </VfIconButton>
             </VfInline>
 
             <VfTabs default-value="overview" :items="tabs">
@@ -213,7 +232,12 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
                   <strong>Recent projects</strong>
                   <VfDropdown placement="bottom-end" :disable-teleport="true">
                     <template #trigger>
-                      <VfButton tabindex="-1" :size="variant.density === 'compact' ? 'sm' : 'md'" variant="secondary">
+                      <VfButton
+                        class="icon-saas-button"
+                        tabindex="-1"
+                        :size="variant.density === 'compact' ? 'sm' : 'md'"
+                        variant="secondary"
+                      >
                         Status
                         <VueIconify icon="chevronDown" :size="14" />
                       </VfButton>
@@ -250,8 +274,12 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
                 </template>
                 <template #cell-actions>
                   <VfInline class="icon-saas-row-actions" :wrap="false">
-                    <VfIconButton icon="pencil" size="sm" variant="secondary" aria-label="Edit project" />
-                    <VfIconButton icon="trash" size="sm" variant="secondary" aria-label="Delete project" />
+                    <VfIconButton label="Edit project" size="sm" variant="secondary">
+                      <VueIconify icon="pencil" size="var(--cm-icon-size-sm)" />
+                    </VfIconButton>
+                    <VfIconButton label="Delete project" size="sm" variant="secondary">
+                      <VueIconify icon="trash" size="var(--cm-icon-size-sm)" />
+                    </VfIconButton>
                   </VfInline>
                 </template>
               </VfDataTable>
@@ -261,12 +289,15 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
                 <VfInline class="icon-saas-pagination__actions" :wrap="false">
                   <VfIconButton
                     class="icon-saas-pagination__previous"
-                    icon="chevronRight"
+                    label="Previous page"
                     size="sm"
                     variant="secondary"
-                    aria-label="Previous page"
-                  />
-                  <VfIconButton icon="chevronRight" size="sm" variant="secondary" aria-label="Next page" />
+                  >
+                    <VueIconify icon="chevronRight" size="var(--cm-icon-size-sm)" />
+                  </VfIconButton>
+                  <VfIconButton label="Next page" size="sm" variant="secondary">
+                    <VueIconify icon="chevronRight" size="var(--cm-icon-size-sm)" />
+                  </VfIconButton>
                 </VfInline>
               </VfInline>
             </VfPanel>
@@ -278,7 +309,9 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
                   <strong>No pending messages</strong>
                   <span>New activity will appear here.</span>
                 </div>
-                <VfIconButton icon="upload" size="sm" variant="secondary" aria-label="Upload a message" />
+                <VfIconButton label="Upload a message" size="sm" variant="secondary">
+                  <VueIconify icon="upload" size="var(--cm-icon-size-sm)" />
+                </VfIconButton>
               </VfInline>
             </VfSection>
           </VfStack>
@@ -377,6 +410,10 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
 
 .icon-saas-toolbar__actions {
   margin-inline-start: auto;
+}
+
+.icon-saas-button :deep(.cm-button__label) {
+  display: contents;
 }
 
 .icon-saas-sidebar {
