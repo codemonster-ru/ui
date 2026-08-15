@@ -523,6 +523,69 @@
   padding-block-start: 0;
 }
 
+.demo-application-column-chooser .cm-popover__trigger {
+  width: calc(var(--cm-control-height-sm) + 2 * var(--cm-border-width));
+  height: calc(var(--cm-control-height-sm) + 2 * var(--cm-border-width));
+  min-block-size: 0;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--cm-color-icon-primary);
+  line-height: 1;
+}
+
+.demo-application-column-chooser .cm-popover__trigger:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--cm-color-background-surface-hover);
+}
+
+.demo-application-column-chooser .cm-popover__trigger:active:not(:disabled) {
+  border-color: transparent;
+  background: var(--cm-color-background-surface-active);
+}
+
+.demo-application-column-chooser .cm-popover__panel {
+  z-index: 1100;
+  inset-block-start: calc(100% + var(--cm-space-4) + var(--cm-border-width));
+  inline-size: auto;
+  min-inline-size: 13.125rem;
+  padding: var(--cm-space-2);
+  border-color: var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface-elevated);
+  box-shadow: var(--cm-shadow-overlay);
+}
+
+.demo-application-column-chooser__arrow {
+  position: absolute;
+  z-index: 0;
+  top: -0.3535rem;
+  left: calc(var(--cm-space-3) - var(--cm-border-width) - var(--cm-border-width) / 2);
+  width: calc(var(--cm-space-2) + var(--cm-border-width-thick));
+  height: calc(var(--cm-space-2) + var(--cm-border-width-thick));
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-inline-start: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface-elevated);
+  pointer-events: none;
+  transform: rotate(45deg);
+}
+
+.demo-application-column-chooser__options {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--cm-space-2);
+  min-width: 12rem;
+  max-height: min(24rem, calc(100vh - var(--cm-space-8)));
+  padding: var(--cm-field-padding-sm);
+  overflow-y: auto;
+}
+
+.demo-application-column-chooser__all {
+  padding-block-end: var(--cm-space-2);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+}
+
 .demo-application-form-layout {
   --demo-application-form-layout-label-width: minmax(10rem, 25%);
 

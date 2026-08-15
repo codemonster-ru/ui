@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import {
   CmAvatar as VfAvatar,
   CmAlert as VfAlert,
@@ -7,11 +7,13 @@ import {
   CmBreadcrumbs as VfBreadcrumbs,
   CmButton,
   CmCard as VfCard,
+  CmCheckbox,
   CmCheckbox as VfCheckbox,
   CmDivider as VfDivider,
   CmDialog,
   CmIconButton,
   CmLink,
+  CmPopover,
   CmProgressBar,
   CmProgressSpinner,
   CmRadio as VfRadio,
@@ -27,9 +29,11 @@ import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
 import '@codemonster-ru/ui-css/button.css';
 import '@codemonster-ru/ui-css/alert.css';
 import '@codemonster-ru/ui-css/breadcrumbs.css';
+import '@codemonster-ru/ui-css/checkbox.css';
 import '@codemonster-ru/ui-css/dialog.css';
 import '@codemonster-ru/ui-css/icon-button.css';
 import '@codemonster-ru/ui-css/link.css';
+import '@codemonster-ru/ui-css/popover.css';
 import '@codemonster-ru/ui-css/progress-bar.css';
 import '@codemonster-ru/ui-css/progress-spinner.css';
 import '@codemonster-ru/ui-css/table.css';
@@ -38,7 +42,6 @@ import {
   VfButton as VfLegacyButton,
   VfCommandPalette,
   VfDataTable,
-  VfDataTableColumnChooser,
   VfDatePicker,
   VfDrawer,
   VfDialog,
@@ -116,6 +119,7 @@ const dataTableColumnWidths = ref<VfDataTableColumnWidths>({});
 const dataTableSort = ref<VfDataTableSort[]>([]);
 const dataTableError = ref(true);
 const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
+const dataTableColumnChooserOpen = ref(false);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 let confirmDialogPreviousBodyOverflow: string | undefined;
 
@@ -650,6 +654,53 @@ const dataTableConfigurableColumns: VfDataTableColumn[] = [
   { key: 'status', header: 'Status' },
   { key: 'tasks', header: 'Tasks', align: 'end' },
 ];
+
+const requiredDataTableColumnKeys = new Set(['member']);
+const optionalDataTableColumns = computed(() =>
+  dataTableConfigurableColumns.filter((column) => !requiredDataTableColumnKeys.has(column.key)),
+);
+const visibleOptionalDataTableColumnCount = computed(
+  () => optionalDataTableColumns.value.filter((column) => visibleDataTableColumnKeys.value.includes(column.key)).length,
+);
+const allDataTableColumnsVisible = computed(
+  () => visibleOptionalDataTableColumnCount.value === optionalDataTableColumns.value.length,
+);
+const someDataTableColumnsVisible = computed(
+  () => visibleOptionalDataTableColumnCount.value > 0 && !allDataTableColumnsVisible.value,
+);
+
+function commitVisibleDataTableColumns(keys: Iterable<string>): void {
+  const visibleKeys = new Set([...keys, ...requiredDataTableColumnKeys]);
+  visibleDataTableColumnKeys.value = dataTableConfigurableColumns
+    .map((column) => column.key)
+    .filter((key) => visibleKeys.has(key));
+}
+
+function toggleAllDataTableColumns(checked: boolean): void {
+  commitVisibleDataTableColumns(checked ? dataTableConfigurableColumns.map((column) => column.key) : []);
+}
+
+function toggleDataTableColumn(key: string, checked: boolean): void {
+  const visibleKeys = new Set(visibleDataTableColumnKeys.value);
+  if (checked) visibleKeys.add(key);
+  else visibleKeys.delete(key);
+  commitVisibleDataTableColumns(visibleKeys);
+}
+
+function handleDataTableColumnChooserOpenChange(open: boolean): void {
+  dataTableColumnChooserOpen.value = open;
+  if (!open) {
+    void nextTick(() => document.getElementById('data-table-column-chooser-trigger')?.focus());
+  }
+}
+
+function handleDataTableColumnChooserKeydown(event: KeyboardEvent): void {
+  const root = event.currentTarget as HTMLElement | null;
+  if (event.key !== 'ArrowDown' || event.target !== root?.querySelector('button')) return;
+  event.preventDefault();
+  event.stopPropagation();
+  dataTableColumnChooserOpen.value = true;
+}
 
 const dataTablePinnedColumns: VfDataTableColumn[] = [
   { key: 'actions', header: 'Actions', pinned: 'end', width: '1%', minWidth: '7rem', nowrap: true },
@@ -1515,11 +1566,39 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <p class="demo-component-matrix__label">VfDataTable + VfDataTableColumnChooser</p>
                   <div class="demo-stack">
                     <div class="demo-inline">
-                      <VfDataTableColumnChooser
-                        v-model="visibleDataTableColumnKeys"
-                        :columns="dataTableConfigurableColumns"
-                        :required-column-keys="['member']"
-                      />
+                      <CmPopover
+                        id="data-table-column-chooser"
+                        class="demo-application-column-chooser"
+                        label="Configure columns"
+                        title="Configure columns"
+                        :open="dataTableColumnChooserOpen"
+                        placement="bottom-start"
+                        @keydown.capture="handleDataTableColumnChooserKeydown"
+                        @update:open="handleDataTableColumnChooserOpenChange"
+                      >
+                        <template #trigger>
+                          <VueIconify :icon="icons.gear" size="var(--cm-icon-size-sm)" />
+                        </template>
+                        <span class="demo-application-column-chooser__arrow" aria-hidden="true" />
+                        <div class="demo-application-column-chooser__options">
+                          <div class="demo-application-column-chooser__all">
+                            <CmCheckbox
+                              :model-value="allDataTableColumnsVisible"
+                              :indeterminate="someDataTableColumnsVisible"
+                              label="All columns"
+                              @update:model-value="toggleAllDataTableColumns"
+                            />
+                          </div>
+                          <CmCheckbox
+                            v-for="column in dataTableConfigurableColumns"
+                            :key="column.key"
+                            :model-value="visibleDataTableColumnKeys.includes(column.key)"
+                            :label="column.header || column.key"
+                            :disabled="requiredDataTableColumnKeys.has(column.key)"
+                            @update:model-value="toggleDataTableColumn(column.key, $event)"
+                          />
+                        </div>
+                      </CmPopover>
                       <span class="demo-text">Member is always visible</span>
                     </div>
                     <VfDataTable
