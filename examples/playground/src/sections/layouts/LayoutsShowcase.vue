@@ -868,7 +868,6 @@
 
 <script setup lang="ts">
 import {
-  VfAvatar,
   VfButton,
   VfCard,
   VfCheckbox,
@@ -886,6 +885,7 @@ import {
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
 import { computed, ref, watch } from 'vue';
 import {
+  CmAvatar as VfAvatar,
   CmBadge as VfBadge,
   CmContainer as VfContainer,
   CmGrid as VfGrid,

@@ -48,7 +48,7 @@
                 @error="onError"
               />
               <template #skeleton>
-                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+                <VfSkeleton :min-height="260" style="border-radius: var(--vf-layout-section-radius)" />
               </template>
             </VfSkeletonGate>
           </VfSection>
@@ -80,7 +80,7 @@
                 @error="onError"
               />
               <template #skeleton>
-                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+                <VfSkeleton :min-height="260" style="border-radius: var(--vf-layout-section-radius)" />
               </template>
             </VfSkeletonGate>
           </VfSection>
@@ -111,7 +111,7 @@
                 @preview-ready="onPlaygroundReady"
               />
               <template #skeleton>
-                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+                <VfSkeleton :min-height="260" style="border-radius: var(--vf-layout-section-radius)" />
               </template>
             </VfSkeletonGate>
           </VfSection>
@@ -144,9 +144,8 @@
 
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
-import { CmSection as VfSection, CmStack as VfStack } from '@codemonster-ru/ui-vue';
+import { CmSection as VfSection, CmSkeleton as VfSkeleton, CmStack as VfStack } from '@codemonster-ru/ui-vue';
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
-import { VfSkeleton } from '@codemonster-ru/vueforge-core/skeleton';
 import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
 import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
