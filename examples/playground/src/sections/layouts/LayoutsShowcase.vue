@@ -869,7 +869,6 @@
 <script setup lang="ts">
 import {
   VfButton,
-  VfCard,
   VfCheckbox,
   VfDataTable,
   VfDrawer,
@@ -887,6 +886,7 @@ import { computed, ref, watch } from 'vue';
 import {
   CmAvatar as VfAvatar,
   CmBadge as VfBadge,
+  CmCard as VfCard,
   CmContainer as VfContainer,
   CmGrid as VfGrid,
   CmInline as VfInline,
