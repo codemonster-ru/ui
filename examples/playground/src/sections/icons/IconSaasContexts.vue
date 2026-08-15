@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  VfAlert,
   VfButton,
   VfDataTable,
   VfDropdown,
@@ -17,6 +16,7 @@ import {
   type VfTabItem,
 } from '@codemonster-ru/vueforge-core';
 import {
+  CmAlert as VfAlert,
   CmCard as VfCard,
   CmGrid as VfGrid,
   CmInline as VfInline,
@@ -25,6 +25,7 @@ import {
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
 import { VfAppShell } from '@codemonster-ru/vueforge-layouts';
+import '@codemonster-ru/ui-css/alert.css';
 
 type UiVariant = {
   id: string;
@@ -196,8 +197,14 @@ const rowText = (row: VfDataTableRow, key: 'project' | 'owner' | 'status'): stri
             </VfGrid>
 
             <VfGrid class="icon-saas-feedback">
-              <VfAlert tone="warn" icon="warning">Backup requires attention.</VfAlert>
-              <VfAlert tone="info" icon="infoCircle">3 updates are ready.</VfAlert>
+              <VfAlert tone="warning" role="alert">
+                <template #icon><VueIconify icon="warning" size="var(--vf-icon-size-lg)" /></template>
+                Backup requires attention.
+              </VfAlert>
+              <VfAlert tone="info" role="alert">
+                <template #icon><VueIconify icon="infoCircle" size="var(--vf-icon-size-lg)" /></template>
+                3 updates are ready.
+              </VfAlert>
             </VfGrid>
 
             <VfPanel class="icon-saas-data-panel">
