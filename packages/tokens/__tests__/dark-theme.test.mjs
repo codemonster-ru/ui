@@ -13,7 +13,7 @@ test('composes the complete immutable dark preset', () => {
   assert.equal(Object.isFrozen(cmDarkThemePreset), true);
   assert.equal(Object.isFrozen(cmDarkThemePreset.tokens), true);
   assert.deepEqual(Object.keys(cmDarkThemePreset.tokens), Object.keys(cmLightThemePreset.tokens));
-  assert.equal(Object.keys(cmDarkThemePreset.tokens).length, 224);
+  assert.equal(Object.keys(cmDarkThemePreset.tokens).length, 225);
 });
 
 test('changes only semantic colors between default modes', () => {

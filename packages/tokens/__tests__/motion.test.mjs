@@ -7,6 +7,12 @@ test('owns immutable motion durations and easing', () => {
   assert.equal(Object.isFrozen(cmMotionTokens), true);
   assert.equal(Object.isFrozen(cmMotionTokenNames), true);
   assert.equal(Object.isFrozen(cmMotionDurationsMs), true);
+  assert.deepEqual(cmMotionTokens, {
+    motionDurationNone: '0ms',
+    motionDurationFast: '220ms',
+    motionDurationNormal: '320ms',
+    motionEaseStandard: 'cubic-bezier(0.16, 1, 0.3, 1)',
+  });
   assert.deepEqual(cmMotionDurationsMs, { none: 0, fast: 220, normal: 320 });
 });
 

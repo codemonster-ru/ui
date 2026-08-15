@@ -24,7 +24,7 @@ function parseDeclarations(source) {
 test('generates the complete light theme and minimal dark overrides', () => {
   const [lightBlock, darkBlock] = css.split("\n\n[data-cm-theme='dark'] {");
 
-  assert.equal(lightBlock.match(/ {2}--cm-/g)?.length, 218);
+  assert.equal(lightBlock.match(/ {2}--cm-/g)?.length, 219);
   assert.equal(darkBlock.match(/ {2}--cm-/g)?.length, 83);
   assert.match(css, /^@import '\.\/breakpoints\.css';/);
 });
@@ -34,6 +34,11 @@ test('uses portable CodeMonster custom property names', () => {
   assert.match(css, /--cm-color-background-canvas: var\(--cm-palette-/);
   assert.match(css, /--cm-font-size-2xl: /);
   assert.match(css, /--cm-focus-ring-width: 3px;/);
+  assert.match(css, /--cm-radius-control: calc\(var\(--cm-radius\) - 0\.125rem\);/);
+  assert.match(css, /--cm-radius-surface: var\(--cm-radius\);/);
+  assert.match(css, /--cm-shadow-surface: 0 1px 2px color-mix\(in srgb, var\(--cm-color-text-primary\) 4%, transparent\);/);
+  assert.match(css, /--cm-motion-duration-fast: 220ms;/);
+  assert.match(css, /--cm-motion-ease-standard: cubic-bezier\(0\.16, 1, 0\.3, 1\);/);
   assert.match(css, /--cm-button-padding-md: 0\.3125rem 0\.75rem;/);
   assert.match(css, /--cm-field-padding-lg: var\(--cm-field-padding-block-lg\) var\(--cm-field-padding-inline-lg\);/);
   assert.doesNotMatch(css, /--(?:vf|vueforge)-/);
