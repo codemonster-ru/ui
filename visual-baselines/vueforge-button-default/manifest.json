@@ -1,0 +1,52 @@
+{
+  "label": "vueforge-button-default-reference",
+  "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "sourceFixture": {
+    "component": "@codemonster-ru/vueforge-core/VfButton",
+    "props": {},
+    "renderer": "Vue createApp at the reference commit",
+    "slots": {
+      "default": "Save"
+    }
+  },
+  "routes": ["button-default"],
+  "screenshots": [
+    {
+      "filename": "button-default--light--mobile.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "button-default--dark--mobile.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "button-default--light--desktop.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "button-default--dark--desktop.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "desktop"
+    }
+  ],
+  "themes": ["light", "dark"],
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    }
+  ]
+}

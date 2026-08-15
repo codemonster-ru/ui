@@ -1,0 +1,10 @@
+:root {
+  background: var(--cm-color-background-canvas);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-visual-adapter-root {
+  min-block-size: 100vh;
+  padding: var(--cm-space-6);
+  background: var(--cm-color-background-canvas);
+}
