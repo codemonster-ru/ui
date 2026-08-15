@@ -52,11 +52,19 @@ test('checks both actual adapters against the reviewed fd baseline in macOS visu
 
   assert.equal(baselineManifest.referenceCommit, 'fd793696f50d3be0fcd3788f0f8f751c63869963');
   assert.deepEqual(baselineManifest.sourceFixture, {
-    caseIds: ['alert-danger-icon', 'badge-danger', 'button-default', 'card-title'],
+    caseIds: [
+      'alert-danger-icon',
+      'avatar-label',
+      'badge-danger',
+      'button-default',
+      'card-title',
+      'divider-horizontal',
+      'link-default',
+    ],
     componentPackage: '@codemonster-ru/vueforge-core',
     renderer: 'Vue createApp at the reference commit',
   });
-  assert.equal(screenshots.length, 16);
+  assert.equal(screenshots.length, 28);
   assert.match(workflow, /runs-on: macos-15/u);
   assert.match(workflow, /visual:cross-platform:razor-render/u);
   assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/vue"/u);
