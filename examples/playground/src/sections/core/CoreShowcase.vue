@@ -55,15 +55,10 @@ import {
   VfDatePicker,
   VfField,
   VfInput,
-  VfMenuBar,
-  VfNavMenu,
   VfSelect,
   VfTable as VfLegacyTable,
   VfTextarea as VfFloatingTextarea,
   VfSwitch as VfIconSwitch,
-} from '@codemonster-ru/vueforge-core';
-import type {
-  VfNavMenuItem,
 } from '@codemonster-ru/vueforge-core';
 import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
@@ -76,6 +71,8 @@ import CoreCommandPaletteRecipe, {
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe from './CoreDrawerRecipe.vue';
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
+import CoreMenuBarRecipe from './CoreMenuBarRecipe.vue';
+import CoreNavMenuRecipe from './CoreNavMenuRecipe.vue';
 import CorePaginationDataTableRecipe from './CorePaginationDataTableRecipe.vue';
 import CorePinnedDataTableRecipe from './CorePinnedDataTableRecipe.vue';
 import CoreResizableDataTableRecipe, {
@@ -90,6 +87,7 @@ import CoreSortableDataTableRecipe, {
   type CoreSortableDataTableSort,
 } from './CoreSortableDataTableRecipe.vue';
 import CoreTabsRecipe from './CoreTabsRecipe.vue';
+import type { CoreNavigationRecipeItem } from './core-navigation-recipes.types';
 import ShowcaseThemeSwitch from '../../components/ShowcaseThemeSwitch.vue';
 import { useShowcaseTheme } from '../../showcase-theme';
 
@@ -543,7 +541,7 @@ const selectOptions = [
   { value: 'custom', label: 'Custom' },
 ];
 
-const docsMenuSimpleItems: VfNavMenuItem[] = [
+const docsMenuSimpleItems: CoreNavigationRecipeItem[] = [
   {
     value: 'getting-started',
     label: 'Getting Started',
@@ -595,12 +593,12 @@ const docsMenuSimpleItems: VfNavMenuItem[] = [
   },
 ];
 
-const docsMenuSidebarItems: VfNavMenuItem[] = docsMenuSimpleItems.map((item, index) => ({
+const docsMenuSidebarItems: CoreNavigationRecipeItem[] = docsMenuSimpleItems.map((item, index) => ({
   ...item,
   leadingIcon: ['folderOpen', 'grid', 'layers'][index],
 }));
 
-const docsMenuSidebarNoIconItems: VfNavMenuItem[] = [
+const docsMenuSidebarNoIconItems: CoreNavigationRecipeItem[] = [
   {
     value: 'no-icons-getting-started',
     label: 'Getting started with workspace configuration',
@@ -638,7 +636,7 @@ const docsMenuSidebarNoIconItems: VfNavMenuItem[] = [
   },
 ];
 
-const topMenuItems: VfNavMenuItem[] = [
+const topMenuItems: CoreNavigationRecipeItem[] = [
   {
     value: 'products',
     label: 'Products',
@@ -3203,17 +3201,21 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfNavMenu + VfMenuBar</p>
-                  <VfNavMenu v-model="navMenuDefaultValue" :items="docsMenuSimpleItems" />
-                  <VfNavMenu v-model="navMenuPillsValue" :items="docsMenuSimpleItems" variant="pills" />
+                  <CoreNavMenuRecipe v-model="navMenuDefaultValue" :items="docsMenuSimpleItems" />
+                  <CoreNavMenuRecipe v-model="navMenuPillsValue" :items="docsMenuSimpleItems" variant="pills" />
                   <div class="demo-component-matrix__grid demo-nav-menu-variants-grid">
                     <div class="demo-component-matrix__cell">
                       <p class="demo-component-matrix__label">VfNavMenu · sidebar with icons</p>
-                      <VfNavMenu v-model="navMenuSidebarValue" :items="docsMenuSidebarItems" variant="sidebar" />
+                      <CoreNavMenuRecipe
+                        v-model="navMenuSidebarValue"
+                        :items="docsMenuSidebarItems"
+                        variant="sidebar"
+                      />
                     </div>
                     <div class="demo-component-matrix__cell">
                       <p class="demo-component-matrix__label">VfNavMenu · collapsed</p>
                       <div class="demo-nav-menu-collapsed-frame">
-                        <VfNavMenu
+                        <CoreNavMenuRecipe
                           v-model="navMenuSidebarValue"
                           :items="docsMenuSidebarItems"
                           variant="sidebar"
@@ -3223,15 +3225,16 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </div>
                     <div class="demo-component-matrix__cell demo-nav-menu-wrapping-labels">
                       <p class="demo-component-matrix__label">VfNavMenu · wrapping labels without icons</p>
-                      <VfNavMenu
+                      <CoreNavMenuRecipe
                         v-model="navMenuSidebarNoIconsValue"
                         :items="docsMenuSidebarNoIconItems"
                         variant="sidebar"
+                        wrap-labels
                       />
                     </div>
                   </div>
-                  <VfMenuBar v-model="menuBarDefaultValue" :items="topMenuItems" />
-                  <VfMenuBar v-model="menuBarPillsValue" :items="topMenuItems" variant="pills" />
+                  <CoreMenuBarRecipe v-model="menuBarDefaultValue" :items="topMenuItems" />
+                  <CoreMenuBarRecipe v-model="menuBarPillsValue" :items="topMenuItems" variant="pills" />
                 </div>
 
                 <div class="demo-component-matrix__cell">
