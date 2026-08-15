@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { CmSection as VfSection, CmStack as VfStack } from '@codemonster-ru/ui-vue';
+import { CmBadge as VfBadge, CmSection as VfSection, CmStack as VfStack } from '@codemonster-ru/ui-vue';
 import {
   VfAlert,
-  VfBadge,
   VfButton,
   VfCheckbox,
   VfInput,
@@ -114,6 +113,7 @@ const codeSample = [
             :key="mode"
             class="color-system__theme"
             :data-vf-theme="mode"
+            :data-cm-theme="mode"
           >
             <header class="color-system__theme-header">
               <h3>{{ mode }}</h3>
@@ -175,7 +175,11 @@ const codeSample = [
                 Separate background, border, icon, and foreground roles.
               </VfAlert>
               <div class="color-system__chips">
-                <VfBadge v-for="status in statusTones" :key="`badge-${status.tone}`" :tone="status.tone">
+                <VfBadge
+                  v-for="status in statusTones"
+                  :key="`badge-${status.tone}`"
+                  :tone="status.tone === 'warn' ? 'warning' : status.tone"
+                >
                   {{ status.label }}
                 </VfBadge>
                 <VfTag v-for="status in statusTones" :key="`tag-${status.tone}`" :tone="status.tone">
