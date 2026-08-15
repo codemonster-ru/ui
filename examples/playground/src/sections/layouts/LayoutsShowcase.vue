@@ -845,15 +845,7 @@
                       </div>
                     </div>
 
-                    <VfDrawer
-                      v-model:open="adminShellDrawerOpen"
-                      title="Navigation"
-                      placement="left"
-                      size="sm"
-                      dividers
-                      :disable-teleport="true"
-                      :scroll-lock-target="false"
-                    >
+                    <LayoutsDrawer v-model:open="adminShellDrawerOpen" title="Navigation">
                       <LayoutsNavMenu
                         v-model="activeAdminNavigation"
                         :items="adminNavigationItems"
@@ -861,7 +853,7 @@
                         aria-label="Mobile admin navigation"
                         @select="adminShellDrawerOpen = false"
                       />
-                    </VfDrawer>
+                    </LayoutsDrawer>
                   </div>
                 </div>
               </article>
@@ -1052,7 +1044,6 @@
 </template>
 
 <script setup lang="ts">
-import { VfDrawer } from '@codemonster-ru/vueforge-core';
 import { cmBreakpoints, type CmBreakpointName } from '@codemonster-ru/ui-tokens';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import {
@@ -1077,6 +1068,7 @@ import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
 import LayoutsDataTable from './LayoutsDataTable.vue';
+import LayoutsDrawer from './LayoutsDrawer.vue';
 import LayoutsNavMenu from './LayoutsNavMenu.vue';
 import LayoutsPasswordInput from './LayoutsPasswordInput.vue';
 import LayoutsTabs from './LayoutsTabs.vue';
