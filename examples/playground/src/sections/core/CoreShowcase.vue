@@ -44,16 +44,13 @@ import {
   VfDropdown,
   VfField,
   VfFieldset,
-  VfFormLayout,
-  VfGroupBox,
+  VfGroupBox as VfLegacyGroupBox,
   VfIconButton as VfLegacyIconButton,
   VfInput,
   VfMenu,
   VfMenuBar,
   VfMenuItem,
   VfNavMenu,
-  VfPanel,
-  VfPageHeader,
   VfPopover,
   VfProgressBar,
   VfProgressSpinner,
@@ -1174,30 +1171,41 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfPanel · default</p>
-                  <VfPanel title="Supporting Context">
+                  <section class="demo-application-panel">
+                    <header>
+                      <h3 class="demo-application-panel__title">Supporting Context</h3>
+                    </header>
                     <p class="demo-m-0">Panel content with regular treatment.</p>
-                  </VfPanel>
+                  </section>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfPanel · subtle</p>
-                  <VfPanel title="Subtle Context" subtle>
+                  <section class="demo-application-panel demo-application-panel--subtle">
+                    <header>
+                      <h3 class="demo-application-panel__title">Subtle Context</h3>
+                    </header>
                     <p class="demo-m-0">Subtle panel treatment for quiet grouping.</p>
-                  </VfPanel>
+                  </section>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfGroupBox · default</p>
-                  <VfGroupBox title="Shipping address">
-                    <p class="demo-m-0">1234 Elm Street, San Francisco, CA 94102</p>
-                  </VfGroupBox>
+                  <fieldset class="demo-application-group-box">
+                    <legend class="demo-application-group-box__legend">
+                      <span class="demo-application-group-box__title">Shipping address</span>
+                    </legend>
+                    <div class="demo-application-group-box__content">
+                      <p class="demo-m-0">1234 Elm Street, San Francisco, CA 94102</p>
+                    </div>
+                  </fieldset>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfGroupBox · collapsible</p>
-                  <VfGroupBox v-model:collapsed="groupBoxCollapsed" title="Invoice details" collapsible>
+                  <VfLegacyGroupBox v-model:collapsed="groupBoxCollapsed" title="Invoice details" collapsible>
                     <p class="demo-m-0">Invoice #1024 · Design service · $120.00</p>
-                  </VfGroupBox>
+                  </VfLegacyGroupBox>
                 </div>
 
                 <div class="demo-component-matrix__cell">
@@ -1910,14 +1918,20 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">VfSkeletonGate</p>
                     <VfSkeletonGate :ready="false" min-height="6rem" reserve-height="6rem">
-                      <VfPanel title="Loaded panel">
+                      <section class="demo-application-panel">
+                        <header>
+                          <h3 class="demo-application-panel__title">Loaded panel</h3>
+                        </header>
                         <p class="demo-m-0">Loaded content preserves geometry.</p>
-                      </VfPanel>
+                      </section>
                     </VfSkeletonGate>
                     <VfSkeletonGate ready min-height="6rem" reserve-height="6rem">
-                      <VfPanel title="Ready panel">
+                      <section class="demo-application-panel">
+                        <header>
+                          <h3 class="demo-application-panel__title">Ready panel</h3>
+                        </header>
                         <p class="demo-m-0">Ready content replaces the skeleton.</p>
-                      </VfPanel>
+                      </section>
                     </VfSkeletonGate>
                   </div>
                 </div>
@@ -1988,7 +2002,7 @@ const tabContent = computed<Record<string, string>>(() => ({
           <div class="demo-item demo-item--full">
             <p class="demo-label">VfFormLayout · responsive</p>
             <VfCard title="Workspace settings">
-              <VfFormLayout mode="responsive" label-width="12rem">
+              <div class="demo-application-form-layout" style="--demo-application-form-layout-label-width: 12rem">
                 <VfField label="Workspace name" description="Shown to every workspace member." required>
                   <template #default="{ controlId, describedBy, invalid, required }">
                     <VfInput
@@ -2030,7 +2044,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     />
                   </template>
                 </VfField>
-              </VfFormLayout>
+              </div>
             </VfCard>
           </div>
 
@@ -2691,19 +2705,32 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell demo-item--full">
                   <p class="demo-component-matrix__label">VfPageHeader</p>
-                  <VfPageHeader
-                    title="Team members"
-                    description="Manage workspace access, roles, and account status."
-                    :breadcrumbs="[
-                      { label: 'Administration', href: '#demo-navigation' },
-                      { label: 'Users', current: true },
-                    ]"
-                  >
-                    <template #actions>
-                      <CmButton variant="secondary">Export</CmButton>
-                      <CmButton>New user</CmButton>
-                    </template>
-                  </VfPageHeader>
+                  <header class="demo-application-page-header">
+                    <div class="demo-application-page-header__breadcrumbs">
+                      <VfBreadcrumbs
+                        :items="[
+                          { label: 'Administration', href: '#demo-navigation' },
+                          { label: 'Users', current: true },
+                        ]"
+                      >
+                        <template #separator>
+                          <VueIconify :icon="icons.chevronRight" size="var(--cm-icon-size-sm)" />
+                        </template>
+                      </VfBreadcrumbs>
+                    </div>
+                    <div class="demo-application-page-header__row">
+                      <div class="demo-application-page-header__content">
+                        <h1 class="demo-application-page-header__title">Team members</h1>
+                        <div class="demo-application-page-header__description">
+                          Manage workspace access, roles, and account status.
+                        </div>
+                      </div>
+                      <div class="demo-application-page-header__actions">
+                        <CmButton variant="secondary">Export</CmButton>
+                        <CmButton>New user</CmButton>
+                      </div>
+                    </div>
+                  </header>
                 </div>
 
                 <div class="demo-component-matrix__cell">
