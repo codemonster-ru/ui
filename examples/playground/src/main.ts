@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
-import VueForgeLayouts from '@codemonster-ru/vueforge-layouts';
+
+import '@codemonster-ru/vueforge-layouts/styles.css';
 
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-tokens/breakpoints.css';
@@ -26,9 +27,4 @@ import './theme-bootstrap';
 
 import App from './App.vue';
 
-createApp(App)
-  .use(VueForgeLayouts, {
-    defaultTheme: 'system',
-    themeStorageKey: 'codemonster-showcase-theme',
-  })
-  .mount('#app');
+createApp(App).mount('#app');
