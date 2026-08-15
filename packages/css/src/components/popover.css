@@ -1,7 +1,8 @@
 .cm-popover,
 .cm-popover--open {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
 }
 
 .cm-popover__trigger {
@@ -19,8 +20,9 @@
 }
 
 .cm-popover__trigger:focus-visible {
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .cm-popover__trigger:disabled {
@@ -38,16 +40,26 @@
 .cm-popover__panel {
   position: absolute;
   z-index: 1;
-  inset-block-start: calc(100% + var(--cm-space-2));
+  inset-block-start: calc(100% + var(--cm-space-2) + var(--cm-border-width-thick));
   inset-inline-start: 0;
-  min-inline-size: calc(var(--cm-space-16) * 2);
-  max-inline-size: min(calc(100vw - 2 * var(--cm-space-4)), calc(var(--cm-space-16) * 5));
-  padding: var(--cm-space-4);
-  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
-  border-radius: var(--cm-radius-overlay);
+  inline-size: min(calc(100vw - 2 * var(--cm-space-4)), calc(var(--cm-space-16) * 5 + var(--cm-space-4) * 2));
+  padding: var(--cm-space-3) var(--cm-space-4);
+  border: var(--cm-border-width) solid var(--cm-color-border-strong);
+  border-radius: var(--cm-radius-surface);
   background: var(--cm-color-background-surface-elevated);
   color: var(--cm-color-text-primary);
   box-shadow: var(--cm-shadow-overlay);
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-regular);
+  line-height: var(--cm-line-height-normal);
+}
+
+.cm-popover__panel:focus-visible {
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow:
+    var(--cm-shadow-overlay),
+    0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .cm-popover--bottom-end .cm-popover__panel {
@@ -55,7 +67,7 @@
 }
 
 .cm-popover--top .cm-popover__panel {
-  inset-block: auto calc(100% + var(--cm-space-2));
+  inset-block: auto calc(100% + var(--cm-space-2) + var(--cm-border-width-thick));
 }
 
 .cm-popover__panel[hidden] {
@@ -66,5 +78,12 @@
   .cm-popover__trigger,
   .cm-popover__panel {
     border-color: CanvasText;
+  }
+
+  .cm-popover__panel:focus-visible {
+    border-color: Highlight;
+    outline: var(--cm-border-width-thick) solid Highlight;
+    outline-offset: var(--cm-border-width-thick);
+    box-shadow: none;
   }
 }
