@@ -1279,11 +1279,6 @@
   grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1.25fr);
 }
 
-.demo-nav-menu-wrapping-labels .vf-nav-menu--sidebar .vf-nav-menu__label {
-  overflow: visible;
-  white-space: normal;
-}
-
 .demo-application-accordion .cm-accordion__trigger::after {
   display: none;
 }
