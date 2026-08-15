@@ -6,7 +6,7 @@
   inline-size: 100%;
   min-block-size: 6rem;
   padding: var(--cm-field-padding-md);
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
   border-radius: var(--cm-radius-control);
   background: var(--cm-color-background-surface);
   color: var(--cm-color-text-primary);
