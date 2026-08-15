@@ -1,15 +1,17 @@
+/* stylelint-disable no-descending-specificity -- State rules mirror the frozen interaction matrix. */
+
 .cm-textarea {
   display: block;
+  box-sizing: border-box;
   inline-size: 100%;
-  min-block-size: calc(var(--cm-control-height-md) * 2);
-  padding-block: var(--cm-space-2);
-  padding-inline: var(--cm-space-3);
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  min-block-size: 6rem;
+  padding: var(--cm-field-padding-md);
+  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
   border-radius: var(--cm-radius-control);
   background: var(--cm-color-background-surface);
   color: var(--cm-color-text-primary);
-  font: inherit;
-  font-size: var(--cm-font-size-md);
+  font-size: var(--cm-control-font-size-md);
+  font-weight: var(--cm-font-weight-regular);
   line-height: var(--cm-line-height-normal);
   resize: vertical;
   transition:
@@ -19,33 +21,45 @@
 }
 
 .cm-textarea--sm {
-  min-block-size: calc(var(--cm-control-height-sm) * 2);
-  padding-inline: var(--cm-space-2);
-  font-size: var(--cm-font-size-sm);
-}
-
-.cm-textarea--md {
-  min-block-size: calc(var(--cm-control-height-md) * 2);
+  min-block-size: 4.5rem;
+  padding: var(--cm-field-padding-sm);
+  font-size: var(--cm-control-font-size-sm);
 }
 
 .cm-textarea--lg {
-  min-block-size: calc(var(--cm-control-height-lg) * 2);
-  padding-inline: var(--cm-space-4);
-  font-size: var(--cm-font-size-lg);
+  min-block-size: 7rem;
+  padding: var(--cm-field-padding-lg);
+  font-size: var(--cm-control-font-size-lg);
 }
 
 .cm-textarea::placeholder {
-  color: var(--cm-color-text-muted);
+  color: var(--cm-color-text-placeholder);
 }
 
-.cm-textarea:hover:where(:not(:disabled, :read-only)) {
-  border-color: var(--cm-color-border-interactive);
+.cm-textarea:focus,
+.cm-textarea:focus-visible {
+  border-color: var(--cm-color-border-focus);
 }
 
 .cm-textarea:focus-visible {
-  border-color: var(--cm-color-focus-ring);
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  border-radius: var(--cm-radius-control);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+}
+
+.cm-textarea--invalid,
+.cm-textarea[aria-invalid='true'],
+.cm-textarea--invalid:focus,
+.cm-textarea--invalid:focus-visible,
+.cm-textarea[aria-invalid='true']:focus,
+.cm-textarea[aria-invalid='true']:focus-visible,
+.cm-textarea--invalid:hover:not(:disabled, :focus, :focus-visible),
+.cm-textarea[aria-invalid='true']:hover:not(:disabled, :focus, :focus-visible) {
+  border-color: var(--cm-color-status-danger-border);
+}
+
+.cm-textarea:hover:not(:disabled, :read-only, .cm-textarea--invalid, [aria-invalid='true'], :focus, :focus-visible) {
+  border-color: var(--cm-color-interactive-primary-border);
 }
 
 .cm-textarea:disabled {
@@ -55,13 +69,15 @@
   cursor: not-allowed;
 }
 
-.cm-textarea:read-only:not(:disabled) {
+.cm-textarea:read-only:not(:disabled, .cm-textarea--invalid, [aria-invalid='true']) {
+  border-color: var(--cm-color-border-default);
   background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-secondary);
+  cursor: default;
 }
 
-.cm-textarea--invalid,
-.cm-textarea[aria-invalid='true'] {
-  border-color: var(--cm-color-status-danger-border);
+.cm-textarea:read-only:not(:disabled, .cm-textarea--invalid, [aria-invalid='true'])::placeholder {
+  color: var(--cm-color-text-secondary);
 }
 
 @media (forced-colors: active) {

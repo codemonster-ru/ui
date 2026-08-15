@@ -1,71 +1,104 @@
 .cm-tabs {
-  color: var(--cm-color-text-primary);
+  display: flex;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  flex-direction: column;
+  gap: calc(var(--cm-space-3) - var(--cm-space-1));
+  overflow-x: hidden;
 }
 
 .cm-tabs__list {
+  position: relative;
   display: flex;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  inline-size: 100%;
+  min-block-size: var(--cm-control-height-md);
+  align-items: center;
+  gap: var(--cm-space-1);
   overflow-x: auto;
-  border-block-end: var(--cm-border-width) solid var(--cm-color-border-divider);
+  padding: 0 0 3px;
+  border-block-end: 0;
+  background: transparent;
+  box-shadow: inset 0 -1px var(--cm-color-border-divider);
+  scrollbar-width: none;
+}
+
+.cm-tabs__list::-webkit-scrollbar {
+  display: none;
 }
 
 .cm-tabs__tab {
   position: relative;
+  z-index: 1;
   display: inline-flex;
-  min-block-size: var(--cm-control-height-lg);
-  flex: none;
+  min-block-size: var(--cm-control-height-md);
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  padding-block: var(--cm-space-2);
-  padding-inline: var(--cm-space-4);
+  margin-block-end: 0;
+  padding: 0.3125rem var(--cm-space-3);
   border: 0;
+  border-radius: var(--cm-radius-control-tight) var(--cm-radius-control-tight) 0 0;
   appearance: none;
   background: transparent;
   color: var(--cm-color-text-secondary);
   cursor: pointer;
   font: inherit;
-  font-size: var(--cm-font-size-md);
+  font-size: var(--cm-control-font-size-md);
   font-weight: var(--cm-font-weight-medium);
-  line-height: var(--cm-line-height-tight);
+  line-height: var(--cm-line-height-normal);
   white-space: nowrap;
+  transition:
+    background-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    box-shadow var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
 .cm-tabs__tab::after {
   position: absolute;
-  inset-block-end: calc(-1 * var(--cm-border-width));
-  inset-inline: var(--cm-space-2);
-  block-size: var(--cm-border-width-thick);
-  border-radius: var(--cm-radius-round);
+  z-index: 2;
+  inset-block-end: -3px;
+  inset-inline: 0;
+  block-size: 3px;
   background: transparent;
   content: '';
 }
 
 .cm-tabs__tab:focus-visible {
-  z-index: 1;
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: calc(-1 * var(--cm-border-width-thick));
+  outline: none;
+  box-shadow: inset 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .cm-tabs__tab:disabled {
+  background: transparent;
   color: var(--cm-color-text-disabled);
   cursor: not-allowed;
 }
 
-.cm-tabs__tab[aria-selected='true'] {
+.cm-tabs__tab:hover:not(:disabled, [aria-selected='true']),
+.cm-tabs__tab:active:not(:disabled, [aria-selected='true']) {
+  background: transparent;
+  color: var(--cm-color-text-primary);
+}
+
+.cm-tabs__tab[aria-selected='true']:not(:disabled) {
+  background: transparent;
   color: var(--cm-color-selected-foreground);
 }
 
 .cm-tabs__tab[aria-selected='true']::after {
-  background: var(--cm-color-interactive-primary-background);
-}
-
-.cm-tabs__tab:hover:not(:disabled) {
-  background: var(--cm-color-background-surface-hover);
-  color: var(--cm-color-text-primary);
+  background: var(--cm-color-selected-foreground);
 }
 
 .cm-tabs__panel {
-  padding-block: var(--cm-space-4);
-  color: var(--cm-color-text-secondary);
+  padding: var(--cm-space-3) 0 0;
+  border: var(--cm-border-width) solid transparent;
+  border-radius: var(--cm-radius-control);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-regular);
   line-height: var(--cm-line-height-normal);
 }
 
@@ -74,14 +107,14 @@
 }
 
 .cm-tabs__panel:focus-visible {
-  border-radius: var(--cm-radius-control);
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 @media (forced-colors: active) {
   .cm-tabs__list {
-    border-color: CanvasText;
+    box-shadow: inset 0 -1px CanvasText;
   }
 
   .cm-tabs__tab[aria-selected='true']::after {

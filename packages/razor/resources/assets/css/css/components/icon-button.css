@@ -1,19 +1,22 @@
 .cm-icon-button {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: var(--cm-border-width) solid transparent;
   border-radius: var(--cm-radius-control);
   appearance: none;
-  color: inherit;
+  background: transparent;
+  color: var(--cm-color-icon-primary);
   cursor: pointer;
   line-height: 1;
   user-select: none;
   transition:
     background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
     border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
-    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    filter var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
 }
 
 .cm-icon-button--sm {
@@ -32,19 +35,17 @@
 }
 
 .cm-icon-button--primary {
-  border-color: var(--cm-color-interactive-primary-border);
   background: var(--cm-color-interactive-primary-background);
   color: var(--cm-color-interactive-primary-foreground);
 }
 
 .cm-icon-button--secondary {
-  border-color: var(--cm-color-border-default);
+  border-color: var(--cm-color-border-interactive);
   background: var(--cm-color-background-surface);
-  color: var(--cm-color-text-primary);
+  color: var(--cm-color-icon-primary);
 }
 
 .cm-icon-button--danger {
-  border-color: var(--cm-color-status-danger-border);
   background: var(--cm-color-status-danger-solid-background);
   color: var(--cm-color-status-danger-solid-foreground);
 }
@@ -52,13 +53,13 @@
 .cm-icon-button--ghost {
   border-color: transparent;
   background: transparent;
-  color: var(--cm-color-interactive-primary-subtle-foreground);
+  color: var(--cm-color-icon-primary);
 }
 
 .cm-icon-button:disabled {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
-  color: var(--cm-color-text-disabled);
+  color: var(--cm-color-icon-disabled);
   cursor: not-allowed;
 }
 
@@ -75,9 +76,25 @@
   background: var(--cm-color-background-surface-hover);
 }
 
+.cm-icon-button--secondary:hover:not(:disabled) {
+  border-color: var(--cm-color-border-interactive);
+}
+
+.cm-icon-button--ghost:hover:not(:disabled) {
+  border-color: transparent;
+}
+
 .cm-icon-button--secondary:active:not(:disabled),
 .cm-icon-button--ghost:active:not(:disabled) {
   background: var(--cm-color-background-surface-active);
+}
+
+.cm-icon-button--secondary:active:not(:disabled) {
+  border-color: var(--cm-color-border-strong);
+}
+
+.cm-icon-button--ghost:active:not(:disabled) {
+  border-color: transparent;
 }
 
 .cm-icon-button--danger:hover:not(:disabled) {
@@ -89,8 +106,9 @@
 }
 
 .cm-icon-button:focus-visible {
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .cm-icon-button__icon {

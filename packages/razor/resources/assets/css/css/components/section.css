@@ -1,13 +1,12 @@
 .cm-section {
-  padding: var(--cm-space-6);
+  padding: var(--cm-space-4);
 }
 
 .cm-section--surface {
-  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
   border-radius: var(--cm-radius-surface);
   background: var(--cm-color-background-surface);
-  color: var(--cm-color-text-primary);
-  box-shadow: var(--cm-shadow-surface);
+  box-shadow: var(--cm-shadow-none);
 }
 
 @media (forced-colors: active) {

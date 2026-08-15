@@ -5,7 +5,7 @@
   overflow: hidden;
   inline-size: 100%;
   block-size: 100%;
-  background: var(--cm-color-background-surface-active);
+  background: var(--cm-color-background-surface-disabled);
 }
 
 .cm-skeleton--radius-control {
@@ -22,26 +22,43 @@
 
 .cm-skeleton::after {
   position: absolute;
-  inset: 0;
+  z-index: 1;
+  inset-block: 0;
+  inset-inline: 0;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    transparent 25%,
-    var(--cm-color-background-surface-hover) 50%,
-    transparent 75%,
+    transparent 24%,
+    color-mix(in srgb, var(--cm-color-text-primary) 6%, transparent) 50%,
+    transparent 76%,
     transparent 100%
   );
   content: '';
   transform: translateX(-100%);
+  will-change: transform;
 }
 
 .cm-skeleton--animated::after {
-  animation: cm-skeleton-shimmer var(--cm-skeleton-shimmer-duration) var(--cm-motion-ease-standard) infinite;
+  animation: cm-skeleton-shimmer var(--cm-skeleton-shimmer-duration) ease infinite;
 }
 
 @keyframes cm-skeleton-shimmer {
   to {
     transform: translateX(100%);
+  }
+}
+
+[dir='rtl'] .cm-skeleton--animated::after {
+  animation-name: cm-skeleton-shimmer-rtl;
+}
+
+@keyframes cm-skeleton-shimmer-rtl {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(-100%);
   }
 }
 

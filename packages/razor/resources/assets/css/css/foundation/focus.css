@@ -1,6 +1,6 @@
 :where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex='-1'])):focus-visible,
 .cm-focus-ring:focus-visible {
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
+  outline: var(--cm-focus-ring-width) solid var(--cm-color-focus-ring);
   outline-offset: var(--cm-border-width-thick);
 }
 
