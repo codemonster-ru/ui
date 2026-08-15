@@ -2,20 +2,20 @@
   --cm-button-spinner-duration: 1.4s;
 
   display: inline-flex;
-  min-block-size: var(--cm-control-height-md);
   align-items: center;
   justify-content: center;
-  gap: var(--cm-space-2);
-  padding-block: 0;
-  padding-inline: var(--cm-space-3);
+  gap: var(--cm-button-gap);
+  min-block-size: var(--cm-control-height-md);
+  padding: var(--cm-button-padding-md);
   border: var(--cm-border-width) solid transparent;
   border-radius: var(--cm-radius-control);
   appearance: none;
-  color: inherit;
+  background: var(--cm-color-interactive-primary-background);
+  color: var(--cm-color-interactive-primary-foreground);
   cursor: pointer;
-  font-size: var(--cm-font-size-md);
-  font-weight: var(--cm-font-weight-semibold);
-  line-height: var(--cm-line-height-tight);
+  font-size: var(--cm-control-font-size-md);
+  font-weight: var(--cm-font-weight-regular);
+  line-height: var(--cm-control-line-height);
   text-align: center;
   text-decoration: none;
   user-select: none;
@@ -23,41 +23,40 @@
   transition:
     background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
     border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
-    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    filter var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
 }
 
 .cm-button--sm {
   min-block-size: var(--cm-control-height-sm);
-  padding-inline: var(--cm-space-2);
-  font-size: var(--cm-font-size-sm);
+  padding: var(--cm-button-padding-sm);
+  font-size: var(--cm-control-font-size-sm);
 }
 
 .cm-button--md {
   min-block-size: var(--cm-control-height-md);
-  padding-inline: var(--cm-space-3);
-  font-size: var(--cm-font-size-md);
+  padding: var(--cm-button-padding-md);
+  font-size: var(--cm-control-font-size-md);
 }
 
 .cm-button--lg {
   min-block-size: var(--cm-control-height-lg);
-  padding-inline: var(--cm-space-4);
-  font-size: var(--cm-font-size-lg);
+  padding: var(--cm-button-padding-lg);
+  font-size: var(--cm-control-font-size-lg);
 }
 
 .cm-button--primary {
-  border-color: var(--cm-color-interactive-primary-border);
   background: var(--cm-color-interactive-primary-background);
   color: var(--cm-color-interactive-primary-foreground);
 }
 
 .cm-button--secondary {
-  border-color: var(--cm-color-border-default);
+  border-color: var(--cm-color-border-interactive);
   background: var(--cm-color-background-surface);
   color: var(--cm-color-text-primary);
 }
 
 .cm-button--danger {
-  border-color: var(--cm-color-status-danger-border);
   background: var(--cm-color-status-danger-solid-background);
   color: var(--cm-color-status-danger-solid-foreground);
 }
@@ -65,7 +64,7 @@
 .cm-button--ghost {
   border-color: transparent;
   background: transparent;
-  color: var(--cm-color-interactive-primary-subtle-foreground);
+  color: var(--cm-color-text-primary);
 }
 
 .cm-button:disabled,
@@ -89,9 +88,25 @@
   background: var(--cm-color-background-surface-hover);
 }
 
+.cm-button--secondary:hover:not(:disabled, [aria-disabled='true']) {
+  border-color: var(--cm-color-border-interactive);
+}
+
+.cm-button--ghost:hover:not(:disabled, [aria-disabled='true']) {
+  border-color: transparent;
+}
+
 .cm-button--secondary:active:not(:disabled, [aria-disabled='true']),
 .cm-button--ghost:active:not(:disabled, [aria-disabled='true']) {
   background: var(--cm-color-background-surface-active);
+}
+
+.cm-button--secondary:active:not(:disabled, [aria-disabled='true']) {
+  border-color: var(--cm-color-border-strong);
+}
+
+.cm-button--ghost:active:not(:disabled, [aria-disabled='true']) {
+  border-color: transparent;
 }
 
 .cm-button--danger:hover:not(:disabled, [aria-disabled='true']) {
@@ -103,8 +118,9 @@
 }
 
 .cm-button:focus-visible {
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .cm-button__leading,
@@ -148,6 +164,12 @@
 @keyframes cm-button-spin {
   to {
     transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-button__spinner {
+    animation: none;
   }
 }
 
