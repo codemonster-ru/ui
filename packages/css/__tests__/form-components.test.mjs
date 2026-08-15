@@ -69,5 +69,6 @@ test('preserves frozen switch and textarea dimensions', async () => {
   assert.match(textarea, /\.cm-textarea--sm[\s\S]*min-block-size: 4\.5rem;/u);
   assert.match(textarea, /\.cm-textarea--lg[\s\S]*min-block-size: 7rem;/u);
   assert.match(textarea, /padding: var\(--cm-field-padding-md\);/u);
+  assert.match(textarea, /border: var\(--cm-border-width\) solid var\(--cm-color-border-interactive\);/u);
   assert.match(textarea, /border-color: var\(--cm-color-interactive-primary-border\);/u);
 });
