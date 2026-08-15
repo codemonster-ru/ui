@@ -96,5 +96,7 @@ describe('CorePaginationDataTableRecipe', () => {
     expect(source).toContain('<CmIconButton');
     expect(source).toContain('icons.chevronLeft');
     expect(source).toContain('icons.chevronRight');
+    expect(source).toContain('.core-pagination-data-table-recipe__page-size-visual > :last-child');
+    expect(source).not.toContain('.vf-icon-wrapper');
   });
 });

@@ -208,8 +208,8 @@ function updateChecked(event: Event): void {
     box-shadow var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
-.core-icon-switch-recipe__thumb > :deep(.vf-icon-wrapper),
-.core-icon-switch-recipe__thumb > :deep(.vf-icon-wrapper > .vf-icon),
+.core-icon-switch-recipe__thumb > :deep(:first-child),
+.core-icon-switch-recipe__thumb > :deep(:first-child > .vf-icon),
 .core-icon-switch-recipe__thumb > :deep(svg) {
   inline-size: var(--core-icon-switch-thumb-icon-size);
   block-size: var(--core-icon-switch-thumb-icon-size);

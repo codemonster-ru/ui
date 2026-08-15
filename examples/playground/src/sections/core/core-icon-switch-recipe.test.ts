@@ -44,7 +44,8 @@ describe('CoreIconSwitchRecipe', () => {
     expect(host.querySelector('input')?.getAttribute('aria-label')).toBe('Icon preference');
     expect(host.querySelector('input')?.getAttribute('name')).toBe('icon-preference');
     expect(host.querySelector('.core-icon-switch-recipe__content')?.textContent).toBe('Icon switch');
-    expect(host.querySelector('.vf-icon-wrapper')).not.toBeNull();
+    expect(host.querySelector('.core-icon-switch-recipe__thumb > :first-child')).not.toBeNull();
+    expect(host.querySelector('.core-icon-switch-recipe__thumb .vf-icon')).not.toBeNull();
     app.unmount();
   });
 
@@ -117,8 +118,9 @@ describe('CoreIconSwitchRecipe', () => {
 
   it('owns the two-level frozen icon sizing without legacy runtime or tokens', () => {
     const source = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreIconSwitchRecipe.vue'), 'utf8');
-    expect(source).toContain('.core-icon-switch-recipe__thumb > :deep(.vf-icon-wrapper)');
-    expect(source).toContain('.core-icon-switch-recipe__thumb > :deep(.vf-icon-wrapper > .vf-icon)');
+    expect(source).toContain('.core-icon-switch-recipe__thumb > :deep(:first-child)');
+    expect(source).toContain('.core-icon-switch-recipe__thumb > :deep(:first-child > .vf-icon)');
+    expect(source).not.toContain('.vf-icon-wrapper');
     expect(source).toContain('--core-icon-switch-thumb-icon-size: 0.75rem');
     expect(source).not.toContain('--vf-');
     expect(source).not.toContain('@codemonster-ru/vueforge-core');
