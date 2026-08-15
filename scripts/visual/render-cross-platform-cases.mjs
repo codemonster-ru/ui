@@ -25,6 +25,6 @@ if (!existsSync(autoload)) {
   );
 }
 
-execFileSync('php', [resolve(import.meta.dirname, 'render-cross-platform-button.php'), outputPath], {
+execFileSync('php', [resolve(import.meta.dirname, 'render-cross-platform-cases.php'), outputPath], {
   stdio: 'inherit',
 });

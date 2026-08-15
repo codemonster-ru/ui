@@ -4,7 +4,9 @@
 }
 
 .cm-visual-adapter-root {
+  box-sizing: border-box;
+  inline-size: 20rem;
   min-block-size: 100vh;
-  padding: var(--cm-space-6);
+  padding: 1.5rem;
   background: var(--cm-color-background-canvas);
 }
