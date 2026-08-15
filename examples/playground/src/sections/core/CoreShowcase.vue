@@ -62,7 +62,6 @@ import {
   VfNavMenu,
   VfSelect,
   VfTable as VfLegacyTable,
-  VfTabs,
   VfTextarea as VfFloatingTextarea,
   VfSwitch as VfIconSwitch,
 } from '@codemonster-ru/vueforge-core';
@@ -78,6 +77,7 @@ import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
   type CoreDataTableRecipeRow,
 } from './CoreDataTableRecipe.vue';
+import CoreTabsRecipe from './CoreTabsRecipe.vue';
 import ShowcaseThemeSwitch from '../../components/ShowcaseThemeSwitch.vue';
 import { useShowcaseTheme } from '../../showcase-theme';
 
@@ -3186,16 +3186,16 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfTabs</p>
-                  <VfTabs model-value="overview" :items="releaseTabs.slice(0, 4)">
+                  <CoreTabsRecipe model-value="overview" :items="releaseTabs.slice(0, 4)">
                     <template #panel="{ activeValue }">
                       <p class="demo-text">{{ tabContent[activeValue] }}</p>
                     </template>
-                  </VfTabs>
-                  <VfTabs model-value="status" :items="releaseTabs">
+                  </CoreTabsRecipe>
+                  <CoreTabsRecipe model-value="status" :items="releaseTabs">
                     <template #panel="{ activeValue }">
                       <p class="demo-text">{{ tabContent[activeValue] }}</p>
                     </template>
-                  </VfTabs>
+                  </CoreTabsRecipe>
                 </div>
 
                 <div class="demo-component-matrix__cell">
