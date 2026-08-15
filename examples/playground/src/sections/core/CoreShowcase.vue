@@ -45,7 +45,6 @@ import {
   VfDropdown,
   VfField,
   VfFieldset,
-  VfGroupBox as VfLegacyGroupBox,
   VfIconButton as VfLegacyIconButton,
   VfInput,
   VfMenu,
@@ -1278,9 +1277,35 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfGroupBox · collapsible</p>
-                  <VfLegacyGroupBox v-model:collapsed="groupBoxCollapsed" title="Invoice details" collapsible>
-                    <p class="demo-m-0">Invoice #1024 · Design service · $120.00</p>
-                  </VfLegacyGroupBox>
+                  <fieldset
+                    class="demo-application-group-box demo-application-group-box--collapsible"
+                    :class="{ 'demo-application-group-box--collapsed': groupBoxCollapsed }"
+                  >
+                    <legend class="demo-application-group-box__legend">
+                      <button
+                        id="invoice-details-toggle"
+                        class="demo-application-group-box__trigger"
+                        type="button"
+                        aria-controls="invoice-details-content"
+                        :aria-expanded="!groupBoxCollapsed"
+                        @click="groupBoxCollapsed = !groupBoxCollapsed"
+                      >
+                        <span class="demo-application-group-box__icon" aria-hidden="true">
+                          <VueIconify :icon="icons.chevronDown" size="var(--cm-icon-size-sm)" />
+                        </span>
+                        <span class="demo-application-group-box__title">Invoice details</span>
+                      </button>
+                    </legend>
+                    <div
+                      v-if="!groupBoxCollapsed"
+                      id="invoice-details-content"
+                      class="demo-application-group-box__content demo-application-group-box__content--collapsible"
+                      role="region"
+                      aria-labelledby="invoice-details-toggle"
+                    >
+                      <p class="demo-m-0">Invoice #1024 · Design service · $120.00</p>
+                    </div>
+                  </fieldset>
                 </div>
 
                 <div class="demo-component-matrix__cell">
