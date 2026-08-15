@@ -54,13 +54,6 @@
   box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
 }
 
-.cm-input:disabled {
-  border-color: var(--cm-color-border-disabled);
-  background: var(--cm-color-background-surface-disabled);
-  color: var(--cm-color-text-disabled);
-  cursor: not-allowed;
-}
-
 .cm-input:read-only:not(:disabled) {
   border-color: var(--cm-color-border-default);
   background: var(--cm-color-background-surface-subtle);
@@ -80,6 +73,14 @@
 .cm-input--invalid:is(:focus, :focus-visible, :hover),
 .cm-input[aria-invalid='true']:is(:focus, :focus-visible, :hover) {
   border-color: var(--cm-color-status-danger-border);
+}
+
+/* stylelint-disable-next-line no-descending-specificity -- Native disabled state must win over invalid. */
+.cm-input:disabled {
+  border-color: var(--cm-color-border-disabled);
+  background: var(--cm-color-background-surface-disabled);
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
 }
 
 .cm-input-wrap {

@@ -27,6 +27,11 @@ test('preserves the reference Input state matrix and adornment geometry', async 
   assert.match(input, /\.cm-input-wrap:has\(\.cm-input__leading\) \.cm-input/u);
   assert.match(input, /padding-inline-start: 2\.125rem;/u);
   assert.match(input, /\.cm-input__action:has\(\+ \.cm-input__action\)/u);
+  assert.ok(
+    input.indexOf('.cm-input:disabled {') >
+      input.indexOf(".cm-input[aria-invalid='true']:is(:focus, :focus-visible, :hover)"),
+    'disabled input state must override the invalid border',
+  );
 });
 
 test('preserves the reference Field and Fieldset text rhythm', async () => {
