@@ -25,6 +25,8 @@ export type {
   CmBreakpointTokens,
   CmBreakpointValue,
 } from './breakpoints.js';
+export { cmControlTokenNames, cmControlTokens } from './control.js';
+export type { CmControlOverrides, CmControlTokenName, CmControlTokens } from './control.js';
 export { cmMotionDurationsMs, cmMotionTokenNames, cmMotionTokens } from './motion.js';
 export type { CmMotionOverrides, CmMotionTokenName, CmMotionTokens } from './motion.js';
 export type {

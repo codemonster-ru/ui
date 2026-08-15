@@ -1,5 +1,6 @@
 import { cmBorderTokens, cmRadiusTokens, cmShadowTokens } from './borders.js';
 import { cmBreakpointTokens } from './breakpoints.js';
+import { cmControlTokens } from './control.js';
 import { cmMotionTokens } from './motion.js';
 import { cmPrimitiveColorTokens } from './primitive-colors.js';
 import { cmSemanticDarkColorTokens, cmSemanticLightColorTokens } from './semantic-colors.js';
@@ -7,6 +8,7 @@ import { cmSizingTokens, cmSpacingTokens } from './spacing-sizing.js';
 import { cmTypographyTokens } from './typography.js';
 import type { CmBorderTokens, CmRadiusTokens, CmShadowTokens } from './borders.js';
 import type { CmBreakpointTokens } from './breakpoints.js';
+import type { CmControlTokens } from './control.js';
 import type { CmMotionTokens } from './motion.js';
 import type { CmPrimitiveColorTokens } from './primitive-colors.js';
 import type { CmSemanticColorTokens } from './semantic-colors.js';
@@ -18,6 +20,7 @@ export type CmThemeTokens = CmPrimitiveColorTokens &
   CmSemanticColorTokens &
   CmSpacingTokens &
   CmSizingTokens &
+  CmControlTokens &
   CmTypographyTokens &
   CmBorderTokens &
   CmRadiusTokens &
@@ -38,6 +41,7 @@ function createThemeTokens(semanticColorTokens: CmSemanticColorTokens): CmThemeT
     ...semanticColorTokens,
     ...cmSpacingTokens,
     ...cmSizingTokens,
+    ...cmControlTokens,
     ...cmTypographyTokens,
     ...cmBorderTokens,
     ...cmRadiusTokens,
