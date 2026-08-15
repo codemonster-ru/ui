@@ -1,5 +1,9 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
+  "reference": {
+    "commit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+    "routes": ["core", "colors", "layouts", "icons", "codeblock", "playground"]
+  },
   "themes": [
     {
       "name": "light",
