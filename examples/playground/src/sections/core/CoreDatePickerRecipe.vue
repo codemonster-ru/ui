@@ -6,19 +6,24 @@ import {
   addCoreDays,
   coreMonthHasSelectableDate,
   createCoreDateGrid,
-  formatCoreDateDisplay,
+  createCoreMonthGrid,
+  createCoreYearGrid,
   formatCoreDateLabel,
   formatCoreMonthLabel,
   formatCoreDateSelection,
+  formatCorePickerDisplay,
   getCoreWeekBoundary,
+  getCoreYearPageStart,
   isCoreDateDisabled,
   moveCoreDateByMonth,
   normalizeCoreDateSelection,
+  requireCorePickerValue,
   requireCoreDate,
   selectCoreDateRange,
   startOfCoreMonth,
   toggleCoreMultipleDate,
   type CoreDatePickerValue,
+  type CoreDatePickerMode,
   type CoreDateSelectionMode,
 } from './core-date-picker-recipe';
 
@@ -27,6 +32,7 @@ defineOptions({ inheritAttrs: false });
 const props = defineProps({
   id: { type: String, required: true },
   modelValue: { type: [String, Array] as PropType<CoreDatePickerValue>, default: '' },
+  pickerMode: { type: String as PropType<CoreDatePickerMode>, default: 'date' },
   selectionMode: { type: String as PropType<CoreDateSelectionMode>, default: 'single' },
   today: { type: String, required: true },
   min: { type: String, default: null },
@@ -53,14 +59,20 @@ for (const [label, value] of [
 }
 if (props.min && props.max && props.min > props.max) throw new TypeError('DatePicker min must not exceed max.');
 
-const selectedValues = computed(() => normalizeCoreDateSelection(props.modelValue, props.selectionMode));
-const initialDate = selectedValues.value[0] ?? props.today;
-const visibleMonth = ref(startOfCoreMonth(initialDate));
-const focusedDate = ref(initialDate);
+const selectedValues = computed(() =>
+  normalizeCoreDateSelection(props.modelValue, props.selectionMode, props.pickerMode),
+);
+const initialDate = selectedValues.value[0]
+  ? requireCorePickerValue(selectedValues.value[0], props.pickerMode)
+  : requireCorePickerValue(props.today, 'date');
+const initialDateValue = `${String(initialDate.getFullYear()).padStart(4, '0')}-${String(initialDate.getMonth() + 1).padStart(2, '0')}-${String(initialDate.getDate()).padStart(2, '0')}`;
+const visibleMonth = ref(startOfCoreMonth(initialDateValue));
+const focusedDate = ref(initialDateValue);
+const visibleYearPageStart = ref(getCoreYearPageStart(String(initialDate.getFullYear()).padStart(4, '0')));
 const calendarId = computed(() => `${props.id}-calendar`);
 const displayValue = computed(() => {
   if (selectedValues.value.length === 0) return props.placeholder;
-  if (props.selectionMode === 'single') return formatCoreDateDisplay(selectedValues.value[0]!);
+  if (props.selectionMode === 'single') return formatCorePickerDisplay(selectedValues.value[0]!, props.pickerMode);
   return formatCoreDateSelection(selectedValues.value, props.selectionMode);
 });
 const showClear = computed(
@@ -79,22 +91,85 @@ const cells = computed(() =>
 const weeks = computed(() =>
   Array.from({ length: cells.value.length / 7 }, (_, index) => cells.value.slice(index * 7, index * 7 + 7)),
 );
-const previousDisabled = computed(
-  () =>
-    !coreMonthHasSelectableDate(
-      moveCoreDateByMonth(visibleMonth.value, -1),
-      props.min ?? undefined,
-      props.max ?? undefined,
-    ),
+const monthCells = computed(() =>
+  createCoreMonthGrid({
+    max: props.max ?? undefined,
+    min: props.min ?? undefined,
+    selected: selectedValues.value[0],
+    today: props.today,
+    year: Number(visibleMonth.value.slice(0, 4)),
+  }),
 );
-const nextDisabled = computed(
-  () =>
-    !coreMonthHasSelectableDate(
-      moveCoreDateByMonth(visibleMonth.value, 1),
-      props.min ?? undefined,
-      props.max ?? undefined,
-    ),
+const yearCells = computed(() =>
+  createCoreYearGrid({
+    max: props.max ?? undefined,
+    min: props.min ?? undefined,
+    selected: selectedValues.value[0],
+    startYear: visibleYearPageStart.value,
+    today: props.today,
+  }),
 );
+const periodRows = computed(() => {
+  const options = props.pickerMode === 'month' ? monthCells.value : yearCells.value;
+  return Array.from({ length: 4 }, (_, index) => options.slice(index * 3, index * 3 + 3));
+});
+const calendarTitle = computed(() => {
+  if (props.pickerMode === 'year') return `${visibleYearPageStart.value}–${visibleYearPageStart.value + 11}`;
+  if (props.pickerMode === 'month') return visibleMonth.value.slice(0, 4);
+  return formatCoreMonthLabel(visibleMonth.value);
+});
+const previousPeriodLabel = computed(() =>
+  props.pickerMode === 'year' ? 'Previous decade' : props.pickerMode === 'month' ? 'Previous year' : 'Previous month',
+);
+const nextPeriodLabel = computed(() =>
+  props.pickerMode === 'year' ? 'Next decade' : props.pickerMode === 'month' ? 'Next year' : 'Next month',
+);
+const previousDisabled = computed(() => {
+  if (props.pickerMode === 'year') {
+    return !createCoreYearGrid({
+      max: props.max ?? undefined,
+      min: props.min ?? undefined,
+      startYear: visibleYearPageStart.value - 12,
+      today: props.today,
+    }).some(({ disabled }) => !disabled);
+  }
+  if (props.pickerMode === 'month') {
+    return !createCoreMonthGrid({
+      max: props.max ?? undefined,
+      min: props.min ?? undefined,
+      today: props.today,
+      year: Number(visibleMonth.value.slice(0, 4)) - 1,
+    }).some(({ disabled }) => !disabled);
+  }
+  return !coreMonthHasSelectableDate(
+    moveCoreDateByMonth(visibleMonth.value, -1),
+    props.min ?? undefined,
+    props.max ?? undefined,
+  );
+});
+const nextDisabled = computed(() => {
+  if (props.pickerMode === 'year') {
+    return !createCoreYearGrid({
+      max: props.max ?? undefined,
+      min: props.min ?? undefined,
+      startYear: visibleYearPageStart.value + 12,
+      today: props.today,
+    }).some(({ disabled }) => !disabled);
+  }
+  if (props.pickerMode === 'month') {
+    return !createCoreMonthGrid({
+      max: props.max ?? undefined,
+      min: props.min ?? undefined,
+      today: props.today,
+      year: Number(visibleMonth.value.slice(0, 4)) + 1,
+    }).some(({ disabled }) => !disabled);
+  }
+  return !coreMonthHasSelectableDate(
+    moveCoreDateByMonth(visibleMonth.value, 1),
+    props.min ?? undefined,
+    props.max ?? undefined,
+  );
+});
 const rootAttrs = computed(() => (attrs.style === undefined ? {} : { style: attrs.style }));
 const triggerAttrs = computed(() =>
   Object.fromEntries(
@@ -111,17 +186,26 @@ watch(
   () => {
     const value = selectedValues.value[0];
     if (!value || open.value) return;
-    visibleMonth.value = startOfCoreMonth(value);
-    focusedDate.value = value;
+    const date = pickerValueAsDate(value);
+    visibleMonth.value = startOfCoreMonth(date);
+    focusedDate.value = date;
+    visibleYearPageStart.value = getCoreYearPageStart(date.slice(0, 4));
   },
   { deep: true },
 );
 
 function initialFocusDate(): string {
-  for (const candidate of [...selectedValues.value, props.today, props.min, props.max]) {
+  const selected = selectedValues.value.map(pickerValueAsDate);
+  for (const candidate of [...selected, props.today, props.min, props.max]) {
     if (candidate && !isCoreDateDisabled(candidate, props.min ?? undefined, props.max ?? undefined)) return candidate;
   }
   return props.today;
+}
+
+function pickerValueAsDate(value: string): string {
+  if (props.pickerMode === 'year') return `${value}-01-01`;
+  if (props.pickerMode === 'month') return `${value}-01`;
+  return value;
 }
 
 function updatePanelPosition(): void {
@@ -155,6 +239,22 @@ async function focusDate(value: string): Promise<void> {
   calendarRef.value?.querySelector<HTMLButtonElement>(`[data-date="${value}"]`)?.focus();
 }
 
+async function focusPeriod(value: string): Promise<void> {
+  const date = pickerValueAsDate(value);
+  if (isCoreDateDisabled(date, props.min ?? undefined, props.max ?? undefined)) return;
+  focusedDate.value = date;
+  visibleMonth.value = startOfCoreMonth(date);
+  if (props.pickerMode === 'year') {
+    const year = Number(value);
+    if (year < visibleYearPageStart.value || year >= visibleYearPageStart.value + 12) {
+      visibleYearPageStart.value += Math.floor((year - visibleYearPageStart.value) / 12) * 12;
+    }
+  }
+  await nextTick();
+  const attribute = props.pickerMode === 'year' ? 'data-year' : 'data-month';
+  calendarRef.value?.querySelector<HTMLButtonElement>(`[${attribute}="${value}"]`)?.focus();
+}
+
 async function openCalendar(): Promise<void> {
   if (props.disabled || props.readonly || open.value) return;
   const value = initialFocusDate();
@@ -163,7 +263,8 @@ async function openCalendar(): Promise<void> {
   open.value = true;
   await nextTick();
   updatePanelPosition();
-  await focusDate(value);
+  if (props.pickerMode === 'date') await focusDate(value);
+  else await focusPeriod(props.pickerMode === 'year' ? value.slice(0, 4) : value.slice(0, 7));
 }
 
 function closeCalendar(restoreFocus = true): void {
@@ -202,7 +303,22 @@ function selectDate(value: string, disabled: boolean): void {
   closeCalendar();
 }
 
-function changeMonth(amount: number): void {
+function selectPeriod(value: string, disabled: boolean): void {
+  if (disabled || props.readonly) return;
+  emit('update:modelValue', value);
+  closeCalendar();
+}
+
+function changePeriod(amount: number): void {
+  if (props.pickerMode === 'year') {
+    void focusPeriod(String(Number(focusedDate.value.slice(0, 4)) + amount * 12).padStart(4, '0'));
+    return;
+  }
+  if (props.pickerMode === 'month') {
+    const target = moveCoreDateByMonth(focusedDate.value, amount * 12);
+    void focusPeriod(target.slice(0, 7));
+    return;
+  }
   const month = moveCoreDateByMonth(visibleMonth.value, amount);
   if (!coreMonthHasSelectableDate(month, props.min ?? undefined, props.max ?? undefined)) return;
   const target = moveCoreDateByMonth(focusedDate.value, amount);
@@ -234,6 +350,39 @@ function handleDayKeydown(event: KeyboardEvent, value: string, disabled: boolean
   if (!target) return;
   event.preventDefault();
   void focusDate(target);
+}
+
+function handlePeriodKeydown(event: KeyboardEvent, value: string, disabled: boolean): void {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    selectPeriod(value, disabled);
+    return;
+  }
+  let target: string | null = null;
+  if (props.pickerMode === 'month') {
+    const date = `${value}-01`;
+    if (event.key === 'ArrowLeft') target = moveCoreDateByMonth(date, -1).slice(0, 7);
+    if (event.key === 'ArrowRight') target = moveCoreDateByMonth(date, 1).slice(0, 7);
+    if (event.key === 'ArrowUp') target = moveCoreDateByMonth(date, -3).slice(0, 7);
+    if (event.key === 'ArrowDown') target = moveCoreDateByMonth(date, 3).slice(0, 7);
+    if (event.key === 'Home') target = `${value.slice(0, 4)}-01`;
+    if (event.key === 'End') target = `${value.slice(0, 4)}-12`;
+    if (event.key === 'PageUp') target = moveCoreDateByMonth(date, -12).slice(0, 7);
+    if (event.key === 'PageDown') target = moveCoreDateByMonth(date, 12).slice(0, 7);
+  } else {
+    const year = Number(value);
+    if (event.key === 'ArrowLeft') target = String(year - 1).padStart(4, '0');
+    if (event.key === 'ArrowRight') target = String(year + 1).padStart(4, '0');
+    if (event.key === 'ArrowUp') target = String(year - 3).padStart(4, '0');
+    if (event.key === 'ArrowDown') target = String(year + 3).padStart(4, '0');
+    if (event.key === 'Home') target = String(visibleYearPageStart.value).padStart(4, '0');
+    if (event.key === 'End') target = String(visibleYearPageStart.value + 11).padStart(4, '0');
+    if (event.key === 'PageUp') target = String(year - 12).padStart(4, '0');
+    if (event.key === 'PageDown') target = String(year + 12).padStart(4, '0');
+  }
+  if (!target) return;
+  event.preventDefault();
+  void focusPeriod(target);
 }
 
 function handleDocumentClick(event: MouseEvent): void {
@@ -316,24 +465,56 @@ onBeforeUnmount(() => {
           <button
             class="core-date-picker-recipe__navigation"
             type="button"
-            aria-label="Previous month"
+            :aria-label="previousPeriodLabel"
             :disabled="previousDisabled"
-            @click="changeMonth(-1)"
+            @click="changePeriod(-1)"
           >
             <VueIconify :icon="icons.caretLeft" size="var(--cm-icon-size-md)" aria-hidden="true" />
           </button>
-          <div class="core-date-picker-recipe__month" aria-live="polite">{{ formatCoreMonthLabel(visibleMonth) }}</div>
+          <div class="core-date-picker-recipe__month" aria-live="polite">{{ calendarTitle }}</div>
           <button
             class="core-date-picker-recipe__navigation"
             type="button"
-            aria-label="Next month"
+            :aria-label="nextPeriodLabel"
             :disabled="nextDisabled"
-            @click="changeMonth(1)"
+            @click="changePeriod(1)"
           >
             <VueIconify :icon="icons.caretRight" size="var(--cm-icon-size-md)" aria-hidden="true" />
           </button>
         </header>
-        <div class="core-date-picker-recipe__grid" role="grid">
+        <div v-if="props.pickerMode !== 'date'" class="core-date-picker-recipe__periods" role="grid">
+          <div
+            v-for="(row, rowIndex) in periodRows"
+            :key="rowIndex"
+            class="core-date-picker-recipe__period-row"
+            role="row"
+          >
+            <button
+              v-for="period in row"
+              :key="period.value"
+              class="core-date-picker-recipe__period"
+              :class="{
+                'core-date-picker-recipe__day--today': period.today,
+                'core-date-picker-recipe__day--selected': period.selected,
+              }"
+              type="button"
+              role="gridcell"
+              :data-month="props.pickerMode === 'month' ? period.value : undefined"
+              :data-year="props.pickerMode === 'year' ? period.value : undefined"
+              :aria-label="period.label"
+              :aria-selected="period.selected ? 'true' : 'false'"
+              :aria-current="period.today ? 'date' : undefined"
+              :disabled="period.disabled || undefined"
+              :tabindex="period.value === focusedDate.slice(0, props.pickerMode === 'year' ? 4 : 7) ? 0 : -1"
+              @focus="focusedDate = pickerValueAsDate(period.value)"
+              @click="selectPeriod(period.value, period.disabled)"
+              @keydown="handlePeriodKeydown($event, period.value, period.disabled)"
+            >
+              {{ period.label }}
+            </button>
+          </div>
+        </div>
+        <div v-else class="core-date-picker-recipe__grid" role="grid">
           <div class="core-date-picker-recipe__weekdays" role="row">
             <span
               v-for="label in weekdayLabels"
@@ -530,7 +711,8 @@ onBeforeUnmount(() => {
 }
 
 .core-date-picker-recipe__navigation,
-.core-date-picker-recipe__day {
+.core-date-picker-recipe__day,
+.core-date-picker-recipe__period {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -549,12 +731,14 @@ onBeforeUnmount(() => {
 }
 
 .core-date-picker-recipe__navigation:hover:not(:disabled),
-.core-date-picker-recipe__day:hover:not(:disabled, .core-date-picker-recipe__day--selected) {
+.core-date-picker-recipe__day:hover:not(:disabled, .core-date-picker-recipe__day--selected),
+.core-date-picker-recipe__period:hover:not(:disabled, .core-date-picker-recipe__day--selected) {
   background: var(--cm-color-background-surface-hover);
 }
 
 .core-date-picker-recipe__navigation:focus-visible,
-.core-date-picker-recipe__day:focus-visible {
+.core-date-picker-recipe__day:focus-visible,
+.core-date-picker-recipe__period:focus-visible {
   z-index: 1;
   border-color: var(--cm-color-border-focus);
   outline: none;
@@ -562,7 +746,8 @@ onBeforeUnmount(() => {
 }
 
 .core-date-picker-recipe__navigation:disabled,
-.core-date-picker-recipe__day:disabled {
+.core-date-picker-recipe__day:disabled,
+.core-date-picker-recipe__period:disabled {
   color: var(--cm-color-text-disabled);
   cursor: not-allowed;
 }
@@ -570,6 +755,24 @@ onBeforeUnmount(() => {
 .core-date-picker-recipe__grid {
   display: grid;
   gap: var(--cm-space-1);
+}
+
+.core-date-picker-recipe__periods {
+  display: grid;
+  row-gap: 0.125rem;
+}
+
+.core-date-picker-recipe__period-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 0.125rem;
+}
+
+.core-date-picker-recipe__period {
+  min-inline-size: 0;
+  min-block-size: var(--cm-control-height-md);
+  padding: var(--cm-space-2) var(--cm-space-3);
+  text-transform: capitalize;
 }
 
 .core-date-picker-recipe__weekdays,

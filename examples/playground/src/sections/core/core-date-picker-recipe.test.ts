@@ -10,14 +10,19 @@ import CoreDatePickerRecipe from './CoreDatePickerRecipe.vue';
 import {
   addCoreDays,
   createCoreDateGrid,
+  createCoreMonthGrid,
+  createCoreYearGrid,
   formatCoreDateDisplay,
   formatCoreDateLabel,
   formatCoreDateSelection,
+  formatCorePickerDisplay,
   getCoreWeekBoundary,
+  getCoreYearPageStart,
   moveCoreDateByMonth,
   selectCoreDateRange,
   parseCoreDate,
   toggleCoreMultipleDate,
+  type CoreDatePickerMode,
   type CoreDatePickerValue,
   type CoreDateSelectionMode,
 } from './core-date-picker-recipe';
@@ -43,6 +48,7 @@ describe('CoreDatePickerRecipe date foundation', () => {
       max?: string;
       min?: string;
       placeholder?: string;
+      pickerMode?: CoreDatePickerMode;
       readonly?: boolean;
       selectionMode?: CoreDateSelectionMode;
       value?: CoreDatePickerValue;
@@ -62,6 +68,7 @@ describe('CoreDatePickerRecipe date foundation', () => {
             max: options.max,
             min: options.min,
             placeholder: options.placeholder,
+            pickerMode: options.pickerMode,
             readonly: options.readonly,
             selectionMode: options.selectionMode,
             'aria-describedby': 'release-date-help',
@@ -135,6 +142,96 @@ describe('CoreDatePickerRecipe date foundation', () => {
     host.querySelector<HTMLButtonElement>('[aria-label="Clear date"]')!.click();
     await nextTick();
     expect(value.value).toEqual([]);
+    app.unmount();
+  });
+
+  it('renders and navigates the deterministic 3x4 month grid', async () => {
+    expect(formatCorePickerDisplay('2026-07', 'month')).toBe('07/26');
+    const months = createCoreMonthGrid({ selected: '2026-07', today: '2026-08-15', year: 2026 });
+    expect(months).toHaveLength(12);
+    expect(months[6]).toMatchObject({ label: 'Jul', selected: true, today: false, value: '2026-07' });
+    expect(months[7]).toMatchObject({ label: 'Aug', selected: false, today: true, value: '2026-08' });
+
+    const { app, value } = mountPicker({ pickerMode: 'month', value: '2026-07' });
+    const trigger = host.querySelector<HTMLButtonElement>('#release-date')!;
+    expect(trigger.textContent).toContain('07/26');
+    trigger.click();
+    await nextTick();
+    await nextTick();
+
+    const calendar = document.body.querySelector<HTMLElement>('#release-date-calendar')!;
+    expect(calendar.querySelector('.core-date-picker-recipe__month')?.textContent).toBe('2026');
+    expect(calendar.querySelectorAll('.core-date-picker-recipe__period-row')).toHaveLength(4);
+    expect(calendar.querySelectorAll('[role="gridcell"]')).toHaveLength(12);
+    expect(document.activeElement?.getAttribute('data-month')).toBe('2026-07');
+
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowRight' }),
+    );
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-month')).toBe('2026-08');
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Home' }),
+    );
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-month')).toBe('2026-01');
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'PageDown' }),
+    );
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-month')).toBe('2027-01');
+    expect(calendar.querySelector('.core-date-picker-recipe__month')?.textContent).toBe('2027');
+
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' }),
+    );
+    await nextTick();
+    expect(value.value).toBe('2027-01');
+    expect(document.body.querySelector('#release-date-calendar')).toBeNull();
+    app.unmount();
+  });
+
+  it('renders and pages the deterministic 3x4 year grid', async () => {
+    expect(formatCorePickerDisplay('2026', 'year')).toBe('2026');
+    expect(getCoreYearPageStart('2026')).toBe(2020);
+    const years = createCoreYearGrid({ selected: '2026', startYear: 2020, today: '2026-08-15' });
+    expect(years).toHaveLength(12);
+    expect(years[6]).toMatchObject({ label: '2026', selected: true, today: true, value: '2026' });
+
+    const { app, value } = mountPicker({ pickerMode: 'year', value: '2026' });
+    const trigger = host.querySelector<HTMLButtonElement>('#release-date')!;
+    expect(trigger.textContent).toContain('2026');
+    trigger.click();
+    await nextTick();
+    await nextTick();
+
+    const calendar = document.body.querySelector<HTMLElement>('#release-date-calendar')!;
+    expect(calendar.querySelector('.core-date-picker-recipe__month')?.textContent).toBe('2020–2031');
+    expect(calendar.querySelectorAll('.core-date-picker-recipe__period-row')).toHaveLength(4);
+    expect(calendar.querySelectorAll('[role="gridcell"]')).toHaveLength(12);
+    expect(document.activeElement?.getAttribute('data-year')).toBe('2026');
+
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowDown' }),
+    );
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-year')).toBe('2029');
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'End' }),
+    );
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-year')).toBe('2031');
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'PageDown' }),
+    );
+    await nextTick();
+    expect(document.activeElement?.getAttribute('data-year')).toBe('2043');
+    expect(calendar.querySelector('.core-date-picker-recipe__month')?.textContent).toBe('2032–2043');
+
+    document.activeElement?.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' }));
+    await nextTick();
+    expect(value.value).toBe('2043');
+    expect(document.body.querySelector('#release-date-calendar')).toBeNull();
     app.unmount();
   });
 
@@ -270,6 +367,7 @@ describe('CoreDatePickerRecipe date foundation', () => {
     expect(component).not.toContain('showTime');
     expect(component).not.toContain('monthPicker');
     expect(component).not.toContain('yearPicker');
+    expect(helper).toContain("export type CoreDatePickerMode = 'date' | 'month' | 'year'");
     expect(helper).toContain("export type CoreDateSelectionMode = 'multiple' | 'range' | 'single'");
     expect(component).toContain('today: { type: String, required: true }');
   });
