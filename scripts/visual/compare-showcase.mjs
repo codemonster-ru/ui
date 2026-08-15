@@ -13,7 +13,7 @@ const baselineDirectory = options.baseline ? resolve(options.baseline) : null;
 const currentDirectory = options.current ? resolve(options.current) : null;
 const diffDirectory = options.diff ? resolve(options.diff) : null;
 const reportOnly = options['report-only'] === 'true';
-const channelThreshold = Number(options.threshold ?? 8);
+const channelThreshold = Number(options.threshold ?? 0);
 
 if (!baselineDirectory || !currentDirectory) {
   throw new Error(
@@ -26,6 +26,13 @@ if (!Number.isFinite(channelThreshold) || channelThreshold < 0 || channelThresho
 
 const baselineManifest = JSON.parse(readFileSync(resolve(baselineDirectory, 'manifest.json'), 'utf8'));
 const currentManifest = JSON.parse(readFileSync(resolve(currentDirectory, 'manifest.json'), 'utf8'));
+
+for (const field of ['referenceCommit', 'routes', 'themes', 'viewports']) {
+  if (JSON.stringify(baselineManifest[field]) !== JSON.stringify(currentManifest[field])) {
+    throw new Error(`Showcase manifests use different ${field}.`);
+  }
+}
+
 const baselineNames = new Set(baselineManifest.screenshots.map(({ filename }) => filename));
 const currentNames = new Set(currentManifest.screenshots.map(({ filename }) => filename));
 const missing = [...baselineNames].filter((filename) => !currentNames.has(filename)).sort();
