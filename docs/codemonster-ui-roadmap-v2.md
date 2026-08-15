@@ -61,7 +61,8 @@ not be used to update expected images.
 CodeMonster UI may use different package names, selectors, component implementations, and semantic
 DOM where its contracts require them. Those internal differences must not create a product-level
 visual difference. Screenshot comparison may tolerate only deterministic browser rasterization noise;
-there is no design-change tolerance.
+the executable gate ignores at most two integer levels per RGBA channel and rejects any pixel above
+that threshold. There is no design-change tolerance.
 
 ## Working rules
 
@@ -86,7 +87,7 @@ there is no design-change tolerance.
 - Current phase: Phase 19 — VueForge visual compatibility
 - Current milestone: M12 — In progress
 - Completed milestones: M9, M10, and M11
-- Next item: `CMUI-193` — compare current CodeMonster UI rendering with the frozen reference
+- Next item: `CMUI-194` — finish exact VueForge token parity under `--cm-*` names
 
 ## Milestones
 
@@ -181,7 +182,7 @@ for presentation while retaining the completed semantic, accessibility, and cros
       CodeBlock, and Playground showcase routes, including the exact package styles, deterministic
       fonts, animation settings, content, data, themes, and viewport sizes. The reviewed 312-image
       baseline is stored in `visual-baselines/vueforge-showcase`.
-- [ ] `CMUI-193` Add a browser screenshot harness that renders frozen VueForge and current
+- [x] `CMUI-193` Add a browser screenshot harness that renders frozen VueForge and current
       CodeMonster UI references side by side, stores reviewed baselines, produces image diffs, and
       fails CI above an explicitly documented anti-aliasing tolerance.
 - [ ] `CMUI-194` Restore VueForge 2 token parity for palette, semantic colors, typography, control

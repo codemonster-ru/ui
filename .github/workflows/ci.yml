@@ -36,3 +36,67 @@ jobs:
 
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
+
+  visual:
+    needs: validate
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Verify frozen showcase visuals
+        env:
+          SHOWCASE_CAPTURE: ${{ runner.temp }}/codemonster-showcase-current
+          SHOWCASE_DIFF: ${{ runner.temp }}/codemonster-showcase-diff
+        run: |
+          set -euo pipefail
+
+          npm run dev -w @codemonster-ru/vueforge-playground-example -- --host 127.0.0.1 --port 5175 > "${RUNNER_TEMP}/codemonster-showcase-vite.log" 2>&1 &
+          vite_pid=$!
+          "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --remote-debugging-port=9226 --user-data-dir="${RUNNER_TEMP}/codemonster-showcase-chrome" --disable-gpu --no-first-run --no-default-browser-check about:blank > "${RUNNER_TEMP}/codemonster-showcase-chrome.log" 2>&1 &
+          chrome_pid=$!
+
+          cleanup() {
+            kill "${vite_pid}" "${chrome_pid}" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:5175/ >/dev/null && curl --fail --silent http://127.0.0.1:9226/json/version >/dev/null; then
+              break
+            fi
+            if [ "${attempt}" -eq 60 ]; then
+              cat "${RUNNER_TEMP}/codemonster-showcase-vite.log"
+              cat "${RUNNER_TEMP}/codemonster-showcase-chrome.log"
+              exit 1
+            fi
+            sleep 1
+          done
+
+          node scripts/visual/capture-showcase.mjs --origin=http://127.0.0.1:5175 --output="${SHOWCASE_CAPTURE}" --label=ci-current
+          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-showcase --current="${SHOWCASE_CAPTURE}" --diff="${SHOWCASE_DIFF}"
+
+      - name: Upload showcase visual differences
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codemonster-showcase-visual-diff
+          path: |
+            ${{ runner.temp }}/codemonster-showcase-current
+            ${{ runner.temp }}/codemonster-showcase-diff
+            ${{ runner.temp }}/codemonster-showcase-vite.log
+            ${{ runner.temp }}/codemonster-showcase-chrome.log
+          if-no-files-found: ignore
