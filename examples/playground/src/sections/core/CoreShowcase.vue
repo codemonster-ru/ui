@@ -985,56 +985,52 @@ const tabContent = computed<Record<string, string>>(() => ({
           <div class="demo-example">
             <p class="demo-label">h1-h6 headings</p>
             <div class="demo-stack demo-form-stack">
-              <h1 class="vf-heading vf-heading-h1">Heading H1</h1>
-              <h2 class="vf-heading vf-heading-h2">Heading H2</h2>
-              <h3 class="vf-heading vf-heading-h3">Heading H3</h3>
-              <h4 class="vf-heading vf-heading-h4">Heading H4</h4>
-              <h5 class="vf-heading vf-heading-h5">Heading H5</h5>
-              <h6 class="vf-heading vf-heading-h6">Heading H6</h6>
+              <h1 class="demo-typography-heading demo-typography-heading--h1">Heading H1</h1>
+              <h2 class="demo-typography-heading demo-typography-heading--h2">Heading H2</h2>
+              <h3 class="demo-typography-heading demo-typography-heading--h3">Heading H3</h3>
+              <h4 class="demo-typography-heading demo-typography-heading--h4">Heading H4</h4>
+              <h5 class="demo-typography-heading demo-typography-heading--h5">Heading H5</h5>
+              <h6 class="demo-typography-heading demo-typography-heading--h6">Heading H6</h6>
             </div>
           </div>
 
           <div class="demo-example">
             <p class="demo-label">text utilities</p>
             <div class="demo-stack">
-              <p class="vf-text-body demo-m-0">Body text utility</p>
-              <p class="vf-text-label demo-m-0">Label text utility</p>
-              <p class="vf-text-caption demo-m-0">Caption text utility</p>
-              <p class="vf-text-body vf-text-muted demo-m-0">Muted body text utility</p>
-              <p class="vf-text-body vf-text-primary demo-m-0">Primary body text utility</p>
-              <p class="vf-text-body vf-text-success demo-m-0">Success body text utility</p>
-              <p class="vf-text-body vf-text-info demo-m-0">Info body text utility</p>
-              <p class="vf-text-body vf-text-warn demo-m-0">Warn body text utility</p>
-              <p class="vf-text-body vf-text-help demo-m-0">Help body text utility</p>
-              <p class="vf-text-body vf-text-danger demo-m-0">Danger body text utility</p>
-              <p class="vf-text-body vf-text-contrast demo-m-0">Contrast body text utility</p>
-              <p class="vf-text-body demo-m-0">
+              <p class="demo-typography-body demo-m-0">Body text utility</p>
+              <p class="demo-typography-label demo-m-0">Label text utility</p>
+              <p class="demo-typography-caption demo-m-0">Caption text utility</p>
+              <p class="demo-typography-body demo-typography-muted demo-m-0">Muted body text utility</p>
+              <p class="demo-typography-body demo-typography-primary demo-m-0">Primary body text utility</p>
+              <p class="demo-typography-body demo-typography-success demo-m-0">Success body text utility</p>
+              <p class="demo-typography-body demo-typography-info demo-m-0">Info body text utility</p>
+              <p class="demo-typography-body demo-typography-warn demo-m-0">Warn body text utility</p>
+              <p class="demo-typography-body demo-typography-help demo-m-0">Help body text utility</p>
+              <p class="demo-typography-body demo-typography-danger demo-m-0">Danger body text utility</p>
+              <p class="demo-typography-body demo-typography-contrast demo-m-0">Contrast body text utility</p>
+              <p class="demo-typography-body demo-m-0">
                 Link utility:
-                <a href="#demo-typography" class="vf-text-link">Open typography section</a>
+                <CmLink href="#demo-typography">Open typography section</CmLink>
               </p>
-              <p class="vf-text-body demo-m-0">
+              <p class="demo-typography-body demo-m-0">
                 Link utility muted:
-                <a href="#demo-typography" class="vf-text-link vf-text-link--muted">Open typography section</a>
+                <CmLink href="#demo-typography" tone="muted">Open typography section</CmLink>
               </p>
-              <p class="vf-text-body demo-m-0">
+              <p class="demo-typography-body demo-m-0">
                 Link utility underline hover:
-                <a href="#demo-typography" class="vf-text-link vf-text-link--underline-hover"
-                  >Open typography section</a
-                >
+                <CmLink href="#demo-typography" underline="hover">Open typography section</CmLink>
               </p>
-              <p class="vf-text-body demo-m-0">
+              <p class="demo-typography-body demo-m-0">
                 Link utility underline always:
-                <a href="#demo-typography" class="vf-text-link vf-text-link--underline-always"
-                  >Open typography section</a
-                >
+                <CmLink href="#demo-typography" underline="always">Open typography section</CmLink>
               </p>
-              <p class="vf-text-body demo-m-0">
+              <p class="demo-typography-body demo-m-0">
                 Inline code utility:
-                <code class="vf-text-code">npm run check</code>
+                <code class="demo-typography-code">npm run check</code>
               </p>
-              <p class="vf-text-body demo-m-0">
+              <p class="demo-typography-body demo-m-0">
                 Mono text utility:
-                <span class="vf-text-mono">theme.tokens.headingH1FontSize</span>
+                <span class="demo-typography-mono">theme.tokens.headingH1FontSize</span>
               </p>
             </div>
           </div>
@@ -1042,33 +1038,33 @@ const tabContent = computed<Record<string, string>>(() => ({
           <div class="demo-example">
             <p class="demo-label">content utilities</p>
             <div class="demo-stack">
-              <ul class="vf-list-disc">
+              <ul class="demo-content-list demo-content-list--disc">
                 <li>Disc list item one</li>
                 <li>Disc list item two</li>
               </ul>
-              <ol class="vf-list-decimal">
+              <ol class="demo-content-list demo-content-list--decimal">
                 <li>Decimal list item one</li>
                 <li>Decimal list item two</li>
               </ol>
-              <ul class="vf-list-reset demo-inline">
-                <li><span class="vf-text-code">reset</span></li>
-                <li><span class="vf-text-code">list</span></li>
-                <li><span class="vf-text-code">utility</span></li>
+              <ul class="demo-content-list--reset demo-inline">
+                <li><span class="demo-typography-code">reset</span></li>
+                <li><span class="demo-typography-code">list</span></li>
+                <li><span class="demo-typography-code">utility</span></li>
               </ul>
-              <blockquote class="vf-blockquote">
+              <blockquote class="demo-content-blockquote">
                 Utility-driven content rhythm keeps docs and UI copy consistent.
               </blockquote>
-              <p class="vf-text-body vf-text-truncate demo-m-0 demo-max-w-16">
+              <p class="demo-typography-body demo-typography-truncate demo-m-0 demo-max-w-16">
                 This line demonstrates truncation behavior for long text content in constrained UI areas.
               </p>
-              <p class="vf-text-body vf-text-nowrap demo-m-0 demo-nowrap-preview">
+              <p class="demo-typography-body demo-typography-nowrap demo-m-0 demo-nowrap-preview">
                 No-wrap utility keeps short status labels on a single line.
               </p>
-              <p class="vf-text-body vf-text-balance demo-m-0 demo-max-w-20">
+              <p class="demo-typography-body demo-typography-balance demo-m-0 demo-max-w-20">
                 Balanced wrapping improves heading and summary rhythm in narrow content columns.
               </p>
-              <p class="vf-text-body demo-m-0">
-                <span class="vf-sr-only">Utility text for screen readers.</span>
+              <p class="demo-typography-body demo-m-0">
+                <span class="demo-visually-hidden">Utility text for screen readers.</span>
                 <span aria-hidden="true">SR-only utility is active.</span>
               </p>
             </div>
@@ -1076,7 +1072,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
           <div class="demo-example">
             <p class="demo-label">vf-prose</p>
-            <article class="vf-prose">
+            <article class="demo-prose">
               <h3>Baseline Example</h3>
               <p>Prose container keeps content rhythm consistent for documentation and text-heavy screens.</p>
               <p>Use <code>vf-prose</code> when regular semantic HTML should look polished by default.</p>
@@ -1092,7 +1088,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </p>
             </article>
 
-            <article class="vf-prose">
+            <article class="demo-prose">
               <h3>Spacing Matrix</h3>
               <p>
                 This matrix intentionally places many neighboring block combinations to reveal where vertical spacing
@@ -1158,7 +1154,7 @@ const tabContent = computed<Record<string, string>>(() => ({
               </ul>
             </article>
 
-            <article class="vf-prose">
+            <article class="demo-prose">
               <h3>Heading Scale Matrix (H1-H6)</h3>
               <p>
                 This block covers all heading levels with common neighboring prose elements for visual rhythm checks.
