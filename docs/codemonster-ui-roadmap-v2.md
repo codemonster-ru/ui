@@ -196,7 +196,7 @@ for presentation while retaining the completed semantic, accessibility, and cros
 - [ ] `CMUI-197` Restore the complete showcase information architecture and representative example
       matrix from the frozen VueForge reference. Product names and intentional API migration notes
       may change; layout, density, component appearance, and responsive behavior may not.
-- [ ] `CMUI-198` Add visual regression coverage for hover, active, focus-visible, disabled, invalid,
+- [x] `CMUI-198` Add visual regression coverage for hover, active, focus-visible, disabled, invalid,
       selected, open, loading, and indeterminate states at desktop and mobile viewports.
 - [ ] `CMUI-199` Run the same reviewed visual baselines against Vue-rendered and Razor-rendered
       canonical cases so cross-platform parity cannot converge on a design that differs from
@@ -234,6 +234,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-15 | Use `fd793696f50d3be0fcd3788f0f8f751c63869963` as the sole visual baseline.                       | This is the last accepted showcase before the substantial monorepository and package migration; later commits cannot define expected presentation even when their relevant files happen to match.                                                       | `CMUI-192`–`CMUI-200`, `CMUI-G012` |
 | 2026-08-15 | Preserve frozen token alias formulas as well as their computed values.                            | Equivalent literals can hide semantic drift in derived radii and shadows; the portable `--cm-*` graph now retains the reviewed VueForge relationships and verifies every reference.                                                                     | `CMUI-194`                         |
 | 2026-08-15 | Preserve canonical ownership while matching direct-replacement pixels.                            | All 37 direct replacements retain their current Vue/Razor semantics and public contracts while the reviewed showcase comparison passes all 312 light/dark desktop/mobile screenshots with no changed, missing, or unexpected images.                    | `CMUI-195`                         |
+| 2026-08-15 | Compare interaction states against the frozen showcase, not against a regenerated current run.    | The reviewed 44-image state baseline comes from the detached `fd793696` worktree and covers hover, active, focus-visible, disabled, invalid, selected, open, loading, indeterminate, and reduced-motion cases in both themes and viewports.             | `CMUI-198`                         |
 
 ## Scope-change log
 
