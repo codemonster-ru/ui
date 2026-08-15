@@ -299,7 +299,7 @@
                           </div>
 
                           <aside v-if="!activeSetupBreakpointHidesAside" class="demo-setup-recipe__aside">
-                            <VfNavMenu
+                            <LayoutsNavMenu
                               v-model="activeSetupStep"
                               :items="setupSteps"
                               variant="pills"
@@ -664,7 +664,7 @@
                           </div>
                         </div>
                         <div class="demo-admin-layout-recipe__aside-content">
-                          <VfNavMenu
+                          <LayoutsNavMenu
                             v-model="activeAdminNavigation"
                             :items="adminNavigationItems"
                             variant="sidebar"
@@ -820,7 +820,7 @@
                       <div class="demo-admin-shell-recipe__body">
                         <aside class="demo-admin-shell-recipe__sidebar">
                           <div class="demo-admin-shell-recipe__sidebar-content">
-                            <VfNavMenu
+                            <LayoutsNavMenu
                               v-model="activeAdminNavigation"
                               :items="adminNavigationItems"
                               variant="sidebar"
@@ -857,7 +857,7 @@
                       :disable-teleport="true"
                       :scroll-lock-target="false"
                     >
-                      <VfNavMenu
+                      <LayoutsNavMenu
                         v-model="activeAdminNavigation"
                         :items="adminNavigationItems"
                         variant="sidebar"
@@ -1055,7 +1055,7 @@
 </template>
 
 <script setup lang="ts">
-import { VfDataTable, VfDrawer, VfNavMenu } from '@codemonster-ru/vueforge-core';
+import { VfDataTable, VfDrawer } from '@codemonster-ru/vueforge-core';
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
 import { cmBreakpoints, type CmBreakpointName } from '@codemonster-ru/ui-tokens';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -1080,6 +1080,7 @@ import {
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
+import LayoutsNavMenu from './LayoutsNavMenu.vue';
 import LayoutsPasswordInput from './LayoutsPasswordInput.vue';
 import LayoutsTabs from './LayoutsTabs.vue';
 import '@codemonster-ru/ui-css/button.css';
