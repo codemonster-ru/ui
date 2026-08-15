@@ -34,12 +34,14 @@ test('fails clearly when local PHP or Composer dependencies are unavailable', ()
 
 test('keeps one frozen baseline filename matrix for both current platforms', () => {
   const capture = read('capture-cross-platform-cases.mjs');
+  const fixtureCss = read('cross-platform-fixture/fixture.css');
 
   assert.match(capture, /platforms = source === 'vueforge' \? \['reference'\] : \['vue', 'razor'\]/u);
   assert.match(capture, /\$\{caseId\}--\$\{theme\.name\}--\$\{viewport\.name\}\.png/u);
   assert.match(capture, /routes: caseIds/u);
   assert.match(capture, /componentPackage: '@codemonster-ru\/vueforge-core'/u);
   assert.match(capture, /renderer: 'Vue createApp at the reference commit'/u);
+  assert.match(fixtureCss, /\.cm-visual-adapter-root \{[^}]*line-height: normal;/su);
 });
 
 test('checks both actual adapters against the reviewed fd baseline in macOS visual CI', () => {
@@ -50,11 +52,11 @@ test('checks both actual adapters against the reviewed fd baseline in macOS visu
 
   assert.equal(baselineManifest.referenceCommit, 'fd793696f50d3be0fcd3788f0f8f751c63869963');
   assert.deepEqual(baselineManifest.sourceFixture, {
-    caseIds: ['alert-danger-icon', 'button-default', 'card-title'],
+    caseIds: ['alert-danger-icon', 'badge-danger', 'button-default', 'card-title'],
     componentPackage: '@codemonster-ru/vueforge-core',
     renderer: 'Vue createApp at the reference commit',
   });
-  assert.equal(screenshots.length, 12);
+  assert.equal(screenshots.length, 16);
   assert.match(workflow, /runs-on: macos-15/u);
   assert.match(workflow, /visual:cross-platform:razor-render/u);
   assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/vue"/u);

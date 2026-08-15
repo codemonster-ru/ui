@@ -76,11 +76,11 @@ test('builds the reviewed repository first slice for both adapters', () => {
   );
 
   assert.deepEqual(collected.errors, []);
-  assert.equal(fixtures.length, 24);
+  assert.equal(fixtures.length, 32);
   assert.deepEqual(
     new Set(fixtures.map(({ caseId }) => caseId)),
-    new Set(['alert-danger-icon', 'button-default', 'card-title']),
+    new Set(['alert-danger-icon', 'badge-danger', 'button-default', 'card-title']),
   );
   assert.deepEqual(new Set(fixtures.map(({ platform }) => platform)), new Set(['vue', 'razor']));
-  assert.equal(new Set(fixtures.map(({ baselineId }) => baselineId)).size, 12);
+  assert.equal(new Set(fixtures.map(({ baselineId }) => baselineId)).size, 16);
 });
