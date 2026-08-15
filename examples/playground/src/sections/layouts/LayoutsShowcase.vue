@@ -771,54 +771,68 @@
                   :style="{ maxWidth: activeAdminShellBreakpointConfig.value }"
                 >
                   <div class="demo-shell-frame demo-shell-frame--scroll demo-shell-frame--fixed-preview">
-                    <VfAdminShell
-                      class="demo-admin-shell"
-                      :class="{
-                        'demo-admin-shell--sidebar-hidden': activeAdminShellBreakpointHidesSidebar,
-                      }"
+                    <div
+                      :class="[
+                        'demo-admin-shell-recipe',
+                        activeAdminShellBreakpointHidesSidebar && 'demo-admin-shell-recipe--sidebar-hidden',
+                      ]"
                     >
-                      <template #brand>
-                        <VfIconButton
-                          v-if="activeAdminShellBreakpointHidesSidebar"
-                          class="demo-admin-shell__sidebar-toggle"
-                          label="Open navigation"
-                          variant="ghost"
-                          @click="adminShellDrawerOpen = true"
-                        >
-                          <VueIconify :icon="icons.bars" />
-                        </VfIconButton>
-                        <VfInline class="demo-admin-shell__brand-identity" :wrap="false">
-                          <img class="demo-admin-shell__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
-                          <strong>Annabel</strong>
-                        </VfInline>
-                      </template>
+                      <header class="demo-admin-shell-recipe__topbar">
+                        <div class="demo-admin-shell-recipe__brand">
+                          <VfIconButton
+                            v-if="activeAdminShellBreakpointHidesSidebar"
+                            class="demo-admin-shell__sidebar-toggle"
+                            label="Open navigation"
+                            variant="ghost"
+                            @click="adminShellDrawerOpen = true"
+                          >
+                            <VueIconify :icon="icons.bars" />
+                          </VfIconButton>
+                          <VfInline class="demo-admin-shell__brand-identity" :wrap="false">
+                            <img
+                              class="demo-admin-shell__brand-mark"
+                              :src="annabelLogoIcon"
+                              alt=""
+                              aria-hidden="true"
+                            />
+                            <strong>Annabel</strong>
+                          </VfInline>
+                        </div>
+                        <div class="demo-admin-shell-recipe__header-actions">
+                          <VfAvatar label="AK" shape="circle" aria-label="User profile" />
+                        </div>
+                      </header>
 
-                      <template #header-actions>
-                        <VfAvatar label="AK" shape="circle" aria-label="User profile" />
-                      </template>
+                      <div class="demo-admin-shell-recipe__body">
+                        <aside class="demo-admin-shell-recipe__sidebar">
+                          <div class="demo-admin-shell-recipe__sidebar-content">
+                            <VfNavMenu
+                              v-model="activeAdminNavigation"
+                              :items="adminNavigationItems"
+                              variant="sidebar"
+                              aria-label="Admin shell navigation"
+                            />
+                          </div>
+                        </aside>
 
-                      <template #sidebar>
-                        <VfNavMenu
-                          v-model="activeAdminNavigation"
-                          :items="adminNavigationItems"
-                          variant="sidebar"
-                          aria-label="Admin shell navigation"
-                        />
-                      </template>
-
-                      <VfStack>
-                        <h3 class="demo-admin-shell__page-title">Warehouse availability</h3>
-                        <VfDataTable
-                          :columns="adminShellTableColumns"
-                          :rows="adminShellTableRows"
-                          row-key="id"
-                          column-dividers
-                          pagination
-                          :default-page-size="5"
-                          :page-size-options="[5, 10]"
-                        />
-                      </VfStack>
-                    </VfAdminShell>
+                        <div class="demo-admin-shell-recipe__workspace">
+                          <main class="demo-admin-shell-recipe__content">
+                            <VfStack>
+                              <h3 class="demo-admin-shell__page-title">Warehouse availability</h3>
+                              <VfDataTable
+                                :columns="adminShellTableColumns"
+                                :rows="adminShellTableRows"
+                                row-key="id"
+                                column-dividers
+                                pagination
+                                :default-page-size="5"
+                                :page-size-options="[5, 10]"
+                              />
+                            </VfStack>
+                          </main>
+                        </div>
+                      </div>
+                    </div>
 
                     <VfDrawer
                       v-model:open="adminShellDrawerOpen"
@@ -1014,7 +1028,7 @@ import {
   CmSwitch as VfSwitch,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
-import { VfAdminShell, VfDocumentLayout } from '@codemonster-ru/vueforge-layouts';
+import { VfDocumentLayout } from '@codemonster-ru/vueforge-layouts';
 import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
@@ -2054,6 +2068,184 @@ const demoAsideItems = buildDemoItems(
   .demo-admin-layout-recipe__header,
   .demo-admin-layout-recipe__mobile-backdrop {
     transition: none;
+  }
+}
+
+.demo-admin-shell-recipe {
+  --demo-admin-shell-sidebar-width: 18rem;
+  --demo-admin-shell-header-height: 4rem;
+  --demo-admin-shell-header-background: var(--demo-admin-shell-theme-header-background, var(--cm-color-text-primary));
+  --demo-admin-shell-header-color: var(--demo-admin-shell-theme-header-color, var(--cm-color-background-surface));
+
+  min-width: 20rem;
+  min-height: var(--demo-preview-height);
+  display: flex;
+  flex-direction: column;
+  color: var(--cm-color-text-primary);
+  background: var(--demo-admin-shell-header-background);
+}
+
+:global([data-cm-theme='dark']) .demo-admin-shell-recipe {
+  --demo-admin-shell-theme-header-background: color-mix(in srgb, var(--cm-color-background-canvas) 75%, black);
+  --demo-admin-shell-theme-header-color: var(--cm-color-text-primary);
+}
+
+.demo-admin-shell-recipe__topbar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+  box-sizing: border-box;
+  block-size: var(--demo-admin-shell-header-height);
+  display: grid;
+  grid-template-columns:
+    calc(var(--demo-admin-shell-sidebar-width) - var(--cm-space-4))
+    minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--cm-space-4);
+  padding: var(--cm-space-3) var(--cm-space-4);
+  color: var(--demo-admin-shell-header-color);
+  background: var(--demo-admin-shell-header-background);
+}
+
+.demo-admin-shell-recipe__brand,
+.demo-admin-shell-recipe__header-actions {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.demo-admin-shell-recipe__brand {
+  grid-column: 1;
+}
+
+.demo-admin-shell-recipe__header-actions {
+  grid-column: -2 / -1;
+  justify-content: flex-end;
+}
+
+.demo-admin-shell-recipe__body {
+  position: relative;
+  flex: 1 0 auto;
+  display: grid;
+  grid-template-columns: var(--demo-admin-shell-sidebar-width) minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--cm-color-background-canvas);
+  border-start-start-radius: var(--cm-radius-surface);
+  border-start-end-radius: var(--cm-radius-surface);
+}
+
+.demo-admin-shell-recipe__body::before {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 1;
+  block-size: var(--cm-radius-surface);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-block-end: 0;
+  border-start-start-radius: var(--cm-radius-surface);
+  border-start-end-radius: var(--cm-radius-surface);
+  content: '';
+  pointer-events: none;
+}
+
+.demo-admin-shell-recipe__sidebar {
+  min-width: 0;
+  background: var(--cm-color-background-canvas);
+}
+
+.demo-admin-shell-recipe__sidebar-content {
+  position: sticky;
+  inset-block-start: 0;
+  max-height: calc(100dvh - var(--demo-admin-shell-header-height));
+  overflow-y: auto;
+  padding: var(--cm-space-4);
+}
+
+.demo-admin-shell-recipe__workspace {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-block: var(--cm-space-4);
+  margin-inline-end: var(--cm-space-4);
+  overflow: hidden;
+  background: var(--cm-color-background-surface);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+}
+
+.demo-admin-shell-recipe__content {
+  flex: 1 0 auto;
+  min-width: 0;
+  padding: var(--cm-space-4);
+}
+
+.demo-admin-shell-recipe--sidebar-hidden .demo-admin-shell-recipe__topbar {
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+}
+
+.demo-admin-shell-recipe--sidebar-hidden .demo-admin-shell-recipe__brand {
+  display: contents;
+}
+
+.demo-admin-shell-recipe--sidebar-hidden .demo-admin-shell__sidebar-toggle {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.demo-admin-shell-recipe--sidebar-hidden .demo-admin-shell__brand-identity {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.demo-admin-shell-recipe--sidebar-hidden .demo-admin-shell-recipe__header-actions {
+  grid-column: 4;
+}
+
+.demo-admin-shell-recipe--sidebar-hidden .demo-admin-shell-recipe__body {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.demo-admin-shell-recipe--sidebar-hidden .demo-admin-shell-recipe__sidebar {
+  display: none;
+}
+
+.demo-admin-shell__brand-mark {
+  width: var(--cm-icon-size-xl);
+  height: var(--cm-icon-size-xl);
+  display: block;
+}
+
+.demo-admin-shell__page-title {
+  margin: 0;
+}
+
+@media (width <= 1023.98px) {
+  .demo-admin-shell-recipe__topbar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .demo-admin-shell-recipe__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo-admin-shell-recipe__sidebar {
+    display: none;
+  }
+
+  .demo-admin-shell-recipe__workspace {
+    margin-inline-start: var(--cm-space-4);
+  }
+}
+
+@media (width <= 639.98px) {
+  .demo-admin-shell-recipe__topbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .demo-admin-shell-recipe__header-actions {
+    grid-column: 2;
   }
 }
 
