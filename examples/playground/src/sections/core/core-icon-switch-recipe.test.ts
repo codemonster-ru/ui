@@ -124,4 +124,13 @@ describe('CoreIconSwitchRecipe', () => {
     expect(source).not.toContain('@codemonster-ru/vueforge-core');
     expect(source).toContain('--cm-');
   });
+
+  it('owns the only Core showcase icon-switch usage without changing its explicit thumb slot', () => {
+    const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
+    expect(showcase.match(/<CoreIconSwitchRecipe\b/gu)).toHaveLength(1);
+    expect(showcase).not.toMatch(/VfIconSwitch|VfSwitch as VfIconSwitch/u);
+    expect(showcase).toContain('<template #thumb="{ checked }">');
+    expect(showcase).toContain('<VueIconify :icon="checked ? icons.check : icons.xmark" />');
+    expect(showcase).toContain('Icon switch\n                      </CoreIconSwitchRecipe>');
+  });
 });
