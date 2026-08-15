@@ -1,33 +1,34 @@
 .cm-avatar {
+  --cm-avatar-current-size: var(--cm-control-height-md);
+  --cm-avatar-current-font-size: var(--cm-font-size-xl);
+
   display: inline-flex;
-  flex: none;
-  inline-size: var(--cm-control-height-md);
-  block-size: var(--cm-control-height-md);
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
+  inline-size: var(--cm-avatar-current-size);
+  block-size: var(--cm-avatar-current-size);
   overflow: hidden;
-  border-radius: var(--cm-radius-control);
+  border-radius: var(--cm-radius-control-tight);
   background: var(--cm-color-background-surface-subtle);
-  color: var(--cm-color-text-secondary);
-  font-size: var(--cm-font-size-sm);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-avatar-current-font-size);
   font-weight: var(--cm-font-weight-medium);
   line-height: 1;
 }
 
 .cm-avatar--sm {
-  inline-size: var(--cm-control-height-sm);
-  block-size: var(--cm-control-height-sm);
-  font-size: var(--cm-font-size-xs);
+  --cm-avatar-current-size: var(--cm-control-height-sm);
+  --cm-avatar-current-font-size: var(--cm-font-size-xs);
 }
 
 .cm-avatar--lg {
-  inline-size: var(--cm-control-height-lg);
-  block-size: var(--cm-control-height-lg);
-  font-size: var(--cm-font-size-md);
+  --cm-avatar-current-size: var(--cm-control-height-lg);
+  --cm-avatar-current-font-size: var(--cm-font-size-3xl);
 }
 
 .cm-avatar--circle {
-  border-radius: var(--cm-radius-round);
+  border-radius: 50%;
 }
 
 .cm-avatar__image {
@@ -42,4 +43,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.cm-avatar__icon {
+  inline-size: 1em;
+  block-size: 1em;
 }

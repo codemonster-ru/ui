@@ -29,6 +29,15 @@ describe('display components', () => {
     expect(wrapper.get('.cm-alert__title').text()).toBe('Failed');
   });
 
+  it('keeps the default info Alert surface canonical while marking the primary tone', () => {
+    const primary = mount(CmAlert, { props: { tone: 'primary' }, slots: { default: 'Primary' } });
+    const info = mount(CmAlert, { slots: { default: 'Info' } });
+
+    expect(primary.classes()).toEqual(['cm-alert', 'cm-alert--primary']);
+    expect(info.classes()).toEqual(['cm-alert']);
+    expect(info.attributes('role')).toBe('status');
+  });
+
   it('prioritizes Avatar image then label then fallback content', async () => {
     const wrapper = mount(CmAvatar, {
       props: { image: '/a.png', imageAlt: 'Ada', label: 'AK' },
