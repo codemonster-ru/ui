@@ -279,7 +279,7 @@ onBeforeUnmount(() => tabResizeObserver?.disconnect());
   overflow: visible;
   display: grid;
   place-items: center;
-  padding: var(--vf-layout-space-layout-lg) 0;
+  padding: 0;
 }
 
 .vf-playground__panel.preview > * {
