@@ -36,8 +36,13 @@ import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch 
 import { VfMenuBar, VfThemeProvider, VfThemeSwitch, type VfNavMenuItem } from '@codemonster-ru/vueforge-core';
 import { CmInline as VfInline } from '@codemonster-ru/ui-vue';
 import { VfAppShell } from '@codemonster-ru/vueforge-layouts';
+import {
+  buildPathForSection,
+  resolveSectionFromPath,
+  type ShowcaseSection,
+} from './app-shell';
 
-type SectionValue = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
+type SectionValue = ShowcaseSection;
 
 interface SectionMeta {
   value: SectionValue;
@@ -84,24 +89,6 @@ const sectionComponents = {
   codeblock: defineAsyncComponent(() => import('./sections/codeblock/CodeBlockShowcase.vue')),
   playground: defineAsyncComponent(() => import('./PlaygroundShowcase.vue')),
 } satisfies Record<SectionValue, unknown>;
-
-const validSections = new Set<SectionValue>(sections.map((section) => section.value));
-
-function resolveSectionFromPath(pathname: string): SectionValue {
-  const normalizedPath = pathname.replace(/\/+$/, '');
-  const segments = normalizedPath.split('/').filter(Boolean);
-  const lastSegment = segments.length > 0 ? segments[segments.length - 1] : undefined;
-
-  if (lastSegment && validSections.has(lastSegment as SectionValue)) {
-    return lastSegment as SectionValue;
-  }
-
-  return 'core';
-}
-
-function buildPathForSection(section: SectionValue): string {
-  return `/${section}`;
-}
 
 const activeSection = ref<SectionValue>(resolveSectionFromPath(window.location.pathname));
 const activeSectionComponent = computed(() => sectionComponents[activeSection.value]);
