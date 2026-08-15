@@ -286,7 +286,11 @@ onBeforeUnmount(() => {
                     aria-label="Search projects"
                   >
                     <template #leading>
-                      <VueIconify icon="magnifyingGlass" size="var(--vf-field-icon-size)" aria-hidden="true" />
+                      <VueIconify
+                        icon="magnifyingGlass"
+                        :size="variant.density === 'compact' ? '0.9375rem' : '1rem'"
+                        aria-hidden="true"
+                      />
                     </template>
                   </VfInput>
                 </div>
@@ -430,11 +434,11 @@ onBeforeUnmount(() => {
 
                       <VfGrid class="icon-saas-feedback">
                         <VfAlert tone="warning" role="alert">
-                          <template #icon><VueIconify icon="warning" size="var(--vf-icon-size-lg)" /></template>
+                          <template #icon><VueIconify icon="warning" size="var(--cm-icon-size-lg)" /></template>
                           Backup requires attention.
                         </VfAlert>
                         <VfAlert tone="info" role="alert">
-                          <template #icon><VueIconify icon="infoCircle" size="var(--vf-icon-size-lg)" /></template>
+                          <template #icon><VueIconify icon="infoCircle" size="var(--cm-icon-size-lg)" /></template>
                           3 updates are ready.
                         </VfAlert>
                       </VfGrid>
@@ -593,15 +597,15 @@ onBeforeUnmount(() => {
 <style scoped>
 .icon-saas-contexts {
   display: grid;
-  gap: var(--vf-layout-space-layout-roomy, 24px);
+  gap: var(--cm-space-6);
 }
 
 .icon-saas-context {
   overflow: hidden;
-  border: var(--vf-layout-border-base);
-  border-radius: var(--vf-layout-section-radius);
-  background: var(--vf-color-background-canvas);
-  color: var(--vf-color-text-primary);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-canvas);
+  color: var(--cm-color-text-primary);
 }
 
 .icon-saas-context__label {
@@ -609,14 +613,14 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  border-bottom: var(--vf-layout-border-base);
-  background: var(--vf-color-background-surface);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
   text-transform: capitalize;
 }
 
 .icon-saas-context__label span {
-  color: var(--vf-color-text-muted);
-  font-size: var(--vf-text-caption-font-size);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
 }
 
 .icon-saas-context__viewport {
@@ -954,7 +958,7 @@ onBeforeUnmount(() => {
   align-items: center;
   margin-top: auto;
   padding: 12px 10px 2px;
-  border-top: 1px solid var(--vf-color-border-divider);
+  border-top: var(--cm-border-width) solid var(--cm-color-border-divider);
 }
 
 .icon-saas-content {
@@ -963,11 +967,11 @@ onBeforeUnmount(() => {
 
 .icon-saas-title h3 {
   margin: 2px 0 0;
-  font-size: var(--vf-heading-h-4-font-size);
+  font-size: 1.1875rem;
 }
 
 .icon-saas-title small {
-  color: var(--vf-color-text-muted);
+  color: var(--cm-color-text-muted);
 }
 
 .icon-saas-metrics,
@@ -985,13 +989,13 @@ onBeforeUnmount(() => {
 
 .icon-saas-metric span {
   display: grid;
-  color: var(--vf-color-text-muted);
+  color: var(--cm-color-text-muted);
   line-height: 1.25;
 }
 
 .icon-saas-metric strong {
-  color: var(--vf-color-text-primary);
-  font-size: var(--vf-text-body-lg-font-size);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-xl);
 }
 
 .icon-saas-data-panel {
@@ -1008,7 +1012,7 @@ onBeforeUnmount(() => {
 
 .icon-saas-data-panel__header {
   padding: 10px 12px;
-  border-bottom: 1px solid var(--vf-color-border-divider);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-divider);
 }
 
 .icon-saas-dropdown {
@@ -1176,7 +1180,7 @@ onBeforeUnmount(() => {
 }
 
 .icon-saas-status {
-  color: var(--vf-color-status-success-text);
+  color: var(--cm-color-status-success-subtle-foreground);
 }
 
 .icon-saas-row-actions {
@@ -1186,8 +1190,8 @@ onBeforeUnmount(() => {
 .icon-saas-pagination {
   box-sizing: border-box;
   padding: 8px 12px;
-  border-top: 1px solid var(--vf-color-border-divider);
-  color: var(--vf-color-text-muted);
+  border-top: var(--cm-border-width) solid var(--cm-color-border-divider);
+  color: var(--cm-color-text-muted);
 }
 
 .icon-saas-pagination__previous :deep(.vf-icon) {
@@ -1208,7 +1212,7 @@ onBeforeUnmount(() => {
 }
 
 .icon-saas-empty__copy span {
-  color: var(--vf-color-text-muted);
+  color: var(--cm-color-text-muted);
 }
 
 .icon-saas-context--compact .icon-saas-content {
