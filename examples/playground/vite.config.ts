@@ -123,32 +123,6 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../packages/core/src/styles/components.css', import.meta.url)),
       },
       {
-        find: /^@codemonster-ru\/vueforge-core\/foundation$/,
-        replacement: fileURLToPath(new URL('../../packages/core/src/foundation/index.ts', import.meta.url)),
-      },
-      {
-        find: /^@codemonster-ru\/vueforge-core\/theme$/,
-        replacement: fileURLToPath(new URL('../../packages/core/src/theme/public.ts', import.meta.url)),
-      },
-      {
-        find: /^@codemonster-ru\/vueforge-core\/skeleton$/,
-        replacement: fileURLToPath(new URL('../../packages/core/src/entries/skeleton.ts', import.meta.url)),
-      },
-      {
-        find: /^@codemonster-ru\/vueforge-core\/skeleton-gate$/,
-        replacement: fileURLToPath(new URL('../../packages/core/src/entries/skeleton-gate.ts', import.meta.url)),
-      },
-      {
-        find: /^@codemonster-ru\/vueforge-layouts$/,
-        replacement: fileURLToPath(new URL('../../packages/layouts/src/index.ts', import.meta.url)),
-      },
-      {
-        find: /^@codemonster-ru\/vueforge-layouts\/composables\/useCssVarBreakpoints$/,
-        replacement: fileURLToPath(
-          new URL('../../packages/layouts/src/composables/useCssVarBreakpoints.ts', import.meta.url),
-        ),
-      },
-      {
         find: /^@codemonster-ru\/vueforge-codeblock\/view$/,
         replacement: fileURLToPath(new URL('../../packages/codeblock/src/view.ts', import.meta.url)),
       },
