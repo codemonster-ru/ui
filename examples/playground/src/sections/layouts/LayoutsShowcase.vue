@@ -32,11 +32,11 @@
               </VfStack>
             </VfSection>
             <VfSection surface>
-              <VfStack as="article">
+              <article class="cm-stack">
                 <VfSection surface>Article block</VfSection>
                 <VfSection surface>Body section</VfSection>
                 <VfSection surface>Related notes</VfSection>
-              </VfStack>
+              </article>
             </VfSection>
           </div>
         </section>
@@ -281,7 +281,7 @@
                         />
                       </template>
 
-                      <VfStack :id="setupFormId" as="form" class="demo-setup-form" @submit.prevent="goToNextSetupStep">
+                      <form :id="setupFormId" class="cm-stack demo-setup-form" @submit.prevent="goToNextSetupStep">
                         <div class="demo-setup-fields demo-setup-fields--split">
                           <VfField label="Host" description="Hostname, socket, or private address.">
                             <template #default="{ controlId, describedBy, invalid }">
@@ -346,7 +346,7 @@
                             </template>
                           </VfField>
                         </div>
-                      </VfStack>
+                      </form>
 
                       <template #actions>
                         <VfButton
@@ -887,18 +887,20 @@ import {
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
 import { computed, ref, watch } from 'vue';
 import {
+  CmContainer as VfContainer,
+  CmGrid as VfGrid,
+  CmInline as VfInline,
+  CmSection as VfSection,
+  CmStack as VfStack,
+} from '@codemonster-ru/ui-vue';
+import {
   VfAppShell,
   VfAdminLayout,
   VfAdminShell,
   VfAuthLayout,
-  VfContainer,
   VfDocumentLayout,
   VfErrorLayout,
-  VfGrid,
-  VfInline,
-  VfSection,
   VfSetupLayout,
-  VfStack,
 } from '@codemonster-ru/vueforge-layouts';
 import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';

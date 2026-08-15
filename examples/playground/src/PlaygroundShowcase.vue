@@ -144,10 +144,10 @@
 
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
+import { CmSection as VfSection, CmStack as VfStack } from '@codemonster-ru/ui-vue';
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import { VfSkeleton } from '@codemonster-ru/vueforge-core/skeleton';
 import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
-import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
 import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
