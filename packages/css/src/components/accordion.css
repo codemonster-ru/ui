@@ -1,9 +1,10 @@
+/* stylelint-disable no-descending-specificity -- State rules mirror the frozen interaction matrix. */
+
 .cm-accordion {
-  overflow: hidden;
-  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
   border-radius: var(--cm-radius-surface);
   background: var(--cm-color-background-surface);
-  color: var(--cm-color-text-primary);
+  color: var(--cm-color-text-secondary);
 }
 
 .cm-accordion__item + .cm-accordion__item {
@@ -16,60 +17,97 @@
 }
 
 .cm-accordion__trigger {
+  position: relative;
+  z-index: 1;
   display: flex;
   inline-size: 100%;
-  min-block-size: var(--cm-control-height-lg);
+  min-block-size: var(--cm-control-height-md);
   align-items: center;
   justify-content: space-between;
-  gap: var(--cm-space-3);
-  padding-block: var(--cm-space-3);
-  padding-inline: var(--cm-space-4);
-  border: 0;
+  gap: var(--cm-space-4);
+  padding: var(--cm-field-padding-md);
+  border: var(--cm-border-width) solid transparent;
+  border-radius: 0;
   appearance: none;
   background: transparent;
   color: inherit;
   cursor: pointer;
-  font: inherit;
-  font-weight: var(--cm-font-weight-semibold);
-  line-height: var(--cm-line-height-tight);
+  font-size: var(--cm-control-font-size-md);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-normal);
   text-align: start;
 }
 
-.cm-accordion__trigger::after {
-  content: '+';
-  flex: none;
-  color: var(--cm-color-text-secondary);
-  font-size: var(--cm-font-size-lg);
-  transition: transform var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+.cm-accordion__item:first-child .cm-accordion__trigger {
+  border-start-start-radius: var(--cm-radius-surface);
+  border-start-end-radius: var(--cm-radius-surface);
 }
 
-.cm-accordion__trigger:hover:where(:not(:disabled)) {
-  background: var(--cm-color-background-surface-hover);
+.cm-accordion__item:last-child .cm-accordion__trigger {
+  border-end-start-radius: var(--cm-radius-surface);
+  border-end-end-radius: var(--cm-radius-surface);
+}
+
+.cm-accordion__trigger::after {
+  content: '';
+  flex-shrink: 0;
+  inline-size: var(--cm-icon-size-md);
+  block-size: var(--cm-icon-size-md);
+  background: var(--cm-color-icon-secondary);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6.65 7.15-2.3 2.3L12 17.1l7.65-7.65-2.3-2.3L12 12.5Z'/%3E%3C/svg%3E") center / var(--cm-icon-size-sm) no-repeat;
+  transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.cm-accordion__trigger:hover:not(:disabled, [aria-expanded='true']) {
+  background: transparent;
+  color: var(--cm-color-text-primary);
 }
 
 .cm-accordion__trigger:focus-visible {
-  position: relative;
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: calc(-1 * var(--cm-border-width-thick));
+  z-index: 2;
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .cm-accordion__trigger[aria-expanded='true'] {
-  background: var(--cm-color-background-surface-selected);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  background: transparent;
+  color: var(--cm-color-selected-foreground);
+}
+
+.cm-accordion__item:last-child .cm-accordion__trigger[aria-expanded='true'] {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
 }
 
 .cm-accordion__trigger[aria-expanded='true']::after {
-  transform: rotate(45deg);
+  transform: rotate(180deg);
 }
 
 .cm-accordion__trigger:disabled {
-  color: var(--cm-color-text-disabled);
   cursor: not-allowed;
 }
 
 .cm-accordion__panel {
-  padding: var(--cm-space-4);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  padding: var(--cm-space-3) var(--cm-space-4);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-divider);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  background: var(--cm-color-background-surface);
   color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-regular);
   line-height: var(--cm-line-height-normal);
+}
+
+.cm-accordion__item:last-child .cm-accordion__panel {
+  border-end-start-radius: var(--cm-radius-surface);
+  border-end-end-radius: var(--cm-radius-surface);
 }
 
 .cm-accordion__panel[hidden] {
