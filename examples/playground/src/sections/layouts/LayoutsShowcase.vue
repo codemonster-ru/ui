@@ -911,85 +911,120 @@
                               'demo-document-layout-frame--scroll': true,
                             }"
                           >
-                            <VfDocumentLayout
-                              :layout="activeDocumentLayoutConfig.name"
-                              :edge-notches="documentEdgeNotches"
-                              :show-subheader="showDocumentSubheader"
-                              :show-content-subheader="showDocumentContentSubheader"
-                              :sticky-header="stickyDocumentHeader"
-                              :sticky-sidebar="stickyDocumentSidebar"
-                              :sticky-aside="stickyDocumentAside"
+                            <VfContainer
+                              size="2xl"
                               :class="{
-                                'demo-document-layout': true,
-                                'demo-document-layout--plain-columns': plainDocumentColumns,
-                                'demo-document-layout--compact-aside':
-                                  activeDocumentLayoutConfig.name === 'sidebar-content-aside' &&
-                                  activeDocumentBreakpointHidesAside,
-                                'demo-document-layout--compact-sidebar':
-                                  activeDocumentLayoutConfig.name !== 'content' && activeDocumentBreakpointHidesSidebar,
+                                'demo-document-recipe__container': true,
+                                'demo-document-recipe__container--compact': activeDocumentBreakpointHidesContainerInset,
                               }"
                             >
-                              <template #header>
-                                <VfInline :wrap="false" class="demo-document-layout__bar">
-                                  <strong>Header</strong>
-                                </VfInline>
-                              </template>
+                              <div
+                                :class="[
+                                  'demo-document-recipe',
+                                  `demo-document-recipe--${activeDocumentLayoutConfig.name}`,
+                                  documentEdgeNotches && 'demo-document-recipe--edge-notches',
+                                  stickyDocumentHeader
+                                    ? 'demo-document-recipe--header-sticky'
+                                    : 'demo-document-recipe--header-static',
+                                  stickyDocumentSidebar && 'demo-document-recipe--sidebar-sticky',
+                                  stickyDocumentAside && 'demo-document-recipe--aside-sticky',
+                                  plainDocumentColumns && 'demo-document-recipe--plain-columns',
+                                  activeDocumentLayoutConfig.name === 'sidebar-content-aside' &&
+                                    activeDocumentBreakpointHidesAside &&
+                                    'demo-document-recipe--compact-aside',
+                                  activeDocumentLayoutConfig.name !== 'content' &&
+                                    activeDocumentBreakpointHidesSidebar &&
+                                    'demo-document-recipe--compact-sidebar',
+                                ]"
+                                :style="documentStickyOffsetsStyle"
+                              >
+                                <header class="demo-document-recipe__header">
+                                  <VfInline :wrap="false" class="demo-document-layout__bar">
+                                    <strong>Header</strong>
+                                  </VfInline>
+                                </header>
 
-                              <template #subheader>
-                                <VfInline :wrap="false" class="demo-document-layout__bar">
-                                  <strong>Subheader</strong>
-                                </VfInline>
-                              </template>
+                                <div v-if="showDocumentSubheader" class="demo-document-recipe__subheader">
+                                  <VfInline :wrap="false" class="demo-document-layout__bar">
+                                    <strong>Subheader</strong>
+                                  </VfInline>
+                                </div>
 
-                              <template #content-subheader>
-                                <VfInline :wrap="false" class="demo-document-layout__bar">
-                                  <strong>Content subheader</strong>
-                                </VfInline>
-                              </template>
-
-                              <template v-if="activeDocumentLayoutConfig.name !== 'content'" #sidebar>
-                                <VfStack class="demo-scroll-column">
-                                  <strong>Sidebar</strong>
-                                  <p
-                                    v-for="item in demoSidebarItems"
-                                    :key="`document-sidebar-${item.id}`"
-                                    class="demo-scroll-copy"
+                                <main class="demo-document-recipe__content">
+                                  <div
+                                    :class="[
+                                      'demo-document-recipe__content-grid',
+                                      `demo-document-recipe__content-grid--${activeDocumentLayoutConfig.name}`,
+                                    ]"
                                   >
-                                    {{ item.title }}. {{ item.text }}
-                                  </p>
-                                </VfStack>
-                              </template>
+                                    <aside
+                                      v-if="activeDocumentLayoutConfig.name !== 'content'"
+                                      class="demo-document-recipe__sidebar"
+                                    >
+                                      <div class="demo-document-recipe__sidebar-inner">
+                                        <VfStack class="demo-scroll-column">
+                                          <strong>Sidebar</strong>
+                                          <p
+                                            v-for="item in demoSidebarItems"
+                                            :key="`document-sidebar-${item.id}`"
+                                            class="demo-scroll-copy"
+                                          >
+                                            {{ item.title }}. {{ item.text }}
+                                          </p>
+                                        </VfStack>
+                                      </div>
+                                    </aside>
 
-                              <VfStack class="demo-scroll-column">
-                                <strong>Content</strong>
-                                <p
-                                  v-for="item in demoContentItems"
-                                  :key="`document-content-${item.id}`"
-                                  class="demo-scroll-copy"
-                                >
-                                  {{ item.title }}. {{ item.text }}
-                                </p>
-                              </VfStack>
+                                    <section class="demo-document-recipe__main">
+                                      <div
+                                        v-if="showDocumentContentSubheader"
+                                        class="demo-document-recipe__content-subheader"
+                                      >
+                                        <VfInline :wrap="false" class="demo-document-layout__bar">
+                                          <strong>Content subheader</strong>
+                                        </VfInline>
+                                      </div>
+                                      <div class="demo-document-recipe__main-body">
+                                        <VfStack class="demo-scroll-column">
+                                          <strong>Content</strong>
+                                          <p
+                                            v-for="item in demoContentItems"
+                                            :key="`document-content-${item.id}`"
+                                            class="demo-scroll-copy"
+                                          >
+                                            {{ item.title }}. {{ item.text }}
+                                          </p>
+                                        </VfStack>
+                                      </div>
+                                    </section>
 
-                              <template v-if="activeDocumentLayoutConfig.name === 'sidebar-content-aside'" #aside>
-                                <VfStack class="demo-scroll-column">
-                                  <strong>Aside</strong>
-                                  <p
-                                    v-for="item in demoAsideItems"
-                                    :key="`document-aside-${item.id}`"
-                                    class="demo-scroll-copy"
-                                  >
-                                    {{ item.title }}. {{ item.text }}
-                                  </p>
-                                </VfStack>
-                              </template>
+                                    <aside
+                                      v-if="activeDocumentLayoutConfig.name === 'sidebar-content-aside'"
+                                      class="demo-document-recipe__aside"
+                                    >
+                                      <div class="demo-document-recipe__aside-inner">
+                                        <VfStack class="demo-scroll-column">
+                                          <strong>Aside</strong>
+                                          <p
+                                            v-for="item in demoAsideItems"
+                                            :key="`document-aside-${item.id}`"
+                                            class="demo-scroll-copy"
+                                          >
+                                            {{ item.title }}. {{ item.text }}
+                                          </p>
+                                        </VfStack>
+                                      </div>
+                                    </aside>
+                                  </div>
+                                </main>
 
-                              <template #footer>
-                                <VfInline :wrap="false" class="demo-document-layout__bar">
-                                  <strong>Footer</strong>
-                                </VfInline>
-                              </template>
-                            </VfDocumentLayout>
+                                <footer class="demo-document-recipe__footer">
+                                  <VfInline :wrap="false" class="demo-document-layout__bar">
+                                    <strong>Footer</strong>
+                                  </VfInline>
+                                </footer>
+                              </div>
+                            </VfContainer>
                           </div>
                         </div>
                       </div>
@@ -1008,7 +1043,8 @@
 <script setup lang="ts">
 import { VfDataTable, VfDrawer, VfInput as VfPasswordInput, VfNavMenu, VfTabs } from '@codemonster-ru/vueforge-core';
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
-import { computed, ref, watch } from 'vue';
+import { cmBreakpoints, type CmBreakpointName } from '@codemonster-ru/ui-tokens';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import {
   CmAvatar as VfAvatar,
   CmBadge as VfBadge,
@@ -1028,8 +1064,6 @@ import {
   CmSwitch as VfSwitch,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
-import { VfDocumentLayout } from '@codemonster-ru/vueforge-layouts';
-import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
 import '@codemonster-ru/ui-css/button.css';
@@ -1038,7 +1072,60 @@ import '@codemonster-ru/ui-css/input.css';
 import '@codemonster-ru/ui-css/link.css';
 import '@codemonster-ru/ui-css/progress-bar.css';
 
-const resolvedBreakpoints = useCssVarBreakpoints();
+function parseShowcaseCssLength(value: string, rootFontSize: number) {
+  const normalizedValue = value.trim().toLowerCase();
+  const numericValue = Number.parseFloat(normalizedValue);
+
+  if (!normalizedValue || Number.isNaN(numericValue)) return null;
+  if (normalizedValue.endsWith('px') || /^[+-]?\d*\.?\d+$/.test(normalizedValue)) return numericValue;
+  if (normalizedValue.endsWith('rem') || normalizedValue.endsWith('em')) return numericValue * rootFontSize;
+
+  return null;
+}
+
+function readShowcaseBreakpoints() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return { ...cmBreakpoints };
+
+  const rootStyles = window.getComputedStyle(document.documentElement);
+  const rootFontSize = Number.parseFloat(rootStyles.fontSize) || 16;
+
+  return Object.fromEntries(
+    Object.entries(cmBreakpoints).map(([name, fallbackValue]) => [
+      name,
+      parseShowcaseCssLength(rootStyles.getPropertyValue(`--cm-breakpoint-${name}`), rootFontSize) ?? fallbackValue,
+    ]),
+  ) as Record<CmBreakpointName, number>;
+}
+
+const resolvedBreakpoints = ref(readShowcaseBreakpoints());
+let breakpointUpdateFrame: number | null = null;
+let breakpointObserver: MutationObserver | null = null;
+
+function scheduleShowcaseBreakpointUpdate() {
+  if (typeof window === 'undefined') return;
+  if (breakpointUpdateFrame !== null) window.cancelAnimationFrame(breakpointUpdateFrame);
+
+  breakpointUpdateFrame = window.requestAnimationFrame(() => {
+    breakpointUpdateFrame = null;
+    resolvedBreakpoints.value = readShowcaseBreakpoints();
+  });
+}
+
+onMounted(() => {
+  scheduleShowcaseBreakpointUpdate();
+  window.addEventListener('resize', scheduleShowcaseBreakpointUpdate);
+  breakpointObserver = new MutationObserver(scheduleShowcaseBreakpointUpdate);
+  breakpointObserver.observe(document.documentElement, { attributes: true });
+  if (document.body) breakpointObserver.observe(document.body, { attributes: true });
+  breakpointObserver.observe(document.head, { childList: true, subtree: true, characterData: true });
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', scheduleShowcaseBreakpointUpdate);
+  if (breakpointUpdateFrame !== null) window.cancelAnimationFrame(breakpointUpdateFrame);
+  breakpointObserver?.disconnect();
+});
+
 const currentYear = new Date().getFullYear();
 
 function getViewportWidth() {
@@ -1385,6 +1472,11 @@ const documentEdgeNotches = ref(false);
 const stickyDocumentHeader = ref(false);
 const stickyDocumentSidebar = ref(false);
 const stickyDocumentAside = ref(false);
+const documentStickyOffsetsStyle = computed(() => ({
+  '--demo-document-sticky-header-offset': '4rem',
+  '--demo-document-sticky-subheader-offset': showDocumentSubheader.value ? '2.75rem' : '0',
+  '--demo-document-sticky-top-offset': showDocumentSubheader.value ? '6.75rem' : '4rem',
+}));
 const activeDocumentLayoutConfig = computed(() =>
   shellLayouts.find((layout) => layout.name === activeDocumentLayout.value),
 );
@@ -1760,6 +1852,345 @@ const demoAsideItems = buildDemoItems(
     border: 0;
     border-radius: 0;
     box-shadow: none;
+  }
+}
+
+.demo-document-layout-frame {
+  overflow: hidden;
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-surface);
+  background: var(--cm-color-background-surface);
+}
+
+.demo-document-layout-frame--scroll {
+  block-size: var(--demo-preview-height);
+  overflow: auto;
+}
+
+.demo-document-layouts,
+.demo-document-card {
+  display: grid;
+  gap: var(--cm-space-4);
+}
+
+.demo-document-layouts__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cm-space-4);
+}
+
+.demo-document-layouts__title,
+.demo-document-card__title {
+  font-weight: var(--cm-font-weight-bold);
+}
+
+.demo-document-card__title {
+  color: var(--cm-color-text-muted);
+}
+
+.demo-document-preview {
+  width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+.demo-document-recipe__container {
+  min-width: 20rem;
+  padding-inline: 0;
+}
+
+.demo-document-recipe {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+  border-left: 0;
+  border-right: 0;
+}
+
+.demo-document-recipe__header {
+  box-sizing: border-box;
+  block-size: 4rem;
+  background: var(--cm-color-background-surface);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.demo-document-recipe__subheader {
+  position: relative;
+  box-sizing: border-box;
+  block-size: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-4);
+  padding-block: 0.375rem;
+  padding-inline: var(--cm-space-4);
+  background: var(--cm-color-background-surface);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.demo-document-recipe__content {
+  flex: 1 1 auto;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+.demo-document-recipe__footer {
+  min-height: auto;
+  padding: var(--cm-space-4);
+  background: var(--cm-color-background-surface);
+  border-top: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.demo-document-recipe__content-grid {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 100%;
+}
+
+.demo-document-recipe__content-grid--content {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.demo-document-recipe__content-grid--sidebar-content {
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+}
+
+.demo-document-recipe__content-grid--sidebar-content-aside {
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr) minmax(0, 20rem);
+}
+
+.demo-document-recipe__main,
+.demo-document-recipe__sidebar,
+.demo-document-recipe__aside {
+  min-width: 0;
+}
+
+.demo-document-recipe__header,
+.demo-document-recipe__footer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-4);
+  padding-block: var(--cm-space-3);
+  padding-inline: var(--cm-space-4);
+}
+
+.demo-document-recipe--edge-notches .demo-document-recipe__header::before,
+.demo-document-recipe--edge-notches .demo-document-recipe__header::after,
+.demo-document-recipe--edge-notches .demo-document-recipe__footer::before,
+.demo-document-recipe--edge-notches .demo-document-recipe__footer::after {
+  position: absolute;
+  z-index: 1;
+  width: 7px;
+  height: 10px;
+  background: var(--cm-color-border-default);
+  content: '';
+  pointer-events: none;
+}
+
+.demo-document-recipe--edge-notches .demo-document-recipe__header::before,
+.demo-document-recipe--edge-notches .demo-document-recipe__footer::before {
+  inset-inline-start: 0;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.demo-document-recipe--edge-notches .demo-document-recipe__header::after,
+.demo-document-recipe--edge-notches .demo-document-recipe__footer::after {
+  inset-inline-end: 0;
+  clip-path: polygon(100% 0, 0 50%, 100% 100%);
+}
+
+.demo-document-recipe--edge-notches .demo-document-recipe__header::before,
+.demo-document-recipe--edge-notches .demo-document-recipe__header::after {
+  inset-block-end: 0;
+  transform: translateY(calc(50% + 0.5px));
+}
+
+.demo-document-recipe--edge-notches .demo-document-recipe__footer::before,
+.demo-document-recipe--edge-notches .demo-document-recipe__footer::after {
+  inset-block-start: 0;
+  transform: translateY(calc(-50% - 0.5px));
+}
+
+.demo-document-recipe--header-sticky .demo-document-recipe__header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.demo-document-recipe--header-sticky .demo-document-recipe__subheader {
+  position: sticky;
+  top: var(--demo-document-sticky-header-offset);
+  z-index: 19;
+}
+
+.demo-document-recipe--header-static .demo-document-recipe__header {
+  position: relative;
+  z-index: 1;
+}
+
+.demo-document-recipe--header-static .demo-document-recipe__subheader {
+  position: relative;
+  z-index: 0;
+}
+
+.demo-document-recipe__sidebar {
+  background: var(--cm-color-background-surface);
+  border-right: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.demo-document-recipe__main {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+  padding: var(--cm-space-4);
+  background: var(--cm-color-background-surface);
+}
+
+.demo-document-recipe__main-body {
+  min-width: 0;
+  min-height: 0;
+}
+
+.demo-document-recipe__content-subheader {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-4);
+  margin-block: calc(-1 * var(--cm-space-4)) var(--cm-space-4);
+  margin-inline: calc(-1 * var(--cm-space-4));
+  padding: 0.375rem var(--cm-space-4);
+  background: var(--cm-color-background-surface);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.demo-document-recipe__aside {
+  background: var(--cm-color-background-surface);
+  border-left: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.demo-document-recipe__sidebar-inner,
+.demo-document-recipe__aside-inner {
+  min-width: 0;
+  padding: var(--cm-space-4);
+}
+
+.demo-document-recipe--sidebar-sticky .demo-document-recipe__sidebar-inner,
+.demo-document-recipe--aside-sticky .demo-document-recipe__aside-inner {
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow: auto;
+}
+
+.demo-document-recipe--header-sticky.demo-document-recipe--sidebar-sticky .demo-document-recipe__sidebar-inner,
+.demo-document-recipe--header-sticky.demo-document-recipe--aside-sticky .demo-document-recipe__aside-inner {
+  top: var(--demo-document-sticky-top-offset);
+  max-height: calc(100vh - var(--demo-document-sticky-top-offset));
+}
+
+.demo-document-recipe--header-sticky .demo-document-recipe__content-subheader {
+  position: sticky;
+  top: var(--demo-document-sticky-top-offset);
+  z-index: 18;
+  margin-block-start: 0;
+}
+
+.demo-document-recipe--header-static .demo-document-recipe__content-subheader {
+  position: relative;
+  z-index: 0;
+}
+
+.demo-document-recipe--header-sticky .demo-document-recipe__main:has(.demo-document-recipe__content-subheader) {
+  padding-block-start: 0;
+}
+
+.demo-document-recipe--plain-columns
+  :is(.demo-document-recipe__sidebar, .demo-document-recipe__main, .demo-document-recipe__aside) {
+  background: transparent;
+}
+
+.demo-document-recipe--plain-columns .demo-document-recipe__content-subheader {
+  background: transparent;
+  border-bottom: 0;
+}
+
+.demo-document-recipe--plain-columns .demo-document-recipe__sidebar {
+  border-right: 0;
+}
+
+.demo-document-recipe--plain-columns .demo-document-recipe__aside {
+  border-left: 0;
+}
+
+.demo-document-recipe--compact-aside .demo-document-recipe__content-grid--sidebar-content-aside {
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+}
+
+.demo-document-recipe--compact-sidebar
+  :is(
+    .demo-document-recipe__content-grid--sidebar-content,
+    .demo-document-recipe__content-grid--sidebar-content-aside
+  ) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.demo-document-recipe--compact-sidebar :is(.demo-document-recipe__sidebar, .demo-document-recipe__aside),
+.demo-document-recipe--compact-aside .demo-document-recipe__aside {
+  display: none;
+}
+
+.demo-document-layout__bar {
+  justify-content: space-between;
+  width: 100%;
+}
+
+@media (width >= 768px) {
+  .demo-document-recipe__container {
+    padding-inline: calc(var(--cm-space-4) * 2);
+  }
+
+  .demo-document-recipe__container .demo-document-recipe {
+    border-left: var(--cm-border-width) solid var(--cm-color-border-default);
+    border-right: var(--cm-border-width) solid var(--cm-color-border-default);
+  }
+
+  .demo-document-recipe__container--compact {
+    padding-inline: 0;
+  }
+
+  .demo-document-recipe__container--compact .demo-document-recipe {
+    border-left: 0;
+    border-right: 0;
+  }
+}
+
+@media (width <= 1279.98px) {
+  .demo-document-recipe--sidebar-content-aside .demo-document-recipe__content-grid--sidebar-content-aside {
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+  }
+
+  .demo-document-recipe--sidebar-content-aside .demo-document-recipe__aside {
+    display: none;
+  }
+}
+
+@media (width <= 1023.98px) {
+  :is(.demo-document-recipe--sidebar-content, .demo-document-recipe--sidebar-content-aside)
+    :is(
+      .demo-document-recipe__content-grid--sidebar-content,
+      .demo-document-recipe__content-grid--sidebar-content-aside
+    ) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :is(.demo-document-recipe--sidebar-content, .demo-document-recipe--sidebar-content-aside)
+    :is(.demo-document-recipe__sidebar, .demo-document-recipe__aside) {
+    display: none;
   }
 }
 
