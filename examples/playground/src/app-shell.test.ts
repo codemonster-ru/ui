@@ -4,7 +4,10 @@ import {
   applyShowcaseTheme,
   bootstrapShowcaseTheme,
   buildPathForSection,
+  isShowcaseThemeMode,
+  persistShowcaseTheme,
   resolveInitialTheme,
+  resolveShowcaseTheme,
   resolveSectionFromPath,
   shouldHandleShowcaseNavigation,
   showcaseThemeStorageKey,
@@ -50,6 +53,13 @@ describe('showcase app shell', () => {
     expect(resolveInitialTheme('system', null, true)).toBe('dark');
   });
 
+  it('keeps theme mode separate from its system-resolved value', () => {
+    expect(isShowcaseThemeMode('system')).toBe(true);
+    expect(isShowcaseThemeMode('contrast')).toBe(false);
+    expect(resolveShowcaseTheme('system', false)).toBe('light');
+    expect(resolveShowcaseTheme('system', true)).toBe('dark');
+  });
+
   it('mirrors the resolved theme for CodeMonster UI and retained VueForge products', () => {
     const root = createRoot();
     applyShowcaseTheme(root, 'dark');
@@ -68,5 +78,30 @@ describe('showcase app shell', () => {
     expect(bootstrapShowcaseTheme(root, storage, false)).toBe('dark');
     expect(root.attributes.get('data-cm-theme')).toBe('dark');
     expect(root.attributes.get('data-vf-theme')).toBe('dark');
+  });
+
+  it('prepaints a persisted system mode without losing its resolved theme', () => {
+    const root = createRoot();
+    const storage = {
+      getItem: () => 'system',
+      setItem: () => undefined,
+    };
+
+    expect(bootstrapShowcaseTheme(root, storage, true)).toBe('dark');
+    expect(root.attributes.get('data-cm-theme')).toBe('dark');
+    expect(root.attributes.get('data-vf-theme')).toBe('dark');
+  });
+
+  it('persists the authored mode rather than the system-resolved value', () => {
+    const values = new Map<string, string>();
+    persistShowcaseTheme(
+      {
+        getItem: (key) => values.get(key) ?? null,
+        setItem: (key, value) => values.set(key, value),
+      },
+      'system',
+    );
+
+    expect(values.get(showcaseThemeStorageKey)).toBe('system');
   });
 });

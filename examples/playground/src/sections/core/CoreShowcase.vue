@@ -59,13 +59,11 @@ import {
   VfProgressSpinner,
   VfSelect,
   VfTable as VfLegacyTable,
-  VfThemeSwitch,
   VfTag,
   VfTabs,
   VfTextarea as VfFloatingTextarea,
   VfTooltip,
   VfSwitch as VfIconSwitch,
-  useTheme,
 } from '@codemonster-ru/vueforge-core';
 import type {
   VfDataTableColumn,
@@ -75,8 +73,10 @@ import type {
   VfDataTableSort,
   VfNavMenuItem,
 } from '@codemonster-ru/vueforge-core';
+import ShowcaseThemeSwitch from '../../components/ShowcaseThemeSwitch.vue';
+import { useShowcaseTheme } from '../../showcase-theme';
 
-const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
+const { themeMode: theme, resolvedTheme, setThemeMode: setTheme, toggleTheme } = useShowcaseTheme();
 
 const dialogOpen = ref(false);
 const drawerOpen = ref(false);
@@ -836,21 +836,21 @@ const tabContent = computed<Record<string, string>>(() => ({
             <p class="demo-label">VfThemeSwitch</p>
             <div class="demo-stack demo-form-stack">
               <div class="demo-inline">
-                <VfThemeSwitch />
-                <VfThemeSwitch static />
-                <VfThemeSwitch static thumb-contrast="inverse" />
-                <VfThemeSwitch variant="button" />
-                <VfThemeSwitch variant="button" button-variant="ghost" />
-                <VfThemeSwitch variant="button" size="sm" />
-                <VfThemeSwitch variant="button">
+                <ShowcaseThemeSwitch />
+                <ShowcaseThemeSwitch static-track />
+                <ShowcaseThemeSwitch static-track inverse-thumb />
+                <ShowcaseThemeSwitch appearance="icon-button" />
+                <ShowcaseThemeSwitch appearance="icon-button" button-tone="ghost" />
+                <ShowcaseThemeSwitch appearance="icon-button" size="sm" />
+                <ShowcaseThemeSwitch appearance="button">
                   {{ resolvedTheme === 'dark' ? 'Dark' : 'Light' }}
-                </VfThemeSwitch>
-                <VfThemeSwitch variant="button" button-variant="ghost">
+                </ShowcaseThemeSwitch>
+                <ShowcaseThemeSwitch appearance="button" button-tone="ghost">
                   {{ resolvedTheme === 'dark' ? 'Dark' : 'Light' }}
-                </VfThemeSwitch>
-                <VfThemeSwitch variant="button" size="lg">
+                </ShowcaseThemeSwitch>
+                <ShowcaseThemeSwitch appearance="button" size="lg">
                   {{ resolvedTheme === 'dark' ? 'Dark' : 'Light' }}
-                </VfThemeSwitch>
+                </ShowcaseThemeSwitch>
               </div>
               <p class="demo-text">
                 The switch reflects the resolved theme and turns system mode into an explicit light or dark choice after
