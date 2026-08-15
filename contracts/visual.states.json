@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "states": [
+    {
+      "id": "hover",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
+      "pseudoClasses": ["hover"]
+    },
+    {
+      "id": "active",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
+      "pseudoClasses": ["active"]
+    },
+    {
+      "id": "focus-visible",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
+      "pseudoClasses": ["focus", "focus-visible"]
+    },
+    {
+      "id": "disabled",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):disabled"
+    },
+    {
+      "id": "invalid",
+      "route": "core",
+      "selector": "[data-test=\"form-geometry-matrix\"] [aria-invalid=\"true\"]"
+    },
+    {
+      "id": "selected",
+      "route": "core",
+      "selector": "[role=\"tab\"][aria-selected=\"true\"]"
+    },
+    {
+      "id": "open",
+      "route": "core",
+      "selector": "[aria-expanded=\"true\"]",
+      "padding": 160
+    },
+    {
+      "id": "closed",
+      "route": "core",
+      "selector": "[aria-expanded=\"false\"]",
+      "padding": 80
+    },
+    {
+      "id": "loading",
+      "route": "core",
+      "selector": "[data-test=\"action-geometry-matrix\"] [aria-busy=\"true\"]"
+    },
+    {
+      "id": "indeterminate",
+      "route": "core",
+      "selector": "[role=\"progressbar\"]:not([aria-valuenow])"
+    },
+    {
+      "id": "reduced-motion",
+      "route": "core",
+      "selector": ":is(.vf-progress-bar--animated, .cm-progress-bar--animated)",
+      "media": "reduce",
+      "assertReducedMotion": true
+    }
+  ]
+}
