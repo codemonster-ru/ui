@@ -986,14 +986,14 @@
 .demo-switch--static .cm-switch__control,
 .demo-switch--static:hover .cm-switch__control,
 .demo-switch--static:active .cm-switch__control {
-  border-color: var(--vf-switch-track-static-border-color);
-  background: var(--vf-switch-track-background);
+  border-color: var(--cm-color-border-interactive);
+  background: var(--cm-color-background-surface);
 }
 
 .demo-switch--inverse .cm-switch__thumb {
-  border-color: var(--vf-switch-thumb-inverse-border-color);
-  background: var(--vf-switch-thumb-inverse-background);
-  color: var(--vf-switch-thumb-inverse-color);
+  border-color: var(--cm-color-border-inverse);
+  background: var(--cm-color-background-inverse);
+  color: var(--cm-color-icon-inverse);
 }
 
 @media (width <= 960px) {

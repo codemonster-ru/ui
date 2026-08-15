@@ -1,4 +1,5 @@
 export type ShowcaseSection = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
+export type ShowcaseThemeMode = 'light' | 'dark' | 'system';
 export type ShowcaseTheme = 'light' | 'dark';
 
 const validSections = new Set<ShowcaseSection>(['colors', 'core', 'layouts', 'icons', 'codeblock', 'playground']);
@@ -23,6 +24,14 @@ interface ShowcaseNavigationEvent {
 }
 
 export const showcaseThemeStorageKey = 'codemonster-showcase-theme';
+
+export function isShowcaseThemeMode(value: unknown): value is ShowcaseThemeMode {
+  return value === 'light' || value === 'dark' || value === 'system';
+}
+
+export function resolveShowcaseTheme(mode: ShowcaseThemeMode, prefersDark: boolean): ShowcaseTheme {
+  return mode === 'system' ? (prefersDark ? 'dark' : 'light') : mode;
+}
 
 export function resolveSectionFromPath(pathname: string): ShowcaseSection {
   const normalizedPath = pathname.replace(/\/+$/, '');
@@ -52,7 +61,7 @@ export function resolveInitialTheme(
   authoredTheme: string | null,
   prefersDark: boolean,
 ): ShowcaseTheme {
-  if (storedTheme === 'light' || storedTheme === 'dark') return storedTheme;
+  if (isShowcaseThemeMode(storedTheme)) return resolveShowcaseTheme(storedTheme, prefersDark);
   if (authoredTheme === 'light' || authoredTheme === 'dark') return authoredTheme;
   return prefersDark ? 'dark' : 'light';
 }
@@ -76,11 +85,9 @@ export function bootstrapShowcaseTheme(root: ThemeRoot, storage: ThemeStorage, p
   return theme;
 }
 
-export function persistShowcaseTheme(root: ThemeRoot, storage: ThemeStorage, theme: ShowcaseTheme): void {
-  applyShowcaseTheme(root, theme);
-
+export function persistShowcaseTheme(storage: ThemeStorage, mode: ShowcaseThemeMode): void {
   try {
-    storage.setItem(showcaseThemeStorageKey, theme);
+    storage.setItem(showcaseThemeStorageKey, mode);
   } catch {
     // The in-page preference still works when persistence is unavailable.
   }

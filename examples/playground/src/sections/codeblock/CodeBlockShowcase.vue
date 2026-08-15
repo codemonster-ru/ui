@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from "vue";
 import { CmSection as VfSection } from "@codemonster-ru/ui-vue";
-import { useTheme } from "@codemonster-ru/vueforge-core";
 import { CmSkeleton as VfSkeleton } from "@codemonster-ru/ui-vue";
 import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock/view";
+import { useShowcaseTheme } from "../../showcase-theme";
 
-const { resolvedTheme } = useTheme();
+const { resolvedTheme } = useShowcaseTheme();
 const longSnippetLineCount = 1000;
 const longTsSnippet = Array.from({ length: longSnippetLineCount }, (_, index) => {
   const line = index + 1;

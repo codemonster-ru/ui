@@ -26,12 +26,6 @@ import './theme-bootstrap';
 
 import App from './App.vue';
 
-const themeRoot = document.documentElement;
-new MutationObserver(() => {
-  const theme = themeRoot.getAttribute('data-vf-theme');
-  if (theme === 'light' || theme === 'dark') themeRoot.setAttribute('data-cm-theme', theme);
-}).observe(themeRoot, { attributeFilter: ['data-vf-theme'] });
-
 createApp(App)
   .use(VueForgeLayouts, {
     defaultTheme: 'system',

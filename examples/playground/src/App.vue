@@ -1,101 +1,100 @@
 <template>
-  <VfThemeProvider>
-    <div class="showcase-shell">
-      <header class="showcase-shell__header">
-        <div class="showcase-shell__container">
-          <VfInline class="showcase-header" :wrap="false">
-            <div class="showcase-brand">VueForge</div>
+  <div class="showcase-shell">
+    <header class="showcase-shell__header">
+      <div class="showcase-shell__container">
+        <VfInline class="showcase-header" :wrap="false">
+          <div class="showcase-brand">VueForge</div>
 
-            <nav class="showcase-navigation" aria-label="Showcase packages">
-              <button
-                class="showcase-navigation__scroll-control showcase-navigation__scroll-control--left"
-                :class="{ 'showcase-navigation__scroll-control--hidden': !canScrollNavigationLeft }"
-                type="button"
-                aria-label="Scroll menu left"
-                :aria-hidden="!canScrollNavigationLeft"
-                :tabindex="canScrollNavigationLeft ? 0 : -1"
-                :disabled="!canScrollNavigationLeft"
-                @click="scrollNavigation('left')"
-              >
-                <VueIconify :icon="icons.chevronLeft" aria-hidden="true" size="1em" />
-              </button>
+          <nav class="showcase-navigation" aria-label="Showcase packages">
+            <button
+              class="showcase-navigation__scroll-control showcase-navigation__scroll-control--left"
+              :class="{ 'showcase-navigation__scroll-control--hidden': !canScrollNavigationLeft }"
+              type="button"
+              aria-label="Scroll menu left"
+              :aria-hidden="!canScrollNavigationLeft"
+              :tabindex="canScrollNavigationLeft ? 0 : -1"
+              :disabled="!canScrollNavigationLeft"
+              @click="scrollNavigation('left')"
+            >
+              <VueIconify :icon="icons.chevronLeft" aria-hidden="true" size="1em" />
+            </button>
 
-              <div
-                ref="navigationViewportRef"
-                class="showcase-navigation__viewport"
-                @scroll="updateNavigationScrollState"
-              >
-                <ul class="showcase-navigation__list">
-                  <li v-for="section in sections" :key="section.value" class="showcase-navigation__item">
-                    <a
-                      class="showcase-navigation__link"
-                      :class="{ 'showcase-navigation__link--active': activeSection === section.value }"
-                      :href="buildPathForSection(section.value)"
-                      :aria-current="activeSection === section.value ? 'page' : undefined"
-                      @click="activateSection($event, section.value)"
-                    >
-                      <span>{{ section.label }}</span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div
-                v-if="canScrollNavigationLeft"
-                class="showcase-navigation__fade showcase-navigation__fade--left"
-                aria-hidden="true"
-              />
-              <div
-                v-if="canScrollNavigationRight"
-                class="showcase-navigation__fade showcase-navigation__fade--right"
-                aria-hidden="true"
-              />
-
-              <button
-                class="showcase-navigation__scroll-control showcase-navigation__scroll-control--right"
-                :class="{ 'showcase-navigation__scroll-control--hidden': !canScrollNavigationRight }"
-                type="button"
-                aria-label="Scroll menu right"
-                :aria-hidden="!canScrollNavigationRight"
-                :tabindex="canScrollNavigationRight ? 0 : -1"
-                :disabled="!canScrollNavigationRight"
-                @click="scrollNavigation('right')"
-              >
-                <VueIconify :icon="icons.chevronRight" aria-hidden="true" size="1em" />
-              </button>
-            </nav>
-
-            <VfInline class="showcase-header__actions" :wrap="false">
-              <VfThemeSwitch variant="button" button-variant="secondary" />
-            </VfInline>
-          </VfInline>
-        </div>
-      </header>
-
-      <div class="showcase-shell__body">
-        <div class="showcase-shell__container showcase-shell__body-container">
-          <main class="showcase-shell__content">
-            <div class="showcase-shell__content-body">
-              <component :is="activeSectionComponent" />
+            <div
+              ref="navigationViewportRef"
+              class="showcase-navigation__viewport"
+              @scroll="updateNavigationScrollState"
+            >
+              <ul class="showcase-navigation__list">
+                <li v-for="section in sections" :key="section.value" class="showcase-navigation__item">
+                  <a
+                    class="showcase-navigation__link"
+                    :class="{ 'showcase-navigation__link--active': activeSection === section.value }"
+                    :href="buildPathForSection(section.value)"
+                    :aria-current="activeSection === section.value ? 'page' : undefined"
+                    @click="activateSection($event, section.value)"
+                  >
+                    <span>{{ section.label }}</span>
+                  </a>
+                </li>
+              </ul>
             </div>
-          </main>
-        </div>
+
+            <div
+              v-if="canScrollNavigationLeft"
+              class="showcase-navigation__fade showcase-navigation__fade--left"
+              aria-hidden="true"
+            />
+            <div
+              v-if="canScrollNavigationRight"
+              class="showcase-navigation__fade showcase-navigation__fade--right"
+              aria-hidden="true"
+            />
+
+            <button
+              class="showcase-navigation__scroll-control showcase-navigation__scroll-control--right"
+              :class="{ 'showcase-navigation__scroll-control--hidden': !canScrollNavigationRight }"
+              type="button"
+              aria-label="Scroll menu right"
+              :aria-hidden="!canScrollNavigationRight"
+              :tabindex="canScrollNavigationRight ? 0 : -1"
+              :disabled="!canScrollNavigationRight"
+              @click="scrollNavigation('right')"
+            >
+              <VueIconify :icon="icons.chevronRight" aria-hidden="true" size="1em" />
+            </button>
+          </nav>
+
+          <VfInline class="showcase-header__actions" :wrap="false">
+            <ShowcaseThemeSwitch appearance="icon-button" />
+          </VfInline>
+        </VfInline>
+      </div>
+    </header>
+
+    <div class="showcase-shell__body">
+      <div class="showcase-shell__container showcase-shell__body-container">
+        <main class="showcase-shell__content">
+          <div class="showcase-shell__content-body">
+            <component :is="activeSectionComponent" />
+          </div>
+        </main>
       </div>
     </div>
-  </VfThemeProvider>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { VfThemeProvider, VfThemeSwitch } from '@codemonster-ru/vueforge-core';
 import { CmInline as VfInline } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import ShowcaseThemeSwitch from './components/ShowcaseThemeSwitch.vue';
 import {
   buildPathForSection,
   resolveSectionFromPath,
   shouldHandleShowcaseNavigation,
   type ShowcaseSection,
 } from './app-shell';
+import { provideShowcaseTheme } from './showcase-theme';
 
 type SectionValue = ShowcaseSection;
 
@@ -103,6 +102,8 @@ interface SectionMeta {
   value: SectionValue;
   label: string;
 }
+
+provideShowcaseTheme();
 
 const sections: SectionMeta[] = [
   {
