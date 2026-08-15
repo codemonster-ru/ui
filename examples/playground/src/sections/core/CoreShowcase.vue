@@ -2331,12 +2331,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">Date and time</p>
                     <CmField control-id="core-date-picker-starts-at" label="Starts at">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker
+                        <CoreDatePickerRecipe
                           :id="controlId"
                           v-model="dateTimePickerValue"
-                          locale="en-US"
-                          show-time
-                          display-format="MM/dd/yy HH:mm"
+                          picker-mode="datetime"
+                          today="2026-08-15"
                           clearable
                           :invalid="invalid"
                           :aria-describedby="describedBy"
