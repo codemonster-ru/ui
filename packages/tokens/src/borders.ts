@@ -10,10 +10,11 @@ export type CmBorderOverrides = Partial<CmBorderTokens>;
 export const cmBorderTokenNames = Object.freeze(Object.keys(cmBorderTokens) as CmBorderTokenName[]);
 
 export const cmRadiusTokens = Object.freeze({
-  radiusControl: '0.625rem',
-  radiusControlTight: '0.5rem',
-  radiusSurface: '0.75rem',
-  radiusOverlay: '0.875rem',
+  radius: '0.75rem',
+  radiusControl: 'calc(var(--cm-radius) - 0.125rem)',
+  radiusControlTight: 'calc(var(--cm-radius) - 0.25rem)',
+  radiusSurface: 'var(--cm-radius)',
+  radiusOverlay: 'calc(var(--cm-radius) + 0.125rem)',
   radiusRound: '999px',
 } as const);
 
@@ -25,9 +26,9 @@ export const cmRadiusTokenNames = Object.freeze(Object.keys(cmRadiusTokens) as C
 
 export const cmShadowTokens = Object.freeze({
   shadowNone: 'none',
-  shadowSurface: '0 1px 2px color-mix(in srgb, var(--cm-palette-neutral-1000) 4%, transparent)',
+  shadowSurface: '0 1px 2px color-mix(in srgb, var(--cm-color-text-primary) 4%, transparent)',
   shadowOverlay:
-    '0 0.25rem 0.625rem color-mix(in srgb, var(--cm-palette-neutral-1000) 16%, transparent), 0 1px 0.125rem color-mix(in srgb, var(--cm-palette-neutral-1000) 10%, transparent)',
+    '0 var(--cm-space-1) calc(var(--cm-space-4) * 0.625) color-mix(in srgb, var(--cm-palette-neutral-1000) 16%, transparent), 0 var(--cm-border-width) calc(var(--cm-space-1) / 2) color-mix(in srgb, var(--cm-palette-neutral-1000) 10%, transparent)',
 } as const);
 
 export type CmShadowTokenName = keyof typeof cmShadowTokens;
