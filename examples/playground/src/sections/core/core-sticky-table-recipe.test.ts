@@ -78,4 +78,12 @@ describe('CoreStickyTableRecipe', () => {
     expect(source).not.toContain('cm-table');
     expect(source).toContain('--cm-');
   });
+
+  it('owns the sole frozen sticky-table showcase boundary without the legacy component', () => {
+    const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
+    expect(showcase.match(/<CoreStickyTableRecipe\s*\/>/gu)).toHaveLength(1);
+    expect(showcase).toContain("import CoreStickyTableRecipe from './CoreStickyTableRecipe.vue';");
+    expect(showcase).not.toContain('VfLegacyTable');
+    expect(showcase).toContain('VfTable · sticky header');
+  });
 });
