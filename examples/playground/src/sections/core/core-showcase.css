@@ -91,6 +91,113 @@
   display: none;
 }
 
+.demo-application-toc {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.demo-application-toc__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-application-toc--pills .demo-application-toc__list {
+  gap: var(--cm-space-1);
+}
+
+.demo-application-toc__item {
+  display: block;
+  min-width: 0;
+}
+
+.demo-application-toc__item[data-level='2'] {
+  padding-inline-start: var(--cm-space-4);
+}
+
+.demo-application-toc__item[data-level='3'] {
+  padding-inline-start: var(--cm-space-8);
+}
+
+.demo-application-toc__item[data-level='4'] {
+  padding-inline-start: calc(var(--cm-space-4) * 3);
+}
+
+.demo-application-toc__item[data-level='5'] {
+  padding-inline-start: var(--cm-space-16);
+}
+
+.demo-application-toc__item[data-level='6'] {
+  padding-inline-start: calc(var(--cm-space-4) * 5);
+}
+
+.demo-application-toc__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: auto;
+  min-width: 0;
+  min-height: var(--cm-control-height-sm);
+  padding: var(--cm-space-1) 0;
+  border: var(--cm-border-width) solid transparent;
+  border-radius: var(--cm-radius-control);
+  background: transparent;
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-md);
+  font-weight: var(--cm-font-weight-regular);
+  line-height: var(--cm-line-height-normal);
+  text-align: start;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition:
+    background-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    box-shadow var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.demo-application-toc--pills .demo-application-toc__link {
+  min-height: var(--cm-space-8);
+  padding: var(--cm-space-1) calc(var(--cm-space-2) + 2 * var(--cm-border-width));
+}
+
+.demo-application-toc__link:focus-visible {
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  color: var(--cm-color-selected-foreground);
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+}
+
+.demo-application-toc__link:hover:not(.demo-application-toc__link--active) {
+  color: var(--cm-color-text-primary);
+}
+
+.demo-application-toc--pills .demo-application-toc__link:hover:not(.demo-application-toc__link--active) {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.demo-application-toc__link--active {
+  color: var(--cm-color-selected-foreground);
+  font-weight: var(--cm-font-weight-medium);
+}
+
+.demo-application-toc--pills .demo-application-toc__link--active {
+  background: var(--cm-color-background-surface-selected);
+}
+
+.demo-application-toc--pills .demo-application-toc__link--active:hover {
+  background: var(--cm-color-background-surface-selected-hover);
+}
+
+.demo-application-toc--pills .demo-application-toc__link--active:active {
+  background: var(--cm-color-background-surface-selected-active);
+}
+
 .demo-application-group-box {
   box-sizing: border-box;
   min-width: 0;
