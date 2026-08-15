@@ -223,7 +223,7 @@
                           <div class="demo-auth-recipe__body">
                             <form class="demo-auth-form">
                               <VfInput placeholder="Email" type="email" />
-                              <VfPasswordInput placeholder="Password" type="password" password-reveal />
+                              <LayoutsPasswordInput placeholder="Password" />
                               <div class="demo-auth-options">
                                 <VfCheckbox class="demo-auth-remember"> Remember me </VfCheckbox>
                                 <VfLink class="demo-auth-forgot" href="/" underline="none"> Forgot password? </VfLink>
@@ -380,13 +380,11 @@
 
                                   <VfField :control-id="`${setupFormId}-password`" label="Database password">
                                     <template #default="{ controlId, describedBy, invalid }">
-                                      <VfPasswordInput
+                                      <LayoutsPasswordInput
                                         :id="controlId"
                                         :aria-describedby="describedBy"
                                         :invalid="invalid"
                                         placeholder="Password"
-                                        type="password"
-                                        password-reveal
                                       />
                                     </template>
                                   </VfField>
@@ -1057,7 +1055,7 @@
 </template>
 
 <script setup lang="ts">
-import { VfDataTable, VfDrawer, VfInput as VfPasswordInput, VfNavMenu } from '@codemonster-ru/vueforge-core';
+import { VfDataTable, VfDrawer, VfNavMenu } from '@codemonster-ru/vueforge-core';
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
 import { cmBreakpoints, type CmBreakpointName } from '@codemonster-ru/ui-tokens';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -1082,6 +1080,7 @@ import {
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
+import LayoutsPasswordInput from './LayoutsPasswordInput.vue';
 import LayoutsTabs from './LayoutsTabs.vue';
 import '@codemonster-ru/ui-css/button.css';
 import '@codemonster-ru/ui-css/icon-button.css';
