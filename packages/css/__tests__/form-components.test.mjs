@@ -42,6 +42,11 @@ test('preserves frozen selection-control geometry and typography', async () => {
   assert.match(checkbox, /--cm-checkbox-control-size: 1\.25rem;/u);
   assert.match(checkbox, /--cm-checkbox-control-offset: 0\.125rem;/u);
   assert.match(checkbox, /border-radius: calc\(var\(--cm-radius-control-tight\) - 0\.0625rem\);/u);
+  assert.match(checkbox, /\.cm-checkbox__input:disabled:indeterminate \+ \.cm-checkbox__control \.cm-checkbox__mark/u);
+  assert.doesNotMatch(
+    checkbox,
+    /\.cm-checkbox__input:disabled \+ \.cm-checkbox__control \.cm-checkbox__mark \{[^}]*background:/su,
+  );
   assert.match(radio, /--cm-radio-dot-size: 0\.5rem;/u);
   assert.match(radio, /\.cm-radio__input:checked \+ \.cm-radio__control \{\s*border-color:[^}]+\}/u);
   assert.doesNotMatch(
