@@ -75,6 +75,7 @@ import CoreDataTableRecipe, {
   type CoreDataTableRecipeColumn,
   type CoreDataTableRecipeRow,
 } from './CoreDataTableRecipe.vue';
+import CoreDataTableStateRecipe from './CoreDataTableStateRecipe.vue';
 import CoreCommandPaletteRecipe, {
   type CoreCommandPaletteRecipeItem,
 } from './CoreCommandPaletteRecipe.vue';
@@ -1947,34 +1948,22 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · loading</p>
-                  <VfDataTable :columns="dataTableColumns" :rows="dataTableRows.slice(0, 5)" row-key="id" loading />
+                  <CoreDataTableStateRecipe variant="loading" />
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · skeleton</p>
-                  <VfDataTable :columns="dataTableMetricColumns" loading loading-variant="skeleton" :loading-rows="4" />
+                  <CoreDataTableStateRecipe variant="skeleton" />
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · error</p>
                   <div class="demo-stack">
-                    <VfDataTable
-                      :columns="dataTableColumns"
-                      :rows="dataTableRows.slice(0, 3)"
-                      row-key="id"
+                    <CoreDataTableStateRecipe
+                      variant="error"
                       :error="dataTableError"
-                    >
-                      <template #error>
-                        <div class="demo-stack demo-stack--center">
-                          <span>Could not load team members.</span>
-                          <div class="demo-inline">
-                            <CmButton size="sm" variant="secondary" @click="dataTableError = false">
-                              Try again
-                            </CmButton>
-                          </div>
-                        </div>
-                      </template>
-                    </VfDataTable>
+                      @retry="dataTableError = false"
+                    />
                     <div v-if="!dataTableError" class="demo-inline">
                       <CmButton size="sm" variant="secondary" @click="dataTableError = true">
                         Show error state
