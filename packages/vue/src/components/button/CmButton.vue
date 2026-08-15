@@ -78,7 +78,12 @@ function preventDisabledLinkActivation(event: MouseEvent): void {
     :aria-busy="props.loading ? 'true' : undefined"
     @click="preventDisabledLinkActivation"
   >
-    <span v-if="props.loading" class="cm-button__spinner" aria-hidden="true" />
+    <span v-if="props.loading" class="cm-button__spinner" aria-hidden="true">
+      <svg class="cm-button__spinner-svg" viewBox="0 0 50 50" focusable="false">
+        <circle class="cm-button__spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
+        <circle class="cm-button__spinner-value" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
+      </svg>
+    </span>
     <span v-else-if="$slots.leading" class="cm-button__leading"><slot name="leading" /></span>
     <span class="cm-button__label"><slot /></span>
     <span v-if="$slots.trailing" class="cm-button__trailing"><slot name="trailing" /></span>

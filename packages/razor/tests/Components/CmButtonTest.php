@@ -79,7 +79,9 @@ final class CmButtonTest extends TestCase
         $html = $this->button()->render($context)->value();
 
         self::assertStringContainsString('type="button" disabled aria-busy="true"', $html);
-        self::assertStringContainsString('<span class="cm-button__spinner" aria-hidden="true"></span>', $html);
+        self::assertStringContainsString('<span class="cm-button__spinner" aria-hidden="true"><svg', $html);
+        self::assertStringContainsString('class="cm-button__spinner-track"', $html);
+        self::assertStringContainsString('class="cm-button__spinner-value"', $html);
         self::assertStringNotContainsString('cm-button__leading', $html);
         self::assertStringContainsString('<span class="cm-button__trailing"><i>Trail</i></span>', $html);
     }
