@@ -837,6 +837,7 @@ onBeforeUnmount(() => {
   color: var(--cm-color-selected-foreground);
 }
 
+/* stylelint-disable-next-line no-descending-specificity -- Focus state intentionally overrides hover. */
 .icon-saas-tabs__tab:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
@@ -940,6 +941,7 @@ onBeforeUnmount(() => {
   color: var(--cm-color-text-primary);
 }
 
+/* stylelint-disable-next-line no-descending-specificity -- Focus state intentionally overrides hover. */
 .icon-saas-nav__item:focus-visible {
   border-color: var(--cm-color-border-focus);
   outline: none;
