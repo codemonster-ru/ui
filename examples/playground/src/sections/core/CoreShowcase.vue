@@ -63,8 +63,6 @@ import {
   VfSwitch as VfIconSwitch,
 } from '@codemonster-ru/vueforge-core';
 import type {
-  VfDataTableColumn,
-  VfDataTableRow,
   VfNavMenuItem,
 } from '@codemonster-ru/vueforge-core';
 import CoreDataTableRecipe, {
@@ -96,6 +94,18 @@ import ShowcaseThemeSwitch from '../../components/ShowcaseThemeSwitch.vue';
 import { useShowcaseTheme } from '../../showcase-theme';
 
 const { themeMode: theme, resolvedTheme, setThemeMode: setTheme, toggleTheme } = useShowcaseTheme();
+
+interface CoreShowcaseDataTableRow {
+  [key: string]: string | number;
+  id: number;
+  member: string;
+  role: string;
+  status: string;
+  tasks: number;
+  email: string;
+  lastActivity: string;
+  note: string;
+}
 
 const dialogOpen = ref(false);
 const drawerOpen = ref(false);
@@ -440,7 +450,7 @@ function resetDataTableColumnOrder() {
   dataTableColumnOrder.value = [];
 }
 
-function isDataTableRowSelectable(row: VfDataTableRow) {
+function isDataTableRowSelectable(row: CoreShowcaseDataTableRow) {
   return (row as { status?: string }).status !== 'Offline';
 }
 
@@ -708,13 +718,13 @@ function normalizeTocLevel(level: number): number {
   return Math.min(Math.max(level, 1), 6);
 }
 
-const dataTableColumns: VfDataTableColumn[] = [
+const dataTableColumns: CoreDataTableRecipeColumn[] = [
   { key: 'member', header: 'Member' },
   { key: 'role', header: 'Role' },
   { key: 'status', header: 'Status' },
 ];
 
-const dataTableMetricColumns: VfDataTableColumn[] = [
+const dataTableMetricColumns: CoreDataTableRecipeColumn[] = [
   { key: 'member', header: 'Member' },
   { key: 'status', header: 'Status' },
   { key: 'tasks', header: 'Tasks', align: 'end' },
@@ -726,7 +736,7 @@ const dataTableSortLabel = computed(() =>
     : 'none',
 );
 
-const dataTableConfigurableColumns: VfDataTableColumn[] = [
+const dataTableConfigurableColumns: CoreDataTableRecipeColumn[] = [
   { key: 'member', header: 'Member' },
   { key: 'role', header: 'Role' },
   { key: 'status', header: 'Status' },
@@ -780,7 +790,7 @@ function handleDataTableColumnChooserKeydown(event: KeyboardEvent): void {
   dataTableColumnChooserOpen.value = true;
 }
 
-const dataTableRows: VfDataTableRow[] = [
+const dataTableRows: CoreShowcaseDataTableRow[] = [
   {
     id: 1,
     member: 'Alice',
@@ -853,7 +863,7 @@ const dataTableRows: VfDataTableRow[] = [
   },
 ];
 
-function createCoreDataTableColumns(columns: readonly VfDataTableColumn[]): CoreDataTableRecipeColumn[] {
+function createCoreDataTableColumns(columns: readonly CoreDataTableRecipeColumn[]): CoreDataTableRecipeColumn[] {
   return columns.map(({ align, header, key }) => ({
     key,
     header: header || key,
@@ -863,7 +873,7 @@ function createCoreDataTableColumns(columns: readonly VfDataTableColumn[]): Core
 
 function createCoreDataTableRows(
   columns: readonly CoreDataTableRecipeColumn[],
-  rows: readonly VfDataTableRow[],
+  rows: readonly CoreShowcaseDataTableRow[],
 ): CoreDataTableRecipeRow[] {
   return rows.map((row) => {
     const source = row as Record<string, unknown>;
