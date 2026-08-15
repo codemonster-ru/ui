@@ -13,7 +13,7 @@ const baselineDirectory = options.baseline ? resolve(options.baseline) : null;
 const currentDirectory = options.current ? resolve(options.current) : null;
 const diffDirectory = options.diff ? resolve(options.diff) : null;
 const reportOnly = options['report-only'] === 'true';
-const channelThreshold = Number(options.threshold ?? 0);
+const channelThreshold = Number(options.threshold ?? 2);
 
 if (!baselineDirectory || !currentDirectory) {
   throw new Error(

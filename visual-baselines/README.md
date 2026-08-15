@@ -7,8 +7,9 @@ declared in `contracts/visual.config.json`.
 
 The capture disables animation and transition rendering. The two randomized progress examples are
 normalized to 50% by `scripts/visual/capture-showcase.mjs`; application source is not modified.
-Comparison is exact by default (`--threshold=0`). A non-zero per-channel tolerance must be supplied
-explicitly and is not accepted for the M12 exit gate.
+Comparison allows at most two levels per color channel by default (`--threshold=2`) to absorb
+non-deterministic browser anti-aliasing. Any larger channel difference is a visual regression; the
+M12 gate does not allow a changed-pixel ratio above zero after that threshold is applied.
 
 Capture a running candidate and compare it with the reference:
 

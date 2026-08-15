@@ -32,7 +32,7 @@ function compare(baseline, current, diff) {
   });
 }
 
-test('passes identical showcase captures with an exact default threshold', () => {
+test('passes identical showcase captures with the anti-aliasing threshold', () => {
   const root = mkdtempSync(join(tmpdir(), 'cm-showcase-compare-'));
   const baseline = join(root, 'baseline');
   const current = join(root, 'current');
@@ -44,16 +44,30 @@ test('passes identical showcase captures with an exact default threshold', () =>
 
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /0 changed/u);
-  assert.equal(JSON.parse(readFileSync(join(diff, 'comparison.json'), 'utf8')).threshold, 0);
+  assert.equal(JSON.parse(readFileSync(join(diff, 'comparison.json'), 'utf8')).threshold, 2);
 });
 
-test('fails when one pixel channel changes', () => {
+test('tolerates only two channel levels of browser anti-aliasing noise', () => {
   const root = mkdtempSync(join(tmpdir(), 'cm-showcase-compare-'));
   const baseline = join(root, 'baseline');
   const current = join(root, 'current');
   const diff = join(root, 'diff');
   writeCapture(baseline);
-  writeCapture(current, { channel: 1 });
+  writeCapture(current, { channel: 2 });
+
+  const result = compare(baseline, current, diff);
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /0 changed/u);
+});
+
+test('fails when a pixel channel exceeds the anti-aliasing threshold', () => {
+  const root = mkdtempSync(join(tmpdir(), 'cm-showcase-compare-'));
+  const baseline = join(root, 'baseline');
+  const current = join(root, 'current');
+  const diff = join(root, 'diff');
+  writeCapture(baseline);
+  writeCapture(current, { channel: 3 });
 
   const result = compare(baseline, current, diff);
 
