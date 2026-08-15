@@ -205,7 +205,7 @@
 
                       <form class="demo-auth-form">
                         <VfInput placeholder="Email" type="email" />
-                        <VfInput placeholder="Password" type="password" password-reveal />
+                        <VfPasswordInput placeholder="Password" type="password" password-reveal />
                         <div class="demo-auth-options">
                           <VfCheckbox class="demo-auth-remember"> Remember me </VfCheckbox>
                           <VfLink class="demo-auth-forgot" href="/" underline="none"> Forgot password? </VfLink>
@@ -266,7 +266,7 @@
                               :value="activeSetupStepNumber"
                               :max="setupSteps.length"
                               label="Setup progress"
-                              height="0.25rem"
+                              style="--cm-progress-bar-height: 0.25rem"
                             />
                           </div>
                         </div>
@@ -294,7 +294,7 @@
                                 :aria-describedby="describedBy"
                                 :invalid="invalid"
                                 placeholder="127.0.0.1"
-                                value="127.0.0.1"
+                                model-value="127.0.0.1"
                               />
                             </template>
                           </VfField>
@@ -306,7 +306,7 @@
                                 :aria-describedby="describedBy"
                                 :invalid="invalid"
                                 placeholder="3306"
-                                value="3306"
+                                model-value="3306"
                               />
                             </template>
                           </VfField>
@@ -319,7 +319,7 @@
                               :aria-describedby="describedBy"
                               :invalid="invalid"
                               placeholder="annabel"
-                              value="annabel"
+                              model-value="annabel"
                             />
                           </template>
                         </VfField>
@@ -332,14 +332,14 @@
                                 :aria-describedby="describedBy"
                                 :invalid="invalid"
                                 placeholder="annabel_user"
-                                value="annabel_user"
+                                model-value="annabel_user"
                               />
                             </template>
                           </VfField>
 
                           <VfField :control-id="`${setupFormId}-password`" label="Database password">
                             <template #default="{ controlId, describedBy, invalid }">
-                              <VfInput
+                              <VfPasswordInput
                                 :id="controlId"
                                 :aria-describedby="describedBy"
                                 :invalid="invalid"
@@ -574,11 +574,12 @@
                         <VfInline class="demo-admin-layout__header" :wrap="false">
                           <VfIconButton
                             class="demo-admin-layout__desktop-toggle"
-                            icon="bars"
+                            :label="adminLayoutSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
                             variant="ghost"
-                            :aria-label="adminLayoutSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
                             @click="toggleSidebarCollapsed"
-                          />
+                          >
+                            <VueIconify :icon="icons.bars" />
+                          </VfIconButton>
                         </VfInline>
                       </template>
 
@@ -661,11 +662,12 @@
                         <VfIconButton
                           v-if="activeAdminShellBreakpointHidesSidebar"
                           class="demo-admin-shell__sidebar-toggle"
-                          icon="bars"
+                          label="Open navigation"
                           variant="ghost"
-                          aria-label="Open navigation"
                           @click="adminShellDrawerOpen = true"
-                        />
+                        >
+                          <VueIconify :icon="icons.bars" />
+                        </VfIconButton>
                         <VfInline class="demo-admin-shell__brand-identity" :wrap="false">
                           <img class="demo-admin-shell__brand-mark" :src="annabelLogoIcon" alt="" aria-hidden="true" />
                           <strong>Annabel</strong>
@@ -872,14 +874,10 @@
 
 <script setup lang="ts">
 import {
-  VfButton,
   VfDataTable,
   VfDrawer,
-  VfIconButton,
-  VfInput,
-  VfLink,
+  VfInput as VfPasswordInput,
   VfNavMenu,
-  VfProgressBar,
   VfTabs,
 } from '@codemonster-ru/vueforge-core';
 import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
@@ -887,16 +885,22 @@ import { computed, ref, watch } from 'vue';
 import {
   CmAvatar as VfAvatar,
   CmBadge as VfBadge,
+  CmButton as VfButton,
   CmCard as VfCard,
   CmCheckbox as VfCheckbox,
   CmContainer as VfContainer,
   CmField as VfField,
   CmGrid as VfGrid,
+  CmIconButton as VfIconButton,
   CmInline as VfInline,
+  CmInput as VfInput,
+  CmLink as VfLink,
+  CmProgressBar as VfProgressBar,
   CmSection as VfSection,
   CmStack as VfStack,
   CmSwitch as VfSwitch,
 } from '@codemonster-ru/ui-vue';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import {
   VfAppShell,
   VfAdminLayout,
@@ -909,6 +913,11 @@ import {
 import { useCssVarBreakpoints } from '@codemonster-ru/vueforge-layouts';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
+import '@codemonster-ru/ui-css/button.css';
+import '@codemonster-ru/ui-css/icon-button.css';
+import '@codemonster-ru/ui-css/input.css';
+import '@codemonster-ru/ui-css/link.css';
+import '@codemonster-ru/ui-css/progress-bar.css';
 
 const resolvedBreakpoints = useCssVarBreakpoints();
 const currentYear = new Date().getFullYear();
