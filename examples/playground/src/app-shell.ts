@@ -1,14 +1,7 @@
 export type ShowcaseSection = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblock' | 'playground';
 export type ShowcaseTheme = 'light' | 'dark';
 
-const validSections = new Set<ShowcaseSection>([
-  'colors',
-  'core',
-  'layouts',
-  'icons',
-  'codeblock',
-  'playground',
-]);
+const validSections = new Set<ShowcaseSection>(['colors', 'core', 'layouts', 'icons', 'codeblock', 'playground']);
 
 interface ThemeRoot {
   getAttribute(name: string): string | null;
@@ -20,6 +13,15 @@ interface ThemeStorage {
   setItem(key: string, value: string): void;
 }
 
+interface ShowcaseNavigationEvent {
+  defaultPrevented: boolean;
+  button: number;
+  metaKey: boolean;
+  ctrlKey: boolean;
+  shiftKey: boolean;
+  altKey: boolean;
+}
+
 export const showcaseThemeStorageKey = 'codemonster-showcase-theme';
 
 export function resolveSectionFromPath(pathname: string): ShowcaseSection {
@@ -27,13 +29,22 @@ export function resolveSectionFromPath(pathname: string): ShowcaseSection {
   const segments = normalizedPath.split('/').filter(Boolean);
   const lastSegment = segments.length > 0 ? segments[segments.length - 1] : undefined;
 
-  return lastSegment && validSections.has(lastSegment as ShowcaseSection)
-    ? (lastSegment as ShowcaseSection)
-    : 'core';
+  return lastSegment && validSections.has(lastSegment as ShowcaseSection) ? (lastSegment as ShowcaseSection) : 'core';
 }
 
 export function buildPathForSection(section: ShowcaseSection): string {
   return `/${section}`;
+}
+
+export function shouldHandleShowcaseNavigation(event: ShowcaseNavigationEvent): boolean {
+  return !(
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  );
 }
 
 export function resolveInitialTheme(
@@ -51,11 +62,7 @@ export function applyShowcaseTheme(root: ThemeRoot, theme: ShowcaseTheme): void 
   root.setAttribute('data-vf-theme', theme);
 }
 
-export function bootstrapShowcaseTheme(
-  root: ThemeRoot,
-  storage: ThemeStorage,
-  prefersDark: boolean,
-): ShowcaseTheme {
+export function bootstrapShowcaseTheme(root: ThemeRoot, storage: ThemeStorage, prefersDark: boolean): ShowcaseTheme {
   let storedTheme: string | null = null;
 
   try {

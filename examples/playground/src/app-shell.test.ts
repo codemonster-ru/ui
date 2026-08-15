@@ -6,6 +6,7 @@ import {
   buildPathForSection,
   resolveInitialTheme,
   resolveSectionFromPath,
+  shouldHandleShowcaseNavigation,
   showcaseThemeStorageKey,
 } from './app-shell';
 
@@ -25,6 +26,22 @@ describe('showcase app shell', () => {
     expect(resolveSectionFromPath('/nested/playground')).toBe('playground');
     expect(resolveSectionFromPath('/unknown')).toBe('core');
     expect(buildPathForSection('icons')).toBe('/icons');
+  });
+
+  it('handles ordinary primary-button navigation without hijacking modified links', () => {
+    const ordinaryClick = {
+      defaultPrevented: false,
+      button: 0,
+      metaKey: false,
+      ctrlKey: false,
+      shiftKey: false,
+      altKey: false,
+    };
+
+    expect(shouldHandleShowcaseNavigation(ordinaryClick)).toBe(true);
+    expect(shouldHandleShowcaseNavigation({ ...ordinaryClick, ctrlKey: true })).toBe(false);
+    expect(shouldHandleShowcaseNavigation({ ...ordinaryClick, button: 1 })).toBe(false);
+    expect(shouldHandleShowcaseNavigation({ ...ordinaryClick, defaultPrevented: true })).toBe(false);
   });
 
   it('prefers persisted and authored themes before the system fallback', () => {

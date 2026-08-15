@@ -1,44 +1,99 @@
 <template>
   <VfThemeProvider>
-    <VfAppShell
-      class="showcase-shell"
-      layout="content"
-      sticky-header
-      content-appearance="plain"
-      :show-subheader="false"
-      :show-content-subheader="false"
-    >
-      <template #header>
-        <VfInline class="showcase-header" :wrap="false">
-          <div class="showcase-brand">VueForge</div>
+    <div class="showcase-shell">
+      <header class="showcase-shell__header">
+        <div class="showcase-shell__container">
+          <VfInline class="showcase-header" :wrap="false">
+            <div class="showcase-brand">VueForge</div>
 
-          <VfMenuBar
-            v-model="activeSection"
-            class="showcase-navigation"
-            :items="sectionItems"
-            variant="default"
-            aria-label="Showcase packages"
-          />
+            <nav class="showcase-navigation" aria-label="Showcase packages">
+              <button
+                class="showcase-navigation__scroll-control showcase-navigation__scroll-control--left"
+                :class="{ 'showcase-navigation__scroll-control--hidden': !canScrollNavigationLeft }"
+                type="button"
+                aria-label="Scroll menu left"
+                :aria-hidden="!canScrollNavigationLeft"
+                :tabindex="canScrollNavigationLeft ? 0 : -1"
+                :disabled="!canScrollNavigationLeft"
+                @click="scrollNavigation('left')"
+              >
+                <VueIconify :icon="icons.chevronLeft" aria-hidden="true" size="1em" />
+              </button>
 
-          <VfInline class="showcase-header__actions" :wrap="false">
-            <VfThemeSwitch variant="button" button-variant="secondary" />
+              <div
+                ref="navigationViewportRef"
+                class="showcase-navigation__viewport"
+                @scroll="updateNavigationScrollState"
+              >
+                <ul class="showcase-navigation__list">
+                  <li v-for="section in sections" :key="section.value" class="showcase-navigation__item">
+                    <a
+                      class="showcase-navigation__link"
+                      :class="{ 'showcase-navigation__link--active': activeSection === section.value }"
+                      :href="buildPathForSection(section.value)"
+                      :aria-current="activeSection === section.value ? 'page' : undefined"
+                      @click="activateSection($event, section.value)"
+                    >
+                      <span>{{ section.label }}</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div
+                v-if="canScrollNavigationLeft"
+                class="showcase-navigation__fade showcase-navigation__fade--left"
+                aria-hidden="true"
+              />
+              <div
+                v-if="canScrollNavigationRight"
+                class="showcase-navigation__fade showcase-navigation__fade--right"
+                aria-hidden="true"
+              />
+
+              <button
+                class="showcase-navigation__scroll-control showcase-navigation__scroll-control--right"
+                :class="{ 'showcase-navigation__scroll-control--hidden': !canScrollNavigationRight }"
+                type="button"
+                aria-label="Scroll menu right"
+                :aria-hidden="!canScrollNavigationRight"
+                :tabindex="canScrollNavigationRight ? 0 : -1"
+                :disabled="!canScrollNavigationRight"
+                @click="scrollNavigation('right')"
+              >
+                <VueIconify :icon="icons.chevronRight" aria-hidden="true" size="1em" />
+              </button>
+            </nav>
+
+            <VfInline class="showcase-header__actions" :wrap="false">
+              <VfThemeSwitch variant="button" button-variant="secondary" />
+            </VfInline>
           </VfInline>
-        </VfInline>
-      </template>
+        </div>
+      </header>
 
-      <component :is="activeSectionComponent" />
-    </VfAppShell>
+      <div class="showcase-shell__body">
+        <div class="showcase-shell__container showcase-shell__body-container">
+          <main class="showcase-shell__content">
+            <div class="showcase-shell__content-body">
+              <component :is="activeSectionComponent" />
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
   </VfThemeProvider>
 </template>
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { VfMenuBar, VfThemeProvider, VfThemeSwitch, type VfNavMenuItem } from '@codemonster-ru/vueforge-core';
+import { VfThemeProvider, VfThemeSwitch } from '@codemonster-ru/vueforge-core';
 import { CmInline as VfInline } from '@codemonster-ru/ui-vue';
-import { VfAppShell } from '@codemonster-ru/vueforge-layouts';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import {
   buildPathForSection,
   resolveSectionFromPath,
+  shouldHandleShowcaseNavigation,
   type ShowcaseSection,
 } from './app-shell';
 
@@ -76,11 +131,6 @@ const sections: SectionMeta[] = [
   },
 ];
 
-const sectionItems: VfNavMenuItem[] = sections.map((section) => ({
-  value: section.value,
-  label: section.label,
-}));
-
 const sectionComponents = {
   colors: defineAsyncComponent(() => import('./sections/colors/ColorSystemShowcase.vue')),
   core: defineAsyncComponent(() => import('./sections/core/CoreShowcase.vue')),
@@ -92,13 +142,61 @@ const sectionComponents = {
 
 const activeSection = ref<SectionValue>(resolveSectionFromPath(window.location.pathname));
 const activeSectionComponent = computed(() => sectionComponents[activeSection.value]);
+const navigationViewportRef = ref<HTMLElement | null>(null);
+const canScrollNavigationLeft = ref(false);
+const canScrollNavigationRight = ref(false);
+let navigationResizeObserver: ResizeObserver | null = null;
 
 function syncSectionFromLocation() {
   activeSection.value = resolveSectionFromPath(window.location.pathname);
 }
 
+function activateSection(event: MouseEvent, section: SectionValue): void {
+  if (!shouldHandleShowcaseNavigation(event)) {
+    return;
+  }
+
+  event.preventDefault();
+  activeSection.value = section;
+}
+
+function updateNavigationScrollState(): void {
+  const viewport = navigationViewportRef.value;
+
+  if (!viewport) {
+    canScrollNavigationLeft.value = false;
+    canScrollNavigationRight.value = false;
+    return;
+  }
+
+  const maxScrollLeft = viewport.scrollWidth - viewport.clientWidth;
+  canScrollNavigationLeft.value = viewport.scrollLeft > 1;
+  canScrollNavigationRight.value = maxScrollLeft - viewport.scrollLeft > 1;
+}
+
+function scrollNavigation(direction: 'left' | 'right'): void {
+  const viewport = navigationViewportRef.value;
+
+  if (!viewport) {
+    return;
+  }
+
+  const delta = Math.max(120, Math.round(viewport.clientWidth * 0.6));
+  viewport.scrollTo({
+    left: viewport.scrollLeft + (direction === 'left' ? -delta : delta),
+    behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+  });
+}
+
 onMounted(() => {
   window.addEventListener('popstate', syncSectionFromLocation);
+  window.addEventListener('resize', updateNavigationScrollState);
+  requestAnimationFrame(updateNavigationScrollState);
+
+  if (typeof ResizeObserver !== 'undefined' && navigationViewportRef.value) {
+    navigationResizeObserver = new ResizeObserver(updateNavigationScrollState);
+    navigationResizeObserver.observe(navigationViewportRef.value);
+  }
 
   const activePath = buildPathForSection(activeSection.value);
   if (window.location.pathname !== activePath) {
@@ -108,6 +206,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('popstate', syncSectionFromLocation);
+  window.removeEventListener('resize', updateNavigationScrollState);
+  navigationResizeObserver?.disconnect();
+  navigationResizeObserver = null;
 });
 
 watch(activeSection, (nextSection) => {
@@ -120,30 +221,214 @@ watch(activeSection, (nextSection) => {
 
 <style scoped>
 .showcase-shell {
+  display: grid;
+  grid-template: 'header' auto 'body' minmax(0, 1fr) / minmax(0, 1fr);
+  min-width: 20rem;
   min-height: 100vh;
-  background: var(--vf-color-background-canvas);
+  background: var(--cm-color-background-canvas);
+  color: var(--cm-color-text-primary);
+}
+
+.showcase-shell__header {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  block-size: var(--cm-space-16);
+  padding-block: var(--cm-space-3);
+  border-bottom: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+}
+
+.showcase-shell__container {
+  width: 100%;
+  max-width: var(--cm-breakpoint-xl);
+  margin-inline: auto;
+  padding-inline: var(--cm-space-4);
+}
+
+.showcase-shell__body {
+  grid-area: body;
+  min-width: 0;
+  min-height: 0;
+}
+
+.showcase-shell__body-container {
+  min-height: 100%;
+  padding-inline: 0;
+}
+
+.showcase-shell__content {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  min-height: 100%;
+  padding: var(--cm-space-4);
+  background: transparent;
+}
+
+.showcase-shell__content-body {
+  min-width: 0;
+  min-height: 0;
 }
 
 .showcase-header {
-  gap: var(--vf-layout-space-layout-base);
+  gap: var(--cm-space-4);
   justify-content: space-between;
   width: 100%;
   min-width: 0;
-  min-height: 2rem;
+  min-height: var(--cm-space-8);
 }
 
 .showcase-brand {
   min-width: 0;
-  color: var(--vf-color-text-primary);
-  font-size: var(--vf-heading-h-6-font-size);
-  font-weight: var(--vf-heading-font-weight);
-  line-height: var(--vf-heading-h-6-line-height);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-md);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: 1.45;
 }
 
 .showcase-navigation {
+  position: relative;
+  display: flex;
   flex: 1 1 auto;
-  margin-left: var(--vf-layout-space-layout-base);
+  width: 100%;
+  margin-left: var(--cm-space-4);
   min-width: 0;
+}
+
+.showcase-navigation__list {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.showcase-navigation__viewport {
+  width: 100%;
+  min-width: 0;
+  overflow: auto visible;
+  scrollbar-width: none;
+}
+
+.showcase-navigation__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.showcase-navigation__scroll-control {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cm-control-height-sm);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-icon-secondary);
+  font-size: var(--cm-control-font-size-md);
+  line-height: 0;
+  cursor: pointer;
+}
+
+.showcase-navigation__scroll-control--left {
+  left: 0;
+}
+
+.showcase-navigation__scroll-control--right {
+  right: 0;
+}
+
+.showcase-navigation__scroll-control--hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.showcase-navigation__scroll-control:hover {
+  color: var(--cm-color-icon-primary);
+}
+
+.showcase-navigation__scroll-control:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+}
+
+.showcase-navigation__fade {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  width: var(--cm-space-8);
+  pointer-events: none;
+}
+
+.showcase-navigation__fade--left {
+  left: var(--cm-control-height-sm);
+  background: linear-gradient(to right, var(--cm-color-background-surface), transparent);
+}
+
+.showcase-navigation__fade--right {
+  right: var(--cm-control-height-sm);
+  background: linear-gradient(to left, var(--cm-color-background-surface), transparent);
+}
+
+.showcase-navigation__item {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.showcase-navigation__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cm-space-2);
+  width: auto;
+  min-width: 0;
+  min-height: var(--cm-control-height-md);
+  padding: var(--cm-field-padding-block-md) var(--cm-space-2);
+  border: var(--cm-border-width) solid transparent;
+  border-radius: var(--cm-radius-control);
+  background: transparent;
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-control-font-size-md);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-normal);
+  text-align: start;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    box-shadow var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.showcase-navigation__link--active {
+  color: var(--cm-color-selected-foreground);
+}
+
+.showcase-navigation__link:focus-visible {
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  color: var(--cm-color-selected-foreground);
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+}
+
+.showcase-navigation__link:hover:not(.showcase-navigation__link--active) {
+  color: var(--cm-color-text-primary);
 }
 
 .showcase-header__actions {
