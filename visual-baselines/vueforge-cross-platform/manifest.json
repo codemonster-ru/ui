@@ -2,14 +2,36 @@
   "label": "vueforge-cross-platform-reference",
   "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
   "sourceFixture": {
-    "caseIds": ["alert-danger-icon", "badge-danger", "button-default", "card-title"],
+    "caseIds": [
+      "alert-danger-icon",
+      "avatar-label",
+      "badge-danger",
+      "button-default",
+      "card-title",
+      "divider-horizontal",
+      "link-default"
+    ],
     "componentPackage": "@codemonster-ru/vueforge-core",
     "renderer": "Vue createApp at the reference commit"
   },
-  "routes": ["alert-danger-icon", "badge-danger", "button-default", "card-title"],
+  "routes": [
+    "alert-danger-icon",
+    "avatar-label",
+    "badge-danger",
+    "button-default",
+    "card-title",
+    "divider-horizontal",
+    "link-default"
+  ],
   "screenshots": [
     {
       "filename": "alert-danger-icon--light--mobile.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "avatar-label--light--mobile.png",
       "platform": "reference",
       "theme": "light",
       "viewport": "mobile"
@@ -33,7 +55,25 @@
       "viewport": "mobile"
     },
     {
+      "filename": "divider-horizontal--light--mobile.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "link-default--light--mobile.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
       "filename": "alert-danger-icon--dark--mobile.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "avatar-label--dark--mobile.png",
       "platform": "reference",
       "theme": "dark",
       "viewport": "mobile"
@@ -57,7 +97,25 @@
       "viewport": "mobile"
     },
     {
+      "filename": "divider-horizontal--dark--mobile.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "link-default--dark--mobile.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
       "filename": "alert-danger-icon--light--desktop.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "avatar-label--light--desktop.png",
       "platform": "reference",
       "theme": "light",
       "viewport": "desktop"
@@ -81,7 +139,25 @@
       "viewport": "desktop"
     },
     {
+      "filename": "divider-horizontal--light--desktop.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "link-default--light--desktop.png",
+      "platform": "reference",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
       "filename": "alert-danger-icon--dark--desktop.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "avatar-label--dark--desktop.png",
       "platform": "reference",
       "theme": "dark",
       "viewport": "desktop"
@@ -100,6 +176,18 @@
     },
     {
       "filename": "card-title--dark--desktop.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "divider-horizontal--dark--desktop.png",
+      "platform": "reference",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "link-default--dark--desktop.png",
       "platform": "reference",
       "theme": "dark",
       "viewport": "desktop"

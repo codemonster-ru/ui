@@ -1,5 +1,13 @@
 {
   "schemaVersion": 1,
   "platforms": ["vue", "razor"],
-  "caseIds": ["alert-danger-icon", "badge-danger", "button-default", "card-title"]
+  "caseIds": [
+    "alert-danger-icon",
+    "avatar-label",
+    "badge-danger",
+    "button-default",
+    "card-title",
+    "divider-horizontal",
+    "link-default"
+  ]
 }
