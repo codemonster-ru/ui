@@ -429,64 +429,6 @@
   margin: 0;
 }
 
-.demo-shell-card .vf-app-shell {
-  min-height: 30rem;
-}
-
-/* stylelint-disable declaration-block-no-redundant-longhand-properties, no-descending-specificity -- Demo-only layout state combinations intentionally mirror interactive toggle permutations. */
-.demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid {
-  grid-template-areas: 'sidebar content';
-  grid-template-rows: minmax(0, 1fr);
-  grid-template-columns: minmax(0, var(--vf-layout-shell-sidebar-width)) minmax(0, 1fr);
-}
-
-.demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside.vf-app-shell--sidebar-collapsed
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid {
-  grid-template-areas: 'sidebar content';
-  grid-template-rows: minmax(0, 1fr);
-  grid-template-columns: minmax(0, var(--vf-layout-shell-sidebar-collapsed-width)) minmax(0, 1fr);
-}
-
-.demo-shell-app--compact-aside.vf-app-shell--sidebar-content-aside
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid
-  > .vf-aside-area {
-  display: none;
-}
-
-.demo-shell-app--compact-sidebar.vf-app-shell--sidebar-content
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid,
-.demo-shell-app--compact-sidebar.vf-app-shell--sidebar-content-aside
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid {
-  grid-template-areas: 'content';
-  grid-template-rows: minmax(0, 1fr);
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.demo-shell-app--compact-sidebar
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid
-  > .vf-sidebar-area,
-.demo-shell-app--compact-sidebar
-  > .vf-app-shell__body
-  > .vf-app-shell__body-container
-  > .vf-app-shell__body-grid
-  > .vf-aside-area {
-  display: none;
-}
-/* stylelint-enable declaration-block-no-redundant-longhand-properties, no-descending-specificity */
-
 .demo-shell-content-area {
   background: var(--vf-layout-surface-base);
 }
