@@ -3,9 +3,13 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import {
   CmAvatar as VfAvatar,
   CmBadge as VfBadge,
+  CmButton,
   CmCard as VfCard,
   CmCheckbox as VfCheckbox,
   CmDivider as VfDivider,
+  CmLink,
+  CmProgressBar,
+  CmProgressSpinner,
   CmRadio as VfRadio,
   CmSkeleton as VfSkeleton,
   CmStack as VfStack,
@@ -14,6 +18,10 @@ import {
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
+import '@codemonster-ru/ui-css/button.css';
+import '@codemonster-ru/ui-css/link.css';
+import '@codemonster-ru/ui-css/progress-bar.css';
+import '@codemonster-ru/ui-css/progress-spinner.css';
 import {
   VfAccordion,
   VfAlert,
@@ -33,7 +41,6 @@ import {
   VfGroupBox,
   VfIconButton,
   VfInput,
-  VfLink,
   VfMenu,
   VfMenuBar,
   VfMenuItem,
@@ -667,10 +674,10 @@ const tabContent = computed<Record<string, string>>(() => ({
             <p class="demo-label">VfThemeProvider</p>
             <div class="demo-stack demo-form-stack">
               <div class="demo-inline">
-                <VfButton size="sm" variant="secondary" @click="setTheme('light')">Light</VfButton>
-                <VfButton size="sm" variant="secondary" @click="setTheme('dark')">Dark</VfButton>
-                <VfButton size="sm" variant="secondary" @click="setTheme('system')">System</VfButton>
-                <VfButton size="sm" @click="toggleTheme">Toggle</VfButton>
+                <CmButton size="sm" variant="secondary" @click="setTheme('light')">Light</CmButton>
+                <CmButton size="sm" variant="secondary" @click="setTheme('dark')">Dark</CmButton>
+                <CmButton size="sm" variant="secondary" @click="setTheme('system')">System</CmButton>
+                <CmButton size="sm" @click="toggleTheme">Toggle</CmButton>
               </div>
               <div class="demo-inline">
                 <VfTag tone="primary">mode: {{ theme }}</VfTag>
@@ -1016,7 +1023,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                   <div v-for="tone in linkTones" :key="`link-${tone}`" class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">{{ tone }}</p>
-                    <VfLink
+                    <CmLink
                       v-for="underline in linkUnderlines"
                       :key="`${tone}-${underline}`"
                       href="#demo-actions"
@@ -1024,10 +1031,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                       :underline="underline"
                     >
                       {{ underline }} underline
-                    </VfLink>
-                    <VfLink href="https://example.com" target="_blank" :tone="tone" underline="hover">
+                    </CmLink>
+                    <CmLink href="https://example.com" target="_blank" :tone="tone" underline="hover">
                       external link
-                    </VfLink>
+                    </CmLink>
                   </div>
                 </div>
               </div>
@@ -1808,7 +1815,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-component-matrix__grid demo-component-matrix__grid--two">
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">VfProgressBar</p>
-                    <VfProgressBar :value="42" label="Import progress" />
+                    <CmProgressBar :value="42" label="Import progress" />
                     <VfProgressBar :value="7" :max="12" show-value label="Step progress" height="1rem" />
                     <VfProgressBar
                       :value="dynamicProgressValue"
@@ -1835,13 +1842,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                       label="Installing module progress"
                       height="1rem"
                     />
-                    <VfProgressBar indeterminate tone="info" label="Background sync progress" />
+                    <CmProgressBar indeterminate tone="info" label="Background sync progress" />
                   </div>
 
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">VfProgressSpinner</p>
                     <div class="demo-inline">
-                      <VfProgressSpinner label="Loading preview" />
+                      <CmProgressSpinner label="Loading preview" />
                       <VfProgressSpinner label="Loading large preview" tone="warn" size="2.5rem" :stroke-width="3" />
                     </div>
                   </div>
@@ -2755,7 +2762,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDialog · sizes</p>
                   <div class="demo-inline">
-                    <VfButton
+                    <CmButton
                       v-for="size in dialogSizes"
                       :key="`dialog-${size}`"
                       :size="size"
@@ -2765,14 +2772,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                       "
                     >
                       {{ size }} dialog
-                    </VfButton>
+                    </CmButton>
                   </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDrawer · placements</p>
                   <div class="demo-inline">
-                    <VfButton
+                    <CmButton
                       v-for="placement in drawerPlacements"
                       :key="`drawer-${placement}`"
                       variant="secondary"
@@ -2782,16 +2789,16 @@ const tabContent = computed<Record<string, string>>(() => ({
                       "
                     >
                       {{ placement }}
-                    </VfButton>
-                    <VfButton variant="secondary" @click="drawerFullscreenOpen = true"> fullscreen </VfButton>
+                    </CmButton>
+                    <CmButton variant="secondary" @click="drawerFullscreenOpen = true"> fullscreen </CmButton>
                   </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfCommandPalette · states</p>
                   <div class="demo-inline">
-                    <VfButton variant="secondary" @click="commandPaletteOpen = true"> empty query </VfButton>
-                    <VfButton
+                    <CmButton variant="secondary" @click="commandPaletteOpen = true"> empty query </CmButton>
+                    <CmButton
                       variant="secondary"
                       @click="
                         commandPaletteQuery = 'theme';
@@ -2799,14 +2806,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                       "
                     >
                       matched query
-                    </VfButton>
+                    </CmButton>
                   </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfConfirmDialog</p>
                   <div class="demo-stack">
-                    <VfButton variant="danger" @click="confirmDialogOpen = true">Delete example user</VfButton>
+                    <CmButton variant="danger" @click="confirmDialogOpen = true">Delete example user</CmButton>
                     <p class="demo-text" aria-live="polite">{{ confirmDialogResult }}</p>
                   </div>
                 </div>
