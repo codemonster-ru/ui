@@ -27,6 +27,7 @@ import {
   CmStack as VfStack,
   CmSwitch as VfSwitch,
   CmTable as VfTable,
+  CmTextarea,
   CmTextarea as VfTextarea,
   type CmBreadcrumbItem,
 } from '@codemonster-ru/ui-vue';
@@ -54,10 +55,7 @@ import {
   VfDataTable,
   VfDatePicker,
   VfField,
-  VfInput,
-  VfSelect,
   VfTable as VfLegacyTable,
-  VfTextarea as VfFloatingTextarea,
   VfSwitch as VfIconSwitch,
 } from '@codemonster-ru/vueforge-core';
 import CoreDataTableRecipe, {
@@ -71,6 +69,7 @@ import CoreCommandPaletteRecipe, {
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe from './CoreDrawerRecipe.vue';
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
+import CoreFloatingFieldRecipe from './CoreFloatingFieldRecipe.vue';
 import CoreInputRecipe from './CoreInputRecipe.vue';
 import CoreMenuBarRecipe from './CoreMenuBarRecipe.vue';
 import CoreNavMenuRecipe from './CoreNavMenuRecipe.vue';
@@ -2258,11 +2257,12 @@ const tabContent = computed<Record<string, string>>(() => ({
                 </template>
               </CmField>
 
-              <VfField label="Billing email" label-placement="floating" required>
-                <template #default="{ controlId, describedBy, invalid, required }">
-                  <VfInput
+              <CoreFloatingFieldRecipe label="Billing email" required>
+                <template #default="{ controlId, describedBy, floating, invalid, required }">
+                  <CoreInputRecipe
                     :id="controlId"
                     v-model="formStackEmailValue"
+                    :floating="floating"
                     required
                     :aria-required="required ? 'true' : undefined"
                     :invalid="invalid"
@@ -2270,11 +2270,11 @@ const tabContent = computed<Record<string, string>>(() => ({
                     placeholder="team@acme.test"
                   />
                 </template>
-              </VfField>
+              </CoreFloatingFieldRecipe>
 
-              <VfField label="Plan" label-placement="floating" floating-variant="over">
+              <CoreFloatingFieldRecipe label="Plan" variant="over">
                 <template #default="{ controlId, describedBy, invalid }">
-                  <VfSelect
+                  <CoreSelectRecipe
                     :id="controlId"
                     v-model="formStackPlanValue"
                     :invalid="invalid"
@@ -2283,7 +2283,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     :options="selectOptions"
                   />
                 </template>
-              </VfField>
+              </CoreFloatingFieldRecipe>
             </VfStack>
           </div>
 
@@ -2684,11 +2684,12 @@ const tabContent = computed<Record<string, string>>(() => ({
                     class="demo-form-geometry__cell"
                   >
                     <p class="demo-form-geometry__label">{{ variant }}</p>
-                    <VfField label="Search" label-placement="floating" :floating-variant="variant" required>
-                      <template #default="{ controlId, describedBy, invalid, required }">
-                        <VfInput
+                    <CoreFloatingFieldRecipe label="Search" :variant="variant" required>
+                      <template #default="{ controlId, describedBy, floating, invalid, required }">
+                        <CoreInputRecipe
                           :id="controlId"
                           model-value="Search query"
+                          :floating="floating"
                           required
                           :aria-required="required ? 'true' : undefined"
                           leading-icon="magnifyingGlass"
@@ -2698,10 +2699,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Search"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Plan" label-placement="floating" :floating-variant="variant">
+                    </CoreFloatingFieldRecipe>
+                    <CoreFloatingFieldRecipe label="Plan" :variant="variant">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfSelect
+                        <CoreSelectRecipe
                           :id="controlId"
                           model-value="team"
                           leading-icon="layers"
@@ -2713,10 +2714,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :options="selectOptions"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Notes" label-placement="floating" :floating-variant="variant">
+                    </CoreFloatingFieldRecipe>
+                    <CoreFloatingFieldRecipe label="Notes" :variant="variant">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfFloatingTextarea
+                        <CmTextarea
                           :id="controlId"
                           model-value="Textarea baseline check"
                           :invalid="invalid"
@@ -2724,7 +2725,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Notes"
                         />
                       </template>
-                    </VfField>
+                    </CoreFloatingFieldRecipe>
                   </div>
                 </div>
               </div>
@@ -2738,12 +2739,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                     class="demo-form-geometry__cell"
                   >
                     <p class="demo-form-geometry__label">{{ size }}</p>
-                    <VfField label="Empty input" label-placement="floating">
-                      <template #default="{ controlId, describedBy, invalid }">
-                        <VfInput
+                    <CoreFloatingFieldRecipe label="Empty input">
+                      <template #default="{ controlId, describedBy, floating, invalid }">
+                        <CoreInputRecipe
                           :id="controlId"
                           :size="size"
                           model-value=""
+                          :floating="floating"
                           leading-icon="magnifyingGlass"
                           clearable
                           :invalid="invalid"
@@ -2751,13 +2753,14 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Empty"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Filled input" label-placement="floating">
-                      <template #default="{ controlId, describedBy, invalid }">
-                        <VfInput
+                    </CoreFloatingFieldRecipe>
+                    <CoreFloatingFieldRecipe label="Filled input">
+                      <template #default="{ controlId, describedBy, floating, invalid }">
+                        <CoreInputRecipe
                           :id="controlId"
                           :size="size"
                           model-value="Filled"
+                          :floating="floating"
                           leading-icon="magnifyingGlass"
                           clearable
                           :invalid="invalid"
@@ -2765,22 +2768,23 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Filled"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Invalid input" label-placement="floating" error="Invalid">
-                      <template #default="{ controlId, describedBy, invalid }">
-                        <VfInput
+                    </CoreFloatingFieldRecipe>
+                    <CoreFloatingFieldRecipe label="Invalid input" error="Invalid">
+                      <template #default="{ controlId, describedBy, floating, invalid }">
+                        <CoreInputRecipe
                           :id="controlId"
                           :size="size"
                           model-value="Invalid"
+                          :floating="floating"
                           :invalid="invalid"
                           :aria-describedby="describedBy"
                           placeholder="Invalid"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Empty select" label-placement="floating">
+                    </CoreFloatingFieldRecipe>
+                    <CoreFloatingFieldRecipe label="Empty select">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfSelect
+                        <CoreSelectRecipe
                           :id="controlId"
                           :size="size"
                           model-value=""
@@ -2791,10 +2795,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :options="selectOptions"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Filled select" label-placement="floating">
+                    </CoreFloatingFieldRecipe>
+                    <CoreFloatingFieldRecipe label="Filled select">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfSelect
+                        <CoreSelectRecipe
                           :id="controlId"
                           :size="size"
                           model-value="pro"
@@ -2806,10 +2810,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                           :options="selectOptions"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Empty textarea" label-placement="floating">
+                    </CoreFloatingFieldRecipe>
+                    <CoreFloatingFieldRecipe label="Empty textarea">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfFloatingTextarea
+                        <CmTextarea
                           :id="controlId"
                           :size="size"
                           model-value=""
@@ -2818,10 +2822,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Empty"
                         />
                       </template>
-                    </VfField>
-                    <VfField label="Filled textarea" label-placement="floating">
+                    </CoreFloatingFieldRecipe>
+                    <CoreFloatingFieldRecipe label="Filled textarea">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfFloatingTextarea
+                        <CmTextarea
                           :id="controlId"
                           :size="size"
                           model-value="Filled textarea"
@@ -2830,7 +2834,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                           placeholder="Filled"
                         />
                       </template>
-                    </VfField>
+                    </CoreFloatingFieldRecipe>
                   </div>
                 </div>
               </div>

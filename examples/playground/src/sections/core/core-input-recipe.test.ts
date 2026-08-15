@@ -139,14 +139,18 @@ describe('CoreInputRecipe', () => {
     expect(source).toContain('<slot name="action" />');
   });
 
-  it('integrates only the nine non-floating Core input examples', () => {
+  it('keeps the nine non-floating Core input examples after floating-field ownership', () => {
     const showcase = readFileSync(resolve(__dirname, 'CoreShowcase.vue'), 'utf8');
-    expect(showcase.match(/<CoreInputRecipe\b/gu)).toHaveLength(9);
-    expect(showcase.match(/<VfInput\b/gu)).toHaveLength(5);
+    const nonFloatingMatrix = showcase.slice(
+      showcase.indexOf('VfInput + VfSelect + VfTextarea · controls'),
+      showcase.indexOf('VfField · floating labels'),
+    );
+    expect(nonFloatingMatrix.match(/<CoreInputRecipe\b/gu)).toHaveLength(9);
+    expect(showcase.match(/<CoreInputRecipe\b/gu)).toHaveLength(14);
+    expect(showcase).not.toContain('<VfInput');
     expect(showcase).toContain('model-value="Search query"\n                      leading-icon="magnifyingGlass"');
     expect(showcase).toContain('model-value="secret-value"\n                      type="password"');
     expect(showcase).toContain('model-value="all-actions"\n                      type="password"');
-    expect(showcase).toContain('<VfField label="Search" label-placement="floating"');
-    expect(showcase).toContain('<VfInput\n                          :id="controlId"');
+    expect(showcase).toContain('<CoreFloatingFieldRecipe label="Search" :variant="variant"');
   });
 });
