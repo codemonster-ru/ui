@@ -222,7 +222,7 @@ const codeSample = [
                 role="alert"
               >
                 <template #icon>
-                  <VueIconify :icon="alertIconByTone[status.tone]" size="var(--vf-icon-size-lg)" />
+                  <VueIconify :icon="alertIconByTone[status.tone]" size="var(--cm-icon-size-lg)" />
                 </template>
                 Separate background, border, icon, and foreground roles.
               </VfAlert>
