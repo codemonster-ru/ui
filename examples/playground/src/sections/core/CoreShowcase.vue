@@ -80,6 +80,7 @@ import CoreResizableDataTableRecipe, {
   type CoreResizableDataTableWidths,
 } from './CoreResizableDataTableRecipe.vue';
 import CoreReorderableDataTableRecipe from './CoreReorderableDataTableRecipe.vue';
+import CoreSelectRecipe from './CoreSelectRecipe.vue';
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
@@ -2326,7 +2327,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <CmField control-id="core-form-layout-plan" label="Plan">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfSelect
+                    <CoreSelectRecipe
                       :id="controlId"
                       v-model="formStackPlanValue"
                       :aria-describedby="describedBy"
@@ -2552,7 +2553,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       clearable
                       placeholder="Filter"
                     />
-                    <VfSelect
+                    <CoreSelectRecipe
                       :size="size"
                       model-value="pro"
                       leading-icon="layers"
@@ -2586,15 +2587,15 @@ const tabContent = computed<Record<string, string>>(() => ({
                       password-reveal
                       placeholder="Password"
                     />
-                    <VfSelect :size="size" model-value="pro" placeholder="Default select" :options="selectOptions" />
-                    <VfSelect
+                    <CoreSelectRecipe :size="size" model-value="pro" placeholder="Default select" :options="selectOptions" />
+                    <CoreSelectRecipe
                       :size="size"
                       model-value=""
                       invalid
                       placeholder="Invalid select"
                       :options="selectOptions"
                     />
-                    <VfSelect
+                    <CoreSelectRecipe
                       :size="size"
                       model-value="team"
                       disabled
@@ -2647,21 +2648,21 @@ const tabContent = computed<Record<string, string>>(() => ({
                       password-reveal
                       clearable
                     />
-                    <VfSelect
+                    <CoreSelectRecipe
                       :size="size"
                       model-value="starter"
                       leading-icon="layers"
                       placeholder="Leading"
                       :options="selectOptions"
                     />
-                    <VfSelect
+                    <CoreSelectRecipe
                       :size="size"
                       model-value="team"
                       trailing-icon="filter"
                       placeholder="Trailing"
                       :options="selectOptions"
                     />
-                    <VfSelect
+                    <CoreSelectRecipe
                       :size="size"
                       model-value="enterprise"
                       leading-icon="layers"
