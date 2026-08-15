@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codemonster.ru/schemas/ui/cross-platform-visual-baselines-v1.json",
+  "title": "CodeMonster UI cross-platform visual baselines",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "platforms", "caseIds"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "platforms": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "caseIds": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/identifier"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    }
+  }
+}
