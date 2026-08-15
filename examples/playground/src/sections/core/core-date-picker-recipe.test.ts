@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import CoreDatePickerRecipe from './CoreDatePickerRecipe.vue';
 import {
   addCoreDays,
+  combineCoreDateTime,
   createCoreDateGrid,
   createCoreMonthGrid,
   createCoreYearGrid,
@@ -21,6 +22,7 @@ import {
   moveCoreDateByMonth,
   selectCoreDateRange,
   parseCoreDate,
+  parseCorePickerValue,
   toggleCoreMultipleDate,
   type CoreDatePickerMode,
   type CoreDatePickerValue,
@@ -235,6 +237,50 @@ describe('CoreDatePickerRecipe date foundation', () => {
     app.unmount();
   });
 
+  it('owns local datetime display, date selection, and 24-hour minute-step controls', async () => {
+    expect(parseCorePickerValue('2026-07-30T24:00', 'datetime')).toBeNull();
+    expect(combineCoreDateTime('2026-07-30', '4', '5')).toBe('2026-07-30T04:05');
+    expect(formatCorePickerDisplay('2026-07-30T14:30', 'datetime')).toBe('07/30/26 14:30');
+
+    const { app, value } = mountPicker({ pickerMode: 'datetime', value: '2026-07-30T14:30' });
+    const trigger = host.querySelector<HTMLButtonElement>('#release-date')!;
+    expect(trigger.textContent).toContain('07/30/26 14:30');
+    trigger.click();
+    await nextTick();
+    await nextTick();
+
+    const calendar = document.body.querySelector<HTMLElement>('#release-date-calendar')!;
+    expect(calendar.querySelector('[data-date="2026-07-30"]')?.getAttribute('aria-selected')).toBe('true');
+    const hour = calendar.querySelector<HTMLSelectElement>('[aria-label="Hour"]')!;
+    const minute = calendar.querySelector<HTMLSelectElement>('[aria-label="Minute"]')!;
+    expect(hour.options).toHaveLength(24);
+    expect(minute.options).toHaveLength(60);
+    expect(hour.value).toBe('14');
+    expect(minute.value).toBe('30');
+
+    calendar.querySelector<HTMLButtonElement>('[data-date="2026-07-20"]')!.click();
+    await nextTick();
+    expect(value.value).toBe('2026-07-20T14:30');
+    expect(document.body.querySelector('#release-date-calendar')).not.toBeNull();
+
+    hour.value = '16';
+    hour.dispatchEvent(new Event('change', { bubbles: true }));
+    await nextTick();
+    expect(value.value).toBe('2026-07-20T16:30');
+    minute.value = '45';
+    minute.dispatchEvent(new Event('change', { bubbles: true }));
+    await nextTick();
+    expect(value.value).toBe('2026-07-20T16:45');
+
+    calendar
+      .querySelector<HTMLButtonElement>('[data-date="2026-07-21"]')!
+      .dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter' }));
+    await nextTick();
+    expect(value.value).toBe('2026-07-21T16:45');
+    expect(document.body.querySelector('#release-date-calendar')).not.toBeNull();
+    app.unmount();
+  });
+
   it('starts, sorts, renders, and closes a completed range', async () => {
     expect(selectCoreDateRange(['2026-07-20', '2026-07-25'], '2026-07-15')).toEqual(['2026-07-15']);
     expect(selectCoreDateRange(['2026-07-20'], '2026-07-15')).toEqual(['2026-07-15', '2026-07-20']);
@@ -367,7 +413,7 @@ describe('CoreDatePickerRecipe date foundation', () => {
     expect(component).not.toContain('showTime');
     expect(component).not.toContain('monthPicker');
     expect(component).not.toContain('yearPicker');
-    expect(helper).toContain("export type CoreDatePickerMode = 'date' | 'month' | 'year'");
+    expect(helper).toContain("export type CoreDatePickerMode = 'date' | 'datetime' | 'month' | 'year'");
     expect(helper).toContain("export type CoreDateSelectionMode = 'multiple' | 'range' | 'single'");
     expect(component).toContain('today: { type: String, required: true }');
   });
