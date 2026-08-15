@@ -65,7 +65,6 @@ import {
 } from '@codemonster-ru/vueforge-core';
 import type {
   VfDataTableColumn,
-  VfDataTableColumnOrder,
   VfDataTableRow,
   VfNavMenuItem,
 } from '@codemonster-ru/vueforge-core';
@@ -85,6 +84,7 @@ import CorePinnedDataTableRecipe from './CorePinnedDataTableRecipe.vue';
 import CoreResizableDataTableRecipe, {
   type CoreResizableDataTableWidths,
 } from './CoreResizableDataTableRecipe.vue';
+import CoreReorderableDataTableRecipe from './CoreReorderableDataTableRecipe.vue';
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
@@ -134,7 +134,7 @@ const menuBarDefaultValue = ref('pricing');
 const menuBarPillsValue = ref('about');
 const selectedDataTableRowKeys = ref<Array<string | number>>([]);
 const expandedDataTableRowKeys = ref<Array<string | number>>([2]);
-const dataTableColumnOrder = ref<VfDataTableColumnOrder>([]);
+const dataTableColumnOrder = ref<string[]>([]);
 const dataTableColumnWidths = ref<CoreResizableDataTableWidths>({});
 const dataTableSort = ref<CoreSortableDataTableSort[]>([]);
 const dataTableError = ref(true);
@@ -1813,15 +1813,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                       Drag anywhere in a column header to preview the animated new order, then release to commit. You
                       can also focus a header and press Left or Right Arrow. Reset restores the declared column order.
                     </p>
-                    <VfDataTable
+                    <CoreReorderableDataTableRecipe
                       v-model:column-order="dataTableColumnOrder"
-                      caption="Reorderable team roster"
-                      :columns="dataTableConfigurableColumns"
-                      :rows="dataTableRows"
-                      row-key="id"
-                      reorderable-columns
-                      striped
-                      column-dividers
+                      :columns="coreDataTableConfigurableColumns"
+                      :rows="coreDataTableConfigurableRows"
                     />
                   </div>
                 </div>
