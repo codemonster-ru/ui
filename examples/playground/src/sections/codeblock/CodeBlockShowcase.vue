@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from "vue";
 import { CmSection as VfSection } from "@codemonster-ru/ui-vue";
 import { useTheme } from "@codemonster-ru/vueforge-core";
 import { CmSkeleton as VfSkeleton } from "@codemonster-ru/ui-vue";
-import { VfSkeletonGate } from "@codemonster-ru/vueforge-core/skeleton-gate";
 import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock/view";
 
 const { resolvedTheme } = useTheme();
@@ -112,7 +111,41 @@ const blocks = [
 
 const CODEBLOCK_SKELETON_DELAY_MS = 2200;
 const codeblockReady = ref(false);
+const measuredCodeblockHeights = ref<Record<string, number>>({});
+const codeblockResizeObservers = new Map<string, ResizeObserver>();
 let codeblockReadyTimer: ReturnType<typeof setTimeout> | null = null;
+
+const codeblockGateMinHeight = (filename: string, fallback: number): string => {
+  const measuredHeight = measuredCodeblockHeights.value[filename];
+
+  return !codeblockReady.value && measuredHeight ? `${measuredHeight}px` : `${fallback}px`;
+};
+
+const setCodeblockContentRef = (
+  filename: string,
+  element: Element | ComponentPublicInstance | null,
+): void => {
+  codeblockResizeObservers.get(filename)?.disconnect();
+  codeblockResizeObservers.delete(filename);
+
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+
+  const syncHeight = () => {
+    if (element.offsetHeight > 0) {
+      measuredCodeblockHeights.value[filename] = element.offsetHeight;
+    }
+  };
+
+  syncHeight();
+
+  if (typeof ResizeObserver !== "undefined") {
+    const observer = new ResizeObserver(syncHeight);
+    observer.observe(element);
+    codeblockResizeObservers.set(filename, observer);
+  }
+};
 
 const scheduleCodeblockReady = () => {
   if (codeblockReadyTimer) {
@@ -135,6 +168,11 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  for (const observer of codeblockResizeObservers.values()) {
+    observer.disconnect();
+  }
+  codeblockResizeObservers.clear();
+
   if (codeblockReadyTimer) {
     clearTimeout(codeblockReadyTimer);
     codeblockReadyTimer = null;
@@ -157,31 +195,46 @@ onBeforeUnmount(() => {
 
         <VfSection class="demo-surface" surface>
           <div class="demo-grid">
-            <VfSkeletonGate
+            <div
               v-for="block in blocks"
               :key="`gate-${block.filename}`"
-              :ready="codeblockReady"
-              :min-height="block.skeletonMinHeight"
-              :preserve-last-height="true"
-              :normalize-content-spacing="true"
-              radius="var(--vf-layout-section-radius)"
+              class="codeblock-loading-gate"
+              :style="{
+                minHeight: codeblockGateMinHeight(block.filename, block.skeletonMinHeight),
+                borderRadius: 'var(--cm-radius-surface)',
+              }"
+              :aria-busy="!codeblockReady || undefined"
             >
-              <VfCodeBlock
-                :language="block.language"
-                :filename="block.filename"
-                :code="block.code"
-                :max-height="block.maxHeight"
-                theme="inherit"
-                :container-min-height="`${block.skeletonMinHeight}px`"
-                show-line-numbers
-              />
-              <template #skeleton>
+              <div
+                :ref="(element) => setCodeblockContentRef(block.filename, element)"
+                class="codeblock-loading-gate__content codeblock-loading-gate__content--normalize-spacing"
+                :class="{ 'codeblock-loading-gate__content--ready': codeblockReady }"
+                :data-showcase-loading-content="codeblockReady ? 'ready' : 'busy'"
+                :aria-hidden="!codeblockReady || undefined"
+                :inert="!codeblockReady ? true : undefined"
+              >
+                <VfCodeBlock
+                  :language="block.language"
+                  :filename="block.filename"
+                  :code="block.code"
+                  :max-height="block.maxHeight"
+                  theme="inherit"
+                  :container-min-height="`${block.skeletonMinHeight}px`"
+                  show-line-numbers
+                />
+              </div>
+              <div
+                v-show="!codeblockReady"
+                class="codeblock-loading-gate__overlay"
+                style="border-radius: var(--cm-radius-surface)"
+                aria-hidden="true"
+              >
                 <VfSkeleton
                   :min-height="block.skeletonMinHeight"
-                  style="border-radius: var(--vf-layout-section-radius)"
+                  style="border-radius: var(--cm-radius-surface)"
                 />
-              </template>
-            </VfSkeletonGate>
+              </div>
+            </div>
           </div>
         </VfSection>
       </section>
@@ -207,6 +260,35 @@ onBeforeUnmount(() => {
 
 .demo-surface {
   min-width: 0;
+}
+
+.codeblock-loading-gate {
+  position: relative;
+  overflow: hidden;
+}
+
+.codeblock-loading-gate__content {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.codeblock-loading-gate__content--normalize-spacing > :first-child {
+  margin-block-start: 0;
+}
+
+.codeblock-loading-gate__content--normalize-spacing > :last-child {
+  margin-block-end: 0;
+}
+
+.codeblock-loading-gate__content--ready {
+  opacity: 1;
+}
+
+.codeblock-loading-gate__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
 }
 
 .demo-replay-button {

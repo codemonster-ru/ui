@@ -27,29 +27,44 @@
             <p class="demo-text">Use this mode for a self-contained browser example with no build step.</p>
           </div>
           <VfSection class="demo-surface" surface>
-            <VfSkeletonGate
-              :ready="playgroundReady"
-              :min-height="260"
-              :preserve-last-height="true"
-              :normalize-content-spacing="true"
-              radius="var(--vf-layout-section-radius)"
+            <div
+              class="playground-loading-gate"
+              :style="{
+                minHeight: playgroundGateMinHeight('single-file'),
+                borderRadius: 'var(--cm-radius-surface)',
+              }"
+              :aria-busy="!playgroundReady || undefined"
             >
-              <VfPlaygroundAsync
-                :files="singleFileExample"
-                entry="/index.html"
-                framework="html"
-                :autorun="true"
-                :show-code="true"
-                theme="inherit"
-                @ready="onPlaygroundReady"
-                @preview-ready="onPlaygroundReady"
-                @run="onRun"
-                @error="onError"
-              />
-              <template #skeleton>
-                <VfSkeleton :min-height="260" style="border-radius: var(--vf-layout-section-radius)" />
-              </template>
-            </VfSkeletonGate>
+              <div
+                :ref="(element) => setPlaygroundContentRef('single-file', element)"
+                class="playground-loading-gate__content playground-loading-gate__content--normalize-spacing"
+                :class="{ 'playground-loading-gate__content--ready': playgroundReady }"
+                :data-showcase-loading-content="playgroundReady ? 'ready' : 'busy'"
+                :aria-hidden="!playgroundReady || undefined"
+                :inert="!playgroundReady ? true : undefined"
+              >
+                <VfPlaygroundAsync
+                  :files="singleFileExample"
+                  entry="/index.html"
+                  framework="html"
+                  :autorun="true"
+                  :show-code="true"
+                  theme="inherit"
+                  @ready="onPlaygroundReady"
+                  @preview-ready="onPlaygroundReady"
+                  @run="onRun"
+                  @error="onError"
+                />
+              </div>
+              <div
+                v-show="!playgroundReady"
+                class="playground-loading-gate__overlay"
+                style="border-radius: var(--cm-radius-surface)"
+                aria-hidden="true"
+              >
+                <VfSkeleton :min-height="260" style="border-radius: var(--cm-radius-surface)" />
+              </div>
+            </div>
           </VfSection>
         </section>
 
@@ -59,29 +74,44 @@
             <p class="demo-text">Use this mode when JavaScript imports related source and stylesheet files.</p>
           </div>
           <VfSection class="demo-surface" surface>
-            <VfSkeletonGate
-              :ready="playgroundReady"
-              :min-height="260"
-              :preserve-last-height="true"
-              :normalize-content-spacing="true"
-              radius="var(--vf-layout-section-radius)"
+            <div
+              class="playground-loading-gate"
+              :style="{
+                minHeight: playgroundGateMinHeight('multi-file'),
+                borderRadius: 'var(--cm-radius-surface)',
+              }"
+              :aria-busy="!playgroundReady || undefined"
             >
-              <VfPlaygroundAsync
-                :files="multiFileExample"
-                entry="/main.js"
-                framework="vanilla"
-                :autorun="true"
-                :show-code="true"
-                theme="inherit"
-                @ready="onPlaygroundReady"
-                @preview-ready="onPlaygroundReady"
-                @run="onRun"
-                @error="onError"
-              />
-              <template #skeleton>
-                <VfSkeleton :min-height="260" style="border-radius: var(--vf-layout-section-radius)" />
-              </template>
-            </VfSkeletonGate>
+              <div
+                :ref="(element) => setPlaygroundContentRef('multi-file', element)"
+                class="playground-loading-gate__content playground-loading-gate__content--normalize-spacing"
+                :class="{ 'playground-loading-gate__content--ready': playgroundReady }"
+                :data-showcase-loading-content="playgroundReady ? 'ready' : 'busy'"
+                :aria-hidden="!playgroundReady || undefined"
+                :inert="!playgroundReady ? true : undefined"
+              >
+                <VfPlaygroundAsync
+                  :files="multiFileExample"
+                  entry="/main.js"
+                  framework="vanilla"
+                  :autorun="true"
+                  :show-code="true"
+                  theme="inherit"
+                  @ready="onPlaygroundReady"
+                  @preview-ready="onPlaygroundReady"
+                  @run="onRun"
+                  @error="onError"
+                />
+              </div>
+              <div
+                v-show="!playgroundReady"
+                class="playground-loading-gate__overlay"
+                style="border-radius: var(--cm-radius-surface)"
+                aria-hidden="true"
+              >
+                <VfSkeleton :min-height="260" style="border-radius: var(--cm-radius-surface)" />
+              </div>
+            </div>
           </VfSection>
         </section>
 
@@ -91,28 +121,43 @@
             <p class="demo-text">Render a trusted Vue component directly when iframe isolation is unnecessary.</p>
           </div>
           <VfSection class="demo-surface" surface>
-            <VfSkeletonGate
-              :ready="playgroundReady"
-              :min-height="260"
-              :preserve-last-height="true"
-              :normalize-content-spacing="true"
-              radius="var(--vf-layout-section-radius)"
+            <div
+              class="playground-loading-gate"
+              :style="{
+                minHeight: playgroundGateMinHeight('component'),
+                borderRadius: 'var(--cm-radius-surface)',
+              }"
+              :aria-busy="!playgroundReady || undefined"
             >
-              <VfPlaygroundAsync
-                mode="component"
-                :component="componentModeDemo"
-                :component-files="componentModeFiles"
-                component-entry="DemoCard.vue"
-                theme="inherit"
-                :component-padding="24"
-                component-min-height="220px"
-                @ready="onPlaygroundReady"
-                @preview-ready="onPlaygroundReady"
-              />
-              <template #skeleton>
-                <VfSkeleton :min-height="260" style="border-radius: var(--vf-layout-section-radius)" />
-              </template>
-            </VfSkeletonGate>
+              <div
+                :ref="(element) => setPlaygroundContentRef('component', element)"
+                class="playground-loading-gate__content playground-loading-gate__content--normalize-spacing"
+                :class="{ 'playground-loading-gate__content--ready': playgroundReady }"
+                :data-showcase-loading-content="playgroundReady ? 'ready' : 'busy'"
+                :aria-hidden="!playgroundReady || undefined"
+                :inert="!playgroundReady ? true : undefined"
+              >
+                <VfPlaygroundAsync
+                  mode="component"
+                  :component="componentModeDemo"
+                  :component-files="componentModeFiles"
+                  component-entry="DemoCard.vue"
+                  theme="inherit"
+                  :component-padding="24"
+                  component-min-height="220px"
+                  @ready="onPlaygroundReady"
+                  @preview-ready="onPlaygroundReady"
+                />
+              </div>
+              <div
+                v-show="!playgroundReady"
+                class="playground-loading-gate__overlay"
+                style="border-radius: var(--cm-radius-surface)"
+                aria-hidden="true"
+              >
+                <VfSkeleton :min-height="260" style="border-radius: var(--cm-radius-surface)" />
+              </div>
+            </div>
           </VfSection>
         </section>
 
@@ -141,9 +186,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
+import { defineComponent, h, onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from 'vue';
 import { CmSection as VfSection, CmSkeleton as VfSkeleton, CmStack as VfStack } from '@codemonster-ru/ui-vue';
-import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
 import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
@@ -252,9 +296,45 @@ document.getElementById('app')?.append(title, line);`,
 };
 
 const PLAYGROUND_SKELETON_DELAY_MS = 2500;
+type PlaygroundGateId = 'single-file' | 'multi-file' | 'component';
+
 const playgroundReady = ref(false);
+const measuredPlaygroundHeights = ref<Partial<Record<PlaygroundGateId, number>>>({});
+const playgroundResizeObservers = new Map<PlaygroundGateId, ResizeObserver>();
 let playgroundReadyTimer: ReturnType<typeof setTimeout> | null = null;
 let ignoreReadyEventsUntil = 0;
+
+function playgroundGateMinHeight(gateId: PlaygroundGateId): string {
+  const measuredHeight = measuredPlaygroundHeights.value[gateId];
+
+  return !playgroundReady.value && measuredHeight ? `${measuredHeight}px` : '260px';
+}
+
+function setPlaygroundContentRef(
+  gateId: PlaygroundGateId,
+  element: Element | ComponentPublicInstance | null,
+): void {
+  playgroundResizeObservers.get(gateId)?.disconnect();
+  playgroundResizeObservers.delete(gateId);
+
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+
+  const syncHeight = () => {
+    if (element.offsetHeight > 0) {
+      measuredPlaygroundHeights.value[gateId] = element.offsetHeight;
+    }
+  };
+
+  syncHeight();
+
+  if (typeof ResizeObserver !== 'undefined') {
+    const observer = new ResizeObserver(syncHeight);
+    observer.observe(element);
+    playgroundResizeObservers.set(gateId, observer);
+  }
+}
 
 function schedulePlaygroundReady(): void {
   if (playgroundReadyTimer) {
@@ -274,6 +354,11 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  for (const observer of playgroundResizeObservers.values()) {
+    observer.disconnect();
+  }
+  playgroundResizeObservers.clear();
+
   if (playgroundReadyTimer) {
     clearTimeout(playgroundReadyTimer);
     playgroundReadyTimer = null;
@@ -315,6 +400,35 @@ function onError(error: {
 <style scoped>
 .demo-surface {
   min-width: 0;
+}
+
+.playground-loading-gate {
+  position: relative;
+  overflow: hidden;
+}
+
+.playground-loading-gate__content {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.playground-loading-gate__content--normalize-spacing > :first-child {
+  margin-block-start: 0;
+}
+
+.playground-loading-gate__content--normalize-spacing > :last-child {
+  margin-block-end: 0;
+}
+
+.playground-loading-gate__content--ready {
+  opacity: 1;
+}
+
+.playground-loading-gate__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
 }
 
 .demo-replay-button {
