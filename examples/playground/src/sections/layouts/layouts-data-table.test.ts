@@ -1,5 +1,8 @@
 // @vitest-environment jsdom
 
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { createApp, nextTick } from 'vue';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -65,7 +68,7 @@ describe('LayoutsDataTable', () => {
     await nextTick();
     const select = host.querySelector<HTMLSelectElement>('[aria-label="Rows per page"]');
     expect(select?.options).toHaveLength(2);
-    const pageSizeIcon = host.querySelector<HTMLElement>('.layouts-data-table__page-size-visual > .vf-icon-wrapper');
+    const pageSizeIcon = host.querySelector<HTMLElement>('.layouts-data-table__page-size-visual > :last-child');
     expect(pageSizeIcon).not.toBeNull();
     expect(pageSizeIcon?.querySelector<SVGElement>('svg')?.getAttribute('width')).toBe(
       'calc(var(--cm-icon-size-md) - var(--cm-border-width))',
@@ -80,5 +83,11 @@ describe('LayoutsDataTable', () => {
     expect(host.querySelector('.layouts-data-table__pagination-summary')?.textContent?.trim()).toBe('1-7 of 7');
     expect(host.querySelector('[aria-current="page"]')?.getAttribute('aria-label')).toBe('Page 1 of 1');
     app.unmount();
+  });
+
+  it('owns page-size icon color without a legacy wrapper selector', () => {
+    const source = readFileSync(resolve(process.cwd(), 'src/sections/layouts/layouts-data-table.css'), 'utf8');
+    expect(source).toContain('.layouts-data-table__page-size-visual > :last-child');
+    expect(source).not.toContain('.vf-icon-wrapper');
   });
 });

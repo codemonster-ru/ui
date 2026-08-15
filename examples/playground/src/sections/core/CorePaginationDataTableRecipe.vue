@@ -190,7 +190,7 @@ function setPageSize(event: Event): void {
   line-height: var(--cm-line-height-tight);
 }
 
-.core-pagination-data-table-recipe__page-size-visual > .vf-icon-wrapper {
+.core-pagination-data-table-recipe__page-size-visual > :last-child {
   color: var(--cm-color-icon-secondary);
 }
 
