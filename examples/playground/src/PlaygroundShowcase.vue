@@ -1,7 +1,8 @@
 <template>
-  <main class="demo-page">
-    <div class="demo-container">
-      <CmStack>
+  <VfThemeProvider>
+    <main class="demo-page">
+      <div class="demo-container">
+        <VfStack>
         <section class="demo-block">
           <div class="demo-example">
             <p class="demo-label">Three cooperating packages</p>
@@ -26,27 +27,31 @@
             <h2>VfPlayground · single-file HTML</h2>
             <p class="demo-text">Use this mode for a self-contained browser example with no build step.</p>
           </div>
-          <CmSection class="demo-surface" surface>
-            <div class="demo-loading-gate" :aria-busy="playgroundReady ? 'false' : 'true'">
-              <div v-if="!playgroundReady" class="demo-loading-gate__placeholder">
-                <CmSkeleton :min-height="260" radius="surface" />
-              </div>
-              <div :hidden="!playgroundReady" :inert="!playgroundReady">
-                <VfPlaygroundAsync
-                  :files="singleFileExample"
-                  entry="/index.html"
-                  framework="html"
-                  :autorun="true"
-                  :show-code="true"
-                  theme="inherit"
-                  @ready="onPlaygroundReady"
-                  @preview-ready="onPlaygroundReady"
-                  @run="onRun"
-                  @error="onError"
-                />
-              </div>
-            </div>
-          </CmSection>
+          <VfSection class="demo-surface" surface>
+            <VfSkeletonGate
+              :ready="playgroundReady"
+              :min-height="260"
+              :preserve-last-height="true"
+              :normalize-content-spacing="true"
+              radius="var(--vf-layout-section-radius)"
+            >
+              <VfPlaygroundAsync
+                :files="singleFileExample"
+                entry="/index.html"
+                framework="html"
+                :autorun="true"
+                :show-code="true"
+                theme="inherit"
+                @ready="onPlaygroundReady"
+                @preview-ready="onPlaygroundReady"
+                @run="onRun"
+                @error="onError"
+              />
+              <template #skeleton>
+                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+              </template>
+            </VfSkeletonGate>
+          </VfSection>
         </section>
 
         <section class="demo-block">
@@ -54,27 +59,31 @@
             <h2>VfPlayground · multi-file runtime</h2>
             <p class="demo-text">Use this mode when JavaScript imports related source and stylesheet files.</p>
           </div>
-          <CmSection class="demo-surface" surface>
-            <div class="demo-loading-gate" :aria-busy="playgroundReady ? 'false' : 'true'">
-              <div v-if="!playgroundReady" class="demo-loading-gate__placeholder">
-                <CmSkeleton :min-height="260" radius="surface" />
-              </div>
-              <div :hidden="!playgroundReady" :inert="!playgroundReady">
-                <VfPlaygroundAsync
-                  :files="multiFileExample"
-                  entry="/main.js"
-                  framework="vanilla"
-                  :autorun="true"
-                  :show-code="true"
-                  theme="inherit"
-                  @ready="onPlaygroundReady"
-                  @preview-ready="onPlaygroundReady"
-                  @run="onRun"
-                  @error="onError"
-                />
-              </div>
-            </div>
-          </CmSection>
+          <VfSection class="demo-surface" surface>
+            <VfSkeletonGate
+              :ready="playgroundReady"
+              :min-height="260"
+              :preserve-last-height="true"
+              :normalize-content-spacing="true"
+              radius="var(--vf-layout-section-radius)"
+            >
+              <VfPlaygroundAsync
+                :files="multiFileExample"
+                entry="/main.js"
+                framework="vanilla"
+                :autorun="true"
+                :show-code="true"
+                theme="inherit"
+                @ready="onPlaygroundReady"
+                @preview-ready="onPlaygroundReady"
+                @run="onRun"
+                @error="onError"
+              />
+              <template #skeleton>
+                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+              </template>
+            </VfSkeletonGate>
+          </VfSection>
         </section>
 
         <section class="demo-block">
@@ -82,26 +91,30 @@
             <h2>VfPlayground · Vue component mode</h2>
             <p class="demo-text">Render a trusted Vue component directly when iframe isolation is unnecessary.</p>
           </div>
-          <CmSection class="demo-surface" surface>
-            <div class="demo-loading-gate" :aria-busy="playgroundReady ? 'false' : 'true'">
-              <div v-if="!playgroundReady" class="demo-loading-gate__placeholder">
-                <CmSkeleton :min-height="260" radius="surface" />
-              </div>
-              <div :hidden="!playgroundReady" :inert="!playgroundReady">
-                <VfPlaygroundAsync
-                  mode="component"
-                  :component="componentModeDemo"
-                  :component-files="componentModeFiles"
-                  component-entry="DemoCard.vue"
-                  theme="inherit"
-                  :component-padding="24"
-                  component-min-height="220px"
-                  @ready="onPlaygroundReady"
-                  @preview-ready="onPlaygroundReady"
-                />
-              </div>
-            </div>
-          </CmSection>
+          <VfSection class="demo-surface" surface>
+            <VfSkeletonGate
+              :ready="playgroundReady"
+              :min-height="260"
+              :preserve-last-height="true"
+              :normalize-content-spacing="true"
+              radius="var(--vf-layout-section-radius)"
+            >
+              <VfPlaygroundAsync
+                mode="component"
+                :component="componentModeDemo"
+                :component-files="componentModeFiles"
+                component-entry="DemoCard.vue"
+                theme="inherit"
+                :component-padding="24"
+                component-min-height="220px"
+                @ready="onPlaygroundReady"
+                @preview-ready="onPlaygroundReady"
+              />
+              <template #skeleton>
+                <VfSkeleton :min-height="260" radius="var(--vf-layout-section-radius)" />
+              </template>
+            </VfSkeletonGate>
+          </VfSection>
         </section>
 
         <section class="demo-block">
@@ -109,9 +122,9 @@
             <h2>Vite plugin · Vue runtime module</h2>
             <p class="demo-text">A production-built virtual module resolved by the Playground Vite plugin.</p>
           </div>
-          <CmSection class="demo-surface" surface>
+          <VfSection class="demo-surface" surface>
             <ViteLikeDemoPreview demo-id="vue-runtime-smoke" :source="vueRuntimeSmokeSource" />
-          </CmSection>
+          </VfSection>
         </section>
 
         <section class="demo-block">
@@ -119,18 +132,22 @@
             <h2>Vite plugin · custom resolver</h2>
             <p class="demo-text">A virtual-module example that verifies custom component resolution.</p>
           </div>
-          <CmSection class="demo-surface" surface>
+          <VfSection class="demo-surface" surface>
             <ViteLikeDemoPreview demo-id="custom-resolver-smoke" :source="customResolverSmokeSource" />
-          </CmSection>
+          </VfSection>
         </section>
-      </CmStack>
-    </div>
-  </main>
+        </VfStack>
+      </div>
+    </main>
+  </VfThemeProvider>
 </template>
 
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
-import { CmSection, CmSkeleton, CmStack } from '@codemonster-ru/ui-vue';
+import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
+import { VfSkeleton } from '@codemonster-ru/vueforge-core/skeleton';
+import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
+import { VfSection, VfStack } from '@codemonster-ru/vueforge-layouts';
 import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
@@ -144,12 +161,12 @@ const componentModeDemo = defineComponent({
         h('h3', { style: 'margin:0;' }, 'Vue Component Preview'),
         h(
           'p',
-          { style: 'margin:0;color:var(--cm-color-text-muted);' },
-          'This preview is rendered directly as a Vue component without iframe sandbox.',
+          { style: 'margin:0;color:var(--vf-color-text-muted);' },
+          'This preview is rendered directly as a Vue component without iframe sandbox.'
         ),
-        h('button', { class: 'cm-button cm-button--secondary cm-button--md', type: 'button' }, 'Action'),
+        h('button', { class: 'vf-button vf-button--secondary', type: 'button' }, 'Action')
       ]);
-  },
+  }
 });
 
 const componentModeFiles = {
@@ -164,9 +181,9 @@ import DemoCard from './DemoCard.vue';
   <div class="component-mode-demo">
     <h3>Vue Component Preview</h3>
     <p>This preview is rendered directly as a Vue component without iframe sandbox.</p>
-    <button class="cm-button cm-button--secondary cm-button--md" type="button">Action</button>
+    <button class="vf-button vf-button--secondary" type="button">Action</button>
   </div>
-</template>`,
+</template>`
 };
 
 const singleFileExample = {
@@ -202,7 +219,7 @@ const singleFileExample = {
       document.body.appendChild(root);
     </${'script'}>
   </body>
-</html>`,
+</html>`
 };
 
 const multiFileExample = {
@@ -235,7 +252,7 @@ document.getElementById('app')?.append(title, line);`,
   body {
           color-scheme: dark;
   }
-}`,
+}`
 };
 
 const PLAYGROUND_SKELETON_DELAY_MS = 2500;
@@ -294,7 +311,7 @@ function onError(error: {
     message: error.message,
     source: error.source,
     code: error.code,
-    details: error.details,
+    details: error.details
   });
 }
 </script>
@@ -312,10 +329,10 @@ function onError(error: {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--cm-color-border-default);
-  border-radius: var(--cm-radius-control);
-  background: var(--cm-color-background-surface);
-  color: var(--cm-color-text-primary);
+  border: 1px solid var(--vf-color-border-default);
+  border-radius: var(--vf-radius-control);
+  background: var(--vf-color-background-surface);
+  color: var(--vf-color-text-primary);
   padding: 0.35rem 0.65rem;
   font: inherit;
   cursor: pointer;

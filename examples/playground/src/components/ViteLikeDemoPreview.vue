@@ -1,18 +1,12 @@
 <template>
   <div class="vf-playground" data-vf-theme="inherit">
     <div class="vf-playground__tabs">
-      <CmInline class="vf-playground__tabs-default" role="tablist" aria-label="Demo view">
-        <CmButton
-          v-for="item in tabItems"
-          :key="item.value"
-          role="tab"
-          :aria-selected="activeTab === item.value"
-          :variant="activeTab === item.value ? 'primary' : 'ghost'"
-          @click="activeTab = item.value"
-        >
-          {{ item.label }}
-        </CmButton>
-      </CmInline>
+      <VfTabs
+        class="vf-playground__tabs-default"
+        :items="tabItems"
+        :model-value="activeTab"
+        @update:model-value="onTabChange"
+      />
     </div>
 
     <div v-if="activeTab === 'preview'" class="vf-playground__panel preview">
@@ -30,7 +24,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import type { Component } from 'vue';
-import { CmButton, CmInline } from '@codemonster-ru/ui-vue';
+import { VfTabs, type VfTabItem } from '@codemonster-ru/vueforge-core';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 
 import VueRuntimeSmokeDemo from 'virtual:vueforge-playground/vue-runtime-smoke';
@@ -42,7 +36,7 @@ const props = defineProps<{
 }>();
 
 const activeTab = ref<'preview' | 'code'>('preview');
-const tabItems: Array<{ value: 'preview' | 'code'; label: string }> = [
+const tabItems: VfTabItem[] = [
   { value: 'code', label: 'Code' },
   { value: 'preview', label: 'Preview' },
 ];
@@ -54,6 +48,11 @@ const demoComponentMap: Record<'vue-runtime-smoke' | 'custom-resolver-smoke', Co
 
 const demoComponent = computed(() => demoComponentMap[props.demoId]);
 
+function onTabChange(value: string): void {
+  if (value === 'preview' || value === 'code') {
+    activeTab.value = value;
+  }
+}
 </script>
 
 <style scoped>
@@ -63,7 +62,7 @@ const demoComponent = computed(() => demoComponentMap[props.demoId]);
   overflow: visible;
   display: grid;
   place-items: center;
-  padding: var(--cm-space-6) 0;
+  padding: var(--vf-layout-space-layout-lg) 0;
 }
 
 .vf-playground__panel.preview > * {
