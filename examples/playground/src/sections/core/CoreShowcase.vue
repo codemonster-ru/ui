@@ -82,6 +82,7 @@ import CoreCommandPaletteRecipe, {
 import CoreDialogRecipe from './CoreDialogRecipe.vue';
 import CoreDrawerRecipe, { isCoreDrawerSupportedPlacement } from './CoreDrawerRecipe.vue';
 import CoreExpandableDataTableRecipe from './CoreExpandableDataTableRecipe.vue';
+import CorePaginationDataTableRecipe from './CorePaginationDataTableRecipe.vue';
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
@@ -910,16 +911,6 @@ const coreDataTableMetricColumns = createCoreDataTableColumns(dataTableMetricCol
 const coreDataTableMetricRows = createCoreDataTableRows(coreDataTableMetricColumns, dataTableRows);
 const coreDataTableConfigurableColumns = createCoreDataTableColumns(dataTableConfigurableColumns);
 const coreDataTableConfigurableRows = createCoreDataTableRows(coreDataTableConfigurableColumns, dataTableRows);
-
-const dataTablePaginationRows: VfDataTableRow[] = Array.from({ length: 42 }, (_, index) => {
-  const source = dataTableRows[index % dataTableRows.length] as Record<string, unknown>;
-
-  return {
-    ...source,
-    id: index + 1,
-    member: `Member ${index + 1}`,
-  };
-});
 
 const tabContent = computed<Record<string, string>>(() => ({
   overview: 'Overview content.',
@@ -2000,15 +1991,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · pagination</p>
-                  <VfDataTable
-                    :columns="dataTableMetricColumns"
-                    :rows="dataTablePaginationRows"
-                    row-key="id"
-                    pagination
-                    :default-page="7"
-                    :default-page-size="3"
-                    :page-size-options="[3, 5, 10]"
-                  />
+                  <CorePaginationDataTableRecipe />
                 </div>
 
                 <div class="demo-component-matrix__cell">
