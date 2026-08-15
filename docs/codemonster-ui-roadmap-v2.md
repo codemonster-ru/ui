@@ -87,7 +87,7 @@ that threshold. There is no design-change tolerance.
 - Current phase: Phase 19 — VueForge visual compatibility
 - Current milestone: M12 — In progress
 - Completed milestones: M9, M10, and M11
-- Next item: `CMUI-195` — restore direct-replacement visual parity
+- Next item: `CMUI-196` — restore composition and application-shell visual parity
 
 ## Milestones
 
@@ -187,7 +187,7 @@ for presentation while retaining the completed semantic, accessibility, and cros
       fails CI above an explicitly documented anti-aliasing tolerance.
 - [x] `CMUI-194` Restore VueForge 2 token parity for palette, semantic colors, typography, control
       sizing, spacing, radii, borders, shadows, focus treatment, and motion under `--cm-*` names.
-- [ ] `CMUI-195` Restore default, variant, size, state, and responsive visual parity for every
+- [x] `CMUI-195` Restore default, variant, size, state, and responsive visual parity for every
       direct replacement in both light and dark themes without adding `.vf-*` selectors or a
       VueForge runtime dependency to CodeMonster UI packages.
 - [ ] `CMUI-196` Restore the frozen visual presentation for approved compositions and
@@ -233,6 +233,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-15 | Reopen migration completion for VueForge 2 visual compatibility.                                  | The replacement changed showcase content, shell geometry, component spacing, typography, focus treatment, and other presentation while the existing visual gate only generated fixtures and never compared screenshots.                                 | `CMUI-192`–`CMUI-200`, `CMUI-G012` |
 | 2026-08-15 | Use `fd793696f50d3be0fcd3788f0f8f751c63869963` as the sole visual baseline.                       | This is the last accepted showcase before the substantial monorepository and package migration; later commits cannot define expected presentation even when their relevant files happen to match.                                                       | `CMUI-192`–`CMUI-200`, `CMUI-G012` |
 | 2026-08-15 | Preserve frozen token alias formulas as well as their computed values.                            | Equivalent literals can hide semantic drift in derived radii and shadows; the portable `--cm-*` graph now retains the reviewed VueForge relationships and verifies every reference.                                                                     | `CMUI-194`                         |
+| 2026-08-15 | Preserve canonical ownership while matching direct-replacement pixels.                            | All 37 direct replacements retain their current Vue/Razor semantics and public contracts while the reviewed showcase comparison passes all 312 light/dark desktop/mobile screenshots with no changed, missing, or unexpected images.                    | `CMUI-195`                         |
 
 ## Scope-change log
 
