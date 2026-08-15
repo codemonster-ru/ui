@@ -1,6 +1,5 @@
 <template>
-  <VfThemeProvider>
-    <main class="demo-page">
+  <main class="demo-page">
       <div class="demo-container">
         <VfStack>
         <section class="demo-block">
@@ -138,14 +137,12 @@
         </section>
         </VfStack>
       </div>
-    </main>
-  </VfThemeProvider>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
 import { CmSection as VfSection, CmSkeleton as VfSkeleton, CmStack as VfStack } from '@codemonster-ru/ui-vue';
-import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import { VfSkeletonGate } from '@codemonster-ru/vueforge-core/skeleton-gate';
 import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
