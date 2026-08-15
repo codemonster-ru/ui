@@ -7,7 +7,7 @@ import {
   CmSection as VfSection,
   CmStack as VfStack,
 } from '@codemonster-ru/ui-vue';
-import { VfButton, VfTag, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-core';
+import { cmSemanticColorTokenNames } from '@codemonster-ru/ui-tokens';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@codemonster-ru/ui-css/alert.css';
@@ -59,8 +59,8 @@ const contrastRows = [
   { label: 'Selected strongest state', light: '4.59', dark: '5.35' },
 ];
 
-const semanticSwatches = vfSemanticColorTokenNames.map((name) => {
-  const variable = `--vf-${name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)}`;
+const semanticSwatches = cmSemanticColorTokenNames.map((name) => {
+  const variable = `--cm-${name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)}`;
   const label = name
     .replace(/^color/, '')
     .replace(/([a-z])([A-Z])/g, '$1 $2')
@@ -101,7 +101,7 @@ const codeSample = [
               <div v-for="step in family.steps" :key="step" class="color-system__primitive">
                 <span
                   class="color-system__primitive-color"
-                  :style="{ background: `var(--vf-palette-${family.prefix}-${step})` }"
+                  :style="{ background: `var(--cm-palette-${family.prefix}-${step})` }"
                   aria-hidden="true"
                 />
                 <span>{{ step }}</span>
@@ -169,9 +169,46 @@ const codeSample = [
               </div>
               <VfCheckbox :model-value="true" label="Selected with a non-color cue" />
               <div class="color-system__actions">
-                <VfButton v-for="variant in actionVariants" :key="variant" :variant="variant">{{ variant }}</VfButton>
-                <VfButton loading>Loading</VfButton>
-                <VfButton disabled>Disabled</VfButton>
+                <button
+                  v-for="variant in actionVariants"
+                  :key="variant"
+                  class="color-system__action"
+                  :class="`color-system__action--${variant}`"
+                  type="button"
+                >
+                  {{ variant }}
+                </button>
+                <button
+                  class="color-system__action color-system__action--primary"
+                  type="button"
+                  disabled
+                  aria-busy="true"
+                >
+                  <span class="color-system__action-spinner" role="progressbar" aria-label="Loading">
+                    <svg viewBox="0 0 50 50" aria-hidden="true" focusable="false">
+                      <circle
+                        class="color-system__action-spinner-track"
+                        cx="25"
+                        cy="25"
+                        r="20"
+                        fill="none"
+                        stroke-width="5"
+                      />
+                      <circle
+                        class="color-system__action-spinner-value"
+                        cx="25"
+                        cy="25"
+                        r="20"
+                        fill="none"
+                        stroke-width="5"
+                      />
+                    </svg>
+                  </span>
+                  Loading
+                </button>
+                <button class="color-system__action color-system__action--primary" type="button" disabled>
+                  Disabled
+                </button>
               </div>
             </div>
 
@@ -197,9 +234,14 @@ const codeSample = [
                 >
                   {{ status.label }}
                 </VfBadge>
-                <VfTag v-for="status in statusTones" :key="`tag-${status.tone}`" :tone="status.tone">
+                <span
+                  v-for="status in statusTones"
+                  :key="`tag-${status.tone}`"
+                  class="color-system__tag"
+                  :class="`color-system__tag--${status.tone}`"
+                >
                   {{ status.label }}
-                </VfTag>
+                </span>
               </div>
             </div>
 
