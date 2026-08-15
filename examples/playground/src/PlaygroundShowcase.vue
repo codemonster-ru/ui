@@ -188,6 +188,7 @@
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from 'vue';
 import { CmSection as VfSection, CmSkeleton as VfSkeleton, CmStack as VfStack } from '@codemonster-ru/ui-vue';
+import '@codemonster-ru/ui-css/button.css';
 import { VfPlaygroundAsync } from '@codemonster-ru/vueforge-playground/ui';
 import ViteLikeDemoPreview from './components/ViteLikeDemoPreview.vue';
 import vueRuntimeSmokeSource from './vitepress-demos/vue-runtime-smoke.ts?raw';
@@ -204,7 +205,7 @@ const componentModeDemo = defineComponent({
           { style: 'margin:0;color:var(--cm-color-text-muted);' },
           'This preview is rendered directly as a Vue component without iframe sandbox.'
         ),
-        h('button', { class: 'vf-button vf-button--secondary', type: 'button' }, 'Action')
+        h('button', { class: 'cm-button cm-button--secondary', type: 'button' }, 'Action')
       ]);
   }
 });
