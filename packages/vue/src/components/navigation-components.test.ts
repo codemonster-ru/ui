@@ -38,6 +38,22 @@ describe('Vue navigation components', () => {
     expect(wrapper.get('[aria-current="page"]').text()).toBe('Archive');
   });
 
+  it('preserves caller-owned root IDs across navigation components', () => {
+    const breadcrumbs = mount(CmBreadcrumbs, {
+      attrs: { id: 'project-path' },
+      props: { items: [{ label: 'Project', current: true }] },
+    });
+    const link = mount(CmLink, { attrs: { id: 'project-link' }, props: { href: '/project' } });
+    const menu = mount(CmMenu, {
+      attrs: { id: 'project-menu' },
+      props: { items: [{ id: 'open', label: 'Open' }] },
+    });
+
+    expect(breadcrumbs.attributes('id')).toBe('project-path');
+    expect(link.attributes('id')).toBe('project-link');
+    expect(menu.attributes('id')).toBe('project-menu');
+  });
+
   it('updates uncontrolled tabs and skips disabled items with keyboard', async () => {
     const wrapper = mount(CmTabs, {
       attachTo: document.body,
