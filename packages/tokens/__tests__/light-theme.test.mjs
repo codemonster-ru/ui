@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   cmBorderTokenNames,
   cmBreakpointTokenNames,
+  cmControlTokenNames,
   cmLightThemePreset,
   cmMotionTokenNames,
   cmPrimitiveColorTokenNames,
@@ -19,6 +20,7 @@ const groupNames = [
   cmSemanticColorTokenNames,
   cmSpacingTokenNames,
   cmSizingTokenNames,
+  cmControlTokenNames,
   cmTypographyTokenNames,
   cmBorderTokenNames,
   cmRadiusTokenNames,
@@ -33,7 +35,7 @@ function cssNameToTokenName(name) {
 
 test('composes every token group into the immutable light preset', () => {
   const declaredNames = groupNames.flat();
-  assert.equal(declaredNames.length, 206);
+  assert.equal(declaredNames.length, 224);
   assert.equal(new Set(declaredNames).size, declaredNames.length, 'Token groups must not overlap.');
   assert.deepEqual(Object.keys(cmLightThemePreset.tokens), declaredNames);
   assert.equal(cmLightThemePreset.name, 'codemonster-light');

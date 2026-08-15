@@ -1,5 +1,6 @@
 import { cmBorderTokenNames, cmRadiusTokenNames, cmShadowTokenNames } from './borders.js';
 import { cmBreakpointTokenNames } from './breakpoints.js';
+import { cmControlTokenNames } from './control.js';
 import { cmMotionTokenNames } from './motion.js';
 import { cmPrimitiveColorTokenNames } from './primitive-colors.js';
 import { cmSemanticColorTokenNames } from './semantic-colors.js';
@@ -12,6 +13,7 @@ export const cmThemeTokenSchema = Object.freeze({
   semanticColor: cmSemanticColorTokenNames,
   spacing: cmSpacingTokenNames,
   sizing: cmSizingTokenNames,
+  control: cmControlTokenNames,
   typography: cmTypographyTokenNames,
   border: cmBorderTokenNames,
   radius: cmRadiusTokenNames,

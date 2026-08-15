@@ -24,7 +24,7 @@ function parseDeclarations(source) {
 test('generates the complete light theme and minimal dark overrides', () => {
   const [lightBlock, darkBlock] = css.split("\n\n[data-cm-theme='dark'] {");
 
-  assert.equal(lightBlock.match(/ {2}--cm-/g)?.length, 200);
+  assert.equal(lightBlock.match(/ {2}--cm-/g)?.length, 218);
   assert.equal(darkBlock.match(/ {2}--cm-/g)?.length, 83);
   assert.match(css, /^@import '\.\/breakpoints\.css';/);
 });
@@ -33,6 +33,9 @@ test('uses portable CodeMonster custom property names', () => {
   assert.match(css, /--cm-palette-neutral-0: oklch\(/);
   assert.match(css, /--cm-color-background-canvas: var\(--cm-palette-/);
   assert.match(css, /--cm-font-size-2xl: /);
+  assert.match(css, /--cm-focus-ring-width: 3px;/);
+  assert.match(css, /--cm-button-padding-md: 0\.3125rem 0\.75rem;/);
+  assert.match(css, /--cm-field-padding-lg: var\(--cm-field-padding-block-lg\) var\(--cm-field-padding-inline-lg\);/);
   assert.doesNotMatch(css, /--(?:vf|vueforge)-/);
   assert.doesNotMatch(css, /--cm-[^:]*[A-Z]/);
   assert.ok(css.endsWith('\n'));
