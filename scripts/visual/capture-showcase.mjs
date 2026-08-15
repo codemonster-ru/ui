@@ -131,9 +131,9 @@ for (const viewport of config.viewports) {
           '*,*::before,*::after{animation:none!important;caret-color:transparent!important;scroll-behavior:auto!important;transition:none!important}',
           'html{scrollbar-width:none!important}',
           'html::-webkit-scrollbar{display:none!important}',
-          '[role="progressbar"][aria-label="Dynamic progress"] .vf-progress-bar__value,[role="progressbar"][aria-label="Installing module progress"] .vf-progress-bar__value{inline-size:50%!important}',
-          '[role="progressbar"][aria-label="Dynamic progress"] .vf-progress-bar__label,[role="progressbar"][aria-label="Installing module progress"] .vf-progress-bar__label{font-size:0!important}',
-          '[role="progressbar"][aria-label="Dynamic progress"] .vf-progress-bar__label::after,[role="progressbar"][aria-label="Installing module progress"] .vf-progress-bar__label::after{content:"50%";font-size:var(--vf-progress-bar-label-font-size)!important}',
+          '[role="progressbar"][aria-label="Dynamic progress"] :is(.vf-progress-bar__value,.cm-progress-bar__value),[role="progressbar"][aria-label="Installing module progress"] :is(.vf-progress-bar__value,.cm-progress-bar__value){inline-size:50%!important}',
+          '[role="progressbar"][aria-label="Dynamic progress"] :is(.vf-progress-bar__label,.cm-progress-bar__label),[role="progressbar"][aria-label="Installing module progress"] :is(.vf-progress-bar__label,.cm-progress-bar__label){font-size:0!important}',
+          '[role="progressbar"][aria-label="Dynamic progress"] :is(.vf-progress-bar__label,.cm-progress-bar__label)::after,[role="progressbar"][aria-label="Installing module progress"] :is(.vf-progress-bar__label,.cm-progress-bar__label)::after{content:"50%";font-size:0.625rem!important}',
         ].join('');
         document.head.append(style);
 
