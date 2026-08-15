@@ -85,7 +85,7 @@ const blocks = [
     language: "ts",
     filename: "long-1000-lines.ts",
     code: longTsSnippet,
-    maxHeight: "var(--vf-breakpoint-xs)",
+    maxHeight: "var(--cm-breakpoint-xs)",
     skeletonMinHeight: estimateSkeletonMinHeight(longTsSnippet, true),
   },
   { language: "plaintext", filename: "plain.txt", code: snippets.plain, skeletonMinHeight: estimateSkeletonMinHeight(snippets.plain, false) },
@@ -245,7 +245,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .demo-page {
   min-height: 100vh;
-  background: var(--vf-color-background-canvas);
+  background: var(--cm-color-background-canvas);
 }
 
 .demo-grid {
@@ -299,10 +299,10 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--vf-color-border-default);
-  border-radius: var(--vf-radius-control);
-  background: var(--vf-color-background-surface);
-  color: var(--vf-color-text-primary);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+  color: var(--cm-color-text-primary);
   padding: 0.35rem 0.65rem;
   font: inherit;
   cursor: pointer;
