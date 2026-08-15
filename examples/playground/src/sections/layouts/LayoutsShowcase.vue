@@ -833,12 +833,9 @@
                           <main class="demo-admin-shell-recipe__content">
                             <VfStack>
                               <h3 class="demo-admin-shell__page-title">Warehouse availability</h3>
-                              <VfDataTable
+                              <LayoutsDataTable
                                 :columns="adminShellTableColumns"
                                 :rows="adminShellTableRows"
-                                row-key="id"
-                                column-dividers
-                                pagination
                                 :default-page-size="5"
                                 :page-size-options="[5, 10]"
                               />
@@ -1055,8 +1052,7 @@
 </template>
 
 <script setup lang="ts">
-import { VfDataTable, VfDrawer } from '@codemonster-ru/vueforge-core';
-import type { VfDataTableColumn, VfDataTableRow } from '@codemonster-ru/vueforge-core';
+import { VfDrawer } from '@codemonster-ru/vueforge-core';
 import { cmBreakpoints, type CmBreakpointName } from '@codemonster-ru/ui-tokens';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import {
@@ -1080,6 +1076,7 @@ import {
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import annabelLogoIcon from '../../assets/annabel-logo-icon.svg';
 import vueForgeLogoIcon from '../../assets/vueforge-logo-icon.svg';
+import LayoutsDataTable from './LayoutsDataTable.vue';
 import LayoutsNavMenu from './LayoutsNavMenu.vue';
 import LayoutsPasswordInput from './LayoutsPasswordInput.vue';
 import LayoutsTabs from './LayoutsTabs.vue';
@@ -1371,14 +1368,14 @@ const adminLayoutPanels = [
     ],
   },
 ];
-const adminShellTableColumns: VfDataTableColumn[] = [
+const adminShellTableColumns = [
   { key: 'product', header: 'Product' },
   { key: 'sku', header: 'SKU' },
   { key: 'warehouse', header: 'Warehouse' },
-  { key: 'available', header: 'Available', align: 'end' },
+  { key: 'available', header: 'Available', align: 'end' as const },
   { key: 'status', header: 'Status' },
 ];
-const adminShellTableRows: VfDataTableRow[] = [
+const adminShellTableRows = [
   { id: 1, product: 'Wireless keyboard', sku: 'KB-1042', warehouse: 'North', available: 24, status: 'Available' },
   { id: 2, product: 'USB-C dock', sku: 'DK-2208', warehouse: 'Central', available: 0, status: 'Out of stock' },
   { id: 3, product: 'Studio monitor', sku: 'MN-3410', warehouse: 'North', available: 7, status: 'Low stock' },
