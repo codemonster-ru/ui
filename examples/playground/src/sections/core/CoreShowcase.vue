@@ -68,7 +68,6 @@ import type {
   VfDataTableColumnOrder,
   VfDataTableColumnWidths,
   VfDataTableRow,
-  VfDataTableSort,
   VfNavMenuItem,
 } from '@codemonster-ru/vueforge-core';
 import CoreDataTableRecipe, {
@@ -87,6 +86,9 @@ import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
 import CoreSlotsDataTableRecipe from './CoreSlotsDataTableRecipe.vue';
+import CoreSortableDataTableRecipe, {
+  type CoreSortableDataTableSort,
+} from './CoreSortableDataTableRecipe.vue';
 import CoreTabsRecipe from './CoreTabsRecipe.vue';
 import ShowcaseThemeSwitch from '../../components/ShowcaseThemeSwitch.vue';
 import { useShowcaseTheme } from '../../showcase-theme';
@@ -131,7 +133,7 @@ const selectedDataTableRowKeys = ref<Array<string | number>>([]);
 const expandedDataTableRowKeys = ref<Array<string | number>>([2]);
 const dataTableColumnOrder = ref<VfDataTableColumnOrder>([]);
 const dataTableColumnWidths = ref<VfDataTableColumnWidths>({});
-const dataTableSort = ref<VfDataTableSort[]>([]);
+const dataTableSort = ref<CoreSortableDataTableSort[]>([]);
 const dataTableError = ref(true);
 const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
 const dataTableColumnChooserOpen = ref(false);
@@ -718,13 +720,6 @@ const dataTableMetricColumns: VfDataTableColumn[] = [
   { key: 'member', header: 'Member' },
   { key: 'status', header: 'Status' },
   { key: 'tasks', header: 'Tasks', align: 'end' },
-];
-
-const dataTableSortableColumns: VfDataTableColumn[] = [
-  { key: 'member', header: 'Member', sortable: true },
-  { key: 'role', header: 'Role', sortable: true },
-  { key: 'status', header: 'Status', sortable: true },
-  { key: 'tasks', header: 'Tasks', sortable: true, align: 'end' },
 ];
 
 const dataTableSortLabel = computed(() =>
@@ -1970,19 +1965,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                       Click headers to add sort columns in priority order. Sorting is applied to all rows before
                       pagination.
                     </p>
-                    <VfDataTable
-                      v-model:sort="dataTableSort"
-                      caption="Sortable team workload"
-                      :columns="dataTableSortableColumns"
-                      :rows="dataTableRows"
-                      row-key="id"
-                      multi-sort
-                      pagination
-                      :default-page-size="3"
-                      :page-size-options="[3, 5, 10]"
-                      striped
-                      column-dividers
-                    />
+                    <CoreSortableDataTableRecipe v-model:sort="dataTableSort" />
                     <p class="demo-text" aria-live="polite">
                       Sort: <code>{{ dataTableSortLabel }}</code>
                     </p>
