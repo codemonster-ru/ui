@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import {
+  CmAlert as VfAlert,
   CmBadge as VfBadge,
   CmCheckbox as VfCheckbox,
   CmSection as VfSection,
   CmStack as VfStack,
 } from '@codemonster-ru/ui-vue';
-import {
-  VfAlert,
-  VfButton,
-  VfInput,
-  VfTag,
-  vfSemanticColorTokenNames,
-} from '@codemonster-ru/vueforge-core';
+import { VfButton, VfInput, VfTag, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-core';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
+import { VueIconify } from '@codemonster-ru/vueforge-icons';
+import '@codemonster-ru/ui-css/alert.css';
 import './color-system-showcase.css';
 
 interface PrimitiveFamily {
@@ -42,6 +39,13 @@ const statusTones = [
   { tone: 'danger', label: 'danger' },
   { tone: 'help', label: 'help' },
 ] as const;
+const alertIconByTone = {
+  success: 'checkCircle',
+  info: 'infoCircle',
+  warn: 'alertCircle',
+  danger: 'xCircle',
+  help: 'questionCircle',
+} as const;
 const actionVariants = ['primary', 'secondary', 'success', 'info', 'warn', 'help', 'danger', 'contrast'] as const;
 
 const contrastRows = [
@@ -173,9 +177,14 @@ const codeSample = [
               <VfAlert
                 v-for="status in statusTones"
                 :key="status.tone"
-                :tone="status.tone"
+                class="color-system__status-alert"
+                :tone="status.tone === 'warn' ? 'warning' : status.tone"
                 :title="`${status.label} status`"
+                role="alert"
               >
+                <template #icon>
+                  <VueIconify :icon="alertIconByTone[status.tone]" size="var(--vf-icon-size-lg)" />
+                </template>
                 Separate background, border, icon, and foreground roles.
               </VfAlert>
               <div class="color-system__chips">
@@ -232,3 +241,9 @@ const codeSample = [
     </VfStack>
   </VfSection>
 </template>
+
+<style>
+.color-system__status-alert {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--cm-color-text-primary) 4%, transparent);
+}
+</style>
