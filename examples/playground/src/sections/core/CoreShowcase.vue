@@ -14,6 +14,8 @@ import {
   CmDialog,
   CmIconButton,
   CmLink,
+  CmMenu,
+  CmTooltip,
   CmPopover,
   CmProgressBar,
   CmProgressSpinner,
@@ -33,34 +35,32 @@ import '@codemonster-ru/ui-css/alert.css';
 import '@codemonster-ru/ui-css/breadcrumbs.css';
 import '@codemonster-ru/ui-css/checkbox.css';
 import '@codemonster-ru/ui-css/dialog.css';
+import '@codemonster-ru/ui-css/dropdown.css';
 import '@codemonster-ru/ui-css/icon-button.css';
 import '@codemonster-ru/ui-css/link.css';
+import '@codemonster-ru/ui-css/menu.css';
 import '@codemonster-ru/ui-css/popover.css';
 import '@codemonster-ru/ui-css/progress-bar.css';
 import '@codemonster-ru/ui-css/progress-spinner.css';
 import '@codemonster-ru/ui-css/table.css';
+import '@codemonster-ru/ui-css/tooltip.css';
 import {
   VfCommandPalette,
   VfDataTable,
   VfDatePicker,
   VfDrawer,
   VfDialog,
-  VfDropdown,
   VfField,
   VfFieldset,
   VfInput,
-  VfMenu,
   VfMenuBar,
-  VfMenuItem,
   VfNavMenu,
-  VfPopover,
   VfProgressBar,
   VfProgressSpinner,
   VfSelect,
   VfTable as VfLegacyTable,
   VfTabs,
   VfTextarea as VfFloatingTextarea,
-  VfTooltip,
   VfSwitch as VfIconSwitch,
 } from '@codemonster-ru/vueforge-core';
 import type {
@@ -118,6 +118,12 @@ const dataTableSort = ref<VfDataTableSort[]>([]);
 const dataTableError = ref(true);
 const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
 const dataTableColumnChooserOpen = ref(false);
+const defaultDropdownOpen = ref(false);
+const pillsDropdownOpen = ref(false);
+const contentPopoverOpen = ref(false);
+const defaultDropdownRoot = ref<HTMLElement | null>(null);
+const pillsDropdownRoot = ref<HTMLElement | null>(null);
+const contentPopoverRoot = ref<HTMLElement | null>(null);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 let confirmDialogPreviousBodyOverflow: string | undefined;
 
@@ -126,6 +132,87 @@ const openAccordionItems = [{ id: 'open', title: 'Open section', content: 'Open 
 const disabledAccordionItems = [
   { id: 'disabled', title: 'Disabled section', content: 'Disabled content.', disabled: true },
 ] as const;
+const defaultDropdownItems = [
+  { id: 'edit', label: 'Edit' },
+  { id: 'delete', label: 'Delete', tone: 'danger' },
+] as const;
+const pillsDropdownItems = [
+  { id: 'action-one', label: 'Action one' },
+  { id: 'action-two', label: 'Action two' },
+] as const;
+
+type OverlayMenuId = 'default' | 'pills';
+
+function overlayMenuState(id: OverlayMenuId) {
+  return id === 'default' ? defaultDropdownOpen : pillsDropdownOpen;
+}
+
+function overlayMenuRoot(id: OverlayMenuId): HTMLElement | null {
+  return (id === 'default' ? defaultDropdownRoot : pillsDropdownRoot).value;
+}
+
+async function setOverlayMenuOpen(id: OverlayMenuId, open: boolean, focusItem = false): Promise<void> {
+  overlayMenuState(id).value = open;
+  if (!open || !focusItem) return;
+  await nextTick();
+  overlayMenuRoot(id)?.querySelector<HTMLElement>('[data-cm-menu-item]:not([disabled])')?.focus();
+}
+
+function restoreOverlayMenuTrigger(id: OverlayMenuId): void {
+  overlayMenuRoot(id)?.querySelector<HTMLButtonElement>('.cm-dropdown__trigger')?.focus();
+}
+
+function closeOverlayMenu(id: OverlayMenuId, restoreFocus = false): void {
+  overlayMenuState(id).value = false;
+  if (restoreFocus) restoreOverlayMenuTrigger(id);
+}
+
+function handleOverlayMenuTriggerKeydown(event: KeyboardEvent, id: OverlayMenuId): void {
+  if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+  event.preventDefault();
+  void setOverlayMenuOpen(id, true, true).then(() => {
+    if (event.key !== 'ArrowUp') return;
+    const items = overlayMenuRoot(id)?.querySelectorAll<HTMLElement>('[data-cm-menu-item]:not([disabled])');
+    items?.[items.length - 1]?.focus();
+  });
+}
+
+async function setContentPopoverOpen(open: boolean, focusPanel = false): Promise<void> {
+  contentPopoverOpen.value = open;
+  if (!open || !focusPanel) return;
+  await nextTick();
+  contentPopoverRoot.value
+    ?.querySelector<HTMLElement>(
+      '.cm-popover__panel button:not([disabled]), .cm-popover__panel [tabindex]:not([tabindex="-1"])',
+    )
+    ?.focus();
+}
+
+function closeContentPopover(restoreFocus = false): void {
+  contentPopoverOpen.value = false;
+  if (restoreFocus) contentPopoverRoot.value?.querySelector<HTMLButtonElement>('.cm-popover__trigger')?.focus();
+}
+
+function handleContentPopoverKeydown(event: KeyboardEvent): void {
+  if (event.key === 'Escape' && contentPopoverOpen.value) {
+    event.preventDefault();
+    closeContentPopover(true);
+  } else if (
+    event.key === 'ArrowDown' &&
+    event.target instanceof Element &&
+    event.target.matches('.cm-popover__trigger')
+  ) {
+    event.preventDefault();
+    void setContentPopoverOpen(true, true);
+  }
+}
+
+function handleOverlayDocumentClick(event: MouseEvent): void {
+  if (!(event.target instanceof Node)) return;
+  if (!defaultDropdownRoot.value?.contains(event.target)) closeOverlayMenu('default');
+  if (!pillsDropdownRoot.value?.contains(event.target)) closeOverlayMenu('pills');
+  if (!contentPopoverRoot.value?.contains(event.target)) closeContentPopover();
+}
 
 const formGeometrySizes = ['sm', 'md', 'lg'] as const;
 const formGeometryFloatingVariants = ['in', 'on', 'over'] as const;
@@ -415,6 +502,7 @@ watch(
 
 onMounted(() => {
   window.addEventListener('keydown', handleGlobalCommandPaletteShortcut);
+  document.addEventListener('click', handleOverlayDocumentClick);
 
   dynamicProgressTimer = setInterval(() => {
     const nextStep = Math.random() * 1.4 + 0.35;
@@ -425,6 +513,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleGlobalCommandPaletteShortcut);
+  document.removeEventListener('click', handleOverlayDocumentClick);
 
   if (confirmDialogPreviousBodyOverflow !== undefined) {
     document.body.style.overflow = confirmDialogPreviousBodyOverflow;
@@ -1227,46 +1316,129 @@ const tabContent = computed<Record<string, string>>(() => ({
                   class="demo-component-matrix__cell"
                 >
                   <p class="demo-component-matrix__label">VfTooltip · {{ placement }}</p>
-                  <VfTooltip :text="`Tooltip placement: ${placement}`" :placement="placement">
-                    <CmButton variant="secondary">{{ placement }}</CmButton>
-                  </VfTooltip>
+                  <CmTooltip
+                    :id="`demo-${placement}-tooltip`"
+                    class="demo-application-overlay-trigger"
+                    :label="`${placement} tooltip`"
+                    :content="`Tooltip placement: ${placement}`"
+                    :placement="placement"
+                  >
+                    <template #trigger>{{ placement }}</template>
+                  </CmTooltip>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDropdown + VfMenu + VfMenuItem · default</p>
-                  <VfDropdown>
-                    <template #trigger>
-                      <CmButton tabindex="-1" variant="secondary">Open menu</CmButton>
-                    </template>
-                    <VfMenu>
-                      <VfMenuItem :icon="icons.pencil" label="Edit" />
-                      <VfMenuItem :icon="icons.trash" label="Delete" tone="danger" />
-                    </VfMenu>
-                  </VfDropdown>
+                  <div
+                    id="demo-default-dropdown"
+                    ref="defaultDropdownRoot"
+                    class="cm-dropdown demo-application-dropdown"
+                    :class="{ 'cm-dropdown--open': defaultDropdownOpen }"
+                    data-cm-controller="dropdown"
+                  >
+                    <button
+                      id="demo-default-dropdown-trigger"
+                      class="cm-dropdown__trigger"
+                      type="button"
+                      aria-haspopup="menu"
+                      aria-controls="demo-default-dropdown-menu"
+                      :aria-expanded="defaultDropdownOpen"
+                      @click="defaultDropdownOpen = !defaultDropdownOpen"
+                      @keydown="handleOverlayMenuTriggerKeydown($event, 'default')"
+                    >
+                      Open menu
+                    </button>
+                    <CmMenu
+                      id="demo-default-dropdown-menu"
+                      class="cm-dropdown__menu"
+                      :items="defaultDropdownItems"
+                      aria-labelledby="demo-default-dropdown-trigger"
+                      :hidden="!defaultDropdownOpen"
+                      @select="closeOverlayMenu('default', true)"
+                      @close-request="closeOverlayMenu('default', true)"
+                    >
+                      <template #itemEdit>
+                        <span class="demo-application-menu-item-content">
+                          <VueIconify :icon="icons.pencil" size="var(--cm-icon-size-md)" aria-hidden="true" />
+                          <span>Edit</span>
+                        </span>
+                      </template>
+                      <template #itemDelete>
+                        <span class="demo-application-menu-item-content">
+                          <VueIconify :icon="icons.trash" size="var(--cm-icon-size-md)" aria-hidden="true" />
+                          <span>Delete</span>
+                        </span>
+                      </template>
+                    </CmMenu>
+                  </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDropdown · pills</p>
-                  <VfDropdown variant="pills">
-                    <template #trigger>
-                      <CmButton tabindex="-1" variant="secondary">Open menu</CmButton>
-                    </template>
-                    <button class="vf-dropdown__item" role="menuitem">Action one</button>
-                    <button class="vf-dropdown__item" role="menuitem">Action two</button>
-                  </VfDropdown>
+                  <div
+                    id="demo-pills-dropdown"
+                    ref="pillsDropdownRoot"
+                    class="cm-dropdown demo-application-dropdown demo-application-dropdown--pills"
+                    :class="{ 'cm-dropdown--open': pillsDropdownOpen }"
+                    data-cm-controller="dropdown"
+                  >
+                    <button
+                      id="demo-pills-dropdown-trigger"
+                      class="cm-dropdown__trigger"
+                      type="button"
+                      aria-haspopup="menu"
+                      aria-controls="demo-pills-dropdown-menu"
+                      :aria-expanded="pillsDropdownOpen"
+                      @click="pillsDropdownOpen = !pillsDropdownOpen"
+                      @keydown="handleOverlayMenuTriggerKeydown($event, 'pills')"
+                    >
+                      Open menu
+                    </button>
+                    <CmMenu
+                      id="demo-pills-dropdown-menu"
+                      class="cm-dropdown__menu"
+                      :items="pillsDropdownItems"
+                      aria-labelledby="demo-pills-dropdown-trigger"
+                      :hidden="!pillsDropdownOpen"
+                      @select="closeOverlayMenu('pills', true)"
+                      @close-request="closeOverlayMenu('pills', true)"
+                    />
+                  </div>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfPopover · content</p>
-                  <VfPopover>
-                    <template #trigger>
-                      <CmButton tabindex="-1" variant="secondary">Open popover</CmButton>
-                    </template>
-                    <div class="demo-stack">
-                      <p class="demo-text">Compact content block.</p>
-                      <CmButton size="sm">Apply</CmButton>
+                  <div
+                    id="demo-content-popover"
+                    ref="contentPopoverRoot"
+                    class="cm-popover demo-application-popover"
+                    :class="{ 'cm-popover--open': contentPopoverOpen }"
+                    data-cm-controller="popover"
+                    @keydown="handleContentPopoverKeydown"
+                  >
+                    <button
+                      id="demo-content-popover-trigger"
+                      class="cm-popover__trigger"
+                      type="button"
+                      aria-controls="demo-content-popover-panel"
+                      :aria-expanded="contentPopoverOpen"
+                      @click="contentPopoverOpen = !contentPopoverOpen"
+                    >
+                      Open popover
+                    </button>
+                    <div
+                      id="demo-content-popover-panel"
+                      class="cm-popover__panel"
+                      role="dialog"
+                      aria-labelledby="demo-content-popover-trigger"
+                      :hidden="!contentPopoverOpen"
+                    >
+                      <div class="demo-stack">
+                        <p class="demo-text">Compact content block.</p>
+                        <CmButton size="sm">Apply</CmButton>
+                      </div>
                     </div>
-                  </VfPopover>
+                  </div>
                 </div>
               </div>
             </div>
