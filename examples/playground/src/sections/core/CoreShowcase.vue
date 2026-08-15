@@ -58,7 +58,6 @@ import {
   VfSelect,
   VfStepper,
   VfTable as VfLegacyTable,
-  VfTableOfContents,
   VfThemeSwitch,
   VfTag,
   VfTabs,
@@ -75,7 +74,6 @@ import type {
   VfDataTableSort,
   VfNavMenuItem,
   VfStepperItem,
-  VfTableOfContentsItem,
 } from '@codemonster-ru/vueforge-core';
 
 const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
@@ -575,7 +573,7 @@ const breadcrumbItems: CmBreadcrumbItem[] = [
   { label: 'Menu Bar', current: true },
 ];
 
-const tocItems: VfTableOfContentsItem[] = [
+const tocItems = [
   { id: 'demo-theme', label: 'Theme', level: 1 },
   { id: 'demo-typography', label: 'Typography', level: 1 },
   { id: 'demo-actions', label: 'Actions and Links', level: 1 },
@@ -585,7 +583,11 @@ const tocItems: VfTableOfContentsItem[] = [
   { id: 'demo-forms', label: 'Forms', level: 1 },
   { id: 'demo-navigation', label: 'Navigation and Disclosure', level: 1 },
   { id: 'demo-dialog', label: 'Modals and Commands', level: 1 },
-];
+] as const;
+
+function normalizeTocLevel(level: number): number {
+  return Math.min(Math.max(level, 1), 6);
+}
 
 const dataTableColumns: VfDataTableColumn[] = [
   { key: 'member', header: 'Member' },
@@ -2875,8 +2877,44 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfTableOfContents</p>
-                  <VfTableOfContents :items="tocItems.slice(0, 5)" active-id="demo-actions" />
-                  <VfTableOfContents :items="tocItems.slice(0, 5)" active-id="demo-actions" variant="pills" />
+                  <nav class="demo-application-toc" aria-label="Table of contents">
+                    <ol class="demo-application-toc__list">
+                      <li
+                        v-for="item in tocItems.slice(0, 5)"
+                        :key="item.id"
+                        class="demo-application-toc__item"
+                        :data-level="normalizeTocLevel(item.level)"
+                      >
+                        <a
+                          :href="`#${item.id}`"
+                          class="demo-application-toc__link"
+                          :class="{ 'demo-application-toc__link--active': item.id === 'demo-actions' }"
+                          :aria-current="item.id === 'demo-actions' ? 'location' : undefined"
+                        >
+                          {{ item.label }}
+                        </a>
+                      </li>
+                    </ol>
+                  </nav>
+                  <nav class="demo-application-toc demo-application-toc--pills" aria-label="Table of contents">
+                    <ol class="demo-application-toc__list">
+                      <li
+                        v-for="item in tocItems.slice(0, 5)"
+                        :key="item.id"
+                        class="demo-application-toc__item"
+                        :data-level="normalizeTocLevel(item.level)"
+                      >
+                        <a
+                          :href="`#${item.id}`"
+                          class="demo-application-toc__link"
+                          :class="{ 'demo-application-toc__link--active': item.id === 'demo-actions' }"
+                          :aria-current="item.id === 'demo-actions' ? 'location' : undefined"
+                        >
+                          {{ item.label }}
+                        </a>
+                      </li>
+                    </ol>
+                  </nav>
                 </div>
               </div>
             </div>
