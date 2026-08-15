@@ -3,13 +3,15 @@ import {
   CmAlert as VfAlert,
   CmBadge as VfBadge,
   CmCheckbox as VfCheckbox,
+  CmInput as VfInput,
   CmSection as VfSection,
   CmStack as VfStack,
 } from '@codemonster-ru/ui-vue';
-import { VfButton, VfInput, VfTag, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-core';
+import { VfButton, VfTag, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-core';
 import { VfCodeBlock } from '@codemonster-ru/vueforge-codeblock/view';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@codemonster-ru/ui-css/alert.css';
+import '@codemonster-ru/ui-css/input.css';
 import './color-system-showcase.css';
 
 interface PrimitiveFamily {
