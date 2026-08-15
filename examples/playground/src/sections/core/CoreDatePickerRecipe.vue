@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 
 import {
@@ -9,18 +9,25 @@ import {
   formatCoreDateDisplay,
   formatCoreDateLabel,
   formatCoreMonthLabel,
+  formatCoreDateSelection,
   getCoreWeekBoundary,
   isCoreDateDisabled,
   moveCoreDateByMonth,
+  normalizeCoreDateSelection,
   requireCoreDate,
+  selectCoreDateRange,
   startOfCoreMonth,
+  toggleCoreMultipleDate,
+  type CoreDatePickerValue,
+  type CoreDateSelectionMode,
 } from './core-date-picker-recipe';
 
 defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
   id: { type: String, required: true },
-  modelValue: { type: String, default: '' },
+  modelValue: { type: [String, Array] as PropType<CoreDatePickerValue>, default: '' },
+  selectionMode: { type: String as PropType<CoreDateSelectionMode>, default: 'single' },
   today: { type: String, required: true },
   min: { type: String, default: null },
   max: { type: String, default: null },
@@ -30,7 +37,7 @@ const props = defineProps({
   clearable: Boolean,
   placeholder: { type: String, default: '' },
 });
-const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
+const emit = defineEmits<{ 'update:modelValue': [value: CoreDatePickerValue] }>();
 const attrs = useAttrs();
 const rootRef = ref<HTMLElement | null>(null);
 const triggerRef = ref<HTMLButtonElement | null>(null);
@@ -39,7 +46,6 @@ const open = ref(false);
 
 for (const [label, value] of [
   ['DatePicker today', props.today],
-  ['DatePicker value', props.modelValue],
   ['DatePicker min', props.min ?? ''],
   ['DatePicker max', props.max ?? ''],
 ] as const) {
@@ -47,18 +53,26 @@ for (const [label, value] of [
 }
 if (props.min && props.max && props.min > props.max) throw new TypeError('DatePicker min must not exceed max.');
 
-const initialDate = props.modelValue || props.today;
+const selectedValues = computed(() => normalizeCoreDateSelection(props.modelValue, props.selectionMode));
+const initialDate = selectedValues.value[0] ?? props.today;
 const visibleMonth = ref(startOfCoreMonth(initialDate));
 const focusedDate = ref(initialDate);
 const calendarId = computed(() => `${props.id}-calendar`);
-const displayValue = computed(() => (props.modelValue ? formatCoreDateDisplay(props.modelValue) : props.placeholder));
-const showClear = computed(() => props.clearable && Boolean(props.modelValue) && !props.disabled && !props.readonly);
+const displayValue = computed(() => {
+  if (selectedValues.value.length === 0) return props.placeholder;
+  if (props.selectionMode === 'single') return formatCoreDateDisplay(selectedValues.value[0]!);
+  return formatCoreDateSelection(selectedValues.value, props.selectionMode);
+});
+const showClear = computed(
+  () => props.clearable && selectedValues.value.length > 0 && !props.disabled && !props.readonly,
+);
 const cells = computed(() =>
   createCoreDateGrid({
     max: props.max ?? undefined,
     min: props.min ?? undefined,
+    mode: props.selectionMode,
     month: visibleMonth.value,
-    selected: props.modelValue || undefined,
+    selected: selectedValues.value,
     today: props.today,
   }),
 );
@@ -94,15 +108,17 @@ const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
 
 watch(
   () => props.modelValue,
-  (value) => {
+  () => {
+    const value = selectedValues.value[0];
     if (!value || open.value) return;
     visibleMonth.value = startOfCoreMonth(value);
     focusedDate.value = value;
   },
+  { deep: true },
 );
 
 function initialFocusDate(): string {
-  for (const candidate of [props.modelValue, props.today, props.min, props.max]) {
+  for (const candidate of [...selectedValues.value, props.today, props.min, props.max]) {
     if (candidate && !isCoreDateDisabled(candidate, props.min ?? undefined, props.max ?? undefined)) return candidate;
   }
   return props.today;
@@ -165,13 +181,23 @@ function clearValue(event: MouseEvent): void {
   event.preventDefault();
   event.stopPropagation();
   if (!showClear.value) return;
-  emit('update:modelValue', '');
+  emit('update:modelValue', props.selectionMode === 'single' ? '' : []);
   closeCalendar();
   triggerRef.value?.focus();
 }
 
 function selectDate(value: string, disabled: boolean): void {
   if (disabled || props.readonly) return;
+  if (props.selectionMode === 'multiple') {
+    emit('update:modelValue', toggleCoreMultipleDate(selectedValues.value, value));
+    return;
+  }
+  if (props.selectionMode === 'range') {
+    const range = selectCoreDateRange(selectedValues.value, value);
+    emit('update:modelValue', range);
+    if (range.length === 2) closeCalendar();
+    return;
+  }
   emit('update:modelValue', value);
   closeCalendar();
 }
@@ -190,7 +216,12 @@ function handleTriggerKeydown(event: KeyboardEvent): void {
   void openCalendar();
 }
 
-function handleDayKeydown(event: KeyboardEvent, value: string): void {
+function handleDayKeydown(event: KeyboardEvent, value: string, disabled: boolean): void {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    selectDate(value, disabled);
+    return;
+  }
   let target: string | null = null;
   if (event.key === 'ArrowLeft') target = addCoreDays(value, -1);
   if (event.key === 'ArrowRight') target = addCoreDays(value, 1);
@@ -242,7 +273,7 @@ onBeforeUnmount(() => {
       :class="{
         'core-date-picker-recipe__trigger--invalid': props.invalid,
         'core-date-picker-recipe__trigger--open': open,
-        'core-date-picker-recipe__trigger--placeholder': !props.modelValue && props.placeholder,
+        'core-date-picker-recipe__trigger--placeholder': selectedValues.length === 0 && props.placeholder,
         'core-date-picker-recipe__trigger--with-clear': showClear,
       }"
       type="button"
@@ -322,6 +353,9 @@ onBeforeUnmount(() => {
                 :class="{
                   'core-date-picker-recipe__day--outside': !day.inCurrentMonth,
                   'core-date-picker-recipe__day--today': day.today,
+                  'core-date-picker-recipe__day--in-range': day.inRange,
+                  'core-date-picker-recipe__day--range-start': day.rangeStart,
+                  'core-date-picker-recipe__day--range-end': day.rangeEnd,
                   'core-date-picker-recipe__day--selected': day.selected,
                 }"
                 type="button"
@@ -334,7 +368,7 @@ onBeforeUnmount(() => {
                 :tabindex="day.date === focusedDate ? 0 : -1"
                 @focus="focusedDate = day.date"
                 @click="selectDate(day.date, day.disabled)"
-                @keydown="handleDayKeydown($event, day.date)"
+                @keydown="handleDayKeydown($event, day.date, day.disabled)"
               >
                 {{ day.day }}
               </button>
@@ -574,6 +608,61 @@ onBeforeUnmount(() => {
 
 .core-date-picker-recipe__day--today {
   border-color: var(--cm-color-border-interactive);
+}
+
+.core-date-picker-recipe__day--in-range,
+.core-date-picker-recipe__day--range-start,
+.core-date-picker-recipe__day--range-end {
+  position: relative;
+  inline-size: 100%;
+}
+
+.core-date-picker-recipe__day--in-range {
+  border-radius: 0;
+  background: var(--cm-color-background-surface-hover);
+  color: var(--cm-color-text-primary);
+}
+
+.core-date-picker-recipe__day--range-start {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.core-date-picker-recipe__day--range-end {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+.core-date-picker-recipe__day--range-start.core-date-picker-recipe__day--range-end {
+  border-radius: var(--cm-radius-control-tight);
+}
+
+.core-date-picker-recipe__day--in-range::before,
+.core-date-picker-recipe__day--in-range::after,
+.core-date-picker-recipe__day--range-start::after,
+.core-date-picker-recipe__day--range-end::before {
+  position: absolute;
+  inset-block: calc(var(--cm-border-width) * -1);
+  inline-size: 0.125rem;
+  background: var(--cm-color-background-surface-hover);
+  content: '';
+}
+
+.core-date-picker-recipe__day--in-range::before,
+.core-date-picker-recipe__day--range-end::before {
+  inset-inline-end: 100%;
+}
+
+.core-date-picker-recipe__day--in-range::after,
+.core-date-picker-recipe__day--range-start::after {
+  inset-inline-start: 100%;
+}
+
+.core-date-picker-recipe__week > :first-child::before,
+.core-date-picker-recipe__week > :last-child::after,
+.core-date-picker-recipe__day--range-start.core-date-picker-recipe__day--range-end::before,
+.core-date-picker-recipe__day--range-start.core-date-picker-recipe__day--range-end::after {
+  display: none;
 }
 
 .core-date-picker-recipe__day--selected,

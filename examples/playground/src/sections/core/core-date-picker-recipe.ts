@@ -2,16 +2,23 @@ export interface CoreDateGridCell {
   date: string;
   day: number;
   disabled: boolean;
+  inRange: boolean;
   inCurrentMonth: boolean;
+  rangeEnd: boolean;
+  rangeStart: boolean;
   selected: boolean;
   today: boolean;
 }
+
+export type CoreDateSelectionMode = 'multiple' | 'range' | 'single';
+export type CoreDatePickerValue = string | string[];
 
 interface CoreDateGridOptions {
   max?: string;
   min?: string;
   month: string;
-  selected?: string;
+  mode?: CoreDateSelectionMode;
+  selected?: string | readonly string[];
   today: string;
 }
 
@@ -40,6 +47,33 @@ export function formatCoreDate(date: Date): string {
 export function formatCoreDateDisplay(value: string): string {
   const date = requireCoreDate(value, 'DatePicker value');
   return new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: '2-digit' }).format(date);
+}
+
+export function formatCoreDateSelection(values: readonly string[], mode: CoreDateSelectionMode): string {
+  return values.map(formatCoreDateDisplay).join(mode === 'range' ? ' – ' : '; ');
+}
+
+export function normalizeCoreDateSelection(value: CoreDatePickerValue, mode: CoreDateSelectionMode): readonly string[] {
+  if (mode === 'single') {
+    if (typeof value !== 'string') throw new TypeError('DatePicker single value must be a string.');
+    if (value) requireCoreDate(value, 'DatePicker value');
+    return value ? [value] : [];
+  }
+  if (!Array.isArray(value)) throw new TypeError(`DatePicker ${mode} value must be an array.`);
+  const values = mode === 'range' ? value.slice(0, 2) : value.slice();
+  values.forEach((entry) => requireCoreDate(entry, 'DatePicker value'));
+  return values;
+}
+
+export function toggleCoreMultipleDate(values: readonly string[], value: string): string[] {
+  requireCoreDate(value, 'DatePicker value');
+  return values.includes(value) ? values.filter((entry) => entry !== value) : [...values, value];
+}
+
+export function selectCoreDateRange(values: readonly string[], value: string): string[] {
+  requireCoreDate(value, 'DatePicker value');
+  if (values.length !== 1) return [value];
+  return [values[0]!, value].sort();
 }
 
 export function formatCoreDateLabel(value: string): string {
@@ -83,7 +117,9 @@ export function coreMonthHasSelectableDate(month: string, min?: string, max?: st
 export function createCoreDateGrid(options: CoreDateGridOptions): CoreDateGridCell[] {
   const month = requireCoreDate(startOfCoreMonth(options.month), 'DatePicker month');
   requireCoreDate(options.today, 'DatePicker today');
-  if (options.selected) requireCoreDate(options.selected, 'DatePicker value');
+  const selected = typeof options.selected === 'string' ? [options.selected] : (options.selected ?? []);
+  selected.forEach((value) => requireCoreDate(value, 'DatePicker value'));
+  const range = options.mode === 'range' ? [...selected].sort() : [];
   if (options.min) requireCoreDate(options.min, 'DatePicker min');
   if (options.max) requireCoreDate(options.max, 'DatePicker max');
 
@@ -95,12 +131,17 @@ export function createCoreDateGrid(options: CoreDateGridOptions): CoreDateGridCe
   return Array.from({ length: cellCount }, (_, index) => {
     const date = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + index);
     const value = formatCoreDate(date);
+    const rangeStart = range[0];
+    const rangeEnd = range[1];
     return {
       date: value,
       day: date.getDate(),
       disabled: isCoreDateDisabled(value, options.min, options.max),
+      inRange: Boolean(rangeStart && rangeEnd && value > rangeStart && value < rangeEnd),
       inCurrentMonth: date.getMonth() === month.getMonth() && date.getFullYear() === month.getFullYear(),
-      selected: value === options.selected,
+      rangeEnd: value === rangeEnd,
+      rangeStart: value === rangeStart,
+      selected: selected.includes(value),
       today: value === options.today,
     };
   });
