@@ -1,22 +1,34 @@
+/* stylelint-disable no-descending-specificity -- DatePicker states intentionally share one interaction matrix. */
+
 .cm-date-picker {
+  position: relative;
   display: block;
+  box-sizing: border-box;
   inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
   min-block-size: var(--cm-control-height-md);
-  padding-block: 0;
-  padding-inline: var(--cm-space-3);
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  padding: 0.3125rem var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
   border-radius: var(--cm-radius-control);
   background: var(--cm-color-background-surface);
   color: var(--cm-color-text-primary);
-  font: inherit;
-  font-size: var(--cm-font-size-md);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-regular);
   line-height: var(--cm-line-height-tight);
+  text-align: start;
+  transition:
+    background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
 }
 
 .cm-date-picker--sm {
   min-block-size: var(--cm-control-height-sm);
-  padding-inline: var(--cm-space-2);
-  font-size: var(--cm-font-size-sm);
+  padding: var(--cm-space-1) var(--cm-space-2);
+  font-size: var(--cm-font-size-md);
 }
 
 .cm-date-picker--md {
@@ -25,18 +37,22 @@
 
 .cm-date-picker--lg {
   min-block-size: var(--cm-control-height-lg);
-  padding-inline: var(--cm-space-4);
-  font-size: var(--cm-font-size-lg);
+  padding: var(--cm-space-2) 0.875rem;
+  font-size: var(--cm-font-size-2xl);
 }
 
-.cm-date-picker:hover:where(:not(:disabled, :read-only)) {
-  border-color: var(--cm-color-border-interactive);
+.cm-date-picker:hover:not(:disabled, .cm-date-picker--invalid, :read-only, :focus, :focus-visible) {
+  border-color: var(--cm-color-interactive-primary-border);
+}
+
+.cm-date-picker:focus,
+.cm-date-picker:focus-visible {
+  border-color: var(--cm-color-border-focus);
 }
 
 .cm-date-picker:focus-visible {
-  border-color: var(--cm-color-focus-ring);
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
 }
 
 .cm-date-picker:disabled {
@@ -47,67 +63,81 @@
 }
 
 .cm-date-picker:read-only:not(:disabled) {
-  background: var(--cm-color-background-surface-subtle);
+  cursor: default;
 }
 
 .cm-date-picker--invalid,
-.cm-date-picker[aria-invalid='true'] {
+.cm-date-picker[aria-invalid='true'],
+.cm-date-picker--invalid:is(:hover, :focus, :focus-visible),
+.cm-date-picker[aria-invalid='true']:is(:hover, :focus, :focus-visible) {
   border-color: var(--cm-color-status-danger-border);
 }
 
 .cm-date-picker-wrap {
-  display: flex;
-  align-items: center;
+  position: relative;
+  box-sizing: border-box;
   inline-size: 100%;
-  border: var(--cm-border-width) solid var(--cm-color-border-default);
-  border-radius: var(--cm-radius-control);
-  background: var(--cm-color-background-surface);
-}
-
-.cm-date-picker-wrap:where(:has(.cm-date-picker:hover:not(:disabled, :read-only))) {
-  border-color: var(--cm-color-border-interactive);
-}
-
-.cm-date-picker-wrap:where(:has(.cm-date-picker--invalid, .cm-date-picker[aria-invalid='true'])) {
-  border-color: var(--cm-color-status-danger-border);
-}
-
-.cm-date-picker-wrap:focus-within {
-  border-color: var(--cm-color-focus-ring);
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }
 
 .cm-date-picker-wrap > :where(.cm-date-picker) {
   min-inline-size: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
+  padding-inline-end: 3.625rem;
+}
+
+.cm-date-picker-wrap:focus-within > :where(.cm-date-picker:focus) {
+  border-color: var(--cm-color-border-focus);
+}
+
+.cm-date-picker-wrap > :where(.cm-date-picker--sm) {
+  padding-inline-end: 3.25rem;
+}
+
+.cm-date-picker-wrap > :where(.cm-date-picker--lg) {
+  padding-inline-end: 3.875rem;
 }
 
 .cm-date-picker__clear {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 50%;
+  inset-inline-end: 0.625rem;
   display: inline-flex;
-  flex: none;
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
   align-items: center;
   justify-content: center;
-  min-inline-size: var(--cm-control-height-sm);
-  min-block-size: var(--cm-control-height-sm);
-  padding: 0 var(--cm-space-2);
+  padding: 0;
   border: 0;
-  border-radius: var(--cm-radius-control);
+  border-radius: var(--cm-radius-control-tight);
   background: transparent;
-  color: var(--cm-color-text-secondary);
-  font: inherit;
+  color: var(--cm-color-icon-secondary);
   cursor: pointer;
+  font: inherit;
+  transform: translateY(-50%);
 }
 
-.cm-date-picker__clear:hover {
-  background: var(--cm-color-background-surface-hover);
+.cm-date-picker-wrap:has(.cm-date-picker--sm) .cm-date-picker__clear {
+  inset-inline-end: var(--cm-space-2);
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+.cm-date-picker-wrap:has(.cm-date-picker--lg) .cm-date-picker__clear {
+  inline-size: var(--cm-icon-size-xl);
+  block-size: var(--cm-icon-size-xl);
+}
+
+.cm-date-picker__clear:hover,
+.cm-date-picker__clear:active {
+  background: transparent;
+  color: var(--cm-color-icon-primary);
 }
 
 .cm-date-picker__clear:focus-visible {
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: calc(-1 * var(--cm-border-width-thick));
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
 }
 
 .cm-date-picker__clear[hidden] {
@@ -117,10 +147,6 @@
 @media (forced-colors: active) {
   .cm-date-picker--invalid,
   .cm-date-picker[aria-invalid='true'] {
-    border-color: Mark;
-  }
-
-  .cm-date-picker-wrap:where(:has(.cm-date-picker--invalid, .cm-date-picker[aria-invalid='true'])) {
     border-color: Mark;
   }
 }
