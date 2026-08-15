@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { CmBadge as VfBadge, CmSection as VfSection, CmStack as VfStack } from '@codemonster-ru/ui-vue';
+import {
+  CmBadge as VfBadge,
+  CmCheckbox as VfCheckbox,
+  CmSection as VfSection,
+  CmStack as VfStack,
+} from '@codemonster-ru/ui-vue';
 import {
   VfAlert,
   VfButton,
-  VfCheckbox,
   VfInput,
   VfTag,
   vfSemanticColorTokenNames,

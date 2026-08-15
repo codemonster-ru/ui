@@ -4,9 +4,12 @@ import {
   CmAvatar as VfAvatar,
   CmBadge as VfBadge,
   CmCard as VfCard,
+  CmCheckbox as VfCheckbox,
   CmDivider as VfDivider,
+  CmRadio as VfRadio,
   CmSkeleton as VfSkeleton,
   CmStack as VfStack,
+  CmSwitch as VfSwitch,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
@@ -15,7 +18,6 @@ import {
   VfAlert,
   VfBreadcrumbs,
   VfButton,
-  VfCheckbox,
   VfCommandPalette,
   VfConfirmDialog,
   VfDataTable,
@@ -40,11 +42,9 @@ import {
   VfPopover,
   VfProgressBar,
   VfProgressSpinner,
-  VfRadio,
   VfSelect,
   VfSkeletonGate,
   VfStepper,
-  VfSwitch,
   VfTable,
   VfTableOfContents,
   VfThemeSwitch,
@@ -52,6 +52,7 @@ import {
   VfTabs,
   VfTextarea,
   VfTooltip,
+  VfSwitch as VfIconSwitch,
   useTheme,
 } from '@codemonster-ru/vueforge-core';
 import type {
@@ -2475,12 +2476,12 @@ const tabContent = computed<Record<string, string>>(() => ({
                         Active radio
                       </VfRadio>
                       <VfSwitch :size="size" :model-value="true"> Active switch </VfSwitch>
-                      <VfSwitch :size="size" :model-value="true">
+                      <VfIconSwitch :size="size" :model-value="true">
                         <template #thumb="{ checked }">
                           <VueIconify :icon="checked ? icons.check : icons.xmark" />
                         </template>
                         Icon switch
-                      </VfSwitch>
+                      </VfIconSwitch>
                     </div>
                   </div>
                 </div>
@@ -2588,8 +2589,10 @@ const tabContent = computed<Record<string, string>>(() => ({
                       <VfSwitch :size="size">Unchecked switch</VfSwitch>
                       <VfSwitch :size="size" :model-value="true">Checked switch</VfSwitch>
                       <VfSwitch :size="size" invalid>Invalid switch</VfSwitch>
-                      <VfSwitch :size="size" static>Static switch</VfSwitch>
-                      <VfSwitch :size="size" static thumb-contrast="inverse">Static inverse switch</VfSwitch>
+                      <VfSwitch :size="size" class="demo-switch--static">Static switch</VfSwitch>
+                      <VfSwitch :size="size" class="demo-switch--static demo-switch--inverse">
+                        Static inverse switch
+                      </VfSwitch>
                       <VfSwitch :size="size" disabled>Disabled switch</VfSwitch>
                       <VfSwitch :size="size" :model-value="true" disabled>Disabled checked switch</VfSwitch>
                     </div>

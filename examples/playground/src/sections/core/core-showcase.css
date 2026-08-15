@@ -326,6 +326,19 @@
   color: var(--vf-color-text-muted);
 }
 
+.demo-switch--static .cm-switch__control,
+.demo-switch--static:hover .cm-switch__control,
+.demo-switch--static:active .cm-switch__control {
+  border-color: var(--vf-switch-track-static-border-color);
+  background: var(--vf-switch-track-background);
+}
+
+.demo-switch--inverse .cm-switch__thumb {
+  border-color: var(--vf-switch-thumb-inverse-border-color);
+  background: var(--vf-switch-thumb-inverse-background);
+  color: var(--vf-switch-thumb-inverse-color);
+}
+
 @media (width <= 960px) {
   .demo-data-table-details {
     grid-template-columns: 1fr;
