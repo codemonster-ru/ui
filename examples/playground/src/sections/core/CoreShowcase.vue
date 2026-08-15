@@ -83,6 +83,7 @@ import CoreDrawerRecipe, { isCoreDrawerSupportedPlacement } from './CoreDrawerRe
 import CoreSelectableDataTableRecipe, {
   type CoreSelectableDataTableRecipeRow,
 } from './CoreSelectableDataTableRecipe.vue';
+import CoreSlotsDataTableRecipe from './CoreSlotsDataTableRecipe.vue';
 import CoreTabsRecipe from './CoreTabsRecipe.vue';
 import ShowcaseThemeSwitch from '../../components/ShowcaseThemeSwitch.vue';
 import { useShowcaseTheme } from '../../showcase-theme';
@@ -1909,19 +1910,7 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · slots and footer</p>
-                  <VfDataTable :columns="dataTableMetricColumns" :rows="dataTableRows.slice(0, 5)" row-key="id">
-                    <template #header-tasks="{ column }"> {{ column.header }} open </template>
-                    <template #cell-status="{ value }">
-                      <VfBadge :tone="value === 'Available' ? 'success' : value === 'Busy' ? 'warning' : 'neutral'">
-                        {{ value }}
-                      </VfBadge>
-                    </template>
-                    <template #footer>
-                      <tr>
-                        <td colspan="3">Total: 43 open tasks</td>
-                      </tr>
-                    </template>
-                  </VfDataTable>
+                  <CoreSlotsDataTableRecipe />
                 </div>
 
                 <div class="demo-component-matrix__cell">
