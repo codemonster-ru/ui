@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { CmSection as VfSection } from "@codemonster-ru/ui-vue";
 import { useTheme } from "@codemonster-ru/vueforge-core";
-import { VfSkeleton } from "@codemonster-ru/vueforge-core/skeleton";
+import { CmSkeleton as VfSkeleton } from "@codemonster-ru/ui-vue";
 import { VfSkeletonGate } from "@codemonster-ru/vueforge-core/skeleton-gate";
 import { VfCodeBlock } from "@codemonster-ru/vueforge-codeblock/view";
 
@@ -176,7 +176,10 @@ onBeforeUnmount(() => {
                 show-line-numbers
               />
               <template #skeleton>
-                <VfSkeleton :min-height="block.skeletonMinHeight" radius="var(--vf-layout-section-radius)" />
+                <VfSkeleton
+                  :min-height="block.skeletonMinHeight"
+                  style="border-radius: var(--vf-layout-section-radius)"
+                />
               </template>
             </VfSkeletonGate>
           </div>

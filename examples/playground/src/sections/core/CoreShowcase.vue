@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { CmBadge as VfBadge, CmDivider as VfDivider, CmStack as VfStack } from '@codemonster-ru/ui-vue';
+import {
+  CmAvatar as VfAvatar,
+  CmBadge as VfBadge,
+  CmDivider as VfDivider,
+  CmSkeleton as VfSkeleton,
+  CmStack as VfStack,
+} from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
 import {
   VfAccordion,
   VfAlert,
-  VfAvatar,
   VfBreadcrumbs,
   VfButton,
   VfCard,
@@ -37,7 +42,6 @@ import {
   VfProgressSpinner,
   VfRadio,
   VfSelect,
-  VfSkeleton,
   VfSkeletonGate,
   VfStepper,
   VfSwitch,
@@ -1727,7 +1731,9 @@ const tabContent = computed<Record<string, string>>(() => ({
                         <span>Image</span>
                       </div>
                       <div class="demo-avatar-variant">
-                        <VfAvatar class="demo-avatar--slate" icon="user" size="lg" shape="circle" aria-label="User" />
+                        <VfAvatar class="demo-avatar--slate" size="lg" shape="circle" aria-label="User">
+                          <VueIconify class="cm-avatar__icon" icon="user" aria-hidden="true" />
+                        </VfAvatar>
                         <span>Icon</span>
                       </div>
                       <div class="demo-avatar-variant">
@@ -1846,7 +1852,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                   <div class="demo-component-matrix__cell">
                     <p class="demo-component-matrix__label">VfSkeleton · sizes</p>
                     <VfSkeleton min-height="2.5rem" />
-                    <VfSkeleton min-height="4rem" radius="var(--vf-radius-surface)" />
+                    <VfSkeleton min-height="4rem" />
                     <VfSkeleton min-height="6rem" :animated="false" />
                   </div>
 
