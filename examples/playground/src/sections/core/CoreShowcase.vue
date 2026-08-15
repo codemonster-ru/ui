@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import {
+  CmAccordion,
   CmAvatar as VfAvatar,
   CmAlert as VfAlert,
   CmBadge as VfBadge,
@@ -26,6 +27,7 @@ import {
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
+import '@codemonster-ru/ui-css/accordion.css';
 import '@codemonster-ru/ui-css/button.css';
 import '@codemonster-ru/ui-css/alert.css';
 import '@codemonster-ru/ui-css/breadcrumbs.css';
@@ -38,7 +40,6 @@ import '@codemonster-ru/ui-css/progress-bar.css';
 import '@codemonster-ru/ui-css/progress-spinner.css';
 import '@codemonster-ru/ui-css/table.css';
 import {
-  VfAccordion,
   VfCommandPalette,
   VfDataTable,
   VfDatePicker,
@@ -119,6 +120,12 @@ const visibleDataTableColumnKeys = ref(['member', 'status', 'tasks']);
 const dataTableColumnChooserOpen = ref(false);
 let dynamicProgressTimer: ReturnType<typeof setInterval> | undefined;
 let confirmDialogPreviousBodyOverflow: string | undefined;
+
+const closedAccordionItems = [{ id: 'closed', title: 'Closed section', content: 'Closed content.' }] as const;
+const openAccordionItems = [{ id: 'open', title: 'Open section', content: 'Open content.' }] as const;
+const disabledAccordionItems = [
+  { id: 'disabled', title: 'Disabled section', content: 'Disabled content.', disabled: true },
+] as const;
 
 const formGeometrySizes = ['sm', 'md', 'lg'] as const;
 const formGeometryFloatingVariants = ['in', 'on', 'over'] as const;
@@ -208,7 +215,13 @@ function createStepperSummary(items: DemoStepperItem[], activeValue: string): De
 
   return items.map((item, index) => ({
     ...item,
-    state: item.disabled ? 'disabled' : index === activeIndex ? 'current' : index < activeIndex ? 'complete' : 'upcoming',
+    state: item.disabled
+      ? 'disabled'
+      : index === activeIndex
+        ? 'current'
+        : index < activeIndex
+          ? 'complete'
+          : 'upcoming',
   }));
 }
 
@@ -2959,9 +2972,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                       >
                         <div class="demo-application-stepper__summary">
                           <span class="demo-application-stepper__rail" aria-hidden="true">
-                            <span class="demo-application-stepper__connector demo-application-stepper__connector--before" />
+                            <span
+                              class="demo-application-stepper__connector demo-application-stepper__connector--before"
+                            />
                             <span class="demo-application-stepper__marker">{{ index + 1 }}</span>
-                            <span class="demo-application-stepper__connector demo-application-stepper__connector--after" />
+                            <span
+                              class="demo-application-stepper__connector demo-application-stepper__connector--after"
+                            />
                           </span>
                           <span class="demo-application-stepper__content">
                             <span class="demo-application-stepper__label">{{ item.label }}</span>
@@ -2986,9 +3003,13 @@ const tabContent = computed<Record<string, string>>(() => ({
                       >
                         <div class="demo-application-stepper__summary">
                           <span class="demo-application-stepper__rail" aria-hidden="true">
-                            <span class="demo-application-stepper__connector demo-application-stepper__connector--before" />
+                            <span
+                              class="demo-application-stepper__connector demo-application-stepper__connector--before"
+                            />
                             <span class="demo-application-stepper__marker">{{ index + 1 }}</span>
-                            <span class="demo-application-stepper__connector demo-application-stepper__connector--after" />
+                            <span
+                              class="demo-application-stepper__connector demo-application-stepper__connector--after"
+                            />
                           </span>
                           <span class="demo-application-stepper__content">
                             <span class="demo-application-stepper__label">{{ item.label }}</span>
@@ -3031,9 +3052,55 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfAccordion · states</p>
-                  <VfAccordion title="Closed section">Closed content.</VfAccordion>
-                  <VfAccordion title="Open section" open>Open content.</VfAccordion>
-                  <VfAccordion title="Disabled section" disabled> Disabled content. </VfAccordion>
+                  <CmAccordion
+                    id="demo-closed-accordion"
+                    class="demo-application-accordion"
+                    :items="closedAccordionItems"
+                  >
+                    <template #triggerClosed="{ open }">
+                      <span>Closed section</span>
+                      <span
+                        class="demo-application-accordion__icon"
+                        :class="{ 'demo-application-accordion__icon--open': open }"
+                        aria-hidden="true"
+                      >
+                        <VueIconify :icon="icons.chevronDown" size="var(--cm-icon-size-sm)" />
+                      </span>
+                    </template>
+                  </CmAccordion>
+                  <CmAccordion
+                    id="demo-open-accordion"
+                    class="demo-application-accordion"
+                    :items="openAccordionItems"
+                    :default-open-items="['open']"
+                  >
+                    <template #triggerOpen="{ open }">
+                      <span>Open section</span>
+                      <span
+                        class="demo-application-accordion__icon"
+                        :class="{ 'demo-application-accordion__icon--open': open }"
+                        aria-hidden="true"
+                      >
+                        <VueIconify :icon="icons.chevronDown" size="var(--cm-icon-size-sm)" />
+                      </span>
+                    </template>
+                  </CmAccordion>
+                  <CmAccordion
+                    id="demo-disabled-accordion"
+                    class="demo-application-accordion"
+                    :items="disabledAccordionItems"
+                  >
+                    <template #triggerDisabled="{ open }">
+                      <span>Disabled section</span>
+                      <span
+                        class="demo-application-accordion__icon"
+                        :class="{ 'demo-application-accordion__icon--open': open }"
+                        aria-hidden="true"
+                      >
+                        <VueIconify :icon="icons.chevronDown" size="var(--cm-icon-size-sm)" />
+                      </span>
+                    </template>
+                  </CmAccordion>
                 </div>
 
                 <div class="demo-component-matrix__cell">
