@@ -10,6 +10,7 @@ import {
   CmSkeleton as VfSkeleton,
   CmStack as VfStack,
   CmSwitch as VfSwitch,
+  CmTextarea as VfTextarea,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
@@ -50,7 +51,7 @@ import {
   VfThemeSwitch,
   VfTag,
   VfTabs,
-  VfTextarea,
+  VfTextarea as VfFloatingTextarea,
   VfTooltip,
   VfSwitch as VfIconSwitch,
   useTheme,
@@ -2345,7 +2346,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </VfField>
                     <VfField label="Notes" label-placement="floating" :floating-variant="variant">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfTextarea
+                        <VfFloatingTextarea
                           :id="controlId"
                           model-value="Textarea baseline check"
                           :invalid="invalid"
@@ -2438,7 +2439,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </VfField>
                     <VfField label="Empty textarea" label-placement="floating">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfTextarea
+                        <VfFloatingTextarea
                           :id="controlId"
                           :size="size"
                           model-value=""
@@ -2450,7 +2451,7 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </VfField>
                     <VfField label="Filled textarea" label-placement="floating">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfTextarea
+                        <VfFloatingTextarea
                           :id="controlId"
                           :size="size"
                           model-value="Filled textarea"
