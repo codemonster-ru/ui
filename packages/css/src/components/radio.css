@@ -1,89 +1,148 @@
+/* stylelint-disable no-descending-specificity -- State rules mirror the frozen interaction matrix. */
+
 .cm-radio {
-  --cm-radio-control-size: var(--cm-space-5);
+  --cm-radio-control-size: 1.25rem;
+  --cm-radio-control-offset: 0.125rem;
+  --cm-radio-dot-size: 0.5rem;
 
   position: relative;
   display: inline-flex;
-  align-items: center;
-  gap: var(--cm-space-2);
+  align-items: flex-start;
+  inline-size: fit-content;
+  min-inline-size: 0;
+  gap: var(--cm-space-3);
   color: var(--cm-color-text-primary);
   cursor: pointer;
-  font-size: var(--cm-font-size-md);
-  line-height: var(--cm-line-height-normal);
 }
 
 .cm-radio--sm {
-  --cm-radio-control-size: var(--cm-space-4);
+  --cm-radio-control-size: var(--cm-icon-size-lg);
+  --cm-radio-control-offset: 0.0938rem;
+  --cm-radio-dot-size: 0.4375rem;
 
-  font-size: var(--cm-font-size-sm);
-}
-
-.cm-radio--md {
-  --cm-radio-control-size: var(--cm-space-5);
+  gap: var(--cm-space-2);
 }
 
 .cm-radio--lg {
-  --cm-radio-control-size: var(--cm-space-6);
-
-  font-size: var(--cm-font-size-lg);
+  --cm-radio-control-size: 1.375rem;
+  --cm-radio-control-offset: 0.0625rem;
+  --cm-radio-dot-size: 0.5625rem;
 }
 
 .cm-radio__input {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
+  padding: 0;
   margin: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
   opacity: 0;
+  white-space: nowrap;
 }
 
 .cm-radio__control {
-  --cm-radio-active-border: var(--cm-color-interactive-primary-border);
-
+  position: relative;
   display: inline-flex;
-  flex: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
   inline-size: var(--cm-radio-control-size);
   block-size: var(--cm-radio-control-size);
   align-items: center;
   justify-content: center;
+  margin-block-start: var(--cm-radio-control-offset);
   border: var(--cm-border-width) solid var(--cm-color-border-interactive);
   border-radius: var(--cm-radius-round);
   background: var(--cm-color-background-surface);
   transition:
-    background-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
-    border-color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+    background-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    border-color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    box-shadow var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    color var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.cm-radio__content {
+  min-inline-size: 0;
+  color: currentcolor;
+  font-size: var(--cm-control-font-size-md);
+  font-weight: var(--cm-font-weight-regular);
+  line-height: var(--cm-line-height-normal);
+}
+
+.cm-radio__content:empty {
+  display: none;
 }
 
 .cm-radio__mark {
-  inline-size: 50%;
-  block-size: 50%;
+  inline-size: var(--cm-radio-dot-size);
+  block-size: var(--cm-radio-dot-size);
   border-radius: var(--cm-radius-round);
-  background: var(--cm-color-interactive-primary-foreground);
+  background: var(--cm-color-interactive-primary-background);
   opacity: 0;
+  transform: scale(0.35);
+  transition:
+    opacity var(--cm-motion-duration-fast) var(--cm-motion-ease-standard),
+    transform var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
 }
 
-.cm-radio--invalid .cm-radio__control,
-.cm-radio__input[aria-invalid='true'] + .cm-radio__control {
-  --cm-radio-active-border: var(--cm-color-status-danger-border);
+.cm-radio--sm .cm-radio__content {
+  font-size: var(--cm-control-font-size-sm);
+}
 
-  border-color: var(--cm-color-status-danger-border);
+.cm-radio--lg .cm-radio__content {
+  font-size: var(--cm-control-font-size-lg);
+}
+
+.cm-radio:hover:has(.cm-radio__input:not(:disabled)) .cm-radio__input:not(:checked) + .cm-radio__control {
+  border-color: var(--cm-color-interactive-primary-border);
+}
+
+.cm-radio:active:has(.cm-radio__input:not(:disabled)) .cm-radio__input:not(:checked) + .cm-radio__control {
+  border-color: var(--cm-color-interactive-primary-border);
+  background: var(--cm-color-background-surface-active);
 }
 
 .cm-radio__input:checked + .cm-radio__control {
-  border-color: var(--cm-radio-active-border);
-  background: var(--cm-color-interactive-primary-background);
+  border-color: var(--cm-color-interactive-primary-background);
 }
 
 .cm-radio__input:checked + .cm-radio__control .cm-radio__mark {
   opacity: 1;
+  transform: scale(1);
+}
+
+.cm-radio:hover:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__control,
+.cm-radio:hover:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__mark {
+  border-color: var(--cm-color-interactive-primary-hover-background);
+  background: var(--cm-color-interactive-primary-hover-background);
+}
+
+.cm-radio:active:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__control,
+.cm-radio:active:has(.cm-radio__input:checked:not(:disabled)) .cm-radio__mark {
+  border-color: var(--cm-color-interactive-primary-active-background);
+  background: var(--cm-color-interactive-primary-active-background);
 }
 
 .cm-radio__input:focus-visible + .cm-radio__control {
-  outline: var(--cm-border-width-thick) solid var(--cm-color-focus-ring);
-  outline-offset: var(--cm-border-width-thick);
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+}
+
+.cm-radio--invalid:has(.cm-radio__input:not(:disabled)) .cm-radio__control,
+.cm-radio__input[aria-invalid='true']:not(:disabled) + .cm-radio__control {
+  border-color: var(--cm-color-status-danger-border);
 }
 
 .cm-radio__input:disabled + .cm-radio__control {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
+}
+
+.cm-radio__input:disabled + .cm-radio__control .cm-radio__mark {
+  background: var(--cm-color-text-disabled);
 }
 
 .cm-radio__input:disabled ~ .cm-radio__content {
@@ -96,7 +155,6 @@
 
 @media (forced-colors: active) {
   .cm-radio__input:checked + .cm-radio__control {
-    background: Highlight;
     color: HighlightText;
   }
 }
