@@ -1,6 +1,8 @@
 import './tokens.css';
 import './critical.css';
 import './playground.css';
+import '../../core/src/styles/foundation.css';
+import '../../core/src/styles/entries/tabs.css';
 
 import type { Component } from 'vue';
 import { createAsyncWithSkeleton } from '@codemonster-ru/vueforge-core/async';
