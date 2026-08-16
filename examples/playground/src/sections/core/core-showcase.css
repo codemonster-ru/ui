@@ -1535,6 +1535,14 @@
   color: transparent;
 }
 
+.demo-application-floating-field.demo-application-floating-field--active:has(
+    .demo-application-input--sm,
+    .core-select-recipe-wrap--sm
+  )
+  .demo-application-floating-field__label {
+  inset-block-start: calc(var(--cm-space-1) - var(--cm-border-width) * 2);
+}
+
 @media (width <= 960px) {
   .demo-data-table-details {
     grid-template-columns: 1fr;
