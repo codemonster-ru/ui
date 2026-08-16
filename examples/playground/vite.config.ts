@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { fileURLToPath, URL } from 'node:url';
 import { vueforgePlaygroundVirtualPlugin } from '../../packages/playground-vite-plugin/src/index';
-import { expandVfBreakpointQueries, resolveVfBreakpointQuery } from '../../packages/theme/src/breakpoint-queries';
 
 const showcaseSectionPattern = /^\/(overview|colors|core|layouts|icons|codeblock|playground)\/?$/;
 
@@ -27,75 +26,13 @@ function vueforgeShowcaseHistoryFallback(): Plugin {
   };
 }
 
-function vueforgeBreakpointQueriesPlugin(): Plugin {
-  return {
-    name: 'vueforge-showcase-expand-breakpoint-queries',
-    enforce: 'pre',
-    transform(code, id) {
-      const normalizedId = id.replace(/\\/g, '/').split('?', 1)[0];
-      if (!normalizedId.includes('/packages/') || !normalizedId.includes('/src/') || !normalizedId.endsWith('.css')) {
-        return null;
-      }
-
-      const { transformed, unknownAliases } = expandVfBreakpointQueries(code);
-      if (unknownAliases.size > 0) {
-        throw new Error(`Unknown breakpoint aliases in ${normalizedId}: ${[...unknownAliases].sort().join(', ')}`);
-      }
-
-      return transformed === code ? null : transformed;
-    },
-    generateBundle(_options, bundle) {
-      for (const output of Object.values(bundle)) {
-        if (output.type !== 'asset' || !output.fileName.endsWith('.css')) continue;
-
-        const source = typeof output.source === 'string' ? output.source : new TextDecoder().decode(output.source);
-        if (/@(?:media|container)[^{]*(--vf-bp-)/i.test(source)) {
-          throw new Error(`Unresolved breakpoint alias in ${output.fileName}`);
-        }
-      }
-    },
-  };
-}
-
-type PostcssAtRule = {
-  name: string;
-  params: string;
-};
-
-function vueforgeBreakpointQueriesPostcssPlugin() {
-  return {
-    postcssPlugin: 'vueforge-showcase-expand-imported-breakpoint-queries',
-    AtRule(atRule: PostcssAtRule) {
-      if (atRule.name !== 'media' && atRule.name !== 'container') return;
-
-      const match = atRule.params.match(/^([a-z_][a-z0-9_-]*\s+)?\(\s*(--vf-bp-[a-z0-9-]+)\s*\)$/i);
-      if (!match) return;
-
-      const query = resolveVfBreakpointQuery(match[2]);
-      if (!query) {
-        throw new Error(`Unknown breakpoint alias: ${match[2]}`);
-      }
-
-      atRule.params = `${match[1] ?? ''}${query}`;
-    },
-  };
-}
-
-vueforgeBreakpointQueriesPostcssPlugin.postcss = true;
-
 export default defineConfig({
-  css: {
-    postcss: {
-      plugins: [vueforgeBreakpointQueriesPostcssPlugin()],
-    },
-  },
   server: {
     host: '127.0.0.1',
     port: 5175,
     strictPort: true,
   },
   plugins: [
-    vueforgeBreakpointQueriesPlugin(),
     vue(),
     vueforgeShowcaseHistoryFallback(),
     vueforgePlaygroundVirtualPlugin({

@@ -192,7 +192,7 @@
   color: var(--vf-playground-ssr-hint);
 }
 
-@media (--vf-bp-md-down) {
+@media (max-width: 767.98px) {
   .vf-playground__tabs {
     flex-wrap: wrap;
   }
