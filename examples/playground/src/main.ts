@@ -1,7 +1,5 @@
 import { createApp } from 'vue';
 
-import '@codemonster-ru/vueforge-layouts/styles.css';
-
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-tokens/breakpoints.css';
 import '@codemonster-ru/ui-css/avatar.css';
