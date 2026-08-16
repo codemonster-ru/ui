@@ -438,4 +438,10 @@ function setPageSize(value: string): void {
   }
 }
 
+@media (width <= 960px) {
+  .demo-application-sortable-table {
+    margin-block-end: calc(-1 * var(--cm-border-width));
+  }
+}
+
 </style>
