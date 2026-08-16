@@ -190,7 +190,7 @@ for presentation while retaining the completed semantic, accessibility, and cros
 - [x] `CMUI-195` Restore default, variant, size, state, and responsive visual parity for every
       direct replacement in both light and dark themes without adding `.vf-*` selectors or a
       VueForge runtime dependency to CodeMonster UI packages.
-- [ ] `CMUI-196` Restore the frozen visual presentation for approved compositions and
+- [x] `CMUI-196` Restore the frozen visual presentation for approved compositions and
       application-owned shell recipes while preserving their current semantic and accessibility
       ownership.
 - [ ] `CMUI-197` Restore the complete showcase information architecture and representative example
