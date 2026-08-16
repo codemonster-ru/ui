@@ -790,7 +790,17 @@
 }
 
 .demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible {
+  position: relative;
   border-block-start-color: transparent;
+}
+
+.demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible::before {
+  position: absolute;
+  inset-block-start: var(--cm-space-3);
+  inset-inline: 0;
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
+  content: '';
+  pointer-events: none;
 }
 
 .demo-application-group-box__accordion.cm-accordion {
@@ -807,6 +817,7 @@
   padding: var(--cm-field-padding-md);
   border: var(--cm-border-width) solid transparent;
   border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
   color: var(--cm-color-text-primary);
   font-size: var(--cm-font-size-xl);
   font-weight: var(--cm-font-weight-regular);
