@@ -945,6 +945,7 @@
   container-name: demo-application-page-header;
   container-type: inline-size;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--cm-space-3);
   min-width: 0;
 }
