@@ -261,4 +261,11 @@ function setPageSize(event: Event): void {
     display: none;
   }
 }
+
+@media (width <= 600px) {
+  .core-pagination-data-table-recipe__page:not([aria-current='page']),
+  .core-pagination-data-table-recipe__ellipsis {
+    display: none;
+  }
+}
 </style>
