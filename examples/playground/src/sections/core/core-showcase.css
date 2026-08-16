@@ -955,6 +955,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--cm-space-2) var(--cm-space-3);
+  inline-size: 100%;
   min-width: 0;
 }
 
