@@ -311,6 +311,24 @@ onBeforeUnmount(() => filledObserver?.disconnect());
   color: transparent;
 }
 
+.demo-application-floating-field:not(.demo-application-floating-field--active):has(.cm-textarea--sm)
+  .demo-application-floating-field__label {
+  inset-block-start: 7px;
+  transform: none;
+}
+
+.demo-application-floating-field:not(.demo-application-floating-field--active):has(.cm-textarea--md)
+  .demo-application-floating-field__label {
+  inset-block-start: 8px;
+  transform: none;
+}
+
+.demo-application-floating-field:not(.demo-application-floating-field--active):has(.cm-textarea--lg)
+  .demo-application-floating-field__label {
+  inset-block-start: 13px;
+  transform: none;
+}
+
 /* stylelint-disable-next-line no-descending-specificity -- Unsupported fallback must win after floating geometry. */
 .demo-application-floating-field--unsupported .demo-application-floating-field__label {
   position: static;
