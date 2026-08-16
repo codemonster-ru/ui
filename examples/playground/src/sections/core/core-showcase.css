@@ -807,6 +807,14 @@
   order: -1;
 }
 
+.demo-application-group-box__accordion .cm-accordion__trigger[aria-expanded='false']::after {
+  transform: rotate(-90deg);
+}
+
+.demo-application-group-box__accordion .cm-accordion__trigger[aria-expanded='true']::after {
+  transform: none;
+}
+
 .demo-application-group-box__accordion .cm-accordion__panel {
   padding: 0;
   border-block-start: 0;
