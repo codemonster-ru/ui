@@ -2149,12 +2149,16 @@ const tabContent = computed<Record<string, string>>(() => ({
                     <p class="demo-component-matrix__label">VfSkeletonGate</p>
                     <div class="demo-application-busy" aria-busy="true">
                       <div class="demo-application-busy__content" aria-hidden="true" inert>
-                        <section class="demo-application-panel">
-                          <header>
-                            <h3 class="demo-application-panel__title">Loaded panel</h3>
-                          </header>
+                        <VfCard
+                          element="section"
+                          class="demo-application-panel"
+                          aria-labelledby="loaded-panel-title"
+                        >
+                          <template #header>
+                            <h3 id="loaded-panel-title" class="demo-application-panel__title">Loaded panel</h3>
+                          </template>
                           <p class="demo-m-0">Loaded content preserves geometry.</p>
-                        </section>
+                        </VfCard>
                       </div>
                       <div class="demo-application-busy__overlay" aria-hidden="true">
                         <VfSkeleton min-height="6rem" />
@@ -2162,12 +2166,16 @@ const tabContent = computed<Record<string, string>>(() => ({
                     </div>
                     <div class="demo-application-busy">
                       <div class="demo-application-busy__content demo-application-busy__content--ready">
-                        <section class="demo-application-panel">
-                          <header>
-                            <h3 class="demo-application-panel__title">Ready panel</h3>
-                          </header>
+                        <VfCard
+                          element="section"
+                          class="demo-application-panel"
+                          aria-labelledby="ready-panel-title"
+                        >
+                          <template #header>
+                            <h3 id="ready-panel-title" class="demo-application-panel__title">Ready panel</h3>
+                          </template>
                           <p class="demo-m-0">Ready content replaces the skeleton.</p>
-                        </section>
+                        </VfCard>
                       </div>
                       <div class="demo-application-busy__overlay" aria-hidden="true" hidden>
                         <VfSkeleton min-height="6rem" />
