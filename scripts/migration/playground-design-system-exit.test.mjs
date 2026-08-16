@@ -36,6 +36,10 @@ function sourceFiles() {
     .map((entry) => join(entry.parentPath, entry.name));
 }
 
+function legacyPackageSource(contents, path) {
+  return /\.(?:test|spec)\.[^.]+$/u.test(path) ? stripCommentsAndStrings(contents) : contents;
+}
+
 function stripCommentsAndStrings(source) {
   let output = '';
   let index = 0;
@@ -175,10 +179,11 @@ test('keeps the representative playground off legacy design-system dependencies'
     const contents = readFileSync(file, 'utf8');
     const path = relative(repositoryRoot, file);
     const extension = file.slice(file.lastIndexOf('.'));
+    const packageSource = legacyPackageSource(contents, path);
 
     for (const packageName of legacyPackages) {
       assert.doesNotMatch(
-        contents,
+        packageSource,
         new RegExp(packageName.replaceAll('/', '\\/'), 'u'),
         `${path} imports ${packageName}.`,
       );
@@ -226,6 +231,14 @@ const runtime = { class: 'vf-button vf-button--secondary' };
     'vf-playground',
     'vf-runtime-state',
   ]);
+});
+
+test('dependency scanner ignores test-only fixture strings', () => {
+  const assertionFixture = "expect(showcase).not.toContain('@codemonster-ru/vueforge-core');";
+  const runtimeImport = "import '@codemonster-ru/vueforge-core/styles.css';";
+
+  assert.doesNotMatch(legacyPackageSource(assertionFixture, 'fixture.test.ts'), /@codemonster-ru\/vueforge-core/u);
+  assert.match(legacyPackageSource(runtimeImport, 'fixture.ts'), /@codemonster-ru\/vueforge-core/u);
 });
 
 test('semantic scanners find component APIs and narrowly allow retained product hooks', () => {
