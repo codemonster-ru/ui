@@ -366,6 +366,10 @@
   line-height: var(--cm-line-height-normal);
 }
 
+.demo-application-panel .cm-card__body {
+  color: inherit;
+}
+
 .demo-application-busy {
   --demo-application-busy-fade-easing: ease;
 
