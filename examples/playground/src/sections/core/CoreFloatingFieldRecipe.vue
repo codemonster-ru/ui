@@ -211,7 +211,7 @@ onBeforeUnmount(() => filledObserver?.disconnect());
   --demo-floating-input-padding-bottom: var(--cm-field-padding-block-md);
   --demo-floating-label-active-block: calc(-1 * var(--cm-border-width));
   --demo-floating-label-active-translate: -100%;
-  --demo-floating-label-background: var(--cm-color-background-canvas);
+  --demo-floating-label-background: transparent;
 
   padding-block-start: calc(var(--cm-space-3) - var(--cm-border-width));
 }
