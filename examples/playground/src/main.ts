@@ -17,7 +17,6 @@ import '@codemonster-ru/ui-css/stack.css';
 import '@codemonster-ru/ui-css/radio.css';
 import '@codemonster-ru/ui-css/switch.css';
 import '@codemonster-ru/ui-css/textarea.css';
-import '@codemonster-ru/vueforge-core/styles.css';
 import './sections/core/core-showcase.css';
 import './sections/layouts/layouts-showcase.css';
 import './demo-showcase.css';
