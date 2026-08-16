@@ -494,6 +494,8 @@ onBeforeUnmount(() => {
 }
 
 .core-select-recipe__clear {
+  --core-select-icon-size: var(--cm-icon-size-md);
+
   position: absolute;
   z-index: 1;
   inset-block-start: 50%;
@@ -513,12 +515,16 @@ onBeforeUnmount(() => {
 }
 
 .core-select-recipe-wrap--sm .core-select-recipe__clear {
+  --core-select-icon-size: 0.9375rem;
+
   inset-inline-end: var(--cm-space-2);
   inline-size: 1.25rem;
   block-size: 1.25rem;
 }
 
 .core-select-recipe-wrap--lg .core-select-recipe__clear {
+  --core-select-icon-size: 1.0625rem;
+
   inline-size: var(--cm-icon-size-xl);
   block-size: var(--cm-icon-size-xl);
 }
