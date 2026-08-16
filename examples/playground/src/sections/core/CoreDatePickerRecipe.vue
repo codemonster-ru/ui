@@ -714,6 +714,10 @@ onBeforeUnmount(() => {
   line-height: 1;
 }
 
+.core-date-picker-recipe__trigger--with-clear .core-date-picker-recipe__icon {
+  transform: translateX(1.375rem);
+}
+
 .core-date-picker-recipe__clear {
   position: absolute;
   z-index: 1;
