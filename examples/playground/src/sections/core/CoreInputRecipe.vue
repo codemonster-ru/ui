@@ -252,7 +252,9 @@ async function togglePassword(): Promise<void> {
 }
 
 .demo-application-input:not(.demo-application-input--actions-0) .cm-input {
-  padding-inline-end: calc(var(--demo-input-adornment-offset) + var(--demo-input-actions-width) + var(--cm-space-2));
+  padding-inline-end: calc(
+    var(--demo-input-adornment-offset) + var(--demo-input-actions-width) + var(--cm-border-width) * 2
+  );
 }
 
 .demo-application-input--trailing:not(.demo-application-input--actions-0) .cm-input__trailing {
