@@ -197,11 +197,6 @@ async function togglePassword(): Promise<void> {
   block-size: calc(var(--cm-icon-size-lg) - var(--cm-border-width));
 }
 
-.demo-application-input:not(.demo-application-input--floating):has(.demo-application-input__actions)
-  .cm-input__trailing {
-  transform: translateX(calc(var(--cm-space-1) / 2));
-}
-
 .demo-application-input__icon :deep(svg),
 .demo-application-input__action :deep(svg) {
   inline-size: 100%;
