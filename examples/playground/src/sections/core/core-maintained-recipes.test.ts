@@ -20,4 +20,10 @@ describe('maintained showcase recipes', () => {
     expect(showcaseSource).toContain('aria-labelledby="ready-panel-title"');
     expect(showcaseSource).toContain('<VfCard');
   });
+
+  it('keeps PageHeader spacing and actions on Stack and Inline compositions', () => {
+    expect(showcaseSource).toContain('<VfStack class="demo-application-page-header">');
+    expect(showcaseSource).toContain('<VfInline class="demo-application-page-header__row">');
+    expect(showcaseSource).toContain('<VfInline class="demo-application-page-header__actions">');
+  });
 });
