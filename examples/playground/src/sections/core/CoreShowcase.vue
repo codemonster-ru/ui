@@ -3005,8 +3005,8 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell demo-item--full">
                   <p class="demo-component-matrix__label">VfPageHeader</p>
-                  <header class="demo-application-page-header">
-                    <div class="demo-application-page-header__breadcrumbs">
+                  <header>
+                    <VfStack class="demo-application-page-header">
                       <VfBreadcrumbs
                         :items="[
                           { label: 'Administration', href: '#demo-navigation' },
@@ -3017,19 +3017,19 @@ const tabContent = computed<Record<string, string>>(() => ({
                           <VueIconify :icon="icons.chevronRight" size="var(--cm-icon-size-sm)" />
                         </template>
                       </VfBreadcrumbs>
-                    </div>
-                    <div class="demo-application-page-header__row">
-                      <div class="demo-application-page-header__content">
-                        <h1 class="demo-application-page-header__title">Team members</h1>
-                        <div class="demo-application-page-header__description">
-                          Manage workspace access, roles, and account status.
+                      <VfInline class="demo-application-page-header__row">
+                        <div class="demo-application-page-header__content">
+                          <h1 class="demo-application-page-header__title">Team members</h1>
+                          <div class="demo-application-page-header__description">
+                            Manage workspace access, roles, and account status.
+                          </div>
                         </div>
-                      </div>
-                      <div class="demo-application-page-header__actions">
-                        <CmButton variant="secondary">Export</CmButton>
-                        <CmButton>New user</CmButton>
-                      </div>
-                    </div>
+                        <VfInline class="demo-application-page-header__actions">
+                          <CmButton variant="secondary">Export</CmButton>
+                          <CmButton>New user</CmButton>
+                        </VfInline>
+                      </VfInline>
+                    </VfStack>
                   </header>
                 </div>
 
