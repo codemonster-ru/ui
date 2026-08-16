@@ -183,6 +183,8 @@ onBeforeUnmount(() => filledObserver?.disconnect());
 
 <style scoped>
 .demo-application-floating-field {
+  --demo-floating-input-padding-top: calc(var(--cm-space-4) + var(--cm-space-1) + var(--cm-border-width));
+  --demo-floating-input-padding-bottom: calc(var(--cm-space-1) - var(--cm-border-width));
   --demo-floating-label-active-block: var(--cm-space-1);
   --demo-floating-label-active-translate: 0;
   --demo-floating-label-background: transparent;
@@ -195,19 +197,23 @@ onBeforeUnmount(() => filledObserver?.disconnect());
 }
 
 .demo-application-floating-field--on {
+  --demo-floating-input-padding-top: var(--cm-field-padding-block-md);
+  --demo-floating-input-padding-bottom: var(--cm-field-padding-block-md);
   --demo-floating-label-active-block: 0;
   --demo-floating-label-active-translate: -50%;
   --demo-floating-label-background: var(--cm-color-background-surface);
 
-  padding-block-start: var(--cm-space-1);
+  padding-block-start: calc(var(--cm-space-1) + var(--cm-border-width) * 2);
 }
 
 .demo-application-floating-field--over {
+  --demo-floating-input-padding-top: var(--cm-field-padding-block-md);
+  --demo-floating-input-padding-bottom: var(--cm-field-padding-block-md);
   --demo-floating-label-active-block: 0;
   --demo-floating-label-active-translate: -100%;
   --demo-floating-label-background: var(--cm-color-background-canvas);
 
-  padding-block-start: var(--cm-space-4);
+  padding-block-start: calc(var(--cm-space-3) - var(--cm-border-width));
 }
 
 .demo-application-floating-field__control {
