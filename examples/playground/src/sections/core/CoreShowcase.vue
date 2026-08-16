@@ -24,6 +24,7 @@ import {
   CmProgressSpinner,
   CmRadio as VfRadio,
   CmSkeleton as VfSkeleton,
+  CmSection as VfSection,
   CmStack as VfStack,
   CmSwitch as VfSwitch,
   CmTable as VfTable,
@@ -1482,22 +1483,28 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfPanel · default</p>
-                  <section class="demo-application-panel">
-                    <header>
-                      <h3 class="demo-application-panel__title">Supporting Context</h3>
-                    </header>
+                  <VfCard
+                    element="section"
+                    class="demo-application-panel"
+                    aria-labelledby="supporting-context-title"
+                  >
+                    <template #header>
+                      <h3 id="supporting-context-title" class="demo-application-panel__title">Supporting Context</h3>
+                    </template>
                     <p class="demo-m-0">Panel content with regular treatment.</p>
-                  </section>
+                  </VfCard>
                 </div>
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfPanel · subtle</p>
-                  <section class="demo-application-panel demo-application-panel--subtle">
-                    <header>
-                      <h3 class="demo-application-panel__title">Subtle Context</h3>
-                    </header>
+                  <VfSection
+                    element="section"
+                    class="demo-application-panel demo-application-panel--subtle"
+                    aria-labelledby="subtle-context-title"
+                  >
+                    <h3 id="subtle-context-title" class="demo-application-panel__title">Subtle Context</h3>
                     <p class="demo-m-0">Subtle panel treatment for quiet grouping.</p>
-                  </section>
+                  </VfSection>
                 </div>
 
                 <div class="demo-component-matrix__cell">
