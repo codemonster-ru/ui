@@ -813,6 +813,9 @@
 }
 
 .demo-application-group-box__accordion .cm-accordion__trigger {
+  display: inline-flex;
+  inline-size: max-content;
+  max-inline-size: 100%;
   justify-content: flex-start;
   gap: var(--cm-space-2);
   min-block-size: var(--cm-control-height-md);
@@ -820,8 +823,8 @@
   padding: var(--cm-field-padding-md);
   border: var(--cm-border-width) solid transparent;
   border-radius: var(--cm-radius-control);
-  background: var(--cm-color-background-surface);
-  background-color: var(--cm-color-background-surface) !important;
+  background: transparent;
+  background-color: transparent !important;
   color: var(--cm-color-text-primary);
   font-size: var(--cm-font-size-xl);
   font-weight: var(--cm-font-weight-regular);
