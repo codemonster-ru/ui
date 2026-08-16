@@ -57,7 +57,7 @@
 }
 
 .core-nav-recipe--sidebar.core-nav-recipe--simple .core-nav-recipe__collapse {
-  margin-inline-start: calc(var(--cm-space-2) * 2);
+  margin-inline-start: calc(var(--cm-space-3) * 2);
 }
 
 .core-nav-recipe__node {
