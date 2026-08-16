@@ -294,7 +294,7 @@ onBeforeUnmount(() => stopResize());
 
 .demo-application-resizable-table__description {
   margin: 0;
-  color: var(--cm-color-text-secondary);
+  color: var(--cm-color-text-muted);
   font-size: var(--cm-font-size-xl);
   line-height: var(--cm-line-height-normal);
 }
