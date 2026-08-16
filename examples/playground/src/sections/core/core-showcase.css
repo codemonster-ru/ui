@@ -814,15 +814,14 @@
 
 .demo-application-group-box__accordion .cm-accordion__trigger {
   justify-content: flex-start;
-  inline-size: max-content;
   gap: var(--cm-space-2);
   min-block-size: var(--cm-control-height-md);
   margin-inline: calc(var(--cm-space-3) * -1);
   padding: var(--cm-field-padding-md);
   border: var(--cm-border-width) solid transparent;
   border-radius: var(--cm-radius-control);
-  background: transparent;
-  background-color: transparent !important;
+  background: var(--cm-color-background-surface);
+  background-color: var(--cm-color-background-surface) !important;
   color: var(--cm-color-text-primary);
   font-size: var(--cm-font-size-xl);
   font-weight: var(--cm-font-weight-regular);
