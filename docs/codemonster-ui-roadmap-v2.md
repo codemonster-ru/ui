@@ -76,6 +76,15 @@ that threshold. There is no design-change tolerance.
   interaction, SSR or server-rendering, and visual layers.
 - A visual claim requires rendered screenshot comparison. Generating an HTML fixture matrix without
   capturing and comparing pixels is fixture coverage, not visual verification.
+- Treat VueForge token source and formulas as the first visual-compatibility input. Compare token
+  names, aliases, formulas, serialized values, and computed browser values before changing
+  component or showcase CSS.
+- Keep visual corrections in the lowest shared layer that owns the behavior: tokens in
+  `ui-tokens`, component geometry and states in `ui-css` or the shared component contract, adapter
+  behavior in the platform adapter, and only application-owned composition in the showcase.
+- Do not accept screenshot-driven offsets, selectors, or markup changes as component fixes. A
+  screenshot diff is a validation signal, not the implementation source of truth; every shared
+  component change requires canonical Vue and Razor evidence before it can close a visual item.
 - Use commit `fd793696f50d3be0fcd3788f0f8f751c63869963` as the frozen VueForge repository,
   showcase, token, and component-style reference. Compare equivalent routes, states, themes, and
   viewports; do not approve a new design merely because Vue and Razor match each other.
@@ -87,7 +96,7 @@ that threshold. There is no design-change tolerance.
 - Current phase: Phase 19 — VueForge visual compatibility
 - Current milestone: M12 — In progress
 - Completed milestones: M9, M10, and M11
-- Next item: `CMUI-196` — restore composition and application-shell visual parity
+- Next item: `CMUI-194` — audit and restore the shared VueForge 2 token graph before component parity
 
 ## Milestones
 
@@ -185,14 +194,20 @@ for presentation while retaining the completed semantic, accessibility, and cros
 - [x] `CMUI-193` Add a browser screenshot harness that renders frozen VueForge and current
       CodeMonster UI references side by side, stores reviewed baselines, produces image diffs, and
       fails CI above an explicitly documented anti-aliasing tolerance.
-- [x] `CMUI-194` Restore VueForge 2 token parity for palette, semantic colors, typography, control
-      sizing, spacing, radii, borders, shadows, focus treatment, and motion under `--cm-*` names.
-- [x] `CMUI-195` Restore default, variant, size, state, and responsive visual parity for every
-      direct replacement in both light and dark themes without adding `.vf-*` selectors or a
-      VueForge runtime dependency to CodeMonster UI packages.
-- [x] `CMUI-196` Restore the frozen visual presentation for approved compositions and
-      application-owned shell recipes while preserving their current semantic and accessibility
-      ownership.
+- [ ] `CMUI-194` Audit and restore VueForge 2 token parity for palette, semantic colors,
+      typography, control sizing, spacing, radii, borders, shadows, focus treatment, and motion
+      under `--cm-*` names. Compare the frozen VueForge token source, aliases, formulas, serialized
+      light/dark presets, and computed browser values; add a machine-readable parity report and
+      token-package tests before changing component CSS.
+- [ ] `CMUI-195` Restore default, variant, size, state, and responsive visual parity for every
+      direct replacement in both light and dark themes after `CMUI-194` passes. Validate canonical
+      component fixtures in Vue and Razor, repair shared contracts/CSS at the owning layer, and use
+      the frozen showcase only as the final product-level gate. Do not close this item with
+      showcase-specific offsets or regenerated baselines.
+- [ ] `CMUI-196` Restore the frozen visual presentation for approved compositions and
+      application-owned shell recipes after shared component parity is complete, while preserving
+      their current semantic and accessibility ownership. Keep composition fixes separate from
+      shared component and token fixes.
 - [ ] `CMUI-197` Restore the complete showcase information architecture and representative example
       matrix from the frozen VueForge reference. Product names and intentional API migration notes
       may change; layout, density, component appearance, and responsive behavior may not.
@@ -235,6 +250,8 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-15 | Preserve frozen token alias formulas as well as their computed values.                            | Equivalent literals can hide semantic drift in derived radii and shadows; the portable `--cm-*` graph now retains the reviewed VueForge relationships and verifies every reference.                                                                     | `CMUI-194`                         |
 | 2026-08-15 | Preserve canonical ownership while matching direct-replacement pixels.                            | All 37 direct replacements retain their current Vue/Razor semantics and public contracts while the reviewed showcase comparison passes all 312 light/dark desktop/mobile screenshots with no changed, missing, or unexpected images.                    | `CMUI-195`                         |
 | 2026-08-15 | Compare interaction states against the frozen showcase, not against a regenerated current run.    | The reviewed 44-image state baseline comes from the detached `fd793696` worktree and covers hover, active, focus-visible, disabled, invalid, selected, open, loading, indeterminate, and reduced-motion cases in both themes and viewports.             | `CMUI-198`                         |
+| 2026-08-16 | Reopen token, component, and composition parity in dependency order.                                | The current 312-image comparison still reports 62 changed screenshots, so the earlier completion claims for CMUI-194–196 are not release evidence. Audit the frozen token graph first, then repair shared component layers, then repair application-owned composition. | `CMUI-194`–`CMUI-196` |
+| 2026-08-16 | Treat screenshot diffs as validation rather than implementation guidance.                          | Local showcase offsets can reduce one screenshot cluster while introducing cross-viewport or cross-platform drift; shared Vue/Razor evidence must establish the owning layer before a visual change is accepted. | `CMUI-194`–`CMUI-199` |
 
 ## Scope-change log
 
