@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-tokens/breakpoints.css';
+import '@codemonster-ru/vueforge-playground/style.css';
 import '@codemonster-ru/ui-css/avatar.css';
 import '@codemonster-ru/ui-css/badge.css';
 import '@codemonster-ru/ui-css/card.css';
