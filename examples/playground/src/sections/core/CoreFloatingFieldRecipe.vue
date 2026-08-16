@@ -307,6 +307,10 @@ onBeforeUnmount(() => filledObserver?.disconnect());
   padding-block-start: 5px;
 }
 
+.demo-application-floating-field__control :deep(textarea)::placeholder {
+  color: transparent;
+}
+
 /* stylelint-disable-next-line no-descending-specificity -- Unsupported fallback must win after floating geometry. */
 .demo-application-floating-field--unsupported .demo-application-floating-field__label {
   position: static;
