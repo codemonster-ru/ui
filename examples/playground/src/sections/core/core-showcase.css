@@ -814,7 +814,6 @@
 
 .demo-application-group-box__accordion .cm-accordion__trigger {
   justify-content: flex-start;
-  inline-size: max-content;
   gap: var(--cm-space-2);
   min-block-size: var(--cm-control-height-md);
   margin-inline: calc(var(--cm-space-3) * -1);
