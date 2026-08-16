@@ -295,6 +295,10 @@ onBeforeUnmount(() => filledObserver?.disconnect());
   padding-block-start: calc(var(--cm-space-5) + var(--cm-space-1) + var(--cm-border-width) * 2);
 }
 
+.demo-application-floating-field--in .demo-application-floating-field__control :deep(.cm-textarea--sm) {
+  padding-block-start: calc(var(--cm-space-5) + var(--cm-space-1));
+}
+
 .demo-application-floating-field--on .demo-application-floating-field__control :deep(textarea) {
   padding-block-start: 7px;
 }
