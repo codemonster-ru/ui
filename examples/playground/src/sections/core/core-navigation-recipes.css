@@ -251,14 +251,6 @@
   color: var(--cm-color-text-secondary);
 }
 
-.core-nav-recipe--sidebar.core-nav-recipe--simple.core-nav-recipe--wrap-labels
-  .core-nav-recipe__item:is(.core-nav-recipe__item--active, .core-nav-recipe__item--ancestor-active):not(
-    :disabled,
-    .core-nav-recipe__item--disabled
-  ) {
-  color: var(--cm-color-text-secondary);
-}
-
 .core-nav-recipe--pills .core-nav-recipe__item--active:not(:disabled, .core-nav-recipe__item--disabled),
 .core-nav-recipe--sidebar .core-nav-recipe__item--top.core-nav-recipe__item--ancestor-active {
   background: var(--cm-color-background-surface-selected);
