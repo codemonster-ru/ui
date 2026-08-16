@@ -246,6 +246,10 @@
   color: var(--cm-color-selected-foreground);
 }
 
+.core-nav-recipe--simple .core-nav-recipe__item--ancestor-active:not(:disabled, .core-nav-recipe__item--disabled) {
+  color: var(--cm-color-text-secondary);
+}
+
 .core-nav-recipe--pills .core-nav-recipe__item--active:not(:disabled, .core-nav-recipe__item--disabled),
 .core-nav-recipe--sidebar .core-nav-recipe__item--top.core-nav-recipe__item--ancestor-active {
   background: var(--cm-color-background-surface-selected);
