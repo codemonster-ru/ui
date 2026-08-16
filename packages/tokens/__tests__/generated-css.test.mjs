@@ -24,7 +24,7 @@ function parseDeclarations(source) {
 test('generates the complete light theme and minimal dark overrides', () => {
   const [lightBlock, darkBlock] = css.split("\n\n[data-cm-theme='dark'] {");
 
-  assert.equal(lightBlock.match(/ {2}--cm-/g)?.length, 219);
+  assert.equal(lightBlock.match(/ {2}--cm-/g)?.length, 228);
   assert.equal(darkBlock.match(/ {2}--cm-/g)?.length, 83);
   assert.match(css, /^@import '\.\/breakpoints\.css';/);
 });

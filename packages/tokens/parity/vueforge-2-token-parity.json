@@ -1,0 +1,59 @@
+{
+  "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "referenceNamespace": "--vf-",
+  "portableNamespace": "--cm-",
+  "status": "pass",
+  "themePresets": {
+    "light": {
+      "name": "codemonster-light",
+      "mode": "light",
+      "tokenCount": 234,
+      "darkOverrideCount": 83
+    },
+    "dark": {
+      "name": "codemonster-dark",
+      "mode": "dark",
+      "tokenCount": 234
+    }
+  },
+  "groups": {
+    "primitiveColor": 66,
+    "semanticColor": 85,
+    "spacing": 11,
+    "sizing": 7,
+    "control": 18,
+    "typography": 26,
+    "border": 2,
+    "radius": 6,
+    "shadow": 3,
+    "motion": 4,
+    "breakpoint": 6
+  },
+  "aliases": {
+    "controlFontSizeSm": "var(--cm-text-label-font-size)",
+    "controlFontSizeMd": "var(--cm-text-body-font-size)",
+    "controlFontSizeLg": "var(--cm-font-size-2xl)",
+    "controlLineHeight": "var(--cm-text-label-line-height)",
+    "radiusControl": "calc(var(--cm-radius) - 0.125rem)",
+    "radiusControlTight": "calc(var(--cm-radius) - 0.25rem)",
+    "radiusSurface": "var(--cm-radius)",
+    "radiusOverlay": "calc(var(--cm-radius) + 0.125rem)",
+    "fieldPaddingMd": "var(--cm-field-padding-block-md) var(--cm-field-padding-inline-md)"
+  },
+  "computedCssVariables": {
+    "--cm-control-font-size-sm": "0.875rem",
+    "--cm-control-font-size-md": "1rem",
+    "--cm-control-font-size-lg": "1.125rem",
+    "--cm-control-line-height": "1.2",
+    "--cm-radius-control": "0.625rem",
+    "--cm-radius-control-tight": "0.5rem",
+    "--cm-radius-surface": "0.75rem",
+    "--cm-radius-overlay": "0.875rem"
+  },
+  "serialization": {
+    "cssVariablePrefix": "--cm-",
+    "lightDeclarationCount": 228,
+    "darkDeclarationCount": 83,
+    "breakpointDeclarationCount": 6
+  }
+}
