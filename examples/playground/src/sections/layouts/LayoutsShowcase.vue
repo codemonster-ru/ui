@@ -157,16 +157,21 @@
                   <div class="demo-shell-frame">
                     <section class="demo-error-recipe">
                       <VfContainer size="md" class="demo-error-recipe__container">
-                        <div class="demo-error-recipe__panel">
+                        <VfSection
+                          element="article"
+                          surface
+                          class="demo-error-recipe__panel"
+                          aria-labelledby="demo-error-title"
+                        >
                           <p class="demo-error-recipe__code">404</p>
-                          <h1 class="demo-error-recipe__title">Page not found</h1>
+                          <h1 id="demo-error-title" class="demo-error-recipe__title">Page not found</h1>
                           <p class="demo-error-recipe__description">
                             The page you requested does not exist or has been moved.
                           </p>
                           <div class="demo-error-recipe__actions">
                             <VfButton variant="primary" type="button"> Go to home page </VfButton>
                           </div>
-                        </div>
+                        </VfSection>
                       </VfContainer>
                     </section>
                   </div>
@@ -208,12 +213,17 @@
                       ]"
                     >
                       <VfContainer size="md" class="demo-auth-recipe__container">
-                        <div class="demo-auth-recipe__panel">
+                        <VfSection
+                          element="section"
+                          surface
+                          class="demo-auth-recipe__panel"
+                          aria-labelledby="demo-auth-title"
+                        >
                           <header class="demo-auth-recipe__header">
                             <div class="demo-auth-recipe__brand">
                               <img class="demo-auth-brand" :src="vueForgeLogoIcon" alt="VueForge" />
                             </div>
-                            <h1 class="demo-auth-recipe__title">Sign in</h1>
+                            <h1 id="demo-auth-title" class="demo-auth-recipe__title">Sign in</h1>
                             <p class="demo-auth-recipe__description">
                               Don't have an account?
                               <VfLink href="/" underline="none"> Click here to sign up </VfLink>
@@ -235,7 +245,7 @@
                               </p>
                             </form>
                           </div>
-                        </div>
+                        </VfSection>
                       </VfContainer>
                     </main>
                   </div>
