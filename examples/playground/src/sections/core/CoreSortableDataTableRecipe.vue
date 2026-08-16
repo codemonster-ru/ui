@@ -437,4 +437,10 @@ function setPageSize(value: string): void {
     border-color: CanvasText;
   }
 }
+
+@media (width <= 960px) {
+  .demo-application-sortable-table__pagination {
+    padding-block-end: calc(var(--cm-field-padding-md) + var(--cm-border-width));
+  }
+}
 </style>
