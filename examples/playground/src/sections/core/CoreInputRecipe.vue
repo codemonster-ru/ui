@@ -238,7 +238,7 @@ async function togglePassword(): Promise<void> {
 }
 
 .demo-application-input--floating .cm-input {
-  padding-block: calc(var(--cm-space-3) + var(--cm-space-1)) var(--cm-space-1);
+  padding-block: var(--demo-floating-input-padding-top) var(--demo-floating-input-padding-bottom);
 }
 
 .demo-application-input--floating .cm-input--sm {
