@@ -119,10 +119,6 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../packages/core/src/index.ts', import.meta.url)),
       },
       {
-        find: /^@codemonster-ru\/vueforge-core\/styles\.css$/,
-        replacement: fileURLToPath(new URL('../../packages/core/src/styles/components.css', import.meta.url)),
-      },
-      {
         find: /^@codemonster-ru\/vueforge-codeblock\/view$/,
         replacement: fileURLToPath(new URL('../../packages/codeblock/src/view.ts', import.meta.url)),
       },
