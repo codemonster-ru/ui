@@ -821,6 +821,7 @@
   border: var(--cm-border-width) solid transparent;
   border-radius: var(--cm-radius-control);
   background: var(--cm-color-background-surface);
+  background-color: var(--cm-color-background-surface) !important;
   color: var(--cm-color-text-primary);
   font-size: var(--cm-font-size-xl);
   font-weight: var(--cm-font-weight-regular);
