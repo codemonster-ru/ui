@@ -1524,6 +1524,17 @@
   color: var(--cm-color-icon-inverse);
 }
 
+.demo-application-floating-field.demo-application-floating-field--in .core-date-picker-recipe__trigger {
+  padding-block: calc(var(--cm-space-4) + var(--cm-space-1) + var(--cm-border-width))
+    calc(var(--cm-space-1) - var(--cm-border-width));
+}
+
+.demo-application-floating-field.demo-application-floating-field--in
+  .core-date-picker-recipe__trigger--placeholder
+  .core-date-picker-recipe__value {
+  color: transparent;
+}
+
 @media (width <= 960px) {
   .demo-data-table-details {
     grid-template-columns: 1fr;
