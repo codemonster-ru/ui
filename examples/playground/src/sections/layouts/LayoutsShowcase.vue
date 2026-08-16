@@ -1599,6 +1599,10 @@ const demoAsideItems = buildDemoItems(
   align-items: center;
 }
 
+.demo-error-recipe__container.cm-container {
+  max-inline-size: none;
+}
+
 .demo-error-recipe__panel,
 .demo-auth-recipe__panel {
   display: flex;
@@ -1613,6 +1617,14 @@ const demoAsideItems = buildDemoItems(
   border-radius: var(--cm-radius-surface);
   box-shadow: var(--cm-shadow-none);
   text-align: center;
+}
+
+.demo-error-recipe__panel.cm-section {
+  padding: calc(var(--cm-space-6) * 1.5);
+  border: 0;
+  border-radius: var(--cm-radius-surface);
+  background: transparent;
+  box-shadow: var(--cm-shadow-none);
 }
 
 .demo-error-recipe__code,
