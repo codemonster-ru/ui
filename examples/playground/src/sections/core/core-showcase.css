@@ -1532,7 +1532,11 @@
     calc(var(--cm-space-1) - var(--cm-border-width));
 }
 
-.demo-application-floating-field.demo-application-floating-field--in
+.demo-application-floating-field:is(
+    .demo-application-floating-field--in,
+    .demo-application-floating-field--on,
+    .demo-application-floating-field--over
+  )
   .core-date-picker-recipe__trigger--placeholder
   .core-date-picker-recipe__value {
   color: transparent;
