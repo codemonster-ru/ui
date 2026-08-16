@@ -209,7 +209,7 @@ onBeforeUnmount(() => filledObserver?.disconnect());
 .demo-application-floating-field--over {
   --demo-floating-input-padding-top: var(--cm-field-padding-block-md);
   --demo-floating-input-padding-bottom: var(--cm-field-padding-block-md);
-  --demo-floating-label-active-block: 0;
+  --demo-floating-label-active-block: calc(-1 * var(--cm-border-width));
   --demo-floating-label-active-translate: -100%;
   --demo-floating-label-background: var(--cm-color-background-canvas);
 
