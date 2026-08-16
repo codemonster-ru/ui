@@ -6,7 +6,7 @@ test('defines the immutable typography foundation', () => {
   assert.deepEqual(Object.keys(cmTypographyTokens), [...cmTypographyTokenNames]);
   assert.equal(Object.isFrozen(cmTypographyTokens), true);
   assert.equal(Object.isFrozen(cmTypographyTokenNames), true);
-  assert.equal(cmTypographyTokenNames.length, 17);
+  assert.equal(cmTypographyTokenNames.length, 26);
 });
 
 test('keeps font size and weight scales strictly ordered', () => {

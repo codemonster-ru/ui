@@ -35,7 +35,7 @@ function cssNameToTokenName(name) {
 
 test('composes every token group into the immutable light preset', () => {
   const declaredNames = groupNames.flat();
-  assert.equal(declaredNames.length, 225);
+  assert.equal(declaredNames.length, 234);
   assert.equal(new Set(declaredNames).size, declaredNames.length, 'Token groups must not overlap.');
   assert.deepEqual(Object.keys(cmLightThemePreset.tokens), declaredNames);
   assert.equal(cmLightThemePreset.name, 'codemonster-light');

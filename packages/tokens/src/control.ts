@@ -1,9 +1,9 @@
 export const cmControlTokens = Object.freeze({
   focusRingWidth: '3px',
-  controlFontSizeSm: 'var(--cm-font-size-md)',
-  controlFontSizeMd: 'var(--cm-font-size-xl)',
+  controlFontSizeSm: 'var(--cm-text-label-font-size)',
+  controlFontSizeMd: 'var(--cm-text-body-font-size)',
   controlFontSizeLg: 'var(--cm-font-size-2xl)',
-  controlLineHeight: 'var(--cm-line-height-tight)',
+  controlLineHeight: 'var(--cm-text-label-line-height)',
   buttonPaddingSm: '0.25rem 0.5rem',
   buttonPaddingMd: '0.3125rem 0.75rem',
   buttonPaddingLg: '0.5rem 1rem',

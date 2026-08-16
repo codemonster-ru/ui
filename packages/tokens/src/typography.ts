@@ -17,6 +17,15 @@ export const cmTypographyTokens = Object.freeze({
   lineHeightTight: '1.2',
   lineHeightNormal: '1.5',
   lineHeightRelaxed: '1.65',
+  textBodyFontSize: 'var(--cm-font-size-xl)',
+  textBodyLineHeight: 'var(--cm-line-height-normal)',
+  textBodyFontWeight: 'var(--cm-font-weight-regular)',
+  textCaptionFontSize: 'var(--cm-font-size-sm)',
+  textCaptionLineHeight: 'var(--cm-line-height-normal)',
+  textCaptionFontWeight: 'var(--cm-font-weight-medium)',
+  textLabelFontSize: 'var(--cm-font-size-md)',
+  textLabelLineHeight: 'var(--cm-line-height-tight)',
+  textLabelFontWeight: 'var(--cm-font-weight-medium)',
 } as const);
 
 export type CmTypographyTokenName = keyof typeof cmTypographyTokens;
