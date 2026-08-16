@@ -789,6 +789,12 @@
   padding-block-start: 0;
 }
 
+.demo-application-group-box__accordion.cm-accordion {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
 .demo-application-group-box__accordion .cm-accordion__trigger {
   justify-content: flex-start;
   gap: var(--cm-space-2);
