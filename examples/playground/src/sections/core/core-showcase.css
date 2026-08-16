@@ -1546,7 +1546,7 @@
 .demo-application-floating-field
   > .demo-application-floating-field__control
   > .demo-application-floating-field__label {
-  inset-inline-start: calc(var(--cm-space-2) + var(--cm-border-width));
+  inset-inline-start: calc(var(--cm-space-3) + var(--cm-border-width));
 }
 
 .demo-application-floating-field:has(.demo-application-input__icon)
@@ -1556,14 +1556,13 @@
   inset-inline-start: 2.125rem;
 }
 
-.demo-application-floating-field:has(.demo-application-input--sm)
+.demo-application-floating-field:has(
+    .demo-application-input--sm,
+    .core-select-recipe-wrap--sm,
+    .cm-textarea--sm
+  ):not(:has(.demo-application-input__icon, .core-select-recipe__icon--leading))
   .demo-application-floating-field__label {
-  inset-inline-start: 1.875rem;
-}
-
-.demo-application-floating-field:has(.core-select-recipe-wrap--sm)
-  .demo-application-floating-field__label {
-  inset-inline-start: 1.9375rem;
+  inset-inline-start: calc(var(--cm-space-2) + var(--cm-border-width));
 }
 
 .demo-application-floating-field:has(.demo-application-input--lg)
