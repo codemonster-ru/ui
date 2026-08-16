@@ -1509,14 +1509,13 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfGroupBox · default</p>
-                  <fieldset class="demo-application-group-box">
-                    <legend class="demo-application-group-box__legend">
-                      <span class="demo-application-group-box__title">Shipping address</span>
-                    </legend>
-                    <div class="demo-application-group-box__content">
-                      <p class="demo-m-0">1234 Elm Street, San Francisco, CA 94102</p>
-                    </div>
-                  </fieldset>
+                  <CmFieldset
+                    id="shipping-address-group"
+                    class="demo-application-group-box"
+                    label="Shipping address"
+                  >
+                    <p class="demo-m-0">1234 Elm Street, San Francisco, CA 94102</p>
+                  </CmFieldset>
                 </div>
 
                 <div class="demo-component-matrix__cell">
