@@ -82,6 +82,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
+import '../../core/src/styles/foundation.css';
+import '../../core/src/styles/entries/tabs.css';
 import VueIconify from './lib/components/icon.vue';
 import type { IconFamily } from './lib/iconFamilies';
 import { iconCatalog, iconNames } from './lib/iconMeta';
