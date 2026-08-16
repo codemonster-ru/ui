@@ -25,7 +25,7 @@
 }
 
 .core-nav-recipe--sidebar-compact {
-  --core-nav-list-gap: calc(var(--cm-space-1) + var(--cm-border-width) * 2);
+  --core-nav-list-gap: var(--cm-space-1);
 }
 
 .core-nav-recipe__list {
