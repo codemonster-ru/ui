@@ -188,13 +188,13 @@ async function togglePassword(): Promise<void> {
 }
 
 .demo-application-input--sm .demo-application-input__icon {
-  inline-size: var(--cm-icon-size-sm);
-  block-size: var(--cm-icon-size-sm);
+  inline-size: calc(var(--cm-icon-size-sm) + var(--cm-border-width));
+  block-size: calc(var(--cm-icon-size-sm) + var(--cm-border-width));
 }
 
 .demo-application-input--lg .demo-application-input__icon {
-  inline-size: var(--cm-icon-size-lg);
-  block-size: var(--cm-icon-size-lg);
+  inline-size: calc(var(--cm-icon-size-lg) - var(--cm-border-width));
+  block-size: calc(var(--cm-icon-size-lg) - var(--cm-border-width));
 }
 
 .demo-application-input__icon :deep(svg),
