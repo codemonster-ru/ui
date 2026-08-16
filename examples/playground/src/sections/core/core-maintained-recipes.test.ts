@@ -26,4 +26,11 @@ describe('maintained showcase recipes', () => {
     expect(showcaseSource).toContain('<VfInline class="demo-application-page-header__row">');
     expect(showcaseSource).toContain('<VfInline class="demo-application-page-header__actions">');
   });
+
+  it('keeps FormLayout and ConfirmDialog application-owned', () => {
+    expect(showcaseSource).toContain('<VfCard title="Workspace settings">');
+    expect(showcaseSource).toContain('class="demo-application-form-layout demo-application-form-layout--wide-label"');
+    expect(showcaseSource).toContain('<CmDialog');
+    expect(showcaseSource).toContain('class="demo-application-confirm-dialog"');
+  });
 });
