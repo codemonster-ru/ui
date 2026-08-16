@@ -444,4 +444,22 @@ function setPageSize(value: string): void {
   }
 }
 
+@container (inline-size <= 30rem) {
+  .demo-application-sortable-table__actions {
+    flex-basis: 100%;
+    justify-content: space-between;
+    min-inline-size: 0;
+  }
+
+  .demo-application-sortable-table__pages {
+    flex: 1;
+    justify-content: center;
+    min-inline-size: 0;
+  }
+
+  .demo-application-sortable-table__page:not([aria-current='page']) {
+    display: none;
+  }
+}
+
 </style>
