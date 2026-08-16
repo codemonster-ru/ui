@@ -791,6 +791,7 @@
 
 .demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible {
   position: relative;
+  padding-block-end: calc(var(--cm-space-4) - var(--cm-border-width));
   border-block-start-color: transparent;
 }
 
