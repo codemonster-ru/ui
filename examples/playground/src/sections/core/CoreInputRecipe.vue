@@ -243,11 +243,12 @@ async function togglePassword(): Promise<void> {
 
 .demo-application-input--floating .cm-input--sm {
   min-block-size: var(--cm-control-height-md);
-  padding-block: var(--cm-space-3) var(--cm-space-1);
+  padding-block: calc(var(--cm-space-4) + var(--cm-space-1))
+    calc(var(--cm-space-1) - var(--cm-border-width));
 }
 
 .demo-application-input--floating .cm-input--lg {
-  padding-block: calc(var(--cm-space-4) + var(--cm-space-1)) var(--cm-space-2);
+  padding-block: calc(var(--cm-space-4) + var(--cm-space-2)) var(--cm-space-2);
 }
 
 .demo-application-input:not(.demo-application-input--actions-0) .cm-input {
