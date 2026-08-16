@@ -30,6 +30,7 @@ import {
   CmTextarea,
   CmTextarea as VfTextarea,
   type CmBreadcrumbItem,
+  type CmAccordionItem,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
@@ -112,7 +113,7 @@ const confirmDialogBusy = ref(false);
 const confirmDialogError = ref('');
 const confirmDialogResult = ref('No action confirmed yet.');
 const commandPaletteQuery = ref('');
-const groupBoxCollapsed = ref(false);
+const groupBoxOpenItems = ref<string[]>([]);
 const dialogSize = ref<'sm' | 'md' | 'lg'>('md');
 const drawerPlacement = ref<'left' | 'right' | 'top' | 'bottom'>('right');
 const formStackNameValue = ref('');
@@ -156,6 +157,9 @@ let confirmDialogPreviousBodyOverflow: string | undefined;
 
 const closedAccordionItems = [{ id: 'closed', title: 'Closed section', content: 'Closed content.' }] as const;
 const openAccordionItems = [{ id: 'open', title: 'Open section', content: 'Open content.' }] as const;
+const invoiceGroupItems: CmAccordionItem[] = [
+  { id: 'details', title: 'Invoice details', content: '' },
+];
 const disabledAccordionItems = [
   { id: 'disabled', title: 'Disabled section', content: 'Disabled content.', disabled: true },
 ] as const;
@@ -1510,35 +1514,22 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfGroupBox · collapsible</p>
-                  <fieldset
+                  <CmFieldset
+                    id="invoice-details-group"
                     class="demo-application-group-box demo-application-group-box--collapsible"
-                    :class="{ 'demo-application-group-box--collapsed': groupBoxCollapsed }"
+                    label="Invoice details"
                   >
-                    <legend class="demo-application-group-box__legend">
-                      <button
-                        id="invoice-details-toggle"
-                        class="demo-application-group-box__trigger"
-                        type="button"
-                        aria-controls="invoice-details-content"
-                        :aria-expanded="!groupBoxCollapsed"
-                        @click="groupBoxCollapsed = !groupBoxCollapsed"
-                      >
-                        <span class="demo-application-group-box__icon" aria-hidden="true">
-                          <VueIconify :icon="icons.chevronDown" size="var(--cm-icon-size-sm)" />
-                        </span>
-                        <span class="demo-application-group-box__title">Invoice details</span>
-                      </button>
-                    </legend>
-                    <div
-                      v-if="!groupBoxCollapsed"
-                      id="invoice-details-content"
-                      class="demo-application-group-box__content demo-application-group-box__content--collapsible"
-                      role="region"
-                      aria-labelledby="invoice-details-toggle"
+                    <CmAccordion
+                      id="invoice-details-accordion"
+                      v-model:open-items="groupBoxOpenItems"
+                      class="demo-application-group-box__accordion"
+                      :items="invoiceGroupItems"
                     >
-                      <p class="demo-m-0">Invoice #1024 · Design service · $120.00</p>
-                    </div>
-                  </fieldset>
+                      <template #panelDetails>
+                        <p class="demo-m-0">Invoice #1024 · Design service · $120.00</p>
+                      </template>
+                    </CmAccordion>
+                  </CmFieldset>
                 </div>
 
                 <div class="demo-component-matrix__cell">
