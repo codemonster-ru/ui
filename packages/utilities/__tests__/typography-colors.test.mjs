@@ -9,7 +9,25 @@ import { colorUtilities, typographyUtilities } from '../src/contract.mjs';
 const css = await readFile(new URL('../dist/utilities.css', import.meta.url), 'utf8');
 
 test('generates the approved token-backed typography utilities', () => {
-  assert.equal(Object.keys(typographyUtilities).length, cmTypographyTokenNames.length);
+  assert.deepEqual(Object.keys(typographyUtilities), [
+    'font-base',
+    'font-heading',
+    'font-mono',
+    'font-regular',
+    'font-medium',
+    'font-semibold',
+    'font-bold',
+    'text-xs',
+    'text-sm',
+    'text-md',
+    'text-lg',
+    'text-xl',
+    'text-2xl',
+    'text-3xl',
+    'leading-tight',
+    'leading-normal',
+    'leading-relaxed',
+  ]);
   assert.deepEqual(typographyUtilities['font-heading'], { 'font-family': 'var(--cm-font-family-heading)' });
   assert.deepEqual(typographyUtilities['text-2xl'], { 'font-size': 'var(--cm-font-size-2xl)' });
   assert.deepEqual(typographyUtilities['leading-relaxed'], { 'line-height': 'var(--cm-line-height-relaxed)' });
