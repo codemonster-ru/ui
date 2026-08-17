@@ -254,6 +254,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-16 | Treat screenshot diffs as validation rather than implementation guidance.                          | Local showcase offsets can reduce one screenshot cluster while introducing cross-viewport or cross-platform drift; shared Vue/Razor evidence must establish the owning layer before a visual change is accepted. | `CMUI-194`–`CMUI-199` |
 | 2026-08-16 | Restore the frozen token aliases and formulas in the portable `--cm-*` graph.                       | The audit found three control aliases pointing directly at scale tokens and nine missing typography role aliases; restoring the VueForge relationships keeps serialized and computed values stable for Vue and Razor. | `CMUI-194` |
 | 2026-08-16 | Keep approved composition repairs in application-owned recipes.                                    | The GroupBox replacement now matches the frozen intrinsic trigger geometry and transparent treatment through its recipe CSS; a 312-state recapture changed only the expected GroupBox screenshots, with no token or shared-component changes. | `CMUI-196` |
+| 2026-08-17 | Preserve frozen state styling in application-owned navigation and data-table recipes.                | Active navigation items now retain label weight and selected-state hover exclusions, while the data-table error state uses the frozen text treatment; focused tests pass and the full 312-image gate remains deterministic with 62 known Core composition differences. | `CMUI-196` |
 
 ## Scope-change log
 
