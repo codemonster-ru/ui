@@ -257,6 +257,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-17 | Preserve frozen state styling in application-owned navigation and data-table recipes.                | Active navigation items now retain label weight and selected-state hover exclusions, while the data-table error state uses the frozen text treatment; focused tests pass and the full 312-image gate remains deterministic with 62 known Core composition differences. | `CMUI-196` |
 | 2026-08-17 | Restore menu-bar active-item semantics in the application recipe.                                      | Non-top active items now retain VueForge label weight and external-link icons retain the frozen baseline offset; focused navigation tests pass and the desktop menu-bar diff decreases by 146 pixels per theme. | `CMUI-196` |
 | 2026-08-17 | Restore direct floating form geometry and DataTable error styling.                                         | Input and Select sm/lg padding and leading-label formulas now match the frozen VueForge contracts; DataTable error text uses the frozen danger role. Focused tests pass, while the full gate remains at 62 changed Core screenshots. | `CMUI-195` |
+| 2026-08-17 | Align sortable DataTable pagination width with the frozen mobile contract.                                  | The application-owned replacement now keeps the Rows-per-page control at the frozen 50px width; the mobile20 diff decreased by 170 pixels per theme without adding changed frames. | `CMUI-195` |
 
 ## Scope-change log
 
