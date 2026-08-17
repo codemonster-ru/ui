@@ -760,19 +760,6 @@
   padding-block-start: var(--cm-space-2);
 }
 
-.demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible > .cm-fieldset__legend {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  overflow: hidden;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 .demo-application-group-box.cm-fieldset > .cm-fieldset__legend {
   max-width: calc(100% - var(--cm-space-3) * 2);
   margin-inline-start: calc(var(--cm-space-2) * -1);
@@ -782,6 +769,18 @@
   font-size: var(--cm-font-size-xl);
   font-weight: var(--cm-font-weight-medium);
   line-height: var(--cm-line-height-normal);
+}
+
+.demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible > .cm-fieldset__legend {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible
@@ -1545,14 +1544,6 @@
   color: transparent;
 }
 
-.demo-application-floating-field.demo-application-floating-field--active:has(
-    .demo-application-input--sm,
-    .core-select-recipe-wrap--sm
-  )
-  .demo-application-floating-field__label {
-  inset-block-start: calc(var(--cm-space-1) - var(--cm-border-width) * 2);
-}
-
 .demo-application-floating-field
   > .demo-application-floating-field__control
   > .demo-application-floating-field__label {
@@ -1566,6 +1557,7 @@
   inset-inline-start: 2.125rem;
 }
 
+/* stylelint-disable no-descending-specificity -- Size-specific offsets intentionally override the generic no-icon position. */
 .demo-application-floating-field:has(
     .demo-application-input--sm,
     .core-select-recipe-wrap--sm,
@@ -1601,6 +1593,15 @@
   .demo-application-floating-field__label {
   inset-inline-start: calc(var(--cm-space-4) + var(--cm-border-width));
 }
+
+.demo-application-floating-field.demo-application-floating-field--active:has(
+    .demo-application-input--sm,
+    .core-select-recipe-wrap--sm
+  )
+  .demo-application-floating-field__label {
+  inset-block-start: calc(var(--cm-space-1) - var(--cm-border-width) * 2);
+}
+/* stylelint-enable no-descending-specificity */
 
 @media (width <= 960px) {
   .demo-data-table-details {
