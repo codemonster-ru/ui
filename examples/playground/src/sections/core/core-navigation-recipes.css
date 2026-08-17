@@ -237,7 +237,13 @@
 
 .core-nav-recipe--pills
   .core-nav-recipe__item:hover:not(:disabled, .core-nav-recipe__item--disabled, .core-nav-recipe__item--active),
-.core-nav-recipe--sidebar .core-nav-recipe__item--top:hover:not(:disabled, .core-nav-recipe__item--disabled) {
+.core-nav-recipe--sidebar
+  .core-nav-recipe__item--top:hover:not(
+    :disabled,
+    .core-nav-recipe__item--disabled,
+    .core-nav-recipe__item--active,
+    .core-nav-recipe__item--ancestor-active
+  ) {
   background: var(--cm-color-background-surface-hover);
 }
 
