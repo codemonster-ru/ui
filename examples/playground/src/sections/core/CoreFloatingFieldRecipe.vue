@@ -266,6 +266,11 @@ onBeforeUnmount(() => filledObserver?.disconnect());
   padding-inline: 0;
 }
 
+.demo-application-floating-field:has(:deep(.core-select-recipe-wrap--lg))
+  .demo-application-floating-field__label {
+  inset-inline-start: 2.1875rem;
+}
+
 .demo-application-floating-field:focus-within:not(.demo-application-floating-field--invalid)
   .demo-application-floating-field__label {
   color: var(--cm-color-interactive-primary-subtle-foreground);
