@@ -518,6 +518,10 @@
   white-space: nowrap;
 }
 
+.core-menu-bar-recipe__item--external .core-menu-bar-recipe__icon {
+  transform: translateY(-0.02em);
+}
+
 .core-menu-bar-recipe__item:is(:disabled, .core-menu-bar-recipe__item--disabled) {
   border-color: var(--cm-color-border-disabled);
   background: var(--cm-color-background-surface-disabled);
@@ -541,6 +545,10 @@
 .core-menu-bar-recipe--pills .core-menu-bar-recipe__item--active,
 .core-menu-bar-recipe--pills .core-menu-bar-recipe__item--open {
   background: var(--cm-color-background-surface-selected);
+}
+
+.core-menu-bar-recipe__item--active:not(.core-menu-bar-recipe__item--top) {
+  font-weight: var(--cm-font-weight-medium);
 }
 
 .core-menu-bar-recipe__item:hover:not(:disabled, .core-menu-bar-recipe__item--disabled, .core-menu-bar-recipe__item--active) {
