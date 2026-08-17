@@ -398,7 +398,7 @@ function setPageSize(value: string): void {
 }
 
 .demo-application-sortable-table__page-size :deep(.cm-select) {
-  width: auto;
+  inline-size: 3.125rem;
 }
 
 .demo-application-sortable-table__page {
