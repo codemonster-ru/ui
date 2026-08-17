@@ -3,13 +3,21 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { URL } from 'node:url';
 
-import { cmBorderTokenNames, cmRadiusTokenNames } from '@codemonster-ru/ui-tokens';
 import { borderUtilities } from '../src/contract.mjs';
 
 const css = await readFile(new URL('../dist/utilities.css', import.meta.url), 'utf8');
 
 test('covers every border width and radius token', () => {
-  assert.equal(Object.keys(borderUtilities).length, cmBorderTokenNames.length + cmRadiusTokenNames.length + 1);
+  assert.deepEqual(Object.keys(borderUtilities), [
+    'border',
+    'border-thick',
+    'border-0',
+    'rounded-control',
+    'rounded-control-tight',
+    'rounded-surface',
+    'rounded-overlay',
+    'rounded-round',
+  ]);
   assert.deepEqual(borderUtilities.border, { 'border-width': 'var(--cm-border-width)' });
   assert.deepEqual(borderUtilities['border-thick'], { 'border-width': 'var(--cm-border-width-thick)' });
   assert.deepEqual(borderUtilities['rounded-control-tight'], {
