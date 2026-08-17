@@ -158,7 +158,7 @@ const standardColumns = [
 }
 
 .demo-application-data-table-state__error {
-  color: var(--cm-color-text-primary);
+  color: var(--cm-color-status-danger-subtle-foreground);
 }
 
 .demo-application-data-table-state__loading {
