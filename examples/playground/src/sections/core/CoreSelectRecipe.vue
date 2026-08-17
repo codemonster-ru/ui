@@ -592,7 +592,7 @@ onBeforeUnmount(() => {
 
 .core-select-recipe-wrap:is(.core-select-recipe-wrap--floating-in, .core-select-recipe-wrap--floating-on)
   .core-select-recipe--sm.core-select-recipe--with-leading {
-  padding-inline-start: 1.875rem;
+  padding-inline-start: 1.9375rem;
 }
 
 .core-select-recipe-wrap:is(.core-select-recipe-wrap--floating-in, .core-select-recipe-wrap--floating-on)
@@ -607,7 +607,7 @@ onBeforeUnmount(() => {
 
 .core-select-recipe-wrap:is(.core-select-recipe-wrap--floating-in, .core-select-recipe-wrap--floating-on)
   .core-select-recipe--lg.core-select-recipe--with-leading {
-  padding-inline-start: 2.25rem;
+  padding-inline-start: 2.1875rem;
 }
 
 .core-select-recipe-wrap:is(.core-select-recipe-wrap--floating-in, .core-select-recipe-wrap--floating-on)
