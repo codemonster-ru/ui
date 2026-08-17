@@ -5,6 +5,9 @@ This document continues the completed
 contract, CSS, runtime, Vue, and Annabel Razor architecture. This roadmap closes the remaining
 functional, migration, and visual-compatibility gaps before another platform adapter is scheduled.
 
+**Document status:** Approved roadmap as of 2026-08-17. Delivery remains in progress; unchecked
+items describe the implementation backlog and do not make this document a draft.
+
 ## Scope
 
 - Keep Vue and Annabel Razor as the active platform adapters.
@@ -67,7 +70,8 @@ that threshold. There is no design-change tolerance.
 ## Working rules
 
 - Complete phases in order unless a dependency recorded below permits parallel work.
-- Keep every implementation commit buildable and include its relevant tests and roadmap update.
+- Keep every implementation commit buildable and include its relevant tests. Update this roadmap
+  only when an item changes status, scope, dependency, or a decision changes the delivery plan.
 - Reference the stable item identifier in the commit body, for example `Roadmap: CMUI-170`.
 - Do not mark an item complete because component files exist on both platforms.
 - Record every legacy capability as `supported`, `superseded`, `application-owned`, `retained`, or
@@ -90,6 +94,8 @@ that threshold. There is no design-change tolerance.
   viewports; do not approve a new design merely because Vue and Razor match each other.
 - Do not weaken canonical HTML or accessibility contracts solely to reproduce a VueForge API.
 - Record material scope changes in the decision log before changing the numbered checklist.
+- Do not use the decision log as an implementation journal. Link routine visual-fix evidence from
+  the relevant work item, issue, or commit instead.
 
 ## Progress
 
@@ -258,6 +264,7 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-17 | Restore menu-bar active-item semantics in the application recipe.                                      | Non-top active items now retain VueForge label weight and external-link icons retain the frozen baseline offset; focused navigation tests pass and the desktop menu-bar diff decreases by 146 pixels per theme. | `CMUI-196` |
 | 2026-08-17 | Restore direct floating form geometry and DataTable error styling.                                         | Input and Select sm/lg padding and leading-label formulas now match the frozen VueForge contracts; DataTable error text uses the frozen danger role. Focused tests pass, while the full gate remains at 62 changed Core screenshots. | `CMUI-195` |
 | 2026-08-17 | Align sortable DataTable pagination width with the frozen mobile contract.                                  | The application-owned replacement now keeps the Rows-per-page control at the frozen 50px width; the mobile20 diff decreased by 170 pixels per theme without adding changed frames. | `CMUI-195` |
+| 2026-08-17 | Approve this document as the delivery roadmap, separate from M12 completion.                                | A roadmap is complete when its scope, sequence, exit gates, and ownership are agreed; outstanding delivery work remains in its numbered backlog rather than keeping the plan in draft status. | All |
 
 ## Scope-change log
 
