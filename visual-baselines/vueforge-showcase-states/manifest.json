@@ -1,9 +1,7 @@
 {
   "label": "vueforge-state-reference",
   "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
-  "routes": [
-    "core"
-  ],
+  "routes": ["core"],
   "screenshots": [
     {
       "filename": "state--hover--light--mobile.png",
@@ -675,26 +673,19 @@
       "id": "hover",
       "route": "core",
       "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
-      "pseudoClasses": [
-        "hover"
-      ]
+      "pseudoClasses": ["hover"]
     },
     {
       "id": "active",
       "route": "core",
       "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
-      "pseudoClasses": [
-        "active"
-      ]
+      "pseudoClasses": ["active"]
     },
     {
       "id": "focus-visible",
       "route": "core",
       "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
-      "pseudoClasses": [
-        "focus",
-        "focus-visible"
-      ]
+      "pseudoClasses": ["focus", "focus-visible"]
     },
     {
       "id": "disabled",
@@ -742,10 +733,7 @@
     }
   ],
   "suite": "states",
-  "themes": [
-    "light",
-    "dark"
-  ],
+  "themes": ["light", "dark"],
   "viewports": [
     {
       "name": "mobile",

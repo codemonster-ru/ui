@@ -1,14 +1,7 @@
 {
   "label": "vueforge-reference",
   "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
-  "routes": [
-    "core",
-    "colors",
-    "layouts",
-    "icons",
-    "codeblock",
-    "playground"
-  ],
+  "routes": ["core", "colors", "layouts", "icons", "codeblock", "playground"],
   "screenshots": [
     {
       "filename": "core--light--mobile--01.png",
@@ -2507,10 +2500,7 @@
       "viewport": "desktop"
     }
   ],
-  "themes": [
-    "light",
-    "dark"
-  ],
+  "themes": ["light", "dark"],
   "viewports": [
     {
       "name": "mobile",
