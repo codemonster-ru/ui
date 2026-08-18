@@ -40,6 +40,9 @@ jobs:
   visual:
     needs: validate
     runs-on: macos-15
+    env:
+      CHROME_FOR_TESTING_VERSION: 151.0.7922.138
+      CHROME_FOR_TESTING_PATH: ${{ runner.temp }}/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
 
     steps:
       - name: Checkout
@@ -66,6 +69,14 @@ jobs:
       - name: Install Razor visual runtime
         run: composer --working-dir=packages/razor update --no-dev --no-interaction --prefer-dist
 
+      - name: Install pinned Chrome for visual checks
+        run: |
+          curl --fail --location --retry 3 --silent --show-error \
+            "https://storage.googleapis.com/chrome-for-testing-public/${CHROME_FOR_TESTING_VERSION}/mac-arm64/chrome-mac-arm64.zip" \
+            --output "${RUNNER_TEMP}/chrome-for-testing.zip"
+          unzip -q "${RUNNER_TEMP}/chrome-for-testing.zip" -d "${RUNNER_TEMP}"
+          "${CHROME_FOR_TESTING_PATH}" --version
+
       - name: Verify frozen showcase visuals
         env:
           SHOWCASE_CAPTURE: ${{ runner.temp }}/codemonster-showcase-current
@@ -84,7 +95,7 @@ jobs:
           npm run visual:cross-platform:razor-render -- --output="${CROSS_PLATFORM_RAZOR_FIXTURES}"
           npm run visual:cross-platform:serve -- --razor-fixtures="${CROSS_PLATFORM_RAZOR_FIXTURES}" --port=5176 > "${RUNNER_TEMP}/codemonster-cross-platform-vite.log" 2>&1 &
           adapter_pid=$!
-          "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --remote-debugging-port=9226 --user-data-dir="${RUNNER_TEMP}/codemonster-showcase-chrome" --disable-gpu --no-first-run --no-default-browser-check about:blank > "${RUNNER_TEMP}/codemonster-showcase-chrome.log" 2>&1 &
+          "${CHROME_FOR_TESTING_PATH}" --headless=new --remote-debugging-port=9226 --user-data-dir="${RUNNER_TEMP}/codemonster-showcase-chrome" --disable-gpu --no-first-run --no-default-browser-check about:blank > "${RUNNER_TEMP}/codemonster-showcase-chrome.log" 2>&1 &
           chrome_pid=$!
 
           cleanup() {
