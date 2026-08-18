@@ -1,19 +1,6 @@
 {
-  "label": "vueforge-cross-platform-reference",
+  "label": "vueforge-cross-platform-reference-vue",
   "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
-  "sourceFixture": {
-    "caseIds": [
-      "alert-danger-icon",
-      "avatar-label",
-      "badge-danger",
-      "button-default",
-      "card-title",
-      "divider-horizontal",
-      "link-default"
-    ],
-    "componentPackage": "@codemonster-ru/vueforge-core",
-    "renderer": "Vue createApp at the reference commit"
-  },
   "routes": [
     "alert-danger-icon",
     "avatar-label",
@@ -26,174 +13,177 @@
   "screenshots": [
     {
       "filename": "alert-danger-icon--light--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
     },
     {
       "filename": "avatar-label--light--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
     },
     {
       "filename": "badge-danger--light--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
     },
     {
       "filename": "button-default--light--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
     },
     {
       "filename": "card-title--light--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
     },
     {
       "filename": "divider-horizontal--light--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
     },
     {
       "filename": "link-default--light--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
     },
     {
       "filename": "alert-danger-icon--dark--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "mobile"
     },
     {
       "filename": "avatar-label--dark--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "mobile"
     },
     {
       "filename": "badge-danger--dark--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "mobile"
     },
     {
       "filename": "button-default--dark--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "mobile"
     },
     {
       "filename": "card-title--dark--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "mobile"
     },
     {
       "filename": "divider-horizontal--dark--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "mobile"
     },
     {
       "filename": "link-default--dark--mobile.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "mobile"
     },
     {
       "filename": "alert-danger-icon--light--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "desktop"
     },
     {
       "filename": "avatar-label--light--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "desktop"
     },
     {
       "filename": "badge-danger--light--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "desktop"
     },
     {
       "filename": "button-default--light--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "desktop"
     },
     {
       "filename": "card-title--light--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "desktop"
     },
     {
       "filename": "divider-horizontal--light--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "desktop"
     },
     {
       "filename": "link-default--light--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "light",
       "viewport": "desktop"
     },
     {
       "filename": "alert-danger-icon--dark--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
     },
     {
       "filename": "avatar-label--dark--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
     },
     {
       "filename": "badge-danger--dark--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
     },
     {
       "filename": "button-default--dark--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
     },
     {
       "filename": "card-title--dark--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
     },
     {
       "filename": "divider-horizontal--dark--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
     },
     {
       "filename": "link-default--dark--desktop.png",
-      "platform": "reference",
+      "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
     }
   ],
-  "themes": ["light", "dark"],
+  "themes": [
+    "light",
+    "dark"
+  ],
   "viewports": [
     {
       "name": "mobile",

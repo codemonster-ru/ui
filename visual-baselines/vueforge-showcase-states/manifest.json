@@ -1,7 +1,9 @@
 {
   "label": "vueforge-state-reference",
   "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
-  "routes": ["core"],
+  "routes": [
+    "core"
+  ],
   "screenshots": [
     {
       "filename": "state--hover--light--mobile.png",
@@ -9,11 +11,11 @@
         "height": 76,
         "width": 116,
         "x": 9,
-        "y": 5965
+        "y": 5980
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5581,
+      "scrollTop": 5596,
       "state": "hover",
       "theme": "light",
       "viewport": "mobile"
@@ -24,11 +26,11 @@
         "height": 76,
         "width": 116,
         "x": 9,
-        "y": 5965
+        "y": 5980
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5581,
+      "scrollTop": 5596,
       "state": "active",
       "theme": "light",
       "viewport": "mobile"
@@ -39,11 +41,11 @@
         "height": 76,
         "width": 116,
         "x": 9,
-        "y": 5965
+        "y": 5980
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5581,
+      "scrollTop": 5596,
       "state": "focus-visible",
       "theme": "light",
       "viewport": "mobile"
@@ -54,11 +56,11 @@
         "height": 76,
         "width": 121,
         "x": 80,
-        "y": 6053
+        "y": 6068
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5669,
+      "scrollTop": 5684,
       "state": "disabled",
       "theme": "light",
       "viewport": "mobile"
@@ -69,11 +71,11 @@
         "height": 77,
         "width": 372,
         "x": 9,
-        "y": 24023
+        "y": 24323
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 23639,
+      "scrollTop": 23939,
       "state": "invalid",
       "theme": "light",
       "viewport": "mobile"
@@ -84,11 +86,11 @@
         "height": 84,
         "width": 142,
         "x": 9,
-        "y": 34471
+        "y": 34771
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 34091,
+      "scrollTop": 34391,
       "state": "selected",
       "theme": "light",
       "viewport": "mobile"
@@ -96,14 +98,14 @@
     {
       "filename": "state--open--light--mobile.png",
       "clip": {
-        "height": 357,
-        "width": 516,
+        "height": 356,
+        "width": 351,
         "x": 0,
-        "y": 35158
+        "y": 9681
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 34914,
+      "scrollTop": 9437,
       "state": "open",
       "theme": "light",
       "viewport": "mobile"
@@ -114,11 +116,11 @@
         "height": 197,
         "width": 436,
         "x": 0,
-        "y": 35188
+        "y": 35488
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 34864,
+      "scrollTop": 35164,
       "state": "closed",
       "theme": "light",
       "viewport": "mobile"
@@ -129,11 +131,11 @@
         "height": 77,
         "width": 138,
         "x": 9,
-        "y": 6619
+        "y": 6634
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 6235,
+      "scrollTop": 6250,
       "state": "loading",
       "theme": "light",
       "viewport": "mobile"
@@ -144,11 +146,11 @@
         "height": 57,
         "width": 372,
         "x": 9,
-        "y": 19600
+        "y": 19900
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 19206,
+      "scrollTop": 19506,
       "state": "indeterminate",
       "theme": "light",
       "viewport": "mobile"
@@ -159,12 +161,12 @@
         "height": 65,
         "width": 372,
         "x": 9,
-        "y": 19544
+        "y": 19844
       },
       "media": "reduce",
       "route": "core",
       "reducedMotionVerified": true,
-      "scrollTop": 19154,
+      "scrollTop": 19454,
       "state": "reduced-motion",
       "theme": "light",
       "viewport": "mobile"
@@ -175,11 +177,11 @@
         "height": 76,
         "width": 116,
         "x": 9,
-        "y": 5965
+        "y": 5980
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5581,
+      "scrollTop": 5596,
       "state": "hover",
       "theme": "dark",
       "viewport": "mobile"
@@ -190,11 +192,11 @@
         "height": 76,
         "width": 116,
         "x": 9,
-        "y": 5965
+        "y": 5980
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5581,
+      "scrollTop": 5596,
       "state": "active",
       "theme": "dark",
       "viewport": "mobile"
@@ -205,11 +207,11 @@
         "height": 76,
         "width": 116,
         "x": 9,
-        "y": 5965
+        "y": 5980
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5581,
+      "scrollTop": 5596,
       "state": "focus-visible",
       "theme": "dark",
       "viewport": "mobile"
@@ -220,11 +222,11 @@
         "height": 76,
         "width": 121,
         "x": 80,
-        "y": 6053
+        "y": 6068
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5669,
+      "scrollTop": 5684,
       "state": "disabled",
       "theme": "dark",
       "viewport": "mobile"
@@ -235,11 +237,11 @@
         "height": 77,
         "width": 372,
         "x": 9,
-        "y": 24023
+        "y": 24323
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 23639,
+      "scrollTop": 23939,
       "state": "invalid",
       "theme": "dark",
       "viewport": "mobile"
@@ -250,11 +252,11 @@
         "height": 84,
         "width": 142,
         "x": 9,
-        "y": 34471
+        "y": 34771
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 34091,
+      "scrollTop": 34391,
       "state": "selected",
       "theme": "dark",
       "viewport": "mobile"
@@ -262,14 +264,14 @@
     {
       "filename": "state--open--dark--mobile.png",
       "clip": {
-        "height": 357,
-        "width": 516,
+        "height": 356,
+        "width": 351,
         "x": 0,
-        "y": 35158
+        "y": 9681
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 34914,
+      "scrollTop": 9437,
       "state": "open",
       "theme": "dark",
       "viewport": "mobile"
@@ -280,11 +282,11 @@
         "height": 197,
         "width": 436,
         "x": 0,
-        "y": 35188
+        "y": 35488
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 34864,
+      "scrollTop": 35164,
       "state": "closed",
       "theme": "dark",
       "viewport": "mobile"
@@ -295,11 +297,11 @@
         "height": 77,
         "width": 138,
         "x": 9,
-        "y": 6619
+        "y": 6634
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 6235,
+      "scrollTop": 6250,
       "state": "loading",
       "theme": "dark",
       "viewport": "mobile"
@@ -310,11 +312,11 @@
         "height": 57,
         "width": 372,
         "x": 9,
-        "y": 19600
+        "y": 19900
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 19206,
+      "scrollTop": 19506,
       "state": "indeterminate",
       "theme": "dark",
       "viewport": "mobile"
@@ -325,12 +327,12 @@
         "height": 65,
         "width": 372,
         "x": 9,
-        "y": 19544
+        "y": 19844
       },
       "media": "reduce",
       "route": "core",
       "reducedMotionVerified": true,
-      "scrollTop": 19154,
+      "scrollTop": 19454,
       "state": "reduced-motion",
       "theme": "dark",
       "viewport": "mobile"
@@ -401,11 +403,11 @@
         "height": 77,
         "width": 442,
         "x": 9,
-        "y": 14801
+        "y": 14816
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 14439,
+      "scrollTop": 14454,
       "state": "invalid",
       "theme": "light",
       "viewport": "desktop"
@@ -416,11 +418,11 @@
         "height": 85,
         "width": 142,
         "x": 9,
-        "y": 19055
+        "y": 19070
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18697,
+      "scrollTop": 18712,
       "state": "selected",
       "theme": "light",
       "viewport": "desktop"
@@ -428,14 +430,14 @@
     {
       "filename": "state--open--light--desktop.png",
       "clip": {
-        "height": 356,
-        "width": 917,
-        "x": 489,
-        "y": 19209
+        "height": 357,
+        "width": 473,
+        "x": 493,
+        "y": 6191
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18987,
+      "scrollTop": 5969,
       "state": "open",
       "theme": "light",
       "viewport": "desktop"
@@ -446,11 +448,11 @@
         "height": 196,
         "width": 757,
         "x": 569,
-        "y": 19239
+        "y": 19254
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18937,
+      "scrollTop": 18952,
       "state": "closed",
       "theme": "light",
       "viewport": "desktop"
@@ -476,11 +478,11 @@
         "height": 57,
         "width": 647,
         "x": 9,
-        "y": 12369
+        "y": 12384
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 11997,
+      "scrollTop": 12012,
       "state": "indeterminate",
       "theme": "light",
       "viewport": "desktop"
@@ -491,12 +493,12 @@
         "height": 65,
         "width": 647,
         "x": 9,
-        "y": 12313
+        "y": 12328
       },
       "media": "reduce",
       "route": "core",
       "reducedMotionVerified": true,
-      "scrollTop": 11945,
+      "scrollTop": 11960,
       "state": "reduced-motion",
       "theme": "light",
       "viewport": "desktop"
@@ -567,11 +569,11 @@
         "height": 77,
         "width": 442,
         "x": 9,
-        "y": 14801
+        "y": 14816
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 14439,
+      "scrollTop": 14454,
       "state": "invalid",
       "theme": "dark",
       "viewport": "desktop"
@@ -582,11 +584,11 @@
         "height": 85,
         "width": 142,
         "x": 9,
-        "y": 19055
+        "y": 19070
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18697,
+      "scrollTop": 18712,
       "state": "selected",
       "theme": "dark",
       "viewport": "desktop"
@@ -594,14 +596,14 @@
     {
       "filename": "state--open--dark--desktop.png",
       "clip": {
-        "height": 356,
-        "width": 917,
-        "x": 489,
-        "y": 19209
+        "height": 357,
+        "width": 473,
+        "x": 493,
+        "y": 6191
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18987,
+      "scrollTop": 5969,
       "state": "open",
       "theme": "dark",
       "viewport": "desktop"
@@ -612,11 +614,11 @@
         "height": 196,
         "width": 757,
         "x": 569,
-        "y": 19239
+        "y": 19254
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18937,
+      "scrollTop": 18952,
       "state": "closed",
       "theme": "dark",
       "viewport": "desktop"
@@ -642,11 +644,11 @@
         "height": 57,
         "width": 647,
         "x": 9,
-        "y": 12369
+        "y": 12384
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 11997,
+      "scrollTop": 12012,
       "state": "indeterminate",
       "theme": "dark",
       "viewport": "desktop"
@@ -657,12 +659,12 @@
         "height": 65,
         "width": 647,
         "x": 9,
-        "y": 12313
+        "y": 12328
       },
       "media": "reduce",
       "route": "core",
       "reducedMotionVerified": true,
-      "scrollTop": 11945,
+      "scrollTop": 11960,
       "state": "reduced-motion",
       "theme": "dark",
       "viewport": "desktop"
@@ -673,19 +675,26 @@
       "id": "hover",
       "route": "core",
       "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
-      "pseudoClasses": ["hover"]
+      "pseudoClasses": [
+        "hover"
+      ]
     },
     {
       "id": "active",
       "route": "core",
       "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
-      "pseudoClasses": ["active"]
+      "pseudoClasses": [
+        "active"
+      ]
     },
     {
       "id": "focus-visible",
       "route": "core",
       "selector": "[data-test=\"action-geometry-matrix\"] :is(.vf-button, .cm-button):not(:disabled)",
-      "pseudoClasses": ["focus", "focus-visible"]
+      "pseudoClasses": [
+        "focus",
+        "focus-visible"
+      ]
     },
     {
       "id": "disabled",
@@ -733,7 +742,10 @@
     }
   ],
   "suite": "states",
-  "themes": ["light", "dark"],
+  "themes": [
+    "light",
+    "dark"
+  ],
   "viewports": [
     {
       "name": "mobile",
