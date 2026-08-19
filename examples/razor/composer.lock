@@ -1,0 +1,201 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "081cf767a3e2746070c84e2ea6ef0c8f",
+    "packages": [
+        {
+            "name": "codemonster-ru/razor",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/razor.git",
+                "reference": "f3c71eb6184e904fd88dbc840b908b355eb31df1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/razor/zipball/f3c71eb6184e904fd88dbc840b908b355eb31df1",
+                "reference": "f3c71eb6184e904fd88dbc840b908b355eb31df1",
+                "shasum": ""
+            },
+            "require": {
+                "codemonster-ru/view": "^2.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Razor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.ru",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Template engine for PHP",
+            "homepage": "https://github.com/codemonster-ru/razor",
+            "keywords": [
+                "annabel",
+                "codemonster",
+                "engine",
+                "php",
+                "razor",
+                "template",
+                "templating",
+                "view"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/razor/issues",
+                "source": "https://github.com/codemonster-ru/razor"
+            },
+            "time": "2026-08-14T20:50:29+00:00"
+        },
+        {
+            "name": "codemonster-ru/ui-razor",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/razor",
+                "reference": "6514b69c2fb1adf7ade7c95205260aa504681c3c"
+            },
+            "require": {
+                "codemonster-ru/razor": "^2.1",
+                "codemonster-ru/view": "^2.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^11.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Ui\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Codemonster\\Ui\\Tests\\": "tests/"
+                }
+            },
+            "archive": {
+                "exclude": [
+                    "/phpstan.neon.dist",
+                    "/phpunit.xml.dist",
+                    "/tests"
+                ]
+            },
+            "scripts": {
+                "analyse": [
+                    "phpstan analyse --configuration=phpstan.neon.dist --no-progress --memory-limit=1G"
+                ],
+                "test": [
+                    "phpunit --configuration=phpunit.xml.dist"
+                ],
+                "check": [
+                    "@analyse",
+                    "@test"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "CodeMonster UI components and assets for Annabel Razor.",
+            "support": {
+                "source": "https://github.com/codemonster-ru/ui-razor"
+            },
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "codemonster-ru/view",
+            "version": "v2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/view.git",
+                "reference": "6da45e93109c51c594f3ef9c48403e9148831df5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/view/zipball/6da45e93109c51c594f3ef9c48403e9148831df5",
+                "reference": "6da45e93109c51c594f3ef9c48403e9148831df5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\View\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.ru",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "View rendering core for PHP applications",
+            "homepage": "https://github.com/codemonster-ru/view",
+            "keywords": [
+                "engine",
+                "php",
+                "renderer",
+                "templating",
+                "view"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/view/issues",
+                "source": "https://github.com/codemonster-ru/view"
+            },
+            "time": "2025-12-27T02:26:13+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {},
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=8.2"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
+}

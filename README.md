@@ -22,6 +22,9 @@ See the [CodeMonster UI 1.1 release notes](./docs/codemonster-ui-1.1-release-not
 [CSS-only guide](./docs/css/getting-started.md), and
 [VueForge migration guide](./docs/vueforge-to-codemonster-ui.md).
 
+Local runnable examples are available in [`examples/vue`](./examples/vue) for Vue
+and [`examples/razor`](./examples/razor) for Annabel Razor/PHP.
+
 ## VueForge maintenance
 
 VueForge design-system foundations are in maintenance. They receive critical security and
