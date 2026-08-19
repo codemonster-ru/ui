@@ -38,10 +38,11 @@ separately maintained products and can be used alongside CodeMonster UI.
 
 ### Requirements
 
-- Vue `^3.5.0`.
-- Node.js 18 or newer for packages other than CodeBlock and Playground. A selected Vite version may
-  impose a higher Node.js requirement on the Playground Vite plugin.
-- Node.js 20 or newer when using CodeBlock or Playground.
+- Node.js `>=24.15.0` for the repository workspace and development scripts. The required version is
+  pinned by [`.nvmrc`](./.nvmrc) and enforced by the root `package.json`.
+- Vue `^3.5.0` for the Vue packages.
+- Published packages may declare narrower runtime requirements in their own manifests; consult the
+  package documentation when consuming them outside this repository.
 
 ### Existing VueForge applications
 
