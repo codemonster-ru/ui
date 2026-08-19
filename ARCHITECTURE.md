@@ -3,7 +3,7 @@
 ## Repository layout
 
 - `packages/*` — publishable npm packages
-- `examples/*` — local demo/playground apps
+- `examples/*` — local demo/playground apps for supported adapters (Vue and Annabel Razor)
 - `scripts/*` — CI/release helper scripts
 
 ## Package structure standard

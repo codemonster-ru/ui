@@ -1,0 +1,20 @@
+services:
+  razor:
+    build:
+      context: ../../../../PHP/annabel
+      dockerfile: docker/php/Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+    working_dir: /workspace/JS/ui/examples/razor
+    command: sh -lc "composer install --no-interaction && composer run dev"
+    ports:
+      - "${RAZOR_PORT:-8081}:8081"
+    volumes:
+      - ../../../../:/workspace
+      - composer-cache:/tmp/composer-cache
+    environment:
+      COMPOSER_CACHE_DIR: /tmp/composer-cache
+      COMPOSER_MEMORY_LIMIT: -1
+
+volumes:
+  composer-cache:

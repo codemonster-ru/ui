@@ -1,0 +1,36 @@
+{
+  "name": "codemonster-ru/ui-razor-example",
+  "description": "Minimal CodeMonster UI Annabel Razor example.",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.2",
+    "codemonster-ru/ui-razor": "*"
+  },
+  "scripts": {
+    "dev": "php -S 0.0.0.0:8081 -t public"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../packages/razor",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "path",
+      "url": "../../../../PHP/annabel/packages/*",
+      "canonical": false,
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": false,
+    "sort-packages": true
+  }
+}
