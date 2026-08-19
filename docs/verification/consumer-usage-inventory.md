@@ -17,11 +17,11 @@ This inventory separates three kinds of evidence that must not be conflated:
 3. The Annabel CMS public page template is the real Annabel Razor consumer. Only server-rendered
    component tags in this surface establish current Razor demand.
 
-| Consumer                  | Baseline                                           | Source root                                        |
-| ------------------------- | -------------------------------------------------- | -------------------------------------------------- |
-| Repository Vue playground | CodeMonster UI `529d338`                           | `examples/vue`                              |
-| Annabel CMS Vue admin     | Annabel `f037701378fc92ec311f29f30f7130711f3471a7` | `applications/annabel-cms/app`                     |
-| Annabel CMS Razor page    | Annabel `f037701378fc92ec311f29f30f7130711f3471a7` | `applications/annabel-cms/app/Modules/Pages/views` |
+| Consumer | Baseline | Source root |
+| --- | --- | --- |
+| Repository Vue playground | CodeMonster UI `529d338` | `examples/vue` |
+| Annabel CMS Vue admin | Annabel `f037701378fc92ec311f29f30f7130711f3471a7` | `applications/annabel-cms/app` |
+| Annabel CMS Razor page | Annabel `f037701378fc92ec311f29f30f7130711f3471a7` | `applications/annabel-cms/app/Modules/Pages/views` |
 
 Generated files under `dist`, `public/admin/assets`, dependencies, lockfiles, tests, and package
 fixtures are excluded from usage counts.

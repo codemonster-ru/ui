@@ -5,6 +5,8 @@
     "**/showcase-dist/**",
     "**/coverage/**",
     "**/node_modules/**",
+    "examples/razor/public/vendor/**",
+    "examples/razor/vendor/**",
     "packages/razor/resources/assets/**"
   ],
   "rules": {
