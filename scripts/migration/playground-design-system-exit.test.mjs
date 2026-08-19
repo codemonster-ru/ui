@@ -5,7 +5,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const playgroundRoot = join(repositoryRoot, 'examples/playground');
+const playgroundRoot = join(repositoryRoot, 'examples/vue');
 const sourceRoot = join(playgroundRoot, 'src');
 const legacyPackages = ['@codemonster-ru/vueforge-core', '@codemonster-ru/vueforge-layouts'];
 const migratedApis = [
@@ -23,11 +23,11 @@ const retainedLegacyCustomProperties = new Set([
 ]);
 const retainedLegacyClassPrefixes = ['vf-codeblock', 'vf-icon', 'vf-playground'];
 const retainedThemeBoundaryPaths = new Set([
-  'examples/playground/src/app-shell.ts',
-  'examples/playground/src/components/ViteLikeDemoPreview.vue',
-  'examples/playground/src/sections/codeblock/CodeBlockShowcase.vue',
-  'examples/playground/src/sections/colors/ColorSystemShowcase.vue',
-  'examples/playground/src/sections/icons/IconSaasContexts.vue',
+  'examples/vue/src/app-shell.ts',
+  'examples/vue/src/components/ViteLikeDemoPreview.vue',
+  'examples/vue/src/sections/codeblock/CodeBlockShowcase.vue',
+  'examples/vue/src/sections/colors/ColorSystemShowcase.vue',
+  'examples/vue/src/sections/icons/IconSaasContexts.vue',
 ]);
 
 function sourceFiles() {

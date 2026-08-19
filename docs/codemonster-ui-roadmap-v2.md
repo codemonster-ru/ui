@@ -56,7 +56,7 @@ or intentionally drops.
 ### Frozen visual baseline
 
 The sole visual authority is commit `fd793696f50d3be0fcd3788f0f8f751c63869963`. The baseline
-includes the complete browser rendering of `examples/playground`, every stylesheet and default theme
+includes the complete browser rendering of `examples/vue`, every stylesheet and default theme
 token consumed by that application, and every component state displayed by its Core, Colors,
 Layouts, Icons, CodeBlock, and Playground routes. Later commits are migration evidence only and must
 not be used to update expected images.

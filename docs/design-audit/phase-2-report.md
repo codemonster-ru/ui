@@ -372,10 +372,10 @@ The list reflects the Phase 2 working tree when this report was prepared; genera
 
 ### Showcase, visual automation, and documentation
 
-- `examples/playground/src/App.vue`
-- `examples/playground/src/sections/colors/ColorSystemShowcase.vue`
-- `examples/playground/src/sections/colors/color-system-showcase.css`
-- `examples/playground/vite.config.ts`
+- `examples/vue/src/App.vue`
+- `examples/vue/src/sections/colors/ColorSystemShowcase.vue`
+- `examples/vue/src/sections/colors/color-system-showcase.css`
+- `examples/vue/vite.config.ts`
 - `scripts/visual/phase-2-color-smoke.mjs`
 - `package.json`
 - `docs/core/guides/color-tokens.md`

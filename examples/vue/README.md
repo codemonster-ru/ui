@@ -8,7 +8,8 @@ Internal visual test bench for VueForge packages.
 npm run dev
 ```
 
-The app opens directly on Core and exposes six focused showcase sections:
+The app opens directly on the shared cross-platform showcase. The previous Vue-specific showcase
+remains available at `/core` and exposes six focused sections:
 
 - Core
 - Colors

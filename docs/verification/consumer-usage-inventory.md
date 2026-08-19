@@ -9,7 +9,7 @@ Roadmap item: `CMUI-175`
 
 This inventory separates three kinds of evidence that must not be conflated:
 
-1. `examples/playground` is the repository-owned Vue migration consumer. `CMUI-189` removed its
+1. `examples/vue` is the repository-owned Vue migration consumer. `CMUI-189` removed its
    direct `vueforge-core` and `vueforge-layouts` dependencies after the approved replacements and
    recipes landed.
 2. Annabel CMS admin is the real cross-repository Vue consumer previously approved by `CMUI-159`.
@@ -19,7 +19,7 @@ This inventory separates three kinds of evidence that must not be conflated:
 
 | Consumer                  | Baseline                                           | Source root                                        |
 | ------------------------- | -------------------------------------------------- | -------------------------------------------------- |
-| Repository Vue playground | CodeMonster UI `529d338`                           | `examples/playground`                              |
+| Repository Vue playground | CodeMonster UI `529d338`                           | `examples/vue`                              |
 | Annabel CMS Vue admin     | Annabel `f037701378fc92ec311f29f30f7130711f3471a7` | `applications/annabel-cms/app`                     |
 | Annabel CMS Razor page    | Annabel `f037701378fc92ec311f29f30f7130711f3471a7` | `applications/annabel-cms/app/Modules/Pages/views` |
 
@@ -162,7 +162,7 @@ release evidence and reproduction commands.
 
 ## Reproduction
 
-Repository usage was collected with `rg` over `examples/playground/src` and its package manifest.
+Repository usage was collected with `rg` over `examples/vue/src` and its package manifest.
 The Annabel baseline was inspected with `git grep` at the exact commit above, restricted to
 `applications/annabel-cms/app` and excluding generated public assets. Re-running the external
 inventory requires a local Annabel checkout; normal CodeMonster UI checks intentionally do not

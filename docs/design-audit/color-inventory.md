@@ -15,7 +15,7 @@ Reviewed:
 - `packages/core/src/theme`, generated fallback CSS, all aggregate and component-entry CSS;
 - 41 Vue templates and 39 core CSS entries;
 - `packages/layouts`, `packages/codeblock`, `packages/playground`, `packages/icons`;
-- `examples/playground`, `docs`, CI, Stylelint, and tests;
+- `examples/vue`, `docs`, CI, Stylelint, and tests;
 - HEX/RGB/RGBA/HSL/HSLA/OKLCH/named colors, `color-mix`, inline styles, SVG masks, gradients, shadows, and backdrops;
 - light/dark computed styles and the showcase on desktop/mobile.
 

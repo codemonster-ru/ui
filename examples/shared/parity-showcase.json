@@ -1,0 +1,35 @@
+{
+  "title": "CodeMonster UI parity showcase",
+  "intro": "The same component scenarios rendered by each supported adapter.",
+  "button": {
+    "primaryLabel": "Save",
+    "secondaryLabel": "Secondary action",
+    "loadingLabel": "Saving..."
+  },
+  "card": {
+    "title": "Project summary",
+    "body": "The Card scenario uses the shared title and body contract.",
+    "footer": "Last updated just now"
+  },
+  "form": {
+    "controlId": "account-email",
+    "email": "developer@example.com",
+    "description": "This field participates in a native form."
+  },
+  "accordion": {
+    "id": "shared-contracts",
+    "items": [
+      {
+        "id": "tokens",
+        "title": "Shared tokens",
+        "content": "The same design tokens feed Vue and Razor."
+      },
+      {
+        "id": "css",
+        "title": "Framework-independent CSS",
+        "content": "The visual foundation is published as regular CSS assets."
+      }
+    ],
+    "defaultOpenItems": ["tokens"]
+  }
+}
