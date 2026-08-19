@@ -3,7 +3,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 
 const rootDir = process.cwd();
-const manifestPath = path.join(rootDir, 'examples/playground/dist/.vite/manifest.json');
+const manifestPath = path.join(rootDir, 'examples/vue/dist/.vite/manifest.json');
 
 if (!fs.existsSync(manifestPath)) {
   console.error(`[deferred-check] Manifest not found: ${manifestPath}`);
@@ -107,7 +107,7 @@ if (!indexChunk?.file) {
   process.exit(1);
 }
 
-const entryJsPath = path.join(rootDir, 'examples/playground/dist', indexChunk.file);
+const entryJsPath = path.join(rootDir, 'examples/vue/dist', indexChunk.file);
 const entryGzip = gzipSizeOfFile(entryJsPath);
 const ENTRY_GZIP_BUDGET = 95 * 1024;
 
@@ -169,7 +169,7 @@ if (!playgroundReachableGraph.has(runtimeKey)) {
   process.exit(1);
 }
 
-const runtimePath = path.join(rootDir, 'examples/playground/dist', runtimeEntry.file);
+const runtimePath = path.join(rootDir, 'examples/vue/dist', runtimeEntry.file);
 const runtimeSource = fs.readFileSync(runtimePath, 'utf8');
 const compilerWorkerMatch = runtimeSource.match(/["']([^"']*typescriptWorker-[^"']+\.js)["']/);
 if (!compilerWorkerMatch) {
@@ -178,7 +178,7 @@ if (!compilerWorkerMatch) {
 }
 
 const compilerFile = path.join('assets', path.basename(compilerWorkerMatch[1]));
-const compilerPath = path.join(rootDir, 'examples/playground/dist', compilerFile);
+const compilerPath = path.join(rootDir, 'examples/vue/dist', compilerFile);
 if (!fs.existsSync(compilerPath)) {
   console.error(`[deferred-check] TypeScript compiler worker file not found: ${compilerPath}`);
   process.exit(1);
@@ -201,7 +201,7 @@ if (compilerGzip > COMPILER_GZIP_BUDGET) {
   process.exit(1);
 }
 
-const assetsDirectory = path.join(rootDir, 'examples/playground/dist/assets');
+const assetsDirectory = path.join(rootDir, 'examples/vue/dist/assets');
 const MAX_NON_COMPILER_JS_BYTES = 500 * 1000;
 for (const fileName of fs.readdirSync(assetsDirectory)) {
   if (!fileName.endsWith('.js') || fileName === path.basename(compilerFile)) {
@@ -223,7 +223,7 @@ for (const [routeName, routeKey] of Object.entries(routeKeys)) {
   if (!routeChunk?.file) {
     continue;
   }
-  const fullPath = path.join(rootDir, 'examples/playground/dist', routeChunk.file);
+  const fullPath = path.join(rootDir, 'examples/vue/dist', routeChunk.file);
   routeReport[routeName] = {
     file: routeChunk.file,
     gzip: gzipSizeOfFile(fullPath),

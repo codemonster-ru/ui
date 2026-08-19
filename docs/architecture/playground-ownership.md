@@ -22,7 +22,7 @@ VueForge migration and maintenance policy and may run alongside CodeMonster UI.
 | `@codemonster-ru/vueforge-playground-core`        | Framework-independent session state, TypeScript worker, module compilation, iframe document generation, and preview messaging      | Retained Playground runtime product            |
 | `@codemonster-ru/vueforge-playground`             | Vue editor/preview UI, component-preview mode, theme bridging, console/files/actions regions, and Playground session orchestration | Retained Vue Playground adapter                |
 | `@codemonster-ru/vueforge-playground-vite-plugin` | Build-time virtual modules backed by explicitly configured local source files                                                      | Retained Playground build integration          |
-| `examples/playground`                             | Repository showcase and manual integration consumer                                                                                | Application; migrated separately by `CMUI-153` |
+| `examples/vue`                             | Repository showcase and manual integration consumer                                                                                | Application; migrated separately by `CMUI-153` |
 
 The framework-independent core remains outside `ui-runtime`. The latter enhances canonical
 CodeMonster UI DOM with small controllers; it must not become a compiler, worker host, module

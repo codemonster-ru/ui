@@ -8,7 +8,7 @@
   "maturity": {
     "directReplacements": "complete"
   },
-  "catalog": "examples/playground/src/sections/core/component-catalog.json",
+  "catalog": "examples/vue/src/sections/core/component-catalog.json",
   "backlog": "migration/codemonster-ui-maturity-backlog.json",
   "components": {
     "VfAccordion": {
@@ -51,7 +51,7 @@
         "contract": "accordion",
         "razorTag": "accordion",
         "documentation": "docs/components/accordion.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfAlert": {
@@ -83,7 +83,7 @@
         "contract": "alert",
         "razorTag": "alert",
         "documentation": "docs/components/display.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfAvatar": {
@@ -115,7 +115,7 @@
         "contract": "avatar",
         "razorTag": "avatar",
         "documentation": "docs/components/display.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfBadge": {
@@ -147,7 +147,7 @@
         "contract": "badge",
         "razorTag": "badge",
         "documentation": "docs/components/display.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfBreadcrumbs": {
@@ -179,7 +179,7 @@
         "contract": "breadcrumbs",
         "razorTag": "breadcrumbs",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfButton": {
@@ -211,7 +211,7 @@
         "contract": "button",
         "razorTag": "button",
         "documentation": "docs/components/button.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfCard": {
@@ -243,7 +243,7 @@
         "contract": "card",
         "razorTag": "card",
         "documentation": "docs/components/card.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfCheckbox": {
@@ -275,7 +275,7 @@
         "contract": "checkbox",
         "razorTag": "checkbox",
         "documentation": "docs/components/forms.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfCommandPalette": {
@@ -319,7 +319,7 @@
         "contract": "command-palette",
         "razorTag": "command-palette",
         "documentation": "docs/components/advanced-inputs.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfConfirmDialog": {
@@ -433,7 +433,7 @@
         "contract": "data-table",
         "razorTag": "data-table",
         "documentation": "docs/components/data-tables.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfDataTableColumnChooser": {
@@ -494,7 +494,7 @@
         "contract": "date-picker",
         "razorTag": "date-picker",
         "documentation": "docs/components/advanced-inputs.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfDrawer": {
@@ -537,7 +537,7 @@
         "contract": "drawer",
         "razorTag": "drawer",
         "documentation": "docs/components/overlays.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfDialog": {
@@ -580,7 +580,7 @@
         "contract": "dialog",
         "razorTag": "dialog",
         "documentation": "docs/components/overlays.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfDivider": {
@@ -612,7 +612,7 @@
         "contract": "divider",
         "razorTag": "divider",
         "documentation": "docs/components/display.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfDropdown": {
@@ -655,7 +655,7 @@
         "contract": "dropdown",
         "razorTag": "dropdown",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfField": {
@@ -687,7 +687,7 @@
         "contract": "field",
         "razorTag": "field",
         "documentation": "docs/components/forms.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfFieldset": {
@@ -721,7 +721,7 @@
         "contract": "fieldset",
         "razorTag": "fieldset",
         "documentation": "docs/components/fieldset.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfFormLayout": {
@@ -809,7 +809,7 @@
         "contract": "icon-button",
         "razorTag": "icon-button",
         "documentation": "docs/components/icon-button.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfInput": {
@@ -853,7 +853,7 @@
         "contract": "input",
         "razorTag": "input",
         "documentation": "docs/components/forms.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfLink": {
@@ -885,7 +885,7 @@
         "contract": "link",
         "razorTag": "link",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfMenuBar": {
@@ -945,7 +945,7 @@
         "contract": "menu",
         "razorTag": "menu",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfMenuItem": {
@@ -1096,7 +1096,7 @@
         "contract": "popover",
         "razorTag": "popover",
         "documentation": "docs/components/overlays.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfProgressBar": {
@@ -1130,7 +1130,7 @@
         "contract": "progress-bar",
         "razorTag": "progress-bar",
         "documentation": "docs/components/progress.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfProgressSpinner": {
@@ -1164,7 +1164,7 @@
         "contract": "progress-spinner",
         "razorTag": "progress-spinner",
         "documentation": "docs/components/progress.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfRadio": {
@@ -1196,7 +1196,7 @@
         "contract": "radio",
         "razorTag": "radio",
         "documentation": "docs/components/forms.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfSelect": {
@@ -1240,7 +1240,7 @@
         "contract": "select",
         "razorTag": "select",
         "documentation": "docs/components/advanced-inputs.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfSkeleton": {
@@ -1272,7 +1272,7 @@
         "contract": "skeleton",
         "razorTag": "skeleton",
         "documentation": "docs/components/display.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfSkeletonGate": {
@@ -1356,7 +1356,7 @@
         "contract": "switch",
         "razorTag": "switch",
         "documentation": "docs/components/forms.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfTable": {
@@ -1388,7 +1388,7 @@
         "contract": "table",
         "razorTag": "table",
         "documentation": "docs/components/data-tables.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfTableOfContents": {
@@ -1501,7 +1501,7 @@
         "contract": "tabs",
         "razorTag": "tabs",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfTextarea": {
@@ -1533,7 +1533,7 @@
         "contract": "textarea",
         "razorTag": "textarea",
         "documentation": "docs/components/forms.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfTooltip": {
@@ -1576,7 +1576,7 @@
         "contract": "tooltip",
         "razorTag": "tooltip",
         "documentation": "docs/components/overlays.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfContainer": {
@@ -1592,7 +1592,7 @@
             "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
             "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
             "packages/css/__tests__/layout-primitives.test.mjs",
-            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "examples/vue/src/sections/layouts/LayoutsShowcase.vue",
             "docs/verification/consumer-usage-inventory.md"
           ]
         },
@@ -1612,7 +1612,7 @@
         "contract": "container",
         "razorTag": "container",
         "documentation": "docs/components/layout-primitives.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfStack": {
@@ -1628,7 +1628,7 @@
             "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
             "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
             "packages/css/__tests__/layout-primitives.test.mjs",
-            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "examples/vue/src/sections/layouts/LayoutsShowcase.vue",
             "docs/verification/consumer-usage-inventory.md"
           ]
         },
@@ -1648,7 +1648,7 @@
         "contract": "stack",
         "razorTag": "stack",
         "documentation": "docs/components/layout-primitives.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfInline": {
@@ -1664,7 +1664,7 @@
             "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
             "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
             "packages/css/__tests__/layout-primitives.test.mjs",
-            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "examples/vue/src/sections/layouts/LayoutsShowcase.vue",
             "docs/verification/consumer-usage-inventory.md"
           ]
         },
@@ -1684,7 +1684,7 @@
         "contract": "inline",
         "razorTag": "inline",
         "documentation": "docs/components/layout-primitives.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfSection": {
@@ -1700,7 +1700,7 @@
             "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
             "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
             "packages/css/__tests__/layout-primitives.test.mjs",
-            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "examples/vue/src/sections/layouts/LayoutsShowcase.vue",
             "docs/verification/consumer-usage-inventory.md"
           ]
         },
@@ -1720,7 +1720,7 @@
         "contract": "section",
         "razorTag": "section",
         "documentation": "docs/components/layout-primitives.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfGrid": {
@@ -1736,7 +1736,7 @@
             "packages/vue/__tests__/layout-primitives-ssr.test.mjs",
             "packages/razor/tests/Components/CmLayoutPrimitivesParityTest.php",
             "packages/css/__tests__/layout-primitives.test.mjs",
-            "examples/playground/src/sections/layouts/LayoutsShowcase.vue",
+            "examples/vue/src/sections/layouts/LayoutsShowcase.vue",
             "docs/verification/consumer-usage-inventory.md"
           ]
         },
@@ -1756,7 +1756,7 @@
         "contract": "grid",
         "razorTag": "grid",
         "documentation": "docs/components/layout-primitives.md",
-        "showcase": "examples/playground/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
       }
     },
     "VfAppShell": {

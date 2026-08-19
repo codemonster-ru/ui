@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const appSource = readFileSync(resolve(__dirname, 'App.vue'), 'utf8');
+const appSource = readFileSync(resolve(__dirname, 'LegacyShowcase.vue'), 'utf8');
 const colorsSource = readFileSync(resolve(__dirname, 'sections/colors/ColorSystemShowcase.vue'), 'utf8');
 const coreSource = readFileSync(resolve(__dirname, 'sections/core/CoreShowcase.vue'), 'utf8');
 const codeblockSource = readFileSync(resolve(__dirname, 'sections/codeblock/CodeBlockShowcase.vue'), 'utf8');

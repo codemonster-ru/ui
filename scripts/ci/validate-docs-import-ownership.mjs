@@ -12,7 +12,7 @@ const packageEntrypoints = {
 const scanRoots = [
   path.join(repoRoot, 'docs'),
   path.join(repoRoot, 'packages/playground/src'),
-  path.join(repoRoot, 'examples/playground/src'),
+  path.join(repoRoot, 'examples/vue/src'),
 ];
 
 const scanExtensions = new Set(['.md', '.vue', '.ts']);

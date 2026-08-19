@@ -97,7 +97,7 @@ test('resolves current showcase anchors and declared Vue showcase evidence', () 
     ),
   );
 
-  const layoutsShowcasePath = 'examples/playground/src/sections/layouts/LayoutsShowcase.vue';
+  const layoutsShowcasePath = 'examples/vue/src/sections/layouts/LayoutsShowcase.vue';
   const missingDeclaredEvidence = cloneArtifacts(artifacts);
   missingDeclaredEvidence.files.set(
     layoutsShowcasePath,

@@ -5,7 +5,7 @@ import layoutsConfig from './packages/layouts/eslint.config.js';
 import playgroundConfig from './packages/playground/eslint.config.mjs';
 import playgroundCoreConfig from './packages/playground-core/eslint.config.mjs';
 import themeConfig from './packages/theme/eslint.config.ts';
-import examplePlaygroundConfig from './examples/playground/eslint.config.mjs';
+import examplePlaygroundConfig from './examples/vue/eslint.config.mjs';
 
 function asArray(config) {
   return Array.isArray(config) ? config : [config];

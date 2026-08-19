@@ -255,7 +255,7 @@ Screenshots and the temporary smoke script were not added to the repository. Pha
 - `packages/playground/src/tokens.css`
 - `packages/playground-core/src/runtimes/browserRuntime.ts`
 - `packages/playground-core/__tests__/browserRuntime.test.ts`
-- `examples/playground/src/sections/codeblock/CodeBlockShowcase.vue`
+- `examples/vue/src/sections/codeblock/CodeBlockShowcase.vue`
 
 ### Audit documents
 

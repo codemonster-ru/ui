@@ -2,7 +2,14 @@ export type ShowcaseSection = 'colors' | 'core' | 'layouts' | 'icons' | 'codeblo
 export type ShowcaseThemeMode = 'light' | 'dark' | 'system';
 export type ShowcaseTheme = 'light' | 'dark';
 
-const validSections = new Set<ShowcaseSection>(['colors', 'core', 'layouts', 'icons', 'codeblock', 'playground']);
+const validSections = new Set<ShowcaseSection>([
+  'colors',
+  'core',
+  'layouts',
+  'icons',
+  'codeblock',
+  'playground',
+]);
 
 interface ThemeRoot {
   getAttribute(name: string): string | null;

@@ -4,7 +4,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { fileURLToPath, URL } from 'node:url';
 import { vueforgePlaygroundVirtualPlugin } from '../../packages/playground-vite-plugin/src/index';
 
-const showcaseSectionPattern = /^\/(overview|colors|core|layouts|icons|codeblock|playground)\/?$/;
+const showcaseSectionPattern = /^\/(overview|showcase|colors|core|layouts|icons|codeblock|playground)\/?$/;
 
 function vueforgeShowcaseHistoryFallback(): Plugin {
   const rewriteShowcaseSection = (req: IncomingMessage, _res: ServerResponse, next: (err?: unknown) => void) => {
