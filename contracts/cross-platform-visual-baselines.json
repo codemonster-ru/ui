@@ -12,6 +12,7 @@
     "field-help-error",
     "input-enhanced",
     "accordion-rich-content",
-    "select-clearable"
+    "select-clearable",
+    "date-picker-clearable"
   ]
 }
