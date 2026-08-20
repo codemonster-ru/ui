@@ -53,7 +53,7 @@ if (!component) throw new Error(`Vue adapter ${componentName} is unavailable for
 
 function resolveVueProps(): Record<string, unknown> {
   const props = { ...componentCase.props };
-  if (componentSlug === 'input' && Object.hasOwn(props, 'value')) {
+  if (['input', 'select', 'date-picker'].includes(componentSlug) && Object.hasOwn(props, 'value')) {
     props.modelValue = props.value;
     delete props.value;
   }
