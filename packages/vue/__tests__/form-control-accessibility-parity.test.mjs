@@ -12,11 +12,15 @@ Object.assign(globalThis, {
   Node: browser.window.Node,
   SVGElement: browser.window.SVGElement,
   document: browser.window.document,
+  Event: browser.window.Event,
+  KeyboardEvent: browser.window.KeyboardEvent,
   window: browser.window,
 });
 
 const { mount } = await import('@vue/test-utils');
+const { nextTick } = await import('vue');
 const { CmCheckbox, CmDatePicker, CmSelect } = await import('../dist/index.js');
+const { CmRuntime, createCmInputController, createCmSelectController } = await import('../../runtime/dist/index.js');
 const contractsDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '../../../contracts');
 const cases = [
   ['checkbox', CmCheckbox, 'indeterminate'],
@@ -42,6 +46,7 @@ for (const [componentSlug, component, caseName] of cases) {
     const razorRoot = razorDom.window.document.body.firstElementChild;
     const vueControl = findControl(vueRoot);
     const razorControl = findControl(razorRoot);
+    startRazorRuntime(componentSlug, razorDom.window.document);
 
     assert.deepEqual(accessibilitySnapshot(vueRoot, vueControl), accessibilitySnapshot(razorRoot, razorControl));
     vueControl.focus();
@@ -50,6 +55,26 @@ for (const [componentSlug, component, caseName] of cases) {
       browser.window.document.activeElement === vueControl,
       razorDom.window.document.activeElement === razorControl,
     );
+
+    const vueClear = findClear(vueRoot);
+    const razorClear = findClear(razorRoot);
+    if (vueClear && razorClear) {
+      vueClear.focus();
+      razorClear.focus();
+      assert.equal(
+        browser.window.document.activeElement === vueClear,
+        razorDom.window.document.activeElement === razorClear,
+      );
+      vueClear.click();
+      razorClear.click();
+      await nextTick();
+      assert.equal(vueControl.value, razorControl.value);
+      assert.equal(
+        browser.window.document.activeElement === vueControl,
+        razorDom.window.document.activeElement === razorControl,
+      );
+      assert.equal(vueClear.hidden, razorClear.hidden);
+    }
 
     vue.unmount();
     razorDom.window.close();
@@ -81,6 +106,15 @@ function findControl(root) {
   return control;
 }
 
+function findClear(root) {
+  return root.querySelector('[data-cm-select-clear], [data-cm-input-clear]');
+}
+
+function startRazorRuntime(componentSlug, document) {
+  if (componentSlug === 'select') new CmRuntime().register('select', createCmSelectController).start(document);
+  if (componentSlug === 'date-picker') new CmRuntime().register('input', createCmInputController).start(document);
+}
+
 function accessibilitySnapshot(root, control) {
   const clear = root.querySelector('[data-cm-select-clear], [data-cm-input-clear]');
   return {
@@ -91,6 +125,7 @@ function accessibilitySnapshot(root, control) {
     readOnly: control.readOnly ?? false,
     required: control.required,
     tabIndex: control.tabIndex,
+    disabledOptions: [...control.querySelectorAll('option:disabled')].map((option) => option.value),
     labelText: root.tagName === 'LABEL' ? root.textContent?.trim() : null,
     clearAction: clear
       ? { ariaLabel: clear.getAttribute('aria-label'), hidden: clear.hidden, tabIndex: clear.tabIndex }
