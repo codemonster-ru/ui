@@ -60,11 +60,14 @@ test('checks both actual adapters against the reviewed fd baseline in macOS visu
       'card-title',
       'divider-horizontal',
       'link-default',
+      'field-help-error',
+      'input-enhanced',
+      'accordion-rich-content',
     ],
     componentPackage: '@codemonster-ru/vueforge-core',
     renderer: 'Vue createApp at the reference commit',
   });
-  assert.equal(screenshots.length, 28);
+  assert.equal(screenshots.length, 40);
   assert.match(workflow, /runs-on: macos-15/u);
   assert.match(workflow, /visual:cross-platform:razor-render/u);
   assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/vue"/u);
