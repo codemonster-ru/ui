@@ -6,15 +6,19 @@ The MVP supports Vue 3 and Annabel Razor as active rendering targets. React and 
 outside the MVP scope and must not be added to the release gate without a concrete consumer and
 an approved scope change.
 
-The MVP cohort is deliberately small and representative:
+The MVP cohort is deliberately small and representative, and matches the reviewed frozen visual
+baseline:
 
 - `Button` — native actions, link mode, disabled and loading states;
 - `Card` — semantic surface and header/body/footer composition;
-- `Field` — label, help, required, and validation composition;
-- `Input` — native form value, validation state, and progressive enhancement;
 - `Alert` — semantic status content and trusted content regions;
 - `Badge` — compact status and categorization content;
-- `Accordion` — server-rendered disclosures with shared keyboard enhancement.
+- `Avatar` — image, label, and fallback content;
+- `Divider` — horizontal and vertical separation semantics;
+- `Link` — native navigation and link attributes.
+
+`Field`, `Input`, and `Accordion` already have functional Vue/Razor contracts and tests, but their
+pixel baselines belong to the next MVP expansion rather than this release gate.
 
 Other components may remain available in the repository, but they are not required for the MVP
 release gate unless they are used by one of the cohort's canonical cases.
