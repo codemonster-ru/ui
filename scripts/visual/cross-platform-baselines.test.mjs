@@ -76,7 +76,7 @@ test('builds the reviewed repository first slice for both adapters', () => {
   );
 
   assert.deepEqual(collected.errors, []);
-  assert.equal(fixtures.length, 56);
+  assert.equal(fixtures.length, 80);
   assert.deepEqual(
     new Set(fixtures.map(({ caseId }) => caseId)),
     new Set([
@@ -87,8 +87,11 @@ test('builds the reviewed repository first slice for both adapters', () => {
       'card-title',
       'divider-horizontal',
       'link-default',
+      'field-help-error',
+      'input-enhanced',
+      'accordion-rich-content',
     ]),
   );
   assert.deepEqual(new Set(fixtures.map(({ platform }) => platform)), new Set(['vue', 'razor']));
-  assert.equal(new Set(fixtures.map(({ baselineId }) => baselineId)).size, 28);
+  assert.equal(new Set(fixtures.map(({ baselineId }) => baselineId)).size, 40);
 });

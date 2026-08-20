@@ -8,6 +8,9 @@
     "button-default",
     "card-title",
     "divider-horizontal",
-    "link-default"
+    "link-default",
+    "field-help-error",
+    "input-enhanced",
+    "accordion-rich-content"
   ]
 }

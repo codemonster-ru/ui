@@ -51,6 +51,15 @@ const componentName = `Cm${componentSlug
 const component = components[componentName];
 if (!component) throw new Error(`Vue adapter ${componentName} is unavailable for ${caseId}.`);
 
+function resolveVueProps(): Record<string, unknown> {
+  const props = { ...componentCase.props };
+  if (componentSlug === 'input' && Object.hasOwn(props, 'value')) {
+    props.modelValue = props.value;
+    delete props.value;
+  }
+  return { ...props, ...componentCase.attributes };
+}
+
 function staticSlot(contents: string): () => VNodeChild {
   const template = document.createElement('template');
   template.innerHTML = contents;
@@ -65,9 +74,7 @@ if (platform === 'vue') {
   const slots = Object.fromEntries(
     Object.entries(componentCase.slots).map(([name, contents]) => [name, staticSlot(contents)]),
   );
-  createApp({
-    render: () => h(component, { ...componentCase.props, ...componentCase.attributes }, slots),
-  }).mount(root);
+  createApp({ render: () => h(component, resolveVueProps(), slots) }).mount(root);
   await nextTick();
   root.dataset.visualRenderer = 'vue-mounted';
 } else {

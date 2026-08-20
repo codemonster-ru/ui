@@ -1,6 +1,22 @@
 {
   "label": "vueforge-cross-platform-reference-vue",
   "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "sourceFixture": {
+    "caseIds": [
+      "alert-danger-icon",
+      "avatar-label",
+      "badge-danger",
+      "button-default",
+      "card-title",
+      "divider-horizontal",
+      "link-default",
+      "field-help-error",
+      "input-enhanced",
+      "accordion-rich-content"
+    ],
+    "componentPackage": "@codemonster-ru/vueforge-core",
+    "renderer": "Vue createApp at the reference commit"
+  },
   "routes": [
     "alert-danger-icon",
     "avatar-label",
@@ -8,7 +24,10 @@
     "button-default",
     "card-title",
     "divider-horizontal",
-    "link-default"
+    "link-default",
+    "field-help-error",
+    "input-enhanced",
+    "accordion-rich-content"
   ],
   "screenshots": [
     {
@@ -49,6 +68,24 @@
     },
     {
       "filename": "link-default--light--mobile.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "field-help-error--light--mobile.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "input-enhanced--light--mobile.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "accordion-rich-content--light--mobile.png",
       "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
@@ -96,6 +133,24 @@
       "viewport": "mobile"
     },
     {
+      "filename": "field-help-error--dark--mobile.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "input-enhanced--dark--mobile.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "accordion-rich-content--dark--mobile.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
       "filename": "alert-danger-icon--light--desktop.png",
       "platform": "vue",
       "theme": "light",
@@ -138,6 +193,24 @@
       "viewport": "desktop"
     },
     {
+      "filename": "field-help-error--light--desktop.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "input-enhanced--light--desktop.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "accordion-rich-content--light--desktop.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
       "filename": "alert-danger-icon--dark--desktop.png",
       "platform": "vue",
       "theme": "dark",
@@ -175,6 +248,24 @@
     },
     {
       "filename": "link-default--dark--desktop.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "field-help-error--dark--desktop.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "input-enhanced--dark--desktop.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "accordion-rich-content--dark--desktop.png",
       "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
