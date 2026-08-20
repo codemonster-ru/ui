@@ -11,6 +11,7 @@
     "link-default",
     "field-help-error",
     "input-enhanced",
-    "accordion-rich-content"
+    "accordion-rich-content",
+    "select-clearable"
   ]
 }
