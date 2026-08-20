@@ -57,6 +57,10 @@ function resolveVueProps(): Record<string, unknown> {
     props.modelValue = props.value;
     delete props.value;
   }
+  if (componentSlug === 'checkbox' && Object.hasOwn(props, 'checked')) {
+    props.modelValue = props.checked;
+    delete props.checked;
+  }
   return { ...props, ...componentCase.attributes };
 }
 
