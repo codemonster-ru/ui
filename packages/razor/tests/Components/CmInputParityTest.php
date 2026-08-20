@@ -38,6 +38,17 @@ final class CmInputParityTest extends TestCase
         /** @var array{props: array<string, mixed>, attributes?: array<string, mixed>, slots: array<string, string>} $case */
         $case = json_decode((string) file_get_contents($casePath), true, flags: JSON_THROW_ON_ERROR);
         $props = [...$case['props'], ...($case['attributes'] ?? [])];
+        foreach ([
+            'passwordReveal' => 'password-reveal',
+            'clearLabel' => 'clear-label',
+            'showPasswordLabel' => 'show-password-label',
+            'hidePasswordLabel' => 'hide-password-label',
+        ] as $source => $target) {
+            if (array_key_exists($source, $props)) {
+                $props[$target] = $props[$source];
+                unset($props[$source]);
+            }
+        }
         $slots = [];
         foreach ($case['slots'] as $name => $content) {
             $slots[$name] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($content);
