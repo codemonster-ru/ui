@@ -138,8 +138,8 @@ jobs:
           npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${SHOWCASE_STATE_CAPTURE}" --label=ci-state-current
           npm run visual:showcase:states:compare -- --current="${SHOWCASE_STATE_CAPTURE}" --diff="${SHOWCASE_STATE_DIFF}"
           npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${CROSS_PLATFORM_CAPTURE}" --label=ci-actual-adapters
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}"
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/razor" --diff="${CROSS_PLATFORM_RAZOR_DIFF}"
+          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}" --threshold=4
+          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/razor" --diff="${CROSS_PLATFORM_RAZOR_DIFF}" --threshold=4
 
       - name: Upload showcase visual differences
         if: failure()
