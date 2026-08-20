@@ -611,10 +611,7 @@
       "viewport": "desktop"
     }
   ],
-  "themes": [
-    "light",
-    "dark"
-  ],
+  "themes": ["light", "dark"],
   "viewports": [
     {
       "name": "mobile",
