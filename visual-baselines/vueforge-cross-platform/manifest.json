@@ -14,7 +14,8 @@
       "input-enhanced",
       "accordion-rich-content",
       "select-clearable",
-      "date-picker-clearable"
+      "date-picker-clearable",
+      "checkbox-checked"
     ],
     "componentPackage": "@codemonster-ru/vueforge-core",
     "renderer": "Vue createApp at the reference commit"
@@ -31,7 +32,8 @@
     "input-enhanced",
     "accordion-rich-content",
     "select-clearable",
-    "date-picker-clearable"
+    "date-picker-clearable",
+    "checkbox-checked"
   ],
   "screenshots": [
     {
@@ -606,6 +608,54 @@
     },
     {
       "filename": "date-picker-clearable--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "checkbox-checked--light--mobile.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "checkbox-checked--dark--mobile.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "checkbox-checked--light--desktop.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "checkbox-checked--dark--desktop.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "checkbox-checked--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "checkbox-checked--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "checkbox-checked--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "checkbox-checked--dark--desktop.png",
       "platform": "razor",
       "theme": "dark",
       "viewport": "desktop"
