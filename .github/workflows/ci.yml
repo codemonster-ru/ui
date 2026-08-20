@@ -37,6 +37,22 @@ jobs:
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
 
+  razor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install and verify Razor package
+        run: |
+          docker run --rm \
+            --volume "${GITHUB_WORKSPACE}:/workspace/JS/ui" \
+            --workdir /workspace/JS/ui/packages/razor \
+            --env COMPOSER_MAX_PARALLEL_HTTP=1 \
+            composer:2 \
+            sh -lc 'composer install --no-interaction --prefer-dist --no-progress && composer check'
+
   visual:
     needs: validate
     runs-on: macos-15
