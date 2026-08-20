@@ -13,7 +13,8 @@
       "field-help-error",
       "input-enhanced",
       "accordion-rich-content",
-      "select-clearable"
+      "select-clearable",
+      "date-picker-clearable"
     ],
     "componentPackage": "@codemonster-ru/vueforge-core",
     "renderer": "Vue createApp at the reference commit"
@@ -29,7 +30,8 @@
     "field-help-error",
     "input-enhanced",
     "accordion-rich-content",
-    "select-clearable"
+    "select-clearable",
+    "date-picker-clearable"
   ],
   "screenshots": [
     {
@@ -556,6 +558,54 @@
     },
     {
       "filename": "select-clearable--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "date-picker-clearable--light--mobile.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "date-picker-clearable--dark--mobile.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "date-picker-clearable--light--desktop.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "date-picker-clearable--dark--desktop.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "date-picker-clearable--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "date-picker-clearable--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "date-picker-clearable--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "date-picker-clearable--dark--desktop.png",
       "platform": "razor",
       "theme": "dark",
       "viewport": "desktop"
