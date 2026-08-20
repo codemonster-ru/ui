@@ -52,7 +52,7 @@ final class CmInputTest extends TestCase
             'value' => 'secret',
             'type' => 'password',
             'clearable' => true,
-            'passwordReveal' => true,
+            'password-reveal' => true,
         ], [
             'leading' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<span>@</span>'),
             'trailing' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<span>required</span>'),

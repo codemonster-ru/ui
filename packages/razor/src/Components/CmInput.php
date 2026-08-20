@@ -30,10 +30,10 @@ final class CmInput implements ComponentInterface
         $readonly = $props->bool('readonly');
         $required = $props->bool('required');
         $clearable = $props->bool('clearable');
-        $passwordReveal = $props->bool('passwordReveal');
-        $clearLabel = $props->string('clearLabel', 'Clear input');
-        $showPasswordLabel = $props->string('showPasswordLabel', 'Show password');
-        $hidePasswordLabel = $props->string('hidePasswordLabel', 'Hide password');
+        $passwordReveal = $props->bool('password-reveal');
+        $clearLabel = $props->string('clear-label', 'Clear input');
+        $showPasswordLabel = $props->string('show-password-label', 'Show password');
+        $hidePasswordLabel = $props->string('hide-password-label', 'Hide password');
         $leading = $context->hasSlot('leading') ? $context->slot('leading') : null;
         $trailing = $context->hasSlot('trailing') ? $context->slot('trailing') : null;
         $hasClear = $clearable && !$disabled && !$readonly;
