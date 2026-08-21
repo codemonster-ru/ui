@@ -58,7 +58,7 @@
     "check:ui-visual-fixtures": "node --test ./scripts/visual/code-monster-ui-fixtures.test.mjs ./scripts/visual/compare-showcase.test.mjs ./scripts/visual/cross-platform-baselines.test.mjs ./scripts/visual/cross-platform-browser.test.mjs ./scripts/visual/showcase-state-cases.test.mjs && node ./scripts/ci/check-code-monster-ui-visual-fixtures.mjs",
     "sync:ui-razor-assets": "node ./scripts/ci/sync-code-monster-ui-razor-assets.mjs",
     "check:packed-consumer": "node ./scripts/ci/check-packed-consumer.mjs --manager=npm && node ./scripts/ci/check-code-monster-ui-packed-consumer.mjs --manager=npm && node ./scripts/ci/check-code-monster-ui-css-packed-consumer.mjs --manager=npm",
-    "check:packed-consumers": "npm run check:packed-consumer && npx --yes --package=pnpm@10.34.5 --call 'node ./scripts/ci/check-packed-consumer.mjs --manager=pnpm && node ./scripts/ci/check-code-monster-ui-packed-consumer.mjs --manager=pnpm && node ./scripts/ci/check-code-monster-ui-css-packed-consumer.mjs --manager=pnpm' && npx --yes --package=yarn@1.22.22 --call 'node ./scripts/ci/check-packed-consumer.mjs --manager=yarn && node ./scripts/ci/check-code-monster-ui-packed-consumer.mjs --manager=yarn && node ./scripts/ci/check-code-monster-ui-css-packed-consumer.mjs --manager=yarn'",
+    "check:packed-consumers": "node ./scripts/ci/run-packed-consumer-managers.mjs",
     "check:composer-packed-consumer": "node ./scripts/ci/check-code-monster-ui-composer-packed-consumer.mjs",
     "check:composer-registry-consumer": "node ./scripts/ci/check-code-monster-ui-composer-registry-consumer.mjs",
     "check:ui-registry-consumer": "node ./scripts/ci/check-code-monster-ui-registry-consumer.mjs",
