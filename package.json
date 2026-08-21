@@ -71,7 +71,7 @@
     "visual:cross-platform:razor-render": "node ./scripts/visual/render-cross-platform-cases.mjs",
     "visual:cross-platform:serve": "node ./scripts/visual/serve-cross-platform-cases.mjs",
     "visual:cross-platform:capture": "node ./scripts/visual/capture-cross-platform-cases.mjs --source=adapters",
-    "verify": "npm run check:clean-install && npm run audit:release && npm run lint:all && npm run format:check && npm run typecheck && npm run build && npm run check:repository-contracts && npm run test:ci-like && npm run test:migration && npm run check:docs:examples && npm run test:release-prep && npm run check:package-contracts && npm run check:ui-package-budgets && npm run check:packed-consumers && npm run check:consumer-tree-shaking && npm run check:deferred-budgets",
+    "verify": "npm run check:clean-install && npm run audit:release && npm run lint:all && npm run format:check && npm run build && npm run typecheck && npm run check:repository-contracts && npm run test:ci-like && npm run test:migration && npm run check:docs:examples && npm run test:release-prep && npm run check:package-contracts && npm run check:ui-package-budgets && npm run check:packed-consumers && npm run check:consumer-tree-shaking && npm run check:deferred-budgets",
     "format": "npm run format --workspaces --if-present --include-workspace-root=false",
     "format:check": "npm run format:check --workspaces --if-present --include-workspace-root=false",
     "prepublish:all": "npm run build && npm run pack:all:dry-run",
