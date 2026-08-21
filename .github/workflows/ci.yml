@@ -35,7 +35,7 @@ jobs:
         run: npm run verify
 
       - name: Dry-run publish artifacts
-        run: npm run prepublish:all
+        run: npm run pack:all:dry-run
 
   razor:
     runs-on: ubuntu-latest
