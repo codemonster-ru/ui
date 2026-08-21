@@ -93,6 +93,30 @@ async function waitFor(expression, timeout = 30_000) {
   throw new Error(`Timed out waiting for ${expression}.`);
 }
 
+async function waitForStablePageHeight(timeout = 30_000) {
+  const startedAt = Date.now();
+  let previousHeight = null;
+  let stableMeasurements = 0;
+
+  while (Date.now() - startedAt < timeout) {
+    const pageHeight = await evaluate(
+      'Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight ?? 0)',
+    );
+
+    if (pageHeight === previousHeight) {
+      stableMeasurements += 1;
+      if (stableMeasurements >= 3) return pageHeight;
+    } else {
+      previousHeight = pageHeight;
+      stableMeasurements = 0;
+    }
+
+    await sleep(100);
+  }
+
+  throw new Error('Timed out waiting for the showcase page height to stabilize.');
+}
+
 await send('Page.enable');
 await send('Runtime.enable');
 
@@ -102,7 +126,9 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
   });
   const url = `${origin.replace(/\/$/u, '')}/${route}`;
   await send('Page.navigate', { url });
-  await waitFor('document.readyState === "complete" && document.querySelector("#app")?.children.length > 0');
+  await waitFor(
+    'document.readyState === "complete" && document.querySelector(".showcase-shell__content-body")?.children.length > 0',
+  );
   await evaluate(`(() => {
     localStorage.setItem('vf-theme', ${JSON.stringify(theme.name)});
     localStorage.setItem('codemonster-showcase-theme', ${JSON.stringify(theme.name)});
@@ -111,7 +137,9 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
     location.reload();
     return true;
   })()`);
-  await waitFor('document.readyState === "complete" && document.querySelector("#app")?.children.length > 0');
+  await waitFor(
+    'document.readyState === "complete" && document.querySelector(".showcase-shell__content-body")?.children.length > 0',
+  );
   await evaluate(`document.fonts?.ready ?? Promise.resolve()`);
   const motionStyle = stabilizeMotion
     ? '*,*::before,*::after{animation:none!important;caret-color:transparent!important;scroll-behavior:auto!important;transition:none!important}'
@@ -258,9 +286,7 @@ for (const viewport of config.viewports) {
     for (const route of config.reference.routes) {
       await prepareRoute(route, theme);
 
-      const pageHeight = await evaluate(
-        'Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight ?? 0)',
-      );
+      const pageHeight = await waitForStablePageHeight();
       const tileCount = Math.max(1, Math.ceil(pageHeight / viewport.height));
 
       for (let tile = 0; tile < tileCount; tile += 1) {
