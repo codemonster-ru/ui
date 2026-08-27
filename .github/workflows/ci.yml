@@ -54,7 +54,7 @@ jobs:
             sh -lc 'composer install --no-interaction --prefer-dist --no-progress && composer check'
 
   visual:
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       CHROME_FOR_TESTING_VERSION: 151.0.7922.138
 

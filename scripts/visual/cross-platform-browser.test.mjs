@@ -71,7 +71,7 @@ test('checks both actual adapters against the reviewed fd baseline in macOS visu
     renderer: 'Vue createApp at the reference commit',
   });
   assert.equal(screenshots.length, 52);
-  assert.match(workflow, /runs-on: macos-15/u);
+  assert.match(workflow, /runs-on: macos-26/u);
   assert.match(workflow, /visual:cross-platform:razor-render/u);
   assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/vue"/u);
   assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/razor"/u);
