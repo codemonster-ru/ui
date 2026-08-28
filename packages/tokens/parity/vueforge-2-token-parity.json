@@ -7,13 +7,13 @@
     "light": {
       "name": "codemonster-light",
       "mode": "light",
-      "tokenCount": 234,
+      "tokenCount": 237,
       "darkOverrideCount": 83
     },
     "dark": {
       "name": "codemonster-dark",
       "mode": "dark",
-      "tokenCount": 234
+      "tokenCount": 237
     }
   },
   "groups": {
@@ -21,7 +21,7 @@
     "semanticColor": 85,
     "spacing": 11,
     "sizing": 7,
-    "control": 18,
+    "control": 21,
     "typography": 26,
     "border": 2,
     "radius": 6,

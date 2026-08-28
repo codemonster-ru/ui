@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { CmIconButton } from '@codemonster-ru/ui-vue';
+import { CmIconButton, CmSelect } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import '@codemonster-ru/ui-css/data-table.css';
 import '@codemonster-ru/ui-css/icon-button.css';
+import '@codemonster-ru/ui-css/select.css';
 
 const sourceRows = [
   { status: 'Available', tasks: 12 },
@@ -19,7 +20,11 @@ const rows = Array.from({ length: 42 }, (_, index) => ({
   member: `Member ${index + 1}`,
   ...sourceRows[index % sourceRows.length],
 }));
-const pageSizeOptions = [3, 5, 10] as const;
+const pageSizeOptions = [
+  { label: '3', value: '3' },
+  { label: '5', value: '5' },
+  { label: '10', value: '10' },
+] as const;
 const currentPage = ref(7);
 const pageSize = ref(3);
 const pageCount = computed(() => Math.max(1, Math.ceil(rows.length / pageSize.value)));
@@ -47,9 +52,9 @@ function setPage(page: number): void {
   currentPage.value = Math.min(Math.max(1, Math.trunc(page)), pageCount.value);
 }
 
-function setPageSize(event: Event): void {
-  const nextPageSize = Number((event.target as HTMLSelectElement).value);
-  if (!pageSizeOptions.includes(nextPageSize as (typeof pageSizeOptions)[number])) return;
+function setPageSize(value: string): void {
+  const nextPageSize = Number(value);
+  if (![3, 5, 10].includes(nextPageSize)) return;
   pageSize.value = nextPageSize;
   currentPage.value = 1;
 }
@@ -83,18 +88,14 @@ function setPageSize(event: Event): void {
 
       <div class="core-pagination-data-table-recipe__page-size">
         <span>Rows</span>
-        <span class="core-pagination-data-table-recipe__page-size-control">
-          <select :value="pageSize" aria-label="Rows per page" @change="setPageSize">
-            <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
-          </select>
-          <span class="core-pagination-data-table-recipe__page-size-visual" aria-hidden="true">
-            <span>{{ pageSize }}</span>
-            <VueIconify
-              :icon="icons.chevronDown"
-              size="calc(var(--cm-icon-size-md) - var(--cm-border-width))"
-            />
-          </span>
-        </span>
+        <CmSelect
+          id="pagination-table-page-size"
+          :model-value="String(pageSize)"
+          :options="pageSizeOptions"
+          size="sm"
+          aria-label="Rows per page"
+          @update:model-value="setPageSize"
+        />
       </div>
 
       <div class="core-pagination-data-table-recipe__actions">
@@ -154,50 +155,6 @@ function setPageSize(event: Event): void {
   display: inline-flex;
   align-items: center;
   gap: var(--cm-space-2);
-}
-
-.core-pagination-data-table-recipe__page-size-control {
-  position: relative;
-  display: inline-flex;
-  /* stylelint-disable-next-line number-max-precision -- Frozen selector width resolves to this browser subpixel. */
-  inline-size: 3.0947265625rem;
-}
-
-.core-pagination-data-table-recipe__page-size-control select {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  inline-size: 100%;
-  block-size: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.core-pagination-data-table-recipe__page-size-visual {
-  display: inline-flex;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: space-between;
-  inline-size: 100%;
-  min-block-size: var(--cm-control-height-sm);
-  padding: var(--cm-space-1) var(--cm-space-2);
-  gap: var(--cm-space-2);
-  border: var(--cm-border-width) solid var(--cm-color-border-interactive);
-  border-radius: var(--cm-radius-control);
-  background: var(--cm-color-background-surface);
-  color: var(--cm-color-text-primary);
-  font-size: var(--cm-font-size-md);
-  line-height: var(--cm-line-height-tight);
-}
-
-.core-pagination-data-table-recipe__page-size-visual > :last-child {
-  color: var(--cm-color-icon-secondary);
-}
-
-.core-pagination-data-table-recipe__page-size-control:focus-within
-  .core-pagination-data-table-recipe__page-size-visual {
-  border-color: var(--cm-color-border-focus);
-  box-shadow: 0 0 0 var(--cm-border-width-thick) var(--cm-color-focus-ring);
 }
 
 .core-pagination-data-table-recipe__pages {
