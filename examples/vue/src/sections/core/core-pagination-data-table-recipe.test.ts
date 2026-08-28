@@ -45,7 +45,8 @@ describe('CorePaginationDataTableRecipe', () => {
     expect(host.querySelector('.core-pagination-data-table-recipe__summary')?.textContent?.trim()).toBe(
       '19-21 of 42',
     );
-    expect(host.querySelector<HTMLSelectElement>('[aria-label="Rows per page"]')?.value).toBe('3');
+    expect(host.querySelector('[role="combobox"]')?.getAttribute('aria-label')).toBe('Rows per page');
+    expect(host.querySelector('.cm-select__value')?.textContent?.trim()).toBe('3');
     expect(host.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('7');
     expect(host.querySelector('[aria-current="page"]')?.getAttribute('aria-label')).toBe('Page 7 of 14');
     expect([...host.querySelectorAll('.core-pagination-data-table-recipe__ellipsis')]).toHaveLength(2);
@@ -72,13 +73,13 @@ describe('CorePaginationDataTableRecipe', () => {
     app.unmount();
   });
 
-  it('resets to page one when the native page-size selector changes', async () => {
+  it('resets to page one when the page-size selector changes', async () => {
     const app = mountRecipe();
     await nextTick();
 
-    const select = host.querySelector<HTMLSelectElement>('[aria-label="Rows per page"]')!;
-    select.value = '5';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
+    host.querySelector<HTMLButtonElement>('[role="combobox"]')!.click();
+    await nextTick();
+    host.querySelector<HTMLElement>('[role="option"][data-cm-select-value="5"]')!.click();
     await nextTick();
 
     expect(host.querySelector('.core-pagination-data-table-recipe__summary')?.textContent?.trim()).toBe('1-5 of 42');
@@ -96,7 +97,8 @@ describe('CorePaginationDataTableRecipe', () => {
     expect(source).toContain('<CmIconButton');
     expect(source).toContain('icons.chevronLeft');
     expect(source).toContain('icons.chevronRight');
-    expect(source).toContain('.core-pagination-data-table-recipe__page-size-visual > :last-child');
+    expect(source).toContain('<CmSelect');
+    expect(source).not.toContain('<select');
     expect(source).not.toContain('.vf-icon-wrapper');
   });
 });

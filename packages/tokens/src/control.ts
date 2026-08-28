@@ -17,6 +17,9 @@ export const cmControlTokens = Object.freeze({
   fieldPaddingSm: 'var(--cm-field-padding-block-sm) var(--cm-field-padding-inline-sm)',
   fieldPaddingMd: 'var(--cm-field-padding-block-md) var(--cm-field-padding-inline-md)',
   fieldPaddingLg: 'var(--cm-field-padding-block-lg) var(--cm-field-padding-inline-lg)',
+  fieldIconSizeSm: '0.9375rem',
+  fieldIconSizeMd: '1rem',
+  fieldIconSizeLg: '1.0625rem',
 } as const);
 
 export type CmControlTokenName = keyof typeof cmControlTokens;

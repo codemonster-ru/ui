@@ -1,6 +1,10 @@
 /* stylelint-disable no-descending-specificity -- Select states intentionally share one interaction matrix. */
 
 .cm-select {
+  /* Adornments inside a field follow their own scale, one that stays closer to the text than the
+     general icon sizes do. */
+  --cm-select-icon-size: var(--cm-field-icon-size-md);
+
   display: inline-flex;
   box-sizing: border-box;
   inline-size: 100%;
@@ -25,6 +29,8 @@
 }
 
 .cm-select--sm {
+  --cm-select-icon-size: var(--cm-field-icon-size-sm);
+
   min-block-size: var(--cm-control-height-sm);
   padding: var(--cm-space-1) var(--cm-space-2);
   font-size: var(--cm-font-size-md);
@@ -35,6 +41,8 @@
 }
 
 .cm-select--lg {
+  --cm-select-icon-size: var(--cm-field-icon-size-lg);
+
   min-block-size: var(--cm-control-height-lg);
   padding: var(--cm-space-2) 0.875rem;
   font-size: var(--cm-font-size-2xl);
@@ -164,8 +172,8 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  inline-size: var(--cm-icon-size-md);
-  block-size: var(--cm-icon-size-md);
+  inline-size: var(--cm-select-icon-size);
+  block-size: var(--cm-select-icon-size);
   color: var(--cm-color-icon-secondary);
 }
 
