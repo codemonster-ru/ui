@@ -1,5 +1,5 @@
 export const cmMotionTokens = Object.freeze({
-  motionDurationNone: '0ms',
+  motionDurationNone: '0.01ms',
   motionDurationFast: '220ms',
   motionDurationNormal: '320ms',
   motionEaseStandard: 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -11,7 +11,7 @@ export type CmMotionOverrides = Partial<CmMotionTokens>;
 
 export const cmMotionTokenNames = Object.freeze(Object.keys(cmMotionTokens) as CmMotionTokenName[]);
 export const cmMotionDurationsMs = Object.freeze({
-  none: 0,
+  none: 0.01,
   fast: 220,
   normal: 320,
 } as const);
