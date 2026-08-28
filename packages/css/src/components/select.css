@@ -1,9 +1,11 @@
 /* stylelint-disable no-descending-specificity -- Select states intentionally share one interaction matrix. */
 
 .cm-select {
-  display: block;
+  display: inline-flex;
   box-sizing: border-box;
   inline-size: 100%;
+  align-items: center;
+  gap: var(--cm-space-2);
   min-block-size: var(--cm-control-height-md);
   padding: 0.3125rem var(--cm-space-3);
   border: var(--cm-border-width) solid var(--cm-color-border-interactive);
@@ -145,4 +147,76 @@
   .cm-select[aria-invalid='true'] {
     border-color: Mark;
   }
+}
+
+/* Trigger content ---------------------------------------------------------- */
+
+.cm-select__value {
+  min-inline-size: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cm-select__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--cm-icon-size-md);
+  block-size: var(--cm-icon-size-md);
+  color: var(--cm-color-icon-secondary);
+}
+
+.cm-select__icon--chevron {
+  margin-inline-start: auto;
+}
+
+/* Listbox ------------------------------------------------------------------ */
+
+.cm-select__listbox {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: calc(100% + 2px);
+  inset-inline-start: 0;
+  min-inline-size: 100%;
+  max-block-size: var(--cm-space-16);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--cm-space-1);
+  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-overlay);
+  background: var(--cm-color-background-surface);
+  box-shadow: var(--cm-shadow-overlay);
+}
+
+.cm-select__listbox[hidden] {
+  display: none;
+}
+
+.cm-select__option {
+  display: block;
+  inline-size: 100%;
+  padding: var(--cm-space-1) var(--cm-space-2);
+  border: 0;
+  border-radius: var(--cm-radius-control-tight);
+  background: transparent;
+  color: var(--cm-color-text-primary);
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+}
+
+.cm-select__option:hover:not([aria-disabled='true']) {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-select__option--selected {
+  background: var(--cm-color-background-surface-selected);
+}
+
+.cm-select__option[aria-disabled='true'] {
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
 }

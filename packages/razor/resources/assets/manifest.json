@@ -384,7 +384,7 @@
     "css:components/select.css": {
       "path": "css/css/components/select.css",
       "mediaType": "text/css",
-      "sha256": "9763f5bc3b0877577dae04c164fd3916ff35ebb309f1b30faaaea66244b8b15e",
+      "sha256": "60f237c5fc93b19a036d0950bdeffd222d2d298fa585a46856dbb8831eef37fa",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
