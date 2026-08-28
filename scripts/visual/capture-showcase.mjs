@@ -105,7 +105,7 @@ async function waitForStablePageHeight(timeout = 30_000) {
 
     if (pageHeight === previousHeight) {
       stableMeasurements += 1;
-      if (stableMeasurements >= 3) return pageHeight;
+      if (stableMeasurements >= 5) return pageHeight;
     } else {
       previousHeight = pageHeight;
       stableMeasurements = 0;
@@ -118,9 +118,11 @@ async function waitForStablePageHeight(timeout = 30_000) {
 }
 
 // The reviewed reference commit and the current showcase use different application shells, so the
-// readiness probe must match both. Route content is then settled by waitForStablePageHeight.
+// readiness probe targets the route content both of them render. Probing the mounted application
+// root instead would pass before the lazily imported section resolves, and the page height would
+// then stabilise on a short page and drop trailing tiles.
 const showcaseContentReady =
-  'document.readyState === "complete" && document.querySelector("#app")?.children.length > 0';
+  'document.readyState === "complete" && document.querySelector(".demo-page")?.children.length > 0';
 
 await send('Page.enable');
 await send('Runtime.enable');
