@@ -181,6 +181,10 @@
   margin-inline-start: auto;
 }
 
+.cm-select:disabled .cm-select__icon {
+  color: var(--cm-color-icon-disabled);
+}
+
 /* Listbox ------------------------------------------------------------------ */
 
 .cm-select__listbox {
