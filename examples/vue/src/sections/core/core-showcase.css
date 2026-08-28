@@ -1490,6 +1490,21 @@
     calc(var(--cm-space-1) - var(--cm-border-width));
 }
 
+/* The reference lifts the trailing icon out of flow in a floating field so it stays centred on the
+   control instead of on the content box the raised label makes asymmetric, and reserves the room it
+   vacates: the adornment offset, the icon, and the control gap. */
+.demo-application-floating-field
+  .core-date-picker-recipe__trigger:not(.core-date-picker-recipe__trigger--with-clear) {
+  padding-inline-end: 2.125rem;
+}
+
+.demo-application-floating-field .core-date-picker-recipe__icon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 0.625rem;
+  transform: translateY(-50%);
+}
+
 .demo-application-floating-field:is(
     .demo-application-floating-field--in,
     .demo-application-floating-field--on,
