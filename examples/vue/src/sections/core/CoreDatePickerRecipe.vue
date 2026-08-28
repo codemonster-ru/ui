@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { CmIconButton } from '@codemonster-ru/ui-vue';
 
 import {
   addCoreDays,
@@ -473,16 +474,17 @@ onBeforeUnmount(() => {
         <VueIconify :icon="icons.calendar" size="var(--cm-icon-size-md)" />
       </span>
     </button>
-    <button
+    <CmIconButton
       v-if="showClear"
       class="core-date-picker-recipe__clear"
-      type="button"
-      aria-label="Clear date"
+      variant="ghost"
+      size="sm"
+      label="Clear date"
       @mousedown.prevent
       @click="clearValue"
     >
       <VueIconify :icon="icons.xmark" size="var(--cm-icon-size-sm)" aria-hidden="true" />
-    </button>
+    </CmIconButton>
 
     <Teleport to="body">
       <section
@@ -725,32 +727,16 @@ onBeforeUnmount(() => {
   transform: translateY(-50%);
 }
 
-.core-date-picker-recipe__clear {
+/* The reference composes a small ghost icon button here and only overrides its size, so the clear
+   action keeps the shared interactive presentation. */
+.core-date-picker-recipe__clear.cm-icon-button {
   position: absolute;
   z-index: 1;
   inset-block-start: 50%;
   inset-inline-end: 0.625rem;
-  display: inline-flex;
   inline-size: 1.375rem;
   block-size: 1.375rem;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  border-radius: var(--cm-radius-control-tight);
-  background: transparent;
-  color: var(--cm-color-icon-secondary);
-  cursor: pointer;
   transform: translateY(-50%);
-}
-
-.core-date-picker-recipe__clear:hover {
-  color: var(--cm-color-icon-primary);
-}
-
-.core-date-picker-recipe__clear:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
 .core-date-picker-recipe__calendar {
