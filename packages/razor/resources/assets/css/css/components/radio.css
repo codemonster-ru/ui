@@ -15,6 +15,13 @@
   cursor: pointer;
 }
 
+/* The medium size restates the base control metrics so the canonical modifier owns a rule. */
+.cm-radio--md {
+  --cm-radio-control-size: 1.25rem;
+  --cm-radio-control-offset: 0.125rem;
+  --cm-radio-dot-size: 0.5rem;
+}
+
 .cm-radio--sm {
   --cm-radio-control-size: var(--cm-icon-size-lg);
   --cm-radio-control-offset: 0.0938rem;
