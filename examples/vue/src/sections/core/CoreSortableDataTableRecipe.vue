@@ -398,10 +398,6 @@ function setPageSize(value: string): void {
   gap: var(--cm-space-1);
 }
 
-.demo-application-sortable-table__page-size :deep(.cm-select) {
-  inline-size: 3.125rem;
-}
-
 .demo-application-sortable-table__page {
   display: inline-grid;
   min-width: var(--cm-control-height-sm);

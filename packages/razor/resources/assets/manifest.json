@@ -14,7 +14,7 @@
     "tokens:tokens.css": {
       "path": "css/tokens/tokens.css",
       "mediaType": "text/css",
-      "sha256": "22057a36cf92e53da1b48823b4173e2cd256df41e581de5e8bf177150f88b59f",
+      "sha256": "05e517ded7376b3c2cefe816a0a7c7a693a61453732d397fbe48b1ba4bc97ada",
       "source": {
         "package": "@codemonster-ru/ui-tokens",
         "version": "1.0.1",
@@ -384,7 +384,7 @@
     "css:components/select.css": {
       "path": "css/css/components/select.css",
       "mediaType": "text/css",
-      "sha256": "60f237c5fc93b19a036d0950bdeffd222d2d298fa585a46856dbb8831eef37fa",
+      "sha256": "2e87b3b1cd95a42748d8b13330d2657ea69c36e68ae8ca678614d8d078b0a1b7",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",

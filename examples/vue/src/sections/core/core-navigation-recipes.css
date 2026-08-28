@@ -324,6 +324,13 @@
     transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
+/* The icon component renders this chevron at the small size, and the reference scales it back up
+   to the medium one so it fills the box the item reserves. */
+.core-nav-recipe__icon .vf-icon {
+  inline-size: var(--cm-icon-size-md);
+  block-size: var(--cm-icon-size-md);
+}
+
 .core-nav-recipe__icon--open {
   transform: rotate(180deg);
 }
