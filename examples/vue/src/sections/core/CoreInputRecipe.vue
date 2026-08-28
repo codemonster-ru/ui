@@ -167,7 +167,12 @@ async function togglePassword(): Promise<void> {
   --demo-input-action-gap: var(--cm-space-1);
   --demo-input-actions-width: 0rem;
   --demo-input-adornment-offset: 0.625rem;
-  --demo-input-trailing-width: calc(var(--cm-space-2) * 2 + var(--cm-icon-size-md));
+
+  /* The reference stores the trailing contribution as one value per size and action count rather
+     than deriving it, so these mirror its tokens instead of recomputing them. */
+  --demo-input-trailing-total: calc(0.625rem + 1.625rem);
+  --demo-input-trailing-extra: 0rem;
+  --demo-input-trailing-gap: var(--cm-space-1);
 
   position: relative;
 }
@@ -175,10 +180,12 @@ async function togglePassword(): Promise<void> {
 .demo-application-input--sm {
   --demo-input-action-size: 1.25rem;
   --demo-input-adornment-offset: var(--cm-space-2);
+  --demo-input-trailing-total: calc(var(--cm-space-2) + 1.5rem);
 }
 
 .demo-application-input--lg {
   --demo-input-action-size: var(--cm-icon-size-xl);
+  --demo-input-trailing-total: calc(0.625rem + 1.75rem);
 }
 
 .demo-application-input__icon {
@@ -227,6 +234,8 @@ async function togglePassword(): Promise<void> {
 
 .demo-application-input--actions-2 {
   --demo-input-actions-width: calc(var(--demo-input-action-size) * 2 + var(--demo-input-action-gap));
+  --demo-input-trailing-extra: var(--cm-space-1);
+  --demo-input-trailing-gap: calc(var(--cm-space-1) + var(--cm-border-width) * 2);
 }
 
 .demo-application-input--actions-3 {
@@ -260,12 +269,14 @@ async function togglePassword(): Promise<void> {
 
 .demo-application-input--trailing:not(.demo-application-input--actions-0) .cm-input__trailing {
   /* The reference leaves one spacing step between the action and the trailing adornment. */
-  inset-inline-end: calc(var(--demo-input-adornment-offset) + var(--demo-input-actions-width) + var(--cm-space-1));
+  inset-inline-end: calc(
+    var(--demo-input-adornment-offset) + var(--demo-input-actions-width) + var(--demo-input-trailing-gap)
+  );
 }
 
 .demo-application-input--trailing:not(.demo-application-input--actions-0) .cm-input {
   padding-inline-end: calc(
-    var(--demo-input-adornment-offset) + var(--demo-input-actions-width) + var(--demo-input-trailing-width)
+    var(--demo-input-trailing-total) + var(--demo-input-actions-width) + var(--demo-input-trailing-extra)
   );
 }
 </style>
