@@ -1601,6 +1601,12 @@
   inset-inline-start: calc(var(--cm-space-4) + var(--cm-border-width));
 }
 
+/* Large textareas were left on the generic offset, which assumes the medium inline padding. The
+   reference offsets the floating label by the control's own padding plus its border. */
+.demo-application-floating-field:has(.cm-textarea--lg) .demo-application-floating-field__label {
+  inset-inline-start: calc(var(--cm-field-padding-inline-lg) + var(--cm-border-width));
+}
+
 .demo-application-floating-field.demo-application-floating-field--active:has(
     .demo-application-input--sm,
     .core-select-recipe-wrap--sm
