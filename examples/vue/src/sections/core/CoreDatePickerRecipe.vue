@@ -631,6 +631,8 @@ onBeforeUnmount(() => {
 }
 
 .core-date-picker-recipe__trigger {
+  /* The reference makes the trigger the containing block for its own adornments. */
+  position: relative;
   display: inline-flex;
   box-sizing: border-box;
   inline-size: 100%;
@@ -714,8 +716,13 @@ onBeforeUnmount(() => {
   line-height: 1;
 }
 
+/* The reference lifts this icon out of flow so the value keeps the full inner width; shifting it
+   with a transform instead left it occupying space it no longer sits in. */
 .core-date-picker-recipe__trigger--with-clear .core-date-picker-recipe__icon {
-  transform: translateX(1.375rem);
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 2.25rem;
+  transform: translateY(-50%);
 }
 
 .core-date-picker-recipe__clear {
