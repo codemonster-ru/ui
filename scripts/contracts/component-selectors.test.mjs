@@ -183,6 +183,8 @@ for (const [slug, approved] of [
       'cm-progress-bar--success',
       'cm-progress-bar--info',
       'cm-progress-bar--warning',
+      'cm-progress-bar--striped',
+      'cm-progress-bar--animated',
       'cm-progress-bar--help',
       'cm-progress-bar--danger',
       'cm-progress-bar--contrast',
@@ -282,7 +284,17 @@ for (const [slug, approved] of [
     ],
   ],
   ['tabs', ['cm-tabs', 'cm-tabs__list', 'cm-tabs__tab', 'cm-tabs__panel']],
-  ['menu', ['cm-menu', 'cm-menu__item', 'cm-menu__item--active', 'cm-menu__item--danger', 'cm-menu__item-label']],
+  [
+    'menu',
+    [
+      'cm-menu',
+      'cm-menu__item',
+      'cm-menu__item--active',
+      'cm-menu__item--danger',
+      'cm-menu__item-label',
+      'cm-menu__item-icon',
+    ],
+  ],
   [
     'dropdown',
     ['cm-dropdown', 'cm-dropdown--bottom-end', 'cm-dropdown--open', 'cm-dropdown__trigger', 'cm-dropdown__menu'],
@@ -431,7 +443,15 @@ for (const [slug, approved] of [
   ],
   [
     'avatar',
-    ['cm-avatar', 'cm-avatar--sm', 'cm-avatar--lg', 'cm-avatar--circle', 'cm-avatar__image', 'cm-avatar__label'],
+    [
+      'cm-avatar',
+      'cm-avatar--sm',
+      'cm-avatar--lg',
+      'cm-avatar--circle',
+      'cm-avatar__image',
+      'cm-avatar__label',
+      'cm-avatar__icon',
+    ],
   ],
   ['divider', ['cm-divider', 'cm-divider--horizontal', 'cm-divider--vertical']],
   [

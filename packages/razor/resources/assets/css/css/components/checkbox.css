@@ -17,6 +17,14 @@
   vertical-align: top;
 }
 
+/* The medium size restates the base control metrics so the canonical modifier owns a rule. */
+.cm-checkbox--md {
+  --cm-checkbox-control-size: 1.25rem;
+  --cm-checkbox-control-offset: 0.125rem;
+  --cm-checkbox-mark-width: 0.25rem;
+  --cm-checkbox-mark-height: 0.5rem;
+}
+
 .cm-checkbox--sm {
   --cm-checkbox-control-size: var(--cm-icon-size-lg);
   --cm-checkbox-control-offset: 0.0938rem;

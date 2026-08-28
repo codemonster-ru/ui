@@ -20,6 +20,13 @@
     color var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
 }
 
+/* The medium size restates the base metrics so the canonical modifier owns a rule. */
+.cm-textarea--md {
+  min-block-size: 6rem;
+  padding: var(--cm-field-padding-md);
+  font-size: var(--cm-control-font-size-md);
+}
+
 .cm-textarea--sm {
   min-block-size: 4.5rem;
   padding: var(--cm-field-padding-sm);

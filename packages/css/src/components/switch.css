@@ -18,6 +18,15 @@
   cursor: pointer;
 }
 
+/* The medium size restates the base control metrics so the canonical modifier owns a rule. */
+.cm-switch--md {
+  --cm-switch-track-inline-size: 2.375rem;
+  --cm-switch-track-block-size: 1.375rem;
+  --cm-switch-thumb-size: 1rem;
+  --cm-switch-control-offset: 0.0625rem;
+  --cm-switch-thumb-icon-size: 0.75rem;
+}
+
 .cm-switch--sm {
   --cm-switch-track-inline-size: 2.125rem;
   --cm-switch-track-block-size: 1.25rem;
