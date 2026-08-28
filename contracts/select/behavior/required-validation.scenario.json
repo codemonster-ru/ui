@@ -2,5 +2,12 @@
   "schemaVersion": 1,
   "id": "select-required-validation",
   "case": "select-default",
-  "steps": [{ "expect": "validity", "target": "control", "value": false }]
+  "steps": [
+    {
+      "expect": "attribute",
+      "target": "trigger",
+      "name": "aria-required",
+      "value": "true"
+    }
+  ]
 }
