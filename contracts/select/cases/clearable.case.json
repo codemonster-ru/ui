@@ -3,6 +3,7 @@
   "id": "select-clearable",
   "description": "Selected native control with a localized clear action.",
   "props": {
+    "id": "frequency",
     "options": [
       {
         "value": "daily",
@@ -18,7 +19,6 @@
     "clearLabel": "Clear frequency"
   },
   "attributes": {
-    "id": "frequency",
     "name": "frequency",
     "aria-label": "Frequency"
   },

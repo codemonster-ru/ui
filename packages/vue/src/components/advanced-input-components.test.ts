@@ -10,9 +10,11 @@ afterEach(() => {
 });
 
 describe('Vue advanced input components', () => {
-  it('binds Select to native change and form serialization', async () => {
+  it('commits a Select choice and keeps it submittable', async () => {
     const wrapper = mount(CmSelect, {
+      attachTo: document.body,
       props: {
+        id: 'frequency',
         modelValue: '',
         options: [
           { value: 'daily', label: 'Daily' },
@@ -22,17 +24,45 @@ describe('Vue advanced input components', () => {
       attrs: { name: 'frequency', 'aria-label': 'Frequency' },
     });
     const form = document.createElement('form');
+    document.body.append(form);
     form.append(wrapper.element);
-    await wrapper.get('select').setValue('weekly');
+
+    await wrapper.get('.cm-select').trigger('click');
+    expect(wrapper.get('.cm-select__listbox').attributes('hidden')).toBeUndefined();
+    await wrapper.findAll('.cm-select__option')[1].trigger('click');
+
     expect(wrapper.emitted('update:modelValue')).toEqual([['weekly']]);
+    expect(wrapper.emitted('valueChange')).toEqual([['weekly']]);
+    expect(wrapper.get('.cm-select__value').text()).toBe('Weekly');
     expect(new FormData(form).get('frequency')).toBe('weekly');
+    expect(wrapper.get('.cm-select__listbox').attributes('hidden')).toBe('');
+    wrapper.unmount();
   });
 
-  it('clears Select through native change and preserves focus and submission', async () => {
+  it('refuses a disabled Select option and keeps the listbox open', async () => {
+    const wrapper = mount(CmSelect, {
+      props: {
+        id: 'status',
+        modelValue: '',
+        options: [
+          { value: 'draft', label: 'Draft' },
+          { value: 'archived', label: 'Archived', disabled: true },
+        ],
+      },
+    });
+    await wrapper.get('.cm-select').trigger('click');
+    await wrapper.findAll('.cm-select__option')[1].trigger('click');
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined();
+    expect(wrapper.get('.cm-select__listbox').attributes('hidden')).toBeUndefined();
+  });
+
+  it('clears a Select choice and restores the placeholder', async () => {
     const wrapper = mount(CmSelect, {
       attachTo: document.body,
       props: {
+        id: 'frequency',
         modelValue: 'weekly',
+        placeholder: 'Choose frequency',
         clearable: true,
         clearLabel: 'Clear frequency',
         options: [
@@ -45,13 +75,38 @@ describe('Vue advanced input components', () => {
     const form = document.createElement('form');
     document.body.append(form);
     form.append(wrapper.element);
-    const select = wrapper.get<HTMLSelectElement>('select');
-    await wrapper.get('button').trigger('click');
+
+    expect(wrapper.get('.cm-select__value').text()).toBe('Weekly');
+    await wrapper.get('[data-cm-select-clear]').trigger('click');
+
     expect(wrapper.emitted('update:modelValue')).toEqual([['']]);
     expect(wrapper.emitted('valueChange')).toEqual([['']]);
-    expect(select.element).toBe(document.activeElement);
-    expect(wrapper.get('button').attributes('hidden')).toBe('');
+    expect(wrapper.get('.cm-select__value').text()).toBe('Choose frequency');
     expect(new FormData(form).get('frequency')).toBe('');
+    expect(wrapper.find('[data-cm-select-clear]').exists()).toBe(false);
+    wrapper.unmount();
+  });
+
+  it('opens a Select from the keyboard and closes on Escape', async () => {
+    const wrapper = mount(CmSelect, {
+      attachTo: document.body,
+      props: {
+        id: 'frequency',
+        modelValue: '',
+        options: [
+          { value: 'daily', label: 'Daily' },
+          { value: 'weekly', label: 'Weekly' },
+        ],
+      },
+    });
+
+    await wrapper.get('.cm-select').trigger('keydown', { key: 'ArrowDown' });
+    expect(wrapper.get('.cm-select__listbox').attributes('hidden')).toBeUndefined();
+    expect(wrapper.get('.cm-select').attributes('aria-expanded')).toBe('true');
+
+    await wrapper.get('.cm-select__listbox').trigger('keydown', { key: 'Escape' });
+    expect(wrapper.get('.cm-select__listbox').attributes('hidden')).toBe('');
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined();
     wrapper.unmount();
   });
 

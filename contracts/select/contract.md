@@ -26,8 +26,8 @@ The trigger is a button carrying `role="combobox"` with `aria-haspopup="listbox"
 `aria-expanded`, and `aria-controls` pointing at the listbox. The reference used a plain button, but
 that role refuses `aria-required`, and a combobox is the role this widget actually presents. `invalid` maps to `aria-invalid` and `required` to `aria-required`, since
 neither native attribute applies to a button; `disabled` maps to the native `disabled` attribute.
-Consumer `id` names the trigger and the listbox derives its own as `{id}-listbox`; both are
-generated together when no `id` is given. Safe attributes such as `autocomplete` and
+`id` is required, as it is for the other components that own related identifiers; it names the
+trigger and the listbox derives its own as `{id}-listbox`. Safe attributes such as `autocomplete` and
 `aria-describedby` reach the trigger, while `name` reaches the hidden input.
 
 ## Visual configuration
@@ -45,7 +45,9 @@ value is selected.
 ## Content
 
 The trigger renders an optional `leading` region, the current label in `cm-select__value`, an
-optional `trailing` region, and a chevron in `cm-select__icon--chevron`. The chevron is omitted when
+optional `trailing` region, and a chevron in `cm-select__icon--chevron`. It carries the placeholder
+in `data-cm-placeholder` when one is set, so the label can be restored after the value is cleared
+without consulting the adapter. The chevron is omitted when
 the clear action is present. Empty named regions are omitted. When no value is selected the value
 region renders the `placeholder`, or an empty string when none is given.
 
