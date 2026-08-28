@@ -1233,6 +1233,12 @@
             "packages/runtime/__tests__/select.test.mjs",
             "packages/razor/tests/Components/CmAdvancedInputComponentsParityTest.php"
           ]
+        },
+        {
+          "id": "required-constraint-validation",
+          "status": "application-owned",
+          "notes": "The component-owned control reports the required state through aria-required, while refusing an empty submission is the application’s responsibility",
+          "evidence": ["contracts/select/contract.md", "docs/codemonster-ui-roadmap-v2.md"]
         }
       ],
       "delivery": {

@@ -19,7 +19,7 @@ order:
 
 1. a hidden input when `name` is present, so a form submits the current value;
 2. the trigger button `cm-select`;
-3. the clear action when `clearable` is set and a value is present;
+3. the clear action when `clearable` is set and the control is enabled;
 4. the listbox.
 
 The trigger is a button carrying `role="combobox"` with `aria-haspopup="listbox"`,
@@ -83,12 +83,17 @@ closes without changing the value and restores focus to the trigger. Selecting a
 the value, closes the listbox, restores focus, and dispatches a bubbling `change` event. Pointer
 activity outside the root closes the listbox.
 
-`clearable` adds a localized clear action while the control is enabled and a value is present.
+`clearable` adds a localized clear action while the control is enabled. The action stays in the
+markup and is hidden while the value is empty, so both adapters and the runtime agree on one shape.
 Activating it clears the value, dispatches the same `change` event, and restores focus to the
 trigger.
 
 ## Scripting
 
 Both adapters render identical markup and share the `select` controller, which owns listbox
-placement as well as pointer and keyboard interaction. Without scripting the control renders its current value
+placement as well as pointer and keyboard interaction.
+
+`required` is announced through `aria-required` but is not enforced by the browser, because a
+component-owned control sits outside constraint validation. Refusing an empty submission is the
+application's responsibility. Without scripting the control renders its current value
 and a form still submits that value through the hidden input, but the value cannot be changed.

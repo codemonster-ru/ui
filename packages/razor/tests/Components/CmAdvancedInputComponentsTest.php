@@ -28,13 +28,15 @@ final class CmAdvancedInputComponentsTest extends TestCase
     public function testRendersNativeFormControlsAndCommandRuntimeMarkup(): void
     {
         file_put_contents($this->root . '/views/inputs.razor.php', <<<'RAZOR'
-<form><cm-select name="status" aria-label="Status" :options="$options" value="draft" /><cm-date-picker name="date" aria-label="Date" value="2026-08-13" /><cm-command-palette id="commands" title="Commands" :commands="$commands" /></form>
+<form><cm-select id="status" name="status" aria-label="Status" :options="$options" value="draft" /><cm-date-picker name="date" aria-label="Date" value="2026-08-13" /><cm-command-palette id="commands" title="Commands" :commands="$commands" /></form>
 RAZOR);
         $html = $this->engine()->render('inputs', [
             'options' => [['value' => 'draft', 'label' => 'Draft']],
             'commands' => [['id' => 'open', 'label' => 'Open']],
         ]);
-        self::assertStringContainsString('<select class="cm-select cm-select--md" name="status" aria-label="Status">', $html);
+        self::assertStringContainsString('<button class="cm-select cm-select--md" id="status" type="button" role="combobox"', $html);
+        self::assertStringContainsString('<input type="hidden" name="status" value="draft">', $html);
+        self::assertStringContainsString('role="listbox"', $html);
         self::assertStringContainsString('type="date" value="2026-08-13"', $html);
         self::assertStringContainsString('data-cm-controller="command-palette"', $html);
     }
@@ -42,7 +44,7 @@ RAZOR);
     public function testEscapesOptionAndCommandValues(): void
     {
         file_put_contents($this->root . '/views/escaping.razor.php', <<<'RAZOR'
-<cm-select aria-label="Select" :options="$options" /><cm-command-palette id="commands" title="Commands" :commands="$commands" />
+<cm-select id="unsafe" aria-label="Select" :options="$options" /><cm-command-palette id="commands" title="Commands" :commands="$commands" />
 RAZOR);
         $html = $this->engine()->render('escaping', [
             'options' => [['value' => '"><script>', 'label' => '<Option>']],
