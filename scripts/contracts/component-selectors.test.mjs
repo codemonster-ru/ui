@@ -236,6 +236,12 @@ for (const [slug, approved] of [
       'cm-select--invalid',
       'cm-select-wrap',
       'cm-select__clear',
+      'cm-select__value',
+      'cm-select__icon',
+      'cm-select__icon--chevron',
+      'cm-select__listbox',
+      'cm-select__option',
+      'cm-select__option--selected',
     ],
   ],
   [

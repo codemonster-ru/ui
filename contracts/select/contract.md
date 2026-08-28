@@ -22,11 +22,13 @@ order:
 3. the clear action when `clearable` is set and a value is present;
 4. the listbox.
 
-The trigger owns `type="button"`, `aria-haspopup="listbox"`, `aria-expanded`, and `aria-controls`
-pointing at the listbox. `invalid` maps to `aria-invalid`, `disabled` to the native `disabled`
-attribute. Consumer `id` names the trigger; a generated identifier is used otherwise. Safe
-attributes such as `name`, `autocomplete`, and `aria-describedby` reach the trigger, except `name`,
-which reaches the hidden input.
+The trigger is a button carrying `role="combobox"` with `aria-haspopup="listbox"`,
+`aria-expanded`, and `aria-controls` pointing at the listbox. The reference used a plain button, but
+that role refuses `aria-required`, and a combobox is the role this widget actually presents. `invalid` maps to `aria-invalid` and `required` to `aria-required`, since
+neither native attribute applies to a button; `disabled` maps to the native `disabled` attribute.
+Consumer `id` names the trigger and the listbox derives its own as `{id}-listbox`; both are
+generated together when no `id` is given. Safe attributes such as `autocomplete` and
+`aria-describedby` reach the trigger, while `name` reaches the hidden input.
 
 ## Visual configuration
 
