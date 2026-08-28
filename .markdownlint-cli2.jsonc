@@ -13,6 +13,7 @@
     "**/dist/**",
     "**/coverage/**",
     "examples/razor/vendor/**",
+    "packages/razor/vendor/**",
     "**/LICENSE"
   ]
 }
