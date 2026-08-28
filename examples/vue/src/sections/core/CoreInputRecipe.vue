@@ -101,7 +101,7 @@ async function togglePassword(): Promise<void> {
   >
     <span v-if="hasLeading" class="cm-input__leading demo-application-input__icon" aria-hidden="true">
       <slot name="leading">
-        <VueIconify :icon="props.leadingIcon!" />
+        <VueIconify :icon="props.leadingIcon!" size="var(--demo-input-icon-size)" />
       </slot>
     </span>
 
@@ -121,7 +121,7 @@ async function togglePassword(): Promise<void> {
 
     <span v-if="hasTrailing" class="cm-input__trailing demo-application-input__icon" aria-hidden="true">
       <slot name="trailing">
-        <VueIconify :icon="props.trailingIcon!" />
+        <VueIconify :icon="props.trailingIcon!" size="var(--demo-input-icon-size)" />
       </slot>
     </span>
 
@@ -135,7 +135,11 @@ async function togglePassword(): Promise<void> {
         @mousedown.prevent
         @click="togglePassword"
       >
-        <VueIconify :icon="passwordVisible ? 'eyeSlash' : 'eye'" aria-hidden="true" />
+        <VueIconify
+          :icon="passwordVisible ? 'eyeSlash' : 'eye'"
+          size="var(--demo-input-icon-size)"
+          aria-hidden="true"
+        />
       </button>
       <button
         v-if="hasCustomAction"
@@ -155,7 +159,7 @@ async function togglePassword(): Promise<void> {
         @mousedown.prevent
         @click="clearValue"
       >
-        <VueIconify icon="xmark" aria-hidden="true" />
+        <VueIconify icon="xmark" size="var(--demo-input-icon-size)" aria-hidden="true" />
       </button>
     </span>
   </div>
@@ -170,6 +174,7 @@ async function togglePassword(): Promise<void> {
 
   /* The reference stores the trailing contribution as one value per size and action count rather
      than deriving it, so these mirror its tokens instead of recomputing them. */
+  --demo-input-icon-size: var(--cm-icon-size-md);
   --demo-input-trailing-total: calc(0.625rem + 1.625rem);
   --demo-input-trailing-extra: 0rem;
   --demo-input-trailing-gap: var(--cm-space-1);
@@ -180,17 +185,19 @@ async function togglePassword(): Promise<void> {
 .demo-application-input--sm {
   --demo-input-action-size: 1.25rem;
   --demo-input-adornment-offset: var(--cm-space-2);
+  --demo-input-icon-size: calc(var(--cm-icon-size-sm) + var(--cm-border-width));
   --demo-input-trailing-total: calc(var(--cm-space-2) + 1.5rem);
 }
 
 .demo-application-input--lg {
   --demo-input-action-size: var(--cm-icon-size-xl);
+  --demo-input-icon-size: calc(var(--cm-icon-size-lg) - var(--cm-border-width));
   --demo-input-trailing-total: calc(0.625rem + 1.75rem);
 }
 
 .demo-application-input__icon {
-  inline-size: var(--cm-icon-size-md);
-  block-size: var(--cm-icon-size-md);
+  inline-size: var(--demo-input-icon-size);
+  block-size: var(--demo-input-icon-size);
   pointer-events: none;
 }
 
