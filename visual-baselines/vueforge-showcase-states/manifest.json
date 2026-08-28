@@ -705,13 +705,13 @@
     {
       "id": "open",
       "route": "core",
-      "selector": ":is(.vf-accordion__trigger, .cm-accordion__trigger)[aria-expanded=\"true\"]",
+      "selector": "[data-test=\"navigation-geometry-matrix\"] :is(.vf-accordion__trigger, .cm-accordion__trigger)[aria-expanded=\"true\"]",
       "padding": 160
     },
     {
       "id": "closed",
       "route": "core",
-      "selector": ":is(.vf-accordion__trigger, .cm-accordion__trigger)[aria-expanded=\"false\"]",
+      "selector": "[data-test=\"navigation-geometry-matrix\"] :is(.vf-accordion__trigger, .cm-accordion__trigger)[aria-expanded=\"false\"]",
       "padding": 80
     },
     {
