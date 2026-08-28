@@ -3,6 +3,7 @@
   "id": "select-default",
   "description": "Required select with a placeholder.",
   "props": {
+    "id": "frequency",
     "options": [
       {
         "value": "daily",
@@ -17,7 +18,6 @@
     "required": true
   },
   "attributes": {
-    "id": "frequency",
     "name": "frequency",
     "aria-label": "Frequency"
   },

@@ -5,6 +5,11 @@
   "razorTag": "cm-select",
   "description": "A component-owned single-value select control.",
   "props": {
+    "id": {
+      "type": "string",
+      "required": true,
+      "description": "Names the trigger; the listbox derives its own identifier from it."
+    },
     "options": {
       "type": "collection",
       "required": true,
