@@ -47,7 +47,8 @@ for (const [slug, component] of Object.entries(components)) {
 test('escapes advanced-input option, command, and attribute values during SSR', async () => {
   const actual = await renderToString(
     createSSRApp({
-      render: () => h(CmSelect, { options: [{ value: '"><script>', label: '<Unsafe>' }], 'aria-label': 'Safe' }),
+      render: () =>
+        h(CmSelect, { id: 'safe', options: [{ value: '"><script>', label: '<Unsafe>' }], 'aria-label': 'Safe' }),
     }),
   );
   assert.match(actual, /&lt;Unsafe&gt;/u);

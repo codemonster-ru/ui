@@ -7,6 +7,7 @@ export interface CmSelectOption {
 }
 
 export interface CmSelectProps {
+  id: string;
   options: readonly CmSelectOption[];
   modelValue?: string;
   placeholder?: string | null;
