@@ -83,7 +83,7 @@ describe('Vue advanced input components', () => {
     expect(wrapper.emitted('valueChange')).toEqual([['']]);
     expect(wrapper.get('.cm-select__value').text()).toBe('Choose frequency');
     expect(new FormData(form).get('frequency')).toBe('');
-    expect(wrapper.find('[data-cm-select-clear]').exists()).toBe(false);
+    expect(wrapper.get('[data-cm-select-clear]').attributes('hidden')).toBe('');
     wrapper.unmount();
   });
 

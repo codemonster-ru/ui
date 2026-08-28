@@ -58,8 +58,8 @@ for (const [componentSlug, component, scenarioFile] of scenarios) {
         activate(razorDom.window, razorForm, razorControl, step);
         await nextTick();
       } else {
-        const vueObservation = observe(vueForm, vueControl, vueEvents, step);
-        const razorObservation = observe(razorForm, razorControl, razorEvents, step);
+        const vueObservation = observe(vueForm, resolveTarget(vueForm, step.target), vueEvents, step);
+        const razorObservation = observe(razorForm, resolveTarget(razorForm, step.target), razorEvents, step);
         assert.deepEqual(vueObservation, razorObservation, `${scenarioFile}: Vue and Razor diverged at ${step.expect}`);
         assert.deepEqual(vueObservation, expectedObservation(step), `${scenarioFile}: contract expectation failed`);
       }
@@ -103,8 +103,11 @@ function createRuntime(componentSlug) {
 
 function resolveTarget(form, target) {
   if (target === 'form') return form;
-  const control = form.querySelector('input, select');
-  assert.ok(control, `Missing behavior control for ${target}.`);
+  // A component-owned control keeps its value in a hidden input and its state on the trigger, so a
+  // scenario names the one it means.
+  const selector = target === 'trigger' ? '[role="combobox"], button[aria-haspopup]' : 'input, select';
+  const control = form.querySelector(selector);
+  assert.ok(control, `Missing behavior ${target}.`);
   return control;
 }
 

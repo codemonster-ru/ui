@@ -55,7 +55,7 @@ const selectedOption = computed(() =>
   normalizedOptions.value.find((option) => option.value === currentValue.value && currentValue.value !== ''),
 );
 const displayLabel = computed(() => selectedOption.value?.label ?? props.placeholder ?? '');
-const hasClear = computed(() => props.clearable && !props.disabled && currentValue.value !== '');
+const hasClear = computed(() => props.clearable && !props.disabled);
 const name = computed(() => (typeof attrs.name === 'string' ? attrs.name : null));
 
 const classes = computed(() =>
@@ -189,6 +189,7 @@ onBeforeUnmount(() => {
       class="cm-select__clear"
       type="button"
       :aria-label="props.clearLabel"
+      :hidden="currentValue === ''"
       data-cm-select-clear
       @mousedown.prevent
       @click="clearValue"
