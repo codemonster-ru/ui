@@ -4,12 +4,22 @@
   "description": "Required select with a placeholder.",
   "props": {
     "options": [
-      { "value": "daily", "label": "Daily" },
-      { "value": "weekly", "label": "Weekly" }
+      {
+        "value": "daily",
+        "label": "Daily"
+      },
+      {
+        "value": "weekly",
+        "label": "Weekly"
+      }
     ],
     "placeholder": "Choose frequency",
     "required": true
   },
-  "attributes": { "id": "frequency", "name": "frequency", "aria-label": "Frequency" },
+  "attributes": {
+    "id": "frequency",
+    "name": "frequency",
+    "aria-label": "Frequency"
+  },
   "slots": {}
 }
