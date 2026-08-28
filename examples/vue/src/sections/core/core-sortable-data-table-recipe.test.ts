@@ -59,7 +59,7 @@ describe('CoreSortableDataTableRecipe', () => {
     ).toEqual(['1', '2', '3']);
     expect(host.querySelector<HTMLButtonElement>('button[aria-label="Previous page"]')?.disabled).toBe(true);
     expect(host.querySelector<HTMLButtonElement>('button[aria-label="Next page"]')?.disabled).toBe(false);
-    expect(host.querySelector('select')?.getAttribute('aria-label')).toBe('Rows per page');
+    expect(host.querySelector('[role="combobox"]')?.getAttribute('aria-label')).toBe('Rows per page');
     app.unmount();
   });
 
@@ -114,9 +114,9 @@ describe('CoreSortableDataTableRecipe', () => {
     expect(document.activeElement).toBe(tasks);
     expect(tasks.type).toBe('button');
 
-    const select = host.querySelector<HTMLSelectElement>('select')!;
-    select.value = '5';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
+    host.querySelector<HTMLButtonElement>('[role="combobox"]')!.click();
+    await nextTick();
+    host.querySelector<HTMLButtonElement>('[role="option"][data-cm-select-value="5"]')!.click();
     await nextTick();
     expect(visibleMembers()).toEqual(['Eve', 'Diego', 'Bob', 'Frank', 'Grace']);
     expect(host.querySelector('.demo-application-sortable-table__summary')?.textContent).toBe('1-5 of 7');
