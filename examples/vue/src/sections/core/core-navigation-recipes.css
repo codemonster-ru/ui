@@ -191,11 +191,16 @@
   margin-inline-start: 1.75rem;
 }
 
+/* The reference resets the nested weight for branch items only, so an active leaf keeps the
+   medium weight its own rule gives it. */
+.core-nav-recipe--sidebar .core-nav-recipe__item--branch:not(.core-nav-recipe__item--top) {
+  font-weight: var(--cm-font-weight-regular);
+}
+
 .core-nav-recipe--sidebar .core-nav-recipe__item:not(.core-nav-recipe__item--top) {
   position: relative;
   inline-size: calc(100% - var(--cm-space-2));
   margin-inline-start: var(--cm-space-2);
-  font-weight: var(--cm-font-weight-regular);
 }
 
 .core-nav-recipe--sidebar .core-nav-recipe__item:not(.core-nav-recipe__item--top)::after {
