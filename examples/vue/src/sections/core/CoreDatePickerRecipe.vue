@@ -718,6 +718,10 @@ onBeforeUnmount(() => {
   line-height: 1;
 }
 
+.core-date-picker-recipe__trigger:disabled .core-date-picker-recipe__icon {
+  color: var(--cm-color-icon-disabled);
+}
+
 /* The reference lifts this icon out of flow so the value keeps the full inner width; shifting it
    with a transform instead left it occupying space it no longer sits in. */
 .core-date-picker-recipe__trigger--with-clear .core-date-picker-recipe__icon {

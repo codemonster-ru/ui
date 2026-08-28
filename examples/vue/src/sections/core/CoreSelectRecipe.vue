@@ -477,6 +477,10 @@ onBeforeUnmount(() => {
   transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
+.core-select-recipe:disabled .core-select-recipe__icon {
+  color: var(--cm-color-icon-disabled);
+}
+
 .core-select-recipe--open .core-select-recipe__icon--chevron {
   transform: rotate(180deg);
 }
