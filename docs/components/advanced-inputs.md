@@ -10,10 +10,12 @@ Individual styles are available from the `select.css`, `date-picker.css`, and
 
 ## Select
 
-Select requires `options` with unique string `value`, non-empty `label`, and optional `disabled`.
-It accepts `value`, `placeholder`, `clearable`, localized `clearLabel`, `size` (`sm`, `md`, or
-`lg`), `invalid`, `disabled`, and `required`. Safe native attributes such as `id`, `name`, `autocomplete`, and
-`aria-describedby` reach the `<select>`.
+Select is component-owned: both adapters render the same trigger, listbox, and hidden input rather
+than a browser-drawn control. It requires `id` and `options` with unique string `value`, non-empty
+`label`, and optional `disabled`. It accepts `value`, `placeholder`, `clearable`, localized
+`clearLabel`, `size` (`sm`, `md`, or `lg`), `invalid`, `disabled`, and `required`. Safe attributes
+such as `autocomplete` and `aria-describedby` reach the trigger, while `name` reaches the hidden
+input.
 
 ```vue
 <script setup lang="ts">
@@ -29,6 +31,7 @@ const options = [
 
 <template>
   <CmSelect
+    id="frequency"
     v-model="frequency"
     name="frequency"
     aria-label="Frequency"
@@ -42,14 +45,20 @@ const options = [
 ```
 
 ```razor
-<cm-select name="frequency" aria-label="Frequency" :options="$options" :value="$submitted['frequency'] ?? ''" placeholder="Choose" :clearable="true" clear-label="Clear frequency" :required="true" />
+<cm-select id="frequency" name="frequency" aria-label="Frequency" :options="$options" :value="$submitted['frequency'] ?? ''" placeholder="Choose" :clearable="true" clear-label="Clear frequency" :required="true" />
 ```
 
-Vue emits `update:modelValue` and `valueChange` from the native `change` event. Razor expects the
-current submitted or application value. The clear action selects the empty native value, emits the
-same bubbling `change`, and restores focus. Register `createCmSelectController` for this progressive
-enhancement in Razor; without runtime the select and form submission remain native and the clear
-button is inert.
+Vue emits `update:modelValue` and `valueChange` when a choice is committed. Razor expects the
+current submitted or application value. The clear action stays in the markup, is hidden while the
+value is empty, emits the same bubbling `change`, and restores focus to the trigger.
+
+Register `createCmSelectController` in Razor: it owns opening, keyboard movement, selection,
+clearing, and listbox placement. Without it the control renders its current value and a form still
+submits that value through the hidden input, but the value cannot be changed.
+
+`required` is announced through `aria-required` and is not enforced by the browser, because a
+component-owned control sits outside constraint validation. Refusing an empty submission is the
+application's responsibility.
 
 ## DatePicker
 

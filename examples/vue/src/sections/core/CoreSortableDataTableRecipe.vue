@@ -209,6 +209,7 @@ function setPageSize(value: string): void {
       <div class="demo-application-sortable-table__page-size">
         <span>Rows</span>
         <CmSelect
+          id="sortable-table-page-size"
           :model-value="String(pageSize)"
           :options="pageSizeOptions"
           size="sm"
@@ -461,5 +462,4 @@ function setPageSize(value: string): void {
     display: none;
   }
 }
-
 </style>
