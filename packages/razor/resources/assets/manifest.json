@@ -174,7 +174,7 @@
     "css:components/checkbox.css": {
       "path": "css/css/components/checkbox.css",
       "mediaType": "text/css",
-      "sha256": "fabe0aee942393ae7faf9647beb1060314e59a9d424a32b9406d7c8364018150",
+      "sha256": "41a59ea2ba634d471782b5e0aa9f3bc9f6dcadf2da63ab56e7cd14b1288b8394",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -244,7 +244,7 @@
     "css:components/dropdown.css": {
       "path": "css/css/components/dropdown.css",
       "mediaType": "text/css",
-      "sha256": "9da72687d0a375e95682325c8c7236388f7bafbfe44b0c9449fb4b3cf61c6c01",
+      "sha256": "cf02d2ab254ae80eefe67497f4ccc55e64705cc107177e04dc10db179069d10d",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -374,7 +374,7 @@
     "css:components/radio.css": {
       "path": "css/css/components/radio.css",
       "mediaType": "text/css",
-      "sha256": "b21006585e74ee26ffb17d6c6bc6ecf769906592624523ff23d8436414fbaedf",
+      "sha256": "daab1b26fd527e37d81768767409ed914b351e02714d2ec92b389be0fc0643c2",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -424,7 +424,7 @@
     "css:components/switch.css": {
       "path": "css/css/components/switch.css",
       "mediaType": "text/css",
-      "sha256": "ef29eb6550e27fb1c38086b789b5c462e790e3c701b90fb9c1e03c8e28eab830",
+      "sha256": "cfb7bcd766d13d4cd57564420af16f1829877e246dad23343bb44da7b3a70651",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
@@ -444,7 +444,7 @@
     "css:components/textarea.css": {
       "path": "css/css/components/textarea.css",
       "mediaType": "text/css",
-      "sha256": "d5557370773fded5bb1e77912d871b2cacf885f6ede91c660ac182d4bce4483c",
+      "sha256": "0c9bda03c88cfcfd48bd6852a6b3ee7e8e95073b99427fee96257aa00ebafa18",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "1.1.0",
