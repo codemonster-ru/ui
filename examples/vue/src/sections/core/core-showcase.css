@@ -796,7 +796,10 @@
 
 .demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible::before {
   position: absolute;
-  inset-block-start: var(--cm-space-3);
+
+  /* The reference renders a native legend, which centres the fieldset rule on the trigger, so the
+     reconstructed rule sits half a control height down, less the trigger's own offset. */
+  inset-block-start: calc(var(--cm-control-height-md) / 2 - var(--cm-border-width));
   inset-inline: 0;
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
   content: '';
@@ -832,6 +835,10 @@
 
 .demo-application-group-box__accordion .cm-accordion__trigger::after {
   order: -1;
+
+  /* The reference renders this chevron through the icon component at the small size. */
+  inline-size: var(--cm-icon-size-sm);
+  block-size: var(--cm-icon-size-sm);
 }
 
 .demo-application-group-box__accordion .cm-accordion__trigger[aria-expanded='false']::after {
