@@ -1,6 +1,25 @@
 {
   "label": "vueforge-cross-platform-reference-vue",
   "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "sourceFixture": {
+    "caseIds": [
+      "alert-danger-icon",
+      "avatar-label",
+      "badge-danger",
+      "button-default",
+      "card-title",
+      "divider-horizontal",
+      "link-default",
+      "field-help-error",
+      "input-enhanced",
+      "accordion-rich-content",
+      "select-clearable",
+      "date-picker-clearable",
+      "checkbox-checked"
+    ],
+    "componentPackage": "@codemonster-ru/vueforge-core",
+    "renderer": "Vue createApp at the reference commit"
+  },
   "routes": [
     "alert-danger-icon",
     "avatar-label",
@@ -84,18 +103,6 @@
       "viewport": "mobile"
     },
     {
-      "filename": "date-picker-clearable--light--mobile.png",
-      "platform": "vue",
-      "theme": "light",
-      "viewport": "mobile"
-    },
-    {
-      "filename": "checkbox-checked--light--mobile.png",
-      "platform": "vue",
-      "theme": "light",
-      "viewport": "mobile"
-    },
-    {
       "filename": "alert-danger-icon--dark--mobile.png",
       "platform": "vue",
       "theme": "dark",
@@ -157,18 +164,6 @@
     },
     {
       "filename": "select-clearable--dark--mobile.png",
-      "platform": "vue",
-      "theme": "dark",
-      "viewport": "mobile"
-    },
-    {
-      "filename": "date-picker-clearable--dark--mobile.png",
-      "platform": "vue",
-      "theme": "dark",
-      "viewport": "mobile"
-    },
-    {
-      "filename": "checkbox-checked--dark--mobile.png",
       "platform": "vue",
       "theme": "dark",
       "viewport": "mobile"
@@ -240,18 +235,6 @@
       "viewport": "desktop"
     },
     {
-      "filename": "date-picker-clearable--light--desktop.png",
-      "platform": "vue",
-      "theme": "light",
-      "viewport": "desktop"
-    },
-    {
-      "filename": "checkbox-checked--light--desktop.png",
-      "platform": "vue",
-      "theme": "light",
-      "viewport": "desktop"
-    },
-    {
       "filename": "alert-danger-icon--dark--desktop.png",
       "platform": "vue",
       "theme": "dark",
@@ -318,14 +301,362 @@
       "viewport": "desktop"
     },
     {
+      "filename": "alert-danger-icon--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "avatar-label--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "badge-danger--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "button-default--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "card-title--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "divider-horizontal--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "link-default--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "field-help-error--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "input-enhanced--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "accordion-rich-content--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "select-clearable--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "alert-danger-icon--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "avatar-label--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "badge-danger--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "button-default--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "card-title--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "divider-horizontal--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "link-default--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "field-help-error--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "input-enhanced--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "accordion-rich-content--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "select-clearable--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "alert-danger-icon--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "avatar-label--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "badge-danger--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "button-default--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "card-title--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "divider-horizontal--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "link-default--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "field-help-error--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "input-enhanced--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "accordion-rich-content--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "select-clearable--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "alert-danger-icon--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "avatar-label--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "badge-danger--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "button-default--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "card-title--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "divider-horizontal--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "link-default--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "field-help-error--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "input-enhanced--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "accordion-rich-content--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "select-clearable--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "date-picker-clearable--light--mobile.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "date-picker-clearable--dark--mobile.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "date-picker-clearable--light--desktop.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
       "filename": "date-picker-clearable--dark--desktop.png",
       "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
     },
     {
+      "filename": "date-picker-clearable--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "date-picker-clearable--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "date-picker-clearable--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "date-picker-clearable--dark--desktop.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "checkbox-checked--light--mobile.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "checkbox-checked--dark--mobile.png",
+      "platform": "vue",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "checkbox-checked--light--desktop.png",
+      "platform": "vue",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
       "filename": "checkbox-checked--dark--desktop.png",
       "platform": "vue",
+      "theme": "dark",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "checkbox-checked--light--mobile.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "checkbox-checked--dark--mobile.png",
+      "platform": "razor",
+      "theme": "dark",
+      "viewport": "mobile"
+    },
+    {
+      "filename": "checkbox-checked--light--desktop.png",
+      "platform": "razor",
+      "theme": "light",
+      "viewport": "desktop"
+    },
+    {
+      "filename": "checkbox-checked--dark--desktop.png",
+      "platform": "razor",
       "theme": "dark",
       "viewport": "desktop"
     }

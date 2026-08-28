@@ -88,12 +88,14 @@ jobs:
           # Ports 5175 serves the frozen reference commit; 5176 serves the current adapters.
           node scripts/visual/capture-showcase.mjs --origin=http://127.0.0.1:5175 --output="${showcase_capture}" --label=vueforge-reference
           npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${state_capture}" --label=vueforge-state-reference
-          npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${cross_platform_capture}" --label=vueforge-cross-platform-reference
+          # The cross-platform capture only renders the current adapters, so it checks Vue against
+          # Razor but must not overwrite the reviewed cross-platform baseline. Regenerating that
+          # baseline needs a reference-commit fixture, which is CMUI-199.
+          npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${cross_platform_capture}" --label=vueforge-cross-platform-current
           node scripts/visual/compare-showcase.mjs --baseline="${cross_platform_capture}/vue" --current="${cross_platform_capture}/razor"
 
           cp -R "${showcase_capture}/." visual-baselines/vueforge-showcase/
           cp -R "${state_capture}/." visual-baselines/vueforge-showcase-states/
-          cp -R "${cross_platform_capture}/vue/." visual-baselines/vueforge-cross-platform/
           npm exec -- prettier --write visual-baselines/*/manifest.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
