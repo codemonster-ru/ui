@@ -538,16 +538,24 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
 }
 
+/* The reference makes the trigger itself the containing block for the adornments it lifts out of
+   flow, so their offsets resolve inside the border instead of around it, and reserves the room the
+   chevron needs: the adornment offset on either side of the icon. */
 .core-select-recipe-wrap--floating-in .core-select-recipe--floating {
+  position: relative;
+  align-items: center;
   padding-block: 1.3125rem 0.1875rem;
+  padding-inline-end: 2.25rem;
 }
 
 .core-select-recipe-wrap--floating-in .core-select-recipe--floating.core-select-recipe--sm {
   padding-block: 1.0625rem 0.125rem;
+  padding-inline-end: 1.9375rem;
 }
 
 .core-select-recipe-wrap--floating-in .core-select-recipe--floating.core-select-recipe--lg {
   padding-block: 1.5625rem 0.3125rem;
+  padding-inline-end: 2.3125rem;
 }
 
 .core-select-recipe-wrap:is(.core-select-recipe-wrap--floating-in, .core-select-recipe-wrap--floating-on)
