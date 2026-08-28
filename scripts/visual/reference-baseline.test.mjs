@@ -18,6 +18,9 @@ test('captures the showcase and state baselines from the frozen reference commit
     /\(cd "\$\{RUNNER_TEMP\}\/vueforge-reference" && npm run dev -w @codemonster-ru\/vueforge-playground-example -- --host 127\.0\.0\.1 --port 5175\)/u,
   );
 
+  // A refresh run must not replace the reviewed cross-platform baseline with an adapters capture.
+  assert.doesNotMatch(workflow, /cp -R "\$\{cross_platform_capture\}/u);
+
   const captureLines = workflow
     .split('\n')
     .filter((line) => line.includes('capture-showcase.mjs') || line.includes('states:capture'));
