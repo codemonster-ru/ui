@@ -146,7 +146,7 @@ function select(event?: MouseEvent): void {
       />
     </ul>
 
-    <div v-else-if="hasChildren" class="core-nav-recipe__collapse" :aria-hidden="!isExpanded">
+    <div v-else-if="hasChildren && isExpanded" class="core-nav-recipe__collapse">
       <ul class="core-nav-recipe__list core-nav-recipe__list--nested">
         <CoreNavMenuRecipeNode
           v-for="child in item.children"
