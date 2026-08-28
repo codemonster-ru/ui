@@ -772,15 +772,8 @@
 }
 
 .demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible > .cm-fieldset__legend {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  overflow: hidden;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  clip-path: inset(50%);
-  white-space: nowrap;
+  margin-inline-start: calc(var(--cm-space-3) * -1);
+  padding-inline: var(--cm-space-3);
 }
 
 .demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible
@@ -788,80 +781,36 @@
   padding-block-start: 0;
 }
 
-.demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible {
-  position: relative;
-  padding-block-end: calc(var(--cm-space-4) - var(--cm-border-width));
-  border-block-start-color: transparent;
-}
-
-.demo-application-group-box.cm-fieldset.demo-application-group-box--collapsible::before {
-  position: absolute;
-
-  /* The reference renders a native legend, which centres the fieldset rule on the trigger, so the
-     reconstructed rule sits half a control height down, less the trigger's own offset. */
-  inset-block-start: calc(var(--cm-control-height-md) / 2 - var(--cm-border-width));
-  inset-inline: 0;
-  border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
-  content: '';
-  pointer-events: none;
-}
-
-.demo-application-group-box__accordion.cm-accordion {
-  position: relative;
-  inset-block-start: -1px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-
-.demo-application-group-box__accordion .cm-accordion__trigger {
-  display: inline-flex;
-  inline-size: max-content;
-  max-inline-size: 100%;
-  justify-content: flex-start;
-  gap: var(--cm-space-2);
-  min-block-size: var(--cm-control-height-md);
+.demo-application-group-box__trigger.cm-button {
+  margin-block: 0;
   margin-inline: calc(var(--cm-space-3) * -1);
-  padding: var(--cm-field-padding-md);
-  border: var(--cm-border-width) solid transparent;
-  border-radius: var(--cm-radius-control);
-  background: var(--cm-color-background-surface);
-  background-color: var(--cm-color-background-surface) !important;
-  color: var(--cm-color-text-primary);
-  font-size: var(--cm-font-size-xl);
-  font-weight: var(--cm-font-weight-regular);
-  line-height: var(--cm-line-height-tight);
+  vertical-align: middle;
 }
 
-.demo-application-group-box__accordion .cm-accordion__trigger::after {
-  order: -1;
-
-  /* The reference renders this chevron through the icon component at the small size. */
+/* The reference sizes this chevron through the icon component at the small size, while the shared
+   button reserves the medium icon box for its leading slot. */
+.demo-application-group-box__trigger .cm-button__leading {
   inline-size: var(--cm-icon-size-sm);
   block-size: var(--cm-icon-size-sm);
 }
 
-.demo-application-group-box__accordion .cm-accordion__trigger[aria-expanded='false']::after {
+.demo-application-group-box__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.demo-application-group-box__trigger[aria-expanded='false'] .demo-application-group-box__icon {
   transform: rotate(-90deg);
 }
 
-.demo-application-group-box__accordion .cm-accordion__trigger[aria-expanded='true']::after {
-  transform: none;
-}
-
-.demo-application-group-box__accordion .cm-accordion__panel {
-  padding: 0;
-  border-block-start: 0;
-  background: transparent;
-  line-height: normal;
-}
-
-.demo-application-group-box__accordion .cm-accordion__panel p {
-  margin: 0;
-}
-
-.demo-application-group-box__accordion .cm-accordion__trigger[aria-expanded='true'] {
-  color: var(--cm-color-text-primary);
+.demo-application-group-box__title {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .demo-application-column-chooser .cm-popover__trigger {

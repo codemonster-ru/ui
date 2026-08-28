@@ -31,7 +31,6 @@ import {
   CmTextarea,
   CmTextarea as VfTextarea,
   type CmBreadcrumbItem,
-  type CmAccordionItem,
 } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import mayaChenAvatar from '../../assets/maya-chen-avatar.png';
@@ -114,7 +113,7 @@ const confirmDialogBusy = ref(false);
 const confirmDialogError = ref('');
 const confirmDialogResult = ref('No action confirmed yet.');
 const commandPaletteQuery = ref('');
-const groupBoxOpenItems = ref<string[]>(['details']);
+const invoiceDetailsExpanded = ref(true);
 const dialogSize = ref<'sm' | 'md' | 'lg'>('md');
 const drawerPlacement = ref<'left' | 'right' | 'top' | 'bottom'>('right');
 const formStackNameValue = ref('');
@@ -158,9 +157,6 @@ let confirmDialogPreviousBodyOverflow: string | undefined;
 
 const closedAccordionItems = [{ id: 'closed', title: 'Closed section', content: 'Closed content.' }] as const;
 const openAccordionItems = [{ id: 'open', title: 'Open section', content: 'Open content.' }] as const;
-const invoiceGroupItems: CmAccordionItem[] = [
-  { id: 'details', title: 'Invoice details', content: '' },
-];
 const disabledAccordionItems = [
   { id: 'disabled', title: 'Disabled section', content: 'Disabled content.', disabled: true },
 ] as const;
@@ -1525,16 +1521,31 @@ const tabContent = computed<Record<string, string>>(() => ({
                     class="demo-application-group-box demo-application-group-box--collapsible"
                     label="Invoice details"
                   >
-                    <CmAccordion
-                      id="invoice-details-accordion"
-                      v-model:open-items="groupBoxOpenItems"
-                      class="demo-application-group-box__accordion"
-                      :items="invoiceGroupItems"
+                    <template #legend>
+                      <CmButton
+                        id="invoice-details-trigger"
+                        class="demo-application-group-box__trigger"
+                        variant="ghost"
+                        aria-controls="invoice-details-content"
+                        :aria-expanded="invoiceDetailsExpanded"
+                        @click="invoiceDetailsExpanded = !invoiceDetailsExpanded"
+                      >
+                        <template #leading>
+                          <span aria-hidden="true" class="demo-application-group-box__icon">
+                            <VueIconify :icon="icons.chevronDown" size="var(--cm-icon-size-sm)" />
+                          </span>
+                        </template>
+                        <span class="demo-application-group-box__title">Invoice details</span>
+                      </CmButton>
+                    </template>
+                    <div
+                      v-if="invoiceDetailsExpanded"
+                      id="invoice-details-content"
+                      role="region"
+                      aria-labelledby="invoice-details-trigger"
                     >
-                      <template #panelDetails>
-                        <p class="demo-m-0">Invoice #1024 · Design service · $120.00</p>
-                      </template>
-                    </CmAccordion>
+                      <p class="demo-m-0">Invoice #1024 · Design service · $120.00</p>
+                    </div>
                   </CmFieldset>
                 </div>
 
