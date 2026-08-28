@@ -1607,10 +1607,9 @@
   inset-inline-start: calc(var(--cm-field-padding-inline-lg) + var(--cm-border-width));
 }
 
-.demo-application-floating-field.demo-application-floating-field--active:has(
-    .demo-application-input--sm,
-    .core-select-recipe-wrap--sm
-  )
+/* Small selects take the plain spacing step from their own rule above; only the small input needs
+   the border compensation, so scoping this to the input keeps both at the reference position. */
+.demo-application-floating-field.demo-application-floating-field--active:has(.demo-application-input--sm)
   .demo-application-floating-field__label {
   inset-block-start: calc(var(--cm-space-1) - var(--cm-border-width) * 2);
 }
