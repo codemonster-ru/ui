@@ -27,3 +27,10 @@ npm run visual:showcase:compare -- \
 
 Chrome must already be running with remote debugging enabled. The endpoint defaults to
 `http://127.0.0.1:9226` and can be overridden with `--chrome=` or `CHROME_REMOTE_ENDPOINT`.
+
+Start that browser fresh for each comparison you intend to trust. Captures are deterministic within
+one browser session, but a long-lived one drifts: a session left running through many captures
+shifted sub-pixel text rendering on six Core frames, worth roughly seven hundred pixels, with no
+change to the page or its computed styles. Restarting Chrome reproduced the earlier images exactly.
+CI is unaffected because it launches the browser per run, so this only bites during local work, and
+it makes any local difference below about a thousand pixels unsafe to read as a real change.
