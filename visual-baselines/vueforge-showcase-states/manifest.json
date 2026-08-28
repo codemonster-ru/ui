@@ -96,14 +96,14 @@
     {
       "filename": "state--open--light--mobile.png",
       "clip": {
-        "height": 356,
-        "width": 351,
+        "height": 357,
+        "width": 516,
         "x": 0,
-        "y": 9681
+        "y": 35458
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 9437,
+      "scrollTop": 35214,
       "state": "open",
       "theme": "light",
       "viewport": "mobile"
@@ -262,14 +262,14 @@
     {
       "filename": "state--open--dark--mobile.png",
       "clip": {
-        "height": 356,
-        "width": 351,
+        "height": 357,
+        "width": 516,
         "x": 0,
-        "y": 9681
+        "y": 35458
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 9437,
+      "scrollTop": 35214,
       "state": "open",
       "theme": "dark",
       "viewport": "mobile"
@@ -428,14 +428,14 @@
     {
       "filename": "state--open--light--desktop.png",
       "clip": {
-        "height": 357,
-        "width": 473,
-        "x": 493,
-        "y": 6191
+        "height": 356,
+        "width": 917,
+        "x": 489,
+        "y": 19224
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5969,
+      "scrollTop": 19002,
       "state": "open",
       "theme": "light",
       "viewport": "desktop"
@@ -594,14 +594,14 @@
     {
       "filename": "state--open--dark--desktop.png",
       "clip": {
-        "height": 357,
-        "width": 473,
-        "x": 493,
-        "y": 6191
+        "height": 356,
+        "width": 917,
+        "x": 489,
+        "y": 19224
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5969,
+      "scrollTop": 19002,
       "state": "open",
       "theme": "dark",
       "viewport": "desktop"
