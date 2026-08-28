@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -39,6 +40,15 @@ jobs:
       - name: Install Razor visual runtime
         run: composer --working-dir=packages/razor update --no-dev --no-interaction --prefer-dist
 
+      - name: Build the frozen reference showcase
+        run: |
+          set -euo pipefail
+          reference_commit="$(node -p "require('./contracts/visual.config.json').reference.commit")"
+          git worktree add --detach "${RUNNER_TEMP}/vueforge-reference" "${reference_commit}"
+          cd "${RUNNER_TEMP}/vueforge-reference"
+          npm ci
+          npm run build
+
       - name: Install pinned Chrome for visual checks
         run: |
           chrome_for_testing_path="${RUNNER_TEMP}/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
@@ -52,12 +62,12 @@ jobs:
         run: |
           set -euo pipefail
           chrome_for_testing_path="${RUNNER_TEMP}/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
-          showcase_capture="${RUNNER_TEMP}/codemonster-showcase-current"
-          state_capture="${RUNNER_TEMP}/codemonster-showcase-state-current"
+          showcase_capture="${RUNNER_TEMP}/codemonster-showcase-reference"
+          state_capture="${RUNNER_TEMP}/codemonster-showcase-state-reference"
           cross_platform_capture="${RUNNER_TEMP}/codemonster-cross-platform-current"
           razor_fixtures="${RUNNER_TEMP}/codemonster-cross-platform-razor.json"
 
-          npm run dev -w @codemonster-ru/vueforge-playground-example -- --host 127.0.0.1 --port 5175 > "${RUNNER_TEMP}/codemonster-showcase-vite.log" 2>&1 &
+          (cd "${RUNNER_TEMP}/vueforge-reference" && npm run dev -w @codemonster-ru/vueforge-playground-example -- --host 127.0.0.1 --port 5175) > "${RUNNER_TEMP}/codemonster-showcase-vite.log" 2>&1 &
           vite_pid=$!
           npm run visual:cross-platform:razor-render -- --output="${razor_fixtures}"
           npm run visual:cross-platform:serve -- --razor-fixtures="${razor_fixtures}" --port=5176 > "${RUNNER_TEMP}/codemonster-cross-platform-vite.log" 2>&1 &
@@ -75,6 +85,7 @@ jobs:
             sleep 1
           done
 
+          # Ports 5175 serves the frozen reference commit; 5176 serves the current adapters.
           node scripts/visual/capture-showcase.mjs --origin=http://127.0.0.1:5175 --output="${showcase_capture}" --label=vueforge-reference
           npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${state_capture}" --label=vueforge-state-reference
           npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${cross_platform_capture}" --label=vueforge-cross-platform-reference

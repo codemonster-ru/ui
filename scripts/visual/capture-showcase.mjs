@@ -117,6 +117,11 @@ async function waitForStablePageHeight(timeout = 30_000) {
   throw new Error('Timed out waiting for the showcase page height to stabilize.');
 }
 
+// The reviewed reference commit and the current showcase use different application shells, so the
+// readiness probe must match both. Route content is then settled by waitForStablePageHeight.
+const showcaseContentReady =
+  'document.readyState === "complete" && document.querySelector("#app")?.children.length > 0';
+
 await send('Page.enable');
 await send('Runtime.enable');
 
@@ -126,9 +131,7 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
   });
   const url = `${origin.replace(/\/$/u, '')}/${route}`;
   await send('Page.navigate', { url });
-  await waitFor(
-    'document.readyState === "complete" && document.querySelector(".showcase-shell__content-body")?.children.length > 0',
-  );
+  await waitFor(showcaseContentReady);
   await evaluate(`(() => {
     localStorage.setItem('vf-theme', ${JSON.stringify(theme.name)});
     localStorage.setItem('codemonster-showcase-theme', ${JSON.stringify(theme.name)});
@@ -137,9 +140,7 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
     location.reload();
     return true;
   })()`);
-  await waitFor(
-    'document.readyState === "complete" && document.querySelector(".showcase-shell__content-body")?.children.length > 0',
-  );
+  await waitFor(showcaseContentReady);
   await evaluate(`document.fonts?.ready ?? Promise.resolve()`);
   const motionStyle = stabilizeMotion
     ? '*,*::before,*::after{animation:none!important;caret-color:transparent!important;scroll-behavior:auto!important;transition:none!important}'
@@ -161,10 +162,14 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
   })()`);
   await sleep(route === 'playground' || route === 'codeblock' ? 3_000 : 500);
   if (route === 'codeblock') {
-    await waitFor('document.querySelector("[data-showcase-loading-content=ready] .vf-codeblock") !== null');
+    await waitFor(
+      'document.querySelector("[data-showcase-loading-content=ready] .vf-codeblock, .vf-codeblock") !== null',
+    );
   }
   if (route === 'playground') {
-    await waitFor('document.querySelector("[data-showcase-loading-content=ready] .vf-playground") !== null');
+    await waitFor(
+      'document.querySelector("[data-showcase-loading-content=ready] .vf-playground, .vf-playground") !== null',
+    );
   }
 }
 
