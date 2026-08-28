@@ -14,7 +14,7 @@
     "tokens:tokens.css": {
       "path": "css/tokens/tokens.css",
       "mediaType": "text/css",
-      "sha256": "0b556c283ca21bbce0e0df531b4d5c57ea228fd2be13b6937265d85f476938fb",
+      "sha256": "22057a36cf92e53da1b48823b4173e2cd256df41e581de5e8bf177150f88b59f",
       "source": {
         "package": "@codemonster-ru/ui-tokens",
         "version": "1.0.1",
