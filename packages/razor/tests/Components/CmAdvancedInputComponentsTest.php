@@ -28,7 +28,7 @@ final class CmAdvancedInputComponentsTest extends TestCase
     public function testRendersNativeFormControlsAndCommandRuntimeMarkup(): void
     {
         file_put_contents($this->root . '/views/inputs.razor.php', <<<'RAZOR'
-<form><cm-select id="status" name="status" aria-label="Status" :options="$options" value="draft" /><cm-date-picker name="date" aria-label="Date" value="2026-08-13" /><cm-command-palette id="commands" title="Commands" :commands="$commands" /></form>
+<form><cm-select id="status" name="status" aria-label="Status" :options="$options" value="draft" /><cm-date-picker id="date" name="date" aria-label="Date" value="2026-08-13" /><cm-command-palette id="commands" title="Commands" :commands="$commands" /></form>
 RAZOR);
         $html = $this->engine()->render('inputs', [
             'options' => [['value' => 'draft', 'label' => 'Draft']],
@@ -37,7 +37,9 @@ RAZOR);
         self::assertStringContainsString('<button class="cm-select cm-select--md" id="status" type="button" role="combobox"', $html);
         self::assertStringContainsString('<input type="hidden" name="status" value="draft">', $html);
         self::assertStringContainsString('role="listbox"', $html);
-        self::assertStringContainsString('type="date" value="2026-08-13"', $html);
+        self::assertStringContainsString('<button class="cm-date-picker cm-date-picker--md" id="date" type="button" role="combobox"', $html);
+        self::assertStringContainsString('<input type="hidden" name="date" value="2026-08-13">', $html);
+        self::assertStringContainsString('<span class="cm-date-picker__value">08/13/26</span>', $html);
         self::assertStringContainsString('data-cm-controller="command-palette"', $html);
     }
 
