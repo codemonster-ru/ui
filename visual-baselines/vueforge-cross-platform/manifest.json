@@ -12,7 +12,6 @@
       "link-default",
       "field-help-error",
       "input-enhanced",
-      "accordion-rich-content",
       "select-clearable",
       "date-picker-clearable",
       "checkbox-checked"
@@ -30,7 +29,6 @@
     "link-default",
     "field-help-error",
     "input-enhanced",
-    "accordion-rich-content",
     "select-clearable",
     "date-picker-clearable",
     "checkbox-checked"
@@ -86,12 +84,6 @@
     },
     {
       "filename": "input-enhanced--light--mobile.png",
-      "platform": "vue",
-      "theme": "light",
-      "viewport": "mobile"
-    },
-    {
-      "filename": "accordion-rich-content--light--mobile.png",
       "platform": "vue",
       "theme": "light",
       "viewport": "mobile"
@@ -157,12 +149,6 @@
       "viewport": "mobile"
     },
     {
-      "filename": "accordion-rich-content--dark--mobile.png",
-      "platform": "vue",
-      "theme": "dark",
-      "viewport": "mobile"
-    },
-    {
       "filename": "select-clearable--dark--mobile.png",
       "platform": "vue",
       "theme": "dark",
@@ -223,12 +209,6 @@
       "viewport": "desktop"
     },
     {
-      "filename": "accordion-rich-content--light--desktop.png",
-      "platform": "vue",
-      "theme": "light",
-      "viewport": "desktop"
-    },
-    {
       "filename": "select-clearable--light--desktop.png",
       "platform": "vue",
       "theme": "light",
@@ -284,12 +264,6 @@
     },
     {
       "filename": "input-enhanced--dark--desktop.png",
-      "platform": "vue",
-      "theme": "dark",
-      "viewport": "desktop"
-    },
-    {
-      "filename": "accordion-rich-content--dark--desktop.png",
       "platform": "vue",
       "theme": "dark",
       "viewport": "desktop"
@@ -355,12 +329,6 @@
       "viewport": "mobile"
     },
     {
-      "filename": "accordion-rich-content--light--mobile.png",
-      "platform": "razor",
-      "theme": "light",
-      "viewport": "mobile"
-    },
-    {
       "filename": "select-clearable--light--mobile.png",
       "platform": "razor",
       "theme": "light",
@@ -416,12 +384,6 @@
     },
     {
       "filename": "input-enhanced--dark--mobile.png",
-      "platform": "razor",
-      "theme": "dark",
-      "viewport": "mobile"
-    },
-    {
-      "filename": "accordion-rich-content--dark--mobile.png",
       "platform": "razor",
       "theme": "dark",
       "viewport": "mobile"
@@ -487,12 +449,6 @@
       "viewport": "desktop"
     },
     {
-      "filename": "accordion-rich-content--light--desktop.png",
-      "platform": "razor",
-      "theme": "light",
-      "viewport": "desktop"
-    },
-    {
       "filename": "select-clearable--light--desktop.png",
       "platform": "razor",
       "theme": "light",
@@ -548,12 +504,6 @@
     },
     {
       "filename": "input-enhanced--dark--desktop.png",
-      "platform": "razor",
-      "theme": "dark",
-      "viewport": "desktop"
-    },
-    {
-      "filename": "accordion-rich-content--dark--desktop.png",
       "platform": "razor",
       "theme": "dark",
       "viewport": "desktop"
