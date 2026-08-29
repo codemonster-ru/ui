@@ -196,7 +196,9 @@ onBeforeUnmount(() => {
       @mousedown.prevent
       @click="clearValue"
     >
-      <span aria-hidden="true">&times;</span>
+      <span aria-hidden="true">
+        <svg class="cm-select__clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="5.75" y1="5.75" x2="18.25" y2="18.25"/><line x1="18.25" y1="5.75" x2="5.75" y2="18.25"/></svg>
+      </span>
     </button>
     <div
       :id="listboxId"

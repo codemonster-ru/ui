@@ -124,6 +124,13 @@
   transform: translateY(-50%);
 }
 
+/* The reference draws this action through the shared icon rather than a text character, which
+   rasterises differently at every size. */
+.cm-select__clear-icon {
+  inline-size: var(--cm-icon-size-md);
+  block-size: var(--cm-icon-size-md);
+}
+
 .cm-select-wrap:has(.cm-select--sm) .cm-select__clear {
   inset-inline-end: var(--cm-space-2);
   inline-size: 1.25rem;

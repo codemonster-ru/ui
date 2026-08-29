@@ -240,6 +240,7 @@ for (const [slug, approved] of [
       'cm-select__icon',
       'cm-select__icon--chevron',
       'cm-select__chevron',
+      'cm-select__clear-icon',
       'cm-select__listbox',
       'cm-select__option',
       'cm-select__option--selected',
