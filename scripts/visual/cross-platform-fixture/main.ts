@@ -2,6 +2,7 @@ import * as UiVue from '@codemonster-ru/ui-vue';
 import { createApp, createStaticVNode, h, nextTick, type Component, type VNodeChild } from 'vue';
 
 import '@codemonster-ru/ui-tokens/tokens.css';
+import '@codemonster-ru/ui-css/fonts.css';
 import '@codemonster-ru/ui-css/styles.css';
 import './fixture.css';
 import baselineManifest from '../../../contracts/cross-platform-visual-baselines.json';
