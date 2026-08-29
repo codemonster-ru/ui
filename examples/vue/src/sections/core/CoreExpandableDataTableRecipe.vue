@@ -171,7 +171,14 @@ function toggle(id: CoreExpandableDataTableRowId): void {
   transform: rotate(90deg);
 }
 
-.demo-application-expandable-table__row--striped > td {
+/* The reference stripes this table through the shared modifier and then repaints the rows its own
+   classes leave unstriped, so every cell the wrapper clips carries a fill of its own. Leaving them
+   transparent renders the same colour but composites the rounded corners once instead of twice. */
+.demo-application-expandable-table .cm-table__body > tr:nth-child(even) > td {
+  background: var(--cm-color-background-surface);
+}
+
+.demo-application-expandable-table .cm-table__body > tr.demo-application-expandable-table__row--striped > td {
   background: color-mix(in srgb, var(--cm-color-background-surface) 65%, var(--cm-color-background-surface-hover) 35%);
 }
 
