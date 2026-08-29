@@ -18,8 +18,12 @@ test('captures the showcase and state baselines from the frozen reference commit
     /\(cd "\$\{RUNNER_TEMP\}\/vueforge-reference" && npm run dev -w @codemonster-ru\/vueforge-playground-example -- --host 127\.0\.0\.1 --port 5175\)/u,
   );
 
-  // A refresh run must not replace the reviewed cross-platform baseline with an adapters capture.
+  // Every baseline must come from the reference checkout. The adapters capture stays a Vue-against-
+  // Razor check; promoting it to a baseline would compare the product against itself.
   assert.doesNotMatch(workflow, /cp -R "\$\{cross_platform_capture\}/u);
+  assert.match(workflow, /--reference="\$\{RUNNER_TEMP\}\/vueforge-reference"/u);
+  assert.match(workflow, /visual:cross-platform:reference:capture/u);
+  assert.match(workflow, /cp -R "\$\{cross_platform_reference\}\/\." visual-baselines\/vueforge-cross-platform\//u);
 
   const captureLines = workflow
     .split('\n')
@@ -40,4 +44,25 @@ test('probes showcase readiness in a way both application shells satisfy', () =>
   assert.doesNotMatch(capture, /querySelector\("\.showcase-shell__content-body"\)/u);
   assert.match(capture, /\[data-showcase-loading-content=ready\] \.vf-codeblock, \.vf-codeblock/u);
   assert.match(capture, /\[data-showcase-loading-content=ready\] \.vf-playground, \.vf-playground/u);
+});
+
+test('mounts the reference components for the cross-platform baseline', () => {
+  const fixture = read('cross-platform-reference-fixture/main.ts');
+  const server = read('serve-cross-platform-reference.mjs');
+  const style = read('cross-platform-reference-fixture/fixture.css');
+
+  // The baseline must render the reference package, not this repository's adapters.
+  assert.match(fixture, /import \* as VueForgeCore from '@codemonster-ru\/vueforge-core';/u);
+  assert.match(fixture, /`Vf\$\{componentSlug/u);
+  assert.match(fixture, /vueforge-fd-mounted/u);
+  assert.doesNotMatch(fixture, /@codemonster-ru\/ui-vue/u);
+
+  // Both fixtures must resolve one Vue instance, and from the reference checkout.
+  assert.match(server, /find: \/\^@codemonster-ru\\\/vueforge-core\$\/u, replacement: referenceCore/u);
+  assert.match(server, /dedupe: \['vue'\]/u);
+
+  // The reference ships no document typography, so the fixture states the same frame the adapter
+  // fixture inherits from the shared foundation stylesheet; otherwise text metrics differ.
+  assert.match(style, /font-family: var\(--vf-font-family-base\)/u);
+  assert.match(style, /line-height: var\(--vf-line-height-normal\)/u);
 });
