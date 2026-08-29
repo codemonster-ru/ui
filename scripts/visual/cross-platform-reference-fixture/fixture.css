@@ -1,17 +1,17 @@
-/* The reference ships no document-level typography — its application establishes it — while the
-   adapter fixture inherits ours from the shared foundation stylesheet. Declaring the same frame
-   here in the reference's own token namespace leaves the component as the only difference between
-   the two captures. */
-:root {
-  color-scheme: light;
+/* Reproduces the frame the reference application itself establishes, so the capture shows the
+   reference component as that application renders it. The reference ships no document typography
+   of its own; its playground sets this much, and without it the fixture falls back to the browser
+   default and every text measurement drifts. */
+html,
+body {
+  min-block-size: 100%;
+  margin: 0;
+}
+
+body {
   background: var(--vf-color-background-canvas);
   color: var(--vf-color-text-primary);
   font-family: var(--vf-font-family-base);
-  font-size: 100%;
-  font-synthesis: none;
-  line-height: var(--vf-line-height-normal);
-  text-rendering: optimizelegibility;
-  text-size-adjust: 100%;
 }
 
 .cm-visual-adapter-root {
