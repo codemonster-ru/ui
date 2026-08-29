@@ -4,6 +4,8 @@ export { createCmEvent, dispatchCmEvent } from './events.js';
 export type { CmCustomEventInit } from './events.js';
 export { CmInputController, createCmInputController } from './input.js';
 export { CmSelectController, createCmSelectController } from './select.js';
+export { CmDatePickerController, createCmDatePickerController } from './date-picker.js';
+export type { DatePickerValueChangeDetail } from './date-picker.js';
 export { CmAccordionController, createCmAccordionController } from './accordion.js';
 export type { AccordionOpenChangeDetail } from './accordion.js';
 export { CmCheckboxController, createCmCheckboxController } from './checkbox.js';

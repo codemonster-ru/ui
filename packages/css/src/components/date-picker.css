@@ -1,9 +1,15 @@
 /* stylelint-disable no-descending-specificity -- DatePicker states intentionally share one interaction matrix. */
 
 .cm-date-picker {
+  /* Adornments inside a field follow their own scale, one that stays closer to the text than the
+     general icon sizes do. */
+  --cm-date-picker-icon-size: var(--cm-field-icon-size-md);
+
   position: relative;
-  display: block;
+  display: inline-flex;
   box-sizing: border-box;
+  align-items: center;
+  gap: var(--cm-space-2);
   inline-size: 100%;
   min-inline-size: 0;
   max-inline-size: 100%;
@@ -26,6 +32,8 @@
 }
 
 .cm-date-picker--sm {
+  --cm-date-picker-icon-size: var(--cm-field-icon-size-sm);
+
   min-block-size: var(--cm-control-height-sm);
   padding: var(--cm-space-1) var(--cm-space-2);
   font-size: var(--cm-font-size-md);
@@ -36,6 +44,8 @@
 }
 
 .cm-date-picker--lg {
+  --cm-date-picker-icon-size: var(--cm-field-icon-size-lg);
+
   min-block-size: var(--cm-control-height-lg);
   padding: var(--cm-space-2) 0.875rem;
   font-size: var(--cm-font-size-2xl);
@@ -98,6 +108,55 @@
   padding-inline-end: 3.875rem;
 }
 
+.cm-date-picker__value {
+  min-inline-size: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cm-date-picker--placeholder .cm-date-picker__value {
+  color: var(--cm-color-text-placeholder);
+}
+
+.cm-date-picker__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--cm-date-picker-icon-size);
+  block-size: var(--cm-date-picker-icon-size);
+  color: var(--cm-color-icon-secondary);
+}
+
+.cm-date-picker:disabled .cm-date-picker__icon {
+  color: var(--cm-color-icon-disabled);
+}
+
+.cm-date-picker__calendar-icon {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.cm-date-picker__clear-icon {
+  inline-size: var(--cm-icon-size-sm);
+  block-size: var(--cm-icon-size-sm);
+}
+
+/* The reference lifts the calendar icon out of flow once a clear action shares the trailing edge,
+   and reserves the room both of them need. */
+.cm-date-picker-wrap:has(.cm-date-picker__clear) .cm-date-picker {
+  padding-inline-end: 3.625rem;
+}
+
+.cm-date-picker-wrap:has(.cm-date-picker__clear) .cm-date-picker__icon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 2.25rem;
+  transform: translateY(-50%);
+}
+
 .cm-date-picker__clear {
   position: absolute;
   z-index: 1;
@@ -112,7 +171,7 @@
   border: 0;
   border-radius: var(--cm-radius-control-tight);
   background: transparent;
-  color: var(--cm-color-icon-secondary);
+  color: var(--cm-color-icon-primary);
   cursor: pointer;
   font: inherit;
   transform: translateY(-50%);
@@ -149,4 +208,124 @@
   .cm-date-picker[aria-invalid='true'] {
     border-color: Mark;
   }
+}
+
+/* Calendar ----------------------------------------------------------------- */
+
+.cm-date-picker__calendar {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: calc(100% + 2px);
+  inset-inline-start: 0;
+  display: grid;
+  gap: var(--cm-space-2);
+  padding: var(--cm-space-3);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-overlay);
+  background: var(--cm-color-background-surface-elevated);
+  box-shadow: var(--cm-shadow-overlay);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-date-picker__calendar[hidden] {
+  display: none;
+}
+
+.cm-date-picker__header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--cm-space-2);
+}
+
+.cm-date-picker__month {
+  font-weight: var(--cm-font-weight-medium);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.cm-date-picker__navigation,
+.cm-date-picker__day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: var(--cm-border-width) solid transparent;
+  border-radius: var(--cm-radius-control-tight);
+  background: transparent;
+  color: var(--cm-color-text-primary);
+  cursor: pointer;
+  font: inherit;
+}
+
+.cm-date-picker__navigation {
+  inline-size: var(--cm-control-height-md);
+  block-size: var(--cm-control-height-md);
+}
+
+.cm-date-picker__navigation-icon {
+  inline-size: var(--cm-icon-size-md);
+  block-size: var(--cm-icon-size-md);
+}
+
+.cm-date-picker__weekdays,
+.cm-date-picker__week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  column-gap: 0.125rem;
+  justify-items: center;
+}
+
+.cm-date-picker__days {
+  display: grid;
+  row-gap: 0.125rem;
+}
+
+.cm-date-picker__weekday {
+  padding-block: var(--cm-space-1);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
+  font-weight: var(--cm-font-weight-medium);
+  line-height: var(--cm-line-height-normal);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.cm-date-picker__day {
+  inline-size: var(--cm-control-height-md);
+  min-inline-size: var(--cm-control-height-md);
+  block-size: var(--cm-control-height-md);
+  min-block-size: var(--cm-control-height-md);
+}
+
+.cm-date-picker__day--outside {
+  color: var(--cm-color-text-muted);
+}
+
+.cm-date-picker__day--today {
+  border-color: var(--cm-color-border-interactive);
+}
+
+.cm-date-picker__day--selected {
+  background: var(--cm-color-background-surface-selected);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-date-picker__navigation:hover:not(:disabled),
+.cm-date-picker__day:hover:not(:disabled, .cm-date-picker__day--selected) {
+  background: var(--cm-color-background-surface-hover);
+}
+
+.cm-date-picker__navigation:focus-visible,
+.cm-date-picker__day:focus-visible {
+  z-index: 1;
+  border-color: var(--cm-color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 var(--cm-focus-ring-width) var(--cm-color-focus-ring);
+}
+
+.cm-date-picker__navigation:disabled,
+.cm-date-picker__day:disabled {
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
 }
