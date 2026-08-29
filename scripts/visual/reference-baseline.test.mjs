@@ -32,6 +32,16 @@ test('captures the showcase and state baselines from the frozen reference commit
   for (const line of captureLines) {
     assert.match(line, /--origin=http:\/\/127\.0\.0\.1:5175/u);
   }
+
+  // The reference names Inter in its tokens and never shipped it. A capture taken without the
+  // faces records a system fallback, which then reads as the whole product having changed.
+  const referenceCaptures = workflow
+    .split('\n')
+    .filter((line) => /--label=vueforge-(reference|state-reference|cross-platform-reference-vue)/u.test(line));
+  assert.equal(referenceCaptures.length, 3);
+  for (const line of referenceCaptures) {
+    assert.match(line, /--font=inject/u);
+  }
 });
 
 test('probes showcase readiness in a way both application shells satisfy', () => {
