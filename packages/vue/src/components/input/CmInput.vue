@@ -124,7 +124,9 @@ async function togglePassword(): Promise<void> {
       @mousedown.prevent
       @click="togglePassword"
     >
-      <span aria-hidden="true">◉</span>
+      <span aria-hidden="true">
+        <svg class="cm-input__action-icon cm-input__action-icon--show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z"/><circle cx="12" cy="12" r="3.25"/></svg><svg class="cm-input__action-icon cm-input__action-icon--hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z"/><circle cx="12" cy="12" r="3.25"/><line x1="4" y1="4" x2="20" y2="20"/></svg>
+      </span>
     </button>
     <button
       v-if="hasClear"
@@ -136,7 +138,9 @@ async function togglePassword(): Promise<void> {
       @mousedown.prevent
       @click="clearValue"
     >
-      <span aria-hidden="true">×</span>
+      <span aria-hidden="true">
+        <svg class="cm-input__action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="5.75" y1="5.75" x2="18.25" y2="18.25"/><line x1="18.25" y1="5.75" x2="5.75" y2="18.25"/></svg>
+      </span>
     </button>
   </div>
   <input

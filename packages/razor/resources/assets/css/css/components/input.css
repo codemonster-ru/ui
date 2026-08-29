@@ -125,9 +125,13 @@
   padding-inline-end: 2.125rem;
 }
 
-.cm-input-wrap:has(.cm-input--sm, .cm-input--md, .cm-input--lg) :is(.cm-input__leading, .cm-input__trailing) {
-  inline-size: var(--cm-icon-size-md);
-  block-size: var(--cm-icon-size-md);
+/* The reference leaves an adornment to its own content, so a textual one keeps its width; only an
+   icon inside it is sized. Forcing the slot to a square clipped every adornment that is not one. */
+.cm-input-wrap:has(.cm-input--sm, .cm-input--md, .cm-input--lg)
+  :is(.cm-input__leading, .cm-input__trailing)
+  > svg {
+  inline-size: var(--cm-field-icon-size-md);
+  block-size: var(--cm-field-icon-size-md);
 }
 
 .cm-input-wrap:has(.cm-input--sm) .cm-input__leading {
@@ -169,7 +173,7 @@
   border: 0;
   border-radius: var(--cm-radius-control-tight);
   background: transparent;
-  color: var(--cm-color-text-secondary);
+  color: var(--cm-color-icon-secondary);
   font: inherit;
   cursor: pointer;
   transform: translateY(-50%);
@@ -186,7 +190,21 @@
 }
 
 .cm-input__action:has(+ .cm-input__action) {
-  inset-inline-end: 2.375rem;
+  inset-inline-end: 2.25rem;
+}
+
+.cm-input__action-icon {
+  inline-size: var(--cm-field-icon-size-md);
+  block-size: var(--cm-field-icon-size-md);
+}
+
+.cm-input__action-icon--hide,
+.cm-input__action[aria-pressed='true'] .cm-input__action-icon--show {
+  display: none;
+}
+
+.cm-input__action[aria-pressed='true'] .cm-input__action-icon--hide {
+  display: inline;
 }
 
 .cm-input-wrap:has(.cm-input__trailing):has(.cm-input__action) .cm-input__trailing {
@@ -203,6 +221,16 @@
 
 .cm-input-wrap:has(.cm-input__action + .cm-input__action) .cm-input {
   padding-inline-end: 3.625rem;
+}
+
+/* A password toggle standing before the clear action pushes both the input's own padding and the
+   trailing adornment out by one clear button and the gap the reference leaves beside it. */
+.cm-input-wrap:has([data-cm-input-password]):has([data-cm-input-clear]) .cm-input {
+  padding-inline-end: 5.5rem;
+}
+
+.cm-input-wrap:has([data-cm-input-password]):has([data-cm-input-clear]) .cm-input__trailing {
+  inset-inline-end: 4rem;
 }
 
 .cm-input-wrap:has(.cm-input--sm) .cm-input__action {

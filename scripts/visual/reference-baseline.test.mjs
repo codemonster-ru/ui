@@ -61,8 +61,11 @@ test('mounts the reference components for the cross-platform baseline', () => {
   assert.match(server, /find: \/\^@codemonster-ru\\\/vueforge-core\$\/u, replacement: referenceCore/u);
   assert.match(server, /dedupe: \['vue'\]/u);
 
-  // The reference ships no document typography, so the fixture states the same frame the adapter
-  // fixture inherits from the shared foundation stylesheet; otherwise text metrics differ.
+  // The reference ships no document typography, so the fixture reproduces the frame its own
+  // application establishes. Falling back to the browser default drifts every text measurement,
+  // and stating more than that application does drifts the glyphs by a subpixel.
   assert.match(style, /font-family: var\(--vf-font-family-base\)/u);
-  assert.match(style, /line-height: var\(--vf-line-height-normal\)/u);
+  assert.match(style, /margin: 0;/u);
+  assert.doesNotMatch(style, /text-rendering/u);
+  assert.doesNotMatch(style, /font-synthesis/u);
 });
