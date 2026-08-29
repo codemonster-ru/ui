@@ -100,18 +100,18 @@ that threshold. There is no design-change tolerance.
 ## Progress
 
 - Current phase: Phase 19 — VueForge visual compatibility
-- Current milestone: M12 — In progress
-- Completed milestones: M9, M10, and M11
-- Next item: `CMUI-195` — restore direct-replacement component parity after the token graph audit
+- Current milestone: M12 — Completed
+- Completed milestones: M9, M10, M11, and M12
+- Next item: none in Phase 19; publishing the visual-parity release is post-M12 work
 
 ## Milestones
 
-| Milestone | Outcome                                                                                              | Status      |
-| --------- | ---------------------------------------------------------------------------------------------------- | ----------- |
-| M9        | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status    | Completed   |
-| M10       | Existing direct replacements cover their approved stable use cases in Vue and Razor                  | Completed   |
-| M11       | Missing portable components and recipes are delivered, and real consumers complete migration         | Completed   |
-| M12       | CodeMonster UI reproduces the frozen VueForge visual language and showcase without image regressions | In progress |
+| Milestone | Outcome                                                                                              | Status    |
+| --------- | ---------------------------------------------------------------------------------------------------- | --------- |
+| M9        | Every frozen VueForge capability has an explicit, enforced disposition and visible catalog status    | Completed |
+| M10       | Existing direct replacements cover their approved stable use cases in Vue and Razor                  | Completed |
+| M11       | Missing portable components and recipes are delivered, and real consumers complete migration         | Completed |
+| M12       | CodeMonster UI reproduces the frozen VueForge visual language and showcase without image regressions | Completed |
 
 ## Phase 16 — Coverage truth and restored catalog
 
@@ -222,8 +222,9 @@ for presentation while retaining the completed semantic, accessibility, and cros
 - [x] `CMUI-199` Run the same reviewed visual baselines against Vue-rendered and Razor-rendered
       canonical cases so cross-platform parity cannot converge on a design that differs from
       VueForge.
-- [ ] `CMUI-200` Re-run real-consumer migration and release verification, publish the visual-parity
-      release, and verify that no product-level pixel differences remain.
+- [x] `CMUI-200` Re-run real-consumer migration and release verification, and verify that no
+      product-level pixel differences remain. Publishing the release itself is tracked outside this
+      phase; see the 2026-08-29 scope change.
 
 ### M12 exit gate
 
@@ -289,14 +290,16 @@ Add decisions chronologically. Do not rewrite old entries; supersede them with a
 | 2026-08-29 | Drop `accordion-rich-content` from the cross-platform matrix rather than compare it with something the reference does not have. | The reference ships no accordion: `VfAccordion` is a single disclosure with `defaultOpen`, and its own showcase stacks three independent ones. A baseline for that case could only ever record our own render, which is the failure the whole repair was about. The remaining twelve cases now match the reference exactly on both adapters.                                                                                                                                                                                                                             | `CMUI-199`                                     |
 | 2026-08-29 | Keep the grouped Accordion and note the missing disclosure primitive.                                                           | Arrow, Home, and End movement between headers and a single-open mode are required of the accordion pattern and cannot exist without a parent to coordinate them, so the reference's shape is the weaker one. It does expose a real gap: the showcase mounts three one-item accordions and the GroupBox recipe hand-rolls a button in a legend, both standing in for a disclosure the library does not have.                                                                                                                                                              | Post-M12 backlog                               |
 | 2026-08-29 | Close `CMUI-195`, `CMUI-196`, `CMUI-197`, `CMUI-199`, and the `CMUI-G012` exit gate.                                            | Run 33246846226 compares the product with commit `fd793696` four times and reports no difference: 312 showcase frames, 44 state frames, and 48 cross-platform frames for each adapter. Every page height matches across all twelve route and viewport combinations, which is what closes `CMUI-197`: identical heights under identical pixels leave no room for a different section or example. No item was closed with a showcase-specific offset or a baseline taken from the product.                                                                                 | `CMUI-195`–`CMUI-197`, `CMUI-199`, `CMUI-G012` |
+| 2026-08-29 | Move publishing the visual-parity release out of M12 and keep the verification inside it.                                       | The milestone's outcome is that the product reproduces the frozen visual language, which the exit gate now proves; publishing is a separate decision that the gate does not settle. It is also a breaking major — Select and DatePicker require an `id`, DatePicker is no longer a native `input[type=date]`, and both hand required-field validation to the application — so it needs migration notes and a version decision rather than a checkbox.                                                                                                                    | `CMUI-200`, Post-M12 backlog                   |
 
 ## Scope-change log
 
 Record additions, removals, splits, and reordered dependencies before editing the numbered
 checklist.
 
-| Date       | Change                                                                | Reason                                                                                                                                                             | Decision reference                       |
-| ---------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| 2026-08-14 | Added the post-1.0 maturity sequence for Vue and Annabel Razor.       | Continue the original multi-platform goal after the minimum viable cross-platform release.                                                                         | 2026-08-14 maturity decision             |
-| 2026-08-15 | Added Phase 19 and M12 for exact VueForge visual compatibility.       | Functional and adapter parity did not preserve the approved VueForge presentation.                                                                                 | 2026-08-15 visual compatibility decision |
-| 2026-08-28 | Added a component-owned rebuild of Select and DatePicker to Phase 19. | Native controls cannot reproduce the reference rendering, and the Annabel Razor side has no reference at all because the frozen repository ships no Razor package. | 2026-08-28 native control decision       |
+| Date       | Change                                                                       | Reason                                                                                                                                                                                       | Decision reference                       |
+| ---------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| 2026-08-14 | Added the post-1.0 maturity sequence for Vue and Annabel Razor.              | Continue the original multi-platform goal after the minimum viable cross-platform release.                                                                                                   | 2026-08-14 maturity decision             |
+| 2026-08-15 | Added Phase 19 and M12 for exact VueForge visual compatibility.              | Functional and adapter parity did not preserve the approved VueForge presentation.                                                                                                           | 2026-08-15 visual compatibility decision |
+| 2026-08-28 | Added a component-owned rebuild of Select and DatePicker to Phase 19.        | Native controls cannot reproduce the reference rendering, and the Annabel Razor side has no reference at all because the frozen repository ships no Razor package.                           | 2026-08-28 native control decision       |
+| 2026-08-29 | Moved publishing the visual-parity release out of Phase 19 to post-M12 work. | The release is a breaking major that needs migration notes and a version decision; the milestone gates visual reproduction, which is proven, and nothing about the gate depends on shipping. | 2026-08-29 release scope decision        |
