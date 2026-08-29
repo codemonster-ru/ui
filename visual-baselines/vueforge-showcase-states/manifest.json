@@ -6,14 +6,14 @@
     {
       "filename": "state--hover--light--mobile.png",
       "clip": {
-        "height": 76,
-        "width": 116,
+        "height": 77,
+        "width": 117,
         "x": 9,
-        "y": 5980
+        "y": 6074
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5596,
+      "scrollTop": 5690,
       "state": "hover",
       "theme": "light",
       "viewport": "mobile"
@@ -21,14 +21,14 @@
     {
       "filename": "state--active--light--mobile.png",
       "clip": {
-        "height": 76,
-        "width": 116,
+        "height": 77,
+        "width": 117,
         "x": 9,
-        "y": 5980
+        "y": 6074
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5596,
+      "scrollTop": 5690,
       "state": "active",
       "theme": "light",
       "viewport": "mobile"
@@ -36,14 +36,14 @@
     {
       "filename": "state--focus-visible--light--mobile.png",
       "clip": {
-        "height": 76,
-        "width": 116,
+        "height": 77,
+        "width": 117,
         "x": 9,
-        "y": 5980
+        "y": 6074
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5596,
+      "scrollTop": 5690,
       "state": "focus-visible",
       "theme": "light",
       "viewport": "mobile"
@@ -51,14 +51,14 @@
     {
       "filename": "state--disabled--light--mobile.png",
       "clip": {
-        "height": 76,
-        "width": 121,
+        "height": 77,
+        "width": 123,
         "x": 80,
-        "y": 6068
+        "y": 6162
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5684,
+      "scrollTop": 5778,
       "state": "disabled",
       "theme": "light",
       "viewport": "mobile"
@@ -66,14 +66,14 @@
     {
       "filename": "state--invalid--light--mobile.png",
       "clip": {
-        "height": 77,
+        "height": 76,
         "width": 372,
         "x": 9,
-        "y": 24323
+        "y": 24494
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 23939,
+      "scrollTop": 24110,
       "state": "invalid",
       "theme": "light",
       "viewport": "mobile"
@@ -82,13 +82,13 @@
       "filename": "state--selected--light--mobile.png",
       "clip": {
         "height": 84,
-        "width": 142,
+        "width": 145,
         "x": 9,
-        "y": 34771
+        "y": 34989
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 34391,
+      "scrollTop": 34609,
       "state": "selected",
       "theme": "light",
       "viewport": "mobile"
@@ -99,11 +99,11 @@
         "height": 357,
         "width": 516,
         "x": 0,
-        "y": 35458
+        "y": 35676
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 35214,
+      "scrollTop": 35432,
       "state": "open",
       "theme": "light",
       "viewport": "mobile"
@@ -114,11 +114,11 @@
         "height": 197,
         "width": 436,
         "x": 0,
-        "y": 35488
+        "y": 35706
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 35164,
+      "scrollTop": 35382,
       "state": "closed",
       "theme": "light",
       "viewport": "mobile"
@@ -126,14 +126,14 @@
     {
       "filename": "state--loading--light--mobile.png",
       "clip": {
-        "height": 77,
-        "width": 138,
+        "height": 76,
+        "width": 139,
         "x": 9,
-        "y": 6634
+        "y": 6729
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 6250,
+      "scrollTop": 6345,
       "state": "loading",
       "theme": "light",
       "viewport": "mobile"
@@ -141,14 +141,14 @@
     {
       "filename": "state--indeterminate--light--mobile.png",
       "clip": {
-        "height": 57,
+        "height": 56,
         "width": 372,
         "x": 9,
-        "y": 19900
+        "y": 20047
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 19506,
+      "scrollTop": 19653,
       "state": "indeterminate",
       "theme": "light",
       "viewport": "mobile"
@@ -156,15 +156,15 @@
     {
       "filename": "state--reduced-motion--light--mobile.png",
       "clip": {
-        "height": 65,
+        "height": 64,
         "width": 372,
         "x": 9,
-        "y": 19844
+        "y": 19991
       },
       "media": "reduce",
       "route": "core",
       "reducedMotionVerified": true,
-      "scrollTop": 19454,
+      "scrollTop": 19601,
       "state": "reduced-motion",
       "theme": "light",
       "viewport": "mobile"
@@ -172,14 +172,14 @@
     {
       "filename": "state--hover--dark--mobile.png",
       "clip": {
-        "height": 76,
-        "width": 116,
+        "height": 77,
+        "width": 117,
         "x": 9,
-        "y": 5980
+        "y": 6074
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5596,
+      "scrollTop": 5690,
       "state": "hover",
       "theme": "dark",
       "viewport": "mobile"
@@ -187,14 +187,14 @@
     {
       "filename": "state--active--dark--mobile.png",
       "clip": {
-        "height": 76,
-        "width": 116,
+        "height": 77,
+        "width": 117,
         "x": 9,
-        "y": 5980
+        "y": 6074
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5596,
+      "scrollTop": 5690,
       "state": "active",
       "theme": "dark",
       "viewport": "mobile"
@@ -202,14 +202,14 @@
     {
       "filename": "state--focus-visible--dark--mobile.png",
       "clip": {
-        "height": 76,
-        "width": 116,
+        "height": 77,
+        "width": 117,
         "x": 9,
-        "y": 5980
+        "y": 6074
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5596,
+      "scrollTop": 5690,
       "state": "focus-visible",
       "theme": "dark",
       "viewport": "mobile"
@@ -217,14 +217,14 @@
     {
       "filename": "state--disabled--dark--mobile.png",
       "clip": {
-        "height": 76,
-        "width": 121,
+        "height": 77,
+        "width": 123,
         "x": 80,
-        "y": 6068
+        "y": 6162
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 5684,
+      "scrollTop": 5778,
       "state": "disabled",
       "theme": "dark",
       "viewport": "mobile"
@@ -232,14 +232,14 @@
     {
       "filename": "state--invalid--dark--mobile.png",
       "clip": {
-        "height": 77,
+        "height": 76,
         "width": 372,
         "x": 9,
-        "y": 24323
+        "y": 24494
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 23939,
+      "scrollTop": 24110,
       "state": "invalid",
       "theme": "dark",
       "viewport": "mobile"
@@ -248,13 +248,13 @@
       "filename": "state--selected--dark--mobile.png",
       "clip": {
         "height": 84,
-        "width": 142,
+        "width": 145,
         "x": 9,
-        "y": 34771
+        "y": 34989
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 34391,
+      "scrollTop": 34609,
       "state": "selected",
       "theme": "dark",
       "viewport": "mobile"
@@ -265,11 +265,11 @@
         "height": 357,
         "width": 516,
         "x": 0,
-        "y": 35458
+        "y": 35676
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 35214,
+      "scrollTop": 35432,
       "state": "open",
       "theme": "dark",
       "viewport": "mobile"
@@ -280,11 +280,11 @@
         "height": 197,
         "width": 436,
         "x": 0,
-        "y": 35488
+        "y": 35706
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 35164,
+      "scrollTop": 35382,
       "state": "closed",
       "theme": "dark",
       "viewport": "mobile"
@@ -292,14 +292,14 @@
     {
       "filename": "state--loading--dark--mobile.png",
       "clip": {
-        "height": 77,
-        "width": 138,
+        "height": 76,
+        "width": 139,
         "x": 9,
-        "y": 6634
+        "y": 6729
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 6250,
+      "scrollTop": 6345,
       "state": "loading",
       "theme": "dark",
       "viewport": "mobile"
@@ -307,14 +307,14 @@
     {
       "filename": "state--indeterminate--dark--mobile.png",
       "clip": {
-        "height": 57,
+        "height": 56,
         "width": 372,
         "x": 9,
-        "y": 19900
+        "y": 20047
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 19506,
+      "scrollTop": 19653,
       "state": "indeterminate",
       "theme": "dark",
       "viewport": "mobile"
@@ -322,15 +322,15 @@
     {
       "filename": "state--reduced-motion--dark--mobile.png",
       "clip": {
-        "height": 65,
+        "height": 64,
         "width": 372,
         "x": 9,
-        "y": 19844
+        "y": 19991
       },
       "media": "reduce",
       "route": "core",
       "reducedMotionVerified": true,
-      "scrollTop": 19454,
+      "scrollTop": 19601,
       "state": "reduced-motion",
       "theme": "dark",
       "viewport": "mobile"
@@ -339,13 +339,13 @@
       "filename": "state--hover--light--desktop.png",
       "clip": {
         "height": 77,
-        "width": 116,
+        "width": 117,
         "x": 9,
-        "y": 4627
+        "y": 4657
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4265,
+      "scrollTop": 4295,
       "state": "hover",
       "theme": "light",
       "viewport": "desktop"
@@ -354,13 +354,13 @@
       "filename": "state--active--light--desktop.png",
       "clip": {
         "height": 77,
-        "width": 116,
+        "width": 117,
         "x": 9,
-        "y": 4627
+        "y": 4657
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4265,
+      "scrollTop": 4295,
       "state": "active",
       "theme": "light",
       "viewport": "desktop"
@@ -369,13 +369,13 @@
       "filename": "state--focus-visible--light--desktop.png",
       "clip": {
         "height": 77,
-        "width": 116,
+        "width": 117,
         "x": 9,
-        "y": 4627
+        "y": 4657
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4265,
+      "scrollTop": 4295,
       "state": "focus-visible",
       "theme": "light",
       "viewport": "desktop"
@@ -385,12 +385,12 @@
       "clip": {
         "height": 77,
         "width": 122,
-        "x": 308,
-        "y": 4671
+        "x": 312,
+        "y": 4701
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4309,
+      "scrollTop": 4339,
       "state": "disabled",
       "theme": "light",
       "viewport": "desktop"
@@ -401,11 +401,11 @@
         "height": 77,
         "width": 442,
         "x": 9,
-        "y": 14816
+        "y": 14848
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 14454,
+      "scrollTop": 14486,
       "state": "invalid",
       "theme": "light",
       "viewport": "desktop"
@@ -414,13 +414,13 @@
       "filename": "state--selected--light--desktop.png",
       "clip": {
         "height": 85,
-        "width": 142,
+        "width": 145,
         "x": 9,
-        "y": 19070
+        "y": 19129
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18712,
+      "scrollTop": 18771,
       "state": "selected",
       "theme": "light",
       "viewport": "desktop"
@@ -431,11 +431,11 @@
         "height": 356,
         "width": 917,
         "x": 489,
-        "y": 19224
+        "y": 19283
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 19002,
+      "scrollTop": 19061,
       "state": "open",
       "theme": "light",
       "viewport": "desktop"
@@ -446,11 +446,11 @@
         "height": 196,
         "width": 757,
         "x": 569,
-        "y": 19254
+        "y": 19313
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18952,
+      "scrollTop": 19011,
       "state": "closed",
       "theme": "light",
       "viewport": "desktop"
@@ -459,13 +459,13 @@
       "filename": "state--loading--light--desktop.png",
       "clip": {
         "height": 76,
-        "width": 138,
+        "width": 139,
         "x": 9,
-        "y": 4875
+        "y": 4905
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4513,
+      "scrollTop": 4543,
       "state": "loading",
       "theme": "light",
       "viewport": "desktop"
@@ -476,11 +476,11 @@
         "height": 57,
         "width": 647,
         "x": 9,
-        "y": 12384
+        "y": 12416
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 12012,
+      "scrollTop": 12044,
       "state": "indeterminate",
       "theme": "light",
       "viewport": "desktop"
@@ -491,12 +491,12 @@
         "height": 65,
         "width": 647,
         "x": 9,
-        "y": 12328
+        "y": 12360
       },
       "media": "reduce",
       "route": "core",
       "reducedMotionVerified": true,
-      "scrollTop": 11960,
+      "scrollTop": 11992,
       "state": "reduced-motion",
       "theme": "light",
       "viewport": "desktop"
@@ -505,13 +505,13 @@
       "filename": "state--hover--dark--desktop.png",
       "clip": {
         "height": 77,
-        "width": 116,
+        "width": 117,
         "x": 9,
-        "y": 4627
+        "y": 4657
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4265,
+      "scrollTop": 4295,
       "state": "hover",
       "theme": "dark",
       "viewport": "desktop"
@@ -520,13 +520,13 @@
       "filename": "state--active--dark--desktop.png",
       "clip": {
         "height": 77,
-        "width": 116,
+        "width": 117,
         "x": 9,
-        "y": 4627
+        "y": 4657
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4265,
+      "scrollTop": 4295,
       "state": "active",
       "theme": "dark",
       "viewport": "desktop"
@@ -535,13 +535,13 @@
       "filename": "state--focus-visible--dark--desktop.png",
       "clip": {
         "height": 77,
-        "width": 116,
+        "width": 117,
         "x": 9,
-        "y": 4627
+        "y": 4657
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4265,
+      "scrollTop": 4295,
       "state": "focus-visible",
       "theme": "dark",
       "viewport": "desktop"
@@ -551,12 +551,12 @@
       "clip": {
         "height": 77,
         "width": 122,
-        "x": 308,
-        "y": 4671
+        "x": 312,
+        "y": 4701
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4309,
+      "scrollTop": 4339,
       "state": "disabled",
       "theme": "dark",
       "viewport": "desktop"
@@ -567,11 +567,11 @@
         "height": 77,
         "width": 442,
         "x": 9,
-        "y": 14816
+        "y": 14848
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 14454,
+      "scrollTop": 14486,
       "state": "invalid",
       "theme": "dark",
       "viewport": "desktop"
@@ -580,13 +580,13 @@
       "filename": "state--selected--dark--desktop.png",
       "clip": {
         "height": 85,
-        "width": 142,
+        "width": 145,
         "x": 9,
-        "y": 19070
+        "y": 19129
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18712,
+      "scrollTop": 18771,
       "state": "selected",
       "theme": "dark",
       "viewport": "desktop"
@@ -597,11 +597,11 @@
         "height": 356,
         "width": 917,
         "x": 489,
-        "y": 19224
+        "y": 19283
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 19002,
+      "scrollTop": 19061,
       "state": "open",
       "theme": "dark",
       "viewport": "desktop"
@@ -612,11 +612,11 @@
         "height": 196,
         "width": 757,
         "x": 569,
-        "y": 19254
+        "y": 19313
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 18952,
+      "scrollTop": 19011,
       "state": "closed",
       "theme": "dark",
       "viewport": "desktop"
@@ -625,13 +625,13 @@
       "filename": "state--loading--dark--desktop.png",
       "clip": {
         "height": 76,
-        "width": 138,
+        "width": 139,
         "x": 9,
-        "y": 4875
+        "y": 4905
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 4513,
+      "scrollTop": 4543,
       "state": "loading",
       "theme": "dark",
       "viewport": "desktop"
@@ -642,11 +642,11 @@
         "height": 57,
         "width": 647,
         "x": 9,
-        "y": 12384
+        "y": 12416
       },
       "media": "reduce",
       "route": "core",
-      "scrollTop": 12012,
+      "scrollTop": 12044,
       "state": "indeterminate",
       "theme": "dark",
       "viewport": "desktop"
@@ -657,12 +657,12 @@
         "height": 65,
         "width": 647,
         "x": 9,
-        "y": 12328
+        "y": 12360
       },
       "media": "reduce",
       "route": "core",
       "reducedMotionVerified": true,
-      "scrollTop": 11960,
+      "scrollTop": 11992,
       "state": "reduced-motion",
       "theme": "dark",
       "viewport": "desktop"
