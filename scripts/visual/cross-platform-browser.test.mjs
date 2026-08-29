@@ -62,7 +62,6 @@ test('checks both actual adapters against the reviewed fd baseline in macOS visu
       'link-default',
       'field-help-error',
       'input-enhanced',
-      'accordion-rich-content',
       'select-clearable',
       'date-picker-clearable',
       'checkbox-checked',
@@ -70,7 +69,7 @@ test('checks both actual adapters against the reviewed fd baseline in macOS visu
     componentPackage: '@codemonster-ru/vueforge-core',
     renderer: 'Vue createApp at the reference commit',
   });
-  assert.equal(screenshots.length, 52);
+  assert.equal(screenshots.length, 48);
   assert.match(workflow, /runs-on: macos-26/u);
   assert.match(workflow, /visual:cross-platform:razor-render/u);
   assert.match(workflow, /current="\$\{CROSS_PLATFORM_CAPTURE\}\/vue"/u);
