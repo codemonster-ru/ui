@@ -224,6 +224,9 @@ for (const [slug, approved] of [
       'cm-input__leading',
       'cm-input__trailing',
       'cm-input__action',
+      'cm-input__action-icon',
+      'cm-input__action-icon--show',
+      'cm-input__action-icon--hide',
     ],
   ],
   [
