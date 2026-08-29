@@ -182,7 +182,9 @@ onBeforeUnmount(() => {
       <span v-if="$slots.trailing" class="cm-select__icon cm-select__icon--trailing" aria-hidden="true">
         <slot name="trailing" />
       </span>
-      <span v-if="!hasClear" class="cm-select__icon cm-select__icon--chevron" aria-hidden="true"></span>
+      <span v-if="!hasClear" class="cm-select__icon cm-select__icon--chevron" aria-hidden="true">
+        <svg class="cm-select__chevron" viewBox="0 0 24 24" fill="none" focusable="false"><polyline points="5.75 8.75 12 15 18.25 8.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </span>
     </button>
     <button
       v-if="hasClear"
