@@ -65,6 +65,7 @@ jobs:
           showcase_capture="${RUNNER_TEMP}/codemonster-showcase-reference"
           state_capture="${RUNNER_TEMP}/codemonster-showcase-state-reference"
           cross_platform_capture="${RUNNER_TEMP}/codemonster-cross-platform-current"
+          cross_platform_reference="${RUNNER_TEMP}/codemonster-cross-platform-reference"
           razor_fixtures="${RUNNER_TEMP}/codemonster-cross-platform-razor.json"
 
           (cd "${RUNNER_TEMP}/vueforge-reference" && npm run dev -w @codemonster-ru/vueforge-playground-example -- --host 127.0.0.1 --port 5175) > "${RUNNER_TEMP}/codemonster-showcase-vite.log" 2>&1 &
@@ -88,14 +89,25 @@ jobs:
           # Ports 5175 serves the frozen reference commit; 5176 serves the current adapters.
           node scripts/visual/capture-showcase.mjs --origin=http://127.0.0.1:5175 --output="${showcase_capture}" --label=vueforge-reference
           npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${state_capture}" --label=vueforge-state-reference
-          # The cross-platform capture only renders the current adapters, so it checks Vue against
-          # Razor but must not overwrite the reviewed cross-platform baseline. Regenerating that
-          # baseline needs a reference-commit fixture, which is CMUI-199.
+          # The adapter capture checks Vue against Razor; it must never become the cross-platform
+          # baseline, because a baseline taken from the product cannot prove anything about the
+          # reference. The baseline itself is captured from the reference checkout below.
           npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${cross_platform_capture}" --label=vueforge-cross-platform-current
           node scripts/visual/compare-showcase.mjs --baseline="${cross_platform_capture}/vue" --current="${cross_platform_capture}/razor"
 
+          npm run visual:cross-platform:reference:serve -- --reference="${RUNNER_TEMP}/vueforge-reference" --port=5178 > "${RUNNER_TEMP}/codemonster-cross-platform-reference.log" 2>&1 &
+          reference_fixture_pid=$!
+          for attempt in {1..60}; do
+            if curl --fail --silent 'http://127.0.0.1:5178/?case=button-default&theme=light' >/dev/null; then break; fi
+            if [ "${attempt}" -eq 60 ]; then cat "${RUNNER_TEMP}/codemonster-cross-platform-reference.log"; exit 1; fi
+            sleep 1
+          done
+          npm run visual:cross-platform:reference:capture -- --origin=http://127.0.0.1:5178 --output="${cross_platform_reference}" --label=vueforge-cross-platform-reference-vue
+          kill "${reference_fixture_pid}" 2>/dev/null || true
+
           cp -R "${showcase_capture}/." visual-baselines/vueforge-showcase/
           cp -R "${state_capture}/." visual-baselines/vueforge-showcase-states/
+          cp -R "${cross_platform_reference}/." visual-baselines/vueforge-cross-platform/
           npm exec -- prettier --write visual-baselines/*/manifest.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
