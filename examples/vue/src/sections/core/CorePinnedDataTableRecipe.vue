@@ -59,7 +59,10 @@ const rows = [
   color: var(--cm-color-text-primary);
 }
 
+/* The reference makes the scroll viewport the positioning context, which is also what decides
+   whether the viewport or the table it holds owns the compositing layer the pinned cells force. */
 .demo-application-pinned-table__scroll {
+  position: relative;
   width: 100%;
   overflow-x: auto;
 }
