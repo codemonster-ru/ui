@@ -86,24 +86,23 @@ const standardColumns = [
           </template>
         </tbody>
       </table>
-    </div>
 
-    <div
-      v-if="props.variant === 'loading'"
-      class="demo-application-data-table-state__loading-mask"
-      role="status"
-      aria-label="Loading..."
-    >
-      <span class="demo-application-data-table-state__loading">
-        <CmProgressSpinner class="demo-application-data-table-state__spinner" label="Loading..." />
-      </span>
+      <div
+        v-if="props.variant === 'loading'"
+        class="demo-application-data-table-state__loading-mask"
+        role="status"
+        aria-label="Loading..."
+      >
+        <span class="demo-application-data-table-state__loading">
+          <CmProgressSpinner class="demo-application-data-table-state__spinner" label="Loading..." />
+        </span>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .demo-application-data-table-state {
-  position: relative;
   display: flex;
   inline-size: 100%;
   min-inline-size: 0;
@@ -115,7 +114,11 @@ const standardColumns = [
   color: var(--cm-color-text-primary);
 }
 
+/* The reference anchors the loading mask to the scroll viewport, a plain rectangle, and leaves the
+   rounded clip to the wrapper outside it. Anchoring the mask to the rounded wrapper instead put its
+   translucent fill inside a rounded clip, which the bottom corners showed. */
 .demo-application-data-table-state__scroll {
+  position: relative;
   inline-size: 100%;
   overflow-x: auto;
 }
