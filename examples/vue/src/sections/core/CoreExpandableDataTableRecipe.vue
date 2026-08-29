@@ -154,6 +154,12 @@ function toggle(id: CoreExpandableDataTableRowId): void {
 </template>
 
 <style scoped>
+/* The reference renders this demo as a data table, whose scroll viewport is a positioning
+   context; the plain table this recipe composes leaves it static. */
+.demo-application-expandable-table :deep(.cm-table__scroll) {
+  position: relative;
+}
+
 .demo-application-expandable-table__expansion-cell {
   width: 1%;
   white-space: nowrap;

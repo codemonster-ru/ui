@@ -47,6 +47,12 @@ function statusTone(status: (typeof rows)[number]['status']): 'success' | 'warni
 </template>
 
 <style scoped>
+/* The reference renders this demo as a data table, whose scroll viewport is a positioning
+   context; the plain table this recipe composes leaves it static. */
+.demo-application-slots-table :deep(.cm-table__scroll) {
+  position: relative;
+}
+
 .demo-application-slots-table__header-content {
   display: inline-flex;
   align-items: center;

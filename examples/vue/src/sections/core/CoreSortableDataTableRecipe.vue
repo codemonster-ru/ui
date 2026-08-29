@@ -277,7 +277,10 @@ function setPageSize(value: string): void {
   color: var(--cm-color-text-primary);
 }
 
+/* The reference renders this demo as a data table, whose scroll viewport is a positioning
+   context; the plain table this recipe composes leaves it static. */
 .demo-application-sortable-table__scroll {
+  position: relative;
   width: 100%;
   overflow-x: auto;
 }
