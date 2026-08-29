@@ -1,0 +1,24 @@
+/* The reference ships no document-level typography — its application establishes it — while the
+   adapter fixture inherits ours from the shared foundation stylesheet. Declaring the same frame
+   here in the reference's own token namespace leaves the component as the only difference between
+   the two captures. */
+:root {
+  color-scheme: light;
+  background: var(--vf-color-background-canvas);
+  color: var(--vf-color-text-primary);
+  font-family: var(--vf-font-family-base);
+  font-size: 100%;
+  font-synthesis: none;
+  line-height: var(--vf-line-height-normal);
+  text-rendering: optimizelegibility;
+  text-size-adjust: 100%;
+}
+
+.cm-visual-adapter-root {
+  box-sizing: border-box;
+  inline-size: 20rem;
+  min-block-size: 100vh;
+  padding: 1.5rem;
+  background: var(--vf-color-background-canvas);
+  line-height: normal;
+}
