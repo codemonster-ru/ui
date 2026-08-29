@@ -177,12 +177,13 @@
   color: var(--cm-color-icon-secondary);
 }
 
-/* The reference strokes this chevron as a rounded polyline, which a mask reproduces without
-   coupling the stylesheet to an icon registry. */
 .cm-select__icon--chevron {
   margin-inline-start: auto;
-  background: currentcolor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='5.75 8.75 12 15 18.25 8.75'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.cm-select__chevron {
+  inline-size: 100%;
+  block-size: 100%;
 }
 
 .cm-select:disabled .cm-select__icon {
