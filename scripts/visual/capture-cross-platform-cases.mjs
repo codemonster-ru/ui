@@ -1,4 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readCaptureFontFaceCss } from './capture-font.mjs';
 import { resolve } from 'node:path';
 
 const options = Object.fromEntries(
@@ -25,6 +26,9 @@ const crossPlatformManifest = JSON.parse(
 );
 const caseIds = crossPlatformManifest.caseIds;
 const platforms = source === 'vueforge' ? ['reference'] : ['vue', 'razor'];
+// Our own pages ship the family through the package. The frozen reference names it in its
+// tokens but never shipped it, so only that capture is given the faces.
+const fontFaceCss = options.font === 'inject' ? readCaptureFontFaceCss() : '';
 const sleep = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
 
 const targets = await fetch(`${chromeEndpoint}/json/list`).then((response) => {
@@ -138,14 +142,15 @@ for (const platform of platforms) {
           );
         }
 
-        await evaluate('document.fonts?.ready ?? Promise.resolve()');
         await evaluate(`(() => {
         const style = document.createElement('style');
         style.dataset.visualCapture = 'true';
-        style.textContent = '*,*::before,*::after{animation:none!important;caret-color:transparent!important;scroll-behavior:auto!important;transition:none!important}';
+        style.textContent = ${JSON.stringify(fontFaceCss)} + '*,*::before,*::after{animation:none!important;caret-color:transparent!important;scroll-behavior:auto!important;transition:none!important}';
         document.head.append(style);
         return true;
       })()`);
+        // The family arrives with the injected stylesheet, so it has to settle after it, not before.
+        await evaluate('document.fonts?.ready ?? Promise.resolve()');
         await sleep(100);
 
         const selector = '#visual-root > :first-child';
