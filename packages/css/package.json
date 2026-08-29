@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-css",
-  "version": "1.1.0",
+  "version": "2.0.0-dev",
   "description": "Framework-independent foundation and component styles for CodeMonster UI.",
   "type": "module",
   "license": "MIT",
@@ -81,7 +81,7 @@
     "design-system"
   ],
   "dependencies": {
-    "@codemonster-ru/ui-tokens": "^1.0.0"
+    "@codemonster-ru/ui-tokens": "^2.0.0-dev"
   },
   "devDependencies": {
     "eslint": "^10.8.0",

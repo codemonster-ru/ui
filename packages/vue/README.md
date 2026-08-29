@@ -2,7 +2,7 @@
 
 Vue 3 adapter for CodeMonster UI components.
 
-Current release: `@codemonster-ru/ui-vue@1.1.0`.
+Current version: `@codemonster-ru/ui-vue@2.0.0-dev` — in development, not published; the published line is `1.x`.
 
 ## Requirements
 
@@ -12,7 +12,7 @@ Current release: `@codemonster-ru/ui-vue@1.1.0`.
 ## Installation
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-vue@^1.1.0 @codemonster-ru/ui-css@^1.1.0
+npm install vue@^3.5.0 @codemonster-ru/ui-vue@^2.0.0-dev @codemonster-ru/ui-css@^2.0.0-dev
 ```
 
 ## Quick start
