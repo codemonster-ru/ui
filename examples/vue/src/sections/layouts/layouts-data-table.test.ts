@@ -60,23 +60,20 @@ describe('LayoutsDataTable', () => {
     app.unmount();
   });
 
-  it('uses a native labelled rows selector and resets the page after resizing', async () => {
+  it('resets the page after the rows selector changes', async () => {
     const app = mountTable();
     await nextTick();
 
     host.querySelector<HTMLButtonElement>('[aria-label="Go to page 2"]')?.click();
     await nextTick();
-    const select = host.querySelector<HTMLSelectElement>('[aria-label="Rows per page"]');
-    expect(select?.options).toHaveLength(2);
-    const pageSizeIcon = host.querySelector<HTMLElement>('.layouts-data-table__page-size-visual > :last-child');
-    expect(pageSizeIcon).not.toBeNull();
-    expect(pageSizeIcon?.querySelector<SVGElement>('svg')?.getAttribute('width')).toBe(
-      'calc(var(--cm-icon-size-md) - var(--cm-border-width))',
-    );
-    if (select) {
-      select.value = '10';
-      select.dispatchEvent(new Event('change', { bubbles: true }));
-    }
+
+    const trigger = host.querySelector<HTMLButtonElement>('[role="combobox"]');
+    expect(trigger?.getAttribute('aria-label')).toBe('Rows per page');
+    expect(host.querySelectorAll('[role="option"]')).toHaveLength(2);
+
+    trigger?.click();
+    await nextTick();
+    host.querySelector<HTMLButtonElement>('[role="option"][data-cm-select-value="10"]')?.click();
     await nextTick();
 
     expect(host.querySelectorAll('tbody tr')).toHaveLength(7);
@@ -85,9 +82,13 @@ describe('LayoutsDataTable', () => {
     app.unmount();
   });
 
-  it('owns page-size icon color without a legacy wrapper selector', () => {
+  it('composes the shared select instead of drawing a replica over a native one', () => {
+    const markup = readFileSync(resolve(process.cwd(), 'src/sections/layouts/LayoutsDataTable.vue'), 'utf8');
     const source = readFileSync(resolve(process.cwd(), 'src/sections/layouts/layouts-data-table.css'), 'utf8');
-    expect(source).toContain('.layouts-data-table__page-size-visual > :last-child');
+
+    expect(markup).toContain('<CmSelect');
+    expect(markup).not.toContain('<select');
+    expect(source).not.toContain('page-size-visual');
     expect(source).not.toContain('.vf-icon-wrapper');
   });
 });

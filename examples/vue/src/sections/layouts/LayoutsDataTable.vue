@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { CmIconButton } from '@codemonster-ru/ui-vue';
+import { CmIconButton, CmSelect } from '@codemonster-ru/ui-vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import '@codemonster-ru/ui-css/data-table.css';
+import '@codemonster-ru/ui-css/select.css';
 import './layouts-data-table.css';
 
 interface LayoutsDataTableColumn {
@@ -45,8 +46,13 @@ function setPage(page: number) {
   currentPage.value = Math.min(Math.max(1, page), pageCount.value);
 }
 
-function setPageSize(event: Event) {
-  pageSize.value = Number((event.target as HTMLSelectElement).value);
+const pageSizeChoices = computed(() =>
+  props.pageSizeOptions.map((option) => ({ label: String(option), value: String(option) })),
+);
+
+function setPageSize(value: string) {
+  if (!props.pageSizeOptions.includes(Number(value))) return;
+  pageSize.value = Number(value);
   currentPage.value = 1;
 }
 </script>
@@ -88,15 +94,14 @@ function setPageSize(event: Event) {
 
       <div class="layouts-data-table__page-size">
         <span>Rows</span>
-        <span class="layouts-data-table__page-size-control">
-          <select :value="pageSize" aria-label="Rows per page" @change="setPageSize">
-            <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
-          </select>
-          <span class="layouts-data-table__page-size-visual" aria-hidden="true">
-            <span>{{ pageSize }}</span>
-            <VueIconify :icon="icons.chevronDown" size="calc(var(--cm-icon-size-md) - var(--cm-border-width))" />
-          </span>
-        </span>
+        <CmSelect
+          id="layouts-data-table-page-size"
+          :model-value="String(pageSize)"
+          :options="pageSizeChoices"
+          size="sm"
+          aria-label="Rows per page"
+          @update:model-value="setPageSize"
+        />
       </div>
 
       <div class="layouts-data-table__pagination-actions">

@@ -38,6 +38,10 @@ if (corePackage.name !== '@codemonster-ru/vueforge-core') {
 const server = await createServer({
   configFile: false,
   root: resolve(import.meta.dirname, 'cross-platform-reference-fixture'),
+  // Vite's dependency optimizer rewrites bare imports before the aliases apply, which silently
+  // resolved Vue to this repository's copy and left the reference components with a second Vue
+  // instance that never mounted.
+  optimizeDeps: { exclude: ['vue', '@codemonster-ru/vueforge-core'] },
   resolve: {
     alias: [
       { find: /^@codemonster-ru\/vueforge-core$/u, replacement: referenceCore },
