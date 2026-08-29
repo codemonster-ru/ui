@@ -86,9 +86,11 @@ jobs:
             sleep 1
           done
 
-          # Ports 5175 serves the frozen reference commit; 5176 serves the current adapters.
-          node scripts/visual/capture-showcase.mjs --origin=http://127.0.0.1:5175 --output="${showcase_capture}" --label=vueforge-reference
-          npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${state_capture}" --label=vueforge-state-reference
+          # Ports 5175 serves the frozen reference commit; 5176 serves the current adapters. The
+          # reference names Inter in its tokens but never shipped it, so its captures are given the
+          # faces the product now ships; without that a baseline records a system fallback.
+          node scripts/visual/capture-showcase.mjs --origin=http://127.0.0.1:5175 --output="${showcase_capture}" --label=vueforge-reference --font=inject
+          npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${state_capture}" --label=vueforge-state-reference --font=inject
           # The adapter capture checks Vue against Razor; it must never become the cross-platform
           # baseline, because a baseline taken from the product cannot prove anything about the
           # reference. The baseline itself is captured from the reference checkout below.
@@ -102,7 +104,7 @@ jobs:
             if [ "${attempt}" -eq 60 ]; then cat "${RUNNER_TEMP}/codemonster-cross-platform-reference.log"; exit 1; fi
             sleep 1
           done
-          npm run visual:cross-platform:reference:capture -- --origin=http://127.0.0.1:5178 --output="${cross_platform_reference}" --label=vueforge-cross-platform-reference-vue
+          npm run visual:cross-platform:reference:capture -- --origin=http://127.0.0.1:5178 --output="${cross_platform_reference}" --label=vueforge-cross-platform-reference-vue --font=inject
           kill "${reference_fixture_pid}" 2>/dev/null || true
 
           cp -R "${showcase_capture}/." visual-baselines/vueforge-showcase/
