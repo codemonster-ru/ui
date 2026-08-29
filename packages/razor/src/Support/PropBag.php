@@ -134,8 +134,25 @@ final class PropBag
 
     private function consume(string $name, mixed $default): mixed
     {
-        $this->consumed[$name] = true;
+        $key = $this->resolve($name);
+        $this->consumed[$key] = true;
 
-        return array_key_exists($name, $this->props) ? $this->props[$name] : $default;
+        return array_key_exists($key, $this->props) ? $this->props[$key] : $default;
+    }
+
+    /**
+     * A Razor template spells a prop the way HTML spells an attribute, so `clear-label` has to
+     * reach a component asking for `clearLabel`. Matching only the camel case name left every such
+     * prop on its default and then rendered the supplied one back out as a stray attribute.
+     */
+    private function resolve(string $name): string
+    {
+        if (array_key_exists($name, $this->props)) {
+            return $name;
+        }
+
+        $kebab = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '-$0', $name));
+
+        return array_key_exists($kebab, $this->props) ? $kebab : $name;
     }
 }

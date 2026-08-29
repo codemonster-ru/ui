@@ -12,6 +12,21 @@ use PHPUnit\Framework\TestCase;
 
 final class ComponentSupportTest extends TestCase
 {
+    public function testResolvesPropsSpelledTheWayARazorTemplateSpellsThem(): void
+    {
+        $props = new PropBag([
+            'clear-label' => 'Clear frequency',
+            'show-password-label' => 'Show secret',
+            'data-analytics' => 'select',
+        ]);
+
+        self::assertSame('Clear frequency', $props->string('clearLabel', 'Clear selection'));
+        self::assertSame('Show secret', $props->string('showPasswordLabel', 'Show password'));
+
+        // A prop consumed under its attribute spelling must not reappear as a stray attribute.
+        self::assertSame(['data-analytics' => 'select'], $props->remaining());
+    }
+
     public function testConsumesValidatedPropsAndPreservesUnknownAttributes(): void
     {
         $props = new PropBag([
