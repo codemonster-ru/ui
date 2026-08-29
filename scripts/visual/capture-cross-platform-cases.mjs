@@ -93,6 +93,7 @@ async function waitFor(expression, timeout = 30_000) {
 await send('Page.enable');
 await send('Runtime.enable');
 await send('DOM.enable');
+
 await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
 // Components that format dates or numbers read the browser's locale, so a capture taken on a
 // workstation configured for another language cannot be compared with one taken on CI.
@@ -151,6 +152,7 @@ for (const platform of platforms) {
       })()`);
         // The family arrives with the injected stylesheet, so it has to settle after it, not before.
         await evaluate('document.fonts?.ready ?? Promise.resolve()');
+        await evaluate("(() => { dispatchEvent(new Event('resize')); return true; })()");
         await sleep(100);
 
         const selector = '#visual-root > :first-child';

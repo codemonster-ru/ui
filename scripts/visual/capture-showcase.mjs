@@ -131,6 +131,7 @@ const showcaseContentReady =
 await send('Page.enable');
 await send('Runtime.enable');
 
+
 async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMotion = true) {
   await send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value: reducedMotion }],
@@ -168,6 +169,9 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
     return true;
   })()`);
   await evaluate(`document.fonts?.ready ?? Promise.resolve()`);
+  // A widget that measured its own text before the family arrived, such as a tab indicator, keeps
+  // the fallback's width until something asks it to measure again.
+  await evaluate(`(() => { dispatchEvent(new Event('resize')); return true; })()`);
   await sleep(route === 'playground' || route === 'codeblock' ? 3_000 : 500);
   if (route === 'codeblock') {
     await waitFor(
