@@ -34,3 +34,9 @@ shifted sub-pixel text rendering on six Core frames, worth roughly seven hundred
 change to the page or its computed styles. Restarting Chrome reproduced the earlier images exactly.
 CI is unaffected because it launches the browser per run, so this only bites during local work, and
 it makes any local difference below about a thousand pixels unsafe to read as a real change.
+
+Restart the Vite dev servers on the same schedule. A server carried through a long editing session
+serves module state that no longer matches the working tree: after one such session a capture
+reported eight hundred pixels of change across frames the edit could not reach, and the difference
+vanished on a restarted server. The frozen reference server is not exempt, though its capture has
+been byte-identical across restarts because nothing edits it.
