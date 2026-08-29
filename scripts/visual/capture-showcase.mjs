@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { readCaptureFontFaceCss } from './capture-font.mjs';
 import { createShowcaseStateMatrix, readShowcaseStateConfig } from './showcase-state-cases.mjs';
 
 const options = Object.fromEntries(
@@ -25,6 +26,9 @@ if (!['default', 'states'].includes(suite)) {
 }
 
 const config = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../contracts/visual.config.json'), 'utf8'));
+// Our own pages ship the family through the package. The frozen reference names it in its
+// tokens but never shipped it, so only that capture is given the faces.
+const fontFaceCss = options.font === 'inject' ? readCaptureFontFaceCss() : '';
 const sleep = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
 
 mkdirSync(outputDirectory, { recursive: true });
@@ -143,7 +147,7 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
     return true;
   })()`);
   await waitFor(showcaseContentReady);
-  await evaluate(`document.fonts?.ready ?? Promise.resolve()`);
+
   const motionStyle = stabilizeMotion
     ? '*,*::before,*::after{animation:none!important;caret-color:transparent!important;scroll-behavior:auto!important;transition:none!important}'
     : '*,*::before,*::after{caret-color:transparent!important;scroll-behavior:auto!important}';
@@ -151,6 +155,7 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
     const style = document.createElement('style');
     style.dataset.visualCapture = 'true';
     style.textContent = [
+      ${JSON.stringify(fontFaceCss)},
       ${JSON.stringify(motionStyle)},
       'html{scrollbar-width:none!important}',
       'html::-webkit-scrollbar{display:none!important}',
@@ -162,6 +167,7 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
 
     return true;
   })()`);
+  await evaluate(`document.fonts?.ready ?? Promise.resolve()`);
   await sleep(route === 'playground' || route === 'codeblock' ? 3_000 : 500);
   if (route === 'codeblock') {
     await waitFor(
