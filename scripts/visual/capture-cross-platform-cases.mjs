@@ -90,6 +90,9 @@ await send('Page.enable');
 await send('Runtime.enable');
 await send('DOM.enable');
 await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+// Components that format dates or numbers read the browser's locale, so a capture taken on a
+// workstation configured for another language cannot be compared with one taken on CI.
+await send('Emulation.setLocaleOverride', { locale: 'en-US' });
 
 for (const platform of platforms) {
   const platformDirectory = source === 'vueforge' ? outputDirectory : resolve(outputDirectory, platform);

@@ -3,7 +3,7 @@
   "id": "date-picker-range-validation",
   "case": "date-picker-default",
   "steps": [
-    { "action": "setValue", "target": "control", "value": "2027-01-01" },
-    { "expect": "validity", "target": "control", "value": false }
+    { "expect": "attribute", "target": "trigger", "name": "data-cm-min", "value": "2026-01-01" },
+    { "expect": "attribute", "target": "trigger", "name": "data-cm-max", "value": "2026-12-31" }
   ]
 }

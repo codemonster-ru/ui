@@ -271,6 +271,9 @@ if (suite === 'states') {
 }
 
 await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+// Components that format dates or numbers read the browser's locale, so a capture taken on a
+// workstation configured for another language cannot be compared with one taken on CI.
+await send('Emulation.setLocaleOverride', { locale: 'en-US' });
 
 const manifest = {
   label,

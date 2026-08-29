@@ -110,13 +110,22 @@ describe('Vue advanced input components', () => {
     wrapper.unmount();
   });
 
-  it('binds DatePicker to native input and ISO form values', async () => {
-    const wrapper = mount(CmDatePicker, { props: { modelValue: '' }, attrs: { name: 'date', 'aria-label': 'Date' } });
+  it('submits the DatePicker selection as an ISO form value', async () => {
+    const wrapper = mount(CmDatePicker, {
+      props: { id: 'date', modelValue: '' },
+      attrs: { name: 'date', 'aria-label': 'Date' },
+    });
     const form = document.createElement('form');
     form.append(wrapper.element);
-    await wrapper.get('input').setValue('2026-08-13');
-    expect(wrapper.emitted('valueChange')).toEqual([['2026-08-13']]);
-    expect(new FormData(form).get('date')).toBe('2026-08-13');
+
+    await wrapper.get('button.cm-date-picker').trigger('click');
+    // An empty picker opens on the current month, so the assertion reads the day it actually offers.
+    const day = wrapper.get('[data-cm-date-picker-value]:not(.cm-date-picker__day--outside)');
+    const value = day.attributes('data-cm-date-picker-value');
+    await day.trigger('click');
+
+    expect(wrapper.emitted('valueChange')).toEqual([[value]]);
+    expect(new FormData(form).get('date')).toBe(value);
   });
 
   it('filters CommandPalette and selects the active enabled command', async () => {
