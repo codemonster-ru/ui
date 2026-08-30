@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmAccordionItem, CmAccordionOpenChange } from './accordion.types';
 
@@ -105,6 +106,8 @@ function moveFocus(event: KeyboardEvent): void {
           : (currentIndex - 1 + enabled.length) % enabled.length;
   enabled[nextIndex]?.focus();
 }
+
+useCmHydrated();
 </script>
 
 <template>

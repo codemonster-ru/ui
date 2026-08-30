@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, ref, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm } from '../../internal/warn';
 import type { CmTooltipDelay, CmTooltipPlacement } from './tooltip.types';
 
@@ -68,6 +69,8 @@ function onKeydown(event: KeyboardEvent): void {
 }
 
 onBeforeUnmount(clearTimer);
+
+useCmHydrated();
 </script>
 
 <template>

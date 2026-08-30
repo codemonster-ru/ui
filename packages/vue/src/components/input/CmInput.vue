@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import type { CmInputSize, CmInputType } from './input.types';
 
 defineOptions({ inheritAttrs: false });
@@ -84,6 +85,8 @@ async function togglePassword(): Promise<void> {
   inputRef.value?.focus();
   if (selection) inputRef.value?.setSelectionRange(selection[0], selection[1]);
 }
+
+useCmHydrated();
 </script>
 
 <template>

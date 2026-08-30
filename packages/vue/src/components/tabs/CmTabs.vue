@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs, useSlots, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import { nextTabsValue, resolveTabsValue } from '@codemonster-ru/ui-runtime/core';
 
@@ -79,6 +80,8 @@ function move(event: KeyboardEvent, item: CmTabItem): void {
   const next = normalizedItems.value.find(({ value }) => value === nextValue);
   if (next) select(next, true);
 }
+
+useCmHydrated();
 </script>
 
 <template>

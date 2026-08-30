@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { warnCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmCommandPaletteItem } from './command-palette.types';
@@ -148,6 +149,8 @@ function onKeydown(event: KeyboardEvent): void {
   onInputKeydown(event);
   onModalKeydown(event);
 }
+
+useCmHydrated();
 </script>
 
 <template>

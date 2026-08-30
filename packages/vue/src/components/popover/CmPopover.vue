@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm } from '../../internal/warn';
 import type { CmPopoverPlacement } from './popover.types';
 
@@ -71,6 +72,8 @@ function onDocumentClick(event: MouseEvent): void {
 
 onMounted(() => document.addEventListener('click', onDocumentClick));
 onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
+
+useCmHydrated();
 </script>
 
 <template>
