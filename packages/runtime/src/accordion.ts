@@ -1,3 +1,4 @@
+import { nextAccordionItem, toggleAccordionItem } from './core/accordion.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -76,26 +77,27 @@ export class CmAccordionController implements CmController {
     }
 
     const trigger = target.closest<HTMLButtonElement>(triggerSelector);
-    const enabledTriggers = this.#items
-      .filter(({ trigger: candidate }) => !candidate.disabled)
-      .map(({ trigger }) => trigger);
-    const currentIndex = trigger ? enabledTriggers.indexOf(trigger) : -1;
-    if (currentIndex < 0 || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+    const current = this.#items.find((candidate) => candidate.trigger === trigger);
+    if (!current) {
+      return;
+    }
+
+    const nextId = nextAccordionItem(this.#coreItems, current.id, event.key);
+    if (nextId === null) {
       return;
     }
 
     event.preventDefault();
-    const lastIndex = enabledTriggers.length - 1;
-    const nextIndex =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? lastIndex
-          : event.key === 'ArrowDown'
-            ? (currentIndex + 1) % enabledTriggers.length
-            : (currentIndex - 1 + enabledTriggers.length) % enabledTriggers.length;
-    enabledTriggers[nextIndex]?.focus();
+    this.#items.find((candidate) => candidate.id === nextId)?.trigger.focus();
   };
+
+  get #coreItems(): { disabled: boolean; id: string }[] {
+    return this.#items.map(({ id, trigger }) => ({ disabled: trigger.disabled, id }));
+  }
+
+  get #openIds(): string[] {
+    return this.#items.filter(({ trigger }) => trigger.getAttribute('aria-expanded') === 'true').map(({ id }) => id);
+  }
 
   #synchronizePanels(): void {
     for (const { panel, trigger } of this.#items) {
@@ -106,21 +108,16 @@ export class CmAccordionController implements CmController {
   }
 
   #toggle(item: AccordionItem): void {
-    const opening = item.trigger.getAttribute('aria-expanded') !== 'true';
     const multiple = this.#root.getAttribute('data-cm-accordion-multiple') === 'true';
+    const openItems = toggleAccordionItem(this.#coreItems, this.#openIds, item.id, multiple);
 
     for (const candidate of this.#items) {
-      const open =
-        candidate === item ? opening : multiple && candidate.trigger.getAttribute('aria-expanded') === 'true';
+      const open = openItems.includes(candidate.id);
       candidate.trigger.setAttribute('aria-expanded', String(open));
       candidate.panel.hidden = !open;
     }
 
-    dispatchCmEvent<AccordionOpenChangeDetail>(this.#root, 'open-change', {
-      openItems: this.#items
-        .filter(({ trigger }) => trigger.getAttribute('aria-expanded') === 'true')
-        .map(({ id }) => id),
-    });
+    dispatchCmEvent<AccordionOpenChangeDetail>(this.#root, 'open-change', { openItems });
   }
 }
 
