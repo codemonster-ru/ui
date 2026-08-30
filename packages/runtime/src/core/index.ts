@@ -6,6 +6,15 @@
  */
 export { nextAccordionItem, resolveAccordionOpenItems, toggleAccordionItem } from './accordion.js';
 export type { CmAccordionCoreItem } from './accordion.js';
+export {
+  cmFocusableSelector,
+  cmTooltipDelays,
+  dropdownKeyAction,
+  popoverKeyAction,
+  resolveDisclosureOpen,
+  resolveTooltipDelay,
+} from './disclosure.js';
+export type { CmDisclosureAction, CmDisclosureFocus, CmDisclosureState, CmTooltipDelay } from './disclosure.js';
 export { nextRovingIndex } from './roving.js';
 export type { CmRovingDirection, CmRovingOptions, CmRovingOrientation } from './roving.js';
 export { nextTabsValue, resolveTabsValue } from './tabs.js';

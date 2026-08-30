@@ -1,6 +1,5 @@
+import { cmTooltipDelays as delays } from './core/disclosure.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
-
-const delays = { none: 0, short: 300, long: 700 } as const;
 
 export class CmTooltipController implements CmController {
   readonly #content: HTMLElement;

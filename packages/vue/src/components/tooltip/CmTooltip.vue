@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, ref, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
+import { resolveTooltipDelay } from '@codemonster-ru/ui-runtime/core';
 import { assertCm } from '../../internal/warn';
 import type { CmTooltipDelay, CmTooltipPlacement } from './tooltip.types';
 
@@ -52,7 +53,7 @@ function clearTimer(): void {
 
 function show(): void {
   clearTimer();
-  const milliseconds = delay.value === 'none' ? 0 : delay.value === 'long' ? 700 : 300;
+  const milliseconds = resolveTooltipDelay(delay.value);
   timer = setTimeout(() => (visible.value = true), milliseconds);
 }
 
