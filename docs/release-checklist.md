@@ -21,9 +21,8 @@ The tag preparation script derives `next` whenever the version contains a prerel
 - Confirm the packages in scope use the target release versions and all other package versions remain
   unchanged.
 - Confirm every package in scope has a non-empty matching section in its `CHANGELOG.md` file.
-- Keep `@vue/test-utils` pinned to `2.4.11` while the root install patch redirects its vulnerable
-  formatter dependency to `js-beautify@2`; the patch intentionally fails when the upstream
-  dependency contract changes and must then be reviewed.
+- Confirm the root `overrides` entry still resolves `js-beautify` to `2.0.3`, replacing the
+  vulnerable `1.x` formatter dependency that `@vue/test-utils` declares.
 - Review [migration-to-v2.md](./migration-to-v2.md) and [release-notes.md](./release-notes.md).
 - Confirm npm Trusted Publishing is configured for `.github/workflows/release-from-tag.yml`.
 - Confirm the workflow has only `contents: write` and `id-token: write` permissions.

@@ -11,7 +11,7 @@
     "examples/*"
   ],
   "scripts": {
-    "prepare": "node ./scripts/patch-vue-test-utils.mjs && npm run hooks:install",
+    "prepare": "npm run hooks:install",
     "hooks:install": "git config core.hooksPath .githooks",
     "dev": "npm run dev -w @codemonster-ru/vueforge-playground-example",
     "dev:demo": "npm run dev -w @codemonster-ru/vueforge-playground-example",
