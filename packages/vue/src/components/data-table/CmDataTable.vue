@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs, watch, watchEffect, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import type {
   CmDataTableColumn,
@@ -393,6 +394,8 @@ function changePageSize(pageSize: number): void {
   emit('pageSizeChange', pageSize);
   if (localPage.value !== 1) changePage(1);
 }
+
+useCmHydrated();
 </script>
 
 <template>

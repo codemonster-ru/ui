@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmSelectOption, CmSelectSize } from './select.types';
 
@@ -157,6 +158,8 @@ watch(isOpen, (open) => {
 onBeforeUnmount(() => {
   if (typeof document !== 'undefined') document.removeEventListener('click', onDocumentClick);
 });
+
+useCmHydrated();
 </script>
 
 <template>

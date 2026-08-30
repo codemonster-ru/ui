@@ -2,6 +2,7 @@
 import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmMenuItem } from './menu.types';
 
@@ -96,6 +97,8 @@ function move(event: KeyboardEvent): void {
           : (index - 1 + enabled.length) % enabled.length;
   enabled[nextIndex]?.focus();
 }
+
+useCmHydrated();
 </script>
 
 <template>
