@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import CmProgressBar from './CmProgressBar.vue';
+import { expectCmWarning } from '../../internal/expect-warning';
 
 describe('CmProgressBar', () => {
   it('renders bounded determinate ARIA state and a rounded value label', () => {
@@ -58,8 +59,9 @@ describe('CmProgressBar', () => {
   });
 
   it('rejects an empty accessible label', () => {
-    expect(() => mount(CmProgressBar, { props: { label: '  ' } })).toThrow(
-      'ProgressBar label must be a non-empty string.',
+    const wrapper = expectCmWarning('ProgressBar label must be a non-empty string.', () =>
+      mount(CmProgressBar, { props: { label: '  ' } }),
     );
+    expect(wrapper.attributes('role')).toBe('progressbar');
   });
 });

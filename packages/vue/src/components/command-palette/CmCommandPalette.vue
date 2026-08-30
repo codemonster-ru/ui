@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { warnCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmCommandPaletteItem } from './command-palette.types';
 
@@ -39,17 +40,20 @@ if (
     props.closeLabel,
   ].every((value) => value.trim())
 ) {
-  throw new TypeError('CommandPalette text props must be non-empty strings.');
+  warnCm('CommandPalette text props must be non-empty strings.');
 }
 const normalizedCommands = computed(() => {
   const ids = new Set<string>();
+  const commands: CmCommandPaletteItem[] = [];
   for (const command of props.commands) {
     if (!idPattern.test(command.id) || !command.label.trim() || ids.has(command.id)) {
-      throw new TypeError(`Invalid CommandPalette command: ${command.id}.`);
+      warnCm(`Invalid CommandPalette command: ${command.id}. The command is not rendered.`);
+      continue;
     }
     ids.add(command.id);
+    commands.push(command);
   }
-  return props.commands;
+  return commands;
 });
 const localQuery = ref(props.query);
 const visibleCommands = computed(() => {

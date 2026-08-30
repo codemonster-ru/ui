@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm, warnCm } from '../../internal/warn';
 import type { CmAccordionItem, CmAccordionOpenChange } from './accordion.types';
 
 defineOptions({ inheritAttrs: false });
@@ -21,18 +22,19 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 
 function validatedItems(): readonly CmAccordionItem[] {
-  if (!props.id.trim()) {
-    throw new TypeError('Accordion id must be a non-empty string.');
-  }
+  assertCm(props.id.trim() !== '', 'Accordion id must be a non-empty string.');
 
   const ids = new Set<string>();
+  const items: CmAccordionItem[] = [];
   for (const item of props.items) {
     if (!itemIdPattern.test(item.id) || !item.title.trim() || typeof item.content !== 'string' || ids.has(item.id)) {
-      throw new TypeError(`Invalid Accordion item: ${item.id}.`);
+      warnCm(`Invalid Accordion item: ${item.id}. The item is not rendered.`);
+      continue;
     }
     ids.add(item.id);
+    items.push(item);
   }
-  return props.items;
+  return items;
 }
 
 const normalizedItems = computed(validatedItems);

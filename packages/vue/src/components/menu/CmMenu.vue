@@ -2,6 +2,7 @@
 import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm, warnCm } from '../../internal/warn';
 import type { CmMenuItem } from './menu.types';
 
 defineOptions({ inheritAttrs: false });
@@ -17,8 +18,9 @@ const emit = defineEmits<{
 }>();
 const attrs = useAttrs();
 const normalizedItems = computed(() => {
-  if (props.items.length === 0) throw new TypeError('Menu requires items.');
+  assertCm(props.items.length > 0, 'Menu requires items.');
   const ids = new Set<string>();
+  const items: CmMenuItem[] = [];
   for (const item of props.items) {
     if (
       !idPattern.test(item.id) ||
@@ -29,12 +31,14 @@ const normalizedItems = computed(() => {
       (item.tone !== undefined && !['default', 'danger'].includes(item.tone)) ||
       ids.has(item.id)
     ) {
-      throw new TypeError(`Invalid Menu item: ${item.id}.`);
+      warnCm(`Invalid Menu item: ${item.id}. The item is not rendered.`);
+      continue;
     }
     ids.add(item.id);
+    items.push(item);
   }
-  if (!props.items.some(({ disabled }) => !disabled)) throw new TypeError('Menu requires an enabled item.');
-  return props.items;
+  assertCm(items.length === 0 || items.some(({ disabled }) => !disabled), 'Menu requires an enabled item.');
+  return items;
 });
 const classes = computed(() => mergeCmClasses('cm-menu', attrs.class as CmClassValue));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['role', 'aria-label', 'data-cm-controller', 'onKeydown']));
