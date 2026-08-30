@@ -6,6 +6,7 @@ import CmAvatar from './avatar/CmAvatar.vue';
 import CmBadge from './badge/CmBadge.vue';
 import CmDivider from './divider/CmDivider.vue';
 import CmSkeleton from './skeleton/CmSkeleton.vue';
+import { expectCmWarning } from '../internal/expect-warning';
 
 describe('display components', () => {
   it('renders Badge tone and consumer attributes', () => {
@@ -62,6 +63,9 @@ describe('display components', () => {
   it('normalizes Skeleton height and rejects unsafe CSS values', () => {
     const wrapper = mount(CmSkeleton, { props: { animated: false, minHeight: 48, radius: 'control' } });
     expect(wrapper.attributes('style')).toContain('min-height: 48px');
-    expect(() => mount(CmSkeleton, { props: { minHeight: 'calc(100% - 1px)' } })).toThrow(/non-negative CSS length/u);
+    const unsafe = expectCmWarning(/non-negative CSS length/u, () =>
+      mount(CmSkeleton, { props: { minHeight: 'calc(100% - 1px)' } }),
+    );
+    expect(unsafe.attributes('style')).toBeUndefined();
   });
 });

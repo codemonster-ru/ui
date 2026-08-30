@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import CmMenu from '../menu/CmMenu.vue';
 import type { CmMenuItem } from '../menu/menu.types';
 import type { CmDropdownPlacement } from './dropdown.types';
@@ -43,7 +44,7 @@ const classes = computed(() =>
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller']));
 
-if (!props.id.trim() || !props.label.trim()) throw new TypeError('Dropdown id and label must be non-empty strings.');
+assertCm(props.id.trim() !== '' && props.label.trim() !== '', 'Dropdown id and label must be non-empty strings.');
 
 watch(
   () => [props.open, props.disabled] as const,

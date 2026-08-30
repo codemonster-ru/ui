@@ -2,6 +2,7 @@
 import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmDialogSize } from './dialog.types';
 
@@ -23,9 +24,10 @@ const props = defineProps({
 });
 const emit = defineEmits<{ openChange: [open: boolean]; 'update:open': [open: boolean] }>();
 const attrs = useAttrs();
-if (![props.id, props.title, props.closeLabel].every((value) => value.trim())) {
-  throw new TypeError('Dialog id, title, and closeLabel must be non-empty strings.');
-}
+assertCm(
+  [props.id, props.title, props.closeLabel].every((value) => value.trim() !== ''),
+  'Dialog id, title, and closeLabel must be non-empty strings.',
+);
 const modal = useCmModal(
   () => props.open,
   (open) => {

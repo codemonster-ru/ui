@@ -2,6 +2,7 @@
 import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import type { CmLinkTone, CmLinkUnderline } from './link.types';
 
 defineOptions({ inheritAttrs: false });
@@ -37,7 +38,7 @@ const rel = computed(() =>
   typeof attrs.rel === 'string' ? attrs.rel : attrs.target === '_blank' ? 'noopener noreferrer' : undefined,
 );
 
-if (!props.href.trim()) throw new TypeError('Link href must be a non-empty string.');
+assertCm(props.href.trim() !== '', 'Link href must be a non-empty string.');
 </script>
 
 <template>

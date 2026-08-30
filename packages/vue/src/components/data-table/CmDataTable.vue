@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs, watch, watchEffect, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm, warnCm } from '../../internal/warn';
 import type {
   CmDataTableColumn,
   CmDataTableDensity,
@@ -68,8 +69,9 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 
 const normalizedColumns = computed(() => {
-  if (props.columns.length === 0) throw new TypeError('DataTable requires columns.');
+  assertCm(props.columns.length > 0, 'DataTable requires columns.');
   const keys = new Set<string>();
+  const columns: CmDataTableColumn[] = [];
   for (const column of props.columns) {
     if (
       !idPattern.test(column.key) ||
@@ -77,74 +79,101 @@ const normalizedColumns = computed(() => {
       (column.align !== undefined && !['start', 'center', 'end'].includes(column.align)) ||
       keys.has(column.key)
     ) {
-      throw new TypeError(`Invalid DataTable column: ${column.key}.`);
+      warnCm(`Invalid DataTable column: ${column.key}. The column is not rendered.`);
+      continue;
     }
     keys.add(column.key);
+    columns.push(column);
   }
-  return props.columns;
+  return columns;
 });
 
 const normalizedRows = computed(() => {
   const ids = new Set<string>();
   const keys = new Set(normalizedColumns.value.map(({ key }) => key));
+  const rows: CmDataTableRow[] = [];
   for (const row of props.rows) {
     if (
       !idPattern.test(row.id) ||
       ids.has(row.id) ||
       (row.selectable !== undefined && typeof row.selectable !== 'boolean')
     ) {
-      throw new TypeError(`Invalid DataTable row: ${row.id}.`);
+      warnCm(`Invalid DataTable row: ${row.id}. The row is not rendered.`);
+      continue;
     }
-    for (const [key, value] of Object.entries(row.cells)) {
-      if (
+    const invalidCell = Object.entries(row.cells).find(
+      ([key, value]) =>
         !keys.has(key) ||
         (!['string', 'number'].includes(typeof value) && value !== null) ||
-        (typeof value === 'number' && !Number.isFinite(value))
-      ) {
-        throw new TypeError(`Invalid DataTable cell: ${row.id}.${key}.`);
-      }
+        (typeof value === 'number' && !Number.isFinite(value)),
+    );
+    if (invalidCell) {
+      warnCm(`Invalid DataTable cell: ${row.id}.${invalidCell[0]}. The row is not rendered.`);
+      continue;
     }
     ids.add(row.id);
+    rows.push(row);
   }
-  return props.rows;
+  return rows;
 });
 
 const visibleColumns = computed(() => {
   if (props.visibleColumnKeys === null) return normalizedColumns.value;
-  if (props.visibleColumnKeys.length === 0) {
-    throw new TypeError('DataTable visibleColumnKeys must not be empty.');
+  if (!assertCm(props.visibleColumnKeys.length > 0, 'DataTable visibleColumnKeys must not be empty.')) {
+    return normalizedColumns.value;
   }
   const columns = new Map(normalizedColumns.value.map((column) => [column.key, column]));
   const seen = new Set<string>();
-  return props.visibleColumnKeys.map((key) => {
+  const visible: CmDataTableColumn[] = [];
+  for (const key of props.visibleColumnKeys) {
     const column = typeof key === 'string' ? columns.get(key) : undefined;
-    if (!column || seen.has(key)) throw new TypeError(`Invalid DataTable visible column: ${String(key)}.`);
+    if (!column || seen.has(key)) {
+      warnCm(`Invalid DataTable visible column: ${String(key)}. The column is not rendered.`);
+      continue;
+    }
     seen.add(key);
-    return column;
-  });
+    visible.push(column);
+  }
+  return visible;
 });
 
-if (!idPattern.test(props.id)) throw new TypeError('DataTable id must use lowercase kebab-case.');
+assertCm(idPattern.test(props.id), 'DataTable id must use lowercase kebab-case.');
 const normalizedPageSizeOptions = computed(() => {
   const seen = new Set<number>();
+  const options: number[] = [];
   for (const option of props.pageSizeOptions) {
     if (!Number.isInteger(option) || option < 1 || seen.has(option)) {
-      throw new TypeError('DataTable pageSizeOptions must contain unique positive integers.');
+      warnCm('DataTable pageSizeOptions must contain unique positive integers. The option is dropped.');
+      continue;
     }
     seen.add(option);
+    options.push(option);
   }
-  if (seen.size > 0 && !seen.has(props.pageSize)) {
-    throw new TypeError('DataTable pageSizeOptions must contain pageSize.');
+  if (options.length > 0 && !seen.has(safePageSize.value)) {
+    warnCm('DataTable pageSizeOptions must contain pageSize. The active size is appended.');
+    options.push(safePageSize.value);
   }
-  return props.pageSizeOptions;
+  return options;
 });
 
-if (![props.page, props.pageCount, props.pageSize].every((value) => Number.isInteger(value) && value > 0)) {
-  throw new TypeError('DataTable page, pageCount, and pageSize must be positive integers.');
+function safeCount(value: number): number {
+  const usable = assertCm(
+    Number.isInteger(value) && value > 0,
+    'DataTable page, pageCount, and pageSize must be positive integers.',
+  );
+  return usable ? value : 1;
 }
-if (props.totalRows !== null && (!Number.isInteger(props.totalRows) || props.totalRows < 0)) {
-  throw new TypeError('DataTable totalRows must be a non-negative integer or null.');
-}
+const safePage = computed(() => safeCount(props.page));
+const safePageCount = computed(() => safeCount(props.pageCount));
+const safePageSize = computed(() => safeCount(props.pageSize));
+const safeTotalRows = computed(() => {
+  if (props.totalRows === null) return null;
+  const usable = assertCm(
+    Number.isInteger(props.totalRows) && props.totalRows >= 0,
+    'DataTable totalRows must be a non-negative integer or null.',
+  );
+  return usable ? props.totalRows : null;
+});
 if (
   [
     props.emptyText,
@@ -160,27 +189,27 @@ if (
     props.selectAllLabel,
   ].some((value) => !value.trim())
 ) {
-  throw new TypeError('DataTable labels must be non-empty strings.');
+  warnCm('DataTable labels must be non-empty strings.');
 }
 if (!props.pageSummaryTemplate.includes('{page}') || !props.pageSummaryTemplate.includes('{pageCount}')) {
-  throw new TypeError('DataTable pageSummaryTemplate must contain {page} and {pageCount}.');
+  warnCm('DataTable pageSummaryTemplate must contain {page} and {pageCount}.');
 }
 if (
   !props.paginationSummaryTemplate.includes('{firstRow}') ||
   !props.paginationSummaryTemplate.includes('{lastRow}') ||
   !props.paginationSummaryTemplate.includes('{totalRows}')
 ) {
-  throw new TypeError('DataTable paginationSummaryTemplate must contain first, last, and total row placeholders.');
+  warnCm('DataTable paginationSummaryTemplate must contain first, last, and total row placeholders.');
 }
 if (!props.selectRowLabelTemplate.includes('{row}')) {
-  throw new TypeError('DataTable selectRowLabelTemplate must contain {row}.');
+  warnCm('DataTable selectRowLabelTemplate must contain {row}.');
 }
 if (
   [props.sortAscendingLabelTemplate, props.sortDescendingLabelTemplate, props.clearSortLabelTemplate].some(
     (template) => !template.includes('{column}'),
   )
 ) {
-  throw new TypeError('DataTable sort label templates must contain {column}.');
+  warnCm('DataTable sort label templates must contain {column}.');
 }
 
 function normalizeSort(sort: CmDataTableSort | null): CmDataTableSort | null {
@@ -189,20 +218,23 @@ function normalizeSort(sort: CmDataTableSort | null): CmDataTableSort | null {
     (!directions.includes(sort.direction) ||
       !normalizedColumns.value.some(({ key, sortable }) => key === sort.key && sortable))
   ) {
-    throw new TypeError(`Invalid DataTable sort: ${sort.key}.`);
+    warnCm(`Invalid DataTable sort: ${sort.key}. The table renders unsorted.`);
+    return null;
   }
   return sort ? { ...sort } : null;
 }
 
 const localSort = ref<CmDataTableSort | null>(normalizeSort(props.sort));
 const localSelectedRowIds = ref([...props.selectedRowIds]);
-const localPage = ref(props.page);
-const localPageSize = ref(props.pageSize);
+const localPage = ref(safePage.value);
+const localPageSize = ref(safePageSize.value);
 const resolvedPageCount = computed(() =>
-  props.totalRows === null ? props.pageCount : Math.max(1, Math.ceil(props.totalRows / localPageSize.value)),
+  safeTotalRows.value === null
+    ? safePageCount.value
+    : Math.max(1, Math.ceil(safeTotalRows.value / localPageSize.value)),
 );
-if (props.page > resolvedPageCount.value) {
-  throw new TypeError('DataTable page must be within its resolved pageCount.');
+if (!assertCm(safePage.value <= resolvedPageCount.value, 'DataTable page must be within its resolved pageCount.')) {
+  localPage.value = resolvedPageCount.value;
 }
 watch(
   () => props.sort,
@@ -214,11 +246,11 @@ watch(
   (ids) => (localSelectedRowIds.value = [...ids]),
 );
 watch(
-  () => props.page,
-  (page) => (localPage.value = page),
+  () => safePage.value,
+  (page) => (localPage.value = Math.min(page, resolvedPageCount.value)),
 );
 watch(
-  () => props.pageSize,
+  () => safePageSize.value,
   (pageSize) => (localPageSize.value = pageSize),
 );
 
@@ -273,11 +305,11 @@ const pageSummary = computed(() =>
   formatTemplate(props.pageSummaryTemplate, { page: localPage.value, pageCount: resolvedPageCount.value }),
 );
 const paginationSummary = computed(() => {
-  if (props.totalRows === null) return '';
-  if (props.totalRows === 0) return props.emptyPaginationSummaryText;
+  if (safeTotalRows.value === null) return '';
+  if (safeTotalRows.value === 0) return props.emptyPaginationSummaryText;
   const firstRow = (localPage.value - 1) * localPageSize.value + 1;
-  const lastRow = Math.min(localPage.value * localPageSize.value, props.totalRows);
-  return formatTemplate(props.paginationSummaryTemplate, { firstRow, lastRow, totalRows: props.totalRows });
+  const lastRow = Math.min(localPage.value * localPageSize.value, safeTotalRows.value);
+  return formatTemplate(props.paginationSummaryTemplate, { firstRow, lastRow, totalRows: safeTotalRows.value });
 });
 const columnCount = computed(() => visibleColumns.value.length + (props.selectable ? 1 : 0));
 
@@ -374,7 +406,7 @@ function changePageSize(pageSize: number): void {
     :data-cm-data-table-page="localPage"
     :data-cm-data-table-page-count="resolvedPageCount"
     :data-cm-data-table-page-size="localPageSize"
-    :data-cm-data-table-total-rows="props.totalRows ?? undefined"
+    :data-cm-data-table-total-rows="safeTotalRows ?? undefined"
     :data-cm-data-table-selected-count="localSelectedRowIds.length"
   >
     <div class="cm-data-table__scroll">
@@ -451,7 +483,7 @@ function changePageSize(pageSize: number): void {
       </table>
     </div>
     <nav
-      v-if="resolvedPageCount > 1 || normalizedPageSizeOptions.length > 0 || props.totalRows !== null"
+      v-if="resolvedPageCount > 1 || normalizedPageSizeOptions.length > 0 || safeTotalRows !== null"
       class="cm-data-table__pagination"
       :aria-label="props.paginationLabel"
     >
@@ -472,7 +504,7 @@ function changePageSize(pageSize: number): void {
         </select>
       </label>
       <span
-        v-if="props.totalRows !== null"
+        v-if="safeTotalRows !== null"
         class="cm-data-table__pagination-summary"
         aria-live="polite"
         :data-cm-data-table-pagination-summary-template="props.paginationSummaryTemplate"

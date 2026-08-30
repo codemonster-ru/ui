@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import CmDataTable from './data-table/CmDataTable.vue';
 import CmTable from './table/CmTable.vue';
+import { expectCmWarning } from '../internal/expect-warning';
 
 const columns = [
   { key: 'name', header: 'Name', sortable: true },
@@ -137,28 +138,39 @@ describe('Vue data table components', () => {
     expect(sort.attributes('aria-label')).toBe('Сбросить сортировку Name');
   });
 
-  it('rejects duplicate columns and unsafe cell values', () => {
-    expect(() => mount(CmDataTable, { props: { id: 'projects', columns: [columns[0], columns[0]], rows } })).toThrow(
-      /Invalid DataTable column/u,
+  it('warns about invalid table input and renders what is left', () => {
+    const duplicateColumn = expectCmWarning(/Invalid DataTable column/u, () =>
+      mount(CmDataTable, { props: { id: 'projects', columns: [columns[0], columns[0]], rows } }),
     );
-    expect(() =>
+    expect(duplicateColumn.findAll('thead th')).toHaveLength(1);
+
+    const unsafeCell = expectCmWarning(/Invalid DataTable cell/u, () =>
       mount(CmDataTable, {
         props: { id: 'projects', columns, rows: [{ id: 'bad', cells: { name: Number.NaN } }] },
       }),
-    ).toThrow(/Invalid DataTable cell/u);
-    expect(() =>
+    );
+    expect(unsafeCell.findAll('tbody tr[data-cm-data-table-row]')).toHaveLength(0);
+
+    const missingPageSize = expectCmWarning(/pageSizeOptions must contain pageSize/u, () =>
       mount(CmDataTable, { props: { id: 'projects', columns, rows, pageSize: 10, pageSizeOptions: [25, 50] } }),
-    ).toThrow(/pageSizeOptions must contain pageSize/u);
-    expect(() =>
+    );
+    expect(missingPageSize.findAll('option').map((option) => option.text())).toContain('10');
+
+    const unsafeRow = expectCmWarning(/Invalid DataTable row/u, () =>
       mount(CmDataTable, {
         props: { id: 'projects', columns, rows: [{ ...rows[0]!, selectable: 'no' as unknown as boolean }] },
       }),
-    ).toThrow(/Invalid DataTable row/u);
-    expect(() =>
+    );
+    expect(unsafeRow.findAll('tbody tr[data-cm-data-table-row]')).toHaveLength(0);
+
+    const missingColumn = expectCmWarning(/Invalid DataTable visible column/u, () =>
       mount(CmDataTable, { props: { id: 'projects', columns, rows, visibleColumnKeys: ['missing'] } }),
-    ).toThrow(/Invalid DataTable visible column/u);
-    expect(() =>
+    );
+    expect(missingColumn.findAll('thead th')).toHaveLength(0);
+
+    const missingPlaceholder = expectCmWarning(/selectRowLabelTemplate must contain \{row\}/u, () =>
       mount(CmDataTable, { props: { id: 'projects', columns, rows, selectRowLabelTemplate: 'Выбрать строку' } }),
-    ).toThrow(/selectRowLabelTemplate must contain \{row\}/u);
+    );
+    expect(missingPlaceholder.find('table').exists()).toBe(true);
   });
 });

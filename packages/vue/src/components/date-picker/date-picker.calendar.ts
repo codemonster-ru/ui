@@ -26,16 +26,17 @@ export function parseIsoDate(value: string): Date | null {
   return formatIsoDate(date) === value ? date : null;
 }
 
+// Callers below need a real Date to build a grid from. The component sanitizes every value it
+// passes, so the fallback is defence in depth rather than a path the UI reaches.
 function requireIsoDate(value: string): Date {
-  const date = parseIsoDate(value);
-  if (!date) throw new TypeError(`DatePicker value must be a valid YYYY-MM-DD date: ${value}.`);
-  return date;
+  return parseIsoDate(value) ?? new Date();
 }
 
 // The display and month names are pinned to one locale so a server-rendered control and the client
 // that later takes it over agree, and so a capture does not depend on the machine's language.
 export function formatDisplayDate(value: string): string {
-  return displayFormatter.format(requireIsoDate(value));
+  const date = parseIsoDate(value);
+  return date === null ? value : displayFormatter.format(date);
 }
 
 export function monthLabel(value: string): string {
@@ -73,9 +74,7 @@ export function buildCalendarMonth(options: {
       const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + week * 7 + day);
       const value = formatIsoDate(date);
       days.push({
-        disabled: Boolean(
-          (options.min && value < options.min) || (options.max && value > options.max),
-        ),
+        disabled: Boolean((options.min && value < options.min) || (options.max && value > options.max)),
         label: String(date.getDate()),
         outside: date.getMonth() !== anchor.getMonth(),
         selected: value === options.selected,

@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import type { CmPopoverPlacement } from './popover.types';
 
 defineOptions({ inheritAttrs: false });
@@ -22,7 +23,7 @@ const root = ref<HTMLElement>();
 const trigger = ref<HTMLButtonElement>();
 const panel = ref<HTMLElement>();
 const localOpen = ref(props.open && !props.disabled);
-if (!props.id.trim() || !props.label.trim()) throw new TypeError('Popover id and label must be non-empty strings.');
+assertCm(props.id.trim() !== '' && props.label.trim() !== '', 'Popover id and label must be non-empty strings.');
 const placement = computed(() =>
   ['top', 'bottom-start', 'bottom-end'].includes(props.placement) ? props.placement : 'bottom-start',
 );

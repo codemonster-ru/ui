@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, ref, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import type { CmTooltipDelay, CmTooltipPlacement } from './tooltip.types';
 
 defineOptions({ inheritAttrs: false });
@@ -24,9 +25,10 @@ const props = defineProps({
 const attrs = useAttrs();
 const visible = ref(props.defaultVisible);
 let timer: ReturnType<typeof setTimeout> | undefined;
-if (![props.id, props.label, props.content].every((value) => value.trim())) {
-  throw new TypeError('Tooltip id, label, and content must be non-empty strings.');
-}
+assertCm(
+  [props.id, props.label, props.content].every((value) => value.trim() !== ''),
+  'Tooltip id, label, and content must be non-empty strings.',
+);
 const placement = computed(() =>
   ['top', 'bottom', 'start', 'end'].includes(props.placement) ? props.placement : 'top',
 );

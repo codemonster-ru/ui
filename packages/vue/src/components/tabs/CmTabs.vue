@@ -2,6 +2,7 @@
 import { computed, ref, useAttrs, useSlots, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm, warnCm } from '../../internal/warn';
 import type { CmTabItem } from './tabs.types';
 
 defineOptions({ inheritAttrs: false });
@@ -28,8 +29,9 @@ function itemSlotName(region: 'tab' | 'panel', value: string): string {
 }
 
 const normalizedItems = computed(() => {
-  if (!props.id.trim() || props.items.length === 0) throw new TypeError('Tabs require a non-empty id and items.');
+  assertCm(props.id.trim() !== '' && props.items.length > 0, 'Tabs require a non-empty id and items.');
   const values = new Set<string>();
+  const items: CmTabItem[] = [];
   for (const item of props.items) {
     if (
       !valuePattern.test(item.value) ||
@@ -38,14 +40,16 @@ const normalizedItems = computed(() => {
       (item.content === undefined && !slots[itemSlotName('panel', item.value)]) ||
       values.has(item.value)
     ) {
-      throw new TypeError(`Invalid Tabs item: ${item.value}.`);
+      warnCm(`Invalid Tabs item: ${item.value}. The item is not rendered.`);
+      continue;
     }
     values.add(item.value);
+    items.push(item);
   }
-  if (!props.items.some(({ disabled }) => !disabled)) throw new TypeError('Tabs require an enabled item.');
-  return props.items;
+  assertCm(items.length === 0 || items.some(({ disabled }) => !disabled), 'Tabs require an enabled item.');
+  return items;
 });
-const fallbackValue = computed(() => normalizedItems.value.find(({ disabled }) => !disabled)!.value);
+const fallbackValue = computed(() => normalizedItems.value.find(({ disabled }) => !disabled)?.value ?? '');
 const localValue = ref(
   normalizedItems.value.some(({ disabled, value }) => !disabled && value === props.defaultValue)
     ? props.defaultValue!
