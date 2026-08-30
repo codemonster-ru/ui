@@ -3,6 +3,7 @@ import { computed, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
+import { commandPaletteKeyAction, filterCommands } from '@codemonster-ru/ui-runtime/core';
 import { warnCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmCommandPaletteItem } from './command-palette.types';
@@ -57,13 +58,9 @@ const normalizedCommands = computed(() => {
   return commands;
 });
 const localQuery = ref(props.query);
-const visibleCommands = computed(() => {
-  if (props.loading) return [];
-  const needle = localQuery.value.trim().toLocaleLowerCase();
-  return normalizedCommands.value.filter((command) =>
-    needle === '' ? true : `${command.label} ${command.keywords ?? ''}`.toLocaleLowerCase().includes(needle),
-  );
-});
+const visibleCommands = computed(() =>
+  props.loading ? [] : filterCommands(normalizedCommands.value, localQuery.value),
+);
 const enabledCommands = computed(() => visibleCommands.value.filter(({ disabled }) => !disabled));
 const hasQuery = computed(() => localQuery.value.trim() !== '');
 const isIdle = computed(() => !props.loading && !hasQuery.value && normalizedCommands.value.length === 0);
@@ -119,29 +116,23 @@ function commandSlotName(id: string): string {
 }
 
 function onInputKeydown(event: KeyboardEvent): void {
-  if (event.key === 'Enter') {
-    const command = enabledCommands.value.find(({ id }) => id === activeId.value);
-    if (command) {
-      event.preventDefault();
-      select(command);
-    }
+  const activeIndex = enabledCommands.value.findIndex(({ id }) => id === activeId.value);
+  const action = commandPaletteKeyAction(event.key, {
+    activeIndex,
+    count: enabledCommands.value.length,
+  });
+  if (!action) return;
+
+  event.preventDefault();
+  if (action.type === 'commit') {
+    const command = enabledCommands.value[activeIndex];
+    if (command) select(command);
     return;
   }
-  if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key) || enabledCommands.value.length === 0) return;
-  event.preventDefault();
-  const current = enabledCommands.value.findIndex(({ id }) => id === activeId.value);
-  const last = enabledCommands.value.length - 1;
-  const next =
-    event.key === 'Home'
-      ? 0
-      : event.key === 'End'
-        ? last
-        : event.key === 'ArrowDown'
-          ? (Math.max(current, -1) + 1) % enabledCommands.value.length
-          : current <= 0
-            ? last
-            : current - 1;
-  activeId.value = enabledCommands.value[next].id;
+
+  const next = enabledCommands.value[action.index];
+  if (!next) return;
+  activeId.value = next.id;
   document.getElementById(`${props.id}-option-${activeId.value}`)?.scrollIntoView?.({ block: 'nearest' });
 }
 
