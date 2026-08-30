@@ -111,10 +111,8 @@ function handleKeydown(event: KeyboardEvent, currentItem: VfTabItem) {
   const isRtl =
     directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' ||
     (!directionHost && document.documentElement.getAttribute('dir')?.toLowerCase() === 'rtl');
-  const movesForward =
-    event.key === 'ArrowDown' || (isRtl ? event.key === 'ArrowLeft' : event.key === 'ArrowRight');
-  const movesBackward =
-    event.key === 'ArrowUp' || (isRtl ? event.key === 'ArrowRight' : event.key === 'ArrowLeft');
+  const movesForward = event.key === 'ArrowDown' || (isRtl ? event.key === 'ArrowLeft' : event.key === 'ArrowRight');
+  const movesBackward = event.key === 'ArrowUp' || (isRtl ? event.key === 'ArrowRight' : event.key === 'ArrowLeft');
 
   if (movesForward) {
     event.preventDefault();

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
+import { assertCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmDrawerSide, CmDrawerSize } from './drawer.types';
 
@@ -28,9 +30,10 @@ const props = defineProps({
 });
 const emit = defineEmits<{ openChange: [open: boolean]; 'update:open': [open: boolean] }>();
 const attrs = useAttrs();
-if (![props.id, props.title, props.closeLabel].every((value) => value.trim())) {
-  throw new TypeError('Drawer id, title, and closeLabel must be non-empty strings.');
-}
+assertCm(
+  [props.id, props.title, props.closeLabel].every((value) => value.trim() !== ''),
+  'Drawer id, title, and closeLabel must be non-empty strings.',
+);
 const side = computed(() => (['start', 'end'].includes(props.side) ? props.side : 'end'));
 const size = computed(() => (['sm', 'md', 'lg', 'full'].includes(props.size) ? props.size : 'md'));
 const modal = useCmModal(
@@ -52,7 +55,7 @@ const classes = computed(() =>
     props.dividers ? 'cm-drawer--dividers' : undefined,
     props.rounded ? 'cm-drawer--rounded' : undefined,
     localOpen.value ? 'cm-drawer--open' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>
@@ -66,6 +69,8 @@ const rootAttrs = computed(() =>
     'data-cm-drawer-dismissible',
   ]),
 );
+
+useCmHydrated();
 </script>
 
 <template>

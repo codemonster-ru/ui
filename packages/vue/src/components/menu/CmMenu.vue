@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
+import { isMenuCloseKey, menuTabStopId, nextMenuItem } from '@codemonster-ru/ui-runtime/core';
+import { assertCm, warnCm } from '../../internal/warn';
 import type { CmMenuItem } from './menu.types';
 
 defineOptions({ inheritAttrs: false });
@@ -17,8 +20,9 @@ const emit = defineEmits<{
 }>();
 const attrs = useAttrs();
 const normalizedItems = computed(() => {
-  if (props.items.length === 0) throw new TypeError('Menu requires items.');
+  assertCm(props.items.length > 0, 'Menu requires items.');
   const ids = new Set<string>();
+  const items: CmMenuItem[] = [];
   for (const item of props.items) {
     if (
       !idPattern.test(item.id) ||
@@ -29,14 +33,16 @@ const normalizedItems = computed(() => {
       (item.tone !== undefined && !['default', 'danger'].includes(item.tone)) ||
       ids.has(item.id)
     ) {
-      throw new TypeError(`Invalid Menu item: ${item.id}.`);
+      warnCm(`Invalid Menu item: ${item.id}. The item is not rendered.`);
+      continue;
     }
     ids.add(item.id);
+    items.push(item);
   }
-  if (!props.items.some(({ disabled }) => !disabled)) throw new TypeError('Menu requires an enabled item.');
-  return props.items;
+  assertCm(items.length === 0 || items.some(({ disabled }) => !disabled), 'Menu requires an enabled item.');
+  return items;
 });
-const classes = computed(() => mergeCmClasses('cm-menu', attrs.class as CmClassValue));
+const classes = computed(() => mergeCmClasses('cm-menu', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['role', 'aria-label', 'data-cm-controller', 'onKeydown']));
 const label = computed(() => (attrs['aria-labelledby'] === undefined ? props.ariaLabel : undefined));
 
@@ -68,37 +74,32 @@ function activate(event: MouseEvent, item: CmMenuItem): void {
 }
 
 function move(event: KeyboardEvent): void {
-  if (event.key === 'Escape') {
+  if (isMenuCloseKey(event.key)) {
     event.preventDefault();
     emit('closeRequest');
     return;
   }
-  if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
   const root = event.currentTarget as HTMLElement;
-  const enabled = [
-    ...root.querySelectorAll<HTMLElement>('[data-cm-menu-item]:not([disabled]):not([aria-disabled="true"])'),
-  ];
-  const index = enabled.indexOf(event.target as HTMLElement);
-  if (index < 0) return;
+  const currentId = (event.target as HTMLElement).closest<HTMLElement>('[data-cm-menu-item]')?.dataset.cmMenuValue;
+  if (currentId === undefined) return;
+
+  const nextId = nextMenuItem(normalizedItems.value, currentId, event.key);
+  if (nextId === null) return;
+
   event.preventDefault();
-  const last = enabled.length - 1;
-  const nextIndex =
-    event.key === 'Home'
-      ? 0
-      : event.key === 'End'
-        ? last
-        : event.key === 'ArrowDown'
-          ? (index + 1) % enabled.length
-          : (index - 1 + enabled.length) % enabled.length;
-  enabled[nextIndex]?.focus();
+  root.querySelector<HTMLElement>(`[data-cm-menu-value="${nextId}"]`)?.focus();
 }
+
+const tabStopId = computed(() => menuTabStopId(normalizedItems.value));
+
+useCmHydrated();
 </script>
 
 <template>
   <div v-bind="rootAttrs" :class="classes" role="menu" :aria-label="label" data-cm-controller="menu" @keydown="move">
     <component
       :is="item.href ? 'a' : 'button'"
-      v-for="(item, index) in normalizedItems"
+      v-for="item in normalizedItems"
       :key="item.id"
       :class="itemClasses(item)"
       :type="item.href ? undefined : 'button'"
@@ -106,7 +107,7 @@ function move(event: KeyboardEvent): void {
       :target="item.href ? item.target : undefined"
       :rel="item.href ? itemRel(item) : undefined"
       role="menuitem"
-      :tabindex="!item.disabled && normalizedItems.findIndex((candidate) => !candidate.disabled) === index ? 0 : -1"
+      :tabindex="item.id === tabStopId ? 0 : -1"
       data-cm-menu-item
       :data-cm-menu-value="item.id"
       :disabled="!item.href && item.disabled ? true : undefined"

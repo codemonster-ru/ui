@@ -274,7 +274,7 @@ function getItemLabel(item: unknown): string {
     }
   }
 
-  return String(item ?? '');
+  return typeof item === 'string' || typeof item === 'number' ? String(item) : '';
 }
 
 function getItemField(item: unknown, keys: string[]): string {

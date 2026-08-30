@@ -98,32 +98,32 @@ describe('CoreTabsRecipe', () => {
     const tabs = [...host.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
 
     tabs[0]?.focus();
-    press(tabs[0]!, 'ArrowRight');
+    press(tabs[0], 'ArrowRight');
     await nextTick();
     expect(value.value).toBe('status');
     expect(document.activeElement).toBe(tabs[2]);
 
-    press(tabs[2]!, 'ArrowDown');
+    press(tabs[2], 'ArrowDown');
     await nextTick();
     expect(value.value).toBe('changelog');
 
-    press(tabs[3]!, 'ArrowRight');
+    press(tabs[3], 'ArrowRight');
     await nextTick();
     expect(value.value).toBe('overview');
 
-    press(tabs[0]!, 'ArrowLeft');
+    press(tabs[0], 'ArrowLeft');
     await nextTick();
     expect(value.value).toBe('changelog');
 
-    press(tabs[3]!, 'ArrowUp');
+    press(tabs[3], 'ArrowUp');
     await nextTick();
     expect(value.value).toBe('status');
 
-    press(tabs[2]!, 'Home');
+    press(tabs[2], 'Home');
     await nextTick();
     expect(value.value).toBe('overview');
 
-    press(tabs[0]!, 'End');
+    press(tabs[0], 'End');
     await nextTick();
     expect(value.value).toBe('changelog');
     expect(document.activeElement).toBe(tabs[3]);
@@ -148,15 +148,15 @@ describe('CoreTabsRecipe', () => {
     await nextTick();
     const tabs = [...host.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
 
-    press(tabs[0]!, 'ArrowRight');
+    press(tabs[0], 'ArrowRight');
     await nextTick();
     expect(value.value).toBe('changelog');
 
-    press(tabs[3]!, 'ArrowLeft');
+    press(tabs[3], 'ArrowLeft');
     await nextTick();
     expect(value.value).toBe('overview');
 
-    press(tabs[0]!, 'ArrowDown');
+    press(tabs[0], 'ArrowDown');
     await nextTick();
     expect(value.value).toBe('status');
     app.unmount();

@@ -1,3 +1,4 @@
+import { nextTabsValue, resolveTabsValue } from './core/tabs.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -27,17 +28,18 @@ export class CmTabsController implements CmController {
   readonly #root: Element;
   #entries: TabEntry[] = [];
 
+  get #coreItems(): { disabled: boolean; value: string }[] {
+    return this.#entries.map(({ tab, value }) => ({ disabled: tab.disabled, value }));
+  }
+
   constructor(root: Element) {
     this.#root = root;
   }
 
   connect(): void {
     this.#entries = entries(this.#root);
-    const requested = this.#root.getAttribute('data-cm-tabs-value');
-    const active =
-      this.#entries.find(({ tab, value }) => !tab.disabled && value === requested) ??
-      this.#entries.find(({ tab }) => !tab.disabled);
-    if (active) this.#synchronize(active.value);
+    const active = resolveTabsValue(this.#coreItems, this.#root.getAttribute('data-cm-tabs-value'));
+    if (active !== null) this.#synchronize(active);
     this.#root.addEventListener('click', this.#handleClick);
     this.#root.addEventListener('keydown', this.#handleKeydown);
   }
@@ -59,30 +61,17 @@ export class CmTabsController implements CmController {
     if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor)) return;
 
     const tab = this.#tabFromEvent(event);
-    const enabled = this.#entries.filter(({ tab: candidate }) => !candidate.disabled);
-    const currentIndex = tab ? enabled.findIndex((entry) => entry.tab === tab) : -1;
-    if (currentIndex < 0) return;
+    const current = this.#entries.find((entry) => entry.tab === tab);
+    if (!current) return;
 
     const direction =
       this.#root.closest('[dir]')?.getAttribute('dir')?.toLowerCase() ??
       this.#root.ownerDocument.documentElement.getAttribute('dir')?.toLowerCase();
-    const forwardKey = direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
-    const backwardKey = direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
-    const last = enabled.length - 1;
-    const nextIndex =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? last
-          : event.key === forwardKey
-            ? (currentIndex + 1) % enabled.length
-            : event.key === backwardKey
-              ? (currentIndex - 1 + enabled.length) % enabled.length
-              : -1;
-    if (nextIndex < 0) return;
+    const nextValue = nextTabsValue(this.#coreItems, current.value, event.key, direction === 'rtl' ? 'rtl' : 'ltr');
+    if (nextValue === null) return;
 
     event.preventDefault();
-    const next = enabled[nextIndex];
+    const next = this.#entries.find((entry) => entry.value === nextValue);
     if (next) this.#select(next, true);
   };
 

@@ -27,7 +27,7 @@ const toCssLength = (value: unknown): string | undefined => {
     return `${value}px`;
   }
 
-  return String(value);
+  return typeof value === 'string' ? value : undefined;
 };
 
 const resolveMinHeightFromAttrs = (attrs: Record<string, unknown>, keys: readonly string[]): string | undefined => {

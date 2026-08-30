@@ -1,3 +1,4 @@
+import { commandPaletteKeyAction, normalizeCommandQuery } from './core/command-palette.js';
 import { dispatchCmEvent } from './events.js';
 import { CmModalController } from './modal.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
@@ -67,28 +68,18 @@ export class CmCommandPaletteController implements CmController {
 
   readonly #handleKeydown = (event: KeyboardEvent): void => {
     const enabled = this.#enabledVisibleOptions();
-    if (event.key === 'Enter') {
-      const active = enabled.find((option) => option.getAttribute('aria-selected') === 'true');
-      if (!active) return;
-      event.preventDefault();
-      this.#select(active);
+    const activeIndex = enabled.findIndex((option) => option.getAttribute('aria-selected') === 'true');
+    const action = commandPaletteKeyAction(event.key, { activeIndex, count: enabled.length });
+    if (!action) return;
+
+    event.preventDefault();
+    if (action.type === 'commit') {
+      const active = enabled[activeIndex];
+      if (active) this.#select(active);
       return;
     }
-    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key) || enabled.length === 0) return;
-    event.preventDefault();
-    const current = enabled.findIndex((option) => option.getAttribute('aria-selected') === 'true');
-    const last = enabled.length - 1;
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? last
-          : event.key === 'ArrowDown'
-            ? (Math.max(current, -1) + 1) % enabled.length
-            : current <= 0
-              ? last
-              : current - 1;
-    this.#activate(enabled[next]!);
+    const next = enabled[action.index];
+    if (next) this.#activate(next);
   };
 
   readonly #handleClick = (event: Event): void => {
@@ -105,7 +96,7 @@ export class CmCommandPaletteController implements CmController {
 
   #filter(query: string): void {
     if (this.#root.getAttribute('data-cm-command-palette-loading') === 'true') return;
-    const needle = query.trim().toLocaleLowerCase();
+    const needle = normalizeCommandQuery(query);
     let visibleCount = 0;
     for (const option of this.#options) {
       const haystack = `${option.textContent ?? ''} ${option.dataset.cmCommandKeywords ?? ''}`.toLocaleLowerCase();

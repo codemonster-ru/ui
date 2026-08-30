@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmTableDensity } from './table.types';
 
 defineOptions({ inheritAttrs: false });
@@ -17,7 +17,7 @@ const props = defineProps({
   stickyHeader: Boolean,
 });
 const attrs = useAttrs();
-const rootClasses = computed(() => mergeCmClasses('cm-table-wrap', attrs.class as CmClassValue));
+const rootClasses = computed(() => mergeCmClasses('cm-table-wrap', attrs.class));
 const tableClasses = computed(() =>
   mergeCmClasses(
     'cm-table',

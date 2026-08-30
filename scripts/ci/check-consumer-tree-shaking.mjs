@@ -17,6 +17,16 @@ const commonBuildOptions = {
   platform: 'browser',
   treeShaking: true,
 };
+// A framework adapter imports the shared core but must never drag in the DOM controllers beside
+// it. These match the runtime's own strings rather than the markup contract: every adapter renders
+// data-cm-controller on purpose, so that attribute proves nothing.
+const domRuntimeMarkers = [
+  ['CmRuntime registry', /Controller name must use lowercase kebab-case/],
+  ['CmRuntime observer', /MutationObserver is not available/],
+  ['a DOM controller', /controller requires/i],
+  ['the positioning engine', /autoUpdate|computePosition/],
+];
+
 const cases = [
   {
     entry: "export { VfButton } from '@codemonster-ru/vueforge-core';\n",
@@ -61,6 +71,42 @@ const cases = [
     maxGzipBytes: 5 * 1024,
     name: 'layouts component VfContainer with CSS',
   },
+  {
+    entry: "export { CmButton } from '@codemonster-ru/ui-vue';\n",
+    fileName: 'ui-vue-button',
+    forbiddenMarkers: domRuntimeMarkers,
+    maxGzipBytes: 3 * 1024,
+    name: 'ui-vue CmButton',
+  },
+  {
+    entry: "export { CmTabs } from '@codemonster-ru/ui-vue';\n",
+    fileName: 'ui-vue-tabs',
+    forbiddenMarkers: domRuntimeMarkers,
+    maxGzipBytes: 4 * 1024,
+    name: 'ui-vue CmTabs with its shared core',
+  },
+  {
+    entry: "export { CmButton, CmDialog, CmTabs } from '@codemonster-ru/ui-vue';\n",
+    fileName: 'ui-vue-multiple',
+    forbiddenMarkers: domRuntimeMarkers,
+    maxGzipBytes: 8 * 1024,
+    name: 'ui-vue multiple components',
+  },
+  {
+    entry: "import * as CodeMonsterUiVue from '@codemonster-ru/ui-vue';\nconsole.log(CodeMonsterUiVue);\n",
+    fileName: 'ui-vue-full',
+    forbiddenMarkers: domRuntimeMarkers,
+    maxGzipBytes: 32 * 1024,
+    minGzipBytes: 15 * 1024,
+    name: 'ui-vue full namespace',
+  },
+  {
+    entry: "import * as CodeMonsterUiCore from '@codemonster-ru/ui-runtime/core';\nconsole.log(CodeMonsterUiCore);\n",
+    fileName: 'ui-core-full',
+    forbiddenMarkers: domRuntimeMarkers,
+    maxGzipBytes: 5 * 1024,
+    name: 'ui-runtime core subpath',
+  },
 ];
 const forbiddenOutput = [
   ['OKLCH palette', /oklch\(/i],
@@ -102,6 +148,12 @@ try {
       throw new Error(
         `${testCase.name} unexpectedly small: ${formatKiB(gzipBytes)} < ${formatKiB(testCase.minGzipBytes)}`,
       );
+    }
+
+    for (const [description, matcher] of testCase.forbiddenMarkers ?? []) {
+      if (matcher.test(searchableOutput)) {
+        throw new Error(`${testCase.name} retained ${description}.`);
+      }
     }
 
     if (testCase.checkForbidden !== false) {

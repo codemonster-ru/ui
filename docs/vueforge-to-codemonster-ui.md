@@ -141,8 +141,9 @@ rename as API compatibility:
 - [Navigation](./components/navigation.md) and [overlays](./components/overlays.md) define owned
   triggers and panels, controlled state, keyboard and focus behavior, and the boundary around
   routers, teleportation, and application dismissal policy.
-- [Advanced inputs](./components/advanced-inputs.md) preserve native Select and DatePicker
-  submission while documenting localized clear actions and typed CommandPalette async content.
+- [Advanced inputs](./components/advanced-inputs.md) preserve native DatePicker submission and
+  authored Select markup while documenting localized clear actions and typed CommandPalette async
+  content.
   [Table and DataTable](./components/data-tables.md) separates portable scalar controls from
   application-owned queries and rich table composition.
 - [Layout primitives](./components/layout-primitives.md) replace the portable layout vocabulary;

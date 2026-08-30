@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmDividerOrientation } from './divider.types';
 
 defineOptions({ inheritAttrs: false });
@@ -15,9 +15,7 @@ const props = defineProps({
 });
 const attrs = useAttrs();
 const orientation = computed(() => (orientations.includes(props.orientation) ? props.orientation : 'horizontal'));
-const classes = computed(() =>
-  mergeCmClasses('cm-divider', `cm-divider--${orientation.value}`, attrs.class as CmClassValue),
-);
+const classes = computed(() => mergeCmClasses('cm-divider', `cm-divider--${orientation.value}`, attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'role', 'aria-orientation']));
 </script>
 

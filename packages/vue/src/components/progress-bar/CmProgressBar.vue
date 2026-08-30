@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import type { CmProgressBarTone } from './progress-bar.types';
 
 defineOptions({ inheritAttrs: false });
@@ -28,7 +29,7 @@ const props = defineProps({
       ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'].includes(value),
   },
 });
-if (!props.label.trim()) throw new TypeError('ProgressBar label must be a non-empty string.');
+assertCm(props.label.trim() !== '', 'ProgressBar label must be a non-empty string.');
 
 const attrs = useAttrs();
 const normalizedMax = computed(() => (Number.isFinite(props.max) && props.max > 0 ? props.max : 100));
@@ -44,7 +45,7 @@ const classes = computed(() =>
     'cm-progress-bar',
     props.indeterminate ? 'cm-progress-bar--indeterminate' : undefined,
     tone.value === 'primary' ? undefined : `cm-progress-bar--${tone.value}`,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>

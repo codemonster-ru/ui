@@ -446,6 +446,7 @@
     "build": "vue-tsc --noEmit && vite build && vite build --mode cjs && node ../../scripts/build/finalize-declarations.mjs dist",
     "check": "npm run lint && npm run test && npm run typecheck",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint .",
     "prepack": "npm run build",
     "test": "npm run check:css-contract && npm run check:css-parity && npm run check:form-geometry && npm run smoke:css-export && npm run smoke:consumer-css && npm run smoke:theme-types && npm run smoke:cjs-ssr && vitest run --config vitest.config.ts",

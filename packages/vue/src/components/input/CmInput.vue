@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
+import { resolveInputClearable, resolvePasswordReveal } from '@codemonster-ru/ui-runtime/core';
 import type { CmInputSize, CmInputType } from './input.types';
 
 defineOptions({ inheritAttrs: false });
@@ -47,21 +49,21 @@ watch(
 );
 const inputType = computed(() => (types.includes(props.type) ? props.type : 'text'));
 const resolvedInputType = computed(() =>
-  props.passwordReveal && inputType.value === 'password' && passwordVisible.value ? 'text' : inputType.value,
+  props.passwordReveal && inputType.value === 'password' ? passwordReveal.value.type : inputType.value,
 );
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const hasLeading = computed(() => Boolean(slots.leading));
 const hasTrailing = computed(() => Boolean(slots.trailing));
 const hasPasswordReveal = computed(() => props.passwordReveal && inputType.value === 'password');
-const hasClear = computed(() => props.clearable && !props.disabled && !props.readonly);
+const hasClear = computed(() =>
+  resolveInputClearable({ clearable: props.clearable, disabled: props.disabled, readonly: props.readonly }),
+);
+const passwordReveal = computed(() =>
+  resolvePasswordReveal(passwordVisible.value, { hide: props.hidePasswordLabel, show: props.showPasswordLabel }),
+);
 const hasWrapper = computed(() => hasLeading.value || hasTrailing.value || hasPasswordReveal.value || hasClear.value);
 const classes = computed(() =>
-  mergeCmClasses(
-    'cm-input',
-    `cm-input--${size.value}`,
-    props.invalid ? 'cm-input--invalid' : undefined,
-    attrs.class as CmClassValue,
-  ),
+  mergeCmClasses('cm-input', `cm-input--${size.value}`, props.invalid ? 'cm-input--invalid' : undefined, attrs.class),
 );
 const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, ['value', 'type', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),
@@ -89,6 +91,8 @@ async function togglePassword(): Promise<void> {
   inputRef.value?.focus();
   if (selection) inputRef.value?.setSelectionRange(selection[0], selection[1]);
 }
+
+useCmHydrated();
 </script>
 
 <template>
@@ -116,8 +120,8 @@ async function togglePassword(): Promise<void> {
       v-if="hasPasswordReveal"
       class="cm-input__action"
       type="button"
-      :aria-label="passwordVisible ? props.hidePasswordLabel : props.showPasswordLabel"
-      :aria-pressed="passwordVisible"
+      :aria-label="passwordReveal.label"
+      :aria-pressed="passwordReveal.ariaPressed"
       data-cm-input-password
       :data-cm-input-show-password-label="props.showPasswordLabel"
       :data-cm-input-hide-password-label="props.hidePasswordLabel"
@@ -125,7 +129,32 @@ async function togglePassword(): Promise<void> {
       @click="togglePassword"
     >
       <span aria-hidden="true">
-        <svg class="cm-input__action-icon cm-input__action-icon--show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z"/><circle cx="12" cy="12" r="3.25"/></svg><svg class="cm-input__action-icon cm-input__action-icon--hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z"/><circle cx="12" cy="12" r="3.25"/><line x1="4" y1="4" x2="20" y2="20"/></svg>
+        <svg
+          class="cm-input__action-icon cm-input__action-icon--show"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          focusable="false"
+        >
+          <path d="M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z" />
+          <circle cx="12" cy="12" r="3.25" /></svg
+        ><svg
+          class="cm-input__action-icon cm-input__action-icon--hide"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          focusable="false"
+        >
+          <path d="M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z" />
+          <circle cx="12" cy="12" r="3.25" />
+          <line x1="4" y1="4" x2="20" y2="20" />
+        </svg>
       </span>
     </button>
     <button
@@ -139,7 +168,19 @@ async function togglePassword(): Promise<void> {
       @click="clearValue"
     >
       <span aria-hidden="true">
-        <svg class="cm-input__action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="5.75" y1="5.75" x2="18.25" y2="18.25"/><line x1="18.25" y1="5.75" x2="5.75" y2="18.25"/></svg>
+        <svg
+          class="cm-input__action-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          focusable="false"
+        >
+          <line x1="5.75" y1="5.75" x2="18.25" y2="18.25" />
+          <line x1="18.25" y1="5.75" x2="5.75" y2="18.25" />
+        </svg>
       </span>
     </button>
   </div>

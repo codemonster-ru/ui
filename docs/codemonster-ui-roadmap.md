@@ -1,7 +1,8 @@
 # CodeMonster UI roadmap
 
-This document is the canonical implementation tracker for evolving VueForge into a cross-platform
-CodeMonster UI design system. The current delivery scope covers the shared design foundation and
+This document tracked CodeMonster UI 1.0. The active tracker is the
+[maturity roadmap](./codemonster-ui-roadmap-v2.md); this one records how VueForge became a
+cross-platform CodeMonster UI design system. The current delivery scope covers the shared design foundation and
 the Vue and Annabel Razor adapters. React and Angular adapters are unscheduled future considerations
 and do not block the current roadmap or any release. They may enter the active scope only when a
 concrete product need is identified.

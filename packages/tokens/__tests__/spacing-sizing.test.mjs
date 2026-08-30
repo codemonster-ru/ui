@@ -1,11 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {
-  cmSizingTokenNames,
-  cmSizingTokens,
-  cmSpacingTokenNames,
-  cmSpacingTokens,
-} from '../dist/index.js';
+import { cmSizingTokenNames, cmSizingTokens, cmSpacingTokenNames, cmSpacingTokens } from '../dist/index.js';
 
 function remValue(value) {
   if (value === '0') {
@@ -20,9 +15,10 @@ test('defines an ordered immutable spacing scale', () => {
   assert.deepEqual(Object.keys(cmSpacingTokens), [...cmSpacingTokenNames]);
   assert.equal(Object.isFrozen(cmSpacingTokens), true);
   assert.equal(Object.isFrozen(cmSpacingTokenNames), true);
-  assert.deepEqual(cmSpacingTokenNames.map((name) => remValue(cmSpacingTokens[name])), [
-    0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4,
-  ]);
+  assert.deepEqual(
+    cmSpacingTokenNames.map((name) => remValue(cmSpacingTokens[name])),
+    [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4],
+  );
 });
 
 test('owns the shared control and icon size scales', () => {

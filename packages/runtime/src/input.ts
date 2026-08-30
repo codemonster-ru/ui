@@ -1,3 +1,4 @@
+import { isInputClearVisible, resolvePasswordReveal } from './core/input.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
 const controlSelector = '[data-cm-input-control]';
@@ -58,22 +59,20 @@ export class CmInputController implements CmController {
   };
 
   readonly #synchronizeClear = (): void => {
-    if (this.#clear) this.#clear.hidden = this.#input.value.length === 0;
+    if (this.#clear) this.#clear.hidden = !isInputClearVisible(true, this.#input.value);
   };
 
   #togglePassword(): void {
     if (!this.#password) return;
     const selectionStart = this.#input.selectionStart;
     const selectionEnd = this.#input.selectionEnd;
-    const visible = this.#input.type === 'password';
-    this.#input.type = visible ? 'text' : 'password';
-    this.#password.setAttribute('aria-pressed', String(visible));
-    this.#password.setAttribute(
-      'aria-label',
-      visible
-        ? (this.#password.dataset.cmInputHidePasswordLabel ?? 'Hide password')
-        : (this.#password.dataset.cmInputShowPasswordLabel ?? 'Show password'),
-    );
+    const reveal = resolvePasswordReveal(this.#input.type === 'password', {
+      hide: this.#password.dataset.cmInputHidePasswordLabel ?? 'Hide password',
+      show: this.#password.dataset.cmInputShowPasswordLabel ?? 'Show password',
+    });
+    this.#input.type = reveal.type;
+    this.#password.setAttribute('aria-pressed', String(reveal.ariaPressed));
+    this.#password.setAttribute('aria-label', reveal.label);
     this.#input.focus();
     if (selectionStart !== null && selectionEnd !== null) this.#input.setSelectionRange(selectionStart, selectionEnd);
   }

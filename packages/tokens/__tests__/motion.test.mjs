@@ -24,9 +24,7 @@ test('keeps CSS and numeric duration values synchronized', () => {
 });
 
 test('uses a valid monotonic cubic-bezier easing', () => {
-  const match = cmMotionTokens.motionEaseStandard.match(
-    /^cubic-bezier\(([\d.]+), ([\d.]+), ([\d.]+), ([\d.]+)\)$/,
-  );
+  const match = cmMotionTokens.motionEaseStandard.match(/^cubic-bezier\(([\d.]+), ([\d.]+), ([\d.]+), ([\d.]+)\)$/);
   assert.ok(match);
   const [, x1, y1, x2, y2] = match.map(Number);
   assert.ok(x1 >= 0 && x1 <= 1);

@@ -64,11 +64,7 @@
 }
 
 .cm-table--striped .cm-table__body > tr:nth-child(even) > td {
-  background: color-mix(
-    in srgb,
-    var(--cm-color-background-surface) 65%,
-    var(--cm-color-background-surface-hover) 35%
-  );
+  background: color-mix(in srgb, var(--cm-color-background-surface) 65%, var(--cm-color-background-surface-hover) 35%);
 }
 
 .cm-table--column-dividers :where(th, td) + :where(th, td) {

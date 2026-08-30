@@ -80,7 +80,7 @@ describe('LayoutsNavMenu', () => {
 
     Object.defineProperty(controls[0], 'offsetParent', { configurable: true, value: host });
     Object.defineProperty(controls[1], 'offsetParent', { configurable: true, value: host });
-    Object.defineProperty(controls[controls.length - 1] as HTMLButtonElement, 'offsetParent', {
+    Object.defineProperty(controls[controls.length - 1], 'offsetParent', {
       configurable: true,
       value: host,
     });
