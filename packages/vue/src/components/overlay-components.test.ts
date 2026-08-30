@@ -114,6 +114,25 @@ describe('Vue overlay components', () => {
     wrapper.unmount();
   });
 
+  it('focuses a select or textarea the panel opens onto', async () => {
+    // The two adapters kept their own focusable-element selector and the Vue copy had lost select
+    // and textarea, so a panel opening onto either focused nothing here while the runtime adapter
+    // focused it. Both now read one selector from the shared core.
+    for (const markup of [
+      '<select class="control"><option>One</option></select>',
+      '<textarea class="control"></textarea>',
+    ]) {
+      const wrapper = mount(CmPopover, {
+        attachTo: document.body,
+        props: { id: 'filters', label: 'Filters' },
+        slots: { default: markup },
+      });
+      await wrapper.get('.cm-popover__trigger').trigger('keydown', { key: 'ArrowDown' });
+      expect(document.activeElement).toBe(wrapper.get('.control').element);
+      wrapper.unmount();
+    }
+  });
+
   it('keeps Popover trigger composition inside the labelled native button', () => {
     const wrapper = mount(CmPopover, {
       props: { id: 'profile', label: 'Open profile details' },
