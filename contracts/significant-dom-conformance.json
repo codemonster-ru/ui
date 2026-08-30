@@ -1,0 +1,121 @@
+{
+  "$comment": "Cases both SignificantDom implementations must agree on. The JavaScript comparator judges the Vue adapter and the PHP one judges Razor, against the same canonical markup, so a disagreement here means the two adapters are held to different standards. Every case names the rule it pins.",
+  "cases": [
+    {
+      "name": "a bare boolean attribute equals its repeated-name form",
+      "equal": true,
+      "a": "<button disabled></button>",
+      "b": "<button disabled=\"disabled\"></button>"
+    },
+    {
+      "name": "open is a boolean attribute",
+      "equal": true,
+      "a": "<details open></details>",
+      "b": "<details open=\"open\"></details>"
+    },
+    {
+      "name": "selected is a boolean attribute",
+      "equal": true,
+      "a": "<option selected></option>",
+      "b": "<option selected=\"selected\"></option>"
+    },
+    {
+      "name": "autofocus is a boolean attribute",
+      "equal": true,
+      "a": "<input autofocus>",
+      "b": "<input autofocus=\"autofocus\">"
+    },
+    {
+      "name": "a present boolean attribute differs from an absent one",
+      "equal": false,
+      "a": "<button disabled></button>",
+      "b": "<button></button>"
+    },
+    {
+      "name": "class order and duplication are not significant",
+      "equal": true,
+      "a": "<i class=\"b a b\"></i>",
+      "b": "<i class=\"a b\"></i>"
+    },
+    {
+      "name": "a different class is significant",
+      "equal": false,
+      "a": "<i class=\"a\"></i>",
+      "b": "<i class=\"c\"></i>"
+    },
+    {
+      "name": "attribute order is not significant",
+      "equal": true,
+      "a": "<i id=\"x\" lang=\"en\"></i>",
+      "b": "<i lang=\"en\" id=\"x\"></i>"
+    },
+    {
+      "name": "style spacing and declaration order are not significant",
+      "equal": true,
+      "a": "<i style=\"color: red; margin: 0\"></i>",
+      "b": "<i style=\"margin:0;color:red\"></i>"
+    },
+    {
+      "name": "a style value inside parentheses survives splitting",
+      "equal": true,
+      "a": "<i style=\"width: calc(1px + 2px)\"></i>",
+      "b": "<i style=\"width:calc(1px + 2px)\"></i>"
+    },
+    {
+      "name": "a different style value is significant",
+      "equal": false,
+      "a": "<i style=\"color:red\"></i>",
+      "b": "<i style=\"color:blue\"></i>"
+    },
+    {
+      "name": "identifiers compare by position, not by name",
+      "equal": true,
+      "a": "<div id=\"a1\"><span aria-controls=\"a1\"></span></div>",
+      "b": "<div id=\"b9\"><span aria-controls=\"b9\"></span></div>",
+      "normalizeGeneratedIds": true
+    },
+    {
+      "name": "a reference pointing somewhere else is significant",
+      "equal": false,
+      "a": "<div id=\"a\"><span aria-controls=\"a\"></span></div>",
+      "b": "<div id=\"a\"><span aria-controls=\"other\"></span></div>"
+    },
+    {
+      "name": "a fragment href follows the same aliasing",
+      "equal": true,
+      "a": "<div id=\"p1\"></div><a href=\"#p1\">go</a>",
+      "b": "<div id=\"q7\"></div><a href=\"#q7\">go</a>",
+      "normalizeGeneratedIds": true
+    },
+    {
+      "name": "comments are not significant",
+      "equal": true,
+      "a": "<p><!-- note -->text</p>",
+      "b": "<p>text</p>"
+    },
+    {
+      "name": "whitespace between elements is not significant",
+      "equal": true,
+      "a": "<ul>\n  <li>one</li>\n</ul>",
+      "b": "<ul><li>one</li></ul>"
+    },
+    {
+      "name": "text content is significant",
+      "equal": false,
+      "a": "<p>one</p>",
+      "b": "<p>two</p>"
+    },
+    {
+      "name": "element nesting is significant",
+      "equal": false,
+      "a": "<div><span></span></div>",
+      "b": "<div></div><span></span>"
+    },
+    {
+      "name": "identifiers are compared literally unless aliasing is requested",
+      "equal": false,
+      "a": "<div id=\"a1\"><span aria-controls=\"a1\"></span></div>",
+      "b": "<div id=\"b9\"><span aria-controls=\"b9\"></span></div>"
+    }
+  ]
+}
