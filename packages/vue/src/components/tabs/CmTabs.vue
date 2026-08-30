@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useAttrs, useSlots, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmTabItem } from './tabs.types';
 
@@ -62,7 +62,7 @@ const activeValue = computed(() =>
       ? localValue.value
       : fallbackValue.value,
 );
-const classes = computed(() => mergeCmClasses('cm-tabs', attrs.class as CmClassValue));
+const classes = computed(() => mergeCmClasses('cm-tabs', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tabs-value', 'onKeydown']));
 
 function panelId(item: CmTabItem): string {

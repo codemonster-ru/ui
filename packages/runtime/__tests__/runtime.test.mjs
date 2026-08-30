@@ -120,12 +120,7 @@ test('optionally observes inserted removed and retargeted controllers', async ()
   await mutations(dom);
   dispose();
 
-  assert.deepEqual(calls, [
-    'connect:first',
-    'disconnect:first',
-    'connect:second',
-    'disconnect:second',
-  ]);
+  assert.deepEqual(calls, ['connect:first', 'disconnect:first', 'connect:second', 'disconnect:second']);
 });
 
 test('reports roots without a MutationObserver implementation', () => {

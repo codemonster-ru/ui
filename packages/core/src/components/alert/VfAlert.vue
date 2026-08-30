@@ -2,7 +2,7 @@
 import { computed, useAttrs } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
 import { cx } from '@/utils/classes';
-import type { IconName } from '@codemonster-ru/vueforge-icons';
+import type { VfIconNameOrCustom } from '../../types/components';
 import type { VfFeedbackTone } from '@/types/components';
 
 defineOptions({
@@ -12,7 +12,7 @@ defineOptions({
 interface VfAlertProps {
   tone?: VfFeedbackTone;
   title?: string;
-  icon?: IconName | string;
+  icon?: VfIconNameOrCustom;
   hideIcon?: boolean;
 }
 

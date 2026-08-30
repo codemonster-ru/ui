@@ -454,7 +454,10 @@ function compareSortValues(left: unknown, right: unknown) {
     return Number(left) - Number(right);
   }
 
-  return sortCollator.compare(String(left), String(right));
+  const collationKey = (value: unknown): string =>
+    typeof value === 'string' || typeof value === 'number' || typeof value === 'bigint' ? String(value) : '';
+
+  return sortCollator.compare(collationKey(left), collationKey(right));
 }
 
 function compareRows(left: VfDataTableRow, right: VfDataTableRow) {

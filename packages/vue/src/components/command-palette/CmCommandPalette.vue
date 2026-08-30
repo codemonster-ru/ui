@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useAttrs, watch, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { warnCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmCommandPaletteItem } from './command-palette.types';
@@ -85,11 +85,7 @@ const modal = useCmModal(
 );
 const { dialog, localOpen, onCancel, onKeydown: onModalKeydown, setOpen } = modal;
 const classes = computed(() =>
-  mergeCmClasses(
-    'cm-command-palette',
-    localOpen.value ? 'cm-command-palette--open' : undefined,
-    attrs.class as CmClassValue,
-  ),
+  mergeCmClasses('cm-command-palette', localOpen.value ? 'cm-command-palette--open' : undefined, attrs.class),
 );
 const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, [
@@ -144,7 +140,7 @@ function onInputKeydown(event: KeyboardEvent): void {
           : current <= 0
             ? last
             : current - 1;
-  activeId.value = enabledCommands.value[next]!.id;
+  activeId.value = enabledCommands.value[next].id;
   document.getElementById(`${props.id}-option-${activeId.value}`)?.scrollIntoView?.({ block: 'nearest' });
 }
 

@@ -53,7 +53,7 @@ export function parseCorePickerValue(value: string, mode: CoreDatePickerMode): D
   if (mode === 'date') return parseCoreDate(value);
   if (mode === 'datetime') {
     const match = dateTimePattern.exec(value);
-    if (!match || !parseCoreDate(match[1]!)) return null;
+    if (!match || !parseCoreDate(match[1])) return null;
     const hour = Number(match[2]);
     const minute = Number(match[3]);
     return hour < 24 && minute < 60 ? new Date(`${match[1]}T${match[2]}:${match[3]}:00`) : null;
@@ -196,7 +196,7 @@ export function toggleCoreMultipleDate(values: readonly string[], value: string)
 export function selectCoreDateRange(values: readonly string[], value: string): string[] {
   requireCoreDate(value, 'DatePicker value');
   if (values.length !== 1) return [value];
-  return [values[0]!, value].sort();
+  return [values[0], value].sort();
 }
 
 export function formatCoreDateLabel(value: string): string {

@@ -1,12 +1,4 @@
-import {
-  onBeforeUnmount,
-  onMounted,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-  type Ref,
-  type WatchStopHandle,
-} from 'vue';
+import { onBeforeUnmount, onMounted, toValue, watch, type MaybeRefOrGetter, type Ref, type WatchStopHandle } from 'vue';
 
 export interface UseFocusTrapOptions {
   enabled?: MaybeRefOrGetter<boolean>;

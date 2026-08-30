@@ -92,11 +92,11 @@ const dialogClasses = computed(() =>
 
 const hasHeaderSlot = computed(() => Boolean(dialogSlots.header));
 const hasDescriptionSlot = computed(() => Boolean(dialogSlots.description));
-const labelledBy = computed<string | undefined>(() =>
-  props.ariaLabelledby ?? (!props.ariaLabel && (props.title || hasHeaderSlot.value) ? titleId.value : undefined),
+const labelledBy = computed<string | undefined>(
+  () => props.ariaLabelledby ?? (!props.ariaLabel && (props.title || hasHeaderSlot.value) ? titleId.value : undefined),
 );
-const describedBy = computed<string | undefined>(() =>
-  props.ariaDescribedby ?? (props.description || hasDescriptionSlot.value ? descriptionId.value : undefined),
+const describedBy = computed<string | undefined>(
+  () => props.ariaDescribedby ?? (props.description || hasDescriptionSlot.value ? descriptionId.value : undefined),
 );
 
 function close() {

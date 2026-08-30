@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmFieldsetDefaultSlotProps } from './fieldset.types';
 
 defineOptions({ inheritAttrs: false });
@@ -42,7 +42,7 @@ const describedBy = computed(() => {
   return ids.length > 0 ? ids.join(' ') : undefined;
 });
 const classes = computed(() =>
-  mergeCmClasses('cm-fieldset', isInvalid.value ? 'cm-fieldset--invalid' : undefined, attrs.class as CmClassValue),
+  mergeCmClasses('cm-fieldset', isInvalid.value ? 'cm-fieldset--invalid' : undefined, attrs.class),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['id', 'aria-describedby', 'aria-invalid']));
 const defaultSlotProps = computed<CmFieldsetDefaultSlotProps>(() => ({

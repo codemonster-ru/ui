@@ -70,7 +70,7 @@ function measuredWidths(): CoreResizableDataTableWidths {
       const fallback = tableRef.value ? tableRef.value.clientWidth * Number.parseFloat(column.width) * 0.01 : 0;
       return [column.key, `${Math.round(measured || fallback || column.minWidth)}px`];
     }),
-  ) as CoreResizableDataTableWidths;
+  );
 }
 
 function widthNumber(widths: CoreResizableDataTableWidths, key: CoreResizableDataTableColumnKey): number {

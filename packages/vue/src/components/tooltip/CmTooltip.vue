@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm } from '../../internal/warn';
 import type { CmTooltipDelay, CmTooltipPlacement } from './tooltip.types';
 
@@ -39,7 +39,7 @@ const classes = computed(() =>
     `cm-tooltip--${placement.value}`,
     `cm-tooltip--delay-${delay.value}`,
     visible.value ? 'cm-tooltip--visible' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller']));

@@ -76,8 +76,8 @@ describe('CorePinnedDataTableRecipe', () => {
     const editButtons = [...host.querySelectorAll<HTMLButtonElement>('tbody button')];
     expect(editButtons).toHaveLength(5);
     expect(editButtons.every((button) => button.type === 'button')).toBe(true);
-    editButtons[0]!.focus();
-    editButtons[0]!.click();
+    editButtons[0].focus();
+    editButtons[0].click();
     expect(document.activeElement).toBe(editButtons[0]);
     app.unmount();
   });
