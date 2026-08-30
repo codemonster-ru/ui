@@ -20,6 +20,9 @@ export function normalizeCommandQuery(query: string): string {
 /**
  * Reports whether a command matches an already-normalized query.
  *
+ * Internal to this module: `filterCommands` is what adapters need, and exporting the single-command
+ * form as well only widens the surface without answering a question anyone has asked.
+ *
  * Label and keywords are searched together, so a command can be found by a synonym it never
  * displays. An empty query matches everything.
  */
