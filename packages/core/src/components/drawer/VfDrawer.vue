@@ -157,8 +157,8 @@ const contentClasses = computed(() =>
 );
 
 const hasHeaderSlot = computed(() => Boolean(drawerSlots.header));
-const labelledBy = computed<string | undefined>(() =>
-  props.ariaLabelledby ?? (!props.ariaLabel && (props.title || hasHeaderSlot.value) ? titleId.value : undefined),
+const labelledBy = computed<string | undefined>(
+  () => props.ariaLabelledby ?? (!props.ariaLabel && (props.title || hasHeaderSlot.value) ? titleId.value : undefined),
 );
 
 function close() {

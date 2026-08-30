@@ -1,5 +1,14 @@
 import type { IconName } from '@codemonster-ru/vueforge-icons';
 
+/**
+ * A known icon name, with any other string still accepted.
+ *
+ * `IconName | string` collapses to `string`, which drops the editor suggestions the union was
+ * written for. Intersecting with an empty object keeps `IconName` a distinct constituent.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export type VfIconNameOrCustom = IconName | (string & {});
+
 export type VfButtonVariant =
   'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'help' | 'danger' | 'contrast' | 'ghost';
 export type VfControlSize = 'sm' | 'md' | 'lg';
@@ -139,7 +148,7 @@ export interface VfNavMenuItem {
   value: string;
   label: string;
   kind?: 'item' | 'group';
-  leadingIcon?: IconName | string;
+  leadingIcon?: VfIconNameOrCustom;
   href?: string;
   to?: string | Record<string, unknown>;
   target?: string;

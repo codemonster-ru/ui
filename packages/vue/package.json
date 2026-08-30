@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-vue",
-  "version": "2.0.0-dev",
+  "version": "2.0.0-dev.0",
   "description": "Vue 3 adapter for CodeMonster UI components.",
   "type": "module",
   "license": "MIT",
@@ -33,6 +33,7 @@
     "build": "vite build",
     "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint .",
     "prepack": "npm run build",
     "test": "vitest run src && npm run build && node --test ./__tests__/*.test.mjs",
@@ -45,7 +46,11 @@
     "vue3"
   ],
   "peerDependencies": {
+    "@codemonster-ru/ui-css": "^2.0.0-dev.0",
     "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@codemonster-ru/ui-runtime": "^2.0.0-dev.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",

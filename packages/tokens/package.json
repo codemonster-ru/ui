@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-tokens",
-  "version": "2.0.0-dev",
+  "version": "2.0.0-dev.0",
   "description": "Framework-independent design tokens and theme serialization for CodeMonster UI.",
   "type": "module",
   "license": "MIT",
@@ -37,6 +37,7 @@
     "build": "rm -rf dist && tsc -p tsconfig.json && node ./scripts/generate-css.mjs",
     "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint .",
     "prepack": "npm run build",
     "test": "npm run build && node --test ./__tests__/*.test.mjs",

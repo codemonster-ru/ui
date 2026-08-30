@@ -29,9 +29,7 @@ test('preserves navigation focus and hidden-state hooks', async () => {
 
 test('preserves the reference Breadcrumbs and Link geometry', async () => {
   const [breadcrumbs, link] = await Promise.all(
-    ['breadcrumbs', 'link'].map((slug) =>
-      readFile(new URL(`../src/components/${slug}.css`, import.meta.url), 'utf8'),
-    ),
+    ['breadcrumbs', 'link'].map((slug) => readFile(new URL(`../src/components/${slug}.css`, import.meta.url), 'utf8')),
   );
 
   assert.match(breadcrumbs, /gap: calc\(var\(--cm-space-2\) \* 0\.75\);/u);

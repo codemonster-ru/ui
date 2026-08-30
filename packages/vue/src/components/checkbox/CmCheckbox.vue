@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, useAttrs, useTemplateRef, watch, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import type { CmCheckboxSize } from './checkbox.types';
 
 defineOptions({ inheritAttrs: false });
@@ -33,7 +34,7 @@ const classes = computed(() =>
     'cm-checkbox',
     `cm-checkbox--${size.value}`,
     props.invalid ? 'cm-checkbox--invalid' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const controlAttrs = computed(() =>
@@ -52,6 +53,8 @@ function updateChecked(event: Event): void {
   emit('update:modelValue', (event.target as HTMLInputElement).checked);
   emit('change', event);
 }
+
+useCmHydrated();
 </script>
 
 <template>

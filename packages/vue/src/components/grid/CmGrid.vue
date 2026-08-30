@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmGridElement } from './grid.types';
 
 defineOptions({ inheritAttrs: false });
@@ -15,7 +15,7 @@ const props = defineProps({
 });
 const attrs = useAttrs();
 const rootElement = computed(() => (elements.includes(props.element) ? props.element : 'div'));
-const classes = computed(() => mergeCmClasses('cm-grid', attrs.class as CmClassValue));
+const classes = computed(() => mergeCmClasses('cm-grid', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
 </script>
 

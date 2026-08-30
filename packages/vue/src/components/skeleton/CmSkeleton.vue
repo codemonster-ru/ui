@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, useAttrs, type CSSProperties, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import type { CmSkeletonRadius } from './skeleton.types';
 
 defineOptions({ inheritAttrs: false });
@@ -23,18 +24,18 @@ const classes = computed(() =>
     'cm-skeleton',
     props.animated ? 'cm-skeleton--animated' : undefined,
     `cm-skeleton--radius-${radius.value}`,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const minHeight = computed(() => {
   if (props.minHeight === null) return undefined;
   if (typeof props.minHeight === 'number') {
-    if (!Number.isFinite(props.minHeight) || props.minHeight < 0)
-      throw new TypeError('Skeleton minHeight must be non-negative.');
+    if (!assertCm(Number.isFinite(props.minHeight) && props.minHeight >= 0, 'Skeleton minHeight must be non-negative.'))
+      return undefined;
     return `${props.minHeight}px`;
   }
-  if (!cssLengthPattern.test(props.minHeight))
-    throw new TypeError('Skeleton minHeight must be a non-negative CSS length.');
+  if (!assertCm(cssLengthPattern.test(props.minHeight), 'Skeleton minHeight must be a non-negative CSS length.'))
+    return undefined;
   return props.minHeight;
 });
 const rootStyle = computed<CSSProperties | undefined>(() =>

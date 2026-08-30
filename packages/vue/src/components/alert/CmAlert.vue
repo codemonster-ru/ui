@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmAlertTone } from './alert.types';
 
 defineOptions({ inheritAttrs: false });
@@ -27,11 +27,7 @@ const props = defineProps({
 const attrs = useAttrs();
 const tone = computed(() => (tones.includes(props.tone) ? props.tone : 'info'));
 const classes = computed(() =>
-  mergeCmClasses(
-    'cm-alert',
-    tone.value === 'info' ? undefined : `cm-alert--${tone.value}`,
-    attrs.class as CmClassValue,
-  ),
+  mergeCmClasses('cm-alert', tone.value === 'info' ? undefined : `cm-alert--${tone.value}`, attrs.class),
 );
 const rootRole = computed(() => (typeof attrs.role === 'string' ? attrs.role : 'status'));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class', 'role']));

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmContainerElement, CmContainerSize } from './container.types';
 
 defineOptions({ inheritAttrs: false });
@@ -25,7 +25,7 @@ const classes = computed(() =>
   mergeCmClasses(
     'cm-container',
     props.fluid ? 'cm-container--fluid' : props.size ? `cm-container--${props.size}` : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));

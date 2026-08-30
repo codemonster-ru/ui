@@ -15,15 +15,15 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -31,18 +31,184 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify repository
-        run: npm run verify
+      # Type-aware rules resolve a sibling package through its built types, so ui-vue's imports
+      # from ui-runtime/core are error-typed without this and no-unsafe-* fires on every one.
+      - name: Build packages
+        run: npm run build
+
+      - name: Lint sources, styles, markup, and data
+        run: npm run lint:all
+
+      - name: Check formatting
+        run: npm run format:check
+
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Typecheck workspaces
+        run: npm run typecheck
+
+      - name: Typecheck documented examples
+        run: npm run check:docs:examples
+
+  contracts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Check repository contracts
+        run: npm run check:repository-contracts
+
+      - name: Check CodeMonster UI contracts, accessibility, and visual fixtures
+        run: npm run test:ui
+
+      - name: Run migration tests
+        run: npm run test:migration
+
+      - name: Run release preparation tests
+        run: npm run test:release-prep
+
+      - name: Check that every verify step runs in CI
+        run: npm run check:verify-coverage
+
+  source-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The suite hides dist itself; the build is still needed for its other output, such as the
+      # generated theme CSS that vueforge-core's parity check reads.
+      - name: Build packages
+        run: npm run build
+
+      - name: Run workspace tests without build output
+        run: npm run test:ci-like
+
+  packaging:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Check package contracts
+        run: npm run check:package-contracts
+
+      - name: Check package size budgets
+        run: npm run check:ui-package-budgets
+
+      - name: Check consumer tree shaking
+        run: npm run check:consumer-tree-shaking
+
+      - name: Check deferred runtime budgets
+        run: npm run check:deferred-budgets
 
       - name: Dry-run publish artifacts
         run: npm run pack:all:dry-run
+
+  packed-consumers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Consume packed tarballs with npm, pnpm, and yarn
+        run: npm run check:packed-consumers
+
+  hygiene:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check that a clean install stays clean
+        run: npm run check:clean-install
+
+      - name: Audit release dependencies
+        run: npm run audit:release
 
   razor:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install and verify Razor package
         run: |
@@ -60,10 +226,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -142,7 +308,7 @@ jobs:
 
       - name: Upload showcase visual differences
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: codemonster-showcase-visual-diff
           path: |

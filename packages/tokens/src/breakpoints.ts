@@ -25,9 +25,7 @@ export type CmBreakpointTokenName = keyof typeof cmBreakpointTokens;
 export type CmBreakpointTokens = Readonly<Record<CmBreakpointTokenName, string>>;
 export type CmBreakpointOverrides = Partial<CmBreakpointTokens>;
 
-export const cmBreakpointTokenNames = Object.freeze(
-  Object.keys(cmBreakpointTokens) as CmBreakpointTokenName[],
-);
+export const cmBreakpointTokenNames = Object.freeze(Object.keys(cmBreakpointTokens) as CmBreakpointTokenName[]);
 
 export function resolveCmBreakpoint(name: string): CmBreakpointValue | null {
   return cmBreakpoints[name as CmBreakpointName] ?? null;

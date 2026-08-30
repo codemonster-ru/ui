@@ -1,7 +1,8 @@
 # Advanced input components
 
-`Select` and `DatePicker` deliberately preserve native browser controls, form submission, keyboard
-editing, and constraint validation. `CommandPalette` is a modal searchable command list with shared
+`DatePicker` deliberately preserves the native browser control, form submission, keyboard
+editing, and constraint validation. `Select` is component-owned: both adapters author the same
+trigger, listbox, and hidden input. `CommandPalette` is a modal searchable command list with shared
 Vue and progressive-enhancement behavior.
 
 Load the token and complete component stylesheets described in the [Button guide](./button.md).

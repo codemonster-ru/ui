@@ -99,7 +99,7 @@ export function createPlaygroundSession(options: CreatePlaygroundSessionOptions)
       return;
     }
 
-    const payload = event.data;
+    const payload: unknown = event.data;
     if (!isRecord(payload) || payload.__cm_playground !== true) {
       return;
     }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmTextareaSize } from './textarea.types';
 
 defineOptions({ inheritAttrs: false });
@@ -30,7 +30,7 @@ const classes = computed(() =>
     'cm-textarea',
     `cm-textarea--${size.value}`,
     props.invalid ? 'cm-textarea--invalid' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>

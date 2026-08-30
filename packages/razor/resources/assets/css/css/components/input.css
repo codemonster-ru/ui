@@ -127,9 +127,7 @@
 
 /* The reference leaves an adornment to its own content, so a textual one keeps its width; only an
    icon inside it is sized. Forcing the slot to a square clipped every adornment that is not one. */
-.cm-input-wrap:has(.cm-input--sm, .cm-input--md, .cm-input--lg)
-  :is(.cm-input__leading, .cm-input__trailing)
-  > svg {
+.cm-input-wrap:has(.cm-input--sm, .cm-input--md, .cm-input--lg) :is(.cm-input__leading, .cm-input__trailing) > svg {
   inline-size: var(--cm-field-icon-size-md);
   block-size: var(--cm-field-icon-size-md);
 }

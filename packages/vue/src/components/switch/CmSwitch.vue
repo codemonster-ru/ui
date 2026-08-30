@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmSwitchSize } from './switch.types';
 
 defineOptions({ inheritAttrs: false });
@@ -35,7 +35,7 @@ const classes = computed(() =>
     'cm-switch',
     `cm-switch--${size.value}`,
     props.invalid ? 'cm-switch--invalid' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const controlAttrs = computed(() =>

@@ -13,6 +13,11 @@ interface ConnectedController {
 
 const controllerAttribute = 'data-cm-controller';
 const controllerSelector = `[${controllerAttribute}]`;
+// A framework adapter renders the same controller hook so its markup matches the canonical DOM,
+// but it owns that element's state declaratively. It marks the element once it has taken over, and
+// the runtime leaves those alone rather than writing the same attributes imperatively behind it.
+const hydratedAttribute = 'data-cm-hydrated';
+const hydratedSelector = `[${hydratedAttribute}]`;
 
 function controllerNames(element: Element): string[] {
   return [...new Set((element.getAttribute(controllerAttribute) ?? '').split(/\s+/u).filter(Boolean))];
@@ -26,7 +31,7 @@ function discoverElements(root: ParentNode): Element[] {
       elements.unshift(element);
     }
   }
-  return elements;
+  return elements.filter((element) => !element.matches(hydratedSelector));
 }
 
 export class CmRuntime {
@@ -101,7 +106,7 @@ export class CmRuntime {
       added.forEach((node) => this.start(node));
     });
     observer.observe(root, {
-      attributeFilter: [controllerAttribute],
+      attributeFilter: [controllerAttribute, hydratedAttribute],
       attributes: true,
       childList: true,
       subtree: true,

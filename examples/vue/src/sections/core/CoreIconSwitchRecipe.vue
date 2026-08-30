@@ -51,7 +51,7 @@ const hasContent = computed(() => {
 
   function isRenderable(node: VNode): boolean {
     if (node.type === Comment) return false;
-    if (node.type === Text) return String(node.children ?? '').trim().length > 0;
+    if (node.type === Text) return typeof node.children === 'string' && node.children.trim().length > 0;
     if (node.type === Fragment && Array.isArray(node.children)) {
       return node.children.some((child) => isRenderable(child as VNode));
     }

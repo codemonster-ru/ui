@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch } from 'vue';
-import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
+import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import type { VfIconNameOrCustom } from '../../types/components';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import { cx } from '@/utils/classes';
 import type { VfControlSize } from '@/types/components';
@@ -14,8 +15,8 @@ interface VfInputProps {
   modelValue?: string;
   size?: VfControlSize;
   invalid?: boolean;
-  leadingIcon?: IconName | string;
-  trailingIcon?: IconName | string;
+  leadingIcon?: VfIconNameOrCustom;
+  trailingIcon?: VfIconNameOrCustom;
   clearable?: boolean;
   passwordReveal?: boolean;
 }

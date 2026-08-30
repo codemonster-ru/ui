@@ -54,6 +54,38 @@ products keep their published `vueforge-*` names while they are in maintenance.
   - `icons`: `vf-icon*` / `--vf-icon-*`
 - Legacy prefixes (`vif*`, `vcb*`, `cm-*`) are not used for new code.
 
+## Shared behavior layer
+
+A component's behavior is written once, in `packages/runtime/src/core/`, and published from
+`@codemonster-ru/ui-runtime/core`. Adapters translate; they do not decide.
+
+The layer holds pure functions over plain data. No DOM, no reactivity, no framework import, and no
+throwing — an unusable input returns a value the caller can render (often `null`) rather than an
+exception. That keeps it safe to import during server rendering and callable from a controller that
+owns real elements.
+
+Each behavioral component is expected to split three ways:
+
+- `runtime/src/core/<component>.ts` — the rules: which item is active, where a key moves focus,
+  what a set of props reduces to.
+- `runtime/src/<component>.ts` — a `CmController` that reads those rules off the rendered DOM and
+  writes the result back to it, for server-rendered and Annabel Razor pages.
+- `vue/src/components/<component>/` — a Vue component that feeds the same rules from its props and
+  binds the result declaratively.
+
+Rules for the layer:
+
+- Adapters must not re-implement a rule the core already owns. Two copies of one algorithm is the
+  defect this layer exists to prevent.
+- The core is externalised in each adapter's library build, so an application using more than one
+  adapter links a single copy.
+- Core modules are tested directly, without a DOM and without mounting a component. Adapter tests
+  cover translation and markup, not the rules.
+- Components with no behavior — layout primitives, badges, cards — have no core module and need
+  none.
+
+`Tabs` is the reference implementation.
+
 ## Dependency rules
 
 - Published package runtime dependencies must use semver ranges.
@@ -68,6 +100,8 @@ Each publishable npm package should expose, where applicable:
 - `lint`
 - `typecheck`
 - `check` (aggregates lint/typecheck/tests/build as applicable)
+- `format` and `format:check` — both, or neither. A package with only `format` is skipped by the
+  root `format:check`, which runs with `--if-present`, so its formatting goes unverified.
 - `prepack` (usually calls `build`)
 
 The root scripts compose package checks with repository-level documentation, contract, migration,

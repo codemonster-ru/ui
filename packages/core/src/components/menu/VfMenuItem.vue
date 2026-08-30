@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
+import { VueIconify } from '@codemonster-ru/vueforge-icons';
+import type { VfIconNameOrCustom } from '../../types/components';
 import { computed, useAttrs } from 'vue';
 
 defineOptions({
@@ -8,7 +9,7 @@ defineOptions({
 
 interface VfMenuItemProps {
   label: string;
-  icon?: IconName | string;
+  icon?: VfIconNameOrCustom;
   disabled?: boolean;
   active?: boolean;
   tone?: 'default' | 'danger';

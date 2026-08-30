@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
+import { resolveTooltipDelay } from '@codemonster-ru/ui-runtime/core';
+import { assertCm } from '../../internal/warn';
 import type { CmTooltipDelay, CmTooltipPlacement } from './tooltip.types';
 
 defineOptions({ inheritAttrs: false });
@@ -24,9 +27,10 @@ const props = defineProps({
 const attrs = useAttrs();
 const visible = ref(props.defaultVisible);
 let timer: ReturnType<typeof setTimeout> | undefined;
-if (![props.id, props.label, props.content].every((value) => value.trim())) {
-  throw new TypeError('Tooltip id, label, and content must be non-empty strings.');
-}
+assertCm(
+  [props.id, props.label, props.content].every((value) => value.trim() !== ''),
+  'Tooltip id, label, and content must be non-empty strings.',
+);
 const placement = computed(() =>
   ['top', 'bottom', 'start', 'end'].includes(props.placement) ? props.placement : 'top',
 );
@@ -37,7 +41,7 @@ const classes = computed(() =>
     `cm-tooltip--${placement.value}`,
     `cm-tooltip--delay-${delay.value}`,
     visible.value ? 'cm-tooltip--visible' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller']));
@@ -49,7 +53,7 @@ function clearTimer(): void {
 
 function show(): void {
   clearTimer();
-  const milliseconds = delay.value === 'none' ? 0 : delay.value === 'long' ? 700 : 300;
+  const milliseconds = resolveTooltipDelay(delay.value);
   timer = setTimeout(() => (visible.value = true), milliseconds);
 }
 
@@ -66,6 +70,8 @@ function onKeydown(event: KeyboardEvent): void {
 }
 
 onBeforeUnmount(clearTimer);
+
+useCmHydrated();
 </script>
 
 <template>

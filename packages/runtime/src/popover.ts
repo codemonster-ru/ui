@@ -1,12 +1,10 @@
+import { cmFocusableSelector, popoverKeyAction, resolveDisclosureOpen } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
 export interface PopoverOpenChangeDetail {
   open: boolean;
 }
-
-const focusableSelector =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export class CmPopoverController implements CmController {
   readonly #panel: HTMLElement;
@@ -38,11 +36,11 @@ export class CmPopoverController implements CmController {
   }
 
   setOpen(open: boolean, restoreFocus = false): void {
-    if (this.#trigger.disabled) open = false;
-    const changed = this.#panel.hidden === open;
-    this.#synchronize(open);
+    const next = resolveDisclosureOpen(open, this.#trigger.disabled);
+    const changed = this.#panel.hidden === next;
+    this.#synchronize(next);
     if (restoreFocus) this.#trigger.focus();
-    if (changed) dispatchCmEvent<PopoverOpenChangeDetail>(this.#root, 'popover-open-change', { open });
+    if (changed) dispatchCmEvent<PopoverOpenChangeDetail>(this.#root, 'popover-open-change', { open: next });
   }
 
   readonly #handleClick = (event: Event): void => {
@@ -52,17 +50,20 @@ export class CmPopoverController implements CmController {
   readonly #handleKeydown = (event: Event): void => {
     const KeyboardEventConstructor = this.#root.ownerDocument.defaultView?.KeyboardEvent;
     if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor)) return;
-    if (event.key === 'Escape' && !this.#panel.hidden) {
-      event.preventDefault();
-      this.setOpen(false, true);
+    const action = popoverKeyAction(event.key, {
+      disabled: this.#trigger.disabled,
+      onTrigger: event.target === this.#trigger,
+      open: !this.#panel.hidden,
+    });
+    if (!action) return;
+
+    event.preventDefault();
+    if (action.type === 'close') {
+      this.setOpen(false, action.restoreFocus);
       return;
     }
-    if (event.target !== this.#trigger || this.#trigger.disabled) return;
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      this.setOpen(true);
-      this.#panel.querySelector<HTMLElement>(focusableSelector)?.focus();
-    }
+    this.setOpen(true);
+    if (action.focus === 'first') this.#panel.querySelector<HTMLElement>(cmFocusableSelector)?.focus();
   };
 
   readonly #handleCloseRequest = (): void => this.setOpen(false, true);

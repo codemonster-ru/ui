@@ -11,7 +11,7 @@
     "examples/*"
   ],
   "scripts": {
-    "prepare": "node ./scripts/patch-vue-test-utils.mjs && npm run hooks:install",
+    "prepare": "npm run hooks:install",
     "hooks:install": "git config core.hooksPath .githooks",
     "dev": "npm run dev -w @codemonster-ru/vueforge-playground-example",
     "dev:demo": "npm run dev -w @codemonster-ru/vueforge-playground-example",
@@ -55,7 +55,7 @@
     "check:ui-package-metadata": "node --test ./scripts/ci/code-monster-ui-package-metadata.test.mjs && node ./scripts/ci/check-code-monster-ui-package-metadata.mjs",
     "check:ui-packages": "node ./scripts/ci/run-code-monster-ui-workspaces.mjs check",
     "check:ui-significant-dom": "node --test ./scripts/contracts/significant-dom.test.mjs",
-    "check:ui-visual-fixtures": "node --test ./scripts/visual/code-monster-ui-fixtures.test.mjs ./scripts/visual/compare-showcase.test.mjs ./scripts/visual/cross-platform-baselines.test.mjs ./scripts/visual/cross-platform-browser.test.mjs ./scripts/visual/reference-baseline.test.mjs ./scripts/visual/showcase-state-cases.test.mjs && node ./scripts/ci/check-code-monster-ui-visual-fixtures.mjs",
+    "check:ui-visual-fixtures": "node --test ./scripts/visual/baseline-manifest.test.mjs ./scripts/visual/code-monster-ui-fixtures.test.mjs ./scripts/visual/compare-showcase.test.mjs ./scripts/visual/cross-platform-baselines.test.mjs ./scripts/visual/cross-platform-browser.test.mjs ./scripts/visual/reference-baseline.test.mjs ./scripts/visual/showcase-state-cases.test.mjs && node ./scripts/ci/check-code-monster-ui-visual-fixtures.mjs && node ./scripts/visual/check-baseline-manifests.mjs",
     "sync:ui-razor-assets": "node ./scripts/ci/sync-code-monster-ui-razor-assets.mjs",
     "check:packed-consumer": "node ./scripts/ci/check-packed-consumer.mjs --manager=npm && node ./scripts/ci/check-code-monster-ui-packed-consumer.mjs --manager=npm && node ./scripts/ci/check-code-monster-ui-css-packed-consumer.mjs --manager=npm",
     "check:packed-consumers": "node ./scripts/ci/run-packed-consumer-managers.mjs",
@@ -73,7 +73,7 @@
     "visual:cross-platform:capture": "node ./scripts/visual/capture-cross-platform-cases.mjs --source=adapters",
     "visual:cross-platform:reference:serve": "node ./scripts/visual/serve-cross-platform-reference.mjs",
     "visual:cross-platform:reference:capture": "node ./scripts/visual/capture-cross-platform-cases.mjs --source=vueforge",
-    "verify": "npm run check:clean-install && npm run audit:release && npm run lint:all && npm run format:check && npm run build && npm run typecheck && npm run check:repository-contracts && npm run test:ui && npm run test:ci-like && npm run test:migration && npm run check:docs:examples && npm run test:release-prep && npm run check:package-contracts && npm run check:ui-package-budgets && npm run check:packed-consumers && npm run check:consumer-tree-shaking && npm run check:deferred-budgets",
+    "verify": "npm run check:clean-install && npm run audit:release && npm run lint:all && npm run format:check && npm run build && npm run typecheck && npm run check:repository-contracts && npm run check:verify-coverage && npm run test:ui && npm run test:ci-like && npm run test:migration && npm run check:docs:examples && npm run test:release-prep && npm run check:package-contracts && npm run check:ui-package-budgets && npm run check:packed-consumers && npm run check:consumer-tree-shaking && npm run check:deferred-budgets",
     "format": "npm run format --workspaces --if-present --include-workspace-root=false",
     "format:check": "npm run format:check --workspaces --if-present --include-workspace-root=false",
     "prepublish:all": "npm run build && npm run pack:all:dry-run",
@@ -82,6 +82,7 @@
     "pack:ui:dry-run": "npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/ui-tokens --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/ui-runtime --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/ui-css --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/ui-utilities --dry-run --ignore-scripts && npm_config_cache=.npm-cache npm pack --workspace @codemonster-ru/ui-vue --dry-run --ignore-scripts",
     "check:deferred-budgets": "npm run build -w @codemonster-ru/vueforge-playground-example -- --manifest && node ./scripts/ci/check-deferred-runtime-budgets.mjs",
     "check:consumer-tree-shaking": "node ./scripts/ci/check-consumer-tree-shaking.mjs",
+    "check:verify-coverage": "node --test ./scripts/ci/verify-coverage.test.mjs && node ./scripts/ci/check-verify-coverage.mjs",
     "test:release-prep": "node --test ./scripts/ci/prepare-release-from-tag.test.mjs ./scripts/ci/verify-chain.test.mjs",
     "test:migration": "node --test ./scripts/migrate-to-v2.test.mjs ./scripts/check-vueforge-migration.test.mjs ./scripts/migrate-to-codemonster-ui.test.mjs"
   },

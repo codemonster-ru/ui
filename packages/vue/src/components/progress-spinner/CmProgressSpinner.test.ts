@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import CmProgressSpinner from './CmProgressSpinner.vue';
+import { expectCmWarning } from '../../internal/expect-warning';
 
 describe('CmProgressSpinner', () => {
   it('renders labelled indeterminate progress with owned SVG geometry', () => {
@@ -45,8 +46,9 @@ describe('CmProgressSpinner', () => {
   });
 
   it('rejects an empty accessible label', () => {
-    expect(() => mount(CmProgressSpinner, { props: { label: '' } })).toThrow(
-      'ProgressSpinner label must be a non-empty string.',
+    const wrapper = expectCmWarning('ProgressSpinner label must be a non-empty string.', () =>
+      mount(CmProgressSpinner, { props: { label: '' } }),
     );
+    expect(wrapper.attributes('role')).toBe('progressbar');
   });
 });
