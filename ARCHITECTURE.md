@@ -54,9 +54,9 @@ products keep their published `vueforge-*` names while they are in maintenance.
   - `icons`: `vf-icon*` / `--vf-icon-*`
 - Legacy prefixes (`vif*`, `vcb*`, `cm-*`) are not used for new code.
 
-## Shared behaviour layer
+## Shared behavior layer
 
-A component's behaviour is written once, in `packages/runtime/src/core/`, and published from
+A component's behavior is written once, in `packages/runtime/src/core/`, and published from
 `@codemonster-ru/ui-runtime/core`. Adapters translate; they do not decide.
 
 The layer holds pure functions over plain data. No DOM, no reactivity, no framework import, and no
@@ -64,7 +64,7 @@ throwing — an unusable input returns a value the caller can render (often `nul
 exception. That keeps it safe to import during server rendering and callable from a controller that
 owns real elements.
 
-Each behavioural component is expected to split three ways:
+Each behavioral component is expected to split three ways:
 
 - `runtime/src/core/<component>.ts` — the rules: which item is active, where a key moves focus,
   what a set of props reduces to.
@@ -81,7 +81,7 @@ Rules for the layer:
   adapter links a single copy.
 - Core modules are tested directly, without a DOM and without mounting a component. Adapter tests
   cover translation and markup, not the rules.
-- Components with no behaviour — layout primitives, badges, cards — have no core module and need
+- Components with no behavior — layout primitives, badges, cards — have no core module and need
   none.
 
 `Tabs` is the reference implementation.
