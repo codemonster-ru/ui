@@ -53,7 +53,7 @@
     "check:ui-behavior-scenarios": "node --test ./scripts/contracts/behavior-scenarios.test.mjs && node ./scripts/ci/check-code-monster-ui-behavior-scenarios.mjs",
     "check:package-contracts": "node --test ./scripts/ci/code-monster-ui-package-contracts.test.mjs && node ./scripts/ci/check-package-contracts.mjs",
     "check:ui-package-budgets": "node --test ./scripts/ci/code-monster-ui-package-budgets.test.mjs && node ./scripts/ci/check-code-monster-ui-package-budgets.mjs",
-    "check:ui-package-metadata": "node --test ./scripts/ci/code-monster-ui-package-metadata.test.mjs && node ./scripts/ci/check-code-monster-ui-package-metadata.mjs",
+    "check:ui-package-metadata": "node --test ./scripts/ci/code-monster-ui-package-metadata.test.mjs ./scripts/ci/code-monster-ui-workspaces.test.mjs && node ./scripts/ci/check-code-monster-ui-package-metadata.mjs",
     "check:ui-packages": "node ./scripts/ci/run-code-monster-ui-workspaces.mjs check",
     "check:ui-significant-dom": "node --test ./scripts/contracts/significant-dom.test.mjs ./scripts/contracts/significant-dom-conformance.test.mjs",
     "check:ui-visual-fixtures": "node --test ./scripts/visual/baseline-manifest.test.mjs ./scripts/visual/code-monster-ui-fixtures.test.mjs ./scripts/visual/compare-showcase.test.mjs ./scripts/visual/cross-platform-baselines.test.mjs ./scripts/visual/cross-platform-browser.test.mjs ./scripts/visual/reference-baseline.test.mjs ./scripts/visual/showcase-state-cases.test.mjs && node ./scripts/ci/check-code-monster-ui-visual-fixtures.mjs && node ./scripts/visual/check-baseline-manifests.mjs",
