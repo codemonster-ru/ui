@@ -3,6 +3,8 @@ import { computed, ref, useAttrs, useSlots, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
+import { nextTabsValue, resolveTabsValue } from '@codemonster-ru/ui-runtime/core';
+
 import type { CmTabItem } from './tabs.types';
 
 defineOptions({ inheritAttrs: false });
@@ -49,18 +51,9 @@ const normalizedItems = computed(() => {
   assertCm(items.length === 0 || items.some(({ disabled }) => !disabled), 'Tabs require an enabled item.');
   return items;
 });
-const fallbackValue = computed(() => normalizedItems.value.find(({ disabled }) => !disabled)?.value ?? '');
-const localValue = ref(
-  normalizedItems.value.some(({ disabled, value }) => !disabled && value === props.defaultValue)
-    ? props.defaultValue!
-    : fallbackValue.value,
-);
-const activeValue = computed(() =>
-  normalizedItems.value.some(({ disabled, value }) => !disabled && value === props.modelValue)
-    ? props.modelValue!
-    : props.modelValue === null
-      ? localValue.value
-      : fallbackValue.value,
+const localValue = ref(resolveTabsValue(normalizedItems.value, props.defaultValue) ?? '');
+const activeValue = computed(
+  () => resolveTabsValue(normalizedItems.value, props.modelValue === null ? localValue.value : props.modelValue) ?? '',
 );
 const classes = computed(() => mergeCmClasses('cm-tabs', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tabs-value', 'onKeydown']));
@@ -78,27 +71,12 @@ function select(item: CmTabItem, focus = false): void {
 }
 
 function move(event: KeyboardEvent, item: CmTabItem): void {
-  const enabled = normalizedItems.value.filter(({ disabled }) => !disabled);
-  const index = enabled.findIndex(({ value }) => value === item.value);
-  if (index < 0) return;
   const host = (event.currentTarget as Element).closest('[dir]');
   const rtl = host?.getAttribute('dir')?.toLowerCase() === 'rtl' || document.documentElement.dir === 'rtl';
-  const forward = rtl ? 'ArrowLeft' : 'ArrowRight';
-  const backward = rtl ? 'ArrowRight' : 'ArrowLeft';
-  const last = enabled.length - 1;
-  const nextIndex =
-    event.key === 'Home'
-      ? 0
-      : event.key === 'End'
-        ? last
-        : event.key === forward
-          ? (index + 1) % enabled.length
-          : event.key === backward
-            ? (index - 1 + enabled.length) % enabled.length
-            : -1;
-  if (nextIndex < 0) return;
+  const nextValue = nextTabsValue(normalizedItems.value, item.value, event.key, rtl ? 'rtl' : 'ltr');
+  if (nextValue === null) return;
   event.preventDefault();
-  const next = enabled[nextIndex];
+  const next = normalizedItems.value.find(({ value }) => value === nextValue);
   if (next) select(next, true);
 }
 </script>
