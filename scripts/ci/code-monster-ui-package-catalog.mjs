@@ -37,7 +37,11 @@ export const codeMonsterUiComposerPackage = Object.freeze({
 export const codeMonsterUiPackageSizeBudgets = Object.freeze({
   '@codemonster-ru/ui-tokens': { cssGzip: 12 * 1024, cssRaw: 64 * 1024, jsGzip: 24 * 1024 },
   '@codemonster-ru/ui-icons': { cssGzip: 0, cssRaw: 0, jsGzip: 256 * 1024 },
-  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 32 * 1024 },
+  // The shared core lives here, so this package carries logic the adapters used to duplicate.
+  // Measured 31.45 KiB before that move and 33.29 KiB after, while ui-vue fell from 24.82 to
+  // 24.16: one implementation costs about 1.2 KiB more than two specialised ones, which is the
+  // deliberate trade. Headroom is kept deliberately tight so the next growth is a decision too.
+  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 36 * 1024 },
   '@codemonster-ru/ui-css': { cssGzip: 48 * 1024, cssRaw: 320 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-utilities': { cssGzip: 32 * 1024, cssRaw: 256 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-vue': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },
