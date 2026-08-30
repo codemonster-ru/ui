@@ -3,6 +3,15 @@ import { computed, ref, useAttrs, watch, watchEffect, type PropType } from 'vue'
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
+import {
+  ariaSortFor,
+  clampPage,
+  formatTemplate,
+  nextSortState,
+  resolveSelectionState,
+  sortLabelFor,
+  toggleAllSelection,
+} from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
 import type {
   CmDataTableColumn,
@@ -259,12 +268,9 @@ const selectedIds = computed(() => new Set(localSelectedRowIds.value));
 const enabledRowIds = computed(() =>
   normalizedRows.value.filter(({ selectable }) => selectable !== false).map(({ id }) => id),
 );
-const allSelected = computed(
-  () => enabledRowIds.value.length > 0 && enabledRowIds.value.every((id) => selectedIds.value.has(id)),
-);
-const partiallySelected = computed(
-  () => !allSelected.value && enabledRowIds.value.some((id) => selectedIds.value.has(id)),
-);
+const selectionState = computed(() => resolveSelectionState(enabledRowIds.value, localSelectedRowIds.value));
+const allSelected = computed(() => selectionState.value.all);
+const partiallySelected = computed(() => selectionState.value.partial);
 const selectAll = ref<HTMLInputElement>();
 watchEffect(() => {
   if (selectAll.value) selectAll.value.indeterminate = partiallySelected.value;
@@ -325,31 +331,22 @@ function rowLabel(id: string): string {
     .join(' ');
 }
 
-function formatTemplate(template: string, values: Readonly<Record<string, number | string>>): string {
-  return Object.entries(values).reduce(
-    (result, [name, value]) => result.split(`{${name}}`).join(String(value)),
-    template,
-  );
+function sortLabel(column: CmDataTableColumn): string {
+  const template = {
+    ascending: props.sortAscendingLabelTemplate,
+    clear: props.clearSortLabelTemplate,
+    descending: props.sortDescendingLabelTemplate,
+  }[sortLabelFor(localSort.value, column.key)];
+  return formatTemplate(template, { column: column.header });
 }
 
-function sortLabel(column: CmDataTableColumn): string {
-  const template =
-    localSort.value?.key !== column.key
-      ? props.sortAscendingLabelTemplate
-      : localSort.value.direction === 'ascending'
-        ? props.sortDescendingLabelTemplate
-        : props.clearSortLabelTemplate;
-  return formatTemplate(template, { column: column.header });
+function columnAriaSort(column: CmDataTableColumn): CmDataTableSortDirection | 'none' {
+  return ariaSortFor(localSort.value, column.key);
 }
 
 function changeSort(column: CmDataTableColumn): void {
   if (!column.sortable) return;
-  const sort =
-    localSort.value?.key !== column.key
-      ? { key: column.key, direction: 'ascending' as const }
-      : localSort.value.direction === 'ascending'
-        ? { key: column.key, direction: 'descending' as const }
-        : null;
+  const sort = nextSortState(localSort.value, column.key);
   localSort.value = sort;
   emit('update:sort', sort);
   emit('sortChange', sort);
@@ -370,17 +367,18 @@ function changeRowSelection(rowId: string, checked: boolean): void {
 }
 
 function changeAllSelection(checked: boolean): void {
-  const enabled = new Set(enabledRowIds.value);
-  const next = new Set(localSelectedRowIds.value);
-  for (const rowId of enabled) {
-    if (checked) next.add(rowId);
-    else next.delete(rowId);
-  }
-  reportSelection(normalizedRows.value.map(({ id }) => id).filter((id) => next.has(id)));
+  reportSelection(
+    toggleAllSelection(
+      normalizedRows.value.map(({ id }) => id),
+      enabledRowIds.value,
+      localSelectedRowIds.value,
+      checked,
+    ),
+  );
 }
 
 function changePage(page: number): void {
-  const next = Math.min(resolvedPageCount.value, Math.max(1, page));
+  const next = clampPage(page, resolvedPageCount.value);
   if (next === localPage.value) return;
   localPage.value = next;
   emit('update:page', next);
@@ -437,7 +435,7 @@ useCmHydrated();
               :key="column.key"
               v-bind="cellAttrs(column)"
               scope="col"
-              :aria-sort="column.sortable ? (localSort?.key === column.key ? localSort.direction : 'none') : undefined"
+              :aria-sort="column.sortable ? columnAriaSort(column) : undefined"
             >
               <button
                 v-if="column.sortable"
