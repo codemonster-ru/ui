@@ -3,6 +3,7 @@ import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
+import { isMenuCloseKey, menuTabStopId, nextMenuItem } from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmMenuItem } from './menu.types';
 
@@ -73,30 +74,23 @@ function activate(event: MouseEvent, item: CmMenuItem): void {
 }
 
 function move(event: KeyboardEvent): void {
-  if (event.key === 'Escape') {
+  if (isMenuCloseKey(event.key)) {
     event.preventDefault();
     emit('closeRequest');
     return;
   }
-  if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
   const root = event.currentTarget as HTMLElement;
-  const enabled = [
-    ...root.querySelectorAll<HTMLElement>('[data-cm-menu-item]:not([disabled]):not([aria-disabled="true"])'),
-  ];
-  const index = enabled.indexOf(event.target as HTMLElement);
-  if (index < 0) return;
+  const currentId = (event.target as HTMLElement).closest<HTMLElement>('[data-cm-menu-item]')?.dataset.cmMenuValue;
+  if (currentId === undefined) return;
+
+  const nextId = nextMenuItem(normalizedItems.value, currentId, event.key);
+  if (nextId === null) return;
+
   event.preventDefault();
-  const last = enabled.length - 1;
-  const nextIndex =
-    event.key === 'Home'
-      ? 0
-      : event.key === 'End'
-        ? last
-        : event.key === 'ArrowDown'
-          ? (index + 1) % enabled.length
-          : (index - 1 + enabled.length) % enabled.length;
-  enabled[nextIndex]?.focus();
+  root.querySelector<HTMLElement>(`[data-cm-menu-value="${nextId}"]`)?.focus();
 }
+
+const tabStopId = computed(() => menuTabStopId(normalizedItems.value));
 
 useCmHydrated();
 </script>
@@ -105,7 +99,7 @@ useCmHydrated();
   <div v-bind="rootAttrs" :class="classes" role="menu" :aria-label="label" data-cm-controller="menu" @keydown="move">
     <component
       :is="item.href ? 'a' : 'button'"
-      v-for="(item, index) in normalizedItems"
+      v-for="item in normalizedItems"
       :key="item.id"
       :class="itemClasses(item)"
       :type="item.href ? undefined : 'button'"
@@ -113,7 +107,7 @@ useCmHydrated();
       :target="item.href ? item.target : undefined"
       :rel="item.href ? itemRel(item) : undefined"
       role="menuitem"
-      :tabindex="!item.disabled && normalizedItems.findIndex((candidate) => !candidate.disabled) === index ? 0 : -1"
+      :tabindex="item.id === tabStopId ? 0 : -1"
       data-cm-menu-item
       :data-cm-menu-value="item.id"
       :disabled="!item.href && item.disabled ? true : undefined"

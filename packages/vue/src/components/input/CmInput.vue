@@ -3,6 +3,7 @@ import { computed, nextTick, ref, useAttrs, useSlots, watch, type PropType } fro
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
+import { resolveInputClearable, resolvePasswordReveal } from '@codemonster-ru/ui-runtime/core';
 import type { CmInputSize, CmInputType } from './input.types';
 
 defineOptions({ inheritAttrs: false });
@@ -48,13 +49,18 @@ watch(
 );
 const inputType = computed(() => (types.includes(props.type) ? props.type : 'text'));
 const resolvedInputType = computed(() =>
-  props.passwordReveal && inputType.value === 'password' && passwordVisible.value ? 'text' : inputType.value,
+  props.passwordReveal && inputType.value === 'password' ? passwordReveal.value.type : inputType.value,
 );
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const hasLeading = computed(() => Boolean(slots.leading));
 const hasTrailing = computed(() => Boolean(slots.trailing));
 const hasPasswordReveal = computed(() => props.passwordReveal && inputType.value === 'password');
-const hasClear = computed(() => props.clearable && !props.disabled && !props.readonly);
+const hasClear = computed(() =>
+  resolveInputClearable({ clearable: props.clearable, disabled: props.disabled, readonly: props.readonly }),
+);
+const passwordReveal = computed(() =>
+  resolvePasswordReveal(passwordVisible.value, { hide: props.hidePasswordLabel, show: props.showPasswordLabel }),
+);
 const hasWrapper = computed(() => hasLeading.value || hasTrailing.value || hasPasswordReveal.value || hasClear.value);
 const classes = computed(() =>
   mergeCmClasses('cm-input', `cm-input--${size.value}`, props.invalid ? 'cm-input--invalid' : undefined, attrs.class),
@@ -114,8 +120,8 @@ useCmHydrated();
       v-if="hasPasswordReveal"
       class="cm-input__action"
       type="button"
-      :aria-label="passwordVisible ? props.hidePasswordLabel : props.showPasswordLabel"
-      :aria-pressed="passwordVisible"
+      :aria-label="passwordReveal.label"
+      :aria-pressed="passwordReveal.ariaPressed"
       data-cm-input-password
       :data-cm-input-show-password-label="props.showPasswordLabel"
       :data-cm-input-hide-password-label="props.hidePasswordLabel"
