@@ -1,0 +1,47 @@
+{
+  "$comment": "Shared by every SignificantDom implementation. The JavaScript comparator and the PHP one used to keep separate copies of these lists, and they had already drifted: PHP knew six boolean attributes to JavaScript twenty-five, so the two adapters were held to different notions of DOM equality.",
+  "booleanAttributes": [
+    "allowfullscreen",
+    "async",
+    "autofocus",
+    "autoplay",
+    "checked",
+    "controls",
+    "default",
+    "defer",
+    "disabled",
+    "formnovalidate",
+    "hidden",
+    "inert",
+    "ismap",
+    "itemscope",
+    "loop",
+    "multiple",
+    "muted",
+    "nomodule",
+    "novalidate",
+    "open",
+    "playsinline",
+    "readonly",
+    "required",
+    "reversed",
+    "selected"
+  ],
+  "idReferenceAttributes": [
+    "aria-activedescendant",
+    "aria-controls",
+    "aria-describedby",
+    "aria-details",
+    "aria-errormessage",
+    "aria-flowto",
+    "aria-labelledby",
+    "aria-owns",
+    "for",
+    "form",
+    "list"
+  ],
+  "frameworkAttributes": {
+    "exact": ["data-reactroot", "ng-version"],
+    "patterns": ["^data-v-[a-z0-9-]+$", "^_ng(?:content|host)-[a-z0-9-]+$"]
+  }
+}
