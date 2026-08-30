@@ -139,15 +139,19 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
   const url = `${origin.replace(/\/$/u, '')}/${route}`;
   await send('Page.navigate', { url });
   await waitFor(showcaseContentReady);
+  // The old document still reports readyState "complete" for a moment after reload() is called, so
+  // waiting on readiness alone can match the page being torn down and hand the next step a
+  // half-built document with no head. Mark this one first and wait for a document without the mark.
   await evaluate(`(() => {
     localStorage.setItem('vf-theme', ${JSON.stringify(theme.name)});
     localStorage.setItem('codemonster-showcase-theme', ${JSON.stringify(theme.name)});
     document.documentElement.setAttribute('data-vf-theme', ${JSON.stringify(theme.attribute)});
     document.documentElement.setAttribute('data-cm-theme', ${JSON.stringify(theme.attribute)});
+    window.__cmCaptureReloading = true;
     location.reload();
     return true;
   })()`);
-  await waitFor(showcaseContentReady);
+  await waitFor(`!window.__cmCaptureReloading && ${showcaseContentReady}`);
 
   const motionStyle = stabilizeMotion
     ? '*,*::before,*::after{animation:none!important;caret-color:transparent!important;scroll-behavior:auto!important;transition:none!important}'
@@ -164,6 +168,7 @@ async function prepareRoute(route, theme, reducedMotion = 'reduce', stabilizeMot
       '[role="progressbar"][aria-label="Dynamic progress"] :is(.vf-progress-bar__label,.cm-progress-bar__label),[role="progressbar"][aria-label="Installing module progress"] :is(.vf-progress-bar__label,.cm-progress-bar__label){font-size:0!important}',
       '[role="progressbar"][aria-label="Dynamic progress"] :is(.vf-progress-bar__label,.cm-progress-bar__label)::after,[role="progressbar"][aria-label="Installing module progress"] :is(.vf-progress-bar__label,.cm-progress-bar__label)::after{content:"50%";font-size:0.625rem!important}',
     ].join('');
+    if (!document.head) throw new Error('Capture ran before the document had a head.');
     document.head.append(style);
 
     return true;
