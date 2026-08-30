@@ -48,6 +48,9 @@
     "@codemonster-ru/ui-css": "^2.0.0-dev.0",
     "vue": "^3.5.0"
   },
+  "dependencies": {
+    "@codemonster-ru/ui-runtime": "^2.0.0-dev.0"
+  },
   "devDependencies": {
     "@types/node": "^24.3.1",
     "@vitejs/plugin-vue": "^5.2.4",
