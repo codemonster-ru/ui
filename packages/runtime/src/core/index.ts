@@ -21,5 +21,7 @@ export { isMenuCloseKey, menuTabStopId, nextMenuItem } from './menu.js';
 export type { CmMenuCoreItem } from './menu.js';
 export { nextRovingIndex } from './roving.js';
 export type { CmRovingDirection, CmRovingOptions, CmRovingOrientation } from './roving.js';
+export { selectClosedKeyAction, selectOpenKeyAction } from './select.js';
+export type { CmSelectAction, CmSelectFocusTarget } from './select.js';
 export { nextTabsValue, resolveTabsValue } from './tabs.js';
 export type { CmTabsCoreItem, CmTabsDirection } from './tabs.js';

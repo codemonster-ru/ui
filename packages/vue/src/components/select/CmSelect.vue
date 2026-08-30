@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, ref, useAttrs, watch, type PropTyp
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
+import { selectClosedKeyAction, selectOpenKeyAction } from '@codemonster-ru/ui-runtime/core';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmSelectOption, CmSelectSize } from './select.types';
 
@@ -106,40 +107,37 @@ function clearValue(): void {
 }
 
 function onTriggerKeydown(event: KeyboardEvent): void {
-  if (props.disabled) return;
-  if (!isOpen.value) {
-    if (!['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) return;
-    event.preventDefault();
-    setOpen(true);
-    void nextTick(() => {
-      const options = enabledOptions();
-      const selected = options.find((option) => option.getAttribute('aria-selected') === 'true');
-      (event.key === 'ArrowUp' ? options[options.length - 1] : (selected ?? options[0]))?.focus();
-    });
-  }
+  if (props.disabled || isOpen.value) return;
+
+  const action = selectClosedKeyAction(event.key);
+  if (!action || action.type !== 'open') return;
+
+  event.preventDefault();
+  setOpen(true);
+  void nextTick(() => {
+    const options = enabledOptions();
+    const selected = options.find((option) => option.getAttribute('aria-selected') === 'true');
+    (action.focus === 'last' ? options[options.length - 1] : (selected ?? options[0]))?.focus();
+  });
 }
 
 function onListboxKeydown(event: KeyboardEvent): void {
-  if (event.key === 'Escape') {
-    event.preventDefault();
+  const options = enabledOptions();
+  const action = selectOpenKeyAction(event.key, {
+    activeIndex: options.indexOf(document.activeElement as HTMLButtonElement),
+    count: options.length,
+  });
+  if (!action) return;
+
+  // Options are native buttons here, so Enter and Space already commit through their own click.
+  if (action.type === 'commit') return;
+
+  event.preventDefault();
+  if (action.type === 'close') {
     setOpen(false, true);
     return;
   }
-
-  const options = enabledOptions();
-  const active = options.indexOf(document.activeElement as HTMLButtonElement);
-
-  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-    event.preventDefault();
-    const step = event.key === 'ArrowDown' ? 1 : -1;
-    options[active === -1 ? 0 : (active + step + options.length) % options.length]?.focus();
-    return;
-  }
-
-  if (event.key === 'Home' || event.key === 'End') {
-    event.preventDefault();
-    (event.key === 'Home' ? options[0] : options[options.length - 1])?.focus();
-  }
+  if (action.type === 'focus') options[action.index]?.focus();
 }
 
 function onDocumentClick(event: MouseEvent): void {
