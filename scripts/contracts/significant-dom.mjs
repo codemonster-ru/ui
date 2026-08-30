@@ -1,54 +1,27 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+// The PHP comparator reads the same file. Keeping these lists in one place is what stops the two
+// adapters being judged against different notions of DOM equality, which is what had happened.
+const rules = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, '../../contracts/significant-dom.json'), 'utf8'),
+);
+const booleanAttributes = new Set(rules.booleanAttributes);
+const idReferenceAttributes = new Set(rules.idReferenceAttributes);
+const frameworkAttributeExact = new Set(rules.frameworkAttributes.exact);
+const frameworkAttributePatterns = rules.frameworkAttributes.patterns.map(
+  (pattern) => new RegExp(pattern, 'u'),
+);
+
 import { isDeepStrictEqual } from 'node:util';
 import { parseFragment } from 'parse5';
 
 const htmlNamespace = 'http://www.w3.org/1999/xhtml';
-const booleanAttributes = new Set([
-  'allowfullscreen',
-  'async',
-  'autofocus',
-  'autoplay',
-  'checked',
-  'controls',
-  'default',
-  'defer',
-  'disabled',
-  'formnovalidate',
-  'hidden',
-  'inert',
-  'ismap',
-  'itemscope',
-  'loop',
-  'multiple',
-  'muted',
-  'nomodule',
-  'novalidate',
-  'open',
-  'playsinline',
-  'readonly',
-  'required',
-  'reversed',
-  'selected',
-]);
-const idReferenceAttributes = new Set([
-  'aria-activedescendant',
-  'aria-controls',
-  'aria-describedby',
-  'aria-details',
-  'aria-errormessage',
-  'aria-flowto',
-  'aria-labelledby',
-  'aria-owns',
-  'for',
-  'form',
-  'list',
-]);
 
 function isFrameworkAttribute(name) {
   return (
-    name === 'data-reactroot' ||
-    name === 'ng-version' ||
-    /^data-v-[a-z0-9-]+$/u.test(name) ||
-    /^_ng(?:content|host)-[a-z0-9-]+$/u.test(name)
+    frameworkAttributeExact.has(name) ||
+    frameworkAttributePatterns.some((pattern) => pattern.test(name))
   );
 }
 
