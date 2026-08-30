@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch, t
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
+import { dropdownKeyAction, resolveDisclosureOpen } from '@codemonster-ru/ui-runtime/core';
 import { assertCm } from '../../internal/warn';
 import CmMenu from '../menu/CmMenu.vue';
 import type { CmMenuItem } from '../menu/menu.types';
@@ -31,7 +32,7 @@ const attrs = useAttrs();
 const slots = useSlots();
 const root = ref<HTMLElement>();
 const trigger = ref<HTMLButtonElement>();
-const localOpen = ref(props.open && !props.disabled);
+const localOpen = ref(resolveDisclosureOpen(props.open, props.disabled));
 const placement = computed(() =>
   ['bottom-start', 'bottom-end'].includes(props.placement) ? props.placement : 'bottom-start',
 );
@@ -49,11 +50,11 @@ assertCm(props.id.trim() !== '' && props.label.trim() !== '', 'Dropdown id and l
 
 watch(
   () => [props.open, props.disabled] as const,
-  ([open, disabled]) => (localOpen.value = open && !disabled),
+  ([open, disabled]) => (localOpen.value = resolveDisclosureOpen(open, disabled)),
 );
 
 function setOpen(open: boolean, restoreFocus = false): void {
-  const next = open && !props.disabled;
+  const next = resolveDisclosureOpen(open, props.disabled);
   if (localOpen.value === next) return;
   localOpen.value = next;
   emit('update:open', next);
@@ -62,13 +63,23 @@ function setOpen(open: boolean, restoreFocus = false): void {
 }
 
 function onTriggerKeydown(event: KeyboardEvent): void {
-  if (props.disabled || !['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) return;
+  const action = dropdownKeyAction(event.key, {
+    disabled: props.disabled,
+    onTrigger: true,
+    open: localOpen.value,
+  });
+  if (!action) return;
+
   event.preventDefault();
+  if (action.type === 'close') {
+    setOpen(false, action.restoreFocus);
+    return;
+  }
   setOpen(true);
   const items = root.value?.querySelectorAll<HTMLElement>(
     '[data-cm-menu-item]:not([disabled]):not([aria-disabled="true"])',
   );
-  const item = event.key === 'ArrowUp' ? items?.[items.length - 1] : items?.[0];
+  const item = action.focus === 'last' ? items?.[items.length - 1] : items?.[0];
   item?.focus();
 }
 

@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, useAttrs, watch, type PropTy
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { useCmHydrated } from '../../internal/hydration';
+import { cmFocusableSelector, popoverKeyAction, resolveDisclosureOpen } from '@codemonster-ru/ui-runtime/core';
 import { assertCm } from '../../internal/warn';
 import type { CmPopoverPlacement } from './popover.types';
 
@@ -23,7 +24,7 @@ const attrs = useAttrs();
 const root = ref<HTMLElement>();
 const trigger = ref<HTMLButtonElement>();
 const panel = ref<HTMLElement>();
-const localOpen = ref(props.open && !props.disabled);
+const localOpen = ref(resolveDisclosureOpen(props.open, props.disabled));
 assertCm(props.id.trim() !== '' && props.label.trim() !== '', 'Popover id and label must be non-empty strings.');
 const placement = computed(() =>
   ['top', 'bottom-start', 'bottom-end'].includes(props.placement) ? props.placement : 'bottom-start',
@@ -39,11 +40,11 @@ const classes = computed(() =>
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller']));
 watch(
   () => [props.open, props.disabled] as const,
-  ([open, disabled]) => (localOpen.value = open && !disabled),
+  ([open, disabled]) => (localOpen.value = resolveDisclosureOpen(open, disabled)),
 );
 
 function setOpen(open: boolean, restoreFocus = false): void {
-  const next = open && !props.disabled;
+  const next = resolveDisclosureOpen(open, props.disabled);
   if (localOpen.value === next) return;
   localOpen.value = next;
   emit('update:open', next);
@@ -52,18 +53,20 @@ function setOpen(open: boolean, restoreFocus = false): void {
 }
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key === 'Escape' && localOpen.value) {
-    event.preventDefault();
-    setOpen(false, true);
-  } else if (event.target === trigger.value && event.key === 'ArrowDown' && !props.disabled) {
-    event.preventDefault();
-    setOpen(true);
-    panel.value
-      ?.querySelector<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      )
-      ?.focus();
+  const action = popoverKeyAction(event.key, {
+    disabled: props.disabled,
+    onTrigger: event.target === trigger.value,
+    open: localOpen.value,
+  });
+  if (!action) return;
+
+  event.preventDefault();
+  if (action.type === 'close') {
+    setOpen(false, action.restoreFocus);
+    return;
   }
+  setOpen(true);
+  if (action.focus === 'first') panel.value?.querySelector<HTMLElement>(cmFocusableSelector)?.focus();
 }
 
 function onDocumentClick(event: MouseEvent): void {
