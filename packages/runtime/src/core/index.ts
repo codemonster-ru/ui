@@ -7,6 +7,23 @@
 export { nextAccordionItem, resolveAccordionOpenItems, toggleAccordionItem } from './accordion.js';
 export type { CmAccordionCoreItem } from './accordion.js';
 export {
+  buildCalendarMonth,
+  formatDisplayDate,
+  formatIsoDate,
+  monthLabel,
+  parseIsoDate,
+  shiftMonth,
+  weekdayLabels,
+} from './date-picker.js';
+export type { CmCalendarDay } from './date-picker.js';
+export {
+  commandPaletteKeyAction,
+  filterCommands,
+  matchesCommandQuery,
+  normalizeCommandQuery,
+} from './command-palette.js';
+export type { CmCommandCoreItem, CmCommandPaletteAction } from './command-palette.js';
+export {
   cmFocusableSelector,
   cmTooltipDelays,
   dropdownKeyAction,
