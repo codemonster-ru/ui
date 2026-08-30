@@ -6,6 +6,8 @@
  * so the rules live here and each adapter only supplies the items it can see.
  */
 
+import { nextRovingIndex } from './roving.js';
+
 export interface CmTabsCoreItem {
   readonly disabled?: boolean;
   readonly value: string;
@@ -42,29 +44,13 @@ export function nextTabsValue(
   direction: CmTabsDirection = 'ltr',
 ): string | null {
   const enabled = items.filter((item) => !item.disabled);
-  if (enabled.length === 0) {
-    return null;
-  }
+  const index = nextRovingIndex({
+    count: enabled.length,
+    current: enabled.findIndex((item) => item.value === current),
+    direction,
+    key,
+    orientation: 'horizontal',
+  });
 
-  const currentIndex = enabled.findIndex((item) => item.value === current);
-  if (currentIndex < 0) {
-    return null;
-  }
-
-  const forwardKey = direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
-  const backwardKey = direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft';
-  const last = enabled.length - 1;
-
-  const nextIndex =
-    key === 'Home'
-      ? 0
-      : key === 'End'
-        ? last
-        : key === forwardKey
-          ? (currentIndex + 1) % enabled.length
-          : key === backwardKey
-            ? (currentIndex - 1 + enabled.length) % enabled.length
-            : -1;
-
-  return nextIndex < 0 ? null : (enabled[nextIndex]?.value ?? null);
+  return index === null ? null : (enabled[index]?.value ?? null);
 }

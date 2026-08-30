@@ -2,6 +2,8 @@
 import { computed, ref, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { nextAccordionItem, resolveAccordionOpenItems, toggleAccordionItem } from '@codemonster-ru/ui-runtime/core';
+
 import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmAccordionItem, CmAccordionOpenChange } from './accordion.types';
@@ -41,11 +43,7 @@ function validatedItems(): readonly CmAccordionItem[] {
 const normalizedItems = computed(validatedItems);
 
 function normalizeOpenItems(values: readonly string[]): string[] {
-  const requested = new Set(values);
-  const normalized = normalizedItems.value
-    .filter((item) => !item.disabled && requested.has(item.id))
-    .map(({ id }) => id);
-  return props.multiple ? normalized : normalized.slice(0, 1);
+  return resolveAccordionOpenItems(normalizedItems.value, values, props.multiple);
 }
 
 const localOpenItems = ref(normalizeOpenItems(props.defaultOpenItems));
@@ -71,15 +69,7 @@ function itemSlotName(region: 'trigger' | 'panel', id: string): string {
 function toggle(item: CmAccordionItem): void {
   if (item.disabled) return;
 
-  const open = isOpen(item.id);
-  const requested = props.multiple
-    ? open
-      ? renderedOpenItems.value.filter((id) => id !== item.id)
-      : [...renderedOpenItems.value, item.id]
-    : open
-      ? []
-      : [item.id];
-  const next = normalizeOpenItems(requested);
+  const next = toggleAccordionItem(normalizedItems.value, renderedOpenItems.value, item.id, props.multiple);
 
   if (props.openItems === null) localOpenItems.value = next;
   emit('update:openItems', next);
@@ -87,24 +77,16 @@ function toggle(item: CmAccordionItem): void {
 }
 
 function moveFocus(event: KeyboardEvent): void {
-  if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
-
   const root = event.currentTarget as HTMLElement;
-  const enabled = [...root.querySelectorAll<HTMLButtonElement>('.cm-accordion__trigger:not(:disabled)')];
-  const currentIndex = enabled.indexOf(event.target as HTMLButtonElement);
-  if (currentIndex < 0) return;
+  const trigger = (event.target as HTMLElement).closest<HTMLButtonElement>('.cm-accordion__trigger');
+  const currentId = trigger?.closest<HTMLElement>('[data-cm-accordion-item]')?.dataset.cmAccordionItem;
+  if (currentId === undefined) return;
+
+  const nextId = nextAccordionItem(normalizedItems.value, currentId, event.key);
+  if (nextId === null) return;
 
   event.preventDefault();
-  const lastIndex = enabled.length - 1;
-  const nextIndex =
-    event.key === 'Home'
-      ? 0
-      : event.key === 'End'
-        ? lastIndex
-        : event.key === 'ArrowDown'
-          ? (currentIndex + 1) % enabled.length
-          : (currentIndex - 1 + enabled.length) % enabled.length;
-  enabled[nextIndex]?.focus();
+  root.querySelector<HTMLButtonElement>(`[data-cm-accordion-item="${nextId}"] .cm-accordion__trigger`)?.focus();
 }
 
 useCmHydrated();
