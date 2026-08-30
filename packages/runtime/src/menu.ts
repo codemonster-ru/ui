@@ -1,3 +1,4 @@
+import { isMenuCloseKey, menuTabStopId, nextMenuItem } from './core/menu.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -50,33 +51,30 @@ export class CmMenuController implements CmController {
     const KeyboardEventConstructor = this.#root.ownerDocument.defaultView?.KeyboardEvent;
     if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor)) return;
 
-    if (event.key === 'Escape') {
+    if (isMenuCloseKey(event.key)) {
       event.preventDefault();
       dispatchCmEvent(this.#root, 'menu-close-request', {});
       return;
     }
 
     const item = this.#itemFromEvent(event);
-    const enabled = this.#items.filter((candidate) => !disabled(candidate));
-    const currentIndex = item ? enabled.indexOf(item) : -1;
-    if (currentIndex < 0) return;
+    const currentId = item ? this.#idOf(item) : null;
+    if (currentId === null) return;
 
-    const last = enabled.length - 1;
-    const nextIndex =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? last
-          : event.key === 'ArrowDown'
-            ? (currentIndex + 1) % enabled.length
-            : event.key === 'ArrowUp'
-              ? (currentIndex - 1 + enabled.length) % enabled.length
-              : -1;
-    if (nextIndex < 0) return;
+    const nextId = nextMenuItem(this.#coreItems, currentId, event.key);
+    if (nextId === null) return;
 
     event.preventDefault();
-    enabled[nextIndex]?.focus();
+    this.#items.find((candidate) => this.#idOf(candidate) === nextId)?.focus();
   };
+
+  #idOf(item: HTMLElement): string {
+    return item.dataset.cmMenuValue ?? String(this.#items.indexOf(item));
+  }
+
+  get #coreItems(): { disabled: boolean; id: string }[] {
+    return this.#items.map((item) => ({ disabled: disabled(item), id: this.#idOf(item) }));
+  }
 
   #itemFromEvent(event: Event): HTMLElement | null {
     const ElementConstructor = this.#root.ownerDocument.defaultView?.Element;
@@ -86,11 +84,9 @@ export class CmMenuController implements CmController {
   }
 
   #synchronizeTabStops(): void {
-    let assigned = false;
+    const tabStop = menuTabStopId(this.#coreItems);
     for (const item of this.#items) {
-      const enabled = !disabled(item);
-      item.tabIndex = enabled && !assigned ? 0 : -1;
-      if (enabled) assigned = true;
+      item.tabIndex = this.#idOf(item) === tabStop ? 0 : -1;
     }
   }
 }
