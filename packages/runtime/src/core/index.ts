@@ -7,6 +7,21 @@
 export { nextAccordionItem, resolveAccordionOpenItems, toggleAccordionItem } from './accordion.js';
 export type { CmAccordionCoreItem } from './accordion.js';
 export {
+  ariaSortFor,
+  clampPage,
+  formatTemplate,
+  nextSortState,
+  resolveSelectionState,
+  sortLabelFor,
+  toggleAllSelection,
+} from './data-table.js';
+export type {
+  CmDataTableSelectionState,
+  CmDataTableSortDirection,
+  CmDataTableSortLabel,
+  CmDataTableSortState,
+} from './data-table.js';
+export {
   buildCalendarMonth,
   formatDisplayDate,
   formatIsoDate,
