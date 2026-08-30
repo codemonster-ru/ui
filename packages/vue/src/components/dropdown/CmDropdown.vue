@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm } from '../../internal/warn';
 import CmMenu from '../menu/CmMenu.vue';
 import type { CmMenuItem } from '../menu/menu.types';
@@ -86,6 +87,8 @@ function onDocumentClick(event: MouseEvent): void {
 
 onMounted(() => document.addEventListener('click', onDocumentClick));
 onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
+
+useCmHydrated();
 </script>
 
 <template>

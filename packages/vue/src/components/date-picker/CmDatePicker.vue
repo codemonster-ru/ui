@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmDatePickerSize } from './date-picker.types';
 import {
@@ -130,6 +131,8 @@ function onCalendarKeydown(event: KeyboardEvent): void {
   event.preventDefault();
   setOpen(false, true);
 }
+
+useCmHydrated();
 </script>
 
 <template>
