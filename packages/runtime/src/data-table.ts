@@ -1,3 +1,10 @@
+import {
+  ariaSortFor,
+  formatTemplate,
+  nextSortState,
+  sortLabelFor,
+  type CmDataTableSortState,
+} from './core/data-table.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -39,13 +46,6 @@ function positiveInteger(value: string | null, fallback: number): number {
 function nonNegativeInteger(value: string | null): number | null {
   const parsed = Number(value);
   return value !== null && Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
-}
-
-function formatTemplate(template: string, values: Readonly<Record<string, number | string>>): string {
-  return Object.entries(values).reduce(
-    (result, [name, value]) => result.split(`{${name}}`).join(String(value)),
-    template,
-  );
 }
 
 export class CmDataTableController implements CmController {
@@ -115,41 +115,35 @@ export class CmDataTableController implements CmController {
     return ElementConstructor && event.target instanceof ElementConstructor ? event.target : null;
   }
 
+  get #sortState(): CmDataTableSortState | null {
+    const key = this.#root.getAttribute('data-cm-data-table-sort-key');
+    const direction = this.#root.getAttribute('data-cm-data-table-sort-direction');
+    if (!key || (direction !== 'ascending' && direction !== 'descending')) return null;
+    return { direction, key };
+  }
+
   #requestSort(button: HTMLElement): void {
     const key = button.dataset.cmDataTableSort;
     if (!key) return;
-    const currentKey = this.#root.getAttribute('data-cm-data-table-sort-key');
-    const currentDirection = this.#root.getAttribute('data-cm-data-table-sort-direction');
-    const direction =
-      currentKey !== key || currentDirection === ''
-        ? 'ascending'
-        : currentDirection === 'ascending'
-          ? 'descending'
-          : null;
+    const sort = nextSortState(this.#sortState, key);
 
-    this.#root.setAttribute('data-cm-data-table-sort-key', direction ? key : '');
-    this.#root.setAttribute('data-cm-data-table-sort-direction', direction ?? '');
+    this.#root.setAttribute('data-cm-data-table-sort-key', sort?.key ?? '');
+    this.#root.setAttribute('data-cm-data-table-sort-direction', sort?.direction ?? '');
     this.#synchronizeSort();
-    dispatchCmEvent<DataTableSortChangeDetail>(this.#root, 'data-table-sort-change', {
-      sort: direction ? { direction, key } : null,
-    });
+    dispatchCmEvent<DataTableSortChangeDetail>(this.#root, 'data-table-sort-change', { sort });
   }
 
   #synchronizeSort(): void {
-    const key = this.#root.getAttribute('data-cm-data-table-sort-key');
-    const direction = this.#root.getAttribute('data-cm-data-table-sort-direction');
+    const sort = this.#sortState;
     for (const button of this.#root.querySelectorAll<HTMLElement>(sortSelector)) {
-      const active = button.dataset.cmDataTableSort === key;
-      const resolved = active && (direction === 'ascending' || direction === 'descending') ? direction : 'none';
-      button.closest('th')?.setAttribute('aria-sort', resolved);
-      const label = this.#sortLabel(button);
-      const template =
-        resolved === 'none'
-          ? (button.dataset.cmDataTableSortAscendingLabelTemplate ?? 'Sort {column} ascending')
-          : resolved === 'ascending'
-            ? (button.dataset.cmDataTableSortDescendingLabelTemplate ?? 'Sort {column} descending')
-            : (button.dataset.cmDataTableClearSortLabelTemplate ?? 'Clear sorting for {column}');
-      button.setAttribute('aria-label', formatTemplate(template, { column: label }));
+      const key = button.dataset.cmDataTableSort ?? '';
+      button.closest('th')?.setAttribute('aria-sort', ariaSortFor(sort, key));
+      const template = {
+        ascending: button.dataset.cmDataTableSortAscendingLabelTemplate ?? 'Sort {column} ascending',
+        clear: button.dataset.cmDataTableClearSortLabelTemplate ?? 'Clear sorting for {column}',
+        descending: button.dataset.cmDataTableSortDescendingLabelTemplate ?? 'Sort {column} descending',
+      }[sortLabelFor(sort, key)];
+      button.setAttribute('aria-label', formatTemplate(template, { column: this.#sortLabel(button) }));
     }
   }
 
