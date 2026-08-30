@@ -2,7 +2,7 @@
 
 Vue 3 adapter for CodeMonster UI components.
 
-Current version: `@codemonster-ru/ui-vue@2.0.0-dev` — in development, not published; the published line is `1.x`.
+Current version: `@codemonster-ru/ui-vue@2.0.0-dev.0` — in development, not published; the published line is `1.x`.
 
 ## Requirements
 
@@ -12,7 +12,7 @@ Current version: `@codemonster-ru/ui-vue@2.0.0-dev` — in development, not publ
 ## Installation
 
 ```bash
-npm install vue@^3.5.0 @codemonster-ru/ui-vue@^2.0.0-dev @codemonster-ru/ui-css@^2.0.0-dev
+npm install vue@^3.5.0 @codemonster-ru/ui-vue@^2.0.0-dev.0 @codemonster-ru/ui-css@^2.0.0-dev.0
 ```
 
 ## Quick start
@@ -44,7 +44,7 @@ See the [Accordion guide](../../docs/components/accordion.md) for controlled sta
 See the [display components guide](../../docs/components/display.md) for Badge, Alert, Avatar, Divider, and Skeleton.
 See the [navigation components guide](../../docs/components/navigation.md) for native links, controlled Tabs, Menu, and Dropdown behavior.
 See the [overlay components guide](../../docs/components/overlays.md) for modal focus, disclosure state, and Tooltip behavior.
-See the [advanced input guide](../../docs/components/advanced-inputs.md) for native Select and DatePicker binding and CommandPalette state.
+See the [advanced input guide](../../docs/components/advanced-inputs.md) for component-owned Select, native DatePicker binding, and CommandPalette state.
 See the [Table and DataTable guide](../../docs/components/data-tables.md) for authored table slots and controlled data requests.
 See the [layout primitives guide](../../docs/components/layout-primitives.md) for semantic,
 responsive page composition without runtime behavior.

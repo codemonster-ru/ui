@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { assertCm, warnCm } from '../../internal/warn';
 import type { CmBreadcrumbItem } from './breadcrumbs.types';
 
 defineOptions({ inheritAttrs: false });
@@ -11,18 +12,30 @@ const props = defineProps({
   ariaLabel: { type: String, default: 'Breadcrumb' },
 });
 const attrs = useAttrs();
-const classes = computed(() => mergeCmClasses('cm-breadcrumbs', attrs.class as CmClassValue));
+const classes = computed(() => mergeCmClasses('cm-breadcrumbs', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['aria-label']));
 const normalizedItems = computed(() => {
-  if (props.items.length === 0 || !props.ariaLabel.trim() || props.items.filter(({ current }) => current).length > 1) {
-    throw new TypeError('Breadcrumbs require items, one optional current item, and a non-empty accessible label.');
-  }
+  assertCm(
+    props.items.length > 0 && props.ariaLabel.trim() !== '',
+    'Breadcrumbs require items and a non-empty accessible label.',
+  );
+
+  const items: CmBreadcrumbItem[] = [];
+  let markedCurrent = false;
   for (const item of props.items) {
     if (!item.label.trim() || (item.href !== undefined && !item.href.trim())) {
-      throw new TypeError('Invalid Breadcrumb item.');
+      warnCm('Invalid Breadcrumb item. The item is not rendered.');
+      continue;
     }
+    if (item.current && markedCurrent) {
+      warnCm('Breadcrumbs accept one current item. The later flag is ignored.');
+      items.push({ ...item, current: false });
+      continue;
+    }
+    markedCurrent = markedCurrent || Boolean(item.current);
+    items.push(item);
   }
-  return props.items;
+  return items;
 });
 const hasCurrent = computed(() => normalizedItems.value.some(({ current }) => current));
 

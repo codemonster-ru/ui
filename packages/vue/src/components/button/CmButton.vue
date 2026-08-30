@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmButtonSize, CmButtonType, CmButtonVariant } from './button.types';
 
 defineOptions({
@@ -44,7 +44,7 @@ const variant = computed(() => (variants.includes(props.variant) ? props.variant
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const type = computed(() => (types.includes(props.type) ? props.type : 'button'));
 const classes = computed(() =>
-  mergeCmClasses('cm-button', `cm-button--${variant.value}`, `cm-button--${size.value}`, attrs.class as CmClassValue),
+  mergeCmClasses('cm-button', `cm-button--${variant.value}`, `cm-button--${size.value}`, attrs.class),
 );
 const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, [

@@ -54,7 +54,8 @@
   inline-size: var(--cm-icon-size-md);
   block-size: var(--cm-icon-size-md);
   background: var(--cm-color-icon-secondary);
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6.65 7.15-2.3 2.3L12 17.1l7.65-7.65-2.3-2.3L12 12.5Z'/%3E%3C/svg%3E") center / var(--cm-icon-size-sm) no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6.65 7.15-2.3 2.3L12 17.1l7.65-7.65-2.3-2.3L12 12.5Z'/%3E%3C/svg%3E")
+    center / var(--cm-icon-size-sm) no-repeat;
   transition: transform var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 

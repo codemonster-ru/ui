@@ -1,6 +1,6 @@
 {
   "name": "@codemonster-ru/ui-css",
-  "version": "2.0.0-dev",
+  "version": "2.0.0-dev.0",
   "description": "Framework-independent foundation and component styles for CodeMonster UI.",
   "type": "module",
   "license": "MIT",
@@ -71,6 +71,7 @@
     "build": "node ./scripts/build.mjs",
     "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "prepack": "npm run build",
     "test": "npm run build && node --test ./__tests__/*.test.mjs",
@@ -82,7 +83,7 @@
     "design-system"
   ],
   "dependencies": {
-    "@codemonster-ru/ui-tokens": "^2.0.0-dev"
+    "@codemonster-ru/ui-tokens": "^2.0.0-dev.0"
   },
   "devDependencies": {
     "eslint": "^10.8.0",

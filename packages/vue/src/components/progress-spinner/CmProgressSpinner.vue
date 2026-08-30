@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import type { CmProgressSpinnerSize, CmProgressSpinnerTone } from './progress-spinner.types';
 
 defineOptions({ inheritAttrs: false });
@@ -30,7 +31,7 @@ const props = defineProps({
       ['neutral', 'primary', 'success', 'info', 'warning', 'help', 'danger', 'contrast'].includes(value),
   },
 });
-if (!props.label.trim()) throw new TypeError('ProgressSpinner label must be a non-empty string.');
+assertCm(props.label.trim() !== '', 'ProgressSpinner label must be a non-empty string.');
 
 const attrs = useAttrs();
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
@@ -40,7 +41,7 @@ const classes = computed(() =>
     'cm-progress-spinner',
     `cm-progress-spinner--${size.value}`,
     tone.value === 'primary' ? undefined : `cm-progress-spinner--${tone.value}`,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>

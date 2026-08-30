@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, useAttrs, useSlots, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
+import { assertCm, warnCm } from '../../internal/warn';
+import { nextTabsValue, resolveTabsValue } from '@codemonster-ru/ui-runtime/core';
+
 import type { CmTabItem } from './tabs.types';
 
 defineOptions({ inheritAttrs: false });
@@ -28,8 +32,9 @@ function itemSlotName(region: 'tab' | 'panel', value: string): string {
 }
 
 const normalizedItems = computed(() => {
-  if (!props.id.trim() || props.items.length === 0) throw new TypeError('Tabs require a non-empty id and items.');
+  assertCm(props.id.trim() !== '' && props.items.length > 0, 'Tabs require a non-empty id and items.');
   const values = new Set<string>();
+  const items: CmTabItem[] = [];
   for (const item of props.items) {
     if (
       !valuePattern.test(item.value) ||
@@ -38,27 +43,20 @@ const normalizedItems = computed(() => {
       (item.content === undefined && !slots[itemSlotName('panel', item.value)]) ||
       values.has(item.value)
     ) {
-      throw new TypeError(`Invalid Tabs item: ${item.value}.`);
+      warnCm(`Invalid Tabs item: ${item.value}. The item is not rendered.`);
+      continue;
     }
     values.add(item.value);
+    items.push(item);
   }
-  if (!props.items.some(({ disabled }) => !disabled)) throw new TypeError('Tabs require an enabled item.');
-  return props.items;
+  assertCm(items.length === 0 || items.some(({ disabled }) => !disabled), 'Tabs require an enabled item.');
+  return items;
 });
-const fallbackValue = computed(() => normalizedItems.value.find(({ disabled }) => !disabled)!.value);
-const localValue = ref(
-  normalizedItems.value.some(({ disabled, value }) => !disabled && value === props.defaultValue)
-    ? props.defaultValue!
-    : fallbackValue.value,
+const localValue = ref(resolveTabsValue(normalizedItems.value, props.defaultValue) ?? '');
+const activeValue = computed(
+  () => resolveTabsValue(normalizedItems.value, props.modelValue === null ? localValue.value : props.modelValue) ?? '',
 );
-const activeValue = computed(() =>
-  normalizedItems.value.some(({ disabled, value }) => !disabled && value === props.modelValue)
-    ? props.modelValue!
-    : props.modelValue === null
-      ? localValue.value
-      : fallbackValue.value,
-);
-const classes = computed(() => mergeCmClasses('cm-tabs', attrs.class as CmClassValue));
+const classes = computed(() => mergeCmClasses('cm-tabs', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-tabs-value', 'onKeydown']));
 
 function panelId(item: CmTabItem): string {
@@ -74,29 +72,16 @@ function select(item: CmTabItem, focus = false): void {
 }
 
 function move(event: KeyboardEvent, item: CmTabItem): void {
-  const enabled = normalizedItems.value.filter(({ disabled }) => !disabled);
-  const index = enabled.findIndex(({ value }) => value === item.value);
-  if (index < 0) return;
   const host = (event.currentTarget as Element).closest('[dir]');
   const rtl = host?.getAttribute('dir')?.toLowerCase() === 'rtl' || document.documentElement.dir === 'rtl';
-  const forward = rtl ? 'ArrowLeft' : 'ArrowRight';
-  const backward = rtl ? 'ArrowRight' : 'ArrowLeft';
-  const last = enabled.length - 1;
-  const nextIndex =
-    event.key === 'Home'
-      ? 0
-      : event.key === 'End'
-        ? last
-        : event.key === forward
-          ? (index + 1) % enabled.length
-          : event.key === backward
-            ? (index - 1 + enabled.length) % enabled.length
-            : -1;
-  if (nextIndex < 0) return;
+  const nextValue = nextTabsValue(normalizedItems.value, item.value, event.key, rtl ? 'rtl' : 'ltr');
+  if (nextValue === null) return;
   event.preventDefault();
-  const next = enabled[nextIndex];
+  const next = normalizedItems.value.find(({ value }) => value === nextValue);
   if (next) select(next, true);
 }
+
+useCmHydrated();
 </script>
 
 <template>

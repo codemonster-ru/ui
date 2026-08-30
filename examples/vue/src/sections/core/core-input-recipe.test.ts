@@ -22,7 +22,7 @@ describe('CoreInputRecipe', () => {
   });
 
   function mountInput(props: Record<string, unknown> = {}, slots: Record<string, () => ReturnType<typeof h>> = {}) {
-    const value = ref(String(props.modelValue ?? ''));
+    const value = ref(typeof props.modelValue === 'string' ? props.modelValue : '');
     const onAction = vi.fn();
     const app = createApp(
       defineComponent(

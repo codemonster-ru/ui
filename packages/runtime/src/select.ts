@@ -1,4 +1,5 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
+import { selectClosedKeyAction, selectOpenKeyAction } from './core/select.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -95,40 +96,30 @@ export class CmSelectController implements CmController {
     const options = this.#enabledOptions;
 
     if (!open) {
-      if (!['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) return;
+      const action = selectClosedKeyAction(event.key);
+      if (!action || action.type !== 'open') return;
       event.preventDefault();
       this.#setOpen(true, false);
-      const next = event.key === 'ArrowUp' ? options[options.length - 1] : (this.#selectedOption() ?? options[0]);
+      const next = action.focus === 'last' ? options[options.length - 1] : (this.#selectedOption() ?? options[0]);
       next?.focus();
       return;
     }
 
-    if (event.key === 'Escape') {
-      event.preventDefault();
+    const active = options.indexOf(this.#root.ownerDocument.activeElement as HTMLButtonElement);
+    const action = selectOpenKeyAction(event.key, { activeIndex: active, count: options.length });
+    if (!action) return;
+
+    event.preventDefault();
+    if (action.type === 'close') {
       this.#setOpen(false, true);
       return;
     }
-
-    const active = options.indexOf(this.#root.ownerDocument.activeElement as HTMLButtonElement);
-
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      event.preventDefault();
-      const step = event.key === 'ArrowDown' ? 1 : -1;
-      const index = active === -1 ? 0 : (active + step + options.length) % options.length;
-      options[index]?.focus();
+    if (action.type === 'focus') {
+      options[action.index]?.focus();
       return;
     }
-
-    if (event.key === 'Home' || event.key === 'End') {
-      event.preventDefault();
-      (event.key === 'Home' ? options[0] : options[options.length - 1])?.focus();
-      return;
-    }
-
-    if (event.key === 'Enter' || event.key === ' ') {
-      if (active === -1) return;
-      event.preventDefault();
-      this.#commit(options[active].getAttribute('data-cm-select-value') ?? '');
+    if (action.type === 'commit') {
+      this.#commit(options[action.index]?.getAttribute('data-cm-select-value') ?? '');
       this.#setOpen(false, true);
     }
   };

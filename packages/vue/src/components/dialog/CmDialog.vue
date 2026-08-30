@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
+import { assertCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmDialogSize } from './dialog.types';
 
@@ -23,9 +25,10 @@ const props = defineProps({
 });
 const emit = defineEmits<{ openChange: [open: boolean]; 'update:open': [open: boolean] }>();
 const attrs = useAttrs();
-if (![props.id, props.title, props.closeLabel].every((value) => value.trim())) {
-  throw new TypeError('Dialog id, title, and closeLabel must be non-empty strings.');
-}
+assertCm(
+  [props.id, props.title, props.closeLabel].every((value) => value.trim() !== ''),
+  'Dialog id, title, and closeLabel must be non-empty strings.',
+);
 const modal = useCmModal(
   () => props.open,
   (open) => {
@@ -44,7 +47,7 @@ const classes = computed(() =>
     `cm-dialog--${size.value}`,
     props.dividers ? 'cm-dialog--dividers' : undefined,
     localOpen.value ? 'cm-dialog--open' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>
@@ -58,6 +61,8 @@ const rootAttrs = computed(() =>
     'data-cm-dialog-dismissible',
   ]),
 );
+
+useCmHydrated();
 </script>
 
 <template>

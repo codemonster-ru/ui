@@ -1,6 +1,6 @@
 import { defineComponent, h, useId, type PropType, type SVGAttributes } from 'vue';
 import { iconFamilies, type IconFamily } from '../iconFamilies';
-import { iconStrokeWidths, iconVariants, type IconVariant, type OutlineIconVariant } from '../iconVariants';
+import { iconStrokeWidths, iconVariants, type IconVariant } from '../iconVariants';
 import solidIconDataJson from './solidIconData.json';
 
 const solidIconData = solidIconDataJson as Partial<Record<OutlineIconName, { viewBox: string; body: string }>>;
@@ -1784,7 +1784,7 @@ export const createOutlineIcon = (name: OutlineIconName) => {
           ]);
         }
 
-        const outlineVariant = props.variant as OutlineIconVariant;
+        const outlineVariant = props.variant;
         const strokeWidth = iconStrokeWidths[outlineVariant];
 
         if (props.family === 'duotone' && name === 'chartBar') {

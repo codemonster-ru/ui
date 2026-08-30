@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import CmAccordion from './CmAccordion.vue';
+import { expectCmWarning } from '../../internal/expect-warning';
 
 const items = [
   { id: 'account', title: 'Account', content: 'Account answer.' },
@@ -47,9 +48,10 @@ describe('CmAccordion', () => {
   });
 
   it('rejects invalid item contracts', () => {
-    expect(() => mount(CmAccordion, { props: { id: 'faq', items: [...items, items[0]] } })).toThrow(
-      /Invalid Accordion item/u,
+    const wrapper = expectCmWarning(/Invalid Accordion item/u, () =>
+      mount(CmAccordion, { props: { id: 'faq', items: [...items, items[0]] } }),
     );
+    expect(wrapper.findAll('.cm-accordion__item')).toHaveLength(items.length);
   });
 
   it('reports controlled state without mutating rendered panels', async () => {

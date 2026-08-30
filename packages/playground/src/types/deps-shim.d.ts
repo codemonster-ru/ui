@@ -64,7 +64,7 @@ declare module '@codemonster-ru/vueforge-playground-core' {
   }
 
   export interface CreatePlaygroundSessionOptions {
-    runtime: 'browser' | string;
+    runtime: string;
     framework: FrameworkType;
     iframe: HTMLIFrameElement;
     files: PlaygroundFiles;

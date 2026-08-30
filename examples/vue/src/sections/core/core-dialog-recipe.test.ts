@@ -126,7 +126,7 @@ describe('CoreDialogRecipe', () => {
 
     await reopen();
     const footerButtons = [...host.querySelectorAll<HTMLButtonElement>('.cm-dialog__footer button')];
-    footerButtons[footerButtons.length - 1]!.click();
+    footerButtons[footerButtons.length - 1].click();
     await nextTick();
     expect(open.value).toBe(false);
     expect(document.body.style.overflow).toBe('');

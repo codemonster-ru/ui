@@ -1,8 +1,4 @@
-import {
-  autoUpdate,
-  computePosition,
-  type MiddlewareType,
-} from '@codemonster-ru/floater.js';
+import { autoUpdate, computePosition, type MiddlewareType } from '@codemonster-ru/floater.js';
 import { computed, nextTick, onBeforeUnmount, ref, toValue, watch, type MaybeRefOrGetter, type Ref } from 'vue';
 
 type FloatingPlacement =

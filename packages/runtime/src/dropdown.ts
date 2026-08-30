@@ -1,3 +1,4 @@
+import { dropdownKeyAction, resolveDisclosureOpen } from './core/disclosure.js';
 import { dispatchCmEvent } from './events.js';
 import type { MenuSelectDetail } from './menu.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
@@ -50,13 +51,21 @@ export class CmDropdownController implements CmController {
     if (!KeyboardEventConstructor || !(event instanceof KeyboardEventConstructor) || event.target !== this.#trigger) {
       return;
     }
-    if (this.#trigger.disabled || !['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) return;
+    const action = dropdownKeyAction(event.key, {
+      disabled: this.#trigger.disabled,
+      onTrigger: true,
+      open: !this.#menu.hidden,
+    });
+    if (!action) return;
 
     event.preventDefault();
-    const focusLast = event.key === 'ArrowUp';
+    if (action.type === 'close') {
+      this.#setOpen(false, action.restoreFocus);
+      return;
+    }
     this.#setOpen(true, false);
     const items = [...this.#menu.querySelectorAll<HTMLElement>(enabledItemSelector)];
-    (focusLast ? items[items.length - 1] : items[0])?.focus();
+    (action.focus === 'last' ? items[items.length - 1] : items[0])?.focus();
   };
 
   readonly #handleSelect = (event: Event): void => {
@@ -77,11 +86,11 @@ export class CmDropdownController implements CmController {
   };
 
   #setOpen(open: boolean, restoreFocus: boolean): void {
-    if (this.#trigger.disabled) open = false;
-    const changed = this.#menu.hidden === open;
-    this.#synchronize(open);
+    const next = resolveDisclosureOpen(open, this.#trigger.disabled);
+    const changed = this.#menu.hidden === next;
+    this.#synchronize(next);
     if (restoreFocus) this.#trigger.focus();
-    if (changed) dispatchCmEvent<DropdownOpenChangeDetail>(this.#root, 'dropdown-open-change', { open });
+    if (changed) dispatchCmEvent<DropdownOpenChangeDetail>(this.#root, 'dropdown-open-change', { open: next });
   }
 
   #synchronize(open: boolean): void {

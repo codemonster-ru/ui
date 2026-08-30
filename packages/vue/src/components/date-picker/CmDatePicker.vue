@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useAttrs, watch, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
+import { useCmHydrated } from '../../internal/hydration';
+import { assertCm, warnCm } from '../../internal/warn';
 import type { CmDatePickerSize } from './date-picker.types';
-import { buildCalendarMonth, formatIsoDate, formatDisplayDate, monthLabel, parseIsoDate, shiftMonth, weekdayLabels } from './date-picker.calendar';
+import {
+  buildCalendarMonth,
+  formatIsoDate,
+  formatDisplayDate,
+  monthLabel,
+  parseIsoDate,
+  shiftMonth,
+  weekdayLabels,
+} from './date-picker.calendar';
 
 defineOptions({ inheritAttrs: false });
 const props = defineProps({
@@ -29,22 +39,24 @@ const props = defineProps({
 const emit = defineEmits<{ valueChange: [value: string]; 'update:modelValue': [value: string] }>();
 const attrs = useAttrs();
 
-if (!props.id.trim()) throw new TypeError('DatePicker id must be a non-empty string.');
-for (const value of [props.modelValue, props.min ?? '', props.max ?? '']) {
-  if (value !== '' && !parseIsoDate(value))
-    throw new TypeError(`DatePicker value must be a valid YYYY-MM-DD date: ${value}.`);
+assertCm(props.id.trim() !== '', 'DatePicker id must be a non-empty string.');
+function sanitizeIsoDate(value: string): string {
+  if (value === '' || parseIsoDate(value)) return value;
+  warnCm(`DatePicker value must be a valid YYYY-MM-DD date: ${value}. The value is ignored.`);
+  return '';
 }
 
 const triggerRef = ref<HTMLButtonElement | null>(null);
-const currentValue = ref(props.modelValue);
+const currentValue = ref(sanitizeIsoDate(props.modelValue));
 const isOpen = ref(false);
-const visibleMonth = ref(props.modelValue === '' ? formatIsoDate(new Date()) : props.modelValue);
+const visibleMonth = ref(currentValue.value === '' ? formatIsoDate(new Date()) : currentValue.value);
 
 watch(
   () => props.modelValue,
   (value) => {
-    currentValue.value = value;
-    if (value !== '') visibleMonth.value = value;
+    const sanitized = sanitizeIsoDate(value);
+    currentValue.value = sanitized;
+    if (sanitized !== '') visibleMonth.value = sanitized;
   },
 );
 
@@ -55,8 +67,15 @@ const hasClear = computed(() => props.clearable && !props.disabled && !props.rea
 const displayValue = computed(() =>
   currentValue.value === '' ? (props.placeholder ?? '') : formatDisplayDate(currentValue.value),
 );
+const minDate = computed(() => sanitizeIsoDate(props.min ?? '') || undefined);
+const maxDate = computed(() => sanitizeIsoDate(props.max ?? '') || undefined);
 const weeks = computed(() =>
-  buildCalendarMonth({ month: visibleMonth.value, selected: currentValue.value, min: props.min, max: props.max }),
+  buildCalendarMonth({
+    month: visibleMonth.value,
+    selected: currentValue.value,
+    min: minDate.value,
+    max: maxDate.value,
+  }),
 );
 const classes = computed(() =>
   mergeCmClasses(
@@ -64,7 +83,7 @@ const classes = computed(() =>
     `cm-date-picker--${size.value}`,
     props.invalid ? 'cm-date-picker--invalid' : undefined,
     currentValue.value === '' ? 'cm-date-picker--placeholder' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const triggerAttrs = computed(() =>
@@ -112,6 +131,8 @@ function onCalendarKeydown(event: KeyboardEvent): void {
   event.preventDefault();
   setOpen(false, true);
 }
+
+useCmHydrated();
 </script>
 
 <template>
@@ -130,8 +151,8 @@ function onCalendarKeydown(event: KeyboardEvent): void {
       :aria-required="props.required || undefined"
       :aria-readonly="props.readonly || undefined"
       :disabled="props.disabled || undefined"
-      :data-cm-min="props.min || undefined"
-      :data-cm-max="props.max || undefined"
+      :data-cm-min="minDate"
+      :data-cm-max="maxDate"
       :data-cm-placeholder="props.placeholder ?? undefined"
       :data-cm-filled="currentValue !== '' || undefined"
       v-bind="triggerAttrs"
@@ -140,7 +161,22 @@ function onCalendarKeydown(event: KeyboardEvent): void {
     >
       <span class="cm-date-picker__value">{{ displayValue }}</span>
       <span class="cm-date-picker__icon" aria-hidden="true">
-        <svg class="cm-date-picker__calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="4.25" width="18" height="16.5" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="7.5" y1="2.75" x2="7.5" y2="6" /><line x1="16.5" y1="2.75" x2="16.5" y2="6" /><path d="M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01" /></svg>
+        <svg
+          class="cm-date-picker__calendar-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          focusable="false"
+        >
+          <rect x="3" y="4.25" width="18" height="16.5" rx="2" />
+          <line x1="3" y1="9" x2="21" y2="9" />
+          <line x1="7.5" y1="2.75" x2="7.5" y2="6" />
+          <line x1="16.5" y1="2.75" x2="16.5" y2="6" />
+          <path d="M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01" />
+        </svg>
       </span>
     </button>
     <button
@@ -154,7 +190,19 @@ function onCalendarKeydown(event: KeyboardEvent): void {
       @click="clearValue"
     >
       <span aria-hidden="true">
-        <svg class="cm-date-picker__clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="5.75" y1="5.75" x2="18.25" y2="18.25" /><line x1="18.25" y1="5.75" x2="5.75" y2="18.25" /></svg>
+        <svg
+          class="cm-date-picker__clear-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          focusable="false"
+        >
+          <line x1="5.75" y1="5.75" x2="18.25" y2="18.25" />
+          <line x1="18.25" y1="5.75" x2="5.75" y2="18.25" />
+        </svg>
       </span>
     </button>
     <div
@@ -173,9 +221,22 @@ function onCalendarKeydown(event: KeyboardEvent): void {
           data-cm-date-picker-previous
           @click="changeMonth(-1)"
         >
-          <svg class="cm-date-picker__navigation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><polyline points="15 5.75 8.75 12 15 18.25" /></svg>
+          <svg
+            class="cm-date-picker__navigation-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            focusable="false"
+          >
+            <polyline points="15 5.75 8.75 12 15 18.25" />
+          </svg>
         </button>
-        <span class="cm-date-picker__month" data-cm-date-picker-month>{{ isOpen ? monthLabel(visibleMonth) : '' }}</span>
+        <span class="cm-date-picker__month" data-cm-date-picker-month>{{
+          isOpen ? monthLabel(visibleMonth) : ''
+        }}</span>
         <button
           class="cm-date-picker__navigation"
           type="button"
@@ -183,7 +244,18 @@ function onCalendarKeydown(event: KeyboardEvent): void {
           data-cm-date-picker-next
           @click="changeMonth(1)"
         >
-          <svg class="cm-date-picker__navigation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><polyline points="9 5.75 15.25 12 9 18.25" /></svg>
+          <svg
+            class="cm-date-picker__navigation-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            focusable="false"
+          >
+            <polyline points="9 5.75 15.25 12 9 18.25" />
+          </svg>
         </button>
       </header>
       <div class="cm-date-picker__weekdays" role="row">
@@ -192,7 +264,7 @@ function onCalendarKeydown(event: KeyboardEvent): void {
         </span>
       </div>
       <div class="cm-date-picker__days" data-cm-date-picker-days>
-        <div v-for="(week, index) in (isOpen ? weeks : [])" :key="index" class="cm-date-picker__week" role="row">
+        <div v-for="(week, index) in isOpen ? weeks : []" :key="index" class="cm-date-picker__week" role="row">
           <button
             v-for="day in week"
             :key="day.value"

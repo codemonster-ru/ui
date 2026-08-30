@@ -24,8 +24,8 @@ import {
 export interface ShowcaseThemeContext {
   themeMode: Ref<ShowcaseThemeMode>;
   resolvedTheme: ComputedRef<ShowcaseTheme>;
-  setThemeMode(mode: ShowcaseThemeMode): void;
-  toggleTheme(): void;
+  setThemeMode: (mode: ShowcaseThemeMode) => void;
+  toggleTheme: () => void;
 }
 
 const showcaseThemeContextKey: InjectionKey<ShowcaseThemeContext> = Symbol('showcase-theme');

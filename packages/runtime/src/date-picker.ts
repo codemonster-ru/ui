@@ -1,4 +1,5 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@codemonster-ru/floater.js';
+import { buildCalendarMonth, formatIsoDate, monthLabel, parseIsoDate, shiftMonth } from './core/date-picker.js';
 import { dispatchCmEvent } from './events.js';
 import type { CmController, CmControllerFactory } from './runtime.js';
 
@@ -15,22 +16,6 @@ const valueSelector = '.cm-date-picker__value';
 const hiddenInputSelector = 'input[type="hidden"]';
 
 const displayFormatter = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: '2-digit' });
-const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
-const isoPattern = /^(\d{4})-(\d{2})-(\d{2})$/u;
-
-function formatIso(date: Date): string {
-  const year = String(date.getFullYear()).padStart(4, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function parseIso(value: string): Date | null {
-  const match = isoPattern.exec(value);
-  if (!match) return null;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-  return formatIso(date) === value ? date : null;
-}
 
 export class CmDatePickerController implements CmController {
   readonly #root: Element;
@@ -50,7 +35,7 @@ export class CmDatePickerController implements CmController {
     this.#calendar = calendar;
     this.#clear = root.querySelector<HTMLButtonElement>(clearSelector);
     this.#input = root.querySelector<HTMLInputElement>(hiddenInputSelector);
-    this.#visibleMonth = this.#currentValue() || formatIso(new Date());
+    this.#visibleMonth = this.#currentValue() || formatIsoDate(new Date());
   }
 
   connect(): void {
@@ -127,36 +112,31 @@ export class CmDatePickerController implements CmController {
   };
 
   #changeMonth(delta: number): void {
-    const anchor = parseIso(this.#visibleMonth);
-    if (!anchor) return;
-    const shifted = new Date(anchor.getFullYear(), anchor.getMonth() + delta, 1);
-    const lastDay = new Date(shifted.getFullYear(), shifted.getMonth() + 1, 0).getDate();
-    shifted.setDate(Math.min(anchor.getDate(), lastDay));
-    this.#visibleMonth = formatIso(shifted);
+    this.#visibleMonth = shiftMonth(this.#visibleMonth, delta);
     this.#renderMonth();
   }
 
   #renderMonth(): void {
-    const anchor = parseIso(this.#visibleMonth);
     const days = this.#calendar.querySelector<HTMLElement>(daysSelector);
-    if (!anchor || !days) return;
+    if (!days) return;
 
     const month = this.#calendar.querySelector<HTMLElement>(monthSelector);
-    if (month) month.textContent = monthFormatter.format(anchor);
+    if (month) month.textContent = monthLabel(this.#visibleMonth);
 
     const selected = this.#currentValue();
-    const today = formatIso(new Date());
-    const first = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-    const start = new Date(first.getFullYear(), first.getMonth(), 1 - first.getDay());
+    const weeks = buildCalendarMonth({
+      max: this.#trigger.dataset.cmMax ?? null,
+      min: this.#trigger.dataset.cmMin ?? null,
+      month: this.#visibleMonth,
+      selected,
+    });
+
     // The server renders the calendar's scaffolding only: a grid built from the current date would
     // make its markup depend on the day it was rendered. The cells are built here on first open.
-    const built = [...days.querySelectorAll<HTMLButtonElement>('[data-cm-date-picker-value]')];
-
-    const cells = built;
-
+    const cells = [...days.querySelectorAll<HTMLButtonElement>('[data-cm-date-picker-value]')];
     if (cells.length === 0) {
       const document_ = this.#root.ownerDocument;
-      for (let week = 0; week < 6; week += 1) {
+      for (let week = 0; week < weeks.length; week += 1) {
         const row = document_.createElement('div');
         row.className = 'cm-date-picker__week';
         row.setAttribute('role', 'row');
@@ -171,18 +151,17 @@ export class CmDatePickerController implements CmController {
       }
     }
 
-    cells.forEach((cell, index) => {
-      const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
-      const value = formatIso(date);
-      cell.dataset.cmDatePickerValue = value;
-      cell.textContent = String(date.getDate());
-      const min = this.#trigger.dataset.cmMin;
-      const max = this.#trigger.dataset.cmMax;
-      cell.disabled = Boolean((min && value < min) || (max && value > max));
-      cell.classList.toggle('cm-date-picker__day--outside', date.getMonth() !== anchor.getMonth());
-      cell.classList.toggle('cm-date-picker__day--today', value === today);
-      cell.classList.toggle('cm-date-picker__day--selected', value === selected && selected !== '');
-      cell.setAttribute('aria-pressed', String(value === selected && selected !== ''));
+    weeks.flat().forEach((day, index) => {
+      const cell = cells[index];
+      if (!cell) return;
+      const isSelected = day.selected && selected !== '';
+      cell.dataset.cmDatePickerValue = day.value;
+      cell.textContent = day.label;
+      cell.disabled = day.disabled;
+      cell.classList.toggle('cm-date-picker__day--outside', day.outside);
+      cell.classList.toggle('cm-date-picker__day--today', day.today);
+      cell.classList.toggle('cm-date-picker__day--selected', isSelected);
+      cell.setAttribute('aria-pressed', String(isSelected));
     });
   }
 
@@ -190,12 +169,10 @@ export class CmDatePickerController implements CmController {
     if (this.#input) this.#input.value = value;
     if (value !== '') this.#visibleMonth = value;
 
-    const parsed = parseIso(value);
+    const parsed = parseIsoDate(value);
     const valueElement = this.#trigger.querySelector<HTMLElement>(valueSelector);
     if (valueElement) {
-      valueElement.textContent = parsed
-        ? displayFormatter.format(parsed)
-        : (this.#trigger.dataset.cmPlaceholder ?? '');
+      valueElement.textContent = parsed ? displayFormatter.format(parsed) : (this.#trigger.dataset.cmPlaceholder ?? '');
     }
     this.#trigger.classList.toggle('cm-date-picker--placeholder', value === '');
     if (value) this.#trigger.dataset.cmFilled = 'true';

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmInlineElement } from './inline.types';
 
 defineOptions({ inheritAttrs: false });
@@ -16,9 +16,7 @@ const props = defineProps({
 });
 const attrs = useAttrs();
 const rootElement = computed(() => (elements.includes(props.element) ? props.element : 'div'));
-const classes = computed(() =>
-  mergeCmClasses('cm-inline', props.wrap ? undefined : 'cm-inline--nowrap', attrs.class as CmClassValue),
-);
+const classes = computed(() => mergeCmClasses('cm-inline', props.wrap ? undefined : 'cm-inline--nowrap', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
 </script>
 

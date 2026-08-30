@@ -6,7 +6,6 @@ import { cmPrimitiveColorTokenNames } from './primitive-colors.js';
 import { cmSemanticColorTokenNames } from './semantic-colors.js';
 import { cmSizingTokenNames, cmSpacingTokenNames } from './spacing-sizing.js';
 import { cmTypographyTokenNames } from './typography.js';
-import type { CmThemeTokenName } from './theme-preset.js';
 
 export const cmThemeTokenSchema = Object.freeze({
   primitiveColor: cmPrimitiveColorTokenNames,
@@ -24,4 +23,4 @@ export const cmThemeTokenSchema = Object.freeze({
 
 export type CmThemeTokenGroupName = keyof typeof cmThemeTokenSchema;
 
-export const cmThemeTokenNames = Object.freeze(Object.values(cmThemeTokenSchema).flat() as CmThemeTokenName[]);
+export const cmThemeTokenNames = Object.freeze(Object.values(cmThemeTokenSchema).flat());

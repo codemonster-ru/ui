@@ -18,8 +18,14 @@ test('keeps font size and weight scales strictly ordered', () => {
     Number(cmTypographyTokens[`fontWeight${suffix}`]),
   );
 
-  assert.deepEqual([...sizes].sort((left, right) => left - right), sizes);
-  assert.deepEqual([...weights].sort((left, right) => left - right), weights);
+  assert.deepEqual(
+    [...sizes].sort((left, right) => left - right),
+    sizes,
+  );
+  assert.deepEqual(
+    [...weights].sort((left, right) => left - right),
+    weights,
+  );
   assert.equal(new Set(sizes).size, sizes.length);
   assert.equal(new Set(weights).size, weights.length);
 });
