@@ -165,7 +165,7 @@ describe('CoreSelectRecipe', () => {
     const showcase = readFileSync(resolve(process.cwd(), 'src/sections/core/CoreShowcase.vue'), 'utf8');
     const floatingFields = Array.from(
       showcase.matchAll(/<CoreFloatingFieldRecipe\b[^>]*>([\s\S]*?)<\/CoreFloatingFieldRecipe>/gu),
-      (match) => match[1]!,
+      (match) => match[1],
     );
     expect(showcase.match(/<CoreSelectRecipe\b/gu)).toHaveLength(12);
     expect(showcase).not.toContain('<VfSelect');

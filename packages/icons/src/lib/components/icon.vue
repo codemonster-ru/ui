@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useAttrs, type Component } from 'vue';
+import { computed, useAttrs } from 'vue';
 import iconOpticalOffsetsJson from '../iconOpticalOffsets.json';
 import { iconFamilies, type IconFamily } from '../iconFamilies';
 import { iconCatalog, iconNames, type IconName } from '../iconMeta';
@@ -20,13 +20,13 @@ const FALLBACK_ICON = 'moon' as const;
 const iconModules = import.meta.glob('./*.vue', {
   eager: true,
   import: 'default',
-}) as Record<string, Component>;
+});
 
 const iconOpticalOffsets = iconOpticalOffsetsJson as Partial<Record<IconName, { x: number; y: number }>>;
 
 const props = withDefaults(
   defineProps<{
-    icon?: IconName | string;
+    icon?: IconName;
     spin?: boolean;
     size?: number | string;
     inset?: number;
@@ -58,7 +58,7 @@ const toComponentIconName = (iconName: string) => {
 
 const getIconComponent = (iconName: string) => {
   const componentIconName = toComponentIconName(iconName);
-  const normalizedIconName = iconNames.includes(componentIconName as IconName) ? componentIconName : FALLBACK_ICON;
+  const normalizedIconName = iconNames.includes(componentIconName) ? componentIconName : FALLBACK_ICON;
   const componentPath = `./${normalizedIconName}.vue`;
 
   return iconModules[componentPath] ?? iconModules[`./${FALLBACK_ICON}.vue`];
@@ -66,7 +66,7 @@ const getIconComponent = (iconName: string) => {
 
 const normalizedIconName = computed<IconName>(() => {
   const componentIconName = toComponentIconName(props.icon);
-  return iconNames.includes(componentIconName as IconName) ? (componentIconName as IconName) : FALLBACK_ICON;
+  return iconNames.includes(componentIconName) ? componentIconName : FALLBACK_ICON;
 });
 
 const iconComponent = computed(() => {

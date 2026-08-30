@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm } from '../../internal/warn';
 import type { CmLinkTone, CmLinkUnderline } from './link.types';
 
@@ -30,7 +30,7 @@ const classes = computed(() =>
     'cm-link',
     underline.value === 'none' ? undefined : `cm-link--underline-${underline.value}`,
     tone.value === 'muted' ? 'cm-link--muted' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['href', 'rel']));

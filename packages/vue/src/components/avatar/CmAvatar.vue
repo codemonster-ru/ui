@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmAvatarShape, CmAvatarSize } from './avatar.types';
 
 defineOptions({ inheritAttrs: false });
@@ -30,7 +30,7 @@ const classes = computed(() =>
     'cm-avatar',
     size.value === 'md' ? undefined : `cm-avatar--${size.value}`,
     shape.value === 'circle' ? 'cm-avatar--circle' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['class']));

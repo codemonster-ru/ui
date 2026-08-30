@@ -45,5 +45,8 @@ test('preserves the fd793696 table geometry through CodeMonster tokens', async (
   assert.match(dataTable, /\.cm-data-table__body > tr \+ tr > td/u);
   assert.match(dataTable, /inline-size: calc\(var\(--cm-space-4\) \+ var\(--cm-space-1\)\)/u);
   assert.doesNotMatch(dataTable, /\.cm-data-table__row--selected\s*\{[^}]*background:/u);
-  assert.match(dataTable, /min-block-size: calc\(var\(--cm-control-height-sm\) \+ var\(--cm-field-padding-block-lg\) \* 2\)/u);
+  assert.match(
+    dataTable,
+    /min-block-size: calc\(var\(--cm-control-height-sm\) \+ var\(--cm-field-padding-block-lg\) \* 2\)/u,
+  );
 });

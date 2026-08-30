@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmMenuItem } from './menu.types';
 
@@ -40,7 +40,7 @@ const normalizedItems = computed(() => {
   assertCm(items.length === 0 || items.some(({ disabled }) => !disabled), 'Menu requires an enabled item.');
   return items;
 });
-const classes = computed(() => mergeCmClasses('cm-menu', attrs.class as CmClassValue));
+const classes = computed(() => mergeCmClasses('cm-menu', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['role', 'aria-label', 'data-cm-controller', 'onKeydown']));
 const label = computed(() => (attrs['aria-labelledby'] === undefined ? props.ariaLabel : undefined));
 

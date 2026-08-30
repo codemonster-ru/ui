@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
-import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
+import { VueIconify } from '@codemonster-ru/vueforge-icons';
+import type { VfIconNameOrCustom } from '../../types/components';
 import { cx } from '@/utils/classes';
 import type { VfAvatarShape, VfControlSize } from '@/types/components';
 
@@ -12,7 +13,7 @@ interface VfAvatarProps {
   image?: string;
   imageAlt?: string;
   label?: string;
-  icon?: IconName | string;
+  icon?: VfIconNameOrCustom;
   size?: VfControlSize;
   shape?: VfAvatarShape;
 }

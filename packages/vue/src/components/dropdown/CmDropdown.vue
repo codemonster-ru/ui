@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm } from '../../internal/warn';
 import CmMenu from '../menu/CmMenu.vue';
 import type { CmMenuItem } from '../menu/menu.types';
@@ -39,7 +39,7 @@ const classes = computed(() =>
     'cm-dropdown',
     placement.value === 'bottom-end' ? 'cm-dropdown--bottom-end' : undefined,
     localOpen.value ? 'cm-dropdown--open' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['data-cm-controller']));

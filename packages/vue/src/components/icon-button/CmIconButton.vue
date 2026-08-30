@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmIconButtonSize, CmIconButtonType, CmIconButtonVariant } from './icon-button.types';
 
 defineOptions({ inheritAttrs: false });
@@ -39,12 +39,7 @@ const variant = computed(() => (variants.includes(props.variant) ? props.variant
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const type = computed(() => (types.includes(props.type) ? props.type : 'button'));
 const classes = computed(() =>
-  mergeCmClasses(
-    'cm-icon-button',
-    `cm-icon-button--${variant.value}`,
-    `cm-icon-button--${size.value}`,
-    attrs.class as CmClassValue,
-  ),
+  mergeCmClasses('cm-icon-button', `cm-icon-button--${variant.value}`, `cm-icon-button--${size.value}`, attrs.class),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['type', 'disabled', 'aria-label']));
 </script>

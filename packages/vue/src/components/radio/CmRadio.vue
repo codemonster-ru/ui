@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmRadioSize } from './radio.types';
 
 defineOptions({ inheritAttrs: false });
@@ -27,12 +27,7 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 const size = computed(() => (sizes.includes(props.size) ? props.size : 'md'));
 const classes = computed(() =>
-  mergeCmClasses(
-    'cm-radio',
-    `cm-radio--${size.value}`,
-    props.invalid ? 'cm-radio--invalid' : undefined,
-    attrs.class as CmClassValue,
-  ),
+  mergeCmClasses('cm-radio', `cm-radio--${size.value}`, props.invalid ? 'cm-radio--invalid' : undefined, attrs.class),
 );
 const controlAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, ['style', 'type', 'value', 'checked', 'disabled', 'required', 'aria-invalid']),

@@ -84,7 +84,8 @@ function updateScrollState() {
   const maxScrollLeft = viewport.scrollWidth - viewport.clientWidth;
   const directionHost = viewport.closest('[dir]');
   const isRtl =
-    directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' || window.getComputedStyle(viewport).direction === 'rtl';
+    directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' ||
+    window.getComputedStyle(viewport).direction === 'rtl';
   const scrollOffset = isRtl ? Math.abs(Math.min(viewport.scrollLeft, 0)) : viewport.scrollLeft;
   canScrollLeft.value = isRtl ? maxScrollLeft - scrollOffset > 1 : scrollOffset > 1;
   canScrollRight.value = isRtl ? scrollOffset > 1 : maxScrollLeft - scrollOffset > 1;
@@ -230,7 +231,11 @@ onBeforeUnmount(() => {
       :disabled="!controlsReady || !canScrollRight"
       @click="scrollBy('right')"
     >
-      <VueIconify :icon="icons.chevronRight" aria-hidden="true" size="var(--vf-horizontal-scroller-control-icon-size)" />
+      <VueIconify
+        :icon="icons.chevronRight"
+        aria-hidden="true"
+        size="var(--vf-horizontal-scroller-control-icon-size)"
+      />
     </button>
 
     <slot name="overlay" />

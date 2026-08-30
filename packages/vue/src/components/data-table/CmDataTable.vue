@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useAttrs, watch, watchEffect, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
 import type {
   CmDataTableColumn,
@@ -276,7 +276,7 @@ const classes = computed(() =>
     props.striped ? 'cm-data-table--striped' : undefined,
     props.columnDividers ? 'cm-data-table--column-dividers' : undefined,
     props.stickyHeader ? 'cm-data-table--sticky-header' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmDialogSize } from './dialog.types';
@@ -46,7 +46,7 @@ const classes = computed(() =>
     `cm-dialog--${size.value}`,
     props.dividers ? 'cm-dialog--dividers' : undefined,
     localOpen.value ? 'cm-dialog--open' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>

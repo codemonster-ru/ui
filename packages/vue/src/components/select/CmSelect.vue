@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, useAttrs, watch, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmSelectOption, CmSelectSize } from './select.types';
 
@@ -68,7 +68,7 @@ const classes = computed(() =>
     'cm-select',
     `cm-select--${size.value}`,
     props.invalid ? 'cm-select--invalid' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const triggerAttrs = computed(() =>

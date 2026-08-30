@@ -100,7 +100,7 @@ function animateColumnOrder(previousPositions: Map<HTMLElement, number>): void {
     if (generation !== animationGeneration || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     const elements = columnElements();
     if (elements.length > 200 || elements.every((element) => typeof element.animate !== 'function')) return;
-    const tableStyle = getComputedStyle(tableRef.value ?? elements[0]!);
+    const tableStyle = getComputedStyle(tableRef.value ?? elements[0]);
     const duration = motionDurationMilliseconds(tableStyle.getPropertyValue('--cm-motion-duration-fast'), 160);
     const easing = tableStyle.getPropertyValue('--cm-motion-ease-standard').trim() || 'ease';
 

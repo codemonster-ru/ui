@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm } from '../../internal/warn';
 import type { CmProgressSpinnerSize, CmProgressSpinnerTone } from './progress-spinner.types';
 
@@ -41,7 +41,7 @@ const classes = computed(() =>
     'cm-progress-spinner',
     `cm-progress-spinner--${size.value}`,
     tone.value === 'primary' ? undefined : `cm-progress-spinner--${tone.value}`,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>

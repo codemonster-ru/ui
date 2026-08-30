@@ -77,7 +77,7 @@ const visibleYearPageStart = ref(getCoreYearPageStart(String(initialDate.getFull
 const calendarId = computed(() => `${props.id}-calendar`);
 const displayValue = computed(() => {
   if (selectedValues.value.length === 0) return props.placeholder;
-  if (props.selectionMode === 'single') return formatCorePickerDisplay(selectedValues.value[0]!, props.pickerMode);
+  if (props.selectionMode === 'single') return formatCorePickerDisplay(selectedValues.value[0], props.pickerMode);
   return formatCoreDateSelection(selectedValues.value, props.selectionMode);
 });
 const dateTimeHour = computed(() =>

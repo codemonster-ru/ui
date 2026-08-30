@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmBreadcrumbItem } from './breadcrumbs.types';
 
@@ -12,7 +12,7 @@ const props = defineProps({
   ariaLabel: { type: String, default: 'Breadcrumb' },
 });
 const attrs = useAttrs();
-const classes = computed(() => mergeCmClasses('cm-breadcrumbs', attrs.class as CmClassValue));
+const classes = computed(() => mergeCmClasses('cm-breadcrumbs', attrs.class));
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, ['aria-label']));
 const normalizedItems = computed(() => {
   assertCm(
