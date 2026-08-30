@@ -2,6 +2,7 @@
 import { computed, useAttrs, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm } from '../../internal/warn';
 import { useCmModal } from '../modal/use-modal';
 import type { CmDrawerSide, CmDrawerSize } from './drawer.types';
 
@@ -28,9 +29,10 @@ const props = defineProps({
 });
 const emit = defineEmits<{ openChange: [open: boolean]; 'update:open': [open: boolean] }>();
 const attrs = useAttrs();
-if (![props.id, props.title, props.closeLabel].every((value) => value.trim())) {
-  throw new TypeError('Drawer id, title, and closeLabel must be non-empty strings.');
-}
+assertCm(
+  [props.id, props.title, props.closeLabel].every((value) => value.trim() !== ''),
+  'Drawer id, title, and closeLabel must be non-empty strings.',
+);
 const side = computed(() => (['start', 'end'].includes(props.side) ? props.side : 'end'));
 const size = computed(() => (['sm', 'md', 'lg', 'full'].includes(props.size) ? props.size : 'md'));
 const modal = useCmModal(

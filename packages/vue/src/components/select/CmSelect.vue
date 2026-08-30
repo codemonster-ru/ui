@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, ref, useAttrs, watch, type PropType } from 'vue';
 
 import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { assertCm, warnCm } from '../../internal/warn';
 import type { CmSelectOption, CmSelectSize } from './select.types';
 
 defineOptions({ inheritAttrs: false });
@@ -24,7 +25,7 @@ const props = defineProps({
 const emit = defineEmits<{ valueChange: [value: string]; 'update:modelValue': [value: string] }>();
 const attrs = useAttrs();
 
-if (!props.id.trim()) throw new TypeError('Select id must be a non-empty string.');
+assertCm(props.id.trim() !== '', 'Select id must be a non-empty string.');
 
 const triggerRef = ref<HTMLButtonElement | null>(null);
 const listboxRef = ref<HTMLElement | null>(null);
@@ -39,14 +40,18 @@ watch(
 );
 
 const normalizedOptions = computed(() => {
-  if (props.options.length === 0) throw new TypeError('Select requires options.');
+  assertCm(props.options.length > 0, 'Select requires options.');
   const values = new Set<string>();
+  const options: CmSelectOption[] = [];
   for (const option of props.options) {
-    if (!option.label.trim() || values.has(option.value))
-      throw new TypeError(`Invalid Select option: ${option.value}.`);
+    if (!option.label.trim() || values.has(option.value)) {
+      warnCm(`Invalid Select option: ${option.value}. The option is not rendered.`);
+      continue;
+    }
     values.add(option.value);
+    options.push(option);
   }
-  return props.options;
+  return options;
 });
 
 const size = computed(() => (['sm', 'md', 'lg'].includes(props.size) ? props.size : 'md'));
@@ -183,7 +188,15 @@ onBeforeUnmount(() => {
         <slot name="trailing" />
       </span>
       <span v-if="!hasClear" class="cm-select__icon cm-select__icon--chevron" aria-hidden="true">
-        <svg class="cm-select__chevron" viewBox="0 0 24 24" fill="none" focusable="false"><polyline points="5.75 8.75 12 15 18.25 8.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        <svg class="cm-select__chevron" viewBox="0 0 24 24" fill="none" focusable="false">
+          <polyline
+            points="5.75 8.75 12 15 18.25 8.75"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
       </span>
     </button>
     <button
@@ -197,7 +210,19 @@ onBeforeUnmount(() => {
       @click="clearValue"
     >
       <span aria-hidden="true">
-        <svg class="cm-select__clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><line x1="5.75" y1="5.75" x2="18.25" y2="18.25"/><line x1="18.25" y1="5.75" x2="5.75" y2="18.25"/></svg>
+        <svg
+          class="cm-select__clear-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          focusable="false"
+        >
+          <line x1="5.75" y1="5.75" x2="18.25" y2="18.25" />
+          <line x1="18.25" y1="5.75" x2="5.75" y2="18.25" />
+        </svg>
       </span>
     </button>
     <div
