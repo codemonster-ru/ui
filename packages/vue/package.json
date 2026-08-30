@@ -33,6 +33,7 @@
     "build": "vite build",
     "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint .",
     "prepack": "npm run build",
     "test": "vitest run src && npm run build && node --test ./__tests__/*.test.mjs",
