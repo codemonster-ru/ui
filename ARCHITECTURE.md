@@ -84,7 +84,8 @@ Rules for the layer:
 - Components with no behavior — layout primitives, badges, cards — have no core module and need
   none.
 
-`Tabs` is the reference implementation.
+`Tabs` is the reference implementation. [Component model](./docs/architecture/component-model.md)
+records why components are canonical HTML plus this core rather than custom elements.
 
 ## Dependency rules
 
