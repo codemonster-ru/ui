@@ -31,6 +31,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Type-aware rules resolve a sibling package through its built types, so ui-vue's imports
+      # from ui-runtime/core are error-typed without this and no-unsafe-* fires on every one.
+      - name: Build packages
+        run: npm run build
+
       - name: Lint sources, styles, markup, and data
         run: npm run lint:all
 
@@ -111,6 +116,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # The suite hides dist itself; the build is still needed for its other output, such as the
+      # generated theme CSS that vueforge-core's parity check reads.
+      - name: Build packages
+        run: npm run build
 
       - name: Run workspace tests without build output
         run: npm run test:ci-like
