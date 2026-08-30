@@ -104,7 +104,7 @@
     "css:components/accordion.css": {
       "path": "css/css/components/accordion.css",
       "mediaType": "text/css",
-      "sha256": "135e42a98f042597a690ca0004047352d2ab277281fc9e6f33516e54f7e9d0c9",
+      "sha256": "9066060bfb5e359b305aac783ce8799c17928bd54bcccdd607fd7f9f6b0a678b",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -204,7 +204,7 @@
     "css:components/data-table.css": {
       "path": "css/css/components/data-table.css",
       "mediaType": "text/css",
-      "sha256": "42f80fa1de67d8dc2cfafbac542bea4d885e82b6faebcf46de99fb914ef3dd8f",
+      "sha256": "c8c4e562b70c4a1948d5216dd0aa6d7a428bc3e797b1af96a6fd5b2ea402db69",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -304,7 +304,7 @@
     "css:components/input.css": {
       "path": "css/css/components/input.css",
       "mediaType": "text/css",
-      "sha256": "e5e6e6817ee2ad01f3bf0443b7c2d3b01136598314dd6813d6bbd515b0ad683e",
+      "sha256": "0c176a098e8917cff3f55a0ed6531ec4d826b0206f7af60aff7c63116b1702a7",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -434,7 +434,7 @@
     "css:components/table.css": {
       "path": "css/css/components/table.css",
       "mediaType": "text/css",
-      "sha256": "ec430b2c2ae7ee121958739b569e6b821c1f456ddc01c0973c3ee393e9a33e3c",
+      "sha256": "64f6c170225092df3bb99fc127bbb59b5b89b74977e0a9f3dfd3f8d0d6a493c3",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
