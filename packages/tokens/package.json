@@ -37,6 +37,7 @@
     "build": "rm -rf dist && tsc -p tsconfig.json && node ./scripts/generate-css.mjs",
     "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --ignore-path ../../.prettierignore --write .",
+    "format:check": "prettier --ignore-path ../../.prettierignore --check .",
     "lint": "eslint .",
     "prepack": "npm run build",
     "test": "npm run build && node --test ./__tests__/*.test.mjs",
