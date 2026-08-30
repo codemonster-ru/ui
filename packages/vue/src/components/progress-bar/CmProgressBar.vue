@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm } from '../../internal/warn';
 import type { CmProgressBarTone } from './progress-bar.types';
 
@@ -45,7 +45,7 @@ const classes = computed(() =>
     'cm-progress-bar',
     props.indeterminate ? 'cm-progress-bar--indeterminate' : undefined,
     tone.value === 'primary' ? undefined : `cm-progress-bar--${tone.value}`,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const rootAttrs = computed(() =>

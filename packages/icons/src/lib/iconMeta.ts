@@ -47,5 +47,5 @@ export const icons = /* @__PURE__ */ Object.freeze(
 ) as Readonly<Record<IconName, string>>;
 
 export const iconCatalog = iconCatalogJson as Record<IconName, IconCatalogEntry>;
-export const coreIconNames = iconCoreJson as IconName[];
+export const coreIconNames = iconCoreJson;
 export const showcaseIconEntries = iconShowcaseJson as IconShowcaseEntry[];

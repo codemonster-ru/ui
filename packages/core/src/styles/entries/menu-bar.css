@@ -172,14 +172,16 @@
   background: var(--vf-color-background-surface-selected-active, var(--vf-menu-bar-current-top-active-background));
 }
 
-:where(.vf-menu-bar--pills) .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active:hover:not(
+:where(.vf-menu-bar--pills)
+  .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active:hover:not(
     :disabled,
     .vf-menu-bar__item--disabled
   ) {
   background: var(--vf-color-background-surface-selected-hover, var(--vf-menu-bar-current-submenu-active-background));
 }
 
-:where(.vf-menu-bar--pills) .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active:active:not(
+:where(.vf-menu-bar--pills)
+  .vf-menu-bar__item:not(.vf-menu-bar__item--top).vf-menu-bar__item--active:active:not(
     :disabled,
     .vf-menu-bar__item--disabled
   ) {

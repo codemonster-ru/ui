@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
-import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
+import { VueIconify } from '@codemonster-ru/vueforge-icons';
+import type { VfIconNameOrCustom } from '../../types/components';
 import { cx } from '@/utils/classes';
 import type { VfButtonVariant, VfControlSize } from '@/types/components';
 
@@ -9,7 +10,7 @@ defineOptions({
 });
 
 interface VfIconButtonProps {
-  icon: IconName | string;
+  icon: VfIconNameOrCustom;
   variant?: VfButtonVariant;
   size?: VfControlSize;
   type?: 'button' | 'submit' | 'reset';

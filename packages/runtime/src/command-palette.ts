@@ -88,7 +88,7 @@ export class CmCommandPaletteController implements CmController {
             : current <= 0
               ? last
               : current - 1;
-    this.#activate(enabled[next]!);
+    this.#activate(enabled[next]);
   };
 
   readonly #handleClick = (event: Event): void => {

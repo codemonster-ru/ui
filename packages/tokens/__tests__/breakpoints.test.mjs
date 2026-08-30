@@ -17,7 +17,10 @@ test('owns the ordered immutable breakpoint registry', () => {
 
 test('keeps CSS breakpoint tokens synchronized with numeric values', () => {
   assert.deepEqual(Object.keys(cmBreakpointTokens), [...cmBreakpointTokenNames]);
-  assert.deepEqual(Object.values(cmBreakpointTokens), Object.values(cmBreakpoints).map((value) => `${value}px`));
+  assert.deepEqual(
+    Object.values(cmBreakpointTokens),
+    Object.values(cmBreakpoints).map((value) => `${value}px`),
+  );
   assert.equal(Object.isFrozen(cmBreakpointTokens), true);
   assert.equal(Object.isFrozen(cmBreakpointTokenNames), true);
 });

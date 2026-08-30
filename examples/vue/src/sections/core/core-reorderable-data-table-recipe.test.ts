@@ -137,7 +137,7 @@ describe('CoreReorderableDataTableRecipe', () => {
       return event;
     };
 
-    headers[0]!.dispatchEvent(pointerEvent('pointerdown', { button: 0, clientX: 50, clientY: 10, pointerId: 1 }));
+    headers[0].dispatchEvent(pointerEvent('pointerdown', { button: 0, clientX: 50, clientY: 10, pointerId: 1 }));
     window.dispatchEvent(pointerEvent('pointermove', { clientX: 260, clientY: 10, pointerId: 1 }));
     window.dispatchEvent(pointerEvent('pointerup', { clientX: 260, clientY: 10, pointerId: 1 }));
     await nextTick();

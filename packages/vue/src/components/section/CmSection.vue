@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmSectionElement } from './section.types';
 
 defineOptions({ inheritAttrs: false });
@@ -17,7 +17,7 @@ const props = defineProps({
 const attrs = useAttrs();
 const rootElement = computed(() => (elements.includes(props.element) ? props.element : 'section'));
 const classes = computed(() =>
-  mergeCmClasses('cm-section', props.surface ? 'cm-section--surface' : undefined, attrs.class as CmClassValue),
+  mergeCmClasses('cm-section', props.surface ? 'cm-section--surface' : undefined, attrs.class),
 );
 const rootAttrs = computed(() => omitCmOwnedAttrs(attrs, []));
 </script>

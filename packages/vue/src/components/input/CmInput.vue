@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useAttrs, useSlots, watch, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import type { CmInputSize, CmInputType } from './input.types';
 
 defineOptions({ inheritAttrs: false });
@@ -56,12 +56,7 @@ const hasPasswordReveal = computed(() => props.passwordReveal && inputType.value
 const hasClear = computed(() => props.clearable && !props.disabled && !props.readonly);
 const hasWrapper = computed(() => hasLeading.value || hasTrailing.value || hasPasswordReveal.value || hasClear.value);
 const classes = computed(() =>
-  mergeCmClasses(
-    'cm-input',
-    `cm-input--${size.value}`,
-    props.invalid ? 'cm-input--invalid' : undefined,
-    attrs.class as CmClassValue,
-  ),
+  mergeCmClasses('cm-input', `cm-input--${size.value}`, props.invalid ? 'cm-input--invalid' : undefined, attrs.class),
 );
 const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, ['value', 'type', 'disabled', 'readonly', 'required', 'aria-invalid', 'onInput']),

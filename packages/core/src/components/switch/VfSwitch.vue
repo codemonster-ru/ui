@@ -62,7 +62,7 @@ const hasContent = computed(() => {
     }
 
     if (node.type === Text) {
-      return String(node.children ?? '').trim().length > 0;
+      return typeof node.children === 'string' && node.children.trim().length > 0;
     }
 
     if (node.type === Fragment && Array.isArray(node.children)) {

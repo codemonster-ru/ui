@@ -48,14 +48,14 @@ describe('Vue data table components', () => {
     const wrapper = mount(CmDataTable, {
       props: { id: 'projects', columns, rows, selectable: true, page: 2, pageCount: 3 },
     });
-    await wrapper.findAll<HTMLInputElement>('[data-cm-data-table-select-row]')[1]!.setValue(true);
+    await wrapper.findAll<HTMLInputElement>('[data-cm-data-table-select-row]')[1].setValue(true);
     await wrapper.get('[data-cm-data-table-page-action="next"]').trigger('click');
     expect(wrapper.emitted('selectionChange')).toEqual([[['zephyr']]]);
     expect(wrapper.emitted('pageChange')).toEqual([[3]]);
   });
 
   it('preserves disabled selections when selecting eligible rows', async () => {
-    const constrainedRows = [{ ...rows[0]!, selectable: false }, rows[1]!];
+    const constrainedRows = [{ ...rows[0], selectable: false }, rows[1]];
     const wrapper = mount(CmDataTable, {
       props: {
         id: 'projects',
@@ -66,7 +66,7 @@ describe('Vue data table components', () => {
       },
     });
     const inputs = wrapper.findAll<HTMLInputElement>('[data-cm-data-table-select-row]');
-    expect(inputs[0]!.attributes('disabled')).toBeDefined();
+    expect(inputs[0].attributes('disabled')).toBeDefined();
     await wrapper.get<HTMLInputElement>('[data-cm-data-table-select-all]').setValue(true);
     expect(wrapper.emitted('selectionChange')).toEqual([[['apollo', 'zephyr']]]);
   });
@@ -129,7 +129,7 @@ describe('Vue data table components', () => {
     });
     const sort = wrapper.get('[data-cm-data-table-sort]');
     expect(sort.attributes('aria-label')).toBe('Сортировать Name по возрастанию');
-    expect(wrapper.findAll('[data-cm-data-table-select-row]')[0]!.attributes('aria-label')).toBe(
+    expect(wrapper.findAll('[data-cm-data-table-select-row]')[0].attributes('aria-label')).toBe(
       'Выбрать строку Apollo',
     );
     await sort.trigger('click');
@@ -158,7 +158,7 @@ describe('Vue data table components', () => {
 
     const unsafeRow = expectCmWarning(/Invalid DataTable row/u, () =>
       mount(CmDataTable, {
-        props: { id: 'projects', columns, rows: [{ ...rows[0]!, selectable: 'no' as unknown as boolean }] },
+        props: { id: 'projects', columns, rows: [{ ...rows[0], selectable: 'no' as unknown as boolean }] },
       }),
     );
     expect(unsafeRow.findAll('tbody tr[data-cm-data-table-row]')).toHaveLength(0);

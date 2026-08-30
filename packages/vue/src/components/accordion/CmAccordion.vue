@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useAttrs, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmAccordionItem, CmAccordionOpenChange } from './accordion.types';
 
@@ -51,7 +51,7 @@ const localOpenItems = ref(normalizeOpenItems(props.defaultOpenItems));
 const renderedOpenItems = computed(() =>
   props.openItems === null ? localOpenItems.value : normalizeOpenItems(props.openItems),
 );
-const classes = computed(() => mergeCmClasses('cm-accordion', attrs.class as CmClassValue));
+const classes = computed(() => mergeCmClasses('cm-accordion', attrs.class));
 const rootAttrs = computed(() =>
   omitCmOwnedAttrs(attrs, ['data-cm-controller', 'data-cm-accordion-multiple', 'onKeydown']),
 );

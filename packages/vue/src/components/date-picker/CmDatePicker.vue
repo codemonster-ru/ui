@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useAttrs, watch, type PropType } from 'vue';
 
-import { mergeCmClasses, omitCmOwnedAttrs, type CmClassValue } from '../../internal/root-attributes';
+import { mergeCmClasses, omitCmOwnedAttrs } from '../../internal/root-attributes';
 import { assertCm, warnCm } from '../../internal/warn';
 import type { CmDatePickerSize } from './date-picker.types';
 import {
@@ -82,7 +82,7 @@ const classes = computed(() =>
     `cm-date-picker--${size.value}`,
     props.invalid ? 'cm-date-picker--invalid' : undefined,
     currentValue.value === '' ? 'cm-date-picker--placeholder' : undefined,
-    attrs.class as CmClassValue,
+    attrs.class,
   ),
 );
 const triggerAttrs = computed(() =>

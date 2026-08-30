@@ -193,9 +193,7 @@ export class CmDatePickerController implements CmController {
     const parsed = parseIso(value);
     const valueElement = this.#trigger.querySelector<HTMLElement>(valueSelector);
     if (valueElement) {
-      valueElement.textContent = parsed
-        ? displayFormatter.format(parsed)
-        : (this.#trigger.dataset.cmPlaceholder ?? '');
+      valueElement.textContent = parsed ? displayFormatter.format(parsed) : (this.#trigger.dataset.cmPlaceholder ?? '');
     }
     this.#trigger.classList.toggle('cm-date-picker--placeholder', value === '');
     if (value) this.#trigger.dataset.cmFilled = 'true';

@@ -49,7 +49,7 @@ describe('CoreResizableDataTableRecipe', () => {
           x: 0,
           y: 0,
           toJSON: () => ({}),
-        }) as DOMRect;
+        });
     });
   }
 
@@ -113,6 +113,9 @@ describe('CoreResizableDataTableRecipe', () => {
     await nextTick();
     expect(widths.value.member).toBe('370px');
     expect(widths.value.role).toBe('230px');
+    // vue-tsc types these as string | undefined; eslint's project service disagrees and its
+    // autofix strips the assertions, so the rule is off here and the build's checker wins.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect(Number.parseFloat(widths.value.member!) + Number.parseFloat(widths.value.role!)).toBe(600);
     expect(ended.value).toHaveLength(1);
 
