@@ -1928,7 +1928,7 @@
       ]
     },
     "VfHeaderArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
@@ -1943,7 +1943,7 @@
       ]
     },
     "VfSidebarArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
@@ -1958,7 +1958,7 @@
       ]
     },
     "VfContentArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
@@ -1973,7 +1973,7 @@
       ]
     },
     "VfAsideArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
@@ -1988,7 +1988,7 @@
       ]
     },
     "VfFooterArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
