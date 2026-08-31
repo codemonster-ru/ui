@@ -208,3 +208,36 @@ const items = [
 <cm-nav-menu :items="$items" value="active" />
 ```
 
+## Menu bar
+
+`CmMenuBar` is a horizontal bar of menus: `role="menubar"` with nested `role="menu"` submenus. It
+shows one path at a time, so opening a branch replaces the open path rather than adding to it.
+
+The keyboard is the part worth knowing, because the same arrow means different things depending on
+where focus sits. Down opens a branch on the bar but walks entries inside a submenu; right moves
+along the bar but opens a nested branch; left moves back along the bar but closes to the parent
+inside. The horizontal pair swaps under `rtl` and the vertical pair does not, because a submenu
+drops downward in both directions. Those rules are one function in the shared core rather than
+nested conditions in each adapter.
+
+Submenus are positioned by CSS and stay in the markup while closed, hidden rather than absent.
+
+```vue
+<script setup lang="ts">
+import { CmMenuBar } from '@codemonster-ru/ui-vue';
+
+const items = [
+  { value: 'file', label: 'File', children: [{ value: 'new', label: 'New' }] },
+  { value: 'help', label: 'Help', href: '/help' },
+];
+</script>
+
+<template>
+  <CmMenuBar :items="items" />
+</template>
+```
+
+```php
+<cm-menu-bar :items="$items" :open-path="['file']" />
+```
+

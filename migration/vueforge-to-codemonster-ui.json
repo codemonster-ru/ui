@@ -166,8 +166,8 @@
     },
     {
       "source": "VfMenuBar",
-      "action": "manual",
-      "targets": ["CmInline", "CmLink"]
+      "action": "replace",
+      "targets": ["CmMenuBar"]
     },
     {
       "source": "VfMenu",

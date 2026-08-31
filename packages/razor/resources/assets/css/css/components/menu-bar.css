@@ -1,0 +1,89 @@
+/*
+ * A submenu is positioned by CSS rather than measured and placed by JavaScript: it drops below its
+ * trigger on the bar and flows sideways from there. That keeps the whole menu in the markup, hidden
+ * rather than absent, so a page without JavaScript still exposes it to assistive technology.
+ */
+.cm-menu-bar__list,
+.cm-menu-bar__submenu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cm-menu-bar__list {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-0);
+}
+
+.cm-menu-bar__node {
+  position: relative;
+}
+
+.cm-menu-bar__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-1);
+  inline-size: 100%;
+  padding: var(--cm-space-1) var(--cm-space-2);
+  border: 0;
+  border-radius: var(--cm-radius-control-tight);
+  background: none;
+  color: var(--cm-color-text-secondary);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.cm-menu-bar__item:hover {
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-menu-bar__item--open {
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-menu-bar__item:disabled,
+.cm-menu-bar__item[aria-disabled='true'] {
+  color: var(--cm-color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.cm-menu-bar__icon {
+  inline-size: 0.4rem;
+  block-size: 0.4rem;
+  border-inline-end: var(--cm-border-width) solid currentcolor;
+  border-block-end: var(--cm-border-width) solid currentcolor;
+  rotate: 45deg;
+}
+
+.cm-menu-bar__submenu {
+  position: absolute;
+  z-index: 1;
+  min-inline-size: 10rem;
+  padding: var(--cm-space-1);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+  box-shadow: var(--cm-shadow-overlay);
+}
+
+/* A top-level submenu drops below the bar; a nested one flows to the side of its parent. */
+.cm-menu-bar__node--depth-0 > .cm-menu-bar__submenu {
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+}
+
+.cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__submenu {
+  inset-block-start: calc(var(--cm-space-1) * -1);
+  inset-inline-start: 100%;
+}
+
+.cm-menu-bar__node:not(.cm-menu-bar__node--depth-0) > .cm-menu-bar__item .cm-menu-bar__icon {
+  margin-inline-start: auto;
+  rotate: -45deg;
+}
