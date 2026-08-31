@@ -101,8 +101,8 @@
     },
     {
       "source": "VfDataTableColumnChooser",
-      "action": "manual",
-      "targets": ["CmCheckbox", "CmPopover"]
+      "action": "replace",
+      "targets": ["CmColumnChooser"]
     },
     {
       "source": "VfDatePicker",
@@ -176,7 +176,7 @@
     },
     {
       "source": "VfMenuItem",
-      "action": "manual",
+      "action": "compose",
       "targets": ["CmMenu"]
     },
     {

@@ -437,19 +437,23 @@
       }
     },
     "VfDataTableColumnChooser": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmColumnChooser",
+        "contract": "column-chooser",
+        "razorTag": "column-chooser",
+        "documentation": "docs/components/data-tables.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "CmDataTable visibleColumnKeys plus CmCheckbox and CmPopover cover the portable visibility boundary; required-column policy, chooser placement, persistence, optimistic updates, and rollback remain application-owned",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Column visibility with required columns that cannot be cleared, reported in declaration order. Renders the Popover structure and is driven by the Popover controller. The visibility rules live in the shared core; the Razor adapter ports them and is held to the same canonical DOM.",
           "evidence": [
-            "docs/core/components/data-table-column-chooser/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "contracts/data-table/contract.md",
-            "contracts/checkbox/contract.md",
-            "contracts/popover/contract.md"
+            "contracts/column-chooser/manifest.json",
+            "contracts/column-chooser/cases/default.html",
+            "docs/components/data-tables.md"
           ]
         }
       ]
@@ -949,26 +953,16 @@
       }
     },
     "VfMenuItem": {
-      "disposition": "manual",
+      "disposition": "compose",
       "capabilities": [
         {
           "id": "reviewed-disposition",
           "status": "superseded",
-          "notes": "CmMenu covers action/link states, rich item content, safe link metadata, and selection through its portable collection",
+          "notes": "Covered by Menu: CmMenu renders each entry from CmMenuItem data as the same anchor or button with role=\"menuitem\", href, target, rel, disabled, active and tone, with a per-item slot in place of the icon prop. A separate component would be a second way to render one thing.",
           "evidence": [
-            "docs/core/components/menu/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/menu/contract.md"
-          ]
-        },
-        {
-          "id": "standalone-item-component",
-          "status": "superseded",
-          "notes": "A standalone MenuItem adapter is unnecessary because the matured CmMenu collection owns item semantics and composition",
-          "evidence": [
-            "docs/core/components/menu/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/menu/contract.md"
+            "contracts/menu/manifest.json",
+            "contracts/menu/cases/default.html",
+            "docs/components/navigation.md"
           ]
         }
       ]

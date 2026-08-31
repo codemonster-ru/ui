@@ -14,6 +14,8 @@ export { default as CmCard } from './components/card/CmCard.vue';
 export type { CmCardElement, CmCardProps } from './components/card/card.types';
 export { default as CmCheckbox } from './components/checkbox/CmCheckbox.vue';
 export type { CmCheckboxProps, CmCheckboxSize } from './components/checkbox/checkbox.types';
+export { default as CmColumnChooser } from './components/column-chooser/CmColumnChooser.vue';
+export type { CmColumnChooserColumn, CmColumnChooserProps } from './components/column-chooser/column-chooser.types';
 export { default as CmCommandPalette } from './components/command-palette/CmCommandPalette.vue';
 export type { CmCommandPaletteItem, CmCommandPaletteProps } from './components/command-palette/command-palette.types';
 export { default as CmContainer } from './components/container/CmContainer.vue';

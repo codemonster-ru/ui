@@ -17,6 +17,7 @@ test('publishes only the approved CSS subpath exports', async () => {
     './card.css': './dist/components/card.css',
     './checkbox.css': './dist/components/checkbox.css',
     './command-palette.css': './dist/components/command-palette.css',
+    './column-chooser.css': './dist/components/column-chooser.css',
     './container.css': './dist/components/container.css',
     './data-table.css': './dist/components/data-table.css',
     './date-picker.css': './dist/components/date-picker.css',
