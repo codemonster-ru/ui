@@ -12,6 +12,13 @@ export const codeMonsterUiNpmPackages = Object.freeze([
     name: '@codemonster-ru/ui-vue',
     releaseOrder: 4,
   },
+  // A layout composes components, so it releases after them.
+  {
+    directory: 'layouts',
+    frameworkPeers: { vue: '^3.5.0' },
+    name: '@codemonster-ru/ui-layouts',
+    releaseOrder: 5,
+  },
   {
     directory: 'react',
     frameworkPeers: { react: '^19.2.0', 'react-dom': '^19.2.0' },
@@ -45,6 +52,7 @@ export const codeMonsterUiPackageSizeBudgets = Object.freeze({
   '@codemonster-ru/ui-css': { cssGzip: 48 * 1024, cssRaw: 320 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-utilities': { cssGzip: 32 * 1024, cssRaw: 256 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-vue': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },
+  '@codemonster-ru/ui-layouts': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 64 * 1024 },
   '@codemonster-ru/ui-react': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },
   '@codemonster-ru/ui-angular': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },
 });

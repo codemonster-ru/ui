@@ -388,7 +388,7 @@ function publicComponentContracts() {
     });
   }
 
-  const layoutsRoot = path.join(repositoryRoot, 'packages/layouts/src');
+  const layoutsRoot = path.join(repositoryRoot, 'packages/vueforge-layouts/src');
   const layoutsIndex = readFileSync(path.join(layoutsRoot, 'index.ts'), 'utf8');
   for (const match of layoutsIndex.matchAll(
     /export\s*\{\s*default\s+as\s+(Vf[A-Za-z\d]+)\s*\}\s*from\s*['"]([^'"]+\.vue)['"]/gu,
