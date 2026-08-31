@@ -7,6 +7,7 @@ namespace Codemonster\Ui;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
 use Codemonster\Ui\Components\CmAccordion;
+use Codemonster\Ui\Layouts\CmAdminLayout;
 use Codemonster\Ui\Components\CmAlert;
 use Codemonster\Ui\Components\CmAvatar;
 use Codemonster\Ui\Components\CmBadge;
@@ -73,6 +74,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
     {
         return [
             'accordion' => new CmAccordion($this->views),
+            'admin-layout' => new CmAdminLayout($this->views),
             'alert' => new CmAlert($this->views),
             'avatar' => new CmAvatar($this->views),
             'badge' => new CmBadge($this->views),

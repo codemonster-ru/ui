@@ -27,7 +27,12 @@ export function discoverLegacyComponents(root = repositoryRoot) {
 }
 
 export function discoverCodeMonsterComponents(root = repositoryRoot) {
-  return defaultComponentExports(readFileSync(resolve(root, 'packages/vue/src/index.ts'), 'utf8'), 'Cm');
+  // Layouts are a separate published line but are migration targets like any other, so both entry
+  // points are read; otherwise a layout could be mapped to a target this check calls unavailable.
+  return new Set([
+    ...defaultComponentExports(readFileSync(resolve(root, 'packages/vue/src/index.ts'), 'utf8'), 'Cm'),
+    ...defaultComponentExports(readFileSync(resolve(root, 'packages/layouts/src/index.ts'), 'utf8'), 'Cm'),
+  ]);
 }
 
 export function validateVueForgeMapping(mapping, baseline, legacyComponents, targetComponents) {
