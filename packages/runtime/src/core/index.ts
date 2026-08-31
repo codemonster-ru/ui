@@ -54,6 +54,14 @@ export { isMenuCloseKey, menuTabStopId, nextMenuItem } from './menu.js';
 export type { CmMenuCoreItem } from './menu.js';
 export { nextRovingIndex } from './roving.js';
 export type { CmRovingDirection, CmRovingOptions, CmRovingOrientation } from './roving.js';
+export {
+  cmShellAttributes,
+  resolveMobileToggleLabel,
+  shellEscapeState,
+  toggleShellMobileSidebar,
+  toggleShellSidebar,
+} from './shell.js';
+export type { CmShellState } from './shell.js';
 export { selectClosedKeyAction, selectOpenKeyAction } from './select.js';
 export { nextStepperValue, resolveStepperProgress, resolveStepperValue, resolveStepState } from './stepper.js';
 export type { CmStepperCoreItem, CmStepperStepState } from './stepper.js';

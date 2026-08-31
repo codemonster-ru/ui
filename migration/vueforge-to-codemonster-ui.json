@@ -306,8 +306,8 @@
     },
     {
       "source": "VfAdminLayout",
-      "action": "manual",
-      "targets": ["CmDrawer", "CmMenu", "CmGrid"]
+      "action": "replace",
+      "targets": ["CmAdminLayout"]
     },
     {
       "source": "VfAdminShell",

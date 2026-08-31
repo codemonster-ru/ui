@@ -2,6 +2,7 @@
 @import './primitives/control.css';
 @import './primitives/surface.css';
 @import './components/accordion.css';
+@import './components/admin-layout.css';
 @import './components/alert.css';
 @import './components/avatar.css';
 @import './components/badge.css';

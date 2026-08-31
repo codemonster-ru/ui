@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "name": "AdminLayout",
+  "slug": "admin-layout",
+  "razorTag": "cm-admin-layout",
+  "description": "An application shell with a collapsible sidebar, a header, and a mobile drawer. State lives in attributes on the root rather than a slot scope, so both adapters render it and one controller flips it.",
+  "props": {
+    "id": {
+      "type": "string",
+      "required": true,
+      "description": "Names the sidebar; the mobile toggle points at it with aria-controls."
+    },
+    "sidebarCollapsed": { "type": "boolean", "required": false, "default": false },
+    "mobileSidebarOpen": { "type": "boolean", "required": false, "default": false },
+    "mobileSidebarOpenLabel": { "type": "string", "required": false, "default": "Open navigation" },
+    "mobileSidebarCloseLabel": { "type": "string", "required": false, "default": "Close navigation" }
+  },
+  "slots": {
+    "default": { "required": true, "description": "Page content, rendered inside the main landmark." },
+    "brand": { "required": false, "description": "Product identity at the top of the sidebar." },
+    "aside": { "required": false, "description": "Sidebar content, usually navigation." },
+    "header": { "required": false, "description": "Header content beside the mobile toggle." },
+    "mobileBrand": { "required": false, "description": "Product identity shown in the header on narrow screens." },
+    "mobileToggle": { "required": false, "description": "Replaces the default drawer button." },
+    "footer": { "required": false, "description": "Content below the main landmark." }
+  },
+  "events": {
+    "sidebarCollapsedChange": { "description": "Reports the desktop sidebar state.", "payloadContract": "boolean" },
+    "mobileSidebarOpenChange": { "description": "Reports the mobile drawer state.", "payloadContract": "boolean" }
+  },
+  "states": ["default", "collapsed", "mobile-open"]
+}

@@ -9,6 +9,7 @@ const manifest = JSON.parse(await readFile(packageUrl, 'utf8'));
 test('publishes only the approved CSS subpath exports', async () => {
   assert.deepEqual(manifest.exports, {
     './accordion.css': './dist/components/accordion.css',
+    './admin-layout.css': './dist/components/admin-layout.css',
     './alert.css': './dist/components/alert.css',
     './avatar.css': './dist/components/avatar.css',
     './badge.css': './dist/components/badge.css',
