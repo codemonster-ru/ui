@@ -968,29 +968,30 @@
       ]
     },
     "VfNavMenu": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmNavMenu",
+        "contract": "nav-menu",
+        "razorTag": "nav-menu",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "superseded",
-          "notes": "Split: Routing, authorization, active location, and compact sidebar policy are application-owned; a generic nested disclosure navigation pattern may still be portable",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Nested branches with single and multiple expand modes, group headings, and the path to the active item opened automatically, from the shared tree core. A collapsed branch stays in the markup so a page without JavaScript shows the whole tree.",
           "evidence": [
-            "docs/core/components/nav-menu/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/menu/contract.md",
-            "contracts/link/contract.md"
+            "contracts/nav-menu/manifest.json",
+            "contracts/nav-menu/cases/default.html",
+            "docs/components/navigation.md"
           ]
         },
         {
-          "id": "remaining-migration-outcome",
-          "status": "application-owned",
-          "notes": "Native navigation and CmLink composition supersede the static link-list subset; nested disclosure state, routing, authorization, active location, and compact sidebar policy remain application-owned without shared Razor demand",
-          "evidence": [
-            "docs/core/components/nav-menu/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "contracts/link/contract.md"
-          ]
+          "id": "migration-outcome",
+          "status": "supported",
+          "notes": "Two deliberate differences from VueForge: a leading icon is a per-item slot rather than an icon prop, since this package does not depend on an icon library; and the sidebar narrows with a CSS container query rather than a resize observer, which also works on a server-rendered page.",
+          "evidence": ["docs/components/navigation.md", "packages/css/src/components/nav-menu.css"]
         }
       ]
     },

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "nav-menu-default",
+  "description": "A branch opened to reach the active child, beside a group heading.",
+  "props": {
+    "items": [
+      { "value": "dashboard", "label": "Dashboard", "href": "/dashboard" },
+      {
+        "value": "projects",
+        "label": "Projects",
+        "children": [
+          { "value": "active", "label": "Active", "href": "/projects/active" },
+          { "value": "archived", "label": "Archived", "href": "/projects/archived", "disabled": true }
+        ]
+      },
+      {
+        "value": "support",
+        "label": "Support",
+        "kind": "group",
+        "children": [{ "value": "docs", "label": "Docs", "href": "/docs" }]
+      }
+    ],
+    "value": "active"
+  },
+  "slots": {}
+}
