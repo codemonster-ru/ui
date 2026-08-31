@@ -10,5 +10,9 @@
  * `@codemonster-ru/ui-runtime/core` and both adapters render from them.
  */
 
+export { default as CmAdminShell } from './admin-shell/CmAdminShell.vue';
+export type { CmAdminShellProps } from './admin-shell/admin-shell.types';
 export { default as CmAdminLayout } from './admin-layout/CmAdminLayout.vue';
 export type { CmAdminLayoutProps } from './admin-layout/admin-layout.types';
+export { default as CmSetupLayout } from './setup-layout/CmSetupLayout.vue';
+export type { CmSetupLayoutAsidePosition, CmSetupLayoutProps } from './setup-layout/setup-layout.types';

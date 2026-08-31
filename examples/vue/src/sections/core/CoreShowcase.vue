@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { CmAdminLayout } from '@codemonster-ru/ui-layouts';
+import { CmAdminLayout, CmAdminShell, CmSetupLayout } from '@codemonster-ru/ui-layouts';
 import {
   CmAccordion,
   CmAvatar as VfAvatar,
@@ -1705,6 +1705,15 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · default</p>
+                  <CmAdminShell>
+                    <template #brand>CodeMonster</template>
+                    <template #sidebar>Navigation</template>
+                    Workspace
+                  </CmAdminShell>
+                  <CmSetupLayout title="Create your workspace" description="This takes a minute.">
+                    Workspace name
+                    <template #actions>Continue</template>
+                  </CmSetupLayout>
                   <CmAdminLayout id="core-admin-layout">
                     <template #brand>CodeMonster</template>
                     <template #aside>Navigation</template>

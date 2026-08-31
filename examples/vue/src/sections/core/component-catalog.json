@@ -12,6 +12,11 @@
       "demoHref": "/layouts"
     },
     {
+      "name": "CmAdminShell",
+      "group": "Layout primitives",
+      "demoHref": "/layouts"
+    },
+    {
       "name": "CmAlert",
       "group": "Actions and feedback",
       "demoHref": "#demo-actions-feedback"
@@ -170,6 +175,11 @@
       "name": "CmSelect",
       "group": "Forms",
       "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmSetupLayout",
+      "group": "Layout primitives",
+      "demoHref": "/layouts"
     },
     {
       "name": "CmSkeleton",

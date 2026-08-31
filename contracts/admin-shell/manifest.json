@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "name": "AdminShell",
+  "slug": "admin-shell",
+  "razorTag": "cm-admin-shell",
+  "description": "A fixed administrative frame: a topbar above a sidebar and workspace. It holds no state, so it is regions and nothing else.",
+  "props": {},
+  "slots": {
+    "default": { "required": true, "description": "Workspace content, rendered inside the main landmark." },
+    "brand": { "required": false, "description": "Product identity at the start of the topbar." },
+    "header": { "required": false, "description": "Topbar content beside the brand." },
+    "headerActions": { "required": false, "description": "Controls at the end of the topbar." },
+    "sidebar": { "required": false, "description": "Navigation beside the workspace." },
+    "footer": { "required": false, "description": "Content below the workspace." }
+  },
+  "events": {},
+  "states": ["default"]
+}
