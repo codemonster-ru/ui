@@ -30,6 +30,7 @@ const expectedNames = [
   '@codemonster-ru/ui-css',
   '@codemonster-ru/ui-utilities',
   '@codemonster-ru/ui-vue',
+  '@codemonster-ru/ui-layouts',
 ];
 assert.deepEqual(
   workspaces.map(({ name }) => name),

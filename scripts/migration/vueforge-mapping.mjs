@@ -22,7 +22,7 @@ function defaultComponentExports(source, prefix) {
 
 export function discoverLegacyComponents(root = repositoryRoot) {
   const core = readFileSync(resolve(root, 'packages/core/src/components/index.ts'), 'utf8');
-  const layouts = readFileSync(resolve(root, 'packages/layouts/src/index.ts'), 'utf8');
+  const layouts = readFileSync(resolve(root, 'packages/vueforge-layouts/src/index.ts'), 'utf8');
   return new Set([...namedExports(core, 'Vf'), ...defaultComponentExports(layouts, 'Vf')]);
 }
 
