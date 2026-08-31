@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "name": "NavMenu",
+  "slug": "nav-menu",
+  "razorTag": "cm-nav-menu",
+  "description": "A nested navigation menu. Branches expand in place, the path to the active item is opened for it, and a collapsed branch stays in the markup so a page without JavaScript still shows the whole tree.",
+  "props": {
+    "items": {
+      "type": "collection",
+      "required": true,
+      "valueContract": "nav-menu-item"
+    },
+    "value": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "The active item, marked with aria-current=page."
+    },
+    "expandedValues": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "Open branches. Null lets the menu open the path to the active item itself."
+    },
+    "expandMode": {
+      "type": "enum",
+      "required": false,
+      "default": "multiple",
+      "values": ["multiple", "single"]
+    },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "default": "sidebar",
+      "values": ["sidebar", "inline"]
+    },
+    "ariaLabel": {
+      "type": "string",
+      "required": false,
+      "default": "Main navigation"
+    }
+  },
+  "slots": {
+    "item{UpperCamelValue}": {
+      "required": false,
+      "description": "Trusted content replacing one item's label, which is where a leading icon goes."
+    }
+  },
+  "events": {
+    "valueChange": {
+      "description": "Reports the selected item value.",
+      "payloadContract": "string"
+    },
+    "expandedChange": {
+      "description": "Reports the open branch values.",
+      "payloadContract": "string-list"
+    }
+  },
+  "states": ["default", "expanded", "active", "disabled"]
+}

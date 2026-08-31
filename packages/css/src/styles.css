@@ -26,6 +26,7 @@
 @import './components/inline.css';
 @import './components/link.css';
 @import './components/menu.css';
+@import './components/nav-menu.css';
 @import './components/popover.css';
 @import './components/progress-bar.css';
 @import './components/progress-spinner.css';

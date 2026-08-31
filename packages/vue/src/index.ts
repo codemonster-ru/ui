@@ -62,6 +62,13 @@ export { default as CmLink } from './components/link/CmLink.vue';
 export type { CmLinkProps, CmLinkTone, CmLinkUnderline } from './components/link/link.types';
 export { default as CmMenu } from './components/menu/CmMenu.vue';
 export type { CmMenuItem, CmMenuItemTone, CmMenuProps } from './components/menu/menu.types';
+export { default as CmNavMenu } from './components/nav-menu/CmNavMenu.vue';
+export type {
+  CmNavMenuExpandMode,
+  CmNavMenuItem,
+  CmNavMenuProps,
+  CmNavMenuVariant,
+} from './components/nav-menu/nav-menu.types';
 export { default as CmPopover } from './components/popover/CmPopover.vue';
 export type { CmPopoverPlacement, CmPopoverProps } from './components/popover/popover.types';
 export { default as CmProgressBar } from './components/progress-bar/CmProgressBar.vue';

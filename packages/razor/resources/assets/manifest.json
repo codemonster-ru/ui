@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "d338faa2ae93a2b40f21aa3dde4a3865b210fb911c3089480a45b74ebe650920",
+      "sha256": "8ab10f8030f0545c3b38f093274e87b70e784d9de70a06cf3dd26b277e7ab8d4",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -349,6 +349,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./menu.css"
+      }
+    },
+    "css:components/nav-menu.css": {
+      "path": "css/css/components/nav-menu.css",
+      "mediaType": "text/css",
+      "sha256": "49a48d55dc2bd7c5b145d2d7a7ea416127242a108d2af34d05823570ea954657",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./nav-menu.css"
       }
     },
     "css:components/popover.css": {
