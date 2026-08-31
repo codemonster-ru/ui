@@ -893,18 +893,23 @@
       }
     },
     "VfMenuBar": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmMenuBar",
+        "contract": "menu-bar",
+        "razorTag": "menu-bar",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Native navigation with CmInline and CmLink supersedes the static flat site-navigation subset; nested command-menubar structure, two-axis keyboard behavior, shortcuts, routing, and authorization remain application-owned without shared Razor demand",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "role=menubar with nested role=menu submenus, one open path at a time, and keyboard rules stated once in the shared core: the same arrow opens, walks or moves along the bar depending on where focus sits, with the horizontal pair swapped under rtl. Submenus are positioned by CSS and stay in the markup while closed.",
           "evidence": [
-            "docs/core/components/menu-bar/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "contracts/inline/contract.md",
-            "contracts/link/contract.md"
+            "contracts/menu-bar/manifest.json",
+            "contracts/menu-bar/cases/default.html",
+            "docs/components/navigation.md"
           ]
         }
       ]

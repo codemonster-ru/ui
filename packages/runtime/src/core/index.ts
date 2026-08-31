@@ -48,6 +48,8 @@ export {
 export type { CmDisclosureAction, CmDisclosureFocus, CmDisclosureState, CmTooltipDelay } from './disclosure.js';
 export { isInputClearVisible, resolveInputClearable, resolvePasswordReveal } from './input.js';
 export type { CmPasswordRevealLabels, CmPasswordRevealState } from './input.js';
+export { menuBarKeyAction } from './menu-bar.js';
+export type { CmMenuBarAction, CmMenuBarContext, CmMenuBarDirection } from './menu-bar.js';
 export { isMenuCloseKey, menuTabStopId, nextMenuItem } from './menu.js';
 export type { CmMenuCoreItem } from './menu.js';
 export { nextRovingIndex } from './roving.js';

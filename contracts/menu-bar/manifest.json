@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "name": "MenuBar",
+  "slug": "menu-bar",
+  "razorTag": "cm-menu-bar",
+  "description": "A horizontal bar of menus. role=menubar with nested role=menu submenus, where the same arrow means different things along the bar and inside a submenu.",
+  "props": {
+    "items": { "type": "collection", "required": true, "valueContract": "menu-bar-item" },
+    "openPath": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "The branch values from the bar down to the open submenu."
+    },
+    "ariaLabel": { "type": "string", "required": false, "default": "Main menu" }
+  },
+  "slots": {
+    "item{UpperCamelValue}": { "required": false, "description": "Trusted content replacing one item's label." }
+  },
+  "events": {
+    "select": { "description": "Reports the activated leaf value.", "payloadContract": "string" },
+    "openPathChange": { "description": "Reports the open branch path.", "payloadContract": "string-list" }
+  },
+  "states": ["default", "open", "active", "disabled"]
+}

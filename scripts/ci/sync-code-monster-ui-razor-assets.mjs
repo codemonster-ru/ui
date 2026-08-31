@@ -40,6 +40,7 @@ const sources = [
   { packageDirectory: 'css', path: 'components/input.css', export: './input.css' },
   { packageDirectory: 'css', path: 'components/inline.css', export: './inline.css' },
   { packageDirectory: 'css', path: 'components/link.css', export: './link.css' },
+  { packageDirectory: 'css', path: 'components/menu-bar.css', export: './menu-bar.css' },
   { packageDirectory: 'css', path: 'components/menu.css', export: './menu.css' },
   { packageDirectory: 'css', path: 'components/nav-menu.css', export: './nav-menu.css' },
   { packageDirectory: 'css', path: 'components/popover.css', export: './popover.css' },

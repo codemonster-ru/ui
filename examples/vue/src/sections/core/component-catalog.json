@@ -127,6 +127,11 @@
       "demoHref": "#demo-navigation"
     },
     {
+      "name": "CmMenuBar",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-navigation"
+    },
+    {
       "name": "CmNavMenu",
       "group": "Navigation and disclosure",
       "demoHref": "#demo-navigation"

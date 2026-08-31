@@ -34,6 +34,7 @@ test('publishes only the approved CSS subpath exports', async () => {
     './input.css': './dist/components/input.css',
     './inline.css': './dist/components/inline.css',
     './link.css': './dist/components/link.css',
+    './menu-bar.css': './dist/components/menu-bar.css',
     './menu.css': './dist/components/menu.css',
     './nav-menu.css': './dist/components/nav-menu.css',
     './popover.css': './dist/components/popover.css',
