@@ -177,6 +177,11 @@
       "demoHref": "#demo-data"
     },
     {
+      "name": "CmTableOfContents",
+      "group": "Data display",
+      "demoHref": "#demo-data"
+    },
+    {
       "name": "CmTabs",
       "group": "Navigation and disclosure",
       "demoHref": "#demo-navigation"

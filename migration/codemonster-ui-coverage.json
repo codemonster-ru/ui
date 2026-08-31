@@ -1392,18 +1392,23 @@
       }
     },
     "VfTableOfContents": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmTableOfContents",
+        "contract": "table-of-contents",
+        "razorTag": "table-of-contents",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Native navigation with CmLink and CmStack supersedes the static authored outline; heading discovery, active-location observation, smooth scrolling, offsets, and document synchronization remain application-owned without shared Razor demand",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Anchor navigation that works without JavaScript, nested by heading level, with the active heading marked by aria-current. Smooth scrolling and a header offset are an enhancement the shared core computes; the click is left to the browser when neither is asked for.",
           "evidence": [
-            "docs/core/components/table-of-contents/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "contracts/link/contract.md",
-            "contracts/stack/contract.md"
+            "contracts/table-of-contents/manifest.json",
+            "contracts/table-of-contents/cases/default.html",
+            "docs/components/navigation.md"
           ]
         }
       ]

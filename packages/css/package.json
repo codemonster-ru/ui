@@ -63,6 +63,7 @@
     "./stack.css": "./dist/components/stack.css",
     "./styles.css": "./dist/styles.css",
     "./switch.css": "./dist/components/switch.css",
+    "./table-of-contents.css": "./dist/components/table-of-contents.css",
     "./table.css": "./dist/components/table.css",
     "./tabs.css": "./dist/components/tabs.css",
     "./tag.css": "./dist/components/tag.css",
