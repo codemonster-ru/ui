@@ -47,8 +47,13 @@ export const codeMonsterUiPackageSizeBudgets = Object.freeze({
   // The shared core lives here, so this package carries logic the adapters used to duplicate.
   // Measured 31.45 KiB before that move and 33.29 KiB after, while ui-vue fell from 24.82 to
   // 24.16: one implementation costs about 1.2 KiB more than two specialised ones, which is the
-  // deliberate trade. Headroom is kept deliberately tight so the next growth is a decision too.
-  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 36 * 1024 },
+  // deliberate trade.
+  //
+  // The tight headroom then did its job: carrying ColumnChooser and TableOfContents across added
+  // two core modules and pushed this to 36.06 KiB, which failed the 36 KiB limit rather than
+  // passing unnoticed. Three components remain on the list at roughly half a KiB of rules each, so
+  // 40 KiB covers them with the same narrow margin instead of a blank cheque.
+  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 40 * 1024 },
   '@codemonster-ru/ui-css': { cssGzip: 48 * 1024, cssRaw: 320 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-utilities': { cssGzip: 32 * 1024, cssRaw: 256 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-vue': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "name": "TableOfContents",
+  "slug": "table-of-contents",
+  "razorTag": "cm-table-of-contents",
+  "description": "A nav of anchor links to headings on the page. It works without JavaScript through native anchor navigation; smooth scrolling and a header offset are an enhancement layered over that.",
+  "props": {
+    "items": {
+      "type": "collection",
+      "required": true,
+      "valueContract": "table-of-contents-item"
+    },
+    "activeId": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "The heading currently in view, marked with aria-current."
+    },
+    "ariaLabel": { "type": "string", "required": false, "default": "Table of contents" },
+    "smooth": { "type": "boolean", "required": false, "default": false },
+    "scrollOffset": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Pixels to leave above the heading, for a sticky header."
+    },
+    "variant": { "type": "enum", "required": false, "default": "default", "values": ["default", "pills"] }
+  },
+  "slots": {},
+  "events": {},
+  "states": ["default", "active"]
+}

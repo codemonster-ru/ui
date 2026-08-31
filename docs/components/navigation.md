@@ -105,3 +105,33 @@ page load.
 - Dropdown is a disclosure, not a modal: it does not trap focus, teleport content, or calculate
   floating coordinates.
 - Do not initialize the shared runtime over Vue-owned navigation components.
+
+## Table of contents
+
+`CmTableOfContents` is a nav of anchor links to headings on the page. It needs no JavaScript: a
+browser follows `#id` on its own, so the list works from server-rendered markup alone.
+
+`smooth` and `scrollOffset` are the enhancement layered over that, for pages with a sticky header
+that would otherwise cover the heading being jumped to. Without either, the click is left alone
+rather than intercepted and reimplemented. Nesting comes from each item's `level`, clamped to the
+six levels that exist.
+
+```vue
+<script setup lang="ts">
+import { CmTableOfContents } from '@codemonster-ru/ui-vue';
+
+const items = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'install', label: 'Installation', level: 2 },
+  { id: 'usage', label: 'Usage', level: 2 },
+];
+</script>
+
+<template>
+  <CmTableOfContents :items="items" active-id="install" :scroll-offset="64" smooth />
+</template>
+```
+
+```php
+<cm-table-of-contents :items="$items" active-id="install" />
+```

@@ -1,0 +1,39 @@
+/*
+ * Indentation comes from --cm-toc-level, which each item carries. Keeping it in a custom property
+ * rather than a modifier class means six heading levels cost one rule instead of six.
+ */
+.cm-table-of-contents__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cm-table-of-contents__item {
+  padding-inline-start: calc((var(--cm-toc-level, 1) - 1) * var(--cm-space-3));
+}
+
+.cm-table-of-contents__link {
+  display: block;
+  padding: var(--cm-space-1) var(--cm-space-2);
+  border-radius: var(--cm-radius-control-tight);
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-md);
+  line-height: var(--cm-line-height-tight);
+  text-decoration: none;
+}
+
+.cm-table-of-contents__link:hover {
+  color: var(--cm-color-text-primary);
+}
+
+.cm-table-of-contents__link--active {
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+  font-weight: var(--cm-font-weight-medium);
+}
+
+.cm-table-of-contents--pills .cm-table-of-contents__link--active {
+  background: var(--cm-color-interactive-primary-subtle-background);
+}

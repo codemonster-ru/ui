@@ -246,8 +246,8 @@
     },
     {
       "source": "VfTableOfContents",
-      "action": "manual",
-      "targets": ["CmLink", "CmStack"]
+      "action": "replace",
+      "targets": ["CmTableOfContents"]
     },
     {
       "source": "VfThemeSwitch",

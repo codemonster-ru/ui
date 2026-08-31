@@ -6,6 +6,7 @@ import {
   CmAlert as VfAlert,
   CmBadge as VfBadge,
   CmColumnChooser,
+  CmTableOfContents,
   CmTag,
   CmBreadcrumbs as VfBreadcrumbs,
   CmButton,
@@ -1700,6 +1701,13 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · default</p>
+                  <CmTableOfContents
+                    :items="[
+                      { id: 'core-data-table-default', label: 'Team roster' },
+                      { id: 'core-data-table-columns', label: 'Column chooser', level: 2 },
+                    ]"
+                    active-id="core-data-table-default"
+                  />
                   <CmColumnChooser
                     id="core-data-table-columns"
                     v-model:visible-column-keys="coreVisibleColumnKeys"
