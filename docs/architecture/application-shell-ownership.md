@@ -1,8 +1,14 @@
 # Application shell ownership
 
-Status: Accepted  
+Status: Superseded by [layout line ownership](./layout-line-ownership.md)  
 Date: 2026-08-13  
+Superseded: 2026-08-31  
 Roadmap item: `CMUI-146`
+
+> This decision held while no consumer needed the same shell twice. That changed: the shells are
+> wanted across projects, and re-reading the code found part of the reasoning below to be wrong
+> about `VfAdminLayout` and `VfSetupLayout`. See the replacement for what is carried forward, what
+> is dropped, and what is still deferred.
 
 ## Decision
 
