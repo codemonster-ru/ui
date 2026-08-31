@@ -88,6 +88,12 @@ export { default as CmTable } from './components/table/CmTable.vue';
 export type { CmTableDensity, CmTableProps } from './components/table/table.types';
 export { default as CmTag } from './components/tag/CmTag.vue';
 export type { CmTagProps, CmTagTone } from './components/tag/tag.types';
+export { default as CmTableOfContents } from './components/table-of-contents/CmTableOfContents.vue';
+export type {
+  CmTableOfContentsItem,
+  CmTableOfContentsProps,
+  CmTableOfContentsVariant,
+} from './components/table-of-contents/table-of-contents.types';
 export { default as CmTabs } from './components/tabs/CmTabs.vue';
 export type { CmTabItem, CmTabsProps } from './components/tabs/tabs.types';
 export { default as CmTextarea } from './components/textarea/CmTextarea.vue';

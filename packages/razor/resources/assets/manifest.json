@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "64a0b83bbf7e8edbba9cda4df6b202f25663531caec85cced76b9956255fac42",
+      "sha256": "2387808df7b6e74c2dd812e54b3f8a71fa53ddc06bf099d171e9629fb01df08e",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -459,6 +459,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./textarea.css"
+      }
+    },
+    "css:components/table-of-contents.css": {
+      "path": "css/css/components/table-of-contents.css",
+      "mediaType": "text/css",
+      "sha256": "a1f0d843b735ee596ec46e41b77bc701d206faa57b12d8c0267db41b5aac57b5",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./table-of-contents.css"
       }
     },
     "css:components/tabs.css": {
