@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "fd8513621204cf5032bc4c914587df3d1e59f5f9d040a1ec95042ef273067c25",
+      "sha256": "5e1728e9f0e7e54ac5dac704504fb6a60938b8958c1e9f22945aa575a2e30a21",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -459,6 +459,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./tabs.css"
+      }
+    },
+    "css:components/tag.css": {
+      "path": "css/css/components/tag.css",
+      "mediaType": "text/css",
+      "sha256": "22b09bc3cca880523f38b66a03f9a8886d6df91e2d50e2ba93a6f65cad80102e",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./tag.css"
       }
     },
     "css:components/tooltip.css": {

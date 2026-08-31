@@ -41,6 +41,7 @@ use Codemonster\Ui\Components\CmStack;
 use Codemonster\Ui\Components\CmSwitch;
 use Codemonster\Ui\Components\CmTable;
 use Codemonster\Ui\Components\CmTabs;
+use Codemonster\Ui\Components\CmTag;
 use Codemonster\Ui\Components\CmTextarea;
 use Codemonster\Ui\Components\CmTooltip;
 use Codemonster\View\EngineInterface;
@@ -101,6 +102,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'switch' => new CmSwitch($this->views),
             'table' => new CmTable($this->views),
             'tabs' => new CmTabs($this->views),
+            'tag' => new CmTag($this->views),
             'textarea' => new CmTextarea($this->views),
             'tooltip' => new CmTooltip($this->views),
         ];

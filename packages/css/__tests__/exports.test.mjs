@@ -46,6 +46,7 @@ test('publishes only the approved CSS subpath exports', async () => {
     './table.css': './dist/components/table.css',
     './textarea.css': './dist/components/textarea.css',
     './tabs.css': './dist/components/tabs.css',
+    './tag.css': './dist/components/tag.css',
     './tooltip.css': './dist/components/tooltip.css',
     './styles.css': './dist/styles.css',
   });

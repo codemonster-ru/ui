@@ -256,8 +256,8 @@
     },
     {
       "source": "VfTag",
-      "action": "manual",
-      "targets": ["CmBadge"]
+      "action": "replace",
+      "targets": ["CmTag"]
     },
     {
       "source": "VfTabs",
