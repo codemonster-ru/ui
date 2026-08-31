@@ -65,4 +65,13 @@ export {
 export type { CmTableOfContentsCoreItem } from './table-of-contents.js';
 export type { CmSelectAction, CmSelectFocusTarget } from './select.js';
 export { nextTabsValue, resolveTabsValue } from './tabs.js';
+export {
+  collectAncestorValues,
+  collectBranchValues,
+  expandToActive,
+  findSiblings,
+  isBranch,
+  toggleBranchValue,
+} from './tree.js';
+export type { CmTreeCoreItem } from './tree.js';
 export type { CmTabsCoreItem, CmTabsDirection } from './tabs.js';
