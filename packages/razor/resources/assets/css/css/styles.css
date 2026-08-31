@@ -3,6 +3,7 @@
 @import './primitives/surface.css';
 @import './components/accordion.css';
 @import './components/admin-layout.css';
+@import './components/admin-shell.css';
 @import './components/alert.css';
 @import './components/avatar.css';
 @import './components/badge.css';
@@ -35,6 +36,7 @@
 @import './components/radio.css';
 @import './components/select.css';
 @import './components/section.css';
+@import './components/setup-layout.css';
 @import './components/skeleton.css';
 @import './components/stack.css';
 @import './components/stepper.css';

@@ -4,6 +4,7 @@ import {
   cmShellAttributes,
   resolveMobileToggleLabel,
   shellEscapeState,
+  shouldEnterAdvance,
   toggleShellMobileSidebar,
   toggleShellSidebar,
 } from '../dist/core/index.js';
@@ -42,4 +43,24 @@ test('toggling one part of the state leaves the other alone', () => {
     mobileSidebarOpen: true,
     sidebarCollapsed: false,
   });
+});
+
+test('enter advances from a single-line text field', () => {
+  assert.equal(shouldEnterAdvance({ tagName: 'INPUT', inputType: 'text' }), true);
+  assert.equal(shouldEnterAdvance({ tagName: 'INPUT', inputType: 'email' }), true);
+  assert.equal(shouldEnterAdvance({ tagName: 'DIV' }), true);
+  assert.equal(shouldEnterAdvance({}), true);
+});
+
+test('enter belongs to the field where the field uses it', () => {
+  assert.equal(shouldEnterAdvance({ tagName: 'TEXTAREA' }), false);
+  assert.equal(shouldEnterAdvance({ tagName: 'SELECT' }), false);
+  assert.equal(shouldEnterAdvance({ editable: true }), false);
+  assert.equal(shouldEnterAdvance({ tagName: 'INPUT', inputType: 'checkbox' }), false);
+  assert.equal(shouldEnterAdvance({ tagName: 'INPUT', inputType: 'radio' }), false);
+});
+
+test('enter is left to a control that is already about to act on it', () => {
+  assert.equal(shouldEnterAdvance({ interactive: true }), false);
+  assert.equal(shouldEnterAdvance({ interactive: true, tagName: 'INPUT', inputType: 'text' }), false);
 });

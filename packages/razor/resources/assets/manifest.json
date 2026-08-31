@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "ea5af19f532b237744d931456064f90ec8974e74f36d1f1e146a4c4280cdcb56",
+      "sha256": "c265cd309a1bce8cb5b977eee00e35af3eb0367d155bcd5ccc161bc4002a47a6",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -119,6 +119,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./admin-layout.css"
+      }
+    },
+    "css:components/admin-shell.css": {
+      "path": "css/css/components/admin-shell.css",
+      "mediaType": "text/css",
+      "sha256": "59a0d6c65ad3a9c2194413e516b6d4019e1e819f04f0e429e5915917778da906",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./admin-shell.css"
       }
     },
     "css:components/alert.css": {
@@ -439,6 +449,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./section.css"
+      }
+    },
+    "css:components/setup-layout.css": {
+      "path": "css/css/components/setup-layout.css",
+      "mediaType": "text/css",
+      "sha256": "b237f6f9684cdb47ca6bb85f992ea81ae3aafe725cada03e969fc51a782ef548",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./setup-layout.css"
       }
     },
     "css:components/skeleton.css": {

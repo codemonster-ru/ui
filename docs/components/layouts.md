@@ -54,3 +54,40 @@ const items = [{ value: 'dashboard', label: 'Dashboard', href: '/dashboard' }];
   Dashboard content
 </cm-admin-layout>
 ```
+
+## AdminShell
+
+`CmAdminShell` is a fixed administrative frame: a topbar above a sidebar and workspace. It holds no
+state at all, so it needs neither attributes nor a controller — it is the frame, and everything that
+changes lives in what fills it.
+
+```vue
+<template>
+  <CmAdminShell>
+    <template #brand>Acme</template>
+    <template #sidebar>Navigation</template>
+    Workspace
+  </CmAdminShell>
+</template>
+```
+
+## SetupLayout
+
+`CmSetupLayout` is a centred panel for one step of a setup or onboarding flow, with a heading, body
+and actions. Enter advances and Escape goes back.
+
+The Enter rule is worth knowing, because a wizard that steals the key is worse than one that never
+offered the shortcut. Enter advances from a single-line text field or from ordinary content, and is
+left alone in a textarea, a select, a contenteditable region, and on a button or link that is
+already about to act on it. That rule lives in the shared core, so both adapters agree on where the
+shortcut applies.
+
+```vue
+<template>
+  <CmSetupLayout title="Create your workspace" description="This takes a minute." @next="submit" @back="cancel">
+    <CmField id="name" label="Workspace name"><CmInput id="name" /></CmField>
+    <template #actions><CmButton @click="submit">Continue</CmButton></template>
+  </CmSetupLayout>
+</template>
+```
+

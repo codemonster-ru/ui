@@ -36,6 +36,9 @@ final class CmAdminLayout implements ComponentInterface
         }
 
         $mobileOpen = $props->bool('mobileSidebarOpen');
+        $sidebarCollapsed = $props->bool('sidebarCollapsed');
+        $openLabel = $props->string('mobileSidebarOpenLabel', 'Open navigation');
+        $closeLabel = $props->string('mobileSidebarCloseLabel', 'Close navigation');
         $attributes = new AttributeBag($props->remaining());
         $classes = (new ClassBuilder())
             ->add('cm-admin-layout')
@@ -49,11 +52,9 @@ final class CmAdminLayout implements ComponentInterface
         return RenderedHtml::fromTrustedString(rtrim($this->views->render('layouts.admin-layout', [
             'id' => $id,
             'classes' => $classes,
-            'sidebarCollapsed' => $props->bool('sidebarCollapsed') ? 'true' : 'false',
+            'sidebarCollapsed' => $sidebarCollapsed ? 'true' : 'false',
             'mobileSidebarOpen' => $mobileOpen ? 'true' : 'false',
-            'toggleLabel' => $mobileOpen
-                ? $props->string('mobileSidebarCloseLabel', 'Close navigation')
-                : $props->string('mobileSidebarOpenLabel', 'Open navigation'),
+            'toggleLabel' => $mobileOpen ? $closeLabel : $openLabel,
             'hasAside' => $hasAside,
             'brand' => $hasBrand ? $context->slot('brand') : null,
             'aside' => $hasAsideContent ? $context->slot('aside') : null,
