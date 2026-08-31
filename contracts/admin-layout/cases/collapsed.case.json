@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "admin-layout-collapsed",
+  "description": "Collapsed sidebar with the mobile drawer open, so every state prop is exercised.",
+  "props": {
+    "id": "workspace",
+    "sidebarCollapsed": true,
+    "mobileSidebarOpen": true,
+    "mobileSidebarOpenLabel": "Show navigation",
+    "mobileSidebarCloseLabel": "Hide navigation"
+  },
+  "slots": { "default": "Dashboard", "aside": "Navigation" }
+}

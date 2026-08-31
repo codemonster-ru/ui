@@ -57,3 +57,55 @@ export function toggleShellSidebar(state: CmShellState): CmShellState {
 export function toggleShellMobileSidebar(state: CmShellState): CmShellState {
   return { ...state, mobileSidebarOpen: !state.mobileSidebarOpen };
 }
+
+/** What a setup layout needs to know about whatever currently has focus. */
+export interface CmSetupFocusTarget {
+  /** The focused element is inside a button or link, or carries one of their roles. */
+  readonly interactive?: boolean;
+  /** The focused element is editable text, including contenteditable. */
+  readonly editable?: boolean;
+  /** A native input's type, when the focus is on one. */
+  readonly inputType?: string;
+  readonly tagName?: string;
+}
+
+/** Native input types that hold text, where Enter belongs to the field rather than the workflow. */
+const textInputTypes = new Set([
+  'date',
+  'datetime-local',
+  'email',
+  'month',
+  'number',
+  'password',
+  'search',
+  'tel',
+  'text',
+  'time',
+  'url',
+  'week',
+]);
+
+/**
+ * Reports whether Enter should advance a setup workflow.
+ *
+ * A wizard turning Enter into "next" is convenient until it steals the key from something that
+ * needed it. A textarea, a select and a contenteditable region all use Enter themselves; a button
+ * or link is already about to act on it. A single-line text field is the case where advancing is
+ * what a person means, which is why the type matters rather than just the tag.
+ */
+export function shouldEnterAdvance(target: CmSetupFocusTarget): boolean {
+  if (target.editable === true || target.interactive === true) {
+    return false;
+  }
+
+  const tag = target.tagName?.toUpperCase();
+  if (tag === 'TEXTAREA' || tag === 'SELECT') {
+    return false;
+  }
+
+  if (tag === 'INPUT') {
+    return textInputTypes.has((target.inputType ?? 'text').toLowerCase());
+  }
+
+  return true;
+}

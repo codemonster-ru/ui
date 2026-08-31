@@ -58,10 +58,11 @@ export {
   cmShellAttributes,
   resolveMobileToggleLabel,
   shellEscapeState,
+  shouldEnterAdvance,
   toggleShellMobileSidebar,
   toggleShellSidebar,
 } from './shell.js';
-export type { CmShellState } from './shell.js';
+export type { CmSetupFocusTarget, CmShellState } from './shell.js';
 export { selectClosedKeyAction, selectOpenKeyAction } from './select.js';
 export { nextStepperValue, resolveStepperProgress, resolveStepperValue, resolveStepState } from './stepper.js';
 export type { CmStepperCoreItem, CmStepperStepState } from './stepper.js';

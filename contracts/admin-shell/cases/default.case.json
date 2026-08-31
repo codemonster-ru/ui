@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "admin-shell-default",
+  "description": "Topbar, sidebar and workspace.",
+  "props": {},
+  "slots": { "default": "Workspace", "brand": "Acme", "sidebar": "Navigation" }
+}

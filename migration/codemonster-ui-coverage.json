@@ -1822,21 +1822,24 @@
       ]
     },
     "VfAdminShell": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmAdminShell",
+        "contract": "admin-shell",
+        "razorTag": "admin-shell",
+        "documentation": "docs/components/layouts.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Global topbar, brand, navigation, workspace, and footer structure encode product information architecture",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Topbar, sidebar, workspace and footer regions. The layout holds no state, so it needs neither attributes nor a controller and both adapters render the same frame.",
           "evidence": [
-            "docs/layouts/components/admin-shell/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/container/contract.md",
-            "contracts/grid/contract.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "docs/architecture/application-shell-ownership.md"
-          ],
-          "roadmapItem": "CMUI-188"
+            "contracts/admin-shell/manifest.json",
+            "contracts/admin-shell/cases/default.html",
+            "docs/components/layouts.md"
+          ]
         }
       ]
     },
@@ -1924,22 +1927,24 @@
       ]
     },
     "VfSetupLayout": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmSetupLayout",
+        "contract": "setup-layout",
+        "razorTag": "setup-layout",
+        "documentation": "docs/components/layouts.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Enter/Escape workflow commands, validation sequencing, step navigation, and responsive regions belong to the setup application",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Centred step panel with heading, body and actions. Enter advances and Escape goes back, and the rule for when Enter belongs to the focused control instead lives in the shared core so both adapters agree.",
           "evidence": [
-            "docs/layouts/components/setup-layout/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/container/contract.md",
-            "contracts/grid/contract.md",
-            "contracts/stack/contract.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "docs/architecture/application-shell-ownership.md"
-          ],
-          "roadmapItem": "CMUI-188"
+            "contracts/setup-layout/manifest.json",
+            "contracts/setup-layout/cases/default.html",
+            "docs/components/layouts.md"
+          ]
         }
       ]
     },

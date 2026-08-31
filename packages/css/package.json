@@ -28,6 +28,7 @@
   "exports": {
     "./accordion.css": "./dist/components/accordion.css",
     "./admin-layout.css": "./dist/components/admin-layout.css",
+    "./admin-shell.css": "./dist/components/admin-shell.css",
     "./alert.css": "./dist/components/alert.css",
     "./avatar.css": "./dist/components/avatar.css",
     "./badge.css": "./dist/components/badge.css",
@@ -62,6 +63,7 @@
     "./radio.css": "./dist/components/radio.css",
     "./section.css": "./dist/components/section.css",
     "./select.css": "./dist/components/select.css",
+    "./setup-layout.css": "./dist/components/setup-layout.css",
     "./skeleton.css": "./dist/components/skeleton.css",
     "./stack.css": "./dist/components/stack.css",
     "./stepper.css": "./dist/components/stepper.css",
