@@ -5,6 +5,7 @@ import {
   CmAvatar as VfAvatar,
   CmAlert as VfAlert,
   CmBadge as VfBadge,
+  CmTag,
   CmBreadcrumbs as VfBreadcrumbs,
   CmButton,
   CmCard as VfCard,
@@ -1462,6 +1463,8 @@ const tabContent = computed<Record<string, string>>(() => ({
                       <div class="demo-inline">
                         <VfBadge tone="success">Stable</VfBadge>
                         <VfBadge tone="primary">Core</VfBadge>
+                        <CmTag tone="primary">Platform</CmTag>
+                        <CmTag>Internal</CmTag>
                       </div>
                     </template>
                   </VfCard>

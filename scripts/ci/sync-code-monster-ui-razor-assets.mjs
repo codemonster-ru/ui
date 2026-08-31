@@ -52,6 +52,7 @@ const sources = [
   { packageDirectory: 'css', path: 'components/table.css', export: './table.css' },
   { packageDirectory: 'css', path: 'components/textarea.css', export: './textarea.css' },
   { packageDirectory: 'css', path: 'components/tabs.css', export: './tabs.css' },
+  { packageDirectory: 'css', path: 'components/tag.css', export: './tag.css' },
   { packageDirectory: 'css', path: 'components/tooltip.css', export: './tooltip.css' },
 ];
 

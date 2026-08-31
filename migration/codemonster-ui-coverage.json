@@ -1441,28 +1441,24 @@
       ]
     },
     "VfTag": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmTag",
+        "contract": "tag",
+        "razorTag": "tag",
+        "documentation": "docs/components/display.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "superseded",
-          "notes": "CmBadge supersedes the non-interactive status/category semantics and tones; `warn` migrates to `warning`, while a distinct outlined presentation has no product demand",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Outlined label with the eight shared tones, rendered from one canonical DOM by the Vue and Annabel Razor adapters. Badge remains the filled counterpart.",
           "evidence": [
-            "docs/core/components/tag/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/badge/contract.md",
-            "docs/verification/consumer-usage-inventory.md"
-          ]
-        },
-        {
-          "id": "remaining-migration-outcome",
-          "status": "superseded",
-          "notes": "The distinct Tag component is rejected as a visual-only duplicate; migrate manually to CmBadge",
-          "evidence": [
-            "docs/core/components/tag/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/badge/contract.md",
-            "docs/verification/consumer-usage-inventory.md"
+            "contracts/tag/manifest.json",
+            "contracts/tag/cases/default.html",
+            "contracts/tag/cases/primary.html",
+            "docs/components/display.md"
           ]
         }
       ]
