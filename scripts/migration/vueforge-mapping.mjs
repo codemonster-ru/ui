@@ -55,7 +55,9 @@ export function validateVueForgeMapping(mapping, baseline, legacyComponents, tar
   }
   for (const entry of componentMappings) {
     if (!legacyComponents.has(entry.source)) issues.push(`Mapping references unknown component: ${entry.source}.`);
-    if (!['replace', 'compose', 'manual'].includes(entry.action)) {
+    // `drop` says the concept is not carried forward at all, which `manual` cannot express:
+    // manual means the application takes it over, and these have no successor to take over.
+    if (!['replace', 'compose', 'manual', 'drop'].includes(entry.action)) {
       issues.push(`Component ${entry.source} has unknown action ${entry.action}.`);
     }
     if (entry.action === 'replace' && entry.targets.length !== 1) {
