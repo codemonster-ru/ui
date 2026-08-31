@@ -61,6 +61,7 @@
     "./select.css": "./dist/components/select.css",
     "./skeleton.css": "./dist/components/skeleton.css",
     "./stack.css": "./dist/components/stack.css",
+    "./stepper.css": "./dist/components/stepper.css",
     "./styles.css": "./dist/styles.css",
     "./switch.css": "./dist/components/switch.css",
     "./table-of-contents.css": "./dist/components/table-of-contents.css",

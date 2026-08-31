@@ -6,6 +6,7 @@ import {
   CmAlert as VfAlert,
   CmBadge as VfBadge,
   CmColumnChooser,
+  CmStepper,
   CmTableOfContents,
   CmTag,
   CmBreadcrumbs as VfBreadcrumbs,
@@ -1701,6 +1702,14 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · default</p>
+                  <CmStepper
+                    :items="[
+                      { value: 'account', label: 'Account' },
+                      { value: 'billing', label: 'Billing', description: 'Payment details' },
+                      { value: 'review', label: 'Review' },
+                    ]"
+                    value="billing"
+                  />
                   <CmTableOfContents
                     :items="[
                       { id: 'core-data-table-default', label: 'Team roster' },

@@ -1302,16 +1302,23 @@
       ]
     },
     "VfStepper": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmStepper",
+        "contract": "stepper",
+        "razorTag": "stepper",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "A semantic ordered list supersedes static step progress; current-step transitions, disabled policy, validation, routing, and keyboard workflow remain application-owned without shared Razor demand",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Complete, current, upcoming and disabled step states, horizontal and vertical orientation, and roving arrow navigation taken from the shared core rather than written again. Progress is a factor the rail renders from, so a filled rail is one rule instead of a class per step.",
           "evidence": [
-            "docs/core/components/stepper/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md"
+            "contracts/stepper/manifest.json",
+            "contracts/stepper/cases/default.html",
+            "docs/components/navigation.md"
           ]
         }
       ]

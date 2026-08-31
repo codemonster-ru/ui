@@ -49,6 +49,7 @@ const sources = [
   { packageDirectory: 'css', path: 'components/section.css', export: './section.css' },
   { packageDirectory: 'css', path: 'components/skeleton.css', export: './skeleton.css' },
   { packageDirectory: 'css', path: 'components/stack.css', export: './stack.css' },
+  { packageDirectory: 'css', path: 'components/stepper.css', export: './stepper.css' },
   { packageDirectory: 'css', path: 'components/switch.css', export: './switch.css' },
   { packageDirectory: 'css', path: 'components/table.css', export: './table.css' },
   { packageDirectory: 'css', path: 'components/textarea.css', export: './textarea.css' },

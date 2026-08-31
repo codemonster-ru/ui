@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "2387808df7b6e74c2dd812e54b3f8a71fa53ddc06bf099d171e9629fb01df08e",
+      "sha256": "d338faa2ae93a2b40f21aa3dde4a3865b210fb911c3089480a45b74ebe650920",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -429,6 +429,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./stack.css"
+      }
+    },
+    "css:components/stepper.css": {
+      "path": "css/css/components/stepper.css",
+      "mediaType": "text/css",
+      "sha256": "db30ece4050612e250c0dbb21a3501fcfb9172cdd39e5ea5e9ef9262c1bd7626",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./stepper.css"
       }
     },
     "css:components/switch.css": {

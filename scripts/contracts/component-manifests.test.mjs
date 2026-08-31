@@ -10,7 +10,7 @@ const schema = JSON.parse(readFileSync(resolve(contractsDirectory, 'schema/compo
 test('validates every component manifest against the published schema', () => {
   const manifests = collectComponentManifests(contractsDirectory);
 
-  assert.equal(manifests.length, 40);
+  assert.equal(manifests.length, 41);
   assert.deepEqual(validateComponentManifests(schema, manifests), []);
 });
 
