@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { CmAdminLayout } from '@codemonster-ru/ui-layouts';
 import {
   CmAccordion,
   CmAvatar as VfAvatar,
@@ -1704,6 +1705,12 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · default</p>
+                  <CmAdminLayout id="core-admin-layout">
+                    <template #brand>CodeMonster</template>
+                    <template #aside>Navigation</template>
+                    <template #header>Workspace</template>
+                    Layout content
+                  </CmAdminLayout>
                   <CmMenuBar
                     :items="[
                       { value: 'file', label: 'File', children: [{ value: 'new', label: 'New' }] },

@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "9b4f68aecd78d20dfafa8b65cbc0ab91ac66d7cab33504251c4315285db9a620",
+      "sha256": "ea5af19f532b237744d931456064f90ec8974e74f36d1f1e146a4c4280cdcb56",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -109,6 +109,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./accordion.css"
+      }
+    },
+    "css:components/admin-layout.css": {
+      "path": "css/css/components/admin-layout.css",
+      "mediaType": "text/css",
+      "sha256": "61f22962b69c776bc894a43916a37337ca2828f14e3f3d71dfa04c281c73f819",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./admin-layout.css"
       }
     },
     "css:components/alert.css": {

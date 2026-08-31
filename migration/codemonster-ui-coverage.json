@@ -1794,22 +1794,30 @@
       ]
     },
     "VfAdminLayout": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmAdminLayout",
+        "contract": "admin-layout",
+        "razorTag": "admin-layout",
+        "documentation": "docs/components/layouts.md",
+        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Routing, authorization, collapse/preview behavior, mobile drawer state, focus restoration, and commands are admin-application policy",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Collapsible sidebar, header, content and footer regions, with a mobile drawer below 48rem. State is rendered as data-cm-* attributes on the root so both adapters carry it and CSS reads it before JavaScript runs.",
           "evidence": [
-            "docs/layouts/components/admin-layout/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/drawer/contract.md",
-            "contracts/menu/contract.md",
-            "contracts/grid/contract.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "docs/architecture/application-shell-ownership.md"
-          ],
-          "roadmapItem": "CMUI-188"
+            "contracts/admin-layout/manifest.json",
+            "contracts/admin-layout/cases/default.html",
+            "docs/components/layouts.md"
+          ]
+        },
+        {
+          "id": "migration-outcome",
+          "status": "supported",
+          "notes": "Slots no longer receive a scope object. VfAdminLayout handed each slot the shell state plus five control functions, which is what made it unportable; state is now an attribute the markup carries and controls are marked with data attributes a controller listens for.",
+          "evidence": ["docs/components/layouts.md", "docs/architecture/layout-line-ownership.md"]
         }
       ]
     },

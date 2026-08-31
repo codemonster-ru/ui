@@ -17,6 +17,7 @@ const sources = [
   { packageDirectory: 'css', path: 'primitives/control.css', export: './dist/primitives/control.css' },
   { packageDirectory: 'css', path: 'primitives/surface.css', export: './dist/primitives/surface.css' },
   { packageDirectory: 'css', path: 'components/accordion.css', export: './accordion.css' },
+  { packageDirectory: 'css', path: 'components/admin-layout.css', export: './admin-layout.css' },
   { packageDirectory: 'css', path: 'components/alert.css', export: './alert.css' },
   { packageDirectory: 'css', path: 'components/avatar.css', export: './avatar.css' },
   { packageDirectory: 'css', path: 'components/badge.css', export: './badge.css' },
