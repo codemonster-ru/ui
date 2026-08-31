@@ -31,6 +31,7 @@ use Codemonster\Ui\Components\CmInput;
 use Codemonster\Ui\Components\CmInline;
 use Codemonster\Ui\Components\CmLink;
 use Codemonster\Ui\Components\CmMenu;
+use Codemonster\Ui\Components\CmMenuBar;
 use Codemonster\Ui\Components\CmNavMenu;
 use Codemonster\Ui\Components\CmPopover;
 use Codemonster\Ui\Components\CmProgressBar;
@@ -96,6 +97,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'inline' => new CmInline($this->views),
             'link' => new CmLink($this->views),
             'menu' => new CmMenu($this->views),
+            'menu-bar' => new CmMenuBar($this->views),
             'nav-menu' => new CmNavMenu($this->views),
             'popover' => new CmPopover($this->views),
             'progress-bar' => new CmProgressBar($this->views),

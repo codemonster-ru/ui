@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-bar-default",
+  "description": "One menu open on the bar, with a nested branch inside it.",
+  "props": {
+    "items": [
+      {
+        "value": "file",
+        "label": "File",
+        "children": [
+          { "value": "new", "label": "New" },
+          { "value": "recent", "label": "Recent", "children": [{ "value": "report", "label": "Report" }] }
+        ]
+      },
+      { "value": "help", "label": "Help", "href": "/help" }
+    ],
+    "openPath": ["file"]
+  },
+  "slots": {}
+}
