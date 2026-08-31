@@ -9,6 +9,10 @@ export type { CmAccordionCoreItem } from './accordion.js';
 export {
   ariaSortFor,
   clampPage,
+  resolveColumnChooserState,
+  resolveVisibleColumns,
+  toggleAllColumns,
+  toggleColumnVisibility,
   formatTemplate,
   nextSortState,
   resolveSelectionState,

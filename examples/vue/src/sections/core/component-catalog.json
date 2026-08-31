@@ -42,6 +42,11 @@
       "demoHref": "#demo-forms"
     },
     {
+      "name": "CmColumnChooser",
+      "group": "Data display",
+      "demoHref": "#demo-data"
+    },
+    {
       "name": "CmCommandPalette",
       "group": "Overlays",
       "demoHref": "#demo-overlays"

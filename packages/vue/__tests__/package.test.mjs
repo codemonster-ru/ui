@@ -13,6 +13,7 @@ test('publishes the Vue component adapter entries', async () => {
     'CmButton',
     'CmCard',
     'CmCheckbox',
+    'CmColumnChooser',
     'CmCommandPalette',
     'CmContainer',
     'CmDataTable',

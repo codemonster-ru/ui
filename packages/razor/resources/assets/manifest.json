@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "5e1728e9f0e7e54ac5dac704504fb6a60938b8958c1e9f22945aa575a2e30a21",
+      "sha256": "64a0b83bbf7e8edbba9cda4df6b202f25663531caec85cced76b9956255fac42",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -189,6 +189,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./command-palette.css"
+      }
+    },
+    "css:components/column-chooser.css": {
+      "path": "css/css/components/column-chooser.css",
+      "mediaType": "text/css",
+      "sha256": "db3f7abddf047e15690f04856722a45a86409ffaaaf55266ef3fc584006e2b67",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./column-chooser.css"
       }
     },
     "css:components/container.css": {

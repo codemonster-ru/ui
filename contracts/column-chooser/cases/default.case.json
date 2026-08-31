@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "column-chooser-default",
+  "description": "Every column shown, with one required column that cannot be cleared.",
+  "props": {
+    "id": "projects-columns",
+    "columns": [
+      { "key": "name", "header": "Name" },
+      { "key": "owner", "header": "Owner" },
+      { "key": "size", "header": "Size" }
+    ],
+    "requiredColumnKeys": ["name"]
+  },
+  "slots": {}
+}

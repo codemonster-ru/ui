@@ -25,6 +25,7 @@ const sources = [
   { packageDirectory: 'css', path: 'components/card.css', export: './card.css' },
   { packageDirectory: 'css', path: 'components/checkbox.css', export: './checkbox.css' },
   { packageDirectory: 'css', path: 'components/command-palette.css', export: './command-palette.css' },
+  { packageDirectory: 'css', path: 'components/column-chooser.css', export: './column-chooser.css' },
   { packageDirectory: 'css', path: 'components/container.css', export: './container.css' },
   { packageDirectory: 'css', path: 'components/data-table.css', export: './data-table.css' },
   { packageDirectory: 'css', path: 'components/date-picker.css', export: './date-picker.css' },
