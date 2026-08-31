@@ -38,6 +38,7 @@ test('publishes the Vue component adapter entries', async () => {
     'CmSelect',
     'CmSkeleton',
     'CmStack',
+    'CmStepper',
     'CmSwitch',
     'CmTable',
     'CmTableOfContents',

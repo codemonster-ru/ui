@@ -84,7 +84,7 @@ test('deterministically renames every approved direct replacement without transf
   const replacements = mapping.componentMappings.filter(({ action }) => action === 'replace');
   const layoutComponents = new Set(['VfContainer', 'VfGrid', 'VfInline', 'VfSection', 'VfStack']);
 
-  assert.equal(replacements.length, 40);
+  assert.equal(replacements.length, 41);
 
   for (const replacement of replacements) {
     const packageName = layoutComponents.has(replacement.source) ? 'layouts' : 'core';

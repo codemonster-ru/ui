@@ -53,6 +53,8 @@ export type { CmMenuCoreItem } from './menu.js';
 export { nextRovingIndex } from './roving.js';
 export type { CmRovingDirection, CmRovingOptions, CmRovingOrientation } from './roving.js';
 export { selectClosedKeyAction, selectOpenKeyAction } from './select.js';
+export { nextStepperValue, resolveStepperProgress, resolveStepperValue, resolveStepState } from './stepper.js';
+export type { CmStepperCoreItem, CmStepperStepState } from './stepper.js';
 export {
   needsScrollEnhancement,
   resolveAnchorTargetId,

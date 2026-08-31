@@ -39,6 +39,7 @@ use Codemonster\Ui\Components\CmSelect;
 use Codemonster\Ui\Components\CmSection;
 use Codemonster\Ui\Components\CmSkeleton;
 use Codemonster\Ui\Components\CmStack;
+use Codemonster\Ui\Components\CmStepper;
 use Codemonster\Ui\Components\CmSwitch;
 use Codemonster\Ui\Components\CmTable;
 use Codemonster\Ui\Components\CmTableOfContents;
@@ -102,6 +103,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'section' => new CmSection($this->views),
             'skeleton' => new CmSkeleton($this->views),
             'stack' => new CmStack($this->views),
+            'stepper' => new CmStepper($this->views),
             'switch' => new CmSwitch($this->views),
             'table' => new CmTable($this->views),
             'table-of-contents' => new CmTableOfContents($this->views),

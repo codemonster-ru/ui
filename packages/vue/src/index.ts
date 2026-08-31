@@ -82,6 +82,13 @@ export { default as CmSkeleton } from './components/skeleton/CmSkeleton.vue';
 export type { CmSkeletonProps, CmSkeletonRadius } from './components/skeleton/skeleton.types';
 export { default as CmStack } from './components/stack/CmStack.vue';
 export type { CmStackElement, CmStackProps } from './components/stack/stack.types';
+export { default as CmStepper } from './components/stepper/CmStepper.vue';
+export type {
+  CmStepperContentPosition,
+  CmStepperItem,
+  CmStepperOrientation,
+  CmStepperProps,
+} from './components/stepper/stepper.types';
 export { default as CmSwitch } from './components/switch/CmSwitch.vue';
 export type { CmSwitchProps, CmSwitchSize } from './components/switch/switch.types';
 export { default as CmTable } from './components/table/CmTable.vue';

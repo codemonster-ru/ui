@@ -135,3 +135,35 @@ const items = [
 ```php
 <cm-table-of-contents :items="$items" active-id="install" />
 ```
+
+## Stepper
+
+`CmStepper` walks a person through a sequence. Each step reads as complete, current or upcoming
+relative to the active one, and a disabled step stays disabled wherever it sits — "complete" and
+"upcoming" describe progress through steps that can actually be reached.
+
+Arrow keys move between steps and follow the orientation: left and right when horizontal, up and
+down when vertical. That is the same roving navigation Tabs, Accordion and Menu use, taken from the
+shared core rather than written again here.
+
+```vue
+<script setup lang="ts">
+import { CmStepper } from '@codemonster-ru/ui-vue';
+import { ref } from 'vue';
+
+const items = [
+  { value: 'account', label: 'Account' },
+  { value: 'billing', label: 'Billing', description: 'Payment details' },
+  { value: 'review', label: 'Review' },
+];
+const step = ref('billing');
+</script>
+
+<template>
+  <CmStepper v-model:value="step" :items="items" />
+</template>
+```
+
+```php
+<cm-stepper :items="$items" value="billing" />
+```

@@ -43,6 +43,7 @@ test('publishes only the approved CSS subpath exports', async () => {
     './section.css': './dist/components/section.css',
     './skeleton.css': './dist/components/skeleton.css',
     './stack.css': './dist/components/stack.css',
+    './stepper.css': './dist/components/stepper.css',
     './switch.css': './dist/components/switch.css',
     './table.css': './dist/components/table.css',
     './textarea.css': './dist/components/textarea.css',
