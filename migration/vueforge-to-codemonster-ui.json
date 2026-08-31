@@ -181,8 +181,8 @@
     },
     {
       "source": "VfNavMenu",
-      "action": "manual",
-      "targets": ["CmLink"]
+      "action": "replace",
+      "targets": ["CmNavMenu"]
     },
     {
       "source": "VfPanel",

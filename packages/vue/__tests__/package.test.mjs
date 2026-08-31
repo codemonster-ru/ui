@@ -30,6 +30,7 @@ test('publishes the Vue component adapter entries', async () => {
     'CmInput',
     'CmLink',
     'CmMenu',
+    'CmNavMenu',
     'CmPopover',
     'CmProgressBar',
     'CmProgressSpinner',

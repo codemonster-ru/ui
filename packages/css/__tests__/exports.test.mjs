@@ -35,6 +35,7 @@ test('publishes only the approved CSS subpath exports', async () => {
     './inline.css': './dist/components/inline.css',
     './link.css': './dist/components/link.css',
     './menu.css': './dist/components/menu.css',
+    './nav-menu.css': './dist/components/nav-menu.css',
     './popover.css': './dist/components/popover.css',
     './progress-bar.css': './dist/components/progress-bar.css',
     './progress-spinner.css': './dist/components/progress-spinner.css',

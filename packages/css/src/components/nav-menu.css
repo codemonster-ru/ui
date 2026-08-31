@@ -1,0 +1,128 @@
+/*
+ * A collapsed branch stays in the markup and CSS closes it, which is what lets a page without
+ * JavaScript still show the whole tree and a search find text inside a closed branch. The animation
+ * is grid-template-rows going 0fr to 1fr — no measured heights, so both adapters behave the same.
+ *
+ * The sidebar variant narrows itself with a container query rather than a resize observer. The
+ * VueForge component measured its own width in JavaScript; the container query says the same thing
+ * declaratively and works on a server-rendered page.
+ */
+.cm-nav-menu {
+  container-type: inline-size;
+  container-name: cm-nav-menu;
+}
+
+.cm-nav-menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-0);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cm-nav-menu__item,
+.cm-nav-menu__group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cm-space-2);
+  inline-size: 100%;
+  padding: var(--cm-space-1) var(--cm-space-2);
+  padding-inline-start: calc(var(--cm-space-2) + var(--cm-nav-menu-level, 0) * var(--cm-space-3));
+  border: 0;
+  border-radius: var(--cm-radius-control-tight);
+  background: none;
+  color: var(--cm-color-text-secondary);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+}
+
+.cm-nav-menu__item {
+  cursor: pointer;
+}
+
+.cm-nav-menu__item:hover {
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+}
+
+.cm-nav-menu__item--active {
+  background: var(--cm-color-interactive-primary-subtle-background);
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+}
+
+.cm-nav-menu__item--disabled {
+  color: var(--cm-color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.cm-nav-menu__group-label {
+  color: var(--cm-color-text-tertiary);
+  font-size: var(--cm-font-size-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cm-nav-menu__item-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cm-space-2);
+  min-inline-size: 0;
+}
+
+.cm-nav-menu__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cm-nav-menu__icon {
+  flex: 0 0 auto;
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-inline-end: var(--cm-border-width) solid currentcolor;
+  border-block-end: var(--cm-border-width) solid currentcolor;
+  rotate: 45deg;
+  transition: rotate var(--cm-motion-duration-fast) var(--cm-motion-easing-standard);
+}
+
+.cm-nav-menu__item--expanded .cm-nav-menu__icon {
+  rotate: 225deg;
+}
+
+.cm-nav-menu__collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--cm-motion-duration-fast) var(--cm-motion-easing-standard);
+}
+
+.cm-nav-menu__collapse > .cm-nav-menu__list {
+  overflow: hidden;
+}
+
+.cm-nav-menu__node--expanded > .cm-nav-menu__collapse,
+.cm-nav-menu__node:not(:has(> .cm-nav-menu__item--branch)) > .cm-nav-menu__collapse {
+  grid-template-rows: 1fr;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-nav-menu__collapse,
+  .cm-nav-menu__icon {
+    transition: none;
+  }
+}
+
+@container cm-nav-menu (inline-size < 12rem) {
+  .cm-nav-menu--sidebar .cm-nav-menu__label,
+  .cm-nav-menu--sidebar .cm-nav-menu__group-label {
+    display: none;
+  }
+
+  .cm-nav-menu--sidebar .cm-nav-menu__item,
+  .cm-nav-menu--sidebar .cm-nav-menu__group {
+    justify-content: center;
+    padding-inline: var(--cm-space-1);
+  }
+}

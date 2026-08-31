@@ -167,3 +167,44 @@ const step = ref('billing');
 ```php
 <cm-stepper :items="$items" value="billing" />
 ```
+
+## Nested navigation
+
+`CmNavMenu` renders a nested menu. Branches expand in place, and an uncontrolled menu opens the path
+to the active item itself — an active item nobody can see is the failure worth preventing.
+
+A collapsed branch stays in the markup and CSS closes it. That keeps the whole tree present on a
+page without JavaScript and lets a browser's find-in-page reach text inside a closed branch. The
+open and closed states animate with `grid-template-rows`, so no height is measured and both adapters
+behave identically.
+
+`kind: 'group'` renders a non-interactive section heading whose children are always shown.
+
+Two things differ from the VueForge component this replaces. A leading icon is a per-item slot
+rather than an `icon` prop, matching how Menu takes one, because this package does not depend on an
+icon library. And the sidebar variant narrows itself with a CSS container query instead of a resize
+observer, which means it also narrows correctly on a server-rendered page.
+
+```vue
+<script setup lang="ts">
+import { CmNavMenu } from '@codemonster-ru/ui-vue';
+
+const items = [
+  { value: 'dashboard', label: 'Dashboard', href: '/dashboard' },
+  {
+    value: 'projects',
+    label: 'Projects',
+    children: [{ value: 'active', label: 'Active', href: '/projects/active' }],
+  },
+];
+</script>
+
+<template>
+  <CmNavMenu :items="items" value="active" expand-mode="single" />
+</template>
+```
+
+```php
+<cm-nav-menu :items="$items" value="active" />
+```
+

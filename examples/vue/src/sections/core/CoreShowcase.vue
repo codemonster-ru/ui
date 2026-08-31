@@ -6,6 +6,7 @@ import {
   CmAlert as VfAlert,
   CmBadge as VfBadge,
   CmColumnChooser,
+  CmNavMenu,
   CmStepper,
   CmTableOfContents,
   CmTag,
@@ -1702,6 +1703,17 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · default</p>
+                  <CmNavMenu
+                    :items="[
+                      { value: 'dashboard', label: 'Dashboard', href: '#demo-actions-feedback' },
+                      {
+                        value: 'projects',
+                        label: 'Projects',
+                        children: [{ value: 'active', label: 'Active', href: '#demo-data' }],
+                      },
+                    ]"
+                    value="active"
+                  />
                   <CmStepper
                     :items="[
                       { value: 'account', label: 'Account' },
