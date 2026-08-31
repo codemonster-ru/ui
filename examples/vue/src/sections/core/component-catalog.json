@@ -177,6 +177,11 @@
       "demoHref": "#demo-navigation"
     },
     {
+      "name": "CmTag",
+      "group": "Actions and feedback",
+      "demoHref": "#demo-actions-feedback"
+    },
+    {
       "name": "CmTextarea",
       "group": "Forms",
       "demoHref": "#demo-forms"
