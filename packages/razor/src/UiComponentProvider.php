@@ -14,6 +14,7 @@ use Codemonster\Ui\Components\CmBreadcrumbs;
 use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
 use Codemonster\Ui\Components\CmCheckbox;
+use Codemonster\Ui\Components\CmColumnChooser;
 use Codemonster\Ui\Components\CmCommandPalette;
 use Codemonster\Ui\Components\CmContainer;
 use Codemonster\Ui\Components\CmDataTable;
@@ -75,6 +76,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'button' => new CmButton($this->views),
             'card' => new CmCard($this->views),
             'checkbox' => new CmCheckbox($this->views),
+            'column-chooser' => new CmColumnChooser($this->views),
             'command-palette' => new CmCommandPalette($this->views),
             'container' => new CmContainer($this->views),
             'data-table' => new CmDataTable($this->views),

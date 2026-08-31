@@ -5,6 +5,7 @@ import {
   CmAvatar as VfAvatar,
   CmAlert as VfAlert,
   CmBadge as VfBadge,
+  CmColumnChooser,
   CmTag,
   CmBreadcrumbs as VfBreadcrumbs,
   CmButton,
@@ -887,6 +888,7 @@ function createCoreDataTableRows(
   });
 }
 
+const coreVisibleColumnKeys = ref<string[] | null>(null);
 const coreDataTableColumns = createCoreDataTableColumns(dataTableColumns);
 const coreDataTableRows = createCoreDataTableRows(coreDataTableColumns, dataTableRows);
 const coreSelectableDataTableRows: CoreSelectableDataTableRecipeRow[] = coreDataTableRows.map((row, index) => ({
@@ -1698,6 +1700,12 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · default</p>
+                  <CmColumnChooser
+                    id="core-data-table-columns"
+                    v-model:visible-column-keys="coreVisibleColumnKeys"
+                    :columns="coreDataTableColumns"
+                    :required-column-keys="[coreDataTableColumns[0]?.key ?? '']"
+                  />
                   <CoreDataTableRecipe
                     id="core-data-table-default"
                     caption="Team roster"

@@ -34,6 +34,7 @@
     "./button.css": "./dist/components/button.css",
     "./card.css": "./dist/components/card.css",
     "./checkbox.css": "./dist/components/checkbox.css",
+    "./column-chooser.css": "./dist/components/column-chooser.css",
     "./command-palette.css": "./dist/components/command-palette.css",
     "./container.css": "./dist/components/container.css",
     "./data-table.css": "./dist/components/data-table.css",
