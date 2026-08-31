@@ -167,6 +167,11 @@
       "demoHref": "/layouts"
     },
     {
+      "name": "CmStepper",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-navigation"
+    },
+    {
       "name": "CmSwitch",
       "group": "Forms",
       "demoHref": "#demo-forms"

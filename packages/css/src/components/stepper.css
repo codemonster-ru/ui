@@ -1,0 +1,126 @@
+/*
+ * The rail is drawn per step: each trigger carries its own connector before and after the marker,
+ * so a step knows its own geometry without the list computing offsets. --cm-stepper-progress-factor
+ * lets a filled rail be one gradient rather than a class per step.
+ */
+.cm-stepper__list {
+  display: flex;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cm-stepper__item {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+
+.cm-stepper__trigger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-1);
+  inline-size: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cm-color-text-secondary);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.cm-stepper__trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.cm-stepper__rail {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-1);
+}
+
+.cm-stepper__connector {
+  flex: 1 1 auto;
+  block-size: var(--cm-border-width);
+  background: var(--cm-color-border-default);
+}
+
+.cm-stepper__item:first-child .cm-stepper__connector--before,
+.cm-stepper__item:last-child .cm-stepper__connector--after {
+  visibility: hidden;
+}
+
+.cm-stepper__marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: 50%;
+  background: var(--cm-color-background-surface);
+  font-size: var(--cm-font-size-md);
+  line-height: 1;
+}
+
+.cm-stepper__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-0);
+}
+
+.cm-stepper__label {
+  font-size: var(--cm-font-size-md);
+  line-height: var(--cm-line-height-tight);
+}
+
+.cm-stepper__description {
+  color: var(--cm-color-text-tertiary);
+  font-size: var(--cm-font-size-sm);
+  line-height: var(--cm-line-height-tight);
+}
+
+.cm-stepper__item--complete .cm-stepper__marker,
+.cm-stepper__item--current .cm-stepper__marker {
+  border-color: var(--cm-color-interactive-primary-border);
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+}
+
+.cm-stepper__item--current .cm-stepper__trigger,
+.cm-stepper__item--complete .cm-stepper__trigger {
+  color: var(--cm-color-text-primary);
+}
+
+.cm-stepper__item--current .cm-stepper__marker {
+  background: var(--cm-color-interactive-primary-subtle-background);
+}
+
+.cm-stepper--vertical .cm-stepper__list {
+  flex-direction: column;
+}
+
+.cm-stepper--vertical .cm-stepper__trigger {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--cm-space-2);
+  text-align: start;
+}
+
+.cm-stepper--vertical .cm-stepper__rail {
+  flex-direction: column;
+  align-self: stretch;
+}
+
+.cm-stepper--vertical .cm-stepper__connector {
+  inline-size: var(--cm-border-width);
+  block-size: auto;
+}
+
+.cm-stepper--content-inline .cm-stepper__trigger {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--cm-space-2);
+  text-align: start;
+}

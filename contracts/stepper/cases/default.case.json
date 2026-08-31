@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "stepper-default",
+  "description": "Three steps with the second active and the third disabled.",
+  "props": {
+    "items": [
+      { "value": "account", "label": "Account" },
+      { "value": "billing", "label": "Billing", "description": "Payment details" },
+      { "value": "review", "label": "Review", "disabled": true }
+    ],
+    "value": "billing"
+  },
+  "slots": {}
+}
