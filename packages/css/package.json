@@ -74,6 +74,7 @@
     "./tabs.css": "./dist/components/tabs.css",
     "./tag.css": "./dist/components/tag.css",
     "./textarea.css": "./dist/components/textarea.css",
+    "./theme-switch.css": "./dist/components/theme-switch.css",
     "./tooltip.css": "./dist/components/tooltip.css"
   },
   "scripts": {

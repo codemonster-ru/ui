@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "theme-switch-default",
+  "description": "The three modes, with the operating system deferred to.",
+  "props": {
+    "modelValue": "system",
+    "options": [
+      { "value": "light", "label": "Light" },
+      { "value": "system", "label": "System" },
+      { "value": "dark", "label": "Dark" }
+    ]
+  },
+  "slots": {}
+}

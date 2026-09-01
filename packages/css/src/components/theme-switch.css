@@ -1,0 +1,63 @@
+/*
+ * A three-state control, because the preference is three-state: an explicit light, an explicit dark,
+ * and deferring to the operating system. A two-position toggle cannot say the third thing, which is
+ * the one most people never change.
+ *
+ * Native radios carry the semantics and the keyboard behaviour, so the control works inside a form
+ * with no JavaScript at all. The input stays in the accessibility tree and is hidden visually only.
+ */
+.cm-theme-switch {
+  display: inline-flex;
+  gap: var(--cm-space-3xs);
+  margin: 0;
+  padding: var(--cm-space-3xs);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control);
+  background: var(--cm-color-background-surface);
+}
+
+.cm-theme-switch__legend {
+  position: absolute;
+  overflow: hidden;
+  clip-path: inset(50%);
+  inline-size: 1px;
+  block-size: 1px;
+  white-space: nowrap;
+}
+
+.cm-theme-switch__option {
+  display: inline-flex;
+}
+
+.cm-theme-switch__input {
+  position: absolute;
+  opacity: 0;
+  inline-size: 1px;
+  block-size: 1px;
+}
+
+.cm-theme-switch__label {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--cm-space-3xs) var(--cm-space-xs);
+  border-radius: var(--cm-radius-control-tight);
+  color: var(--cm-color-text-secondary);
+  font-size: var(--cm-font-size-md);
+  line-height: var(--cm-line-height-tight);
+  cursor: pointer;
+}
+
+.cm-theme-switch__input:checked + .cm-theme-switch__label {
+  background: var(--cm-color-interactive-primary-subtle-background);
+  color: var(--cm-color-interactive-primary-subtle-foreground);
+}
+
+.cm-theme-switch__input:focus-visible + .cm-theme-switch__label {
+  outline: var(--cm-focus-ring-width) solid var(--cm-color-border-focus);
+  outline-offset: var(--cm-focus-ring-offset);
+}
+
+.cm-theme-switch__input:disabled + .cm-theme-switch__label {
+  color: var(--cm-color-text-disabled);
+  cursor: not-allowed;
+}

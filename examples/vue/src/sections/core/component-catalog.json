@@ -227,6 +227,11 @@
       "demoHref": "#demo-forms"
     },
     {
+      "name": "CmThemeSwitch",
+      "group": "Forms",
+      "demoHref": "#demo-theme-switch"
+    },
+    {
       "name": "CmTooltip",
       "group": "Navigation and disclosure",
       "demoHref": "#demo-navigation"
