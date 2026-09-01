@@ -162,6 +162,14 @@ unknown attributes through to the root element, a bare rename leaves them render
 rather than reported as errors. Migrate the props deliberately, drop `VfThemeProvider`, and let the
 server stamp `data-cm-theme` from the cookie.
 
+`CmAppShell` is the other rename that needs reading before it is trusted. `VfAppShell` handed its
+slots a scope object of `{ isSidebarCollapsed, collapseSidebar, expandSidebar, toggleSidebarCollapsed }`,
+and PHP has no scoped slots. The state is an attribute on the root now, and the collapse control is
+marked rather than supplied: tag your own button with `data-cm-sidebar-toggle` and both adapters keep
+its `aria-expanded` in step. Sticky offsets moved from `--vf-sticky-*` to `--cm-sticky-*` and are
+published by the layout rather than measured by it, so declare `--cm-layout-header-height` for the
+pre-script case.
+
 `CmDataTable` now covers portable page-size controls and summaries, eligible-row selection, ordered
 visible columns, and localizable interaction labels. Migrate rich cells and expanded content to an
 application-owned `CmTable` composition; keep multi-sort and interactive column layout policy in

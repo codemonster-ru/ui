@@ -8,6 +8,8 @@ import '@codemonster-ru/ui-css/stack.css';
 import '@codemonster-ru/ui-css/checkbox.css';
 import '@codemonster-ru/ui-css/popover.css';
 import '@codemonster-ru/ui-css/admin-layout.css';
+import '@codemonster-ru/ui-css/app-shell.css';
+import '@codemonster-ru/ui-css/document-layout.css';
 import '@codemonster-ru/ui-css/admin-shell.css';
 import '@codemonster-ru/ui-css/column-chooser.css';
 import '@codemonster-ru/ui-css/menu-bar.css';

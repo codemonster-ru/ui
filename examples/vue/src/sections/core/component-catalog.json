@@ -22,6 +22,11 @@
       "demoHref": "#demo-actions-feedback"
     },
     {
+      "name": "CmAppShell",
+      "group": "Layout primitives",
+      "demoHref": "#demo-app-shell"
+    },
+    {
       "name": "CmAvatar",
       "group": "Content",
       "demoHref": "#demo-content"
@@ -85,6 +90,11 @@
       "name": "CmDivider",
       "group": "Content",
       "demoHref": "#demo-content"
+    },
+    {
+      "name": "CmDocumentLayout",
+      "group": "Layout primitives",
+      "demoHref": "#demo-document-layout"
     },
     {
       "name": "CmDrawer",

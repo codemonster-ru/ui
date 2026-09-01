@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "document-layout-default",
+  "description": "Every region present.",
+  "props": { "layout": "sidebar-content-aside" },
+  "slots": {
+    "header": "Guide",
+    "subheader": "Version 2",
+    "sidebar": "Chapters",
+    "default": "Body",
+    "aside": "On this page",
+    "footer": "Footer"
+  }
+}
