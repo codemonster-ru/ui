@@ -12,6 +12,10 @@
 
 export { default as CmAdminShell } from './admin-shell/CmAdminShell.vue';
 export type { CmAdminShellProps } from './admin-shell/admin-shell.types';
+export { default as CmAppShell } from './app-shell/CmAppShell.vue';
+export type { CmAppShellVariant } from './app-shell/app-shell.types';
+export { default as CmDocumentLayout } from './document-layout/CmDocumentLayout.vue';
+export type { CmDocumentLayoutVariant } from './document-layout/document-layout.types';
 export { default as CmAdminLayout } from './admin-layout/CmAdminLayout.vue';
 export type { CmAdminLayoutProps } from './admin-layout/admin-layout.types';
 export { default as CmSetupLayout } from './setup-layout/CmSetupLayout.vue';

@@ -17,7 +17,7 @@ Object.assign(globalThis, {
 });
 
 const { mount } = await import('@vue/test-utils');
-const { nextTick } = await import('vue');
+const { h, nextTick } = await import('vue');
 const components = await import('../dist/index.js');
 const layouts = await import('../../layouts/dist/index.js');
 const runtime = await import('../../runtime/dist/index.js');
@@ -43,6 +43,29 @@ const suites = {
       drawer: root.getAttribute('data-cm-mobile-sidebar-open'),
       collapsed: root.getAttribute('data-cm-sidebar-collapsed'),
       expanded: root.querySelector('[data-cm-mobile-sidebar-toggle]')?.getAttribute('aria-expanded'),
+    }),
+  },
+  'app-shell': {
+    component: layouts.CmAppShell,
+    controller: ['app-shell', runtime.createCmAppShellController],
+    root: '.cm-app-shell',
+    targets: { 'sidebar-toggle': '[data-cm-sidebar-toggle]' },
+    snapshot: (root) => ({
+      collapsed: root.getAttribute('data-cm-sidebar-collapsed'),
+      expanded: root.querySelector('[data-cm-sidebar-toggle]')?.getAttribute('aria-expanded'),
+    }),
+  },
+  'document-layout': {
+    component: layouts.CmDocumentLayout,
+    controller: ['shell-metrics', runtime.createCmShellMetricsController],
+    root: '.cm-document-layout',
+    targets: {},
+    // jsdom reports every element as zero-height, which is exactly the case worth pinning: with
+    // nothing measurable the controller must leave the declared offsets alone rather than collapse
+    // the layout to 0px.
+    snapshot: (root) => ({
+      header: root.style.getPropertyValue('--cm-sticky-header-offset').trim(),
+      top: root.style.getPropertyValue('--cm-sticky-top-offset').trim(),
     }),
   },
   'column-chooser': {
@@ -115,6 +138,18 @@ const suites = {
   },
 };
 
+/**
+ * A case file states slot content as markup, which Vue would render as escaped text while the
+ * canonical fixture means it as elements. The few cases needing real elements name them here rather
+ * than the comparison being loosened to let a string pass.
+ */
+function slotContent(content) {
+  if (content === '<button type="button" data-cm-sidebar-toggle aria-expanded="true">Collapse</button>') {
+    return h('button', { 'aria-expanded': 'true', 'data-cm-sidebar-toggle': '', type: 'button' }, 'Collapse');
+  }
+  return content;
+}
+
 function resolveTarget(root, suite, name) {
   if (name === 'root') return root;
   const selector = suite.targets[name];
@@ -137,6 +172,7 @@ function observe(root, suite, step, counts) {
   if (step.expect === 'attribute') return target.getAttribute(step.name);
   if (step.expect === 'visible') return !target.hidden;
   if (step.expect === 'eventCount') return counts.get(step.name) ?? 0;
+  if (step.expect === 'styleProperty') return target.style.getPropertyValue(step.name).trim();
   if (step.expect === 'focus') return root.ownerDocument.activeElement === target;
   throw new Error(`Unsupported expectation: ${step.expect}.`);
 }
@@ -180,7 +216,7 @@ for (const [slug, suite] of Object.entries(suites)) {
       new runtime.CmRuntime().register(...suite.controller).start(razorDom.window.document);
 
       const slots = Object.fromEntries(
-        Object.entries(definition.slots ?? {}).map(([name, content]) => [name, () => content]),
+        Object.entries(definition.slots ?? {}).map(([name, content]) => [name, () => slotContent(content)]),
       );
       const vue = mount(suite.component, {
         attachTo: browser.window.document.body,
