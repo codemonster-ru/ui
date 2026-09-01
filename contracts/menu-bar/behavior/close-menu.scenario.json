@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "menu-bar-close-menu",
+  "case": "menu-bar-default",
+  "steps": [
+    { "expect": "attribute", "target": "branch-first", "name": "aria-expanded", "value": "true" },
+    { "action": "click", "target": "branch-first" },
+    { "expect": "attribute", "target": "branch-first", "name": "aria-expanded", "value": "false" },
+    { "expect": "visible", "target": "submenu-first", "value": false }
+  ]
+}
