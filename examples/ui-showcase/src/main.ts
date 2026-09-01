@@ -1,0 +1,22 @@
+import { createApp } from 'vue';
+import '@codemonster-ru/ui-tokens/tokens.css';
+import '@codemonster-ru/ui-tokens/breakpoints.css';
+import '@codemonster-ru/ui-css/fonts.css';
+import '@codemonster-ru/ui-css/container.css';
+import '@codemonster-ru/ui-css/section.css';
+import '@codemonster-ru/ui-css/stack.css';
+import '@codemonster-ru/ui-css/checkbox.css';
+import '@codemonster-ru/ui-css/popover.css';
+import '@codemonster-ru/ui-css/admin-layout.css';
+import '@codemonster-ru/ui-css/admin-shell.css';
+import '@codemonster-ru/ui-css/column-chooser.css';
+import '@codemonster-ru/ui-css/menu-bar.css';
+import '@codemonster-ru/ui-css/nav-menu.css';
+import '@codemonster-ru/ui-css/setup-layout.css';
+import '@codemonster-ru/ui-css/stepper.css';
+import '@codemonster-ru/ui-css/table-of-contents.css';
+import '@codemonster-ru/ui-css/tag.css';
+import App from './App.vue';
+import './showcase.css';
+
+createApp(App).mount('#app');

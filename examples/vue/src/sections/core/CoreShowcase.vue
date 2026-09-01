@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { CmAdminLayout, CmAdminShell, CmSetupLayout } from '@codemonster-ru/ui-layouts';
 import {
   CmAccordion,
   CmAvatar as VfAvatar,
   CmAlert as VfAlert,
   CmBadge as VfBadge,
-  CmColumnChooser,
-  CmMenuBar,
-  CmNavMenu,
-  CmStepper,
-  CmTableOfContents,
-  CmTag,
   CmBreadcrumbs as VfBreadcrumbs,
   CmButton,
   CmCard as VfCard,
@@ -893,7 +886,6 @@ function createCoreDataTableRows(
   });
 }
 
-const coreVisibleColumnKeys = ref<string[] | null>(null);
 const coreDataTableColumns = createCoreDataTableColumns(dataTableColumns);
 const coreDataTableRows = createCoreDataTableRows(coreDataTableColumns, dataTableRows);
 const coreSelectableDataTableRows: CoreSelectableDataTableRecipeRow[] = coreDataTableRows.map((row, index) => ({
@@ -1470,8 +1462,6 @@ const tabContent = computed<Record<string, string>>(() => ({
                       <div class="demo-inline">
                         <VfBadge tone="success">Stable</VfBadge>
                         <VfBadge tone="primary">Core</VfBadge>
-                        <CmTag tone="primary">Platform</CmTag>
-                        <CmTag>Internal</CmTag>
                       </div>
                     </template>
                   </VfCard>
@@ -1705,59 +1695,6 @@ const tabContent = computed<Record<string, string>>(() => ({
 
                 <div class="demo-component-matrix__cell">
                   <p class="demo-component-matrix__label">VfDataTable · default</p>
-                  <CmAdminShell>
-                    <template #brand>CodeMonster</template>
-                    <template #sidebar>Navigation</template>
-                    Workspace
-                  </CmAdminShell>
-                  <CmSetupLayout title="Create your workspace" description="This takes a minute.">
-                    Workspace name
-                    <template #actions>Continue</template>
-                  </CmSetupLayout>
-                  <CmAdminLayout id="core-admin-layout">
-                    <template #brand>CodeMonster</template>
-                    <template #aside>Navigation</template>
-                    <template #header>Workspace</template>
-                    Layout content
-                  </CmAdminLayout>
-                  <CmMenuBar
-                    :items="[
-                      { value: 'file', label: 'File', children: [{ value: 'new', label: 'New' }] },
-                      { value: 'help', label: 'Help', href: '#demo-actions-feedback' },
-                    ]"
-                  />
-                  <CmNavMenu
-                    :items="[
-                      { value: 'dashboard', label: 'Dashboard', href: '#demo-actions-feedback' },
-                      {
-                        value: 'projects',
-                        label: 'Projects',
-                        children: [{ value: 'active', label: 'Active', href: '#demo-data' }],
-                      },
-                    ]"
-                    value="active"
-                  />
-                  <CmStepper
-                    :items="[
-                      { value: 'account', label: 'Account' },
-                      { value: 'billing', label: 'Billing', description: 'Payment details' },
-                      { value: 'review', label: 'Review' },
-                    ]"
-                    value="billing"
-                  />
-                  <CmTableOfContents
-                    :items="[
-                      { id: 'core-data-table-default', label: 'Team roster' },
-                      { id: 'core-data-table-columns', label: 'Column chooser', level: 2 },
-                    ]"
-                    active-id="core-data-table-default"
-                  />
-                  <CmColumnChooser
-                    id="core-data-table-columns"
-                    v-model:visible-column-keys="coreVisibleColumnKeys"
-                    :columns="coreDataTableColumns"
-                    :required-column-keys="[coreDataTableColumns[0]?.key ?? '']"
-                  />
                   <CoreDataTableRecipe
                     id="core-data-table-default"
                     caption="Team roster"

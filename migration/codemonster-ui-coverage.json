@@ -443,7 +443,7 @@
         "contract": "column-chooser",
         "razorTag": "column-chooser",
         "documentation": "docs/components/data-tables.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {
@@ -899,7 +899,7 @@
         "contract": "menu-bar",
         "razorTag": "menu-bar",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {
@@ -979,7 +979,7 @@
         "contract": "nav-menu",
         "razorTag": "nav-menu",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {
@@ -1314,7 +1314,7 @@
         "contract": "stepper",
         "razorTag": "stepper",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {
@@ -1411,7 +1411,7 @@
         "contract": "table-of-contents",
         "razorTag": "table-of-contents",
         "documentation": "docs/components/navigation.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {
@@ -1459,7 +1459,7 @@
         "contract": "tag",
         "razorTag": "tag",
         "documentation": "docs/components/display.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {
@@ -1800,7 +1800,7 @@
         "contract": "admin-layout",
         "razorTag": "admin-layout",
         "documentation": "docs/components/layouts.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {
@@ -1828,7 +1828,7 @@
         "contract": "admin-shell",
         "razorTag": "admin-shell",
         "documentation": "docs/components/layouts.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {
@@ -1933,7 +1933,7 @@
         "contract": "setup-layout",
         "razorTag": "setup-layout",
         "documentation": "docs/components/layouts.md",
-        "showcase": "examples/vue/src/sections/core/CoreShowcase.vue"
+        "showcase": "examples/ui-showcase/src/App.vue"
       },
       "capabilities": [
         {

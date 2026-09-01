@@ -1,0 +1,50 @@
+/* The showcase is a working page rather than a styled one: it borrows the design tokens and lets
+   each component supply its own appearance, so nothing here can disguise a component that looks
+   wrong on its own. */
+
+body {
+  margin: 0;
+  background: var(--cm-color-surface-default, #fff);
+  color: var(--cm-color-text-default, #111);
+  font-family: var(--cm-font-family-base, system-ui, sans-serif);
+}
+
+.ui-showcase {
+  margin: 0 auto;
+  max-width: 60rem;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.ui-showcase__intro {
+  margin-bottom: 2.5rem;
+}
+
+.ui-showcase__demo {
+  border-top: 1px solid var(--cm-color-border-subtle, #e5e5e5);
+  padding-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.ui-showcase__demo h2 {
+  font-size: 1.125rem;
+  margin: 0 0 0.25rem;
+}
+
+.ui-showcase__note {
+  color: var(--cm-color-text-muted, #666);
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+}
+
+.ui-showcase__frame {
+  border: 1px solid var(--cm-color-border-subtle, #e5e5e5);
+  border-radius: var(--cm-radius-md, 8px);
+  overflow: hidden;
+  resize: vertical;
+}
+
+.ui-showcase__inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

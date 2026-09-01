@@ -1,0 +1,29 @@
+{
+  "name": "@codemonster-ru/ui-showcase-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --force",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@codemonster-ru/ui-css": "file:../../packages/css",
+    "@codemonster-ru/ui-layouts": "file:../../packages/layouts",
+    "@codemonster-ru/ui-tokens": "file:../../packages/tokens",
+    "@codemonster-ru/ui-vue": "file:../../packages/vue",
+    "vue": "^3.5.20"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.4",
+    "eslint": "^10.8.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.4.2",
+    "vitest": "^3.2.4",
+    "vue-tsc": "^3.3.8"
+  }
+}
