@@ -50,6 +50,7 @@ use Codemonster\Ui\Components\CmTable;
 use Codemonster\Ui\Components\CmTableOfContents;
 use Codemonster\Ui\Components\CmTabs;
 use Codemonster\Ui\Components\CmTag;
+use Codemonster\Ui\Components\CmThemeSwitch;
 use Codemonster\Ui\Components\CmTextarea;
 use Codemonster\Ui\Components\CmTooltip;
 use Codemonster\View\EngineInterface;
@@ -119,6 +120,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'table-of-contents' => new CmTableOfContents($this->views),
             'tabs' => new CmTabs($this->views),
             'tag' => new CmTag($this->views),
+            'theme-switch' => new CmThemeSwitch($this->views),
             'textarea' => new CmTextarea($this->views),
             'tooltip' => new CmTooltip($this->views),
         ];

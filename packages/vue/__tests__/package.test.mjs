@@ -47,6 +47,7 @@ test('publishes the Vue component adapter entries', async () => {
     'CmTabs',
     'CmTag',
     'CmTextarea',
+    'CmThemeSwitch',
     'CmTooltip',
   ]);
   assert.equal(entry.CmAccordion.__name, 'CmAccordion');

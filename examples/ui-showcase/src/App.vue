@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
 import { CmAdminLayout, CmAdminShell, CmSetupLayout } from '@codemonster-ru/ui-layouts';
 import { CmColumnChooser, CmMenuBar, CmNavMenu, CmStepper, CmTableOfContents, CmTag } from '@codemonster-ru/ui-vue';
 
@@ -9,6 +10,7 @@ const columns = [
   { key: 'size', header: 'Size' },
 ];
 const visibleColumnKeys = ref<string[] | null>(null);
+const themeMode = ref<CmThemeMode>('system');
 
 const menuBarItems = [
   {
@@ -99,6 +101,16 @@ const tableOfContentsItems = [
       <h2>Menu bar</h2>
       <p class="ui-showcase__note">An application menu bar showing one open path at a time.</p>
       <CmMenuBar :items="menuBarItems" />
+    </section>
+
+    <section id="demo-theme-switch" class="ui-showcase__demo">
+      <h2>Theme switch</h2>
+      <p class="ui-showcase__note">
+        A three-state preference: an explicit light, an explicit dark, or deferring to the operating system. Native
+        radios carry the semantics, so it works inside a form with no JavaScript. The choice is written to the document
+        root and to a cookie the server reads, which is what lets the first paint already be right.
+      </p>
+      <CmThemeSwitch v-model="themeMode" />
     </section>
 
     <section id="demo-admin-layout" class="ui-showcase__demo">

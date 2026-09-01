@@ -82,6 +82,24 @@ const suites = {
     events: { back: { dom: 'cm:setup-layout-back', vue: 'back' }, next: { dom: 'cm:setup-layout-next', vue: 'next' } },
     snapshot: () => ({}),
   },
+  'theme-switch': {
+    component: components.CmThemeSwitch,
+    controller: ['theme-switch', runtime.createCmThemeSwitchController],
+    root: '.cm-theme-switch',
+    targets: {
+      dark: '[value="dark"]',
+      light: '[value="light"]',
+      system: '[value="system"]',
+    },
+    events: { 'theme-change': { dom: 'cm:theme-change', vue: 'themeChange' } },
+    // `checked` is a DOM property here, not an attribute: Vue binds the property while the canonical
+    // markup carries the attribute, so comparing attributes would report a difference that does not
+    // exist. The property is what both adapters actually agree on.
+    snapshot: (root) => ({
+      checked: [...root.querySelectorAll('input[type="radio"]')].map((input) => input.checked),
+      values: [...root.querySelectorAll('input[type="radio"]')].map((input) => input.value),
+    }),
+  },
   stepper: {
     component: components.CmStepper,
     controller: ['stepper', runtime.createCmStepperController],
