@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "nav-menu-collapse-branch",
+  "case": "nav-menu-default",
+  "steps": [
+    { "expect": "attribute", "target": "branch-first", "name": "aria-expanded", "value": "true" },
+    { "action": "click", "target": "branch-first" },
+    { "expect": "attribute", "target": "branch-first", "name": "aria-expanded", "value": "false" },
+    { "action": "click", "target": "branch-first" },
+    { "expect": "attribute", "target": "branch-first", "name": "aria-expanded", "value": "true" }
+  ]
+}

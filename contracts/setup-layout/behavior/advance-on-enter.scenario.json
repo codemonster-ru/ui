@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "setup-layout-advance-on-enter",
+  "case": "setup-layout-default",
+  "steps": [
+    { "action": "press", "target": "root", "key": "Enter" },
+    { "expect": "eventCount", "target": "root", "name": "next", "count": 1 },
+    { "action": "press", "target": "root", "key": "Escape" },
+    { "expect": "eventCount", "target": "root", "name": "back", "count": 1 }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "column-chooser-open-panel",
+  "case": "column-chooser-default",
+  "steps": [
+    { "expect": "visible", "target": "panel", "value": false },
+    { "action": "click", "target": "trigger" },
+    { "expect": "attribute", "target": "trigger", "name": "aria-expanded", "value": "true" },
+    { "expect": "visible", "target": "panel", "value": true }
+  ]
+}

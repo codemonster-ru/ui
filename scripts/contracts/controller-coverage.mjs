@@ -54,3 +54,18 @@ export function findMissingControllers(declared, implemented) {
     })
     .sort();
 }
+
+/**
+ * Reports interactive contracts with no behaviour scenarios.
+ *
+ * A scenario is not documentation: the parity suites replay its steps against the Vue component and
+ * against the controller running on the canonical markup, and compare what each ends up with. A
+ * component with a controller and no scenario has both halves tested separately and nothing
+ * checking they agree, which is the only claim that matters for two adapters.
+ */
+export function findInteractiveContractsWithoutScenarios(contracts) {
+  return contracts
+    .filter(({ fixtures, hasScenarios }) => !hasScenarios && fixtures.some((source) => source.includes('data-cm-controller')))
+    .map(({ slug }) => slug)
+    .sort();
+}
