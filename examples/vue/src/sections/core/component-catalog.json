@@ -7,6 +7,16 @@
       "demoHref": "#demo-navigation"
     },
     {
+      "name": "CmAdminLayout",
+      "group": "Layout primitives",
+      "demoHref": "#demo-admin-layout"
+    },
+    {
+      "name": "CmAdminShell",
+      "group": "Layout primitives",
+      "demoHref": "#demo-admin-shell"
+    },
+    {
       "name": "CmAlert",
       "group": "Actions and feedback",
       "demoHref": "#demo-actions-feedback"
@@ -40,6 +50,11 @@
       "name": "CmCheckbox",
       "group": "Forms",
       "demoHref": "#demo-forms"
+    },
+    {
+      "name": "CmColumnChooser",
+      "group": "Data display",
+      "demoHref": "#demo-column-chooser"
     },
     {
       "name": "CmCommandPalette",
@@ -122,6 +137,16 @@
       "demoHref": "#demo-navigation"
     },
     {
+      "name": "CmMenuBar",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-menu-bar"
+    },
+    {
+      "name": "CmNavMenu",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-nav-menu"
+    },
+    {
       "name": "CmPopover",
       "group": "Navigation and disclosure",
       "demoHref": "#demo-navigation"
@@ -152,6 +177,11 @@
       "demoHref": "#demo-forms"
     },
     {
+      "name": "CmSetupLayout",
+      "group": "Layout primitives",
+      "demoHref": "#demo-setup-layout"
+    },
+    {
       "name": "CmSkeleton",
       "group": "Content",
       "demoHref": "#demo-content"
@@ -160,6 +190,11 @@
       "name": "CmStack",
       "group": "Layout primitives",
       "demoHref": "/layouts"
+    },
+    {
+      "name": "CmStepper",
+      "group": "Navigation and disclosure",
+      "demoHref": "#demo-stepper"
     },
     {
       "name": "CmSwitch",
@@ -172,9 +207,19 @@
       "demoHref": "#demo-data"
     },
     {
+      "name": "CmTableOfContents",
+      "group": "Data display",
+      "demoHref": "#demo-table-of-contents"
+    },
+    {
       "name": "CmTabs",
       "group": "Navigation and disclosure",
       "demoHref": "#demo-navigation"
+    },
+    {
+      "name": "CmTag",
+      "group": "Actions and feedback",
+      "demoHref": "#demo-tag"
     },
     {
       "name": "CmTextarea",

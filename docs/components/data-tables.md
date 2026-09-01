@@ -153,3 +153,45 @@ hide, or replace rows. Without JavaScript, users retain a readable semantic tabl
 - For skeleton rows, compose `CmSkeleton` with `CmTable`; DataTable's portable loading state remains
   a semantic status row.
 - Do not initialize shared runtime over Vue-owned DataTable markup.
+
+## Choosing columns
+
+`CmColumnChooser` is a popover of checkboxes that decides which columns a table shows. It renders
+the Popover structure and is driven by the Popover controller rather than a mechanism of its own,
+and it reports the shown keys in declaration order so the table can be handed them directly.
+
+Required columns are always shown and cannot be cleared. A chooser whose columns are all required
+reads as fully shown and disabled, because there is nothing left to reveal — which is deliberately
+unlike the select-all checkbox on rows, where nothing selectable means nothing is checked.
+
+```vue
+<script setup lang="ts">
+import { CmColumnChooser, CmDataTable } from '@codemonster-ru/ui-vue';
+import { ref } from 'vue';
+
+const columns = [
+  { key: 'name', header: 'Name' },
+  { key: 'owner', header: 'Owner' },
+  { key: 'size', header: 'Size' },
+];
+const visibleColumnKeys = ref<string[] | null>(null);
+const rows = [
+  { id: 'atlas', cells: { name: 'Atlas', owner: 'Ada', size: '4 MB' } },
+  { id: 'beacon', cells: { name: 'Beacon', owner: 'Grace', size: '2 MB' } },
+];
+</script>
+
+<template>
+  <CmColumnChooser
+    id="projects-columns"
+    v-model:visible-column-keys="visibleColumnKeys"
+    :columns="columns"
+    :required-column-keys="['name']"
+  />
+  <CmDataTable id="projects" :columns="columns" :rows="rows" :visible-column-keys="visibleColumnKeys" />
+</template>
+```
+
+```php
+<cm-column-chooser id="projects-columns" :columns="$columns" :required-column-keys="['name']" />
+```

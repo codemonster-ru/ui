@@ -12,6 +12,7 @@ use Codemonster\Ui\Components\CmAvatar;
 use Codemonster\Ui\Components\CmBadge;
 use Codemonster\Ui\Components\CmDivider;
 use Codemonster\Ui\Components\CmSkeleton;
+use Codemonster\Ui\Components\CmTag;
 use Codemonster\Ui\Tests\Support\SignificantDom;
 use Codemonster\View\Locator\DefaultLocator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -45,7 +46,7 @@ final class CmDisplayComponentsParityTest extends TestCase
     /** @return iterable<string, array{string, string, string}> */
     public static function caseProvider(): iterable
     {
-        foreach (['alert', 'avatar', 'badge', 'divider', 'skeleton'] as $slug) {
+        foreach (['alert', 'avatar', 'badge', 'divider', 'skeleton', 'tag'] as $slug) {
             $cases = dirname(__DIR__, 4) . "/contracts/{$slug}/cases";
             foreach (glob($cases . '/*.case.json') ?: [] as $casePath) {
                 $basename = substr(basename($casePath), 0, -strlen('.case.json'));
@@ -54,7 +55,7 @@ final class CmDisplayComponentsParityTest extends TestCase
         }
     }
 
-    private function component(string $slug): CmAlert|CmAvatar|CmBadge|CmDivider|CmSkeleton
+    private function component(string $slug): CmAlert|CmAvatar|CmBadge|CmDivider|CmSkeleton|CmTag
     {
         $views = new RazorEngine(
             new DefaultLocator(dirname(__DIR__, 2) . '/resources/views'),
@@ -66,6 +67,7 @@ final class CmDisplayComponentsParityTest extends TestCase
             'badge' => new CmBadge($views),
             'divider' => new CmDivider($views),
             'skeleton' => new CmSkeleton($views),
+            'tag' => new CmTag($views),
             default => throw new \InvalidArgumentException("Unknown display component [{$slug}]."),
         };
     }

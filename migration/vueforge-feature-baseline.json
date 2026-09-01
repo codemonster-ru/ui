@@ -121,7 +121,7 @@
       ]
     },
     {
-      "directory": "layouts",
+      "directory": "vueforge-layouts",
       "name": "@codemonster-ru/vueforge-layouts",
       "version": "2.1.2",
       "exports": [

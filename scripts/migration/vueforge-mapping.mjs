@@ -22,12 +22,17 @@ function defaultComponentExports(source, prefix) {
 
 export function discoverLegacyComponents(root = repositoryRoot) {
   const core = readFileSync(resolve(root, 'packages/core/src/components/index.ts'), 'utf8');
-  const layouts = readFileSync(resolve(root, 'packages/layouts/src/index.ts'), 'utf8');
+  const layouts = readFileSync(resolve(root, 'packages/vueforge-layouts/src/index.ts'), 'utf8');
   return new Set([...namedExports(core, 'Vf'), ...defaultComponentExports(layouts, 'Vf')]);
 }
 
 export function discoverCodeMonsterComponents(root = repositoryRoot) {
-  return defaultComponentExports(readFileSync(resolve(root, 'packages/vue/src/index.ts'), 'utf8'), 'Cm');
+  // Layouts are a separate published line but are migration targets like any other, so both entry
+  // points are read; otherwise a layout could be mapped to a target this check calls unavailable.
+  return new Set([
+    ...defaultComponentExports(readFileSync(resolve(root, 'packages/vue/src/index.ts'), 'utf8'), 'Cm'),
+    ...defaultComponentExports(readFileSync(resolve(root, 'packages/layouts/src/index.ts'), 'utf8'), 'Cm'),
+  ]);
 }
 
 export function validateVueForgeMapping(mapping, baseline, legacyComponents, targetComponents) {
@@ -55,7 +60,9 @@ export function validateVueForgeMapping(mapping, baseline, legacyComponents, tar
   }
   for (const entry of componentMappings) {
     if (!legacyComponents.has(entry.source)) issues.push(`Mapping references unknown component: ${entry.source}.`);
-    if (!['replace', 'compose', 'manual'].includes(entry.action)) {
+    // `drop` says the concept is not carried forward at all, which `manual` cannot express:
+    // manual means the application takes it over, and these have no successor to take over.
+    if (!['replace', 'compose', 'manual', 'drop'].includes(entry.action)) {
       issues.push(`Component ${entry.source} has unknown action ${entry.action}.`);
     }
     if (entry.action === 'replace' && entry.targets.length !== 1) {

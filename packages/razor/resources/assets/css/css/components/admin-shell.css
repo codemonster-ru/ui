@@ -1,0 +1,63 @@
+/* A fixed frame: topbar above, sidebar beside the workspace. It has no state to reflect. */
+.cm-admin-shell {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvb;
+}
+
+.cm-admin-shell__topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-3);
+  padding: var(--cm-space-2) var(--cm-space-3);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.cm-admin-shell__header {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.cm-admin-shell__body {
+  display: flex;
+  flex: 1 1 auto;
+  min-block-size: 0;
+}
+
+.cm-admin-shell__sidebar {
+  inline-size: 16rem;
+  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.cm-admin-shell__sidebar-content {
+  padding: var(--cm-space-3);
+}
+
+.cm-admin-shell__workspace {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.cm-admin-shell__content {
+  flex: 1 1 auto;
+  padding: var(--cm-space-3);
+}
+
+.cm-admin-shell__footer {
+  padding: var(--cm-space-2) var(--cm-space-3);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+@media (width < 48rem) {
+  .cm-admin-shell__body {
+    flex-direction: column;
+  }
+
+  .cm-admin-shell__sidebar {
+    inline-size: auto;
+    border-inline-end: 0;
+    border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  }
+}

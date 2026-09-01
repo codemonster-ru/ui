@@ -7,6 +7,9 @@ namespace Codemonster\Ui;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
 use Codemonster\Ui\Components\CmAccordion;
+use Codemonster\Ui\Layouts\CmAdminLayout;
+use Codemonster\Ui\Layouts\CmAdminShell;
+use Codemonster\Ui\Layouts\CmSetupLayout;
 use Codemonster\Ui\Components\CmAlert;
 use Codemonster\Ui\Components\CmAvatar;
 use Codemonster\Ui\Components\CmBadge;
@@ -14,6 +17,7 @@ use Codemonster\Ui\Components\CmBreadcrumbs;
 use Codemonster\Ui\Components\CmButton;
 use Codemonster\Ui\Components\CmCard;
 use Codemonster\Ui\Components\CmCheckbox;
+use Codemonster\Ui\Components\CmColumnChooser;
 use Codemonster\Ui\Components\CmCommandPalette;
 use Codemonster\Ui\Components\CmContainer;
 use Codemonster\Ui\Components\CmDataTable;
@@ -30,6 +34,8 @@ use Codemonster\Ui\Components\CmInput;
 use Codemonster\Ui\Components\CmInline;
 use Codemonster\Ui\Components\CmLink;
 use Codemonster\Ui\Components\CmMenu;
+use Codemonster\Ui\Components\CmMenuBar;
+use Codemonster\Ui\Components\CmNavMenu;
 use Codemonster\Ui\Components\CmPopover;
 use Codemonster\Ui\Components\CmProgressBar;
 use Codemonster\Ui\Components\CmProgressSpinner;
@@ -38,9 +44,12 @@ use Codemonster\Ui\Components\CmSelect;
 use Codemonster\Ui\Components\CmSection;
 use Codemonster\Ui\Components\CmSkeleton;
 use Codemonster\Ui\Components\CmStack;
+use Codemonster\Ui\Components\CmStepper;
 use Codemonster\Ui\Components\CmSwitch;
 use Codemonster\Ui\Components\CmTable;
+use Codemonster\Ui\Components\CmTableOfContents;
 use Codemonster\Ui\Components\CmTabs;
+use Codemonster\Ui\Components\CmTag;
 use Codemonster\Ui\Components\CmTextarea;
 use Codemonster\Ui\Components\CmTooltip;
 use Codemonster\View\EngineInterface;
@@ -67,6 +76,9 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
     {
         return [
             'accordion' => new CmAccordion($this->views),
+            'admin-layout' => new CmAdminLayout($this->views),
+            'admin-shell' => new CmAdminShell($this->views),
+            'setup-layout' => new CmSetupLayout($this->views),
             'alert' => new CmAlert($this->views),
             'avatar' => new CmAvatar($this->views),
             'badge' => new CmBadge($this->views),
@@ -74,6 +86,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'button' => new CmButton($this->views),
             'card' => new CmCard($this->views),
             'checkbox' => new CmCheckbox($this->views),
+            'column-chooser' => new CmColumnChooser($this->views),
             'command-palette' => new CmCommandPalette($this->views),
             'container' => new CmContainer($this->views),
             'data-table' => new CmDataTable($this->views),
@@ -90,6 +103,8 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'inline' => new CmInline($this->views),
             'link' => new CmLink($this->views),
             'menu' => new CmMenu($this->views),
+            'menu-bar' => new CmMenuBar($this->views),
+            'nav-menu' => new CmNavMenu($this->views),
             'popover' => new CmPopover($this->views),
             'progress-bar' => new CmProgressBar($this->views),
             'progress-spinner' => new CmProgressSpinner($this->views),
@@ -98,9 +113,12 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'section' => new CmSection($this->views),
             'skeleton' => new CmSkeleton($this->views),
             'stack' => new CmStack($this->views),
+            'stepper' => new CmStepper($this->views),
             'switch' => new CmSwitch($this->views),
             'table' => new CmTable($this->views),
+            'table-of-contents' => new CmTableOfContents($this->views),
             'tabs' => new CmTabs($this->views),
+            'tag' => new CmTag($this->views),
             'textarea' => new CmTextarea($this->views),
             'tooltip' => new CmTooltip($this->views),
         ];

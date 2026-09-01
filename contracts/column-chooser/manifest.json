@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "name": "ColumnChooser",
+  "slug": "column-chooser",
+  "razorTag": "cm-column-chooser",
+  "description": "A popover of checkboxes that chooses which DataTable columns are shown. It renders the Popover structure and is driven by the Popover controller rather than a mechanism of its own.",
+  "props": {
+    "id": {
+      "type": "string",
+      "required": true,
+      "description": "Names the trigger; the panel derives its own identifier from it."
+    },
+    "columns": {
+      "type": "collection",
+      "required": true,
+      "valueContract": "column-chooser-column"
+    },
+    "visibleColumnKeys": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "Shown columns. Null shows every column, which is where an uncontrolled chooser starts."
+    },
+    "requiredColumnKeys": {
+      "type": "collection",
+      "required": false,
+      "description": "Columns that are always shown and cannot be cleared."
+    },
+    "disabled": { "type": "boolean", "required": false, "default": false },
+    "triggerLabel": { "type": "string", "required": false, "default": "Configure columns" },
+    "allLabel": { "type": "string", "required": false, "default": "All columns" }
+  },
+  "slots": {
+    "trigger": { "required": false, "description": "Trusted content replacing the default trigger label." }
+  },
+  "events": {
+    "visibleColumnsChange": {
+      "description": "Reports the shown column keys in declaration order.",
+      "payloadContract": "string-list"
+    }
+  },
+  "states": ["default", "open", "disabled"]
+}

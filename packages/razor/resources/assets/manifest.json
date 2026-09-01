@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "fd8513621204cf5032bc4c914587df3d1e59f5f9d040a1ec95042ef273067c25",
+      "sha256": "c265cd309a1bce8cb5b977eee00e35af3eb0367d155bcd5ccc161bc4002a47a6",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -111,6 +111,26 @@
         "export": "./accordion.css"
       }
     },
+    "css:components/admin-layout.css": {
+      "path": "css/css/components/admin-layout.css",
+      "mediaType": "text/css",
+      "sha256": "61f22962b69c776bc894a43916a37337ca2828f14e3f3d71dfa04c281c73f819",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./admin-layout.css"
+      }
+    },
+    "css:components/admin-shell.css": {
+      "path": "css/css/components/admin-shell.css",
+      "mediaType": "text/css",
+      "sha256": "59a0d6c65ad3a9c2194413e516b6d4019e1e819f04f0e429e5915917778da906",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./admin-shell.css"
+      }
+    },
     "css:components/alert.css": {
       "path": "css/css/components/alert.css",
       "mediaType": "text/css",
@@ -189,6 +209,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./command-palette.css"
+      }
+    },
+    "css:components/column-chooser.css": {
+      "path": "css/css/components/column-chooser.css",
+      "mediaType": "text/css",
+      "sha256": "db3f7abddf047e15690f04856722a45a86409ffaaaf55266ef3fc584006e2b67",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./column-chooser.css"
       }
     },
     "css:components/container.css": {
@@ -331,6 +361,16 @@
         "export": "./link.css"
       }
     },
+    "css:components/menu-bar.css": {
+      "path": "css/css/components/menu-bar.css",
+      "mediaType": "text/css",
+      "sha256": "c7b9fd535e6378ec8fdf5290653778a436e9e5a86d52dd0bcef4416f52d02c09",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./menu-bar.css"
+      }
+    },
     "css:components/menu.css": {
       "path": "css/css/components/menu.css",
       "mediaType": "text/css",
@@ -339,6 +379,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./menu.css"
+      }
+    },
+    "css:components/nav-menu.css": {
+      "path": "css/css/components/nav-menu.css",
+      "mediaType": "text/css",
+      "sha256": "49a48d55dc2bd7c5b145d2d7a7ea416127242a108d2af34d05823570ea954657",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./nav-menu.css"
       }
     },
     "css:components/popover.css": {
@@ -401,6 +451,16 @@
         "export": "./section.css"
       }
     },
+    "css:components/setup-layout.css": {
+      "path": "css/css/components/setup-layout.css",
+      "mediaType": "text/css",
+      "sha256": "b237f6f9684cdb47ca6bb85f992ea81ae3aafe725cada03e969fc51a782ef548",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./setup-layout.css"
+      }
+    },
     "css:components/skeleton.css": {
       "path": "css/css/components/skeleton.css",
       "mediaType": "text/css",
@@ -419,6 +479,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./stack.css"
+      }
+    },
+    "css:components/stepper.css": {
+      "path": "css/css/components/stepper.css",
+      "mediaType": "text/css",
+      "sha256": "db30ece4050612e250c0dbb21a3501fcfb9172cdd39e5ea5e9ef9262c1bd7626",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./stepper.css"
       }
     },
     "css:components/switch.css": {
@@ -451,6 +521,16 @@
         "export": "./textarea.css"
       }
     },
+    "css:components/table-of-contents.css": {
+      "path": "css/css/components/table-of-contents.css",
+      "mediaType": "text/css",
+      "sha256": "a1f0d843b735ee596ec46e41b77bc701d206faa57b12d8c0267db41b5aac57b5",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./table-of-contents.css"
+      }
+    },
     "css:components/tabs.css": {
       "path": "css/css/components/tabs.css",
       "mediaType": "text/css",
@@ -459,6 +539,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./tabs.css"
+      }
+    },
+    "css:components/tag.css": {
+      "path": "css/css/components/tag.css",
+      "mediaType": "text/css",
+      "sha256": "22b09bc3cca880523f38b66a03f9a8886d6df91e2d50e2ba93a6f65cad80102e",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./tag.css"
       }
     },
     "css:components/tooltip.css": {

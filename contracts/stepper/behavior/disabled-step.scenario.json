@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "stepper-disabled-step",
+  "case": "stepper-default",
+  "steps": [
+    { "action": "click", "target": "step-third" },
+    { "expect": "attribute", "target": "step-second", "name": "aria-current", "value": "step" }
+  ]
+}

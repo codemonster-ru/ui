@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "name": "SetupLayout",
+  "slug": "setup-layout",
+  "razorTag": "cm-setup-layout",
+  "description": "A centred panel for a setup or onboarding step, with a heading, body and actions. Enter advances and Escape goes back, except where the focused control needs those keys itself.",
+  "props": {
+    "title": { "type": "nullable", "required": false, "default": null },
+    "description": { "type": "nullable", "required": false, "default": null },
+    "asidePosition": { "type": "enum", "required": false, "default": "right", "values": ["left", "right"] },
+    "keyboardNavigation": { "type": "boolean", "required": false, "default": true }
+  },
+  "slots": {
+    "default": { "required": true, "description": "Step content." },
+    "brand": { "required": false },
+    "toolbar": { "required": false },
+    "aside": { "required": false },
+    "title": { "required": false, "description": "Replaces the title prop." },
+    "description": { "required": false, "description": "Replaces the description prop." },
+    "actions": { "required": false, "description": "Controls that advance or go back." },
+    "footer": { "required": false }
+  },
+  "events": {
+    "next": { "description": "Enter was pressed somewhere it means advance.", "payloadContract": "void" },
+    "back": { "description": "Escape was pressed.", "payloadContract": "void" }
+  },
+  "states": ["default"]
+}

@@ -63,7 +63,7 @@ const requiredComponentCssImports = {
   './document-layout': ['../container.css', '../document-layout.css'],
   './setup-layout': ['../container.css', '../setup-layout.css'],
 };
-const themeUtilsTypesTarPath = 'package/dist/layouts/src/theme/utils.d.ts';
+const themeUtilsTypesTarPath = 'package/dist/vueforge-layouts/src/theme/utils.d.ts';
 
 if (!cssExportTargets.length) {
   throw new Error('Expected at least one CSS export in package.json exports.');

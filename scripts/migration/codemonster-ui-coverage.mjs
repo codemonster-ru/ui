@@ -112,7 +112,12 @@ export function discoverCoverageArtifacts(coverage, root = repositoryRoot) {
     razorComponents: razorComponentRegistrations(
       readFileSync(resolve(root, 'packages/razor/src/UiComponentProvider.php'), 'utf8'),
     ),
-    vueComponents: defaultComponentExports(readFileSync(resolve(root, 'packages/vue/src/index.ts'), 'utf8')),
+    // Layouts are published from their own package but are delivered targets like any other, so
+    // both entry points are read. Without this a layout could ship with no coverage record.
+    vueComponents: new Set([
+      ...defaultComponentExports(readFileSync(resolve(root, 'packages/vue/src/index.ts'), 'utf8')),
+      ...defaultComponentExports(readFileSync(resolve(root, 'packages/layouts/src/index.ts'), 'utf8')),
+    ]),
   };
 }
 

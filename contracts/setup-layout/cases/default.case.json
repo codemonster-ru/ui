@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "setup-layout-default",
+  "description": "A titled step with body content and actions.",
+  "props": { "title": "Create your workspace", "description": "This takes a minute." },
+  "slots": { "default": "Workspace name", "actions": "Continue" }
+}

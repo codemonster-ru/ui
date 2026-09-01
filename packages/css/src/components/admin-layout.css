@@ -1,0 +1,144 @@
+/*
+ * The layout reads its own state from attributes on the root rather than from classes a framework
+ * toggles. That is what lets one stylesheet serve both adapters and a server-rendered page that has
+ * not run JavaScript yet.
+ */
+.cm-admin-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  min-block-size: 100dvb;
+}
+
+.cm-admin-layout__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-3);
+  inline-size: 16rem;
+  padding: var(--cm-space-3);
+  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  background: var(--cm-color-background-surface);
+  transition: inline-size var(--cm-motion-duration-fast) var(--cm-motion-easing-standard);
+}
+
+.cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside {
+  inline-size: 4rem;
+}
+
+.cm-admin-layout__main {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.cm-admin-layout__header {
+  display: flex;
+  align-items: center;
+  gap: var(--cm-space-2);
+  padding: var(--cm-space-2) var(--cm-space-3);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.cm-admin-layout__header-content {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.cm-admin-layout__content {
+  flex: 1 1 auto;
+  padding: var(--cm-space-3);
+}
+
+.cm-admin-layout__footer {
+  padding: var(--cm-space-2) var(--cm-space-3);
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.cm-admin-layout__mobile-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cm-radius-control-tight);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cm-admin-layout__mobile-toggle-icon,
+.cm-admin-layout__mobile-toggle-icon::before,
+.cm-admin-layout__mobile-toggle-icon::after {
+  display: block;
+  inline-size: 1rem;
+  block-size: var(--cm-border-width);
+  background: currentcolor;
+}
+
+.cm-admin-layout__mobile-toggle-icon {
+  position: relative;
+}
+
+.cm-admin-layout__mobile-toggle-icon::before,
+.cm-admin-layout__mobile-toggle-icon::after {
+  position: absolute;
+  content: '';
+}
+
+.cm-admin-layout__mobile-toggle-icon::before {
+  inset-block-start: -0.3125rem;
+}
+
+.cm-admin-layout__mobile-toggle-icon::after {
+  inset-block-start: 0.3125rem;
+}
+
+.cm-admin-layout__mobile-toggle,
+.cm-admin-layout__mobile-brand,
+.cm-admin-layout__mobile-backdrop {
+  display: none;
+}
+
+/*
+ * Below the breakpoint the sidebar becomes a drawer: off-canvas by default, slid in when the root
+ * says the drawer is open, with a backdrop that closes it.
+ */
+@media (width < 48rem) {
+  .cm-admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cm-admin-layout__mobile-toggle,
+  .cm-admin-layout__mobile-brand {
+    display: block;
+  }
+
+  .cm-admin-layout__aside {
+    position: fixed;
+    z-index: 2;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 16rem;
+    translate: -100% 0;
+    transition: translate var(--cm-motion-duration-fast) var(--cm-motion-easing-standard);
+  }
+
+  .cm-admin-layout[data-cm-mobile-sidebar-open='true'] .cm-admin-layout__aside {
+    translate: 0 0;
+  }
+
+  .cm-admin-layout[data-cm-mobile-sidebar-open='true'] .cm-admin-layout__mobile-backdrop {
+    position: fixed;
+    z-index: 1;
+    display: block;
+    inset: 0;
+    background: var(--cm-color-background-overlay);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-admin-layout__aside {
+    transition: none;
+  }
+}
