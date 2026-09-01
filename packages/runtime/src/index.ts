@@ -28,6 +28,8 @@ export type { DropdownOpenChangeDetail } from './dropdown.js';
 export { CmMenuController, createCmMenuController } from './menu.js';
 export type { MenuSelectDetail } from './menu.js';
 export { CmPopoverController, createCmPopoverController } from './popover.js';
+export { CmThemeSwitchController, createCmThemeSwitchController } from './theme-switch.js';
+export type { ThemeChangeDetail } from './theme-switch.js';
 export type { PopoverOpenChangeDetail } from './popover.js';
 export { CmTabsController, createCmTabsController } from './tabs.js';
 export type { TabsValueChangeDetail } from './tabs.js';

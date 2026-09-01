@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "theme-switch-choose-dark",
+  "case": "theme-switch-default",
+  "steps": [
+    { "action": "click", "target": "dark" },
+    { "expect": "eventCount", "target": "root", "name": "theme-change", "count": 1 },
+    { "action": "click", "target": "light" },
+    { "expect": "eventCount", "target": "root", "name": "theme-change", "count": 2 }
+  ]
+}
