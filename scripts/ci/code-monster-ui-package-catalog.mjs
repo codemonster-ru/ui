@@ -12,6 +12,13 @@ export const codeMonsterUiNpmPackages = Object.freeze([
     name: '@codemonster-ru/ui-vue',
     releaseOrder: 4,
   },
+  // A layout composes components, so it releases after them.
+  {
+    directory: 'layouts',
+    frameworkPeers: { vue: '^3.5.0' },
+    name: '@codemonster-ru/ui-layouts',
+    releaseOrder: 5,
+  },
   {
     directory: 'react',
     frameworkPeers: { react: '^19.2.0', 'react-dom': '^19.2.0' },
@@ -40,11 +47,20 @@ export const codeMonsterUiPackageSizeBudgets = Object.freeze({
   // The shared core lives here, so this package carries logic the adapters used to duplicate.
   // Measured 31.45 KiB before that move and 33.29 KiB after, while ui-vue fell from 24.82 to
   // 24.16: one implementation costs about 1.2 KiB more than two specialised ones, which is the
-  // deliberate trade. Headroom is kept deliberately tight so the next growth is a decision too.
-  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 36 * 1024 },
+  // deliberate trade.
+  //
+  // The tight headroom then did its job twice. Carrying ColumnChooser and TableOfContents across
+  // pushed this to 36.06 KiB against a 36 KiB limit; the remaining components and the three layouts
+  // pushed it to 40.34 against 40. Both failed rather than passing unnoticed, which is the point of
+  // sizing this to what is measured rather than to what is comfortable.
+  //
+  // 48 KiB now, with the shared core at seventeen modules serving every component and layout. The
+  // theme subsystem is the one deferred addition that would grow it further.
+  '@codemonster-ru/ui-runtime': { cssGzip: 0, cssRaw: 0, jsGzip: 48 * 1024 },
   '@codemonster-ru/ui-css': { cssGzip: 48 * 1024, cssRaw: 320 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-utilities': { cssGzip: 32 * 1024, cssRaw: 256 * 1024, jsGzip: 8 * 1024 },
   '@codemonster-ru/ui-vue': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },
+  '@codemonster-ru/ui-layouts': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 64 * 1024 },
   '@codemonster-ru/ui-react': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },
   '@codemonster-ru/ui-angular': { cssGzip: 8 * 1024, cssRaw: 32 * 1024, jsGzip: 128 * 1024 },
 });

@@ -437,19 +437,23 @@
       }
     },
     "VfDataTableColumnChooser": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmColumnChooser",
+        "contract": "column-chooser",
+        "razorTag": "column-chooser",
+        "documentation": "docs/components/data-tables.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "CmDataTable visibleColumnKeys plus CmCheckbox and CmPopover cover the portable visibility boundary; required-column policy, chooser placement, persistence, optimistic updates, and rollback remain application-owned",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Column visibility with required columns that cannot be cleared, reported in declaration order. Renders the Popover structure and is driven by the Popover controller. The visibility rules live in the shared core; the Razor adapter ports them and is held to the same canonical DOM.",
           "evidence": [
-            "docs/core/components/data-table-column-chooser/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "contracts/data-table/contract.md",
-            "contracts/checkbox/contract.md",
-            "contracts/popover/contract.md"
+            "contracts/column-chooser/manifest.json",
+            "contracts/column-chooser/cases/default.html",
+            "docs/components/data-tables.md"
           ]
         }
       ]
@@ -889,18 +893,23 @@
       }
     },
     "VfMenuBar": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmMenuBar",
+        "contract": "menu-bar",
+        "razorTag": "menu-bar",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Native navigation with CmInline and CmLink supersedes the static flat site-navigation subset; nested command-menubar structure, two-axis keyboard behavior, shortcuts, routing, and authorization remain application-owned without shared Razor demand",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "role=menubar with nested role=menu submenus, one open path at a time, and keyboard rules stated once in the shared core: the same arrow opens, walks or moves along the bar depending on where focus sits, with the horizontal pair swapped under rtl. Submenus are positioned by CSS and stay in the markup while closed.",
           "evidence": [
-            "docs/core/components/menu-bar/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "contracts/inline/contract.md",
-            "contracts/link/contract.md"
+            "contracts/menu-bar/manifest.json",
+            "contracts/menu-bar/cases/default.html",
+            "docs/components/navigation.md"
           ]
         }
       ]
@@ -949,54 +958,45 @@
       }
     },
     "VfMenuItem": {
-      "disposition": "manual",
+      "disposition": "compose",
       "capabilities": [
         {
           "id": "reviewed-disposition",
           "status": "superseded",
-          "notes": "CmMenu covers action/link states, rich item content, safe link metadata, and selection through its portable collection",
+          "notes": "Covered by Menu: CmMenu renders each entry from CmMenuItem data as the same anchor or button with role=\"menuitem\", href, target, rel, disabled, active and tone, with a per-item slot in place of the icon prop. A separate component would be a second way to render one thing.",
           "evidence": [
-            "docs/core/components/menu/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/menu/contract.md"
-          ]
-        },
-        {
-          "id": "standalone-item-component",
-          "status": "superseded",
-          "notes": "A standalone MenuItem adapter is unnecessary because the matured CmMenu collection owns item semantics and composition",
-          "evidence": [
-            "docs/core/components/menu/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/menu/contract.md"
+            "contracts/menu/manifest.json",
+            "contracts/menu/cases/default.html",
+            "docs/components/navigation.md"
           ]
         }
       ]
     },
     "VfNavMenu": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmNavMenu",
+        "contract": "nav-menu",
+        "razorTag": "nav-menu",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "superseded",
-          "notes": "Split: Routing, authorization, active location, and compact sidebar policy are application-owned; a generic nested disclosure navigation pattern may still be portable",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Nested branches with single and multiple expand modes, group headings, and the path to the active item opened automatically, from the shared tree core. A collapsed branch stays in the markup so a page without JavaScript shows the whole tree.",
           "evidence": [
-            "docs/core/components/nav-menu/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/menu/contract.md",
-            "contracts/link/contract.md"
+            "contracts/nav-menu/manifest.json",
+            "contracts/nav-menu/cases/default.html",
+            "docs/components/navigation.md"
           ]
         },
         {
-          "id": "remaining-migration-outcome",
-          "status": "application-owned",
-          "notes": "Native navigation and CmLink composition supersede the static link-list subset; nested disclosure state, routing, authorization, active location, and compact sidebar policy remain application-owned without shared Razor demand",
-          "evidence": [
-            "docs/core/components/nav-menu/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "contracts/link/contract.md"
-          ]
+          "id": "migration-outcome",
+          "status": "supported",
+          "notes": "Two deliberate differences from VueForge: a leading icon is a per-item slot rather than an icon prop, since this package does not depend on an icon library; and the sidebar narrows with a CSS container query rather than a resize observer, which also works on a server-rendered page.",
+          "evidence": ["docs/components/navigation.md", "packages/css/src/components/nav-menu.css"]
         }
       ]
     },
@@ -1308,16 +1308,23 @@
       ]
     },
     "VfStepper": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmStepper",
+        "contract": "stepper",
+        "razorTag": "stepper",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "A semantic ordered list supersedes static step progress; current-step transitions, disabled policy, validation, routing, and keyboard workflow remain application-owned without shared Razor demand",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Complete, current, upcoming and disabled step states, horizontal and vertical orientation, and roving arrow navigation taken from the shared core rather than written again. Progress is a factor the rail renders from, so a filled rail is one rule instead of a class per step.",
           "evidence": [
-            "docs/core/components/stepper/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md"
+            "contracts/stepper/manifest.json",
+            "contracts/stepper/cases/default.html",
+            "docs/components/navigation.md"
           ]
         }
       ]
@@ -1398,18 +1405,23 @@
       }
     },
     "VfTableOfContents": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmTableOfContents",
+        "contract": "table-of-contents",
+        "razorTag": "table-of-contents",
+        "documentation": "docs/components/navigation.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Native navigation with CmLink and CmStack supersedes the static authored outline; heading discovery, active-location observation, smooth scrolling, offsets, and document synchronization remain application-owned without shared Razor demand",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Anchor navigation that works without JavaScript, nested by heading level, with the active heading marked by aria-current. Smooth scrolling and a header offset are an enhancement the shared core computes; the click is left to the browser when neither is asked for.",
           "evidence": [
-            "docs/core/components/table-of-contents/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "contracts/link/contract.md",
-            "contracts/stack/contract.md"
+            "contracts/table-of-contents/manifest.json",
+            "contracts/table-of-contents/cases/default.html",
+            "docs/components/navigation.md"
           ]
         }
       ]
@@ -1441,28 +1453,24 @@
       ]
     },
     "VfTag": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmTag",
+        "contract": "tag",
+        "razorTag": "tag",
+        "documentation": "docs/components/display.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "superseded",
-          "notes": "CmBadge supersedes the non-interactive status/category semantics and tones; `warn` migrates to `warning`, while a distinct outlined presentation has no product demand",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Outlined label with the eight shared tones, rendered from one canonical DOM by the Vue and Annabel Razor adapters. Badge remains the filled counterpart.",
           "evidence": [
-            "docs/core/components/tag/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/badge/contract.md",
-            "docs/verification/consumer-usage-inventory.md"
-          ]
-        },
-        {
-          "id": "remaining-migration-outcome",
-          "status": "superseded",
-          "notes": "The distinct Tag component is rejected as a visual-only duplicate; migrate manually to CmBadge",
-          "evidence": [
-            "docs/core/components/tag/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/badge/contract.md",
-            "docs/verification/consumer-usage-inventory.md"
+            "contracts/tag/manifest.json",
+            "contracts/tag/cases/default.html",
+            "contracts/tag/cases/primary.html",
+            "docs/components/display.md"
           ]
         }
       ]
@@ -1786,41 +1794,52 @@
       ]
     },
     "VfAdminLayout": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmAdminLayout",
+        "contract": "admin-layout",
+        "razorTag": "admin-layout",
+        "documentation": "docs/components/layouts.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Routing, authorization, collapse/preview behavior, mobile drawer state, focus restoration, and commands are admin-application policy",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Collapsible sidebar, header, content and footer regions, with a mobile drawer below 48rem. State is rendered as data-cm-* attributes on the root so both adapters carry it and CSS reads it before JavaScript runs.",
           "evidence": [
-            "docs/layouts/components/admin-layout/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/drawer/contract.md",
-            "contracts/menu/contract.md",
-            "contracts/grid/contract.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "docs/architecture/application-shell-ownership.md"
-          ],
-          "roadmapItem": "CMUI-188"
+            "contracts/admin-layout/manifest.json",
+            "contracts/admin-layout/cases/default.html",
+            "docs/components/layouts.md"
+          ]
+        },
+        {
+          "id": "migration-outcome",
+          "status": "supported",
+          "notes": "Slots no longer receive a scope object. VfAdminLayout handed each slot the shell state plus five control functions, which is what made it unportable; state is now an attribute the markup carries and controls are marked with data attributes a controller listens for.",
+          "evidence": ["docs/components/layouts.md", "docs/architecture/layout-line-ownership.md"]
         }
       ]
     },
     "VfAdminShell": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmAdminShell",
+        "contract": "admin-shell",
+        "razorTag": "admin-shell",
+        "documentation": "docs/components/layouts.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Global topbar, brand, navigation, workspace, and footer structure encode product information architecture",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Topbar, sidebar, workspace and footer regions. The layout holds no state, so it needs neither attributes nor a controller and both adapters render the same frame.",
           "evidence": [
-            "docs/layouts/components/admin-shell/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/container/contract.md",
-            "contracts/grid/contract.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "docs/architecture/application-shell-ownership.md"
-          ],
-          "roadmapItem": "CMUI-188"
+            "contracts/admin-shell/manifest.json",
+            "contracts/admin-shell/cases/default.html",
+            "docs/components/layouts.md"
+          ]
         }
       ]
     },
@@ -1908,27 +1927,29 @@
       ]
     },
     "VfSetupLayout": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmSetupLayout",
+        "contract": "setup-layout",
+        "razorTag": "setup-layout",
+        "documentation": "docs/components/layouts.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Enter/Escape workflow commands, validation sequencing, step navigation, and responsive regions belong to the setup application",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Centred step panel with heading, body and actions. Enter advances and Escape goes back, and the rule for when Enter belongs to the focused control instead lives in the shared core so both adapters agree.",
           "evidence": [
-            "docs/layouts/components/setup-layout/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/container/contract.md",
-            "contracts/grid/contract.md",
-            "contracts/stack/contract.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "docs/architecture/application-shell-ownership.md"
-          ],
-          "roadmapItem": "CMUI-188"
+            "contracts/setup-layout/manifest.json",
+            "contracts/setup-layout/cases/default.html",
+            "docs/components/layouts.md"
+          ]
         }
       ]
     },
     "VfHeaderArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
@@ -1943,7 +1964,7 @@
       ]
     },
     "VfSidebarArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
@@ -1958,7 +1979,7 @@
       ]
     },
     "VfContentArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
@@ -1973,7 +1994,7 @@
       ]
     },
     "VfAsideArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",
@@ -1988,7 +2009,7 @@
       ]
     },
     "VfFooterArea": {
-      "disposition": "manual",
+      "disposition": "drop",
       "capabilities": [
         {
           "id": "reviewed-disposition",

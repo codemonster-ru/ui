@@ -1,18 +1,23 @@
 # Display components
 
-Badge, Alert, Avatar, Divider, and Skeleton are framework-independent display primitives with the
-same significant DOM in Vue and Annabel Razor. Import shared styles once with
+Badge, Tag, Alert, Avatar, Divider, and Skeleton are framework-independent display primitives with
+the same significant DOM in Vue and Annabel Razor. Import shared styles once with
 `@codemonster-ru/ui-css/styles.css`.
+
+Badge and Tag differ only in how a tone reads. A tone fills a Badge, which suits a status; it
+outlines a Tag, which suits a category. Reach for Badge when the label reports what something *is
+doing*, and Tag when it reports what something *belongs to*.
 
 ## Vue
 
 ```vue
 <script setup lang="ts">
-import { CmAlert, CmAvatar, CmBadge, CmDivider, CmSkeleton } from '@codemonster-ru/ui-vue';
+import { CmAlert, CmAvatar, CmBadge, CmDivider, CmSkeleton, CmTag } from '@codemonster-ru/ui-vue';
 </script>
 
 <template>
   <CmBadge tone="success">Published</CmBadge>
+  <CmTag tone="primary">Platform</CmTag>
   <CmAlert tone="warning" title="Review required">Check the highlighted fields.</CmAlert>
   <CmAvatar label="AK" shape="circle" />
   <CmDivider />
@@ -24,6 +29,7 @@ import { CmAlert, CmAvatar, CmBadge, CmDivider, CmSkeleton } from '@codemonster-
 
 ```php
 <cm-badge tone="success">Published</cm-badge>
+<cm-tag tone="primary">Platform</cm-tag>
 <cm-alert tone="warning" title="Review required">Check the highlighted fields.</cm-alert>
 <cm-avatar label="AK" shape="circle" />
 <cm-divider />

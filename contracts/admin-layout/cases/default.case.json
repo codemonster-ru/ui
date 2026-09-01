@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "admin-layout-default",
+  "description": "Expanded sidebar with a closed mobile drawer.",
+  "props": { "id": "workspace" },
+  "slots": {
+    "default": "Dashboard",
+    "brand": "Acme",
+    "aside": "Navigation",
+    "header": "Projects"
+  }
+}

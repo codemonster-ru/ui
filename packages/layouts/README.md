@@ -1,85 +1,45 @@
-# VueForge Layouts
+# CodeMonster UI Layouts
 
-![npm version](https://img.shields.io/npm/v/@codemonster-ru/vueforge-layouts)
-![npm downloads](https://img.shields.io/npm/dm/@codemonster-ru/vueforge-layouts)
-![publish](https://img.shields.io/github/actions/workflow/status/codemonster-ru/vueforge/release-from-tag.yml?label=publish)
-![license](https://img.shields.io/npm/l/@codemonster-ru/vueforge-layouts)
+Page layouts for CodeMonster UI, rendered by the Vue adapter.
 
-Responsive layout primitives and application shells for VueForge-based Vue 3 applications.
-
-Coordinated release: `@codemonster-ru/vueforge-layouts@2.1.2`.
+Current version: `@codemonster-ru/ui-layouts@2.0.0-dev.0` — in development, not published.
 
 ## Requirements
 
-- Node.js 18 or newer for consumer tooling and SSR.
+- Node.js `^22.22.3`, `^24.15.0`, or `>=26.0.0` for package tooling and SSR.
 - Vue `^3.5.0`.
-- `@codemonster-ru/vueforge-core` `^2.1.0`.
 
-## Install
-
-```bash
-npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0 @codemonster-ru/vueforge-layouts
-```
+## Installation
 
 ```bash
-pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0 @codemonster-ru/vueforge-layouts
-```
-
-```bash
-yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.1.0 @codemonster-ru/vueforge-layouts
+npm install vue@^3.5.0 @codemonster-ru/ui-layouts@^2.0.0-dev.0 @codemonster-ru/ui-vue@^2.0.0-dev.0 @codemonster-ru/ui-css@^2.0.0-dev.0
 ```
 
 ## Quick start
 
-```ts
-import { createApp } from 'vue';
-import VueForgeLayouts, { VfAppShell } from '@codemonster-ru/vueforge-layouts';
-import '@codemonster-ru/vueforge-core/styles.css';
-import '@codemonster-ru/vueforge-layouts/styles.css';
-
-const app = createApp({});
-app.use(VueForgeLayouts);
-app.component('VfAppShell', VfAppShell);
-```
-
-The Layouts plugin installs the Core theme plugin and applies layout theme configuration. It does
-not globally register layout components.
-
-## Granular setup
+The package carries no layouts yet. `AdminLayout`, `AdminShell`, and `SetupLayout` arrive once the
+attribute contract that lets the Annabel Razor adapter express their state is designed, and this
+section will show them then.
 
 ```ts
-import '@codemonster-ru/vueforge-core/tokens.css';
-import '@codemonster-ru/vueforge-core/theme.css';
-import '@codemonster-ru/vueforge-core/base.css';
-import '@codemonster-ru/vueforge-layouts/tokens.css';
-import '@codemonster-ru/vueforge-layouts/theme.css';
-import '@codemonster-ru/vueforge-layouts/base.css';
-import VfAppShell from '@codemonster-ru/vueforge-layouts/app-shell';
-import VfContainer from '@codemonster-ru/vueforge-layouts/container';
+// Nothing is exported yet.
+import {} from '@codemonster-ru/ui-layouts';
 ```
 
-Browser component subpaths auto-load their component CSS, but not the Core or Layouts shared
-foundation entries shown above. Node ESM subpath conditions are CSS-free for SSR.
+## What belongs here
 
-For fully manual browser delivery, import named components from the CSS-free package root and add
-their component CSS explicitly; do not combine explicit component CSS with a browser component
-subpath. `auth-layout`, `document-layout`, and `setup-layout` also require `container.css`. Their
-browser subpaths include it automatically.
+A layout composes components into a page shell: its regions, their geometry, and the state deciding
+whether a region is shown. Components live in [`ui-vue`](../vue/README.md); the two are separate
+packages so that the two things can be named apart.
 
-## Public entries
+Layouts render the same canonical DOM as the Annabel Razor adapter, and their state is expressed as
+`data-cm-*` attributes rather than framework-specific slot scopes, so both adapters can carry it.
 
-- Root plugin, layout components, responsive composables, and theme helpers.
-- Seventeen component subpaths, including `./container`, `./grid`, `./app-shell`, and shell areas.
-- Full and granular CSS entries, including `./styles.css`, `./breakpoints.css`, and component CSS.
-- ESM and CommonJS root entries for SSR.
+## Documentation
 
-## More documentation
-
-For full documentation, visit [docs.codemonster.net/vueforge/layouts](https://docs.codemonster.net/vueforge/layouts/).
-See the repository
-[installation guide](https://github.com/codemonster-ru/ui/blob/main/docs/layouts/installation.md)
-and [CHANGELOG.md](https://github.com/codemonster-ru/ui/blob/main/packages/layouts/CHANGELOG.md).
+See [layout line ownership](../../docs/architecture/layout-line-ownership.md) for what this package
+carries, what was dropped, and what remains deferred.
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/ui/blob/main/packages/layouts/LICENSE)
+[MIT](./LICENSE)

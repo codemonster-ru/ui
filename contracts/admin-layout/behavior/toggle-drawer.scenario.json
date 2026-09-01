@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "admin-layout-toggle-drawer",
+  "case": "admin-layout-default",
+  "steps": [
+    { "expect": "attribute", "target": "root", "name": "data-cm-mobile-sidebar-open", "value": "false" },
+    { "action": "click", "target": "mobile-toggle" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-mobile-sidebar-open", "value": "true" },
+    { "expect": "attribute", "target": "mobile-toggle", "name": "aria-expanded", "value": "true" },
+    { "action": "press", "target": "root", "key": "Escape" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-mobile-sidebar-open", "value": "false" }
+  ]
+}

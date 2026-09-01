@@ -6,7 +6,7 @@ const repoRoot = path.resolve(new URL('../..', import.meta.url).pathname);
 
 const packageEntrypoints = {
   '@codemonster-ru/vueforge-core': path.join(repoRoot, 'packages/core/src/index.ts'),
-  '@codemonster-ru/vueforge-layouts': path.join(repoRoot, 'packages/layouts/src/index.ts'),
+  '@codemonster-ru/vueforge-layouts': path.join(repoRoot, 'packages/vueforge-layouts/src/index.ts'),
 };
 
 const scanRoots = [

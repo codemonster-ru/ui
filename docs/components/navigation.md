@@ -105,3 +105,139 @@ page load.
 - Dropdown is a disclosure, not a modal: it does not trap focus, teleport content, or calculate
   floating coordinates.
 - Do not initialize the shared runtime over Vue-owned navigation components.
+
+## Table of contents
+
+`CmTableOfContents` is a nav of anchor links to headings on the page. It needs no JavaScript: a
+browser follows `#id` on its own, so the list works from server-rendered markup alone.
+
+`smooth` and `scrollOffset` are the enhancement layered over that, for pages with a sticky header
+that would otherwise cover the heading being jumped to. Without either, the click is left alone
+rather than intercepted and reimplemented. Nesting comes from each item's `level`, clamped to the
+six levels that exist.
+
+```vue
+<script setup lang="ts">
+import { CmTableOfContents } from '@codemonster-ru/ui-vue';
+
+const items = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'install', label: 'Installation', level: 2 },
+  { id: 'usage', label: 'Usage', level: 2 },
+];
+</script>
+
+<template>
+  <CmTableOfContents :items="items" active-id="install" :scroll-offset="64" smooth />
+</template>
+```
+
+```php
+<cm-table-of-contents :items="$items" active-id="install" />
+```
+
+## Stepper
+
+`CmStepper` walks a person through a sequence. Each step reads as complete, current or upcoming
+relative to the active one, and a disabled step stays disabled wherever it sits — "complete" and
+"upcoming" describe progress through steps that can actually be reached.
+
+Arrow keys move between steps and follow the orientation: left and right when horizontal, up and
+down when vertical. That is the same roving navigation Tabs, Accordion and Menu use, taken from the
+shared core rather than written again here.
+
+```vue
+<script setup lang="ts">
+import { CmStepper } from '@codemonster-ru/ui-vue';
+import { ref } from 'vue';
+
+const items = [
+  { value: 'account', label: 'Account' },
+  { value: 'billing', label: 'Billing', description: 'Payment details' },
+  { value: 'review', label: 'Review' },
+];
+const step = ref('billing');
+</script>
+
+<template>
+  <CmStepper v-model:value="step" :items="items" />
+</template>
+```
+
+```php
+<cm-stepper :items="$items" value="billing" />
+```
+
+## Nested navigation
+
+`CmNavMenu` renders a nested menu. Branches expand in place, and an uncontrolled menu opens the path
+to the active item itself — an active item nobody can see is the failure worth preventing.
+
+A collapsed branch stays in the markup and CSS closes it. That keeps the whole tree present on a
+page without JavaScript and lets a browser's find-in-page reach text inside a closed branch. The
+open and closed states animate with `grid-template-rows`, so no height is measured and both adapters
+behave identically.
+
+`kind: 'group'` renders a non-interactive section heading whose children are always shown.
+
+Two things differ from the VueForge component this replaces. A leading icon is a per-item slot
+rather than an `icon` prop, matching how Menu takes one, because this package does not depend on an
+icon library. And the sidebar variant narrows itself with a CSS container query instead of a resize
+observer, which means it also narrows correctly on a server-rendered page.
+
+```vue
+<script setup lang="ts">
+import { CmNavMenu } from '@codemonster-ru/ui-vue';
+
+const items = [
+  { value: 'dashboard', label: 'Dashboard', href: '/dashboard' },
+  {
+    value: 'projects',
+    label: 'Projects',
+    children: [{ value: 'active', label: 'Active', href: '/projects/active' }],
+  },
+];
+</script>
+
+<template>
+  <CmNavMenu :items="items" value="active" expand-mode="single" />
+</template>
+```
+
+```php
+<cm-nav-menu :items="$items" value="active" />
+```
+
+## Menu bar
+
+`CmMenuBar` is a horizontal bar of menus: `role="menubar"` with nested `role="menu"` submenus. It
+shows one path at a time, so opening a branch replaces the open path rather than adding to it.
+
+The keyboard is the part worth knowing, because the same arrow means different things depending on
+where focus sits. Down opens a branch on the bar but walks entries inside a submenu; right moves
+along the bar but opens a nested branch; left moves back along the bar but closes to the parent
+inside. The horizontal pair swaps under `rtl` and the vertical pair does not, because a submenu
+drops downward in both directions. Those rules are one function in the shared core rather than
+nested conditions in each adapter.
+
+Submenus are positioned by CSS and stay in the markup while closed, hidden rather than absent.
+
+```vue
+<script setup lang="ts">
+import { CmMenuBar } from '@codemonster-ru/ui-vue';
+
+const items = [
+  { value: 'file', label: 'File', children: [{ value: 'new', label: 'New' }] },
+  { value: 'help', label: 'Help', href: '/help' },
+];
+</script>
+
+<template>
+  <CmMenuBar :items="items" />
+</template>
+```
+
+```php
+<cm-menu-bar :items="$items" :open-path="['file']" />
+```
+

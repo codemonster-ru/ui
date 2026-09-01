@@ -14,6 +14,8 @@ export { default as CmCard } from './components/card/CmCard.vue';
 export type { CmCardElement, CmCardProps } from './components/card/card.types';
 export { default as CmCheckbox } from './components/checkbox/CmCheckbox.vue';
 export type { CmCheckboxProps, CmCheckboxSize } from './components/checkbox/checkbox.types';
+export { default as CmColumnChooser } from './components/column-chooser/CmColumnChooser.vue';
+export type { CmColumnChooserColumn, CmColumnChooserProps } from './components/column-chooser/column-chooser.types';
 export { default as CmCommandPalette } from './components/command-palette/CmCommandPalette.vue';
 export type { CmCommandPaletteItem, CmCommandPaletteProps } from './components/command-palette/command-palette.types';
 export { default as CmContainer } from './components/container/CmContainer.vue';
@@ -58,8 +60,17 @@ export { default as CmInline } from './components/inline/CmInline.vue';
 export type { CmInlineElement, CmInlineProps } from './components/inline/inline.types';
 export { default as CmLink } from './components/link/CmLink.vue';
 export type { CmLinkProps, CmLinkTone, CmLinkUnderline } from './components/link/link.types';
+export { default as CmMenuBar } from './components/menu-bar/CmMenuBar.vue';
+export type { CmMenuBarItem, CmMenuBarProps } from './components/menu-bar/menu-bar.types';
 export { default as CmMenu } from './components/menu/CmMenu.vue';
 export type { CmMenuItem, CmMenuItemTone, CmMenuProps } from './components/menu/menu.types';
+export { default as CmNavMenu } from './components/nav-menu/CmNavMenu.vue';
+export type {
+  CmNavMenuExpandMode,
+  CmNavMenuItem,
+  CmNavMenuProps,
+  CmNavMenuVariant,
+} from './components/nav-menu/nav-menu.types';
 export { default as CmPopover } from './components/popover/CmPopover.vue';
 export type { CmPopoverPlacement, CmPopoverProps } from './components/popover/popover.types';
 export { default as CmProgressBar } from './components/progress-bar/CmProgressBar.vue';
@@ -80,10 +91,25 @@ export { default as CmSkeleton } from './components/skeleton/CmSkeleton.vue';
 export type { CmSkeletonProps, CmSkeletonRadius } from './components/skeleton/skeleton.types';
 export { default as CmStack } from './components/stack/CmStack.vue';
 export type { CmStackElement, CmStackProps } from './components/stack/stack.types';
+export { default as CmStepper } from './components/stepper/CmStepper.vue';
+export type {
+  CmStepperContentPosition,
+  CmStepperItem,
+  CmStepperOrientation,
+  CmStepperProps,
+} from './components/stepper/stepper.types';
 export { default as CmSwitch } from './components/switch/CmSwitch.vue';
 export type { CmSwitchProps, CmSwitchSize } from './components/switch/switch.types';
 export { default as CmTable } from './components/table/CmTable.vue';
 export type { CmTableDensity, CmTableProps } from './components/table/table.types';
+export { default as CmTag } from './components/tag/CmTag.vue';
+export type { CmTagProps, CmTagTone } from './components/tag/tag.types';
+export { default as CmTableOfContents } from './components/table-of-contents/CmTableOfContents.vue';
+export type {
+  CmTableOfContentsItem,
+  CmTableOfContentsProps,
+  CmTableOfContentsVariant,
+} from './components/table-of-contents/table-of-contents.types';
 export { default as CmTabs } from './components/tabs/CmTabs.vue';
 export type { CmTabItem, CmTabsProps } from './components/tabs/tabs.types';
 export { default as CmTextarea } from './components/textarea/CmTextarea.vue';
