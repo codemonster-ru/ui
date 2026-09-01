@@ -65,7 +65,36 @@ export function findMissingControllers(declared, implemented) {
  */
 export function findInteractiveContractsWithoutScenarios(contracts) {
   return contracts
-    .filter(({ fixtures, hasScenarios }) => !hasScenarios && fixtures.some((source) => source.includes('data-cm-controller')))
+    .filter(
+      ({ fixtures, hasScenarios }) => !hasScenarios && fixtures.some((source) => source.includes('data-cm-controller')),
+    )
     .map(({ slug }) => slug)
     .sort();
+}
+
+const ssrSlugPatterns = [/contracts\/([a-z][a-z0-9-]*)\/cases/gu, /'?([a-z][a-z0-9-]*)'?\s*:\s*Cm[A-Za-z]+/gu];
+
+/** Reads the contract slugs a set of Vue SSR test sources compares against the canonical fixtures. */
+export function collectSsrCoveredSlugs(testSources) {
+  const covered = new Set();
+
+  for (const source of testSources) {
+    if (!source.includes('compareSignificantDom')) continue;
+    for (const pattern of ssrSlugPatterns) {
+      for (const match of source.matchAll(pattern)) covered.add(match[1]);
+    }
+  }
+
+  return covered;
+}
+
+/**
+ * Reports contracts whose Vue output is never compared against the canonical fixture.
+ *
+ * The Razor adapter has a parity test per component, so a contract missing from here is one where
+ * the canonical markup is enforced on one adapter only — and the fixture stops being a contract
+ * between two platforms the moment just one of them has to satisfy it.
+ */
+export function findContractsWithoutSsrCoverage(slugs, covered) {
+  return slugs.filter((slug) => !covered.has(slug)).sort();
 }

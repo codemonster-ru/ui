@@ -86,3 +86,14 @@ export {
 } from './tree.js';
 export type { CmTreeCoreItem } from './tree.js';
 export type { CmTabsCoreItem, CmTabsDirection } from './tabs.js';
+export {
+  cmThemeAttribute,
+  cmThemeCookieMaxAge,
+  cmThemeCookieName,
+  isCmThemeMode,
+  nextCmThemeMode,
+  readCmThemeCookie,
+  resolveCmTheme,
+  serializeCmThemeCookie,
+} from './theme.js';
+export type { CmResolvedTheme, CmThemeMode } from './theme.js';

@@ -104,6 +104,8 @@ export { default as CmTable } from './components/table/CmTable.vue';
 export type { CmTableDensity, CmTableProps } from './components/table/table.types';
 export { default as CmTag } from './components/tag/CmTag.vue';
 export type { CmTagProps, CmTagTone } from './components/tag/tag.types';
+export { default as CmThemeSwitch } from './components/theme-switch/CmThemeSwitch.vue';
+export type { CmThemeSwitchOption } from './components/theme-switch/theme-switch.types';
 export { default as CmTableOfContents } from './components/table-of-contents/CmTableOfContents.vue';
 export type {
   CmTableOfContentsItem,

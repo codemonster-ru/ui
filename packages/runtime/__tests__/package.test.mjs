@@ -24,6 +24,7 @@ test('publishes the framework-independent runtime entry', async () => {
     'CmSetupLayoutController',
     'CmStepperController',
     'CmTabsController',
+    'CmThemeSwitchController',
     'CmTooltipController',
     'createCmAccordionController',
     'createCmAdminLayoutController',
@@ -44,6 +45,7 @@ test('publishes the framework-independent runtime entry', async () => {
     'createCmSetupLayoutController',
     'createCmStepperController',
     'createCmTabsController',
+    'createCmThemeSwitchController',
     'createCmTooltipController',
     'dispatchCmEvent',
   ]);

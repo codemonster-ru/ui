@@ -235,6 +235,94 @@
   --cm-motion-ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-cm-theme='light']) {
+    --cm-color-background-canvas: var(--cm-palette-neutral-900);
+    --cm-color-background-surface: var(--cm-palette-neutral-850);
+    --cm-color-background-surface-subtle: var(--cm-palette-neutral-800);
+    --cm-color-background-surface-elevated: var(--cm-palette-neutral-750);
+    --cm-color-background-surface-hover: var(--cm-palette-neutral-800);
+    --cm-color-background-surface-active: var(--cm-palette-neutral-750);
+    --cm-color-background-surface-selected: var(--cm-palette-primary-900);
+    --cm-color-background-surface-selected-hover: var(--cm-palette-primary-800);
+    --cm-color-background-surface-selected-active: var(--cm-palette-primary-700);
+    --cm-color-background-surface-disabled: var(--cm-palette-neutral-800);
+    --cm-color-background-inverse: var(--cm-palette-neutral-200);
+    --cm-color-background-inverse-hover: var(--cm-palette-neutral-300);
+    --cm-color-background-inverse-active: var(--cm-palette-neutral-400);
+    --cm-color-background-inverse-subtle: var(--cm-palette-neutral-800);
+    --cm-color-background-backdrop: color-mix(in srgb, var(--cm-palette-neutral-1000) 56%, transparent);
+    --cm-color-text-primary: var(--cm-palette-neutral-200);
+    --cm-color-text-secondary: var(--cm-palette-neutral-300);
+    --cm-color-text-muted: var(--cm-palette-neutral-400);
+    --cm-color-text-disabled: var(--cm-palette-neutral-500);
+    --cm-color-text-placeholder: var(--cm-palette-neutral-400);
+    --cm-color-text-inverse: var(--cm-palette-neutral-950);
+    --cm-color-text-link: var(--cm-palette-primary-300);
+    --cm-color-text-link-hover: var(--cm-palette-primary-200);
+    --cm-color-text-link-active: var(--cm-palette-primary-400);
+    --cm-color-icon-primary: var(--cm-palette-neutral-200);
+    --cm-color-icon-secondary: var(--cm-palette-neutral-300);
+    --cm-color-icon-disabled: var(--cm-palette-neutral-500);
+    --cm-color-icon-inverse: var(--cm-palette-neutral-950);
+    --cm-color-border-subtle: var(--cm-palette-neutral-700);
+    --cm-color-border-default: var(--cm-palette-neutral-600);
+    --cm-color-border-strong: var(--cm-palette-neutral-500);
+    --cm-color-border-interactive: var(--cm-palette-neutral-500);
+    --cm-color-border-disabled: var(--cm-palette-neutral-700);
+    --cm-color-border-focus: var(--cm-palette-primary-300);
+    --cm-color-border-divider: var(--cm-palette-neutral-700);
+    --cm-color-border-inverse: var(--cm-palette-neutral-400);
+    --cm-color-interactive-primary-background: var(--cm-palette-primary-500);
+    --cm-color-interactive-primary-hover-background: var(--cm-palette-primary-600);
+    --cm-color-interactive-primary-active-background: var(--cm-palette-primary-700);
+    --cm-color-interactive-primary-subtle-background: var(--cm-palette-primary-900);
+    --cm-color-interactive-primary-subtle-foreground: var(--cm-palette-primary-300);
+    --cm-color-interactive-primary-border: var(--cm-palette-primary-400);
+    --cm-color-focus-ring: var(--cm-palette-primary-300);
+    --cm-color-selected-foreground: var(--cm-palette-primary-200);
+    --cm-color-status-success-solid-background: var(--cm-palette-success-500);
+    --cm-color-status-success-solid-foreground: var(--cm-palette-neutral-950);
+    --cm-color-status-success-subtle-background: var(--cm-palette-success-900);
+    --cm-color-status-success-subtle-foreground: var(--cm-palette-success-300);
+    --cm-color-status-success-border: var(--cm-palette-success-400);
+    --cm-color-status-success-icon: var(--cm-palette-success-300);
+    --cm-color-status-success-hover-background: var(--cm-palette-success-400);
+    --cm-color-status-success-active-background: var(--cm-palette-success-300);
+    --cm-color-status-warning-solid-background: var(--cm-palette-warning-500);
+    --cm-color-status-warning-subtle-background: var(--cm-palette-warning-900);
+    --cm-color-status-warning-subtle-foreground: var(--cm-palette-warning-300);
+    --cm-color-status-warning-border: var(--cm-palette-warning-400);
+    --cm-color-status-warning-icon: var(--cm-palette-warning-300);
+    --cm-color-status-warning-hover-background: var(--cm-palette-warning-400);
+    --cm-color-status-warning-active-background: var(--cm-palette-warning-300);
+    --cm-color-status-danger-solid-background: var(--cm-palette-danger-500);
+    --cm-color-status-danger-solid-foreground: var(--cm-palette-neutral-950);
+    --cm-color-status-danger-subtle-background: var(--cm-palette-danger-900);
+    --cm-color-status-danger-subtle-foreground: var(--cm-palette-danger-300);
+    --cm-color-status-danger-border: var(--cm-palette-danger-400);
+    --cm-color-status-danger-icon: var(--cm-palette-danger-300);
+    --cm-color-status-danger-hover-background: var(--cm-palette-danger-400);
+    --cm-color-status-danger-active-background: var(--cm-palette-danger-300);
+    --cm-color-status-info-solid-background: var(--cm-palette-info-500);
+    --cm-color-status-info-solid-foreground: var(--cm-palette-neutral-950);
+    --cm-color-status-info-subtle-background: var(--cm-palette-info-900);
+    --cm-color-status-info-subtle-foreground: var(--cm-palette-info-300);
+    --cm-color-status-info-border: var(--cm-palette-info-400);
+    --cm-color-status-info-icon: var(--cm-palette-info-300);
+    --cm-color-status-info-hover-background: var(--cm-palette-info-400);
+    --cm-color-status-info-active-background: var(--cm-palette-info-300);
+    --cm-color-status-help-solid-background: var(--cm-palette-help-500);
+    --cm-color-status-help-solid-foreground: var(--cm-palette-neutral-950);
+    --cm-color-status-help-subtle-background: var(--cm-palette-help-900);
+    --cm-color-status-help-subtle-foreground: var(--cm-palette-help-300);
+    --cm-color-status-help-border: var(--cm-palette-help-400);
+    --cm-color-status-help-icon: var(--cm-palette-help-300);
+    --cm-color-status-help-hover-background: var(--cm-palette-help-400);
+    --cm-color-status-help-active-background: var(--cm-palette-help-300);
+  }
+}
+
 [data-cm-theme='dark'] {
   --cm-color-background-canvas: var(--cm-palette-neutral-900);
   --cm-color-background-surface: var(--cm-palette-neutral-850);

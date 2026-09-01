@@ -251,8 +251,8 @@
     },
     {
       "source": "VfThemeSwitch",
-      "action": "manual",
-      "targets": ["CmButton"]
+      "action": "replace",
+      "targets": ["CmThemeSwitch"]
     },
     {
       "source": "VfTag",
