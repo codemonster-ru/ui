@@ -1,0 +1,2 @@
+<!-- prettier-ignore -->
+<nav class="{{ $classes }}" aria-label="{{ $ariaLabel }}"{!! $attributes !!}><ol class="cm-table-of-contents__list">@foreach ($items as $item)<li class="cm-table-of-contents__item" style="--cm-toc-level: {{ $item['level'] }}"><a class="cm-table-of-contents__link@if ($activeId === $item['id']) cm-table-of-contents__link--active@endif" href="{{ $item['href'] }}"@if ($activeId === $item['id']) aria-current="location"@endif>{{ $item['label'] }}</a></li>@endforeach</ol></nav>

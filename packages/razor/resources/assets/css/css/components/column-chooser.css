@@ -1,0 +1,21 @@
+/*
+ * ColumnChooser renders the Popover structure and adds only what a list of checkboxes needs. The
+ * popover stylesheet carries the surface, placement and open state; nothing is repeated here.
+ */
+.cm-column-chooser__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-2);
+  min-inline-size: 12rem;
+}
+
+.cm-column-chooser__all {
+  padding-block-end: var(--cm-space-2);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
+}
+
+.cm-column-chooser__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cm-space-1);
+}

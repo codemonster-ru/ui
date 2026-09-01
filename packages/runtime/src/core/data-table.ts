@@ -103,3 +103,64 @@ export function toggleAllSelection(
 export function clampPage(page: number, pageCount: number): number {
   return Math.min(Math.max(pageCount, 1), Math.max(1, page));
 }
+
+/**
+ * Reduces a requested set of visible columns to the ones actually shown.
+ *
+ * Required columns are always shown whether or not they were requested, an unknown key is ignored,
+ * and the result keeps the order the columns are declared in rather than the order they were
+ * picked. A `null` request means "everything", which is what an uncontrolled chooser starts from.
+ */
+export function resolveVisibleColumns(
+  columnKeys: readonly string[],
+  requested: readonly string[] | null,
+  requiredKeys: readonly string[] = [],
+): string[] {
+  const required = new Set(requiredKeys.filter((key) => columnKeys.includes(key)));
+  const wanted = new Set(requested ?? columnKeys);
+  return columnKeys.filter((key) => wanted.has(key) || required.has(key));
+}
+
+/** Resolves the visible columns after toggling one of them. A required column cannot be hidden. */
+export function toggleColumnVisibility(
+  columnKeys: readonly string[],
+  visibleKeys: readonly string[],
+  key: string,
+  visible: boolean,
+  requiredKeys: readonly string[] = [],
+): string[] {
+  const next = new Set(visibleKeys);
+  if (visible) next.add(key);
+  else next.delete(key);
+  return resolveVisibleColumns(columnKeys, [...next], requiredKeys);
+}
+
+/** Resolves the visible columns after toggling the "all columns" control. */
+export function toggleAllColumns(
+  columnKeys: readonly string[],
+  visible: boolean,
+  requiredKeys: readonly string[] = [],
+): string[] {
+  return resolveVisibleColumns(columnKeys, visible ? columnKeys : [], requiredKeys);
+}
+
+/**
+ * Resolves the "all columns" checkbox state.
+ *
+ * This deliberately differs from `resolveSelectionState` at the empty case. A table with no
+ * selectable rows is not "all selected", because the control offers an action there is nothing to
+ * perform. A chooser whose columns are all required *is* fully shown — there is nothing left to
+ * reveal — so it reads as checked and disabled rather than unchecked.
+ */
+export function resolveColumnChooserState(
+  optionalKeys: readonly string[],
+  visibleKeys: readonly string[],
+): CmDataTableSelectionState {
+  if (optionalKeys.length === 0) {
+    return { all: true, partial: false };
+  }
+
+  const visible = new Set(visibleKeys);
+  const shown = optionalKeys.filter((key) => visible.has(key)).length;
+  return { all: shown === optionalKeys.length, partial: shown > 0 && shown < optionalKeys.length };
+}

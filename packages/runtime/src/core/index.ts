@@ -9,6 +9,10 @@ export type { CmAccordionCoreItem } from './accordion.js';
 export {
   ariaSortFor,
   clampPage,
+  resolveColumnChooserState,
+  resolveVisibleColumns,
+  toggleAllColumns,
+  toggleColumnVisibility,
   formatTemplate,
   nextSortState,
   resolveSelectionState,
@@ -44,11 +48,41 @@ export {
 export type { CmDisclosureAction, CmDisclosureFocus, CmDisclosureState, CmTooltipDelay } from './disclosure.js';
 export { isInputClearVisible, resolveInputClearable, resolvePasswordReveal } from './input.js';
 export type { CmPasswordRevealLabels, CmPasswordRevealState } from './input.js';
+export { menuBarKeyAction } from './menu-bar.js';
+export type { CmMenuBarAction, CmMenuBarContext, CmMenuBarDirection } from './menu-bar.js';
 export { isMenuCloseKey, menuTabStopId, nextMenuItem } from './menu.js';
 export type { CmMenuCoreItem } from './menu.js';
 export { nextRovingIndex } from './roving.js';
 export type { CmRovingDirection, CmRovingOptions, CmRovingOrientation } from './roving.js';
+export {
+  cmShellAttributes,
+  resolveMobileToggleLabel,
+  shellEscapeState,
+  shouldEnterAdvance,
+  toggleShellMobileSidebar,
+  toggleShellSidebar,
+} from './shell.js';
+export type { CmSetupFocusTarget, CmShellState } from './shell.js';
 export { selectClosedKeyAction, selectOpenKeyAction } from './select.js';
+export { nextStepperValue, resolveStepperProgress, resolveStepperValue, resolveStepState } from './stepper.js';
+export type { CmStepperCoreItem, CmStepperStepState } from './stepper.js';
+export {
+  needsScrollEnhancement,
+  resolveAnchorTargetId,
+  resolveHeadingLevel,
+  resolveItemHref,
+  resolveScrollTarget,
+} from './table-of-contents.js';
+export type { CmTableOfContentsCoreItem } from './table-of-contents.js';
 export type { CmSelectAction, CmSelectFocusTarget } from './select.js';
 export { nextTabsValue, resolveTabsValue } from './tabs.js';
+export {
+  collectAncestorValues,
+  collectBranchValues,
+  expandToActive,
+  findSiblings,
+  isBranch,
+  toggleBranchValue,
+} from './tree.js';
+export type { CmTreeCoreItem } from './tree.js';
 export type { CmTabsCoreItem, CmTabsDirection } from './tabs.js';

@@ -1,59 +1,18 @@
-import './styles.css';
+/**
+ * Page layouts for CodeMonster UI.
+ *
+ * A layout composes components into a page shell: regions, their geometry, and the state deciding
+ * whether a region is shown. That is a different job from a component, which is why it is a
+ * different package — see docs/architecture/layout-line-ownership.md.
+ *
+ * Layout state is expressed as `data-cm-*` attributes on the layout root rather than a slot scope,
+ * because a scope is exactly what the Annabel Razor adapter cannot consume. The decisions live in
+ * `@codemonster-ru/ui-runtime/core` and both adapters render from them.
+ */
 
-export { default, VueForgeLayouts, createVueForgeLayouts } from './plugin';
-export { default as VfContainer } from './primitives/VfContainer.vue';
-export { default as VfStack } from './primitives/VfStack.vue';
-export { default as VfInline } from './primitives/VfInline.vue';
-export { default as VfSection } from './primitives/VfSection.vue';
-export { default as VfGrid } from './primitives/VfGrid.vue';
-
-export { default as VfAppShell } from './shell/VfAppShell.vue';
-export { default as VfAdminLayout } from './shell/VfAdminLayout.vue';
-export type {
-  VfAdminLayoutExposed,
-  VfAdminLayoutMobileSidebarScope,
-  VfAdminLayoutMobileToggleAttrs,
-  VfAdminLayoutProps,
-  VfAdminLayoutScope,
-} from './shell/admin-layout.types';
-export { default as VfAdminShell } from './shell/VfAdminShell.vue';
-export { default as VfDocumentLayout } from './shell/VfDocumentLayout.vue';
-export { default as VfAuthLayout } from './shell/VfAuthLayout.vue';
-export { default as VfErrorLayout } from './shell/VfErrorLayout.vue';
-export { default as VfSetupLayout } from './shell/VfSetupLayout.vue';
-export { default as VfHeaderArea } from './shell/VfHeaderArea.vue';
-export { default as VfSidebarArea } from './shell/VfSidebarArea.vue';
-export { default as VfContentArea } from './shell/VfContentArea.vue';
-export { default as VfAsideArea } from './shell/VfAsideArea.vue';
-export { default as VfFooterArea } from './shell/VfFooterArea.vue';
-export {
-  applyLayoutsThemeConfig,
-  createLayoutsPreset,
-  defaultLayoutsPreset,
-  layoutsPresetToCssText,
-  layoutsTokensToCssVars,
-  resolveLayoutsPreset,
-  resolveLayoutsThemeConfig,
-  resolveLayoutsThemeOptions,
-} from './theme/public';
-export type {
-  VfLayoutPreset,
-  VfLayoutThemeConfig,
-  VfLayoutThemeOptions,
-  VfLayoutTokens,
-  VfVueForgeLayoutsOptions,
-  VfVueForgeLayoutsThemeOptions,
-  VfResolvedLayoutPreset,
-  VfResolvedLayoutThemeConfig,
-  VfResolvedLayoutThemeOptions,
-} from './theme/public';
-export { useCssVarBreakpoints } from './composables/useCssVarBreakpoints';
-
-export {
-  vfBreakpoints,
-  toMinWidthQuery,
-  toMaxWidthQuery,
-  useBreakpoint,
-  useBreakpoints,
-  useBreakpointValue,
-} from '@codemonster-ru/vueforge-core/foundation';
+export { default as CmAdminShell } from './admin-shell/CmAdminShell.vue';
+export type { CmAdminShellProps } from './admin-shell/admin-shell.types';
+export { default as CmAdminLayout } from './admin-layout/CmAdminLayout.vue';
+export type { CmAdminLayoutProps } from './admin-layout/admin-layout.types';
+export { default as CmSetupLayout } from './setup-layout/CmSetupLayout.vue';
+export type { CmSetupLayoutAsidePosition, CmSetupLayoutProps } from './setup-layout/setup-layout.types';
