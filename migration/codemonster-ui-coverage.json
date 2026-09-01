@@ -1427,27 +1427,33 @@
       ]
     },
     "VfThemeSwitch": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmThemeSwitch",
+        "contract": "theme-switch",
+        "razorTag": "theme-switch",
+        "documentation": "docs/architecture/theme-subsystem.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Theme preference, persistence, system-mode policy, initial SSR attributes, and mutation ownership belong to application bootstrap; Switch or Button supplies the control",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Three-state theme preference rendered from one canonical DOM by the Vue and Annabel Razor adapters. Native radios carry the semantics, so the control works inside a form with no JavaScript.",
           "evidence": [
-            "docs/core/components/theme-switch/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/button/contract.md"
+            "contracts/theme-switch/manifest.json",
+            "contracts/theme-switch/cases/default.html",
+            "docs/architecture/theme-subsystem.md"
           ]
         },
         {
-          "id": "maintained-recipe",
+          "id": "reviewed-disposition",
           "status": "supported",
-          "notes": "Maintained Vue and Razor recipe uses Button as the control while SSR bootstrap, persistence, system mode, root mutation, and cross-tab synchronization remain application-owned",
+          "notes": "Supersedes the application-owned disposition. Persistence, system-mode policy and the initial server-rendered attribute are owned by the kit: the preference lives in a cookie the server can read, and `system` resolves in CSS through a media query rather than requiring JavaScript.",
           "evidence": [
-            "docs/recipes/theme-switch.md",
-            "docs/core/components/theme-switch/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/button/contract.md"
+            "docs/architecture/theme-subsystem.md",
+            "packages/runtime/src/core/theme.ts",
+            "packages/razor/src/Support/Theme.php"
           ]
         }
       ]

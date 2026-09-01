@@ -1,0 +1,2 @@
+<!-- prettier-ignore -->
+<fieldset class="{{ $classes }}" data-cm-controller="theme-switch"{!! $attributes !!}><legend class="cm-theme-switch__legend">{{ $legend }}</legend>@foreach ($options as $option)<label class="cm-theme-switch__option"><input class="cm-theme-switch__input" type="radio" name="{{ $name }}" value="{{ $option['value'] }}"@if ($option['checked']) checked@endif><span class="cm-theme-switch__label">{{ $option['label'] }}</span></label>@endforeach</fieldset>

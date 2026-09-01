@@ -3,7 +3,9 @@ import { join, resolve } from 'node:path';
 import {
   collectDeclaredControllers,
   collectImplementedControllers,
+  collectSsrCoveredSlugs,
   factoryNameFor,
+  findContractsWithoutSsrCoverage,
   findInteractiveContractsWithoutScenarios,
   findMissingControllers,
 } from './controller-coverage.mjs';
@@ -50,7 +52,9 @@ if (missing.length > 0) {
   for (const controller of missing) {
     console.error(`[controller-coverage]   data-cm-controller="${controller}" needs ${factoryNameFor(controller)}`);
   }
-  console.error('[controller-coverage] Without it the progressive-enhancement adapter renders the markup and does nothing.');
+  console.error(
+    '[controller-coverage] Without it the progressive-enhancement adapter renders the markup and does nothing.',
+  );
   process.exit(1);
 }
 
@@ -67,7 +71,27 @@ if (withoutScenarios.length > 0) {
   process.exit(1);
 }
 
+const vueTestsDirectory = join(repositoryRoot, 'packages/vue/__tests__');
+const ssrSources = readdirSync(vueTestsDirectory)
+  .filter((entry) => entry.endsWith('.test.mjs'))
+  .map((entry) => readFileSync(join(vueTestsDirectory, entry), 'utf8'));
+const withoutSsr = findContractsWithoutSsrCoverage(
+  contracts.map(({ slug }) => slug),
+  collectSsrCoveredSlugs(ssrSources),
+);
+
+if (withoutSsr.length > 0) {
+  console.error('[controller-coverage] Contracts whose Vue output is never compared to the canonical fixture:');
+  for (const slug of withoutSsr) {
+    console.error(`[controller-coverage]   contracts/${slug} has no Vue SSR comparison`);
+  }
+  console.error(
+    '[controller-coverage] The Razor adapter is compared against every fixture, so these are enforced on one side only.',
+  );
+  process.exit(1);
+}
+
 console.log(
   `[controller-coverage] OK: all ${declared.size} declared controller(s) are implemented in ui-runtime, ` +
-    'and every interactive contract states its behaviour.',
+    `every interactive contract states its behaviour, and all ${contracts.length} contract(s) are compared on both adapters.`,
 );

@@ -27,11 +27,22 @@ const breakpointCss = `:root {
 ${breakpointDeclarations}
 }
 `;
+// The dark declarations are emitted twice on purpose. The media query is what makes `system` resolve
+// with no JavaScript at all, and the attribute rule is what lets an explicit choice override the
+// operating system. Matching `:not([data-cm-theme='light'])` rather than `:not([data-cm-theme])`
+// means a root stamped `system` resolves through the media query too, so the server can render the
+// unresolved preference verbatim instead of having to guess which way it resolves.
 const tokenCss = `@import './breakpoints.css';
 
 :root,
 [data-cm-theme='light'] {
 ${lightDeclarations}
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-cm-theme='light']) {
+${darkDeclarations.replace(/^/gmu, '  ')}
+  }
 }
 
 [data-cm-theme='dark'] {
