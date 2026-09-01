@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "stepper-activate-pointer",
+  "case": "stepper-default",
+  "steps": [
+    { "action": "click", "target": "step-first" },
+    { "expect": "attribute", "target": "step-first", "name": "aria-current", "value": "step" },
+    { "expect": "attribute", "target": "step-second", "name": "aria-current", "value": null }
+  ]
+}
