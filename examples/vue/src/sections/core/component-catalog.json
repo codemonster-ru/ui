@@ -9,12 +9,12 @@
     {
       "name": "CmAdminLayout",
       "group": "Layout primitives",
-      "demoHref": "/layouts"
+      "demoHref": "#demo-admin-layout"
     },
     {
       "name": "CmAdminShell",
       "group": "Layout primitives",
-      "demoHref": "/layouts"
+      "demoHref": "#demo-admin-shell"
     },
     {
       "name": "CmAlert",
@@ -54,7 +54,7 @@
     {
       "name": "CmColumnChooser",
       "group": "Data display",
-      "demoHref": "#demo-data"
+      "demoHref": "#demo-column-chooser"
     },
     {
       "name": "CmCommandPalette",
@@ -139,12 +139,12 @@
     {
       "name": "CmMenuBar",
       "group": "Navigation and disclosure",
-      "demoHref": "#demo-navigation"
+      "demoHref": "#demo-menu-bar"
     },
     {
       "name": "CmNavMenu",
       "group": "Navigation and disclosure",
-      "demoHref": "#demo-navigation"
+      "demoHref": "#demo-nav-menu"
     },
     {
       "name": "CmPopover",
@@ -179,7 +179,7 @@
     {
       "name": "CmSetupLayout",
       "group": "Layout primitives",
-      "demoHref": "/layouts"
+      "demoHref": "#demo-setup-layout"
     },
     {
       "name": "CmSkeleton",
@@ -194,7 +194,7 @@
     {
       "name": "CmStepper",
       "group": "Navigation and disclosure",
-      "demoHref": "#demo-navigation"
+      "demoHref": "#demo-stepper"
     },
     {
       "name": "CmSwitch",
@@ -209,7 +209,7 @@
     {
       "name": "CmTableOfContents",
       "group": "Data display",
-      "demoHref": "#demo-data"
+      "demoHref": "#demo-table-of-contents"
     },
     {
       "name": "CmTabs",
@@ -219,7 +219,7 @@
     {
       "name": "CmTag",
       "group": "Actions and feedback",
-      "demoHref": "#demo-actions-feedback"
+      "demoHref": "#demo-tag"
     },
     {
       "name": "CmTextarea",
