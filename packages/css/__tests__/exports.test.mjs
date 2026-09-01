@@ -52,6 +52,7 @@ test('publishes only the approved CSS subpath exports', async () => {
     './switch.css': './dist/components/switch.css',
     './table.css': './dist/components/table.css',
     './textarea.css': './dist/components/textarea.css',
+    './theme-switch.css': './dist/components/theme-switch.css',
     './table-of-contents.css': './dist/components/table-of-contents.css',
     './tabs.css': './dist/components/tabs.css',
     './tag.css': './dist/components/tag.css',

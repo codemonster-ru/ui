@@ -153,6 +153,15 @@ rename as API compatibility:
 The component guides name every `ui-runtime` controller required by server-rendered interactive
 markup. Do not initialize those controllers over Vue-owned component trees.
 
+`CmThemeSwitch` is the replacement whose rename carries the least meaning. `VfThemeSwitch` was a
+two-position toggle between light and dark, driven by a `VfThemeProvider` that the application
+mounted; `CmThemeSwitch` is a three-state control over `light`, `dark` and `system`, and the
+subsystem behind it is owned by the kit — see the [theme subsystem](./architecture/theme-subsystem.md).
+Nothing about `size`, `variant`, `buttonVariant` or `thumbContrast` survives, and because Vue passes
+unknown attributes through to the root element, a bare rename leaves them rendered as DOM attributes
+rather than reported as errors. Migrate the props deliberately, drop `VfThemeProvider`, and let the
+server stamp `data-cm-theme` from the cookie.
+
 `CmDataTable` now covers portable page-size controls and summaries, eligible-row selection, ordered
 visible columns, and localizable interaction labels. Migrate rich cells and expanded content to an
 application-owned `CmTable` composition; keep multi-sort and interactive column layout policy in
