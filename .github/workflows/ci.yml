@@ -64,6 +64,8 @@ jobs:
       - name: Typecheck workspaces
         run: npm run typecheck
 
+      - name: Guard the frozen showcase
+        run: npm run check:frozen-showcase
       - name: Typecheck documented examples
         run: npm run check:docs:examples
 
