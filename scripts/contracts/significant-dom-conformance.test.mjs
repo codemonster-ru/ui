@@ -12,8 +12,11 @@ const { cases } = JSON.parse(
 
 for (const testCase of cases) {
   test(`conformance: ${testCase.name}`, () => {
-    assert.equal(compareSignificantDom(testCase.a, testCase.b, {
-      normalizeGeneratedIds: testCase.normalizeGeneratedIds === true,
-    }).equal, testCase.equal);
+    assert.equal(
+      compareSignificantDom(testCase.a, testCase.b, {
+        normalizeGeneratedIds: testCase.normalizeGeneratedIds === true,
+      }).equal,
+      testCase.equal,
+    );
   });
 }
