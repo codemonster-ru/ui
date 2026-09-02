@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "app-shell-collapse-sidebar",
+  "case": "app-shell-collapsible",
+  "steps": [
+    { "expect": "attribute", "target": "root", "name": "data-cm-sidebar-collapsed", "value": "false" },
+    { "action": "click", "target": "sidebar-toggle" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-sidebar-collapsed", "value": "true" },
+    { "action": "click", "target": "sidebar-toggle" },
+    { "expect": "attribute", "target": "root", "name": "data-cm-sidebar-collapsed", "value": "false" }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "name": "DocumentLayout",
+  "slug": "document-layout",
+  "razorTag": "cm-document-layout",
+  "description": "A reading frame of header, subheader, chapter sidebar, body, contextual aside and footer. Sticky offsets are published as custom properties that read from declared heights, so the layout is correct before any script runs; a controller narrows them to the observed heights afterwards.",
+  "props": {
+    "layout": {
+      "type": "enum",
+      "required": false,
+      "default": "sidebar-content-aside",
+      "values": ["content", "sidebar-content", "sidebar-content-aside"]
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true,
+      "description": "Document body."
+    },
+    "header": {
+      "required": false,
+      "description": "Document header."
+    },
+    "subheader": {
+      "required": false,
+      "description": "Secondary bar below the header."
+    },
+    "sidebar": {
+      "required": false,
+      "description": "Chapter navigation."
+    },
+    "aside": {
+      "required": false,
+      "description": "Contextual panel, such as an on-this-page list."
+    },
+    "footer": {
+      "required": false,
+      "description": "Document footer."
+    }
+  },
+  "events": {},
+  "states": []
+}

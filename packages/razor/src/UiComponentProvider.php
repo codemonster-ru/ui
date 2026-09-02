@@ -9,6 +9,8 @@ use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
 use Codemonster\Ui\Components\CmAccordion;
 use Codemonster\Ui\Layouts\CmAdminLayout;
 use Codemonster\Ui\Layouts\CmAdminShell;
+use Codemonster\Ui\Layouts\CmAppShell;
+use Codemonster\Ui\Layouts\CmDocumentLayout;
 use Codemonster\Ui\Layouts\CmSetupLayout;
 use Codemonster\Ui\Components\CmAlert;
 use Codemonster\Ui\Components\CmAvatar;
@@ -79,6 +81,8 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'accordion' => new CmAccordion($this->views),
             'admin-layout' => new CmAdminLayout($this->views),
             'admin-shell' => new CmAdminShell($this->views),
+            'app-shell' => new CmAppShell($this->views),
+            'document-layout' => new CmDocumentLayout($this->views),
             'setup-layout' => new CmSetupLayout($this->views),
             'alert' => new CmAlert($this->views),
             'avatar' => new CmAvatar($this->views),

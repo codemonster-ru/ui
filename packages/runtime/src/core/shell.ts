@@ -109,3 +109,42 @@ export function shouldEnterAdvance(target: CmSetupFocusTarget): boolean {
 
   return true;
 }
+
+export interface CmStickyRegions {
+  /** Measured pixel height, or 0 when nothing has measured yet. */
+  readonly headerHeight?: number;
+  readonly hasHeader: boolean;
+  readonly hasSubheader: boolean;
+  readonly subheaderHeight?: number;
+}
+
+export const cmStickyOffsetProperties = Object.freeze({
+  header: '--cm-sticky-header-offset',
+  subheader: '--cm-sticky-subheader-offset',
+  top: '--cm-sticky-top-offset',
+});
+
+/**
+ * Resolves the sticky offsets a shell publishes as custom properties.
+ *
+ * A measured height wins when there is one, and a CSS variable stands in when there is not. That
+ * fallback is what makes the layout correct before any JavaScript runs and on a server that cannot
+ * measure anything: the page sticks against the declared height, and a controller later replaces it
+ * with the observed one. An absent region contributes nothing rather than a variable, so a shell
+ * with no header does not reserve space for one.
+ */
+export function shellStickyOffsets(regions: CmStickyRegions): Record<string, string> {
+  const resolve = (present: boolean, measured: number | undefined, variable: string): string => {
+    if (!present) return '0';
+    return measured !== undefined && measured > 0 ? `${measured}px` : `var(${variable})`;
+  };
+
+  const header = resolve(regions.hasHeader, regions.headerHeight, '--cm-layout-header-height');
+  const subheader = resolve(regions.hasSubheader, regions.subheaderHeight, '--cm-layout-subheader-height');
+
+  return {
+    [cmStickyOffsetProperties.header]: header,
+    [cmStickyOffsetProperties.subheader]: subheader,
+    [cmStickyOffsetProperties.top]: `calc(${header} + ${subheader})`,
+  };
+}

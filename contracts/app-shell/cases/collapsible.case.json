@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "app-shell-collapsible",
+  "description": "A shell whose sidebar carries a marked collapse control.",
+  "props": { "layout": "sidebar-content", "stickyHeader": true },
+  "slots": {
+    "header": "Product",
+    "sidebar": "<button type=\"button\" data-cm-sidebar-toggle aria-expanded=\"true\">Collapse</button>",
+    "default": "Content"
+  }
+}
