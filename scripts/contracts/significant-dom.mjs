@@ -3,15 +3,11 @@ import { resolve } from 'node:path';
 
 // The PHP comparator reads the same file. Keeping these lists in one place is what stops the two
 // adapters being judged against different notions of DOM equality, which is what had happened.
-const rules = JSON.parse(
-  readFileSync(resolve(import.meta.dirname, '../../contracts/significant-dom.json'), 'utf8'),
-);
+const rules = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../contracts/significant-dom.json'), 'utf8'));
 const booleanAttributes = new Set(rules.booleanAttributes);
 const idReferenceAttributes = new Set(rules.idReferenceAttributes);
 const frameworkAttributeExact = new Set(rules.frameworkAttributes.exact);
-const frameworkAttributePatterns = rules.frameworkAttributes.patterns.map(
-  (pattern) => new RegExp(pattern, 'u'),
-);
+const frameworkAttributePatterns = rules.frameworkAttributes.patterns.map((pattern) => new RegExp(pattern, 'u'));
 
 import { isDeepStrictEqual } from 'node:util';
 import { parseFragment } from 'parse5';
@@ -19,10 +15,7 @@ import { parseFragment } from 'parse5';
 const htmlNamespace = 'http://www.w3.org/1999/xhtml';
 
 function isFrameworkAttribute(name) {
-  return (
-    frameworkAttributeExact.has(name) ||
-    frameworkAttributePatterns.some((pattern) => pattern.test(name))
-  );
+  return frameworkAttributeExact.has(name) || frameworkAttributePatterns.some((pattern) => pattern.test(name));
 }
 
 function walkNodes(node, visit) {
