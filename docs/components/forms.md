@@ -206,6 +206,42 @@ Without enhancement the control safely degrades to an ordinary unchecked checkbo
 property directly and does not need the runtime. Do not initialize the runtime over Vue-owned form
 components.
 
+## ThemeSwitch API
+
+`CmThemeSwitch` is a three-state preference — `light`, `dark`, and `system` — not a two-position
+toggle. Native radios carry the semantics and the keyboard behaviour, so the control works inside a
+form with no JavaScript at all.
+
+Choosing a mode writes `data-cm-theme` on the document root and a `cm-theme` cookie. The attribute is
+written verbatim, `system` included, because the stylesheet resolves that case through a
+`prefers-color-scheme` query; the cookie is what lets the server render the right theme on the first
+paint. See [the theme subsystem](../architecture/theme-subsystem.md) for why the preference lives in
+a cookie rather than in `localStorage`.
+
+```vue
+<script setup lang="ts">
+import { CmThemeSwitch } from '@codemonster-ru/ui-vue';
+import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
+import { ref } from 'vue';
+
+const mode = ref<CmThemeMode>('system');
+</script>
+
+<template>
+  <CmThemeSwitch v-model="mode" />
+</template>
+```
+
+On the server, read the cookie and stamp the root before anything renders:
+
+```php
+<html <?= Codemonster\Ui\Support\Theme::rootAttribute($_COOKIE) ?>>
+```
+
+`name` renames the radio group, `legend` labels it, and `cookieName` changes where the preference is
+stored. Nothing about `VfThemeSwitch`'s `size`, `variant`, `buttonVariant`, or `thumbContrast`
+carries over.
+
 ## Native form and accessibility rules
 
 - A named enabled input contributes its current value to form submission.
