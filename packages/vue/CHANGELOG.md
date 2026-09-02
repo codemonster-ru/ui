@@ -2,6 +2,23 @@
 
 All notable changes to this package will be documented in this file.
 
+## Unreleased
+
+### Added
+
+- `CmTag`, `CmTableOfContents`, `CmColumnChooser`, `CmStepper`, `CmNavMenu`, `CmMenuBar`, and
+  `CmThemeSwitch`.
+
+### Changed
+
+- `CmThemeSwitch` replaces `VfThemeSwitch` and shares almost none of its API. The old control was a
+  two-position toggle driven by an application-mounted provider; this one is three-state over
+  `light`, `dark`, and `system`, and the subsystem behind it belongs to the kit. Unknown attributes
+  fall through to the root element, so a bare rename renders the old props as DOM attributes rather
+  than reporting them.
+- Every component is now compared against its canonical fixture on both adapters. Nine contracts had
+  a Razor parity test and no Vue comparison, so the canonical markup was enforced on one side only.
+
 ## 1.1.0
 
 ### Added
