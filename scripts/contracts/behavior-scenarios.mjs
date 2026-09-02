@@ -4,7 +4,19 @@ import { collectComponentCases } from './component-cases.mjs';
 
 const identifierPattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
 const actionNames = new Set(['click', 'focus', 'press', 'setValue', 'submit']);
-const expectationNames = new Set(['attribute', 'eventCount', 'focus', 'formValue', 'text', 'validity', 'visible']);
+// `styleProperty` states a CSS custom property on an element. The shells express their sticky
+// offsets that way, and an attribute expectation cannot say it: the whole `style` string is
+// order-dependent and reformatted differently by each adapter.
+const expectationNames = new Set([
+  'attribute',
+  'eventCount',
+  'focus',
+  'formValue',
+  'styleProperty',
+  'text',
+  'validity',
+  'visible',
+]);
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -36,21 +48,35 @@ function validateStep(step, path, index) {
   if (typeof step.target !== 'string' || !identifierPattern.test(step.target)) {
     errors.push(`${label} target must use lowercase kebab-case.`);
   }
-  if ((step.action === 'press' && typeof step.key !== 'string')
-    || (step.action === 'setValue' && typeof step.value !== 'string')) {
+  if (
+    (step.action === 'press' && typeof step.key !== 'string') ||
+    (step.action === 'setValue' && typeof step.value !== 'string')
+  ) {
     errors.push(`${label} is missing its action value.`);
   }
-  if (step.expect === 'attribute'
-    && (typeof step.name !== 'string' || (step.value !== null && typeof step.value !== 'string'))) {
+  if (
+    step.expect === 'attribute' &&
+    (typeof step.name !== 'string' || (step.value !== null && typeof step.value !== 'string'))
+  ) {
     errors.push(`${label} attribute expectation requires a name and string or null value.`);
   }
-  if (step.expect === 'eventCount'
-    && (typeof step.name !== 'string' || !Number.isInteger(step.count) || step.count < 0)) {
+  if (
+    step.expect === 'eventCount' &&
+    (typeof step.name !== 'string' || !Number.isInteger(step.count) || step.count < 0)
+  ) {
     errors.push(`${label} eventCount expectation requires a name and non-negative count.`);
   }
-  if (step.expect === 'formValue'
-    && (typeof step.name !== 'string' || (step.value !== null && typeof step.value !== 'string'))) {
+  if (
+    step.expect === 'formValue' &&
+    (typeof step.name !== 'string' || (step.value !== null && typeof step.value !== 'string'))
+  ) {
     errors.push(`${label} formValue expectation requires a name and string or null value.`);
+  }
+  if (
+    step.expect === 'styleProperty' &&
+    (typeof step.name !== 'string' || !step.name.startsWith('--') || typeof step.value !== 'string')
+  ) {
+    errors.push(`${label} styleProperty expectation requires a custom property name and string value.`);
   }
   if (step.expect === 'text' && typeof step.value !== 'string') {
     errors.push(`${label} text expectation requires a string value.`);

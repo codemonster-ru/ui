@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
-import { CmAdminLayout, CmAdminShell, CmSetupLayout } from '@codemonster-ru/ui-layouts';
+import { CmAdminLayout, CmAdminShell, CmAppShell, CmDocumentLayout, CmSetupLayout } from '@codemonster-ru/ui-layouts';
 import { CmColumnChooser, CmMenuBar, CmNavMenu, CmStepper, CmTableOfContents, CmTag } from '@codemonster-ru/ui-vue';
 
 const columns = [
@@ -111,6 +111,37 @@ const tableOfContentsItems = [
         root and to a cookie the server reads, which is what lets the first paint already be right.
       </p>
       <CmThemeSwitch v-model="themeMode" />
+    </section>
+
+    <section id="demo-app-shell" class="ui-showcase__demo">
+      <h2>App shell</h2>
+      <p class="ui-showcase__note">
+        An application frame. Sticky offsets are published as custom properties that read from declared heights, so the
+        frame is correct before any script runs; a controller narrows them to the observed heights afterwards. The
+        collapse control is marked, not rendered by the layout.
+      </p>
+      <div class="ui-showcase__frame">
+        <CmAppShell layout="sidebar-content" sticky-header>
+          <template #header>Product</template>
+          <template #sidebar>
+            <button type="button" data-cm-sidebar-toggle aria-expanded="true">Collapse</button>
+          </template>
+          Content
+        </CmAppShell>
+      </div>
+    </section>
+
+    <section id="demo-document-layout" class="ui-showcase__demo">
+      <h2>Document layout</h2>
+      <p class="ui-showcase__note">A reading frame with chapter navigation and a contextual panel.</p>
+      <div class="ui-showcase__frame">
+        <CmDocumentLayout>
+          <template #header>Guide</template>
+          <template #sidebar>Chapters</template>
+          <template #aside>On this page</template>
+          Body
+        </CmDocumentLayout>
+      </div>
     </section>
 
     <section id="demo-admin-layout" class="ui-showcase__demo">

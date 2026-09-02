@@ -82,9 +82,17 @@ test('preserves aliases and leaves default and retained imports unchanged', () =
 test('deterministically renames every approved direct replacement without transforming props', () => {
   const mapping = readVueForgeMapping();
   const replacements = mapping.componentMappings.filter(({ action }) => action === 'replace');
-  const layoutComponents = new Set(['VfContainer', 'VfGrid', 'VfInline', 'VfSection', 'VfStack']);
+  const layoutComponents = new Set([
+    'VfAppShell',
+    'VfContainer',
+    'VfDocumentLayout',
+    'VfGrid',
+    'VfInline',
+    'VfSection',
+    'VfStack',
+  ]);
 
-  assert.equal(replacements.length, 47);
+  assert.equal(replacements.length, 49);
 
   for (const replacement of replacements) {
     const packageName = layoutComponents.has(replacement.source) ? 'layouts' : 'core';

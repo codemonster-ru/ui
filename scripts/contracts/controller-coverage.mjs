@@ -5,7 +5,9 @@
  * identical, while the progressively enhanced adapter does nothing at all.
  */
 
-const controllerAttributePattern = /data-cm-controller="([a-z][a-z0-9-]*)"/gu;
+// The runtime accepts a space-separated list, so an element can carry several controllers. Reading
+// only the first name would let every controller after it go unimplemented without complaint.
+const controllerAttributePattern = /data-cm-controller="([a-z][a-z0-9-]*(?:\s+[a-z][a-z0-9-]*)*)"/gu;
 const factoryPattern = /export \{[^}]*\bcreateCm([A-Za-z0-9]+)Controller\b/gu;
 
 /** Reads the controller names the canonical fixtures ask for. */
@@ -14,7 +16,7 @@ export function collectDeclaredControllers(fixtureSources) {
 
   for (const source of fixtureSources) {
     for (const match of source.matchAll(controllerAttributePattern)) {
-      declared.add(match[1]);
+      for (const name of match[1].split(/\s+/u)) declared.add(name);
     }
   }
 

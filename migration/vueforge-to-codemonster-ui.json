@@ -301,8 +301,8 @@
     },
     {
       "source": "VfAppShell",
-      "action": "manual",
-      "targets": ["CmContainer", "CmGrid", "CmStack"]
+      "action": "replace",
+      "targets": ["CmAppShell"]
     },
     {
       "source": "VfAdminLayout",
@@ -316,8 +316,8 @@
     },
     {
       "source": "VfDocumentLayout",
-      "action": "manual",
-      "targets": ["CmContainer", "CmGrid"]
+      "action": "replace",
+      "targets": ["CmDocumentLayout"]
     },
     {
       "source": "VfAuthLayout",

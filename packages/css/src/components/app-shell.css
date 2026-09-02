@@ -1,0 +1,83 @@
+/*
+ * An application frame. The sticky offsets arrive as custom properties the layout publishes: a
+ * declared height from the server, an observed one once CmShellMetricsController runs. Nothing here
+ * measures, so the frame is correct with scripting disabled.
+ */
+.cm-app-shell {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+  background: var(--cm-color-background-canvas);
+}
+
+.cm-app-shell__header {
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  background: var(--cm-color-background-surface);
+}
+
+.cm-app-shell--header-sticky .cm-app-shell__header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--cm-z-index-sticky, 10);
+}
+
+.cm-app-shell__subheader {
+  position: sticky;
+  inset-block-start: var(--cm-sticky-header-offset, 0);
+  z-index: var(--cm-z-index-sticky, 10);
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  background: var(--cm-color-background-surface-subtle);
+}
+
+.cm-app-shell__body {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr;
+  gap: var(--cm-space-md);
+  align-items: start;
+}
+
+.cm-app-shell--sidebar-content .cm-app-shell__body {
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+}
+
+.cm-app-shell--sidebar-content-aside .cm-app-shell__body {
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr) minmax(0, 18rem);
+}
+
+.cm-app-shell__sidebar,
+.cm-app-shell__aside {
+  position: sticky;
+  inset-block-start: var(--cm-sticky-top-offset, 0);
+  min-inline-size: 0;
+}
+
+.cm-app-shell__content {
+  min-inline-size: 0;
+}
+
+.cm-app-shell__footer {
+  border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  background: var(--cm-color-background-surface);
+}
+
+.cm-app-shell[data-cm-sidebar-collapsed='true'] .cm-app-shell__sidebar {
+  display: none;
+}
+
+.cm-app-shell[data-cm-sidebar-collapsed='true'].cm-app-shell--sidebar-content .cm-app-shell__body,
+.cm-app-shell[data-cm-sidebar-collapsed='true'].cm-app-shell--sidebar-content-aside .cm-app-shell__body {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (width < 64em) {
+  .cm-app-shell--sidebar-content .cm-app-shell__body,
+  .cm-app-shell--sidebar-content-aside .cm-app-shell__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cm-app-shell__sidebar,
+  .cm-app-shell__aside {
+    position: static;
+  }
+}
