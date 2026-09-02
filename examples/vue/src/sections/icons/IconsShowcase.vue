@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconAuditShowcase from '../../../../../packages/icons/src/App.vue';
+import IconAuditShowcase from '../../../../../packages/vueforge-icons/src/App.vue';
 import IconSaasContexts from './IconSaasContexts.vue';
 </script>
 

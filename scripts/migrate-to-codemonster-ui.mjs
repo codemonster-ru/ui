@@ -103,9 +103,21 @@ function migrateVue(source, directMappings) {
   });
 }
 
+/**
+ * Replacements the codemod deliberately leaves alone.
+ *
+ * `VueIconify` takes an icon by name; `CmIcon` takes the geometry itself, imported from
+ * `@codemonster-ru/ui-icons`. A rename would produce code that compiles and draws nothing, which is
+ * worse than a rename the codemod declines to make. The mapping still records the replacement,
+ * because the map states what is true rather than what this script can automate.
+ */
+const manualReplacements = new Set(['VueIconify']);
+
 export function migrateCodeMonsterSource(source, extension, mapping = readVueForgeMapping()) {
   const directMappings = new Map(
-    mapping.componentMappings.filter(({ action }) => action === 'replace').map((entry) => [entry.source, entry]),
+    mapping.componentMappings
+      .filter(({ action, source: name }) => action === 'replace' && !manualReplacements.has(name))
+      .map((entry) => [entry.source, entry]),
   );
   let migrated =
     extension === '.vue' ? migrateVue(source, directMappings) : migrateNamedImports(source, directMappings).source;

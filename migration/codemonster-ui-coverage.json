@@ -2053,6 +2053,28 @@
           ]
         }
       ]
+    },
+    "VueIconify": {
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmIcon",
+        "contract": "icon",
+        "razorTag": "icon",
+        "documentation": "docs/architecture/icon-line-ownership.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
+      "capabilities": [
+        {
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Icon geometry precomputed from the VueForge renderer and emitted by the Vue and Annabel Razor adapters from one source. Neither adapter draws, so there is no second engine to drift.",
+          "evidence": [
+            "contracts/icon/manifest.json",
+            "contracts/icon/cases/default.html",
+            "docs/architecture/icon-line-ownership.md"
+          ]
+        }
+      ]
     }
   }
 }

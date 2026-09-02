@@ -1,0 +1,34 @@
+{
+  "classic/solid": {
+    "body": "<rect x=\"3\" y=\"10.25\" width=\"18\" height=\"3.5\" fill=\"currentColor\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<line x1=\"4.75\" y1=\"12\" x2=\"19.25\" y2=\"12\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<line x1=\"4.75\" y1=\"12\" x2=\"19.25\" y2=\"12\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<line x1=\"4.75\" y1=\"12\" x2=\"19.25\" y2=\"12\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><clipPath id=\"vf-duotone-minus-half-v-0\"><rect x=\"12\" y=\"0\" width=\"12\" height=\"24\"></rect></clipPath></defs><path d=\"M3 10.25h18v3.5H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\"></path><path d=\"M3 10.25h18v3.5H3Z\" fill=\"currentColor\" clip-path=\"url(#vf-duotone-minus-half-v-0)\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><clipPath id=\"vf-duotone-minus-v-0\"><path d=\"M3 10.25h18v3.5H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M3 10.25h18v3.5H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-minus-v-0)\"><path d=\"M3 10.25h18v3.5H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><clipPath id=\"vf-duotone-minus-v-0\"><path d=\"M3 10.25h18v3.5H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M3 10.25h18v3.5H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-minus-v-0)\"><path d=\"M3 10.25h18v3.5H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><clipPath id=\"vf-duotone-minus-v-0\"><path d=\"M3 10.25h18v3.5H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M3 10.25h18v3.5H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-minus-v-0)\"><path d=\"M3 10.25h18v3.5H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"></path></g>",
+    "viewBox": "0 0 24 24"
+  }
+}

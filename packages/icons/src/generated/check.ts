@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const check: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<path fill=\"currentColor\" d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" />",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<polyline points=\"3.75 12.25 9.25 17.5 20.25 6.5\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<polyline points=\"3.75 12.25 9.25 17.5 20.25 6.5\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<polyline points=\"3.75 12.25 9.25 17.5 20.25 6.5\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\"></path><path d=\"M9.4 13.75 18.75 4.45l2.55 2.5L9.4 18.8Z\" fill=\"currentColor\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><clipPath id=\"vf-duotone-check-v-0\"><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-check-v-0)\"><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><clipPath id=\"vf-duotone-check-v-0\"><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-check-v-0)\"><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><clipPath id=\"vf-duotone-check-v-0\"><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-check-v-0)\"><path d=\"m2.7 12.15 2.55-2.5 4.15 4.1 9.35-9.3 2.55 2.5L9.4 18.8Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"></path></g>",
+    "viewBox": "0 0 24 24"
+  }
+};

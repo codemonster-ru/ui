@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const key: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<defs><mask id=\"vf-solid-key\"><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\" fill=\"white\" stroke=\"white\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\" fill=\"black\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-key)\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\"></path><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\"></circle>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\"></path><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\"></circle>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\"></path><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\"></circle>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><clipPath id=\"vf-duotone-key-half-v-0\"><path d=\"M0 23.842 24 0.474V24H0Z\"></path></clipPath></defs><g color=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\"><defs><mask id=\"vf-solid-key-v-0-secondary-half\"><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\" fill=\"white\" stroke=\"white\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\" fill=\"black\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-key-v-0-secondary-half)\"/></g><g clip-path=\"url(#vf-duotone-key-half-v-0)\"><defs><mask id=\"vf-solid-key-v-0-primary-half\"><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\" fill=\"white\" stroke=\"white\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\" fill=\"black\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-key-v-0-primary-half)\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75ZM17.75 8.75a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 1 1 4.5 0Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-rule=\"evenodd\"></path></g><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\"></path><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\"></circle>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75ZM17.75 8.75a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 1 1 4.5 0Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-rule=\"evenodd\"></path></g><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\"></path><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\"></circle>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75ZM17.75 8.75a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 1 1 4.5 0Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-rule=\"evenodd\"></path></g><path d=\"M8.75 11.25A7.25 7.25 0 1 1 12.75 15.5l-2 2H7.5v4H2v-3.75Z\"></path><circle cx=\"15.5\" cy=\"8.75\" r=\"2.25\"></circle>",
+    "viewBox": "0 0 24 24"
+  }
+};

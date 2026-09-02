@@ -9,7 +9,7 @@
       "exports": ["."]
     },
     {
-      "directory": "icons",
+      "directory": "vueforge-icons",
       "name": "@codemonster-ru/vueforge-icons",
       "version": "3.2.0",
       "exports": [".", "./style.css"]

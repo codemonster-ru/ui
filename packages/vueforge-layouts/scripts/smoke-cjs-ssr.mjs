@@ -8,7 +8,7 @@ import { dirname, join, parse } from 'node:path';
 const nodeRequire = createRequire(import.meta.url);
 const packageDir = process.cwd();
 const corePackageDir = join(packageDir, '../core');
-const iconsPackageDir = join(packageDir, '../icons');
+const iconsPackageDir = join(packageDir, '../vueforge-icons');
 const tempDir = mkdtempSync(join(tmpdir(), 'vueforge-layouts-cjs-ssr-'));
 const tarballPaths = [];
 

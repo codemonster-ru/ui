@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const calendar: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<g transform=\"translate(0 -.75)\"><defs><mask id=\"vf-solid-calendar\"><rect width=\"24\" height=\"24\" rx=\"3\" fill=\"white\"/><path d=\"M2 9h20\" stroke=\"black\" stroke-width=\"2\"/><path d=\"M7 3v3M17 3v3\" stroke=\"black\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M7 13h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z\" fill=\"black\"/></mask></defs><rect x=\"2\" y=\"3\" width=\"20\" height=\"19\" rx=\"3\" fill=\"currentColor\" mask=\"url(#vf-solid-calendar)\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"7.5\" y1=\"2.75\" x2=\"7.5\" y2=\"6\"></line><line x1=\"16.5\" y1=\"2.75\" x2=\"16.5\" y2=\"6\"></line><path d=\"M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"7.5\" y1=\"2.75\" x2=\"7.5\" y2=\"6\"></line><line x1=\"16.5\" y1=\"2.75\" x2=\"16.5\" y2=\"6\"></line><path d=\"M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"7.5\" y1=\"2.75\" x2=\"7.5\" y2=\"6\"></line><line x1=\"16.5\" y1=\"2.75\" x2=\"16.5\" y2=\"6\"></line><path d=\"M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><mask id=\"vf-duotone-primary-calendar-v-0\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\"></rect><rect transform=\"translate(0 -.75)\" x=\"0\" y=\"0\" width=\"24\" height=\"9\" fill=\"black\"></rect></mask><mask id=\"vf-duotone-secondary-calendar-v-0\"><rect transform=\"translate(0 -.75)\" x=\"0\" y=\"0\" width=\"24\" height=\"9\" fill=\"white\"></rect></mask></defs><g mask=\"url(#vf-duotone-primary-calendar-v-0)\"><g transform=\"translate(0 -.75)\"><defs><mask id=\"vf-solid-calendar-v-0\"><rect width=\"24\" height=\"24\" rx=\"3\" fill=\"white\"/><path d=\"M2 9h20\" stroke=\"black\" stroke-width=\"2\"/><path d=\"M7 3v3M17 3v3\" stroke=\"black\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M7 13h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z\" fill=\"black\"/></mask></defs><rect x=\"2\" y=\"3\" width=\"20\" height=\"19\" rx=\"3\" fill=\"currentColor\" mask=\"url(#vf-solid-calendar-v-0)\"/></g></g><g color=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" mask=\"url(#vf-duotone-secondary-calendar-v-0)\"><g transform=\"translate(0 -.75)\"><defs><mask id=\"vf-solid-calendar-v-0-secondary\"><rect width=\"24\" height=\"24\" rx=\"3\" fill=\"white\"/><path d=\"M2 9h20\" stroke=\"black\" stroke-width=\"2\"/><path d=\"M7 3v3M17 3v3\" stroke=\"black\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M7 13h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z\" fill=\"black\"/></mask></defs><rect x=\"2\" y=\"3\" width=\"20\" height=\"19\" rx=\"3\" fill=\"currentColor\" mask=\"url(#vf-solid-calendar-v-0-secondary)\"/></g></g><path transform=\"translate(0 -.75)\" d=\"M7 3v3M17 3v3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"7.5\" y1=\"2.75\" x2=\"7.5\" y2=\"6\"></line><line x1=\"16.5\" y1=\"2.75\" x2=\"16.5\" y2=\"6\"></line><path d=\"M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"7.5\" y1=\"2.75\" x2=\"7.5\" y2=\"6\"></line><line x1=\"16.5\" y1=\"2.75\" x2=\"16.5\" y2=\"6\"></line><path d=\"M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"3\" y=\"4.25\" width=\"18\" height=\"16.5\" rx=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"7.5\" y1=\"2.75\" x2=\"7.5\" y2=\"6\"></line><line x1=\"16.5\" y1=\"2.75\" x2=\"16.5\" y2=\"6\"></line><path d=\"M7.5 12.5h.01M12 12.5h.01M16.5 12.5h.01M7.5 16.5h.01M12 16.5h.01M16.5 16.5h.01\"></path>",
+    "viewBox": "0 0 24 24"
+  }
+};

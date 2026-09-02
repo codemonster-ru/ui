@@ -47,6 +47,8 @@ export { default as CmFieldset } from './components/fieldset/CmFieldset.vue';
 export type { CmFieldsetDefaultSlotProps, CmFieldsetProps } from './components/fieldset/fieldset.types';
 export { default as CmGrid } from './components/grid/CmGrid.vue';
 export type { CmGridElement, CmGridProps } from './components/grid/grid.types';
+export { default as CmIcon } from './components/icon/CmIcon.vue';
+export type { CmIconFamily, CmIconGeometry, CmIconVariant } from './components/icon/icon.types';
 export { default as CmIconButton } from './components/icon-button/CmIconButton.vue';
 export type {
   CmIconButtonProps,

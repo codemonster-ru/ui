@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "name": "Icon",
+  "slug": "icon",
+  "razorTag": "cm-icon",
+  "description": "Draws generated icon geometry. Neither adapter renders an icon: the geometry is precomputed from one source and both emit it, so there is no second drawing engine to drift. Without a label the icon is hidden from assistive technology, which is right for decoration.",
+  "props": {
+    "icon": {
+      "type": "string",
+      "required": true,
+      "description": "Icon name on the Razor side; the imported geometry in Vue."
+    },
+    "family": { "type": "enum", "required": false, "default": "classic", "values": ["classic", "duotone"] },
+    "variant": {
+      "type": "enum",
+      "required": false,
+      "default": "regular",
+      "values": ["solid", "regular", "light", "thin"]
+    },
+    "label": {
+      "type": "nullable",
+      "required": false,
+      "default": null,
+      "description": "An accessible name. Without one the icon is aria-hidden."
+    }
+  },
+  "slots": {},
+  "events": {},
+  "states": []
+}
