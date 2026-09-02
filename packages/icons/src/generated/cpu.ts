@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const cpu: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.75\"/><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"/><path d=\"M9 2.5V5m6-2.5V5M9 19v2.5m6-2.5v2.5M2.5 9H5m-2.5 6H5M19 9h2.5M19 15h2.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\"></rect><line x1=\"9\" y1=\"2.5\" x2=\"9\" y2=\"5\"></line><line x1=\"15\" y1=\"2.5\" x2=\"15\" y2=\"5\"></line><line x1=\"9\" y1=\"19\" x2=\"9\" y2=\"21.5\"></line><line x1=\"15\" y1=\"19\" x2=\"15\" y2=\"21.5\"></line><line x1=\"2.5\" y1=\"9\" x2=\"5\" y2=\"9\"></line><line x1=\"2.5\" y1=\"15\" x2=\"5\" y2=\"15\"></line><line x1=\"19\" y1=\"9\" x2=\"21.5\" y2=\"9\"></line><line x1=\"19\" y1=\"15\" x2=\"21.5\" y2=\"15\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\"></rect><line x1=\"9\" y1=\"2.5\" x2=\"9\" y2=\"5\"></line><line x1=\"15\" y1=\"2.5\" x2=\"15\" y2=\"5\"></line><line x1=\"9\" y1=\"19\" x2=\"9\" y2=\"21.5\"></line><line x1=\"15\" y1=\"19\" x2=\"15\" y2=\"21.5\"></line><line x1=\"2.5\" y1=\"9\" x2=\"5\" y2=\"9\"></line><line x1=\"2.5\" y1=\"15\" x2=\"5\" y2=\"15\"></line><line x1=\"19\" y1=\"9\" x2=\"21.5\" y2=\"9\"></line><line x1=\"19\" y1=\"15\" x2=\"21.5\" y2=\"15\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\"></rect><line x1=\"9\" y1=\"2.5\" x2=\"9\" y2=\"5\"></line><line x1=\"15\" y1=\"2.5\" x2=\"15\" y2=\"5\"></line><line x1=\"9\" y1=\"19\" x2=\"9\" y2=\"21.5\"></line><line x1=\"15\" y1=\"19\" x2=\"15\" y2=\"21.5\"></line><line x1=\"2.5\" y1=\"9\" x2=\"5\" y2=\"9\"></line><line x1=\"2.5\" y1=\"15\" x2=\"5\" y2=\"15\"></line><line x1=\"19\" y1=\"9\" x2=\"21.5\" y2=\"9\"></line><line x1=\"19\" y1=\"15\" x2=\"21.5\" y2=\"15\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><mask id=\"vf-duotone-primary-cpu-v-0\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\"></rect><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"black\" stroke-width=\"2.75\"></rect></mask><mask id=\"vf-duotone-secondary-cpu-v-0\"><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"white\" stroke-width=\"2.75\"></rect></mask></defs><g mask=\"url(#vf-duotone-primary-cpu-v-0)\"><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.75\"/><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"/><path d=\"M9 2.5V5m6-2.5V5M9 19v2.5m6-2.5v2.5M2.5 9H5m-2.5 6H5M19 9h2.5M19 15h2.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\"/></g><g color=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" mask=\"url(#vf-duotone-secondary-cpu-v-0)\"><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.75\"/><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"/><path d=\"M9 2.5V5m6-2.5V5M9 19v2.5m6-2.5v2.5M2.5 9H5m-2.5 6H5M19 9h2.5M19 15h2.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\"></rect><line x1=\"9\" y1=\"2.5\" x2=\"9\" y2=\"5\"></line><line x1=\"15\" y1=\"2.5\" x2=\"15\" y2=\"5\"></line><line x1=\"9\" y1=\"19\" x2=\"9\" y2=\"21.5\"></line><line x1=\"15\" y1=\"19\" x2=\"15\" y2=\"21.5\"></line><line x1=\"2.5\" y1=\"9\" x2=\"5\" y2=\"9\"></line><line x1=\"2.5\" y1=\"15\" x2=\"5\" y2=\"15\"></line><line x1=\"19\" y1=\"9\" x2=\"21.5\" y2=\"9\"></line><line x1=\"19\" y1=\"15\" x2=\"21.5\" y2=\"15\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\"></rect><line x1=\"9\" y1=\"2.5\" x2=\"9\" y2=\"5\"></line><line x1=\"15\" y1=\"2.5\" x2=\"15\" y2=\"5\"></line><line x1=\"9\" y1=\"19\" x2=\"9\" y2=\"21.5\"></line><line x1=\"15\" y1=\"19\" x2=\"15\" y2=\"21.5\"></line><line x1=\"2.5\" y1=\"9\" x2=\"5\" y2=\"9\"></line><line x1=\"2.5\" y1=\"15\" x2=\"5\" y2=\"15\"></line><line x1=\"19\" y1=\"9\" x2=\"21.5\" y2=\"9\"></line><line x1=\"19\" y1=\"15\" x2=\"21.5\" y2=\"15\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"5\" y=\"5\" width=\"14\" height=\"14\" rx=\"2\"></rect><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\"></rect><line x1=\"9\" y1=\"2.5\" x2=\"9\" y2=\"5\"></line><line x1=\"15\" y1=\"2.5\" x2=\"15\" y2=\"5\"></line><line x1=\"9\" y1=\"19\" x2=\"9\" y2=\"21.5\"></line><line x1=\"15\" y1=\"19\" x2=\"15\" y2=\"21.5\"></line><line x1=\"2.5\" y1=\"9\" x2=\"5\" y2=\"9\"></line><line x1=\"2.5\" y1=\"15\" x2=\"5\" y2=\"15\"></line><line x1=\"19\" y1=\"9\" x2=\"21.5\" y2=\"9\"></line><line x1=\"19\" y1=\"15\" x2=\"21.5\" y2=\"15\"></line>",
+    "viewBox": "0 0 24 24"
+  }
+};

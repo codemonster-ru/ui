@@ -36,7 +36,7 @@ Public distribution directories use lowercase kebab-case names matching their pa
 packages/tokens
 packages/css
 packages/utilities
-packages/icons
+packages/vueforge-icons
 packages/runtime
 packages/vue
 packages/react

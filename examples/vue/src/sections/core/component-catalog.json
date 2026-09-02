@@ -122,6 +122,11 @@
       "demoHref": "/layouts"
     },
     {
+      "name": "CmIcon",
+      "group": "Display",
+      "demoHref": "#demo-icon"
+    },
+    {
       "name": "CmIconButton",
       "group": "Actions and feedback",
       "demoHref": "#demo-actions-feedback"

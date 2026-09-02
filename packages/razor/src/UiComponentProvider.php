@@ -31,6 +31,7 @@ use Codemonster\Ui\Components\CmDrawer;
 use Codemonster\Ui\Components\CmField;
 use Codemonster\Ui\Components\CmFieldset;
 use Codemonster\Ui\Components\CmGrid;
+use Codemonster\Ui\Components\CmIcon;
 use Codemonster\Ui\Components\CmIconButton;
 use Codemonster\Ui\Components\CmInput;
 use Codemonster\Ui\Components\CmInline;
@@ -103,6 +104,7 @@ final readonly class UiComponentProvider implements ComponentProviderInterface
             'field' => new CmField($this->views),
             'fieldset' => new CmFieldset($this->views),
             'grid' => new CmGrid($this->views),
+            'icon' => new CmIcon($this->views),
             'icon-button' => new CmIconButton($this->views),
             'input' => new CmInput($this->views),
             'inline' => new CmInline($this->views),

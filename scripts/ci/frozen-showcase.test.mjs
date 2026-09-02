@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { affectsFrozenShowcase, findFrozenShowcaseChanges } from './frozen-showcase.mjs';
+import { affectsFrozenShowcase, findFrozenShowcaseChanges, findStaleAcknowledgements } from './frozen-showcase.mjs';
 
 test('treats rendered showcase sources as frozen', () => {
   assert.equal(affectsFrozenShowcase('examples/vue/src/sections/core/CoreShowcase.vue'), true);
@@ -31,4 +31,13 @@ test('reports the changes that would move the baseline', () => {
     ]),
     ['examples/vue/src/main.ts', 'examples/vue/src/sections/core/CoreShowcase.vue'],
   );
+});
+
+test('reports acknowledgements that no longer describe a change', () => {
+  const acknowledged = { 'examples/vue/src/main.ts': 'reviewed' };
+
+  assert.deepEqual(findStaleAcknowledgements(['examples/vue/src/main.ts'], acknowledged), []);
+  assert.deepEqual(findStaleAcknowledgements(['packages/vue/src/index.ts'], acknowledged), [
+    'examples/vue/src/main.ts',
+  ]);
 });

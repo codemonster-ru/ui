@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { arrowLeft, gear, github } from '@codemonster-ru/ui-icons';
 import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
 import { CmAdminLayout, CmAdminShell, CmAppShell, CmDocumentLayout, CmSetupLayout } from '@codemonster-ru/ui-layouts';
 import { CmColumnChooser, CmMenuBar, CmNavMenu, CmStepper, CmTableOfContents, CmTag } from '@codemonster-ru/ui-vue';
@@ -55,6 +56,20 @@ const tableOfContentsItems = [
         commit, so anything without a predecessor to match is demonstrated here instead.
       </p>
     </header>
+
+    <section id="demo-icon" class="ui-showcase__demo">
+      <h2>Icon</h2>
+      <p class="ui-showcase__note">
+        Geometry is precomputed from one source and emitted by both adapters, so neither draws anything. A brand mark
+        has one canonical form, and asking for another falls back to the one that exists rather than failing.
+      </p>
+      <div class="ui-showcase__inline">
+        <CmIcon :icon="arrowLeft" label="Back" />
+        <CmIcon :icon="gear" variant="solid" label="Settings" />
+        <CmIcon :icon="gear" family="duotone" label="Settings, duotone" />
+        <CmIcon :icon="github" variant="thin" label="GitHub" />
+      </div>
+    </section>
 
     <section id="demo-tag" class="ui-showcase__demo">
       <h2>Tag</h2>
