@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const activity: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<path d=\"M2.5 12h4L9 6l4 12 3-7h5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><clipPath id=\"vf-duotone-activity-half-v-0\"><rect x=\"12\" y=\"0\" width=\"12\" height=\"24\"></rect></clipPath></defs><g color=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\"><path d=\"M2.5 12h4L9 6l4 12 3-7h5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></g><g clip-path=\"url(#vf-duotone-activity-half-v-0)\"><path d=\"M2.5 12h4L9 6l4 12 3-7h5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><mask id=\"vf-duotone-activity-outline-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"black\" stroke-width=\"0.5\"></polyline></mask></defs><g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" fill=\"none\"><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></polyline></g><g mask=\"url(#vf-duotone-activity-outline-v-0)\"><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></polyline></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><mask id=\"vf-duotone-activity-outline-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"black\" stroke-width=\"1.25\"></polyline></mask></defs><g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" fill=\"none\"><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></polyline></g><g mask=\"url(#vf-duotone-activity-outline-v-0)\"><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></polyline></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><mask id=\"vf-duotone-activity-outline-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"black\" stroke-width=\"2\"></polyline></mask></defs><g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" fill=\"none\"><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></polyline></g><g mask=\"url(#vf-duotone-activity-outline-v-0)\"><polyline points=\"2.5 12 6.5 12 9 6 13 18 16 11 21.5 11\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></polyline></g>",
+    "viewBox": "0 0 24 24"
+  }
+};

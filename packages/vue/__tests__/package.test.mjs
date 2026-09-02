@@ -25,6 +25,7 @@ test('publishes the Vue component adapter entries', async () => {
     'CmField',
     'CmFieldset',
     'CmGrid',
+    'CmIcon',
     'CmIconButton',
     'CmInline',
     'CmInput',

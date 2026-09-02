@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const download: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<path fill=\"currentColor\" d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"15\"></line><polyline points=\"7.5 10.75 12 15.25 16.5 10.75\"></polyline><path d=\"M4 17.25v3h16v-3\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"15\"></line><polyline points=\"7.5 10.75 12 15.25 16.5 10.75\"></polyline><path d=\"M4 17.25v3h16v-3\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"15\"></line><polyline points=\"7.5 10.75 12 15.25 16.5 10.75\"></polyline><path d=\"M4 17.25v3h16v-3\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><mask id=\"vf-duotone-primary-download-v-0\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\"></rect><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4Z\" fill=\"black\"></path></mask><mask id=\"vf-duotone-secondary-download-v-0\"><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4Z\" fill=\"white\"></path></mask></defs><g mask=\"url(#vf-duotone-primary-download-v-0)\"><path fill=\"currentColor\" d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\"/></g><g color=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" mask=\"url(#vf-duotone-secondary-download-v-0)\"><path fill=\"currentColor\" d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><clipPath id=\"vf-duotone-download-v-0\"><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-download-v-0)\"><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><clipPath id=\"vf-duotone-download-v-0\"><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-download-v-0)\"><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><clipPath id=\"vf-duotone-download-v-0\"><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-download-v-0)\"><path d=\"M10.25 2h3.5v9.75l3.4-3.4 2.5 2.5L12 17.25l-7.65-6.4 2.5-2.5 3.4 3.4ZM3 18.25h18v3H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"></path></g>",
+    "viewBox": "0 0 24 24"
+  }
+};

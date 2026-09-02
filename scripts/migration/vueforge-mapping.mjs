@@ -23,7 +23,14 @@ function defaultComponentExports(source, prefix) {
 export function discoverLegacyComponents(root = repositoryRoot) {
   const core = readFileSync(resolve(root, 'packages/core/src/components/index.ts'), 'utf8');
   const layouts = readFileSync(resolve(root, 'packages/vueforge-layouts/src/index.ts'), 'utf8');
-  return new Set([...namedExports(core, 'Vf'), ...defaultComponentExports(layouts, 'Vf')]);
+  const icons = readFileSync(resolve(root, 'packages/vueforge-icons/src/lib/index.ts'), 'utf8');
+
+  // The icons package publishes one component and it does not use the Vf prefix, so it was outside
+  // this set entirely while icons were mapped at package level. It is a public VueForge component
+  // with a CodeMonster successor now, and leaving it out would let that successor go untracked.
+  const iconComponents = [...icons.matchAll(/export \{ default as (VueIconify) \}/gu)].map((match) => match[1]);
+
+  return new Set([...namedExports(core, 'Vf'), ...defaultComponentExports(layouts, 'Vf'), ...iconComponents]);
 }
 
 export function discoverCodeMonsterComponents(root = repositoryRoot) {
