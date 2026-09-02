@@ -100,3 +100,25 @@ export function collectSsrCoveredSlugs(testSources) {
 export function findContractsWithoutSsrCoverage(slugs, covered) {
   return slugs.filter((slug) => !covered.has(slug)).sort();
 }
+
+/**
+ * Reads the contract slugs a set of Razor parity test sources compares against the canonical
+ * fixtures.
+ *
+ * Slugs are matched anywhere in a file rather than through one path shape, because the grouped
+ * parity tests name several contracts at once. A narrower pattern reported 33 of 47 contracts as
+ * uncovered when all 47 were covered, which is the failure mode worth avoiding in a check whose
+ * whole job is to be believed.
+ */
+export function collectRazorCoveredSlugs(testSources, slugs) {
+  const covered = new Set();
+
+  for (const source of testSources) {
+    if (!source.includes('SignificantDom')) continue;
+    for (const slug of slugs) {
+      if (new RegExp(`contracts/${slug}\\b|'${slug}'|/${slug}/`, 'u').test(source)) covered.add(slug);
+    }
+  }
+
+  return covered;
+}
