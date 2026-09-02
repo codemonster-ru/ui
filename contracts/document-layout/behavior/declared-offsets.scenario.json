@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "document-layout-declared-offsets",
+  "case": "document-layout-default",
+  "steps": [
+    {
+      "expect": "styleProperty",
+      "target": "root",
+      "name": "--cm-sticky-header-offset",
+      "value": "var(--cm-layout-header-height)"
+    },
+    {
+      "expect": "styleProperty",
+      "target": "root",
+      "name": "--cm-sticky-top-offset",
+      "value": "calc(var(--cm-layout-header-height) + var(--cm-layout-subheader-height))"
+    }
+  ]
+}

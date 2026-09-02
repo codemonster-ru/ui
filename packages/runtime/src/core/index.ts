@@ -61,8 +61,10 @@ export {
   shouldEnterAdvance,
   toggleShellMobileSidebar,
   toggleShellSidebar,
+  cmStickyOffsetProperties,
+  shellStickyOffsets,
 } from './shell.js';
-export type { CmSetupFocusTarget, CmShellState } from './shell.js';
+export type { CmSetupFocusTarget, CmShellState, CmStickyRegions } from './shell.js';
 export { selectClosedKeyAction, selectOpenKeyAction } from './select.js';
 export { nextStepperValue, resolveStepperProgress, resolveStepperValue, resolveStepState } from './stepper.js';
 export type { CmStepperCoreItem, CmStepperStepState } from './stepper.js';

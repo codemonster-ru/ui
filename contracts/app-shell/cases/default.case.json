@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "app-shell-default",
+  "description": "Every region present, with the sidebar expanded.",
+  "props": { "layout": "sidebar-content-aside" },
+  "slots": {
+    "header": "Product",
+    "subheader": "Filters",
+    "sidebar": "Navigation",
+    "default": "Content",
+    "aside": "Details",
+    "footer": "Footer"
+  }
+}

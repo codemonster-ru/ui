@@ -11,8 +11,8 @@ Razor side living inside the existing `Codemonster\Ui` package under a `Layouts`
 is not a component and does not belong in `ui-vue`; giving it a separate package is what makes the
 two nameable apart.
 
-Three layouts are carried forward: `AdminLayout`, `AdminShell`, and `SetupLayout`. Five shell-area
-wrappers are dropped. Two shells stay deferred pending a separate decision about measurement.
+Five layouts are carried forward: `AdminLayout`, `AdminShell`, `SetupLayout`, `AppShell`, and
+`DocumentLayout`. Five shell-area wrappers are dropped.
 
 ## What changed since the previous decision
 
@@ -23,13 +23,13 @@ criterion it set out.
 Re-reading the code also found part of its reasoning to be wrong. It excluded every shell partly on
 measured sticky offsets and routing coupling. Those exist, but only in two of them:
 
-| Shell | `ResizeObserver` / `getBoundingClientRect` / routing references |
-| --- | --- |
-| `VfAppShell` | 15 |
-| `VfDocumentLayout` | 15 |
-| `VfAdminLayout` | 0 |
-| `VfAdminShell` | 0 |
-| `VfSetupLayout` | 0 |
+| Shell              | `ResizeObserver` / `getBoundingClientRect` / routing references |
+| ------------------ | --------------------------------------------------------------- |
+| `VfAppShell`       | 15                                                              |
+| `VfDocumentLayout` | 15                                                              |
+| `VfAdminLayout`    | 0                                                               |
+| `VfAdminShell`     | 0                                                               |
+| `VfSetupLayout`    | 0                                                               |
 
 `VfAdminLayout` is a controlled component: `sidebarCollapsed` and `mobileSidebarOpen` as props with
 matching `update:` events, and the application supplies routing and authorization through slots. The
@@ -61,16 +61,31 @@ The migration map calls this `drop`. It previously called it `manual`, which was
 over. The capability entries already said `superseded` with "No standalone replacement", so the
 category name had been the only thing out of step.
 
-## The two deferred
+## The two formerly deferred, now carried across
 
-`VfAppShell` and `VfDocumentLayout` measure geometry with `ResizeObserver` and
-`getBoundingClientRect` to compute sticky offsets. That cannot be expressed in server-rendered markup
-and has no PHP equivalent without JavaScript, so porting them as-is would produce a layout whose
-behavior only half exists on one adapter.
+`VfAppShell` and `VfDocumentLayout` were deferred because they measure geometry with
+`ResizeObserver` and `getBoundingClientRect`, which no server can do. Reading the code more closely
+showed the deferral rested on an incomplete picture: both already fall back to a CSS variable when
+the measured height is zero, so the half that works without JavaScript was written by their original
+author and had simply not been noticed.
 
-They are deferred rather than dropped. The likely shape is a split: portable structure as a layout,
-and measurement as an optional controller that enhances it where JavaScript runs. That is a separate
-decision with its own contract review.
+`CmAppShell` and `CmDocumentLayout` keep exactly that shape. The layout publishes its sticky offsets
+as custom properties resolved by `shellStickyOffsets`, which emits `var(--cm-layout-header-height)`
+when nothing has been measured — the form the server always renders. `CmShellMetricsController`
+then narrows those to the observed heights where a browser is involved. The page sticks correctly
+before any script runs, and more precisely afterwards, which is progressive enhancement in its
+literal sense rather than a graceful failure.
+
+This is the split the deferral predicted, and it turned out to need no new mechanism.
+
+`CmAppShell` also carries the sidebar state VueForge passed through scoped slots. It becomes an
+attribute on the root, and the collapse control is marked rather than wired: an application tags its
+own button with `data-cm-sidebar-toggle`, and both adapters update that button's `aria-expanded`, so
+the marked-control pattern means the same thing on each.
+
+`data-cm-controller` names both controllers on the shell, which the runtime has always accepted as a
+space-separated list. The coverage check read only the first name, so the second could have gone
+unimplemented without complaint; it reads the whole list now.
 
 ## Consequences
 

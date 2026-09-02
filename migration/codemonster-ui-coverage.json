@@ -1780,22 +1780,34 @@
       }
     },
     "VfAppShell": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmAppShell",
+        "contract": "app-shell",
+        "razorTag": "app-shell",
+        "documentation": "docs/architecture/layout-line-ownership.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Responsive landmarks, sticky measured offsets, navigation state, and optional regions depend on the surrounding application",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Application frame of header, subheader, sidebar, content, aside and footer, rendered from one canonical DOM by the Vue and Annabel Razor adapters. Sidebar state is an attribute and its control is marked rather than wired.",
           "evidence": [
-            "docs/layouts/components/app-shell/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/container/contract.md",
-            "contracts/grid/contract.md",
-            "contracts/stack/contract.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "docs/architecture/application-shell-ownership.md"
-          ],
-          "roadmapItem": "CMUI-188"
+            "contracts/app-shell/manifest.json",
+            "contracts/app-shell/cases/default.html",
+            "docs/architecture/layout-line-ownership.md"
+          ]
+        },
+        {
+          "id": "reviewed-disposition",
+          "status": "supported",
+          "notes": "Supersedes the deferral for measured geometry. The sticky offsets are published as custom properties that read from declared heights, so the layout is correct before any script runs; CmShellMetricsController narrows them to observed heights where a browser is involved.",
+          "evidence": [
+            "docs/architecture/layout-line-ownership.md",
+            "packages/runtime/src/shell-metrics.ts",
+            "packages/razor/src/Support/StickyOffsets.php"
+          ]
         }
       ]
     },
@@ -1850,21 +1862,34 @@
       ]
     },
     "VfDocumentLayout": {
-      "disposition": "manual",
+      "disposition": "replace",
+      "delivery": {
+        "target": "CmDocumentLayout",
+        "contract": "document-layout",
+        "razorTag": "document-layout",
+        "documentation": "docs/architecture/layout-line-ownership.md",
+        "showcase": "examples/ui-showcase/src/App.vue"
+      },
       "capabilities": [
         {
-          "id": "reviewed-disposition",
-          "status": "application-owned",
-          "notes": "Application-owned: Documentation rails, sticky measurements, edge treatment, and optional regions are documentation-site policy",
+          "id": "approved-cross-platform-baseline",
+          "status": "supported",
+          "notes": "Reading frame of header, subheader, chapter sidebar, body, contextual aside and footer, rendered from one canonical DOM by the Vue and Annabel Razor adapters.",
           "evidence": [
-            "docs/layouts/components/document-layout/api.md",
-            "docs/verification/component-disposition-audit.md",
-            "contracts/container/contract.md",
-            "contracts/grid/contract.md",
-            "docs/verification/consumer-usage-inventory.md",
-            "docs/architecture/application-shell-ownership.md"
-          ],
-          "roadmapItem": "CMUI-188"
+            "contracts/document-layout/manifest.json",
+            "contracts/document-layout/cases/default.html",
+            "docs/architecture/layout-line-ownership.md"
+          ]
+        },
+        {
+          "id": "reviewed-disposition",
+          "status": "supported",
+          "notes": "Supersedes the deferral for measured geometry. The sticky offsets are published as custom properties that read from declared heights, so the layout is correct before any script runs; CmShellMetricsController narrows them to observed heights where a browser is involved.",
+          "evidence": [
+            "docs/architecture/layout-line-ownership.md",
+            "packages/runtime/src/shell-metrics.ts",
+            "packages/razor/src/Support/StickyOffsets.php"
+          ]
         }
       ]
     },

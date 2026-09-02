@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "name": "AppShell",
+  "slug": "app-shell",
+  "razorTag": "cm-app-shell",
+  "description": "An application frame of header, subheader, sidebar, content, aside and footer. Sticky offsets are published as custom properties that read from declared heights, so the layout is correct before any script runs; a controller narrows them to the observed heights afterwards. The sidebar's collapsed state is an attribute on the root, and its control is marked rather than wired.",
+  "props": {
+    "layout": {
+      "type": "enum",
+      "required": false,
+      "default": "sidebar-content-aside",
+      "values": ["content", "sidebar-content", "sidebar-content-aside"]
+    },
+    "sidebarCollapsed": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "stickyHeader": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    }
+  },
+  "slots": {
+    "default": {
+      "required": true,
+      "description": "Main content."
+    },
+    "header": {
+      "required": false,
+      "description": "Application header."
+    },
+    "subheader": {
+      "required": false,
+      "description": "Secondary bar below the header."
+    },
+    "sidebar": {
+      "required": false,
+      "description": "Primary navigation."
+    },
+    "aside": {
+      "required": false,
+      "description": "Contextual panel."
+    },
+    "footer": {
+      "required": false,
+      "description": "Application footer."
+    }
+  },
+  "events": {
+    "sidebarCollapsedChange": {
+      "description": "Reports the new collapsed state.",
+      "payloadContract": "boolean"
+    }
+  },
+  "states": ["collapsed", "sticky"]
+}

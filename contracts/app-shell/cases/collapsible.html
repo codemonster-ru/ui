@@ -1,0 +1,18 @@
+<div
+  class="cm-app-shell cm-app-shell--sidebar-content cm-app-shell--header-sticky"
+  style="
+    --cm-sticky-header-offset: var(--cm-layout-header-height);
+    --cm-sticky-subheader-offset: 0;
+    --cm-sticky-top-offset: calc(var(--cm-layout-header-height) + 0);
+  "
+  data-cm-sidebar-collapsed="false"
+  data-cm-controller="app-shell shell-metrics"
+>
+  <header class="cm-app-shell__header" data-cm-sticky-header>Product</header>
+  <div class="cm-app-shell__body">
+    <aside class="cm-app-shell__sidebar">
+      <button type="button" data-cm-sidebar-toggle aria-expanded="true">Collapse</button>
+    </aside>
+    <main class="cm-app-shell__content">Content</main>
+  </div>
+</div>
