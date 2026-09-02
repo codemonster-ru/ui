@@ -2,6 +2,21 @@
 
 All notable changes to this package will be documented in this file.
 
+## Unreleased
+
+### Added
+
+- A `prefers-color-scheme: dark` block, guarded as `:root:not([data-cm-theme='light'])`, so the
+  `system` theme resolves with no JavaScript at all. Previously the attribute was the only selector,
+  which meant the most commonly chosen setting worked only once a script had run.
+
+  Matching _not light_ rather than _no attribute_ lets a root stamped `system` resolve through the
+  media query, so a server can render an unresolved preference verbatim instead of guessing which
+  way it resolves in a browser it cannot see.
+
+  The dark declarations are emitted twice as a result: 18,763 to 24,759 raw bytes, and 2,620 to
+  3,049 gzipped.
+
 ## 1.0.1
 
 ### Changed
