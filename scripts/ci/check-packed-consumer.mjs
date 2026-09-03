@@ -188,6 +188,19 @@ function toPortablePath(filePath) {
   return filePath.split(sep).join('/');
 }
 
+/**
+ * Third-party transitive pins, kept separate from the packed packages this fixture exists to test.
+ *
+ * This installs fresh from the registry in an isolated directory, outside any lockfile this
+ * repository controls -- unlike the workspace root, which already pins `vite` (and, through it,
+ * `postcss`) via its own `overrides` field. `tsconfig.bundler.json` below deliberately runs with
+ * `skipLibCheck: false`, so a declaration-file regression in a package we do not publish -- postcss
+ * 8.5.27 shipped one, `Cannot find name 'NodeProps'` in its own `declaration.d.ts` -- fails a check
+ * whose job is to catch a broken declaration in a package we DO publish. Pinning to the version this
+ * repository's own lockfile already carries keeps the check about our types rather than upstream's.
+ */
+const thirdPartyPins = { postcss: '8.5.26' };
+
 function createConsumerManifest(tarballs) {
   const dependencies = {
     '@vue/server-renderer': '3.5.35',
@@ -218,10 +231,12 @@ function createConsumerManifest(tarballs) {
     },
   };
 
-  if (manager === 'pnpm') {
-    manifest.pnpm = { overrides: packedPackageResolutions };
+  if (manager === 'npm') {
+    manifest.overrides = thirdPartyPins;
+  } else if (manager === 'pnpm') {
+    manifest.pnpm = { overrides: { ...packedPackageResolutions, ...thirdPartyPins } };
   } else if (manager === 'yarn') {
-    manifest.resolutions = packedPackageResolutions;
+    manifest.resolutions = { ...packedPackageResolutions, ...thirdPartyPins };
   }
 
   return manifest;
