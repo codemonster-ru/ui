@@ -2,6 +2,7 @@
 
 Status: Accepted  
 Date: 2026-08-13  
+Revisited: 2026-09-03  
 Roadmap item: `CMUI-147`
 
 ## Decision
@@ -46,6 +47,43 @@ It stays local to CodeBlock until a second concrete consumer needs the same exec
   compatibility, and product-specific icons to every adapter consumer.
 - Rebranding selectors and tokens without a Razor consumer would be an in-place rename, contrary to
   the migration policy.
+
+## What changed since, and what did not
+
+By 2026-09-03 icon geometry had crossed into CodeMonster UI as precomputed data, and Playground had
+been re-checked against the same question and confirmed to have no server equivalent. That made
+reconsideration criterion 2 above -- "highlighting ownership for browser, Node SSR, and PHP is
+explicit" -- worth answering as far as it currently can be, rather than leaving it as an open
+checkbox nobody had looked at since 2026-08-13.
+
+**Browser and Node SSR are already answered**, and were not obvious in August: `VfCodeBlock` calls
+`onServerPrefetch`, and the code comment at its mount hook says so directly -- "SSR can already
+contain Shiki output." Shiki's `engine/javascript` avoids the WASM Oniguruma engine entirely, so
+highlighting already runs outside a browser today, during Vue SSR in Node. That rules out one
+possible reason to keep deferring: this was never blocked on Shiki needing a browser.
+
+**PHP is not answered, and the two ways to answer it carry genuinely different costs** -- which is
+why this stays a reconsideration criterion rather than a decision made here:
+
+- _Progressive enhancement_: Razor renders escaped, working `pre`/`code` -- exactly what "Consumer
+  guidance" above already prescribes -- and a controller loads Shiki's browser bundle
+  (`shiki/bundle/web`, a real published export) to color it client-side. This is the same shape as
+  every other adapter in this line: no PHP runtime dependency, a flash of unhighlighted text is the
+  cost, and it cannot be removed the way the theme flash was, because `code` is arbitrary per-request
+  content rather than a small enumerable set a build step could precompute.
+- _A PHP-side highlighter matching Shiki's output_: checked rather than assumed, and the answer is
+  that none exists as a native PHP engine. The one established PHP integration, `spatie/shiki-php`,
+  is not an independent engine -- it shells out to a real Node process per render. Adopting that
+  model would make CodeBlock the only place in the entire Razor adapter with a hard Node.js runtime
+  dependency at request time, unlike every other component and layout, all of which are pure PHP.
+  Writing a from-scratch PHP tokenizer for the same TextMate grammars Shiki consumes would reintroduce
+  exactly the "two engines obliged to agree" risk the icon-line decision avoided by precomputing --
+  except here the input is unbounded, so there is nothing to precompute once and ship.
+
+Progressive enhancement is the one consistent with everything else this migration has built and
+already what "Consumer guidance" recommends for Razor; it is written here as the likely direction,
+not as an adopted decision -- criterion 2 stays open until a real Razor consumer forces the choice,
+and criteria 1, 3, 4, and 5 remain entirely unaddressed.
 
 ## Consumer guidance
 
