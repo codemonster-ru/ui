@@ -1,0 +1,34 @@
+{
+  "classic/solid": {
+    "body": "<path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M3.5 4h17A2.5 2.5 0 0 1 23 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 1 17.5v-11A2.5 2.5 0 0 1 3.5 4Zm-.3 2.2 7.4 6.15a2.2 2.2 0 0 0 2.8 0l7.4-6.15-8.45 4.45a.75.75 0 0 1-.7 0Z\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\"></rect><path d=\"m3.5 6 7.25 6a2 2 0 0 0 2.5 0l7.25-6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\"></rect><path d=\"m3.5 6 7.25 6a2 2 0 0 0 2.5 0l7.25-6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\"></rect><path d=\"m3.5 6 7.25 6a2 2 0 0 0 2.5 0l7.25-6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><clipPath id=\"vf-duotone-mail-body-v-0\"><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"2.5\"></rect></clipPath></defs><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"2.5\" fill=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\"></rect><path d=\"M1 4h22v2.2h-2.2l-7.4 6.15a2.2 2.2 0 0 1-2.8 0L3.2 6.2H1Z\" fill=\"currentColor\" clip-path=\"url(#vf-duotone-mail-body-v-0)\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\"></rect><path d=\"m3.5 6 7.25 6a2 2 0 0 0 2.5 0l7.25-6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\"></rect><path d=\"m3.5 6 7.25 6a2 2 0 0 0 2.5 0l7.25-6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></rect></g><rect x=\"2.75\" y=\"5.25\" width=\"18.5\" height=\"13.5\" rx=\"2\"></rect><path d=\"m3.5 6 7.25 6a2 2 0 0 0 2.5 0l7.25-6\"></path>",
+    "viewBox": "0 0 24 24"
+  }
+}

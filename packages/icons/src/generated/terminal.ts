@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const terminal: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<path d=\"m3.5 5 6.5 7-6.5 7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12.25 19h8.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<polyline points=\"3.5 5 10 12 3.5 19\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<polyline points=\"3.5 5 10 12 3.5 19\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<polyline points=\"3.5 5 10 12 3.5 19\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<g style=\"--vf-icon-secondary-paint:var(--vf-icon-secondary-color, currentColor);--vf-icon-secondary-part-opacity:var(--vf-icon-secondary-opacity, 0.4);\"><path d=\"m3.5 5 6.5 7-6.5 7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M12.25 19h8.25\" fill=\"none\" stroke=\"var(--vf-icon-secondary-paint, currentColor)\" stroke-opacity=\"var(--vf-icon-secondary-part-opacity, 0.4)\" stroke-width=\"3\" stroke-linecap=\"round\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><mask id=\"vf-duotone-terminal-outline-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"black\" stroke-width=\"0.5\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"black\" stroke-width=\"0.5\"></line></mask></defs><g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" fill=\"none\"><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></line></g><g mask=\"url(#vf-duotone-terminal-outline-v-0)\"><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></line></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><mask id=\"vf-duotone-terminal-outline-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"black\" stroke-width=\"1.25\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"black\" stroke-width=\"1.25\"></line></mask></defs><g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" fill=\"none\"><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></line></g><g mask=\"url(#vf-duotone-terminal-outline-v-0)\"><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></line></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><mask id=\"vf-duotone-terminal-outline-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"black\" stroke-width=\"2\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"black\" stroke-width=\"2\"></line></mask></defs><g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" fill=\"none\"><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"var(--vf-icon-secondary-color, currentColor)\" stroke-width=\"3\"></line></g><g mask=\"url(#vf-duotone-terminal-outline-v-0)\"><polyline points=\"3.5 5 10 12 3.5 19\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></polyline><line x1=\"12.25\" y1=\"19\" x2=\"20.5\" y2=\"19\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"></line></g>",
+    "viewBox": "0 0 24 24"
+  }
+};

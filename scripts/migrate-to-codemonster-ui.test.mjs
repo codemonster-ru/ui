@@ -81,7 +81,10 @@ test('preserves aliases and leaves default and retained imports unchanged', () =
 
 test('deterministically renames every approved direct replacement without transforming props', () => {
   const mapping = readVueForgeMapping();
-  const replacements = mapping.componentMappings.filter(({ action }) => action === 'replace');
+  // VueIconify is a recorded replacement the codemod declines to perform; see manualReplacements.
+  const replacements = mapping.componentMappings.filter(
+    ({ action, source }) => action === 'replace' && source !== 'VueIconify',
+  );
   const layoutComponents = new Set([
     'VfAppShell',
     'VfContainer',

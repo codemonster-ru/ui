@@ -1,0 +1,34 @@
+{
+  "classic/solid": {
+    "body": "<path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.25\" stroke-linecap=\"round\"/><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"currentColor\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<path d=\"M7 8a5 5 0 1 1 7.35 4.42C12.8 13.25 12 14.25 12 16\"></path><circle cx=\"12\" cy=\"20.25\" r=\"1.375\" fill=\"currentColor\" stroke=\"none\"></circle>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<path d=\"M7 8a5 5 0 1 1 7.35 4.42C12.8 13.25 12 14.25 12 16\"></path><circle cx=\"12\" cy=\"20.25\" r=\"1.375\" fill=\"currentColor\" stroke=\"none\"></circle>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<path d=\"M7 8a5 5 0 1 1 7.35 4.42C12.8 13.25 12 14.25 12 16\"></path><circle cx=\"12\" cy=\"20.25\" r=\"1.375\" fill=\"currentColor\" stroke=\"none\"></circle>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<g style=\"--vf-icon-secondary-paint:var(--vf-icon-secondary-color, currentColor);--vf-icon-secondary-part-opacity:var(--vf-icon-secondary-opacity, 0.4);\"><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.25\" stroke-linecap=\"round\"/><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"var(--vf-icon-secondary-paint, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-part-opacity, 0.4)\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><mask id=\"vf-duotone-question-silhouette-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"white\" stroke-width=\"3.25\" stroke-linecap=\"round\"></path><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"white\" stroke=\"white\" stroke-width=\"0\"></circle></mask><mask id=\"vf-duotone-question-border-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"black\" stroke=\"white\" stroke-width=\"2.5\"></circle><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"black\" stroke-width=\"0.75\" stroke-linecap=\"round\"></path></mask><mask id=\"vf-duotone-question-inner-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"white\" stroke=\"black\" stroke-width=\"2.5\"></circle><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"white\" stroke-width=\"0.75\" stroke-linecap=\"round\"></path></mask></defs><g mask=\"url(#vf-duotone-question-silhouette-v-0)\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"currentColor\" stroke=\"none\" mask=\"url(#vf-duotone-question-border-v-0)\"></rect></g><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\" mask=\"url(#vf-duotone-question-inner-v-0)\"></rect>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><mask id=\"vf-duotone-question-silhouette-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"white\" stroke-width=\"3.25\" stroke-linecap=\"round\"></path><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"white\" stroke=\"white\" stroke-width=\"0\"></circle></mask><mask id=\"vf-duotone-question-border-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"black\" stroke=\"white\" stroke-width=\"1.75\"></circle><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"black\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path></mask><mask id=\"vf-duotone-question-inner-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"white\" stroke=\"black\" stroke-width=\"1.75\"></circle><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"white\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path></mask></defs><g mask=\"url(#vf-duotone-question-silhouette-v-0)\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"currentColor\" stroke=\"none\" mask=\"url(#vf-duotone-question-border-v-0)\"></rect></g><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\" mask=\"url(#vf-duotone-question-inner-v-0)\"></rect>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><mask id=\"vf-duotone-question-silhouette-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"white\" stroke-width=\"3.25\" stroke-linecap=\"round\"></path><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"white\" stroke=\"white\" stroke-width=\"0\"></circle></mask><mask id=\"vf-duotone-question-border-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\" stroke=\"none\"></rect><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"black\" stroke=\"white\" stroke-width=\"1\"></circle><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"black\" stroke-width=\"2.25\" stroke-linecap=\"round\"></path></mask><mask id=\"vf-duotone-question-inner-v-0\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><circle cx=\"12\" cy=\"20.5\" r=\"1.75\" fill=\"white\" stroke=\"black\" stroke-width=\"1\"></circle><path d=\"M6.5 7.5a5.5 5.5 0 1 1 8 4.9C12.75 13.35 12 14.5 12 16\" fill=\"none\" stroke=\"white\" stroke-width=\"2.25\" stroke-linecap=\"round\"></path></mask></defs><g mask=\"url(#vf-duotone-question-silhouette-v-0)\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"currentColor\" stroke=\"none\" mask=\"url(#vf-duotone-question-border-v-0)\"></rect></g><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\" mask=\"url(#vf-duotone-question-inner-v-0)\"></rect>",
+    "viewBox": "0 0 24 24"
+  }
+}

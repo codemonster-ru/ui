@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@codemonster-ru/ui-css": "file:../../packages/css",
+    "@codemonster-ru/ui-icons": "file:../../packages/icons",
     "@codemonster-ru/ui-layouts": "file:../../packages/layouts",
     "@codemonster-ru/ui-tokens": "file:../../packages/tokens",
     "@codemonster-ru/ui-vue": "file:../../packages/vue",

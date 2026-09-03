@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const house: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<defs><mask id=\"vf-solid-house\"><rect width=\"24\" height=\"24\" fill=\"black\"/><path fill=\"white\" d=\"M2.2 10.6 12 2.35l9.8 8.25-2.25 2.65-1.05-.88V21H5.5v-8.63l-1.05.88Z\"/><rect x=\"9.5\" y=\"15\" width=\"5\" height=\"6\" rx=\".75\" fill=\"black\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-house)\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<path d=\"M3.5 10.75 12 3.6l8.5 7.15\"></path><path d=\"M5.25 9.5v10.25h13.5V9.5\"></path><path d=\"M9.25 19.75v-5.5h5.5v5.5\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<path d=\"M3.5 10.75 12 3.6l8.5 7.15\"></path><path d=\"M5.25 9.5v10.25h13.5V9.5\"></path><path d=\"M9.25 19.75v-5.5h5.5v5.5\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<path d=\"M3.5 10.75 12 3.6l8.5 7.15\"></path><path d=\"M5.25 9.5v10.25h13.5V9.5\"></path><path d=\"M9.25 19.75v-5.5h5.5v5.5\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><mask id=\"vf-duotone-house-body-v-0\"><rect x=\"5.5\" y=\"12.37\" width=\"13\" height=\"8.63\" fill=\"white\"></rect><rect x=\"9.5\" y=\"15\" width=\"5\" height=\"6\" rx=\"0.75\" fill=\"black\"></rect></mask></defs><g color=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\"><defs><mask id=\"vf-solid-house-v-0\"><rect width=\"24\" height=\"24\" fill=\"black\"/><path fill=\"white\" d=\"M2.2 10.6 12 2.35l9.8 8.25-2.25 2.65-1.05-.88V21H5.5v-8.63l-1.05.88Z\"/><rect x=\"9.5\" y=\"15\" width=\"5\" height=\"6\" rx=\".75\" fill=\"black\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-house-v-0)\"/></g><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-duotone-house-body-v-0)\"></rect>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M3.5 10.75 12 3.6l8.5 7.15-1.75-1.25v10.25H5.25V9.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\"></path></g><path d=\"M3.5 10.75 12 3.6l8.5 7.15\"></path><path d=\"M5.25 9.5v10.25h13.5V9.5\"></path><path d=\"M9.25 19.75v-5.5h5.5v5.5\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M3.5 10.75 12 3.6l8.5 7.15-1.75-1.25v10.25H5.25V9.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\"></path></g><path d=\"M3.5 10.75 12 3.6l8.5 7.15\"></path><path d=\"M5.25 9.5v10.25h13.5V9.5\"></path><path d=\"M9.25 19.75v-5.5h5.5v5.5\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M3.5 10.75 12 3.6l8.5 7.15-1.75-1.25v10.25H5.25V9.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\"></path></g><path d=\"M3.5 10.75 12 3.6l8.5 7.15\"></path><path d=\"M5.25 9.5v10.25h13.5V9.5\"></path><path d=\"M9.25 19.75v-5.5h5.5v5.5\"></path>",
+    "viewBox": "0 0 24 24"
+  }
+};

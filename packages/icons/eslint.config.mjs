@@ -1,21 +1,16 @@
-import { createVueTsConfig } from '../../eslint.base.mjs';
 import globals from 'globals';
+import { createTsConfig } from '../../eslint.base.mjs';
 
 export default [
-  ...createVueTsConfig({
-    ignores: ['dist/**', 'node_modules/**', 'showcase-dist/**'],
+  ...createTsConfig({
+    // The generated set is data written by scripts/generate-icons.mjs, not source anyone edits.
+    ignores: ['dist/**', 'node_modules/**', 'src/generated/**'],
     tsconfigRootDir: import.meta.dirname,
-    rules: {
-      semi: ['error', 'always'],
-      'vue/multi-word-component-names': 'off',
-    },
   }),
   {
+    // The shared config declares Node globals for `.ts` and `.js`; the generator is `.mjs` and runs
+    // in Node like any other build script, so it needs them too.
     files: ['scripts/**/*.mjs'],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-      },
-    },
+    languageOptions: { globals: { ...globals.node } },
   },
 ];

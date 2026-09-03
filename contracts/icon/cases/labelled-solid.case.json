@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "icon-labelled-solid",
+  "description": "A solid icon with an accessible name, so it reads as an image rather than decoration.",
+  "props": { "icon": "arrowLeft", "variant": "solid", "label": "Back" },
+  "slots": {}
+}

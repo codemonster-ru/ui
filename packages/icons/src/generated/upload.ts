@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const upload: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<path fill=\"currentColor\" d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<line x1=\"12\" y1=\"15.25\" x2=\"12\" y2=\"3.25\"></line><polyline points=\"7.5 7.5 12 3 16.5 7.5\"></polyline><path d=\"M4 17.25v3h16v-3\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<line x1=\"12\" y1=\"15.25\" x2=\"12\" y2=\"3.25\"></line><polyline points=\"7.5 7.5 12 3 16.5 7.5\"></polyline><path d=\"M4 17.25v3h16v-3\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<line x1=\"12\" y1=\"15.25\" x2=\"12\" y2=\"3.25\"></line><polyline points=\"7.5 7.5 12 3 16.5 7.5\"></polyline><path d=\"M4 17.25v3h16v-3\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><mask id=\"vf-duotone-primary-upload-v-0\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\"></rect><rect x=\"3\" y=\"18.25\" width=\"18\" height=\"3\" fill=\"black\"></rect></mask><mask id=\"vf-duotone-secondary-upload-v-0\"><rect x=\"3\" y=\"18.25\" width=\"18\" height=\"3\" fill=\"white\"></rect></mask></defs><g mask=\"url(#vf-duotone-primary-upload-v-0)\"><path fill=\"currentColor\" d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\"/></g><g color=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" mask=\"url(#vf-duotone-secondary-upload-v-0)\"><path fill=\"currentColor\" d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><clipPath id=\"vf-duotone-upload-v-0\"><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-upload-v-0)\"><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><clipPath id=\"vf-duotone-upload-v-0\"><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-upload-v-0)\"><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><clipPath id=\"vf-duotone-upload-v-0\"><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-upload-v-0)\"><path d=\"M10.25 17.25h3.5v-8.5l3.4 3.4 2.5-2.5L12 2 4.35 9.65l2.5 2.5 3.4-3.4ZM3 18.25h18v3H3Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"></path></g>",
+    "viewBox": "0 0 24 24"
+  }
+};

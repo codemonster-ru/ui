@@ -28,3 +28,24 @@ export function affectsFrozenShowcase(path) {
 export function findFrozenShowcaseChanges(changedPaths) {
   return changedPaths.filter((path) => affectsFrozenShowcase(path)).sort();
 }
+
+/**
+ * Changes to frozen-showcase sources that were reviewed and accepted.
+ *
+ * A declaration is not a permanent exemption. It names a path that currently differs, and the
+ * staleness check below fails once it stops differing -- so an entry cannot outlive the change it
+ * describes and rot into a list nobody reads. The visual gate remains the authority on whether
+ * pixels actually moved; this only records that someone looked.
+ */
+export const acknowledgedChanges = {
+  'examples/vue/src/sections/icons/IconsShowcase.vue':
+    'Import path only: the VueForge icons package moved to packages/vueforge-icons so the CodeMonster line could take the packages/icons name. The imported file is unchanged, so nothing renders differently.',
+};
+
+/** Reports acknowledged paths that no longer differ, so the list cannot outlive its reasons. */
+export function findStaleAcknowledgements(changedPaths, acknowledged = acknowledgedChanges) {
+  const changed = new Set(changedPaths);
+  return Object.keys(acknowledged)
+    .filter((path) => !changed.has(path))
+    .sort();
+}
