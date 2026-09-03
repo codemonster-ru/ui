@@ -2,6 +2,7 @@
 
 Status: Accepted  
 Date: 2026-08-13  
+Revisited: 2026-09-03  
 Roadmap item: `CMUI-148`
 
 ## Decision
@@ -15,14 +16,52 @@ No `ui-playground` package, `CmPlayground` component, Annabel Razor adapter, or 
 is added to the CodeMonster UI 1.0 topology. The existing packages remain supported under the
 VueForge migration and maintenance policy and may run alongside CodeMonster UI.
 
+## Why this held up under the same test that moved icons and layouts
+
+By 2026-09-03 the icon and layout lines had each looked hard to port and turned out portable once
+read closely enough — icons looked like a 2,135-line rendering engine that would have to be
+duplicated in PHP and turned out to be static data once precomputed. That made "retained" worth
+re-checking rather than trusting as a standing label: was Playground actually the same kind of
+question, just not yet worked through?
+
+It is not, and the code says why rather than a category label asserting it.
+`packages/playground-core/src/typescriptWorker.js` transpiles with a real `Worker`:
+
+```js
+self.addEventListener('message', (event) => {
+  const request = event.data;
+  // ... transpiles request.sources with the TypeScript compiler ...
+  self.postMessage({ type: 'result', id: request.id, outputs: [] });
+});
+```
+
+`packages/playground-core/src/runtimes/browserRuntime.ts` runs the result in a sandboxed frame:
+
+```ts
+export function runInIframe(iframe: HTMLIFrameElement, html: string): void {
+  iframe.setAttribute('sandbox', 'allow-scripts');
+  iframe.srcdoc = html;
+}
+```
+
+`Worker` and `HTMLIFrameElement` are not a framework choice Vue happened to make; they are what a
+live, reactive, sandboxed preview of arbitrary just-typed code requires, and nothing server-rendered
+can supply either. A PHP request answers one request with one response; it cannot host a running
+session watching for the next keystroke. An icon's output is a pure function of three known values,
+computable once and shipped as data. Playground's output is a pure function of whatever a person is
+typing at this instant — not a harder version of the same precomputation problem, a different one.
+
+Confirmed rather than assumed: nothing in `ui-vue`, `ui-layouts`, `ui-runtime`, or `ui-icons`
+depends on any of the three Playground packages.
+
 ## Reviewed package boundaries
 
-| Package | Responsibility | Ownership outcome |
-| --- | --- | --- |
-| `@codemonster-ru/vueforge-playground-core` | Framework-independent session state, TypeScript worker, module compilation, iframe document generation, and preview messaging | Retained Playground runtime product |
-| `@codemonster-ru/vueforge-playground` | Vue editor/preview UI, component-preview mode, theme bridging, console/files/actions regions, and Playground session orchestration | Retained Vue Playground adapter |
-| `@codemonster-ru/vueforge-playground-vite-plugin` | Build-time virtual modules backed by explicitly configured local source files | Retained Playground build integration |
-| `examples/vue` | Repository showcase and manual integration consumer | Application; migrated separately by `CMUI-153` |
+| Package                                           | Responsibility                                                                                                                     | Ownership outcome                              |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `@codemonster-ru/vueforge-playground-core`        | Framework-independent session state, TypeScript worker, module compilation, iframe document generation, and preview messaging      | Retained Playground runtime product            |
+| `@codemonster-ru/vueforge-playground`             | Vue editor/preview UI, component-preview mode, theme bridging, console/files/actions regions, and Playground session orchestration | Retained Vue Playground adapter                |
+| `@codemonster-ru/vueforge-playground-vite-plugin` | Build-time virtual modules backed by explicitly configured local source files                                                      | Retained Playground build integration          |
+| `examples/vue`                                    | Repository showcase and manual integration consumer                                                                                | Application; migrated separately by `CMUI-153` |
 
 The framework-independent core remains outside `ui-runtime`. The latter enhances canonical
 CodeMonster UI DOM with small controllers; it must not become a compiler, worker host, module

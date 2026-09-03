@@ -162,15 +162,15 @@
     },
     {
       "package": "@codemonster-ru/vueforge-playground",
-      "reason": "Runs a live, sandboxed browser preview of arbitrary just-typed code -- Worker-based TypeScript transpilation and an HTMLIFrameElement sandbox, neither of which a server request/response can supply. Nothing in the CodeMonster line depends on it. See docs/architecture/playground-line-ownership.md."
+      "reason": "Runs a live, sandboxed browser preview of arbitrary just-typed code -- Worker-based TypeScript transpilation and an HTMLIFrameElement sandbox, neither of which a server request/response can supply. Nothing in the CodeMonster line depends on it. See docs/architecture/playground-ownership.md."
     },
     {
       "package": "@codemonster-ru/vueforge-playground-core",
-      "reason": "The Worker transpiler and iframe runtime behind the Playground UI; browser-only by the primitives it uses, not by framework choice. See docs/architecture/playground-line-ownership.md."
+      "reason": "The Worker transpiler and iframe runtime behind the Playground UI; browser-only by the primitives it uses, not by framework choice. See docs/architecture/playground-ownership.md."
     },
     {
       "package": "@codemonster-ru/vueforge-playground-vite-plugin",
-      "reason": "A Vite/Rollup build plugin that turns demo files into virtual modules for the retained Playground product; build-tool infrastructure with no PHP analog. See docs/architecture/playground-line-ownership.md."
+      "reason": "A Vite/Rollup build plugin that turns demo files into virtual modules for the retained Playground product; build-tool infrastructure with no PHP analog. See docs/architecture/playground-ownership.md."
     }
   ]
 }
