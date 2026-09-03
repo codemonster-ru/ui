@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const caretUp: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<path fill=\"currentColor\" d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<polyline points=\"8.25 14 12 10.25 15.75 14\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<polyline points=\"8.25 14 12 10.25 15.75 14\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<polyline points=\"8.25 14 12 10.25 15.75 14\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><clipPath id=\"vf-duotone-caretUp-half-v-0\"><rect x=\"12\" y=\"0\" width=\"12\" height=\"24\"></rect></clipPath></defs><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\"></path><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"currentColor\" clip-path=\"url(#vf-duotone-caretUp-half-v-0)\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><clipPath id=\"vf-duotone-caretUp-v-0\"><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-caretUp-v-0)\"><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><clipPath id=\"vf-duotone-caretUp-v-0\"><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-caretUp-v-0)\"><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><clipPath id=\"vf-duotone-caretUp-v-0\"><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-caretUp-v-0)\"><path d=\"m7.25 14.75 4.75-5.5 4.75 5.5Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"></path></g>",
+    "viewBox": "0 0 24 24"
+  }
+};

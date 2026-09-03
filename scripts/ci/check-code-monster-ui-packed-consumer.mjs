@@ -26,6 +26,7 @@ for (const argument of process.argv.slice(2)) {
 const workspaces = discoverCodeMonsterUiWorkspaces(join(repositoryRoot, 'packages'));
 const expectedNames = [
   '@codemonster-ru/ui-tokens',
+  '@codemonster-ru/ui-icons',
   '@codemonster-ru/ui-runtime',
   '@codemonster-ru/ui-css',
   '@codemonster-ru/ui-utilities',
@@ -155,7 +156,8 @@ function writeConsumer(tarballs) {
     join(consumerDirectory, 'src/main.ts'),
     [
       "import { createApp, h } from 'vue';",
-      "import { CmButton } from '@codemonster-ru/ui-vue';",
+      "import { CmButton, CmIcon } from '@codemonster-ru/ui-vue';",
+      "import { arrowLeft } from '@codemonster-ru/ui-icons';",
       "import { CmRuntime } from '@codemonster-ru/ui-runtime';",
       "import { cmLightThemePreset } from '@codemonster-ru/ui-tokens';",
       "import '@codemonster-ru/ui-tokens/tokens.css';",
@@ -164,7 +166,9 @@ function writeConsumer(tarballs) {
       '',
       'document.documentElement.dataset.cmTheme = cmLightThemePreset.mode;',
       'new CmRuntime().start(document);',
-      "createApp({ render: () => h(CmButton, { variant: 'primary' }, () => 'Packed consumer') }).mount('#app');",
+      'createApp({',
+      "  render: () => h(CmButton, { variant: 'primary' }, () => [h(CmIcon, { icon: arrowLeft }), 'Packed consumer']),",
+      "}).mount('#app');",
       '',
     ].join('\n'),
   );
@@ -173,7 +177,8 @@ function writeConsumer(tarballs) {
     [
       "import { renderToString } from '@vue/server-renderer';",
       "import { createSSRApp, h } from 'vue';",
-      "import { CmButton } from '@codemonster-ru/ui-vue';",
+      "import { CmButton, CmIcon } from '@codemonster-ru/ui-vue';",
+      "import { arrowLeft } from '@codemonster-ru/ui-icons';",
       "import { CmRuntime } from '@codemonster-ru/ui-runtime';",
       "import { cmLightThemePreset } from '@codemonster-ru/ui-tokens';",
       '',

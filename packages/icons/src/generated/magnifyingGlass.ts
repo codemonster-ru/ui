@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const magnifyingGlass: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<defs><mask id=\"vf-solid-magnifying-glass\"><rect width=\"24\" height=\"24\" fill=\"black\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"7.75\" fill=\"white\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"4.25\" fill=\"black\"/><path d=\"m15.5 15.5 5.25 5.25\" stroke=\"white\" stroke-width=\"3.5\" stroke-linecap=\"round\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-magnifying-glass)\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"></circle><line x1=\"15.25\" y1=\"15.25\" x2=\"20.25\" y2=\"20.25\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"></circle><line x1=\"15.25\" y1=\"15.25\" x2=\"20.25\" y2=\"20.25\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"></circle><line x1=\"15.25\" y1=\"15.25\" x2=\"20.25\" y2=\"20.25\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<g style=\"--vf-icon-secondary-paint:var(--vf-icon-secondary-color, currentColor);--vf-icon-secondary-part-opacity:var(--vf-icon-secondary-opacity, 0.4);\"><defs><mask id=\"vf-solid-magnifying-glass-handle-v-0\"><rect width=\"24\" height=\"24\" fill=\"white\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"7.75\" fill=\"black\"/></mask><mask id=\"vf-solid-magnifying-glass-ring-v-0\"><rect width=\"24\" height=\"24\" fill=\"white\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"4.25\" fill=\"black\"/></mask></defs><path d=\"m15.5 15.5 5.25 5.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.5\" stroke-linecap=\"round\" mask=\"url(#vf-solid-magnifying-glass-handle-v-0)\"/><circle cx=\"10.25\" cy=\"10.25\" r=\"7.75\" fill=\"var(--vf-icon-secondary-paint, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-part-opacity, 0.4)\" mask=\"url(#vf-solid-magnifying-glass-ring-v-0)\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"></circle><line x1=\"15.25\" y1=\"15.25\" x2=\"20.25\" y2=\"20.25\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"></circle><line x1=\"15.25\" y1=\"15.25\" x2=\"20.25\" y2=\"20.25\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"></circle><line x1=\"15.25\" y1=\"15.25\" x2=\"20.25\" y2=\"20.25\"></line>",
+    "viewBox": "0 0 24 24"
+  }
+};

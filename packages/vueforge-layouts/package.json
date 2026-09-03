@@ -204,7 +204,7 @@
   },
   "devDependencies": {
     "@codemonster-ru/vueforge-core": "file:../core",
-    "@codemonster-ru/vueforge-icons": "file:../icons",
+    "@codemonster-ru/vueforge-icons": "file:../vueforge-icons",
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.5.0",
     "@vitejs/plugin-vue": "^5.2.1",

@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const sun: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<circle cx=\"12\" cy=\"12\" r=\"4.5\" fill=\"currentColor\"/><path d=\"M12 2.75V5M12 19v2.25M2.75 12H5M19 12h2.25M4.5 4.5l1.75 1.75m11.5 11.5 1.75 1.75m0-15-1.75 1.75M6.25 17.75 4.5 19.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<circle cx=\"12\" cy=\"12\" r=\"4\"></circle><line x1=\"12\" y1=\"2.75\" x2=\"12\" y2=\"5\"></line><line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"21.25\"></line><line x1=\"2.75\" y1=\"12\" x2=\"5\" y2=\"12\"></line><line x1=\"19\" y1=\"12\" x2=\"21.25\" y2=\"12\"></line><line x1=\"4.5\" y1=\"4.5\" x2=\"6.25\" y2=\"6.25\"></line><line x1=\"17.75\" y1=\"17.75\" x2=\"19.5\" y2=\"19.5\"></line><line x1=\"19.5\" y1=\"4.5\" x2=\"17.75\" y2=\"6.25\"></line><line x1=\"6.25\" y1=\"17.75\" x2=\"4.5\" y2=\"19.5\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<circle cx=\"12\" cy=\"12\" r=\"4\"></circle><line x1=\"12\" y1=\"2.75\" x2=\"12\" y2=\"5\"></line><line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"21.25\"></line><line x1=\"2.75\" y1=\"12\" x2=\"5\" y2=\"12\"></line><line x1=\"19\" y1=\"12\" x2=\"21.25\" y2=\"12\"></line><line x1=\"4.5\" y1=\"4.5\" x2=\"6.25\" y2=\"6.25\"></line><line x1=\"17.75\" y1=\"17.75\" x2=\"19.5\" y2=\"19.5\"></line><line x1=\"19.5\" y1=\"4.5\" x2=\"17.75\" y2=\"6.25\"></line><line x1=\"6.25\" y1=\"17.75\" x2=\"4.5\" y2=\"19.5\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<circle cx=\"12\" cy=\"12\" r=\"4\"></circle><line x1=\"12\" y1=\"2.75\" x2=\"12\" y2=\"5\"></line><line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"21.25\"></line><line x1=\"2.75\" y1=\"12\" x2=\"5\" y2=\"12\"></line><line x1=\"19\" y1=\"12\" x2=\"21.25\" y2=\"12\"></line><line x1=\"4.5\" y1=\"4.5\" x2=\"6.25\" y2=\"6.25\"></line><line x1=\"17.75\" y1=\"17.75\" x2=\"19.5\" y2=\"19.5\"></line><line x1=\"19.5\" y1=\"4.5\" x2=\"17.75\" y2=\"6.25\"></line><line x1=\"6.25\" y1=\"17.75\" x2=\"4.5\" y2=\"19.5\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<g style=\"--vf-icon-secondary-paint:var(--vf-icon-secondary-color, currentColor);--vf-icon-secondary-part-opacity:var(--vf-icon-secondary-opacity, 0.4);\"><circle cx=\"12\" cy=\"12\" r=\"4.5\" fill=\"var(--vf-icon-secondary-paint, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-part-opacity, 0.4)\"/><path d=\"M12 2.75V5M12 19v2.25M2.75 12H5M19 12h2.25M4.5 4.5l1.75 1.75m11.5 11.5 1.75 1.75m0-15-1.75 1.75M6.25 17.75 4.5 19.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><line x1=\"12\" y1=\"2.75\" x2=\"12\" y2=\"5\"></line><line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"21.25\"></line><line x1=\"2.75\" y1=\"12\" x2=\"5\" y2=\"12\"></line><line x1=\"19\" y1=\"12\" x2=\"21.25\" y2=\"12\"></line><line x1=\"4.5\" y1=\"4.5\" x2=\"6.25\" y2=\"6.25\"></line><line x1=\"17.75\" y1=\"17.75\" x2=\"19.5\" y2=\"19.5\"></line><line x1=\"19.5\" y1=\"4.5\" x2=\"17.75\" y2=\"6.25\"></line><line x1=\"6.25\" y1=\"17.75\" x2=\"4.5\" y2=\"19.5\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><line x1=\"12\" y1=\"2.75\" x2=\"12\" y2=\"5\"></line><line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"21.25\"></line><line x1=\"2.75\" y1=\"12\" x2=\"5\" y2=\"12\"></line><line x1=\"19\" y1=\"12\" x2=\"21.25\" y2=\"12\"></line><line x1=\"4.5\" y1=\"4.5\" x2=\"6.25\" y2=\"6.25\"></line><line x1=\"17.75\" y1=\"17.75\" x2=\"19.5\" y2=\"19.5\"></line><line x1=\"19.5\" y1=\"4.5\" x2=\"17.75\" y2=\"6.25\"></line><line x1=\"6.25\" y1=\"17.75\" x2=\"4.5\" y2=\"19.5\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><line x1=\"12\" y1=\"2.75\" x2=\"12\" y2=\"5\"></line><line x1=\"12\" y1=\"19\" x2=\"12\" y2=\"21.25\"></line><line x1=\"2.75\" y1=\"12\" x2=\"5\" y2=\"12\"></line><line x1=\"19\" y1=\"12\" x2=\"21.25\" y2=\"12\"></line><line x1=\"4.5\" y1=\"4.5\" x2=\"6.25\" y2=\"6.25\"></line><line x1=\"17.75\" y1=\"17.75\" x2=\"19.5\" y2=\"19.5\"></line><line x1=\"19.5\" y1=\"4.5\" x2=\"17.75\" y2=\"6.25\"></line><line x1=\"6.25\" y1=\"17.75\" x2=\"4.5\" y2=\"19.5\"></line>",
+    "viewBox": "0 0 24 24"
+  }
+};

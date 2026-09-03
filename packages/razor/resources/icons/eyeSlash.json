@@ -1,0 +1,34 @@
+{
+  "classic/solid": {
+    "body": "<defs><mask id=\"vf-solid-eye-slash\"><path fill=\"white\" d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3.5\" fill=\"black\"/><circle cx=\"12\" cy=\"12\" r=\"1.5\" fill=\"white\"/><path d=\"M4 4 20 20\" stroke=\"black\" stroke-width=\"4.5\" stroke-linecap=\"round\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-eye-slash)\"/><path d=\"M4 4 20 20\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\"></circle><line x1=\"4\" y1=\"4\" x2=\"20\" y2=\"20\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\"></circle><line x1=\"4\" y1=\"4\" x2=\"20\" y2=\"20\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\"></circle><line x1=\"4\" y1=\"4\" x2=\"20\" y2=\"20\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<g style=\"--vf-icon-secondary-paint:var(--vf-icon-secondary-color, currentColor);--vf-icon-secondary-part-opacity:var(--vf-icon-secondary-opacity, 0.4);\"><defs><mask id=\"vf-solid-eye-slash-v-0\"><path fill=\"white\" d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3.5\" fill=\"black\"/><circle cx=\"12\" cy=\"12\" r=\"1.5\" fill=\"white\"/><path d=\"M4 4 20 20\" stroke=\"black\" stroke-width=\"4.5\" stroke-linecap=\"round\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"var(--vf-icon-secondary-paint, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-part-opacity, 0.4)\" mask=\"url(#vf-solid-eye-slash-v-0)\"/><path d=\"M4 4 20 20\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\"></circle><line x1=\"4\" y1=\"4\" x2=\"20\" y2=\"20\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\"></circle><line x1=\"4\" y1=\"4\" x2=\"20\" y2=\"20\"></line>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></circle></g><path d=\"M2.75 12C5.15 8.1 8.25 6 12 6s6.85 2.1 9.25 6c-2.4 3.9-5.5 6-9.25 6S5.15 15.9 2.75 12Z\"></path><circle cx=\"12\" cy=\"12\" r=\"3.25\"></circle><line x1=\"4\" y1=\"4\" x2=\"20\" y2=\"20\"></line>",
+    "viewBox": "0 0 24 24"
+  }
+}
