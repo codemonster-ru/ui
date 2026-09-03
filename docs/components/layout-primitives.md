@@ -77,9 +77,12 @@ elements only when their children are valid list items.
 
 ## Application shell boundary
 
-The primitives may compose inside an application shell, but they do not own routing, authorization,
-landmark placement, responsive navigation state, sticky measurements, or workflow shortcuts. Keep
-those decisions in the application as described by the accepted
-[application shell ownership decision](../architecture/application-shell-ownership.md). A remaining
-legacy `VfAppShell` or theme-bootstrap dependency is migration work, not evidence for a new portable
-layout API.
+The primitives do not own routing or authorization; keep those in the application. They also do not
+own page structure — that is what [layouts](./layouts.md) are for, and `CmAppShell` covers what
+`VfAppShell` used to. Responsive shell state, sticky measurement, and theme bootstrap moved into the
+kit with the [layout line](../architecture/layout-line-ownership.md) and the
+[theme subsystem](../architecture/theme-subsystem.md), which supersede the earlier
+[shell ownership decision](../architecture/application-shell-ownership.md).
+
+A primitive is still the wrong place to reach for any of that: `CmStack` and `CmGrid` arrange
+content, and needing a landmark or a sticky region means reaching for a layout instead.

@@ -2,6 +2,16 @@
 
 All notable changes to this package will be documented in this file.
 
+## Unreleased
+
+### Added
+
+- Styles for the components and layouts carried across in this cycle: `tag`, `table-of-contents`,
+  `column-chooser`, `stepper`, `nav-menu`, `menu-bar`, `theme-switch`, `admin-layout`,
+  `admin-shell`, `setup-layout`, `app-shell`, and `document-layout`.
+- The shell styles stick against `--cm-sticky-*` custom properties the layout publishes rather than
+  anything they measure, so a page is correct before a controller narrows them.
+
 ## 1.1.0
 
 ### Added

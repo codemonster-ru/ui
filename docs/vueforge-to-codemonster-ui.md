@@ -146,9 +146,12 @@ rename as API compatibility:
   content.
   [Table and DataTable](./components/data-tables.md) separates portable scalar controls from
   application-owned queries and rich table composition.
-- [Layout primitives](./components/layout-primitives.md) replace the portable layout vocabulary;
-  semantic landmarks, responsive shell state, routing, and theme bootstrap remain application-owned
-  under the [shell decision](./architecture/application-shell-ownership.md).
+- [Layout primitives](./components/layout-primitives.md) replace the portable layout vocabulary, and
+  [layouts](./components/layouts.md) carry the five page frames. Responsive shell state, sticky
+  measurement, and theme bootstrap are owned by the kit now — see the
+  [layout line](./architecture/layout-line-ownership.md) and the
+  [theme subsystem](./architecture/theme-subsystem.md), which supersede the earlier shell decision.
+  Routing and authorization stay with the application.
 
 The component guides name every `ui-runtime` controller required by server-rendered interactive
 markup. Do not initialize those controllers over Vue-owned component trees.
