@@ -71,6 +71,70 @@ changes lives in what fills it.
 </template>
 ```
 
+## AppShell
+
+`CmAppShell` is the widest frame: header, subheader, sidebar, content, aside, and footer. `layout`
+selects which regions exist — `content`, `sidebar-content`, or `sidebar-content-aside`.
+
+Its sticky offsets are published as custom properties rather than measured, so the frame is correct
+before any script runs. Declare `--cm-layout-header-height` for that case;
+`CmShellMetricsController` replaces it with the observed height once a browser is involved.
+
+The collapse control is marked, not supplied. Tag your own button with `data-cm-sidebar-toggle` and
+both adapters keep its `aria-expanded` in step with the root's `data-cm-sidebar-collapsed`.
+
+```vue
+<script setup lang="ts">
+import { CmAppShell } from '@codemonster-ru/ui-layouts';
+import { ref } from 'vue';
+
+const collapsed = ref(false);
+</script>
+
+<template>
+  <CmAppShell layout="sidebar-content" sticky-header v-model:sidebar-collapsed="collapsed">
+    <template #header>Acme</template>
+    <template #sidebar>
+      <button type="button" data-cm-sidebar-toggle :aria-expanded="!collapsed">Collapse</button>
+    </template>
+    Dashboard content
+  </CmAppShell>
+</template>
+```
+
+```php
+<cm-app-shell layout="sidebar-content" sticky-header>
+    <x-slot name="header">Acme</x-slot>
+    <x-slot name="sidebar">
+        <button type="button" data-cm-sidebar-toggle aria-expanded="true">Collapse</button>
+    </x-slot>
+    Dashboard content
+</cm-app-shell>
+```
+
+Register both controllers, since the root names both: `app-shell` collapses the sidebar and
+`shell-metrics` measures the sticky regions.
+
+## DocumentLayout
+
+`CmDocumentLayout` is the reading counterpart: header, subheader, chapter sidebar, body, a
+contextual aside, and footer. It has no state of its own, so it names only `shell-metrics`.
+
+```vue
+<script setup lang="ts">
+import { CmDocumentLayout } from '@codemonster-ru/ui-layouts';
+</script>
+
+<template>
+  <CmDocumentLayout>
+    <template #header>Guide</template>
+    <template #sidebar>Chapters</template>
+    <template #aside>On this page</template>
+    Body
+  </CmDocumentLayout>
+</template>
+```
+
 ## SetupLayout
 
 `CmSetupLayout` is a centred panel for one step of a setup or onboarding flow, with a heading, body
@@ -90,4 +154,3 @@ shortcut applies.
   </CmSetupLayout>
 </template>
 ```
-
