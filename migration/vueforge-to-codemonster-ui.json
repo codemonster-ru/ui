@@ -9,8 +9,8 @@
     },
     {
       "source": "@codemonster-ru/vueforge-icons",
-      "action": "retain",
-      "targets": []
+      "action": "partial",
+      "targets": ["@codemonster-ru/ui-icons"]
     },
     {
       "source": "@codemonster-ru/vueforge-core",
@@ -50,9 +50,34 @@
       "targets": ["CmAccordion"]
     },
     {
+      "source": "VfAdminLayout",
+      "action": "replace",
+      "targets": ["CmAdminLayout"]
+    },
+    {
+      "source": "VfAdminShell",
+      "action": "replace",
+      "targets": ["CmAdminShell"]
+    },
+    {
       "source": "VfAlert",
       "action": "replace",
       "targets": ["CmAlert"]
+    },
+    {
+      "source": "VfAppShell",
+      "action": "replace",
+      "targets": ["CmAppShell"]
+    },
+    {
+      "source": "VfAsideArea",
+      "action": "drop",
+      "targets": []
+    },
+    {
+      "source": "VfAuthLayout",
+      "action": "compose",
+      "targets": ["CmContainer", "CmStack", "CmSection"]
     },
     {
       "source": "VfAvatar",
@@ -95,6 +120,16 @@
       "targets": ["CmDialog", "CmButton"]
     },
     {
+      "source": "VfContainer",
+      "action": "replace",
+      "targets": ["CmContainer"]
+    },
+    {
+      "source": "VfContentArea",
+      "action": "drop",
+      "targets": []
+    },
+    {
       "source": "VfDataTable",
       "action": "replace",
       "targets": ["CmDataTable"]
@@ -110,11 +145,6 @@
       "targets": ["CmDatePicker"]
     },
     {
-      "source": "VfDrawer",
-      "action": "replace",
-      "targets": ["CmDrawer"]
-    },
-    {
       "source": "VfDialog",
       "action": "replace",
       "targets": ["CmDialog"]
@@ -125,9 +155,24 @@
       "targets": ["CmDivider"]
     },
     {
+      "source": "VfDocumentLayout",
+      "action": "replace",
+      "targets": ["CmDocumentLayout"]
+    },
+    {
+      "source": "VfDrawer",
+      "action": "replace",
+      "targets": ["CmDrawer"]
+    },
+    {
       "source": "VfDropdown",
       "action": "replace",
       "targets": ["CmDropdown"]
+    },
+    {
+      "source": "VfErrorLayout",
+      "action": "compose",
+      "targets": ["CmContainer", "CmStack", "CmSection"]
     },
     {
       "source": "VfField",
@@ -140,9 +185,19 @@
       "targets": ["CmFieldset"]
     },
     {
+      "source": "VfFooterArea",
+      "action": "drop",
+      "targets": []
+    },
+    {
       "source": "VfFormLayout",
       "action": "compose",
       "targets": ["CmStack", "CmGrid"]
+    },
+    {
+      "source": "VfGrid",
+      "action": "replace",
+      "targets": ["CmGrid"]
     },
     {
       "source": "VfGroupBox",
@@ -150,9 +205,19 @@
       "targets": ["CmSection"]
     },
     {
+      "source": "VfHeaderArea",
+      "action": "drop",
+      "targets": []
+    },
+    {
       "source": "VfIconButton",
       "action": "replace",
       "targets": ["CmIconButton"]
+    },
+    {
+      "source": "VfInline",
+      "action": "replace",
+      "targets": ["CmInline"]
     },
     {
       "source": "VfInput",
@@ -165,14 +230,14 @@
       "targets": ["CmLink"]
     },
     {
-      "source": "VfMenuBar",
-      "action": "replace",
-      "targets": ["CmMenuBar"]
-    },
-    {
       "source": "VfMenu",
       "action": "replace",
       "targets": ["CmMenu"]
+    },
+    {
+      "source": "VfMenuBar",
+      "action": "replace",
+      "targets": ["CmMenuBar"]
     },
     {
       "source": "VfMenuItem",
@@ -185,14 +250,14 @@
       "targets": ["CmNavMenu"]
     },
     {
-      "source": "VfPanel",
-      "action": "compose",
-      "targets": ["CmCard", "CmSection"]
-    },
-    {
       "source": "VfPageHeader",
       "action": "compose",
       "targets": ["CmStack", "CmInline"]
+    },
+    {
+      "source": "VfPanel",
+      "action": "compose",
+      "targets": ["CmCard", "CmSection"]
     },
     {
       "source": "VfPopover",
@@ -215,9 +280,24 @@
       "targets": ["CmRadio"]
     },
     {
+      "source": "VfSection",
+      "action": "replace",
+      "targets": ["CmSection"]
+    },
+    {
       "source": "VfSelect",
       "action": "replace",
       "targets": ["CmSelect"]
+    },
+    {
+      "source": "VfSetupLayout",
+      "action": "replace",
+      "targets": ["CmSetupLayout"]
+    },
+    {
+      "source": "VfSidebarArea",
+      "action": "drop",
+      "targets": []
     },
     {
       "source": "VfSkeleton",
@@ -228,6 +308,11 @@
       "source": "VfSkeletonGate",
       "action": "compose",
       "targets": ["CmSkeleton"]
+    },
+    {
+      "source": "VfStack",
+      "action": "replace",
+      "targets": ["CmStack"]
     },
     {
       "source": "VfStepper",
@@ -250,9 +335,9 @@
       "targets": ["CmTableOfContents"]
     },
     {
-      "source": "VfThemeSwitch",
+      "source": "VfTabs",
       "action": "replace",
-      "targets": ["CmThemeSwitch"]
+      "targets": ["CmTabs"]
     },
     {
       "source": "VfTag",
@@ -260,14 +345,14 @@
       "targets": ["CmTag"]
     },
     {
-      "source": "VfTabs",
-      "action": "replace",
-      "targets": ["CmTabs"]
-    },
-    {
       "source": "VfTextarea",
       "action": "replace",
       "targets": ["CmTextarea"]
+    },
+    {
+      "source": "VfThemeSwitch",
+      "action": "replace",
+      "targets": ["CmThemeSwitch"]
     },
     {
       "source": "VfTooltip",
@@ -275,89 +360,9 @@
       "targets": ["CmTooltip"]
     },
     {
-      "source": "VfContainer",
+      "source": "VueIconify",
       "action": "replace",
-      "targets": ["CmContainer"]
-    },
-    {
-      "source": "VfStack",
-      "action": "replace",
-      "targets": ["CmStack"]
-    },
-    {
-      "source": "VfInline",
-      "action": "replace",
-      "targets": ["CmInline"]
-    },
-    {
-      "source": "VfSection",
-      "action": "replace",
-      "targets": ["CmSection"]
-    },
-    {
-      "source": "VfGrid",
-      "action": "replace",
-      "targets": ["CmGrid"]
-    },
-    {
-      "source": "VfAppShell",
-      "action": "replace",
-      "targets": ["CmAppShell"]
-    },
-    {
-      "source": "VfAdminLayout",
-      "action": "replace",
-      "targets": ["CmAdminLayout"]
-    },
-    {
-      "source": "VfAdminShell",
-      "action": "replace",
-      "targets": ["CmAdminShell"]
-    },
-    {
-      "source": "VfDocumentLayout",
-      "action": "replace",
-      "targets": ["CmDocumentLayout"]
-    },
-    {
-      "source": "VfAuthLayout",
-      "action": "compose",
-      "targets": ["CmContainer", "CmStack", "CmSection"]
-    },
-    {
-      "source": "VfErrorLayout",
-      "action": "compose",
-      "targets": ["CmContainer", "CmStack", "CmSection"]
-    },
-    {
-      "source": "VfSetupLayout",
-      "action": "replace",
-      "targets": ["CmSetupLayout"]
-    },
-    {
-      "source": "VfHeaderArea",
-      "action": "drop",
-      "targets": []
-    },
-    {
-      "source": "VfSidebarArea",
-      "action": "drop",
-      "targets": []
-    },
-    {
-      "source": "VfContentArea",
-      "action": "drop",
-      "targets": []
-    },
-    {
-      "source": "VfAsideArea",
-      "action": "drop",
-      "targets": []
-    },
-    {
-      "source": "VfFooterArea",
-      "action": "drop",
-      "targets": []
+      "targets": ["CmIcon"]
     }
   ]
 }

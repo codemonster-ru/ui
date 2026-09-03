@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const arrowTurnUpLeft: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<path d=\"M20 6.75V8a4 4 0 0 1-4 4H7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/><path fill=\"currentColor\" d=\"M9.25 5.25 2.5 12l6.75 6.75Z\"/>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<path d=\"M20.5 6.25V8a4 4 0 0 1-4 4h-13\"></path><polyline points=\"9.25 6.25 3.5 12 9.25 17.75\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<path d=\"M20.5 6.25V8a4 4 0 0 1-4 4h-13\"></path><polyline points=\"9.25 6.25 3.5 12 9.25 17.75\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<path d=\"M20.5 6.25V8a4 4 0 0 1-4 4h-13\"></path><polyline points=\"9.25 6.25 3.5 12 9.25 17.75\"></polyline>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<defs><mask id=\"vf-duotone-primary-arrowTurnUpLeft-v-0\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"24\" fill=\"white\"></rect><polygon points=\"9.25 5.25 2.5 12 9.25 18.75\" fill=\"black\" stroke=\"black\" stroke-width=\"1\" stroke-linejoin=\"round\"></polygon></mask><mask id=\"vf-duotone-secondary-arrowTurnUpLeft-v-0\"><polygon points=\"9.25 5.25 2.5 12 9.25 18.75\" fill=\"white\" stroke=\"white\" stroke-width=\"1\" stroke-linejoin=\"round\"></polygon></mask></defs><g mask=\"url(#vf-duotone-primary-arrowTurnUpLeft-v-0)\"><path d=\"M20 6.75V8a4 4 0 0 1-4 4H7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/><path fill=\"currentColor\" d=\"M9.25 5.25 2.5 12l6.75 6.75Z\"/></g><g color=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" mask=\"url(#vf-duotone-secondary-arrowTurnUpLeft-v-0)\"><path d=\"M20 6.75V8a4 4 0 0 1-4 4H7.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\"/><path fill=\"currentColor\" d=\"M9.25 5.25 2.5 12l6.75 6.75Z\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<defs><clipPath id=\"vf-duotone-arrowTurnUpLeft-v-0\"><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-arrowTurnUpLeft-v-0)\"><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<defs><clipPath id=\"vf-duotone-arrowTurnUpLeft-v-0\"><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-arrowTurnUpLeft-v-0)\"><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<defs><clipPath id=\"vf-duotone-arrowTurnUpLeft-v-0\"><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"white\" stroke=\"none\"></path></clipPath></defs><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" fill-opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"></path><g clip-path=\"url(#vf-duotone-arrowTurnUpLeft-v-0)\"><path d=\"M9.25 10.5V5.25L2.5 12l6.75 6.75V13.5H16A5.5 5.5 0 0 0 21.5 8V6.75a1.5 1.5 0 0 0-3 0V8a2.5 2.5 0 0 1-2.5 2.5Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"></path></g>",
+    "viewBox": "0 0 24 24"
+  }
+};

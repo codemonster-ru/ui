@@ -157,10 +157,6 @@
   ],
   "retainedProducts": [
     {
-      "package": "@codemonster-ru/vueforge-icons",
-      "reason": "Icon rendering is a separately maintained product used by both Vue consumers."
-    },
-    {
       "package": "@codemonster-ru/vueforge-codeblock",
       "reason": "Highlighting and trusted generated markup do not have a current shared Vue and Razor contract."
     },

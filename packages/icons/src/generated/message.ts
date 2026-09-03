@@ -1,0 +1,37 @@
+// Generated. Do not edit; see provenance.json.
+import type { CmIconGeometry } from '../types.js';
+
+export const message: CmIconGeometry = {
+  "classic/solid": {
+    "body": "<g transform=\"translate(1 1) scale(.9167)\"><defs><mask id=\"vf-solid-message\"><path fill=\"white\" d=\"M4 2h16a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4h-8l-7 4v-4H4a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z\"/><path d=\"M6 8h12M6 13h8\" stroke=\"black\" stroke-width=\"2\" stroke-linecap=\"round\"/></mask></defs><rect width=\"24\" height=\"24\" fill=\"currentColor\" mask=\"url(#vf-solid-message)\"/></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/regular": {
+    "body": "<path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\"></path><path d=\"M7.25 9h9.5M7.25 13h6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/light": {
+    "body": "<path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\"></path><path d=\"M7.25 9h9.5M7.25 13h6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "classic/thin": {
+    "body": "<path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\"></path><path d=\"M7.25 9h9.5M7.25 13h6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/solid": {
+    "body": "<g transform=\"translate(1 1) scale(.9167)\"><path fill=\"var(--vf-icon-secondary-color, currentColor)\" opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" d=\"M4 2h16a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4h-8l-7 4v-4H4a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z\"></path><path d=\"M6 8h12M6 13h8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"></path></g>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/regular": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></path></g><path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\"></path><path d=\"M7.25 9h9.5M7.25 13h6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/light": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></path></g><path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\"></path><path d=\"M7.25 9h9.5M7.25 13h6\"></path>",
+    "viewBox": "0 0 24 24"
+  },
+  "duotone/thin": {
+    "body": "<g opacity=\"var(--vf-icon-secondary-opacity, 0.4)\" stroke=\"none\"><path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\" fill=\"var(--vf-icon-secondary-color, currentColor)\" stroke=\"none\"></path></g><path d=\"M4.75 4h14.5A2.75 2.75 0 0 1 22 6.75v8.5A2.75 2.75 0 0 1 19.25 18H10l-5.5 3v-3.05A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4Z\"></path><path d=\"M7.25 9h9.5M7.25 13h6\"></path>",
+    "viewBox": "0 0 24 24"
+  }
+};

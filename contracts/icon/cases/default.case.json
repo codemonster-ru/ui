@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "icon-default",
+  "description": "A decorative outline icon, hidden from assistive technology.",
+  "props": { "icon": "arrowLeft" },
+  "slots": {}
+}

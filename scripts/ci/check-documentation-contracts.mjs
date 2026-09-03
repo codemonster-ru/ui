@@ -404,7 +404,7 @@ function publicComponentContracts() {
   contracts.push(
     {
       componentName: 'VueIconify',
-      sourcePath: path.join(repositoryRoot, 'packages/icons/src/lib/components/icon.vue'),
+      sourcePath: path.join(repositoryRoot, 'packages/vueforge-icons/src/lib/components/icon.vue'),
       docsPath: path.join(repositoryRoot, 'docs/icons/components/vue-iconify/api.md'),
     },
     {
