@@ -99,6 +99,10 @@ for (const platform of platforms) {
   mkdirSync(platformDirectory, { recursive: true });
   const manifest = {
     label: `${label}-${platform}`,
+    // compare-showcase.mjs requires an exact match against the baseline manifest's own
+    // referenceCommit -- a label naming which commit the baseline's pixels came from, not a claim
+    // about this capture. Carrying it here is what lets the two manifests agree.
+    referenceCommit: config.reference.commit,
     routes: caseIds,
     screenshots: [],
     themes: config.themes.map(({ name }) => name),
