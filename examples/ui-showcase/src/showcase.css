@@ -34,10 +34,17 @@
 }
 
 .ui-showcase__frame {
-  border: 1px solid var(--cm-color-border-subtle, #e5e5e5);
-  border-radius: var(--cm-radius-md, 8px);
+  /* Every layout demoed here (CmAppShell, CmAdminLayout, ...) sets min-block-size: 100dvb/100vh on
+     its own root, because that's correct for what it actually is: a full page. Nothing about being
+     dropped into an inline preview changes that, so without a height of its own, this box grew to
+     fill the entire viewport -- once per layout demo, each one christmas-treeing the whole page. The
+     explicit block-size gives resize (already here) something to shrink from; overflow hidden clips
+     the rest instead of pushing the box open. */
+  block-size: 20rem;
   overflow: hidden;
   resize: vertical;
+  border: 1px solid var(--cm-color-border-subtle, #e5e5e5);
+  border-radius: var(--cm-radius-surface, 8px);
 }
 
 .ui-showcase__inline {
