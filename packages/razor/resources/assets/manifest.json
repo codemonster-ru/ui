@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "c265cd309a1bce8cb5b977eee00e35af3eb0367d155bcd5ccc161bc4002a47a6",
+      "sha256": "0c9a81f5022840bfaf89652e372913f6a4c003240de3d18b9001150e9235da4a",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -139,6 +139,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./alert.css"
+      }
+    },
+    "css:components/app-shell.css": {
+      "path": "css/css/components/app-shell.css",
+      "mediaType": "text/css",
+      "sha256": "a338e19eb6bbd2ac025f8861677f0b746584bdb081d7d9aa37a2b6ed0c20c226",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./app-shell.css"
       }
     },
     "css:components/avatar.css": {
@@ -271,6 +281,16 @@
         "export": "./dialog.css"
       }
     },
+    "css:components/document-layout.css": {
+      "path": "css/css/components/document-layout.css",
+      "mediaType": "text/css",
+      "sha256": "5cacc261f3bbf85ffd3495fb04991514b75c0422ded0db71ac60e02e493e720e",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./document-layout.css"
+      }
+    },
     "css:components/dropdown.css": {
       "path": "css/css/components/dropdown.css",
       "mediaType": "text/css",
@@ -329,6 +349,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./icon-button.css"
+      }
+    },
+    "css:components/icon.css": {
+      "path": "css/css/components/icon.css",
+      "mediaType": "text/css",
+      "sha256": "f3cdbe5fe05d88887959816be32f35b96af50997e13baec729a3ac6d7821a23b",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./icon.css"
       }
     },
     "css:components/input.css": {
@@ -549,6 +579,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./tag.css"
+      }
+    },
+    "css:components/theme-switch.css": {
+      "path": "css/css/components/theme-switch.css",
+      "mediaType": "text/css",
+      "sha256": "9779739cc5cb1b5b83cb2a852c53217159cf97b1a7e30ef3ca049845295e88a4",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./theme-switch.css"
       }
     },
     "css:components/tooltip.css": {

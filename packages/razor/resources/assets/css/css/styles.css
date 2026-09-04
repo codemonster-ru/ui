@@ -5,6 +5,7 @@
 @import './components/admin-layout.css';
 @import './components/admin-shell.css';
 @import './components/alert.css';
+@import './components/app-shell.css';
 @import './components/avatar.css';
 @import './components/badge.css';
 @import './components/breadcrumbs.css';
@@ -18,12 +19,14 @@
 @import './components/date-picker.css';
 @import './components/divider.css';
 @import './components/dialog.css';
+@import './components/document-layout.css';
 @import './components/dropdown.css';
 @import './components/drawer.css';
 @import './components/field.css';
 @import './components/fieldset.css';
 @import './components/grid.css';
 @import './components/icon-button.css';
+@import './components/icon.css';
 @import './components/input.css';
 @import './components/inline.css';
 @import './components/link.css';
@@ -44,6 +47,7 @@
 @import './components/table.css';
 @import './components/tag.css';
 @import './components/textarea.css';
+@import './components/theme-switch.css';
 @import './components/table-of-contents.css';
 @import './components/tabs.css';
 @import './components/tooltip.css';
