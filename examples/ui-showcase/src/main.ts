@@ -9,6 +9,7 @@ import '@codemonster-ru/ui-css/fonts.css';
 // CmThemeSwitch was flipping the attribute and the token values correctly, but nothing on the page
 // was ever reading them. The Razor example already loads this same bundle wholesale.
 import '@codemonster-ru/ui-css/styles.css';
+import '@codemonster-ru/ui-utilities/utilities.css';
 import App from './App.vue';
 import './showcase.css';
 
