@@ -3,7 +3,16 @@ import { ref } from 'vue';
 import { arrowLeft, gear, github } from '@codemonster-ru/ui-icons';
 import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
 import { CmAdminLayout, CmAdminShell, CmAppShell, CmDocumentLayout, CmSetupLayout } from '@codemonster-ru/ui-layouts';
-import { CmColumnChooser, CmMenuBar, CmNavMenu, CmStepper, CmTableOfContents, CmTag } from '@codemonster-ru/ui-vue';
+import {
+  CmColumnChooser,
+  CmIcon,
+  CmMenuBar,
+  CmNavMenu,
+  CmStepper,
+  CmTableOfContents,
+  CmTag,
+  CmThemeSwitch,
+} from '@codemonster-ru/ui-vue';
 
 const columns = [
   { key: 'name', header: 'Name' },
