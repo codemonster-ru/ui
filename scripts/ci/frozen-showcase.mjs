@@ -37,10 +37,7 @@ export function findFrozenShowcaseChanges(changedPaths) {
  * describes and rot into a list nobody reads. The visual gate remains the authority on whether
  * pixels actually moved; this only records that someone looked.
  */
-export const acknowledgedChanges = {
-  'examples/vue/src/sections/icons/IconsShowcase.vue':
-    'Import path only: the VueForge icons package moved to packages/vueforge-icons so the CodeMonster line could take the packages/icons name. The imported file is unchanged, so nothing renders differently.',
-};
+export const acknowledgedChanges = {};
 
 /** Reports acknowledged paths that no longer differ, so the list cannot outlive its reasons. */
 export function findStaleAcknowledgements(changedPaths, acknowledged = acknowledgedChanges) {
