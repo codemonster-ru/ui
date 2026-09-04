@@ -18,23 +18,18 @@ composer require codemonster-ru/ui-razor:^1.1.0
 ```
 
 See the [CodeMonster UI 1.1 release notes](./docs/codemonster-ui-1.1-release-notes.md),
-[component documentation](./docs/components/button.md),
-[CSS-only guide](./docs/css/getting-started.md), and
-[VueForge migration guide](./docs/vueforge-to-codemonster-ui.md).
+[component documentation](./docs/components/button.md), and
+[CSS-only guide](./docs/css/getting-started.md).
 
-Local runnable examples are available in [`examples/vue`](./examples/vue) for Vue
+Local runnable examples are available in [`examples/ui-showcase`](./examples/ui-showcase) for Vue
 and [`examples/razor`](./examples/razor) for Annabel Razor/PHP.
 
-## VueForge maintenance
+## VueForge
 
-VueForge design-system foundations are in maintenance. They receive critical security and
-correctness fixes, but no new component families or design-system foundations. Use
-[CodeMonster UI 1.1](./docs/codemonster-ui-1.1-release-notes.md) for new shared Vue and Annabel Razor UI
-work.
-
-Existing VueForge releases remain installable and are not being unpublished. Icons remain
-supported until a verified replacement exists. CodeBlock and the Playground packages remain
-separately maintained products and can be used alongside CodeMonster UI.
+CodeMonster UI succeeds VueForge, the Vue-only design system this project migrated from. VueForge
+is sunset: no new components, no new fixes. Its packages and documentation now live in
+[`codemonster-ru/vueforge`](https://github.com/codemonster-ru/vueforge), where existing consumers
+can continue to install them; nothing in this repository builds or publishes them anymore.
 
 ### Requirements
 
@@ -44,93 +39,11 @@ separately maintained products and can be used alongside CodeMonster UI.
 - Published packages may declare narrower runtime requirements in their own manifests; consult the
   package documentation when consuming them outside this repository.
 
-### Existing VueForge applications
-
-Use the package manager that owns your application lockfile:
-
-```bash
-npm install vue@^3.5.0 @codemonster-ru/vueforge-core@^2.4.0
-```
-
-```bash
-pnpm add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.4.0
-```
-
-```bash
-yarn add vue@^3.5.0 @codemonster-ru/vueforge-core@^2.4.0
-```
-
-### Quick start
-
-Install the Core plugin once and import its complete stylesheet in the browser entry:
-
-```ts
-// src/main.ts
-import { createApp } from 'vue';
-import VueForgeCore from '@codemonster-ru/vueforge-core';
-import '@codemonster-ru/vueforge-core/styles.css';
-import App from './App.vue';
-
-createApp(App).use(VueForgeCore).mount('#app');
-```
-
-Wrap themed UI in `VfThemeProvider`. Components are not registered globally, so import the
-components used by each application:
-
-```vue
-<!-- src/App.vue -->
-<script setup lang="ts">
-import { VfButton, VfThemeProvider, VfThemeSwitch } from '@codemonster-ru/vueforge-core';
-</script>
-
-<template>
-  <VfThemeProvider default-theme="system">
-    <main>
-      <VfThemeSwitch label="Theme" />
-      <VfButton>First VueForge action</VfButton>
-    </main>
-  </VfThemeProvider>
-</template>
-```
-
-`VfThemeSwitch` persists the selected light or dark mode through the provider. Build the
-application with its normal production command—for a standard Vite project:
-
-```bash
-npm run build
-```
-
-### Packages
-
-| Package                                                       | Release | Purpose                                    |
-| ------------------------------------------------------------- | ------- | ------------------------------------------ |
-| [`@codemonster-ru/vueforge-core`][npm-core]                   | `2.4.0` | Components, composables, theme integration |
-| [`@codemonster-ru/vueforge-theme`][npm-theme]                 | `2.0.1` | Framework-agnostic theme engine            |
-| [`@codemonster-ru/vueforge-layouts`][npm-layouts]             | `2.1.2` | Layout primitives and application shells   |
-| [`@codemonster-ru/vueforge-icons`][npm-icons]                 | `3.2.0` | Vue icon renderer and catalog              |
-| [`@codemonster-ru/vueforge-codeblock`][npm-codeblock]         | `4.0.1` | Highlighted, themed code blocks            |
-| [`@codemonster-ru/vueforge-playground`][npm-playground]       | `3.0.1` | Vue playground UI adapter                  |
-| [`@codemonster-ru/vueforge-playground-core`][npm-pg-core]     | `2.1.0` | Framework-agnostic playground runtime      |
-| [`@codemonster-ru/vueforge-playground-vite-plugin`][npm-vite] | `1.0.0` | Vite playground virtual-module integration |
-
 ### Documentation
 
-For full documentation, visit [docs.codemonster.net/vueforge](https://docs.codemonster.net/vueforge/).
-Use the [VueForge 2 migration guide](./docs/migration-to-v2.md) for breaking changes and the
-[release notes](./docs/release-notes.md) for the coordinated package changes. New applications can
-adopt CodeMonster UI for shared Vue and Annabel Razor components. Existing applications should use
-the [VueForge to CodeMonster UI migration guide](./docs/vueforge-to-codemonster-ui.md) for package
-and component replacements, retained products, manual migrations, and the deterministic codemod.
+Start at [the documentation index](./docs/index.md) and see the
+[release notes](./docs/release-notes.md) for coordinated package changes.
 
 ## License
 
-VueForge packages are available under the [MIT License](./LICENSE).
-
-[npm-codeblock]: https://www.npmjs.com/package/@codemonster-ru/vueforge-codeblock
-[npm-core]: https://www.npmjs.com/package/@codemonster-ru/vueforge-core
-[npm-icons]: https://www.npmjs.com/package/@codemonster-ru/vueforge-icons
-[npm-layouts]: https://www.npmjs.com/package/@codemonster-ru/vueforge-layouts
-[npm-pg-core]: https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-core
-[npm-playground]: https://www.npmjs.com/package/@codemonster-ru/vueforge-playground
-[npm-theme]: https://www.npmjs.com/package/@codemonster-ru/vueforge-theme
-[npm-vite]: https://www.npmjs.com/package/@codemonster-ru/vueforge-playground-vite-plugin
+CodeMonster UI packages are available under the [MIT License](./LICENSE).

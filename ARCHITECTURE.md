@@ -1,16 +1,17 @@
 # CodeMonster UI Monorepo Architecture
 
-This repository contains the CodeMonster UI package line, the retained VueForge products, shared
-contracts, cross-platform examples, and the tooling used to validate and publish them.
+This repository contains the CodeMonster UI package line, shared contracts, cross-platform
+examples, and the tooling used to validate and publish them. CodeMonster UI succeeds VueForge, the
+Vue-only design system this project migrated from; VueForge is sunset, and its own packages and
+documentation now live in [`codemonster-ru/vueforge`](https://github.com/codemonster-ru/vueforge).
 
 ## Repository layout
 
 - `packages/*` — publishable npm packages and the Annabel Razor adapter
 - `examples/*` — local runnable examples for Vue and Annabel Razor
 - `contracts/*` — component manifests, behavior contracts, schemas, and visual-fixture metadata
-- `docs/*` — product, package, architecture, migration, and release documentation
-- `migration/*` — machine-readable VueForge-to-CodeMonster UI migration data and checks
-- `scripts/*` — build, CI, contract, migration, release, and visual-validation tooling
+- `docs/*` — product, package, architecture, and release documentation
+- `scripts/*` — build, CI, contract, release, and visual-validation tooling
 - `visual-baselines/*` — reviewed visual-regression reference images used by CI
 - `.github/*` — repository workflows; `.githooks/*` — local Git hooks
 
@@ -32,27 +33,13 @@ Each publishable npm package should keep a consistent shape:
   - `test/*`
 
 The `razor` package follows Composer conventions and keeps its PHP metadata and tests alongside
-the adapter source. Shared CodeMonster UI packages use the `ui-*` naming line; retained VueForge
-products keep their published `vueforge-*` names while they are in maintenance.
+the adapter source. Every publishable npm package uses the `ui-*` naming line.
 
 ## Naming conventions
 
-### Vue components
-
-- Component file names: `Vf*.vue`
-- Public component names and plugin registrations: `Vf*`
-- No `Vue*`/legacy aliases in public API
-
-### CSS classes and tokens
-
-- Base namespace: `vf-`
-- Package namespaces:
-  - `core`: `vf-*`
-  - `layouts`: `vf-layout-*` (plus component-specific `vf-*` blocks)
-  - `codeblock`: `vf-codeblock*` / `--vf-codeblock-*`
-  - `playground`: `vf-playground*` / `--vf-playground-*`
-  - `icons`: `vf-icon*` / `--vf-icon-*`
-- Legacy prefixes (`vif*`, `vcb*`, `cm-*`) are not used for new code.
+Component names, CSS classes, custom properties, and runtime hooks all use the `Cm`/`cm-` prefix.
+See [naming and prefixes](./docs/architecture/naming-and-prefixes.md) for the full, authoritative
+table; it is not duplicated here so there is one place to keep it correct.
 
 ## Shared behavior layer
 
@@ -105,9 +92,9 @@ Each publishable npm package should expose, where applicable:
   root `format:check`, which runs with `--if-present`, so its formatting goes unverified.
 - `prepack` (usually calls `build`)
 
-The root scripts compose package checks with repository-level documentation, contract, migration,
-consumer, and visual checks. New repository checks should be added to the root workflow only when
-they validate a cross-package invariant.
+The root scripts compose package checks with repository-level documentation, contract, consumer,
+and visual checks. New repository checks should be added to the root workflow only when they
+validate a cross-package invariant.
 
 ## Release hygiene
 

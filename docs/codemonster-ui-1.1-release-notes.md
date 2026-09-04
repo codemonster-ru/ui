@@ -63,10 +63,11 @@ composer require codemonster-ru/ui-razor:^1.1.0
 
 ## Migration
 
-Component names are not a promise of prop, slot, event, or state-ownership compatibility. Use the
-[VueForge to CodeMonster UI migration guide](./vueforge-to-codemonster-ui.md) for the exact package
-mapping, all 37 direct replacements, maintained recipes, retained products, application-owned
-outcomes, and the deterministic codemod workflow.
+Component names are not a promise of prop, slot, event, or state-ownership compatibility. The
+VueForge to CodeMonster UI migration guide covered the exact package mapping, all 37 direct
+replacements, maintained recipes, retained products, application-owned outcomes, and the
+deterministic codemod workflow; the migration it describes is complete, and VueForge itself is
+sunset (see [the docs index](./index.md#vueforge)).
 
 VueForge releases are not unpublished by this release. Keep VueForge Icons, CodeBlock, and
 Playground where their dedicated behavior is still required, and migrate design-system foundations

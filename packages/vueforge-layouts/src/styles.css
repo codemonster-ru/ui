@@ -1,9 +1,0 @@
-@import '../.generated/theme/layout-breakpoints.css';
-@import '../.generated/theme/layout-tokens.css';
-@import '../.generated/theme/layout-theme.css';
-@import './style-parts/base.css';
-@import './style-parts/primitives.css';
-@import './style-parts/shell.css';
-@import './style-entries/admin-layout.css';
-@import './style-entries/admin-shell.css';
-@import './style-parts/utilities.css';

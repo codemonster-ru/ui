@@ -9,7 +9,7 @@ const temporaryDirectory = mkdtempSync(join(tmpdir(), 'vueforge-tree-shaking-'))
 const commonBuildOptions = {
   absWorkingDir: repositoryRoot,
   bundle: true,
-  external: ['vue', '@codemonster-ru/vueforge-icons', '@codemonster-ru/floater.js'],
+  external: ['vue'],
   format: 'esm',
   logLevel: 'silent',
   minify: true,
@@ -28,49 +28,6 @@ const domRuntimeMarkers = [
 ];
 
 const cases = [
-  {
-    entry: "export { VfButton } from '@codemonster-ru/vueforge-core';\n",
-    fileName: 'core-root-button',
-    maxGzipBytes: 4 * 1024,
-    name: 'core root VfButton',
-  },
-  {
-    cssMarker: '.vf-button',
-    entry: "export { VfButton } from '@codemonster-ru/vueforge-core/button';\n",
-    fileName: 'core-subpath-button',
-    forbiddenCssMarkers: ['.vf-accordion'],
-    maxCssGzipBytes: 4 * 1024,
-    maxGzipBytes: 5 * 1024,
-    name: 'core component VfButton with CSS',
-  },
-  {
-    entry: "export { VfButton, VfDialog, VfDataTable } from '@codemonster-ru/vueforge-core';\n",
-    fileName: 'core-multiple',
-    maxGzipBytes: 20 * 1024,
-    name: 'core root multiple components',
-  },
-  {
-    checkForbidden: false,
-    entry: "import * as VueForgeCore from '@codemonster-ru/vueforge-core';\nconsole.log(VueForgeCore);\n",
-    fileName: 'core-full',
-    minGzipBytes: 40 * 1024,
-    maxGzipBytes: 100 * 1024,
-    name: 'core full namespace',
-  },
-  {
-    entry: "export { VfContainer } from '@codemonster-ru/vueforge-layouts';\n",
-    fileName: 'layouts-root-container',
-    maxGzipBytes: 4 * 1024,
-    name: 'layouts root VfContainer',
-  },
-  {
-    cssMarker: '.vf-container',
-    entry: "export { VfContainer } from '@codemonster-ru/vueforge-layouts/container';\n",
-    fileName: 'layouts-subpath-container',
-    maxCssGzipBytes: 2 * 1024,
-    maxGzipBytes: 5 * 1024,
-    name: 'layouts component VfContainer with CSS',
-  },
   {
     entry: "export { CmButton } from '@codemonster-ru/ui-vue';\n",
     fileName: 'ui-vue-button',
