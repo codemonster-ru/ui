@@ -64,8 +64,6 @@ jobs:
       - name: Typecheck workspaces
         run: npm run typecheck
 
-      - name: Guard the frozen showcase
-        run: npm run check:frozen-showcase
       - name: Typecheck documented examples
         run: npm run check:docs:examples
 
@@ -94,9 +92,6 @@ jobs:
       - name: Check CodeMonster UI contracts, accessibility, and visual fixtures
         run: npm run test:ui
 
-      - name: Run migration tests
-        run: npm run test:migration
-
       - name: Run release preparation tests
         run: npm run test:release-prep
 
@@ -119,8 +114,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The suite hides dist itself; the build is still needed for its other output, such as the
-      # generated theme CSS that vueforge-core's parity check reads.
+      # The suite hides dist itself; the build is still needed for its other output, such as
+      # generated CSS that some workspaces' own tests read back.
       - name: Build packages
         run: npm run build
 
@@ -154,9 +149,6 @@ jobs:
 
       - name: Check consumer tree shaking
         run: npm run check:consumer-tree-shaking
-
-      - name: Check deferred runtime budgets
-        run: npm run check:deferred-budgets
 
       - name: Dry-run publish artifacts
         run: npm run pack:all:dry-run
@@ -260,12 +252,8 @@ jobs:
           unzip -q "${RUNNER_TEMP}/chrome-for-testing.zip" -d "${RUNNER_TEMP}"
           "${chrome_for_testing_path}" --version
 
-      - name: Verify frozen showcase visuals
+      - name: Verify cross-platform adapter visuals
         env:
-          SHOWCASE_CAPTURE: ${{ runner.temp }}/codemonster-showcase-current
-          SHOWCASE_DIFF: ${{ runner.temp }}/codemonster-showcase-diff
-          SHOWCASE_STATE_CAPTURE: ${{ runner.temp }}/codemonster-showcase-state-current
-          SHOWCASE_STATE_DIFF: ${{ runner.temp }}/codemonster-showcase-state-diff
           CROSS_PLATFORM_CAPTURE: ${{ runner.temp }}/codemonster-cross-platform-current
           CROSS_PLATFORM_RAZOR_DIFF: ${{ runner.temp }}/codemonster-cross-platform-razor-diff
           CROSS_PLATFORM_RAZOR_FIXTURES: ${{ runner.temp }}/codemonster-cross-platform-razor.json
@@ -274,8 +262,6 @@ jobs:
           set -euo pipefail
           chrome_for_testing_path="${RUNNER_TEMP}/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
 
-          npm run dev -w @codemonster-ru/vueforge-playground-example -- --host 127.0.0.1 --port 5175 > "${RUNNER_TEMP}/codemonster-showcase-vite.log" 2>&1 &
-          vite_pid=$!
           npm run visual:cross-platform:razor-render -- --output="${CROSS_PLATFORM_RAZOR_FIXTURES}"
           npm run visual:cross-platform:serve -- --razor-fixtures="${CROSS_PLATFORM_RAZOR_FIXTURES}" --port=5176 > "${RUNNER_TEMP}/codemonster-cross-platform-vite.log" 2>&1 &
           adapter_pid=$!
@@ -283,16 +269,15 @@ jobs:
           chrome_pid=$!
 
           cleanup() {
-            kill "${vite_pid}" "${adapter_pid}" "${chrome_pid}" 2>/dev/null || true
+            kill "${adapter_pid}" "${chrome_pid}" 2>/dev/null || true
           }
           trap cleanup EXIT
 
           for attempt in {1..60}; do
-            if curl --fail --silent http://127.0.0.1:5175/ >/dev/null && curl --fail --silent 'http://127.0.0.1:5176/?case=button-default&platform=vue&theme=light' >/dev/null && curl --fail --silent http://127.0.0.1:9226/json/version >/dev/null; then
+            if curl --fail --silent 'http://127.0.0.1:5176/?case=button-default&platform=vue&theme=light' >/dev/null && curl --fail --silent http://127.0.0.1:9226/json/version >/dev/null; then
               break
             fi
             if [ "${attempt}" -eq 60 ]; then
-              cat "${RUNNER_TEMP}/codemonster-showcase-vite.log"
               cat "${RUNNER_TEMP}/codemonster-cross-platform-vite.log"
               cat "${RUNNER_TEMP}/codemonster-showcase-chrome.log"
               exit 1
@@ -300,28 +285,19 @@ jobs:
             sleep 1
           done
 
-          node scripts/visual/capture-showcase.mjs --origin=http://127.0.0.1:5175 --output="${SHOWCASE_CAPTURE}" --label=ci-current
-          node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-showcase --current="${SHOWCASE_CAPTURE}" --diff="${SHOWCASE_DIFF}"
-          npm run visual:showcase:states:capture -- --origin=http://127.0.0.1:5175 --output="${SHOWCASE_STATE_CAPTURE}" --label=ci-state-current
-          npm run visual:showcase:states:compare -- --current="${SHOWCASE_STATE_CAPTURE}" --diff="${SHOWCASE_STATE_DIFF}"
           npm run visual:cross-platform:capture -- --origin=http://127.0.0.1:5176 --output="${CROSS_PLATFORM_CAPTURE}" --label=ci-actual-adapters
           node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/vue" --diff="${CROSS_PLATFORM_VUE_DIFF}" --threshold=4
           node scripts/visual/compare-showcase.mjs --baseline=visual-baselines/vueforge-cross-platform --current="${CROSS_PLATFORM_CAPTURE}/razor" --diff="${CROSS_PLATFORM_RAZOR_DIFF}" --threshold=4
 
-      - name: Upload showcase visual differences
+      - name: Upload cross-platform visual differences
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: codemonster-showcase-visual-diff
+          name: codemonster-cross-platform-visual-diff
           path: |
-            ${{ runner.temp }}/codemonster-showcase-current
-            ${{ runner.temp }}/codemonster-showcase-diff
-            ${{ runner.temp }}/codemonster-showcase-state-current
-            ${{ runner.temp }}/codemonster-showcase-state-diff
             ${{ runner.temp }}/codemonster-cross-platform-current
             ${{ runner.temp }}/codemonster-cross-platform-vue-diff
             ${{ runner.temp }}/codemonster-cross-platform-razor-diff
             ${{ runner.temp }}/codemonster-cross-platform-vite.log
-            ${{ runner.temp }}/codemonster-showcase-vite.log
             ${{ runner.temp }}/codemonster-showcase-chrome.log
           if-no-files-found: ignore

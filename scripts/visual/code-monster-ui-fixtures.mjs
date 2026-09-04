@@ -29,26 +29,13 @@ export function validateVisualConfig(config) {
   if (config.schemaVersion !== 2) {
     errors.push('Visual fixture schemaVersion must be 2.');
   }
+  // `reference.commit` labels which commit a baseline's pixels were captured from -- it names the
+  // origin of already-committed data, not a route to render. Keeping only the commit here is what
+  // lets a baseline still say honestly where it came from after the thing that produced it is gone.
   if (!config.reference || typeof config.reference !== 'object' || Array.isArray(config.reference)) {
     errors.push('Visual fixture configuration requires a reference object.');
-  } else {
-    if (!commitPattern.test(config.reference.commit)) {
-      errors.push('Visual fixture reference commit must be a full lowercase Git SHA.');
-    }
-    if (!Array.isArray(config.reference.routes) || config.reference.routes.length === 0) {
-      errors.push('Visual fixture reference requires at least one route.');
-    } else {
-      const routes = new Set();
-      for (const route of config.reference.routes) {
-        if (!identifierPattern.test(route)) {
-          errors.push('Each visual reference route must use a kebab-case identifier.');
-        }
-        if (routes.has(route)) {
-          errors.push(`Duplicate visual reference route: ${route}.`);
-        }
-        routes.add(route);
-      }
-    }
+  } else if (!commitPattern.test(config.reference.commit)) {
+    errors.push('Visual fixture reference commit must be a full lowercase Git SHA.');
   }
   if (!Array.isArray(config.themes) || config.themes.length === 0) {
     errors.push('Visual fixture configuration requires at least one theme.');

@@ -1,7 +1,0 @@
-.vf-stack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--vf-layout-space-layout-base);
-  align-items: stretch;
-  justify-content: flex-start;
-}

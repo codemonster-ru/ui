@@ -32,15 +32,13 @@ test('fails clearly when local PHP or Composer dependencies are unavailable', ()
   assert.match(wrapper, /Razor visual output was not generated/u);
 });
 
-test('keeps one frozen baseline filename matrix for both current platforms', () => {
+test('keeps one baseline filename matrix for both current platforms', () => {
   const capture = read('capture-cross-platform-cases.mjs');
   const fixtureCss = read('cross-platform-fixture/fixture.css');
 
-  assert.match(capture, /platforms = source === 'vueforge' \? \['reference'\] : \['vue', 'razor'\]/u);
+  assert.match(capture, /const platforms = \['vue', 'razor'\];/u);
   assert.match(capture, /\$\{caseId\}--\$\{theme\.name\}--\$\{viewport\.name\}\.png/u);
   assert.match(capture, /routes: caseIds/u);
-  assert.match(capture, /componentPackage: '@codemonster-ru\/vueforge-core'/u);
-  assert.match(capture, /renderer: 'Vue createApp at the reference commit'/u);
   assert.match(fixtureCss, /\.cm-visual-adapter-root \{[^}]*line-height: normal;/su);
 });
 

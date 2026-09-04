@@ -9,7 +9,6 @@ const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const managerCheck = (manager) =>
   [
-    `node ./scripts/ci/check-packed-consumer.mjs --manager=${manager}`,
     `node ./scripts/ci/check-code-monster-ui-packed-consumer.mjs --manager=${manager}`,
     `node ./scripts/ci/check-code-monster-ui-css-packed-consumer.mjs --manager=${manager}`,
   ].join(' && ');
