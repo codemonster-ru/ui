@@ -158,7 +158,7 @@
   "retainedProducts": [
     {
       "package": "@codemonster-ru/vueforge-codeblock",
-      "reason": "Highlighting and trusted generated markup do not have a current shared Vue and Razor contract."
+      "reason": "Highlighting works server-side in Node (confirmed: Shiki's JS engine, no WASM) but has no PHP equivalent without either a client-side flash of unhighlighted text or a hard Node runtime dependency in Razor -- the one established PHP integration shells out to Node rather than reimplementing the engine. See docs/architecture/codeblock-ownership.md."
     },
     {
       "package": "@codemonster-ru/vueforge-playground",
