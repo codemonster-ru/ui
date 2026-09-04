@@ -50,12 +50,13 @@ components own their interaction directly.
   [browser and CSS support](./architecture/browser-and-css-support.md).
 - [Accessibility requirements](./architecture/accessibility-requirements.md) and
   [HTML security](./architecture/html-security.md).
-- [Maturity verification](./verification/codemonster-ui-maturity-verification.md).
 
-## Migrating from VueForge
+## VueForge
 
-Use the [package and component mapping](./vueforge-to-codemonster-ui.md) with the
-[migration policy](./architecture/vueforge-migration-policy.md). VueForge Core and Layouts pages
-under `docs/core` and `docs/layouts` remain legacy reference material during the maintenance
-window. Icons, CodeBlock, Playground, and application shells retain their separately documented
-ownership and are not represented as CodeMonster UI replacements.
+CodeMonster UI succeeds VueForge, the Vue-only line this project migrated from. VueForge is
+sunset: its packages and documentation moved to
+[`codemonster-ru/vueforge`](https://github.com/codemonster-ru/vueforge) and are no longer developed
+here. See [icon line ownership](./architecture/icon-line-ownership.md),
+[layout line ownership](./architecture/layout-line-ownership.md),
+[playground ownership](./architecture/playground-ownership.md), and
+[CodeBlock ownership](./architecture/codeblock-ownership.md) for what carried across and why.

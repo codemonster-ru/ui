@@ -32,13 +32,10 @@ const coveredElsewhere = {
 };
 
 const ciOnlySteps = {
-  dev: 'starts the showcase server the pinned browser captures against',
   'visual:cross-platform:capture':
     'drives a pinned Chrome build against two live servers; a different browser reports differences that are not real',
   'visual:cross-platform:razor-render': 'renders through the PHP adapter, which verify cannot assume is installed',
   'visual:cross-platform:serve': 'serves the cross-platform cases for a pinned browser to capture',
-  'visual:showcase:states:capture': 'needs the pinned browser and a running showcase server',
-  'visual:showcase:states:compare': 'compares captures the pinned browser produced',
 };
 
 const repositoryRoot = resolve(import.meta.dirname, '../..');

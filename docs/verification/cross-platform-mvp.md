@@ -54,6 +54,6 @@ both themes and at mobile and desktop viewports, and the following checks pass t
 - clean npm and Composer consumer checks;
 - documentation and packaged-asset checks.
 
-The full VueForge showcase parity effort remains a follow-up milestone. It is not required to
-declare this focused cross-platform MVP complete, provided the cohort baseline and its limitations
-are documented.
+The full VueForge showcase parity effort completed on 2026-08-29 and closed the M12 gate; VueForge
+itself is since sunset. Cross-platform visual comparison continues as a Vue-versus-Razor check
+against `visual-baselines/vueforge-cross-platform`, independent of that now-retired reference.

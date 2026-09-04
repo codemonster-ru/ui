@@ -78,9 +78,8 @@ canonical.
 
 ## CMUI-188 verification
 
-The boundary was re-verified on 2026-08-15 against the
-[representative consumer inventory](../verification/consumer-usage-inventory.md) after the portable
-components and maintained recipes were delivered.
+The boundary was re-verified on 2026-08-15 against the representative consumer inventory after the
+portable components and maintained recipes were delivered.
 
 | Reconsideration criterion                | Consumer evidence                                                                                                                                                                                                                                                                                       | Result  |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
