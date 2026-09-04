@@ -42,8 +42,8 @@ than decide, which is what keeps two platforms honest.
 
 ## Breaking changes
 
-Read [the migration guide](./vueforge-to-codemonster-ui.md) before treating a successful rename as
-API compatibility. The changes that cannot be inferred from a type error:
+The VueForge to CodeMonster UI migration guide covered this; a successful rename was never a promise
+of API compatibility. The changes that cannot be inferred from a type error:
 
 **Select and DatePicker require an `id`.** DatePicker is no longer a native `input[type=date]`, and
 both hand required-field validation to the application: a component-owned control cannot reach the

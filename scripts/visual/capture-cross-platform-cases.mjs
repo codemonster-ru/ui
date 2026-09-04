@@ -11,13 +11,10 @@ const options = Object.fromEntries(
 const origin = options.origin;
 const outputDirectory = options.output ? resolve(options.output) : null;
 const label = options.label;
-const source = options.source ?? 'adapters';
 const chromeEndpoint = options.chrome ?? process.env.CHROME_REMOTE_ENDPOINT ?? 'http://127.0.0.1:9226';
 
-if (!origin || !outputDirectory || !label || !['adapters', 'vueforge'].includes(source)) {
-  throw new Error(
-    'Usage: node scripts/visual/capture-cross-platform-cases.mjs --origin=URL --output=DIR --label=LABEL [--source=adapters|vueforge]',
-  );
+if (!origin || !outputDirectory || !label) {
+  throw new Error('Usage: node scripts/visual/capture-cross-platform-cases.mjs --origin=URL --output=DIR --label=LABEL');
 }
 
 const config = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../contracts/visual.config.json'), 'utf8'));
@@ -25,9 +22,7 @@ const crossPlatformManifest = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../../contracts/cross-platform-visual-baselines.json'), 'utf8'),
 );
 const caseIds = crossPlatformManifest.caseIds;
-const platforms = source === 'vueforge' ? ['reference'] : ['vue', 'razor'];
-// Our own pages ship the family through the package. The frozen reference names it in its
-// tokens but never shipped it, so only that capture is given the faces.
+const platforms = ['vue', 'razor'];
 const fontFaceCss = options.font === 'inject' ? readCaptureFontFaceCss() : '';
 const sleep = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
 
@@ -100,20 +95,14 @@ await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-m
 await send('Emulation.setLocaleOverride', { locale: 'en-US' });
 
 for (const platform of platforms) {
-  const platformDirectory = source === 'vueforge' ? outputDirectory : resolve(outputDirectory, platform);
+  const platformDirectory = resolve(outputDirectory, platform);
   mkdirSync(platformDirectory, { recursive: true });
   const manifest = {
-    label: source === 'vueforge' ? label : `${label}-${platform}`,
+    label: `${label}-${platform}`,
+    // compare-showcase.mjs requires an exact match against the baseline manifest's own
+    // referenceCommit -- a label naming which commit the baseline's pixels came from, not a claim
+    // about this capture. Carrying it here is what lets the two manifests agree.
     referenceCommit: config.reference.commit,
-    ...(source === 'vueforge'
-      ? {
-          sourceFixture: {
-            caseIds,
-            componentPackage: '@codemonster-ru/vueforge-core',
-            renderer: 'Vue createApp at the reference commit',
-          },
-        }
-      : {}),
     routes: caseIds,
     screenshots: [],
     themes: config.themes.map(({ name }) => name),
@@ -129,19 +118,11 @@ for (const platform of platforms) {
     });
     for (const theme of config.themes) {
       for (const caseId of caseIds) {
-        if (source === 'vueforge') {
-          const url = `${origin.replace(/\/$/u, '')}/?case=${caseId}&theme=${theme.name}`;
-          await send('Page.navigate', { url });
-          await waitFor(
-            `document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualCase === ${JSON.stringify(caseId)} && document.querySelector("#visual-root")?.dataset.visualRenderer === "vueforge-fd-mounted" && document.querySelector("#visual-root")?.dataset.visualReady === "true"`,
-          );
-        } else {
-          const url = `${origin.replace(/\/$/u, '')}/?case=${caseId}&platform=${platform}&theme=${theme.name}`;
-          await send('Page.navigate', { url });
-          await waitFor(
-            `document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualCase === ${JSON.stringify(caseId)} && document.querySelector("#visual-root")?.dataset.visualRenderer === ${JSON.stringify(platform === 'vue' ? 'vue-mounted' : 'razor-rendered')} && document.querySelector("#visual-root")?.dataset.visualReady === "true"`,
-          );
-        }
+        const url = `${origin.replace(/\/$/u, '')}/?case=${caseId}&platform=${platform}&theme=${theme.name}`;
+        await send('Page.navigate', { url });
+        await waitFor(
+          `document.readyState === "complete" && document.querySelector("#visual-root")?.dataset.visualCase === ${JSON.stringify(caseId)} && document.querySelector("#visual-root")?.dataset.visualRenderer === ${JSON.stringify(platform === 'vue' ? 'vue-mounted' : 'razor-rendered')} && document.querySelector("#visual-root")?.dataset.visualReady === "true"`,
+        );
 
         await evaluate(`(() => {
         const style = document.createElement('style');

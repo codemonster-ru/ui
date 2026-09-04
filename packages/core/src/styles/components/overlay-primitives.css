@@ -1,9 +1,0 @@
-:root {
-  --vf-overlay-border-width: var(--vf-text-link-border-width);
-  --vf-overlay-enter-shift: var(--vf-overlay-gap);
-  --vf-overlay-float-enter-shift: var(--vf-menu-gap);
-  --vf-overlay-float-enter-scale: var(--vf-overlay-float-enter-scale-default);
-  --vf-overlay-arrow-overlap-offset: var(--vf-overlay-arrow-overlap-offset-default);
-  --vf-overlay-arrow-separated-offset: var(--vf-overlay-border-width);
-  --vf-overlay-viewport-block-size: var(--vf-overlay-viewport-block-size-default);
-}
