@@ -148,7 +148,9 @@ const tableOfContentsItems = [
         <CmAppShell layout="sidebar-content" sticky-header>
           <template #header>Product</template>
           <template #sidebar>
-            <button type="button" data-cm-sidebar-toggle aria-expanded="true">Collapse</button>
+            <button type="button" class="cm-button cm-button--ghost cm-button--sm" data-cm-sidebar-toggle aria-expanded="true">
+              Collapse
+            </button>
           </template>
           Content
         </CmAppShell>

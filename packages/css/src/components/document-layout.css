@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   margin-inline: auto;
-  max-inline-size: var(--cm-container-2xl, 80rem);
+  max-inline-size: var(--cm-breakpoint-2xl, 80rem);
   min-block-size: 100vh;
 }
 
@@ -29,7 +29,7 @@
   display: grid;
   flex: 1;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--cm-space-lg);
+  gap: var(--cm-space-6);
   align-items: start;
 }
 
