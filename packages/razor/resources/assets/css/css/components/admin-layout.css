@@ -2,26 +2,66 @@
  * The layout reads its own state from attributes on the root rather than from classes a framework
  * toggles. That is what lets one stylesheet serve both adapters and a server-rendered page that has
  * not run JavaScript yet.
+ *
+ * The sidebar and header are fixed to the viewport rather than scrolling with the page -- only the
+ * content area scrolls. Responsiveness is a container query against the layout's own inline size,
+ * not the viewport: an admin layout embedded in a narrower pane (a preview frame, a split view)
+ * collapses to its mobile presentation on its own width, the same way it would in a full window.
  */
 .cm-admin-layout {
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: block;
   min-block-size: 100dvb;
+  container: cm-admin-layout / inline-size;
+  background: var(--cm-color-background-canvas);
 }
 
 .cm-admin-layout__aside {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: var(--cm-z-index-sticky, 10);
   display: flex;
   flex-direction: column;
-  gap: var(--cm-space-3);
-  inline-size: 16rem;
-  padding: var(--cm-space-3);
-  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  inline-size: 18rem;
+  overflow: hidden;
   background: var(--cm-color-background-surface);
-  transition: inline-size var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+  border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  transition: inline-size var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
 .cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside {
-  inline-size: 4rem;
+  inline-size: 4.75rem;
+}
+
+/*
+ * A collapsed sidebar still opens on hover or keyboard focus, wide enough to read again, without
+ * changing the collapsed state itself -- that state is for the layout at rest, not for whether you
+ * can currently see it.
+ */
+.cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside:is(:hover, :has(:focus-visible)) {
+  z-index: calc(var(--cm-z-index-sticky, 10) + 2);
+  inline-size: 18rem;
+}
+
+.cm-admin-layout__brand {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--cm-space-2);
+  block-size: 4rem;
+  padding: var(--cm-space-2) var(--cm-space-3);
+  overflow: hidden;
+}
+
+.cm-admin-layout__aside:has(.cm-admin-layout__aside-content) .cm-admin-layout__brand {
+  border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
+}
+
+.cm-admin-layout__aside-content {
+  min-block-size: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--cm-space-3);
 }
 
 .cm-admin-layout__main {
@@ -30,11 +70,25 @@
   min-inline-size: 0;
 }
 
+.cm-admin-layout:has(> .cm-admin-layout__aside) .cm-admin-layout__main {
+  margin-inline-start: 18rem;
+  transition: margin-inline-start var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
+}
+
+.cm-admin-layout[data-cm-sidebar-collapsed='true']:has(> .cm-admin-layout__aside) .cm-admin-layout__main {
+  margin-inline-start: 4.75rem;
+}
+
 .cm-admin-layout__header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: calc(var(--cm-z-index-sticky, 10) + 1);
   display: flex;
   align-items: center;
   gap: var(--cm-space-2);
+  block-size: 4rem;
   padding: var(--cm-space-2) var(--cm-space-3);
+  background: var(--cm-color-background-surface);
   border-block-end: var(--cm-border-width) solid var(--cm-color-border-default);
 }
 
@@ -101,44 +155,104 @@
 }
 
 /*
- * Below the breakpoint the sidebar becomes a drawer: off-canvas by default, slid in when the root
- * says the drawer is open, with a backdrop that closes it.
+ * Below the container's own inline-size threshold the sidebar becomes a drawer: off-canvas by
+ * default, slid in when the root says the drawer is open, with a backdrop that fades in behind it
+ * and closes it on click. The fade is delayed on the way out and immediate on the way in, so the
+ * drawer never appears to sit under a backdrop that hasn't shown up yet.
  */
-@media (width < 48rem) {
-  .cm-admin-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .cm-admin-layout__mobile-toggle,
-  .cm-admin-layout__mobile-brand {
-    display: block;
-  }
-
+@container cm-admin-layout (width < 64rem) {
   .cm-admin-layout__aside {
-    position: fixed;
-    z-index: 2;
-    inset-block: 0;
-    inset-inline-start: 0;
-    inline-size: 16rem;
+    inset-block-start: 0;
+    z-index: calc(var(--cm-z-index-sticky, 10) + 3);
+    inline-size: min(18rem, 85cqi);
+    visibility: hidden;
     translate: -100% 0;
-    transition: translate var(--cm-motion-duration-fast) var(--cm-motion-ease-standard);
+    transition:
+      translate var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+      visibility 0s var(--cm-motion-duration-normal);
+  }
+
+  [dir='rtl'] .cm-admin-layout__aside {
+    translate: 100% 0;
   }
 
   .cm-admin-layout[data-cm-mobile-sidebar-open='true'] .cm-admin-layout__aside {
+    visibility: visible;
     translate: 0 0;
+    transition:
+      translate var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+      visibility 0s;
+  }
+
+  .cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside {
+    inline-size: min(18rem, 85cqi);
+  }
+
+  .cm-admin-layout:has(> .cm-admin-layout__aside) .cm-admin-layout__main,
+  .cm-admin-layout[data-cm-sidebar-collapsed='true']:has(> .cm-admin-layout__aside) .cm-admin-layout__main {
+    margin-inline-start: 0;
+  }
+
+  .cm-admin-layout__header {
+    z-index: calc(var(--cm-z-index-sticky, 10) + 3);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .cm-admin-layout__mobile-toggle {
+    display: flex;
+    justify-self: start;
+  }
+
+  .cm-admin-layout__mobile-brand {
+    display: flex;
+    min-inline-size: 0;
+    align-items: center;
+    justify-content: center;
+    grid-column: 2;
+  }
+
+  .cm-admin-layout__header-content {
+    inline-size: auto;
+    display: flex;
+    min-inline-size: 0;
+    justify-self: end;
+    grid-column: 3;
+  }
+
+  .cm-admin-layout__mobile-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--cm-z-index-sticky, 10) + 2);
+    display: block;
+    background: var(--cm-color-background-backdrop);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+      visibility 0s var(--cm-motion-duration-normal);
   }
 
   .cm-admin-layout[data-cm-mobile-sidebar-open='true'] .cm-admin-layout__mobile-backdrop {
-    position: fixed;
-    z-index: 1;
-    display: block;
-    inset: 0;
-    background: var(--cm-color-background-backdrop);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+      visibility 0s;
+  }
+
+  .cm-admin-layout[data-cm-sidebar-collapsed='true'] .cm-admin-layout__aside:is(:hover, :has(:focus-visible)) {
+    z-index: calc(var(--cm-z-index-sticky, 10) + 4);
+    inline-size: min(18rem, 85cqi);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cm-admin-layout__aside {
+  .cm-admin-layout__aside,
+  .cm-admin-layout__main,
+  .cm-admin-layout__mobile-backdrop {
     transition: none;
   }
 }

@@ -10,6 +10,14 @@
   min-block-size: 100vh;
 }
 
+/* A framed page, once there's room to see the frame -- borderless below that would only be a sliver
+   of border on either side, not an actual margin. */
+@media (width > 48rem) {
+  .cm-document-layout {
+    border-inline: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  }
+}
+
 .cm-document-layout__header {
   position: sticky;
   inset-block-start: 0;
@@ -45,6 +53,8 @@
 .cm-document-layout__aside {
   position: sticky;
   inset-block-start: var(--cm-sticky-top-offset, 0);
+  max-block-size: calc(100dvb - var(--cm-sticky-top-offset, 0));
+  overflow-y: auto;
   min-inline-size: 0;
 }
 
@@ -56,6 +66,16 @@
   border-block-start: var(--cm-border-width) solid var(--cm-color-border-subtle);
 }
 
+@media (width < 80em) {
+  .cm-document-layout--sidebar-content-aside .cm-document-layout__content {
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  }
+
+  .cm-document-layout--sidebar-content-aside .cm-document-layout__aside {
+    display: none;
+  }
+}
+
 @media (width < 64em) {
   .cm-document-layout--sidebar-content .cm-document-layout__content,
   .cm-document-layout--sidebar-content-aside .cm-document-layout__content {
@@ -65,5 +85,7 @@
   .cm-document-layout__sidebar,
   .cm-document-layout__aside {
     position: static;
+    max-block-size: none;
+    overflow-y: visible;
   }
 }
