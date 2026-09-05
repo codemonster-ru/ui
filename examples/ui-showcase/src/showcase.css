@@ -1,13 +1,10 @@
 /* The showcase is a working page rather than a styled one: it borrows the design tokens and lets
    each component supply its own appearance, so nothing here can disguise a component that looks
-   wrong on its own. */
-
-body {
-  margin: 0;
-  background: var(--cm-color-surface-default, #fff);
-  color: var(--cm-color-text-default, #111);
-  font-family: var(--cm-font-family-base, system-ui, sans-serif);
-}
+   wrong on its own. `foundation.css` (imported in main.ts) already paints `body` from
+   `--cm-color-background-canvas`/`--cm-color-text-primary` and responds to `data-cm-theme`, and
+   `reset.css` already zeroes its margin -- restating any of that here previously used two token
+   names (`--cm-color-surface-default`, `--cm-color-text-default`) that don't exist in this design
+   system, so the fallback colors (#fff/#111) always won regardless of theme. */
 
 .ui-showcase {
   margin: 0 auto;
@@ -37,10 +34,17 @@ body {
 }
 
 .ui-showcase__frame {
-  border: 1px solid var(--cm-color-border-subtle, #e5e5e5);
-  border-radius: var(--cm-radius-md, 8px);
+  /* Every layout demoed here (CmAppShell, CmAdminLayout, ...) sets min-block-size: 100dvb/100vh on
+     its own root, because that's correct for what it actually is: a full page. Nothing about being
+     dropped into an inline preview changes that, so without a height of its own, this box grew to
+     fill the entire viewport -- once per layout demo, each one christmas-treeing the whole page. The
+     explicit block-size gives resize (already here) something to shrink from; overflow hidden clips
+     the rest instead of pushing the box open. */
+  block-size: 20rem;
   overflow: hidden;
   resize: vertical;
+  border: 1px solid var(--cm-color-border-subtle, #e5e5e5);
+  border-radius: var(--cm-radius-surface, 8px);
 }
 
 .ui-showcase__inline {

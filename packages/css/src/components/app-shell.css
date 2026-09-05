@@ -33,7 +33,7 @@
   display: grid;
   flex: 1;
   grid-template-columns: 1fr;
-  gap: var(--cm-space-md);
+  gap: var(--cm-space-4);
   align-items: start;
 }
 

@@ -1,0 +1,37 @@
+/*
+ * The generated geometry carries no presentation of its own -- the outline shapes have neither a
+ * fill nor a stroke attribute, because in the source they were painted by the wrapper element they
+ * sat inside, not by themselves. This is that wrapper's other half: without it, `regular`/`light`/
+ * `thin` icons are literal geometry with nothing telling the browser to paint it, and every variant
+ * renders at the browser's default replaced-element size because neither the icon nor anything else
+ * declares one.
+ */
+.cm-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  inline-size: var(--cm-icon-size-md);
+  block-size: var(--cm-icon-size-md);
+  fill: none;
+  vertical-align: middle;
+}
+
+.cm-icon--regular {
+  stroke: currentColor;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cm-icon--light {
+  stroke: currentColor;
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cm-icon--thin {
+  stroke: currentColor;
+  stroke-width: 1px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

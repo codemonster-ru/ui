@@ -49,7 +49,7 @@
 
 .cm-menu-bar__item:disabled,
 .cm-menu-bar__item[aria-disabled='true'] {
-  color: var(--cm-color-text-tertiary);
+  color: var(--cm-color-text-muted);
   cursor: not-allowed;
 }
 
