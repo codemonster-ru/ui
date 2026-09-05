@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { arrowLeft, gear, github, magnifyingGlass, plus, trash } from '@codemonster-ru/ui-icons';
+import {
+  alertCircle,
+  arrowLeft,
+  gear,
+  github,
+  infoCircle,
+  magnifyingGlass,
+  plus,
+  trash,
+} from '@codemonster-ru/ui-icons';
 import type { CmThemeMode } from '@codemonster-ru/ui-runtime/core';
 import { CmAdminLayout, CmAdminShell, CmAppShell, CmDocumentLayout, CmSetupLayout } from '@codemonster-ru/ui-layouts';
 import {
@@ -89,7 +98,7 @@ const dataTableRows = [
   { id: 'b', cells: { name: 'Roadmap.md', owner: 'Aisha', size: '18 KB' } },
 ];
 
-const datePickerValue = ref('');
+const datePickerValue = ref('2026-08-13');
 
 const dialogOpen = ref(false);
 const drawerOpen = ref(false);
@@ -120,6 +129,8 @@ const checkboxValue = ref(true);
 const switchValue = ref(true);
 const radioValue = ref('email');
 const inputValue = ref('');
+const passwordValue = ref('correct-horse');
+const displayNameValue = ref('');
 const textareaValue = ref('');
 
 const menuBarItems = [
@@ -246,10 +257,16 @@ const tableOfContentsItems = [
 
     <section id="demo-alert" class="ui-showcase__demo">
       <h2>Alert</h2>
-      <p class="ui-showcase__note">An inline, non-dismissable status message with a tone.</p>
+      <p class="ui-showcase__note">An inline, non-dismissable status message with a tone; the icon slot is optional.</p>
       <CmStack>
-        <CmAlert tone="info" title="Heads up">A new version of this workspace is available.</CmAlert>
-        <CmAlert tone="danger" title="Failed to save">Check your connection and try again.</CmAlert>
+        <CmAlert tone="info" title="Heads up">
+          <template #icon><CmIcon :icon="infoCircle" /></template>
+          A new version of this workspace is available.
+        </CmAlert>
+        <CmAlert tone="danger" title="Submission failed">
+          <template #icon><CmIcon :icon="alertCircle" /></template>
+          Review the failed fields.
+        </CmAlert>
       </CmStack>
     </section>
 
@@ -264,10 +281,10 @@ const tableOfContentsItems = [
 
     <section id="demo-badge" class="ui-showcase__demo">
       <h2>Badge</h2>
-      <p class="ui-showcase__note">A small count or status mark, meant to sit on or beside another element.</p>
+      <p class="ui-showcase__note">A short status label, meant to sit on or beside another element.</p>
       <div class="ui-showcase__inline">
-        <CmBadge tone="primary">3</CmBadge>
-        <CmBadge tone="danger">!</CmBadge>
+        <CmBadge tone="primary">New</CmBadge>
+        <CmBadge tone="danger">Blocked</CmBadge>
       </div>
     </section>
 
@@ -380,12 +397,17 @@ const tableOfContentsItems = [
         Wraps one control with a label, description, and error, wiring their ids together as
         <code>aria-describedby</code>.
       </p>
-      <CmField control-id="showcase-field-email" label="Email" description="We'll only use this for account alerts.">
+      <CmField
+        control-id="showcase-field-display-name"
+        label="Display name"
+        description="Shown to other members."
+        error="Enter a display name."
+        required
+      >
         <template #default="{ controlId, describedBy, invalid, required }">
           <CmInput
             :id="controlId"
-            v-model="inputValue"
-            type="email"
+            v-model="displayNameValue"
             :aria-describedby="describedBy"
             :invalid="invalid"
             :required="required"
@@ -444,7 +466,13 @@ const tableOfContentsItems = [
     <section id="demo-input" class="ui-showcase__demo">
       <h2>Input</h2>
       <p class="ui-showcase__note">Text entry, with an optional clear button and, for passwords, a reveal toggle.</p>
-      <CmInput v-model="inputValue" type="text" placeholder="Project name" clearable />
+      <CmStack>
+        <CmInput v-model="inputValue" type="text" placeholder="Project name" clearable />
+        <CmInput v-model="passwordValue" type="password" required clearable password-reveal>
+          <template #leading>@</template>
+          <template #trailing>required</template>
+        </CmInput>
+      </CmStack>
     </section>
 
     <section id="demo-inline" class="ui-showcase__demo">
@@ -507,7 +535,7 @@ const tableOfContentsItems = [
     <section id="demo-select" class="ui-showcase__demo">
       <h2>Select</h2>
       <p class="ui-showcase__note">A native select styled to match the rest of the control set.</p>
-      <CmSelect id="showcase-select" v-model="selectValue" :options="selectOptions" />
+      <CmSelect id="showcase-select" v-model="selectValue" :options="selectOptions" clearable />
     </section>
 
     <section id="demo-section" class="ui-showcase__demo">
