@@ -49,6 +49,11 @@
 .cm-app-shell__aside {
   position: sticky;
   inset-block-start: var(--cm-sticky-top-offset, 0);
+
+  /* Sticky alone still lets a sidebar taller than the viewport push past its bottom edge; the cap
+     plus its own scrollbar are what let it stick without doing that. */
+  max-block-size: calc(100dvb - var(--cm-sticky-top-offset, 0));
+  overflow-y: auto;
   min-inline-size: 0;
 }
 
@@ -70,6 +75,21 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+/*
+ * Two stages, not one: the aside is the first casualty of a narrowing window (nice-to-have context,
+ * not primary navigation), so it goes before the sidebar does. Below 64em there's no room for a
+ * three- or even two-column grid at all, and both go static and stack with the content.
+ */
+@media (width < 80em) {
+  .cm-app-shell--sidebar-content-aside .cm-app-shell__body {
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  }
+
+  .cm-app-shell--sidebar-content-aside .cm-app-shell__aside {
+    display: none;
+  }
+}
+
 @media (width < 64em) {
   .cm-app-shell--sidebar-content .cm-app-shell__body,
   .cm-app-shell--sidebar-content-aside .cm-app-shell__body {
@@ -79,5 +99,7 @@
   .cm-app-shell__sidebar,
   .cm-app-shell__aside {
     position: static;
+    max-block-size: none;
+    overflow-y: visible;
   }
 }

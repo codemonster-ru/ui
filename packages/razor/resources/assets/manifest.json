@@ -114,7 +114,7 @@
     "css:components/admin-layout.css": {
       "path": "css/css/components/admin-layout.css",
       "mediaType": "text/css",
-      "sha256": "954a8b362b15c76bbc22e9910e0e44e54aabbdf15a53aa0a0f8e9864ad8836c3",
+      "sha256": "bfd1ca47a9b86359a5f704b5d4afd8645cfd45ba324b8bb8c8723ea9aaa81691",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -124,7 +124,7 @@
     "css:components/admin-shell.css": {
       "path": "css/css/components/admin-shell.css",
       "mediaType": "text/css",
-      "sha256": "59a0d6c65ad3a9c2194413e516b6d4019e1e819f04f0e429e5915917778da906",
+      "sha256": "18622f3fe0ac95fe7f559e4c360e35f645002aae2862cf4dab954a694537f239",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -144,7 +144,7 @@
     "css:components/app-shell.css": {
       "path": "css/css/components/app-shell.css",
       "mediaType": "text/css",
-      "sha256": "9bfdaa294df92b1083ba748311b6062713b6f68f9c80f92d1ff2730b828db3b3",
+      "sha256": "02ef5a296b291b7facb43faff5ff936eeae1f90caab7333245128c5f77548c63",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -284,7 +284,7 @@
     "css:components/document-layout.css": {
       "path": "css/css/components/document-layout.css",
       "mediaType": "text/css",
-      "sha256": "3354af03dcb0782e7090560b48c7095fc2c9f37bf44f024b8718ddc02c8d772c",
+      "sha256": "70622e2f555352d091da40cf06e9327bf9ecb8d4d4b2eba6e142204a8472180d",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -484,7 +484,7 @@
     "css:components/setup-layout.css": {
       "path": "css/css/components/setup-layout.css",
       "mediaType": "text/css",
-      "sha256": "b237f6f9684cdb47ca6bb85f992ea81ae3aafe725cada03e969fc51a782ef548",
+      "sha256": "00ec6d285e68df94611b534542a73481852c26a270b23b41b82b28f4fc16e6e6",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",

@@ -653,13 +653,19 @@ const tableOfContentsItems = [
       <h2>Admin layout</h2>
       <p class="ui-showcase__note">
         Regions plus a collapsible sidebar. State lives on the root as <code>data-cm-*</code>, so the Razor adapter and
-        the runtime controller read the same thing Vue binds.
+        the runtime controller read the same thing Vue binds. A collapsed sidebar still opens on hover or keyboard
+        focus, without leaving the collapsed state.
       </p>
       <div class="ui-showcase__frame">
         <CmAdminLayout id="showcase-admin-layout">
           <template #brand>CodeMonster</template>
           <template #aside>Navigation</template>
-          <template #header>Workspace</template>
+          <template #header>
+            <button type="button" class="cm-button cm-button--ghost cm-button--sm" data-cm-sidebar-toggle>
+              Collapse
+            </button>
+            Workspace
+          </template>
           Layout content
         </CmAdminLayout>
       </div>
@@ -679,9 +685,13 @@ const tableOfContentsItems = [
 
     <section id="demo-setup-layout" class="ui-showcase__demo">
       <h2>Setup layout</h2>
-      <p class="ui-showcase__note">A single-task page for onboarding steps.</p>
+      <p class="ui-showcase__note">
+        A single-task page for onboarding steps. Given an aside, it sits beside the form rather than above it once
+        there's room -- <code>aside-position</code> picks which side.
+      </p>
       <div class="ui-showcase__frame">
         <CmSetupLayout title="Create your workspace" description="This takes a minute.">
+          <template #aside>Invite your team once you're set up -- they'll see this workspace immediately.</template>
           Workspace name
           <template #actions>Continue</template>
         </CmSetupLayout>
