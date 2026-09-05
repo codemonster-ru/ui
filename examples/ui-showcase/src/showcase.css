@@ -7,8 +7,12 @@
    system, so the fallback colors (#fff/#111) always won regardless of theme. */
 
 .ui-showcase {
+  /* Wide enough that the layout demos (CmAdminLayout, CmAppShell, ...) clear their own 64rem
+     container-query breakpoint and render their desktop form -- narrower than that and their
+     container queries correctly, not incidentally, switch them to the mobile drawer they'd also
+     show in a real narrow window. */
   margin: 0 auto;
-  max-width: 60rem;
+  max-width: 76rem;
   padding: 2rem 1.5rem 4rem;
 }
 
@@ -45,6 +49,13 @@
   resize: vertical;
   border: 1px solid var(--cm-color-border-subtle, #e5e5e5);
   border-radius: var(--cm-radius-surface, 8px);
+
+  /* Some layouts (CmAdminLayout, CmAdminShell, ...) fix their sidebar/header to the viewport, which
+     is correct once they're a real page -- but "viewport" for position: fixed is the nearest
+     ancestor that establishes a containing block, and nothing here did, so those elements escaped
+     this frame entirely and pinned themselves to the actual browser window instead. `contain: layout
+     paint` makes this box that ancestor, the same way an iframe's document would be one on its own. */
+  contain: layout paint;
 }
 
 .ui-showcase__inline {
