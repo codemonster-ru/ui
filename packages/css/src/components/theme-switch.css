@@ -8,9 +8,9 @@
  */
 .cm-theme-switch {
   display: inline-flex;
-  gap: var(--cm-space-3xs);
+  gap: var(--cm-space-1);
   margin: 0;
-  padding: var(--cm-space-3xs);
+  padding: var(--cm-space-1);
   border: var(--cm-border-width) solid var(--cm-color-border-default);
   border-radius: var(--cm-radius-control);
   background: var(--cm-color-background-surface);
@@ -39,7 +39,7 @@
 .cm-theme-switch__label {
   display: inline-flex;
   align-items: center;
-  padding: var(--cm-space-3xs) var(--cm-space-xs);
+  padding: var(--cm-space-1) var(--cm-space-2);
   border-radius: var(--cm-radius-control-tight);
   color: var(--cm-color-text-secondary);
   font-size: var(--cm-font-size-md);
@@ -54,7 +54,7 @@
 
 .cm-theme-switch__input:focus-visible + .cm-theme-switch__label {
   outline: var(--cm-focus-ring-width) solid var(--cm-color-border-focus);
-  outline-offset: var(--cm-focus-ring-offset);
+  outline-offset: var(--cm-focus-ring-width);
 }
 
 .cm-theme-switch__input:disabled + .cm-theme-switch__label {

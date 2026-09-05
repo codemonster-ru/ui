@@ -53,6 +53,7 @@
     "./foundation.css": "./dist/foundation.css",
     "./grid.css": "./dist/components/grid.css",
     "./icon-button.css": "./dist/components/icon-button.css",
+    "./icon.css": "./dist/components/icon.css",
     "./inline.css": "./dist/components/inline.css",
     "./input.css": "./dist/components/input.css",
     "./link.css": "./dist/components/link.css",

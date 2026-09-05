@@ -35,6 +35,7 @@ test('publishes only the approved CSS subpath exports', async () => {
     './foundation.css': './dist/foundation.css',
     './grid.css': './dist/components/grid.css',
     './icon-button.css': './dist/components/icon-button.css',
+    './icon.css': './dist/components/icon.css',
     './input.css': './dist/components/input.css',
     './inline.css': './dist/components/inline.css',
     './link.css': './dist/components/link.css',

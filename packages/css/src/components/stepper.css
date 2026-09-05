@@ -77,7 +77,7 @@
 }
 
 .cm-stepper__description {
-  color: var(--cm-color-text-tertiary);
+  color: var(--cm-color-text-muted);
   font-size: var(--cm-font-size-sm);
   line-height: var(--cm-line-height-tight);
 }
