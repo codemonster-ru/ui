@@ -24,7 +24,7 @@
     "css:styles.css": {
       "path": "css/css/styles.css",
       "mediaType": "text/css",
-      "sha256": "c265cd309a1bce8cb5b977eee00e35af3eb0367d155bcd5ccc161bc4002a47a6",
+      "sha256": "0c9a81f5022840bfaf89652e372913f6a4c003240de3d18b9001150e9235da4a",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -114,7 +114,7 @@
     "css:components/admin-layout.css": {
       "path": "css/css/components/admin-layout.css",
       "mediaType": "text/css",
-      "sha256": "61f22962b69c776bc894a43916a37337ca2828f14e3f3d71dfa04c281c73f819",
+      "sha256": "954a8b362b15c76bbc22e9910e0e44e54aabbdf15a53aa0a0f8e9864ad8836c3",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -139,6 +139,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./alert.css"
+      }
+    },
+    "css:components/app-shell.css": {
+      "path": "css/css/components/app-shell.css",
+      "mediaType": "text/css",
+      "sha256": "9bfdaa294df92b1083ba748311b6062713b6f68f9c80f92d1ff2730b828db3b3",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./app-shell.css"
       }
     },
     "css:components/avatar.css": {
@@ -271,6 +281,16 @@
         "export": "./dialog.css"
       }
     },
+    "css:components/document-layout.css": {
+      "path": "css/css/components/document-layout.css",
+      "mediaType": "text/css",
+      "sha256": "3354af03dcb0782e7090560b48c7095fc2c9f37bf44f024b8718ddc02c8d772c",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./document-layout.css"
+      }
+    },
     "css:components/dropdown.css": {
       "path": "css/css/components/dropdown.css",
       "mediaType": "text/css",
@@ -331,6 +351,16 @@
         "export": "./icon-button.css"
       }
     },
+    "css:components/icon.css": {
+      "path": "css/css/components/icon.css",
+      "mediaType": "text/css",
+      "sha256": "f3cdbe5fe05d88887959816be32f35b96af50997e13baec729a3ac6d7821a23b",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./icon.css"
+      }
+    },
     "css:components/input.css": {
       "path": "css/css/components/input.css",
       "mediaType": "text/css",
@@ -364,7 +394,7 @@
     "css:components/menu-bar.css": {
       "path": "css/css/components/menu-bar.css",
       "mediaType": "text/css",
-      "sha256": "c7b9fd535e6378ec8fdf5290653778a436e9e5a86d52dd0bcef4416f52d02c09",
+      "sha256": "94ec4fae07f4686a3730c2b1884a56c14a3167afe5b61b5f89f6595cb7854a72",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -384,7 +414,7 @@
     "css:components/nav-menu.css": {
       "path": "css/css/components/nav-menu.css",
       "mediaType": "text/css",
-      "sha256": "49a48d55dc2bd7c5b145d2d7a7ea416127242a108d2af34d05823570ea954657",
+      "sha256": "4a9154493ac5ad527c20b7a866c32f6045d653fe7febdd2d5871c70fcab5e8f0",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -484,7 +514,7 @@
     "css:components/stepper.css": {
       "path": "css/css/components/stepper.css",
       "mediaType": "text/css",
-      "sha256": "db30ece4050612e250c0dbb21a3501fcfb9172cdd39e5ea5e9ef9262c1bd7626",
+      "sha256": "bc1ac5d109aa3c3eab22fcbc52378ed705f8e97a4c0cc7daa2ca4aa833242f74",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -549,6 +579,16 @@
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
         "export": "./tag.css"
+      }
+    },
+    "css:components/theme-switch.css": {
+      "path": "css/css/components/theme-switch.css",
+      "mediaType": "text/css",
+      "sha256": "002f3899d4f2131b92aeae4bbe8a87362663fe88c3debb7bfd3dcf5637ac1c61",
+      "source": {
+        "package": "@codemonster-ru/ui-css",
+        "version": "2.0.0-dev.0",
+        "export": "./theme-switch.css"
       }
     },
     "css:components/tooltip.css": {

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { URL } from 'node:url';
 
@@ -40,4 +40,22 @@ test('separates foundation-only and complete stylesheet compositions', async () 
   assert.match(stylesCss, /@import '\.\/components\/skeleton\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/stack\.css';/);
   assert.match(stylesCss, /@import '\.\/components\/table\.css';/);
+});
+
+test('every distributed component stylesheet is reachable from styles.css', async () => {
+  // The list above spot-checks a subset by name, which is exactly what let icon.css,
+  // theme-switch.css, app-shell.css and document-layout.css exist as real, exported component
+  // stylesheets without styles.css importing any of them -- nothing here enumerated the directory,
+  // so a component missing from the bundle never failed a check. This reads the actual output
+  // instead, so a future component can't go missing the same way.
+  const stylesCss = await readFile(new URL('../dist/styles.css', import.meta.url), 'utf8');
+  const componentFiles = await readdir(new URL('../dist/components', import.meta.url));
+
+  for (const file of componentFiles) {
+    assert.match(
+      stylesCss,
+      new RegExp(`@import '\\./components/${file.replace('.', '\\.')}';`),
+      `styles.css does not import components/${file}`,
+    );
+  }
 });
