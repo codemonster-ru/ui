@@ -52,3 +52,67 @@
 .cm-setup-layout--aside-left .cm-setup-layout__aside {
   order: -1;
 }
+
+/*
+ * An aside stacks above the form by default -- the same single centered card either way. Once
+ * there's room, a wizard with an aside (an illustration, a summary) earns a second column instead:
+ * the two sit side by side, divided by one border, rather than one queued above the other.
+ */
+@media (width > 48rem) {
+  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    grid-template-areas:
+      'brand aside'
+      'toolbar aside'
+      'header aside'
+      'main aside';
+    align-items: start;
+    gap: 0;
+    max-inline-size: 56rem;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .cm-setup-layout--aside-left:has(.cm-setup-layout__aside) .cm-setup-layout__panel {
+    grid-template-columns: 18rem minmax(0, 1fr);
+    grid-template-areas:
+      'aside brand'
+      'aside toolbar'
+      'aside header'
+      'aside main';
+  }
+
+  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__brand {
+    grid-area: brand;
+    padding: var(--cm-space-4) var(--cm-space-4) 0;
+  }
+
+  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__toolbar {
+    grid-area: toolbar;
+    padding: var(--cm-space-3) var(--cm-space-4) 0;
+  }
+
+  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__header {
+    grid-area: header;
+    padding: var(--cm-space-4) var(--cm-space-4) 0;
+  }
+
+  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__main {
+    grid-area: main;
+    padding: var(--cm-space-4);
+  }
+
+  .cm-setup-layout:has(.cm-setup-layout__aside) .cm-setup-layout__aside {
+    grid-area: aside;
+    align-self: stretch;
+    padding: var(--cm-space-4);
+    border-inline-start: var(--cm-border-width) solid var(--cm-color-border-default);
+  }
+
+  .cm-setup-layout--aside-left:has(.cm-setup-layout__aside) .cm-setup-layout__aside {
+    order: 0;
+    border-inline-start: 0;
+    border-inline-end: var(--cm-border-width) solid var(--cm-color-border-default);
+  }
+}
