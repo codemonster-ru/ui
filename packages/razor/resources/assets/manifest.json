@@ -144,7 +144,7 @@
     "css:components/app-shell.css": {
       "path": "css/css/components/app-shell.css",
       "mediaType": "text/css",
-      "sha256": "02ef5a296b291b7facb43faff5ff936eeae1f90caab7333245128c5f77548c63",
+      "sha256": "5fbbce236e0cd0c54c9430e19a52e99e5798d254c4cf696ab66579697ae51577",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
@@ -284,7 +284,7 @@
     "css:components/document-layout.css": {
       "path": "css/css/components/document-layout.css",
       "mediaType": "text/css",
-      "sha256": "70622e2f555352d091da40cf06e9327bf9ecb8d4d4b2eba6e142204a8472180d",
+      "sha256": "0774b82a04942a8479cdda74ac3f9d486a977b1dd4b87e7cdb25d9d4fa9e08a2",
       "source": {
         "package": "@codemonster-ru/ui-css",
         "version": "2.0.0-dev.0",
