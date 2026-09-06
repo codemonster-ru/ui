@@ -1,4 +1,4 @@
-# Reference baseline harness (M00)
+# Reference baseline harness (M00 / M01)
 
 Machine-checkable oracle for the historical VueForge implementation at commit
 `fd793696f50d3be0fcd3788f0f8f751c63869963` (**reference**). It exists so a later
@@ -19,6 +19,7 @@ here, and no contract DSL.
 | `npm run baseline:showcase -- --write`      | Records the showcase baseline from the immutable reference checkout only.                                                                  |
 | `npm run baseline:showcase -- --origin=URL` | Captures an already served candidate and compares it with the baseline. Cannot write.                                                      |
 | `npm run baseline:control`                  | Reference → reference control run: two independent checkouts, two capture sets, zero tolerated differences.                                |
+| `npm run baseline:input`                    | Runs the VfInput characterization suite unmutated, then once per known regression, and requires every mutation to be detected.             |
 | `npm run baseline:test`                     | Unit tests proving the comparison fails on missing/unexpected cases, census loss, dimension mismatch and font drift.                       |
 
 ## Isolation
@@ -68,6 +69,55 @@ controls the environment rather than masking components out of the frame:
 `Date` is pinned to 2025-01-01T00:00:00Z but still advances with
 `performance.now()`, because `PlaygroundShowcase.vue` gates its ready events on
 `Date.now()` deltas. `Math.random` is seeded.
+
+## VfInput characterization (M01)
+
+`packages/core/src/components/input/VfInput.characterization.spec.ts` records the
+observable behaviour of the historical `VfInput` before any extraction:
+props/defaults, sizes, invalid state, plain and adorned DOM, adornment ordering,
+the leading/trailing slots, native attribute and type forwarding, clear, password
+reveal, caret and selection direction, field and floating-field integration,
+consumer class/style placement, external model updates and the accessibility
+relationships.
+
+`packages/core/src/__tests__/fixtures/HistoricalInputConsumer.vue` is an
+unchanged historical consumer kept as a compile-and-run fixture. It must keep
+type-checking under `vue-tsc` and keep working; an edit forced on it by a
+migration step is itself the regression.
+
+`npm run baseline:input` is the negative fixture. `input-mutations.mjs` lists
+twelve defects the first migration actually shipped - dropped `leadingIcon` and
+`trailingIcon`, a normalised native `type`, consumer `class`/`style` moved onto
+the input, changed clear emission and focus behaviour, a clear control on
+readonly inputs, lost selection restore and direction, removed field injection,
+a missing `data-vf-filled` and an always-on floating state. Each is applied in
+memory by a Vite plugin, so `VfInput.vue` on disk is never modified; the run
+verifies that afterwards with a hash and a `git diff`.
+
+## Recorded historical defects
+
+Found during characterization, asserted as-is and deliberately **not** fixed:
+
+1. A consumer `style` is dropped entirely on a plain, non-adorned `VfInput`.
+   `inheritAttrs` is false, `style` is excluded from the forwarded attributes,
+   and only the wrapper branch binds `:style`, so the style survives only when
+   the input happens to be adorned.
+2. Clearing an input whose only adornment is the clear control collapses the
+   conditional wrapper and replaces the `<input>` element, so the synchronous
+   `focus()` in `handleClear` is lost and focus lands on `<body>`. With any other
+   adornment present the element survives and focus is retained.
+3. `disabled`/`readonly` are read through a strict truthiness check
+   (`true`, `""`, `"true"`), so the HTML idiom `disabled="disabled"` does not
+   suppress the clear control.
+4. Forwarded attributes are bound after the computed `aria-invalid`, so a
+   consumer-supplied `aria-invalid` overrides the `invalid` prop.
+5. `packages/icons/src/App.vue` declares no `<slot>` outlets, so the
+   `#saas-contexts` content that `IconsShowcase.vue` passes is never rendered on
+   `/icons`. The route baseline reflects the rendered DOM.
+6. The shared core test setup mocks the icon registry with `chevronDown` only,
+   which makes `icons.eye`, `icons.eyeSlash` and `icons.xmark` indistinguishable
+   `undefined` values. The characterization suite installs its own registry so
+   the glyph contract is observable; the shared setup is left unchanged.
 
 ## Known limitations
 
