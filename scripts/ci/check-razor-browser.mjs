@@ -356,6 +356,54 @@ try {
       page.diagnostics.pageErrors.join('; '),
     );
   });
+
+  // ---------------------------------------------------------- double bootstrap
+  //
+  // A host can load the controller twice, or call the exported enhancer again
+  // after inserting markup. The ownership attribute is what makes that a no-op,
+  // and nothing was asserting it.
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-enhanced]'))`);
+
+    const before = await page.evaluate(`(() => ({
+      roots: document.querySelectorAll('[data-vf-razor="input"]').length,
+      enhanced: document.querySelectorAll('[data-vf-razor-enhanced]').length,
+      clears: document.querySelectorAll('[data-vf-razor-input="clear"]').length,
+      reveals: document.querySelectorAll('[data-vf-razor-input="password-reveal"]').length,
+    }))()`);
+
+    // A fresh module URL re-evaluates the module, which re-runs its bootstrap.
+    await page.evaluate(`import('./vueforge-razor.js?bootstrap=2').then(() => true)`);
+    await delay(250);
+
+    const after = await page.evaluate(`(() => {
+      const input = document.querySelector('#clearable');
+      const clear = document.querySelector('[data-case="clearable"] [data-vf-razor-input="clear"]');
+      let inputEvents = 0;
+      input.addEventListener('input', () => { inputEvents += 1; });
+      clear.click();
+      return {
+        roots: document.querySelectorAll('[data-vf-razor="input"]').length,
+        enhanced: document.querySelectorAll('[data-vf-razor-enhanced]').length,
+        clears: document.querySelectorAll('[data-vf-razor-input="clear"]').length,
+        reveals: document.querySelectorAll('[data-vf-razor-input="password-reveal"]').length,
+        inputEvents,
+        value: input.value,
+      };
+    })()`);
+
+    check('a second bootstrap adds no root', after.roots === before.roots, JSON.stringify({ before, after }));
+    check('a second bootstrap adds no ownership marker', after.enhanced === before.enhanced);
+    check('a second bootstrap adds no clear action', after.clears === before.clears);
+    check('a second bootstrap adds no reveal action', after.reveals === before.reveals);
+    check('a second bootstrap does not double the clear listener', after.inputEvents === 1, JSON.stringify(after));
+    check('clear still works after a second bootstrap', after.value === '');
+    check(
+      'the double-bootstrapped page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
 } finally {
   await chrome.close();
   await server.close();

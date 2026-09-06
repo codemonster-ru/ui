@@ -39,9 +39,9 @@
     "razor:consumer": "node ./scripts/ci/check-razor-consumer.mjs",
     "razor:check": "npm run razor:test && npm run razor:browser && npm run razor:consumer",
     "parity:input": "node ./scripts/parity/check-input-parity.mjs",
-    "parity:check": "npm run parity:input",
+    "parity:check": "npm run parity:input && npm run parity:input:mutations",
     "test:boundaries": "node --test ./scripts/ci/boundaries.test.mjs",
-    "check": "npm run check:boundaries && npm run test:boundaries && npm run check:icon-data && npm run check:docs && npm run lint:docs-imports && npm run check -w @codemonster-ru/vueforge-codeblock && npm run check -w @codemonster-ru/vueforge-core && npm run check -w @codemonster-ru/vueforge-icons && npm run check -w @codemonster-ru/vueforge-layouts && npm run check -w @codemonster-ru/vueforge-playground && npm run check -w @codemonster-ru/vueforge-playground-core && npm run check -w @codemonster-ru/vueforge-playground-vite-plugin && npm run check -w @codemonster-ru/vueforge-shared-core && npm run check -w @codemonster-ru/vueforge-theme",
+    "check": "npm run check:boundaries && npm run test:boundaries && npm run test:parity && npm run check:icon-data && npm run check:docs && npm run lint:docs-imports && npm run check -w @codemonster-ru/vueforge-codeblock && npm run check -w @codemonster-ru/vueforge-core && npm run check -w @codemonster-ru/vueforge-icons && npm run check -w @codemonster-ru/vueforge-layouts && npm run check -w @codemonster-ru/vueforge-playground && npm run check -w @codemonster-ru/vueforge-playground-core && npm run check -w @codemonster-ru/vueforge-playground-vite-plugin && npm run check -w @codemonster-ru/vueforge-shared-core && npm run check -w @codemonster-ru/vueforge-theme",
     "check:clean-install": "node ./scripts/ci/check-clean-install.mjs",
     "check:package-contracts": "node ./scripts/ci/check-package-contracts.mjs",
     "check:packed-consumer": "node ./scripts/ci/check-packed-consumer.mjs --manager=npm",
@@ -50,6 +50,7 @@
     "baseline:inventory": "node ./scripts/baseline/check-inventory.mjs",
     "baseline:showcase": "node ./scripts/baseline/check-showcase.mjs",
     "baseline:showcase:current": "node ./scripts/baseline/check-showcase.mjs --current",
+    "baseline:showcase:ci": "node ./scripts/baseline/control-run.mjs --current",
     "baseline:css": "node ./scripts/baseline/check-css-artifacts.mjs",
     "baseline:input": "node ./scripts/baseline/check-input-characterization.mjs",
     "baseline:control": "node ./scripts/baseline/control-run.mjs",
@@ -60,7 +61,12 @@
     "check:deferred-budgets": "npm run build -w @codemonster-ru/vueforge-playground-example -- --manifest && node ./scripts/ci/check-deferred-runtime-budgets.mjs",
     "check:consumer-tree-shaking": "node ./scripts/ci/check-consumer-tree-shaking.mjs",
     "test:release-prep": "node --test ./scripts/ci/prepare-release-from-tag.test.mjs",
-    "test:migration": "node --test ./scripts/migrate-to-v2.test.mjs"
+    "test:migration": "node --test ./scripts/migrate-to-v2.test.mjs",
+    "parity:input:mutations": "node ./scripts/parity/check-input-parity-mutations.mjs",
+    "test:parity": "node --test ./scripts/parity/*.test.mjs",
+    "check:reference": "node ./scripts/ci/check-reference-available.mjs",
+    "baseline:input:self-test": "node ./scripts/baseline/check-input-characterization.mjs --self-test",
+    "baseline:ci": "npm run baseline:inventory && npm run baseline:test && npm run baseline:input:self-test && npm run baseline:input && npm run baseline:css"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -21,6 +21,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # The reference commit is the oracle for every comparison gate, and
+          # the harnesses reach it with `git archive`. The default shallow
+          # checkout does not contain it, which is why those gates had never
+          # actually run here.
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,11 +34,21 @@ jobs:
           node-version: 24
           cache: npm
 
+      # Fails in seconds rather than eight minutes into a parity run.
+      - name: Verify the reference commit is available
+        run: node ./scripts/ci/check-reference-available.mjs
+
       - name: Install dependencies
         run: npm ci
 
       - name: Verify repository
         run: npm run verify
+
+      # Reference-based gates. These compare the working tree against the
+      # historical implementation and are host-independent: byte comparisons and
+      # jsdom suites, no recorded screenshots.
+      - name: Verify against the reference implementation
+        run: npm run baseline:ci
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -45,8 +61,47 @@ jobs:
       - name: Verify the Razor adapter
         run: npm run razor:check
 
+      # The clean three-way comparison and the mutation matrix must both pass.
       - name: Verify three-way VfInput parity
         run: npm run parity:check
 
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
+
+  # Stored showcase hashes belong to their original darwin-arm64 environment.
+  # Compare fresh immutable reference/current captures on this runner instead.
+  # This job runs on every PR; it cannot rewrite the committed baseline.
+  showcase-baseline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Verify the reference commit is available
+        run: node ./scripts/ci/check-reference-available.mjs
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Reference to current showcase drift on the same runner
+        run: npm run baseline:showcase:ci
+
+      - name: Upload showcase comparison evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: showcase-reference-comparison
+          include-hidden-files: true
+          path: |
+            .baseline-artifacts/showcase-ci/capture-*.json
+            .baseline-artifacts/showcase-ci/comparison.json
+            .baseline-artifacts/showcase-ci/captures-*/

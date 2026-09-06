@@ -4,7 +4,7 @@
 // VfInput.vue in memory when VUEFORGE_INPUT_MUTATION names a mutation. The file
 // on disk is never touched, so a failed or interrupted run cannot leave an
 // intentional defect behind in the source tree.
-import { readFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vitest/config';
@@ -39,6 +39,16 @@ function inputMutationPlugin() {
       const source = readFileSync(mutationFile, 'utf8');
       if (!source.includes(mutation.find)) {
         throw new Error(`Mutation ${mutation.id} no longer matches ${mutation.file ?? inputSourcePath}.`);
+      }
+
+      // Records that the mutation really reached the module under test. Without
+      // this the driver cannot tell "a test caught the defect" from "the run
+      // failed for some other reason", and a mutation that stopped applying
+      // would be counted as a detection - the defect the independent review
+      // found in this harness.
+      const marker = process.env.VUEFORGE_INPUT_MUTATION_MARKER;
+      if (marker) {
+        appendFileSync(marker, `${mutation.id}\n`);
       }
 
       return mutation.all

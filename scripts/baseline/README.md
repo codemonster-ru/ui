@@ -19,6 +19,7 @@ here, and no contract DSL.
 | `npm run baseline:showcase -- --write`      | Records the showcase baseline from the immutable reference checkout only.                                                                  |
 | `npm run baseline:showcase -- --origin=URL` | Captures an already served candidate and compares it with the baseline. Cannot write.                                                      |
 | `npm run baseline:control`                  | Reference → reference control run: two independent checkouts, two capture sets, zero tolerated differences.                                |
+| `npm run baseline:showcase:ci`              | Fresh immutable reference → current captures on the same runner; zero tolerated differences, no baseline rewriting.                        |
 | `npm run baseline:input`                    | Runs the VfInput characterization suite unmutated, then once per known regression, and requires every mutation to be detected.             |
 | `npm run baseline:test`                     | Unit tests proving the comparison fails on missing/unexpected cases, census loss, dimension mismatch and font drift.                       |
 
@@ -93,6 +94,36 @@ readonly inputs, lost selection restore and direction, removed field injection,
 a missing `data-vf-filled` and an always-on floating state. Each is applied in
 memory by a Vite plugin, so `VfInput.vue` on disk is never modified; the run
 verifies that afterwards with a hash and a `git diff`.
+
+A mutation run has three outcomes, not two. Until M07.1 the driver read any
+non-zero exit as a detection, so a mutation whose search text no longer matched
+the source made the plugin throw, vitest exit non-zero, and the gate print
+`detected` - coverage could rot to nothing while the gate stayed green. Now the
+driver checks every needle against the source _before_ running anything and
+fails on a stale one, and the plugin records that it really rewrote the module,
+so "applied and the suite failed" is distinguished from "the run failed for some
+other reason". Detection also requires completed failing assertions in the
+Vitest JSON report; a build/load error or killed test process does not count.
+`npm run baseline:input:self-test` invokes the real driver with an impossible
+needle and requires exit 1 with `MUTATION_COULD_NOT_BE_APPLIED:STALE` and no
+detection. It also checks assertion/load/process failure classification.
+
+## CI reference checks (M07.1)
+
+Both CI jobs fetch full history and run `check:reference` before dependencies.
+The validation job reaches `baseline:inventory`, `baseline:test`,
+`baseline:input:self-test`, `baseline:input`, `baseline:css`, `parity:input`, and
+`parity:input:mutations`, alongside the existing boundaries/core/shared/Razor
+checks. The `showcase-baseline` job runs `baseline:showcase:ci` on every pull
+request. Its fresh reference and current captures use the same host/browser and
+compare all 24 captures, all route cases, fonts and layout, with zero drift.
+
+`baseline:showcase` and `baseline:showcase:current` retain their original
+recorded-baseline checks. Run those in the recorded Chrome 152 / darwin-arm64
+environment described in the architecture plan. Their stored hashes cannot
+meaningfully pass on Ubuntu. CI instead creates temporary comparison evidence
+from the immutable reference; it never updates `baseline/reference-showcase.json`.
+The job uploads captures and the machine-readable `comparison.json` report.
 
 ## Recorded historical defects
 
