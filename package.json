@@ -75,7 +75,8 @@
     "razor:package": "node ./scripts/release/build-razor-package.mjs",
     "check:razor-package": "node ./scripts/ci/check-razor-package.mjs",
     "check:razor-packaged-consumer": "node ./scripts/ci/check-razor-packaged-consumer.mjs",
-    "razor:distribution": "npm run check:asset-boundary && npm run check:razor-package && npm run check:razor-packaged-consumer"
+    "razor:distribution": "npm run check:asset-boundary && npm run check:razor-package && npm run check:razor-packaged-consumer && npm run check:razor-clean-export",
+    "check:razor-clean-export": "node ./scripts/ci/check-razor-clean-export.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

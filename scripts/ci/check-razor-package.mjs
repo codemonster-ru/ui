@@ -80,7 +80,13 @@ check('the package declares no path repository', !Array.isArray(manifest.reposit
 
 // Provenance identifies the artifact, never the machine that built it.
 const stagedProvenance = JSON.parse(readFileSync(resolve(target, 'dist/package-provenance.json'), 'utf8'));
-check('provenance records the commit', /^[0-9a-f]{40}$/.test(stagedProvenance.commit), stagedProvenance.commit);
+check(
+  'provenance identifies where the artifact came from',
+  stagedProvenance.source === 'git'
+    ? /^[0-9a-f]{40}$/.test(stagedProvenance.commit)
+    : stagedProvenance.source === 'exported-tree' && stagedProvenance.commit === null,
+  `${stagedProvenance.source} ${stagedProvenance.commit}`,
+);
 check(
   'provenance records every canonical stylesheet source',
   stagedProvenance.assets.styles.length === 4,
@@ -117,6 +123,6 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  `[razor-package] OK: ${files.length} files, staged from ${provenance.commit.slice(0, 12)}, ` +
+  `[razor-package] OK: ${files.length} files, staged from ${provenance.commit?.slice(0, 12) ?? provenance.source}, ` +
     'assets present and neutral.\n',
 );
