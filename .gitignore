@@ -9,6 +9,11 @@ node_modules
 **/coverage
 **/*.tsbuildinfo
 
+# PHP tooling caches
+**/.phpstan.cache
+**/.phpunit.cache
+**/.php-cs-fixer.cache
+
 # Local dependencies and caches
 **/node_modules
 **/.cache
