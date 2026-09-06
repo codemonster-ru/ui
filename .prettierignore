@@ -3,3 +3,6 @@
 **/node_modules
 **/showcase-dist
 package-lock.json
+
+# Composer dependencies of the PHP packages and examples.
+**/vendor
