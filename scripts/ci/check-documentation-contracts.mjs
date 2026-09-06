@@ -7,7 +7,7 @@ import ts from 'typescript';
 import { compileTemplate, parse as parseSfc } from '@vue/compiler-sfc';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const ignoredDirectoryNames = new Set(['.git', '.npm-cache', 'build', 'coverage', 'dist', 'node_modules']);
+const ignoredDirectoryNames = new Set(['.git', '.npm-cache', 'build', 'coverage', 'dist', 'node_modules', 'vendor']);
 const issues = [];
 
 function toPosix(filePath) {
