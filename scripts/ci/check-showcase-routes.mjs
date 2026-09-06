@@ -153,14 +153,17 @@ check(
 );
 
 process.stdout.write(`Serving the Vue showcase on ${vueOrigin} and the Razor showcase on ${razorOrigin}\n`);
+// Detached with no inherited pipes, so the gate can end the whole process group
+// and nothing is left holding a handle that keeps this process alive.
 const vueServer = spawn(
   resolve(repositoryRoot, 'node_modules/.bin/vite'),
   ['preview', '--host', '127.0.0.1', '--port', String(vuePort), '--strictPort'],
-  { cwd: vueExample, stdio: ['ignore', 'ignore', 'pipe'] },
+  { cwd: vueExample, stdio: 'ignore', detached: true },
 );
 const razorServer = spawn('php', ['-S', `127.0.0.1:${razorPort}`, '-t', resolve(razorExample, 'public')], {
   cwd: razorExample,
-  stdio: ['ignore', 'ignore', 'pipe'],
+  stdio: 'ignore',
+  detached: true,
   env: {
     ...process.env,
     VUEFORGE_VUE_SHOWCASE_ORIGIN: vueOrigin,
@@ -433,8 +436,15 @@ try {
   }
 } finally {
   await chrome.close();
-  vueServer.kill('SIGTERM');
-  razorServer.kill('SIGTERM');
+  // The whole group: PHP's built-in server forks workers, and killing only the
+  // parent leaves them holding the port and this process open.
+  for (const server of [vueServer, razorServer]) {
+    try {
+      process.kill(-server.pid, 'SIGKILL');
+    } catch {
+      server.kill('SIGKILL');
+    }
+  }
 }
 
 const report = {
