@@ -1,0 +1,26 @@
+/* Harness page chrome only. No product rule lives here: every case is measured
+   inside a fixed-width container so geometry is comparable across targets. */
+body {
+  margin: 0;
+  padding: 24px;
+  background: var(--vf-color-background-canvas);
+  font-family: var(--vf-font-family-base);
+}
+
+.parity-cases {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.parity-case {
+  width: 360px;
+  box-sizing: border-box;
+}
+
+.parity-hint {
+  margin: 4px 0 0;
+  font-size: var(--vf-font-size-sm);
+  color: var(--vf-color-text-secondary);
+}

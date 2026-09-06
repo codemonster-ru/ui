@@ -37,9 +37,10 @@ final class IconRenderer
      * Renders one glyph at the given CSS size.
      *
      * `$size` is written into width/height exactly as the Vue icon does, so the
-     * same custom properties drive both adapters.
+     * same custom properties drive both adapters. `$ariaHidden` mirrors the flag
+     * the Vue adapter passes for an icon inside a labelled action button.
      */
-    public static function render(string $name, string $size): string
+    public static function render(string $name, string $size, bool $ariaHidden = false): string
     {
         $icons = self::icons();
 
@@ -56,6 +57,10 @@ final class IconRenderer
         $attributes = $icon['attributes'];
         $attributes['width'] = $size;
         $attributes['height'] = $size;
+
+        if ($ariaHidden) {
+            $attributes['aria-hidden'] = 'true';
+        }
 
         return '<span class="' . Html::escape($icon['wrapperClass']) . '"'
             . ' style="' . Html::escape($icon['wrapperStyle']) . '">'

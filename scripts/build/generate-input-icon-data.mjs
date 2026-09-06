@@ -25,6 +25,40 @@ export const inputIconNames = ['xmark', 'eye', 'eye-slash'];
 
 const SIZE_PLACEHOLDER = '__VF_ICON_SIZE__';
 
+// The Vue icon gets its layout from a `<style scoped>` block, which compiles to
+// selectors carrying a scope attribute. Razor markup has no such attribute, so
+// the layout would simply not apply. The declarations are read out of the built
+// icons stylesheet and carried in the neutral data as inline style, which keeps
+// packages/icons the single owner: nothing here is transcribed, and re-running
+// the generator re-derives it.
+function readScopedIconLayout() {
+  const cssPath = resolve(repositoryRoot, 'packages/icons/dist/index.css');
+  const css = readFileSync(cssPath, 'utf8');
+  const layout = {};
+
+  for (const [, selector, declarations] of css.matchAll(/(\.vf-icon(?:-wrapper)?)\[data-v-[0-9a-f]+\]\{([^}]*)\}/g)) {
+    // Custom properties are already emitted inline by the component itself;
+    // only the layout declarations are missing from the markup.
+    const layoutOnly = declarations
+      .split(';')
+      .map((declaration) => declaration.trim())
+      .filter((declaration) => declaration !== '' && !declaration.startsWith('--'))
+      .join(';');
+
+    if (layoutOnly !== '') {
+      layout[selector] = layoutOnly;
+    }
+  }
+
+  if (!layout['.vf-icon-wrapper'] || !layout['.vf-icon']) {
+    throw new Error(
+      'Could not read the scoped icon layout from packages/icons/dist/index.css. Build the icons package first.',
+    );
+  }
+
+  return layout;
+}
+
 function parseRenderedIcon(name, html) {
   const wrapper = html.match(/^<span class="([^"]*)" style="([^"]*)">(.*)<\/span>$/s);
   if (!wrapper) {
@@ -64,10 +98,14 @@ async function renderIcon(name) {
 }
 
 export async function buildInputIconData() {
+  const layout = readScopedIconLayout();
   const icons = {};
 
   for (const name of inputIconNames) {
-    icons[name] = await renderIcon(name);
+    const icon = await renderIcon(name);
+    icon.wrapperStyle = `${icon.wrapperStyle}${layout['.vf-icon-wrapper']};`;
+    icon.attributes = { ...icon.attributes, style: layout['.vf-icon'] };
+    icons[name] = icon;
   }
 
   return {

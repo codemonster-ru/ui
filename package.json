@@ -38,6 +38,7 @@
     "razor:browser": "node ./scripts/ci/check-razor-browser.mjs",
     "razor:consumer": "node ./scripts/ci/check-razor-consumer.mjs",
     "razor:check": "npm run razor:test && npm run razor:browser && npm run razor:consumer",
+    "parity:input": "node ./scripts/parity/check-input-parity.mjs",
     "test:boundaries": "node --test ./scripts/ci/boundaries.test.mjs",
     "check": "npm run check:boundaries && npm run test:boundaries && npm run check:icon-data && npm run check:docs && npm run lint:docs-imports && npm run check -w @codemonster-ru/vueforge-codeblock && npm run check -w @codemonster-ru/vueforge-core && npm run check -w @codemonster-ru/vueforge-icons && npm run check -w @codemonster-ru/vueforge-layouts && npm run check -w @codemonster-ru/vueforge-playground && npm run check -w @codemonster-ru/vueforge-playground-core && npm run check -w @codemonster-ru/vueforge-playground-vite-plugin && npm run check -w @codemonster-ru/vueforge-shared-core && npm run check -w @codemonster-ru/vueforge-theme",
     "check:clean-install": "node ./scripts/ci/check-clean-install.mjs",

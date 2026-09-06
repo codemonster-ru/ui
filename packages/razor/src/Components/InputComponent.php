@@ -87,7 +87,11 @@ final class InputComponent implements ComponentInterface
         $inputAttributes['type'] = InputState::resolveType($type, $passwordRevealAvailable, false);
         $inputAttributes['value'] = $value;
         $inputAttributes['data-vf-filled'] = $filled ? 'true' : null;
-        $inputAttributes['aria-invalid'] = $invalid ? 'true' : null;
+        // A consumer-supplied aria-invalid wins over the computed one, matching
+        // the historical Vue behaviour where forwarded attrs are bound after it.
+        if (!array_key_exists('aria-invalid', $forwarded)) {
+            $inputAttributes['aria-invalid'] = $invalid ? 'true' : null;
+        }
         $inputAttributes['class'] = $this->inputClasses($size, $invalid, $initial, $renderWrapper ? null : $context);
         $inputAttributes['data-vf-razor-input'] = 'control';
 
@@ -173,7 +177,7 @@ final class InputComponent implements ComponentInterface
         ], $extra);
 
         return '<button' . Html::attributes($attributes) . '>'
-            . IconRenderer::render($icon, self::ACTION_ICON_SIZE)
+            . IconRenderer::render($icon, self::ACTION_ICON_SIZE, ariaHidden: true)
             . '</button>';
     }
 

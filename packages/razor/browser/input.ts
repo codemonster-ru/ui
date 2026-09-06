@@ -96,7 +96,17 @@ function toggleClass(element: HTMLElement | null, className: string, enabled: bo
 function setActionAvailable(action: HTMLButtonElement, available: boolean): void {
   action.hidden = !available;
   action.disabled = !available;
-  action.style.display = available ? '' : 'none';
+
+  if (available) {
+    action.style.removeProperty('display');
+    // An emptied style attribute is still an attribute; the Vue output has
+    // none, and leaving it behind would be a real difference.
+    if (action.getAttribute('style') === '') {
+      action.removeAttribute('style');
+    }
+  } else {
+    action.style.display = 'none';
+  }
 }
 
 /** Applies the derived state to the DOM. The rules decide; this only paints. */
@@ -130,6 +140,8 @@ function sync(parts: InputParts, revealed: boolean): void {
     const svg = parts.reveal.querySelector('svg');
     if (svg) {
       svg.innerHTML = icon.body;
+      // The button carries the accessible name; its glyph stays hidden.
+      svg.setAttribute('aria-hidden', 'true');
     }
   }
 
