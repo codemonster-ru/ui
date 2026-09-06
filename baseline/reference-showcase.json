@@ -1,0 +1,3844 @@
+{
+  "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "label": "reference",
+  "origin": "http://127.0.0.1:63040",
+  "environment": {
+    "deviceScaleFactor": 1,
+    "locale": "en-US",
+    "timezone": "UTC",
+    "reducedMotion": "reduce",
+    "forcedColors": "none",
+    "screenshotFormat": "png",
+    "fontProbeFamilies": ["--vf-font-family-base", "--vf-font-family-heading", "--vf-font-family-mono"],
+    "determinism": {
+      "clockEpochMs": 1735689600000,
+      "randomSeed": 1597463007,
+      "freezeIntervals": true
+    },
+    "browser": "Chrome/152.0.7977.82",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/152.0.0.0 Safari/537.36",
+    "protocolVersion": "1.3",
+    "chromeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "platform": "darwin-arm64",
+    "nodeVersion": "v24.19.0",
+    "viewports": [
+      {
+        "id": "desktop",
+        "width": 1440,
+        "height": 1100,
+        "mobile": false
+      },
+      {
+        "id": "mobile",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      }
+    ],
+    "themes": ["light", "dark"],
+    "routes": [
+      {
+        "id": "core",
+        "path": "/core"
+      },
+      {
+        "id": "colors",
+        "path": "/colors"
+      },
+      {
+        "id": "layouts",
+        "path": "/layouts"
+      },
+      {
+        "id": "icons",
+        "path": "/icons"
+      },
+      {
+        "id": "codeblock",
+        "path": "/codeblock"
+      },
+      {
+        "id": "playground",
+        "path": "/playground"
+      }
+    ]
+  },
+  "diagnostics": {
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": []
+  },
+  "captures": [
+    {
+      "id": "core-desktop-light",
+      "route": "core",
+      "path": "/core",
+      "viewport": "desktop",
+      "theme": "light",
+      "cases": [
+        "block:demo-theme",
+        "block:demo-typography",
+        "block:demo-actions",
+        "block:demo-overlay",
+        "block:demo-surfaces",
+        "block:demo-feedback",
+        "block:demo-forms",
+        "block:demo-navigation",
+        "block:demo-dialog",
+        "matrix:action-geometry-matrix",
+        "matrix:overlay-trigger-matrix",
+        "matrix:surface-geometry-matrix",
+        "matrix:feedback-geometry-matrix",
+        "matrix:form-geometry-matrix",
+        "matrix:navigation-geometry-matrix",
+        "matrix:modal-launcher-matrix"
+      ],
+      "caseCount": 16,
+      "componentCensus": {
+        "vf-accordion": 3,
+        "vf-alert": 8,
+        "vf-app-shell": 1,
+        "vf-avatar": 9,
+        "vf-badge": 16,
+        "vf-blockquote": 1,
+        "vf-breadcrumbs": 4,
+        "vf-button": 92,
+        "vf-card": 3,
+        "vf-checkbox": 34,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-data-table": 16,
+        "vf-data-table-column-chooser": 1,
+        "vf-data-table-scroll": 16,
+        "vf-data-table-wrap": 16,
+        "vf-date-picker": 13,
+        "vf-date-picker-wrap": 13,
+        "vf-divider": 2,
+        "vf-dropdown": 3,
+        "vf-field": 48,
+        "vf-fieldset": 2,
+        "vf-form-layout": 1,
+        "vf-group-box": 2,
+        "vf-header-area": 1,
+        "vf-heading": 6,
+        "vf-heading-h1": 1,
+        "vf-heading-h2": 1,
+        "vf-heading-h3": 1,
+        "vf-heading-h4": 1,
+        "vf-heading-h5": 1,
+        "vf-heading-h6": 1,
+        "vf-horizontal-scroller": 5,
+        "vf-icon": 261,
+        "vf-icon-button": 93,
+        "vf-icon-wrapper": 261,
+        "vf-inline": 2,
+        "vf-input": 57,
+        "vf-input-wrap": 36,
+        "vf-link": 8,
+        "vf-list-decimal": 1,
+        "vf-list-disc": 1,
+        "vf-list-reset": 1,
+        "vf-menu-bar": 3,
+        "vf-nav-menu": 5,
+        "vf-page-header": 1,
+        "vf-panel": 4,
+        "vf-popover": 1,
+        "vf-progress-bar": 7,
+        "vf-progress-spinner": 30,
+        "vf-prose": 3,
+        "vf-radio": 23,
+        "vf-select": 34,
+        "vf-select-wrap": 34,
+        "vf-skeleton": 17,
+        "vf-skeleton-gate": 2,
+        "vf-sr-only": 17,
+        "vf-stack": 1,
+        "vf-stepper": 3,
+        "vf-switch": 30,
+        "vf-table": 21,
+        "vf-table-of-contents": 2,
+        "vf-table-scroll": 21,
+        "vf-table-wrap": 21,
+        "vf-tabs": 2,
+        "vf-tag": 11,
+        "vf-text-balance": 1,
+        "vf-text-body": 19,
+        "vf-text-caption": 1,
+        "vf-text-code": 4,
+        "vf-text-contrast": 1,
+        "vf-text-danger": 1,
+        "vf-text-help": 1,
+        "vf-text-info": 1,
+        "vf-text-label": 1,
+        "vf-text-link": 4,
+        "vf-text-mono": 1,
+        "vf-text-muted": 1,
+        "vf-text-nowrap": 1,
+        "vf-text-primary": 1,
+        "vf-text-success": 1,
+        "vf-text-truncate": 1,
+        "vf-text-warn": 1,
+        "vf-textarea": 21,
+        "vf-theme-switch": 10,
+        "vf-tooltip": 2
+      },
+      "layout": {
+        "scrollHeight": 21369,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "core-desktop-light.png",
+        "bytes": 2639531,
+        "sha256": "de186a576b9ea2b48f32df18125152fbeb840656785809e657ecbab0686c4fb3"
+      }
+    },
+    {
+      "id": "core-desktop-dark",
+      "route": "core",
+      "path": "/core",
+      "viewport": "desktop",
+      "theme": "dark",
+      "cases": [
+        "block:demo-theme",
+        "block:demo-typography",
+        "block:demo-actions",
+        "block:demo-overlay",
+        "block:demo-surfaces",
+        "block:demo-feedback",
+        "block:demo-forms",
+        "block:demo-navigation",
+        "block:demo-dialog",
+        "matrix:action-geometry-matrix",
+        "matrix:overlay-trigger-matrix",
+        "matrix:surface-geometry-matrix",
+        "matrix:feedback-geometry-matrix",
+        "matrix:form-geometry-matrix",
+        "matrix:navigation-geometry-matrix",
+        "matrix:modal-launcher-matrix"
+      ],
+      "caseCount": 16,
+      "componentCensus": {
+        "vf-accordion": 3,
+        "vf-alert": 8,
+        "vf-app-shell": 1,
+        "vf-avatar": 9,
+        "vf-badge": 16,
+        "vf-blockquote": 1,
+        "vf-breadcrumbs": 4,
+        "vf-button": 92,
+        "vf-card": 3,
+        "vf-checkbox": 34,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-data-table": 16,
+        "vf-data-table-column-chooser": 1,
+        "vf-data-table-scroll": 16,
+        "vf-data-table-wrap": 16,
+        "vf-date-picker": 13,
+        "vf-date-picker-wrap": 13,
+        "vf-divider": 2,
+        "vf-dropdown": 3,
+        "vf-field": 48,
+        "vf-fieldset": 2,
+        "vf-form-layout": 1,
+        "vf-group-box": 2,
+        "vf-header-area": 1,
+        "vf-heading": 6,
+        "vf-heading-h1": 1,
+        "vf-heading-h2": 1,
+        "vf-heading-h3": 1,
+        "vf-heading-h4": 1,
+        "vf-heading-h5": 1,
+        "vf-heading-h6": 1,
+        "vf-horizontal-scroller": 5,
+        "vf-icon": 261,
+        "vf-icon-button": 93,
+        "vf-icon-wrapper": 261,
+        "vf-inline": 2,
+        "vf-input": 57,
+        "vf-input-wrap": 36,
+        "vf-link": 8,
+        "vf-list-decimal": 1,
+        "vf-list-disc": 1,
+        "vf-list-reset": 1,
+        "vf-menu-bar": 3,
+        "vf-nav-menu": 5,
+        "vf-page-header": 1,
+        "vf-panel": 4,
+        "vf-popover": 1,
+        "vf-progress-bar": 7,
+        "vf-progress-spinner": 30,
+        "vf-prose": 3,
+        "vf-radio": 23,
+        "vf-select": 34,
+        "vf-select-wrap": 34,
+        "vf-skeleton": 17,
+        "vf-skeleton-gate": 2,
+        "vf-sr-only": 17,
+        "vf-stack": 1,
+        "vf-stepper": 3,
+        "vf-switch": 30,
+        "vf-table": 21,
+        "vf-table-of-contents": 2,
+        "vf-table-scroll": 21,
+        "vf-table-wrap": 21,
+        "vf-tabs": 2,
+        "vf-tag": 11,
+        "vf-text-balance": 1,
+        "vf-text-body": 19,
+        "vf-text-caption": 1,
+        "vf-text-code": 4,
+        "vf-text-contrast": 1,
+        "vf-text-danger": 1,
+        "vf-text-help": 1,
+        "vf-text-info": 1,
+        "vf-text-label": 1,
+        "vf-text-link": 4,
+        "vf-text-mono": 1,
+        "vf-text-muted": 1,
+        "vf-text-nowrap": 1,
+        "vf-text-primary": 1,
+        "vf-text-success": 1,
+        "vf-text-truncate": 1,
+        "vf-text-warn": 1,
+        "vf-textarea": 21,
+        "vf-theme-switch": 10,
+        "vf-tooltip": 2
+      },
+      "layout": {
+        "scrollHeight": 21369,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "core-desktop-dark.png",
+        "bytes": 2654286,
+        "sha256": "73173a27c34df87d89e2a4d2811a9df82ce795cc66a1e9b759d49445c65f479f"
+      }
+    },
+    {
+      "id": "colors-desktop-light",
+      "route": "colors",
+      "path": "/colors",
+      "viewport": "desktop",
+      "theme": "light",
+      "cases": [
+        "section:primitive-scales",
+        "section:theme-pairings",
+        "section:contrast-matrix",
+        "theme:light",
+        "theme:dark"
+      ],
+      "caseCount": 5,
+      "componentCensus": {
+        "vf-alert": 10,
+        "vf-app-shell": 1,
+        "vf-badge": 10,
+        "vf-button": 20,
+        "vf-checkbox": 2,
+        "vf-codeblock": 2,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 1,
+        "vf-icon": 15,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 15,
+        "vf-inline": 2,
+        "vf-input": 8,
+        "vf-menu-bar": 1,
+        "vf-progress-spinner": 2,
+        "vf-section": 1,
+        "vf-stack": 1,
+        "vf-tag": 10,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 5661,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "colors-desktop-light.png",
+        "bytes": 842259,
+        "sha256": "754930f3479bd451c1d8b9834d6c420293155d591570cd21ec667820280ea2e5"
+      }
+    },
+    {
+      "id": "colors-desktop-dark",
+      "route": "colors",
+      "path": "/colors",
+      "viewport": "desktop",
+      "theme": "dark",
+      "cases": [
+        "section:primitive-scales",
+        "section:theme-pairings",
+        "section:contrast-matrix",
+        "theme:light",
+        "theme:dark"
+      ],
+      "caseCount": 5,
+      "componentCensus": {
+        "vf-alert": 10,
+        "vf-app-shell": 1,
+        "vf-badge": 10,
+        "vf-button": 20,
+        "vf-checkbox": 2,
+        "vf-codeblock": 2,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 1,
+        "vf-icon": 15,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 15,
+        "vf-inline": 2,
+        "vf-input": 8,
+        "vf-menu-bar": 1,
+        "vf-progress-spinner": 2,
+        "vf-section": 1,
+        "vf-stack": 1,
+        "vf-tag": 10,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 5661,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "colors-desktop-dark.png",
+        "bytes": 843977,
+        "sha256": "bf09b1fc4f57d95cabb43df03a33a004c8b47d8ddd46bc23cb6d02aa196e24d9"
+      }
+    },
+    {
+      "id": "layouts-desktop-light",
+      "route": "layouts",
+      "path": "/layouts",
+      "viewport": "desktop",
+      "theme": "light",
+      "cases": [
+        "block:demo-container",
+        "block:demo-stack",
+        "block:demo-inline",
+        "block:demo-section",
+        "block:demo-grid",
+        "block:demo-foundation",
+        "block:demo-error-layout",
+        "block:demo-auth-layout",
+        "block:demo-setup-layout",
+        "block:demo-app-shell",
+        "block:demo-admin-layout",
+        "block:demo-admin-shell",
+        "block:demo-document-layout"
+      ],
+      "caseCount": 13,
+      "componentCensus": {
+        "vf-admin-layout": 1,
+        "vf-admin-shell": 1,
+        "vf-app-shell": 2,
+        "vf-auth-layout": 1,
+        "vf-avatar": 1,
+        "vf-badge": 7,
+        "vf-button": 7,
+        "vf-card": 13,
+        "vf-checkbox": 1,
+        "vf-container": 10,
+        "vf-content-area": 2,
+        "vf-data-table": 1,
+        "vf-data-table-scroll": 1,
+        "vf-data-table-wrap": 1,
+        "vf-document-layout": 1,
+        "vf-error-layout": 1,
+        "vf-field": 5,
+        "vf-footer-area": 1,
+        "vf-grid": 3,
+        "vf-header-area": 2,
+        "vf-horizontal-scroller": 10,
+        "vf-icon": 39,
+        "vf-icon-button": 6,
+        "vf-icon-wrapper": 39,
+        "vf-inline": 13,
+        "vf-input": 7,
+        "vf-input-wrap": 2,
+        "vf-link": 2,
+        "vf-menu-bar": 1,
+        "vf-nav-menu": 3,
+        "vf-section": 17,
+        "vf-select": 1,
+        "vf-select-wrap": 1,
+        "vf-setup-layout": 1,
+        "vf-sr-only": 1,
+        "vf-stack": 13,
+        "vf-switch": 9,
+        "vf-table": 1,
+        "vf-table-scroll": 1,
+        "vf-table-wrap": 1,
+        "vf-tabs": 9,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 8285,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "layouts-desktop-light.png",
+        "bytes": 1112839,
+        "sha256": "a3c5d8b673b1788d7d5c31ba42c3ed9d432cb2d8fad2639e358845bfb12d2fe9"
+      }
+    },
+    {
+      "id": "layouts-desktop-dark",
+      "route": "layouts",
+      "path": "/layouts",
+      "viewport": "desktop",
+      "theme": "dark",
+      "cases": [
+        "block:demo-container",
+        "block:demo-stack",
+        "block:demo-inline",
+        "block:demo-section",
+        "block:demo-grid",
+        "block:demo-foundation",
+        "block:demo-error-layout",
+        "block:demo-auth-layout",
+        "block:demo-setup-layout",
+        "block:demo-app-shell",
+        "block:demo-admin-layout",
+        "block:demo-admin-shell",
+        "block:demo-document-layout"
+      ],
+      "caseCount": 13,
+      "componentCensus": {
+        "vf-admin-layout": 1,
+        "vf-admin-shell": 1,
+        "vf-app-shell": 2,
+        "vf-auth-layout": 1,
+        "vf-avatar": 1,
+        "vf-badge": 7,
+        "vf-button": 7,
+        "vf-card": 13,
+        "vf-checkbox": 1,
+        "vf-container": 10,
+        "vf-content-area": 2,
+        "vf-data-table": 1,
+        "vf-data-table-scroll": 1,
+        "vf-data-table-wrap": 1,
+        "vf-document-layout": 1,
+        "vf-error-layout": 1,
+        "vf-field": 5,
+        "vf-footer-area": 1,
+        "vf-grid": 3,
+        "vf-header-area": 2,
+        "vf-horizontal-scroller": 10,
+        "vf-icon": 39,
+        "vf-icon-button": 6,
+        "vf-icon-wrapper": 39,
+        "vf-inline": 13,
+        "vf-input": 7,
+        "vf-input-wrap": 2,
+        "vf-link": 2,
+        "vf-menu-bar": 1,
+        "vf-nav-menu": 3,
+        "vf-section": 17,
+        "vf-select": 1,
+        "vf-select-wrap": 1,
+        "vf-setup-layout": 1,
+        "vf-sr-only": 1,
+        "vf-stack": 13,
+        "vf-switch": 9,
+        "vf-table": 1,
+        "vf-table-scroll": 1,
+        "vf-table-wrap": 1,
+        "vf-tabs": 9,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 8285,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "layouts-desktop-dark.png",
+        "bytes": 1107228,
+        "sha256": "61a2b9aff42f462eaff20eb8530493ba038d645f0d3dfb812a3c1400347ef2a9"
+      }
+    },
+    {
+      "id": "icons-desktop-light",
+      "route": "icons",
+      "path": "/icons",
+      "viewport": "desktop",
+      "theme": "light",
+      "cases": ["family:Classic", "brands:brand-icons-heading"],
+      "caseCount": 2,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 2,
+        "vf-icon": 448,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 448,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-tabs": 1,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 7634,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "icons-desktop-light.png",
+        "bytes": 696329,
+        "sha256": "28d9815be222d766902a6abe1917a2fc46c42b5312b1d3e2af5ad476691c1e79"
+      }
+    },
+    {
+      "id": "icons-desktop-dark",
+      "route": "icons",
+      "path": "/icons",
+      "viewport": "desktop",
+      "theme": "dark",
+      "cases": ["family:Classic", "brands:brand-icons-heading"],
+      "caseCount": 2,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 2,
+        "vf-icon": 448,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 448,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-tabs": 1,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 7634,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "icons-desktop-dark.png",
+        "bytes": 702303,
+        "sha256": "661b9917618fa06798c652fce7f077dfcab28a510707442cf2d74dc182e91cd1"
+      }
+    },
+    {
+      "id": "codeblock-desktop-light",
+      "route": "codeblock",
+      "path": "/codeblock",
+      "viewport": "desktop",
+      "theme": "light",
+      "cases": [
+        "block:VfCodeBlock",
+        "file:long-1000-lines.ts",
+        "file:plain.txt",
+        "file:note.text",
+        "file:readme.txt",
+        "file:demo.js",
+        "file:demo.javascript",
+        "file:demo.ts",
+        "file:demo.typescript",
+        "file:Demo.vue",
+        "file:index.html",
+        "file:package.json",
+        "file:.env",
+        "file:User.php",
+        "file:schedule.cron",
+        "file:script.bash",
+        "file:script.shell",
+        "file:script.sh",
+        "file:demo.css",
+        "file:demo.scss",
+        "file:demo.sass"
+      ],
+      "caseCount": 21,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-codeblock": 20,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 1,
+        "vf-icon": 23,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 23,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-section": 1,
+        "vf-skeleton": 20,
+        "vf-skeleton-gate": 20,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 2892,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "codeblock-desktop-light.png",
+        "bytes": 354196,
+        "sha256": "bc8804d48bf3c75756cd274d2146a2f504a22025ac99b6e2c5bc9c858d4a1bc7"
+      }
+    },
+    {
+      "id": "codeblock-desktop-dark",
+      "route": "codeblock",
+      "path": "/codeblock",
+      "viewport": "desktop",
+      "theme": "dark",
+      "cases": [
+        "block:VfCodeBlock",
+        "file:long-1000-lines.ts",
+        "file:plain.txt",
+        "file:note.text",
+        "file:readme.txt",
+        "file:demo.js",
+        "file:demo.javascript",
+        "file:demo.ts",
+        "file:demo.typescript",
+        "file:Demo.vue",
+        "file:index.html",
+        "file:package.json",
+        "file:.env",
+        "file:User.php",
+        "file:schedule.cron",
+        "file:script.bash",
+        "file:script.shell",
+        "file:script.sh",
+        "file:demo.css",
+        "file:demo.scss",
+        "file:demo.sass"
+      ],
+      "caseCount": 21,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-codeblock": 20,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 1,
+        "vf-icon": 23,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 23,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-section": 1,
+        "vf-skeleton": 20,
+        "vf-skeleton-gate": 20,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 2892,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "codeblock-desktop-dark.png",
+        "bytes": 352477,
+        "sha256": "46d1b38ca8377b26f72e1d9be3de7489b45e703e9b77942d078ff3eb867f7ad6"
+      }
+    },
+    {
+      "id": "playground-desktop-light",
+      "route": "playground",
+      "path": "/playground",
+      "viewport": "desktop",
+      "theme": "light",
+      "cases": [
+        "block:Interactive code and component previews",
+        "block:Skeleton Preview Control",
+        "block:VfPlayground · single-file HTML",
+        "block:VfPlayground · multi-file runtime",
+        "block:VfPlayground · Vue component mode",
+        "block:Vite plugin · Vue runtime module",
+        "block:Vite plugin · custom resolver"
+      ],
+      "caseCount": 7,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-badge": 2,
+        "vf-button": 3,
+        "vf-card": 8,
+        "vf-codeblock": 3,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 8,
+        "vf-icon": 20,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 20,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-playground": 5,
+        "vf-section": 5,
+        "vf-skeleton": 3,
+        "vf-skeleton-gate": 3,
+        "vf-stack": 1,
+        "vf-tabs": 7,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 3485,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "playground-desktop-light.png",
+        "bytes": 324208,
+        "sha256": "bac7b3595d2a927148cb8a9d5c5fe336e6f33dde538266b8f36c2f0daa028751"
+      }
+    },
+    {
+      "id": "playground-desktop-dark",
+      "route": "playground",
+      "path": "/playground",
+      "viewport": "desktop",
+      "theme": "dark",
+      "cases": [
+        "block:Interactive code and component previews",
+        "block:Skeleton Preview Control",
+        "block:VfPlayground · single-file HTML",
+        "block:VfPlayground · multi-file runtime",
+        "block:VfPlayground · Vue component mode",
+        "block:Vite plugin · Vue runtime module",
+        "block:Vite plugin · custom resolver"
+      ],
+      "caseCount": 7,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-badge": 2,
+        "vf-button": 3,
+        "vf-card": 8,
+        "vf-codeblock": 3,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 8,
+        "vf-icon": 20,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 20,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-playground": 5,
+        "vf-section": 5,
+        "vf-skeleton": 3,
+        "vf-skeleton-gate": 3,
+        "vf-stack": 1,
+        "vf-tabs": 7,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 3485,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "playground-desktop-dark.png",
+        "bytes": 325363,
+        "sha256": "dd3ba57bbda8e48d59b736095267e75cb73830dc9bb1e80f460dbf2b2442e090"
+      }
+    },
+    {
+      "id": "core-mobile-light",
+      "route": "core",
+      "path": "/core",
+      "viewport": "mobile",
+      "theme": "light",
+      "cases": [
+        "block:demo-theme",
+        "block:demo-typography",
+        "block:demo-actions",
+        "block:demo-overlay",
+        "block:demo-surfaces",
+        "block:demo-feedback",
+        "block:demo-forms",
+        "block:demo-navigation",
+        "block:demo-dialog",
+        "matrix:action-geometry-matrix",
+        "matrix:overlay-trigger-matrix",
+        "matrix:surface-geometry-matrix",
+        "matrix:feedback-geometry-matrix",
+        "matrix:form-geometry-matrix",
+        "matrix:navigation-geometry-matrix",
+        "matrix:modal-launcher-matrix"
+      ],
+      "caseCount": 16,
+      "componentCensus": {
+        "vf-accordion": 3,
+        "vf-alert": 8,
+        "vf-app-shell": 1,
+        "vf-avatar": 9,
+        "vf-badge": 16,
+        "vf-blockquote": 1,
+        "vf-breadcrumbs": 4,
+        "vf-button": 92,
+        "vf-card": 3,
+        "vf-checkbox": 34,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-data-table": 16,
+        "vf-data-table-column-chooser": 1,
+        "vf-data-table-scroll": 16,
+        "vf-data-table-wrap": 16,
+        "vf-date-picker": 13,
+        "vf-date-picker-wrap": 13,
+        "vf-divider": 2,
+        "vf-dropdown": 3,
+        "vf-field": 48,
+        "vf-fieldset": 2,
+        "vf-form-layout": 1,
+        "vf-group-box": 2,
+        "vf-header-area": 1,
+        "vf-heading": 6,
+        "vf-heading-h1": 1,
+        "vf-heading-h2": 1,
+        "vf-heading-h3": 1,
+        "vf-heading-h4": 1,
+        "vf-heading-h5": 1,
+        "vf-heading-h6": 1,
+        "vf-horizontal-scroller": 5,
+        "vf-icon": 261,
+        "vf-icon-button": 93,
+        "vf-icon-wrapper": 261,
+        "vf-inline": 2,
+        "vf-input": 57,
+        "vf-input-wrap": 36,
+        "vf-link": 8,
+        "vf-list-decimal": 1,
+        "vf-list-disc": 1,
+        "vf-list-reset": 1,
+        "vf-menu-bar": 3,
+        "vf-nav-menu": 5,
+        "vf-page-header": 1,
+        "vf-panel": 4,
+        "vf-popover": 1,
+        "vf-progress-bar": 7,
+        "vf-progress-spinner": 30,
+        "vf-prose": 3,
+        "vf-radio": 23,
+        "vf-select": 34,
+        "vf-select-wrap": 34,
+        "vf-skeleton": 17,
+        "vf-skeleton-gate": 2,
+        "vf-sr-only": 17,
+        "vf-stack": 1,
+        "vf-stepper": 3,
+        "vf-switch": 30,
+        "vf-table": 21,
+        "vf-table-of-contents": 2,
+        "vf-table-scroll": 21,
+        "vf-table-wrap": 21,
+        "vf-tabs": 2,
+        "vf-tag": 11,
+        "vf-text-balance": 1,
+        "vf-text-body": 19,
+        "vf-text-caption": 1,
+        "vf-text-code": 4,
+        "vf-text-contrast": 1,
+        "vf-text-danger": 1,
+        "vf-text-help": 1,
+        "vf-text-info": 1,
+        "vf-text-label": 1,
+        "vf-text-link": 4,
+        "vf-text-mono": 1,
+        "vf-text-muted": 1,
+        "vf-text-nowrap": 1,
+        "vf-text-primary": 1,
+        "vf-text-success": 1,
+        "vf-text-truncate": 1,
+        "vf-text-warn": 1,
+        "vf-textarea": 21,
+        "vf-theme-switch": 10,
+        "vf-tooltip": 2
+      },
+      "layout": {
+        "scrollHeight": 38196,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "core-mobile-light.png",
+        "bytes": 2450721,
+        "sha256": "c9d3cea4e775d14b0f18c7782d08034a68013d2ff3854ea72a5c9662040f081f"
+      }
+    },
+    {
+      "id": "core-mobile-dark",
+      "route": "core",
+      "path": "/core",
+      "viewport": "mobile",
+      "theme": "dark",
+      "cases": [
+        "block:demo-theme",
+        "block:demo-typography",
+        "block:demo-actions",
+        "block:demo-overlay",
+        "block:demo-surfaces",
+        "block:demo-feedback",
+        "block:demo-forms",
+        "block:demo-navigation",
+        "block:demo-dialog",
+        "matrix:action-geometry-matrix",
+        "matrix:overlay-trigger-matrix",
+        "matrix:surface-geometry-matrix",
+        "matrix:feedback-geometry-matrix",
+        "matrix:form-geometry-matrix",
+        "matrix:navigation-geometry-matrix",
+        "matrix:modal-launcher-matrix"
+      ],
+      "caseCount": 16,
+      "componentCensus": {
+        "vf-accordion": 3,
+        "vf-alert": 8,
+        "vf-app-shell": 1,
+        "vf-avatar": 9,
+        "vf-badge": 16,
+        "vf-blockquote": 1,
+        "vf-breadcrumbs": 4,
+        "vf-button": 92,
+        "vf-card": 3,
+        "vf-checkbox": 34,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-data-table": 16,
+        "vf-data-table-column-chooser": 1,
+        "vf-data-table-scroll": 16,
+        "vf-data-table-wrap": 16,
+        "vf-date-picker": 13,
+        "vf-date-picker-wrap": 13,
+        "vf-divider": 2,
+        "vf-dropdown": 3,
+        "vf-field": 48,
+        "vf-fieldset": 2,
+        "vf-form-layout": 1,
+        "vf-group-box": 2,
+        "vf-header-area": 1,
+        "vf-heading": 6,
+        "vf-heading-h1": 1,
+        "vf-heading-h2": 1,
+        "vf-heading-h3": 1,
+        "vf-heading-h4": 1,
+        "vf-heading-h5": 1,
+        "vf-heading-h6": 1,
+        "vf-horizontal-scroller": 5,
+        "vf-icon": 261,
+        "vf-icon-button": 93,
+        "vf-icon-wrapper": 261,
+        "vf-inline": 2,
+        "vf-input": 57,
+        "vf-input-wrap": 36,
+        "vf-link": 8,
+        "vf-list-decimal": 1,
+        "vf-list-disc": 1,
+        "vf-list-reset": 1,
+        "vf-menu-bar": 3,
+        "vf-nav-menu": 5,
+        "vf-page-header": 1,
+        "vf-panel": 4,
+        "vf-popover": 1,
+        "vf-progress-bar": 7,
+        "vf-progress-spinner": 30,
+        "vf-prose": 3,
+        "vf-radio": 23,
+        "vf-select": 34,
+        "vf-select-wrap": 34,
+        "vf-skeleton": 17,
+        "vf-skeleton-gate": 2,
+        "vf-sr-only": 17,
+        "vf-stack": 1,
+        "vf-stepper": 3,
+        "vf-switch": 30,
+        "vf-table": 21,
+        "vf-table-of-contents": 2,
+        "vf-table-scroll": 21,
+        "vf-table-wrap": 21,
+        "vf-tabs": 2,
+        "vf-tag": 11,
+        "vf-text-balance": 1,
+        "vf-text-body": 19,
+        "vf-text-caption": 1,
+        "vf-text-code": 4,
+        "vf-text-contrast": 1,
+        "vf-text-danger": 1,
+        "vf-text-help": 1,
+        "vf-text-info": 1,
+        "vf-text-label": 1,
+        "vf-text-link": 4,
+        "vf-text-mono": 1,
+        "vf-text-muted": 1,
+        "vf-text-nowrap": 1,
+        "vf-text-primary": 1,
+        "vf-text-success": 1,
+        "vf-text-truncate": 1,
+        "vf-text-warn": 1,
+        "vf-textarea": 21,
+        "vf-theme-switch": 10,
+        "vf-tooltip": 2
+      },
+      "layout": {
+        "scrollHeight": 38196,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "core-mobile-dark.png",
+        "bytes": 2475384,
+        "sha256": "136ff42515c8137b67c492c6f3c8dc53c42a0ec325f726bab09bacf7c75912e2"
+      }
+    },
+    {
+      "id": "colors-mobile-light",
+      "route": "colors",
+      "path": "/colors",
+      "viewport": "mobile",
+      "theme": "light",
+      "cases": [
+        "section:primitive-scales",
+        "section:theme-pairings",
+        "section:contrast-matrix",
+        "theme:light",
+        "theme:dark"
+      ],
+      "caseCount": 5,
+      "componentCensus": {
+        "vf-alert": 10,
+        "vf-app-shell": 1,
+        "vf-badge": 10,
+        "vf-button": 20,
+        "vf-checkbox": 2,
+        "vf-codeblock": 2,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 1,
+        "vf-icon": 15,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 15,
+        "vf-inline": 2,
+        "vf-input": 8,
+        "vf-menu-bar": 1,
+        "vf-progress-spinner": 2,
+        "vf-section": 1,
+        "vf-stack": 1,
+        "vf-tag": 10,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 13339,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "colors-mobile-light.png",
+        "bytes": 841172,
+        "sha256": "dd37ac4c9c74646f7cb09729c2073e743457a8b3b05d59e19e1cd8cb1b948b62"
+      }
+    },
+    {
+      "id": "colors-mobile-dark",
+      "route": "colors",
+      "path": "/colors",
+      "viewport": "mobile",
+      "theme": "dark",
+      "cases": [
+        "section:primitive-scales",
+        "section:theme-pairings",
+        "section:contrast-matrix",
+        "theme:light",
+        "theme:dark"
+      ],
+      "caseCount": 5,
+      "componentCensus": {
+        "vf-alert": 10,
+        "vf-app-shell": 1,
+        "vf-badge": 10,
+        "vf-button": 20,
+        "vf-checkbox": 2,
+        "vf-codeblock": 2,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 1,
+        "vf-icon": 15,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 15,
+        "vf-inline": 2,
+        "vf-input": 8,
+        "vf-menu-bar": 1,
+        "vf-progress-spinner": 2,
+        "vf-section": 1,
+        "vf-stack": 1,
+        "vf-tag": 10,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 13339,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "colors-mobile-dark.png",
+        "bytes": 845177,
+        "sha256": "67fc3385fd1689731bf3c040c11d7dae6727625964fec6abef6f0fa3029ed33d"
+      }
+    },
+    {
+      "id": "layouts-mobile-light",
+      "route": "layouts",
+      "path": "/layouts",
+      "viewport": "mobile",
+      "theme": "light",
+      "cases": [
+        "block:demo-container",
+        "block:demo-stack",
+        "block:demo-inline",
+        "block:demo-section",
+        "block:demo-grid",
+        "block:demo-foundation",
+        "block:demo-error-layout",
+        "block:demo-auth-layout",
+        "block:demo-setup-layout",
+        "block:demo-app-shell",
+        "block:demo-admin-layout",
+        "block:demo-admin-shell",
+        "block:demo-document-layout"
+      ],
+      "caseCount": 13,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-auth-layout": 1,
+        "vf-badge": 7,
+        "vf-button": 4,
+        "vf-card": 8,
+        "vf-checkbox": 1,
+        "vf-container": 6,
+        "vf-content-area": 1,
+        "vf-error-layout": 1,
+        "vf-field": 5,
+        "vf-grid": 2,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 6,
+        "vf-icon": 15,
+        "vf-icon-button": 3,
+        "vf-icon-wrapper": 15,
+        "vf-inline": 6,
+        "vf-input": 7,
+        "vf-input-wrap": 2,
+        "vf-link": 2,
+        "vf-menu-bar": 1,
+        "vf-progress-bar": 1,
+        "vf-section": 17,
+        "vf-setup-layout": 1,
+        "vf-stack": 7,
+        "vf-switch": 9,
+        "vf-tabs": 5,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 5969,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "layouts-mobile-light.png",
+        "bytes": 355423,
+        "sha256": "332ac1fa18f4e1838e04cc0c562e4eba49dc0ea8c7c37e7154f8665296e6d51a"
+      }
+    },
+    {
+      "id": "layouts-mobile-dark",
+      "route": "layouts",
+      "path": "/layouts",
+      "viewport": "mobile",
+      "theme": "dark",
+      "cases": [
+        "block:demo-container",
+        "block:demo-stack",
+        "block:demo-inline",
+        "block:demo-section",
+        "block:demo-grid",
+        "block:demo-foundation",
+        "block:demo-error-layout",
+        "block:demo-auth-layout",
+        "block:demo-setup-layout",
+        "block:demo-app-shell",
+        "block:demo-admin-layout",
+        "block:demo-admin-shell",
+        "block:demo-document-layout"
+      ],
+      "caseCount": 13,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-auth-layout": 1,
+        "vf-badge": 7,
+        "vf-button": 4,
+        "vf-card": 8,
+        "vf-checkbox": 1,
+        "vf-container": 6,
+        "vf-content-area": 1,
+        "vf-error-layout": 1,
+        "vf-field": 5,
+        "vf-grid": 2,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 6,
+        "vf-icon": 15,
+        "vf-icon-button": 3,
+        "vf-icon-wrapper": 15,
+        "vf-inline": 6,
+        "vf-input": 7,
+        "vf-input-wrap": 2,
+        "vf-link": 2,
+        "vf-menu-bar": 1,
+        "vf-progress-bar": 1,
+        "vf-section": 17,
+        "vf-setup-layout": 1,
+        "vf-stack": 7,
+        "vf-switch": 9,
+        "vf-tabs": 5,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 5969,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "layouts-mobile-dark.png",
+        "bytes": 357663,
+        "sha256": "3673c196e890c03c0608cf912f754c7d1ad811272e305ab342ec7ae9fcfb36ce"
+      }
+    },
+    {
+      "id": "icons-mobile-light",
+      "route": "icons",
+      "path": "/icons",
+      "viewport": "mobile",
+      "theme": "light",
+      "cases": ["family:Classic", "brands:brand-icons-heading"],
+      "caseCount": 2,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 2,
+        "vf-icon": 448,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 448,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-tabs": 1,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 8304,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "icons-mobile-light.png",
+        "bytes": 510616,
+        "sha256": "51eed68665cc80a0131391c1d9673b55846cd2044cc7b6cb6a8da323f29a45ac"
+      }
+    },
+    {
+      "id": "icons-mobile-dark",
+      "route": "icons",
+      "path": "/icons",
+      "viewport": "mobile",
+      "theme": "dark",
+      "cases": ["family:Classic", "brands:brand-icons-heading"],
+      "caseCount": 2,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 2,
+        "vf-icon": 448,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 448,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-tabs": 1,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 8304,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "icons-mobile-dark.png",
+        "bytes": 517352,
+        "sha256": "6011bc06d4e28404bfe7306298113be32a4cc4c31055fdae3da49787d3f3be61"
+      }
+    },
+    {
+      "id": "codeblock-mobile-light",
+      "route": "codeblock",
+      "path": "/codeblock",
+      "viewport": "mobile",
+      "theme": "light",
+      "cases": [
+        "block:VfCodeBlock",
+        "file:long-1000-lines.ts",
+        "file:plain.txt",
+        "file:note.text",
+        "file:readme.txt",
+        "file:demo.js",
+        "file:demo.javascript",
+        "file:demo.ts",
+        "file:demo.typescript",
+        "file:Demo.vue",
+        "file:index.html",
+        "file:package.json",
+        "file:.env",
+        "file:User.php",
+        "file:schedule.cron",
+        "file:script.bash",
+        "file:script.shell",
+        "file:script.sh",
+        "file:demo.css",
+        "file:demo.scss",
+        "file:demo.sass"
+      ],
+      "caseCount": 21,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-codeblock": 20,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 1,
+        "vf-icon": 23,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 23,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-section": 1,
+        "vf-skeleton": 20,
+        "vf-skeleton-gate": 20,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 5040,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "codeblock-mobile-light.png",
+        "bytes": 285330,
+        "sha256": "e8156b5a96c2ccb35301c903298e3d2cb8555878d29babd18a3385e930470cbc"
+      }
+    },
+    {
+      "id": "codeblock-mobile-dark",
+      "route": "codeblock",
+      "path": "/codeblock",
+      "viewport": "mobile",
+      "theme": "dark",
+      "cases": [
+        "block:VfCodeBlock",
+        "file:long-1000-lines.ts",
+        "file:plain.txt",
+        "file:note.text",
+        "file:readme.txt",
+        "file:demo.js",
+        "file:demo.javascript",
+        "file:demo.ts",
+        "file:demo.typescript",
+        "file:Demo.vue",
+        "file:index.html",
+        "file:package.json",
+        "file:.env",
+        "file:User.php",
+        "file:schedule.cron",
+        "file:script.bash",
+        "file:script.shell",
+        "file:script.sh",
+        "file:demo.css",
+        "file:demo.scss",
+        "file:demo.sass"
+      ],
+      "caseCount": 21,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-codeblock": 20,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 1,
+        "vf-icon": 23,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 23,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-section": 1,
+        "vf-skeleton": 20,
+        "vf-skeleton-gate": 20,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 5040,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "codeblock-mobile-dark.png",
+        "bytes": 282430,
+        "sha256": "c85c364bf79d62173b3bdcb3f85ce28de93db0ae3475e53b930dbaf8c09612b9"
+      }
+    },
+    {
+      "id": "playground-mobile-light",
+      "route": "playground",
+      "path": "/playground",
+      "viewport": "mobile",
+      "theme": "light",
+      "cases": [
+        "block:Interactive code and component previews",
+        "block:Skeleton Preview Control",
+        "block:VfPlayground · single-file HTML",
+        "block:VfPlayground · multi-file runtime",
+        "block:VfPlayground · Vue component mode",
+        "block:Vite plugin · Vue runtime module",
+        "block:Vite plugin · custom resolver"
+      ],
+      "caseCount": 7,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-badge": 2,
+        "vf-button": 3,
+        "vf-card": 8,
+        "vf-codeblock": 3,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 8,
+        "vf-icon": 20,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 20,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-playground": 5,
+        "vf-section": 5,
+        "vf-skeleton": 3,
+        "vf-skeleton-gate": 3,
+        "vf-stack": 1,
+        "vf-tabs": 7,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 3761,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "light",
+        "reducedMotion": true,
+        "colorScheme": "light",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "playground-mobile-light.png",
+        "bytes": 277321,
+        "sha256": "38bc02f15d22be5e7f4526d213b877588eca1cd43d12425dae9200e4464adf76"
+      }
+    },
+    {
+      "id": "playground-mobile-dark",
+      "route": "playground",
+      "path": "/playground",
+      "viewport": "mobile",
+      "theme": "dark",
+      "cases": [
+        "block:Interactive code and component previews",
+        "block:Skeleton Preview Control",
+        "block:VfPlayground · single-file HTML",
+        "block:VfPlayground · multi-file runtime",
+        "block:VfPlayground · Vue component mode",
+        "block:Vite plugin · Vue runtime module",
+        "block:Vite plugin · custom resolver"
+      ],
+      "caseCount": 7,
+      "componentCensus": {
+        "vf-app-shell": 1,
+        "vf-badge": 2,
+        "vf-button": 3,
+        "vf-card": 8,
+        "vf-codeblock": 3,
+        "vf-container": 2,
+        "vf-content-area": 1,
+        "vf-header-area": 1,
+        "vf-horizontal-scroller": 8,
+        "vf-icon": 20,
+        "vf-icon-button": 1,
+        "vf-icon-wrapper": 20,
+        "vf-inline": 2,
+        "vf-menu-bar": 1,
+        "vf-playground": 5,
+        "vf-section": 5,
+        "vf-skeleton": 3,
+        "vf-skeleton-gate": 3,
+        "vf-stack": 1,
+        "vf-tabs": 7,
+        "vf-theme-switch": 1
+      },
+      "layout": {
+        "scrollHeight": 3761,
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "theme": "dark",
+        "reducedMotion": true,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timeZone": "UTC",
+        "devicePixelRatio": 1
+      },
+      "fonts": {
+        "declared": {
+          "--vf-font-family-base": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-heading": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "--vf-font-family-mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+        },
+        "genericWidths": {
+          "sans-serif": 252.05,
+          "monospace": 288.98,
+          "serif": 227.18
+        },
+        "resolvedFaces": {
+          "-apple-system": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "BlinkMacSystemFont": {
+            "width": 257.38,
+            "generic": false,
+            "installed": true
+          },
+          "Consolas": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Inter": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Liberation Mono": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Menlo": {
+            "width": 288.98,
+            "generic": false,
+            "installed": true
+          },
+          "Monaco": {
+            "width": 288.05,
+            "generic": false,
+            "installed": true
+          },
+          "SFMono-Regular": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "Segoe UI": {
+            "width": 227.18,
+            "generic": false,
+            "installed": false
+          },
+          "monospace": {
+            "width": 288.98,
+            "generic": true,
+            "installed": null
+          },
+          "sans-serif": {
+            "width": 252.05,
+            "generic": true,
+            "installed": null
+          },
+          "system-ui": {
+            "width": 257.38,
+            "generic": true,
+            "installed": null
+          },
+          "ui-monospace": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          },
+          "ui-sans-serif": {
+            "width": 227.18,
+            "generic": true,
+            "installed": null
+          }
+        },
+        "documentFontsStatus": "loaded",
+        "bodyFontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyProbeWidth": 257.38
+      },
+      "screenshot": {
+        "filename": "playground-mobile-dark.png",
+        "bytes": 279310,
+        "sha256": "8b67bc2ad1201d269f6eb0e6bfb13f28fac9c877e6bd0def437f11a592e4d74c"
+      }
+    }
+  ],
+  "provenance": {
+    "source": "immutable-reference-checkout",
+    "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+    "referenceTreeHash": "474626a33d7479a199ba1d5b8028af29a8c98064",
+    "lockfileSha256": "35946fbb4800a5dedbde92c48f1e7d3daf53b742c93c6de38139f624d40d4959",
+    "showcaseIndexSha256": "5a3a8f09581e0941919143c88ed8fb85c21f16f5c932d65b85bb7ec960011c31"
+  }
+}

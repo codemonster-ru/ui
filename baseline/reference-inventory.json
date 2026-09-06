@@ -1,0 +1,1694 @@
+{
+  "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "packages": [
+    {
+      "directory": "packages/theme",
+      "name": "@codemonster-ru/vueforge-theme",
+      "version": "2.0.1",
+      "enginesNode": ">=18",
+      "sideEffects": false,
+      "peerDependencies": [],
+      "dependencies": [],
+      "exportSubpaths": ["."],
+      "cssExportSubpaths": [],
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        }
+      },
+      "publicExports": {
+        ".": {
+          "entryFile": "src/index.ts",
+          "values": [
+            "DEFAULT_ATTRIBUTE",
+            "DEFAULT_STORAGE_KEY",
+            "applyThemeConfig",
+            "applyThemeConfigs",
+            "createThemePreset",
+            "isThemeMode",
+            "resolveTheme",
+            "resolveThemeConfig",
+            "resolveThemePreset",
+            "resolveThemePresetOptions",
+            "themeConfigsToCssText",
+            "themePresetToCssText",
+            "themeTokensToCssVars",
+            "vfBreakpoints",
+            "vfMotionDurationsMs",
+            "vfMotionTokens",
+            "vfPrimitiveColorTokenNames",
+            "vfSemanticColorTokenNames"
+          ],
+          "types": [
+            "VfBreakpointName",
+            "VfBreakpointValue",
+            "VfPrimitiveColorTokenName",
+            "VfPrimitiveColorTokens",
+            "VfResolvedTheme",
+            "VfResolvedThemeConfig",
+            "VfResolvedThemePreset",
+            "VfResolvedThemePresetOptions",
+            "VfSemanticColorTokenName",
+            "VfSemanticColorTokens",
+            "VfThemeConfig",
+            "VfThemeMode",
+            "VfThemePreset",
+            "VfThemePresetOptions",
+            "VfThemeTokens"
+          ],
+          "starReExports": []
+        }
+      }
+    },
+    {
+      "directory": "packages/icons",
+      "name": "@codemonster-ru/vueforge-icons",
+      "version": "3.2.0",
+      "enginesNode": ">=18",
+      "sideEffects": ["**/*.css", "dist/index.ts.mjs"],
+      "peerDependencies": ["vue"],
+      "dependencies": [],
+      "exportSubpaths": [".", "./style.css"],
+      "cssExportSubpaths": ["./style.css"],
+      "exports": {
+        ".": {
+          "import": {
+            "types": "./dist/lib/index.d.ts",
+            "node": "./dist/index.node.mjs",
+            "default": "./dist/index.ts.mjs"
+          },
+          "require": {
+            "types": "./dist/index.d.cts",
+            "default": "./dist/index.cjs"
+          }
+        },
+        "./style.css": "./dist/index.css"
+      },
+      "publicExports": {
+        ".": {
+          "entryFile": "src/lib/index.ts",
+          "values": [
+            "VueIconify",
+            "coreIconNames",
+            "iconCatalog",
+            "iconFamilies",
+            "iconGroups",
+            "iconNames",
+            "iconVariants",
+            "icons",
+            "outlineIconVariants",
+            "showcaseIconEntries"
+          ],
+          "types": [
+            "IconCatalogEntry",
+            "IconFamily",
+            "IconName",
+            "IconShowcaseEntry",
+            "IconVariant",
+            "OutlineIconVariant"
+          ],
+          "starReExports": []
+        }
+      }
+    },
+    {
+      "directory": "packages/core",
+      "name": "@codemonster-ru/vueforge-core",
+      "version": "2.4.0",
+      "enginesNode": ">=18",
+      "sideEffects": ["**/*.css", "dist/auto/*.js"],
+      "peerDependencies": ["vue"],
+      "dependencies": [
+        "@codemonster-ru/floater.js",
+        "@codemonster-ru/vueforge-icons",
+        "@codemonster-ru/vueforge-theme"
+      ],
+      "exportSubpaths": [
+        ".",
+        "./accordion",
+        "./accordion.css",
+        "./alert",
+        "./alert.css",
+        "./async",
+        "./avatar",
+        "./avatar.css",
+        "./badge",
+        "./badge.css",
+        "./base.css",
+        "./breadcrumbs",
+        "./breadcrumbs.css",
+        "./button",
+        "./button.css",
+        "./card",
+        "./card.css",
+        "./checkbox",
+        "./checkbox.css",
+        "./command-palette",
+        "./command-palette.css",
+        "./confirm-dialog",
+        "./confirm-dialog.css",
+        "./data-table",
+        "./data-table-column-chooser",
+        "./data-table-column-chooser.css",
+        "./data-table.css",
+        "./date-picker",
+        "./date-picker.css",
+        "./dialog",
+        "./dialog.css",
+        "./divider",
+        "./divider.css",
+        "./drawer",
+        "./drawer.css",
+        "./dropdown",
+        "./dropdown.css",
+        "./field",
+        "./field.css",
+        "./fieldset",
+        "./fieldset.css",
+        "./form-layout",
+        "./form-layout.css",
+        "./foundation",
+        "./foundation.css",
+        "./group-box",
+        "./group-box.css",
+        "./icon-button",
+        "./icon-button.css",
+        "./input",
+        "./input.css",
+        "./link",
+        "./link.css",
+        "./menu",
+        "./menu-bar",
+        "./menu-bar.css",
+        "./menu.css",
+        "./nav-menu",
+        "./nav-menu.css",
+        "./page-header",
+        "./page-header.css",
+        "./panel",
+        "./panel.css",
+        "./popover",
+        "./popover.css",
+        "./progress-bar",
+        "./progress-bar.css",
+        "./progress-spinner",
+        "./progress-spinner.css",
+        "./radio",
+        "./radio.css",
+        "./select",
+        "./select.css",
+        "./skeleton",
+        "./skeleton-gate",
+        "./skeleton-gate.css",
+        "./skeleton.css",
+        "./stepper",
+        "./stepper.css",
+        "./styles.css",
+        "./switch",
+        "./switch.css",
+        "./table",
+        "./table-of-contents",
+        "./table-of-contents.css",
+        "./table.css",
+        "./tabs",
+        "./tabs.css",
+        "./tag",
+        "./tag.css",
+        "./textarea",
+        "./textarea.css",
+        "./theme",
+        "./theme-switch",
+        "./theme-switch.css",
+        "./theme.css",
+        "./tokens.css",
+        "./tooltip",
+        "./tooltip.css"
+      ],
+      "cssExportSubpaths": [
+        "./accordion.css",
+        "./alert.css",
+        "./avatar.css",
+        "./badge.css",
+        "./base.css",
+        "./breadcrumbs.css",
+        "./button.css",
+        "./card.css",
+        "./checkbox.css",
+        "./command-palette.css",
+        "./confirm-dialog.css",
+        "./data-table-column-chooser.css",
+        "./data-table.css",
+        "./date-picker.css",
+        "./dialog.css",
+        "./divider.css",
+        "./drawer.css",
+        "./dropdown.css",
+        "./field.css",
+        "./fieldset.css",
+        "./form-layout.css",
+        "./foundation.css",
+        "./group-box.css",
+        "./icon-button.css",
+        "./input.css",
+        "./link.css",
+        "./menu-bar.css",
+        "./menu.css",
+        "./nav-menu.css",
+        "./page-header.css",
+        "./panel.css",
+        "./popover.css",
+        "./progress-bar.css",
+        "./progress-spinner.css",
+        "./radio.css",
+        "./select.css",
+        "./skeleton-gate.css",
+        "./skeleton.css",
+        "./stepper.css",
+        "./styles.css",
+        "./switch.css",
+        "./table-of-contents.css",
+        "./table.css",
+        "./tabs.css",
+        "./tag.css",
+        "./textarea.css",
+        "./theme-switch.css",
+        "./theme.css",
+        "./tokens.css",
+        "./tooltip.css"
+      ],
+      "exports": {
+        ".": {
+          "import": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/vueforge-core.js"
+          },
+          "require": {
+            "types": "./dist/index.d.cts",
+            "default": "./dist/vueforge-core.cjs"
+          }
+        },
+        "./accordion": {
+          "import": {
+            "types": "./dist/accordion.d.ts",
+            "node": "./dist/accordion.js",
+            "default": "./dist/auto/accordion.js"
+          }
+        },
+        "./alert": {
+          "import": {
+            "types": "./dist/alert.d.ts",
+            "node": "./dist/alert.js",
+            "default": "./dist/auto/alert.js"
+          }
+        },
+        "./avatar": {
+          "import": {
+            "types": "./dist/avatar.d.ts",
+            "node": "./dist/avatar.js",
+            "default": "./dist/auto/avatar.js"
+          }
+        },
+        "./badge": {
+          "import": {
+            "types": "./dist/badge.d.ts",
+            "node": "./dist/badge.js",
+            "default": "./dist/auto/badge.js"
+          }
+        },
+        "./breadcrumbs": {
+          "import": {
+            "types": "./dist/breadcrumbs.d.ts",
+            "node": "./dist/breadcrumbs.js",
+            "default": "./dist/auto/breadcrumbs.js"
+          }
+        },
+        "./button": {
+          "import": {
+            "types": "./dist/button.d.ts",
+            "node": "./dist/button.js",
+            "default": "./dist/auto/button.js"
+          }
+        },
+        "./card": {
+          "import": {
+            "types": "./dist/card.d.ts",
+            "node": "./dist/card.js",
+            "default": "./dist/auto/card.js"
+          }
+        },
+        "./checkbox": {
+          "import": {
+            "types": "./dist/checkbox.d.ts",
+            "node": "./dist/checkbox.js",
+            "default": "./dist/auto/checkbox.js"
+          }
+        },
+        "./command-palette": {
+          "import": {
+            "types": "./dist/command-palette.d.ts",
+            "node": "./dist/command-palette.js",
+            "default": "./dist/auto/command-palette.js"
+          }
+        },
+        "./confirm-dialog": {
+          "import": {
+            "types": "./dist/confirm-dialog.d.ts",
+            "node": "./dist/confirm-dialog.js",
+            "default": "./dist/auto/confirm-dialog.js"
+          }
+        },
+        "./data-table": {
+          "import": {
+            "types": "./dist/data-table.d.ts",
+            "node": "./dist/data-table.js",
+            "default": "./dist/auto/data-table.js"
+          }
+        },
+        "./data-table-column-chooser": {
+          "import": {
+            "types": "./dist/data-table-column-chooser.d.ts",
+            "node": "./dist/data-table-column-chooser.js",
+            "default": "./dist/auto/data-table-column-chooser.js"
+          }
+        },
+        "./date-picker": {
+          "import": {
+            "types": "./dist/date-picker.d.ts",
+            "node": "./dist/date-picker.js",
+            "default": "./dist/auto/date-picker.js"
+          }
+        },
+        "./dialog": {
+          "import": {
+            "types": "./dist/dialog.d.ts",
+            "node": "./dist/dialog.js",
+            "default": "./dist/auto/dialog.js"
+          }
+        },
+        "./divider": {
+          "import": {
+            "types": "./dist/divider.d.ts",
+            "node": "./dist/divider.js",
+            "default": "./dist/auto/divider.js"
+          }
+        },
+        "./drawer": {
+          "import": {
+            "types": "./dist/drawer.d.ts",
+            "node": "./dist/drawer.js",
+            "default": "./dist/auto/drawer.js"
+          }
+        },
+        "./dropdown": {
+          "import": {
+            "types": "./dist/dropdown.d.ts",
+            "node": "./dist/dropdown.js",
+            "default": "./dist/auto/dropdown.js"
+          }
+        },
+        "./field": {
+          "import": {
+            "types": "./dist/field.d.ts",
+            "node": "./dist/field.js",
+            "default": "./dist/auto/field.js"
+          }
+        },
+        "./fieldset": {
+          "import": {
+            "types": "./dist/fieldset.d.ts",
+            "node": "./dist/fieldset.js",
+            "default": "./dist/auto/fieldset.js"
+          }
+        },
+        "./form-layout": {
+          "import": {
+            "types": "./dist/form-layout.d.ts",
+            "node": "./dist/form-layout.js",
+            "default": "./dist/auto/form-layout.js"
+          }
+        },
+        "./group-box": {
+          "import": {
+            "types": "./dist/group-box.d.ts",
+            "node": "./dist/group-box.js",
+            "default": "./dist/auto/group-box.js"
+          }
+        },
+        "./icon-button": {
+          "import": {
+            "types": "./dist/icon-button.d.ts",
+            "node": "./dist/icon-button.js",
+            "default": "./dist/auto/icon-button.js"
+          }
+        },
+        "./input": {
+          "import": {
+            "types": "./dist/input.d.ts",
+            "node": "./dist/input.js",
+            "default": "./dist/auto/input.js"
+          }
+        },
+        "./link": {
+          "import": {
+            "types": "./dist/link.d.ts",
+            "node": "./dist/link.js",
+            "default": "./dist/auto/link.js"
+          }
+        },
+        "./menu-bar": {
+          "import": {
+            "types": "./dist/menu-bar.d.ts",
+            "node": "./dist/menu-bar.js",
+            "default": "./dist/auto/menu-bar.js"
+          }
+        },
+        "./menu": {
+          "import": {
+            "types": "./dist/menu.d.ts",
+            "node": "./dist/menu.js",
+            "default": "./dist/auto/menu.js"
+          }
+        },
+        "./nav-menu": {
+          "import": {
+            "types": "./dist/nav-menu.d.ts",
+            "node": "./dist/nav-menu.js",
+            "default": "./dist/auto/nav-menu.js"
+          }
+        },
+        "./panel": {
+          "import": {
+            "types": "./dist/panel.d.ts",
+            "node": "./dist/panel.js",
+            "default": "./dist/auto/panel.js"
+          }
+        },
+        "./page-header": {
+          "import": {
+            "types": "./dist/page-header.d.ts",
+            "node": "./dist/page-header.js",
+            "default": "./dist/auto/page-header.js"
+          }
+        },
+        "./popover": {
+          "import": {
+            "types": "./dist/popover.d.ts",
+            "node": "./dist/popover.js",
+            "default": "./dist/auto/popover.js"
+          }
+        },
+        "./progress-bar": {
+          "import": {
+            "types": "./dist/progress-bar.d.ts",
+            "node": "./dist/progress-bar.js",
+            "default": "./dist/auto/progress-bar.js"
+          }
+        },
+        "./progress-spinner": {
+          "import": {
+            "types": "./dist/progress-spinner.d.ts",
+            "node": "./dist/progress-spinner.js",
+            "default": "./dist/auto/progress-spinner.js"
+          }
+        },
+        "./radio": {
+          "import": {
+            "types": "./dist/radio.d.ts",
+            "node": "./dist/radio.js",
+            "default": "./dist/auto/radio.js"
+          }
+        },
+        "./select": {
+          "import": {
+            "types": "./dist/select.d.ts",
+            "node": "./dist/select.js",
+            "default": "./dist/auto/select.js"
+          }
+        },
+        "./skeleton": {
+          "import": {
+            "types": "./dist/skeleton.d.ts",
+            "node": "./dist/skeleton.js",
+            "default": "./dist/auto/skeleton.js"
+          }
+        },
+        "./skeleton-gate": {
+          "import": {
+            "types": "./dist/skeleton-gate.d.ts",
+            "node": "./dist/skeleton-gate.js",
+            "default": "./dist/auto/skeleton-gate.js"
+          }
+        },
+        "./stepper": {
+          "import": {
+            "types": "./dist/stepper.d.ts",
+            "node": "./dist/stepper.js",
+            "default": "./dist/auto/stepper.js"
+          }
+        },
+        "./switch": {
+          "import": {
+            "types": "./dist/switch.d.ts",
+            "node": "./dist/switch.js",
+            "default": "./dist/auto/switch.js"
+          }
+        },
+        "./table": {
+          "import": {
+            "types": "./dist/table.d.ts",
+            "node": "./dist/table.js",
+            "default": "./dist/auto/table.js"
+          }
+        },
+        "./table-of-contents": {
+          "import": {
+            "types": "./dist/table-of-contents.d.ts",
+            "node": "./dist/table-of-contents.js",
+            "default": "./dist/auto/table-of-contents.js"
+          }
+        },
+        "./tabs": {
+          "import": {
+            "types": "./dist/tabs.d.ts",
+            "node": "./dist/tabs.js",
+            "default": "./dist/auto/tabs.js"
+          }
+        },
+        "./tag": {
+          "import": {
+            "types": "./dist/tag.d.ts",
+            "node": "./dist/tag.js",
+            "default": "./dist/auto/tag.js"
+          }
+        },
+        "./textarea": {
+          "import": {
+            "types": "./dist/textarea.d.ts",
+            "node": "./dist/textarea.js",
+            "default": "./dist/auto/textarea.js"
+          }
+        },
+        "./theme-switch": {
+          "import": {
+            "types": "./dist/theme-switch.d.ts",
+            "node": "./dist/theme-switch.js",
+            "default": "./dist/auto/theme-switch.js"
+          }
+        },
+        "./tooltip": {
+          "import": {
+            "types": "./dist/tooltip.d.ts",
+            "node": "./dist/tooltip.js",
+            "default": "./dist/auto/tooltip.js"
+          }
+        },
+        "./accordion.css": "./dist/accordion.css",
+        "./alert.css": "./dist/alert.css",
+        "./avatar.css": "./dist/avatar.css",
+        "./badge.css": "./dist/badge.css",
+        "./breadcrumbs.css": "./dist/breadcrumbs.css",
+        "./button.css": "./dist/button.css",
+        "./card.css": "./dist/card.css",
+        "./checkbox.css": "./dist/checkbox.css",
+        "./command-palette.css": "./dist/command-palette.css",
+        "./confirm-dialog.css": "./dist/confirm-dialog.css",
+        "./data-table.css": "./dist/data-table.css",
+        "./data-table-column-chooser.css": "./dist/data-table-column-chooser.css",
+        "./date-picker.css": "./dist/date-picker.css",
+        "./dialog.css": "./dist/dialog.css",
+        "./divider.css": "./dist/divider.css",
+        "./drawer.css": "./dist/drawer.css",
+        "./dropdown.css": "./dist/dropdown.css",
+        "./field.css": "./dist/field.css",
+        "./fieldset.css": "./dist/fieldset.css",
+        "./form-layout.css": "./dist/form-layout.css",
+        "./group-box.css": "./dist/group-box.css",
+        "./icon-button.css": "./dist/icon-button.css",
+        "./input.css": "./dist/input.css",
+        "./link.css": "./dist/link.css",
+        "./menu-bar.css": "./dist/menu-bar.css",
+        "./menu.css": "./dist/menu.css",
+        "./nav-menu.css": "./dist/nav-menu.css",
+        "./panel.css": "./dist/panel.css",
+        "./page-header.css": "./dist/page-header.css",
+        "./popover.css": "./dist/popover.css",
+        "./progress-bar.css": "./dist/progress-bar.css",
+        "./progress-spinner.css": "./dist/progress-spinner.css",
+        "./radio.css": "./dist/radio.css",
+        "./select.css": "./dist/select.css",
+        "./skeleton.css": "./dist/skeleton.css",
+        "./skeleton-gate.css": "./dist/skeleton-gate.css",
+        "./stepper.css": "./dist/stepper.css",
+        "./switch.css": "./dist/switch.css",
+        "./table.css": "./dist/table.css",
+        "./table-of-contents.css": "./dist/table-of-contents.css",
+        "./tabs.css": "./dist/tabs.css",
+        "./tag.css": "./dist/tag.css",
+        "./textarea.css": "./dist/textarea.css",
+        "./theme-switch.css": "./dist/theme-switch.css",
+        "./tooltip.css": "./dist/tooltip.css",
+        "./base.css": "./dist/base.css",
+        "./tokens.css": "./dist/tokens.css",
+        "./theme.css": "./dist/theme.css",
+        "./foundation.css": "./dist/foundation.css",
+        "./styles.css": "./dist/styles.css",
+        "./foundation": {
+          "import": {
+            "types": "./dist/foundation-api.d.ts",
+            "default": "./dist/foundation-api.js"
+          },
+          "require": {
+            "types": "./dist/foundation-api.d.cts",
+            "default": "./dist/foundation-api.cjs"
+          }
+        },
+        "./theme": {
+          "import": {
+            "types": "./dist/theme-api.d.ts",
+            "default": "./dist/theme-api.js"
+          },
+          "require": {
+            "types": "./dist/theme-api.d.cts",
+            "default": "./dist/theme-api.cjs"
+          }
+        },
+        "./async": {
+          "import": {
+            "types": "./dist/async.d.ts",
+            "node": "./dist/async.js",
+            "default": "./dist/auto/async.js"
+          }
+        }
+      },
+      "publicExports": {
+        ".": {
+          "entryFile": "src/index.ts",
+          "values": [
+            "VfAccordion",
+            "VfAlert",
+            "VfAvatar",
+            "VfBadge",
+            "VfBreadcrumbs",
+            "VfButton",
+            "VfCard",
+            "VfCheckbox",
+            "VfCommandPalette",
+            "VfConfirmDialog",
+            "VfDataTable",
+            "VfDataTableColumnChooser",
+            "VfDatePicker",
+            "VfDialog",
+            "VfDivider",
+            "VfDrawer",
+            "VfDropdown",
+            "VfField",
+            "VfFieldset",
+            "VfFormLayout",
+            "VfGroupBox",
+            "VfIconButton",
+            "VfInput",
+            "VfLink",
+            "VfMenu",
+            "VfMenuBar",
+            "VfMenuItem",
+            "VfNavMenu",
+            "VfPageHeader",
+            "VfPanel",
+            "VfPopover",
+            "VfProgressBar",
+            "VfProgressSpinner",
+            "VfRadio",
+            "VfSelect",
+            "VfSkeleton",
+            "VfSkeletonGate",
+            "VfStepper",
+            "VfSwitch",
+            "VfTable",
+            "VfTableOfContents",
+            "VfTabs",
+            "VfTag",
+            "VfTextarea",
+            "VfThemeProvider",
+            "VfThemeSwitch",
+            "VfTooltip",
+            "VueForgeCore",
+            "createAsyncWithSkeleton",
+            "createThemePreset",
+            "createVueForgeCore",
+            "default",
+            "defaultThemePreset",
+            "toMaxWidthQuery",
+            "toMinWidthQuery",
+            "useBreakpoint",
+            "useBreakpointValue",
+            "useBreakpoints",
+            "useClickOutside",
+            "useDisclosure",
+            "useEscapeKey",
+            "useFloating",
+            "useFocusTrap",
+            "useId",
+            "useScrollLock",
+            "useTableOfContents",
+            "useTheme",
+            "vfBreakpoints",
+            "vfPrimitiveColorTokenNames",
+            "vfSemanticColorTokenNames"
+          ],
+          "types": [
+            "CreateAsyncWithSkeletonOptions",
+            "FloatingMiddlewareData",
+            "UseBreakpointOptions",
+            "UseClickOutsideOptions",
+            "UseDisclosureOptions",
+            "UseEscapeKeyOptions",
+            "UseFloatingOptions",
+            "UseFocusTrapOptions",
+            "UseIdOptions",
+            "UseScrollLockOptions",
+            "UseTableOfContentsOptions",
+            "VfAvatarShape",
+            "VfBadgeTone",
+            "VfBreadcrumbItem",
+            "VfBreakpointName",
+            "VfBreakpointValue",
+            "VfBreakpointValues",
+            "VfButtonVariant",
+            "VfConfirmDialogInitialFocus",
+            "VfControlSize",
+            "VfDataTableCellAlign",
+            "VfDataTableCellVerticalAlign",
+            "VfDataTableColumn",
+            "VfDataTableColumnOrder",
+            "VfDataTableColumnPin",
+            "VfDataTableColumnWidths",
+            "VfDataTableDensity",
+            "VfDataTableLabels",
+            "VfDataTableLoadingVariant",
+            "VfDataTablePaginationMode",
+            "VfDataTableRow",
+            "VfDataTableSort",
+            "VfDataTableSortDirection",
+            "VfDataTableSortingMode",
+            "VfDatePickerLabels",
+            "VfDialogSize",
+            "VfDividerOrientation",
+            "VfDrawerPlacement",
+            "VfDrawerSize",
+            "VfDropdownPlacement",
+            "VfFeedbackTone",
+            "VfFormLayoutMode",
+            "VfLinkTone",
+            "VfLinkUnderline",
+            "VfNavMenuItem",
+            "VfNavMenuProps",
+            "VfPageHeaderHeadingLevel",
+            "VfPrimitiveColorTokenName",
+            "VfPrimitiveColorTokens",
+            "VfResolvedTheme",
+            "VfSelectOption",
+            "VfSemanticColorTokenName",
+            "VfSemanticColorTokens",
+            "VfStepperContentPosition",
+            "VfStepperItem",
+            "VfStepperOrientation",
+            "VfSwitchThumbContrast",
+            "VfTabItem",
+            "VfTableOfContentsItem",
+            "VfThemeConfig",
+            "VfThemeContext",
+            "VfThemeMode",
+            "VfThemePreset",
+            "VfThemePresetOptions",
+            "VfThemeProviderProps",
+            "VfThemeTokens",
+            "VfTooltipPlacement",
+            "VfVueForgeOptions"
+          ],
+          "starReExports": []
+        },
+        "./foundation": {
+          "entryFile": "src/foundation/index.ts",
+          "values": [
+            "toMaxWidthQuery",
+            "toMinWidthQuery",
+            "useBreakpoint",
+            "useBreakpointValue",
+            "useBreakpoints",
+            "useScrollLock",
+            "vfBreakpoints"
+          ],
+          "types": [
+            "UseBreakpointOptions",
+            "UseScrollLockOptions",
+            "VfBreakpointName",
+            "VfBreakpointValue",
+            "VfBreakpointValues"
+          ],
+          "starReExports": []
+        },
+        "./theme": {
+          "entryFile": "src/theme/public.ts",
+          "values": [
+            "createThemePreset",
+            "defaultThemePreset",
+            "vfPrimitiveColorTokenNames",
+            "vfSemanticColorTokenNames"
+          ],
+          "types": [
+            "VfPrimitiveColorTokenName",
+            "VfPrimitiveColorTokens",
+            "VfSemanticColorTokenName",
+            "VfSemanticColorTokens",
+            "VfThemeTokens"
+          ],
+          "starReExports": []
+        },
+        "./async": {
+          "entryFile": "src/async.ts",
+          "values": ["createAsyncWithSkeleton"],
+          "types": ["CreateAsyncWithSkeletonOptions"],
+          "starReExports": []
+        }
+      }
+    },
+    {
+      "directory": "packages/layouts",
+      "name": "@codemonster-ru/vueforge-layouts",
+      "version": "2.1.2",
+      "enginesNode": ">=18",
+      "sideEffects": ["**/*.css", "dist/auto/*.js"],
+      "peerDependencies": ["@codemonster-ru/vueforge-core", "vue"],
+      "dependencies": ["@codemonster-ru/vueforge-theme"],
+      "exportSubpaths": [
+        ".",
+        "./admin-layout",
+        "./admin-layout.css",
+        "./admin-shell",
+        "./admin-shell.css",
+        "./app-shell",
+        "./app-shell.css",
+        "./aside-area",
+        "./aside-area.css",
+        "./auth-layout",
+        "./auth-layout.css",
+        "./base.css",
+        "./breakpoints.css",
+        "./container",
+        "./container.css",
+        "./content-area",
+        "./content-area.css",
+        "./document-layout",
+        "./document-layout.css",
+        "./error-layout",
+        "./error-layout.css",
+        "./footer-area",
+        "./footer-area.css",
+        "./grid",
+        "./grid.css",
+        "./header-area",
+        "./header-area.css",
+        "./inline",
+        "./inline.css",
+        "./section",
+        "./section.css",
+        "./setup-layout",
+        "./setup-layout.css",
+        "./sidebar-area",
+        "./sidebar-area.css",
+        "./stack",
+        "./stack.css",
+        "./styles.css",
+        "./theme.css",
+        "./tokens.css"
+      ],
+      "cssExportSubpaths": [
+        "./admin-layout.css",
+        "./admin-shell.css",
+        "./app-shell.css",
+        "./aside-area.css",
+        "./auth-layout.css",
+        "./base.css",
+        "./breakpoints.css",
+        "./container.css",
+        "./content-area.css",
+        "./document-layout.css",
+        "./error-layout.css",
+        "./footer-area.css",
+        "./grid.css",
+        "./header-area.css",
+        "./inline.css",
+        "./section.css",
+        "./setup-layout.css",
+        "./sidebar-area.css",
+        "./stack.css",
+        "./styles.css",
+        "./theme.css",
+        "./tokens.css"
+      ],
+      "exports": {
+        ".": {
+          "import": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+          },
+          "require": {
+            "types": "./dist/index.d.cts",
+            "default": "./dist/index.cjs"
+          }
+        },
+        "./container": {
+          "import": {
+            "types": "./dist/container.d.ts",
+            "node": "./dist/node/container.js",
+            "default": "./dist/auto/container.js"
+          }
+        },
+        "./stack": {
+          "import": {
+            "types": "./dist/stack.d.ts",
+            "node": "./dist/node/stack.js",
+            "default": "./dist/auto/stack.js"
+          }
+        },
+        "./inline": {
+          "import": {
+            "types": "./dist/inline.d.ts",
+            "node": "./dist/node/inline.js",
+            "default": "./dist/auto/inline.js"
+          }
+        },
+        "./section": {
+          "import": {
+            "types": "./dist/section.d.ts",
+            "node": "./dist/node/section.js",
+            "default": "./dist/auto/section.js"
+          }
+        },
+        "./grid": {
+          "import": {
+            "types": "./dist/grid.d.ts",
+            "node": "./dist/node/grid.js",
+            "default": "./dist/auto/grid.js"
+          }
+        },
+        "./app-shell": {
+          "import": {
+            "types": "./dist/app-shell.d.ts",
+            "node": "./dist/node/app-shell.js",
+            "default": "./dist/auto/app-shell.js"
+          }
+        },
+        "./admin-layout": {
+          "import": {
+            "types": "./dist/admin-layout.d.ts",
+            "node": "./dist/node/admin-layout.js",
+            "default": "./dist/auto/admin-layout.js"
+          }
+        },
+        "./admin-shell": {
+          "import": {
+            "types": "./dist/admin-shell.d.ts",
+            "node": "./dist/node/admin-shell.js",
+            "default": "./dist/auto/admin-shell.js"
+          }
+        },
+        "./document-layout": {
+          "import": {
+            "types": "./dist/document-layout.d.ts",
+            "node": "./dist/node/document-layout.js",
+            "default": "./dist/auto/document-layout.js"
+          }
+        },
+        "./auth-layout": {
+          "import": {
+            "types": "./dist/auth-layout.d.ts",
+            "node": "./dist/node/auth-layout.js",
+            "default": "./dist/auto/auth-layout.js"
+          }
+        },
+        "./error-layout": {
+          "import": {
+            "types": "./dist/error-layout.d.ts",
+            "node": "./dist/node/error-layout.js",
+            "default": "./dist/auto/error-layout.js"
+          }
+        },
+        "./setup-layout": {
+          "import": {
+            "types": "./dist/setup-layout.d.ts",
+            "node": "./dist/node/setup-layout.js",
+            "default": "./dist/auto/setup-layout.js"
+          }
+        },
+        "./header-area": {
+          "import": {
+            "types": "./dist/header-area.d.ts",
+            "node": "./dist/node/header-area.js",
+            "default": "./dist/auto/header-area.js"
+          }
+        },
+        "./sidebar-area": {
+          "import": {
+            "types": "./dist/sidebar-area.d.ts",
+            "node": "./dist/node/sidebar-area.js",
+            "default": "./dist/auto/sidebar-area.js"
+          }
+        },
+        "./content-area": {
+          "import": {
+            "types": "./dist/content-area.d.ts",
+            "node": "./dist/node/content-area.js",
+            "default": "./dist/auto/content-area.js"
+          }
+        },
+        "./aside-area": {
+          "import": {
+            "types": "./dist/aside-area.d.ts",
+            "node": "./dist/node/aside-area.js",
+            "default": "./dist/auto/aside-area.js"
+          }
+        },
+        "./footer-area": {
+          "import": {
+            "types": "./dist/footer-area.d.ts",
+            "node": "./dist/node/footer-area.js",
+            "default": "./dist/auto/footer-area.js"
+          }
+        },
+        "./breakpoints.css": "./dist/breakpoints.css",
+        "./base.css": "./dist/base.css",
+        "./container.css": "./dist/container.css",
+        "./stack.css": "./dist/stack.css",
+        "./inline.css": "./dist/inline.css",
+        "./section.css": "./dist/section.css",
+        "./grid.css": "./dist/grid.css",
+        "./app-shell.css": "./dist/app-shell.css",
+        "./admin-layout.css": "./dist/admin-layout.css",
+        "./admin-shell.css": "./dist/admin-shell.css",
+        "./document-layout.css": "./dist/document-layout.css",
+        "./auth-layout.css": "./dist/auth-layout.css",
+        "./error-layout.css": "./dist/error-layout.css",
+        "./setup-layout.css": "./dist/setup-layout.css",
+        "./header-area.css": "./dist/header-area.css",
+        "./sidebar-area.css": "./dist/sidebar-area.css",
+        "./content-area.css": "./dist/content-area.css",
+        "./aside-area.css": "./dist/aside-area.css",
+        "./footer-area.css": "./dist/footer-area.css",
+        "./tokens.css": "./dist/tokens.css",
+        "./theme.css": "./dist/theme.css",
+        "./styles.css": "./dist/styles.css"
+      },
+      "publicExports": {
+        ".": {
+          "entryFile": "src/index.ts",
+          "values": [
+            "VfAdminLayout",
+            "VfAdminShell",
+            "VfAppShell",
+            "VfAsideArea",
+            "VfAuthLayout",
+            "VfContainer",
+            "VfContentArea",
+            "VfDocumentLayout",
+            "VfErrorLayout",
+            "VfFooterArea",
+            "VfGrid",
+            "VfHeaderArea",
+            "VfInline",
+            "VfSection",
+            "VfSetupLayout",
+            "VfSidebarArea",
+            "VfStack",
+            "VueForgeLayouts",
+            "applyLayoutsThemeConfig",
+            "createLayoutsPreset",
+            "createVueForgeLayouts",
+            "default",
+            "defaultLayoutsPreset",
+            "layoutsPresetToCssText",
+            "layoutsTokensToCssVars",
+            "resolveLayoutsPreset",
+            "resolveLayoutsThemeConfig",
+            "resolveLayoutsThemeOptions",
+            "toMaxWidthQuery",
+            "toMinWidthQuery",
+            "useBreakpoint",
+            "useBreakpointValue",
+            "useBreakpoints",
+            "useCssVarBreakpoints",
+            "vfBreakpoints"
+          ],
+          "types": [
+            "VfAdminLayoutExposed",
+            "VfAdminLayoutMobileSidebarScope",
+            "VfAdminLayoutMobileToggleAttrs",
+            "VfAdminLayoutProps",
+            "VfAdminLayoutScope",
+            "VfLayoutPreset",
+            "VfLayoutThemeConfig",
+            "VfLayoutThemeOptions",
+            "VfLayoutTokens",
+            "VfResolvedLayoutPreset",
+            "VfResolvedLayoutThemeConfig",
+            "VfResolvedLayoutThemeOptions",
+            "VfVueForgeLayoutsOptions",
+            "VfVueForgeLayoutsThemeOptions"
+          ],
+          "starReExports": []
+        }
+      }
+    },
+    {
+      "directory": "packages/codeblock",
+      "name": "@codemonster-ru/vueforge-codeblock",
+      "version": "4.0.1",
+      "enginesNode": ">=20",
+      "sideEffects": ["**/*.css", "dist/auto/*.js"],
+      "peerDependencies": ["vue"],
+      "dependencies": ["@codemonster-ru/vueforge-icons"],
+      "exportSubpaths": ["./codeblock.css", "./critical.css", "./highlight", "./style.css", "./tokens.css", "./view"],
+      "cssExportSubpaths": ["./codeblock.css", "./critical.css", "./style.css", "./tokens.css"],
+      "exports": {
+        "./view": {
+          "import": {
+            "types": "./dist/view.d.ts",
+            "node": "./dist/view.js",
+            "default": "./dist/auto/view.js"
+          },
+          "require": {
+            "types": "./dist/view.d.cts",
+            "default": "./dist/view.cjs"
+          }
+        },
+        "./highlight": {
+          "import": {
+            "types": "./dist/highlight.d.ts",
+            "default": "./dist/highlight.js"
+          },
+          "require": {
+            "types": "./dist/highlight.d.cts",
+            "default": "./dist/highlight.cjs"
+          }
+        },
+        "./style.css": "./dist/view.css",
+        "./tokens.css": "./dist/tokens.css",
+        "./codeblock.css": "./dist/codeblock.css",
+        "./critical.css": "./dist/critical.css"
+      },
+      "publicExports": {
+        "./view": {
+          "entryFile": "src/view.ts",
+          "values": ["SUPPORTED_CODE_BLOCK_LANGUAGES", "VfCodeBlock", "default", "setCodeBlockThemeVars"],
+          "types": [
+            "CodeBlockCopyPayload",
+            "CodeBlockCssVarMap",
+            "CodeBlockCssVarValue",
+            "CodeBlockFallbackLanguage",
+            "CodeBlockHighlightOptions",
+            "CodeBlockLanguage",
+            "CodeBlockPluginOptions",
+            "CodeBlockProps",
+            "CodeBlockTheme",
+            "CodeBlockThemeVarOptions",
+            "SupportedCodeBlockLanguage"
+          ],
+          "starReExports": []
+        },
+        "./highlight": {
+          "entryFile": "src/highlight.ts",
+          "values": [
+            "escapeCodeHtml",
+            "highlightCodeBlock",
+            "highlightCodeLine",
+            "highlightCodeLines",
+            "preloadCodeBlockLanguages",
+            "renderPlainCodeLines"
+          ],
+          "types": ["CodeBlockFallbackLanguage", "CodeBlockHighlightOptions"],
+          "starReExports": []
+        }
+      }
+    },
+    {
+      "directory": "packages/playground-core",
+      "name": "@codemonster-ru/vueforge-playground-core",
+      "version": "2.1.0",
+      "enginesNode": ">=18",
+      "sideEffects": false,
+      "peerDependencies": [],
+      "dependencies": ["typescript"],
+      "exportSubpaths": ["."],
+      "cssExportSubpaths": [],
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        }
+      },
+      "publicExports": {
+        ".": {
+          "entryFile": "src/index.ts",
+          "values": ["createPlaygroundSession"],
+          "types": [
+            "ConsoleEvent",
+            "CreatePlaygroundSessionOptions",
+            "FrameworkType",
+            "ImportResolutionContext",
+            "ImportResolutionErrorCode",
+            "ImportResolutionResult",
+            "PlaygroundError",
+            "PlaygroundFiles",
+            "PlaygroundSession",
+            "RemoteRuntimeExecutor",
+            "RunEvent",
+            "RuntimeType"
+          ],
+          "starReExports": []
+        }
+      }
+    },
+    {
+      "directory": "packages/playground",
+      "name": "@codemonster-ru/vueforge-playground",
+      "version": "3.0.1",
+      "enginesNode": ">=20",
+      "sideEffects": ["**/*.css", "dist/auto/*.js"],
+      "peerDependencies": ["vue"],
+      "dependencies": [
+        "@codemonster-ru/vueforge-codeblock",
+        "@codemonster-ru/vueforge-core",
+        "@codemonster-ru/vueforge-playground-core"
+      ],
+      "exportSubpaths": ["./critical.css", "./playground.css", "./runtime", "./style.css", "./tokens.css", "./ui"],
+      "cssExportSubpaths": ["./critical.css", "./playground.css", "./style.css", "./tokens.css"],
+      "exports": {
+        "./ui": {
+          "import": {
+            "types": "./dist/ui.d.ts",
+            "node": "./dist/ui.js",
+            "default": "./dist/auto/ui.js"
+          }
+        },
+        "./runtime": {
+          "types": "./dist/runtime.d.ts",
+          "import": "./dist/runtime.js"
+        },
+        "./style.css": "./dist/index.css",
+        "./tokens.css": "./dist/tokens.css",
+        "./playground.css": "./dist/playground.css",
+        "./critical.css": "./dist/critical.css"
+      },
+      "publicExports": {
+        "./ui": {
+          "entryFile": "src/ui.ts",
+          "values": ["VfPlayground", "VfPlaygroundAsync", "VfPlaygroundPlugin"],
+          "types": [
+            "VfPlaygroundComponentProps",
+            "VfPlaygroundHeightMode",
+            "VfPlaygroundPluginOptions",
+            "VfPlaygroundProps",
+            "VfPlaygroundSandboxProps",
+            "VfPlaygroundSharedProps",
+            "VfPlaygroundTab"
+          ],
+          "starReExports": ["./index"]
+        },
+        "./runtime": {
+          "entryFile": "src/runtime.ts",
+          "values": ["createPlaygroundSession"],
+          "types": [
+            "ConsoleEvent",
+            "CreatePlaygroundSessionOptions",
+            "PlaygroundError",
+            "PlaygroundFiles",
+            "PlaygroundSession"
+          ],
+          "starReExports": []
+        }
+      }
+    },
+    {
+      "directory": "packages/playground-vite-plugin",
+      "name": "@codemonster-ru/vueforge-playground-vite-plugin",
+      "version": "1.0.0",
+      "enginesNode": ">=18",
+      "sideEffects": false,
+      "peerDependencies": ["vite"],
+      "dependencies": [],
+      "exportSubpaths": ["."],
+      "cssExportSubpaths": [],
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        }
+      },
+      "publicExports": {
+        ".": {
+          "entryFile": "src/index.ts",
+          "values": ["vueforgePlaygroundVirtualPlugin"],
+          "types": [
+            "VueForgePlaygroundVirtualEntryConfig",
+            "VueForgePlaygroundVirtualEntryValue",
+            "VueForgePlaygroundVirtualExportMode",
+            "VueForgePlaygroundVirtualPluginOptions"
+          ],
+          "starReExports": []
+        }
+      }
+    }
+  ],
+  "components": {
+    "publicComponentNames": [
+      "VfAccordion",
+      "VfAdminLayout",
+      "VfAdminShell",
+      "VfAlert",
+      "VfAppShell",
+      "VfAsideArea",
+      "VfAuthLayout",
+      "VfAvatar",
+      "VfBadge",
+      "VfBreadcrumbs",
+      "VfButton",
+      "VfCard",
+      "VfCheckbox",
+      "VfCodeBlock",
+      "VfCommandPalette",
+      "VfConfirmDialog",
+      "VfContainer",
+      "VfContentArea",
+      "VfDataTable",
+      "VfDataTableColumnChooser",
+      "VfDatePicker",
+      "VfDialog",
+      "VfDivider",
+      "VfDocumentLayout",
+      "VfDrawer",
+      "VfDropdown",
+      "VfErrorLayout",
+      "VfField",
+      "VfFieldset",
+      "VfFooterArea",
+      "VfFormLayout",
+      "VfGrid",
+      "VfGroupBox",
+      "VfHeaderArea",
+      "VfIconButton",
+      "VfInline",
+      "VfInput",
+      "VfLink",
+      "VfMenu",
+      "VfMenuBar",
+      "VfMenuItem",
+      "VfNavMenu",
+      "VfPageHeader",
+      "VfPanel",
+      "VfPlayground",
+      "VfPlaygroundAsync",
+      "VfPopover",
+      "VfProgressBar",
+      "VfProgressSpinner",
+      "VfRadio",
+      "VfSection",
+      "VfSelect",
+      "VfSetupLayout",
+      "VfSidebarArea",
+      "VfSkeleton",
+      "VfSkeletonGate",
+      "VfStack",
+      "VfStepper",
+      "VfSwitch",
+      "VfTable",
+      "VfTableOfContents",
+      "VfTabs",
+      "VfTag",
+      "VfTextarea",
+      "VfThemeProvider",
+      "VfThemeSwitch",
+      "VfTooltip",
+      "VueIconify"
+    ],
+    "byBarrel": {
+      "core": [
+        "VfAccordion",
+        "VfAlert",
+        "VfAvatar",
+        "VfBadge",
+        "VfBreadcrumbs",
+        "VfButton",
+        "VfCard",
+        "VfCheckbox",
+        "VfCommandPalette",
+        "VfConfirmDialog",
+        "VfDataTable",
+        "VfDataTableColumnChooser",
+        "VfDatePicker",
+        "VfDialog",
+        "VfDivider",
+        "VfDrawer",
+        "VfDropdown",
+        "VfField",
+        "VfFieldset",
+        "VfFormLayout",
+        "VfGroupBox",
+        "VfIconButton",
+        "VfInput",
+        "VfLink",
+        "VfMenu",
+        "VfMenuBar",
+        "VfMenuItem",
+        "VfNavMenu",
+        "VfPageHeader",
+        "VfPanel",
+        "VfPopover",
+        "VfProgressBar",
+        "VfProgressSpinner",
+        "VfRadio",
+        "VfSelect",
+        "VfSkeleton",
+        "VfSkeletonGate",
+        "VfStepper",
+        "VfSwitch",
+        "VfTable",
+        "VfTableOfContents",
+        "VfTabs",
+        "VfTag",
+        "VfTextarea",
+        "VfThemeSwitch",
+        "VfTooltip"
+      ],
+      "layouts": [
+        "VfAdminLayout",
+        "VfAdminShell",
+        "VfAppShell",
+        "VfAsideArea",
+        "VfAuthLayout",
+        "VfContainer",
+        "VfContentArea",
+        "VfDocumentLayout",
+        "VfErrorLayout",
+        "VfFooterArea",
+        "VfGrid",
+        "VfHeaderArea",
+        "VfInline",
+        "VfSection",
+        "VfSetupLayout",
+        "VfSidebarArea",
+        "VfStack"
+      ]
+    },
+    "additionalPublicComponents": [
+      "codeblock:VfCodeBlock",
+      "core:VfThemeProvider",
+      "icons:VueIconify",
+      "playground:VfPlayground"
+    ],
+    "derivedPublicComponents": ["VfPlaygroundAsync"],
+    "coreComponentSources": {
+      "VfAccordion": "packages/core/src/components/accordion/VfAccordion.vue",
+      "VfAlert": "packages/core/src/components/alert/VfAlert.vue",
+      "VfAvatar": "packages/core/src/components/avatar/VfAvatar.vue",
+      "VfBadge": "packages/core/src/components/badge/VfBadge.vue",
+      "VfBreadcrumbs": "packages/core/src/components/breadcrumbs/VfBreadcrumbs.vue",
+      "VfButton": "packages/core/src/components/button/VfButton.vue",
+      "VfCard": "packages/core/src/components/card/VfCard.vue",
+      "VfCheckbox": "packages/core/src/components/checkbox/VfCheckbox.vue",
+      "VfCommandPalette": "packages/core/src/components/command-palette/VfCommandPalette.vue",
+      "VfConfirmDialog": "packages/core/src/components/confirm-dialog/VfConfirmDialog.vue",
+      "VfDataTable": "packages/core/src/components/data-table/VfDataTable.vue",
+      "VfDataTableColumnChooser": "packages/core/src/components/data-table-column-chooser/VfDataTableColumnChooser.vue",
+      "VfDatePicker": "packages/core/src/components/date-picker/VfDatePicker.vue",
+      "VfDialog": "packages/core/src/components/dialog/VfDialog.vue",
+      "VfDivider": "packages/core/src/components/divider/VfDivider.vue",
+      "VfDrawer": "packages/core/src/components/drawer/VfDrawer.vue",
+      "VfDropdown": "packages/core/src/components/dropdown/VfDropdown.vue",
+      "VfField": "packages/core/src/components/field/VfField.vue",
+      "VfFieldset": "packages/core/src/components/field/VfFieldset.vue",
+      "VfFormLayout": "packages/core/src/components/form-layout/VfFormLayout.vue",
+      "VfGroupBox": "packages/core/src/components/group-box/VfGroupBox.vue",
+      "VfIconButton": "packages/core/src/components/icon-button/VfIconButton.vue",
+      "VfInput": "packages/core/src/components/input/VfInput.vue",
+      "VfHorizontalScroller": "packages/core/src/components/internal/VfHorizontalScroller.vue",
+      "VfLink": "packages/core/src/components/link/VfLink.vue",
+      "VfMenu": "packages/core/src/components/menu/VfMenu.vue",
+      "VfMenuItem": "packages/core/src/components/menu/VfMenuItem.vue",
+      "VfMenuBar": "packages/core/src/components/menu-bar/VfMenuBar.vue",
+      "VfMenuBarItemNode": "packages/core/src/components/menu-bar/VfMenuBarItemNode.vue",
+      "VfNavMenu": "packages/core/src/components/nav-menu/VfNavMenu.vue",
+      "VfNavMenuItemNode": "packages/core/src/components/nav-menu/VfNavMenuItemNode.vue",
+      "VfPageHeader": "packages/core/src/components/page-header/VfPageHeader.vue",
+      "VfPanel": "packages/core/src/components/panel/VfPanel.vue",
+      "VfPopover": "packages/core/src/components/popover/VfPopover.vue",
+      "VfProgressBar": "packages/core/src/components/progress-bar/VfProgressBar.vue",
+      "VfProgressSpinner": "packages/core/src/components/progress-spinner/VfProgressSpinner.vue",
+      "VfRadio": "packages/core/src/components/radio/VfRadio.vue",
+      "VfSelect": "packages/core/src/components/select/VfSelect.vue",
+      "VfSkeleton": "packages/core/src/components/skeleton/VfSkeleton.vue",
+      "VfSkeletonGate": "packages/core/src/components/skeleton-gate/VfSkeletonGate.vue",
+      "VfStepper": "packages/core/src/components/stepper/VfStepper.vue",
+      "VfSwitch": "packages/core/src/components/switch/VfSwitch.vue",
+      "VfTable": "packages/core/src/components/table/VfTable.vue",
+      "VfTableOfContents": "packages/core/src/components/table-of-contents/VfTableOfContents.vue",
+      "VfTabs": "packages/core/src/components/tabs/VfTabs.vue",
+      "VfTag": "packages/core/src/components/tag/VfTag.vue",
+      "VfTextarea": "packages/core/src/components/textarea/VfTextarea.vue",
+      "VfThemeSwitch": "packages/core/src/components/theme-switch/VfThemeSwitch.vue",
+      "VfTooltip": "packages/core/src/components/tooltip/VfTooltip.vue"
+    }
+  },
+  "cssEntrypoints": {
+    "packages/core/src/styles": [
+      "packages/core/src/styles/components.css",
+      "packages/core/src/styles/components/accessibility-preferences.css",
+      "packages/core/src/styles/components/base.css",
+      "packages/core/src/styles/components/horizontal-scroller.css",
+      "packages/core/src/styles/components/overlay-primitives.css",
+      "packages/core/src/styles/components/theme-transition-guard.css",
+      "packages/core/src/styles/entries/accordion.css",
+      "packages/core/src/styles/entries/alert.css",
+      "packages/core/src/styles/entries/async.css",
+      "packages/core/src/styles/entries/avatar.css",
+      "packages/core/src/styles/entries/badge.css",
+      "packages/core/src/styles/entries/breadcrumbs.css",
+      "packages/core/src/styles/entries/button.css",
+      "packages/core/src/styles/entries/card.css",
+      "packages/core/src/styles/entries/checkbox.css",
+      "packages/core/src/styles/entries/command-palette.css",
+      "packages/core/src/styles/entries/confirm-dialog.css",
+      "packages/core/src/styles/entries/data-table-column-chooser.css",
+      "packages/core/src/styles/entries/data-table.css",
+      "packages/core/src/styles/entries/date-picker.css",
+      "packages/core/src/styles/entries/dialog.css",
+      "packages/core/src/styles/entries/divider.css",
+      "packages/core/src/styles/entries/drawer.css",
+      "packages/core/src/styles/entries/dropdown.css",
+      "packages/core/src/styles/entries/field.css",
+      "packages/core/src/styles/entries/fieldset.css",
+      "packages/core/src/styles/entries/form-layout.css",
+      "packages/core/src/styles/entries/group-box.css",
+      "packages/core/src/styles/entries/icon-button.css",
+      "packages/core/src/styles/entries/input.css",
+      "packages/core/src/styles/entries/link.css",
+      "packages/core/src/styles/entries/menu-bar.css",
+      "packages/core/src/styles/entries/menu.css",
+      "packages/core/src/styles/entries/nav-menu.css",
+      "packages/core/src/styles/entries/page-header.css",
+      "packages/core/src/styles/entries/panel.css",
+      "packages/core/src/styles/entries/popover.css",
+      "packages/core/src/styles/entries/progress-bar.css",
+      "packages/core/src/styles/entries/progress-spinner.css",
+      "packages/core/src/styles/entries/radio.css",
+      "packages/core/src/styles/entries/select.css",
+      "packages/core/src/styles/entries/skeleton-gate.css",
+      "packages/core/src/styles/entries/skeleton.css",
+      "packages/core/src/styles/entries/stepper.css",
+      "packages/core/src/styles/entries/switch.css",
+      "packages/core/src/styles/entries/table-of-contents.css",
+      "packages/core/src/styles/entries/table.css",
+      "packages/core/src/styles/entries/tabs.css",
+      "packages/core/src/styles/entries/tag.css",
+      "packages/core/src/styles/entries/textarea.css",
+      "packages/core/src/styles/entries/theme-switch.css",
+      "packages/core/src/styles/entries/tooltip.css",
+      "packages/core/src/styles/foundation.css",
+      "packages/core/src/styles/styles.css"
+    ],
+    "packages/layouts/src": [
+      "packages/layouts/src/style-entries/admin-layout.css",
+      "packages/layouts/src/style-entries/admin-shell.css",
+      "packages/layouts/src/style-entries/app-shell.css",
+      "packages/layouts/src/style-entries/aside-area.css",
+      "packages/layouts/src/style-entries/auth-layout.css",
+      "packages/layouts/src/style-entries/container.css",
+      "packages/layouts/src/style-entries/content-area.css",
+      "packages/layouts/src/style-entries/document-layout.css",
+      "packages/layouts/src/style-entries/error-layout.css",
+      "packages/layouts/src/style-entries/footer-area.css",
+      "packages/layouts/src/style-entries/grid.css",
+      "packages/layouts/src/style-entries/header-area.css",
+      "packages/layouts/src/style-entries/inline.css",
+      "packages/layouts/src/style-entries/section.css",
+      "packages/layouts/src/style-entries/setup-layout.css",
+      "packages/layouts/src/style-entries/sidebar-area.css",
+      "packages/layouts/src/style-entries/stack.css",
+      "packages/layouts/src/style-parts/base.css",
+      "packages/layouts/src/style-parts/primitives.css",
+      "packages/layouts/src/style-parts/shell.css",
+      "packages/layouts/src/style-parts/utilities.css",
+      "packages/layouts/src/styles.css"
+    ]
+  },
+  "showcase": {
+    "routes": [
+      {
+        "id": "core",
+        "path": "/core"
+      },
+      {
+        "id": "colors",
+        "path": "/colors"
+      },
+      {
+        "id": "layouts",
+        "path": "/layouts"
+      },
+      {
+        "id": "icons",
+        "path": "/icons"
+      },
+      {
+        "id": "codeblock",
+        "path": "/codeblock"
+      },
+      {
+        "id": "playground",
+        "path": "/playground"
+      }
+    ],
+    "app": {
+      "declaredSectionValues": ["codeblock", "colors", "core", "icons", "layouts", "playground"],
+      "navigationOrder": ["core", "colors", "layouts", "icons", "codeblock", "playground"],
+      "navigationLabels": {
+        "core": "Core",
+        "colors": "Colors",
+        "layouts": "Layouts",
+        "icons": "Icons",
+        "codeblock": "CodeBlock",
+        "playground": "Playground"
+      },
+      "sectionModules": {
+        "colors": "./sections/colors/ColorSystemShowcase.vue",
+        "core": "./sections/core/CoreShowcase.vue",
+        "layouts": "./sections/layouts/LayoutsShowcase.vue",
+        "icons": "./sections/icons/IconsShowcase.vue",
+        "codeblock": "./sections/codeblock/CodeBlockShowcase.vue",
+        "playground": "./PlaygroundShowcase.vue"
+      },
+      "themeStorageKey": "codemonster-showcase-theme",
+      "defaultTheme": "system"
+    }
+  }
+}
