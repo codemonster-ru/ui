@@ -1,14 +1,29 @@
 {
-  "$comment": "Parity policy for the shared VfInput cases. Plain data: no DSL, no waiver engine. Every dimension is classified, and every tolerated difference is listed individually with a reason. A difference that is not listed here fails the gate.",
+  "$comment": "Parity policy for the shared VfInput cases. Plain data: no DSL, no waiver engine. Every dimension is classified, and every tolerated difference is listed individually with a reason, the exact cases it covers, the exact element it applies to and the number of occurrences it is allowed to have. A difference that is not listed here fails the gate. Hardened in M07.1 after an independent review proved that a wildcard dom.structure approval let real regressions through: there is no wildcard case, no substring path match, no decorative field, and dom.structure can never be approved at all.",
   "classifications": {
     "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
-    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, attribute order, how content is composed, how state is stored, how events are transported.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, how content is composed, how state is stored.",
     "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData.",
+    "eventTransport": "Vue emits update:modelValue; the Razor controller dispatches native input and change events. Only the resulting state is compared, by the interaction dimensions.",
+    "wrapperTransitionVisualFocus": "Only input/interaction-wrapper-transition records natural focus before equalizing focus for a second visual capture. Natural reference-current pixels remain exact; focus-equalized pixels compare exactly in all three directions. The natural body/control focus outcome has its own exact-value approval. No screenshot difference is waived."
   },
   "dimensions": {
     "dom.structure": {
       "classification": "exact",
-      "description": "Element tag names and their order inside the case root."
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.wrapperPresence": {
+      "classification": "framework-specific",
+      "description": "The Razor adapter renders the .vf-input-wrap element where the Vue adapter renders the bare control, because the server cannot know the post-bootstrap state and the controller must never restructure the DOM. The control itself is still compared in full through the wrapper."
+    },
+    "dom.inertAction": {
+      "classification": "framework-specific",
+      "description": "A missing clear action may differ only by the exact complete inert subtree recorded in the approval, including disabled/hidden/display:none, operability, attributes, glyph and descendants. Arbitrary extra action content is not tolerated."
     },
     "dom.canonicalClasses": {
       "classification": "exact",
@@ -16,7 +31,7 @@
     },
     "dom.nativeAttributes": {
       "classification": "exact",
-      "description": "type, name, value, placeholder, required, disabled, readonly, min, max, step, autocomplete, maxlength."
+      "description": "type, name, value, placeholder, required, disabled, readonly, min, max, step, autocomplete, maxlength, inputmode and the live value."
     },
     "dom.text": {
       "classification": "exact",
@@ -24,7 +39,7 @@
     },
     "dom.aria": {
       "classification": "exact",
-      "description": "role, aria-invalid, aria-label, aria-pressed, aria-hidden."
+      "description": "role, aria-invalid, aria-label, aria-pressed, aria-hidden, aria-required."
     },
     "dom.productData": {
       "classification": "exact",
@@ -36,15 +51,7 @@
     },
     "dom.relationships": {
       "classification": "semantic",
-      "description": "label[for], aria-describedby and aria-labelledby are compared as a resolved relationship graph. Concrete generated id values are canonicalised; the edges they create are not."
-    },
-    "dom.attributeOrder": {
-      "classification": "semantic",
-      "description": "Serialisation order carries no meaning."
-    },
-    "dom.frameworkMarkers": {
-      "classification": "semantic",
-      "description": "Vue scope attributes, comment placeholders and the Razor ownership marker identify the renderer, not the product."
+      "description": "label[for], aria-describedby, aria-labelledby and aria-controls are compared as a resolved relationship graph. Concrete generated id values are canonicalised; the edges they create are not."
     },
     "style.geometry": {
       "classification": "exact",
@@ -56,7 +63,11 @@
     },
     "visual": {
       "classification": "exact",
-      "description": "Clipped screenshot of the case root, per theme."
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction scenario has run, per theme. This is what makes an interaction case detect a change that leaves the DOM intact, such as content that is present but invisible."
     },
     "interaction.value": {
       "classification": "exact",
@@ -64,7 +75,11 @@
     },
     "interaction.state": {
       "classification": "exact",
-      "description": "Filled marker, rendered type, action presence and operability after the scenario."
+      "description": "Filled marker, rendered type, action presence and operability, wrapper and control class lists after the scenario."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "framework-specific",
+      "description": "After the scenario the wrapper exists on one side only, for the same reason as dom.wrapperPresence. Split out of interaction.state in M07.1: it used to be skipped inside the comparator, which is an approval nobody could find in the registry."
     },
     "interaction.selection": {
       "classification": "exact",
@@ -73,10 +88,6 @@
     "interaction.focus": {
       "classification": "exact",
       "description": "Which element holds focus after the scenario, by role in the case."
-    },
-    "interaction.transport": {
-      "classification": "semantic",
-      "description": "Vue emits update:modelValue; the Razor controller dispatches native input and change events. Only the resulting state is compared."
     },
     "a11y.name": {
       "classification": "exact",
@@ -143,44 +154,221 @@
   ],
   "approvedDivergences": [
     {
-      "caseId": "*",
+      "id": "razor-wrapper-rendered-for-inert-action",
+      "dimension": "dom.wrapperPresence",
       "target": "razor",
-      "dimension": "dom.frameworkMarkers",
-      "reason": "The Razor root carries data-vf-razor and data-vf-razor-enhanced so its controller can claim exactly the subtrees it owns. Vue roots carry no such marker by design, which is what keeps one DOM owner per subtree.",
-      "classification": "semantic"
+      "caseIds": [
+        "input/disabled",
+        "input/readonly",
+        "input/clearable-empty",
+        "input/interaction-disabled",
+        "input/interaction-readonly",
+        "input/interaction-wrapper-transition"
+      ],
+      "reason": "In these six cases an action is requested but not currently available, so the Vue adapter renders a bare input while the Razor adapter renders the wrapper it will need after bootstrap. The server cannot know the post-bootstrap state, and a controller that restructured the DOM would be worse. The control inside the wrapper is still compared in full, so native attributes, aria, product data and relationships cannot hide behind this.",
+      "classification": "framework-specific",
+      "expectedOccurrences": 24,
+      "directions": ["reference-vs-razor", "current-vs-razor"],
+      "path": "[0]/div.vf-input-wrap",
+      "detail": "wrapper rendered on one side only",
+      "left": "input.vf-input",
+      "right": "div.vf-input-wrap"
     },
     {
-      "caseId": "*",
+      "id": "razor-wrapper-measured-role",
+      "dimension": "dom.wrapperPresence",
       "target": "razor",
-      "dimension": "dom.structure",
-      "scope": "wrapper-presence-for-inert-actions",
-      "reason": "When an action is requested the Razor adapter always renders the wrapper, because the server cannot know the post-bootstrap state and the controller must never restructure the DOM. After bootstrap the structure matches the Vue output for every shared case.",
-      "classification": "framework-specific"
+      "caseIds": [
+        "input/disabled",
+        "input/readonly",
+        "input/clearable-empty",
+        "input/interaction-disabled",
+        "input/interaction-readonly",
+        "input/interaction-wrapper-transition"
+      ],
+      "reason": "The same six wrappers seen by the style extractor: a wrapper only one side renders has no counterpart to be measured against. Every other measured role that appears on one side only stays dom.structure and fails, which is what catches content that is present but invisible.",
+      "classification": "framework-specific",
+      "expectedOccurrences": 24,
+      "directions": ["reference-vs-razor", "current-vs-razor"],
+      "path": "style:wrapper",
+      "detail": "visible role present on one side only",
+      "left": "absent",
+      "right": "present"
     },
     {
-      "caseId": "input/interaction-wrapper-transition",
+      "id": "razor-inert-clear-action",
+      "dimension": "dom.inertAction",
       "target": "razor",
+      "pathSelector": "button.vf-icon-button.vf-icon-button--ghost.vf-icon-button--sm.vf-input-wrap__clear",
+      "caseIds": [
+        "input/disabled",
+        "input/readonly",
+        "input/clearable-empty",
+        "input/interaction-typing",
+        "input/interaction-disabled",
+        "input/interaction-readonly",
+        "input/interaction-wrapper-transition"
+      ],
+      "reason": "Only this exact inert clear subtree is allowed: type=button, disabled, hidden, display:none, not operable, and the canonical xmark glyph. The full extracted subtree is checked against right, including native/aria/product attributes, text and descendants. The values were verified against real M07 browser captures; another child, changed glyph, or an active button is not approved.",
+      "classification": "framework-specific",
+      "expectedOccurrences": 28,
+      "directions": ["reference-vs-razor", "current-vs-razor"],
+      "detail": "rendered on the right only",
+      "left": null,
+      "right": {
+        "tag": "button",
+        "classes": ["vf-icon-button", "vf-icon-button--ghost", "vf-icon-button--sm", "vf-input-wrap__clear"],
+        "consumerClasses": [],
+        "attributes": {
+          "aria-label": "Clear input",
+          "disabled": "",
+          "hidden": "",
+          "style": "display:none",
+          "type": "button"
+        },
+        "children": [
+          {
+            "tag": "span",
+            "classes": ["vf-icon-wrapper"],
+            "consumerClasses": [],
+            "attributes": {
+              "style": "--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1;display:inline-grid;line-height:0;place-items:center"
+            },
+            "children": [
+              {
+                "tag": "svg",
+                "classes": ["vf-icon", "vf-icon--classic", "vf-icon--regular"],
+                "consumerClasses": [],
+                "attributes": {
+                  "aria-hidden": "true",
+                  "fill": "none",
+                  "height": "var(--vf-icon-size-sm)",
+                  "stroke": "currentColor",
+                  "stroke-width": "2",
+                  "style": "transform-origin:center;transform:translate(calc(var(--vf-icon-offset-x) * 100%),calc(var(--vf-icon-offset-y) * 100%)) scale(var(--vf-icon-scale))",
+                  "viewBox": "0 0 24 24",
+                  "width": "var(--vf-icon-size-sm)"
+                },
+                "children": [
+                  {
+                    "tag": "line",
+                    "classes": [],
+                    "consumerClasses": [],
+                    "attributes": {
+                      "x1": "5.75",
+                      "x2": "18.25",
+                      "y1": "5.75",
+                      "y2": "18.25"
+                    },
+                    "children": []
+                  },
+                  {
+                    "tag": "line",
+                    "classes": [],
+                    "consumerClasses": [],
+                    "attributes": {
+                      "x1": "18.25",
+                      "x2": "5.75",
+                      "y1": "5.75",
+                      "y2": "18.25"
+                    },
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "operable": false
+      }
+    },
+    {
+      "id": "razor-icon-wrapper-inline-layout",
+      "dimension": "dom.nativeAttributes",
+      "target": "razor",
+      "detail": "style",
+      "pathSelector": "span.vf-icon-wrapper",
+      "caseIds": [
+        "input/custom-class-adorned",
+        "input/custom-style-adorned",
+        "input/leading-icon",
+        "input/trailing-icon",
+        "input/both-icons",
+        "input/clearable-filled",
+        "input/password-reveal-hidden",
+        "input/trailing-and-clear",
+        "input/password-and-clear",
+        "input/interaction-typing",
+        "input/interaction-empty-again",
+        "input/interaction-clear",
+        "input/interaction-reveal",
+        "input/interaction-hide",
+        "input/interaction-selection"
+      ],
+      "reason": "The Vue icon takes its layout from a <style scoped> block, which compiles to selectors carrying a scope attribute that Razor markup cannot have. The neutral icon data therefore carries those declarations as inline style, derived from the built icons stylesheet by scripts/build/generate-input-icon-data.mjs rather than transcribed. The rendered result is identical, which is why geometry and visual parity stay strict; only the style attribute of this exact element differs. Moving these rules into the shared stylesheet belongs to the milestone that migrates the icon system.",
+      "classification": "framework-specific",
+      "expectedOccurrences": 84,
+      "directions": ["reference-vs-razor", "current-vs-razor"],
+      "left": "--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1",
+      "right": "--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1;display:inline-grid;line-height:0;place-items:center"
+    },
+    {
+      "id": "razor-icon-svg-inline-layout",
+      "dimension": "dom.nativeAttributes",
+      "target": "razor",
+      "detail": "style",
+      "pathSelector": "svg.vf-icon.vf-icon--classic.vf-icon--regular",
+      "caseIds": [
+        "input/custom-class-adorned",
+        "input/custom-style-adorned",
+        "input/leading-icon",
+        "input/trailing-icon",
+        "input/both-icons",
+        "input/clearable-filled",
+        "input/password-reveal-hidden",
+        "input/trailing-and-clear",
+        "input/password-and-clear",
+        "input/interaction-typing",
+        "input/interaction-empty-again",
+        "input/interaction-clear",
+        "input/interaction-reveal",
+        "input/interaction-hide",
+        "input/interaction-selection"
+      ],
+      "reason": "The transform half of the same scoped icon layout, on the svg element itself. Derived by the same generator from the same built stylesheet. The selector names the exact svg element, so a style difference on any element nested inside it is not covered and fails.",
+      "classification": "framework-specific",
+      "expectedOccurrences": 84,
+      "directions": ["reference-vs-razor", "current-vs-razor"],
+      "left": null,
+      "right": "transform-origin:center;transform:translate(calc(var(--vf-icon-offset-x) * 100%),calc(var(--vf-icon-offset-y) * 100%)) scale(var(--vf-icon-scale))"
+    },
+    {
+      "id": "razor-keeps-focus-through-wrapper-transition",
       "dimension": "interaction.focus",
+      "target": "razor",
+      "caseIds": ["input/interaction-wrapper-transition"],
       "reason": "The Vue adapter re-renders from the bare branch into the wrapped one when the clear action appears, which replaces the input element and drops focus to body. The Razor adapter rendered the wrapper up front and keeps focus on the control. This is the clear-only-wrapper-collapse quirk seen from the other direction; every other case keeps an adornment present so the wrapper is stable and focus is compared exactly.",
-      "classification": "framework-specific"
+      "classification": "framework-specific",
+      "expectedOccurrences": 4,
+      "directions": ["reference-vs-razor", "current-vs-razor"],
+      "path": "focusRole",
+      "detail": "focusRole",
+      "left": "body",
+      "right": "control"
     },
     {
-      "caseId": "*",
+      "id": "razor-wrapper-present-after-scenario",
+      "dimension": "interaction.wrapperPresence",
       "target": "razor",
-      "dimension": "dom.nativeAttributes",
-      "detail": "style",
-      "pathPattern": "span.vf-icon-wrapper",
-      "reason": "The Vue icon takes its layout from a <style scoped> block, which compiles to selectors carrying a scope attribute that Razor markup cannot have. The neutral icon data therefore carries those declarations as inline style, derived from the built icons stylesheet by scripts/build/generate-input-icon-data.mjs rather than transcribed. The rendered result is identical, which is why geometry and visual parity stay strict; only the style attribute of the icon elements differs. Moving these rules into the shared stylesheet belongs to the milestone that migrates the icon system.",
-      "classification": "framework-specific"
-    },
-    {
-      "caseId": "*",
-      "target": "razor",
-      "dimension": "dom.nativeAttributes",
-      "detail": "style",
-      "pathPattern": "svg.vf-icon",
-      "reason": "The Vue icon takes its layout from a <style scoped> block, which compiles to selectors carrying a scope attribute that Razor markup cannot have. The neutral icon data therefore carries those declarations as inline style, derived from the built icons stylesheet by scripts/build/generate-input-icon-data.mjs rather than transcribed. The rendered result is identical, which is why geometry and visual parity stay strict; only the style attribute of the icon elements differs. Moving these rules into the shared stylesheet belongs to the milestone that migrates the icon system.",
-      "classification": "framework-specific"
+      "caseIds": ["input/interaction-disabled", "input/interaction-readonly"],
+      "reason": "The interaction-level view of razor-wrapper-rendered-for-inert-action: typing into a disabled or read-only control changes nothing, so the Vue adapter still has no wrapper afterwards while the Razor adapter still has the one it rendered up front. Before M07.1 the comparator skipped this silently instead of reporting it.",
+      "classification": "framework-specific",
+      "expectedOccurrences": 8,
+      "directions": ["reference-vs-razor", "current-vs-razor"],
+      "path": "wrapperClasses",
+      "detail": "wrapper rendered on one side only",
+      "left": "absent",
+      "right": "vf-input-wrap"
     }
   ]
 }

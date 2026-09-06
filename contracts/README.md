@@ -35,3 +35,27 @@ Three classifications decide how a difference is treated:
 A difference that is not listed in `approvedDivergences` fails the gate. That is
 the whole point: a comparison harness is only worth having if it cannot be
 talked into calling two different implementations equal.
+
+## Shape of an approval
+
+An independent review of M07 proved that a registry is only as good as the
+constraints the code actually enforces: a `dom.structure` entry with
+`caseId: "*"`, no path and a decorative `scope` field turned out to disable DOM
+comparison entirely for six cases, and four wrong native attributes produced a
+clean PASS. Every field below is now validated by
+`scripts/parity/compare.mjs`, and the gate refuses to run against a registry
+that breaks any of these rules:
+
+| Field | Rule |
+| --- | --- |
+| `id` | Required and unique. The report attributes every tolerated difference to it. |
+| `dimension` | Must exist in `dimensions`. `dom.structure` may never be approved: an intentional divergence gets its own named dimension, an unexplained one has to fail. |
+| `target` | Exactly one of `reference`, `current`, `razor`. No wildcard. |
+| `caseIds` | A non-empty, explicit list of case ids that exist in `cases.json`. No wildcard. |
+| `pathSelector` | Required for anything anchored to an element. Matched **exactly** against the element the difference is on — not as a substring of the path, so an approval written for `span.vf-icon-wrapper` never covers the `svg` inside it. |
+| `detail` | Optional, matched exactly (an attribute name, for instance). |
+| `expectedOccurrences` | How many differences this rule is allowed to tolerate across the whole run. A rule that matches nothing, or matches more than this, fails the gate. |
+| `reason` | Prose. Why this specific difference is not a defect. |
+
+Unknown fields are rejected, so a constraint that looks like it is enforced
+cannot be one the code ignores.
