@@ -34,5 +34,16 @@ jobs:
       - name: Verify repository
         run: npm run verify
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install Razor adapter dependencies
+        run: composer install --no-interaction --no-progress --working-dir=packages/razor
+
+      - name: Verify the Razor adapter
+        run: npm run razor:check
+
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
