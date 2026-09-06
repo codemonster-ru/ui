@@ -1,12 +1,12 @@
 import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createScopedThemeModeSelector, serializeThemeTokensToCssVars } from '../../theme/src/css-vars';
+import { createScopedThemeModeSelector, serializeThemeTokensToCssVars } from '../src/css-vars';
 import {
   knownExternalThemeCssVariables,
   MAX_CANONICAL_ALIAS_DEPTH,
   validateColorTokenGraph,
-} from '../../theme/src/color-token-schema';
+} from '../src/color-token-schema';
 import { defaultThemePresetSource } from '../src/theme/default-preset-source';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));

@@ -27,10 +27,15 @@ const distDirectory = resolve(packageRoot, 'dist');
 
 // Ordered exactly as a page needs them: tokens, then the theme layer, then the
 // foundation, then the component closure.
+//
+// Every entry is owned by a neutral package. Before M09 the first three came
+// from packages/core, which meant the Razor adapter could not build without the
+// Vue adapter. scripts/ci/check-asset-boundary.mjs fails if a path outside
+// theme, styles or shared-core reappears here.
 const styleSources = [
-  'packages/core/.generated/theme/tokens.css',
-  'packages/core/.generated/theme/theme.css',
-  'packages/core/src/styles/components/base.css',
+  'packages/theme/.generated/theme/tokens.css',
+  'packages/theme/.generated/theme/theme.css',
+  'packages/styles/src/foundation/base.css',
   'packages/styles/src/components/input.css',
 ];
 
@@ -56,7 +61,8 @@ function buildStylesheet() {
 
     if (!existsSync(absolutePath)) {
       throw new Error(
-        `Missing canonical stylesheet source: ${source}. Run the core package build first so the generated theme CSS exists.`,
+        `Missing canonical stylesheet source: ${source}. ` +
+          'Run `npm run theme:tokens` first so the generated token CSS exists.',
       );
     }
 

@@ -1,25 +1,20 @@
-import { vfBreakpoints } from '../../../theme/src/breakpoints';
-import { vfMotionTokens } from '../../../theme/src/motion';
-import type { VfPrimitiveColorTokenName, VfSemanticColorTokenName } from '../../../theme/src/color-token-contract';
-import type { VfThemePreset, VfThemeTokens } from '@/types/theme';
-import {
-  primitiveColorTokens,
-  semanticDarkColorTokens,
-  semanticLightColorTokens,
-} from '../../../theme/src/color-token-schema';
+// Canonical source of the built-in theme preset.
+//
+// Neutral by nature: these are product token values that every adapter needs,
+// and nothing here knows about Vue or PHP. It lives in the theme package so
+// both the Vue adapter and the Razor adapter can build token CSS from one
+// owner (M09). It is deliberately not re-exported from the package index; the
+// published theme API is unchanged.
+//
+// The token values are checked against the published Vue token contract by
+// packages/core/src/theme/default-preset-contract.ts, which is where that
+// contract is declared.
+import { vfBreakpoints } from '../breakpoints';
+import { vfMotionTokens } from '../motion';
+import type { VfThemePreset } from '../types';
+import { primitiveColorTokens, semanticDarkColorTokens, semanticLightColorTokens } from '../color-token-schema';
 
-type ColorTokenName = VfPrimitiveColorTokenName | VfSemanticColorTokenName;
-type ComponentThemeTokens = Omit<Required<VfThemeTokens>, ColorTokenName>;
-
-type ComponentThemePreset = Omit<VfThemePreset, 'tokens' | 'dark'> & {
-  tokens: ComponentThemeTokens;
-  dark?: Partial<ComponentThemeTokens>;
-};
-
-type CompleteDefaultThemePreset = Omit<VfThemePreset, 'tokens' | 'dark'> & {
-  tokens: Required<VfThemeTokens>;
-  dark?: Partial<Required<VfThemeTokens>>;
-};
+type PresetEnvelope = Omit<VfThemePreset, 'tokens' | 'dark'>;
 
 export const breakpointTokens = {
   breakpointXs: `${vfBreakpoints.xs}px`,
@@ -30,7 +25,7 @@ export const breakpointTokens = {
   breakpoint2xl: `${vfBreakpoints['2xl']}px`,
 };
 
-const componentThemePresetSource = {
+export const componentThemePresetSource = {
   name: 'vueforge-default',
   tokens: {
     fontFamilyBase: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -874,7 +869,7 @@ const componentThemePresetSource = {
     zPopover: '1125',
     zTooltip: '1150',
   },
-} satisfies ComponentThemePreset;
+} satisfies PresetEnvelope & { tokens: Record<string, string>; dark?: Record<string, string> };
 
 export const defaultThemePresetSource = {
   name: componentThemePresetSource.name,
@@ -887,4 +882,4 @@ export const defaultThemePresetSource = {
     ...componentThemePresetSource.dark,
     ...semanticDarkColorTokens,
   },
-} satisfies CompleteDefaultThemePreset;
+} satisfies PresetEnvelope & { tokens: Record<string, string>; dark?: Record<string, string> };

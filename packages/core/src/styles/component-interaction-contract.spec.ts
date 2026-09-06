@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolveStyleEntrySource } from '../../build/style-entry-sources.mjs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -13,8 +13,11 @@ function readComponent(path: string) {
   return readFileSync(resolve(sourceRoot, 'components', path), 'utf8');
 }
 
+// M09 gave the preset values a neutral owner in the theme package; everything
+// else under src/theme is still the Vue adapter's own.
 function readTheme(path: string) {
-  return readFileSync(resolve(sourceRoot, 'theme', path), 'utf8');
+  const neutral = resolve(sourceRoot, '../../theme/src/theme', path);
+  return readFileSync(existsSync(neutral) ? neutral : resolve(sourceRoot, 'theme', path), 'utf8');
 }
 
 function extractRule(source: string, selector: string) {

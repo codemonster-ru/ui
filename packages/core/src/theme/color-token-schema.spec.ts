@@ -14,7 +14,7 @@ import {
   validateColorTokenGraph,
   validateCssVariableGraph,
 } from '../../../theme/src/color-token-schema';
-import { defaultThemePresetSource } from './default-preset-source';
+import { defaultThemePresetSource } from '../../../theme/src/theme/default-preset-source';
 import { resolveThemeConfig, themeTokensToCssVars } from './utils';
 
 const removedLegacyColorTokenNames = [

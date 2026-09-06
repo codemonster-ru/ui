@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { buildThemeCssArtifacts, themeCssArtifactPaths } from '../../build/theme-css-artifacts';
+import { buildThemeCssArtifacts, themeCssArtifactPaths } from '../../../theme/build/theme-css-artifacts';
 import { inlineCssImports } from '../../build/css-imports';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { vfPrimitiveColorTokenNames, vfSemanticColorTokenNames } from '@codemonster-ru/vueforge-theme';
@@ -11,7 +11,7 @@ import {
   PRIMITIVE_COLOR_TOKEN_COUNT,
   SEMANTIC_COLOR_TOKEN_COUNT,
 } from '../../../theme/src/color-token-schema';
-import { defaultThemePresetSource } from './default-preset-source';
+import { defaultThemePresetSource } from '../../../theme/src/theme/default-preset-source';
 import { resolveThemeConfig, themeTokensToCssVars } from './utils';
 
 const canonicalFallbackNames = [

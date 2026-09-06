@@ -19,9 +19,9 @@ describe('foundation contract', () => {
   });
 
   it('keeps breakpoint tokens in tokens.css', () => {
-    const tokensCss = readFileSync(resolve(root, '.generated/theme/tokens.css'), 'utf8');
+    const tokensCss = readFileSync(resolve(root, '../theme/.generated/theme/tokens.css'), 'utf8');
     const generatedBreakpointsCss = readFileSync(
-      resolve(root, '.generated/theme/generated-breakpoints.css'),
+      resolve(root, '../theme/.generated/theme/generated-breakpoints.css'),
       'utf8',
     ).trim();
     const distGeneratedBreakpointsCss = readFileSync(resolve(root, 'dist/generated-breakpoints.css'), 'utf8').trim();
@@ -37,8 +37,8 @@ describe('foundation contract', () => {
   it('keeps foundation.css as a narrow entry point', () => {
     const foundationCss = readFileSync(resolve(root, 'src/styles/foundation.css'), 'utf8');
 
-    expect(foundationCss).toMatch(/@import\s+["']\.\.\/\.\.\/\.generated\/theme\/tokens\.css["'];/);
-    expect(foundationCss).toMatch(/@import\s+["']\.\.\/\.\.\/\.generated\/theme\/theme\.css["'];/);
+    expect(foundationCss).toMatch(/@import\s+["']\.\.\/\.\.\/\.\.\/theme\/\.generated\/theme\/tokens\.css["'];/);
+    expect(foundationCss).toMatch(/@import\s+["']\.\.\/\.\.\/\.\.\/theme\/\.generated\/theme\/theme\.css["'];/);
     expect(foundationCss).not.toContain('components/');
   });
 

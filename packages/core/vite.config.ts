@@ -5,7 +5,7 @@ import dts from 'vite-plugin-dts';
 import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { inlineCssFiles, inlineCssImports } from './build/css-imports';
-import { buildThemeCssArtifacts, themeCssArtifactPaths } from './build/theme-css-artifacts';
+import { buildThemeCssArtifacts, themeCssArtifactPaths } from '../theme/build/theme-css-artifacts';
 import { expandVfBreakpointQueries } from '../theme/src/breakpoint-queries';
 
 const rootDir = __dirname;

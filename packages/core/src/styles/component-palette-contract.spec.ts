@@ -6,7 +6,8 @@ import { describe, expect, it } from 'vitest';
 const stylesRoot = resolve(process.cwd(), 'src/styles');
 const entriesRoot = resolve(stylesRoot, 'entries');
 const packagesRoot = resolve(process.cwd(), '..');
-const defaultPresetSourcePath = resolve(process.cwd(), 'src/theme/default-preset-source.ts');
+// M09 gave the preset values a neutral owner; the file is unchanged.
+const defaultPresetSourcePath = resolve(packagesRoot, 'theme/src/theme/default-preset-source.ts');
 
 function readEntry(name: string) {
   return readFileSync(resolveStyleEntrySource(resolve(entriesRoot, `${name}.css`)), 'utf8');

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, vi } from 'vitest';
 import { enableAutoUnmount } from '@vue/test-utils';
-import { buildThemeCssArtifacts } from '../../build/theme-css-artifacts';
+import { buildThemeCssArtifacts } from '../../../theme/build/theme-css-artifacts';
 
 buildThemeCssArtifacts();
 enableAutoUnmount(afterEach);

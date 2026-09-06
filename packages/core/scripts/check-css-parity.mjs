@@ -103,8 +103,8 @@ const fail = (message) => {
 const componentsPath = join(stylesDir, 'components.css');
 const componentsSource = readFileSync(componentsPath, 'utf8');
 const expectedComponentImports = [
-  '../../.generated/theme/tokens.css',
-  '../../.generated/theme/theme.css',
+  '../../../theme/.generated/theme/tokens.css',
+  '../../../theme/.generated/theme/theme.css',
   './components/base.css',
   ...componentEntryNames.map((entryName) => `./entries/${entryName}`),
 ];
