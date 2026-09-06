@@ -39,3 +39,4 @@ yarn-error.log*
 # Artifacts
 *.tgz
 .baseline-artifacts
+.release

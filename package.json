@@ -71,7 +71,11 @@
     "razor:showcase": "php -S 127.0.0.1:8080 -t examples/razor-showcase/public",
     "theme:tokens": "npm run build:tokens -w @codemonster-ru/vueforge-theme",
     "check:asset-boundary": "node ./scripts/ci/check-asset-boundary.mjs",
-    "test:asset-boundary": "node --test ./scripts/ci/asset-boundary.test.mjs"
+    "test:asset-boundary": "node --test ./scripts/ci/asset-boundary.test.mjs",
+    "razor:package": "node ./scripts/release/build-razor-package.mjs",
+    "check:razor-package": "node ./scripts/ci/check-razor-package.mjs",
+    "check:razor-packaged-consumer": "node ./scripts/ci/check-razor-packaged-consumer.mjs",
+    "razor:distribution": "npm run check:asset-boundary && npm run check:razor-package && npm run check:razor-packaged-consumer"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
