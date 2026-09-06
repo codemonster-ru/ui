@@ -1,0 +1,172 @@
+/* Page chrome for the Input showcase route. No component rule lives here: the
+   controls are styled entirely by the real package stylesheet. */
+.input-showcase-shell {
+  min-height: 100vh;
+  background: var(--vf-color-background-canvas);
+}
+
+.input-showcase-header {
+  gap: var(--vf-layout-space-layout-base);
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  min-height: 2rem;
+}
+
+.input-showcase-brand {
+  color: var(--vf-color-text-primary);
+  font-size: var(--vf-heading-h-6-font-size);
+  font-weight: var(--vf-heading-font-weight);
+  line-height: var(--vf-heading-h-6-line-height);
+}
+
+.input-showcase-platforms {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.5rem;
+  margin-left: var(--vf-layout-space-layout-base);
+}
+
+.input-showcase-platform {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--vf-radius-sm, 0.375rem);
+  color: var(--vf-color-text-secondary);
+  font-size: var(--vf-font-size-sm);
+  text-decoration: none;
+}
+
+.input-showcase-platform--active {
+  background: var(--vf-color-background-subtle);
+  color: var(--vf-color-text-primary);
+  font-weight: 600;
+}
+
+.input-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  color: var(--vf-color-text-primary);
+}
+
+.input-showcase__intro h1 {
+  margin: 0 0 0.5rem;
+  font-size: var(--vf-heading-h-3-font-size);
+}
+
+.input-showcase__intro p,
+.input-showcase__catalog p {
+  margin: 0;
+  color: var(--vf-color-text-secondary);
+}
+
+.input-showcase__unknown {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--vf-color-border-danger, #b42318);
+  border-radius: 0.5rem;
+}
+
+.input-showcase__unknown h2 {
+  margin: 0 0 0.25rem;
+  font-size: var(--vf-font-size-md);
+}
+
+.input-showcase__cases {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-showcase__case {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--vf-color-border-subtle);
+  border-radius: 0.5rem;
+  background: var(--vf-color-background-surface);
+}
+
+.input-showcase__case--focused {
+  border-color: var(--vf-color-border-strong);
+  box-shadow: 0 0 0 2px var(--vf-color-border-subtle);
+}
+
+.input-showcase__case-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.input-showcase__case-title {
+  margin: 0;
+  font-size: var(--vf-font-size-md);
+}
+
+.input-showcase__case-id {
+  color: var(--vf-color-text-secondary);
+  font-family: var(--vf-font-family-mono);
+  font-size: var(--vf-font-size-sm);
+}
+
+.input-showcase__case-link {
+  margin-left: auto;
+  color: var(--vf-color-text-link, #175cd3);
+  font-size: var(--vf-font-size-sm);
+}
+
+.input-showcase__case-body {
+  width: 22.5rem;
+  max-width: 100%;
+}
+
+.input-showcase__case-note,
+.input-showcase__hint {
+  margin: 0;
+  color: var(--vf-color-text-secondary);
+  font-size: var(--vf-font-size-sm);
+}
+
+.input-showcase__catalog-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.input-showcase__catalog-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--vf-color-border-subtle);
+  border-radius: 0.375rem;
+}
+
+.input-showcase__catalog-name {
+  flex: 1 1 auto;
+  font-family: var(--vf-font-family-mono);
+  font-size: var(--vf-font-size-sm);
+}
+
+.input-showcase__badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: var(--vf-font-size-xs);
+  white-space: nowrap;
+}
+
+.input-showcase__badge--ok {
+  background: var(--vf-color-background-success-subtle, #ecfdf3);
+  color: var(--vf-color-text-success, #027a48);
+}
+
+.input-showcase__badge--missing {
+  background: var(--vf-color-background-subtle);
+  color: var(--vf-color-text-secondary);
+}

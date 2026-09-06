@@ -6,11 +6,18 @@ import { vueforgePlaygroundVirtualPlugin } from '../../packages/playground-vite-
 import { expandVfBreakpointQueries, resolveVfBreakpointQuery } from '../../packages/theme/src/breakpoint-queries';
 
 const showcaseSectionPattern = /^\/(overview|colors|core|layouts|icons|codeblock|playground)\/?$/;
+// The Input showcase (M08) is a separate document, not a section of the shell,
+// so the six historical routes keep rendering exactly the markup the frozen
+// baseline recorded.
+const inputShowcasePattern = /^\/input\/?(\?.*)?$/;
 
 function vueforgeShowcaseHistoryFallback(): Plugin {
   const rewriteShowcaseSection = (req: IncomingMessage, _res: ServerResponse, next: (err?: unknown) => void) => {
     if (req.url && showcaseSectionPattern.test(req.url)) {
       req.url = '/';
+    } else if (req.url && inputShowcasePattern.test(req.url)) {
+      const [, query = ''] = req.url.split('?');
+      req.url = query ? `/input.html?${query}` : '/input.html';
     }
 
     next();
@@ -84,6 +91,14 @@ function vueforgeBreakpointQueriesPostcssPlugin() {
 vueforgeBreakpointQueriesPostcssPlugin.postcss = true;
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        index: fileURLToPath(new URL('./index.html', import.meta.url)),
+        input: fileURLToPath(new URL('./input.html', import.meta.url)),
+      },
+    },
+  },
   css: {
     postcss: {
       plugins: [vueforgeBreakpointQueriesPostcssPlugin()],
@@ -110,6 +125,16 @@ export default defineConfig({
   resolve: {
     dedupe: ['vue'],
     alias: [
+      // Shared plain data. The showcase reads the files that own this data; a
+      // copy inside the example could disagree with the parity gate.
+      {
+        find: /^@vueforge\/input-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/input/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/showcase-index$/,
+        replacement: fileURLToPath(new URL('../shared/showcase-index.json', import.meta.url)),
+      },
       {
         find: /^@\//,
         replacement: fileURLToPath(new URL('../../packages/core/src/', import.meta.url)),
