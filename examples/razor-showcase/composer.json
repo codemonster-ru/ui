@@ -6,9 +6,9 @@
   "repositories": [
     {
       "type": "path",
-      "url": "../../packages/razor",
+      "url": "../../.release/razor-package",
       "options": {
-        "symlink": true
+        "symlink": false
       }
     }
   ],

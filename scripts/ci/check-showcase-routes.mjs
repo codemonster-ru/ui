@@ -141,15 +141,33 @@ execFileSync('npm', ['run', 'build'], {
   env: { ...process.env, VITE_RAZOR_SHOWCASE_ORIGIN: razorOrigin },
 });
 
+// The showcase installs the staged Composer artifact, so the artifact has to
+// exist and be current before the page is served. This is what stops the
+// showcase demonstrating a gitignored dist that would never ship (M09).
+process.stdout.write('Staging the Razor Composer artifact the showcase installs\n');
+execFileSync(process.execPath, [resolve(repositoryRoot, 'scripts/release/build-razor-package.mjs')], {
+  cwd: repositoryRoot,
+  stdio: ['ignore', 'ignore', 'pipe'],
+});
+execFileSync('composer', ['install', '--no-interaction', '--no-progress', '--quiet'], {
+  cwd: razorExample,
+  stdio: ['ignore', 'ignore', 'pipe'],
+});
+
 const razorAssets = execFileSync(
   'php',
   ['-r', 'require "vendor/autoload.php"; echo Codemonster\\VueForge\\Razor\\VueForgeRazorProvider::assetPath();'],
   { cwd: razorExample, encoding: 'utf8' },
 ).trim();
 check(
+  'the Razor showcase consumes the installed package, not the working tree',
+  razorAssets.includes('examples/razor-showcase/vendor/codemonster-ru/vueforge-razor'),
+  razorAssets,
+);
+check(
   'the Razor showcase resolves the packaged assets through the provider',
   existsSync(resolve(razorAssets, 'vueforge-razor.css')) && existsSync(resolve(razorAssets, 'vueforge-razor.js')),
-  `${razorAssets} (run npm run razor:assets)`,
+  `${razorAssets} (run npm run razor:package)`,
 );
 
 process.stdout.write(`Serving the Vue showcase on ${vueOrigin} and the Razor showcase on ${razorOrigin}\n`);

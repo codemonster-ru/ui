@@ -9,9 +9,15 @@ the frozen reference checkout.
 ## Running it
 
 ```sh
-npm run razor:assets                                    # build the packaged CSS/JS once
-composer install --working-dir=examples/razor-showcase  # install the adapter
-npm run razor:showcase                                  # http://127.0.0.1:8080
+npm run razor:showcase   # stages the Composer artifact, installs it, serves it
+```
+
+Or step by step:
+
+```sh
+npm run razor:package                                   # stage the distributable artifact
+composer install --working-dir=examples/razor-showcase  # install that artifact
+php -S 127.0.0.1:8080 -t examples/razor-showcase/public
 ```
 
 Set `VUEFORGE_VUE_SHOWCASE_ORIGIN` to the origin serving the Vue showcase so the
@@ -25,7 +31,7 @@ the shared index.
 | Case list | `contracts/input/cases.json`, the same file the parity gate uses |
 | Component catalog | `examples/shared/showcase-index.json` |
 | `vf-input` markup | The real `codemonster-ru/vueforge-razor` provider |
-| Stylesheet and controller | `VueForgeRazorProvider::assetPath()`, built by `npm run razor:assets` |
+| Stylesheet and controller | `VueForgeRazorProvider::assetPath()` inside the installed package, staged by `npm run razor:package` |
 
 `views/partials/input-case.razor.php` names every prop explicitly. The engine
 has no prop spread, and the migration plan asks for an explicit map for the
@@ -41,8 +47,10 @@ label/description/error composition the field cases need in order to be shown at
 all. The catalog on the page reports `VfField` as not implemented in Razor, and
 migrating it is its own milestone.
 
-**Not a distribution proof.** The Composer path repository is installed with
-`symlink: true`, so the application runs against the working tree and its
-locally built `packages/razor/dist`. A published package would have to ship
-those assets, which it does not yet — that is the known packaging debt, and this
-showcase neither solves nor hides it.
+**Not the distribution proof.** Since M09 this application installs the same
+staged Composer artifact the packaged-consumer gate installs, copied rather than
+symlinked, so it no longer demonstrates a gitignored `dist` that would never
+ship. The artifact itself is proved by `npm run check:razor-packaged-consumer`,
+which installs it outside the repository through a Composer artifact repository
+with no Node on the PATH. This showcase is a convenience for looking at the
+component, not the proof.

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "714abede036ded8ef117c79d39d53369",
+    "content-hash": "7cfce9220228a86a5fc173ecc3d11aac",
     "packages": [
         {
             "name": "codemonster-ru/razor",
@@ -132,8 +132,8 @@
             "version": "dev-refactor/multiplatform-v2",
             "dist": {
                 "type": "path",
-                "url": "../../packages/razor",
-                "reference": "efb969d174fa28a8086e8028c0717d39637885db"
+                "url": "../../.release/razor-package",
+                "reference": "e97470582378db529a765627adfb9ce46bebd3d2"
             },
             "require": {
                 "codemonster-ru/razor": "^2.1",
@@ -164,7 +164,7 @@
             ],
             "description": "VueForge components for the Annabel Razor template engine",
             "transport-options": {
-                "symlink": true,
+                "symlink": false,
                 "relative": true
             }
         }

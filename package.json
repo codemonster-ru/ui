@@ -68,7 +68,7 @@
     "baseline:input:self-test": "node ./scripts/baseline/check-input-characterization.mjs --self-test",
     "baseline:ci": "npm run baseline:inventory && npm run baseline:test && npm run baseline:input:self-test && npm run baseline:input && npm run baseline:css",
     "showcase:routes": "node ./scripts/ci/check-showcase-routes.mjs",
-    "razor:showcase": "php -S 127.0.0.1:8080 -t examples/razor-showcase/public",
+    "razor:showcase": "npm run razor:package && composer install --no-interaction --working-dir=examples/razor-showcase && php -S 127.0.0.1:8080 -t examples/razor-showcase/public",
     "theme:tokens": "npm run build:tokens -w @codemonster-ru/vueforge-theme",
     "check:asset-boundary": "node ./scripts/ci/check-asset-boundary.mjs",
     "test:asset-boundary": "node --test ./scripts/ci/asset-boundary.test.mjs",
