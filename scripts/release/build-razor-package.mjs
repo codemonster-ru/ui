@@ -21,7 +21,7 @@
 // this artifact; a bare Packagist-from-VCS install would carry no assets, which
 // is exactly what `npm run check:razor-package` refuses to let happen silently.
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -128,7 +128,20 @@ export function listStagedFiles(target) {
     .sort();
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Node resolves a module URL through symlinks while argv[1] keeps the path as
+// it was typed, so comparing the two directly makes this block silently skip
+// whenever the tree is reached through a symlink - /var/folders on macOS, for
+// one. The script would then exit 0 having staged nothing.
+function isDirectlyExecuted() {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectlyExecuted()) {
   const { target, provenance } = stageRazorPackage();
   const files = listStagedFiles(target);
   const missing = requiredEntries.filter((entry) => !existsSync(resolve(target, entry)));

@@ -59,10 +59,14 @@ try {
   });
 
   process.stdout.write('Building the Composer artifact from the exported tree\n');
-  execFileSync(process.execPath, [resolve(tree, 'scripts/release/build-razor-package.mjs')], {
-    cwd: tree,
-    stdio: ['ignore', 'ignore', 'pipe'],
-  });
+  try {
+    execFileSync(process.execPath, [resolve(tree, 'scripts/release/build-razor-package.mjs')], {
+      cwd: tree,
+      stdio: ['ignore', 'ignore', 'pipe'],
+    });
+  } catch (error) {
+    check('the exported tree can build the artifact', false, (error.stderr?.toString() ?? error.message).slice(0, 600));
+  }
 
   const staged = resolve(tree, '.release/razor-package');
   check('the exported tree produced a package', existsSync(resolve(staged, 'composer.json')));
