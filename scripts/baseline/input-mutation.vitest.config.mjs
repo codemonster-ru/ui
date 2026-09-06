@@ -12,7 +12,7 @@ import { inputMutations, inputSourcePath } from './input-mutations.mjs';
 
 const repositoryRoot = resolve(import.meta.dirname, '../..');
 const corePackage = resolve(repositoryRoot, 'packages/core');
-const inputFile = resolve(repositoryRoot, inputSourcePath);
+const defaultMutationFile = resolve(repositoryRoot, inputSourcePath);
 const mutationId = process.env.VUEFORGE_INPUT_MUTATION ?? '';
 
 function inputMutationPlugin() {
@@ -29,14 +29,16 @@ function inputMutationPlugin() {
     name: 'vueforge-input-mutation',
     enforce: 'pre',
     load(id) {
+      // A mutation may target the SFC or, since M05, a shared rule it consumes.
+      const mutationFile = mutation.file ? resolve(repositoryRoot, mutation.file) : defaultMutationFile;
       const [path] = id.split('?', 1);
-      if (path !== inputFile) {
+      if (path !== mutationFile) {
         return null;
       }
 
-      const source = readFileSync(inputFile, 'utf8');
+      const source = readFileSync(mutationFile, 'utf8');
       if (!source.includes(mutation.find)) {
-        throw new Error(`Mutation ${mutation.id} no longer matches ${inputSourcePath}.`);
+        throw new Error(`Mutation ${mutation.id} no longer matches ${mutation.file ?? inputSourcePath}.`);
       }
 
       return mutation.all
@@ -53,6 +55,7 @@ export default defineConfig({
       '@': resolve(corePackage, 'src'),
       '@codemonster-ru/vueforge-theme': resolve(corePackage, '../theme/src/index.ts'),
       '@codemonster-ru/vueforge-icons': resolve(corePackage, 'src/__tests__/mocks/vueforge-icons.ts'),
+      '@codemonster-ru/vueforge-shared-core': resolve(corePackage, '../shared-core/src/index.ts'),
     },
   },
   plugins: [inputMutationPlugin(), vue()],

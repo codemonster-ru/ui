@@ -8,6 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(rootDir, 'src'),
+      '@codemonster-ru/vueforge-shared-core': resolve(rootDir, '../shared-core/src/index.ts'),
       '@codemonster-ru/vueforge-theme': resolve(rootDir, '../theme/src/index.ts'),
       '@codemonster-ru/vueforge-icons': resolve(rootDir, 'src/__tests__/mocks/vueforge-icons.ts'),
     },

@@ -5,19 +5,20 @@
 // migration actually shipped (architecture plan, section 6). The mutation is
 // applied in memory by a Vite plugin, so VfInput.vue on disk is never modified.
 export const inputSourcePath = 'packages/core/src/components/input/VfInput.vue';
+export const sharedInputRulesPath = 'packages/shared-core/src/input/state.ts';
 
 export const inputMutations = [
   {
     id: 'drop-leading-icon',
     description: 'leadingIcon prop no longer renders an adornment (main dropped leadingIcon entirely)',
-    find: 'const hasLeadingAdornment = computed(() => Boolean(props.leadingIcon) || Boolean(slots.leading));',
-    replace: 'const hasLeadingAdornment = computed(() => Boolean(slots.leading));',
+    find: 'hasLeadingAdornment: Boolean(props.leadingIcon) || Boolean(slots.leading),',
+    replace: 'hasLeadingAdornment: Boolean(slots.leading),',
   },
   {
     id: 'drop-trailing-icon',
     description: 'trailingIcon prop no longer renders an adornment (main dropped trailingIcon entirely)',
-    find: 'const hasTrailingAdornment = computed(() => Boolean(props.trailingIcon) || Boolean(slots.trailing));',
-    replace: 'const hasTrailingAdornment = computed(() => Boolean(slots.trailing));',
+    find: 'hasTrailingAdornment: Boolean(props.trailingIcon) || Boolean(slots.trailing),',
+    replace: 'hasTrailingAdornment: Boolean(slots.trailing),',
   },
   {
     id: 'normalise-native-type',
@@ -47,8 +48,8 @@ export const inputMutations = [
   {
     id: 'clear-ignores-readonly',
     description: 'clear control appears on readonly inputs',
-    find: '  () => Boolean(props.clearable) && hasValue.value && !isDisabled.value && !isReadonly.value,',
-    replace: '  () => Boolean(props.clearable) && hasValue.value && !isDisabled.value,',
+    find: '    readonly: isReadonly.value,',
+    replace: '    readonly: false,',
   },
   {
     id: 'lose-selection-direction',
@@ -74,6 +75,37 @@ export const inputMutations = [
     find: ':data-vf-filled="hasValue || undefined"',
     replace: '',
     all: true,
+  },
+  // M05 moved these calculations into shared-core. Breaking a shared rule must
+  // still fail the Vue characterization suite, or the extraction moved
+  // behaviour somewhere the observable gates cannot see.
+  {
+    id: 'shared-filled-rule',
+    description: 'shared filled predicate stops reporting a non-empty value as filled',
+    file: sharedInputRulesPath,
+    find: "  return String(value ?? '').length > 0;",
+    replace: '  return false;',
+  },
+  {
+    id: 'shared-type-resolution',
+    description: 'shared type resolution stops revealing a password as text',
+    file: sharedInputRulesPath,
+    find: "  return passwordRevealAvailable && passwordRevealed ? 'text' : type;",
+    replace: '  return type;',
+  },
+  {
+    id: 'shared-clear-eligibility',
+    description: 'shared clear eligibility stops honouring the read-only state',
+    file: sharedInputRulesPath,
+    find: '  return Boolean(clearable) && filled && !disabled && !readonly;',
+    replace: '  return Boolean(clearable) && filled && !disabled;',
+  },
+  {
+    id: 'shared-adornment-state',
+    description: 'shared adornment state stops counting a leading adornment',
+    file: sharedInputRulesPath,
+    find: '    hasAdornments: flags.hasLeadingAdornment || hasTrailingControl,',
+    replace: '    hasAdornments: hasTrailingControl,',
   },
   {
     id: 'floating-always-on',

@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch } from 'vue';
 import { VueIconify, icons, type IconName } from '@codemonster-ru/vueforge-icons';
+import {
+  isClearActionAvailable,
+  isInputFilled,
+  isPasswordRevealAvailable,
+  resolveInputAdornmentState,
+  resolveInputType,
+} from '@codemonster-ru/vueforge-shared-core';
 import VfIconButton from '@/components/icon-button/VfIconButton.vue';
 import { cx } from '@/utils/classes';
 import type { VfControlSize } from '@/types/components';
@@ -61,21 +68,40 @@ function isTruthyBooleanAttr(value: unknown): boolean {
 
 const isDisabled = computed(() => isTruthyBooleanAttr(attrs.disabled));
 const isReadonly = computed(() => isTruthyBooleanAttr(attrs.readonly));
-const hasValue = computed(() => String(currentValue.value ?? '').length > 0);
+const hasValue = computed(() => isInputFilled(currentValue.value));
 const inputType = computed(() => (typeof attrs.type === 'string' ? attrs.type : undefined));
-const hasPasswordRevealControl = computed(() => Boolean(props.passwordReveal) && inputType.value === 'password');
+const hasPasswordRevealControl = computed(() =>
+  isPasswordRevealAvailable({ passwordReveal: props.passwordReveal, type: inputType.value }),
+);
 const resolvedInputType = computed(() =>
-  hasPasswordRevealControl.value && passwordVisible.value ? 'text' : inputType.value,
+  resolveInputType({
+    type: inputType.value,
+    passwordRevealAvailable: hasPasswordRevealControl.value,
+    passwordRevealed: passwordVisible.value,
+  }),
 );
 
-const hasLeadingAdornment = computed(() => Boolean(props.leadingIcon) || Boolean(slots.leading));
-const hasTrailingAdornment = computed(() => Boolean(props.trailingIcon) || Boolean(slots.trailing));
-const hasClearControl = computed(
-  () => Boolean(props.clearable) && hasValue.value && !isDisabled.value && !isReadonly.value,
+const hasClearControl = computed(() =>
+  isClearActionAvailable({
+    clearable: props.clearable,
+    filled: hasValue.value,
+    disabled: isDisabled.value,
+    readonly: isReadonly.value,
+  }),
 );
-const hasTrailingActionControl = computed(() => hasPasswordRevealControl.value || hasClearControl.value);
-const hasTrailingControl = computed(() => hasTrailingAdornment.value || hasTrailingActionControl.value);
-const hasAdornments = computed(() => hasLeadingAdornment.value || hasTrailingControl.value);
+const adornmentState = computed(() =>
+  resolveInputAdornmentState({
+    hasLeadingAdornment: Boolean(props.leadingIcon) || Boolean(slots.leading),
+    hasTrailingAdornment: Boolean(props.trailingIcon) || Boolean(slots.trailing),
+    hasPasswordRevealControl: hasPasswordRevealControl.value,
+    hasClearControl: hasClearControl.value,
+  }),
+);
+const hasLeadingAdornment = computed(() => adornmentState.value.hasLeadingAdornment);
+const hasTrailingAdornment = computed(() => adornmentState.value.hasTrailingAdornment);
+const hasTrailingActionControl = computed(() => adornmentState.value.hasTrailingActionControl);
+const hasTrailingControl = computed(() => adornmentState.value.hasTrailingControl);
+const hasAdornments = computed(() => adornmentState.value.hasAdornments);
 const isFloatingLabel = computed(() => fieldContext?.labelPlacement.value === 'floating');
 
 const externalClass = computed(() => attrs.class);

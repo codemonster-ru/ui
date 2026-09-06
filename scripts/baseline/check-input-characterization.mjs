@@ -13,8 +13,13 @@ import { inputMutations, inputSourcePath } from './input-mutations.mjs';
 import { repositoryRoot, sha256 } from './reference.mjs';
 
 const configPath = resolve(repositoryRoot, 'scripts/baseline/input-mutation.vitest.config.mjs');
-const inputFile = resolve(repositoryRoot, inputSourcePath);
-const sourceBefore = readFileSync(inputFile);
+
+// Every file a mutation can rewrite. Since M05 that is the SFC plus the shared
+// rules it consumes.
+const mutatedPaths = [
+  ...new Set([inputSourcePath, ...inputMutations.map((mutation) => mutation.file ?? inputSourcePath)]),
+];
+const hashesBefore = new Map(mutatedPaths.map((path) => [path, sha256(readFileSync(resolve(repositoryRoot, path)))]));
 
 function runSuite(mutationId) {
   return spawnSync(
@@ -49,16 +54,26 @@ for (const mutation of inputMutations) {
   }
 }
 
-const sourceAfter = readFileSync(inputFile);
-const sourceUnchanged = sha256(sourceBefore) === sha256(sourceAfter);
-const gitDiff = execFileSync('git', ['-C', repositoryRoot, 'diff', '--name-only', '--', inputSourcePath], {
+// A leak is a file this run changed on disk. Whether a file also differs from
+// HEAD is ordinary work in progress and is reported, not failed: mutations are
+// applied in memory, so an uncommitted edit is not evidence of a leak.
+const leaked = mutatedPaths.filter(
+  (path) => sha256(readFileSync(resolve(repositoryRoot, path))) !== hashesBefore.get(path),
+);
+const modifiedVersusHead = execFileSync('git', ['-C', repositoryRoot, 'diff', '--name-only', '--', ...mutatedPaths], {
   encoding: 'utf8',
-}).trim();
+})
+  .split('\n')
+  .filter(Boolean);
 
-process.stdout.write(`\n${inputSourcePath} unchanged after the run: ${sourceUnchanged && gitDiff === ''}\n`);
+process.stdout.write(`\nMutated files unchanged on disk after the run: ${leaked.length === 0}\n`);
+for (const path of mutatedPaths) {
+  const state = modifiedVersusHead.includes(path) ? 'differs from HEAD (uncommitted work)' : 'matches HEAD';
+  process.stdout.write(`  ${path}: ${state}\n`);
+}
 
-if (!sourceUnchanged || gitDiff !== '') {
-  process.stderr.write('A mutation leaked into the source tree. Restore it before continuing.\n');
+if (leaked.length > 0) {
+  process.stderr.write(`A mutation leaked into the source tree: ${leaked.join(', ')}. Restore it before continuing.\n`);
   process.exit(1);
 }
 

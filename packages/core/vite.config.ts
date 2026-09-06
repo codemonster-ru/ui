@@ -240,6 +240,10 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src'),
+        // shared-core is private and unpublished, so it is always resolved to
+        // source and bundled into dist. It must never appear in `external`, or
+        // a consumer would be asked to install a package that is not released.
+        '@codemonster-ru/vueforge-shared-core': resolve(__dirname, '../shared-core/src/index.ts'),
         ...(isCjsBuild ? { '@codemonster-ru/vueforge-theme': resolve(__dirname, '../theme/src/index.ts') } : {}),
       },
     },
