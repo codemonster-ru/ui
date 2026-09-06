@@ -2,7 +2,11 @@ import { vfBreakpoints } from '../../../theme/src/breakpoints';
 import { vfMotionTokens } from '../../../theme/src/motion';
 import type { VfPrimitiveColorTokenName, VfSemanticColorTokenName } from '../../../theme/src/color-token-contract';
 import type { VfThemePreset, VfThemeTokens } from '@/types/theme';
-import { primitiveColorTokens, semanticDarkColorTokens, semanticLightColorTokens } from './color-token-schema';
+import {
+  primitiveColorTokens,
+  semanticDarkColorTokens,
+  semanticLightColorTokens,
+} from '../../../theme/src/color-token-schema';
 
 type ColorTokenName = VfPrimitiveColorTokenName | VfSemanticColorTokenName;
 type ComponentThemeTokens = Omit<Required<VfThemeTokens>, ColorTokenName>;

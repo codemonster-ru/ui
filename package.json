@@ -40,6 +40,7 @@
     "visual:phase2": "node ./scripts/visual/phase-2-color-smoke.mjs",
     "baseline:inventory": "node ./scripts/baseline/check-inventory.mjs",
     "baseline:showcase": "node ./scripts/baseline/check-showcase.mjs",
+    "baseline:showcase:current": "node ./scripts/baseline/check-showcase.mjs --current",
     "baseline:input": "node ./scripts/baseline/check-input-characterization.mjs",
     "baseline:control": "node ./scripts/baseline/control-run.mjs",
     "baseline:test": "node --test ./scripts/baseline/compare.test.mjs",

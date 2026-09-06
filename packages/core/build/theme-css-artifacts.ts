@@ -6,7 +6,7 @@ import {
   knownExternalThemeCssVariables,
   MAX_CANONICAL_ALIAS_DEPTH,
   validateColorTokenGraph,
-} from '../src/theme/color-token-schema';
+} from '../../theme/src/color-token-schema';
 import { defaultThemePresetSource } from '../src/theme/default-preset-source';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));

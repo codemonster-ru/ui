@@ -13,7 +13,7 @@ import {
   semanticLightColorTokens,
   validateColorTokenGraph,
   validateCssVariableGraph,
-} from './color-token-schema';
+} from '../../../theme/src/color-token-schema';
 import { defaultThemePresetSource } from './default-preset-source';
 import { resolveThemeConfig, themeTokensToCssVars } from './utils';
 

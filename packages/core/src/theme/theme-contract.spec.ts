@@ -10,7 +10,7 @@ import {
   COMPLETE_THEME_TOKEN_COUNT,
   PRIMITIVE_COLOR_TOKEN_COUNT,
   SEMANTIC_COLOR_TOKEN_COUNT,
-} from './color-token-schema';
+} from '../../../theme/src/color-token-schema';
 import { defaultThemePresetSource } from './default-preset-source';
 import { resolveThemeConfig, themeTokensToCssVars } from './utils';
 

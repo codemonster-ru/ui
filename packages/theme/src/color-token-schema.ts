@@ -1,6 +1,6 @@
-import { vfPrimitiveColorTokenNames, vfSemanticColorTokenNames } from '../../../theme/src/color-token-contract';
-import { serializeThemeTokensToCssVars } from '../../../theme/src/css-vars';
-import type { VfPrimitiveColorTokenName, VfSemanticColorTokenName } from '../../../theme/src/color-token-contract';
+import { vfPrimitiveColorTokenNames, vfSemanticColorTokenNames } from './color-token-contract.js';
+import { serializeThemeTokensToCssVars } from './css-vars.js';
+import type { VfPrimitiveColorTokenName, VfSemanticColorTokenName } from './color-token-contract.js';
 
 export const PRIMITIVE_COLOR_TOKEN_COUNT = 66;
 export const SEMANTIC_COLOR_TOKEN_COUNT = 85;

@@ -26,9 +26,9 @@ In package terms:
   - `useTheme()`
 
 The canonical built-in preset assembly lives in [src/theme/default-preset-source.ts](../src/theme/default-preset-source.ts),
-while primitive values and mode-specific semantic maps live in
-[src/theme/color-token-schema.ts](../src/theme/color-token-schema.ts). The color-name contract is shared by
-`@codemonster-ru/vueforge-theme`.
+which describes the component tokens of this package. Primitive values, mode-specific semantic maps and the
+colour-graph validators are owned by `@codemonster-ru/vueforge-theme` in
+[color-token-schema.ts](../../theme/src/color-token-schema.ts), next to the colour-name contract they implement.
 
 Static CSS files still exist as the package baseline:
 
