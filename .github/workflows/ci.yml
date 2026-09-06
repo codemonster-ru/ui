@@ -45,5 +45,8 @@ jobs:
       - name: Verify the Razor adapter
         run: npm run razor:check
 
+      - name: Verify three-way VfInput parity
+        run: npm run parity:check
+
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
