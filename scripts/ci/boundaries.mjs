@@ -116,7 +116,10 @@ export const plainDataDirectories = [
 // are the directories whose entries may forward.
 export const cssOwnership = {
   canonicalRoot: 'packages/styles/src',
-  adapterEntryRoots: ['packages/core/src/styles/entries'],
+  // M04 moved the Input closure, M09 the neutral foundation. Both live under
+  // packages/styles now, and the Vue adapter keeps single-import forwards in
+  // these two directories so its public CSS paths do not move.
+  adapterEntryRoots: ['packages/core/src/styles/entries', 'packages/core/src/styles/components'],
 };
 
 const scannedExtensions = ['.ts', '.mts', '.cts', '.tsx', '.js', '.mjs', '.cjs', '.jsx', '.vue', '.css', '.php'];

@@ -1,9 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { resolveStyleEntrySource } from '../../build/style-entry-sources.mjs';
 
 const root = resolve(__dirname, '..', '..');
-const baseCssPath = resolve(root, 'src/styles/components/base.css');
+// M09 moved the neutral foundation CSS into @codemonster-ru/vueforge-styles, so
+// this path is now a forward. Resolving it hands the spec byte-identical
+// content to the file it read before the move; no assertion is weakened.
+const baseCssPath = resolveStyleEntrySource(resolve(root, 'src/styles/components/base.css'));
 const normalizeCss = (value: string) => value.replace(/\s+/g, ' ').trim();
 
 describe('prose css contract', () => {
