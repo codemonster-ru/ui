@@ -9,7 +9,7 @@
 //   enhanced         the controller is loaded; interactions must work
 //   no-js            no controller at all; the markup must still be usable
 //   mixed ownership  a real Vue VfInput and a Razor VfInput on one page
-import { execFileSync, spawn } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { createServer } from 'node:http';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
@@ -36,7 +36,7 @@ function buildAssets() {
   execFileSync(process.execPath, [resolve(packageRoot, 'build-assets.mjs')], { stdio: ['ignore', 'ignore', 'pipe'] });
   execFileSync(
     resolve(repositoryRoot, 'node_modules/.bin/vite'),
-    ['build', '--config', resolve(packageRoot, 'tests/fixtures/vue-input.vite.config.mts')],
+    ['build', '--config', resolve(repositoryRoot, 'scripts/ci/fixtures/vue-input.vite.config.mts')],
     { cwd: repositoryRoot, stdio: ['ignore', 'ignore', 'pipe'] },
   );
 }

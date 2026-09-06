@@ -2,6 +2,11 @@
 //
 // Mounts the real current VfInput next to Razor-rendered controls so the
 // browser suite can prove the Razor controller never touches a Vue root.
+//
+// It lives in the CI fixtures rather than inside packages/razor on purpose: the
+// Razor adapter must never depend on Vue or on the Vue adapter package, and the
+// boundary guard enforces exactly that. This is cross-adapter test
+// infrastructure, not part of either package.
 import { createApp, h } from 'vue';
 import VfInput from '@codemonster-ru/vueforge-core/src/components/input/VfInput.vue';
 

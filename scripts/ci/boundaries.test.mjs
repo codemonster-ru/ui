@@ -119,7 +119,7 @@ test('razor -> core is rejected once the razor package is tracked', () => {
       'packages/razor/browser/input.ts':
         "import { VfInput } from '@codemonster-ru/vueforge-core';\nexport { VfInput };\n",
     },
-    { 'packages/razor/package.json': { name: 'codemonster-ru/vueforge-razor' } },
+    { 'packages/razor/composer.json': { name: 'codemonster-ru/vueforge-razor' } },
   );
 
   assert.ok(violations.some((violation) => violation.includes('forbidden dependency razor -> core')));
@@ -128,7 +128,7 @@ test('razor -> core is rejected once the razor package is tracked', () => {
 test('razor -> vue is rejected once the razor package is tracked', () => {
   const { violations } = analyze(
     { 'packages/razor/browser/input.ts': "import { createApp } from 'vue';\nexport { createApp };\n" },
-    { 'packages/razor/package.json': { name: 'codemonster-ru/vueforge-razor' } },
+    { 'packages/razor/composer.json': { name: 'codemonster-ru/vueforge-razor' } },
   );
 
   assert.ok(violations.some((violation) => violation.includes('forbidden dependency razor -> vue')));
@@ -146,10 +146,24 @@ test('an untracked razor leftover is not scanned', () => {
 test('the Vue adapter may not depend on Razor bootstrap', () => {
   const { violations } = analyze(
     { 'packages/core/src/bootstrap.ts': "import '../../razor/browser/input';\n" },
-    { 'packages/razor/package.json': { name: 'codemonster-ru/vueforge-razor' } },
+    { 'packages/razor/composer.json': { name: 'codemonster-ru/vueforge-razor' } },
   );
 
   assert.ok(violations.some((violation) => violation.includes('forbidden dependency core -> razor')));
+});
+
+test('a razor PHP file reaching into a Vue adapter namespace is rejected', () => {
+  const { violations } = analyze(
+    {
+      'packages/razor/src/Leak.php':
+        '<?php\nnamespace Codemonster\\VueForge\\Razor;\nuse Codemonster\\VueForge\\Razor\\Support\\Html;\n',
+    },
+    { 'packages/razor/composer.json': { name: 'codemonster-ru/vueforge-razor' } },
+  );
+
+  // A `use` of the adapter's own namespace is fine; the scan exists so a
+  // namespace belonging to another package would be reported.
+  assert.deepEqual(violations, []);
 });
 
 test('a browser global in shared-core is rejected', () => {
