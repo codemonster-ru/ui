@@ -163,7 +163,12 @@ final class InputComponent implements ComponentInterface
             'type' => 'button',
             'aria-label' => $label,
             'data-vf-razor-input' => $action,
+            // `hidden` alone is not enough: the canonical .vf-icon-button rule
+            // sets display, and a class selector outranks the user-agent
+            // [hidden] rule. The inline declaration is adapter-local plumbing,
+            // not a copy of a canonical rule; the controller clears it.
             'hidden' => true,
+            'style' => 'display:none',
             'disabled' => true,
         ], $extra);
 
