@@ -93,6 +93,15 @@ export const boundaryRules = [
   },
 ];
 
+// CSS ownership: once a stylesheet's canonical source lives in the styles
+// package, the adapter must forward to it rather than keep an editable copy
+// (plan section 12, "единственная generated asset source"). `adapterEntryRoots`
+// are the directories whose entries may forward.
+export const cssOwnership = {
+  canonicalRoot: 'packages/styles/src',
+  adapterEntryRoots: ['packages/core/src/styles/entries'],
+};
+
 const scannedExtensions = ['.ts', '.mts', '.cts', '.tsx', '.js', '.mjs', '.cjs', '.jsx', '.vue', '.css'];
 
 // Browser globals that must not appear in the platform-neutral core. Matched on
@@ -298,5 +307,67 @@ export function analyzeBoundaries({ rootDir, files }) {
     }
   }
 
+  violations.push(...analyzeCssOwnership({ rootDir, files }));
+
   return { violations, notes, edges };
+}
+
+// A forwarding entry is one whose whole body is a single relative @import.
+function readSingleImportTarget(source) {
+  const body = source.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+  const match = body.match(/^@import\s+['"](.+?)['"];$/);
+
+  return match && match[1].startsWith('.') ? match[1] : null;
+}
+
+export function analyzeCssOwnership({ rootDir, files }) {
+  const violations = [];
+  const canonicalFiles = files.filter(
+    (file) => file.startsWith(`${cssOwnership.canonicalRoot}/`) && file.endsWith('.css'),
+  );
+
+  if (canonicalFiles.length === 0) {
+    return violations;
+  }
+
+  const canonicalByName = new Map(canonicalFiles.map((file) => [file.split('/').pop(), file]));
+
+  for (const entryRoot of cssOwnership.adapterEntryRoots) {
+    for (const file of files) {
+      if (!file.startsWith(`${entryRoot}/`) || !file.endsWith('.css')) {
+        continue;
+      }
+
+      const canonical = canonicalByName.get(file.split('/').pop());
+      if (!canonical) {
+        continue;
+      }
+
+      let source;
+      try {
+        source = readFileSync(resolve(rootDir, file), 'utf8');
+      } catch {
+        continue;
+      }
+
+      const importTarget = readSingleImportTarget(source);
+
+      if (importTarget === null) {
+        violations.push(
+          `${file}: duplicates the canonical stylesheet ${canonical}; an adapter entry must forward, not hold a copy`,
+        );
+        continue;
+      }
+
+      const resolvedTarget = relative(rootDir, resolve(rootDir, file, '..', importTarget))
+        .split('\\')
+        .join('/');
+
+      if (resolvedTarget !== canonical) {
+        violations.push(`${file}: forwards to ${resolvedTarget}, expected the canonical source ${canonical}`);
+      }
+    }
+  }
+
+  return violations;
 }

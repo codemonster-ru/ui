@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs';
+import { resolveStyleEntrySource } from '../../build/style-entry-sources.mjs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const sourceRoot = resolve(process.cwd(), 'src');
 
 function readEntry(name: string) {
-  return readFileSync(resolve(sourceRoot, 'styles/entries', `${name}.css`), 'utf8');
+  return readFileSync(resolveStyleEntrySource(resolve(sourceRoot, 'styles/entries', `${name}.css`)), 'utf8');
 }
 
 function readComponent(path: string) {

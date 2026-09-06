@@ -1,6 +1,7 @@
 /* global process, console */
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { resolveStyleEntrySource } from '../build/style-entry-sources.mjs';
 
 const root = process.cwd();
 const files = {
@@ -46,7 +47,9 @@ function inlineCssFiles(filePaths) {
 const source = Object.fromEntries(
   Object.entries(files).map(([name, fileOrFiles]) => [
     name,
-    Array.isArray(fileOrFiles) ? inlineCssFiles(fileOrFiles) : readFileSync(fileOrFiles, 'utf8'),
+    Array.isArray(fileOrFiles)
+      ? inlineCssFiles(fileOrFiles.map(resolveStyleEntrySource))
+      : readFileSync(resolveStyleEntrySource(fileOrFiles), 'utf8'),
   ]),
 );
 

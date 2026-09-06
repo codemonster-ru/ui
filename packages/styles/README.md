@@ -3,21 +3,40 @@
 Future single owner of the shared VueForge CSS: foundation, component and region
 stylesheets, and their import graph.
 
-**Status: architectural boundary only.** M02 created this package to fix the
-dependency direction before any stylesheet moves. It deliberately contains no
-CSS yet, so the current CSS output, ordering, specificity and distribution are
-byte-for-byte unchanged.
+**Status: owns the VfInput CSS dependency closure.** M02 created the boundary;
+M04 moved the first closure into it, unchanged.
 
-## What belongs here
+## What lives here
 
-The existing stylesheets, transferred without redesign. M04 moves the first
-dependency closure — `input.css` together with `field.css`, `icon-button.css`
-and the tokens they reach. `packages/core` and `packages/layouts` keep their
-current `.css` export subpaths and build them from this single source; this is a
-continuation of the existing distribution API, not a second implementation.
+`src/components/` holds the canonical source of:
 
+- `input.css` — the `.vf-input` / `.vf-input-wrap` rules, sizes, states,
+  adornment layout and the floating-label selectors;
+- `field.css` — imported by `input.css`, and the reason floating labels work;
+- `icon-button.css` — imported by `input.css` for the clear and reveal actions.
+
+That is the declared `@import` closure of `input.css` and nothing more. The
+foundation, tokens and accessibility preferences stay in `packages/core`: every
+component depends on them, so moving them would drag the whole cascade instead
+of one coherent closure.
+
+More closures arrive one component at a time, transferred without redesign.
 Class names (`.vf-*`), custom properties (`--vf-*`), semantic tokens, theme
 attributes and presets are never renamed as part of a move.
+
+## How consumers still reach it
+
+`packages/core/src/styles/entries/{input,field,icon-button}.css` are single-line
+forwards to the files above. Every existing path keeps working untouched: the
+`@codemonster-ru/vueforge-core/input.css` subpath, the browser auto-CSS entries,
+`styles.css`, and the nine other core entries that import `./field.css` or
+`./icon-button.css`. The build inliner resolves the forward, so the emitted
+stylesheets are byte-identical to the reference.
+
+There is exactly one editable copy of every rule. `npm run check:boundaries`
+fails if a forward grows rules of its own or points somewhere else, and
+`npm run baseline:css` rebuilds `packages/core` from an immutable checkout of the
+reference commit and compares all 52 emitted stylesheets byte for byte.
 
 ## What must never be here
 

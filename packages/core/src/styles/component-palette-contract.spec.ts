@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { resolveStyleEntrySource } from '../../build/style-entry-sources.mjs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -8,7 +9,7 @@ const packagesRoot = resolve(process.cwd(), '..');
 const defaultPresetSourcePath = resolve(process.cwd(), 'src/theme/default-preset-source.ts');
 
 function readEntry(name: string) {
-  return readFileSync(resolve(entriesRoot, `${name}.css`), 'utf8');
+  return readFileSync(resolveStyleEntrySource(resolve(entriesRoot, `${name}.css`)), 'utf8');
 }
 
 function collectCssFiles(directory: string): string[] {

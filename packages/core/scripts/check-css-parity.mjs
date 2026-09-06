@@ -1,6 +1,7 @@
 /* global process, console */
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { resolveStyleEntrySource } from '../build/style-entry-sources.mjs';
 
 const root = process.cwd();
 const stylesDir = join(root, 'src/styles');
@@ -122,7 +123,7 @@ const entryNames = readdirSync(entriesDir)
   .sort();
 
 for (const fileName of entryNames) {
-  const entryPath = join(entriesDir, fileName);
+  const entryPath = resolveStyleEntrySource(join(entriesDir, fileName));
   const ownCss = stripImportsAndComments(readFileSync(entryPath, 'utf8'));
 
   if (ownCss.includes('{') && fullCss.split(ownCss).length - 1 !== 1) {

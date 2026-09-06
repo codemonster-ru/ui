@@ -9,7 +9,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { after, test } from 'node:test';
-import { analyzeBoundaries } from './boundaries.mjs';
+import { analyzeBoundaries, analyzeCssOwnership } from './boundaries.mjs';
 
 const fixtureRoots = [];
 
@@ -219,4 +219,61 @@ test('an allowed edge is reported as a note, not a violation', () => {
 
   assert.deepEqual(violations, []);
   assert.ok(notes.some((note) => note.includes('escape import core -> theme')));
+});
+
+// M04 moved the VfInput CSS closure into the styles package. These cases prove
+// the adapter cannot quietly grow a second, independently editable copy.
+function cssFixture(extraFiles) {
+  const { rootDir, files } = buildFixture(extraFiles);
+  return analyzeCssOwnership({ rootDir, files });
+}
+
+test('a forwarding adapter entry pointing at the canonical source is accepted', () => {
+  const violations = cssFixture({
+    'packages/styles/src/components/input.css': '.vf-input { color: red; }\n',
+    'packages/core/src/styles/entries/input.css': "@import '../../../../styles/src/components/input.css';\n",
+  });
+
+  assert.deepEqual(violations, []);
+});
+
+test('an adapter entry that keeps its own copy of a canonical stylesheet is rejected', () => {
+  const violations = cssFixture({
+    'packages/styles/src/components/input.css': '.vf-input { color: red; }\n',
+    'packages/core/src/styles/entries/input.css': '.vf-input { color: blue; }\n',
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /duplicates the canonical stylesheet/);
+});
+
+test('a forwarding entry that also adds rules is rejected', () => {
+  const violations = cssFixture({
+    'packages/styles/src/components/input.css': '.vf-input { color: red; }\n',
+    'packages/core/src/styles/entries/input.css':
+      "@import '../../../../styles/src/components/input.css';\n.vf-input { color: blue; }\n",
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /duplicates the canonical stylesheet/);
+});
+
+test('a forwarding entry aimed at the wrong file is rejected', () => {
+  const violations = cssFixture({
+    'packages/styles/src/components/input.css': '.vf-input { color: red; }\n',
+    'packages/styles/src/components/field.css': '.vf-field { color: red; }\n',
+    'packages/core/src/styles/entries/input.css': "@import '../../../../styles/src/components/field.css';\n",
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /expected the canonical source/);
+});
+
+test('adapter entries the styles package does not own are left alone', () => {
+  const violations = cssFixture({
+    'packages/styles/src/components/input.css': '.vf-input { color: red; }\n',
+    'packages/core/src/styles/entries/button.css': '.vf-button { color: blue; }\n',
+  });
+
+  assert.deepEqual(violations, []);
 });

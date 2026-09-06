@@ -1,6 +1,7 @@
 /* global process, console */
 import { readFileSync, readdirSync } from 'node:fs';
 import { basename, join } from 'node:path';
+import { resolveStyleEntrySource } from '../build/style-entry-sources.mjs';
 
 const entriesDir = join(process.cwd(), 'src/styles/entries');
 
@@ -85,7 +86,9 @@ let failures = 0;
 for (const fileName of readdirSync(entriesDir)
   .filter((name) => name.endsWith('.css'))
   .sort()) {
-  const absPath = join(entriesDir, fileName);
+  // A forwarding entry is inspected through its canonical source, so the
+  // dependency and selector contracts still read the rules they always read.
+  const absPath = resolveStyleEntrySource(join(entriesDir, fileName));
   const css = readFileSync(absPath, 'utf8');
 
   const foundImports = [...css.matchAll(/@import\s+['"]([^'"]+)['"]/g)].map((m) => m[1]);

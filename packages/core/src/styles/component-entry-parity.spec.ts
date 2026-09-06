@@ -7,6 +7,7 @@ import {
   vfSemanticColorTokenNames,
 } from '@codemonster-ru/vueforge-theme';
 import { inlineCssFiles, inlineCssImports } from '../../build/css-imports';
+import { resolveStyleEntrySource } from '../../build/style-entry-sources.mjs';
 
 const stylesDir = resolve(__dirname);
 const entriesDir = resolve(stylesDir, 'entries');
@@ -37,7 +38,7 @@ describe('component entry CSS parity', () => {
     const expectedEntries = readdirSync(entriesDir)
       .filter((name) => name.endsWith('.css'))
       .filter((name) => {
-        const entrySource = readFileSync(resolve(entriesDir, name), 'utf8');
+        const entrySource = readFileSync(resolveStyleEntrySource(resolve(entriesDir, name)), 'utf8');
         return stripComments(stripImports(entrySource)).includes('{');
       })
       .sort();
@@ -50,7 +51,9 @@ describe('component entry CSS parity', () => {
     const fullCss = inlineCssImports(resolve(stylesDir, 'components.css'));
 
     for (const fileName of readdirSync(entriesDir).filter((name) => name.endsWith('.css'))) {
-      const ownCss = stripComments(stripImports(readFileSync(resolve(entriesDir, fileName), 'utf8')));
+      const ownCss = stripComments(
+        stripImports(readFileSync(resolveStyleEntrySource(resolve(entriesDir, fileName)), 'utf8')),
+      );
       if (!ownCss.includes('{')) {
         continue;
       }
