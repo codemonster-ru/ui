@@ -1,0 +1,851 @@
+{
+  "$comment": "Shared showcase index. Plain data only: no Vue, no PHP, no renderer, no executable code. Both showcase applications read this file to build the same catalog, so neither can quietly claim support the other does not have. The component list is the frozen public catalog of the reference commit; scripts/ci/check-showcase-routes.mjs fails if it drifts from baseline/reference-inventory.json.",
+  "referenceCommit": "fd793696f50d3be0fcd3788f0f8f751c63869963",
+  "urlContract": {
+    "$comment": "Both applications accept the same query parameters, so a case address is portable between platforms.",
+    "parameters": {
+      "component": "Public component name, e.g. VfInput.",
+      "case": "Stable case id from the component caseSource, e.g. input/clearable-filled.",
+      "theme": "light | dark. Applied through each platform native theme mechanism."
+    },
+    "platforms": {
+      "vue": {
+        "label": "Vue",
+        "path": "/input",
+        "$comment": "A route of the historical Vue showcase application at examples/playground."
+      },
+      "razor": {
+        "label": "Razor",
+        "path": "/",
+        "$comment": "The PHP application at examples/razor-showcase, served by its own front controller."
+      }
+    }
+  },
+  "supportStatus": {
+    "implemented": "A real adapter implementation renders this component in this platform.",
+    "not-implemented": "No adapter implementation exists yet. The component stays visible in the catalog and is never counted as parity-supported."
+  },
+  "components": [
+    {
+      "name": "VfAccordion",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfAdminLayout",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfAdminShell",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfAlert",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfAppShell",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfAsideArea",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfAuthLayout",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfAvatar",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfBadge",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfBreadcrumbs",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfButton",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfCard",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfCheckbox",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfCodeBlock",
+      "package": "codeblock",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfCommandPalette",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfConfirmDialog",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfContainer",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfContentArea",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfDataTable",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfDataTableColumnChooser",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfDatePicker",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfDialog",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfDivider",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfDocumentLayout",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfDrawer",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfDropdown",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfErrorLayout",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfField",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfFieldset",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfFooterArea",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfFormLayout",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfGrid",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfGroupBox",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfHeaderArea",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfIconButton",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfInline",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfInput",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "implemented",
+          "caseSource": "contracts/input/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/input/cases.json",
+        "caseIdField": "id"
+      }
+    },
+    {
+      "name": "VfLink",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfMenu",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfMenuBar",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfMenuItem",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfNavMenu",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfPageHeader",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfPanel",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfPlayground",
+      "package": "playground",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfPlaygroundAsync",
+      "package": "playground",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfPopover",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfProgressBar",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfProgressSpinner",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfRadio",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfSection",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfSelect",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfSetupLayout",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfSidebarArea",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfSkeleton",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfSkeletonGate",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfStack",
+      "package": "layouts",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfStepper",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfSwitch",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfTable",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfTableOfContents",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfTabs",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfTag",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfTextarea",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfThemeProvider",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfThemeSwitch",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VfTooltip",
+      "package": "core",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    },
+    {
+      "name": "VueIconify",
+      "package": "icons",
+      "platforms": {
+        "vue": {
+          "status": "implemented"
+        },
+        "razor": {
+          "status": "not-implemented"
+        }
+      }
+    }
+  ]
+}

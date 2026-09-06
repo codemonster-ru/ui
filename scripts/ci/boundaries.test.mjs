@@ -317,3 +317,30 @@ test('a PHP implementation in the contracts directory is rejected', () => {
   assert.equal(violations.length, 1);
   assert.match(violations[0], /holds plain data only/);
 });
+
+// M08 added a second plain-data directory: the showcase index both applications
+// read. A Vue helper or a PHP partial living there would let one platform
+// decide what the other one shows.
+test('the shared showcase index accepts json and markdown', () => {
+  const violations = analyzePlainDataDirectories({
+    files: ['examples/shared/showcase-index.json', 'examples/shared/README.md'],
+  });
+
+  assert.deepEqual(violations, []);
+});
+
+test('a Vue helper smuggled into the shared showcase index is rejected', () => {
+  const violations = analyzePlainDataDirectories({
+    files: ['examples/shared/showcase-index.json', 'examples/shared/renderCase.ts'],
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /holds plain data only/);
+});
+
+test('a PHP partial in the shared showcase index is rejected', () => {
+  const violations = analyzePlainDataDirectories({ files: ['examples/shared/input-case.razor.php'] });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /holds plain data only/);
+});

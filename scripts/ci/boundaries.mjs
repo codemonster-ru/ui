@@ -102,7 +102,13 @@ export const boundaryRules = [
 // The shared contracts directory holds plain data and prose only. If a renderer,
 // a framework import or executable code appears there, the cases have stopped
 // being a neutral specification and have started being one adapter's view.
-export const plainDataDirectories = [{ directory: 'contracts', allowedExtensions: ['.json', '.md'] }];
+export const plainDataDirectories = [
+  { directory: 'contracts', allowedExtensions: ['.json', '.md'] },
+  // The showcase index is read by a Vue application and a PHP application. The
+  // moment it can hold executable code it stops being a shared description and
+  // becomes one platform's opinion (plan, section 15).
+  { directory: 'examples/shared', allowedExtensions: ['.json', '.md'] },
+];
 
 // CSS ownership: once a stylesheet's canonical source lives in the styles
 // package, the adapter must forward to it rather than keep an editable copy
