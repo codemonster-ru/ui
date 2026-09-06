@@ -177,14 +177,14 @@ interface ShowcaseCase {
   field?: {
     label: string;
     placement: 'top' | 'floating';
-    variant?: string;
+    variant?: 'in' | 'on' | 'over';
     description?: string;
     error?: string;
   };
   interaction?: { steps: { action: string }[] };
 }
 
-const cases = (caseCatalog as { cases: ShowcaseCase[] }).cases;
+const cases = caseCatalog.cases as ShowcaseCase[];
 const catalog = showcaseIndex.components;
 const razorPlatform = showcaseIndex.urlContract.platforms.razor;
 const themeStorageKey = 'codemonster-showcase-theme';

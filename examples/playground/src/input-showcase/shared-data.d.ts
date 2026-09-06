@@ -1,7 +1,8 @@
 // Types for the shared plain-data modules the Input showcase reads through the
 // build aliases. The data itself is owned by contracts/ and examples/shared/.
 declare module '@vueforge/input-cases' {
-  const catalog: { cases: Record<string, unknown>[] };
+  // Shaped by the consumer: this module only promises a list of cases.
+  const catalog: { cases: unknown[] };
   export default catalog;
 }
 
