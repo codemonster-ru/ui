@@ -8,7 +8,7 @@
 // isolated tree. New implementation sources and CSS cannot reach a historical
 // capture.
 import { execFileSync, spawn } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, realpathSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { resolve } from 'node:path';
 import { referenceCommit, repositoryRoot, sha256 } from './reference.mjs';
@@ -82,6 +82,12 @@ export function linkDependencies(targetDirectory) {
   rmSync(destination, { recursive: true, force: true });
   copyPreservingSymlinks(source, destination);
 
+  // Workspace packages that exist in the working tree but not at the reference
+  // commit copy across as dangling links. Dropping them keeps the isolated tree
+  // an exact picture of the reference workspace, so a package added by a later
+  // milestone can never half-resolve inside a historical capture.
+  const pruned = pruneDanglingWorkspaceLinks(destination);
+
   // Proves the isolated tree is self-contained before anything is built.
   for (const workspace of ['vueforge-core', 'vueforge-layouts', 'vueforge-icons', 'vueforge-theme']) {
     const probe = resolve(destination, '@codemonster-ru', workspace);
@@ -91,7 +97,30 @@ export function linkDependencies(targetDirectory) {
     }
   }
 
-  return { lockfileSha256: sha256(readFileSync(resolve(targetDirectory, 'package-lock.json'))) };
+  return {
+    lockfileSha256: sha256(readFileSync(resolve(targetDirectory, 'package-lock.json'))),
+    prunedWorkspaceLinks: pruned,
+  };
+}
+
+function pruneDanglingWorkspaceLinks(nodeModulesDirectory) {
+  const scopeDirectory = resolve(nodeModulesDirectory, '@codemonster-ru');
+  if (!existsSync(scopeDirectory)) {
+    return [];
+  }
+
+  const pruned = [];
+  for (const entry of readdirSync(scopeDirectory).sort()) {
+    const entryPath = resolve(scopeDirectory, entry);
+    if (!lstatSync(entryPath).isSymbolicLink() || existsSync(entryPath)) {
+      continue;
+    }
+
+    rmSync(entryPath, { force: true });
+    pruned.push(`@codemonster-ru/${entry}`);
+  }
+
+  return pruned;
 }
 
 export function buildReference(targetDirectory) {
