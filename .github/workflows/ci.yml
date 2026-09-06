@@ -65,6 +65,9 @@ jobs:
       - name: Verify three-way VfInput parity
         run: npm run parity:check
 
+      - name: Stage the Razor Composer artifact for the showcase
+        run: npm run razor:package
+
       - name: Install Razor showcase dependencies
         run: composer install --no-interaction --no-progress --working-dir=examples/razor-showcase
 
@@ -76,6 +79,53 @@ jobs:
 
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
+
+  # M09: the Razor adapter has to be distributable, not just correct. This job
+  # builds the Composer artifact, checks what it contains, installs it outside
+  # the repository with no Node on the consumer PATH, and repeats the whole
+  # thing from a clean `git archive` export.
+  packaging:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify the neutral asset boundary
+        run: npm run check:asset-boundary
+
+      - name: Validate the Composer artifact contents
+        run: npm run check:razor-package
+
+      - name: Prove an isolated packaged Composer consumer
+        run: npm run check:razor-packaged-consumer
+
+      - name: Prove the package from a clean exported tree
+        run: npm run check:razor-clean-export
+
+      - name: Upload the staged artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: razor-composer-artifact
+          include-hidden-files: true
+          path: .release/razor-package
 
   # Stored showcase hashes belong to their original darwin-arm64 environment.
   # Compare fresh immutable reference/current captures on this runner instead.
