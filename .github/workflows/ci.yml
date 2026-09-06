@@ -65,6 +65,15 @@ jobs:
       - name: Verify three-way VfInput parity
         run: npm run parity:check
 
+      - name: Install Razor showcase dependencies
+        run: composer install --no-interaction --no-progress --working-dir=examples/razor-showcase
+
+      # Full-route check: the two real showcase applications, not the isolated
+      # component. Proves both expose the same shared cases and can hand a
+      # reader from one platform to the other.
+      - name: Verify the Input showcase routes
+        run: npm run showcase:routes
+
       - name: Dry-run publish artifacts
         run: npm run prepublish:all
 
