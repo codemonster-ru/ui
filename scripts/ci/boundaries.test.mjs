@@ -9,7 +9,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { after, test } from 'node:test';
-import { analyzeBoundaries, analyzeCssOwnership } from './boundaries.mjs';
+import { analyzeBoundaries, analyzeCssOwnership, analyzePlainDataDirectories } from './boundaries.mjs';
 
 const fixtureRoots = [];
 
@@ -290,4 +290,30 @@ test('adapter entries the styles package does not own are left alone', () => {
   });
 
   assert.deepEqual(violations, []);
+});
+
+// M07 put the shared component cases in contracts/. They are a neutral
+// specification, so nothing executable may live there.
+test('plain data directories accept json and markdown', () => {
+  const violations = analyzePlainDataDirectories({
+    files: ['contracts/input/cases.json', 'contracts/input/README.md'],
+  });
+
+  assert.deepEqual(violations, []);
+});
+
+test('a renderer smuggled into the contracts directory is rejected', () => {
+  const violations = analyzePlainDataDirectories({
+    files: ['contracts/input/cases.json', 'contracts/input/render.ts'],
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /holds plain data only/);
+});
+
+test('a PHP implementation in the contracts directory is rejected', () => {
+  const violations = analyzePlainDataDirectories({ files: ['contracts/input/Renderer.php'] });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /holds plain data only/);
 });

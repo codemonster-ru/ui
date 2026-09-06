@@ -1,0 +1,186 @@
+{
+  "$comment": "Parity policy for the shared VfInput cases. Plain data: no DSL, no waiver engine. Every dimension is classified, and every tolerated difference is listed individually with a reason. A difference that is not listed here fails the gate.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, attribute order, how content is composed, how state is stored, how events are transported.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "Element tag names and their order inside the case root."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type, name, value, placeholder, required, disabled, readonly, min, max, step, autocomplete, maxlength."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "role, aria-invalid, aria-label, aria-pressed, aria-hidden."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-vf-* attributes that carry product semantics, such as data-vf-filled."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Which action controls exist and whether each is operable."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "label[for], aria-describedby and aria-labelledby are compared as a resolved relationship graph. Concrete generated id values are canonicalised; the edges they create are not."
+    },
+    "dom.attributeOrder": {
+      "classification": "semantic",
+      "description": "Serialisation order carries no meaning."
+    },
+    "dom.frameworkMarkers": {
+      "classification": "semantic",
+      "description": "Vue scope attributes, comment placeholders and the Razor ownership marker identify the renderer, not the product."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where token drift shows."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root, per theme."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Control value after the scenario."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "Filled marker, rendered type, action presence and operability after the scenario."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Selection start, end and direction after the scenario."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which element holds focus after the scenario, by role in the case."
+    },
+    "interaction.transport": {
+      "classification": "semantic",
+      "description": "Vue emits update:modelValue; the Razor controller dispatches native input and change events. Only the resulting state is compared."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the control and of every action."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the control and of every action."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "disabled, readonly, required, invalid and pressed as exposed to assistive tech."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "plain-consumer-style-dropped",
+      "description": "A consumer style is dropped on a bare Vue input: inheritAttrs is false, style is excluded from the forwarded attrs, and only the wrapper branch binds :style.",
+      "classification": "framework-specific",
+      "reason": "An artifact of Vue attrs handling. PHP has no equivalent mechanism and no reason to lose a style. Reproducing the loss would make the Razor output worse for no contract benefit.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/input/VfInput.characterization.spec.ts"
+    },
+    {
+      "id": "clear-only-wrapper-collapse",
+      "description": "Clearing when the clear action is the only adornment collapses the Vue wrapper, replaces the input element, and focus lands on body despite the synchronous focus() call.",
+      "classification": "framework-specific",
+      "reason": "A consequence of the Vue conditional wrapper re-rendering. The Razor adapter always renders the wrapper when an action is requested, so it never restructures the DOM and keeps focus. The shared clear case therefore keeps another adornment present, where both adapters must agree exactly.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/input/VfInput.characterization.spec.ts"
+    },
+    {
+      "id": "disabled-attribute-string-quirk",
+      "description": "The Vue adapter treats only true, \"\" and \"true\" as disabled, so disabled=\"disabled\" does not suppress the clear action.",
+      "classification": "framework-specific",
+      "reason": "An artifact of interpreting a Vue attrs map. HTML boolean attributes have their own rules and the shared cases use real boolean state, so the quirk is unreachable from the catalog.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/input/VfInput.characterization.spec.ts"
+    },
+    {
+      "id": "consumer-aria-invalid-override",
+      "description": "A consumer aria-invalid overrides the value computed from the invalid prop, because forwarded attrs are bound after it.",
+      "classification": "exact",
+      "reason": "Observable accessibility output that a consumer relies on. Both adapters must let the consumer value win. Covered by input/aria-invalid-override.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/input/cases.json#input/aria-invalid-override"
+    },
+    {
+      "id": "password-reveal-caret-restore",
+      "description": "Revealing a password actively rewrites the caret, restoring offsets and the selection direction rather than relying on the browser keeping them.",
+      "classification": "exact",
+      "reason": "User-visible behaviour of the action. Covered by input/interaction-selection.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/input/cases.json#input/interaction-selection"
+    },
+    {
+      "id": "data-vf-filled-marker",
+      "description": "The filled marker is written on the input element in both the bare and the adorned branch, and drives the field filled state.",
+      "classification": "exact",
+      "reason": "A CSS and field-integration hook. Covered by the field cases and by dom.productData.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/input/cases.json#input/field-floating-filled"
+    }
+  ],
+  "approvedDivergences": [
+    {
+      "caseId": "*",
+      "target": "razor",
+      "dimension": "dom.frameworkMarkers",
+      "reason": "The Razor root carries data-vf-razor and data-vf-razor-enhanced so its controller can claim exactly the subtrees it owns. Vue roots carry no such marker by design, which is what keeps one DOM owner per subtree.",
+      "classification": "semantic"
+    },
+    {
+      "caseId": "*",
+      "target": "razor",
+      "dimension": "dom.structure",
+      "scope": "wrapper-presence-for-inert-actions",
+      "reason": "When an action is requested the Razor adapter always renders the wrapper, because the server cannot know the post-bootstrap state and the controller must never restructure the DOM. After bootstrap the structure matches the Vue output for every shared case.",
+      "classification": "framework-specific"
+    },
+    {
+      "caseId": "input/interaction-wrapper-transition",
+      "target": "razor",
+      "dimension": "interaction.focus",
+      "reason": "The Vue adapter re-renders from the bare branch into the wrapped one when the clear action appears, which replaces the input element and drops focus to body. The Razor adapter rendered the wrapper up front and keeps focus on the control. This is the clear-only-wrapper-collapse quirk seen from the other direction; every other case keeps an adornment present so the wrapper is stable and focus is compared exactly.",
+      "classification": "framework-specific"
+    },
+    {
+      "caseId": "*",
+      "target": "razor",
+      "dimension": "dom.nativeAttributes",
+      "detail": "style",
+      "pathPattern": "span.vf-icon-wrapper",
+      "reason": "The Vue icon takes its layout from a <style scoped> block, which compiles to selectors carrying a scope attribute that Razor markup cannot have. The neutral icon data therefore carries those declarations as inline style, derived from the built icons stylesheet by scripts/build/generate-input-icon-data.mjs rather than transcribed. The rendered result is identical, which is why geometry and visual parity stay strict; only the style attribute of the icon elements differs. Moving these rules into the shared stylesheet belongs to the milestone that migrates the icon system.",
+      "classification": "framework-specific"
+    },
+    {
+      "caseId": "*",
+      "target": "razor",
+      "dimension": "dom.nativeAttributes",
+      "detail": "style",
+      "pathPattern": "svg.vf-icon",
+      "reason": "The Vue icon takes its layout from a <style scoped> block, which compiles to selectors carrying a scope attribute that Razor markup cannot have. The neutral icon data therefore carries those declarations as inline style, derived from the built icons stylesheet by scripts/build/generate-input-icon-data.mjs rather than transcribed. The rendered result is identical, which is why geometry and visual parity stay strict; only the style attribute of the icon elements differs. Moving these rules into the shared stylesheet belongs to the milestone that migrates the icon system.",
+      "classification": "framework-specific"
+    }
+  ]
+}

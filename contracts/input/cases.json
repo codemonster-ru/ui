@@ -1,0 +1,678 @@
+{
+  "$comment": "Shared VfInput cases. Plain data only: no Vue, no PHP, no renderer objects. Each adapter maps these neutral fields onto its own API. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963, because the reference defines the baseline; this catalog does not introduce new product behaviour.",
+  "propVocabulary": {
+    "modelValue": "The control value. Razor spells this \"value\".",
+    "size": "sm | md | lg.",
+    "invalid": "Invalid state.",
+    "leadingIcon": "Icon name for the leading adornment.",
+    "trailingIcon": "Icon name for the trailing adornment.",
+    "clearable": "Offers the clear action when the control is filled and writable.",
+    "passwordReveal": "Offers the reveal action for type=\"password\"."
+  },
+  "cases": [
+    {
+      "id": "input/plain-empty",
+      "title": "Bare control with no value",
+      "props": {},
+      "attrs": {
+        "name": "plain-empty"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/plain-filled",
+      "title": "Bare control with a value",
+      "props": {
+        "modelValue": "Acme"
+      },
+      "attrs": {
+        "name": "plain-filled"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/placeholder",
+      "title": "Placeholder shown while empty",
+      "props": {},
+      "attrs": {
+        "name": "placeholder",
+        "placeholder": "Acme Inc"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/custom-class",
+      "title": "Consumer class on a bare control",
+      "props": {
+        "modelValue": "Acme"
+      },
+      "attrs": {
+        "name": "custom-class",
+        "class": "consumer-class"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/custom-class-adorned",
+      "title": "Consumer class on an adorned control",
+      "props": {
+        "modelValue": "Acme",
+        "leadingIcon": "eye"
+      },
+      "attrs": {
+        "name": "custom-class-adorned",
+        "class": "consumer-class"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/custom-style-adorned",
+      "title": "Consumer style on an adorned control",
+      "props": {
+        "modelValue": "Acme",
+        "leadingIcon": "eye"
+      },
+      "attrs": {
+        "name": "custom-style-adorned",
+        "style": "margin-top: 4px;"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/unicode-value",
+      "title": "Unicode and markup-like characters in the value",
+      "props": {
+        "modelValue": "Приве́т <b>&</b> \"quoted\" 🌍"
+      },
+      "attrs": {
+        "name": "unicode-value"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/size-sm",
+      "title": "Small size",
+      "props": {
+        "modelValue": "Small",
+        "size": "sm"
+      },
+      "attrs": {
+        "name": "size-sm"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/size-md",
+      "title": "Default size adds no modifier",
+      "props": {
+        "modelValue": "Medium",
+        "size": "md"
+      },
+      "attrs": {
+        "name": "size-md"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/size-lg",
+      "title": "Large size",
+      "props": {
+        "modelValue": "Large",
+        "size": "lg"
+      },
+      "attrs": {
+        "name": "size-lg"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/invalid",
+      "title": "Invalid state",
+      "props": {
+        "modelValue": "bad",
+        "invalid": true
+      },
+      "attrs": {
+        "name": "invalid"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/disabled",
+      "title": "Disabled control keeps its clear action away",
+      "props": {
+        "modelValue": "locked",
+        "clearable": true
+      },
+      "attrs": {
+        "name": "disabled",
+        "disabled": true
+      },
+      "visual": true
+    },
+    {
+      "id": "input/readonly",
+      "title": "Read-only control keeps its clear action away",
+      "props": {
+        "modelValue": "fixed",
+        "clearable": true
+      },
+      "attrs": {
+        "name": "readonly",
+        "readonly": true
+      },
+      "visual": true
+    },
+    {
+      "id": "input/required",
+      "title": "Required control",
+      "props": {},
+      "attrs": {
+        "name": "required",
+        "required": true
+      },
+      "visual": true
+    },
+    {
+      "id": "input/type-text",
+      "title": "Explicit text type",
+      "props": {
+        "modelValue": "text"
+      },
+      "attrs": {
+        "name": "type-text",
+        "type": "text"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/type-email",
+      "title": "Email type with autocomplete",
+      "props": {
+        "modelValue": "a@b.co"
+      },
+      "attrs": {
+        "name": "type-email",
+        "type": "email",
+        "autocomplete": "email"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/type-number",
+      "title": "Number type with min, max and step",
+      "props": {
+        "modelValue": "5"
+      },
+      "attrs": {
+        "name": "type-number",
+        "type": "number",
+        "min": "1",
+        "max": "99",
+        "step": "1"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/type-date",
+      "title": "Date type passes through unchanged",
+      "props": {
+        "modelValue": "2025-01-01"
+      },
+      "attrs": {
+        "name": "type-date",
+        "type": "date"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/type-password",
+      "title": "Password type without the reveal action",
+      "props": {
+        "modelValue": "secret"
+      },
+      "attrs": {
+        "name": "type-password",
+        "type": "password"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/leading-icon",
+      "title": "Leading icon adornment",
+      "props": {
+        "leadingIcon": "eye"
+      },
+      "attrs": {
+        "name": "leading-icon"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/trailing-icon",
+      "title": "Trailing icon adornment",
+      "props": {
+        "trailingIcon": "xmark"
+      },
+      "attrs": {
+        "name": "trailing-icon"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/both-icons",
+      "title": "Leading and trailing icons together",
+      "props": {
+        "leadingIcon": "eye",
+        "trailingIcon": "xmark"
+      },
+      "attrs": {
+        "name": "both-icons"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/leading-content",
+      "title": "Leading composed content replaces the icon prop",
+      "props": {
+        "leadingIcon": "eye"
+      },
+      "attrs": {
+        "name": "leading-content"
+      },
+      "content": {
+        "leading": {
+          "text": "@"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "input/trailing-content",
+      "title": "Trailing composed content",
+      "props": {
+        "modelValue": "12"
+      },
+      "attrs": {
+        "name": "trailing-content"
+      },
+      "content": {
+        "trailing": {
+          "text": "kg"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "input/clearable-empty",
+      "title": "Clearable while empty offers no action",
+      "props": {
+        "clearable": true
+      },
+      "attrs": {
+        "name": "clearable-empty"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/clearable-filled",
+      "title": "Clearable while filled offers the action",
+      "props": {
+        "modelValue": "billing",
+        "clearable": true
+      },
+      "attrs": {
+        "name": "clearable-filled"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/password-reveal-hidden",
+      "title": "Password reveal action, password hidden",
+      "props": {
+        "modelValue": "typed-secret",
+        "passwordReveal": true
+      },
+      "attrs": {
+        "name": "password-reveal-hidden",
+        "type": "password"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/trailing-and-clear",
+      "title": "Trailing adornment beside a clear action",
+      "props": {
+        "modelValue": "billing",
+        "clearable": true,
+        "trailingIcon": "xmark"
+      },
+      "attrs": {
+        "name": "trailing-and-clear"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/password-and-clear",
+      "title": "Trailing adornment, reveal and clear together",
+      "props": {
+        "modelValue": "secret",
+        "clearable": true,
+        "passwordReveal": true,
+        "trailingIcon": "eye"
+      },
+      "attrs": {
+        "name": "password-and-clear",
+        "type": "password"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/field-top-empty",
+      "title": "Field with a top label, empty",
+      "props": {},
+      "attrs": {
+        "name": "field-top-empty"
+      },
+      "field": {
+        "label": "Workspace",
+        "placement": "top"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/field-top-filled",
+      "title": "Field with a top label, filled",
+      "props": {
+        "modelValue": "Acme"
+      },
+      "attrs": {
+        "name": "field-top-filled"
+      },
+      "field": {
+        "label": "Workspace",
+        "placement": "top"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/field-floating-empty",
+      "title": "Floating label over an empty control",
+      "props": {},
+      "attrs": {
+        "name": "field-floating-empty"
+      },
+      "field": {
+        "label": "Workspace",
+        "placement": "floating",
+        "variant": "in"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/field-floating-filled",
+      "title": "Floating label over a filled control",
+      "props": {
+        "modelValue": "Acme"
+      },
+      "attrs": {
+        "name": "field-floating-filled"
+      },
+      "field": {
+        "label": "Workspace",
+        "placement": "floating",
+        "variant": "in"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/field-invalid",
+      "title": "Field carrying an error message",
+      "props": {
+        "modelValue": "bad"
+      },
+      "attrs": {
+        "name": "field-invalid"
+      },
+      "field": {
+        "label": "Workspace",
+        "placement": "top",
+        "error": "Workspace is required."
+      },
+      "visual": true
+    },
+    {
+      "id": "input/aria-described",
+      "title": "Consumer description relationship",
+      "note": "The harness renders the referenced hint element so the relationship can be resolved.",
+      "props": {},
+      "attrs": {
+        "name": "aria-described",
+        "aria-describedby": "aria-described-hint"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/aria-invalid-override",
+      "title": "Consumer aria-invalid overrides the computed one",
+      "note": "Historical Vue behaviour: forwarded attrs are bound after the computed aria-invalid.",
+      "props": {
+        "modelValue": "x",
+        "invalid": true
+      },
+      "attrs": {
+        "name": "aria-invalid-override",
+        "aria-invalid": "false"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/interaction-typing",
+      "title": "Typing marks the control filled and reveals the clear action",
+      "props": {
+        "modelValue": "",
+        "clearable": true,
+        "leadingIcon": "eye"
+      },
+      "attrs": {
+        "name": "interaction-typing"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "type",
+            "value": "typed"
+          }
+        ]
+      },
+      "visual": false,
+      "note": "A leading adornment keeps the wrapper stable, so this case measures filled state and action visibility rather than the wrapper transition covered by input/interaction-wrapper-transition."
+    },
+    {
+      "id": "input/interaction-empty-again",
+      "title": "Emptying hides the clear action again",
+      "props": {
+        "modelValue": "start",
+        "clearable": true,
+        "leadingIcon": "eye"
+      },
+      "attrs": {
+        "name": "interaction-empty-again"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "type",
+            "value": ""
+          }
+        ]
+      },
+      "visual": false,
+      "note": "A leading adornment keeps the wrapper stable, so this case measures filled state and action visibility rather than the wrapper transition covered by input/interaction-wrapper-transition."
+    },
+    {
+      "id": "input/interaction-clear",
+      "title": "Clearing through the action with another adornment present",
+      "props": {
+        "modelValue": "billing",
+        "clearable": true,
+        "leadingIcon": "eye"
+      },
+      "attrs": {
+        "name": "interaction-clear"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickClear"
+          }
+        ]
+      },
+      "visual": false
+    },
+    {
+      "id": "input/interaction-reveal",
+      "title": "Revealing a password switches the rendered type",
+      "props": {
+        "modelValue": "typed-secret",
+        "passwordReveal": true
+      },
+      "attrs": {
+        "name": "interaction-reveal",
+        "type": "password"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "setSelection",
+            "start": 4,
+            "end": 4,
+            "direction": "none"
+          },
+          {
+            "action": "clickReveal"
+          }
+        ]
+      },
+      "visual": false
+    },
+    {
+      "id": "input/interaction-hide",
+      "title": "Hiding a revealed password restores the type",
+      "props": {
+        "modelValue": "typed-secret",
+        "passwordReveal": true
+      },
+      "attrs": {
+        "name": "interaction-hide",
+        "type": "password"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "setSelection",
+            "start": 4,
+            "end": 4,
+            "direction": "none"
+          },
+          {
+            "action": "clickReveal"
+          },
+          {
+            "action": "clickReveal"
+          }
+        ]
+      },
+      "visual": false
+    },
+    {
+      "id": "input/interaction-selection",
+      "title": "Password reveal restores the caret and its direction",
+      "props": {
+        "modelValue": "typed-secret",
+        "passwordReveal": true
+      },
+      "attrs": {
+        "name": "interaction-selection",
+        "type": "password"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "setSelection",
+            "start": 2,
+            "end": 8,
+            "direction": "backward"
+          },
+          {
+            "action": "clickReveal"
+          }
+        ]
+      },
+      "visual": false
+    },
+    {
+      "id": "input/interaction-disabled",
+      "title": "A disabled control ignores typing",
+      "props": {
+        "modelValue": "locked",
+        "clearable": true
+      },
+      "attrs": {
+        "name": "interaction-disabled",
+        "disabled": true
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "type",
+            "value": "ignored"
+          }
+        ]
+      },
+      "visual": false
+    },
+    {
+      "id": "input/interaction-readonly",
+      "title": "A read-only control offers no clear action after typing",
+      "props": {
+        "modelValue": "fixed",
+        "clearable": true
+      },
+      "attrs": {
+        "name": "interaction-readonly",
+        "readonly": true
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "type",
+            "value": "ignored"
+          }
+        ]
+      },
+      "visual": false
+    },
+    {
+      "id": "input/interaction-wrapper-transition",
+      "title": "Typing into a bare clearable control makes the wrapper appear",
+      "note": "Exercises the adornment transition itself. The Vue adapter re-renders from the bare branch into the wrapped one and replaces the input element, which loses focus; the Razor adapter always rendered the wrapper and keeps it. The focus difference is a registered framework-specific divergence.",
+      "props": {
+        "modelValue": "",
+        "clearable": true
+      },
+      "attrs": {
+        "name": "interaction-wrapper-transition"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "type",
+            "value": "typed"
+          }
+        ]
+      },
+      "visual": false
+    }
+  ]
+}

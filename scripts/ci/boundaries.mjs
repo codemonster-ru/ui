@@ -99,6 +99,11 @@ export const boundaryRules = [
   },
 ];
 
+// The shared contracts directory holds plain data and prose only. If a renderer,
+// a framework import or executable code appears there, the cases have stopped
+// being a neutral specification and have started being one adapter's view.
+export const plainDataDirectories = [{ directory: 'contracts', allowedExtensions: ['.json', '.md'] }];
+
 // CSS ownership: once a stylesheet's canonical source lives in the styles
 // package, the adapter must forward to it rather than keep an editable copy
 // (plan section 12, "единственная generated asset source"). `adapterEntryRoots`
@@ -344,8 +349,31 @@ export function analyzeBoundaries({ rootDir, files }) {
   }
 
   violations.push(...analyzeCssOwnership({ rootDir, files }));
+  violations.push(...analyzePlainDataDirectories({ files }));
 
   return { violations, notes, edges };
+}
+
+export function analyzePlainDataDirectories({ files }) {
+  const violations = [];
+
+  for (const rule of plainDataDirectories) {
+    for (const file of files) {
+      if (!file.startsWith(`${rule.directory}/`)) {
+        continue;
+      }
+
+      const extension = file.slice(file.lastIndexOf('.'));
+      if (!rule.allowedExtensions.includes(extension)) {
+        violations.push(
+          `${file}: ${rule.directory}/ holds plain data only; allowed extensions are ` +
+            `${rule.allowedExtensions.join(', ')}`,
+        );
+      }
+    }
+  }
+
+  return violations;
 }
 
 // A forwarding entry is one whose whole body is a single relative @import.
