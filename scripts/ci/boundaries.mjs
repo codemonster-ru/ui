@@ -14,6 +14,11 @@ import { relative, resolve } from 'node:path';
 // Pseudo-target used for `vue`, `vue/*` and `@vue/*` specifiers.
 export const vueTarget = 'vue';
 
+// PHP namespaces that map onto packages the guard knows about.
+const phpNamespaceTargets = {
+  'Codemonster\\VueForge\\Razor': 'razor',
+};
+
 const vueAdapterPackages = ['core', 'layouts', 'icons', 'codeblock', 'playground', 'playground-vite-plugin'];
 
 // Packages whose dependency direction is enforced. A package absent from this
@@ -62,6 +67,7 @@ export const boundaryRules = [
     id: 'razor',
     directory: 'packages/razor',
     packageName: 'codemonster-ru/vueforge-razor',
+    manifestFile: 'composer.json',
     layer: 'adapter',
     // Declared now, active as soon as a Razor package is tracked in git. The
     // untracked first-migration leftover in the working tree is not scanned.
@@ -102,7 +108,7 @@ export const cssOwnership = {
   adapterEntryRoots: ['packages/core/src/styles/entries'],
 };
 
-const scannedExtensions = ['.ts', '.mts', '.cts', '.tsx', '.js', '.mjs', '.cjs', '.jsx', '.vue', '.css'];
+const scannedExtensions = ['.ts', '.mts', '.cts', '.tsx', '.js', '.mjs', '.cjs', '.jsx', '.vue', '.css', '.php'];
 
 // Browser globals that must not appear in the platform-neutral core. Matched on
 // a word boundary so `documentation` or `windowSize` do not trip the rule.
@@ -118,6 +124,10 @@ const browserGlobalPatterns = [
   /\bgetComputedStyle\b/,
 ];
 
+// PHP namespace imports. The adapter must not reach into a Vue adapter
+// namespace, and a `use` statement is how it would.
+const phpUsePattern = /^\s*use\s+([A-Za-z_\\][A-Za-z0-9_\\]*)/gm;
+
 const specifierPatterns = [
   /\bfrom\s+['"]([^'"]+)['"]/g,
   /\bimport\s+['"]([^'"]+)['"]/g,
@@ -126,8 +136,19 @@ const specifierPatterns = [
   /@import\s+(?:url\(\s*)?['"]([^'"]+)['"]/g,
 ];
 
-export function extractSpecifiers(source) {
+export function extractSpecifiers(source, filePath = '') {
   const specifiers = new Set();
+
+  if (filePath.endsWith('.php')) {
+    phpUsePattern.lastIndex = 0;
+    let phpMatch = phpUsePattern.exec(source);
+    while (phpMatch !== null) {
+      specifiers.add(`php:${phpMatch[1]}`);
+      phpMatch = phpUsePattern.exec(source);
+    }
+
+    return [...specifiers];
+  }
 
   for (const pattern of specifierPatterns) {
     pattern.lastIndex = 0;
@@ -158,6 +179,19 @@ export function resolveTarget(specifier, fromFile, { rootDir, packageDirectoryBy
     return null;
   }
 
+  // A PHP `use` of a Vue adapter namespace would be impossible to execute, but
+  // it is exactly the kind of accidental coupling the guard exists to name.
+  if (specifier.startsWith('php:')) {
+    const namespace = specifier.slice('php:'.length);
+    for (const [prefix, target] of Object.entries(phpNamespaceTargets)) {
+      if (namespace === prefix || namespace.startsWith(`${prefix}\\`)) {
+        return target;
+      }
+    }
+
+    return null;
+  }
+
   if (specifier === 'vue' || specifier.startsWith('vue/') || specifier.startsWith('@vue/')) {
     return vueTarget;
   }
@@ -184,9 +218,9 @@ export function resolveTarget(specifier, fromFile, { rootDir, packageDirectoryBy
   return null;
 }
 
-function readManifest(rootDir, directory) {
+function readManifest(rootDir, directory, manifestFile = 'package.json') {
   try {
-    return JSON.parse(readFileSync(resolve(rootDir, directory, 'package.json'), 'utf8'));
+    return JSON.parse(readFileSync(resolve(rootDir, directory, manifestFile), 'utf8'));
   } catch {
     return null;
   }
@@ -225,12 +259,14 @@ export function analyzeBoundaries({ rootDir, files }) {
   const resolution = { rootDir, packageDirectoryByName, knownDirectories };
 
   for (const rule of boundaryRules) {
-    const manifest = readManifest(rootDir, rule.directory);
+    const manifest = readManifest(rootDir, rule.directory, rule.manifestFile);
     const ownedFiles = files.filter((file) => file.startsWith(`${rule.directory}/`));
 
     if (!manifest) {
       if (rule.mustExist) {
-        violations.push(`${rule.id}: expected a package manifest at ${rule.directory}/package.json`);
+        violations.push(
+          `${rule.id}: expected a package manifest at ${rule.directory}/${rule.manifestFile ?? 'package.json'}`,
+        );
       } else if (ownedFiles.length > 0) {
         violations.push(`${rule.id}: tracked files exist under ${rule.directory} but the manifest is missing`);
       } else {
@@ -273,7 +309,7 @@ export function analyzeBoundaries({ rootDir, files }) {
         continue;
       }
 
-      for (const specifier of extractSpecifiers(source)) {
+      for (const specifier of extractSpecifiers(source, file)) {
         const target = resolveTarget(specifier, absolutePath, resolution);
         if (target === null || target === rule.id) {
           continue;

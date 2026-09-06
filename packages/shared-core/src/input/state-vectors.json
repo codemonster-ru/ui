@@ -1,0 +1,78 @@
+{
+  "$comment": "Shared input/expected vectors for the VfInput rules the PHP adapter has to restate for its initial markup. The TypeScript rules in state.ts and the PHP mirror in packages/razor/src/Support/InputState.php both run these, so the two implementations cannot drift. Plain data on purpose: no schema, no DSL.",
+  "isInputFilled": [
+    { "value": "", "expected": false },
+    { "value": "a", "expected": true },
+    { "value": "0", "expected": true },
+    { "value": " ", "expected": true },
+    { "value": "typed-secret", "expected": true },
+    { "value": null, "expected": false }
+  ],
+  "isPasswordRevealAvailable": [
+    { "passwordReveal": true, "type": "password", "expected": true },
+    { "passwordReveal": false, "type": "password", "expected": false },
+    { "passwordReveal": true, "type": "text", "expected": false },
+    { "passwordReveal": true, "type": "email", "expected": false },
+    { "passwordReveal": true, "type": "number", "expected": false },
+    { "passwordReveal": true, "type": null, "expected": false }
+  ],
+  "resolveInputType": [
+    { "type": "password", "passwordRevealAvailable": true, "passwordRevealed": true, "expected": "text" },
+    { "type": "password", "passwordRevealAvailable": true, "passwordRevealed": false, "expected": "password" },
+    { "type": "password", "passwordRevealAvailable": false, "passwordRevealed": true, "expected": "password" },
+    { "type": "number", "passwordRevealAvailable": false, "passwordRevealed": false, "expected": "number" },
+    { "type": "date", "passwordRevealAvailable": false, "passwordRevealed": false, "expected": "date" },
+    { "type": null, "passwordRevealAvailable": false, "passwordRevealed": false, "expected": null }
+  ],
+  "isClearActionAvailable": [
+    { "clearable": true, "filled": true, "disabled": false, "readonly": false, "expected": true },
+    { "clearable": false, "filled": true, "disabled": false, "readonly": false, "expected": false },
+    { "clearable": true, "filled": false, "disabled": false, "readonly": false, "expected": false },
+    { "clearable": true, "filled": true, "disabled": true, "readonly": false, "expected": false },
+    { "clearable": true, "filled": true, "disabled": false, "readonly": true, "expected": false }
+  ],
+  "resolveInputAdornmentState": [
+    {
+      "hasLeadingAdornment": false,
+      "hasTrailingAdornment": false,
+      "hasPasswordRevealControl": false,
+      "hasClearControl": false,
+      "expected": { "hasTrailingActionControl": false, "hasTrailingControl": false, "hasAdornments": false }
+    },
+    {
+      "hasLeadingAdornment": true,
+      "hasTrailingAdornment": false,
+      "hasPasswordRevealControl": false,
+      "hasClearControl": false,
+      "expected": { "hasTrailingActionControl": false, "hasTrailingControl": false, "hasAdornments": true }
+    },
+    {
+      "hasLeadingAdornment": false,
+      "hasTrailingAdornment": true,
+      "hasPasswordRevealControl": false,
+      "hasClearControl": false,
+      "expected": { "hasTrailingActionControl": false, "hasTrailingControl": true, "hasAdornments": true }
+    },
+    {
+      "hasLeadingAdornment": false,
+      "hasTrailingAdornment": false,
+      "hasPasswordRevealControl": true,
+      "hasClearControl": false,
+      "expected": { "hasTrailingActionControl": true, "hasTrailingControl": true, "hasAdornments": true }
+    },
+    {
+      "hasLeadingAdornment": false,
+      "hasTrailingAdornment": false,
+      "hasPasswordRevealControl": false,
+      "hasClearControl": true,
+      "expected": { "hasTrailingActionControl": true, "hasTrailingControl": true, "hasAdornments": true }
+    },
+    {
+      "hasLeadingAdornment": true,
+      "hasTrailingAdornment": true,
+      "hasPasswordRevealControl": true,
+      "hasClearControl": true,
+      "expected": { "hasTrailingActionControl": true, "hasTrailingControl": true, "hasAdornments": true }
+    }
+  ]
+}

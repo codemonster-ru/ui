@@ -1,0 +1,30 @@
+{
+    "name": "codemonster-ru/vueforge-razor",
+    "description": "VueForge components for the Annabel Razor template engine",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\VueForge\\Razor\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codemonster\\VueForge\\Razor\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.2",
+        "codemonster-ru/razor": "^2.1",
+        "codemonster-ru/view": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

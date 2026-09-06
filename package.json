@@ -33,6 +33,7 @@
     "check:boundaries": "node ./scripts/ci/check-architecture-boundaries.mjs",
     "icons:input-data": "vite-node --config ./scripts/build/icon-data.vite.config.mts ./scripts/build/generate-input-icon-data.mjs",
     "check:icon-data": "npm run icons:input-data",
+    "razor:test": "php packages/razor/vendor/bin/phpunit --configuration packages/razor/phpunit.xml.dist --colors=never",
     "test:boundaries": "node --test ./scripts/ci/boundaries.test.mjs",
     "check": "npm run check:boundaries && npm run test:boundaries && npm run check:docs && npm run lint:docs-imports && npm run check -w @codemonster-ru/vueforge-codeblock && npm run check -w @codemonster-ru/vueforge-core && npm run check -w @codemonster-ru/vueforge-icons && npm run check -w @codemonster-ru/vueforge-layouts && npm run check -w @codemonster-ru/vueforge-playground && npm run check -w @codemonster-ru/vueforge-playground-core && npm run check -w @codemonster-ru/vueforge-playground-vite-plugin && npm run check -w @codemonster-ru/vueforge-shared-core && npm run check -w @codemonster-ru/vueforge-theme",
     "check:clean-install": "node ./scripts/ci/check-clean-install.mjs",
