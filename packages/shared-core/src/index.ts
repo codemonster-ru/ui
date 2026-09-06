@@ -1,13 +1,24 @@
 // Public entry of the platform-neutral shared core.
 //
-// M02 establishes this package as an architectural boundary only. Nothing has
-// been extracted into it yet: pure Input calculations arrive in M05, and every
-// later component follows the same route. Adding code here ahead of a real
-// second consumer is exactly the "more scaffolding than transferred behaviour"
-// anti-pattern the architecture plan warns about (section 21).
+// The surface is the set of rules a real adapter uses, nothing more. M05 added
+// the first entries: the VfInput state calculations the Vue adapter consumes
+// today and a Razor browser controller will consume when it toggles the same
+// actions.
 //
-// The boundary this file anchors is enforced by
-// scripts/ci/check-architecture-boundaries.mjs: nothing under this package may
-// import Vue, the Vue adapter packages, the Razor adapter, the showcase, or
-// browser globals.
-export {};
+// The boundary is enforced by scripts/ci/check-architecture-boundaries.mjs:
+// nothing here may import Vue, the Vue adapter packages, the Razor adapter, the
+// showcase, or use browser globals.
+export {
+  isClearActionAvailable,
+  isInputFilled,
+  isPasswordRevealAvailable,
+  resolveInputAdornmentState,
+  resolveInputType,
+} from './input/state.js';
+export type {
+  VfInputAdornmentFlags,
+  VfInputAdornmentState,
+  VfInputClearAvailability,
+  VfInputPasswordRevealAvailability,
+  VfInputTypeResolution,
+} from './input/state.js';
