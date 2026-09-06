@@ -1,0 +1,24 @@
+{
+  "name": "codemonster-ru/vueforge-razor-showcase",
+  "description": "Razor showcase application for the migrated VueForge components",
+  "type": "project",
+  "license": "MIT",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../packages/razor",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "codemonster-ru/vueforge-razor": "*"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {}
+  }
+}
