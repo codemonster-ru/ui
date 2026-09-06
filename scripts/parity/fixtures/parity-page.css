@@ -19,6 +19,14 @@ body {
   box-sizing: border-box;
 }
 
+/* The post-interaction screenshots leave controls focused, and a blinking caret
+   would make those frames depend on when the shot was taken. No stylesheet in
+   the Input closure sets caret-color, so hiding it masks no product rule; the
+   focus ring, which is a product rule, is still compared. */
+.parity-case input {
+  caret-color: transparent;
+}
+
 .parity-hint {
   margin: 4px 0 0;
   font-size: var(--vf-font-size-sm);

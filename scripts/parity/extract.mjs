@@ -224,33 +224,79 @@ export const extractCasesExpression = `(() => {
   return results;
 })()`;
 
-/** Drives one interaction scenario inside a case and reports the observable result. */
-export function interactionExpression(caseId, steps) {
-  return `(async () => {
+/**
+ * Drives the small Input scenario vocabulary with native browser input events.
+ * Selection setup remains explicit because caret direction is scenario data.
+ * Resolve the control for every step: Vue may replace it during a wrapper
+ * transition, so retaining the first element would exercise a detached node.
+ */
+export async function driveInteraction(page, caseId, steps) {
+  const selector = `[data-parity-case="${caseId}"]`;
+  await page.evaluate(`(() => {
+    const root = document.querySelector(${JSON.stringify(selector)});
+    if (!root) throw new Error('missing interaction case');
+    window.__parityInputEvents = [];
+    for (const type of ['pointerdown', 'mousedown', 'mouseup', 'click', 'input', 'keydown']) {
+      document.addEventListener(type, (event) => {
+        if (!root.contains(event.target)) return;
+        const entry = { type, trusted: event.isTrusted, defaultPrevented: false };
+        window.__parityInputEvents.push(entry);
+        setTimeout(() => { entry.defaultPrevented = event.defaultPrevented; }, 0);
+      }, true);
+    }
+  })()`);
+  const settle = () => page.evaluate(`new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))`);
+  for (const step of steps) {
+    if (step.action === 'type') {
+      await page.evaluate(`(() => {
+        const control = document.querySelector(${JSON.stringify(selector)}).querySelector('input.vf-input');
+        control.focus();
+        control.value = ${JSON.stringify(step.value)};
+        control.dispatchEvent(new Event('input', { bubbles: true }));
+      })()`);
+    } else if (step.action === 'clickClear' || step.action === 'clickReveal') {
+      const actionSelector = step.action === 'clickClear' ? '.vf-input-wrap__clear' : '.vf-input-wrap__password-toggle';
+      if (step.action === 'clickReveal') {
+        await page.evaluate(
+          `document.querySelector(${JSON.stringify(selector)}).querySelector(${JSON.stringify(actionSelector)})?.click()`,
+        );
+        await settle();
+        continue;
+      }
+      const point = await page.evaluate(`(() => {
+        const action = document.querySelector(${JSON.stringify(selector)}).querySelector(${JSON.stringify(actionSelector)});
+        if (!action) throw new Error('missing interaction action');
+        action.scrollIntoView({ block: 'center' });
+        const rect = action.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0 || action.disabled || action.hidden) {
+          throw new Error('interaction action is not operable');
+        }
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      })()`);
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+      await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
+      // Native hover would otherwise change only the clicked action's state.
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 900, y: 1 });
+    } else if (step.action === 'setSelection' || step.action === 'focus') {
+      await page.evaluate(`(() => {
+        const control = document.querySelector(${JSON.stringify(selector)}).querySelector('input.vf-input');
+        control.focus();
+        ${step.action === 'setSelection' ? `control.setSelectionRange(${step.start}, ${step.end}, ${JSON.stringify(step.direction)});` : ''}
+      })()`);
+    } else {
+      throw new Error(`unknown interaction step: ${step.action}`);
+    }
+    await settle();
+  }
+  return page.evaluate('window.__parityInputEvents');
+}
+
+/** Reports the actual post-scenario state before any visual focus normalization. */
+export function interactionExpression(caseId) {
+  return `(() => {
     const root = document.querySelector('[data-parity-case="${caseId}"]');
     if (!root) throw new Error('missing case ${caseId}');
-    const control = root.querySelector('input.vf-input');
-    const clear = root.querySelector('.vf-input-wrap__clear');
-    const reveal = root.querySelector('.vf-input-wrap__password-toggle');
-    const tick = () => new Promise((done) => setTimeout(done, 40));
-
-    for (const step of ${JSON.stringify(steps)}) {
-      if (step.action === 'type') {
-        control.focus();
-        control.value = step.value;
-        control.dispatchEvent(new Event('input', { bubbles: true }));
-      } else if (step.action === 'clickClear') {
-        root.querySelector('.vf-input-wrap__clear')?.click();
-      } else if (step.action === 'clickReveal') {
-        root.querySelector('.vf-input-wrap__password-toggle')?.click();
-      } else if (step.action === 'setSelection') {
-        control.focus();
-        control.setSelectionRange(step.start, step.end, step.direction);
-      }
-      await tick();
-      await tick();
-    }
-
     const liveControl = root.querySelector('input.vf-input');
     const activeElement = document.activeElement;
     const focusRole = activeElement === liveControl
@@ -279,11 +325,23 @@ export function interactionExpression(caseId, steps) {
       };
     };
 
+    // The clip of the case root as it stands after the scenario. A screenshot
+    // taken here is what catches a change that leaves the DOM intact - content
+    // that is present but invisible, a focus ring that should or should not be
+    // there - which the DOM and geometry dimensions cannot see on their own.
+    const caseRect = root.getBoundingClientRect();
+
     return {
+      clip: {
+        x: Math.round(caseRect.left + window.scrollX),
+        y: Math.round(caseRect.top + window.scrollY),
+        width: Math.round(caseRect.width),
+        height: Math.round(caseRect.height),
+      },
       value: liveControl.value,
       type: liveControl.getAttribute('type'),
       filled: liveControl.getAttribute('data-vf-filled'),
-      selection: liveControl.selectionStart === null
+      selection: liveControl.disabled || liveControl.selectionStart === null
         ? null
         : {
             start: liveControl.selectionStart,

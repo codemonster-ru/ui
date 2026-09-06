@@ -226,6 +226,68 @@
       "visual": true
     },
     {
+      "id": "input/maxlength",
+      "title": "Native maxlength reaches the control",
+      "note": "The reference forwards every unconsumed attribute to the input element. maxlength is compared but was never set by any case, which is exactly how a wrong value stayed invisible during the independent review.",
+      "props": {
+        "modelValue": "Acme"
+      },
+      "attrs": {
+        "name": "maxlength",
+        "maxlength": "5"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/inputmode",
+      "title": "Native inputmode reaches the control",
+      "props": {
+        "modelValue": "42"
+      },
+      "attrs": {
+        "name": "inputmode",
+        "inputmode": "numeric"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/type-search",
+      "title": "Search type passes through unchanged",
+      "props": {
+        "modelValue": "invoices"
+      },
+      "attrs": {
+        "name": "type-search",
+        "type": "search"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/type-tel",
+      "title": "Telephone type passes through unchanged",
+      "props": {
+        "modelValue": "+1 555 0100"
+      },
+      "attrs": {
+        "name": "type-tel",
+        "type": "tel",
+        "autocomplete": "tel"
+      },
+      "visual": true
+    },
+    {
+      "id": "input/type-url",
+      "title": "URL type passes through unchanged",
+      "props": {
+        "modelValue": "https://acme.example"
+      },
+      "attrs": {
+        "name": "type-url",
+        "type": "url"
+      },
+      "visual": true
+    },
+    {
       "id": "input/type-password",
       "title": "Password type without the reveal action",
       "props": {
@@ -634,7 +696,7 @@
     },
     {
       "id": "input/interaction-readonly",
-      "title": "A read-only control offers no clear action after typing",
+      "title": "A read-only control ignores typing and offers no clear action",
       "props": {
         "modelValue": "fixed",
         "clearable": true
@@ -665,10 +727,36 @@
         "name": "interaction-wrapper-transition"
       },
       "interaction": {
+        "visualFocus": "blur-after-recording",
         "steps": [
           {
             "action": "type",
             "value": "typed"
+          }
+        ]
+      },
+      "visual": false
+    },
+    {
+      "id": "input/interaction-focus",
+      "title": "Focusing the control",
+      "note": "Gives the focus ring a comparison of its own. The static matrix never focuses anything, so :focus-visible had no coverage before M07.1.",
+      "props": {
+        "modelValue": "Acme"
+      },
+      "attrs": {
+        "name": "interaction-focus"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "setSelection",
+            "start": 4,
+            "end": 4,
+            "direction": "none"
+          },
+          {
+            "action": "focus"
           }
         ]
       },
