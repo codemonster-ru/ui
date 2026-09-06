@@ -182,15 +182,21 @@ echo json_encode([
   check('the consumer renders the reveal action', rendered.password.includes('data-vf-razor-input="password-reveal"'));
   check('the consumer renders the packaged icon data', rendered.markup.includes('<svg'));
 
+  // A provider that points outside its package is a packaging defect, not a
+  // crash: report it like every other failure so the whole run is readable.
+  const resolvedAssetPath = existsSync(rendered.assetPath) ? realpathSync(rendered.assetPath) : null;
   check(
     'assetPath resolves inside the installed package',
-    realpathSync(rendered.assetPath).startsWith(realpathSync(installed)),
-    rendered.assetPath,
+    resolvedAssetPath !== null && resolvedAssetPath.startsWith(realpathSync(installed)),
+    resolvedAssetPath === null ? `${rendered.assetPath} does not exist` : resolvedAssetPath,
   );
   check('the packaged stylesheet exists and is not empty', rendered.css > 10_000, `${rendered.css} bytes`);
   check('the packaged controller exists and is not empty', rendered.js > 1_000, `${rendered.js} bytes`);
 
   // ------------------------------------------------------------ the browser
+  if (resolvedAssetPath === null || rendered.css === 0 || rendered.js === 0) {
+    check('the packaged assets are servable to a browser', false, 'no assets to serve; skipping the browser smoke');
+  } else {
   const port = await freePort();
   const documentRoot = resolve(consumerRoot, 'public');
   mkdirSync(documentRoot, { recursive: true });
@@ -261,6 +267,7 @@ ${rendered.password}
     check('the page produced no script error', page.diagnostics.pageErrors.length === 0, page.diagnostics.pageErrors.join('; '));
   } finally {
     await page.close();
+  }
   }
 } finally {
   if (chromeState.chrome) await chromeState.chrome.close();
