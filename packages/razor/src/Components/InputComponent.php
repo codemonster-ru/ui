@@ -8,6 +8,7 @@ use Codemonster\Razor\Components\ComponentRenderContext;
 use Codemonster\Razor\Components\Contracts\ComponentInterface;
 use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\VueForge\Razor\Support\Html;
+use Codemonster\VueForge\Razor\Support\IconButton;
 use Codemonster\VueForge\Razor\Support\IconRenderer;
 use Codemonster\VueForge\Razor\Support\InputState;
 
@@ -51,7 +52,6 @@ final class InputComponent implements ComponentInterface
     ];
 
     private const ADORNMENT_ICON_SIZE = 'var(--vf-field-icon-size)';
-    private const ACTION_ICON_SIZE = 'var(--vf-icon-size-sm)';
 
     public function render(ComponentRenderContext $context): RenderedHtml
     {
@@ -158,13 +158,17 @@ final class InputComponent implements ComponentInterface
      * `hidden` plus `disabled` means a no-JS page shows no control that cannot
      * work, and a keyboard user cannot reach one either.
      *
+     * The control itself is a real icon button, rendered by the same code as
+     * the `vf-icon-button` tag. Until M10 this method assembled its own markup
+     * that merely repeated the same class names, so a change to the icon button
+     * reached one of the two and not the other.
+     *
      * @param array<string, string> $extra
      */
     private function actionButton(string $class, string $action, string $label, string $icon, array $extra): string
     {
-        $attributes = array_merge([
-            'class' => Html::classes(['vf-icon-button', 'vf-icon-button--ghost', 'vf-icon-button--sm', $class]),
-            'type' => 'button',
+        return IconButton::render($icon, size: 'sm', attributes: array_merge([
+            'class' => $class,
             'aria-label' => $label,
             'data-vf-razor-input' => $action,
             // `hidden` alone is not enough: the canonical .vf-icon-button rule
@@ -174,11 +178,7 @@ final class InputComponent implements ComponentInterface
             'hidden' => true,
             'style' => 'display:none',
             'disabled' => true,
-        ], $extra);
-
-        return '<button' . Html::attributes($attributes) . '>'
-            . IconRenderer::render($icon, self::ACTION_ICON_SIZE, ariaHidden: true)
-            . '</button>';
+        ], $extra));
     }
 
     /** @param array<string, bool> $state */
