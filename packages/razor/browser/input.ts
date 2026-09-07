@@ -10,7 +10,7 @@
 // and are imported here. Everything in this file is the part that cannot be
 // shared: listeners, focus, selection and DOM mutation.
 import {
-  getInputIcon,
+  getIcon,
   isClearActionAvailable,
   isInputFilled,
   isPasswordRevealAvailable,
@@ -136,7 +136,7 @@ function sync(parts: InputParts, revealed: boolean): void {
     parts.reveal.setAttribute('aria-pressed', revealed ? 'true' : 'false');
     parts.reveal.setAttribute('aria-label', revealed ? parts.revealLabels.hide : parts.revealLabels.show);
 
-    const icon = getInputIcon(resolvePasswordRevealIcon(revealed));
+    const icon = getIcon(resolvePasswordRevealIcon(revealed));
     const svg = parts.reveal.querySelector('svg');
     if (svg) {
       svg.innerHTML = icon.body;

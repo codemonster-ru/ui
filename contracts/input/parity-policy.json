@@ -209,7 +209,7 @@
         "input/interaction-readonly",
         "input/interaction-wrapper-transition"
       ],
-      "reason": "Only this exact inert clear subtree is allowed: type=button, disabled, hidden, display:none, not operable, and the canonical xmark glyph. The full extracted subtree is checked against right, including native/aria/product attributes, text and descendants. The values were verified against real M07 browser captures; another child, changed glyph, or an active button is not approved.",
+      "reason": "Only this exact inert clear subtree is allowed: type=button, disabled, hidden, display:none, not operable, and the canonical xmark glyph. The full extracted subtree is checked against right, including native/aria/product attributes, text and descendants. The values were verified against real M07 browser captures; another child, changed glyph, or an active button is not approved. M10 narrowed this pin rather than widening it: the icon layout moved into packages/styles/src/components/icon.css, so the wrapper now carries only the per-glyph custom properties and the svg carries no style attribute at all.",
       "classification": "framework-specific",
       "expectedOccurrences": 28,
       "directions": ["reference-vs-razor", "current-vs-razor"],
@@ -232,7 +232,7 @@
             "classes": ["vf-icon-wrapper"],
             "consumerClasses": [],
             "attributes": {
-              "style": "--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1;display:inline-grid;line-height:0;place-items:center"
+              "style": "--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1"
             },
             "children": [
               {
@@ -245,7 +245,6 @@
                   "height": "var(--vf-icon-size-sm)",
                   "stroke": "currentColor",
                   "stroke-width": "2",
-                  "style": "transform-origin:center;transform:translate(calc(var(--vf-icon-offset-x) * 100%),calc(var(--vf-icon-offset-y) * 100%)) scale(var(--vf-icon-scale))",
                   "viewBox": "0 0 24 24",
                   "width": "var(--vf-icon-size-sm)"
                 },
@@ -281,66 +280,6 @@
         ],
         "operable": false
       }
-    },
-    {
-      "id": "razor-icon-wrapper-inline-layout",
-      "dimension": "dom.nativeAttributes",
-      "target": "razor",
-      "detail": "style",
-      "pathSelector": "span.vf-icon-wrapper",
-      "caseIds": [
-        "input/custom-class-adorned",
-        "input/custom-style-adorned",
-        "input/leading-icon",
-        "input/trailing-icon",
-        "input/both-icons",
-        "input/clearable-filled",
-        "input/password-reveal-hidden",
-        "input/trailing-and-clear",
-        "input/password-and-clear",
-        "input/interaction-typing",
-        "input/interaction-empty-again",
-        "input/interaction-clear",
-        "input/interaction-reveal",
-        "input/interaction-hide",
-        "input/interaction-selection"
-      ],
-      "reason": "The Vue icon takes its layout from a <style scoped> block, which compiles to selectors carrying a scope attribute that Razor markup cannot have. The neutral icon data therefore carries those declarations as inline style, derived from the built icons stylesheet by scripts/build/generate-input-icon-data.mjs rather than transcribed. The rendered result is identical, which is why geometry and visual parity stay strict; only the style attribute of this exact element differs. Moving these rules into the shared stylesheet belongs to the milestone that migrates the icon system.",
-      "classification": "framework-specific",
-      "expectedOccurrences": 84,
-      "directions": ["reference-vs-razor", "current-vs-razor"],
-      "left": "--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1",
-      "right": "--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1;display:inline-grid;line-height:0;place-items:center"
-    },
-    {
-      "id": "razor-icon-svg-inline-layout",
-      "dimension": "dom.nativeAttributes",
-      "target": "razor",
-      "detail": "style",
-      "pathSelector": "svg.vf-icon.vf-icon--classic.vf-icon--regular",
-      "caseIds": [
-        "input/custom-class-adorned",
-        "input/custom-style-adorned",
-        "input/leading-icon",
-        "input/trailing-icon",
-        "input/both-icons",
-        "input/clearable-filled",
-        "input/password-reveal-hidden",
-        "input/trailing-and-clear",
-        "input/password-and-clear",
-        "input/interaction-typing",
-        "input/interaction-empty-again",
-        "input/interaction-clear",
-        "input/interaction-reveal",
-        "input/interaction-hide",
-        "input/interaction-selection"
-      ],
-      "reason": "The transform half of the same scoped icon layout, on the svg element itself. Derived by the same generator from the same built stylesheet. The selector names the exact svg element, so a style difference on any element nested inside it is not covered and fails.",
-      "classification": "framework-specific",
-      "expectedOccurrences": 84,
-      "directions": ["reference-vs-razor", "current-vs-razor"],
-      "left": null,
-      "right": "transform-origin:center;transform:translate(calc(var(--vf-icon-offset-x) * 100%),calc(var(--vf-icon-offset-y) * 100%)) scale(var(--vf-icon-scale))"
     },
     {
       "id": "razor-keeps-focus-through-wrapper-transition",

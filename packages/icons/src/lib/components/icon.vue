@@ -136,45 +136,4 @@ const wrapperStyles = computed(() => {
   };
 });
 </script>
-<style lang="scss" scoped>
-.vf-icon-wrapper {
-  --vf-icon-offset-x: 0;
-  --vf-icon-offset-y: 0;
-  --vf-icon-scale: 1;
-
-  display: inline-grid;
-  place-items: center;
-  line-height: 0;
-}
-
-.vf-icon {
-  transform: translate(calc(var(--vf-icon-offset-x) * 100%), calc(var(--vf-icon-offset-y) * 100%))
-    scale(var(--vf-icon-scale));
-  transform-origin: center;
-}
-
-.vf-icon-wrapper--spin {
-  animation-name: vf-icon-spin;
-  animation-delay: 0s;
-  animation-duration: 2s;
-  animation-direction: normal;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .vf-icon-wrapper--spin {
-    animation: none;
-  }
-}
-
-@keyframes vf-icon-spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-</style>
+<style lang="scss" scoped src="../../../../styles/src/components/icon.css"></style>

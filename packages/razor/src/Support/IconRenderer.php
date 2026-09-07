@@ -5,15 +5,19 @@ declare(strict_types=1);
 namespace Codemonster\VueForge\Razor\Support;
 
 /**
- * Renders the neutral icon data extracted from the Vue icon package.
+ * Renders the neutral icon registry extracted from the Vue icon package.
  *
  * The geometry is owned by packages/icons and generated into
- * resources/icons/input-icon-data.json; `npm run check:icon-data` fails if that
+ * resources/icons/icon-registry.json; `npm run check:icon-data` fails if that
  * file drifts from a fresh render. This class only turns the data into markup.
  *
- * Only the glyphs the Input closure needs are extracted. An unknown name throws
- * rather than silently rendering nothing, so a missing glyph is a visible
- * development error instead of an invisible gap in the UI.
+ * The registry covers every glyph the icons package publishes, so adding a
+ * component needs no icon extraction step. An unknown name throws rather than
+ * silently rendering nothing, so a missing glyph is a visible development error
+ * instead of an invisible gap in the UI.
+ *
+ * Layout lives in packages/styles/src/components/icon.css, which both adapters
+ * load. `wrapperStyle` carries only the per-glyph custom properties.
  *
  * @internal
  */
@@ -46,10 +50,11 @@ final class IconRenderer
 
         if (!isset($icons[$name])) {
             throw new \InvalidArgumentException(sprintf(
-                'Unknown VueForge Razor icon [%s]. Available: %s. Extract more glyphs with '
-                . 'scripts/build/generate-input-icon-data.mjs, or use the leading/trailing slots.',
+                'Unknown VueForge Razor icon [%s]. The registry holds %d glyph(s); regenerate it with '
+                . 'scripts/build/generate-icon-registry.mjs if the icons package added this one, '
+                . 'or use the leading/trailing slots.',
                 $name,
-                implode(', ', self::available()),
+                count($icons),
             ));
         }
 
@@ -75,7 +80,7 @@ final class IconRenderer
             return self::$icons;
         }
 
-        $path = dirname(__DIR__, 2) . '/resources/icons/input-icon-data.json';
+        $path = dirname(__DIR__, 2) . '/resources/icons/icon-registry.json';
         $contents = file_get_contents($path);
 
         if ($contents === false) {

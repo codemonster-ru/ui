@@ -40,7 +40,7 @@ export const requiredEntries = [
   'src/Support/Html.php',
   'src/Support/IconRenderer.php',
   'src/Support/InputState.php',
-  'resources/icons/input-icon-data.json',
+  'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',
   'dist/assets-manifest.json',

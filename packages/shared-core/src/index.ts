@@ -15,8 +15,8 @@ export {
   resolveInputAdornmentState,
   resolveInputType,
 } from './input/state.js';
-export { getInputIcon, resolvePasswordRevealIcon, vfInputIcons } from './icons/input-icons.js';
-export type { VfIconData, VfInputIconName } from './icons/input-icons.js';
+export { getIcon, resolvePasswordRevealIcon, vfIcons } from './icons/registry.js';
+export type { VfIconData, VfIconName } from './icons/registry.js';
 export type {
   VfInputAdornmentFlags,
   VfInputAdornmentState,

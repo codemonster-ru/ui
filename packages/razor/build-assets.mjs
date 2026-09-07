@@ -42,6 +42,10 @@ const styleSources = [
   'packages/theme/.generated/theme/tokens.css',
   'packages/theme/.generated/theme/theme.css',
   'packages/styles/src/foundation/base.css',
+  // The icon layout the Vue icons package used to carry in a <style scoped>
+  // block. Both adapters read it from here now, which is what let the Razor
+  // renderer stop injecting those declarations as an inline style attribute.
+  'packages/styles/src/components/icon.css',
   'packages/styles/src/components/input.css',
 ];
 
