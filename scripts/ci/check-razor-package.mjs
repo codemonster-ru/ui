@@ -4,6 +4,7 @@
 // Fails closed. A package with no stylesheet, no controller or no provenance is
 // not publishable, and the point of H2 was that nothing said so.
 import { existsSync, readFileSync, statSync } from 'node:fs';
+import { styleSources } from '../../packages/razor/style-sources.mjs';
 import { relative, resolve } from 'node:path';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -87,10 +88,18 @@ check(
     : stagedProvenance.source === 'exported-tree' && stagedProvenance.commit === null,
   `${stagedProvenance.source} ${stagedProvenance.commit}`,
 );
+// Counting the sources said nothing about which ones they were, so adding a
+// canonical stylesheet meant editing a number rather than reviewing a list.
+// The builder's own declaration is the expectation now.
 check(
-  'provenance records every canonical stylesheet source',
-  stagedProvenance.assets.styles.length === 4,
-  `${stagedProvenance.assets.styles.length} sources`,
+  'provenance records exactly the canonical stylesheet sources the builder declares',
+  JSON.stringify(stagedProvenance.assets.styles.map((entry) => entry.source)) === JSON.stringify(styleSources),
+  stagedProvenance.assets.styles.map((entry) => entry.source).join(', '),
+);
+check(
+  'the shared icon layout is one of them',
+  styleSources.includes('packages/styles/src/components/icon.css'),
+  styleSources.join(', '),
 );
 check(
   'provenance names only neutral owners',
@@ -108,6 +117,11 @@ check('no absolute machine path travels with the package', !/\/(Users|home)\//.t
 const css = readFileSync(resolve(target, 'dist/vueforge-razor.css'), 'utf8');
 check('the packaged stylesheet carries the Input rules', css.includes('.vf-input-wrap__clear'));
 check('the packaged stylesheet carries the tokens those rules reference', css.includes('--vf-input-'));
+check('the packaged stylesheet carries the icon button rules', css.includes('.vf-icon-button'));
+// M10 moved the icon layout out of the markup and into this stylesheet. If it
+// is missing here, every Razor glyph loses its layout and nothing else fails.
+check('the packaged stylesheet carries the shared icon layout', css.includes('.vf-icon-wrapper'));
+check('the packaged stylesheet carries the icon spin keyframes', css.includes('@keyframes vf-icon-spin'));
 check('the packaged stylesheet carries the neutral foundation', css.includes('color-scheme'));
 
 const js = readFileSync(resolve(target, 'dist/vueforge-razor.js'), 'utf8');

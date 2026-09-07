@@ -15,6 +15,7 @@
 //
 // Copying built artifacts is how a Composer package stays self-contained; it is
 // not a source dependency on the Vue adapter.
+import { styleSources } from './style-sources.mjs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -38,16 +39,6 @@ const distDirectory = outDirArgument
 // from packages/core, which meant the Razor adapter could not build without the
 // Vue adapter. scripts/ci/check-asset-boundary.mjs fails if a path outside
 // theme, styles or shared-core reappears here.
-const styleSources = [
-  'packages/theme/.generated/theme/tokens.css',
-  'packages/theme/.generated/theme/theme.css',
-  'packages/styles/src/foundation/base.css',
-  // The icon layout the Vue icons package used to carry in a <style scoped>
-  // block. Both adapters read it from here now, which is what let the Razor
-  // renderer stop injecting those declarations as an inline style attribute.
-  'packages/styles/src/components/icon.css',
-  'packages/styles/src/components/input.css',
-];
 
 function inlineCssImports(filePath, seen = new Set()) {
   if (seen.has(filePath)) {

@@ -153,15 +153,21 @@ use Codemonster\\VueForge\\Razor\\VueForgeRazorProvider;
 $registry = new ComponentRegistry();
 $registry->register(new VueForgeRazorProvider());
 $input = $registry->resolve('vf-input');
+$iconButton = $registry->resolve('vf-icon-button');
 $assetPath = VueForgeRazorProvider::assetPath();
 
 echo json_encode([
+    'handles' => ['vf-input' => $registry->handles('vf-input'), 'vf-icon-button' => $registry->handles('vf-icon-button')],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
         [],
     ))->value(),
     'password' => $input->render(new ComponentRenderContext(
         ['name' => 'secret', 'value' => 'hunter2', 'type' => 'password', 'password-reveal' => true],
+        [],
+    ))->value(),
+    'iconButton' => $iconButton->render(new ComponentRenderContext(
+        ['icon' => 'magnifying-glass', 'variant' => 'danger', 'size' => 'lg', 'aria-label' => 'Search'],
         [],
     ))->value(),
     'assetPath' => $assetPath,
@@ -181,6 +187,33 @@ echo json_encode([
   check('the consumer renders the clear action', rendered.markup.includes('data-vf-razor-input="clear"'));
   check('the consumer renders the reveal action', rendered.password.includes('data-vf-razor-input="password-reveal"'));
   check('the consumer renders the packaged icon data', rendered.markup.includes('<svg'));
+  check(
+    'the installed provider registers both migrated components',
+    rendered.handles['vf-input'] === true && rendered.handles['vf-icon-button'] === true,
+    JSON.stringify(rendered.handles),
+  );
+
+  // The second migrated component, proved from the same installed package. A
+  // glyph no VfInput case uses is deliberate: it fails if the package ever goes
+  // back to shipping only the handful of icons one component needed.
+  check(
+    'the consumer renders the icon button',
+    rendered.iconButton.includes('<button') && rendered.iconButton.includes('class="vf-icon-button'),
+    rendered.iconButton.slice(0, 160),
+  );
+  check(
+    'the icon button carries its variant and size modifiers',
+    rendered.iconButton.includes('vf-icon-button--danger') && rendered.iconButton.includes('vf-icon-button--lg'),
+  );
+  check(
+    'the packaged registry holds glyphs beyond the ones VfInput needs',
+    rendered.iconButton.includes('<svg') && rendered.iconButton.includes('aria-hidden="true"'),
+  );
+  check(
+    'the icon button carries no inline layout, because the stylesheet owns it',
+    !/<svg[^>]*\sstyle=/.test(rendered.iconButton),
+    rendered.iconButton.slice(0, 200),
+  );
 
   // A provider that points outside its package is a packaging defect, not a
   // crash: report it like every other failure so the whole run is readable.

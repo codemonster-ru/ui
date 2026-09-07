@@ -80,6 +80,11 @@ try {
     : '';
   check('the exported stylesheet carries the Input rules', css.includes('.vf-input-wrap__clear'));
   check('the exported stylesheet carries the tokens', css.includes('--vf-input-'));
+  check('the exported stylesheet carries the icon button rules', css.includes('.vf-icon-button'));
+  // The icon layout is only in the artifact because a clean export can build
+  // it from packages/styles. If that source ever stopped shipping, every Razor
+  // glyph would lose its layout and no other assertion here would notice.
+  check('the exported stylesheet carries the shared icon layout', css.includes('.vf-icon-wrapper'));
 
   // The same artifact validation and the same consumer proof, run against the
   // export rather than against the working tree.

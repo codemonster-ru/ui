@@ -29,7 +29,13 @@ import { fileURLToPath } from 'node:url';
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 /** Files a consumer never needs and that must not travel with the package. */
-export const developmentOnlyEntries = ['tests', 'phpunit.xml.dist', 'build-assets.mjs', 'browser'];
+export const developmentOnlyEntries = [
+  'tests',
+  'phpunit.xml.dist',
+  'build-assets.mjs',
+  'style-sources.mjs',
+  'browser',
+];
 
 /** Everything the installed package must contain to be usable. */
 export const requiredEntries = [
@@ -37,7 +43,10 @@ export const requiredEntries = [
   'README.md',
   'src/VueForgeRazorProvider.php',
   'src/Components/InputComponent.php',
+  'src/Components/IconButtonComponent.php',
   'src/Support/Html.php',
+  'src/Support/IconButton.php',
+  'src/Support/IconButtonState.php',
   'src/Support/IconRenderer.php',
   'src/Support/InputState.php',
   'resources/icons/icon-registry.json',
