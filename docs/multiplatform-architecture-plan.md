@@ -1,6 +1,6 @@
 # VueForge: план второй мультиплатформенной миграции
 
-Статус: **план одобрен; выполнены M00–M08 (включая corrective M07.1)**. Дата анализа: 2026-09-07. Результаты M00/M01 — в приложении В, M02 — в приложении Г, M03/M04 — в приложении Д, M05 — в приложении Е, M06 — в приложении Ж, M07 — в приложении З, M07.1 — в приложении И, M08 — в приложении К; остальные milestones не начаты.
+Статус: **план одобрен; выполнены M00–M09 (включая corrective M07.1)**. Дата анализа: 2026-09-07. Результаты M00/M01 — в приложении В, M02 — в приложении Г, M03/M04 — в приложении Д, M05 — в приложении Е, M06 — в приложении Ж, M07 — в приложении З, M07.1 — в приложении И, M08 — в приложении К, M09 — в приложении Л; остальные milestones не начаты.
 
 Единственная спецификация существующего продукта — коммит `fd793696f50d3be0fcd3788f0f8f751c63869963` (далее **reference**). Первая миграция исследована как исторический материал, преимущественно до локального `main` на `921ea7a7969b4510bfc356350eafb72a7a99466d`. Отдельно рассмотрена диагностическая ветка `feat/vueforge-reference-oracle` на `b55b69d96510e3ef68738ef2200ef1c6abd1eac8`; её изменения не следует считать содержимым `main`.
 
@@ -1929,3 +1929,71 @@ Vue-страница — **отдельный документ, а не седь
 Composer path repository установлен с `symlink: true`, поэтому showcase работает против рабочего дерева и локально собранного `packages/razor/dist`. Это dev-приложение, а **не** доказательство дистрибутивности: H2 (gitignored `dist` отсутствует в архиве пакета) и H3 (Razor-ассеты читают generated theme/base CSS Vue-пакета) не исправлялись и не скрыты — они описаны в README showcase. Публикация принадлежит M09.
 
 M4 (рукописная field-фикстура), M6, M8 (частично синтетический interaction transport), M9/M10 (icon ownership) остаются прежним debt. N2/N3 (`blur-after-recording` и отсутствие пиксельного покрытия focus) не расширялись: full-route проверка не использует нормализацию focus вообще. N4 (стоимость точных approvals) не трогался — policy остаётся узкой.
+
+## Приложение Л. Результаты M09
+
+M09 закрывает H2 (дистрибутивность Composer-пакета) и H3 (зависимость Razor asset build от внутренностей Vue-пакета). Следующий компонент не мигрировал, `VfField` не реализован, публикации не было, версии пакетов не менялись.
+
+### Л.1. H2 до исправления
+
+Артефакт собран так, как его получил бы реальный потребитель — `git archive HEAD packages/razor`, то есть только tracked-файлы:
+
+- 16 файлов, каталога `dist/` нет;
+- реальная установка через Composer: `assetPath()` → `…/vendor/codemonster-ru/vueforge-razor/dist`, `dir exists: NO`, `css exists: NO`, `js exists: NO`.
+
+Прежний `razor:consumer` этого не видел, потому что ставил рабочее дерево через path repository и находил gitignored `packages/razor/dist`, собранный локально минуту назад.
+
+### Л.2. H2 — решение
+
+Выбрана **модель B**: `dist` не коммитится, его создаёт release stage. `scripts/release/build-razor-package.mjs`:
+
+1. берёт пакет из `git archive`, поэтому ничто untracked или устаревшее не может попасть внутрь;
+2. собирает ассеты **прямо в staging** через новый `--out-dir`, поэтому старый локальный `dist` не может оказаться тем, что уедет потребителю;
+3. выбрасывает `tests`, `phpunit.xml.dist`, `build-assets.mjs` и `browser`;
+4. пишет provenance: commit, источник, четыре канонических источника стилей, версия esbuild, хэши артефактов — без единого абсолютного пути.
+
+Результат: 12 файлов. Публикация обязана использовать этот артефакт: установка напрямую из VCS ассетов не несёт, и `check:razor-package` не даёт этому пройти незамеченным.
+
+### Л.3. H3 до исправления
+
+`packages/razor/build-assets.mjs` читал:
+
+| Путь | Владелец |
+| --- | --- |
+| `packages/core/.generated/theme/tokens.css` | Vue adapter (артефакт сборки) |
+| `packages/core/.generated/theme/theme.css` | Vue adapter (артефакт сборки) |
+| `packages/core/src/styles/components/base.css` | Vue adapter (исходник) |
+| `packages/styles/src/components/input.css` | нейтральный |
+
+Ни одна из этих связей не была видна dependency guard: это строки, отданные файловой системе, а не import-специфиеры.
+
+### Л.4. H3 — решение
+
+**Foundation CSS.** `base.css`, `theme-transition-guard.css` и `accessibility-preferences.css` не содержат ничего Vue-специфичного. Перенесены дословно в `packages/styles/src/foundation/`; в core остались однострочные forwards, паттерн M04. Публичный экспорт `./base.css`, `components.css`, `foundation.css` и standalone dist-артефакт не изменились.
+
+**Token CSS.** Единственным Vue-входом были значения preset. Это продуктовые токены, нужные каждому адаптеру, поэтому `default-preset-source.ts` и генератор переехали в `packages/theme`, который уже владел сериализатором и colour-schema. Файл сохранил внутрипакетный путь `src/theme/default-preset-source.ts`, поэтому provenance-комментарий, который генератор пишет в `tokens.css` и `theme.css`, остался буквально верным, а артефакты — побайтово прежними.
+
+Публичный API theme не расширен: preset внутренний и не реэкспортируется из index — так же, как M03 поступил с colour-schema. Проверка полноты против `VfThemeTokens` осталась в core (`default-preset-contract.ts`), в пакете, который этот интерфейс публикует: пропущенный токен по-прежнему ошибка компиляции.
+
+`npm run razor:assets` теперь сам генерирует токены и читает только `packages/theme`, `packages/styles`, `packages/shared-core`. Доказано сборкой ассетов при физически отсутствующих `packages/core` и `packages/layouts`: exit 0, четыре канонических источника, все нейтральные.
+
+### Л.5. Boundary hardening
+
+`scripts/ci/check-asset-boundary.mjs` смотрит **строковые литералы**, а не import-специфиеры, — там, где и живёт эта связанность. Он отличает путь, который файл читает, от комментария, объясняющего путь, который файл читал раньше, и от `$comment`-provenance в сгенерированном JSON. Дополнительно отвергает Composer-зависимость на Vue-адаптер, path repository в дистрибутивном манифесте и PHP `require`, выходящий за пределы пакета. 13 негативных тестов плюс живая проверка: возврат старого core-пути в `build-assets.mjs` роняет gate.
+
+### Л.6. Adversarial проверки
+
+| Атака | Детектор | Результат |
+| --- | --- | --- |
+| `packages/core` в Razor build | asset boundary | FAIL |
+| Удалён packaged CSS | package content | FAIL |
+| Удалён packaged JS | package content | FAIL |
+| `assetPath` выходит за пределы пакета | packaged consumer | FAIL, 4 assertions |
+| Пакет симлинкнут на рабочее дерево | packaged consumer isolation | FAIL |
+| Испорчен устаревший локальный `dist` | staged artifact | не затронут |
+| tests/build-script оставлены в артефакте | package content | FAIL, 12 problems |
+| Мутация общего CSS текущего дерева | reference isolation | reference не изменился, current и parity падают |
+
+### Л.7. Что M09 не меняет
+
+Vue public API, Razor public API, product CSS, tokens, версии пакетов и `contracts/` — без изменений. Reference-коммит не тронут. M4 (рукописная field-композиция), M8 (частично синтетический interaction transport), M9/M10 (icon ownership) и N2/N3/N4 остаются прежним debt.
