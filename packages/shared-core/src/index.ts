@@ -15,6 +15,8 @@ export {
   resolveInputAdornmentState,
   resolveInputType,
 } from './input/state.js';
+export { resolveIconButtonClasses, resolveIconButtonIconSize } from './icon-button/state.js';
+export type { VfIconButtonAppearance, VfIconButtonSize, VfIconButtonVariant } from './icon-button/state.js';
 export { getIcon, resolvePasswordRevealIcon, vfIcons } from './icons/registry.js';
 export type { VfIconData, VfIconName } from './icons/registry.js';
 export type {

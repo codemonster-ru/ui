@@ -8,6 +8,9 @@ export const inputSourcePath = 'packages/core/src/components/input/VfInput.vue';
 export const sharedInputRulesPath = 'packages/shared-core/src/input/state.ts';
 export const iconButtonSourcePath = 'packages/core/src/components/icon-button/VfIconButton.vue';
 
+/** The shared rule VfIconButton and the Razor adapter both derive their class list from. */
+export const iconButtonRulePath = 'packages/shared-core/src/icon-button/state.ts';
+
 export const inputMutations = [
   {
     id: 'drop-leading-icon',
@@ -121,24 +124,28 @@ export const inputMutations = [
 // attribute, a glyph that stops being hidden from assistive technology. Each of
 // these shipped somewhere in the first migration.
 export const iconButtonMutations = [
+  // The class list and icon size moved into shared-core, so these three defects
+  // are injected where the rule now lives. That is the point of mutating the
+  // rule rather than the SFC: a defect there has to be caught through both
+  // adapters, not just the one that used to own the code.
   {
     id: 'icon-button-drops-size-modifier',
     description: 'the size modifier class stops being emitted, so sm and lg render as md',
-    file: iconButtonSourcePath,
-    find: "props.size !== 'md' && `vf-icon-button--${props.size}`",
-    replace: 'false',
+    file: iconButtonRulePath,
+    find: "  if (size !== 'md') {\n    classes.push(`vf-icon-button--${size}`);\n  }",
+    replace: '',
   },
   {
     id: 'icon-button-drops-variant-modifier',
     description: 'the variant modifier class disappears, so every button renders as the base style',
-    file: iconButtonSourcePath,
-    find: '`vf-icon-button--${props.variant}`',
-    replace: "''",
+    file: iconButtonRulePath,
+    find: "const classes = ['vf-icon-button', `vf-icon-button--${variant}`];",
+    replace: "const classes = ['vf-icon-button'];",
   },
   {
     id: 'icon-button-normalises-icon-size',
     description: 'the small glyph size collapses to the medium token',
-    file: iconButtonSourcePath,
+    file: iconButtonRulePath,
     find: "    return 'var(--vf-icon-size-sm)';",
     replace: "    return 'var(--vf-icon-size-md)';",
   },

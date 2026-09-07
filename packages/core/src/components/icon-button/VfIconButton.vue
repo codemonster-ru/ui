@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
 import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
+import { resolveIconButtonClasses, resolveIconButtonIconSize } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfButtonVariant, VfControlSize } from '@/types/components';
 
@@ -23,21 +24,12 @@ const props = withDefaults(defineProps<VfIconButtonProps>(), {
 
 const attrs = useAttrs();
 
-const classes = computed(() =>
-  cx('vf-icon-button', `vf-icon-button--${props.variant}`, props.size !== 'md' && `vf-icon-button--${props.size}`),
-);
+// The class list and the icon size are the only derivations this component
+// makes, and the Razor adapter has to make the same two. They live in
+// shared-core so the platforms cannot drift; the rendering below is unchanged.
+const classes = computed(() => cx(...resolveIconButtonClasses({ variant: props.variant, size: props.size })));
 
-const iconSize = computed(() => {
-  if (props.size === 'sm') {
-    return 'var(--vf-icon-size-sm)';
-  }
-
-  if (props.size === 'lg') {
-    return 'var(--vf-icon-size-lg)';
-  }
-
-  return 'var(--vf-icon-size-md)';
-});
+const iconSize = computed(() => resolveIconButtonIconSize(props.size));
 </script>
 
 <template>

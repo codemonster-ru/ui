@@ -201,15 +201,25 @@ for (const mutation of mutations) {
 const leaked = mutatedPaths.filter(
   (path) => sha256(readFileSync(resolve(repositoryRoot, path))) !== hashesBefore.get(path),
 );
-const modifiedVersusHead = execFileSync('git', ['-C', repositoryRoot, 'diff', '--name-only', '--', ...mutatedPaths], {
-  encoding: 'utf8',
-})
-  .split('\n')
-  .filter(Boolean);
+// `git diff` cannot see a file that is not tracked yet, so a brand new rule
+// file would be reported as matching HEAD when it does not exist there at all.
+// `git status` distinguishes the three states this line is meant to tell apart.
+const statusVersusHead = new Map(
+  execFileSync('git', ['-C', repositoryRoot, 'status', '--porcelain', '--', ...mutatedPaths], { encoding: 'utf8' })
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => [line.slice(3).trim(), line.slice(0, 2)]),
+);
 
 process.stdout.write(`\nMutated files unchanged on disk after the run: ${leaked.length === 0}\n`);
 for (const path of mutatedPaths) {
-  const state = modifiedVersusHead.includes(path) ? 'differs from HEAD (uncommitted work)' : 'matches HEAD';
+  const code = statusVersusHead.get(path);
+  const state =
+    code === undefined
+      ? 'matches HEAD'
+      : code === '??'
+        ? 'untracked (new in this working tree)'
+        : 'differs from HEAD (uncommitted work)';
   process.stdout.write(`  ${path}: ${state}\n`);
 }
 

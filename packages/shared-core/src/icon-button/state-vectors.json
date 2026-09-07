@@ -1,0 +1,291 @@
+{
+  "$comment": "Shared input/expected vectors for the VfIconButton presentation rules. The TypeScript rules in state.ts and the PHP mirror in packages/razor/src/Support/IconButtonState.php both run these, so the two implementations cannot drift. The full variant x size grid is enumerated rather than sampled: it is 27 rows, and a sampled grid is how a single wrong modifier survives. Plain data on purpose: no schema, no DSL.",
+  "resolveIconButtonClasses": [
+    {
+      "variant": "primary",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--primary",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "primary",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--primary"
+      ]
+    },
+    {
+      "variant": "primary",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--primary",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "secondary",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--secondary",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "secondary",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--secondary"
+      ]
+    },
+    {
+      "variant": "secondary",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--secondary",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "success",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--success",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "success",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--success"
+      ]
+    },
+    {
+      "variant": "success",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--success",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "info",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--info",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "info",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--info"
+      ]
+    },
+    {
+      "variant": "info",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--info",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "warn",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--warn",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "warn",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--warn"
+      ]
+    },
+    {
+      "variant": "warn",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--warn",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "help",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--help",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "help",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--help"
+      ]
+    },
+    {
+      "variant": "help",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--help",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "danger",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--danger",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "danger",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--danger"
+      ]
+    },
+    {
+      "variant": "danger",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--danger",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "contrast",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--contrast",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "contrast",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--contrast"
+      ]
+    },
+    {
+      "variant": "contrast",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--contrast",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "ghost",
+      "size": "sm",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--ghost",
+        "vf-icon-button--sm"
+      ]
+    },
+    {
+      "variant": "ghost",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--ghost"
+      ]
+    },
+    {
+      "variant": "ghost",
+      "size": "lg",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--ghost",
+        "vf-icon-button--lg"
+      ]
+    },
+    {
+      "variant": "nonsense",
+      "size": "md",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--nonsense"
+      ]
+    },
+    {
+      "variant": "ghost",
+      "size": "xl",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--ghost",
+        "vf-icon-button--xl"
+      ]
+    },
+    {
+      "variant": "nonsense",
+      "size": "xl",
+      "expected": [
+        "vf-icon-button",
+        "vf-icon-button--nonsense",
+        "vf-icon-button--xl"
+      ]
+    }
+  ],
+  "resolveIconButtonIconSize": [
+    {
+      "size": "sm",
+      "expected": "var(--vf-icon-size-sm)"
+    },
+    {
+      "size": "md",
+      "expected": "var(--vf-icon-size-md)"
+    },
+    {
+      "size": "lg",
+      "expected": "var(--vf-icon-size-lg)"
+    },
+    {
+      "size": "xl",
+      "expected": "var(--vf-icon-size-md)"
+    },
+    {
+      "size": "",
+      "expected": "var(--vf-icon-size-md)"
+    },
+    {
+      "size": "MD",
+      "expected": "var(--vf-icon-size-md)"
+    }
+  ]
+}
