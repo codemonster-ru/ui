@@ -25,14 +25,17 @@ In package terms:
   - `VfThemeProvider`
   - `useTheme()`
 
-The canonical built-in preset assembly lives in [src/theme/default-preset-source.ts](../src/theme/default-preset-source.ts),
-which describes the component tokens of this package. Primitive values, mode-specific semantic maps and the
-colour-graph validators are owned by `@codemonster-ru/vueforge-theme` in
+The canonical built-in preset assembly lives in
+[theme/src/theme/default-preset-source.ts](../../theme/src/theme/default-preset-source.ts). M09 moved it to
+`@codemonster-ru/vueforge-theme` so the Vue adapter and the Razor adapter build their token CSS from one owner; it is
+internal to that package and is not a published export. The completeness check against this package's `VfThemeTokens`
+stays here, in [src/theme/default-preset-contract.ts](../src/theme/default-preset-contract.ts). Primitive values,
+mode-specific semantic maps and the colour-graph validators are owned by the same package in
 [color-token-schema.ts](../../theme/src/color-token-schema.ts), next to the colour-name contract they implement.
 
 Static CSS files still exist as the package baseline:
 
-- generated token/theme CSS owned by [build/theme-css-artifacts.ts](../build/theme-css-artifacts.ts)
+- generated token/theme CSS owned by [theme/build/theme-css-artifacts.ts](../../theme/build/theme-css-artifacts.ts)
 - the narrow baseline entry in [src/styles/foundation.css](../src/styles/foundation.css)
 
 These are fallback defaults for consumers who import the package CSS. Runtime theme configuration should be treated as the primary API.

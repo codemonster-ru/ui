@@ -8,7 +8,7 @@
 //
 // Run through vite-node because the generator is TypeScript:
 //   npm run theme:tokens
-import { buildThemeCssArtifacts, themeCssArtifactPaths } from './theme-css-artifacts.ts';
+import { buildThemeCssArtifacts, themeCssArtifactPaths } from './theme-css-artifacts';
 
 buildThemeCssArtifacts();
 

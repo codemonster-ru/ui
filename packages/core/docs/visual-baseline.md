@@ -17,7 +17,7 @@ This document defines the visual contract for `@codemonster-ru/vueforge-core` `1
 
 Primary source: [src/theme/default-preset.ts](../src/theme/default-preset.ts)
 
-CSS fallback baseline source: [src/theme/default-preset-source.ts](../src/theme/default-preset-source.ts)
+CSS fallback baseline source: [theme/src/theme/default-preset-source.ts](../../theme/src/theme/default-preset-source.ts)
 
 - Control heights
   - `sm`: `--vf-control-height-sm` (`28px`)
