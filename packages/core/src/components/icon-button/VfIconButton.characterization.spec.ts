@@ -26,8 +26,17 @@ vi.mock('@codemonster-ru/vueforge-icons', () => ({
 
 import VfIconButton from './VfIconButton.vue';
 
-function mountIconButton(options: Parameters<typeof mount>[1] = {}) {
-  return mount(VfIconButton, { attachTo: document.body, props: { icon: 'xmark' }, ...options });
+type IconButtonProps = InstanceType<typeof VfIconButton>['$props'];
+
+function mountIconButton({
+  props = {},
+  attrs = {},
+}: { props?: Partial<IconButtonProps>; attrs?: Record<string, unknown> } = {}) {
+  return mount(VfIconButton, {
+    attachTo: document.body,
+    props: { icon: 'xmark', ...props } as IconButtonProps,
+    attrs,
+  });
 }
 
 describe('VfIconButton characterization: element and defaults', () => {
