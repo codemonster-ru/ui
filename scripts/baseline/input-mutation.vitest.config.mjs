@@ -8,7 +8,7 @@ import { appendFileSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vitest/config';
-import { inputMutations, inputSourcePath } from './input-mutations.mjs';
+import { componentMutations, inputSourcePath } from './input-mutations.mjs';
 
 const repositoryRoot = resolve(import.meta.dirname, '../..');
 const corePackage = resolve(repositoryRoot, 'packages/core');
@@ -20,7 +20,7 @@ function inputMutationPlugin() {
     return { name: 'vueforge-input-mutation-disabled' };
   }
 
-  const mutation = inputMutations.find((candidate) => candidate.id === mutationId);
+  const mutation = componentMutations.find((candidate) => candidate.id === mutationId);
   if (!mutation) {
     throw new Error(`Unknown VfInput mutation: ${mutationId}`);
   }
@@ -75,6 +75,7 @@ export default defineConfig({
     setupFiles: resolve(corePackage, 'src/__tests__/setup.ts'),
     include: [
       'src/components/input/VfInput.characterization.spec.ts',
+      'src/components/icon-button/VfIconButton.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',
       'src/components/components.spec.ts',
     ],

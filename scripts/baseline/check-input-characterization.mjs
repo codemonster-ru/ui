@@ -22,7 +22,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
-import { inputMutations, inputSourcePath } from './input-mutations.mjs';
+import { componentMutations, inputSourcePath } from './input-mutations.mjs';
 import { repositoryRoot, sha256 } from './reference.mjs';
 
 const configPath = resolve(repositoryRoot, 'scripts/baseline/input-mutation.vitest.config.mjs');
@@ -30,13 +30,13 @@ const selfTest = process.argv.includes('--self-test');
 // Only the self-test uses this switch. It exercises the real driver's stale
 // rejection with an impossible needle, without changing a source file.
 const mutations = process.argv.includes('--self-test-stale')
-  ? [{ ...inputMutations[0], find: 'THIS_NEEDLE_IS_NOT_IN_THE_SOURCE' }]
-  : inputMutations;
+  ? [{ ...componentMutations[0], find: 'THIS_NEEDLE_IS_NOT_IN_THE_SOURCE' }]
+  : componentMutations;
 
 // Every file a mutation can rewrite. Since M05 that is the SFC plus the shared
 // rules it consumes.
 const mutatedPaths = [
-  ...new Set([inputSourcePath, ...inputMutations.map((mutation) => mutation.file ?? inputSourcePath)]),
+  ...new Set([inputSourcePath, ...componentMutations.map((mutation) => mutation.file ?? inputSourcePath)]),
 ];
 const hashesBefore = new Map(mutatedPaths.map((path) => [path, sha256(readFileSync(resolve(repositoryRoot, path)))]));
 const markerDirectory = mkdtempSync(resolve(tmpdir(), 'vueforge-input-mutation-'));
@@ -123,7 +123,7 @@ if (selfTest) {
     staleRun.status === 1 &&
     staleRun.stderr.includes('MUTATION_COULD_NOT_BE_APPLIED:STALE') &&
     !staleRun.stdout.includes('detected');
-  const realMutationsAreFresh = inputMutations.filter((mutation) => isStale(mutation));
+  const realMutationsAreFresh = componentMutations.filter((mutation) => isStale(mutation));
   const assertionFailure = {
     applied: true,
     status: 1,
@@ -172,7 +172,7 @@ if (stale.length > 0) {
   rmSync(markerDirectory, { recursive: true, force: true });
   process.exit(1);
 }
-process.stdout.write(`All ${inputMutations.length} mutations still match their target.\n\n`);
+process.stdout.write(`All ${componentMutations.length} mutations still match their target.\n\n`);
 
 process.stdout.write('Baseline run (no mutation) — the suite must pass.\n');
 const baselineRun = runSuite(null);
@@ -228,4 +228,6 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-process.stdout.write(`All ${inputMutations.length} VfInput regressions are detected by the characterization suite.\n`);
+process.stdout.write(
+  `All ${componentMutations.length} VfInput and VfIconButton regressions are detected by the characterization suites.\n`,
+);

@@ -6,6 +6,7 @@
 // applied in memory by a Vite plugin, so VfInput.vue on disk is never modified.
 export const inputSourcePath = 'packages/core/src/components/input/VfInput.vue';
 export const sharedInputRulesPath = 'packages/shared-core/src/input/state.ts';
+export const iconButtonSourcePath = 'packages/core/src/components/icon-button/VfIconButton.vue';
 
 export const inputMutations = [
   {
@@ -114,3 +115,55 @@ export const inputMutations = [
     replace: 'const isFloatingLabel = computed(() => Boolean(fieldContext));',
   },
 ];
+
+// M10 characterizes the second component. VfIconButton is render-only, so its
+// regressions are all in what the template emits: a lost modifier class, a lost
+// attribute, a glyph that stops being hidden from assistive technology. Each of
+// these shipped somewhere in the first migration.
+export const iconButtonMutations = [
+  {
+    id: 'icon-button-drops-size-modifier',
+    description: 'the size modifier class stops being emitted, so sm and lg render as md',
+    file: iconButtonSourcePath,
+    find: "props.size !== 'md' && `vf-icon-button--${props.size}`",
+    replace: 'false',
+  },
+  {
+    id: 'icon-button-drops-variant-modifier',
+    description: 'the variant modifier class disappears, so every button renders as the base style',
+    file: iconButtonSourcePath,
+    find: '`vf-icon-button--${props.variant}`',
+    replace: "''",
+  },
+  {
+    id: 'icon-button-normalises-icon-size',
+    description: 'the small glyph size collapses to the medium token',
+    file: iconButtonSourcePath,
+    find: "    return 'var(--vf-icon-size-sm)';",
+    replace: "    return 'var(--vf-icon-size-md)';",
+  },
+  {
+    id: 'icon-button-exposes-glyph-to-assistive-tech',
+    description: 'the glyph stops being aria-hidden, so it competes with the accessible name',
+    file: iconButtonSourcePath,
+    find: ' aria-hidden="true"',
+    replace: '',
+  },
+  {
+    id: 'icon-button-drops-attribute-forwarding',
+    description: 'inherited attrs stop reaching the button, losing aria-label, disabled and consumer class',
+    file: iconButtonSourcePath,
+    find: ' v-bind="attrs"',
+    replace: '',
+  },
+  {
+    id: 'icon-button-drops-explicit-type',
+    description: 'the explicit button type disappears, so the control submits a surrounding form',
+    file: iconButtonSourcePath,
+    find: ' :type="props.type"',
+    replace: '',
+  },
+];
+
+/** Everything the characterization gate mutates, across both migrated components. */
+export const componentMutations = [...inputMutations, ...iconButtonMutations];
