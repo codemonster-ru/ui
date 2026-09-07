@@ -76,7 +76,13 @@
             </header>
 
             <div class="input-showcase__case-body">
-              <VfIconButton v-bind="bindings(parityCase)" />
+              <VfIconButton
+                v-bind="parityCase.attrs"
+                :icon="parityCase.props.icon"
+                :variant="parityCase.props.variant"
+                :size="parityCase.props.size"
+                :type="parityCase.props.type"
+              />
             </div>
 
             <p v-if="parityCase.interaction" class="input-showcase__case-note">
@@ -128,6 +134,7 @@
 // the second component its own copy is how two showcases start drifting.
 import { computed } from 'vue';
 import { VfIconButton, VfThemeProvider, VfThemeSwitch } from '@codemonster-ru/vueforge-core';
+import type { VfButtonVariant, VfControlSize } from '@codemonster-ru/vueforge-core';
 import { VfAppShell, VfInline } from '@codemonster-ru/vueforge-layouts';
 import caseCatalog from '@vueforge/icon-button-cases';
 import showcaseIndex from '@vueforge/showcase-index';
@@ -135,7 +142,14 @@ import showcaseIndex from '@vueforge/showcase-index';
 interface ShowcaseCase {
   id: string;
   title?: string;
-  props: Record<string, unknown>;
+  // Typed rather than a loose record: `icon` is required, so a component prop
+  // that went missing from the catalog should fail here rather than at runtime.
+  props: {
+    icon: string;
+    variant?: VfButtonVariant;
+    size?: VfControlSize;
+    type?: 'button' | 'submit' | 'reset';
+  };
   attrs: Record<string, unknown>;
   interaction?: { steps: { action: string }[] };
 }
@@ -159,8 +173,5 @@ function razorHref(caseId?: string): string {
   return `${razorOrigin}${razorPlatform.path}?${query.toString()}`;
 }
 
-/** The neutral case fields mapped onto the historical Vue props and attributes. */
-function bindings(parityCase: ShowcaseCase): Record<string, unknown> {
-  return { ...parityCase.props, ...parityCase.attrs };
-}
+
 </script>
