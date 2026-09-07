@@ -1,8 +1,13 @@
-// The three-way VfInput parity run: build, capture, compare.
+// The three-way parity run: build, capture, compare.
 //
 // Split out of check-input-parity.mjs in M07.1 so the gate and the mutation
 // harness share one pipeline. Mutations run in fresh browser pages against the
 // same freshly built targets; every changed screenshot is captured from Chrome.
+//
+// M10 made it component-blind. The profile rides on the catalog rather than on
+// every signature, so the pipeline below reads the same for VfInput and
+// VfIconButton and there is exactly one implementation of what a difference
+// means.
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -23,16 +28,36 @@ import {
 import { extractCasesExpression, driveInteraction, interactionExpression } from './extract.mjs';
 import { buildCurrentTarget, buildRazorTarget, buildReferenceTarget } from './targets.mjs';
 
-export const runDirectory = resolve(artifactsDirectory, 'parity');
 export const themes = ['light', 'dark'];
 export const viewport = { width: 1000, height: 900 };
 
-export function loadCatalog() {
-  return JSON.parse(readFileSync(resolve(repositoryRoot, 'contracts/input/cases.json'), 'utf8'));
+/** Where a component's captures, screenshots and report are written. */
+export function runDirectoryFor(profile) {
+  return resolve(artifactsDirectory, profile.artifactDirectory);
 }
 
-export function loadParityPolicy() {
-  return loadPolicy(resolve(repositoryRoot, 'contracts/input/parity-policy.json'));
+/**
+ * The case catalog, with its profile attached.
+ *
+ * The profile travels on the catalog rather than through every signature in
+ * this file: the catalog is already passed to each stage, and a component that
+ * could be captured with another component's roles is not a distinction worth
+ * being able to express.
+ */
+export function loadCatalog(profile) {
+  const catalog = JSON.parse(readFileSync(resolve(repositoryRoot, profile.casesPath), 'utf8'));
+
+  if (catalog.component !== profile.component) {
+    throw new Error(
+      `${profile.casesPath} declares component [${catalog.component}], but the profile is [${profile.component}].`,
+    );
+  }
+
+  return { ...catalog, profile };
+}
+
+export function loadParityPolicy(profile) {
+  return loadPolicy(resolve(repositoryRoot, profile.policyPath));
 }
 
 const mimeTypes = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
@@ -56,13 +81,15 @@ async function serve(directory) {
   };
 }
 
-/** Accessibility semantics for the roles a case can expose. */
-async function readAccessibility(page, caseId) {
-  const roles = {
-    control: 'input.vf-input',
-    clear: '.vf-input-wrap__clear',
-    reveal: '.vf-input-wrap__password-toggle',
-  };
+/**
+ * Accessibility semantics for the roles a case can expose.
+ *
+ * The roles come from the profile. Hardcoding VfInput's here would have made
+ * this silently exhaustive-looking and empty for every other component: no
+ * selector would match, no role would be exposed, and the a11y dimensions would
+ * compare nothing while still reporting success.
+ */
+async function readAccessibility(page, caseId, roles) {
   const { root } = await page.send('DOM.getDocument', { depth: -1 });
   const exposed = {};
 
@@ -105,7 +132,25 @@ async function screenshot(page, clip, directory, fileName) {
   return { fileName, sha256: createHash('sha256').update(bytes).digest('hex') };
 }
 
-const settleExpression = `new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))`;
+// Settling means "give the page a chance to paint, then carry on".
+//
+// A bare double requestAnimationFrame assumes a frame will be produced. That
+// held for every VfInput scenario, which all change something visible, and
+// broke on the first VfIconButton keyboard case: pressing Enter on a button
+// that is already focused changes no pixel, headless Chrome produces no frame,
+// and the callback never runs. The evaluate then hangs until the DevTools
+// request times out and the whole gate dies with an error that names none of
+// this.
+//
+// The fallback resolves only when no frame arrived, and it is far longer than
+// a frame interval, so a page that does paint still settles on rAF exactly as
+// before. No frame means nothing changed, which is the settled state anyway.
+const settleExpression = `new Promise((done) => {
+  let settled = false;
+  const finish = () => { if (!settled) { settled = true; done(); } };
+  requestAnimationFrame(() => requestAnimationFrame(finish));
+  setTimeout(finish, 500);
+})`;
 
 async function applyBrowserMutation(page, mutation, phase, context, evidence) {
   if (!mutation?.[phase]) return;
@@ -158,13 +203,13 @@ async function captureTarget(
     };
     await navigate();
     await applyBrowserMutation(page, mutation, 'beforeExtract', { target: label, theme }, evidence);
-    const allExtracted = await page.evaluate(extractCasesExpression);
+    const allExtracted = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
     const extracted = Object.fromEntries(selectedCases.map(({ id }) => [id, allExtracted[id]]));
     const accessibility = {};
     const screenshots = {};
 
     for (const parityCase of selectedCases) {
-      accessibility[parityCase.id] = await readAccessibility(page, parityCase.id);
+      accessibility[parityCase.id] = await readAccessibility(page, parityCase.id, catalog.profile.accessibilityRoles);
       if (!parityCase.visual) continue;
       screenshots[parityCase.id] = await screenshot(
         page,
@@ -186,7 +231,7 @@ async function captureTarget(
       await applyBrowserMutation(page, mutation, 'beforeInteraction', context, evidence);
       const inputEvents = await driveInteraction(page, parityCase.id, parityCase.interaction.steps);
       await applyBrowserMutation(page, mutation, 'afterInteraction', context, evidence);
-      const result = await page.evaluate(interactionExpression(parityCase.id));
+      const result = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
       interactions[parityCase.id] = { ...result, inputEvents };
       const naturalShot = await screenshot(
         page,
@@ -207,7 +252,7 @@ async function captureTarget(
         }
         await page.evaluate(`document.activeElement?.blur()`);
         await page.evaluate(settleExpression);
-        const blurred = await page.evaluate(interactionExpression(parityCase.id));
+        const blurred = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
         interactionScreenshots[parityCase.id] = await screenshot(
           page,
           blurred.clip,
@@ -250,15 +295,20 @@ function mergeCapture(target, recaptured) {
 
 /** Builds all targets once, then captures clean and fresh browser-mutated pages. */
 export async function captureAll(catalog, { log = () => {}, browserMutations = [] } = {}) {
+  const runDirectory = runDirectoryFor(catalog.profile);
   mkdirSync(runDirectory, { recursive: true });
   const screenshotDirectory = resolve(runDirectory, 'screenshots');
   mkdirSync(screenshotDirectory, { recursive: true });
 
   log('Building the three render targets\n');
   const targets = {
-    reference: buildReferenceTarget(resolve(runDirectory, 'reference'), resolve(runDirectory, 'reference-checkout')),
-    current: buildCurrentTarget(resolve(runDirectory, 'current')),
-    razor: buildRazorTarget(resolve(runDirectory, 'razor')),
+    reference: buildReferenceTarget(
+      resolve(runDirectory, 'reference'),
+      resolve(runDirectory, 'reference-checkout'),
+      catalog.profile,
+    ),
+    current: buildCurrentTarget(resolve(runDirectory, 'current'), catalog.profile),
+    razor: buildRazorTarget(resolve(runDirectory, 'razor'), catalog.profile),
   };
   const chrome = await launchChrome();
   const captures = {};

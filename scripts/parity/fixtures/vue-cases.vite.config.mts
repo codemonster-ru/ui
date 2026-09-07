@@ -1,6 +1,6 @@
 // Builds the Vue parity page against a chosen tree root.
 //
-// PARITY_TREE_ROOT selects which VfInput and which stylesheet are compiled: the
+// PARITY_TREE_ROOT selects which component sources and which stylesheet are compiled: the
 // immutable reference checkout for the reference target, the working tree for
 // the current target. Only sources move; the compiler is the same in both
 // builds, so a difference in the output can only come from the sources.
@@ -11,9 +11,12 @@ import { defineConfig } from 'vite';
 
 const treeRoot = process.env.PARITY_TREE_ROOT;
 const outDir = process.env.PARITY_OUT_DIR;
+// PARITY_CASES selects the component's case catalog. One entry serves every
+// component; the catalog says which one it is rendering.
+const casesPath = process.env.PARITY_CASES;
 
-if (!treeRoot || !outDir) {
-  throw new Error('PARITY_TREE_ROOT and PARITY_OUT_DIR must be set.');
+if (!treeRoot || !outDir || !casesPath) {
+  throw new Error('PARITY_TREE_ROOT, PARITY_OUT_DIR and PARITY_CASES must be set.');
 }
 
 const repositoryRoot = fileURLToPath(new URL('../../../', import.meta.url));
@@ -24,7 +27,7 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: [
-      { find: '@parity/cases.json', replacement: resolve(repositoryRoot, 'contracts/input/cases.json') },
+      { find: '@parity/cases.json', replacement: resolve(repositoryRoot, casesPath) },
       { find: /^@parity\/core\//, replacement: `${resolve(treeRoot, 'packages/core/src')}/` },
       // The core sources use `@/` internally.
       { find: /^@\//, replacement: `${resolve(treeRoot, 'packages/core/src')}/` },

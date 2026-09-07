@@ -26,7 +26,7 @@ export const wrapperPresenceCases = [
 
 class MutationNotApplied extends Error {}
 
-function fail(message) {
+export function fail(message) {
   throw new MutationNotApplied(message);
 }
 
@@ -61,7 +61,7 @@ export function assessMutation(expect, failures) {
   return missing;
 }
 
-function eachTheme(captures, target, visit) {
+export function eachTheme(captures, target, visit) {
   const themes = Object.keys(captures[target]);
   if (themes.length === 0) fail(`no themes captured for ${target}`);
   for (const theme of themes) visit(captures[target][theme], theme);
@@ -74,7 +74,7 @@ function walk(nodes, visit) {
   }
 }
 
-function findNode(capture, caseId, predicate, what) {
+export function findNode(capture, caseId, predicate, what) {
   const entry = capture.extracted[caseId];
   if (!entry) fail(`case ${caseId} is missing from the capture`);
 
@@ -396,13 +396,16 @@ export const policyMutations = [
   {
     id: 'substring-path-selector',
     description:
-      'the pre-M07.1 substring pattern vf-icon, which used to match vf-icon-button as well; under exact matching it ' +
-      'now matches nothing, and a rule that matches nothing fails',
+      'the pre-M07.1 substring pattern, which used to match any path containing it; under exact matching it now ' +
+      'matches nothing, and a rule that matches nothing fails',
     rejectedBy: 'occurrences',
     apply(policy) {
-      for (const entry of policy.approvedDivergences) {
-        if (entry.id.startsWith('razor-icon-')) entry.pathSelector = 'vf-icon';
-      }
+      // Retargeted in M10: this used to widen the razor-icon-* approvals, which
+      // that milestone deleted once the icon layout moved into the shared
+      // stylesheet. The property under test is unchanged.
+      const entry = policy.approvedDivergences.find((approval) => approval.id === 'razor-inert-clear-action');
+      if (!entry?.pathSelector) fail('razor-inert-clear-action has no path selector to widen');
+      entry.pathSelector = 'vf-icon-button';
     },
   },
   {
@@ -410,11 +413,13 @@ export const policyMutations = [
     description: 'a well-formed approval that tolerates a difference nobody produces',
     rejectedBy: 'occurrences',
     apply(policy) {
-      const iconRule = policy.approvedDivergences.find((entry) => entry.id === 'razor-icon-wrapper-inline-layout');
-      if (!iconRule) fail('icon wrapper approval not found');
+      const template = policy.approvedDivergences.find((entry) => entry.id === 'razor-inert-clear-action');
+      if (!template) fail('razor-inert-clear-action not found');
       policy.approvedDivergences.push({
-        ...structuredClone(iconRule),
+        ...structuredClone(template),
         id: 'never-matches-anything',
+        // A case that renders no inert clear action, so the cloned rule cannot
+        // match anything however well formed it is.
         caseIds: ['input/plain-empty'],
         reason: 'A deliberately dead entry used by the parity mutation harness.',
         classification: 'framework-specific',

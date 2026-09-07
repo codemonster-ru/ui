@@ -16,6 +16,7 @@ import { writeFileSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
 import { repositoryRoot, stableStringify } from '../baseline/reference.mjs';
 import { validatePolicy } from './compare.mjs';
+import { profileFromArgv } from './profiles.mjs';
 import {
   assertPolicyIsWellFormed,
   captureAll,
@@ -23,13 +24,39 @@ import {
   compareCaptures,
   loadCatalog,
   loadParityPolicy,
-  runDirectory,
+  runDirectoryFor,
 } from './run.mjs';
 import { browserMutations } from './browser-mutations.mjs';
 import { assessMutation, MutationNotApplied, parityMutations, policyMutations } from './mutations.mjs';
+import {
+  iconButtonBrowserMutations,
+  iconButtonParityMutations,
+  iconButtonPolicyMutations,
+} from './icon-button-mutations.mjs';
 
-const catalog = loadCatalog();
-const policy = loadParityPolicy();
+/**
+ * The negative fixture is component-specific even though the harness is not.
+ * A mutation says "break this element in this case", which only means anything
+ * for the component that renders it.
+ */
+const mutationSets = {
+  input: { capture: parityMutations, policy: policyMutations, browser: browserMutations },
+  'icon-button': {
+    capture: iconButtonParityMutations,
+    policy: iconButtonPolicyMutations,
+    browser: iconButtonBrowserMutations,
+  },
+};
+
+const profile = profileFromArgv();
+const mutations = mutationSets[profile.id];
+
+if (!mutations) {
+  throw new Error(`No parity mutation set for component [${profile.id}]. A gate with no negative fixture proves nothing.`);
+}
+const runDirectory = runDirectoryFor(profile);
+const catalog = loadCatalog(profile);
+const policy = loadParityPolicy(profile);
 const caseIds = catalog.cases.map((parityCase) => parityCase.id);
 
 assertPolicyIsWellFormed(policy, catalog);
@@ -75,7 +102,7 @@ function record(id, status, detail) {
 // The registry mutations need no browser, so they run first and fail fast.
 process.stdout.write('Divergence registry mutations\n');
 
-for (const mutation of policyMutations) {
+for (const mutation of mutations.policy) {
   const mutated = structuredClone(policy);
   try {
     mutation.apply(mutated);
@@ -114,7 +141,7 @@ if (failures.length > 0) {
 process.stdout.write('\n');
 const { captures, targets, browser, mutationCaptures } = await captureAll(catalog, {
   log: (line) => process.stdout.write(line),
-  browserMutations,
+  browserMutations: mutations.browser,
 });
 
 const pageErrors = collectPageErrors(captures);
@@ -141,7 +168,7 @@ process.stdout.write(
 
 // ------------------------------------------- registry mutations, on real data
 process.stdout.write('Divergence registry mutations rejected by occurrence accounting\n');
-for (const mutation of policyMutations.filter((entry) => entry.rejectedBy === 'occurrences')) {
+for (const mutation of mutations.policy.filter((entry) => entry.rejectedBy === 'occurrences')) {
   const mutated = structuredClone(policy);
   mutation.apply(mutated);
   const result = compareCaptures(captures, catalog, mutated);
@@ -157,7 +184,7 @@ for (const mutation of policyMutations.filter((entry) => entry.rejectedBy === 'o
 // ---------------------------------------------------------- target mutations
 process.stdout.write('\nTarget mutations\n');
 
-for (const mutation of parityMutations) {
+for (const mutation of mutations.capture) {
   const mutated = structuredClone(captures);
 
   try {
@@ -188,7 +215,7 @@ for (const mutation of parityMutations) {
 
 // Real browser mutations prove the extractor and screenshots see the defect.
 process.stdout.write('\nBrowser mutations\n');
-for (const mutation of browserMutations) {
+for (const mutation of mutations.browser) {
   const captured = mutationCaptures.find((entry) => entry.id === mutation.id);
   if (!captured || captured.applied <= 0) {
     record(mutation.id, 'not-applied', 'browser did not confirm a mutation');
@@ -243,7 +270,7 @@ for (const mutation of browserMutations) {
   });
 }
 
-const reportPath = resolve(runDirectory, 'input-parity-mutations.json');
+const reportPath = resolve(runDirectory, `${profile.id}-parity-mutations.json`);
 writeFileSync(
   reportPath,
   stableStringify({
@@ -266,6 +293,6 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  `\n[parity-mutations] OK: ${policyMutations.length} registry mutation(s) rejected, ` +
-    `${parityMutations.length} capture and ${browserMutations.length} browser mutation(s) caught by the intended dimension.\n`,
+  `\n[parity-mutations] OK: ${mutations.policy.length} registry mutation(s) rejected, ` +
+    `${mutations.capture.length} capture and ${mutations.browser.length} browser mutation(s) caught by the intended dimension.\n`,
 );

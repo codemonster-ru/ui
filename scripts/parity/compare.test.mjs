@@ -351,28 +351,53 @@ test('inert action approval checks operability, every attribute and the complete
   }
 });
 
-test('exact inline declaration approvals cannot waive arbitrary styles or descendant changes', () => {
-  const entry = actualPolicy.approvedDivergences.find((approval) => approval.id === 'razor-icon-wrapper-inline-layout');
+test('an exact-value approval cannot waive a different value, path or case', () => {
+  // The narrowness property this file has always asserted, moved onto a live
+  // approval. It used to be checked through razor-icon-wrapper-inline-layout,
+  // which M10 deleted: the icon layout moved into the shared stylesheet, so
+  // the difference it tolerated no longer exists to be tolerated.
+  const entry = actualPolicy.approvedDivergences.find((a) => a.id === 'razor-keeps-focus-through-wrapper-transition');
   const difference = {
     dimension: entry.dimension,
     detail: entry.detail,
-    path: '[0]/span.vf-icon-wrapper',
+    path: entry.path,
     left: entry.left,
     right: entry.right,
   };
-  assert.equal(classify(actualPolicy, 'input/leading-icon', direction, [difference]).approved.length, 1);
-  assert.equal(
-    classify(actualPolicy, 'input/leading-icon', direction, [
-      { ...difference, right: `${entry.right};visibility:hidden` },
-    ]).failures.length,
-    1,
-  );
-  assert.equal(
-    classify(actualPolicy, 'input/leading-icon', direction, [
-      { ...difference, path: `${difference.path}[0]/svg.vf-icon[0]/path` },
-    ]).failures.length,
-    1,
-  );
+  const caseId = 'input/interaction-wrapper-transition';
+
+  assert.equal(classify(actualPolicy, caseId, direction, [difference]).approved.length, 1);
+  // A different outcome on the same field is not the approved outcome.
+  assert.equal(classify(actualPolicy, caseId, direction, [{ ...difference, right: 'clear' }]).failures.length, 1);
+  // The same outcome on another field is not covered either.
+  assert.equal(classify(actualPolicy, caseId, direction, [{ ...difference, path: 'controlClasses' }]).failures.length, 1);
+  // Nor is it covered in a case the approval does not list.
+  assert.equal(classify(actualPolicy, 'input/plain-empty', direction, [difference]).failures.length, 1);
+});
+
+test('the icon layout divergences M10 removed cannot quietly return', () => {
+  // These two approvals tolerated 84 style differences each, on the icon
+  // wrapper and the svg, because the Vue icon carried its layout in a scoped
+  // style block that Razor markup could not match. M10 moved that layout to
+  // packages/styles/src/components/icon.css, both adapters read it from there,
+  // and the difference disappeared rather than being waived.
+  for (const id of ['razor-icon-wrapper-inline-layout', 'razor-icon-svg-inline-layout']) {
+    assert.equal(
+      actualPolicy.approvedDivergences.find((approval) => approval.id === id),
+      undefined,
+      `${id} is back in the policy; the icon layout is being tolerated again rather than shared.`,
+    );
+  }
+
+  // Inline layout on the icon wrapper is now an ordinary unapproved failure.
+  const relapse = {
+    dimension: 'dom.nativeAttributes',
+    detail: 'style',
+    path: '[0]/span.vf-icon-wrapper',
+    left: '--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1',
+    right: '--vf-icon-offset-x:0;--vf-icon-offset-y:0;--vf-icon-scale:1;display:inline-grid;place-items:center',
+  };
+  assert.equal(classify(actualPolicy, 'input/leading-icon', direction, [relapse]).failures.length, 1);
 });
 
 test('the live policy never approves pixels, including the wrapper transition', () => {
@@ -468,4 +493,57 @@ test('a rule that matches nothing and a rule that matches too much both fail', (
   assert.deepEqual(exact.problems, []);
   assert.equal(exact.rows[0].occurrences, 1);
   assert.deepEqual(exact.rows[0].caseIds, ['input/leading-icon']);
+});
+
+test('every field of an icon button snapshot is compared, not just the ones VfInput had', () => {
+  // The defect this guards against: VfIconButton's snapshot added activations,
+  // pressed, accessibleName and glyphHidden, and the comparator went on
+  // checking VfInput's hardcoded field list. The values reached the report and
+  // were never compared, so a Razor button that refused to activate on Enter
+  // would have passed the gate with the evidence sitting in the artifact.
+  const base = {
+    type: 'button',
+    focusRole: 'button',
+    activations: 1,
+    disabled: false,
+    operable: true,
+    accessibleName: 'Close',
+    pressed: null,
+    buttonClasses: ['vf-icon-button', 'vf-icon-button--ghost'],
+    glyphHidden: 'true',
+  };
+
+  for (const [field, changed] of [
+    ['activations', 0],
+    ['disabled', true],
+    ['operable', false],
+    ['accessibleName', 'Dismiss'],
+    ['pressed', 'true'],
+    ['glyphHidden', null],
+  ]) {
+    const differences = compareInteraction(base, { ...base, [field]: changed });
+    assert.equal(differences.length, 1, `${field} produced no difference`);
+    assert.equal(differences[0].path, field);
+    assert.equal(differences[0].dimension, 'interaction.state');
+  }
+
+  const classDifferences = compareInteraction(base, { ...base, buttonClasses: ['vf-icon-button'] });
+  assert.equal(classDifferences.length, 1);
+  assert.equal(classDifferences[0].right, 'vf-icon-button');
+});
+
+test('a snapshot field that is neither compared nor ignored fails the run', () => {
+  const base = { type: 'button', focusRole: 'button', activations: 1 };
+
+  assert.throws(
+    () => compareInteraction({ ...base, somethingNew: 1 }, { ...base, somethingNew: 1 }),
+    /neither compared nor explicitly ignored/,
+  );
+});
+
+test('snapshots of different shapes are an error rather than a silent partial comparison', () => {
+  assert.throws(
+    () => compareInteraction({ type: 'button', focusRole: 'button' }, { type: 'button' }),
+    /different shapes/,
+  );
 });

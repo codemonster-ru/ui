@@ -1,12 +1,14 @@
-// Renders the shared VfInput cases with a Vue VfInput.
+// Renders a component's shared cases with the Vue adapter.
 //
-// One entry serves both Vue targets. Which VfInput it mounts is decided by the
-// build config's tree root: the immutable reference checkout for the reference
-// target, the working tree for the current target. The entry itself contains no
-// component implementation and no expectations — it only maps the neutral case
-// data onto the historical Vue props and slots.
+// One entry serves both Vue targets and every component. Which sources it
+// mounts is decided by the build config's tree root: the immutable reference
+// checkout for the reference target, the working tree for the current target.
+// Which component it renders is decided by the catalog's `component` field. The
+// entry itself contains no component implementation and no expectations — it
+// only maps the neutral case data onto the historical Vue props and slots.
 import { createApp, defineComponent, h, type VNode } from 'vue';
 import VfInput from '@parity/core/components/input/VfInput.vue';
+import VfIconButton from '@parity/core/components/icon-button/VfIconButton.vue';
 import VfField from '@parity/core/components/field/VfField.vue';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -31,7 +33,7 @@ interface ParityCase {
   field?: CaseField;
 }
 
-const catalog = cases as { cases: ParityCase[] };
+const catalog = cases as { component?: string; cases: ParityCase[] };
 
 function contentSlots(parityCase: ParityCase): Record<string, () => VNode> {
   const slots: Record<string, () => VNode> = {};
@@ -50,7 +52,17 @@ function renderInput(parityCase: ParityCase, extra: Record<string, unknown> = {}
   return h(VfInput, { ...parityCase.props, ...parityCase.attrs, ...extra }, contentSlots(parityCase));
 }
 
+function renderIconButton(parityCase: ParityCase): VNode {
+  // No slots and no wrapper: the historical VfIconButton renders one button
+  // carrying one glyph, and the case root is the only element around it.
+  return h(VfIconButton, { ...parityCase.props, ...parityCase.attrs } as Record<string, unknown>);
+}
+
 function renderCase(parityCase: ParityCase): VNode {
+  if (catalog.component === 'icon-button') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
+  }
+
   const children: VNode[] = [];
 
   if (parityCase.field) {

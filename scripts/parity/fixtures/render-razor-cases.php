@@ -3,11 +3,15 @@
 declare(strict_types=1);
 
 /**
- * Renders the shared VfInput cases with the real Razor adapter.
+ * Renders a component's shared cases with the real Razor adapter.
  *
  * Maps the neutral case vocabulary onto the Razor component's own prop
  * spelling. No expectation lives here: this is a render target, and the
  * comparison happens in the browser harness.
+ *
+ * One renderer serves every component; the catalog's `component` field says
+ * which one it is rendering. A second fixture per component is how two
+ * adapters end up compared under two slightly different sets of assumptions.
  *
  * Usage: php render-razor-cases.php <cases.json> <output.html>
  */
@@ -29,12 +33,15 @@ if ($casesPath === null || $outputPath === null) {
 
 $catalog = json_decode((string) file_get_contents($casesPath), true, 512, JSON_THROW_ON_ERROR);
 
+$component = (string) ($catalog['component'] ?? 'input');
+
 $registry = new ComponentRegistry();
 $registry->register(new VueForgeRazorProvider());
 $input = $registry->resolve('vf-input');
+$iconButton = $registry->resolve('vf-icon-button');
 
-if ($input === null) {
-    fwrite(STDERR, "vf-input is not registered.\n");
+if ($input === null || $iconButton === null) {
+    fwrite(STDERR, "The VueForge components are not registered.\n");
     exit(1);
 }
 
@@ -50,6 +57,24 @@ const PROP_MAP = [
 ];
 
 $escape = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+/**
+ * VfIconButton needs no prop map: the neutral vocabulary and the Razor spelling
+ * are the same words, because the historical Vue props are already
+ * single-word. Props and attrs are merged the same way for both components.
+ */
+$renderIconButton = static function (array $case) use ($iconButton): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    return $iconButton->render(new ComponentRenderContext($props, []))->value();
+};
 
 $renderInput = static function (array $case, array $extra = []) use ($input, $escape): string {
     $props = $extra;
@@ -131,9 +156,14 @@ $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
-    $body = isset($case['field'])
-        ? $renderField($case, str_replace('/', '-', $caseId) . '-control')
-        : $renderInput($case);
+
+    if ($component === 'icon-button') {
+        $body = $renderIconButton($case);
+    } else {
+        $body = isset($case['field'])
+            ? $renderField($case, str_replace('/', '-', $caseId) . '-control')
+            : $renderInput($case);
+    }
 
     if (($case['attrs']['aria-describedby'] ?? null) === 'aria-described-hint') {
         $body .= '<p id="aria-described-hint" class="parity-hint">Shown in workspace settings.</p>';

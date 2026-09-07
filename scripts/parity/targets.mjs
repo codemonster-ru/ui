@@ -1,4 +1,4 @@
-// Builds the three render targets for the shared VfInput cases.
+// Builds the three render targets for a component's shared cases.
 //
 // Reference Vue comes from an immutable checkout of the reference commit, built
 // with the M00 harness. Current Vue comes from the working tree. Razor comes
@@ -10,7 +10,6 @@ import { resolve } from 'node:path';
 import { linkDependencies, materialiseReferenceTree, buildReference } from '../baseline/isolated-reference.mjs';
 import { referenceCommit, repositoryRoot } from '../baseline/reference.mjs';
 
-const casesPath = resolve(repositoryRoot, 'contracts/input/cases.json');
 const fixtureDirectory = resolve(repositoryRoot, 'scripts/parity/fixtures');
 
 function pageHtml({ title, stylesheets, scripts }) {
@@ -30,7 +29,7 @@ ${scripts.map((src) => `<script type="module" src="${src}"></script>`).join('\n'
 `;
 }
 
-function buildVueTarget({ treeRoot, outputDirectory, label }) {
+function buildVueTarget({ treeRoot, outputDirectory, label, profile }) {
   mkdirSync(outputDirectory, { recursive: true });
 
   execFileSync(
@@ -38,7 +37,12 @@ function buildVueTarget({ treeRoot, outputDirectory, label }) {
     ['build', '--config', resolve(fixtureDirectory, 'vue-cases.vite.config.mts')],
     {
       cwd: repositoryRoot,
-      env: { ...process.env, PARITY_TREE_ROOT: treeRoot, PARITY_OUT_DIR: outputDirectory },
+      env: {
+        ...process.env,
+        PARITY_TREE_ROOT: treeRoot,
+        PARITY_OUT_DIR: outputDirectory,
+        PARITY_CASES: profile.casesPath,
+      },
       stdio: ['ignore', 'ignore', 'pipe'],
     },
   );
@@ -47,7 +51,7 @@ function buildVueTarget({ treeRoot, outputDirectory, label }) {
   writeFileSync(
     resolve(outputDirectory, 'cases.html'),
     pageHtml({
-      title: `VueForge parity cases (${label})`,
+      title: `VueForge ${profile.label} parity cases (${label})`,
       stylesheets: ['./vueforge.css', './parity-page.css'],
       scripts: ['./vue-cases.js'],
     }),
@@ -63,7 +67,7 @@ function buildVueTarget({ treeRoot, outputDirectory, label }) {
  * neutral case data and the harness entry are supplied from outside, which is a
  * test wrapper around the historical component rather than a change to it.
  */
-export function buildReferenceTarget(outputDirectory, checkoutDirectory) {
+export function buildReferenceTarget(outputDirectory, checkoutDirectory, profile) {
   materialiseReferenceTree(checkoutDirectory);
   linkDependencies(checkoutDirectory);
   // The full workspace build is what produces the icons dist the reference
@@ -71,20 +75,20 @@ export function buildReferenceTarget(outputDirectory, checkoutDirectory) {
   buildReference(checkoutDirectory);
 
   return {
-    ...buildVueTarget({ treeRoot: checkoutDirectory, outputDirectory, label: 'reference' }),
+    ...buildVueTarget({ treeRoot: checkoutDirectory, outputDirectory, label: 'reference', profile }),
     provenance: { source: 'immutable-reference-checkout', referenceCommit },
   };
 }
 
-export function buildCurrentTarget(outputDirectory) {
+export function buildCurrentTarget(outputDirectory, profile) {
   return {
-    ...buildVueTarget({ treeRoot: repositoryRoot, outputDirectory, label: 'current' }),
+    ...buildVueTarget({ treeRoot: repositoryRoot, outputDirectory, label: 'current', profile }),
     provenance: { source: 'working-tree' },
   };
 }
 
 /** The Razor target: real PHP render, real packaged assets. */
-export function buildRazorTarget(outputDirectory) {
+export function buildRazorTarget(outputDirectory, profile) {
   mkdirSync(outputDirectory, { recursive: true });
 
   const packageRoot = resolve(repositoryRoot, 'packages/razor');
@@ -97,7 +101,11 @@ export function buildRazorTarget(outputDirectory) {
 
   execFileSync(
     'php',
-    [resolve(fixtureDirectory, 'render-razor-cases.php'), casesPath, resolve(outputDirectory, 'cases.html')],
+    [
+      resolve(fixtureDirectory, 'render-razor-cases.php'),
+      resolve(repositoryRoot, profile.casesPath),
+      resolve(outputDirectory, 'cases.html'),
+    ],
     { stdio: ['ignore', 'ignore', 'pipe'] },
   );
 

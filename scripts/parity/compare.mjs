@@ -483,69 +483,123 @@ export function compareStyles(left, right) {
   return differences;
 }
 
+/**
+ * Every field a post-scenario snapshot can carry, and the dimension it belongs
+ * to.
+ *
+ * Declared exhaustively, and in the order VfInput's fields were compared before
+ * M10, so that gate's output is unchanged. The map exists because the previous
+ * version compared a hardcoded list: when VfIconButton added `activations`,
+ * `pressed` and `accessibleName` to its snapshot, those were recorded in the
+ * report and silently never compared. A gate that reads a value and does not
+ * check it is worse than one that never read it, because the report makes it
+ * look checked.
+ *
+ * `classList` formats an array as a space-joined string; `json` compares whole
+ * objects. `presence` marks a field whose appearing on one side only is its own
+ * dimension rather than a value difference.
+ */
+const INTERACTION_FIELDS = {
+  value: { dimension: 'interaction.value' },
+  type: { dimension: 'interaction.state' },
+  filled: { dimension: 'interaction.state' },
+  focusRole: { dimension: 'interaction.focus' },
+  selection: { dimension: 'interaction.selection', format: 'json' },
+  clear: { dimension: 'interaction.state', format: 'json' },
+  reveal: { dimension: 'interaction.state', format: 'json' },
+  wrapperClasses: {
+    dimension: 'interaction.state',
+    format: 'classList',
+    presence: { dimension: 'interaction.wrapperPresence', detail: 'wrapper rendered on one side only' },
+  },
+  controlClasses: { dimension: 'interaction.state', format: 'classList' },
+  activations: { dimension: 'interaction.state' },
+  disabled: { dimension: 'interaction.state' },
+  operable: { dimension: 'interaction.state' },
+  accessibleName: { dimension: 'interaction.state' },
+  pressed: { dimension: 'interaction.state' },
+  buttonClasses: { dimension: 'interaction.state', format: 'classList' },
+  glyphHidden: { dimension: 'interaction.state' },
+};
+
+/**
+ * Snapshot keys that are deliberately not compared, each for a stated reason.
+ *
+ * `clip` is where the screenshot was taken, not what it showed; the pixels it
+ * produced are compared as visual.postInteraction. `inputEvents` is the event
+ * transport, which the policy already records as not compared: Vue emits its
+ * own events and the Razor controller dispatches native ones, so only the
+ * resulting state is a contract.
+ */
+const IGNORED_INTERACTION_FIELDS = new Set(['clip', 'inputEvents']);
+
 export function compareInteraction(left, right) {
   const differences = [];
-  const fields = [
-    ['value', 'interaction.value'],
-    ['type', 'interaction.state'],
-    ['filled', 'interaction.state'],
-    ['focusRole', 'interaction.focus'],
-  ];
 
-  for (const [field, dimension] of fields) {
-    if (left[field] !== right[field]) {
-      differences.push({ dimension, path: field, detail: field, left: left[field], right: right[field] });
-    }
+  // Both sides come from the same profile, so a key on one and not the other
+  // means the two targets were captured with different snapshot shapes and no
+  // comparison below would be meaningful.
+  const leftKeys = Object.keys(left).sort();
+  const rightKeys = Object.keys(right).sort();
+  if (JSON.stringify(leftKeys) !== JSON.stringify(rightKeys)) {
+    throw new Error(
+      `Interaction snapshots have different shapes: [${leftKeys.join(', ')}] vs [${rightKeys.join(', ')}].`,
+    );
   }
 
-  if (JSON.stringify(left.selection) !== JSON.stringify(right.selection)) {
-    differences.push({
-      dimension: 'interaction.selection',
-      path: 'selection',
-      left: JSON.stringify(left.selection),
-      right: JSON.stringify(right.selection),
-    });
+  const unmapped = leftKeys.filter((key) => !INTERACTION_FIELDS[key] && !IGNORED_INTERACTION_FIELDS.has(key));
+  if (unmapped.length > 0) {
+    throw new Error(
+      `Interaction snapshot fields [${unmapped.join(', ')}] are neither compared nor explicitly ignored. ` +
+        'Add them to INTERACTION_FIELDS or IGNORED_INTERACTION_FIELDS in scripts/parity/compare.mjs.',
+    );
   }
 
-  for (const action of ['clear', 'reveal']) {
-    if (JSON.stringify(left[action]) !== JSON.stringify(right[action])) {
+  for (const [field, rule] of Object.entries(INTERACTION_FIELDS)) {
+    if (!(field in left)) continue;
+
+    const leftValue = left[field];
+    const rightValue = right[field];
+
+    if (rule.presence && (leftValue === null) !== (rightValue === null)) {
       differences.push({
-        dimension: 'interaction.state',
-        path: action,
-        left: JSON.stringify(left[action]),
-        right: JSON.stringify(right[action]),
+        dimension: rule.presence.dimension,
+        path: field,
+        detail: rule.presence.detail,
+        left: leftValue === null ? 'absent' : leftValue.join(' '),
+        right: rightValue === null ? 'absent' : rightValue.join(' '),
       });
+      continue;
     }
-  }
 
-  // A wrapper present on one side only used to be skipped here without leaving
-  // a trace, which is an approval hidden inside the comparator. It is now a
-  // reported divergence that the registry has to name, and the class lists are
-  // still compared whenever both sides render a wrapper.
-  if ((left.wrapperClasses === null) !== (right.wrapperClasses === null)) {
-    differences.push({
-      dimension: 'interaction.wrapperPresence',
-      path: 'wrapperClasses',
-      detail: 'wrapper rendered on one side only',
-      left: left.wrapperClasses === null ? 'absent' : left.wrapperClasses.join(' '),
-      right: right.wrapperClasses === null ? 'absent' : right.wrapperClasses.join(' '),
-    });
-  } else if (JSON.stringify(left.wrapperClasses) !== JSON.stringify(right.wrapperClasses)) {
-    differences.push({
-      dimension: 'interaction.state',
-      path: 'wrapperClasses',
-      left: (left.wrapperClasses ?? []).join(' '),
-      right: (right.wrapperClasses ?? []).join(' '),
-    });
-  }
+    if (rule.format === 'json') {
+      if (JSON.stringify(leftValue) !== JSON.stringify(rightValue)) {
+        differences.push({
+          dimension: rule.dimension,
+          path: field,
+          ...(field === 'selection' ? {} : {}),
+          left: JSON.stringify(leftValue),
+          right: JSON.stringify(rightValue),
+        });
+      }
+      continue;
+    }
 
-  if (JSON.stringify(left.controlClasses) !== JSON.stringify(right.controlClasses)) {
-    differences.push({
-      dimension: 'interaction.state',
-      path: 'controlClasses',
-      left: (left.controlClasses ?? []).join(' '),
-      right: (right.controlClasses ?? []).join(' '),
-    });
+    if (rule.format === 'classList') {
+      if (JSON.stringify(leftValue) !== JSON.stringify(rightValue)) {
+        differences.push({
+          dimension: rule.dimension,
+          path: field,
+          left: (leftValue ?? []).join(' '),
+          right: (rightValue ?? []).join(' '),
+        });
+      }
+      continue;
+    }
+
+    if (leftValue !== rightValue) {
+      differences.push({ dimension: rule.dimension, path: field, detail: field, left: leftValue, right: rightValue });
+    }
   }
 
   return differences;

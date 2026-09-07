@@ -53,7 +53,15 @@ const FRAMEWORK_ATTRIBUTE_PATTERN = /^(data-v-|data-vf-razor)/;
 /** Relationship attributes whose values are id references. */
 const REFERENCE_ATTRIBUTES = ['for', 'aria-describedby', 'aria-labelledby', 'aria-controls'];
 
-export const extractCasesExpression = `(() => {
+/**
+ * Extracts every case on the page.
+ *
+ * `measuredRoles` comes from the component profile: the generic half of this
+ * expression - the DOM description, the attribute filtering, the clip - is the
+ * same for every component, and only the list of roles worth measuring differs.
+ */
+export function extractCasesExpression(measuredRoles) {
+  return `(() => {
   const COMPARED_ATTRIBUTES = ${JSON.stringify(COMPARED_ATTRIBUTES)};
   const FRAMEWORK_ATTRIBUTE_PATTERN = ${FRAMEWORK_ATTRIBUTE_PATTERN.toString()};
   const REFERENCE_ATTRIBUTES = ${JSON.stringify(REFERENCE_ATTRIBUTES)};
@@ -171,21 +179,7 @@ export const extractCasesExpression = `(() => {
     return measured;
   }
 
-  // The roles a case can contain, measured by role rather than by selector
-  // position so the two adapters are compared like for like.
-  const MEASURED_ROLES = {
-    control: 'input.vf-input',
-    wrapper: '.vf-input-wrap',
-    leading: '.vf-input-wrap__icon--leading',
-    leadingGlyph: '.vf-input-wrap__icon--leading svg',
-    trailing: '.vf-input-wrap__icon--trailing',
-    trailingGlyph: '.vf-input-wrap__icon--trailing svg',
-    clear: '.vf-input-wrap__clear',
-    clearGlyph: '.vf-input-wrap__clear svg',
-    reveal: '.vf-input-wrap__password-toggle',
-    revealGlyph: '.vf-input-wrap__password-toggle svg',
-    fieldLabel: '.vf-field__label',
-  };
+  const MEASURED_ROLES = ${JSON.stringify(measuredRoles)};
 
   // An element the user cannot see has no geometry worth comparing. This is how
   // an inert Razor action, which Vue does not render at all, stops being a
@@ -223,12 +217,20 @@ export const extractCasesExpression = `(() => {
 
   return results;
 })()`;
+}
 
 /**
- * Drives the small Input scenario vocabulary with native browser input events.
+ * Drives the scenario vocabulary with native browser input events.
+ *
  * Selection setup remains explicit because caret direction is scenario data.
  * Resolve the control for every step: Vue may replace it during a wrapper
  * transition, so retaining the first element would exercise a detached node.
+ *
+ * The vocabulary is shared across components rather than split per profile.
+ * `clickButton` and `pressKey` were added for VfIconButton, and they dispatch
+ * the same real CDP pointer and key events the Input scenarios already used -
+ * a synthesised `element.click()` would prove nothing about whether a keyboard
+ * user can reach and operate the control.
  */
 export async function driveInteraction(page, caseId, steps) {
   const selector = `[data-parity-case="${caseId}"]`;
@@ -236,16 +238,30 @@ export async function driveInteraction(page, caseId, steps) {
     const root = document.querySelector(${JSON.stringify(selector)});
     if (!root) throw new Error('missing interaction case');
     window.__parityInputEvents = [];
+    // Activations are counted separately rather than derived from the event log
+    // later, so that "Enter activated the button" is a recorded fact on both
+    // adapters instead of an inference about which entry belongs to what.
+    window.__parityActivations = 0;
     for (const type of ['pointerdown', 'mousedown', 'mouseup', 'click', 'input', 'keydown']) {
       document.addEventListener(type, (event) => {
         if (!root.contains(event.target)) return;
+        if (type === 'click' && event.target.closest('.vf-icon-button')) window.__parityActivations += 1;
         const entry = { type, trusted: event.isTrusted, defaultPrevented: false };
         window.__parityInputEvents.push(entry);
         setTimeout(() => { entry.defaultPrevented = event.defaultPrevented; }, 0);
       }, true);
     }
   })()`);
-  const settle = () => page.evaluate(`new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)))`);
+  // Same fallback as run.mjs settleExpression: a step that paints nothing -
+  // pressing Enter on an already focused button - produces no frame, and a bare
+  // rAF wait would hang until the DevTools request timed out.
+  const settle = () =>
+    page.evaluate(`new Promise((done) => {
+      let settled = false;
+      const finish = () => { if (!settled) { settled = true; done(); } };
+      requestAnimationFrame(() => requestAnimationFrame(finish));
+      setTimeout(finish, 500);
+    })`);
   for (const step of steps) {
     if (step.action === 'type') {
       await page.evaluate(`(() => {
@@ -263,21 +279,17 @@ export async function driveInteraction(page, caseId, steps) {
         await settle();
         continue;
       }
-      const point = await page.evaluate(`(() => {
-        const action = document.querySelector(${JSON.stringify(selector)}).querySelector(${JSON.stringify(actionSelector)});
-        if (!action) throw new Error('missing interaction action');
-        action.scrollIntoView({ block: 'center' });
-        const rect = action.getBoundingClientRect();
-        if (rect.width === 0 || rect.height === 0 || action.disabled || action.hidden) {
-          throw new Error('interaction action is not operable');
-        }
-        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      await pointerClick(page, selector, actionSelector);
+    } else if (step.action === 'clickButton') {
+      await pointerClick(page, selector, step.selector ?? '.vf-icon-button');
+    } else if (step.action === 'pressKey') {
+      await pressKey(page, step.key);
+    } else if (step.action === 'focusButton') {
+      await page.evaluate(`(() => {
+        const button = document.querySelector(${JSON.stringify(selector)}).querySelector(${JSON.stringify(step.selector ?? '.vf-icon-button')});
+        if (!button) throw new Error('missing interaction button');
+        button.focus();
       })()`);
-      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
-      await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
-      await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
-      // Native hover would otherwise change only the clicked action's state.
-      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 900, y: 1 });
     } else if (step.action === 'setSelection' || step.action === 'focus') {
       await page.evaluate(`(() => {
         const control = document.querySelector(${JSON.stringify(selector)}).querySelector('input.vf-input');
@@ -292,8 +304,76 @@ export async function driveInteraction(page, caseId, steps) {
   return page.evaluate('window.__parityInputEvents');
 }
 
-/** Reports the actual post-scenario state before any visual focus normalization. */
-export function interactionExpression(caseId) {
+/**
+ * A real pointer click at the centre of an element.
+ *
+ * Not `element.click()`: a synthesised activation bypasses hit testing, so it
+ * would happily "click" a control that is covered, zero-sized or disabled, and
+ * report success where a user would get nothing.
+ */
+async function pointerClick(page, caseSelector, targetSelector) {
+  const point = await page.evaluate(`(() => {
+    const action = document.querySelector(${JSON.stringify(caseSelector)}).querySelector(${JSON.stringify(targetSelector)});
+    if (!action) throw new Error('missing interaction action');
+    action.scrollIntoView({ block: 'center' });
+    const rect = action.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0 || action.disabled || action.hidden) {
+      throw new Error('interaction action is not operable');
+    }
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  })()`);
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+  await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
+  // Native hover would otherwise change only the clicked action's state.
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 900, y: 1 });
+}
+
+/** Virtual key codes for the keys the scenario vocabulary can press. */
+const KEY_CODES = {
+  Enter: { code: 'Enter', virtualKeyCode: 13, text: '\r' },
+  ' ': { code: 'Space', virtualKeyCode: 32, text: ' ' },
+  Tab: { code: 'Tab', virtualKeyCode: 9, text: undefined },
+};
+
+/**
+ * A real key press on whatever currently has focus.
+ *
+ * A native button activates on keydown for Enter and on keyup for Space, so the
+ * full down/char/up sequence is dispatched rather than a single event: sending
+ * only keydown would make Space look broken on both adapters at once.
+ */
+async function pressKey(page, key) {
+  const descriptor = KEY_CODES[key];
+
+  if (!descriptor) {
+    throw new Error(`unsupported interaction key: ${JSON.stringify(key)}`);
+  }
+
+  const base = { key, code: descriptor.code, windowsVirtualKeyCode: descriptor.virtualKeyCode, nativeVirtualKeyCode: descriptor.virtualKeyCode };
+  await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
+  if (descriptor.text !== undefined) {
+    await page.send('Input.dispatchKeyEvent', { type: 'char', ...base, text: descriptor.text, unmodifiedText: descriptor.text });
+  }
+  await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
+}
+
+/**
+ * Reports the actual post-scenario state before any visual focus normalization.
+ *
+ * The shape is component-specific - a caret position means nothing on a button,
+ * an activation count means nothing on a text field - so the profile selects
+ * it. Everything downstream compares whatever shape comes back, key by key.
+ */
+export function interactionExpression(caseId, snapshot = 'input') {
+  if (snapshot === 'icon-button') {
+    return iconButtonInteractionExpression(caseId);
+  }
+
+  if (snapshot !== 'input') {
+    throw new Error(`Unknown interaction snapshot: ${snapshot}`);
+  }
+
   return `(() => {
     const root = document.querySelector('[data-parity-case="${caseId}"]');
     if (!root) throw new Error('missing case ${caseId}');
@@ -355,6 +435,51 @@ export function interactionExpression(caseId) {
         ? [...root.querySelector('.vf-input-wrap').classList].filter((name) => name.startsWith('vf-')).sort()
         : null,
       controlClasses: [...liveControl.classList].filter((name) => name.startsWith('vf-')).sort(),
+    };
+  })()`;
+}
+
+/**
+ * Post-scenario state of an icon button.
+ *
+ * What matters on a button is whether it actually activated, whether focus
+ * landed on it, and whether it still reports the same accessible name and
+ * pressed state afterwards. Those are the things a pointer user and a keyboard
+ * user can each tell apart, and they have to agree across all three targets.
+ */
+function iconButtonInteractionExpression(caseId) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+    const button = root.querySelector('.vf-icon-button');
+    if (!button) throw new Error('missing icon button in case ${caseId}');
+    const activeElement = document.activeElement;
+    const focusRole = activeElement === button
+      ? 'button'
+      : activeElement === document.body
+        ? 'body'
+        : root.contains(activeElement) ? 'other-inside-case' : 'outside-case';
+
+    const caseRect = root.getBoundingClientRect();
+
+    return {
+      clip: {
+        x: Math.round(caseRect.left + window.scrollX),
+        y: Math.round(caseRect.top + window.scrollY),
+        width: Math.round(caseRect.width),
+        height: Math.round(caseRect.height),
+      },
+      // The count a pointer click and an Enter press must both produce, and a
+      // disabled button must not.
+      activations: window.__parityActivations ?? 0,
+      focusRole,
+      disabled: button.disabled,
+      operable: !button.disabled && !button.hidden && getComputedStyle(button).display !== 'none',
+      accessibleName: button.getAttribute('aria-label'),
+      pressed: button.getAttribute('aria-pressed'),
+      type: button.getAttribute('type'),
+      buttonClasses: [...button.classList].filter((name) => name.startsWith('vf-')).sort(),
+      glyphHidden: root.querySelector('.vf-icon-button svg')?.getAttribute('aria-hidden') ?? null,
     };
   })()`;
 }
