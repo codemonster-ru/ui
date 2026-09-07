@@ -1,7 +1,12 @@
-// Types for the shared plain-data modules the Input showcase reads through the
+// Types for the shared plain-data modules the showcase routes read through the
 // build aliases. The data itself is owned by contracts/ and examples/shared/.
 declare module '@vueforge/input-cases' {
   // Shaped by the consumer: this module only promises a list of cases.
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
+declare module '@vueforge/icon-button-cases' {
   const catalog: { cases: unknown[] };
   export default catalog;
 }

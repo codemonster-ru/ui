@@ -10,6 +10,7 @@ const showcaseSectionPattern = /^\/(overview|colors|core|layouts|icons|codeblock
 // so the six historical routes keep rendering exactly the markup the frozen
 // baseline recorded.
 const inputShowcasePattern = /^\/input\/?(\?.*)?$/;
+const iconButtonShowcasePattern = /^\/icon-button\/?(\?.*)?$/;
 
 function vueforgeShowcaseHistoryFallback(): Plugin {
   const rewriteShowcaseSection = (req: IncomingMessage, _res: ServerResponse, next: (err?: unknown) => void) => {
@@ -18,6 +19,9 @@ function vueforgeShowcaseHistoryFallback(): Plugin {
     } else if (req.url && inputShowcasePattern.test(req.url)) {
       const [, query = ''] = req.url.split('?');
       req.url = query ? `/input.html?${query}` : '/input.html';
+    } else if (req.url && iconButtonShowcasePattern.test(req.url)) {
+      const [, query = ''] = req.url.split('?');
+      req.url = query ? `/icon-button.html?${query}` : '/icon-button.html';
     }
 
     next();
@@ -96,6 +100,7 @@ export default defineConfig({
       input: {
         index: fileURLToPath(new URL('./index.html', import.meta.url)),
         input: fileURLToPath(new URL('./input.html', import.meta.url)),
+        iconButton: fileURLToPath(new URL('./icon-button.html', import.meta.url)),
       },
     },
   },
@@ -130,6 +135,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/input-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/input/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/icon-button-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/icon-button/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

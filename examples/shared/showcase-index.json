@@ -12,12 +12,12 @@
       "vue": {
         "label": "Vue",
         "path": "/input",
-        "$comment": "A route of the historical Vue showcase application at examples/playground."
+        "$comment": "A route of the historical Vue showcase application at examples/playground. The path is per component, because each component has its own document; see the routes block of each implemented component."
       },
       "razor": {
         "label": "Razor",
         "path": "/",
-        "$comment": "The PHP application at examples/razor-showcase, served by its own front controller."
+        "$comment": "The PHP application at examples/razor-showcase, served by its own front controller. One path for every component: the component query parameter selects which catalog it renders."
       }
     }
   },
@@ -442,7 +442,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/icon-button/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/icon-button/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/icon-button",
+          "razor": "/"
         }
       }
     },
@@ -472,7 +481,11 @@
       },
       "showcase": {
         "caseSource": "contracts/input/cases.json",
-        "caseIdField": "id"
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/input",
+          "razor": "/"
+        }
       }
     },
     {

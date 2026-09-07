@@ -73,8 +73,45 @@ function readSharedJson(string $path): array
     return json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
 }
 
-$catalogData = readSharedJson($repositoryRoot . '/contracts/input/cases.json');
 $showcaseIndex = readSharedJson($repositoryRoot . '/examples/shared/showcase-index.json');
+
+/**
+ * Which component this request is for.
+ *
+ * One front controller and one path serve every migrated component; the
+ * `component` parameter of the shared URL contract selects the catalog and the
+ * view. The list is derived from the shared index rather than written here, so
+ * this application cannot claim support the index does not record.
+ */
+$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase'];
+$supported = [];
+
+foreach ($showcaseIndex['components'] as $entry) {
+    if (($entry['platforms']['razor']['status'] ?? '') !== 'implemented') {
+        continue;
+    }
+    if (!isset($views[$entry['name']])) {
+        throw new RuntimeException("The shared index marks [{$entry['name']}] implemented, but this application has no view for it.");
+    }
+    $supported[$entry['name']] = [
+        'caseSource' => $entry['showcase']['caseSource'],
+        'view' => $views[$entry['name']],
+        'vuePath' => $entry['showcase']['routes']['vue'],
+    ];
+}
+
+$component = isset($_GET['component']) && is_string($_GET['component']) ? $_GET['component'] : 'VfInput';
+
+if (!isset($supported[$component])) {
+    // An address that does not exist has to look like one, the same rule the
+    // unknown-case branch follows rather than quietly rendering a default.
+    http_response_code(404);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "No Razor showcase for component [{$component}]. Available: " . implode(', ', array_keys($supported)) . "\n";
+    exit(0);
+}
+
+$catalogData = readSharedJson($repositoryRoot . '/' . $supported[$component]['caseSource']);
 
 $cases = $catalogData['cases'];
 $caseIds = array_column($cases, 'id');
@@ -91,10 +128,10 @@ $theme = (isset($_GET['theme']) && $_GET['theme'] === 'dark') ? 'dark' : 'light'
  * documented path rather than silently linking back to this page.
  */
 $vueOrigin = rtrim((string) ($_SERVER['VUEFORGE_VUE_SHOWCASE_ORIGIN'] ?? getenv('VUEFORGE_VUE_SHOWCASE_ORIGIN') ?: ''), '/');
-$vuePath = $showcaseIndex['urlContract']['platforms']['vue']['path'];
+$vuePath = $supported[$component]['vuePath'];
 
-$vueHref = static function (?string $caseId) use ($vueOrigin, $vuePath, $theme): string {
-    $query = ['component' => 'VfInput', 'theme' => $theme];
+$vueHref = static function (?string $caseId) use ($vueOrigin, $vuePath, $theme, $component): string {
+    $query = ['component' => $component, 'theme' => $theme];
     if ($caseId !== null) {
         $query['case'] = $caseId;
     }
@@ -118,6 +155,13 @@ foreach ($cases as $case) {
 
     if (isset($case['interaction']['steps'])) {
         $interactionSummaries[$id] = implode(' → ', array_column($case['interaction']['steps'], 'action'));
+    }
+
+    // The remaining per-case values describe the VfField shell the Input cases
+    // can ask for. VfIconButton has no such shell, so there is nothing to
+    // compute and nothing for its template to receive.
+    if ($component !== 'VfInput') {
+        continue;
     }
 
     if (!isset($case['field'])) {
@@ -162,7 +206,7 @@ $engine = new RazorEngine(
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-store');
 
-echo $engine->render('input-showcase', [
+echo $engine->render($supported[$component]['view'], [
     'cases' => $cases,
     'catalog' => $showcaseIndex['components'],
     'theme' => $theme,

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Full-route gate for the two Input showcases (M08).
+// Full-route gate for the showcase applications (M08, extended in M10).
 //
 // The parity gate proves one component renders the same thing in three
 // implementations. This proves something different: that the real applications
@@ -77,16 +77,46 @@ async function waitForOrigin(origin, path, label) {
 }
 
 // ---------------------------------------------------------------- shared data
-const catalog = JSON.parse(readFileSync(resolve(repositoryRoot, 'contracts/input/cases.json'), 'utf8'));
 const showcaseIndex = JSON.parse(readFileSync(resolve(repositoryRoot, 'examples/shared/showcase-index.json'), 'utf8'));
 const inventory = JSON.parse(readFileSync(resolve(repositoryRoot, 'baseline/reference-inventory.json'), 'utf8'));
 
-const caseIds = catalog.cases.map((parityCase) => parityCase.id);
 const indexComponentNames = showcaseIndex.components.map((entry) => entry.name);
 const frozenComponentNames = inventory.components.publicComponentNames;
 const razorImplemented = showcaseIndex.components
   .filter((entry) => entry.platforms.razor.status === 'implemented')
   .map((entry) => entry.name);
+
+/**
+ * The components both applications must expose, derived from the shared index.
+ *
+ * Nothing is hardcoded except the selector that proves a case rendered a real
+ * control, which is the one fact about a component this gate cannot read from
+ * plain data. A component marked implemented with no entry here fails below
+ * rather than being skipped.
+ */
+const controlSelectors = { VfInput: 'input.vf-input', VfIconButton: 'button.vf-icon-button' };
+
+const components = showcaseIndex.components
+  .filter((entry) => entry.platforms.razor.status === 'implemented')
+  .map((entry) => {
+    const catalog = JSON.parse(readFileSync(resolve(repositoryRoot, entry.showcase.caseSource), 'utf8'));
+
+    return {
+      name: entry.name,
+      caseSource: entry.showcase.caseSource,
+      vuePath: entry.showcase.routes.vue,
+      razorPath: entry.showcase.routes.razor,
+      controlSelector: controlSelectors[entry.name],
+      caseIds: catalog.cases.map((parityCase) => parityCase.id),
+    };
+  });
+
+check(
+  'every component the index marks Razor-implemented is covered by this gate',
+  components.every((component) => typeof component.controlSelector === 'string'),
+  components.filter((c) => !c.controlSelector).map((c) => c.name).join(', '),
+);
+
 
 // The index cannot invent, hide or rename a component. Without this the two
 // catalogs could agree with each other while both disagreeing with the product.
@@ -101,13 +131,16 @@ check(
 );
 check(
   'only components with a real Razor adapter are marked implemented',
-  JSON.stringify(razorImplemented) === JSON.stringify(['VfInput']),
+  JSON.stringify(razorImplemented) === JSON.stringify(['VfIconButton', 'VfInput']),
   razorImplemented.join(', '),
 );
 check(
-  'the Razor case source points at the shared catalog',
-  showcaseIndex.components.find((entry) => entry.name === 'VfInput')?.platforms.razor.caseSource ===
-    'contracts/input/cases.json',
+  'every implemented component points at the shared catalog that the parity gate uses',
+  components.every(
+    (component) =>
+      showcaseIndex.components.find((entry) => entry.name === component.name)?.platforms.razor.caseSource ===
+      component.caseSource,
+  ),
 );
 
 // The Razor case template repeats the vf-input tag once per slot combination,
@@ -169,6 +202,19 @@ check(
   existsSync(resolve(razorAssets, 'vueforge-razor.css')) && existsSync(resolve(razorAssets, 'vueforge-razor.js')),
   `${razorAssets} (run npm run razor:package)`,
 );
+// `composer install` over a path repository keeps whatever copy is already in
+// vendor/, so a stale install serves an older adapter while every other check
+// passes. Comparing the installed source against the staged source is what
+// turns that into a failure rather than a confusing missing component.
+const installedProvider = resolve(razorAssets, '../src/VueForgeRazorProvider.php');
+const stagedProvider = resolve(repositoryRoot, '.release/razor-package/src/VueForgeRazorProvider.php');
+check(
+  'the installed package matches the staged artifact',
+  existsSync(installedProvider) &&
+    existsSync(stagedProvider) &&
+    readFileSync(installedProvider, 'utf8') === readFileSync(stagedProvider, 'utf8'),
+  'vendor/ holds an older copy; remove examples/razor-showcase/vendor and reinstall',
+);
 
 process.stdout.write(`Serving the Vue showcase on ${vueOrigin} and the Razor showcase on ${razorOrigin}\n`);
 // Detached with no inherited pipes, so the gate can end the whole process group
@@ -194,7 +240,7 @@ const razorServer = spawn('php', ['-S', `127.0.0.1:${razorPort}`, '-t', resolve(
 const chrome = await launchChrome();
 
 /** Reads what one showcase page actually rendered. */
-async function readShowcase(origin, path, theme, label) {
+async function readShowcase(origin, path, theme, label, controlSelector) {
   process.stdout.write(`  reading the ${label} showcase (${theme})\n`);
   const page = await openPage(chrome.endpoint);
 
@@ -223,7 +269,7 @@ async function readShowcase(origin, path, theme, label) {
         platform: document.querySelector('[data-showcase-platform-current]').dataset.showcasePlatformCurrent,
         component: document.querySelector('[data-showcase-component]')?.dataset.showcaseComponent ?? null,
         caseIds: cases.map((element) => element.dataset.showcaseCase),
-        controls: cases.filter((element) => element.querySelector('input.vf-input')).length,
+        controls: cases.filter((element) => element.querySelector(${JSON.stringify(controlSelector)})).length,
         caseLinks: Object.fromEntries(
           [...document.querySelectorAll('[data-showcase-case-link]')].map((link) => [
             link.dataset.showcaseCaseLinkFor,
@@ -292,125 +338,169 @@ async function readSelectedCase(origin, path) {
 const observations = {};
 
 try {
-  await waitForOrigin(vueOrigin, '/input', 'The Vue showcase');
-  await waitForOrigin(razorOrigin, '/', 'The Razor showcase');
+  for (const component of components) {
+    await waitForOrigin(vueOrigin, component.vuePath, `The Vue ${component.name} showcase`);
+    await waitForOrigin(razorOrigin, component.razorPath, `The Razor ${component.name} showcase`);
+  }
 
-  for (const theme of themes) {
-    const vue = await readShowcase(vueOrigin, `/input?theme=${theme}`, theme, 'vue');
-    const razor = await readShowcase(razorOrigin, `/?theme=${theme}`, theme, 'razor');
-    observations[theme] = { vue, razor };
+  for (const component of components) {
+    const { name, caseIds: componentCaseIds } = component;
+    const vueRoute = `${component.vuePath}?component=${name}`;
+    const razorRoute = `${component.razorPath}?component=${name}`;
+    // VfInput ships a browser controller that enhances every server-rendered
+    // root. VfIconButton has nothing to enhance: a button carrying an icon is
+    // complete server-side, so it carries no ownership marker and the gate must
+    // not demand one it has no reason to render.
+    const enhanced = name === 'VfInput';
 
-    // ---------------------------------------------------------- the same cases
-    check(`[${theme}] the Vue page identifies itself`, vue.platform === 'vue' && vue.component === 'VfInput');
-    check(`[${theme}] the Razor page identifies itself`, razor.platform === 'razor' && razor.component === 'VfInput');
-    check(
-      `[${theme}] the Vue showcase renders every shared case in catalog order`,
-      JSON.stringify(vue.caseIds) === JSON.stringify(caseIds),
-      `${vue.caseIds.length} of ${caseIds.length}`,
-    );
-    check(
-      `[${theme}] the Razor showcase renders every shared case in catalog order`,
-      JSON.stringify(razor.caseIds) === JSON.stringify(caseIds),
-      `${razor.caseIds.length} of ${caseIds.length}`,
-    );
-    check(
-      `[${theme}] every Vue case renders a real control`,
-      vue.controls === caseIds.length,
-      `${vue.controls} of ${caseIds.length}`,
-    );
-    check(
-      `[${theme}] every Razor case renders a real control`,
-      razor.controls === caseIds.length,
-      `${razor.controls} of ${caseIds.length}`,
-    );
+    for (const theme of themes) {
+      const vue = await readShowcase(
+        vueOrigin,
+        `${vueRoute}&theme=${theme}`,
+        theme,
+        `vue-${name}`,
+        component.controlSelector,
+      );
+      const razor = await readShowcase(
+        razorOrigin,
+        `${razorRoute}&theme=${theme}`,
+        theme,
+        `razor-${name}`,
+        component.controlSelector,
+      );
+      observations[`${name}/${theme}`] = { vue, razor };
 
-    // ------------------------------------------------- the real Razor pipeline
-    check(
-      `[${theme}] every Razor case comes from the real adapter`,
-      razor.razorRoots === caseIds.length,
-      `${razor.razorRoots} ownership markers`,
-    );
-    check(
-      `[${theme}] the packaged Razor controller enhanced every root`,
-      razor.razorEnhanced === caseIds.length,
-      `${razor.razorEnhanced} enhanced`,
-    );
-    check(
-      `[${theme}] the Razor page loads the packaged stylesheet`,
-      razor.stylesheets.includes('/assets/vueforge-razor.css'),
-      razor.stylesheets.join(', '),
-    );
-    check(
-      `[${theme}] the Razor page loads the packaged controller`,
-      razor.scripts.includes('/assets/vueforge-razor.js'),
-      razor.scripts.join(', '),
-    );
-    // The Vue page must not reach for the Razor delivery path, and the Razor
-    // page must not reach for the Vue build. Either would make the two pages
-    // share a runtime that the architecture keeps apart.
-    check(
-      `[${theme}] the Vue page loads no Razor asset`,
-      [...vue.stylesheets, ...vue.scripts].every((href) => !/vueforge-razor/.test(href ?? '')),
-    );
-    check(
-      `[${theme}] the Razor page loads no Vue build asset`,
-      [...razor.stylesheets, ...razor.scripts].every((href) => !/\/assets\/(index|input)-/.test(href ?? '')),
-    );
+      // ---------------------------------------------------------- the same cases
+      check(`[${name}/${theme}] the Vue page identifies itself`, vue.platform === 'vue' && vue.component === name);
+      check(`[${name}/${theme}] the Razor page identifies itself`, razor.platform === 'razor' && razor.component === name);
+      check(
+        `[${name}/${theme}] the Vue showcase renders every shared case in catalog order`,
+        JSON.stringify(vue.caseIds) === JSON.stringify(componentCaseIds),
+        `${vue.caseIds.length} of ${componentCaseIds.length}`,
+      );
+      check(
+        `[${name}/${theme}] the Razor showcase renders every shared case in catalog order`,
+        JSON.stringify(razor.caseIds) === JSON.stringify(componentCaseIds),
+        `${razor.caseIds.length} of ${componentCaseIds.length}`,
+      );
+      check(
+        `[${name}/${theme}] every Vue case renders a real control`,
+        vue.controls === componentCaseIds.length,
+        `${vue.controls} of ${componentCaseIds.length}`,
+      );
+      check(
+        `[${name}/${theme}] every Razor case renders a real control`,
+        razor.controls === componentCaseIds.length,
+        `${razor.controls} of ${componentCaseIds.length}`,
+      );
 
-    // ------------------------------------------------------------- the catalog
-    const expectedCatalog = showcaseIndex.components.map((entry) => [entry.name, entry.platforms.razor.status]);
-    check(
-      `[${theme}] the Vue catalog reports honest Razor support`,
-      JSON.stringify(vue.catalog) === JSON.stringify(expectedCatalog),
-    );
-    check(
-      `[${theme}] the Razor catalog reports honest Razor support`,
-      JSON.stringify(razor.catalog) === JSON.stringify(expectedCatalog),
-    );
-    check(
-      `[${theme}] unmigrated components stay listed as not implemented`,
-      razor.catalog.filter(([, status]) => status === 'not-implemented').length === frozenComponentNames.length - 1,
-    );
+      // ------------------------------------------------- the real Razor pipeline
+      if (enhanced) {
+        check(
+          `[${name}/${theme}] every Razor case comes from the real adapter`,
+          razor.razorRoots === componentCaseIds.length,
+          `${razor.razorRoots} ownership markers`,
+        );
+        check(
+          `[${name}/${theme}] the packaged Razor controller enhanced every root`,
+          razor.razorEnhanced === componentCaseIds.length,
+          `${razor.razorEnhanced} enhanced`,
+        );
+      } else {
+        check(
+          `[${name}/${theme}] the Razor page needs no enhancement to be complete`,
+          razor.razorEnhanced === 0,
+          `${razor.razorEnhanced} enhanced roots on a component with no controller`,
+        );
+      }
+      check(
+        `[${name}/${theme}] the Razor page loads the packaged stylesheet`,
+        razor.stylesheets.includes('/assets/vueforge-razor.css'),
+        razor.stylesheets.join(', '),
+      );
+      check(
+        `[${name}/${theme}] the Razor page loads the packaged controller`,
+        razor.scripts.includes('/assets/vueforge-razor.js'),
+        razor.scripts.join(', '),
+      );
+      // The Vue page must not reach for the Razor delivery path, and the Razor
+      // page must not reach for the Vue build. Either would make the two pages
+      // share a runtime that the architecture keeps apart.
+      check(
+        `[${name}/${theme}] the Vue page loads no Razor asset`,
+        [...vue.stylesheets, ...vue.scripts].every((href) => !/vueforge-razor/.test(href ?? '')),
+      );
+      check(
+        `[${name}/${theme}] the Razor page loads no Vue build asset`,
+        [...razor.stylesheets, ...razor.scripts].every((href) => !/\/assets\/(index|input|icon-button)-/.test(href ?? '')),
+      );
 
-    // ---------------------------------------------------------------- the theme
-    check(`[${theme}] the Razor page applies the requested theme`, razor.themeAttribute === theme);
-    check(`[${theme}] the Vue page applies the requested theme`, vue.themeAttribute === theme);
+      // ------------------------------------------------------------- the catalog
+      const expectedCatalog = showcaseIndex.components.map((entry) => [entry.name, entry.platforms.razor.status]);
+      check(
+        `[${name}/${theme}] the Vue catalog reports honest Razor support`,
+        JSON.stringify(vue.catalog) === JSON.stringify(expectedCatalog),
+      );
+      check(
+        `[${name}/${theme}] the Razor catalog reports honest Razor support`,
+        JSON.stringify(razor.catalog) === JSON.stringify(expectedCatalog),
+      );
+      check(
+        `[${name}/${theme}] unmigrated components stay listed as not implemented`,
+        razor.catalog.filter(([, status]) => status === 'not-implemented').length ===
+          frozenComponentNames.length - razorImplemented.length,
+      );
 
-    // ------------------------------------------------------- matching addresses
-    const wrongVueLinks = caseIds.filter(
-      (id) => vue.caseLinks[id] !== `${razorOrigin}/?component=VfInput&theme=${theme}&case=${encodeURIComponent(id)}`,
-    );
-    const wrongRazorLinks = caseIds.filter(
-      (id) => razor.caseLinks[id] !== `${vueOrigin}/input?component=VfInput&theme=${theme}&case=${encodeURIComponent(id)}`,
-    );
-    check(
-      `[${theme}] every Vue case links to the same Razor case`,
-      wrongVueLinks.length === 0,
-      wrongVueLinks.slice(0, 3).join(', '),
-    );
-    check(
-      `[${theme}] every Razor case links to the same Vue case`,
-      wrongRazorLinks.length === 0,
-      wrongRazorLinks.slice(0, 3).join(', '),
-    );
+      // ---------------------------------------------------------------- the theme
+      check(`[${name}/${theme}] the Razor page applies the requested theme`, razor.themeAttribute === theme);
+      check(`[${name}/${theme}] the Vue page applies the requested theme`, vue.themeAttribute === theme);
 
-    check(
-      `[${theme}] neither page reported a script error`,
-      vue.diagnostics.pageErrors.length === 0 && razor.diagnostics.pageErrors.length === 0,
-      [...vue.diagnostics.pageErrors, ...razor.diagnostics.pageErrors].join('; '),
-    );
+      // ------------------------------------------------------- matching addresses
+      const wrongVueLinks = componentCaseIds.filter(
+        (id) =>
+          vue.caseLinks[id] !==
+          `${razorOrigin}${component.razorPath}?component=${name}&theme=${theme}&case=${encodeURIComponent(id)}`,
+      );
+      const wrongRazorLinks = componentCaseIds.filter(
+        (id) =>
+          razor.caseLinks[id] !==
+          `${vueOrigin}${component.vuePath}?component=${name}&theme=${theme}&case=${encodeURIComponent(id)}`,
+      );
+      check(
+        `[${name}/${theme}] every Vue case links to the same Razor case`,
+        wrongVueLinks.length === 0,
+        wrongVueLinks.slice(0, 3).join(', '),
+      );
+      check(
+        `[${name}/${theme}] every Razor case links to the same Vue case`,
+        wrongRazorLinks.length === 0,
+        wrongRazorLinks.slice(0, 3).join(', '),
+      );
+
+      check(
+        `[${name}/${theme}] neither page reported a script error`,
+        vue.diagnostics.pageErrors.length === 0 && razor.diagnostics.pageErrors.length === 0,
+        [...vue.diagnostics.pageErrors, ...razor.diagnostics.pageErrors].join('; '),
+      );
+    }
   }
 
   // ------------------------------------------------- following a matching link
   //
   // A link that resolves to the page but not to the case would look correct in
   // a screenshot. Both directions are followed for real.
-  const sampled = ['input/clearable-filled', 'input/field-floating-filled', 'input/interaction-reveal'];
-  for (const caseId of sampled) {
+  const sampled = [
+    ['VfInput', 'input/clearable-filled'],
+    ['VfInput', 'input/field-floating-filled'],
+    ['VfInput', 'input/interaction-reveal'],
+    ['VfIconButton', 'icon-button/variant-danger'],
+    ['VfIconButton', 'icon-button/interaction-enter'],
+  ];
+  for (const [componentName, caseId] of sampled) {
     // A case missing from one side is already reported above; say so here too
     // rather than crashing on an absent link, so the whole report survives.
-    const vueLink = observations.light.vue.caseLinks[caseId];
-    const razorLink = observations.light.razor.caseLinks[caseId];
+    const vueLink = observations[`${componentName}/light`].vue.caseLinks[caseId];
+    const razorLink = observations[`${componentName}/light`].razor.caseLinks[caseId];
     if (typeof vueLink !== 'string' || typeof razorLink !== 'string') {
       check(
         `both showcases offer a matching link for ${caseId}`,
@@ -441,17 +531,27 @@ try {
   // --------------------------------------------------------- an address that is
   // not a case must look like one, on both platforms, rather than quietly
   // rendering a default.
-  for (const [label, origin, path] of [
-    ['Vue', vueOrigin, '/input?case=input/does-not-exist'],
-    ['Razor', razorOrigin, '/?case=input/does-not-exist'],
-  ]) {
-    const unknown = await readSelectedCase(origin, path);
-    check(
-      `${label} reports an unknown case instead of selecting a default`,
-      unknown.unknownCase && unknown.focused.length === 0 && unknown.caseCount === caseIds.length,
-      JSON.stringify(unknown),
-    );
+  for (const component of components) {
+    for (const [label, origin, path] of [
+      ['Vue', vueOrigin, `${component.vuePath}?component=${component.name}&case=nothing/does-not-exist`],
+      ['Razor', razorOrigin, `${component.razorPath}?component=${component.name}&case=nothing/does-not-exist`],
+    ]) {
+      const unknown = await readSelectedCase(origin, path);
+      check(
+        `${label} reports an unknown ${component.name} case instead of selecting a default`,
+        unknown.unknownCase && unknown.focused.length === 0 && unknown.caseCount === component.caseIds.length,
+        JSON.stringify(unknown),
+      );
+    }
   }
+
+  // A component nobody implemented must not quietly fall back to one that is.
+  const unknownComponentStatus = await probe(`${razorOrigin}/?component=VfNotMigrated`);
+  check(
+    'the Razor showcase refuses an unknown component instead of rendering a default',
+    unknownComponentStatus === 404,
+    `HTTP ${unknownComponentStatus}`,
+  );
 } finally {
   await chrome.close();
   // The whole group: PHP's built-in server forks workers, and killing only the
@@ -467,15 +567,15 @@ try {
 
 const report = {
   $comment: 'Full-route showcase report. Generated by scripts/ci/check-showcase-routes.mjs.',
-  cases: caseIds.length,
+  cases: Object.fromEntries(components.map((component) => [component.name, component.caseIds.length])),
   themes,
   components: frozenComponentNames.length,
   razorImplemented,
   assertions: passed.length + failures.length,
   failures,
   screenshots: Object.fromEntries(
-    Object.entries(observations).map(([theme, sides]) => [
-      theme,
+    Object.entries(observations).map(([key, sides]) => [
+      key,
       { vue: sides.vue.screenshot, razor: sides.razor.screenshot },
     ]),
   ),
@@ -483,7 +583,8 @@ const report = {
 writeFileSync(resolve(runDirectory, 'showcase-routes-report.json'), stableStringify(report));
 
 process.stdout.write(
-  `\n${caseIds.length} shared cases x ${themes.length} themes x 2 platforms, ` +
+  `\n${components.map((component) => `${component.name} ${component.caseIds.length}`).join(', ')} ` +
+    `shared cases x ${themes.length} themes x 2 platforms, ` +
     `${frozenComponentNames.length} catalog components.\n` +
     `Report: ${relative(repositoryRoot, resolve(runDirectory, 'showcase-routes-report.json'))}\n` +
     `${passed.length} assertion(s) passed.\n`,
