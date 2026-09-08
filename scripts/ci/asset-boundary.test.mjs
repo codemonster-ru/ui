@@ -298,3 +298,66 @@ test('a forbidden package named outside any literal is reported, not ignored', (
   assert.equal(violations.length, 1);
   assert.match(violations[0], /outside any string literal/);
 });
+
+// An unterminated block comment used to consume the rest of the file and still
+// report a clean scan. That is the exact failure this guard exists to prevent:
+// everything after `/*` stopped being either a literal or code, so a forbidden
+// path below it was reported by nothing. These pin the fail-closed behaviour
+// and the absence of a false positive on ordinary comments.
+test('an unterminated block comment is reported rather than trusted', () => {
+  const { violations } = analyze({
+    'packages/razor/build-assets.mjs': `
+      const a = 1;
+      /* this explanation never closes
+      const styles = ['packages/icons/dist/icons.css'];`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /could not be scanned/);
+});
+
+test('an unterminated block comment containing an apostrophe is reported', () => {
+  // The M10 exploit shape: prose apostrophes are what desynchronised the walk
+  // in the first place, so the two failures must not cancel into a clean pass.
+  const { violations } = analyze({
+    'packages/razor/build-assets.mjs': `
+      /* the artifact's provenance, never closed
+      const entry = 'packages/core/src/index.ts';`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /could not be scanned/);
+});
+
+test('a closed block comment naming a forbidden package is not a violation', () => {
+  // Accurate history in a comment is not a dependency, and flagging it would
+  // push accurate comments out of the code.
+  const { violations } = analyze({
+    'packages/razor/build-assets.mjs': `
+      /* This once read packages/icons/dist/icons.css and packages/core/dist. */
+      readFileSync('packages/theme/dist/tokens.css');`,
+  });
+
+  assert.deepEqual(violations, []);
+});
+
+test('a forbidden literal after a closed block comment is still caught', () => {
+  const { violations } = analyze({
+    'packages/razor/build-assets.mjs': `
+      /* harmless prose */
+      readFileSync('packages/icons/dist/icons.css');`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /packages\/icons/);
+});
+
+test('a block comment with apostrophes and quotes leaves the walk synchronised', () => {
+  const scan = scanSource(
+    `/* it's a comment with "quotes", an apostrophe and a /slash/ */
+     const p = 'packages/styles/src/components/icon.css';`,
+  );
+
+  assert.equal(scan.unterminated, false);
+  assert.deepEqual(scan.literals, ['packages/styles/src/components/icon.css']);
+});

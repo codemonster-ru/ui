@@ -50,9 +50,9 @@ const repositoryPathPattern = /(?:packages|examples)\/[A-Za-z0-9._-]+(?:\/[A-Za-
  * string. `hashComments` is for PHP, where `#` starts a comment - except `#[`,
  * which is an attribute and can contain literals worth seeing.
  *
- * A scan that ends inside an unterminated string is reported rather than
- * trusted: it means this walk lost sync, and under-reporting is exactly the
- * failure this guard exists to prevent.
+ * A scan that ends inside an unterminated string, regular expression or block
+ * comment is reported rather than trusted: it means this walk lost sync, and
+ * under-reporting is exactly the failure this guard exists to prevent.
  */
 /** Where a `/` can only begin a regular expression, never a division. */
 const REGEX_PRECEDING_CHARACTERS = new Set(['(', ',', '=', ':', '[', '!', '&', '|', '?', '{', '}', ';', '+', '-', '*', '%', '~', '^', '<', '>', '\n']);
@@ -81,9 +81,28 @@ export function scanSource(source, { hashComments = false, regexLiterals = !hash
     }
 
     if (character === '/' && next === '*') {
+      // A block comment that never closes swallowed the rest of the file and
+      // still reported a clean scan, which is the one outcome this guard must
+      // never produce: everything after `/*` became invisible, so a forbidden
+      // path below it was neither a literal nor code. Losing sync here is
+      // reported the same way an unterminated string or regex is.
       index += 2;
-      while (index < source.length && !(source[index] === '*' && source[index + 1] === '/')) index += 1;
-      index += 2;
+      let closed = false;
+
+      while (index < source.length) {
+        if (source[index] === '*' && source[index + 1] === '/') {
+          closed = true;
+          index += 2;
+          break;
+        }
+        index += 1;
+      }
+
+      if (!closed) {
+        unterminated = true;
+        break;
+      }
+
       continue;
     }
 
@@ -285,7 +304,8 @@ export function analyzeAssetBoundary({ rootDir, files, readFile }) {
       // which is not something to report as a clean result.
       if (scan.unterminated) {
         violations.push(
-          `${file}: could not be scanned - an unterminated string literal means its paths cannot be trusted.`,
+          `${file}: could not be scanned - an unterminated string, regular expression or ` +
+            'block comment means its paths cannot be trusted.',
         );
         continue;
       }
