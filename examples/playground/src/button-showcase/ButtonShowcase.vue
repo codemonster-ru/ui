@@ -142,6 +142,7 @@
 // props at all.
 import { computed } from 'vue';
 import { VfButton, VfThemeProvider, VfThemeSwitch } from '@codemonster-ru/vueforge-core';
+import type { VfButtonVariant, VfControlSize } from '@codemonster-ru/vueforge-core';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import { VfAppShell, VfInline } from '@codemonster-ru/vueforge-layouts';
 import caseCatalog from '@vueforge/button-cases';
@@ -150,9 +151,12 @@ import showcaseIndex from '@vueforge/showcase-index';
 interface ShowcaseCase {
   id: string;
   title?: string;
+  // Typed against the component's own unions rather than as loose strings, so
+  // a catalog value the component would reject fails here rather than at
+  // runtime.
   props?: {
-    variant?: string;
-    size?: string;
+    variant?: VfButtonVariant;
+    size?: VfControlSize;
     block?: boolean;
     loading?: boolean;
     type?: 'button' | 'submit' | 'reset';
