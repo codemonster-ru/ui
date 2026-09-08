@@ -83,7 +83,7 @@ $showcaseIndex = readSharedJson($repositoryRoot . '/examples/shared/showcase-ind
  * view. The list is derived from the shared index rather than written here, so
  * this application cannot claim support the index does not record.
  */
-$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase', 'VfButton' => 'button-showcase'];
+$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase', 'VfButton' => 'button-showcase', 'VfTextarea' => 'textarea-showcase'];
 $supported = [];
 
 foreach ($showcaseIndex['components'] as $entry) {

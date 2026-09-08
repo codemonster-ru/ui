@@ -826,7 +826,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/textarea/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/textarea/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/textarea",
+          "razor": "/"
         }
       }
     },

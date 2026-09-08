@@ -13,6 +13,7 @@ const inputShowcasePattern = /^\/input\/?(\?.*)?$/;
 const iconButtonShowcasePattern = /^\/icon-button\/?(\?.*)?$/;
 const fieldShowcasePattern = /^\/field\/?(\?.*)?$/;
 const buttonShowcasePattern = /^\/button\/?(\?.*)?$/;
+const textareaShowcasePattern = /^\/textarea\/?(\?.*)?$/;
 
 function vueforgeShowcaseHistoryFallback(): Plugin {
   const rewriteShowcaseSection = (req: IncomingMessage, _res: ServerResponse, next: (err?: unknown) => void) => {
@@ -30,6 +31,9 @@ function vueforgeShowcaseHistoryFallback(): Plugin {
     } else if (req.url && buttonShowcasePattern.test(req.url)) {
       const [, query = ''] = req.url.split('?');
       req.url = query ? `/button.html?${query}` : '/button.html';
+    } else if (req.url && textareaShowcasePattern.test(req.url)) {
+      const [, query = ''] = req.url.split('?');
+      req.url = query ? `/textarea.html?${query}` : '/textarea.html';
     }
 
     next();
@@ -111,6 +115,7 @@ export default defineConfig({
         iconButton: fileURLToPath(new URL('./icon-button.html', import.meta.url)),
         field: fileURLToPath(new URL('./field.html', import.meta.url)),
         button: fileURLToPath(new URL('./button.html', import.meta.url)),
+        textarea: fileURLToPath(new URL('./textarea.html', import.meta.url)),
       },
     },
   },
@@ -157,6 +162,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/button-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/button/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/textarea-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/textarea/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

@@ -99,6 +99,20 @@ const controlSelectors = {
   VfIconButton: 'button.vf-icon-button',
   VfField: '.vf-field',
   VfButton: 'button.vf-button',
+  VfTextarea: 'textarea.vf-textarea',
+};
+
+/**
+ * The Razor ownership marker and enhancement attribute each component renders.
+ *
+ * These were VfInput's until M13, which worked for VfField only because every
+ * field case wraps an input. A textarea carries its own marker, so counting
+ * the input's would have reported zero real roots on a page full of them.
+ */
+const ownershipMarkers = {
+  VfInput: { root: '[data-vf-razor="input"]', enhanced: '[data-vf-razor-enhanced]' },
+  VfField: { root: '[data-vf-razor="input"]', enhanced: '[data-vf-razor-enhanced]' },
+  VfTextarea: { root: '[data-vf-razor="textarea"]', enhanced: '[data-vf-razor-textarea-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -138,7 +152,7 @@ check(
 );
 check(
   'only components with a real Razor adapter are marked implemented',
-  JSON.stringify(razorImplemented) === JSON.stringify(['VfButton', 'VfField', 'VfIconButton', 'VfInput']),
+  JSON.stringify(razorImplemented) === JSON.stringify(['VfButton', 'VfField', 'VfIconButton', 'VfInput', 'VfTextarea']),
   razorImplemented.join(', '),
 );
 check(
@@ -247,7 +261,7 @@ const razorServer = spawn('php', ['-S', `127.0.0.1:${razorPort}`, '-t', resolve(
 const chrome = await launchChrome();
 
 /** Reads what one showcase page actually rendered. */
-async function readShowcase(origin, path, theme, label, controlSelector) {
+async function readShowcase(origin, path, theme, label, controlSelector, markers = ownershipMarkers.VfInput) {
   process.stdout.write(`  reading the ${label} showcase (${theme})\n`);
   const page = await openPage(chrome.endpoint);
 
@@ -288,8 +302,8 @@ async function readShowcase(origin, path, theme, label, controlSelector) {
           element.dataset.showcaseCatalogComponent,
           element.dataset.showcaseRazorStatus,
         ]),
-        razorRoots: document.querySelectorAll('[data-vf-razor="input"]').length,
-        razorEnhanced: document.querySelectorAll('[data-vf-razor-enhanced]').length,
+        razorRoots: document.querySelectorAll(${JSON.stringify(markers.root)}).length,
+        razorEnhanced: document.querySelectorAll(${JSON.stringify(markers.enhanced)}).length,
         stylesheets: [...document.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute('href')),
         scripts: [...document.querySelectorAll('script[src]')].map((script) => script.getAttribute('src')),
         themeAttribute: document.documentElement.getAttribute('data-vf-theme'),
@@ -359,7 +373,7 @@ try {
     // VfIconButton and VfButton have nothing to enhance: a native button is
     // complete server-side, so neither carries an ownership marker and the gate
     // must not demand one they have no reason to render.
-    const enhanced = name === 'VfInput' || name === 'VfField';
+    const enhanced = name === 'VfInput' || name === 'VfField' || name === 'VfTextarea';
 
     for (const theme of themes) {
       const vue = await readShowcase(
@@ -375,6 +389,7 @@ try {
         theme,
         `razor-${name}`,
         component.controlSelector,
+        ownershipMarkers[name] ?? ownershipMarkers.VfInput,
       );
       observations[`${name}/${theme}`] = { vue, razor };
 

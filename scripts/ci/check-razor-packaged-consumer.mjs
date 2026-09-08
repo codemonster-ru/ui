@@ -171,6 +171,7 @@ $input = $registry->resolve('vf-input');
 $iconButton = $registry->resolve('vf-icon-button');
 $field = $registry->resolve('vf-field');
 $button = $registry->resolve('vf-button');
+$textarea = $registry->resolve('vf-textarea');
 $assetPath = VueForgeRazorProvider::assetPath();
 
 echo json_encode([
@@ -179,6 +180,7 @@ echo json_encode([
         'vf-icon-button' => $registry->handles('vf-icon-button'),
         'vf-field' => $registry->handles('vf-field'),
         'vf-button' => $registry->handles('vf-button'),
+        'vf-textarea' => $registry->handles('vf-textarea'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -217,8 +219,21 @@ echo json_encode([
         ['loading' => true],
         ['default' => static fn () => RenderedHtml::fromTrustedString('Saving')],
     ))->value(),
+    // A standalone textarea carrying a value that must stay text, and the same
+    // control composed inside a real field. Packaging could plausibly break the
+    // escaping or the relationships without breaking a tag.
+    'textarea' => $textarea->render(new ComponentRenderContext(
+        ['value' => "first line\\nsecond <b>line</b> & \\"quoted\\"", 'rows' => 4, 'name' => 'notes'],
+        [],
+    ))->value(),
+    'textareaField' => $field->render(new ComponentRenderContext(
+        ['label' => 'Release notes', 'description' => 'Shown to everyone', 'label-placement' => 'floating'],
+        ['default' => static fn () => $textarea->render(new ComponentRenderContext(['value' => 'Shipped it'], []))],
+    ))->value(),
     'assetPath' => $assetPath,
     'css' => is_file($assetPath . '/vueforge-razor.css') ? filesize($assetPath . '/vueforge-razor.css') : 0,
+    'textareaCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-textarea'),
     'buttonCss' => is_file($assetPath . '/vueforge-razor.css')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-button'),
     'spinnerCss' => is_file($assetPath . '/vueforge-razor.css')
@@ -243,8 +258,10 @@ echo json_encode([
   check('the consumer renders the reveal action', rendered.password.includes('data-vf-razor-input="password-reveal"'));
   check('the consumer renders the packaged icon data', rendered.markup.includes('<svg'));
   check(
-    'the installed provider registers both migrated components',
-    rendered.handles['vf-input'] === true && rendered.handles['vf-icon-button'] === true,
+    'the installed provider registers every migrated component',
+    ['vf-input', 'vf-icon-button', 'vf-field', 'vf-button', 'vf-textarea'].every(
+      (tag) => rendered.handles[tag] === true,
+    ),
     JSON.stringify(rendered.handles),
   );
 
@@ -347,6 +364,57 @@ echo json_encode([
     'the packaged stylesheet carries the button and spinner rules',
     rendered.buttonCss && rendered.spinnerCss,
     JSON.stringify({ button: rendered.buttonCss, spinner: rendered.spinnerCss }),
+  );
+
+  // ---------------------------------------------------------- vf-textarea
+  check(
+    'the consumer renders a native textarea with the canonical class',
+    rendered.textarea.includes('<textarea') && rendered.textarea.includes('class="vf-textarea"'),
+    rendered.textarea.slice(0, 140),
+  );
+  check('the packaged textarea forwards its row count', rendered.textarea.includes('rows="4"'));
+  check(
+    'the packaged textarea puts its value in element text, not a value attribute',
+    rendered.textarea.includes('>first line\n') && !/<textarea[^>]*\svalue=/.test(rendered.textarea),
+    rendered.textarea.slice(0, 200),
+  );
+  check(
+    'the packaged textarea escapes markup in its value',
+    rendered.textarea.includes('&lt;b&gt;') &&
+      rendered.textarea.includes('&amp;') &&
+      !rendered.textarea.includes('<b>'),
+  );
+  check(
+    'the packaged textarea carries its own enhancement marker',
+    rendered.textarea.includes('data-vf-razor="textarea"'),
+  );
+
+  const textareaControlId = /<label for="([^"]+)" class="vf-field__label/.exec(rendered.textareaField)?.[1];
+  const textareaDescriptionId = /<p id="([^"]+)" class="vf-field__description">/.exec(rendered.textareaField)?.[1];
+  check(
+    'the packaged textarea composes inside a real field and takes its id from it',
+    textareaControlId !== undefined && rendered.textareaField.includes(`id="${textareaControlId}"`),
+    textareaControlId ?? 'no association',
+  );
+  check(
+    'the packaged field describes its textarea with its own description',
+    textareaDescriptionId !== undefined &&
+      rendered.textareaField.includes(`aria-describedby="${textareaDescriptionId}"`),
+    textareaDescriptionId ?? 'no description relationship',
+  );
+  check(
+    'the packaged textarea reports its filled state to the field it is inside',
+    rendered.textareaField.includes('vf-field__control--filled') &&
+      rendered.textareaField.includes('data-vf-filled="true"'),
+  );
+  check(
+    'the packaged field floats around its textarea',
+    rendered.textareaField.includes('vf-field--floating') && rendered.textareaField.includes('vf-textarea--floating'),
+  );
+  check(
+    'the packaged stylesheet carries the textarea rules',
+    rendered.textareaCss,
+    'the textarea would render unstyled in a consumer application',
   );
 
   check('the packaged stylesheet exists and is not empty', rendered.css > 10_000, `${rendered.css} bytes`);
