@@ -8,6 +8,7 @@ export const inputSourcePath = 'packages/core/src/components/input/VfInput.vue';
 export const sharedInputRulesPath = 'packages/shared-core/src/input/state.ts';
 export const iconButtonSourcePath = 'packages/core/src/components/icon-button/VfIconButton.vue';
 export const fieldSourcePath = 'packages/core/src/components/field/VfField.vue';
+export const buttonSourcePath = 'packages/core/src/components/button/VfButton.vue';
 
 /** The shared rules VfField and the Razor adapter both derive their presentation from. */
 export const fieldRulePath = 'packages/shared-core/src/field/state.ts';
@@ -263,4 +264,96 @@ export const fieldMutations = [
   },
 ];
 
-export const componentMutations = [...inputMutations, ...iconButtonMutations, ...fieldMutations];
+// M12. VfButton is mostly markup, so most of these break the markup. The two
+// worth reading are the loading ones: loading applies the native disabled
+// attribute, so a regression there does not change how the button looks, it
+// just makes an inert control operable again.
+export const buttonMutations = [
+  {
+    id: 'button-submits-by-default',
+    file: buttonSourcePath,
+    description: 'the default type becomes submit, so a button inside a form posts it',
+    find: "  type: 'button',",
+    replace: "  type: 'submit',",
+  },
+  {
+    id: 'button-drops-the-variant-modifier',
+    file: buttonSourcePath,
+    description: 'the variant modifier disappears, so every button renders as the base style',
+    find: '    `vf-button--${props.variant}`,',
+    replace: '',
+  },
+  {
+    id: 'button-emits-a-default-size-modifier',
+    file: buttonSourcePath,
+    description: 'the medium size starts emitting a modifier the stylesheet never defined',
+    find: "    props.size !== 'md' && `vf-button--${props.size}`,",
+    replace: '    `vf-button--${props.size}`,',
+  },
+  {
+    id: 'button-drops-the-block-modifier',
+    file: buttonSourcePath,
+    description: 'a block button stops filling its container',
+    find: "    props.block && 'vf-button--block',",
+    replace: '',
+  },
+  {
+    id: 'button-drops-the-loading-modifier',
+    file: buttonSourcePath,
+    description: 'a loading button stops looking like one',
+    find: "    props.loading && 'vf-button--loading',",
+    replace: '',
+  },
+  {
+    id: 'button-loading-stops-disabling',
+    file: buttonSourcePath,
+    description: 'a loading button becomes operable again, which no snapshot would show',
+    find: "const isDisabled = computed(() => props.loading || attrs.disabled === true || attrs.disabled === '');",
+    replace: "const isDisabled = computed(() => attrs.disabled === true || attrs.disabled === '');",
+  },
+  {
+    id: 'button-ignores-the-disabled-attribute',
+    file: buttonSourcePath,
+    description: 'a disabled button becomes operable',
+    find: '    :disabled="isDisabled"\n',
+    replace: '',
+  },
+  {
+    id: 'button-drops-attribute-forwarding',
+    file: buttonSourcePath,
+    description: 'inherited attrs stop reaching the button, losing aria-label, name and consumer class',
+    find: '    v-bind="attrs"\n',
+    replace: '',
+  },
+  {
+    id: 'button-drops-its-slot',
+    file: buttonSourcePath,
+    description: 'the button renders empty, so it has no label at all',
+    find: '    <slot />\n',
+    replace: '',
+  },
+  {
+    id: 'button-renders-the-spinner-after-its-label',
+    file: buttonSourcePath,
+    description: 'the loading spinner moves to the far side of the label',
+    find: '    <VfProgressSpinner v-if="props.loading" class="vf-button__spinner" size="var(--vf-icon-current-size)" :stroke-width="5" />\n    <slot />',
+    replace:
+      '    <slot />\n    <VfProgressSpinner v-if="props.loading" class="vf-button__spinner" size="var(--vf-icon-current-size)" :stroke-width="5" />',
+  },
+  {
+    id: 'button-drops-aria-busy',
+    file: buttonSourcePath,
+    description: 'a loading button stops announcing itself busy',
+    find: '    :aria-busy="props.loading ? \'true\' : undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'button-hides-the-spinner-from-assistive-tech',
+    file: buttonSourcePath,
+    description: 'the spinner loses its own class, so the loading affordance is unnamed',
+    find: 'class="vf-button__spinner" size="var(--vf-icon-current-size)" :stroke-width="5"',
+    replace: 'size="var(--vf-icon-current-size)" :stroke-width="5"',
+  },
+];
+
+export const componentMutations = [...inputMutations, ...iconButtonMutations, ...fieldMutations, ...buttonMutations];
