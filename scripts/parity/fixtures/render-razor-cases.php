@@ -41,8 +41,12 @@ $input = $registry->resolve('vf-input');
 $iconButton = $registry->resolve('vf-icon-button');
 $fieldComponent = $registry->resolve('vf-field');
 $buttonComponent = $registry->resolve('vf-button');
+$textareaComponent = $registry->resolve('vf-textarea');
 
-if ($input === null || $iconButton === null || $fieldComponent === null || $buttonComponent === null) {
+if (
+    $input === null || $iconButton === null || $fieldComponent === null
+    || $buttonComponent === null || $textareaComponent === null
+) {
     fwrite(STDERR, "The VueForge components are not registered.\n");
     exit(1);
 }
@@ -231,6 +235,48 @@ $renderButton = static function (array $case) use ($buttonComponent, $escape): s
     ]))->value();
 };
 
+/**
+ * A textarea case, optionally wrapped in the real vf-field.
+ *
+ * The control takes its id and relationships from the field context, so
+ * nothing here wires them by hand - which is the point of the field being real.
+ */
+$renderTextareaCase = static function (array $case, string $controlId) use ($textareaComponent, $fieldComponent): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name === 'modelValue' ? 'value' : $name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $control = static fn (): RenderedHtml => $textareaComponent->render(new ComponentRenderContext($props, []));
+
+    if (!isset($case['field'])) {
+        return $control()->value();
+    }
+
+    $field = $case['field'];
+    $fieldProps = ['control-id' => $controlId];
+
+    foreach ([
+        'label' => 'label',
+        'placement' => 'label-placement',
+        'description' => 'description',
+        'error' => 'error',
+    ] as $from => $to) {
+        if (isset($field[$from])) {
+            $fieldProps[$to] = $field[$from];
+        }
+    }
+    if (($field['required'] ?? false) === true) {
+        $fieldProps['required'] = true;
+    }
+
+    return $fieldComponent->render(new ComponentRenderContext($fieldProps, ['default' => $control]))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -238,6 +284,8 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'icon-button') {
         $body = $renderIconButton($case);
+    } elseif ($component === 'textarea') {
+        $body = $renderTextareaCase($case, str_replace('/', '-', $caseId) . '-control');
     } elseif ($component === 'button') {
         $body = $renderButton($case);
     } elseif ($component === 'field') {

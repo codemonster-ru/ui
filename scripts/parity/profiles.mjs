@@ -135,6 +135,51 @@ export const profiles = {
     snapshot: 'button',
     activationSelector: '.vf-button',
   },
+  textarea: {
+    id: 'textarea',
+    label: 'VfTextarea',
+    component: 'textarea',
+    casesPath: 'contracts/textarea/cases.json',
+    policyPath: 'contracts/textarea/parity-policy.json',
+    artifactDirectory: 'parity-textarea',
+    reportName: 'textarea-parity-report.json',
+    measuredRoles: {
+      control: 'textarea.vf-textarea',
+      field: '.vf-field',
+      label: '.vf-field__label',
+      controlWrapper: '.vf-field__control',
+      description: '.vf-field__description',
+      error: '.vf-field__error',
+    },
+    accessibilityRoles: {
+      control: 'textarea.vf-textarea',
+      description: '.vf-field__description',
+      error: '.vf-field__error',
+    },
+    // The attributes this component's contract is made of, checked against the
+    // comparison by scripts/ci/attribute-coverage.test.mjs. Declared because
+    // M12 and M13 each found attributes that no comparison would ever have
+    // reported: a profile should not be able to claim coverage it lacks.
+    semanticAttributes: [
+      'rows',
+      'placeholder',
+      'name',
+      'maxlength',
+      'minlength',
+      'spellcheck',
+      'autocomplete',
+      'wrap',
+      'disabled',
+      'readonly',
+      'required',
+      'aria-invalid',
+      'aria-label',
+      'aria-describedby',
+      'style',
+      'data-vf-filled',
+    ],
+    snapshot: 'textarea',
+  },
 };
 
 export function loadProfile(id) {

@@ -9,7 +9,7 @@
 // relationship graph.
 
 /** Attributes compared verbatim on every element. */
-const COMPARED_ATTRIBUTES = [
+export const COMPARED_ATTRIBUTES = [
   'type',
   'name',
   'value',
@@ -22,7 +22,13 @@ const COMPARED_ATTRIBUTES = [
   'step',
   'autocomplete',
   'maxlength',
+  'minlength',
   'inputmode',
+  // VfTextarea. `rows` decides the control's rendered height, and the other
+  // three are native behaviour a consumer sets deliberately.
+  'rows',
+  'wrap',
+  'spellcheck',
   'role',
   'aria-busy',
   'aria-invalid',
@@ -52,7 +58,7 @@ const COMPARED_ATTRIBUTES = [
 const FRAMEWORK_ATTRIBUTE_PATTERN = /^(data-v-|data-vf-razor)/;
 
 /** Relationship attributes whose values are id references. */
-const REFERENCE_ATTRIBUTES = ['for', 'aria-describedby', 'aria-labelledby', 'aria-controls'];
+export const REFERENCE_ATTRIBUTES = ['for', 'aria-describedby', 'aria-labelledby', 'aria-controls'];
 
 /**
  * Extracts every case on the page.
@@ -152,10 +158,33 @@ export function extractCasesExpression(measuredRoles) {
     const text = directText(element);
     if (text !== '') node.text = text;
 
-    // The live value of a control is state, not markup, and is what a user sees.
-    if (element instanceof HTMLInputElement) {
+    // The live value of a control is state, not markup, and is what a user
+    // sees. Textareas were omitted here until M13, which mattered more for them
+    // than for inputs: a textarea's value is never an attribute on either
+    // adapter, so nothing else in the capture described it at all.
+    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
       node.liveValue = element.value;
       node.operable = !element.disabled;
+    }
+
+    // A textarea is the one element whose text is a value rather than content,
+    // and neither representation of that value is part of its contract:
+    //
+    //   - HTML defines no value content attribute for textarea at all. Vue's
+    //     client render writes one anyway, as a side effect of binding :value.
+    //   - the element's text is its *default* value, which the browser never
+    //     renders as content - what a user reads is the live value.
+    //
+    // Comparing either would compare how a framework transports the value
+    // rather than what the value is, and the two adapters transport it
+    // differently by necessity: a server-rendered control has only the text,
+    // because there is no client to set a property. So both are dropped here
+    // and liveValue above carries the comparison instead - which is strictly
+    // more than was compared before M13, when nothing described a textarea's
+    // value at all. A wrong value still fails, on dom.liveValue.
+    if (element instanceof HTMLTextAreaElement) {
+      delete node.attributes.value;
+      delete node.text;
     }
     if (element instanceof HTMLButtonElement) {
       node.operable = !element.disabled && !element.hidden && getComputedStyle(element).display !== 'none';
@@ -300,6 +329,26 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
         continue;
       }
       await pointerClick(page, selector, actionSelector);
+    } else if (step.action === 'focusTextarea') {
+      await page.evaluate(`(() => {
+        const control = document.querySelector(${JSON.stringify(selector)}).querySelector('textarea.vf-textarea');
+        if (!control) throw new Error('missing textarea');
+        control.focus();
+      })()`);
+    } else if (step.action === 'typeTextarea') {
+      // Focus, then real key events through CDP so the browser applies the
+      // control's own rules: a disabled control takes nothing, a readonly one
+      // takes focus and keeps its value. Assigning .value directly would type
+      // straight past both.
+      await page.evaluate(`(() => {
+        const control = document.querySelector(${JSON.stringify(selector)}).querySelector('textarea.vf-textarea');
+        if (!control) throw new Error('missing textarea');
+        control.focus();
+        control.setSelectionRange?.(0, control.value.length);
+      })()`);
+      await typeText(page, step.value);
+    } else if (step.action === 'blurTextarea') {
+      await page.evaluate(`document.activeElement?.blur()`);
     } else if (step.action === 'clickLabel') {
       // A real pointer click on the label. Native label activation is what
       // moves focus to the associated control, so this proves the for/id edge
@@ -354,6 +403,49 @@ async function pointerClick(page, caseSelector, targetSelector) {
   await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 900, y: 1 });
 }
 
+/**
+ * Types a string with real key events, replacing whatever is selected.
+ *
+ * An empty string means "clear", which is a backspace over the selection. Every
+ * character goes through the browser, so a disabled or readonly control refuses
+ * the input exactly as it would for a person.
+ */
+async function typeText(page, value) {
+  await page.send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    windowsVirtualKeyCode: 8,
+    code: 'Backspace',
+    key: 'Backspace',
+  });
+  await page.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    windowsVirtualKeyCode: 8,
+    code: 'Backspace',
+    key: 'Backspace',
+  });
+
+  for (const character of value) {
+    if (character === '\n') {
+      await page.send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        windowsVirtualKeyCode: 13,
+        code: 'Enter',
+        key: 'Enter',
+        text: '\r',
+      });
+      await page.send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        windowsVirtualKeyCode: 13,
+        code: 'Enter',
+        key: 'Enter',
+      });
+      continue;
+    }
+    await page.send('Input.dispatchKeyEvent', { type: 'keyDown', text: character, key: character });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: character });
+  }
+}
+
 /** Virtual key codes for the keys the scenario vocabulary can press. */
 const KEY_CODES = {
   Enter: { code: 'Enter', virtualKeyCode: 13, text: '\r' },
@@ -401,6 +493,10 @@ async function pressKey(page, key) {
  * it. Everything downstream compares whatever shape comes back, key by key.
  */
 export function interactionExpression(caseId, snapshot = 'input') {
+  if (snapshot === 'textarea') {
+    return textareaInteractionExpression(caseId);
+  }
+
   if (snapshot === 'field') {
     return fieldInteractionExpression(caseId);
   }
@@ -474,6 +570,73 @@ export function interactionExpression(caseId, snapshot = 'input') {
         ? [...root.querySelector('.vf-input-wrap').classList].filter((name) => name.startsWith('vf-')).sort()
         : null,
       controlClasses: [...liveControl.classList].filter((name) => name.startsWith('vf-')).sort(),
+    };
+  })()`;
+}
+
+/**
+ * Post-scenario state of a textarea, and of the field around it.
+ *
+ * Almost nothing this component does is visible in markup: the value lives in a
+ * property, the filled signal belongs to a different element, and the
+ * relationships come from the field. So the snapshot records the value the user
+ * would read back, where focus ended up, and whether the label still reaches
+ * this control - the three things a broken textarea keeps looking fine without.
+ */
+function textareaInteractionExpression(caseId) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+    const control = root.querySelector('textarea.vf-textarea');
+    if (!control) throw new Error('missing textarea in case ${caseId}');
+    const field = root.querySelector('.vf-field');
+    const wrapper = root.querySelector('.vf-field__control');
+    const label = root.querySelector('.vf-field__label');
+    const description = root.querySelector('.vf-field__description');
+    const error = root.querySelector('.vf-field__error');
+    const active = document.activeElement;
+    const focusRole = active === control
+      ? 'control'
+      : active === label
+        ? 'label'
+        : active === document.body
+          ? 'body'
+          : root.contains(active) ? 'other-inside-case' : 'outside-case';
+
+    const rect = root.getBoundingClientRect();
+    const describedTargets = (control.getAttribute('aria-describedby') ?? '')
+      .split(/\\s+/)
+      .filter(Boolean)
+      .map((id) => {
+        const target = document.getElementById(id);
+        if (!target) return 'missing';
+        if (target === description) return 'description';
+        if (target === error) return 'error';
+        return 'foreign';
+      });
+
+    return {
+      clip: {
+        x: Math.round(rect.left + window.scrollX),
+        y: Math.round(rect.top + window.scrollY),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      },
+      // The value as the user would read it back, newlines and all.
+      value: control.value,
+      focusRole,
+      filled: wrapper === null ? null : wrapper.classList.contains('vf-field__control--filled'),
+      controlFilled: control.getAttribute('data-vf-filled'),
+      floating: field === null ? null : field.classList.contains('vf-field--floating'),
+      invalid: field === null ? null : field.classList.contains('vf-field--invalid'),
+      controlInvalid: control.getAttribute('aria-invalid'),
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      operable: !control.disabled && !control.readOnly,
+      controlClasses: [...control.classList].filter((name) => name.startsWith('vf-')).sort(),
+      labelTargetsControl: label === null ? null : (label.getAttribute('for') ?? '') !== '' &&
+        document.getElementById(label.getAttribute('for')) === control,
+      describedTargets,
     };
   })()`;
 }

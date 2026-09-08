@@ -530,6 +530,12 @@ const INTERACTION_FIELDS = {
   invalid: { dimension: 'interaction.state' },
   fieldClasses: { dimension: 'interaction.state', format: 'classList' },
   controlInvalid: { dimension: 'interaction.state' },
+  // VfTextarea. `controlFilled` is the marker on the control itself, which the
+  // textarea controller owns; `filled` above is the field's class, which the
+  // field controller owns. They are compared separately so a regression in one
+  // owner cannot be masked by the other still being right.
+  controlFilled: { dimension: 'interaction.state' },
+  readOnly: { dimension: 'interaction.state' },
 };
 
 /**

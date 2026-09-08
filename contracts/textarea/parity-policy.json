@@ -1,0 +1,141 @@
+{
+  "$comment": "Parity policy for the shared VfTextarea cases. Plain data: no DSL, no waiver engine. Every dimension is classified, and every tolerated difference is listed individually with a reason, the exact cases it covers, the exact element it applies to and the number of occurrences it is allowed to have. A difference that is not listed here fails the gate.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, how content is composed, how state is stored.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData.",
+    "textareaValueAttribute": "HTML defines no value content attribute for textarea. Vue writes one on the client as a side effect of binding :value; a server-rendered control cannot and must not. Comparing it would compare a framework artifact rather than the product, so the extractor drops it for this element type and the compared live value carries the value instead.",
+    "textareaElementText": "A textarea element text is its default value, not content the browser renders - what a user reads is the live value. Vue leaves the text empty and sets the property; Razor writes the text, which is the only form that survives without a client. The extractor drops the text for this element type and compares the live value, which is strictly more than was compared before M13, when nothing described a textarea value at all. Proved by tampering with a rendered value: the comparison still fails."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included."
+    },
+    "dom.nativeAttributes": "rows, placeholder, name, maxlength, minlength, spellcheck, autocomplete, wrap, disabled, readonly, required, aria-invalid, aria-label and the style attribute, plus the control live value - the value the element currently holds, read from the element rather than from markup. That live value is the only thing describing a textarea value at all: neither adapter keeps it in a compared attribute, and until M13 nothing recorded it for this element type. scripts/ci/attribute-coverage.test.mjs proves each attribute the profile declares is actually reachable by a comparison.",
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element. See the approved divergence: a textarea is the one element whose text is a value rather than content, and the two adapters transport it differently."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "role, aria-label, aria-describedby, aria-invalid and aria-hidden. The required marker must be aria-hidden on both adapters so the asterisk is not announced."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-vf-* attributes that carry product semantics, such as data-vf-filled."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether the button exists and whether it is operable. VfIconButton has no inert-until-enhanced state, so unlike VfInput there is nothing here that either adapter may render differently."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "label[for], aria-describedby, aria-labelledby and aria-controls compared as a resolved relationship graph. Generated id values are canonicalised to their document position; the edges they create are not."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it, and exact rather than framework-specific: a render-only button has no wrapper either adapter may add. If this ever produces a difference, something is wrong."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason as dom.wrapperPresence. VfIconButton renders no inert action, so a difference here is a defect, not a platform trait."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where token drift shows."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction scenario has run, per theme. This is what makes an interaction case detect a change that leaves the DOM intact, such as content that is present but invisible."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the control and of every action."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the control and of every action."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "disabled, readonly, required and invalid as exposed to assistive tech."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which role owns focus after the scenario. Reported as a role rather than an element, because the adapters generate different ids and the question is whether the control got focus."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The post-scenario snapshot: the value, filled on the field and on the control, floating, invalid, disabled, readonly, operability and the control class list."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no value, so this never produces a difference."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no caret, so this never produces a difference."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. VfIconButton renders no wrapper that could appear on one side only."
+    },
+    "interaction.relationships": {
+      "classification": "semantic",
+      "description": "Whether the label still reaches this control after the scenario, and what each aria-describedby token resolves to."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "attrs-win-over-the-components-own-bindings",
+      "description": "v-bind=\"attrs\" is written after the component’s own bindings, so a consumer attribute overrides them. An explicit aria-invalid=\"false\" survives an invalid control. VfButton does the opposite.",
+      "classification": "exact",
+      "reason": "Both adapters reproduce it: the Razor component only computes aria-invalid when the caller did not supply one. Recorded because two form controls in the same library have opposite precedence.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/textarea/VfTextarea.characterization.spec.ts"
+    },
+    {
+      "id": "whitespace-counts-as-filled",
+      "description": "The filled test is string length rather than trimmed content, so three spaces count as filled and a floating label lifts over them.",
+      "classification": "exact",
+      "reason": "Shared with VfInput, which is why both adapters call the same isInputFilled rule rather than restating it.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/input/state-vectors.json"
+    },
+    {
+      "id": "the-control-floats-on-placement-alone",
+      "description": "The control reads the field placement rather than whether the field actually floated, so a floating-placement field with no label still marks the control.",
+      "classification": "exact",
+      "reason": "Identical to VfInput. Reproduced rather than tidied.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/textarea/cases.json"
+    },
+    {
+      "id": "no-rows-prop",
+      "description": "There is no rows prop. The row count is a native attribute a consumer forwards, so the component never sets a default height of its own.",
+      "classification": "exact",
+      "reason": "Recorded because a port would reasonably expect a rows prop on a textarea component and inventing one would be new product surface.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/textarea/cases.json#textarea/rows"
+    }
+  ],
+  "approvedDivergences": []
+}

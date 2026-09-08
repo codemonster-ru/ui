@@ -11,6 +11,7 @@ import VfInput from '@parity/core/components/input/VfInput.vue';
 import VfIconButton from '@parity/core/components/icon-button/VfIconButton.vue';
 import VfField from '@parity/core/components/field/VfField.vue';
 import VfButton from '@parity/core/components/button/VfButton.vue';
+import VfTextarea from '@parity/core/components/textarea/VfTextarea.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -138,6 +139,37 @@ function renderButton(parityCase: ParityCase): VNode {
   return h(VfButton, { ...parityCase.props, ...parityCase.attrs }, { default: () => children });
 }
 
+/**
+ * A textarea, optionally wrapped in a field.
+ *
+ * The field binding is the same one the VfField catalog uses: the consumer
+ * takes the control id and described-by value from the default slot's scope and
+ * puts them on the control, because the field never applies them itself.
+ */
+function renderTextarea(parityCase: ParityCase): VNode {
+  const control = (extra: Record<string, unknown> = {}) =>
+    h(VfTextarea, { ...parityCase.props, ...parityCase.attrs, ...extra });
+
+  if (!parityCase.field) return control();
+
+  const field = parityCase.field;
+
+  return h(
+    VfField,
+    {
+      ...(field.label !== undefined ? { label: field.label } : {}),
+      ...(field.placement !== undefined ? { labelPlacement: field.placement } : {}),
+      ...(field.description !== undefined ? { description: field.description } : {}),
+      ...(field.error !== undefined ? { error: field.error } : {}),
+      ...(field.required !== undefined ? { required: field.required } : {}),
+    },
+    {
+      default: ({ controlId, describedBy, invalid }: Record<string, unknown>) =>
+        control({ id: controlId, 'aria-describedby': describedBy, invalid }),
+    },
+  );
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -147,6 +179,10 @@ function renderIconButton(parityCase: ParityCase): VNode {
 function renderCase(parityCase: ParityCase): VNode {
   if (catalog.component === 'icon-button') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
+  }
+
+  if (catalog.component === 'textarea') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderTextarea(parityCase)]);
   }
 
   if (catalog.component === 'button') {
