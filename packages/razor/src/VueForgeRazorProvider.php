@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codemonster\VueForge\Razor;
 
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
+use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
 
@@ -33,6 +34,7 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
     public function components(): array
     {
         return [
+            'field' => new FieldComponent(),
             'icon-button' => new IconButtonComponent(),
             'input' => new InputComponent(),
         ];

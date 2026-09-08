@@ -7,6 +7,7 @@ namespace Codemonster\VueForge\Razor\Components;
 use Codemonster\Razor\Components\ComponentRenderContext;
 use Codemonster\Razor\Components\Contracts\ComponentInterface;
 use Codemonster\Razor\Components\RenderedHtml;
+use Codemonster\VueForge\Razor\Support\FieldContext;
 use Codemonster\VueForge\Razor\Support\Html;
 use Codemonster\VueForge\Razor\Support\IconButton;
 use Codemonster\VueForge\Razor\Support\IconRenderer;
@@ -57,7 +58,20 @@ final class InputComponent implements ComponentInterface
     {
         $value = $this->stringProp($context, 'value') ?? '';
         $size = $this->stringProp($context, 'size') ?? 'md';
-        $invalid = $this->boolProp($context, 'invalid');
+
+        // The field this control is rendering inside, if any. Vue receives the
+        // id and described-by through the default slot's scope and the filled
+        // and floating signals through provide/inject; a Razor slot has no
+        // scope, so both directions run through the render-time context.
+        $field = FieldContext::current();
+        $field?->consume();
+        $field?->reportFloatingSupported(true);
+
+        // Vue's VfInput reads only the placement here - not whether the field
+        // ended up floating - so a floating-placement field with no label still
+        // puts the modifier on the control while the field itself stays plain.
+        $fieldFloating = $field !== null && $field->labelPlacement === 'floating';
+        $invalid = $this->boolProp($context, 'invalid') || ($field?->invalid ?? false);
         $clearable = $this->boolProp($context, 'clearable');
         $passwordReveal = $this->boolProp($context, 'password-reveal');
         $leadingIcon = $this->stringProp($context, 'leading-icon');
@@ -69,6 +83,7 @@ final class InputComponent implements ComponentInterface
         $readonly = ($forwarded['readonly'] ?? false) !== false;
 
         $filled = InputState::isFilled($value);
+        $field?->reportFilled($filled);
         $passwordRevealAvailable = InputState::isPasswordRevealAvailable($passwordReveal, $type);
         $clearAvailable = InputState::isClearActionAvailable($clearable, $filled, $disabled, $readonly);
 
@@ -84,6 +99,15 @@ final class InputComponent implements ComponentInterface
         $renderWrapper = $initial['hasAdornments'] || $needsActions;
 
         $inputAttributes = $forwarded;
+        // The field's id and relationships, unless the caller wrote their own.
+        // Vue leaves that choice to the consumer binding the slot scope; here
+        // an explicit attribute is what expresses the same decision.
+        if ($field !== null && !array_key_exists('id', $forwarded)) {
+            $inputAttributes['id'] = $field->controlId;
+        }
+        if ($field !== null && !array_key_exists('aria-describedby', $forwarded) && $field->describedBy !== null) {
+            $inputAttributes['aria-describedby'] = $field->describedBy;
+        }
         $inputAttributes['type'] = InputState::resolveType($type, $passwordRevealAvailable, false);
         $inputAttributes['value'] = $value;
         $inputAttributes['data-vf-filled'] = $filled ? 'true' : null;
@@ -92,7 +116,13 @@ final class InputComponent implements ComponentInterface
         if (!array_key_exists('aria-invalid', $forwarded)) {
             $inputAttributes['aria-invalid'] = $invalid ? 'true' : null;
         }
-        $inputAttributes['class'] = $this->inputClasses($size, $invalid, $initial, $renderWrapper ? null : $context);
+        $inputAttributes['class'] = $this->inputClasses(
+            $size,
+            $invalid,
+            $initial,
+            $renderWrapper ? null : $context,
+            $fieldFloating,
+        );
         $inputAttributes['data-vf-razor-input'] = 'control';
 
         if (!$renderWrapper) {
@@ -103,7 +133,7 @@ final class InputComponent implements ComponentInterface
         }
 
         $markup = '<div' . Html::attributes([
-            'class' => $this->wrapperClasses($size, $invalid, $initial, $context),
+            'class' => $this->wrapperClasses($size, $invalid, $initial, $context, $fieldFloating),
             'style' => $this->stringProp($context, 'style'),
             'data-vf-razor' => 'input',
         ]) . '>';
@@ -187,6 +217,7 @@ final class InputComponent implements ComponentInterface
         bool $invalid,
         array $state,
         ?ComponentRenderContext $consumerClassContext,
+        bool $floating = false,
     ): string {
         return Html::classes([
             'vf-input',
@@ -194,19 +225,26 @@ final class InputComponent implements ComponentInterface
             $invalid ? 'vf-input--invalid' : null,
             $state['hasLeadingAdornment'] ? 'vf-input--with-leading' : null,
             $state['hasTrailingControl'] ? 'vf-input--with-trailing' : null,
+            $floating ? 'vf-input--floating' : null,
             $consumerClassContext !== null ? $this->stringProp($consumerClassContext, 'class') : null,
         ]);
     }
 
     /** @param array<string, bool> $state */
-    private function wrapperClasses(string $size, bool $invalid, array $state, ComponentRenderContext $context): string
-    {
+    private function wrapperClasses(
+        string $size,
+        bool $invalid,
+        array $state,
+        ComponentRenderContext $context,
+        bool $floating = false,
+    ): string {
         return Html::classes([
             'vf-input-wrap',
             $size !== 'md' ? 'vf-input-wrap--' . $size : null,
             $invalid ? 'vf-input-wrap--invalid' : null,
             $state['hasLeadingAdornment'] ? 'vf-input-wrap--with-leading' : null,
             $state['hasTrailingControl'] ? 'vf-input-wrap--with-trailing' : null,
+            $floating ? 'vf-input-wrap--floating' : null,
             $this->stringProp($context, 'class'),
         ]);
     }
