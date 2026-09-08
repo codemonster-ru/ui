@@ -244,7 +244,13 @@ async function captureTarget(
       // causes. Here the claim is measured against the counter driveInteraction
       // records from real pointer and key events, so a catalog that lies about
       // an outcome fails rather than quietly widening what counts as coverage.
-      const expectedActivation = parityCase.interaction.expect?.activates;
+      //
+      // Only on an unmutated capture. A browser mutation deliberately breaks
+      // behaviour - browser-icon-button-not-clickable stops the button
+      // activating on purpose - and catching that is the comparator's job, not
+      // this assertion's. Throwing here would abort the mutation harness
+      // before it could report the defect it was constructed to find.
+      const expectedActivation = mutation ? undefined : parityCase.interaction.expect?.activates;
       if (expectedActivation !== undefined) {
         const activated = (result.activations ?? 0) > 0;
         if (activated !== expectedActivation) {

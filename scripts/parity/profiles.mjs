@@ -61,6 +61,14 @@ export const profiles = {
     },
     accessibilityRoles: {
       button: '.vf-icon-button',
+      // The glyph is decorative and aria-hidden, so it is expected to be absent
+      // from every target's accessibility tree. Listing it is what turns that
+      // expectation into a measurement: an ignored node is not exposed, so a
+      // glyph that started leaking into the tree would appear here on one
+      // target and move an a11y dimension. Without the entry the selector is
+      // never queried, and "no icon button exposes its glyph" is a claim no
+      // dimension checks.
+      glyph: '.vf-icon-button svg',
     },
     snapshot: 'icon-button',
   },

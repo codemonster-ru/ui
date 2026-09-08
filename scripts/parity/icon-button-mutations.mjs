@@ -161,6 +161,23 @@ export const iconButtonParityMutations = [
       });
     },
   },
+  {
+    id: 'icon-button-exposes-its-decorative-glyph',
+    klass: 'accessibility',
+    description: 'the decorative glyph stops being ignored and reaches the accessibility tree',
+    expect: { dimensions: ['a11y.role'], caseIds: ['icon-button/default'] },
+    apply(captures) {
+      eachTheme(captures, 'razor', (capture) => {
+        const exposed = capture.accessibility['icon-button/default'];
+        if (!exposed) fail('icon-button/default has no accessibility capture');
+        // The precondition is the claim: the glyph is aria-hidden, so it is an
+        // ignored node and absent from the tree on every target. If it were
+        // already present this mutation would be perturbing nothing.
+        if (exposed.glyph) fail('the glyph was already exposed to the accessibility tree');
+        exposed.glyph = { role: 'graphics-symbol', name: '', states: {} };
+      });
+    },
+  },
 
   // ---------------------------------------------------------------- structure
   {
