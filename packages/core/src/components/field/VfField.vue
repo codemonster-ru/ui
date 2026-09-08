@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { computed, provide, ref, toRef } from 'vue';
+import {
+  isFieldFloatingLabel,
+  isFieldInvalid,
+  resolveFieldClasses,
+  resolveFieldControlClasses,
+  resolveFieldDescribedBy,
+} from '@codemonster-ru/vueforge-shared-core';
 import { useId } from '@/composables';
 import { cx } from '@/utils/classes';
 import { vfFieldContextKey, type VfFieldFloatingVariant, type VfFieldLabelPlacement } from './context';
@@ -46,32 +53,38 @@ const supportsFloatingLabel = ref(false);
 const hasLabel = computed(() => Boolean(props.label) || Boolean(slots.label));
 const hasDescription = computed(() => Boolean(props.description) || Boolean(slots.description));
 const hasError = computed(() => Boolean(props.error) || Boolean(slots.error));
-const isInvalid = computed(() => props.invalid || hasError.value);
-const isFloatingLabel = computed(
-  () => props.labelPlacement === 'floating' && hasLabel.value && supportsFloatingLabel.value,
+// The derivations below are the shared rules, not a second copy of them: the
+// Razor adapter runs the same functions through packages/razor's PHP mirror,
+// which is checked against the same vectors. What stays here is everything that
+// is genuinely Vue - the provide/inject channel, the refs the control writes
+// into, and the reactivity that re-renders when it does.
+const isInvalid = computed(() => isFieldInvalid({ invalid: props.invalid, hasError: hasError.value }));
+const isFloatingLabel = computed(() =>
+  isFieldFloatingLabel({
+    labelPlacement: props.labelPlacement,
+    hasLabel: hasLabel.value,
+    controlSupportsFloating: supportsFloatingLabel.value,
+  }),
 );
-const describedBy = computed(() => {
-  const ids = [
-    hasDescription.value ? descriptionId.value : undefined,
-    hasError.value ? errorId.value : undefined,
-  ].filter((value): value is string => Boolean(value));
-
-  return ids.length > 0 ? ids.join(' ') : undefined;
-});
+const describedBy = computed(() =>
+  resolveFieldDescribedBy({
+    descriptionId: descriptionId.value,
+    errorId: errorId.value,
+    hasDescription: hasDescription.value,
+    hasError: hasError.value,
+  }),
+);
 const rootClasses = computed(() =>
   cx(
-    'vf-field',
-    isInvalid.value && 'vf-field--invalid',
-    isFloatingLabel.value && 'vf-field--floating',
-    isFloatingLabel.value && `vf-field--floating-${props.floatingVariant}`,
+    ...resolveFieldClasses({
+      invalid: isInvalid.value,
+      floating: isFloatingLabel.value,
+      floatingVariant: props.floatingVariant,
+    }),
   ),
 );
 const controlClasses = computed(() =>
-  cx(
-    'vf-field__control',
-    isFloatingLabel.value && 'vf-field__control--floating',
-    isFilled.value && 'vf-field__control--filled',
-  ),
+  cx(...resolveFieldControlClasses({ floating: isFloatingLabel.value, filled: isFilled.value })),
 );
 
 provide(vfFieldContextKey, {

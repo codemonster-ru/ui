@@ -21,6 +21,14 @@ import { createSSRApp, defineComponent, h, inject, nextTick } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 import { vfFieldContextKey } from './context';
+
+/** The default slot scope VfField exposes; not exported by the component. */
+interface FieldSlotScope {
+  controlId: string;
+  describedBy?: string;
+  invalid: boolean;
+  required: boolean;
+}
 import VfField from './VfField.vue';
 
 /**
@@ -59,10 +67,10 @@ function mountField(props: Record<string, unknown> = {}, controlProps: Record<st
     attachTo: document.body,
     props,
     slots: {
-      default: (scope: Record<string, unknown>) =>
+      default: (scope: FieldSlotScope) =>
         h(ControlStub, {
-          controlId: scope.controlId as string,
-          describedBy: scope.describedBy as string | undefined,
+          controlId: scope.controlId,
+          describedBy: scope.describedBy,
           ...controlProps,
         }),
     },
@@ -124,16 +132,16 @@ describe('VfField characterization: label and control association', () => {
             VfField,
             { label: 'First', description: 'First hint' },
             {
-              default: (scope: Record<string, unknown>) =>
-                h(ControlStub, { controlId: scope.controlId as string, describedBy: scope.describedBy as string }),
+              default: (scope: FieldSlotScope) =>
+                h(ControlStub, { controlId: scope.controlId, describedBy: scope.describedBy }),
             },
           ),
           h(
             VfField,
             { label: 'Second', description: 'Second hint' },
             {
-              default: (scope: Record<string, unknown>) =>
-                h(ControlStub, { controlId: scope.controlId as string, describedBy: scope.describedBy as string }),
+              default: (scope: FieldSlotScope) =>
+                h(ControlStub, { controlId: scope.controlId, describedBy: scope.describedBy }),
             },
           ),
         ]),
@@ -197,7 +205,7 @@ describe('VfField characterization: required marker', () => {
     mount(VfField, {
       props: { required: true },
       slots: {
-        default: (scope: Record<string, unknown>) => {
+        default: (scope: FieldSlotScope) => {
           seen.push(scope.required);
           return h(ControlStub);
         },

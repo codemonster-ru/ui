@@ -16,6 +16,20 @@ export {
   resolveInputType,
 } from './input/state.js';
 export { resolveIconButtonClasses, resolveIconButtonIconSize } from './icon-button/state.js';
+export {
+  isFieldFloatingLabel,
+  isFieldInvalid,
+  resolveFieldClasses,
+  resolveFieldControlClasses,
+  resolveFieldDescribedBy,
+} from './field/state.js';
+export type {
+  VfFieldDescribedByInput,
+  VfFieldFloatingInput,
+  VfFieldFloatingVariant,
+  VfFieldLabelPlacement,
+  VfFieldRootAppearance,
+} from './field/state.js';
 export type { VfIconButtonAppearance, VfIconButtonSize, VfIconButtonVariant } from './icon-button/state.js';
 export { getIcon, resolvePasswordRevealIcon, vfIcons } from './icons/registry.js';
 export type { VfIconData, VfIconName } from './icons/registry.js';

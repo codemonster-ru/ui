@@ -1,0 +1,249 @@
+{
+  "$comment": "Shared input/expected vectors for the VfField presentation rules. The TypeScript rules in state.ts and the PHP mirror in packages/razor/src/Support/FieldState.php both run these, so the two implementations cannot drift. Plain data on purpose: no schema, no DSL.",
+  "isFieldFloatingLabel": [
+    {
+      "labelPlacement": "top",
+      "hasLabel": true,
+      "controlSupportsFloating": true,
+      "expected": false
+    },
+    {
+      "labelPlacement": "top",
+      "hasLabel": true,
+      "controlSupportsFloating": false,
+      "expected": false
+    },
+    {
+      "labelPlacement": "top",
+      "hasLabel": false,
+      "controlSupportsFloating": true,
+      "expected": false
+    },
+    {
+      "labelPlacement": "top",
+      "hasLabel": false,
+      "controlSupportsFloating": false,
+      "expected": false
+    },
+    {
+      "labelPlacement": "floating",
+      "hasLabel": true,
+      "controlSupportsFloating": true,
+      "expected": true
+    },
+    {
+      "labelPlacement": "floating",
+      "hasLabel": true,
+      "controlSupportsFloating": false,
+      "expected": false
+    },
+    {
+      "labelPlacement": "floating",
+      "hasLabel": false,
+      "controlSupportsFloating": true,
+      "expected": false
+    },
+    {
+      "labelPlacement": "floating",
+      "hasLabel": false,
+      "controlSupportsFloating": false,
+      "expected": false
+    },
+    {
+      "labelPlacement": "sideways",
+      "hasLabel": true,
+      "controlSupportsFloating": true,
+      "expected": false
+    },
+    {
+      "labelPlacement": "sideways",
+      "hasLabel": true,
+      "controlSupportsFloating": false,
+      "expected": false
+    },
+    {
+      "labelPlacement": "sideways",
+      "hasLabel": false,
+      "controlSupportsFloating": true,
+      "expected": false
+    },
+    {
+      "labelPlacement": "sideways",
+      "hasLabel": false,
+      "controlSupportsFloating": false,
+      "expected": false
+    }
+  ],
+  "isFieldInvalid": [
+    {
+      "invalid": true,
+      "hasError": true,
+      "expected": true
+    },
+    {
+      "invalid": true,
+      "hasError": false,
+      "expected": true
+    },
+    {
+      "invalid": false,
+      "hasError": true,
+      "expected": true
+    },
+    {
+      "invalid": false,
+      "hasError": false,
+      "expected": false
+    }
+  ],
+  "resolveFieldClasses": [
+    {
+      "invalid": true,
+      "floating": true,
+      "floatingVariant": "in",
+      "expected": ["vf-field", "vf-field--invalid", "vf-field--floating", "vf-field--floating-in"]
+    },
+    {
+      "invalid": true,
+      "floating": true,
+      "floatingVariant": "on",
+      "expected": ["vf-field", "vf-field--invalid", "vf-field--floating", "vf-field--floating-on"]
+    },
+    {
+      "invalid": true,
+      "floating": true,
+      "floatingVariant": "over",
+      "expected": ["vf-field", "vf-field--invalid", "vf-field--floating", "vf-field--floating-over"]
+    },
+    {
+      "invalid": true,
+      "floating": true,
+      "floatingVariant": "nonsense",
+      "expected": ["vf-field", "vf-field--invalid", "vf-field--floating", "vf-field--floating-nonsense"]
+    },
+    {
+      "invalid": true,
+      "floating": false,
+      "floatingVariant": "in",
+      "expected": ["vf-field", "vf-field--invalid"]
+    },
+    {
+      "invalid": true,
+      "floating": false,
+      "floatingVariant": "on",
+      "expected": ["vf-field", "vf-field--invalid"]
+    },
+    {
+      "invalid": true,
+      "floating": false,
+      "floatingVariant": "over",
+      "expected": ["vf-field", "vf-field--invalid"]
+    },
+    {
+      "invalid": true,
+      "floating": false,
+      "floatingVariant": "nonsense",
+      "expected": ["vf-field", "vf-field--invalid"]
+    },
+    {
+      "invalid": false,
+      "floating": true,
+      "floatingVariant": "in",
+      "expected": ["vf-field", "vf-field--floating", "vf-field--floating-in"]
+    },
+    {
+      "invalid": false,
+      "floating": true,
+      "floatingVariant": "on",
+      "expected": ["vf-field", "vf-field--floating", "vf-field--floating-on"]
+    },
+    {
+      "invalid": false,
+      "floating": true,
+      "floatingVariant": "over",
+      "expected": ["vf-field", "vf-field--floating", "vf-field--floating-over"]
+    },
+    {
+      "invalid": false,
+      "floating": true,
+      "floatingVariant": "nonsense",
+      "expected": ["vf-field", "vf-field--floating", "vf-field--floating-nonsense"]
+    },
+    {
+      "invalid": false,
+      "floating": false,
+      "floatingVariant": "in",
+      "expected": ["vf-field"]
+    },
+    {
+      "invalid": false,
+      "floating": false,
+      "floatingVariant": "on",
+      "expected": ["vf-field"]
+    },
+    {
+      "invalid": false,
+      "floating": false,
+      "floatingVariant": "over",
+      "expected": ["vf-field"]
+    },
+    {
+      "invalid": false,
+      "floating": false,
+      "floatingVariant": "nonsense",
+      "expected": ["vf-field"]
+    }
+  ],
+  "resolveFieldControlClasses": [
+    {
+      "floating": true,
+      "filled": true,
+      "expected": ["vf-field__control", "vf-field__control--floating", "vf-field__control--filled"]
+    },
+    {
+      "floating": true,
+      "filled": false,
+      "expected": ["vf-field__control", "vf-field__control--floating"]
+    },
+    {
+      "floating": false,
+      "filled": true,
+      "expected": ["vf-field__control", "vf-field__control--filled"]
+    },
+    {
+      "floating": false,
+      "filled": false,
+      "expected": ["vf-field__control"]
+    }
+  ],
+  "resolveFieldDescribedBy": [
+    {
+      "descriptionId": "d-1",
+      "errorId": "e-1",
+      "hasDescription": true,
+      "hasError": true,
+      "expected": "d-1 e-1"
+    },
+    {
+      "descriptionId": "d-1",
+      "errorId": "e-1",
+      "hasDescription": true,
+      "hasError": false,
+      "expected": "d-1"
+    },
+    {
+      "descriptionId": "d-1",
+      "errorId": "e-1",
+      "hasDescription": false,
+      "hasError": true,
+      "expected": "e-1"
+    },
+    {
+      "descriptionId": "d-1",
+      "errorId": "e-1",
+      "hasDescription": false,
+      "hasError": false,
+      "expected": null
+    }
+  ]
+}

@@ -9,6 +9,9 @@ export const sharedInputRulesPath = 'packages/shared-core/src/input/state.ts';
 export const iconButtonSourcePath = 'packages/core/src/components/icon-button/VfIconButton.vue';
 export const fieldSourcePath = 'packages/core/src/components/field/VfField.vue';
 
+/** The shared rules VfField and the Razor adapter both derive their presentation from. */
+export const fieldRulePath = 'packages/shared-core/src/field/state.ts';
+
 /** The shared rule VfIconButton and the Razor adapter both derive their class list from. */
 export const iconButtonRulePath = 'packages/shared-core/src/icon-button/state.ts';
 
@@ -203,16 +206,16 @@ export const fieldMutations = [
   },
   {
     id: 'field-describes-the-wrong-node',
-    file: fieldSourcePath,
+    file: fieldRulePath,
     description: 'aria-describedby names the error twice and never the description',
-    find: 'hasDescription.value ? descriptionId.value : undefined,',
-    replace: 'hasDescription.value ? errorId.value : undefined,',
+    find: 'const ids = [hasDescription ? descriptionId : undefined, hasError ? errorId : undefined].filter(',
+    replace: 'const ids = [hasDescription ? errorId : undefined, hasError ? errorId : undefined].filter(',
   },
   {
     id: 'field-drops-the-invalid-class',
-    file: fieldSourcePath,
+    file: fieldRulePath,
     description: 'an errored field stops looking invalid',
-    find: "    isInvalid.value && 'vf-field--invalid',",
+    find: "  if (invalid) classes.push('vf-field--invalid');",
     replace: '',
   },
   {
@@ -225,23 +228,23 @@ export const fieldMutations = [
   },
   {
     id: 'field-never-floats',
-    file: fieldSourcePath,
+    file: fieldRulePath,
     description: 'the floating placement stops taking effect',
-    find: "() => props.labelPlacement === 'floating' && hasLabel.value && supportsFloatingLabel.value,",
-    replace: '() => false,',
+    find: "  return labelPlacement === 'floating' && hasLabel && controlSupportsFloating;",
+    replace: '  return false;',
   },
   {
     id: 'field-floats-without-the-control-opting-in',
-    file: fieldSourcePath,
+    file: fieldRulePath,
     description: 'floating no longer waits for a control that supports it',
-    find: "() => props.labelPlacement === 'floating' && hasLabel.value && supportsFloatingLabel.value,",
-    replace: "() => props.labelPlacement === 'floating' && hasLabel.value,",
+    find: "  return labelPlacement === 'floating' && hasLabel && controlSupportsFloating;",
+    replace: "  return labelPlacement === 'floating' && hasLabel;",
   },
   {
     id: 'field-ignores-the-filled-signal',
-    file: fieldSourcePath,
+    file: fieldRulePath,
     description: 'the control never reports as filled',
-    find: "    isFilled.value && 'vf-field__control--filled',",
+    find: "  if (filled) classes.push('vf-field__control--filled');",
     replace: '',
   },
   {
