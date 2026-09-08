@@ -4,262 +4,152 @@
     {
       "variant": "primary",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--primary",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--primary", "vf-icon-button--sm"]
     },
     {
       "variant": "primary",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--primary"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--primary"]
     },
     {
       "variant": "primary",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--primary",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--primary", "vf-icon-button--lg"]
     },
     {
       "variant": "secondary",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--secondary",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--secondary", "vf-icon-button--sm"]
     },
     {
       "variant": "secondary",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--secondary"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--secondary"]
     },
     {
       "variant": "secondary",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--secondary",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--secondary", "vf-icon-button--lg"]
     },
     {
       "variant": "success",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--success",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--success", "vf-icon-button--sm"]
     },
     {
       "variant": "success",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--success"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--success"]
     },
     {
       "variant": "success",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--success",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--success", "vf-icon-button--lg"]
     },
     {
       "variant": "info",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--info",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--info", "vf-icon-button--sm"]
     },
     {
       "variant": "info",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--info"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--info"]
     },
     {
       "variant": "info",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--info",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--info", "vf-icon-button--lg"]
     },
     {
       "variant": "warn",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--warn",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--warn", "vf-icon-button--sm"]
     },
     {
       "variant": "warn",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--warn"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--warn"]
     },
     {
       "variant": "warn",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--warn",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--warn", "vf-icon-button--lg"]
     },
     {
       "variant": "help",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--help",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--help", "vf-icon-button--sm"]
     },
     {
       "variant": "help",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--help"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--help"]
     },
     {
       "variant": "help",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--help",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--help", "vf-icon-button--lg"]
     },
     {
       "variant": "danger",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--danger",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--danger", "vf-icon-button--sm"]
     },
     {
       "variant": "danger",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--danger"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--danger"]
     },
     {
       "variant": "danger",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--danger",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--danger", "vf-icon-button--lg"]
     },
     {
       "variant": "contrast",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--contrast",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--contrast", "vf-icon-button--sm"]
     },
     {
       "variant": "contrast",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--contrast"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--contrast"]
     },
     {
       "variant": "contrast",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--contrast",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--contrast", "vf-icon-button--lg"]
     },
     {
       "variant": "ghost",
       "size": "sm",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--ghost",
-        "vf-icon-button--sm"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--ghost", "vf-icon-button--sm"]
     },
     {
       "variant": "ghost",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--ghost"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--ghost"]
     },
     {
       "variant": "ghost",
       "size": "lg",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--ghost",
-        "vf-icon-button--lg"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--ghost", "vf-icon-button--lg"]
     },
     {
       "variant": "nonsense",
       "size": "md",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--nonsense"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--nonsense"]
     },
     {
       "variant": "ghost",
       "size": "xl",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--ghost",
-        "vf-icon-button--xl"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--ghost", "vf-icon-button--xl"]
     },
     {
       "variant": "nonsense",
       "size": "xl",
-      "expected": [
-        "vf-icon-button",
-        "vf-icon-button--nonsense",
-        "vf-icon-button--xl"
-      ]
+      "expected": ["vf-icon-button", "vf-icon-button--nonsense", "vf-icon-button--xl"]
     }
   ],
   "resolveIconButtonIconSize": [
