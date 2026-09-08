@@ -319,14 +319,14 @@ export const buttonMutations = [
     id: 'button-ignores-the-disabled-attribute',
     file: buttonSourcePath,
     description: 'a disabled button becomes operable',
-    find: ' :disabled=\"isDisabled\"',
+    find: ' :disabled="isDisabled"',
     replace: '',
   },
   {
     id: 'button-drops-attribute-forwarding',
     file: buttonSourcePath,
     description: 'inherited attrs stop reaching the button, losing aria-label, name and consumer class',
-    find: 'v-bind=\"attrs\" ',
+    find: 'v-bind="attrs" ',
     replace: '',
   },
   {
@@ -340,9 +340,9 @@ export const buttonMutations = [
     id: 'button-renders-the-spinner-after-its-label',
     file: buttonSourcePath,
     description: 'the loading spinner moves to the far side of the label',
-    find: '    <VfProgressSpinner\n      v-if=\"props.loading\"\n      class=\"vf-button__spinner\"\n      size=\"var(--vf-icon-current-size)\"\n      :stroke-width=\"5\"\n    />\n    <slot />',
+    find: '    <VfProgressSpinner\n      v-if="props.loading"\n      class="vf-button__spinner"\n      size="var(--vf-icon-current-size)"\n      :stroke-width="5"\n    />\n    <slot />',
     replace:
-      '    <slot />\n    <VfProgressSpinner\n      v-if=\"props.loading\"\n      class=\"vf-button__spinner\"\n      size=\"var(--vf-icon-current-size)\"\n      :stroke-width=\"5\"\n    />',
+      '    <slot />\n    <VfProgressSpinner\n      v-if="props.loading"\n      class="vf-button__spinner"\n      size="var(--vf-icon-current-size)"\n      :stroke-width="5"\n    />',
   },
   {
     id: 'button-drops-aria-busy',
@@ -355,7 +355,7 @@ export const buttonMutations = [
     id: 'button-hides-the-spinner-from-assistive-tech',
     file: buttonSourcePath,
     description: 'the spinner loses its own class, so the loading affordance is unnamed',
-    find: '      class=\"vf-button__spinner\"\n',
+    find: '      class="vf-button__spinner"\n',
     replace: '',
   },
 ];
