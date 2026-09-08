@@ -21,7 +21,10 @@
       "classification": "exact",
       "description": "vf-* classes on every element. Consumer classes included."
     },
-    "dom.nativeAttributes": "rows, placeholder, name, maxlength, minlength, spellcheck, autocomplete, wrap, disabled, readonly, required, aria-invalid, aria-label and the style attribute, plus the control live value - the value the element currently holds, read from the element rather than from markup. That live value is the only thing describing a textarea value at all: neither adapter keeps it in a compared attribute, and until M13 nothing recorded it for this element type. scripts/ci/attribute-coverage.test.mjs proves each attribute the profile declares is actually reachable by a comparison.",
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "rows, placeholder, name, maxlength, minlength, spellcheck, autocomplete, wrap, disabled, readonly, required, aria-invalid, aria-label and the style attribute, plus the control live value - the value the element currently holds, read from the element rather than from markup. That live value is the only thing describing a textarea value at all: neither adapter keeps it in a compared attribute, and until M13 nothing recorded it for this element type. scripts/ci/attribute-coverage.test.mjs proves each attribute the profile declares is actually reachable by a comparison."
+    },
     "dom.text": {
       "classification": "exact",
       "description": "Visible text content of every element. See the approved divergence: a textarea is the one element whose text is a value rather than content, and the two adapters transport it differently."
