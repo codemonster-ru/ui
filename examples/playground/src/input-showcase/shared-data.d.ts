@@ -16,6 +16,11 @@ declare module '@vueforge/field-cases' {
   export default catalog;
 }
 
+declare module '@vueforge/button-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
 declare module '@vueforge/showcase-index' {
   interface ShowcasePlatform {
     label: string;

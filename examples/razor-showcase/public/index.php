@@ -83,7 +83,7 @@ $showcaseIndex = readSharedJson($repositoryRoot . '/examples/shared/showcase-ind
  * view. The list is derived from the shared index rather than written here, so
  * this application cannot claim support the index does not record.
  */
-$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase'];
+$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase', 'VfButton' => 'button-showcase'];
 $supported = [];
 
 foreach ($showcaseIndex['components'] as $entry) {
@@ -159,7 +159,7 @@ foreach ($cases as $case) {
     // two platforms. Everything the field itself decides - its classes, its
     // description and error ids, aria-describedby, whether it is invalid -
     // moved into the vf-field component in M11, which is what closed M4.
-    if ($component === 'VfIconButton') {
+    if ($component === 'VfIconButton' || $component === 'VfButton') {
         continue;
     }
 

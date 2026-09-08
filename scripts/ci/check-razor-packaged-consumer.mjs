@@ -162,6 +162,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Codemonster\\Razor\\Components\\ComponentRegistry;
 use Codemonster\\Razor\\Components\\ComponentRenderContext;
+use Codemonster\\Razor\\Components\\RenderedHtml;
 use Codemonster\\VueForge\\Razor\\VueForgeRazorProvider;
 
 $registry = new ComponentRegistry();
@@ -169,6 +170,7 @@ $registry->register(new VueForgeRazorProvider());
 $input = $registry->resolve('vf-input');
 $iconButton = $registry->resolve('vf-icon-button');
 $field = $registry->resolve('vf-field');
+$button = $registry->resolve('vf-button');
 $assetPath = VueForgeRazorProvider::assetPath();
 
 echo json_encode([
@@ -176,6 +178,7 @@ echo json_encode([
         'vf-input' => $registry->handles('vf-input'),
         'vf-icon-button' => $registry->handles('vf-icon-button'),
         'vf-field' => $registry->handles('vf-field'),
+        'vf-button' => $registry->handles('vf-button'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -203,8 +206,23 @@ echo json_encode([
             [],
         ))],
     ))->value(),
+    'button' => $button->render(new ComponentRenderContext(
+        ['variant' => 'danger', 'size' => 'lg', 'name' => 'save'],
+        ['default' => static fn () => RenderedHtml::fromTrustedString('Save')],
+    ))->value(),
+    // Loading is the half packaging could plausibly break without breaking a
+    // tag: the spinner markup, the native disabled attribute and aria-busy all
+    // have to survive the artifact.
+    'loadingButton' => $button->render(new ComponentRenderContext(
+        ['loading' => true],
+        ['default' => static fn () => RenderedHtml::fromTrustedString('Saving')],
+    ))->value(),
     'assetPath' => $assetPath,
     'css' => is_file($assetPath . '/vueforge-razor.css') ? filesize($assetPath . '/vueforge-razor.css') : 0,
+    'buttonCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-button'),
+    'spinnerCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-spinner'),
     'js' => is_file($assetPath . '/vueforge-razor.js') ? filesize($assetPath . '/vueforge-razor.js') : 0,
 ]);
 `,
@@ -295,6 +313,41 @@ echo json_encode([
     rendered.floatingField.includes('vf-field__control--filled'),
   );
   check('the packaged field carries its own enhancement marker', rendered.field.includes('data-vf-razor="field"'));
+
+  // ------------------------------------------------------------ vf-button
+  check(
+    'the consumer renders a native button with the canonical classes',
+    rendered.button.includes('<button') && rendered.button.includes('class="vf-button vf-button--danger vf-button--lg'),
+    rendered.button.slice(0, 140),
+  );
+  check('the packaged button carries an explicit type', rendered.button.includes('type="button"'));
+  check('the packaged button forwards native attributes', rendered.button.includes('name="save"'));
+  check('the packaged button renders its slot label', rendered.button.includes('>Save<'));
+  check(
+    'the packaged button needs no browser controller',
+    !rendered.button.includes('data-vf-razor'),
+    'a native button is complete server-side',
+  );
+  check(
+    'the packaged loading button is natively disabled and marked busy',
+    rendered.loadingButton.includes('disabled') && rendered.loadingButton.includes('aria-busy="true"'),
+    rendered.loadingButton.slice(0, 160),
+  );
+  check(
+    'the packaged loading button renders the spinner as a named progressbar',
+    rendered.loadingButton.includes('vf-button__spinner') &&
+      rendered.loadingButton.includes('role="progressbar"') &&
+      rendered.loadingButton.includes('aria-label="Loading"'),
+  );
+  check(
+    'the packaged loading button hides only the spinner artwork',
+    rendered.loadingButton.includes('aria-hidden="true"') && rendered.loadingButton.includes('Saving'),
+  );
+  check(
+    'the packaged stylesheet carries the button and spinner rules',
+    rendered.buttonCss && rendered.spinnerCss,
+    JSON.stringify({ button: rendered.buttonCss, spinner: rendered.spinnerCss }),
+  );
 
   check('the packaged stylesheet exists and is not empty', rendered.css > 10_000, `${rendered.css} bytes`);
   check('the packaged controller exists and is not empty', rendered.js > 1_000, `${rendered.js} bytes`);

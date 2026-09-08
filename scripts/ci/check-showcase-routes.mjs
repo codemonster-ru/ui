@@ -98,6 +98,7 @@ const controlSelectors = {
   VfInput: 'input.vf-input',
   VfIconButton: 'button.vf-icon-button',
   VfField: '.vf-field',
+  VfButton: 'button.vf-button',
 };
 
 const components = showcaseIndex.components
@@ -137,7 +138,7 @@ check(
 );
 check(
   'only components with a real Razor adapter are marked implemented',
-  JSON.stringify(razorImplemented) === JSON.stringify(['VfField', 'VfIconButton', 'VfInput']),
+  JSON.stringify(razorImplemented) === JSON.stringify(['VfButton', 'VfField', 'VfIconButton', 'VfInput']),
   razorImplemented.join(', '),
 );
 check(
@@ -355,9 +356,9 @@ try {
     const razorRoute = `${component.razorPath}?component=${name}`;
     // VfInput and VfField each ship a browser controller that enhances every
     // server-rendered root - the input's actions, and the field's filled state.
-    // VfIconButton has nothing to enhance: a button carrying an icon is
-    // complete server-side, so it carries no ownership marker and the gate must
-    // not demand one it has no reason to render.
+    // VfIconButton and VfButton have nothing to enhance: a native button is
+    // complete server-side, so neither carries an ownership marker and the gate
+    // must not demand one they have no reason to render.
     const enhanced = name === 'VfInput' || name === 'VfField';
 
     for (const theme of themes) {

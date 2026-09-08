@@ -12,6 +12,7 @@ const showcaseSectionPattern = /^\/(overview|colors|core|layouts|icons|codeblock
 const inputShowcasePattern = /^\/input\/?(\?.*)?$/;
 const iconButtonShowcasePattern = /^\/icon-button\/?(\?.*)?$/;
 const fieldShowcasePattern = /^\/field\/?(\?.*)?$/;
+const buttonShowcasePattern = /^\/button\/?(\?.*)?$/;
 
 function vueforgeShowcaseHistoryFallback(): Plugin {
   const rewriteShowcaseSection = (req: IncomingMessage, _res: ServerResponse, next: (err?: unknown) => void) => {
@@ -26,6 +27,9 @@ function vueforgeShowcaseHistoryFallback(): Plugin {
     } else if (req.url && fieldShowcasePattern.test(req.url)) {
       const [, query = ''] = req.url.split('?');
       req.url = query ? `/field.html?${query}` : '/field.html';
+    } else if (req.url && buttonShowcasePattern.test(req.url)) {
+      const [, query = ''] = req.url.split('?');
+      req.url = query ? `/button.html?${query}` : '/button.html';
     }
 
     next();
@@ -106,6 +110,7 @@ export default defineConfig({
         input: fileURLToPath(new URL('./input.html', import.meta.url)),
         iconButton: fileURLToPath(new URL('./icon-button.html', import.meta.url)),
         field: fileURLToPath(new URL('./field.html', import.meta.url)),
+        button: fileURLToPath(new URL('./button.html', import.meta.url)),
       },
     },
   },
@@ -148,6 +153,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/field-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/field/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/button-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/button/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,
