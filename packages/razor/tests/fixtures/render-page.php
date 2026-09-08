@@ -22,9 +22,10 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 $registry = new ComponentRegistry();
 $registry->register(new VueForgeRazorProvider());
 $input = $registry->resolve('vf-input');
+$field = $registry->resolve('vf-field');
 
-if ($input === null) {
-    fwrite(STDERR, "vf-input is not registered.\n");
+if ($input === null || $field === null) {
+    fwrite(STDERR, "vf-input and vf-field must both be registered.\n");
     exit(1);
 }
 
@@ -42,22 +43,26 @@ $render = static function (array $props, array $slots = []) use ($input): string
 };
 
 /**
- * Minimal field shell for the floating-label scenario.
+ * The real vf-field wrapping the real vf-input.
  *
- * Deliberately not a migrated public VfField: it is a fixture that produces the
- * field DOM the controller bridges to, so the filled and floating signals can be
- * proven end to end. Migrating VfField is its own milestone.
+ * M11 replaced the handwritten shell that used to stand here. The control is
+ * rendered inside the field's default slot, so the id, the label association
+ * and the floating and filled classes all come from the component rather than
+ * from the fixture agreeing with itself.
+ *
+ * @param array<string, mixed> $inputProps
  */
-$fieldShell = static function (string $id, string $label, string $control, bool $floating): string {
-    $placement = $floating ? 'floating' : 'top';
-    $labelMarkup = $floating
-        ? '<label class="vf-field__label vf-field__label--floating" for="' . $id . '">' . $label . '</label>'
-        : '<label class="vf-field__label" for="' . $id . '">' . $label . '</label>';
-
-    return '<div class="vf-field" data-vf-razor-field="' . $placement . '" data-testid="field-' . $id . '">'
-        . ($floating ? '' : $labelMarkup)
-        . '<div class="vf-field__control">' . $control . ($floating ? $labelMarkup : '') . '</div>'
-        . '</div>';
+$fieldShell = static function (string $id, string $label, array $inputProps, bool $floating) use ($field, $input): string {
+    return $field->render(new ComponentRenderContext([
+        'label' => $label,
+        'control-id' => $id,
+        'label-placement' => $floating ? 'floating' : 'top',
+        'data-testid' => 'field-' . $id,
+    ], [
+        'default' => static fn (): RenderedHtml => $input->render(
+            new ComponentRenderContext($inputProps, []),
+        ),
+    ]))->value();
 };
 
 $cases = [
@@ -117,20 +122,18 @@ foreach ($cases as $name => $markup) {
 }
 
 $sections .= '<section class="case" data-case="field-top"><h2>field-top</h2>'
-    . $fieldShell('field-top-input', 'Workspace', $render([
+    . $fieldShell('field-top-input', 'Workspace', [
         'name' => 'field-top',
-        'id' => 'field-top-input',
         'value' => '',
-    ]), false)
+    ], false)
     . '</section>';
 
 $sections .= '<section class="case" data-case="field-floating"><h2>field-floating</h2>'
-    . $fieldShell('field-floating-input', 'Workspace', $render([
+    . $fieldShell('field-floating-input', 'Workspace', [
         'name' => 'field-floating',
-        'id' => 'field-floating-input',
         'value' => '',
         'clearable' => true,
-    ]), true)
+    ], true)
     . '</section>';
 
 $withVue = ($argv[2] ?? '') === '--with-vue';

@@ -19,6 +19,8 @@ import {
   resolvePasswordRevealIcon,
 } from '@codemonster-ru/vueforge-shared-core';
 
+import { enhanceVueForgeFields } from './field.js';
+
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
 
@@ -31,13 +33,6 @@ interface InputParts {
   leadingAdornment: HTMLElement | null;
   trailingAdornment: HTMLElement | null;
   revealLabels: { show: string; hide: string };
-}
-
-/** The field shell a host may wrap the control in; see the package README. */
-interface FieldParts {
-  root: HTMLElement;
-  control: HTMLElement;
-  floating: boolean;
 }
 
 function findParts(root: HTMLElement): InputParts | null {
@@ -64,17 +59,6 @@ function findParts(root: HTMLElement): InputParts | null {
       hide: root.getAttribute('data-vf-razor-hide-password-label') ?? 'Hide password',
     },
   };
-}
-
-function findField(parts: InputParts): FieldParts | null {
-  const root = parts.control.closest<HTMLElement>('[data-vf-razor-field]');
-  const control = root?.querySelector<HTMLElement>('.vf-field__control') ?? null;
-
-  if (!root || !control) {
-    return null;
-  }
-
-  return { root, control, floating: root.getAttribute('data-vf-razor-field') === 'floating' };
 }
 
 function isBooleanAttributePresent(element: HTMLElement, name: string): boolean {
@@ -169,16 +153,9 @@ function sync(parts: InputParts, revealed: boolean): void {
   toggleClass(parts.trailingAdornment, 'vf-input-wrap__icon--trailing-before-clear', state.hasTrailingActionControl);
   toggleClass(parts.reveal, 'vf-input-wrap__password-toggle--before-clear', clearAvailable);
 
-  // Field bridge: the filled and floating signals the static server markup
-  // cannot maintain on its own.
-  const field = findField(parts);
-  if (field) {
-    toggleClass(field.control, 'vf-field__control--filled', filled);
-    toggleClass(field.root, 'vf-field--floating', field.floating);
-    toggleClass(field.control, 'vf-field__control--floating', field.floating);
-    toggleClass(control, 'vf-input--floating', field.floating);
-    toggleClass(wrapper, 'vf-input-wrap--floating', field.floating);
-  }
+  // Nothing here writes field DOM. vf-field owns its own classes, and the
+  // floating modifiers on this control are rendered by the server, which knows
+  // the placement. See browser/field.ts for why the ownership is split.
 }
 
 function readSelection(
@@ -270,10 +247,18 @@ export function enhanceVueForgeInputs(root: ParentNode = document): void {
   }
 }
 
+/** Enhances both Razor-owned components, each owning only its own subtree. */
+function enhanceAll(root: ParentNode = document): void {
+  enhanceVueForgeInputs(root);
+  enhanceVueForgeFields(root);
+}
+
+export { enhanceVueForgeFields };
+
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => enhanceVueForgeInputs());
+    document.addEventListener('DOMContentLoaded', () => enhanceAll());
   } else {
-    enhanceVueForgeInputs();
+    enhanceAll();
   }
 }

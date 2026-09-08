@@ -233,12 +233,16 @@ try {
       input.dispatchEvent(new Event('input', { bubbles: true }));
       return { before, afterFilled: control.classList.contains('vf-field__control--filled') };
     })()`);
+    // Since M11 the floating classes are rendered by vf-field on the server -
+    // placement and label presence cannot change without a re-render - so they
+    // are asserted as already present rather than applied by a bridge. What is
+    // still dynamic is filled, and that is the field controller's only job.
     check(
-      'the bridge applies floating state after bootstrap',
+      'the server renders the field floating, with no runtime bridge',
       field.before.fieldFloating === true,
       JSON.stringify(field),
     );
-    check('the bridge marks the input floating', field.before.inputFloating === true);
+    check('the server marks the input floating', field.before.inputFloating === true);
     check('an empty floating field is not filled', field.before.filled === false);
     check('typing marks the floating field filled', field.afterFilled === true);
 
@@ -280,6 +284,14 @@ try {
         actionsDisabled: buttons.every((b) => b.disabled),
         focusableActions: buttons.filter((b) => !b.disabled).length,
         floatingApplied: document.querySelectorAll('.vf-field--floating').length,
+        floatingLabelInsideControl: document.querySelectorAll(
+          '.vf-field__control > .vf-field__label--floating',
+        ).length,
+        labelAssociations: [...document.querySelectorAll('.vf-field__label')].filter((label) => {
+          const target = document.getElementById(label.getAttribute('for') ?? '');
+          return target !== null && target.tagName === 'INPUT';
+        }).length,
+        fieldsEnhanced: document.querySelectorAll('[data-vf-razor-field-enhanced]').length,
       };
     })()`);
     check('no controller runs without its script', noJs.enhancedRoots === 0, JSON.stringify(noJs));
@@ -289,7 +301,15 @@ try {
     check('no action is visible without javascript', noJs.actionsHidden === true);
     check('no action occupies layout without javascript', noJs.actionsUnrendered === true);
     check('no action is reachable without javascript', noJs.actionsDisabled === true && noJs.focusableActions === 0);
-    check('floating labels degrade to the plain composition', noJs.floatingApplied === 0);
+    // Before M11 there was no Razor field, so the floating composition existed
+    // only once the controller had built it and a no-JS page degraded to a
+    // plain label. vf-field renders it on the server now: the class, the label
+    // moved inside the control, and the association are all present with the
+    // script blocked, and the layout is pure CSS from there.
+    check('floating labels are composed without javascript', noJs.floatingApplied === 1, JSON.stringify(noJs));
+    check('the floating label sits inside the control without javascript', noJs.floatingLabelInsideControl === 1);
+    check('every label reaches a real control without javascript', noJs.labelAssociations === 2);
+    check('no field controller runs without its script', noJs.fieldsEnhanced === 0);
   });
 
   // --------------------------------------------------------- mixed ownership
