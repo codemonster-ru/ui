@@ -13,9 +13,14 @@ M04 moved the first closure into it, unchanged.
 - `input.css` — the `.vf-input` / `.vf-input-wrap` rules, sizes, states,
   adornment layout and the floating-label selectors;
 - `field.css` — imported by `input.css`, and the reason floating labels work;
-- `icon-button.css` — imported by `input.css` for the clear and reveal actions.
+- `icon-button.css` — imported by `input.css` for the clear and reveal actions;
+- `button.css` — the `.vf-button` rules, variants, sizes, block and loading;
+- `progress-spinner.css` — imported by `button.css`, and the reason a loading
+  button has a spinner. Not a migrated component of its own: it is the loading
+  affordance the button composes, so its rules travel with the button.
 
-That is the declared `@import` closure of `input.css` and nothing more. The
+That is the declared `@import` closure of `input.css` and of `button.css`, and
+nothing more. The
 foundation, tokens and accessibility preferences stay in `packages/core`: every
 component depends on them, so moving them would drag the whole cascade instead
 of one coherent closure.
@@ -26,11 +31,12 @@ attributes and presets are never renamed as part of a move.
 
 ## How consumers still reach it
 
-`packages/core/src/styles/entries/{input,field,icon-button}.css` are single-line
+`packages/core/src/styles/entries/{input,field,icon-button,button,progress-spinner}.css` are single-line
 forwards to the files above. Every existing path keeps working untouched: the
 `@codemonster-ru/vueforge-core/input.css` subpath, the browser auto-CSS entries,
-`styles.css`, and the nine other core entries that import `./field.css` or
-`./icon-button.css`. The build inliner resolves the forward, so the emitted
+`styles.css`, and the core entries that import `./field.css`, `./icon-button.css`,
+`./button.css` or `./progress-spinner.css` - confirm-dialog, date-picker,
+theme-switch, group-box and data-table among them. The build inliner resolves the forward, so the emitted
 stylesheets are byte-identical to the reference.
 
 There is exactly one editable copy of every rule. `npm run check:boundaries`

@@ -16,4 +16,8 @@ export const styleSources = [
   // renderer stop injecting those declarations as an inline style attribute.
   'packages/styles/src/components/icon.css',
   'packages/styles/src/components/input.css',
+  // VfButton, which pulls in the progress spinner it renders while loading.
+  // The spinner is not a migrated component of its own: it is the loading
+  // affordance the button composes, so its rules travel with the button.
+  'packages/styles/src/components/button.css',
 ];
