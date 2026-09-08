@@ -61,8 +61,10 @@ jobs:
       - name: Verify the Razor adapter
         run: npm run razor:check
 
-      # The clean three-way comparison and the mutation matrix must both pass.
-      - name: Verify three-way VfInput parity
+      # The clean three-way comparison and the mutation matrix must both pass,
+      # for every migrated component. One harness, one comparator, one policy
+      # engine: parity:check runs it per component.
+      - name: Verify three-way parity for every migrated component
         run: npm run parity:check
 
       - name: Stage the Razor Composer artifact for the showcase
@@ -72,9 +74,9 @@ jobs:
         run: composer install --no-interaction --no-progress --working-dir=examples/razor-showcase
 
       # Full-route check: the two real showcase applications, not the isolated
-      # component. Proves both expose the same shared cases and can hand a
-      # reader from one platform to the other.
-      - name: Verify the Input showcase routes
+      # component. Proves both expose the same shared cases for every migrated
+      # component and can hand a reader from one platform to the other.
+      - name: Verify the showcase routes
         run: npm run showcase:routes
 
       - name: Dry-run publish artifacts

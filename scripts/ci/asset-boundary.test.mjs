@@ -162,3 +162,48 @@ test('paths are read out of string literals, not out of surrounding text', () =>
   assert.deepEqual(extractRepositoryPaths(`// see packages/core/src/x.css`), []);
   assert.deepEqual(extractRepositoryPaths(`read('packages/core/src/x.css')`), ['packages/core/src/x.css']);
 });
+
+// ------------------------------------------------- M10: the icon ownership move
+
+test('the Razor adapter may not read the Vue icons package for glyph geometry', () => {
+  // The shape M10 could have taken. The icons package owns the geometry, but it
+  // is a Vue package: reaching into it from the adapter would rebuild exactly
+  // the coupling H3 was, one milestone after it was removed.
+  for (const expression of [
+    `readFileSync(resolve(root, 'packages/icons/dist/index.css'))`,
+    `const source = 'packages/icons/src/lib/components/icon.vue';`,
+    `readFileSync("packages/icons/src/lib/internal/solidIconData.json")`,
+  ]) {
+    const { violations } = analyze({ 'packages/razor/build-assets.mjs': expression });
+    assert.equal(violations.length, 1, `expected a violation for ${expression}`);
+    assert.match(violations[0], /packages\/icons/);
+  }
+});
+
+test('a Razor PHP file may not reach the Vue icons package either', () => {
+  const { violations } = analyze({
+    'packages/razor/src/Support/IconRenderer.php': `<?php
+      $path = dirname(__DIR__, 4) . '/packages/icons/dist/index.css';`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /packages\/icons/);
+});
+
+test('the neutral icon registry and the shared icon layout are allowed edges', () => {
+  // What the adapter actually reads after M10: a generated registry inside its
+  // own package, and the canonical stylesheet in packages/styles. Neither is a
+  // Vue package, which is the whole point of routing the icons through them.
+  const { violations, edges } = analyze({
+    'packages/razor/style-sources.mjs': `
+      export const styleSources = [
+        'packages/styles/src/components/icon.css',
+        'packages/styles/src/components/input.css',
+      ];`,
+    'packages/razor/src/Support/IconRenderer.php': `<?php
+      $path = dirname(__DIR__, 2) . '/resources/icons/icon-registry.json';`,
+  });
+
+  assert.deepEqual(violations, []);
+  assert.deepEqual([...new Set(edges.map((edge) => edge.owner))], ['packages/styles']);
+});
