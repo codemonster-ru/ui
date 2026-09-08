@@ -17,6 +17,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
+import { GENERATED_ICON_REGISTRIES, unauthorizedGeometryBlobs } from './icon-ownership.mjs';
+
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (path) => readFileSync(resolve(repositoryRoot, path), 'utf8');
 
@@ -57,14 +59,100 @@ test('the registry covers the whole icon system, not one component closure', () 
 
 test('no per-component icon blob is tracked outside the icons package', () => {
   const tracked = execFileSync('git', ['-C', repositoryRoot, 'ls-files'], { encoding: 'utf8' }).split('\n');
-  const blobs = tracked.filter(
-    (file) => /icon.*data.*\.json$/i.test(file) && !file.startsWith('packages/icons/'),
-  );
 
   assert.deepEqual(
-    blobs,
+    unauthorizedGeometryBlobs(tracked, read),
     [],
     'A per-component icon artifact is back. The registry is the only neutral icon source.',
+  );
+});
+
+// The re-audit's escape: the old rule matched /icon.*data.*\.json/i, so a
+// hand-written geometry blob only had to be called something else. These drive
+// the detector with the payloads that walked past it, and with the shapes it
+// must not start rejecting - a filename regex has no false positives to lose,
+// and a content check does.
+const RAZOR_ICONS = 'packages/razor/resources/icons';
+
+/** Runs the detector over one synthetic file. */
+const inspect = (file, document) => unauthorizedGeometryBlobs([file], () => JSON.stringify(document));
+
+test('a hand-written geometry blob is caught however it is named', () => {
+  const glyphs = {
+    glyphs: {
+      'field-required': {
+        viewBox: '0 0 24 24',
+        body: '<path d="M12 2.5L14 9h7l-5.5 4.2L17.5 20 12 16 6.5 20l2-6.8L3 9h7Z" fill="currentColor"/>',
+      },
+    },
+  };
+
+  // Neither name contains "icon-data", which is all the old guard looked for.
+  for (const name of ['field-glyphs.json', 'input-actions.json']) {
+    const violations = inspect(`${RAZOR_ICONS}/${name}`, glyphs);
+
+    assert.equal(violations.length, 1, `${name} was not reported`);
+    assert.match(violations[0], /carries icon geometry/);
+  }
+});
+
+test('raw path data is geometry even with no SVG markup around it', () => {
+  const violations = inspect(`${RAZOR_ICONS}/field-glyphs.json`, {
+    glyphs: { close: { viewBox: '0 0 24 24', d: 'M6 6l12 12M18 6L6 18' } },
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /path-data/);
+});
+
+test('the generated registries in their approved destinations pass', () => {
+  for (const registry of GENERATED_ICON_REGISTRIES) {
+    assert.deepEqual(unauthorizedGeometryBlobs([registry], read), [], `${registry} was rejected`);
+  }
+});
+
+test('an approved registry path without generator provenance is rejected', () => {
+  // Closes the obvious follow-up: hand-write the blob, but give it the name and
+  // the location the generator writes to.
+  const violations = inspect(GENERATED_ICON_REGISTRIES[1], {
+    $comment: 'Icons for the field component.',
+    icons: { close: { body: '<path d="M6 6l12 12"/>' } },
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /does not record .*generate-icon-registry\.mjs/);
+});
+
+test('icon metadata that carries no geometry is not rejected', () => {
+  // Names, categories and counts are not a second source of truth.
+  assert.deepEqual(
+    inspect(`${RAZOR_ICONS}/icon-names.json`, {
+      icons: ['xmark', 'eye', 'eye-slash'],
+      categories: { editing: ['xmark'] },
+    }),
+    [],
+  );
+});
+
+test('a visual snapshot manifest without geometry is not rejected', () => {
+  assert.deepEqual(
+    inspect('packages/icons/__snapshots__/manifest.json', {
+      snapshots: [{ name: 'xmark', file: 'xmark.png', sha256: 'a1b2c3', width: 24, height: 24 }],
+    }),
+    [],
+  );
+});
+
+test('a "path" that means a filesystem path is not geometry', () => {
+  // The false positive a naive key-name check would produce.
+  assert.deepEqual(
+    inspect('packages/razor/resources/manifest.json', {
+      entries: [
+        { name: 'tokens', path: 'packages/theme/.generated/theme/tokens.css' },
+        { name: 'icons', path: './resources/icons/icon-registry.json', d: 'dist' },
+      ],
+    }),
+    [],
   );
 });
 
