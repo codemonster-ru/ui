@@ -1,0 +1,884 @@
+{
+  "$comment": "Shared input/expected vectors for the VfButton presentation rules. The TypeScript rules in state.ts and the PHP mirror in packages/razor/src/Support/ButtonState.php both run these, so the two implementations cannot drift. The full variant x size grid is enumerated rather than sampled: it is 27 rows, and a sampled grid is how a single wrong modifier survives. Plain data on purpose: no schema, no DSL.",
+  "resolveButtonClasses": [
+    {
+      "variant": "primary",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--sm"]
+    },
+    {
+      "variant": "primary",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "primary",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "primary",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "primary",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--primary"]
+    },
+    {
+      "variant": "primary",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--block"]
+    },
+    {
+      "variant": "primary",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--loading"]
+    },
+    {
+      "variant": "primary",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "primary",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--lg"]
+    },
+    {
+      "variant": "primary",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "primary",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "primary",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "primary",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--primary", "vf-button--xl"]
+    },
+    {
+      "variant": "secondary",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--sm"]
+    },
+    {
+      "variant": "secondary",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "secondary",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "secondary",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "secondary",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--secondary"]
+    },
+    {
+      "variant": "secondary",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--block"]
+    },
+    {
+      "variant": "secondary",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--loading"]
+    },
+    {
+      "variant": "secondary",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "secondary",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--lg"]
+    },
+    {
+      "variant": "secondary",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "secondary",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "secondary",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "secondary",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--secondary", "vf-button--xl"]
+    },
+    {
+      "variant": "success",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--success", "vf-button--sm"]
+    },
+    {
+      "variant": "success",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--success", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "success",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--success", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "success",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--success", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "success",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--success"]
+    },
+    {
+      "variant": "success",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--success", "vf-button--block"]
+    },
+    {
+      "variant": "success",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--success", "vf-button--loading"]
+    },
+    {
+      "variant": "success",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--success", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "success",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--success", "vf-button--lg"]
+    },
+    {
+      "variant": "success",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--success", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "success",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--success", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "success",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--success", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "success",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--success", "vf-button--xl"]
+    },
+    {
+      "variant": "info",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--info", "vf-button--sm"]
+    },
+    {
+      "variant": "info",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--info", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "info",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--info", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "info",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--info", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "info",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--info"]
+    },
+    {
+      "variant": "info",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--info", "vf-button--block"]
+    },
+    {
+      "variant": "info",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--info", "vf-button--loading"]
+    },
+    {
+      "variant": "info",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--info", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "info",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--info", "vf-button--lg"]
+    },
+    {
+      "variant": "info",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--info", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "info",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--info", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "info",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--info", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "info",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--info", "vf-button--xl"]
+    },
+    {
+      "variant": "warn",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--sm"]
+    },
+    {
+      "variant": "warn",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "warn",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "warn",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "warn",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--warn"]
+    },
+    {
+      "variant": "warn",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--block"]
+    },
+    {
+      "variant": "warn",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--loading"]
+    },
+    {
+      "variant": "warn",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "warn",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--lg"]
+    },
+    {
+      "variant": "warn",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "warn",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "warn",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "warn",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--warn", "vf-button--xl"]
+    },
+    {
+      "variant": "help",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--help", "vf-button--sm"]
+    },
+    {
+      "variant": "help",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--help", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "help",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--help", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "help",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--help", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "help",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--help"]
+    },
+    {
+      "variant": "help",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--help", "vf-button--block"]
+    },
+    {
+      "variant": "help",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--help", "vf-button--loading"]
+    },
+    {
+      "variant": "help",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--help", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "help",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--help", "vf-button--lg"]
+    },
+    {
+      "variant": "help",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--help", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "help",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--help", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "help",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--help", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "help",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--help", "vf-button--xl"]
+    },
+    {
+      "variant": "danger",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--sm"]
+    },
+    {
+      "variant": "danger",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "danger",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "danger",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "danger",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--danger"]
+    },
+    {
+      "variant": "danger",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--block"]
+    },
+    {
+      "variant": "danger",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--loading"]
+    },
+    {
+      "variant": "danger",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "danger",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--lg"]
+    },
+    {
+      "variant": "danger",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "danger",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "danger",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "danger",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--danger", "vf-button--xl"]
+    },
+    {
+      "variant": "contrast",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--sm"]
+    },
+    {
+      "variant": "contrast",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "contrast",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "contrast",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "contrast",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--contrast"]
+    },
+    {
+      "variant": "contrast",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--block"]
+    },
+    {
+      "variant": "contrast",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--loading"]
+    },
+    {
+      "variant": "contrast",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "contrast",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--lg"]
+    },
+    {
+      "variant": "contrast",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "contrast",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "contrast",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "contrast",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--contrast", "vf-button--xl"]
+    },
+    {
+      "variant": "ghost",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--sm"]
+    },
+    {
+      "variant": "ghost",
+      "size": "sm",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--sm", "vf-button--block"]
+    },
+    {
+      "variant": "ghost",
+      "size": "sm",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--sm", "vf-button--loading"]
+    },
+    {
+      "variant": "ghost",
+      "size": "sm",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--sm", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "ghost",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--ghost"]
+    },
+    {
+      "variant": "ghost",
+      "size": "md",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--block"]
+    },
+    {
+      "variant": "ghost",
+      "size": "md",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--loading"]
+    },
+    {
+      "variant": "ghost",
+      "size": "md",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "ghost",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--lg"]
+    },
+    {
+      "variant": "ghost",
+      "size": "lg",
+      "block": true,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--lg", "vf-button--block"]
+    },
+    {
+      "variant": "ghost",
+      "size": "lg",
+      "block": false,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--lg", "vf-button--loading"]
+    },
+    {
+      "variant": "ghost",
+      "size": "lg",
+      "block": true,
+      "loading": true,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--lg", "vf-button--block", "vf-button--loading"]
+    },
+    {
+      "variant": "ghost",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--ghost", "vf-button--xl"]
+    },
+    {
+      "variant": "nonsense",
+      "size": "sm",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--nonsense", "vf-button--sm"]
+    },
+    {
+      "variant": "nonsense",
+      "size": "md",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--nonsense"]
+    },
+    {
+      "variant": "nonsense",
+      "size": "lg",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--nonsense", "vf-button--lg"]
+    },
+    {
+      "variant": "nonsense",
+      "size": "xl",
+      "block": false,
+      "loading": false,
+      "expected": ["vf-button", "vf-button--nonsense", "vf-button--xl"]
+    }
+  ],
+  "isButtonDisabled": [
+    {
+      "loading": true,
+      "disabled": true,
+      "expected": true
+    },
+    {
+      "loading": true,
+      "disabled": false,
+      "expected": true
+    },
+    {
+      "loading": false,
+      "disabled": true,
+      "expected": true
+    },
+    {
+      "loading": false,
+      "disabled": false,
+      "expected": false
+    }
+  ],
+  "resolveButtonBusy": [
+    {
+      "loading": true,
+      "expected": "true"
+    },
+    {
+      "loading": false,
+      "expected": null
+    }
+  ]
+}

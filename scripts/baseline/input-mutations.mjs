@@ -10,6 +10,9 @@ export const iconButtonSourcePath = 'packages/core/src/components/icon-button/Vf
 export const fieldSourcePath = 'packages/core/src/components/field/VfField.vue';
 export const buttonSourcePath = 'packages/core/src/components/button/VfButton.vue';
 
+/** The shared rules VfButton and the Razor adapter both derive their presentation from. */
+export const buttonRulePath = 'packages/shared-core/src/button/state.ts';
+
 /** The shared rules VfField and the Razor adapter both derive their presentation from. */
 export const fieldRulePath = 'packages/shared-core/src/field/state.ts';
 
@@ -278,38 +281,38 @@ export const buttonMutations = [
   },
   {
     id: 'button-drops-the-variant-modifier',
-    file: buttonSourcePath,
+    file: buttonRulePath,
     description: 'the variant modifier disappears, so every button renders as the base style',
-    find: '    `vf-button--${props.variant}`,',
-    replace: '',
+    find: "  const classes = ['vf-button', `vf-button--${variant}`];",
+    replace: "  const classes = ['vf-button'];",
   },
   {
     id: 'button-emits-a-default-size-modifier',
-    file: buttonSourcePath,
+    file: buttonRulePath,
     description: 'the medium size starts emitting a modifier the stylesheet never defined',
-    find: "    props.size !== 'md' && `vf-button--${props.size}`,",
-    replace: '    `vf-button--${props.size}`,',
+    find: "  if (size !== 'md') classes.push(`vf-button--${size}`);",
+    replace: '  classes.push(`vf-button--${size}`);',
   },
   {
     id: 'button-drops-the-block-modifier',
-    file: buttonSourcePath,
+    file: buttonRulePath,
     description: 'a block button stops filling its container',
-    find: "    props.block && 'vf-button--block',",
+    find: "  if (block) classes.push('vf-button--block');",
     replace: '',
   },
   {
     id: 'button-drops-the-loading-modifier',
-    file: buttonSourcePath,
+    file: buttonRulePath,
     description: 'a loading button stops looking like one',
-    find: "    props.loading && 'vf-button--loading',",
+    find: "  if (loading) classes.push('vf-button--loading');",
     replace: '',
   },
   {
     id: 'button-loading-stops-disabling',
-    file: buttonSourcePath,
+    file: buttonRulePath,
     description: 'a loading button becomes operable again, which no snapshot would show',
-    find: "const isDisabled = computed(() => props.loading || attrs.disabled === true || attrs.disabled === '');",
-    replace: "const isDisabled = computed(() => attrs.disabled === true || attrs.disabled === '');",
+    find: '  return loading || disabled;',
+    replace: '  return disabled;',
   },
   {
     id: 'button-ignores-the-disabled-attribute',
@@ -342,10 +345,10 @@ export const buttonMutations = [
   },
   {
     id: 'button-drops-aria-busy',
-    file: buttonSourcePath,
+    file: buttonRulePath,
     description: 'a loading button stops announcing itself busy',
-    find: '    :aria-busy="props.loading ? \'true\' : undefined"\n',
-    replace: '',
+    find: "  return loading ? 'true' : undefined;",
+    replace: '  return undefined;',
   },
   {
     id: 'button-hides-the-spinner-from-assistive-tech',

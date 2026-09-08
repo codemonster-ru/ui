@@ -16,6 +16,8 @@ export {
   resolveInputType,
 } from './input/state.js';
 export { resolveIconButtonClasses, resolveIconButtonIconSize } from './icon-button/state.js';
+export { isButtonDisabled, resolveButtonBusy, resolveButtonClasses } from './button/state.js';
+export type { VfButtonAppearance, VfButtonSizeName, VfButtonVariantName } from './button/state.js';
 export {
   isFieldFloatingLabel,
   isFieldInvalid,
