@@ -10,6 +10,8 @@ import { createApp, defineComponent, h, type VNode } from 'vue';
 import VfInput from '@parity/core/components/input/VfInput.vue';
 import VfIconButton from '@parity/core/components/icon-button/VfIconButton.vue';
 import VfField from '@parity/core/components/field/VfField.vue';
+import VfButton from '@parity/core/components/button/VfButton.vue';
+import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
 
@@ -34,9 +36,11 @@ interface ParityCase {
   content?: {
     leading?: CaseContent;
     trailing?: CaseContent;
-    label?: CaseContent;
+    label?: CaseContent | string;
     description?: CaseContent;
     error?: CaseContent;
+    /** VfButton writes its icon into the default slot; there is no icon prop. */
+    icon?: string;
   };
   field?: CaseField;
   /** The VfField catalog splits the control's own props out of `props`. */
@@ -86,7 +90,8 @@ function renderField(parityCase: ParityCase): VNode {
   };
 
   for (const name of ['label', 'description', 'error'] as const) {
-    const text = parityCase.content?.[name]?.text;
+    const slotContent = parityCase.content?.[name];
+    const text = typeof slotContent === 'string' ? undefined : slotContent?.text;
     if (text !== undefined) {
       slots[name] = () => text;
     }
@@ -108,6 +113,31 @@ function renderField(parityCase: ParityCase): VNode {
   );
 }
 
+/**
+ * A button whose label is its default slot, for the VfButton catalog.
+ *
+ * The historical component has no icon props: an icon is slot content the
+ * caller writes, so the catalog's `content.icon` becomes a glyph inside the
+ * slot rather than a prop, and an icon-only button is simply a slot with no
+ * text in it.
+ */
+function renderButton(parityCase: ParityCase): VNode {
+  const content = (parityCase.content ?? {}) as { icon?: string; label?: string };
+  const children: unknown[] = [];
+
+  if (content.icon !== undefined) {
+    // The catalog names glyphs the way the registry does, and VueIconify takes
+    // that name directly. Looking it up in the `icons` map instead would find
+    // nothing: that map is keyed by camelCase and its *values* are these names.
+    children.push(h(VueIconify, { icon: content.icon, 'aria-hidden': 'true' }));
+  }
+  if (content.label !== undefined) {
+    children.push(content.label);
+  }
+
+  return h(VfButton, { ...parityCase.props, ...parityCase.attrs }, { default: () => children });
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -117,6 +147,10 @@ function renderIconButton(parityCase: ParityCase): VNode {
 function renderCase(parityCase: ParityCase): VNode {
   if (catalog.component === 'icon-button') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
+  }
+
+  if (catalog.component === 'button') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderButton(parityCase)]);
   }
 
   if (catalog.component === 'field') {

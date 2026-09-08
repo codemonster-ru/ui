@@ -1,0 +1,146 @@
+{
+  "$comment": "Parity policy for the shared VfButton cases. Plain data: no DSL, no waiver engine. Every dimension is classified, and every tolerated difference would be listed individually with a reason, the exact cases it covers, the exact element it applies to and the number of occurrences it is allowed to have. It starts empty, and M12 finished with it still empty: a native button is complete server-side, so there is no server/client asymmetry of the kind that forced approvals on VfInput.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, how content is composed, how state is stored.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type, disabled, aria-busy and every native attribute a consumer forwards onto the button, plus the style attribute."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "role, aria-label, aria-busy and aria-hidden. The loading spinner keeps role=progressbar and its own name; only its artwork is hidden."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-vf-* attributes that carry product semantics, such as data-vf-filled."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether the button exists and whether it is operable. VfIconButton has no inert-until-enhanced state, so unlike VfInput there is nothing here that either adapter may render differently."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "label[for], aria-describedby, aria-labelledby and aria-controls are compared as a resolved relationship graph. Concrete generated id values are canonicalised; the edges they create are not."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it, and exact rather than framework-specific: a render-only button has no wrapper either adapter may add. If this ever produces a difference, something is wrong."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason as dom.wrapperPresence. VfIconButton renders no inert action, so a difference here is a defect, not a platform trait."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where token drift shows."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction scenario has run, per theme. This is what makes an interaction case detect a change that leaves the DOM intact, such as content that is present but invisible."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the control and of every action."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the control and of every action."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "disabled and busy as exposed to assistive tech."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which element owns focus after the scenario. A pointer click and a keyboard press must leave focus in the same place on every target."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The post-scenario snapshot: activation count, disabled, operability, accessible name, type and the canonical class list. A loading button must record zero activations on every target."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no value, so this never produces a difference."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no caret, so this never produces a difference."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. VfIconButton renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "undocumented-variant-and-size-reach-the-class-name",
+      "description": "The reference interpolates the variant and size props into the class name without validating them, so variant=\"nonsense\" renders vf-button--nonsense and an unknown size still gets a modifier class.",
+      "classification": "exact",
+      "reason": "Both adapters must behave the same way, so it is pinned in the shared rule vectors rather than tolerated as a divergence. The shared cases use documented values only; packages/shared-core/src/button/state-vectors.json is where the quirk is proven.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/button/state-vectors.json"
+    },
+    {
+      "id": "medium-size-emits-no-modifier",
+      "description": "The default md size emits no vf-button--md class at all; the default is expressed by the absence of a class.",
+      "classification": "exact",
+      "reason": "A stylesheet cannot target the default size by name on either adapter. Recorded because it looks like a missing class rather than a decision.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/button/VfButton.characterization.spec.ts"
+    },
+    {
+      "id": "loading-applies-the-native-disabled-attribute",
+      "description": "Loading is not a visual state. The reference applies the native disabled attribute while loading, so a loading button is inert to the pointer and the keyboard, and loading wins over an explicit disabled=false.",
+      "classification": "exact",
+      "reason": "Reproduced rather than softened. It is why the catalog has a loading keyboard case: a regression here renders identically and simply makes an inert control operable again.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/button/cases.json#button/interaction-loading-keyboard"
+    },
+    {
+      "id": "the-loading-spinner-is-not-decorative",
+      "description": "The spinner keeps role=progressbar and aria-label=\"Loading\", so a loading button announces both its label and that it is loading. Only the SVG artwork inside is aria-hidden.",
+      "classification": "exact",
+      "reason": "It would be easy to assume a spinner inside a button is decorative and hide it. The reference does not, and both adapters reproduce that.",
+      "razorDiffers": false,
+      "coveredBy": "packages/razor/tests/Components/ButtonComponentTest.php"
+    },
+    {
+      "id": "a-string-disabled-attribute-does-not-disable",
+      "description": "Vue compares attrs.disabled against true and the empty string only, and its own :disabled binding is applied after the attribute fallthrough, so disabled=\"true\" as a string un-disables the button.",
+      "classification": "semantic",
+      "reason": "A fact about Vue attribute fallthrough with no PHP equivalent - a Razor prop is either present or not. The shared cases never pass a string, so the quirk is unreachable from this catalog and is pinned in the Vue characterization suite instead.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/button/VfButton.characterization.spec.ts"
+    }
+  ],
+  "approvedDivergences": []
+}

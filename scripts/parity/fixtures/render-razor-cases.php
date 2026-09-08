@@ -40,8 +40,9 @@ $registry->register(new VueForgeRazorProvider());
 $input = $registry->resolve('vf-input');
 $iconButton = $registry->resolve('vf-icon-button');
 $fieldComponent = $registry->resolve('vf-field');
+$buttonComponent = $registry->resolve('vf-button');
 
-if ($input === null || $iconButton === null || $fieldComponent === null) {
+if ($input === null || $iconButton === null || $fieldComponent === null || $buttonComponent === null) {
     fwrite(STDERR, "The VueForge components are not registered.\n");
     exit(1);
 }
@@ -195,6 +196,41 @@ $renderFieldCase = static function (array $case, string $controlId) use ($fieldC
     return $fieldComponent->render(new ComponentRenderContext($props, $slots))->value();
 };
 
+/**
+ * A button case: props, forwarded attrs and whatever the default slot holds.
+ *
+ * The historical component has no icon props, so an icon is slot content -
+ * rendered from the neutral registry, the same source the Vue side reads.
+ */
+$renderButton = static function (array $case) use ($buttonComponent, $escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $slot = '';
+    if (isset($case['content']['icon'])) {
+        // The literal default the Vue icon component uses when no size prop is
+        // given, so both adapters write the same width and height.
+        $slot .= \Codemonster\VueForge\Razor\Support\IconRenderer::render(
+            (string) $case['content']['icon'],
+            'var(--vf-icon-current-size, var(--vf-icon-size-md))',
+            true,
+        );
+    }
+    if (isset($case['content']['label'])) {
+        $slot .= $escape((string) $case['content']['label']);
+    }
+
+    return $buttonComponent->render(new ComponentRenderContext($props, [
+        'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($slot),
+    ]))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -202,6 +238,8 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'icon-button') {
         $body = $renderIconButton($case);
+    } elseif ($component === 'button') {
+        $body = $renderButton($case);
     } elseif ($component === 'field') {
         $body = $renderFieldCase($case, str_replace('/', '-', $caseId) . '-control');
     } else {

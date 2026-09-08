@@ -24,6 +24,7 @@ const COMPARED_ATTRIBUTES = [
   'maxlength',
   'inputmode',
   'role',
+  'aria-busy',
   'aria-invalid',
   'aria-label',
   'aria-pressed',
@@ -249,7 +250,7 @@ export function extractCasesExpression(measuredRoles) {
  * a synthesised `element.click()` would prove nothing about whether a keyboard
  * user can reach and operate the control.
  */
-export async function driveInteraction(page, caseId, steps) {
+export async function driveInteraction(page, caseId, steps, activationSelector = '.vf-icon-button') {
   const selector = `[data-parity-case="${caseId}"]`;
   await page.evaluate(`(() => {
     const root = document.querySelector(${JSON.stringify(selector)});
@@ -262,7 +263,9 @@ export async function driveInteraction(page, caseId, steps) {
     for (const type of ['pointerdown', 'mousedown', 'mouseup', 'click', 'input', 'keydown']) {
       document.addEventListener(type, (event) => {
         if (!root.contains(event.target)) return;
-        if (type === 'click' && event.target.closest('.vf-icon-button')) window.__parityActivations += 1;
+        if (type === 'click' && event.target.closest(${JSON.stringify(activationSelector)})) {
+          window.__parityActivations += 1;
+        }
         const entry = { type, trusted: event.isTrusted, defaultPrevented: false };
         window.__parityInputEvents.push(entry);
         setTimeout(() => { entry.defaultPrevented = event.defaultPrevented; }, 0);
@@ -402,8 +405,8 @@ export function interactionExpression(caseId, snapshot = 'input') {
     return fieldInteractionExpression(caseId);
   }
 
-  if (snapshot === 'icon-button') {
-    return iconButtonInteractionExpression(caseId);
+  if (snapshot === 'icon-button' || snapshot === 'button') {
+    return buttonInteractionExpression(caseId, snapshot === 'button' ? '.vf-button' : '.vf-icon-button');
   }
 
   if (snapshot !== 'input') {
@@ -547,19 +550,23 @@ function fieldInteractionExpression(caseId) {
 }
 
 /**
- * Post-scenario state of an icon button.
+ * Post-scenario state of a button.
  *
  * What matters on a button is whether it actually activated, whether focus
  * landed on it, and whether it still reports the same accessible name and
  * pressed state afterwards. Those are the things a pointer user and a keyboard
  * user can each tell apart, and they have to agree across all three targets.
+ *
+ * The selector is a parameter because VfIconButton and VfButton have the same
+ * post-scenario shape. Two copies of this expression would be two places for
+ * the activation contract to drift.
  */
-function iconButtonInteractionExpression(caseId) {
+function buttonInteractionExpression(caseId, selector) {
   return `(() => {
     const root = document.querySelector('[data-parity-case="${caseId}"]');
     if (!root) throw new Error('missing case ${caseId}');
-    const button = root.querySelector('.vf-icon-button');
-    if (!button) throw new Error('missing icon button in case ${caseId}');
+    const button = root.querySelector('${selector}');
+    if (!button) throw new Error('missing ${selector} in case ${caseId}');
     const activeElement = document.activeElement;
     const focusRole = activeElement === button
       ? 'button'
@@ -586,7 +593,7 @@ function iconButtonInteractionExpression(caseId) {
       pressed: button.getAttribute('aria-pressed'),
       type: button.getAttribute('type'),
       buttonClasses: [...button.classList].filter((name) => name.startsWith('vf-')).sort(),
-      glyphHidden: root.querySelector('.vf-icon-button svg')?.getAttribute('aria-hidden') ?? null,
+      glyphHidden: root.querySelector('${selector} svg')?.getAttribute('aria-hidden') ?? null,
     };
   })()`;
 }

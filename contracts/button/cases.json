@@ -1,0 +1,514 @@
+{
+  "$comment": "Shared VfButton cases. Plain data only: no Vue, no PHP, no renderer objects. Each adapter maps these neutral fields onto its own API. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Chosen for semantic coverage rather than a Cartesian grid: every documented variant and size appears, every state the component has appears, and interactions declare the outcome they prove. scripts/ci/button-coverage.mjs is what stops the list eroding. \"props\" are declared component props, \"attrs\" fall through to the button element, and \"content\" is what the default slot holds - the historical component has no icon props, so an icon is slot content like any other.",
+  "component": "button",
+  "propVocabulary": {
+    "variant": "primary | secondary | success | info | warn | help | danger | contrast | ghost. Defaults to primary.",
+    "size": "sm | md | lg. Defaults to md, which emits no size modifier.",
+    "block": "Fills the container width.",
+    "loading": "Renders a spinner and applies the native disabled attribute, so the button becomes inert.",
+    "type": "button | submit | reset. Defaults to button."
+  },
+  "cases": [
+    {
+      "id": "button/default",
+      "title": "Default primary button at the medium size",
+      "content": {
+        "label": "Save"
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/type-submit",
+      "title": "Consumer overrides the rendered type",
+      "props": {
+        "type": "submit"
+      },
+      "content": {
+        "label": "Submit"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/block",
+      "title": "A block button fills its container",
+      "props": {
+        "block": true
+      },
+      "content": {
+        "label": "Continue"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-primary",
+      "title": "The primary variant",
+      "props": {
+        "variant": "primary"
+      },
+      "content": {
+        "label": "Primary"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-secondary",
+      "title": "The secondary variant",
+      "props": {
+        "variant": "secondary"
+      },
+      "content": {
+        "label": "Secondary"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-success",
+      "title": "The success variant",
+      "props": {
+        "variant": "success"
+      },
+      "content": {
+        "label": "Success"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-info",
+      "title": "The info variant",
+      "props": {
+        "variant": "info"
+      },
+      "content": {
+        "label": "Info"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-warn",
+      "title": "The warn variant",
+      "props": {
+        "variant": "warn"
+      },
+      "content": {
+        "label": "Warn"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-help",
+      "title": "The help variant",
+      "props": {
+        "variant": "help"
+      },
+      "content": {
+        "label": "Help"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-danger",
+      "title": "The danger variant",
+      "props": {
+        "variant": "danger"
+      },
+      "content": {
+        "label": "Danger"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-contrast",
+      "title": "The contrast variant",
+      "props": {
+        "variant": "contrast"
+      },
+      "content": {
+        "label": "Contrast"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/variant-ghost",
+      "title": "The ghost variant",
+      "props": {
+        "variant": "ghost"
+      },
+      "content": {
+        "label": "Ghost"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/size-sm",
+      "title": "The small size",
+      "props": {
+        "size": "sm"
+      },
+      "content": {
+        "label": "Small"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/size-md",
+      "title": "The medium size, which emits no modifier",
+      "props": {
+        "size": "md"
+      },
+      "content": {
+        "label": "Medium"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/size-lg",
+      "title": "The large size",
+      "props": {
+        "size": "lg"
+      },
+      "content": {
+        "label": "Large"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/size-sm-danger",
+      "title": "A small danger button, so size and variant are compared together",
+      "props": {
+        "size": "sm",
+        "variant": "danger"
+      },
+      "content": {
+        "label": "Delete"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/disabled",
+      "title": "A disabled button",
+      "attrs": {
+        "disabled": true
+      },
+      "content": {
+        "label": "Save"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "button/disabled-secondary",
+      "title": "A disabled secondary button",
+      "props": {
+        "variant": "secondary"
+      },
+      "attrs": {
+        "disabled": true
+      },
+      "content": {
+        "label": "Cancel"
+      },
+      "visual": true
+    },
+    {
+      "id": "button/loading",
+      "title": "A loading button, which is natively disabled and renders a spinner",
+      "props": {
+        "loading": true
+      },
+      "content": {
+        "label": "Saving"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/loading-block",
+      "title": "A loading block button",
+      "props": {
+        "loading": true,
+        "block": true
+      },
+      "content": {
+        "label": "Saving"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/loading-ghost",
+      "title": "A loading ghost button, so the spinner is compared against a light surface",
+      "props": {
+        "loading": true,
+        "variant": "ghost"
+      },
+      "content": {
+        "label": "Saving"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/consumer-class",
+      "title": "A consumer class merges onto the canonical ones",
+      "attrs": {
+        "class": "consumer-button"
+      },
+      "content": {
+        "label": "Save"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "button/consumer-style",
+      "title": "A consumer style reaches the button",
+      "attrs": {
+        "style": "margin-top: 8px"
+      },
+      "content": {
+        "label": "Save"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "button/native-attributes",
+      "title": "Native attributes reach the button",
+      "attrs": {
+        "name": "save",
+        "value": "now",
+        "data-testid": "save"
+      },
+      "content": {
+        "label": "Save"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "button/aria-label",
+      "title": "A consumer accessible name overrides the label text",
+      "attrs": {
+        "aria-label": "Save the workspace"
+      },
+      "content": {
+        "label": "Save"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "button/icon-in-slot",
+      "title": "An icon written into the default slot beside the label",
+      "content": {
+        "icon": "check",
+        "label": "Approve"
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/icon-only",
+      "title": "An icon alone in the slot, named by aria-label",
+      "attrs": {
+        "aria-label": "Search"
+      },
+      "content": {
+        "icon": "magnifying-glass"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "button/interaction-pointer-click",
+      "title": "A real pointer click activates the button",
+      "content": {
+        "label": "Save"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-button"
+          }
+        ],
+        "expect": {
+          "activates": true
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/interaction-enter",
+      "title": "Enter activates the focused button",
+      "content": {
+        "label": "Save"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-button"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": true
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/interaction-space",
+      "title": "Space activates the focused button",
+      "content": {
+        "label": "Save"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-button"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "activates": true
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/interaction-focus",
+      "title": "Focus lands on the button itself",
+      "content": {
+        "label": "Save"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-button"
+          }
+        ],
+        "expect": {
+          "activates": false
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "button/interaction-disabled-keyboard",
+      "title": "A disabled button ignores the keyboard",
+      "attrs": {
+        "disabled": true
+      },
+      "content": {
+        "label": "Save"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-button"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": false
+        }
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "button/interaction-disabled-space",
+      "title": "A disabled button ignores Space",
+      "attrs": {
+        "disabled": true
+      },
+      "content": {
+        "label": "Save"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-button"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "activates": false
+        }
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "button/interaction-loading-keyboard",
+      "title": "A loading button ignores the keyboard, because loading disables it",
+      "props": {
+        "loading": true
+      },
+      "content": {
+        "label": "Saving"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-button"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": false
+        }
+      },
+      "attrs": {},
+      "visual": true
+    }
+  ]
+}

@@ -71,6 +71,7 @@ export const profiles = {
       glyph: '.vf-icon-button svg',
     },
     snapshot: 'icon-button',
+    activationSelector: '.vf-icon-button',
   },
   field: {
     id: 'field',
@@ -103,6 +104,36 @@ export const profiles = {
       requiredMark: '.vf-field__required-mark',
     },
     snapshot: 'field',
+  },
+  button: {
+    id: 'button',
+    label: 'VfButton',
+    component: 'button',
+    casesPath: 'contracts/button/cases.json',
+    policyPath: 'contracts/button/parity-policy.json',
+    artifactDirectory: 'parity-button',
+    reportName: 'button-parity-report.json',
+    measuredRoles: {
+      button: '.vf-button',
+      spinner: '.vf-button__spinner',
+      spinnerArtwork: '.vf-button__spinner svg',
+      glyph: '.vf-button .vf-icon',
+    },
+    // The spinner is listed because it is expected to be *present* in the tree:
+    // the reference gives it role=progressbar and a name, so a loading button
+    // announces both. Its artwork is listed for the opposite reason - it is
+    // aria-hidden, so it should be absent, which is only a measurement if the
+    // selector is queried.
+    accessibilityRoles: {
+      button: '.vf-button',
+      spinner: '.vf-button__spinner',
+      spinnerArtwork: '.vf-button__spinner svg',
+      glyph: '.vf-button .vf-icon',
+    },
+    // A button's post-scenario state is the same shape as the icon button's:
+    // did it activate, where did focus land, is it still operable and named.
+    snapshot: 'button',
+    activationSelector: '.vf-button',
   },
 };
 

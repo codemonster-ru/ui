@@ -241,7 +241,12 @@ async function captureTarget(
       await navigate();
       const context = { target: label, theme, caseId: parityCase.id };
       await applyBrowserMutation(page, mutation, 'beforeInteraction', context, evidence);
-      const inputEvents = await driveInteraction(page, parityCase.id, parityCase.interaction.steps);
+      const inputEvents = await driveInteraction(
+        page,
+        parityCase.id,
+        parityCase.interaction.steps,
+        catalog.profile.activationSelector,
+      );
       await applyBrowserMutation(page, mutation, 'afterInteraction', context, evidence);
       const result = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
       interactions[parityCase.id] = { ...result, inputEvents };

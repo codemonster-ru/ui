@@ -34,6 +34,7 @@ import {
   iconButtonPolicyMutations,
 } from './icon-button-mutations.mjs';
 import { fieldBrowserMutations, fieldParityMutations, fieldPolicyMutations } from './field-mutations.mjs';
+import { buttonBrowserMutations, buttonParityMutations, buttonPolicyMutations } from './button-mutations.mjs';
 
 /**
  * The negative fixture is component-specific even though the harness is not.
@@ -48,13 +49,16 @@ const mutationSets = {
     browser: iconButtonBrowserMutations,
   },
   field: { capture: fieldParityMutations, policy: fieldPolicyMutations, browser: fieldBrowserMutations },
+  button: { capture: buttonParityMutations, policy: buttonPolicyMutations, browser: buttonBrowserMutations },
 };
 
 const profile = profileFromArgv();
 const mutations = mutationSets[profile.id];
 
 if (!mutations) {
-  throw new Error(`No parity mutation set for component [${profile.id}]. A gate with no negative fixture proves nothing.`);
+  throw new Error(
+    `No parity mutation set for component [${profile.id}]. A gate with no negative fixture proves nothing.`,
+  );
 }
 const runDirectory = runDirectoryFor(profile);
 const catalog = loadCatalog(profile);
