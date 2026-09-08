@@ -78,6 +78,7 @@ export default defineConfig({
       'src/components/icon-button/VfIconButton.characterization.spec.ts',
       'src/components/field/VfField.characterization.spec.ts',
       'src/components/button/VfButton.characterization.spec.ts',
+      'src/components/textarea/VfTextarea.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',
       'src/components/components.spec.ts',
     ],

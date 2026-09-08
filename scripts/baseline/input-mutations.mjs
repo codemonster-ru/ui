@@ -9,6 +9,7 @@ export const sharedInputRulesPath = 'packages/shared-core/src/input/state.ts';
 export const iconButtonSourcePath = 'packages/core/src/components/icon-button/VfIconButton.vue';
 export const fieldSourcePath = 'packages/core/src/components/field/VfField.vue';
 export const buttonSourcePath = 'packages/core/src/components/button/VfButton.vue';
+export const textareaSourcePath = 'packages/core/src/components/textarea/VfTextarea.vue';
 
 /** The shared rules VfButton and the Razor adapter both derive their presentation from. */
 export const buttonRulePath = 'packages/shared-core/src/button/state.ts';
@@ -359,4 +360,108 @@ export const buttonMutations = [
   },
 ];
 
-export const componentMutations = [...inputMutations, ...iconButtonMutations, ...fieldMutations, ...buttonMutations];
+// M13. VfTextarea's defects are mostly about state that never reaches anyone:
+// a value that is not rendered, a filled signal the field never hears, an
+// aria-invalid that stops being emitted. None of them change the element's
+// shape, which is why each one needs its own mutation.
+export const textareaMutations = [
+  {
+    id: 'textarea-does-not-render-its-value',
+    file: textareaSourcePath,
+    description: 'the model value never reaches the control, so the field renders empty',
+    find: '    :value="currentValue"\n',
+    replace: '',
+  },
+  {
+    id: 'textarea-stops-emitting-updates',
+    file: textareaSourcePath,
+    description: 'typing no longer updates the model, so v-model is one-way',
+    find: "  emit('update:modelValue', value);",
+    replace: '',
+  },
+  {
+    id: 'textarea-ignores-an-external-model-change',
+    file: textareaSourcePath,
+    description: 'a model value changed from outside stops reaching the control',
+    find: '  (value) => {\n    currentValue.value = value;\n  },',
+    replace: '  () => {},',
+  },
+  {
+    id: 'textarea-drops-attribute-forwarding',
+    file: textareaSourcePath,
+    description: 'inherited attrs stop reaching the control, losing rows, name and consumer class',
+    find: '    v-bind="attrs"\n',
+    replace: '',
+  },
+  {
+    id: 'textarea-drops-the-size-modifier',
+    file: textareaSourcePath,
+    description: 'a small or large control renders at the default size',
+    find: "    props.size !== 'md' && `vf-textarea--${props.size}`,",
+    replace: '',
+  },
+  {
+    id: 'textarea-emits-a-default-size-modifier',
+    file: textareaSourcePath,
+    description: 'the medium size starts emitting a modifier the stylesheet never defined',
+    find: "    props.size !== 'md' && `vf-textarea--${props.size}`,",
+    replace: '    `vf-textarea--${props.size}`,',
+  },
+  {
+    id: 'textarea-drops-the-invalid-modifier',
+    file: textareaSourcePath,
+    description: 'an invalid control stops looking invalid',
+    find: "    props.invalid && 'vf-textarea--invalid',",
+    replace: '',
+  },
+  {
+    id: 'textarea-drops-aria-invalid',
+    file: textareaSourcePath,
+    description: 'an invalid control stops reporting itself invalid to assistive tech',
+    find: '    :aria-invalid="props.invalid || undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'textarea-drops-the-filled-attribute',
+    file: textareaSourcePath,
+    description: 'the filled marker disappears from the control',
+    find: '    :data-vf-filled="hasValue || undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'textarea-trims-before-testing-filled',
+    file: textareaSourcePath,
+    description: 'whitespace stops counting as filled, changing when a floating label lifts',
+    find: "const hasValue = computed(() => String(currentValue.value ?? '').length > 0);",
+    replace: "const hasValue = computed(() => String(currentValue.value ?? '').trim().length > 0);",
+  },
+  {
+    id: 'textarea-never-reports-filled-to-the-field',
+    file: textareaSourcePath,
+    description: 'the field never hears about the filled state, so a floating label never lifts',
+    find: '    fieldContext?.setFilled(value);',
+    replace: '',
+  },
+  {
+    id: 'textarea-drops-field-floating-support',
+    file: textareaSourcePath,
+    description: 'the control stops opting into floating, so its field renders a plain label',
+    find: 'fieldContext?.setFloatingSupported(true);',
+    replace: '',
+  },
+  {
+    id: 'textarea-drops-the-floating-modifier',
+    file: textareaSourcePath,
+    description: 'the control stops carrying the floating modifier inside a floating field',
+    find: "    isFloatingLabel.value && 'vf-textarea--floating',",
+    replace: '',
+  },
+];
+
+export const componentMutations = [
+  ...inputMutations,
+  ...iconButtonMutations,
+  ...fieldMutations,
+  ...buttonMutations,
+  ...textareaMutations,
+];
