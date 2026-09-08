@@ -39,8 +39,9 @@ $registry = new ComponentRegistry();
 $registry->register(new VueForgeRazorProvider());
 $input = $registry->resolve('vf-input');
 $iconButton = $registry->resolve('vf-icon-button');
+$fieldComponent = $registry->resolve('vf-field');
 
-if ($input === null || $iconButton === null) {
+if ($input === null || $iconButton === null || $fieldComponent === null) {
     fwrite(STDERR, "The VueForge components are not registered.\n");
     exit(1);
 }
@@ -99,57 +100,46 @@ $renderInput = static function (array $case, array $extra = []) use ($input, $es
 };
 
 /**
- * Field shell for the field cases.
+ * The real Razor VfField wrapping the real Razor VfInput.
  *
- * Deliberately not a migrated public Razor VfField: it is the harness producing
- * the field DOM the controller bridges to, so the shared field cases can be
- * compared. Migrating VfField is its own milestone.
+ * This is what M11 closed. Until now the harness authored the field DOM here -
+ * the label, the ids, the described-by, the floating classes - which meant the
+ * field half of every VfInput case was comparing Vue's component against this
+ * file's idea of a field. A defect the two agreed on was invisible, and the
+ * markup carried no required marker at all because nothing here needed one.
+ *
+ * The control id is passed explicitly rather than generated, because the case
+ * id is what makes a failure readable; everything else - the label, the
+ * association, the description and error ids, aria-describedby, the floating
+ * and filled classes - now comes from the component.
  */
-$renderField = static function (array $case, string $controlId) use ($renderInput, $escape): string {
+$renderField = static function (array $case, string $controlId) use ($fieldComponent, $renderInput): string {
     $field = $case['field'];
-    $floating = ($field['placement'] ?? 'top') === 'floating';
-    $variant = $field['variant'] ?? 'in';
-    $hasError = isset($field['error']);
-    $describedByIds = [];
+    $props = [
+        'label' => $field['label'],
+        'control-id' => $controlId,
+        'label-placement' => $field['placement'] ?? 'top',
+    ];
 
-    $descriptionId = $controlId . '-description';
-    $errorId = $controlId . '-error';
-
+    if (isset($field['variant'])) {
+        $props['floating-variant'] = $field['variant'];
+    }
     if (isset($field['description'])) {
-        $describedByIds[] = $descriptionId;
+        $props['description'] = $field['description'];
     }
-    if ($hasError) {
-        $describedByIds[] = $errorId;
+    if (isset($field['error'])) {
+        $props['error'] = $field['error'];
     }
-
-    $control = $renderInput($case, array_filter([
-        'id' => $controlId,
-        'aria-describedby' => $describedByIds === [] ? null : implode(' ', $describedByIds),
-        'invalid' => $hasError ? true : null,
-    ], static fn ($value): bool => $value !== null));
-
-    $label = '<label class="vf-field__label' . ($floating ? ' vf-field__label--floating' : '') . '" for="'
-        . $escape($controlId) . '">' . $escape((string) $field['label']) . '</label>';
-
-    $rootClasses = 'vf-field'
-        . ($hasError ? ' vf-field--invalid' : '')
-        . ($floating ? ' vf-field--floating vf-field--floating-' . $escape((string) $variant) : '');
-    $controlClasses = 'vf-field__control' . ($floating ? ' vf-field__control--floating' : '');
-
-    $markup = '<div class="' . $rootClasses . '" data-vf-razor-field="' . ($floating ? 'floating' : 'top') . '">';
-    $markup .= $floating ? '' : $label;
-    $markup .= '<div class="' . $controlClasses . '">' . $control . ($floating ? $label : '') . '</div>';
-
-    if (isset($field['description'])) {
-        $markup .= '<p id="' . $escape($descriptionId) . '" class="vf-field__description">'
-            . $escape((string) $field['description']) . '</p>';
+    if (($field['required'] ?? false) === true) {
+        $props['required'] = true;
     }
-    if ($hasError) {
-        $markup .= '<p id="' . $escape($errorId) . '" class="vf-field__error">'
-            . $escape((string) $field['error']) . '</p>';
+    if (($field['invalid'] ?? false) === true) {
+        $props['invalid'] = true;
     }
 
-    return $markup . '</div>';
+    return $fieldComponent->render(new ComponentRenderContext($props, [
+        'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($renderInput($case)),
+    ]))->value();
 };
 
 $sections = '';
