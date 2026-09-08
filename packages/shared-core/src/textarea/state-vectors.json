@@ -1,0 +1,101 @@
+{
+  "$comment": "Shared input/expected vectors for the VfTextarea presentation rules. The TypeScript rule in state.ts and the PHP mirror in packages/razor/src/Support/TextareaState.php both run these, so the two implementations cannot drift. The filled predicate is deliberately absent: VfTextarea reuses isInputFilled, which has its own vectors in input/state-vectors.json. Plain data on purpose: no schema, no DSL.",
+  "resolveTextareaClasses": [
+    {
+      "size": "sm",
+      "invalid": true,
+      "floating": true,
+      "expected": ["vf-textarea", "vf-textarea--sm", "vf-textarea--invalid", "vf-textarea--floating"]
+    },
+    {
+      "size": "sm",
+      "invalid": true,
+      "floating": false,
+      "expected": ["vf-textarea", "vf-textarea--sm", "vf-textarea--invalid"]
+    },
+    {
+      "size": "sm",
+      "invalid": false,
+      "floating": true,
+      "expected": ["vf-textarea", "vf-textarea--sm", "vf-textarea--floating"]
+    },
+    {
+      "size": "sm",
+      "invalid": false,
+      "floating": false,
+      "expected": ["vf-textarea", "vf-textarea--sm"]
+    },
+    {
+      "size": "md",
+      "invalid": true,
+      "floating": true,
+      "expected": ["vf-textarea", "vf-textarea--invalid", "vf-textarea--floating"]
+    },
+    {
+      "size": "md",
+      "invalid": true,
+      "floating": false,
+      "expected": ["vf-textarea", "vf-textarea--invalid"]
+    },
+    {
+      "size": "md",
+      "invalid": false,
+      "floating": true,
+      "expected": ["vf-textarea", "vf-textarea--floating"]
+    },
+    {
+      "size": "md",
+      "invalid": false,
+      "floating": false,
+      "expected": ["vf-textarea"]
+    },
+    {
+      "size": "lg",
+      "invalid": true,
+      "floating": true,
+      "expected": ["vf-textarea", "vf-textarea--lg", "vf-textarea--invalid", "vf-textarea--floating"]
+    },
+    {
+      "size": "lg",
+      "invalid": true,
+      "floating": false,
+      "expected": ["vf-textarea", "vf-textarea--lg", "vf-textarea--invalid"]
+    },
+    {
+      "size": "lg",
+      "invalid": false,
+      "floating": true,
+      "expected": ["vf-textarea", "vf-textarea--lg", "vf-textarea--floating"]
+    },
+    {
+      "size": "lg",
+      "invalid": false,
+      "floating": false,
+      "expected": ["vf-textarea", "vf-textarea--lg"]
+    },
+    {
+      "size": "xl",
+      "invalid": true,
+      "floating": true,
+      "expected": ["vf-textarea", "vf-textarea--xl", "vf-textarea--invalid", "vf-textarea--floating"]
+    },
+    {
+      "size": "xl",
+      "invalid": true,
+      "floating": false,
+      "expected": ["vf-textarea", "vf-textarea--xl", "vf-textarea--invalid"]
+    },
+    {
+      "size": "xl",
+      "invalid": false,
+      "floating": true,
+      "expected": ["vf-textarea", "vf-textarea--xl", "vf-textarea--floating"]
+    },
+    {
+      "size": "xl",
+      "invalid": false,
+      "floating": false,
+      "expected": ["vf-textarea", "vf-textarea--xl"]
+    }
+  ]
+}

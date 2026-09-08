@@ -11,6 +11,9 @@ export const fieldSourcePath = 'packages/core/src/components/field/VfField.vue';
 export const buttonSourcePath = 'packages/core/src/components/button/VfButton.vue';
 export const textareaSourcePath = 'packages/core/src/components/textarea/VfTextarea.vue';
 
+/** The shared rules VfTextarea and the Razor adapter both derive their presentation from. */
+export const textareaRulePath = 'packages/shared-core/src/textarea/state.ts';
+
 /** The shared rules VfButton and the Razor adapter both derive their presentation from. */
 export const buttonRulePath = 'packages/shared-core/src/button/state.ts';
 
@@ -395,23 +398,23 @@ export const textareaMutations = [
   },
   {
     id: 'textarea-drops-the-size-modifier',
-    file: textareaSourcePath,
+    file: textareaRulePath,
     description: 'a small or large control renders at the default size',
-    find: "    props.size !== 'md' && `vf-textarea--${props.size}`,",
+    find: "  if (size !== 'md') classes.push(`vf-textarea--${size}`);",
     replace: '',
   },
   {
     id: 'textarea-emits-a-default-size-modifier',
-    file: textareaSourcePath,
+    file: textareaRulePath,
     description: 'the medium size starts emitting a modifier the stylesheet never defined',
-    find: "    props.size !== 'md' && `vf-textarea--${props.size}`,",
-    replace: '    `vf-textarea--${props.size}`,',
+    find: "  if (size !== 'md') classes.push(`vf-textarea--${size}`);",
+    replace: '  classes.push(`vf-textarea--${size}`);',
   },
   {
     id: 'textarea-drops-the-invalid-modifier',
-    file: textareaSourcePath,
+    file: textareaRulePath,
     description: 'an invalid control stops looking invalid',
-    find: "    props.invalid && 'vf-textarea--invalid',",
+    find: "  if (invalid) classes.push('vf-textarea--invalid');",
     replace: '',
   },
   {
@@ -432,8 +435,8 @@ export const textareaMutations = [
     id: 'textarea-trims-before-testing-filled',
     file: textareaSourcePath,
     description: 'whitespace stops counting as filled, changing when a floating label lifts',
-    find: "const hasValue = computed(() => String(currentValue.value ?? '').length > 0);",
-    replace: "const hasValue = computed(() => String(currentValue.value ?? '').trim().length > 0);",
+    find: 'const hasValue = computed(() => isInputFilled(currentValue.value));',
+    replace: "const hasValue = computed(() => isInputFilled(String(currentValue.value ?? '').trim()));",
   },
   {
     id: 'textarea-never-reports-filled-to-the-field',
@@ -451,9 +454,9 @@ export const textareaMutations = [
   },
   {
     id: 'textarea-drops-the-floating-modifier',
-    file: textareaSourcePath,
+    file: textareaRulePath,
     description: 'the control stops carrying the floating modifier inside a floating field',
-    find: "    isFloatingLabel.value && 'vf-textarea--floating',",
+    find: "  if (floating) classes.push('vf-textarea--floating');",
     replace: '',
   },
 ];

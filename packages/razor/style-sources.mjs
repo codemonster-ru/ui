@@ -20,4 +20,7 @@ export const styleSources = [
   // The spinner is not a migrated component of its own: it is the loading
   // affordance the button composes, so its rules travel with the button.
   'packages/styles/src/components/button.css',
+  // VfTextarea, whose only declared dependency is field.css - already neutral
+  // and already reached through input.css, so this adds one file, not a closure.
+  'packages/styles/src/components/textarea.css',
 ];

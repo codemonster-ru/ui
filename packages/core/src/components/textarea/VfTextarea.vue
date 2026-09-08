@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, ref, useAttrs, watch } from 'vue';
+import { isInputFilled, resolveTextareaClasses } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfControlSize } from '@/types/components';
 import { vfFieldContextKey } from '@/components/field/context';
@@ -27,7 +28,9 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 const fieldContext = inject(vfFieldContextKey, null);
 const currentValue = ref(props.modelValue);
-const hasValue = computed(() => String(currentValue.value ?? '').length > 0);
+// The same predicate VfInput uses: string length, not trimmed content, which
+// is why whitespace counts as filled on both controls.
+const hasValue = computed(() => isInputFilled(currentValue.value));
 const isFloatingLabel = computed(() => fieldContext?.labelPlacement.value === 'floating');
 
 fieldContext?.setFloatingSupported(true);
@@ -41,10 +44,11 @@ watch(
 
 const classes = computed(() =>
   cx(
-    'vf-textarea',
-    props.size !== 'md' && `vf-textarea--${props.size}`,
-    props.invalid && 'vf-textarea--invalid',
-    isFloatingLabel.value && 'vf-textarea--floating',
+    ...resolveTextareaClasses({
+      size: props.size,
+      invalid: props.invalid,
+      floating: isFloatingLabel.value,
+    }),
   ),
 );
 

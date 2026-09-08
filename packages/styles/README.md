@@ -17,7 +17,9 @@ M04 moved the first closure into it, unchanged.
 - `button.css` — the `.vf-button` rules, variants, sizes, block and loading;
 - `progress-spinner.css` — imported by `button.css`, and the reason a loading
   button has a spinner. Not a migrated component of its own: it is the loading
-  affordance the button composes, so its rules travel with the button.
+  affordance the button composes, so its rules travel with the button;
+- `textarea.css` — the `.vf-textarea` rules, sizes, states and the floating
+  selectors it shares with `field.css`, which it imports.
 
 That is the declared `@import` closure of `input.css` and of `button.css`, and
 nothing more. The
@@ -31,7 +33,7 @@ attributes and presets are never renamed as part of a move.
 
 ## How consumers still reach it
 
-`packages/core/src/styles/entries/{input,field,icon-button,button,progress-spinner}.css` are single-line
+`packages/core/src/styles/entries/{input,field,icon-button,button,progress-spinner,textarea}.css` are single-line
 forwards to the files above. Every existing path keeps working untouched: the
 `@codemonster-ru/vueforge-core/input.css` subpath, the browser auto-CSS entries,
 `styles.css`, and the core entries that import `./field.css`, `./icon-button.css`,

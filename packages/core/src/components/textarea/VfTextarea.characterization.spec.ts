@@ -262,7 +262,7 @@ describe('VfTextarea characterization: field integration', () => {
     await textarea.trigger('input');
     await nextTick();
 
-    expect(reported.filled.at(-1)).toBe(true);
+    expect(reported.filled[reported.filled.length - 1]).toBe(true);
   });
 
   it('carries the floating modifier from the field placement alone', () => {
@@ -276,8 +276,8 @@ describe('VfTextarea characterization: field integration', () => {
     const { wrapper, reported } = mountInField({ modelValue: 'notes' });
     wrapper.unmount();
 
-    expect(reported.floatingSupported.at(-1)).toBe(false);
-    expect(reported.filled.at(-1)).toBe(false);
+    expect(reported.floatingSupported[reported.floatingSupported.length - 1]).toBe(false);
+    expect(reported.filled[reported.filled.length - 1]).toBe(false);
   });
 
   it('renders no floating modifier outside a field', () => {

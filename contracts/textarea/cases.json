@@ -1,0 +1,500 @@
+{
+  "$comment": "Shared VfTextarea cases. Plain data only: no Vue, no PHP, no renderer objects. Each adapter maps these neutral fields onto its own API. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Chosen for semantic coverage rather than a Cartesian grid, and deliberately much smaller than the VfInput catalog: this component has three props. \"props\" are declared component props, \"attrs\" fall through to the textarea, and \"field\" wraps the control in a real VfField. scripts/ci/textarea-coverage.mjs is what stops the list eroding.",
+  "component": "textarea",
+  "propVocabulary": {
+    "modelValue": "The control value. Whitespace counts as filled: the test is string length, not content.",
+    "size": "sm | md | lg. Defaults to md, which emits no size modifier.",
+    "invalid": "Adds the invalid modifier and aria-invalid. A consumer aria-invalid overrides it."
+  },
+  "cases": [
+    {
+      "id": "textarea/default",
+      "title": "An empty textarea at the default size",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/filled",
+      "title": "A textarea holding a single line",
+      "props": {
+        "modelValue": "Release notes"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/multiline",
+      "title": "A textarea holding several lines",
+      "props": {
+        "modelValue": "first line\nsecond line\nthird line"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/markup-like-value",
+      "title": "A value full of characters that must stay text, not markup",
+      "props": {
+        "modelValue": "<script>alert(1)</script> & \"quoted\" & 'single' <b>x</b>"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/whitespace-value",
+      "title": "Whitespace counts as filled, because the test is length not content",
+      "props": {
+        "modelValue": "   "
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/size-sm",
+      "title": "The small size",
+      "props": {
+        "size": "sm",
+        "modelValue": "Small"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/size-md",
+      "title": "The medium size, which emits no modifier",
+      "props": {
+        "size": "md",
+        "modelValue": "Medium"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/size-lg",
+      "title": "The large size",
+      "props": {
+        "size": "lg",
+        "modelValue": "Large"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/rows",
+      "title": "An explicit row count, which is a native attribute rather than a prop",
+      "attrs": {
+        "rows": 6
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/placeholder",
+      "title": "A placeholder on an empty control",
+      "attrs": {
+        "placeholder": "Say something"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/disabled",
+      "title": "A disabled control",
+      "attrs": {
+        "disabled": true
+      },
+      "props": {
+        "modelValue": "Cannot edit"
+      },
+      "visual": true
+    },
+    {
+      "id": "textarea/readonly",
+      "title": "A readonly control",
+      "attrs": {
+        "readonly": true
+      },
+      "props": {
+        "modelValue": "Read only"
+      },
+      "visual": true
+    },
+    {
+      "id": "textarea/required",
+      "title": "A required control",
+      "attrs": {
+        "required": true
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/maxlength",
+      "title": "Length limits reach the control",
+      "attrs": {
+        "maxlength": 200,
+        "minlength": 2
+      },
+      "props": {
+        "modelValue": "Bounded"
+      },
+      "visual": true
+    },
+    {
+      "id": "textarea/native-attributes",
+      "title": "Name, wrap, spellcheck and autocomplete reach the control",
+      "attrs": {
+        "name": "notes",
+        "wrap": "hard",
+        "spellcheck": "false",
+        "autocomplete": "off"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/invalid",
+      "title": "An invalid control",
+      "props": {
+        "invalid": true,
+        "modelValue": "Bad value"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/consumer-class",
+      "title": "A consumer class merges onto the canonical one",
+      "attrs": {
+        "class": "consumer-textarea"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/consumer-style",
+      "title": "A consumer style reaches the control",
+      "attrs": {
+        "style": "min-height: 120px"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/data-attribute",
+      "title": "A data attribute reaches the control",
+      "attrs": {
+        "data-testid": "notes"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/aria-label",
+      "title": "A consumer accessible name",
+      "attrs": {
+        "aria-label": "Release notes"
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-top-label",
+      "title": "Inside a field with a top label",
+      "field": {
+        "label": "Release notes"
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-description",
+      "title": "A field description is announced through aria-describedby",
+      "field": {
+        "label": "Release notes",
+        "description": "Shown to everyone on the workspace"
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-error",
+      "title": "Field error text makes the control invalid",
+      "field": {
+        "label": "Release notes",
+        "error": "Notes are required"
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-required",
+      "title": "A required field marks its label",
+      "field": {
+        "label": "Release notes",
+        "required": true
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-floating-empty",
+      "title": "A floating field with an empty control",
+      "field": {
+        "label": "Release notes",
+        "placement": "floating"
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-floating-filled",
+      "title": "A floating field with a filled control",
+      "field": {
+        "label": "Release notes",
+        "placement": "floating"
+      },
+      "props": {
+        "modelValue": "Shipped the adapter"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-floating-multiline",
+      "title": "A floating field holding several lines",
+      "field": {
+        "label": "Release notes",
+        "placement": "floating"
+      },
+      "props": {
+        "modelValue": "first\nsecond"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-description-and-error",
+      "title": "Description precedes error in aria-describedby",
+      "field": {
+        "label": "Release notes",
+        "description": "Shown to everyone",
+        "error": "Notes are required"
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/field-disabled",
+      "title": "A disabled control inside a field",
+      "field": {
+        "label": "Release notes"
+      },
+      "attrs": {
+        "disabled": true
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/interaction-focus",
+      "title": "Focusing the control directly",
+      "field": {
+        "label": "Release notes",
+        "placement": "floating"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusTextarea"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": false
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/interaction-label-click",
+      "title": "Clicking the label focuses its own control",
+      "field": {
+        "label": "Release notes"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickLabel"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": false
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/interaction-typing",
+      "title": "Typing moves an empty floating field to filled",
+      "field": {
+        "label": "Release notes",
+        "placement": "floating"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "typeTextarea",
+            "value": "Shipped it"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": true,
+          "value": "Shipped it"
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/interaction-typing-multiline",
+      "title": "Typing several lines keeps every newline",
+      "field": {
+        "label": "Release notes",
+        "placement": "floating"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "typeTextarea",
+            "value": "first\nsecond"
+          }
+        ],
+        "expect": {
+          "filled": true,
+          "value": "first\nsecond"
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/interaction-emptied",
+      "title": "Clearing a filled control returns the field to empty",
+      "field": {
+        "label": "Release notes",
+        "placement": "floating"
+      },
+      "props": {
+        "modelValue": "Shipped it"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "typeTextarea",
+            "value": ""
+          }
+        ],
+        "expect": {
+          "filled": false,
+          "value": ""
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/interaction-blur",
+      "title": "Blurring after typing keeps the filled state",
+      "field": {
+        "label": "Release notes",
+        "placement": "floating"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "typeTextarea",
+            "value": "Shipped it"
+          },
+          {
+            "action": "blurTextarea"
+          }
+        ],
+        "expect": {
+          "focusRole": "body",
+          "filled": true,
+          "value": "Shipped it"
+        }
+      },
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/interaction-disabled-typing",
+      "title": "A disabled control cannot be edited",
+      "field": {
+        "label": "Release notes"
+      },
+      "attrs": {
+        "disabled": true
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "typeTextarea",
+            "value": "nope"
+          }
+        ],
+        "expect": {
+          "filled": false,
+          "value": ""
+        }
+      },
+      "props": {},
+      "visual": true
+    },
+    {
+      "id": "textarea/interaction-readonly-typing",
+      "title": "A readonly control cannot be edited but still takes focus",
+      "field": {
+        "label": "Release notes"
+      },
+      "attrs": {
+        "readonly": true
+      },
+      "props": {
+        "modelValue": "Read only"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "typeTextarea",
+            "value": "nope"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": true,
+          "value": "Read only"
+        }
+      },
+      "visual": true
+    }
+  ]
+}
