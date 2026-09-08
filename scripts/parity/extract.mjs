@@ -191,6 +191,23 @@ export function extractCasesExpression(measuredRoles) {
 
   const results = {};
 
+  // Ids are canonicalised per case, so the comparator can see a reference
+  // pointing at the wrong element inside a case but not two cases claiming the
+  // same id. Document-level uniqueness is therefore checked here rather than
+  // compared: a collision is wrong on every target at once, so there is nothing
+  // for a three-way comparison to disagree about, and it would silently make
+  // one field's label reach another field's control.
+  const seenIds = new Map();
+  const duplicateIds = [];
+  for (const element of document.querySelectorAll('[data-parity-case] [id]')) {
+    const owner = element.closest('[data-parity-case]').getAttribute('data-parity-case');
+    if (seenIds.has(element.id)) {
+      duplicateIds.push({ id: element.id, cases: [seenIds.get(element.id), owner] });
+      continue;
+    }
+    seenIds.set(element.id, owner);
+  }
+
   for (const root of document.querySelectorAll('[data-parity-case]')) {
     const caseId = root.getAttribute('data-parity-case');
     const idMap = buildIdMap(root);
@@ -215,7 +232,7 @@ export function extractCasesExpression(measuredRoles) {
     };
   }
 
-  return results;
+  return { cases: results, duplicateIds };
 })()`;
 }
 
@@ -280,6 +297,11 @@ export async function driveInteraction(page, caseId, steps) {
         continue;
       }
       await pointerClick(page, selector, actionSelector);
+    } else if (step.action === 'clickLabel') {
+      // A real pointer click on the label. Native label activation is what
+      // moves focus to the associated control, so this proves the for/id edge
+      // in the only way that matters to a user - not by reading the attribute.
+      await pointerClick(page, selector, step.selector ?? '.vf-field__label');
     } else if (step.action === 'clickButton') {
       await pointerClick(page, selector, step.selector ?? '.vf-icon-button');
     } else if (step.action === 'pressKey') {
@@ -350,10 +372,20 @@ async function pressKey(page, key) {
     throw new Error(`unsupported interaction key: ${JSON.stringify(key)}`);
   }
 
-  const base = { key, code: descriptor.code, windowsVirtualKeyCode: descriptor.virtualKeyCode, nativeVirtualKeyCode: descriptor.virtualKeyCode };
+  const base = {
+    key,
+    code: descriptor.code,
+    windowsVirtualKeyCode: descriptor.virtualKeyCode,
+    nativeVirtualKeyCode: descriptor.virtualKeyCode,
+  };
   await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
   if (descriptor.text !== undefined) {
-    await page.send('Input.dispatchKeyEvent', { type: 'char', ...base, text: descriptor.text, unmodifiedText: descriptor.text });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'char',
+      ...base,
+      text: descriptor.text,
+      unmodifiedText: descriptor.text,
+    });
   }
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
 }
@@ -366,6 +398,10 @@ async function pressKey(page, key) {
  * it. Everything downstream compares whatever shape comes back, key by key.
  */
 export function interactionExpression(caseId, snapshot = 'input') {
+  if (snapshot === 'field') {
+    return fieldInteractionExpression(caseId);
+  }
+
   if (snapshot === 'icon-button') {
     return iconButtonInteractionExpression(caseId);
   }
@@ -435,6 +471,77 @@ export function interactionExpression(caseId, snapshot = 'input') {
         ? [...root.querySelector('.vf-input-wrap').classList].filter((name) => name.startsWith('vf-')).sort()
         : null,
       controlClasses: [...liveControl.classList].filter((name) => name.startsWith('vf-')).sort(),
+    };
+  })()`;
+}
+
+/**
+ * Post-scenario state of a field.
+ *
+ * What matters on a field is whether the relationships still hold and whether
+ * the state the label depends on moved. Focus is reported by role rather than
+ * by element, because the two adapters generate different ids and the question
+ * is "did the control get focus", not "did element X get focus".
+ *
+ * The relationships are re-read after the scenario rather than only before it:
+ * a control that loses its id when its wrapper is replaced would otherwise pass
+ * on the initial DOM comparison and be broken by the time a user reached it.
+ */
+function fieldInteractionExpression(caseId) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+    const field = root.querySelector('.vf-field');
+    if (!field) throw new Error('missing field in case ${caseId}');
+    const control = field.querySelector('input.vf-input');
+    const wrapper = field.querySelector('.vf-field__control');
+    const label = field.querySelector('.vf-field__label');
+    const description = field.querySelector('.vf-field__description');
+    const error = field.querySelector('.vf-field__error');
+    const active = document.activeElement;
+    const focusRole = active === control
+      ? 'control'
+      : active === label
+        ? 'label'
+        : active === document.body
+          ? 'body'
+          : field.contains(active) ? 'other-inside-field' : 'outside-field';
+
+    const rect = root.getBoundingClientRect();
+    // Relationships as edges, not as id values: "the label points at the
+    // control" is the claim, and the generated token differs by construction.
+    const describedTargets = (control?.getAttribute('aria-describedby') ?? '')
+      .split(/\\s+/)
+      .filter(Boolean)
+      .map((id) => {
+        const target = document.getElementById(id);
+        if (!target) return 'missing';
+        if (target === description) return 'description';
+        if (target === error) return 'error';
+        return 'foreign';
+      });
+
+    return {
+      clip: {
+        x: Math.round(rect.left + window.scrollX),
+        y: Math.round(rect.top + window.scrollY),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      },
+      focusRole,
+      value: control?.value ?? null,
+      filled: wrapper?.classList.contains('vf-field__control--filled') ?? null,
+      floating: field.classList.contains('vf-field--floating'),
+      invalid: field.classList.contains('vf-field--invalid'),
+      fieldClasses: [...field.classList].filter((name) => name.startsWith('vf-')).sort(),
+      controlClasses: [...(wrapper?.classList ?? [])].filter((name) => name.startsWith('vf-')).sort(),
+      // The two edges a broken field passes every static check on.
+      labelTargetsControl: label === null ? null : (label.getAttribute('for') ?? '') !== '' &&
+        document.getElementById(label.getAttribute('for')) === control,
+      describedTargets,
+      accessibleName: control?.getAttribute('aria-label') ?? null,
+      controlInvalid: control?.getAttribute('aria-invalid') ?? null,
+      disabled: control?.disabled ?? null,
     };
   })()`;
 }

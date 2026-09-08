@@ -1,0 +1,158 @@
+{
+  "$comment": "Parity policy for the shared VfField cases. Plain data: no DSL, no waiver engine. Every dimension is classified, and every tolerated difference would be listed individually with a reason, the exact cases it covers, the exact element it applies to and the number of occurrences it is allowed to have. It starts empty, and M11 finished with it still empty: the field is server-renderable in full, so there is no server/client asymmetry of the kind that forced approvals on VfInput.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, how content is composed, how state is stored.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type, disabled and every native attribute a consumer forwards onto the button, plus the style attribute. The icon layout moved to packages/styles/src/components/icon.css in M10, so neither adapter writes layout into a style attribute any more."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "role, aria-label, aria-describedby, aria-invalid and aria-hidden. The required marker must be aria-hidden on both adapters so the asterisk is not announced."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-vf-* attributes that carry product semantics, such as data-vf-filled."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether the button exists and whether it is operable. VfIconButton has no inert-until-enhanced state, so unlike VfInput there is nothing here that either adapter may render differently."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "label[for], aria-describedby, aria-labelledby and aria-controls compared as a resolved relationship graph. Generated id values are canonicalised to their document position; the edges they create are not."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it, and exact rather than framework-specific: a render-only button has no wrapper either adapter may add. If this ever produces a difference, something is wrong."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason as dom.wrapperPresence. VfIconButton renders no inert action, so a difference here is a defect, not a platform trait."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where token drift shows."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction scenario has run, per theme. This is what makes an interaction case detect a change that leaves the DOM intact, such as content that is present but invisible."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the control and of every action."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the control and of every action."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "disabled, readonly, required and invalid as exposed to assistive tech."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which role owns focus after the scenario. Reported as a role rather than an element, because the adapters generate different ids and the question is whether the control got focus."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The post-scenario snapshot: the control value, filled, floating and invalid state, the field and control class lists, the accessible name and aria-invalid."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no value, so this never produces a difference."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no caret, so this never produces a difference."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. VfIconButton renders no wrapper that could appear on one side only."
+    },
+    "interaction.relationships": {
+      "classification": "semantic",
+      "description": "Whether the label still reaches its own control after the scenario, and what each aria-describedby token resolves to - the description, the error, a foreign node, or nothing. Compared as resolved edges rather than as id values, because the generated tokens differ by construction while the edges must not."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "floating-needs-a-control-that-opts-in",
+      "description": "labelPlacement=floating alone never floats a label. The control inside the default slot has to opt in through the field context, so a field wrapping something inert renders a plain top label however it was configured.",
+      "classification": "exact",
+      "reason": "Both adapters must behave the same way, so it is pinned in the shared rule vectors and in both characterization suites rather than tolerated as a divergence. The shared cases always wrap a real control, so the inert path is proven in unit tests instead.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/field/state-vectors.json"
+    },
+    {
+      "id": "the-field-never-applies-aria-describedby-itself",
+      "description": "The field computes the described-by value and hands it to the default slot. Whether it reaches the control is the consumer’s decision, so a consumer that ignores it produces a description announced to nobody.",
+      "classification": "exact",
+      "reason": "Recorded because it looks like a missing attribute rather than a decision. Both adapters bind it at the call site; Razor does it through the field context because a Razor slot has no scope.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/field/VfField.characterization.spec.ts"
+    },
+    {
+      "id": "the-required-marker-exists-only-inside-a-label",
+      "description": "The asterisk is rendered inside the label element, so a field that is required but has no label carries no marker at all.",
+      "classification": "exact",
+      "reason": "Both adapters reproduce it. It reads as a bug until you see that the marker has nowhere else to live.",
+      "razorDiffers": false,
+      "coveredBy": "packages/razor/tests/Components/FieldComponentTest.php"
+    },
+    {
+      "id": "the-control-floats-on-placement-alone",
+      "description": "VfInput adds vf-input--floating from the field placement without checking whether the field actually floated, so a floating-placement field with no label marks the control while the field itself stays plain.",
+      "classification": "exact",
+      "reason": "A genuine asymmetry inside the reference: the field and its control disagree about whether floating is happening. Reproduced rather than tidied.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/field/cases.json#field/floating-without-label"
+    },
+    {
+      "id": "vue-cannot-server-render-the-floating-state",
+      "description": "The control opts into floating while the field is already rendering, so Vue SSR always serialises a plain field and the client corrects it on the next tick. Razor emits the floating and filled classes server-side.",
+      "classification": "semantic",
+      "reason": "Parity compares browser-observable DOM, which is the corrected state, so the two agree in the browser. Recorded because it means the Razor no-JS output is strictly better than Vue SSR here, not merely equal.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/field/VfField.characterization.spec.ts"
+    },
+    {
+      "id": "clearing-the-only-adornment-drops-focus-in-vue",
+      "description": "When the clear action is the only adornment, Vue re-renders from the bare input into the wrapped one, replacing the element and dropping focus to body. Razor renders the wrapper up front and keeps focus on the control.",
+      "classification": "framework-specific",
+      "reason": "A VfInput quirk, not a field one, and it already has a named approved divergence in contracts/input/parity-policy.json. The field clear case keeps a leading adornment present so the wrapper is stable, which is the same convention the VfInput catalog uses for every case but the one that exists to prove it.",
+      "razorDiffers": true,
+      "coveredBy": "contracts/input/parity-policy.json#razor-keeps-focus-through-wrapper-transition"
+    }
+  ],
+  "approvedDivergences": []
+}

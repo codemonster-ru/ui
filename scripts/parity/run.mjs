@@ -203,8 +203,20 @@ async function captureTarget(
     };
     await navigate();
     await applyBrowserMutation(page, mutation, 'beforeExtract', { target: label, theme }, evidence);
-    const allExtracted = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
+    const extraction = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
+    const allExtracted = extraction.cases;
     const extracted = Object.fromEntries(selectedCases.map(({ id }) => [id, allExtracted[id]]));
+
+    // A collision is wrong on every target at once, so there is nothing for the
+    // three-way comparison to disagree about - it has to fail the capture. Two
+    // fields sharing a generated id makes one label reach the other's control,
+    // which every static check still reports as correct.
+    if (extraction.duplicateIds.length > 0) {
+      throw new Error(
+        `${label} (${theme}) rendered duplicate ids across cases: ` +
+          extraction.duplicateIds.map((entry) => `${entry.id} in ${entry.cases.join(' and ')}`).join(', '),
+      );
+    }
     const accessibility = {};
     const screenshots = {};
 
@@ -234,33 +246,42 @@ async function captureTarget(
       const result = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
       interactions[parityCase.id] = { ...result, inputEvents };
 
-      // A declared activation outcome is checked against what the target
+      // Declared interaction outcomes are checked against what the target
       // actually did, on every target, in both themes.
       //
-      // Without this, `expect.activates` would be the catalog describing
-      // itself: the coverage guard reads it to tell "Enter activates an
-      // enabled button" apart from "Enter does nothing to a disabled one",
-      // and nothing would stop a case from claiming an activation it never
-      // causes. Here the claim is measured against the counter driveInteraction
-      // records from real pointer and key events, so a catalog that lies about
-      // an outcome fails rather than quietly widening what counts as coverage.
+      // Without this, `expect` would be the catalog describing itself: the
+      // coverage guards read it to tell "Enter activates an enabled button" or
+      // "clicking the label focuses the control" apart from a case that merely
+      // performs the gesture, and nothing would stop a case from claiming an
+      // outcome it never causes. Here each claim is measured against the
+      // snapshot the scenario produced from real pointer and key events.
       //
       // Only on an unmutated capture. A browser mutation deliberately breaks
       // behaviour - browser-icon-button-not-clickable stops the button
       // activating on purpose - and catching that is the comparator's job, not
       // this assertion's. Throwing here would abort the mutation harness
       // before it could report the defect it was constructed to find.
-      const expectedActivation = mutation ? undefined : parityCase.interaction.expect?.activates;
-      if (expectedActivation !== undefined) {
-        const activated = (result.activations ?? 0) > 0;
-        if (activated !== expectedActivation) {
+      const expected = mutation ? undefined : parityCase.interaction.expect;
+      for (const [key, want] of Object.entries(expected ?? {})) {
+        // `activates` is a claim about a counter; everything else is a claim
+        // about a snapshot field of the same name.
+        const got = key === 'activates' ? (result.activations ?? 0) > 0 : result[key];
+
+        if (key !== 'activates' && !(key in result)) {
           throw new Error(
-            `${parityCase.id} on ${label} (${theme}): the catalog expects ` +
-              `${expectedActivation ? 'an activation' : 'no activation'}, but the button ` +
-              `recorded ${result.activations ?? 0}.`,
+            `${parityCase.id} on ${label} (${theme}): the catalog expects [${key}], ` +
+              "which this component's interaction snapshot does not record.",
+          );
+        }
+
+        if (got !== want) {
+          throw new Error(
+            `${parityCase.id} on ${label} (${theme}): the catalog expects ${key}=${JSON.stringify(want)}, ` +
+              `but the component recorded ${JSON.stringify(got)}.`,
           );
         }
       }
+
       const naturalShot = await screenshot(
         page,
         result.clip,

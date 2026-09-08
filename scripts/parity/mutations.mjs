@@ -436,3 +436,28 @@ export const policyMutations = [
     },
   },
 ];
+
+/**
+ * A browser-side mutation that rewrites real elements on a real page.
+ *
+ * Shared by every component's browser fixture. It throws rather than returning
+ * quietly when a selector matches nothing, so a mutation that stopped applying
+ * fails the run instead of being counted as a defect nobody caused.
+ */
+export function mutateElements(caseIds, selector, operation) {
+  return `(() => {
+    const evidence = [];
+    let applied = 0;
+    for (const caseId of ${JSON.stringify(caseIds)}) {
+      const root = document.querySelector('[data-parity-case="' + caseId + '"]');
+      const elements = [...(root?.querySelectorAll(${JSON.stringify(selector)}) ?? [])];
+      if (elements.length === 0) throw new Error('MUTATION_NOT_APPLIED: ' + caseId + ' ${selector}');
+      for (const element of elements) {
+        ${operation}
+        applied += 1;
+      }
+      evidence.push({caseId, elements: elements.length});
+    }
+    return {applied, evidence};
+  })()`;
+}

@@ -18,19 +18,31 @@ interface CaseContent {
 }
 
 interface CaseField {
-  label: string;
-  placement: 'top' | 'floating';
+  label?: string;
+  placement?: 'top' | 'floating';
   variant?: string;
   description?: string;
   error?: string;
+  invalid?: boolean;
+  required?: boolean;
 }
 
 interface ParityCase {
   id: string;
   props: Record<string, unknown>;
   attrs: Record<string, unknown>;
-  content?: { leading?: CaseContent; trailing?: CaseContent };
+  content?: {
+    leading?: CaseContent;
+    trailing?: CaseContent;
+    label?: CaseContent;
+    description?: CaseContent;
+    error?: CaseContent;
+  };
   field?: CaseField;
+  /** The VfField catalog splits the control's own props out of `props`. */
+  control?: Record<string, unknown>;
+  /** Attributes for the field root rather than the control. */
+  fieldAttrs?: Record<string, unknown>;
 }
 
 const catalog = cases as { component?: string; cases: ParityCase[] };
@@ -52,6 +64,50 @@ function renderInput(parityCase: ParityCase, extra: Record<string, unknown> = {}
   return h(VfInput, { ...parityCase.props, ...parityCase.attrs, ...extra }, contentSlots(parityCase));
 }
 
+/**
+ * A field wrapping its control, for the VfField catalog.
+ *
+ * The consumer binding is what the historical component expects: the field
+ * hands the control id, the described-by value and the invalid flag to the
+ * default slot, and the caller puts them on the control. A caller that ignored
+ * them would produce a label pointing at nothing, which is the reference
+ * behaviour and why this is explicit rather than automatic.
+ */
+function renderField(parityCase: ParityCase): VNode {
+  const field = parityCase.field ?? {};
+  const controlCase: ParityCase = {
+    ...parityCase,
+    props: parityCase.control ?? {},
+    attrs: parityCase.attrs ?? {},
+  };
+  const slots: Record<string, unknown> = {
+    default: ({ controlId, describedBy, invalid }: Record<string, unknown>) =>
+      renderInput(controlCase, { id: controlId, 'aria-describedby': describedBy, invalid }),
+  };
+
+  for (const name of ['label', 'description', 'error'] as const) {
+    const text = parityCase.content?.[name]?.text;
+    if (text !== undefined) {
+      slots[name] = () => text;
+    }
+  }
+
+  return h(
+    VfField,
+    {
+      ...(field.label !== undefined ? { label: field.label } : {}),
+      ...(field.placement !== undefined ? { labelPlacement: field.placement } : {}),
+      ...(field.variant !== undefined ? { floatingVariant: field.variant } : {}),
+      ...(field.description !== undefined ? { description: field.description } : {}),
+      ...(field.error !== undefined ? { error: field.error } : {}),
+      ...(field.invalid !== undefined ? { invalid: field.invalid } : {}),
+      ...(field.required !== undefined ? { required: field.required } : {}),
+      ...(parityCase.fieldAttrs ?? {}),
+    },
+    slots,
+  );
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -61,6 +117,10 @@ function renderIconButton(parityCase: ParityCase): VNode {
 function renderCase(parityCase: ParityCase): VNode {
   if (catalog.component === 'icon-button') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
+  }
+
+  if (catalog.component === 'field') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderField(parityCase)]);
   }
 
   const children: VNode[] = [];

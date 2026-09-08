@@ -1,25 +1,7 @@
 // Real DOM/CSS/event mutations on fresh pages served by the three real targets.
 // They exercise extraction and screenshots as well as the comparator. No source
 // file, baseline image or captured hash is rewritten to manufacture a failure.
-import { wrapperPresenceCases } from './mutations.mjs';
-
-function mutateElements(caseIds, selector, operation) {
-  return `(() => {
-    const evidence = [];
-    let applied = 0;
-    for (const caseId of ${JSON.stringify(caseIds)}) {
-      const root = document.querySelector('[data-parity-case="' + caseId + '"]');
-      const elements = [...(root?.querySelectorAll(${JSON.stringify(selector)}) ?? [])];
-      if (elements.length === 0) throw new Error('MUTATION_NOT_APPLIED: ' + caseId + ' ${selector}');
-      for (const element of elements) {
-        ${operation}
-        applied += 1;
-      }
-      evidence.push({caseId, elements: elements.length});
-    }
-    return {applied, evidence};
-  })()`;
-}
+import { mutateElements, wrapperPresenceCases } from './mutations.mjs';
 
 const nativeExpectation = {
   dimensions: ['dom.nativeAttributes', 'dom.productData'],

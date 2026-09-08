@@ -1,0 +1,446 @@
+{
+  "$comment": "Shared VfField cases. Plain data only: no Vue, no PHP, no renderer objects. Each adapter maps these neutral fields onto its own API. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Chosen for semantic coverage rather than a Cartesian grid: every dimension the component actually has appears at least once, interactions declare the outcome they prove, and scripts/ci/field-coverage.mjs is what stops the list eroding. \"field\" is the field component, \"control\" is the VfInput inside its default slot, \"attrs\" fall through to that control and \"fieldAttrs\" to the field root.",
+  "component": "field",
+  "propVocabulary": {
+    "label": "Label text. A field with neither label nor label slot renders no label element.",
+    "placement": "top | floating. Defaults to top. Floating additionally requires a label and a control that opts in.",
+    "variant": "in | on | over. Defaults to in. Only emitted alongside the floating modifier.",
+    "description": "Help text rendered after the control and named in aria-describedby.",
+    "error": "Error text rendered last. Its presence alone makes the field invalid.",
+    "invalid": "Marks the field invalid without rendering error text.",
+    "required": "Renders a decorative asterisk inside the label, if a label exists."
+  },
+  "cases": [
+    {
+      "id": "field/plain",
+      "title": "A field with no label, description or error",
+      "field": {},
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/top-label",
+      "title": "A top-placed label bound to the control",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/top-label-required",
+      "title": "A required top label carries the decorative asterisk",
+      "field": {
+        "label": "Workspace",
+        "required": true
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/label-slot",
+      "title": "The label comes from slot content rather than the prop",
+      "field": {
+        "placement": "top"
+      },
+      "content": {
+        "label": {
+          "text": "Slot label"
+        }
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/description",
+      "title": "A description is announced through aria-describedby",
+      "field": {
+        "label": "Workspace",
+        "description": "Shown to collaborators"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/error",
+      "title": "Error text makes the field invalid without the prop",
+      "field": {
+        "label": "Workspace",
+        "error": "Name is already taken"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/description-and-error",
+      "title": "Description precedes error in aria-describedby",
+      "field": {
+        "label": "Workspace",
+        "description": "Shown to collaborators",
+        "error": "Name is already taken"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/invalid-prop",
+      "title": "The invalid prop alone renders no error paragraph",
+      "field": {
+        "label": "Workspace",
+        "invalid": true
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/description-without-label",
+      "title": "A description with no label still binds to the control",
+      "field": {
+        "description": "Shown to collaborators"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/description-slot",
+      "title": "The description comes from slot content",
+      "field": {
+        "label": "Workspace"
+      },
+      "content": {
+        "description": {
+          "text": "Slot description"
+        }
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/error-slot",
+      "title": "The error comes from slot content",
+      "field": {
+        "label": "Workspace"
+      },
+      "content": {
+        "error": {
+          "text": "Slot error"
+        }
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/floating",
+      "title": "A floating label moves inside the control",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/floating-filled",
+      "title": "A filled floating field",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating"
+      },
+      "control": {
+        "modelValue": "Acme"
+      },
+      "visual": true
+    },
+    {
+      "id": "field/floating-variant-on",
+      "title": "The on floating variant",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating",
+        "variant": "on"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/floating-variant-over",
+      "title": "The over floating variant",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating",
+        "variant": "over"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/floating-required",
+      "title": "A required floating label",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating",
+        "required": true
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/floating-invalid",
+      "title": "A floating field carrying an error",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating",
+        "error": "Name is already taken"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/floating-without-label",
+      "title": "Floating placement with no label does not float",
+      "field": {
+        "placement": "floating"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/floating-description",
+      "title": "A floating field with a description",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating",
+        "description": "Shown to collaborators"
+      },
+      "control": {},
+      "visual": true
+    },
+    {
+      "id": "field/filled-top",
+      "title": "A top-placed field tracks filled just like a floating one",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {
+        "modelValue": "Acme"
+      },
+      "visual": true
+    },
+    {
+      "id": "field/disabled",
+      "title": "A disabled control inside a field",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {},
+      "attrs": {
+        "disabled": true
+      },
+      "visual": true
+    },
+    {
+      "id": "field/readonly",
+      "title": "A readonly control inside a field",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {
+        "modelValue": "Acme"
+      },
+      "attrs": {
+        "readonly": true
+      },
+      "visual": true
+    },
+    {
+      "id": "field/clearable-filled",
+      "title": "A clearable filled control inside a field",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {
+        "modelValue": "billing",
+        "clearable": true
+      },
+      "visual": true
+    },
+    {
+      "id": "field/leading-icon",
+      "title": "A field whose control carries a leading adornment",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {
+        "leadingIcon": "magnifying-glass"
+      },
+      "visual": true
+    },
+    {
+      "id": "field/consumer-class",
+      "title": "A consumer class merges onto the field root",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {},
+      "fieldAttrs": {
+        "class": "consumer-field"
+      },
+      "visual": true
+    },
+    {
+      "id": "field/consumer-style",
+      "title": "A consumer style reaches the field root",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {},
+      "fieldAttrs": {
+        "style": "margin-top: 8px"
+      },
+      "visual": true
+    },
+    {
+      "id": "field/consumer-data",
+      "title": "A consumer data attribute reaches the field root",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {},
+      "fieldAttrs": {
+        "data-testid": "workspace-field"
+      },
+      "visual": true
+    },
+    {
+      "id": "field/interaction-label-click",
+      "title": "Clicking the label focuses its own control",
+      "field": {
+        "label": "Workspace"
+      },
+      "control": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickLabel"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": false
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "field/interaction-floating-label-click",
+      "title": "Clicking a floating label focuses its own control",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating"
+      },
+      "control": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickLabel"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": false
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "field/interaction-focus-control",
+      "title": "Focusing the control directly",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating"
+      },
+      "control": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "focus"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": false
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "field/interaction-type-fills",
+      "title": "Typing moves an empty floating field to filled",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating"
+      },
+      "control": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "type",
+            "value": "Acme"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": true
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "field/interaction-clear-empties",
+      "title": "Clearing a filled field returns it to empty",
+      "field": {
+        "label": "Workspace",
+        "placement": "floating"
+      },
+      "control": {
+        "modelValue": "billing",
+        "clearable": true,
+        "leadingIcon": "magnifying-glass"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickClear"
+          }
+        ],
+        "expect": {
+          "filled": false
+        }
+      },
+      "visual": true,
+      "$comment": "The leading adornment keeps the input wrapper present across the clear, which is the same convention the VfInput catalog uses. Without it the Vue adapter re-renders from the bare branch into the wrapped one, replacing the input and dropping focus to body - a documented VfInput quirk that has its own approved divergence on input/interaction-wrapper-transition, and nothing to do with the field."
+    },
+    {
+      "id": "field/interaction-type-fills-top",
+      "title": "Typing fills a top-placed field too",
+      "field": {
+        "label": "Workspace",
+        "description": "Shown to collaborators"
+      },
+      "control": {},
+      "interaction": {
+        "steps": [
+          {
+            "action": "type",
+            "value": "Acme"
+          }
+        ],
+        "expect": {
+          "focusRole": "control",
+          "filled": true
+        }
+      },
+      "visual": true
+    }
+  ]
+}

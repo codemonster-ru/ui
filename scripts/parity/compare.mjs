@@ -520,6 +520,16 @@ const INTERACTION_FIELDS = {
   pressed: { dimension: 'interaction.state' },
   buttonClasses: { dimension: 'interaction.state', format: 'classList' },
   glyphHidden: { dimension: 'interaction.state' },
+  // VfField. The two relationship fields are their own dimension: a field whose
+  // label stops reaching its control still renders identically, so a value
+  // difference here has to be reported as a broken relationship rather than as
+  // one more class that moved.
+  labelTargetsControl: { dimension: 'interaction.relationships' },
+  describedTargets: { dimension: 'interaction.relationships', format: 'json' },
+  floating: { dimension: 'interaction.state' },
+  invalid: { dimension: 'interaction.state' },
+  fieldClasses: { dimension: 'interaction.state', format: 'classList' },
+  controlInvalid: { dimension: 'interaction.state' },
 };
 
 /**

@@ -72,6 +72,38 @@ export const profiles = {
     },
     snapshot: 'icon-button',
   },
+  field: {
+    id: 'field',
+    label: 'VfField',
+    component: 'field',
+    casesPath: 'contracts/field/cases.json',
+    policyPath: 'contracts/field/parity-policy.json',
+    artifactDirectory: 'parity-field',
+    reportName: 'field-parity-report.json',
+    measuredRoles: {
+      field: '.vf-field',
+      label: '.vf-field__label',
+      requiredMark: '.vf-field__required-mark',
+      controlWrapper: '.vf-field__control',
+      control: 'input.vf-input',
+      description: '.vf-field__description',
+      error: '.vf-field__error',
+    },
+    // The control is what carries the accessible name the label provides and
+    // the description the field wrote, so listing it is how the relationships
+    // are checked as semantics rather than as attributes. The label and the
+    // required mark are listed for the opposite reason: a label is exposed as
+    // part of the control's name rather than as a node of its own, and the
+    // mark is aria-hidden, so both are expected to be absent - which is only a
+    // measurement if the selector is queried.
+    accessibilityRoles: {
+      control: 'input.vf-input',
+      description: '.vf-field__description',
+      error: '.vf-field__error',
+      requiredMark: '.vf-field__required-mark',
+    },
+    snapshot: 'field',
+  },
 };
 
 export function loadProfile(id) {

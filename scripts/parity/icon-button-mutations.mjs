@@ -7,16 +7,16 @@
 // owns it.
 //
 // Mutations perturb the captured description of a target, never a file on disk.
-import { eachTheme, fail, findNode } from './mutations.mjs';
+import { eachTheme, fail, findNode, mutateElements } from './mutations.mjs';
 
 const isButton = (node) => node.tag === 'button' && node.classes.includes('vf-icon-button');
 const isGlyph = (node) => node.tag === 'svg' && node.classes.includes('vf-icon');
 const isGlyphWrapper = (node) => node.tag === 'span' && node.classes.includes('vf-icon-wrapper');
 
 /** The documented variant modifiers, so a mutation can strip whichever one a case carries. */
-const variantModifiers = [
-  'primary', 'secondary', 'success', 'info', 'warn', 'help', 'danger', 'contrast', 'ghost',
-].map((variant) => `vf-icon-button--${variant}`);
+const variantModifiers = ['primary', 'secondary', 'success', 'info', 'warn', 'help', 'danger', 'contrast', 'ghost'].map(
+  (variant) => `vf-icon-button--${variant}`,
+);
 
 /** Cases that carry a non-default variant modifier. */
 const variantCases = ['icon-button/variant-primary', 'icon-button/variant-danger', 'icon-button/size-sm-primary'];
@@ -43,7 +43,11 @@ export const iconButtonParityMutations = [
     id: 'icon-button-emits-a-default-size-modifier',
     klass: 'canonical classes',
     description: 'the Razor button starts emitting vf-icon-button--md, which the reference never emits',
-    expect: { dimensions: ['dom.canonicalClasses'], caseIds: ['icon-button/default', 'icon-button/size-md'], requireAll: true },
+    expect: {
+      dimensions: ['dom.canonicalClasses'],
+      caseIds: ['icon-button/default', 'icon-button/size-md'],
+      requireAll: true,
+    },
     apply(captures) {
       eachTheme(captures, 'razor', (capture) => {
         for (const caseId of ['icon-button/default', 'icon-button/size-md']) {
@@ -73,7 +77,11 @@ export const iconButtonParityMutations = [
     id: 'icon-button-drops-the-explicit-type',
     klass: 'native attributes',
     description: 'the button loses type="button", so it would submit a surrounding form',
-    expect: { dimensions: ['dom.nativeAttributes'], details: { 'dom.nativeAttributes': ['type'] }, caseIds: ['icon-button/default'] },
+    expect: {
+      dimensions: ['dom.nativeAttributes'],
+      details: { 'dom.nativeAttributes': ['type'] },
+      caseIds: ['icon-button/default'],
+    },
     apply(captures) {
       eachTheme(captures, 'razor', (capture) => {
         const button = findNode(capture, 'icon-button/default', isButton, 'icon button');
@@ -86,7 +94,11 @@ export const iconButtonParityMutations = [
     id: 'icon-button-ignores-the-type-override',
     klass: 'native attributes',
     description: 'a consumer type="submit" is overwritten with the default',
-    expect: { dimensions: ['dom.nativeAttributes'], details: { 'dom.nativeAttributes': ['type'] }, caseIds: ['icon-button/type-submit'] },
+    expect: {
+      dimensions: ['dom.nativeAttributes'],
+      details: { 'dom.nativeAttributes': ['type'] },
+      caseIds: ['icon-button/type-submit'],
+    },
     apply(captures) {
       eachTheme(captures, 'razor', (capture) => {
         const button = findNode(capture, 'icon-button/type-submit', isButton, 'icon button');
@@ -112,7 +124,11 @@ export const iconButtonParityMutations = [
     id: 'icon-button-reintroduces-inline-icon-layout',
     klass: 'native attributes',
     description: 'the icon layout comes back as an inline style, the divergence M10 removed',
-    expect: { dimensions: ['dom.nativeAttributes'], details: { 'dom.nativeAttributes': ['style'] }, caseIds: ['icon-button/default'] },
+    expect: {
+      dimensions: ['dom.nativeAttributes'],
+      details: { 'dom.nativeAttributes': ['style'] },
+      caseIds: ['icon-button/default'],
+    },
     apply(captures) {
       eachTheme(captures, 'razor', (capture) => {
         const wrapper = findNode(capture, 'icon-button/default', isGlyphWrapper, 'glyph wrapper');
@@ -382,24 +398,6 @@ export const iconButtonPolicyMutations = [
     },
   },
 ];
-
-function mutateElements(caseIds, selector, operation) {
-  return `(() => {
-    const evidence = [];
-    let applied = 0;
-    for (const caseId of ${JSON.stringify(caseIds)}) {
-      const root = document.querySelector('[data-parity-case="' + caseId + '"]');
-      const elements = [...(root?.querySelectorAll(${JSON.stringify(selector)}) ?? [])];
-      if (elements.length === 0) throw new Error('MUTATION_NOT_APPLIED: ' + caseId + ' ${selector}');
-      for (const element of elements) {
-        ${operation}
-        applied += 1;
-      }
-      evidence.push({caseId, elements: elements.length});
-    }
-    return {applied, evidence};
-  })()`;
-}
 
 /**
  * Real DOM and CSS mutations on fresh pages served by the three real targets.

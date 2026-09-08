@@ -142,6 +142,59 @@ $renderField = static function (array $case, string $controlId) use ($fieldCompo
     ]))->value();
 };
 
+/**
+ * A field case: the field component wrapping its control.
+ *
+ * The VfField catalog keeps the control's own props under `control` and the
+ * field root's attributes under `fieldAttrs`, so neither can be mistaken for
+ * the other the way a single flat map would allow.
+ */
+$renderFieldCase = static function (array $case, string $controlId) use ($fieldComponent, $renderInput, $escape): string {
+    $field = $case['field'] ?? [];
+    $props = ['control-id' => $controlId];
+
+    if (isset($field['label'])) {
+        $props['label'] = $field['label'];
+    }
+    if (isset($field['placement'])) {
+        $props['label-placement'] = $field['placement'];
+    }
+    if (isset($field['variant'])) {
+        $props['floating-variant'] = $field['variant'];
+    }
+    if (isset($field['description'])) {
+        $props['description'] = $field['description'];
+    }
+    if (isset($field['error'])) {
+        $props['error'] = $field['error'];
+    }
+    if (($field['required'] ?? false) === true) {
+        $props['required'] = true;
+    }
+    if (($field['invalid'] ?? false) === true) {
+        $props['invalid'] = true;
+    }
+
+    foreach ($case['fieldAttrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $controlCase = ['props' => $case['control'] ?? [], 'attrs' => $case['attrs'] ?? []];
+    $slots = [
+        'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($renderInput($controlCase)),
+    ];
+
+    foreach (['label', 'description', 'error'] as $slot) {
+        $text = $case['content'][$slot]['text'] ?? null;
+        if ($text !== null) {
+            $markup = $escape((string) $text);
+            $slots[$slot] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+        }
+    }
+
+    return $fieldComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -149,6 +202,8 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'icon-button') {
         $body = $renderIconButton($case);
+    } elseif ($component === 'field') {
+        $body = $renderFieldCase($case, str_replace('/', '-', $caseId) . '-control');
     } else {
         $body = isset($case['field'])
             ? $renderField($case, str_replace('/', '-', $caseId) . '-control')

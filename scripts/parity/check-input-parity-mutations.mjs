@@ -33,6 +33,7 @@ import {
   iconButtonParityMutations,
   iconButtonPolicyMutations,
 } from './icon-button-mutations.mjs';
+import { fieldBrowserMutations, fieldParityMutations, fieldPolicyMutations } from './field-mutations.mjs';
 
 /**
  * The negative fixture is component-specific even though the harness is not.
@@ -46,6 +47,7 @@ const mutationSets = {
     policy: iconButtonPolicyMutations,
     browser: iconButtonBrowserMutations,
   },
+  field: { capture: fieldParityMutations, policy: fieldPolicyMutations, browser: fieldBrowserMutations },
 };
 
 const profile = profileFromArgv();
