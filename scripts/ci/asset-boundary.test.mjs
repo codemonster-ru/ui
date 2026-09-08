@@ -10,6 +10,7 @@ import {
   analyzePhpIncludes,
   extractJsonRepositoryPaths,
   extractRepositoryPaths,
+  scanSource,
 } from './asset-boundary.mjs';
 
 function analyze(fileContents) {
@@ -206,4 +207,94 @@ test('the neutral icon registry and the shared icon layout are allowed edges', (
 
   assert.deepEqual(violations, []);
   assert.deepEqual([...new Set(edges.map((edge) => edge.owner))], ['packages/styles']);
+});
+
+// --------------------------------------------- M10: the scanner's own blind spots
+//
+// The guard reads string literals, so how it decides what a string literal is
+// decides what it can see at all. Both shapes below made it silently blind, and
+// the first one was live: `packages/razor/style-sources.mjs` opens with a
+// comment containing `the artifact's provenance`, and a forbidden path injected
+// into the list five lines below it was not reported.
+
+test('an apostrophe in a comment does not hide the literals after it', () => {
+  const { violations } = analyze({
+    'packages/razor/style-sources.mjs': `
+      // Its own module because the artifact's provenance records exactly them.
+      export const styleSources = [
+        'packages/icons/dist/index.css',
+      ];`,
+  });
+
+  assert.equal(violations.length, 1, 'the forbidden path after the apostrophe was not seen');
+  assert.match(violations[0], /packages\/icons/);
+});
+
+test('prose in a comment is still not a dependency, apostrophes and all', () => {
+  const { violations, edges } = analyze({
+    'packages/razor/build-assets.mjs': `
+      // This used to read packages/core/dist/tokens.css. It doesn't any more:
+      // the theme package's generator owns those bytes now.
+      const sources = ['packages/theme/.generated/theme/tokens.css'];`,
+  });
+
+  assert.deepEqual(violations, []);
+  assert.deepEqual(
+    edges.map((edge) => edge.path),
+    ['packages/theme/.generated/theme/tokens.css'],
+  );
+});
+
+test('a regular expression containing quotes does not desynchronise the scan', () => {
+  // The exact construct in the Razor asset builder. Reading the quotes inside
+  // it as string delimiters opened a string that never closed, and every
+  // literal after it was lost.
+  const { violations } = analyze({
+    'packages/razor/build-assets.mjs': `
+      const inlined = source.replace(/^@import\\s+['"](.+?)['"];\\s*$/gm, (statement) => statement);
+      readFileSync('packages/core/src/styles/components.css');`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /packages\/core/);
+});
+
+test('a division is not mistaken for a regular expression', () => {
+  const { scan } = { scan: scanSource(`const ratio = width / height; const p = 'packages/styles/a.css';`) };
+
+  assert.equal(scan.unterminated, false);
+  assert.deepEqual(scan.literals, ['packages/styles/a.css']);
+});
+
+test('an unterminated string is reported rather than trusted', () => {
+  const { violations } = analyze({
+    'packages/razor/build-assets.mjs': `const broken = 'packages/theme/tokens.css;`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /could not be scanned/);
+});
+
+test('a PHP attribute is code, and a PHP hash comment is not', () => {
+  const scan = scanSource(
+    `<?php
+     # This once read packages/core/dist/tokens.css.
+     #[DataProvider('packages/styles/src/components/icon.css')]
+     final class T {}`,
+    { hashComments: true },
+  );
+
+  assert.equal(scan.unterminated, false);
+  assert.deepEqual(scan.literals, ['packages/styles/src/components/icon.css']);
+});
+
+test('a forbidden package named outside any literal is reported, not ignored', () => {
+  // Belt and braces for a construction the walk does not model. Comments are
+  // stripped first, so history in prose still costs nothing.
+  const { violations } = analyze({
+    'packages/razor/build-assets.mjs': `const parts = [packages/core/dist];`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /outside any string literal/);
 });

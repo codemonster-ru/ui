@@ -36,6 +36,143 @@ const scannedExtensions = ['.mjs', '.cjs', '.js', '.ts', '.mts', '.php', '.json'
 const repositoryPathPattern = /(?:packages|examples)\/[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)*/g;
 
 /**
+ * Splits a source file into its string literals and its comment-free code.
+ *
+ * A regex that just pairs up quotes is wrong on real source, and wrong in the
+ * dangerous direction. One apostrophe in prose - `the artifact's provenance` -
+ * pairs with the opening quote of the next real literal, so everything after it
+ * lands in the gaps between bogus "literals" and is never scanned. M10 found
+ * this live: a forbidden `packages/icons` path injected into the Razor
+ * stylesheet list was not reported, because a comment five lines above it
+ * contained an apostrophe. Eight of the nineteen guarded files carry one.
+ *
+ * So the source is walked once, tracking whether it is inside a comment or a
+ * string. `hashComments` is for PHP, where `#` starts a comment - except `#[`,
+ * which is an attribute and can contain literals worth seeing.
+ *
+ * A scan that ends inside an unterminated string is reported rather than
+ * trusted: it means this walk lost sync, and under-reporting is exactly the
+ * failure this guard exists to prevent.
+ */
+/** Where a `/` can only begin a regular expression, never a division. */
+const REGEX_PRECEDING_CHARACTERS = new Set(['(', ',', '=', ':', '[', '!', '&', '|', '?', '{', '}', ';', '+', '-', '*', '%', '~', '^', '<', '>', '\n']);
+const REGEX_PRECEDING_KEYWORDS = /(?:^|[^A-Za-z0-9_$])(return|typeof|instanceof|in|of|new|delete|void|throw|case|do|else|yield|await)$/;
+
+export function scanSource(source, { hashComments = false, regexLiterals = !hashComments } = {}) {
+  const literals = [];
+  const code = [];
+  let unterminated = false;
+  let index = 0;
+
+  /** The last character that mattered, used to tell a regex from a division. */
+  const lastSignificant = () => {
+    const text = code.join('');
+    const trimmed = text.replace(/\s+$/, '');
+    return { character: trimmed.at(-1), text: trimmed };
+  };
+
+  while (index < source.length) {
+    const character = source[index];
+    const next = source[index + 1];
+
+    if (character === '/' && next === '/') {
+      while (index < source.length && source[index] !== '\n') index += 1;
+      continue;
+    }
+
+    if (character === '/' && next === '*') {
+      index += 2;
+      while (index < source.length && !(source[index] === '*' && source[index + 1] === '/')) index += 1;
+      index += 2;
+      continue;
+    }
+
+    // PHP 8 attributes start with `#[` and are code, not comment.
+    if (hashComments && character === '#' && next !== '[') {
+      while (index < source.length && source[index] !== '\n') index += 1;
+      continue;
+    }
+
+    // A regular expression can contain quotes, and treating them as string
+    // delimiters is how this walk lost sync on the Razor asset builder:
+    // /^@import\s+['"](.+?)['"];/ opened a string that never closed.
+    if (regexLiterals && character === '/') {
+      const { character: previous, text } = lastSignificant();
+      const startsRegex =
+        previous === undefined || REGEX_PRECEDING_CHARACTERS.has(previous) || REGEX_PRECEDING_KEYWORDS.test(text);
+
+      if (startsRegex) {
+        let inClass = false;
+        let closed = false;
+        index += 1;
+
+        while (index < source.length) {
+          const inner = source[index];
+          if (inner === '\\') {
+            index += 2;
+            continue;
+          }
+          if (inner === '\n') break;
+          if (inner === '[') inClass = true;
+          else if (inner === ']') inClass = false;
+          else if (inner === '/' && !inClass) {
+            closed = true;
+            index += 1;
+            break;
+          }
+          index += 1;
+        }
+
+        if (!closed) {
+          unterminated = true;
+          break;
+        }
+
+        // Flags, then a placeholder so the next `/` is read as division.
+        while (index < source.length && /[a-z]/.test(source[index])) index += 1;
+        code.push('0');
+        continue;
+      }
+    }
+
+    if (character === "'" || character === '"' || character === '`') {
+      const quote = character;
+      let value = '';
+      let closed = false;
+      index += 1;
+
+      while (index < source.length) {
+        if (source[index] === '\\') {
+          index += 2;
+          continue;
+        }
+        if (source[index] === quote) {
+          closed = true;
+          index += 1;
+          break;
+        }
+        value += source[index];
+        index += 1;
+      }
+
+      if (!closed) {
+        unterminated = true;
+        break;
+      }
+
+      literals.push(value);
+      code.push(value);
+      continue;
+    }
+
+    code.push(character);
+    index += 1;
+  }
+
+  return { literals, code: code.join(''), unterminated };
+}
+
+/**
  * Any repository path a file names in a string literal.
  *
  * String literals rather than raw text, because that is where filesystem
@@ -45,12 +182,11 @@ const repositoryPathPattern = /(?:packages|examples)\/[A-Za-z0-9._-]+(?:\/[A-Za-
  * package used to read is not a dependency, and flagging it would push accurate
  * comments out of the code.
  */
-export function extractRepositoryPaths(source) {
+export function extractRepositoryPaths(source, options = {}) {
   const paths = new Set();
 
-  for (const literal of source.matchAll(/'([^'\\]*(?:\\.[^'\\]*)*)'|"([^"\\]*(?:\\.[^"\\]*)*)"|`([^`\\]*(?:\\.[^`\\]*)*)`/g)) {
-    const value = literal[1] ?? literal[2] ?? literal[3] ?? '';
-    for (const match of value.matchAll(repositoryPathPattern)) {
+  for (const literal of scanSource(source, options).literals) {
+    for (const match of literal.matchAll(repositoryPathPattern)) {
       paths.add(match[0]);
     }
   }
@@ -142,7 +278,34 @@ export function analyzeAssetBoundary({ rootDir, files, readFile }) {
         continue;
       }
     } else {
-      named = extractRepositoryPaths(source);
+      const scanOptions = { hashComments: file.endsWith('.php') };
+      const scan = scanSource(source, scanOptions);
+
+      // Losing sync means the paths below are whatever survived the confusion,
+      // which is not something to report as a clean result.
+      if (scan.unterminated) {
+        violations.push(
+          `${file}: could not be scanned - an unterminated string literal means its paths cannot be trusted.`,
+        );
+        continue;
+      }
+
+      named = extractRepositoryPaths(source, scanOptions);
+
+      // Belt and braces after M10 found the literal scan silently blind. A
+      // forbidden package that appears in the code but in no literal is either
+      // a construction this walk does not model or an attempt to hide one;
+      // either way it is not a clean result. Comments are already stripped, so
+      // prose explaining history still costs nothing.
+      for (const forbidden of forbiddenPackages) {
+        if (scan.code.includes(`${forbidden}/`) && !named.some((path) => packageOf(path) === forbidden)) {
+          violations.push(
+            `${file}: names "${forbidden}" outside any string literal this scanner understands. ` +
+              'The Razor adapter and its build may only read ' +
+              `${neutralPackages.join(', ')}.`,
+          );
+        }
+      }
     }
 
     for (const repositoryPath of named) {
