@@ -19,6 +19,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
+import { activationCoverageViolations } from './case-coverage.mjs';
+
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const catalog = (path) => JSON.parse(readFileSync(resolve(repositoryRoot, path), 'utf8'));
 
@@ -65,26 +67,14 @@ test('the icon button catalog exercises the attribute contract', () => {
   );
 });
 
-test('the icon button catalog exercises real pointer and keyboard activation', () => {
-  const actions = new Set(
-    iconButtonCases.flatMap((entry) => (entry.interaction?.steps ?? []).map((step) => step.action)),
-  );
-  const keys = new Set(
-    iconButtonCases.flatMap((entry) =>
-      (entry.interaction?.steps ?? []).filter((step) => step.action === 'pressKey').map((step) => step.key),
-    ),
-  );
-
-  assert.ok(actions.has('clickButton'), 'no shared case drives a real pointer click');
-  assert.ok(actions.has('focusButton'), 'no shared case checks where focus lands');
-  assert.ok(keys.has('Enter'), 'no shared case activates the button with Enter');
-  assert.ok(keys.has(' '), 'no shared case activates the button with Space');
-
-  // The inert half of the contract: a disabled button must be proved unusable,
-  // not merely rendered.
-  assert.ok(
-    iconButtonCases.some((entry) => entry.interaction && entry.attrs.disabled === true),
-    'no shared case drives a disabled button',
+// The activation rules live in case-coverage.mjs so the erosion tests can run
+// them against a deliberately damaged catalog. Here they run against the real
+// one, which is the claim CI actually needs to hold.
+test('the icon button catalog proves every activation outcome it claims to cover', () => {
+  assert.deepEqual(
+    activationCoverageViolations(iconButtonCases),
+    [],
+    'the icon button activation coverage eroded',
   );
 });
 

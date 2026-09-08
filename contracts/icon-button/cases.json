@@ -309,7 +309,10 @@
           {
             "action": "clickButton"
           }
-        ]
+        ],
+        "expect": {
+          "activates": true
+        }
       },
       "visual": true
     },
@@ -331,7 +334,10 @@
             "action": "pressKey",
             "key": "Enter"
           }
-        ]
+        ],
+        "expect": {
+          "activates": true
+        }
       },
       "visual": true
     },
@@ -353,7 +359,10 @@
             "action": "pressKey",
             "key": " "
           }
-        ]
+        ],
+        "expect": {
+          "activates": true
+        }
       },
       "visual": true
     },
@@ -371,7 +380,10 @@
           {
             "action": "focusButton"
           }
-        ]
+        ],
+        "expect": {
+          "activates": false
+        }
       },
       "visual": true
     },
@@ -394,7 +406,10 @@
             "action": "pressKey",
             "key": "Enter"
           }
-        ]
+        ],
+        "expect": {
+          "activates": false
+        }
       },
       "visual": true
     }

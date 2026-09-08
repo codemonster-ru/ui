@@ -233,6 +233,28 @@ async function captureTarget(
       await applyBrowserMutation(page, mutation, 'afterInteraction', context, evidence);
       const result = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
       interactions[parityCase.id] = { ...result, inputEvents };
+
+      // A declared activation outcome is checked against what the target
+      // actually did, on every target, in both themes.
+      //
+      // Without this, `expect.activates` would be the catalog describing
+      // itself: the coverage guard reads it to tell "Enter activates an
+      // enabled button" apart from "Enter does nothing to a disabled one",
+      // and nothing would stop a case from claiming an activation it never
+      // causes. Here the claim is measured against the counter driveInteraction
+      // records from real pointer and key events, so a catalog that lies about
+      // an outcome fails rather than quietly widening what counts as coverage.
+      const expectedActivation = parityCase.interaction.expect?.activates;
+      if (expectedActivation !== undefined) {
+        const activated = (result.activations ?? 0) > 0;
+        if (activated !== expectedActivation) {
+          throw new Error(
+            `${parityCase.id} on ${label} (${theme}): the catalog expects ` +
+              `${expectedActivation ? 'an activation' : 'no activation'}, but the button ` +
+              `recorded ${result.activations ?? 0}.`,
+          );
+        }
+      }
       const naturalShot = await screenshot(
         page,
         result.clip,
