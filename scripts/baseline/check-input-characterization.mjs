@@ -239,5 +239,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  `All ${componentMutations.length} VfInput and VfIconButton regressions are detected by the characterization suites.\n`,
+  `All ${componentMutations.length} VfInput, VfIconButton and VfField regressions are detected by the characterization suites.\n`,
 );

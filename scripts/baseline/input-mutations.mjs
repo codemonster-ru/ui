@@ -7,6 +7,7 @@
 export const inputSourcePath = 'packages/core/src/components/input/VfInput.vue';
 export const sharedInputRulesPath = 'packages/shared-core/src/input/state.ts';
 export const iconButtonSourcePath = 'packages/core/src/components/icon-button/VfIconButton.vue';
+export const fieldSourcePath = 'packages/core/src/components/field/VfField.vue';
 
 /** The shared rule VfIconButton and the Razor adapter both derive their class list from. */
 export const iconButtonRulePath = 'packages/shared-core/src/icon-button/state.ts';
@@ -173,4 +174,90 @@ export const iconButtonMutations = [
 ];
 
 /** Everything the characterization gate mutates, across both migrated components. */
-export const componentMutations = [...inputMutations, ...iconButtonMutations];
+
+// M11. VfField's characterization is mostly about relationships - which element
+// points at which - and a relationship regression is invisible in a snapshot:
+// the markup still looks right, the label just stops reaching the control.
+// These are the ways that can break.
+export const fieldMutations = [
+  {
+    id: 'field-drops-label-class',
+    file: fieldSourcePath,
+    description: 'the top label loses its canonical class',
+    find: ':for="controlId" class="vf-field__label">',
+    replace: ':for="controlId" class="">',
+  },
+  {
+    id: 'field-breaks-label-association',
+    file: fieldSourcePath,
+    description: 'the label no longer points at the control (clicking it focuses nothing)',
+    find: '<label v-if="hasLabel && !isFloatingLabel" :for="controlId"',
+    replace: '<label v-if="hasLabel && !isFloatingLabel"',
+  },
+  {
+    id: 'field-hands-the-slot-the-wrong-id',
+    file: fieldSourcePath,
+    description: 'the control receives the description id, so label.for points at nothing',
+    find: '<slot :control-id="controlId"',
+    replace: '<slot :control-id="descriptionId"',
+  },
+  {
+    id: 'field-describes-the-wrong-node',
+    file: fieldSourcePath,
+    description: 'aria-describedby names the error twice and never the description',
+    find: 'hasDescription.value ? descriptionId.value : undefined,',
+    replace: 'hasDescription.value ? errorId.value : undefined,',
+  },
+  {
+    id: 'field-drops-the-invalid-class',
+    file: fieldSourcePath,
+    description: 'an errored field stops looking invalid',
+    find: "    isInvalid.value && 'vf-field--invalid',",
+    replace: '',
+  },
+  {
+    id: 'field-drops-the-required-marker',
+    file: fieldSourcePath,
+    description: 'the required asterisk disappears from both label placements',
+    find: '<span v-if="props.required" class="vf-field__required-mark" aria-hidden="true">*</span>',
+    replace: '',
+    all: true,
+  },
+  {
+    id: 'field-never-floats',
+    file: fieldSourcePath,
+    description: 'the floating placement stops taking effect',
+    find: "() => props.labelPlacement === 'floating' && hasLabel.value && supportsFloatingLabel.value,",
+    replace: '() => false,',
+  },
+  {
+    id: 'field-floats-without-the-control-opting-in',
+    file: fieldSourcePath,
+    description: 'floating no longer waits for a control that supports it',
+    find: "() => props.labelPlacement === 'floating' && hasLabel.value && supportsFloatingLabel.value,",
+    replace: "() => props.labelPlacement === 'floating' && hasLabel.value,",
+  },
+  {
+    id: 'field-ignores-the-filled-signal',
+    file: fieldSourcePath,
+    description: 'the control never reports as filled',
+    find: "    isFilled.value && 'vf-field__control--filled',",
+    replace: '',
+  },
+  {
+    id: 'field-loses-consumer-attributes',
+    file: fieldSourcePath,
+    description: 'a consumer class and style stop reaching the root',
+    find: "const controlId = useId({ prefix: 'vf-field-control' });",
+    replace: "defineOptions({ inheritAttrs: false });\nconst controlId = useId({ prefix: 'vf-field-control' });",
+  },
+  {
+    id: 'field-reuses-one-description-id',
+    file: fieldSourcePath,
+    description: 'every field on the page shares one description id, so descriptions cross-wire',
+    find: "const descriptionId = useId({ prefix: 'vf-field-description' });",
+    replace: "const descriptionId = computed(() => 'vf-field-description-shared');",
+  },
+];
+
+export const componentMutations = [...inputMutations, ...iconButtonMutations, ...fieldMutations];
