@@ -28,8 +28,12 @@ const ENHANCED_ATTRIBUTE = 'data-vf-razor-field-enhanced';
  * Scoped to the nearest field on purpose: a field nested inside another field's
  * slot must not have its state driven by the outer one.
  */
-function ownControl(root: HTMLElement): HTMLInputElement | null {
-  for (const candidate of root.querySelectorAll<HTMLInputElement>('input')) {
+function ownControl(root: HTMLElement): HTMLInputElement | HTMLTextAreaElement | null {
+  // Both controls a field can wrap. Selecting only `input` was correct while
+  // VfInput was the only migrated control, and silently wrong the moment a
+  // field wrapped a textarea: the field would have kept the filled state the
+  // server rendered and never updated it.
+  for (const candidate of root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')) {
     if (candidate.closest(ROOT_SELECTOR) === root) {
       return candidate;
     }

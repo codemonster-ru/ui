@@ -40,6 +40,8 @@ export const requiredEntries = [
   'src/Components/IconButtonComponent.php',
   'src/Components/FieldComponent.php',
   'src/Components/ButtonComponent.php',
+  'src/Components/TextareaComponent.php',
+  'src/Support/TextareaState.php',
   'src/Support/ButtonState.php',
   'src/Support/ProgressSpinner.php',
   'src/Support/FieldContext.php',

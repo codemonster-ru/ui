@@ -20,6 +20,7 @@ import {
 } from '@codemonster-ru/vueforge-shared-core';
 
 import { enhanceVueForgeFields } from './field.js';
+import { enhanceVueForgeTextareas } from './textarea.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -250,10 +251,13 @@ export function enhanceVueForgeInputs(root: ParentNode = document): void {
 /** Enhances both Razor-owned components, each owning only its own subtree. */
 function enhanceAll(root: ParentNode = document): void {
   enhanceVueForgeInputs(root);
+  // Textareas before fields: the field reads the control's current value when
+  // it attaches, and the textarea's own marker should already be correct.
+  enhanceVueForgeTextareas(root);
   enhanceVueForgeFields(root);
 }
 
-export { enhanceVueForgeFields };
+export { enhanceVueForgeFields, enhanceVueForgeTextareas };
 
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {

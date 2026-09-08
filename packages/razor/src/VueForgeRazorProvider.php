@@ -9,6 +9,7 @@ use Codemonster\VueForge\Razor\Components\ButtonComponent;
 use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
+use Codemonster\VueForge\Razor\Components\TextareaComponent;
 
 /**
  * Registers the VueForge components with an Annabel Razor component registry.
@@ -39,6 +40,7 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'field' => new FieldComponent(),
             'icon-button' => new IconButtonComponent(),
             'input' => new InputComponent(),
+            'textarea' => new TextareaComponent(),
         ];
     }
 
