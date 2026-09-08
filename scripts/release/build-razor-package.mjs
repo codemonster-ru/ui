@@ -29,13 +29,7 @@ import { fileURLToPath } from 'node:url';
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 /** Files a consumer never needs and that must not travel with the package. */
-export const developmentOnlyEntries = [
-  'tests',
-  'phpunit.xml.dist',
-  'build-assets.mjs',
-  'style-sources.mjs',
-  'browser',
-];
+export const developmentOnlyEntries = ['tests', 'phpunit.xml.dist', 'build-assets.mjs', 'style-sources.mjs', 'browser'];
 
 /** Everything the installed package must contain to be usable. */
 export const requiredEntries = [
@@ -44,6 +38,10 @@ export const requiredEntries = [
   'src/VueForgeRazorProvider.php',
   'src/Components/InputComponent.php',
   'src/Components/IconButtonComponent.php',
+  'src/Components/FieldComponent.php',
+  'src/Support/FieldContext.php',
+  'src/Support/FieldIds.php',
+  'src/Support/FieldState.php',
   'src/Support/Html.php',
   'src/Support/IconButton.php',
   'src/Support/IconButtonState.php',
@@ -105,9 +103,13 @@ export function stageRazorPackage({ commit = 'HEAD', target = stageDirectory } =
   // Assets are generated into the stage, so a stale local dist cannot be what
   // ships even if one is lying around.
   run('npm', ['run', 'theme:tokens'], { cwd: repositoryRoot });
-  run(process.execPath, [resolve(repositoryRoot, 'packages/razor/build-assets.mjs'), `--out-dir=${resolve(target, 'dist')}`], {
-    cwd: repositoryRoot,
-  });
+  run(
+    process.execPath,
+    [resolve(repositoryRoot, 'packages/razor/build-assets.mjs'), `--out-dir=${resolve(target, 'dist')}`],
+    {
+      cwd: repositoryRoot,
+    },
+  );
 
   for (const entry of developmentOnlyEntries) {
     rmSync(resolve(target, entry), { recursive: true, force: true });
@@ -161,7 +163,16 @@ if (isDirectlyExecuted()) {
   }
 
   const digest = createHash('sha256')
-    .update(files.map((file) => `${file}:${createHash('sha256').update(readFileSync(resolve(target, file))).digest('hex')}`).join('\n'))
+    .update(
+      files
+        .map(
+          (file) =>
+            `${file}:${createHash('sha256')
+              .update(readFileSync(resolve(target, file)))
+              .digest('hex')}`,
+        )
+        .join('\n'),
+    )
     .digest('hex');
 
   process.stdout.write(
@@ -170,4 +181,3 @@ if (isDirectlyExecuted()) {
       `${relative(repositoryRoot, target)}\n  ${files.length} files, content digest ${digest.slice(0, 16)}\n`,
   );
 }
-

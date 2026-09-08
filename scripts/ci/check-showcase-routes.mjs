@@ -94,7 +94,11 @@ const razorImplemented = showcaseIndex.components
  * plain data. A component marked implemented with no entry here fails below
  * rather than being skipped.
  */
-const controlSelectors = { VfInput: 'input.vf-input', VfIconButton: 'button.vf-icon-button' };
+const controlSelectors = {
+  VfInput: 'input.vf-input',
+  VfIconButton: 'button.vf-icon-button',
+  VfField: '.vf-field',
+};
 
 const components = showcaseIndex.components
   .filter((entry) => entry.platforms.razor.status === 'implemented')
@@ -114,9 +118,11 @@ const components = showcaseIndex.components
 check(
   'every component the index marks Razor-implemented is covered by this gate',
   components.every((component) => typeof component.controlSelector === 'string'),
-  components.filter((c) => !c.controlSelector).map((c) => c.name).join(', '),
+  components
+    .filter((c) => !c.controlSelector)
+    .map((c) => c.name)
+    .join(', '),
 );
-
 
 // The index cannot invent, hide or rename a component. Without this the two
 // catalogs could agree with each other while both disagreeing with the product.
@@ -131,7 +137,7 @@ check(
 );
 check(
   'only components with a real Razor adapter are marked implemented',
-  JSON.stringify(razorImplemented) === JSON.stringify(['VfIconButton', 'VfInput']),
+  JSON.stringify(razorImplemented) === JSON.stringify(['VfField', 'VfIconButton', 'VfInput']),
   razorImplemented.join(', '),
 );
 check(
@@ -146,10 +152,10 @@ check(
 // The Razor case template repeats the vf-input tag once per slot combination,
 // because the engine collects named slots at compile time. The prop lists must
 // stay identical or the branches quietly render different components.
-const casePartial = readFileSync(
-  resolve(razorExample, 'views/partials/input-case.razor.php'),
-  'utf8',
-).replace(/\{\{--[\s\S]*?--\}\}/g, '');
+const casePartial = readFileSync(resolve(razorExample, 'views/partials/input-case.razor.php'), 'utf8').replace(
+  /\{\{--[\s\S]*?--\}\}/g,
+  '',
+);
 const propBlocks = [...casePartial.matchAll(/<vf-input\b([\s\S]*?)(?:\/?)>/g)].map((match) =>
   match[1].replace(/\s+/g, ' ').trim(),
 );
@@ -347,11 +353,12 @@ try {
     const { name, caseIds: componentCaseIds } = component;
     const vueRoute = `${component.vuePath}?component=${name}`;
     const razorRoute = `${component.razorPath}?component=${name}`;
-    // VfInput ships a browser controller that enhances every server-rendered
-    // root. VfIconButton has nothing to enhance: a button carrying an icon is
+    // VfInput and VfField each ship a browser controller that enhances every
+    // server-rendered root - the input's actions, and the field's filled state.
+    // VfIconButton has nothing to enhance: a button carrying an icon is
     // complete server-side, so it carries no ownership marker and the gate must
     // not demand one it has no reason to render.
-    const enhanced = name === 'VfInput';
+    const enhanced = name === 'VfInput' || name === 'VfField';
 
     for (const theme of themes) {
       const vue = await readShowcase(
@@ -372,7 +379,10 @@ try {
 
       // ---------------------------------------------------------- the same cases
       check(`[${name}/${theme}] the Vue page identifies itself`, vue.platform === 'vue' && vue.component === name);
-      check(`[${name}/${theme}] the Razor page identifies itself`, razor.platform === 'razor' && razor.component === name);
+      check(
+        `[${name}/${theme}] the Razor page identifies itself`,
+        razor.platform === 'razor' && razor.component === name,
+      );
       check(
         `[${name}/${theme}] the Vue showcase renders every shared case in catalog order`,
         JSON.stringify(vue.caseIds) === JSON.stringify(componentCaseIds),
@@ -432,7 +442,9 @@ try {
       );
       check(
         `[${name}/${theme}] the Razor page loads no Vue build asset`,
-        [...razor.stylesheets, ...razor.scripts].every((href) => !/\/assets\/(index|input|icon-button)-/.test(href ?? '')),
+        [...razor.stylesheets, ...razor.scripts].every(
+          (href) => !/\/assets\/(index|input|icon-button)-/.test(href ?? ''),
+        ),
       );
 
       // ------------------------------------------------------------- the catalog
@@ -596,4 +608,6 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-process.stdout.write('[showcase-routes] OK: both real showcases expose the same shared cases and link to each other.\n');
+process.stdout.write(
+  '[showcase-routes] OK: both real showcases expose the same shared cases and link to each other.\n',
+);

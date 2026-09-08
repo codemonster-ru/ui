@@ -83,7 +83,7 @@ $showcaseIndex = readSharedJson($repositoryRoot . '/examples/shared/showcase-ind
  * view. The list is derived from the shared index rather than written here, so
  * this application cannot claim support the index does not record.
  */
-$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase'];
+$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase'];
 $supported = [];
 
 foreach ($showcaseIndex['components'] as $entry) {
@@ -145,8 +145,6 @@ $caseLinks = [];
 $controlIds = [];
 $describedBy = [];
 $fieldInvalid = [];
-$fieldClasses = [];
-$fieldControlClasses = [];
 $interactionSummaries = [];
 
 foreach ($cases as $case) {
@@ -157,40 +155,17 @@ foreach ($cases as $case) {
         $interactionSummaries[$id] = implode(' → ', array_column($case['interaction']['steps'], 'action'));
     }
 
-    // The remaining per-case values describe the VfField shell the Input cases
-    // can ask for. VfIconButton has no such shell, so there is nothing to
-    // compute and nothing for its template to receive.
-    if ($component !== 'VfInput') {
+    // Only the control id, and only so a case address is portable between the
+    // two platforms. Everything the field itself decides - its classes, its
+    // description and error ids, aria-describedby, whether it is invalid -
+    // moved into the vf-field component in M11, which is what closed M4.
+    if ($component === 'VfIconButton') {
         continue;
     }
 
-    if (!isset($case['field'])) {
-        $controlIds[$id] = null;
-        $describedBy[$id] = $case['attrs']['aria-describedby'] ?? null;
-        $fieldInvalid[$id] = $case['props']['invalid'] ?? false;
-        continue;
-    }
-
-    $controlId = str_replace('/', '-', $id) . '-control';
-    $floating = ($case['field']['placement'] ?? 'top') === 'floating';
-    $variant = $case['field']['variant'] ?? 'in';
-    $hasError = isset($case['field']['error']);
-
-    $described = [];
-    if (isset($case['field']['description'])) {
-        $described[] = $controlId . '-description';
-    }
-    if ($hasError) {
-        $described[] = $controlId . '-error';
-    }
-
-    $controlIds[$id] = $controlId;
-    $describedBy[$id] = $described === [] ? null : implode(' ', $described);
-    $fieldInvalid[$id] = $hasError ? true : ($case['props']['invalid'] ?? false);
-    $fieldClasses[$id] = 'vf-field'
-        . ($hasError ? ' vf-field--invalid' : '')
-        . ($floating ? ' vf-field--floating vf-field--floating-' . $variant : '');
-    $fieldControlClasses[$id] = 'vf-field__control' . ($floating ? ' vf-field__control--floating' : '');
+    $controlIds[$id] = isset($case['field']) ? str_replace('/', '-', $id) . '-control' : null;
+    $describedBy[$id] = $case['attrs']['aria-describedby'] ?? null;
+    $fieldInvalid[$id] = $case['props']['invalid'] ?? false;
 }
 
 $registry = new ComponentRegistry();
@@ -217,7 +192,5 @@ echo $engine->render($supported[$component]['view'], [
     'controlIds' => $controlIds,
     'describedBy' => $describedBy,
     'fieldInvalid' => $fieldInvalid,
-    'fieldClasses' => $fieldClasses,
-    'fieldControlClasses' => $fieldControlClasses,
     'interactionSummaries' => $interactionSummaries,
 ]);

@@ -52,11 +52,6 @@
                         @include('partials.field-shell', [
                             'case' => $case,
                             'controlId' => $controlIds[$case['id']],
-                            'describedBy' => $describedBy[$case['id']],
-                            'invalid' => $fieldInvalid[$case['id']],
-                            'floating' => ($case['field']['placement'] ?? 'top') === 'floating',
-                            'fieldClasses' => $fieldClasses[$case['id']],
-                            'controlClasses' => $fieldControlClasses[$case['id']],
                         ])
                     @else
                         @include('partials.input-case', [

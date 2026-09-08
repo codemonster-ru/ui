@@ -15,7 +15,17 @@
 import { execFileSync, spawn } from 'node:child_process';
 import { createServer } from 'node:net';
 import { get as httpGet } from 'node:http';
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -113,7 +123,11 @@ try {
     const found = execFileSync('/bin/sh', ['-c', `command -v ${tool}`], { encoding: 'utf8' }).trim();
     execFileSync('ln', ['-sf', realpathSync(found), resolve(sanitizedBin, tool)]);
   }
-  const consumerEnv = { PATH: `${sanitizedBin}:/usr/bin:/bin`, HOME: workspace, COMPOSER_HOME: resolve(workspace, '.composer') };
+  const consumerEnv = {
+    PATH: `${sanitizedBin}:/usr/bin:/bin`,
+    HOME: workspace,
+    COMPOSER_HOME: resolve(workspace, '.composer'),
+  };
 
   for (const tool of ['node', 'npm', 'npx', 'pnpm', 'vite', 'esbuild']) {
     const available = execFileSync('/bin/sh', ['-c', `command -v ${tool} || true`], {
@@ -154,10 +168,15 @@ $registry = new ComponentRegistry();
 $registry->register(new VueForgeRazorProvider());
 $input = $registry->resolve('vf-input');
 $iconButton = $registry->resolve('vf-icon-button');
+$field = $registry->resolve('vf-field');
 $assetPath = VueForgeRazorProvider::assetPath();
 
 echo json_encode([
-    'handles' => ['vf-input' => $registry->handles('vf-input'), 'vf-icon-button' => $registry->handles('vf-icon-button')],
+    'handles' => [
+        'vf-input' => $registry->handles('vf-input'),
+        'vf-icon-button' => $registry->handles('vf-icon-button'),
+        'vf-field' => $registry->handles('vf-field'),
+    ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
         [],
@@ -170,6 +189,20 @@ echo json_encode([
         ['icon' => 'magnifying-glass', 'variant' => 'danger', 'size' => 'lg', 'aria-label' => 'Search'],
         [],
     ))->value(),
+    // A field composing a real input, which is the composition that matters:
+    // the id, the label association and aria-describedby have to survive
+    // packaging, and nothing in the consumer wires them by hand.
+    'field' => $field->render(new ComponentRenderContext(
+        ['label' => 'Workspace', 'description' => 'Shown to collaborators', 'required' => true],
+        ['default' => static fn () => $input->render(new ComponentRenderContext(['name' => 'workspace'], []))],
+    ))->value(),
+    'floatingField' => $field->render(new ComponentRenderContext(
+        ['label' => 'Workspace', 'label-placement' => 'floating'],
+        ['default' => static fn () => $input->render(new ComponentRenderContext(
+            ['name' => 'workspace', 'value' => 'Acme'],
+            [],
+        ))],
+    ))->value(),
     'assetPath' => $assetPath,
     'css' => is_file($assetPath . '/vueforge-razor.css') ? filesize($assetPath . '/vueforge-razor.css') : 0,
     'js' => is_file($assetPath . '/vueforge-razor.js') ? filesize($assetPath . '/vueforge-razor.js') : 0,
@@ -178,7 +211,11 @@ echo json_encode([
   );
 
   const rendered = JSON.parse(
-    execFileSync('php', [resolve(consumerRoot, 'render.php')], { encoding: 'utf8', cwd: consumerRoot, env: consumerEnv }),
+    execFileSync('php', [resolve(consumerRoot, 'render.php')], {
+      encoding: 'utf8',
+      cwd: consumerRoot,
+      env: consumerEnv,
+    }),
   );
 
   check('the consumer renders a native input', rendered.markup.includes('<input'), rendered.markup.slice(0, 120));
@@ -223,6 +260,42 @@ echo json_encode([
     resolvedAssetPath !== null && resolvedAssetPath.startsWith(realpathSync(installed)),
     resolvedAssetPath === null ? `${rendered.assetPath} does not exist` : resolvedAssetPath,
   );
+  // ------------------------------------------------------------- vf-field
+  // The relationships are what packaging could plausibly break, so they are
+  // read back out of the markup rather than assumed from the tags being there.
+  const fieldControlId = /<label for="([^"]+)" class="vf-field__label">/.exec(rendered.field)?.[1];
+  const fieldDescriptionId = /<p id="([^"]+)" class="vf-field__description">/.exec(rendered.field)?.[1];
+  check('the consumer renders a field root', rendered.field.includes('class="vf-field"'), rendered.field.slice(0, 120));
+  check('the consumer renders the field label', /<label [^>]*class="vf-field__label"/.test(rendered.field));
+  check(
+    'the packaged field binds its label to the control it wraps',
+    fieldControlId !== undefined && rendered.field.includes(`id="${fieldControlId}"`),
+    fieldControlId ?? 'no association',
+  );
+  check(
+    'the packaged field describes its control with its own description',
+    fieldDescriptionId !== undefined && rendered.field.includes(`aria-describedby="${fieldDescriptionId}"`),
+    fieldDescriptionId ?? 'no description relationship',
+  );
+  check(
+    'the packaged field renders the required marker, hidden from assistive tech',
+    rendered.field.includes('<span class="vf-field__required-mark" aria-hidden="true">*</span>'),
+  );
+  check(
+    'the packaged field composes a real input inside itself',
+    rendered.field.includes('class="vf-input') && rendered.field.includes('data-vf-razor="input"'),
+  );
+  check(
+    'the packaged field server-renders the floating composition',
+    rendered.floatingField.includes('vf-field--floating') &&
+      rendered.floatingField.includes('vf-field__label--floating'),
+  );
+  check(
+    'the packaged field server-renders the filled state of a pre-filled control',
+    rendered.floatingField.includes('vf-field__control--filled'),
+  );
+  check('the packaged field carries its own enhancement marker', rendered.field.includes('data-vf-razor="field"'));
+
   check('the packaged stylesheet exists and is not empty', rendered.css > 10_000, `${rendered.css} bytes`);
   check('the packaged controller exists and is not empty', rendered.js > 1_000, `${rendered.js} bytes`);
 
@@ -230,43 +303,43 @@ echo json_encode([
   if (resolvedAssetPath === null || rendered.css === 0 || rendered.js === 0) {
     check('the packaged assets are servable to a browser', false, 'no assets to serve; skipping the browser smoke');
   } else {
-  const port = await freePort();
-  const documentRoot = resolve(consumerRoot, 'public');
-  mkdirSync(documentRoot, { recursive: true });
-  cpSync(rendered.assetPath, resolve(documentRoot, 'assets'), { recursive: true });
-  writeFileSync(
-    resolve(documentRoot, 'index.html'),
-    `<!doctype html><html lang="en" data-vf-theme="light"><head><meta charset="utf-8">
+    const port = await freePort();
+    const documentRoot = resolve(consumerRoot, 'public');
+    mkdirSync(documentRoot, { recursive: true });
+    cpSync(rendered.assetPath, resolve(documentRoot, 'assets'), { recursive: true });
+    writeFileSync(
+      resolve(documentRoot, 'index.html'),
+      `<!doctype html><html lang="en" data-vf-theme="light"><head><meta charset="utf-8">
 <link rel="stylesheet" href="/assets/vueforge-razor.css"></head><body>
 ${rendered.markup}
 ${rendered.password}
 <script type="module" src="/assets/vueforge-razor.js"></script></body></html>`,
-  );
+    );
 
-  const server = spawn('php', ['-S', `127.0.0.1:${port}`, '-t', documentRoot], {
-    cwd: consumerRoot,
-    stdio: 'ignore',
-    detached: true,
-    env: { ...consumerEnv, PHP_CLI_SERVER_WORKERS: '4' },
-  });
-  chromeState.server = server;
+    const server = spawn('php', ['-S', `127.0.0.1:${port}`, '-t', documentRoot], {
+      cwd: consumerRoot,
+      stdio: 'ignore',
+      detached: true,
+      env: { ...consumerEnv, PHP_CLI_SERVER_WORKERS: '4' },
+    });
+    chromeState.server = server;
 
-  const origin = `http://127.0.0.1:${port}`;
-  const startedAt = Date.now();
-  while (Date.now() - startedAt < 30_000 && (await probe(`${origin}/`)) !== 200) await delay(250);
+    const origin = `http://127.0.0.1:${port}`;
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < 30_000 && (await probe(`${origin}/`)) !== 200) await delay(250);
 
-  const chrome = await launchChrome();
-  chromeState.chrome = chrome;
-  const page = await openPage(chrome.endpoint);
+    const chrome = await launchChrome();
+    chromeState.chrome = chrome;
+    const page = await openPage(chrome.endpoint);
 
-  try {
-    await page.send('Page.enable');
-    await page.send('Runtime.enable');
-    await page.send('Page.navigate', { url: `${origin}/` });
-    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-enhanced]'))`);
-    await delay(250);
+    try {
+      await page.send('Page.enable');
+      await page.send('Runtime.enable');
+      await page.send('Page.navigate', { url: `${origin}/` });
+      await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-enhanced]'))`);
+      await delay(250);
 
-    const smoke = await page.evaluate(`(() => {
+      const smoke = await page.evaluate(`(() => {
       const control = document.querySelector('input[name="workspace"]');
       const clear = control.closest('[data-vf-razor="input"]').querySelector('[data-vf-razor-input="clear"]');
       const password = document.querySelector('input[name="secret"]');
@@ -291,16 +364,28 @@ ${rendered.password}
       };
     })()`);
 
-    check('the packaged controller enhanced both controls', smoke.enhanced === 2, JSON.stringify(smoke.enhanced));
-    check('the packaged stylesheet actually styles the control', smoke.styledPadding !== '0px' && smoke.styledBorder !== '0px', JSON.stringify(smoke));
-    check('the clear action is offered for a filled control', smoke.before.clearVisible === true);
-    check('clear empties the control', smoke.afterClear.value === '', JSON.stringify(smoke.afterClear));
-    check('clear returns focus to the control', smoke.afterClear.focused === true);
-    check('reveal switches the password to text', smoke.typeBefore === 'password' && smoke.typeAfter === 'text', JSON.stringify(smoke));
-    check('the page produced no script error', page.diagnostics.pageErrors.length === 0, page.diagnostics.pageErrors.join('; '));
-  } finally {
-    await page.close();
-  }
+      check('the packaged controller enhanced both controls', smoke.enhanced === 2, JSON.stringify(smoke.enhanced));
+      check(
+        'the packaged stylesheet actually styles the control',
+        smoke.styledPadding !== '0px' && smoke.styledBorder !== '0px',
+        JSON.stringify(smoke),
+      );
+      check('the clear action is offered for a filled control', smoke.before.clearVisible === true);
+      check('clear empties the control', smoke.afterClear.value === '', JSON.stringify(smoke.afterClear));
+      check('clear returns focus to the control', smoke.afterClear.focused === true);
+      check(
+        'reveal switches the password to text',
+        smoke.typeBefore === 'password' && smoke.typeAfter === 'text',
+        JSON.stringify(smoke),
+      );
+      check(
+        'the page produced no script error',
+        page.diagnostics.pageErrors.length === 0,
+        page.diagnostics.pageErrors.join('; '),
+      );
+    } finally {
+      await page.close();
+    }
   }
 } finally {
   if (chromeState.chrome) await chromeState.chrome.close();
