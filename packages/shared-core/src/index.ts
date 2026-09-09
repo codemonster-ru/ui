@@ -34,6 +34,13 @@ export type {
 export type { VfTextareaAppearance, VfTextareaSizeName } from './textarea/state.js';
 export type { VfButtonAppearance, VfButtonSizeName, VfButtonVariantName } from './button/state.js';
 export {
+  resolveBadgeClasses,
+  resolveDividerClasses,
+  resolveDividerRole,
+  resolveTagClasses,
+} from './presentation/state.js';
+export type { VfBadgeToneName, VfDividerOrientationName, VfFeedbackToneName } from './presentation/state.js';
+export {
   isFieldFloatingLabel,
   isFieldInvalid,
   resolveFieldClasses,

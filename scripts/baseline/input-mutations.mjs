@@ -13,6 +13,12 @@ export const textareaSourcePath = 'packages/core/src/components/textarea/VfTexta
 export const checkboxSourcePath = 'packages/core/src/components/checkbox/VfCheckbox.vue';
 export const radioSourcePath = 'packages/core/src/components/radio/VfRadio.vue';
 export const switchSourcePath = 'packages/core/src/components/switch/VfSwitch.vue';
+export const badgeSourcePath = 'packages/core/src/components/badge/VfBadge.vue';
+export const tagSourcePath = 'packages/core/src/components/tag/VfTag.vue';
+export const dividerSourcePath = 'packages/core/src/components/divider/VfDivider.vue';
+
+/** The shared rules the three M15 presentation components and the Razor adapter derive from. */
+export const presentationRulePath = 'packages/shared-core/src/presentation/state.ts';
 
 /** The shared rules the three checkable controls and the Razor adapter derive from. */
 export const checkableRulePath = 'packages/shared-core/src/checkable/state.ts';
@@ -706,6 +712,164 @@ export const switchMutations = [
   },
 ];
 
+// Badge, Tag and Divider each get their own set. `suite` names the spec file
+// whose assertions must be the ones that fail: because VfBadge and VfTag are
+// near-identical, a mutation to one that only broke the other's suite would be
+// a false detection, and aggregate batch failure is not evidence for a
+// component (M15 plan, section 8).
+export const badgeMutations = [
+  {
+    id: 'badge-emits-a-neutral-modifier',
+    file: presentationRulePath,
+    suite: 'src/components/badge/VfBadge.characterization.spec.ts',
+    description: 'the neutral tone starts emitting vf-badge--neutral instead of being expressed by absence',
+    find: "  const classes = ['vf-badge'];\n\n  if (tone !== 'neutral') classes.push(`vf-badge--${tone}`);",
+    replace: "  const classes = ['vf-badge'];\n\n  classes.push(`vf-badge--${tone}`);",
+  },
+  {
+    id: 'badge-drops-the-tone-modifier',
+    file: presentationRulePath,
+    suite: 'src/components/badge/VfBadge.characterization.spec.ts',
+    description: 'a non-neutral tone stops emitting its modifier class',
+    find: "  if (tone !== 'neutral') classes.push(`vf-badge--${tone}`);",
+    replace: '',
+  },
+  {
+    id: 'badge-becomes-a-tag',
+    file: presentationRulePath,
+    suite: 'src/components/badge/VfBadge.characterization.spec.ts',
+    description: "VfTag's block name is reused for VfBadge (the substitution this batch exists to catch)",
+    find: "  const classes = ['vf-badge'];\n\n  if (tone !== 'neutral') classes.push(`vf-badge--${tone}`);",
+    replace: "  const classes = ['vf-tag'];\n\n  if (tone !== 'neutral') classes.push(`vf-tag--${tone}`);",
+  },
+  {
+    id: 'badge-renders-a-div-root',
+    file: badgeSourcePath,
+    suite: 'src/components/badge/VfBadge.characterization.spec.ts',
+    description: 'the badge root stops being an inline span',
+    find: '  <span :class="classes" v-bind="attrs">\n    <slot />\n  </span>',
+    replace: '  <div :class="classes" v-bind="attrs">\n    <slot />\n  </div>',
+  },
+  {
+    id: 'badge-lets-the-caller-class-win',
+    file: badgeSourcePath,
+    suite: 'src/components/badge/VfBadge.characterization.spec.ts',
+    description: 'attrs are bound before the class, so a caller class replaces the canonical classes',
+    find: '  <span :class="classes" v-bind="attrs">',
+    replace: '  <span v-bind="attrs" :class="classes">',
+  },
+  {
+    id: 'badge-loses-its-slot',
+    file: badgeSourcePath,
+    suite: 'src/components/badge/VfBadge.characterization.spec.ts',
+    description: 'the default slot stops rendering',
+    find: '    <slot />\n',
+    replace: '',
+  },
+];
+
+export const tagMutations = [
+  {
+    id: 'tag-emits-a-neutral-modifier',
+    file: presentationRulePath,
+    suite: 'src/components/tag/VfTag.characterization.spec.ts',
+    description: 'the neutral tone starts emitting vf-tag--neutral instead of being expressed by absence',
+    find: "  const classes = ['vf-tag'];\n\n  if (tone !== 'neutral') classes.push(`vf-tag--${tone}`);",
+    replace: "  const classes = ['vf-tag'];\n\n  classes.push(`vf-tag--${tone}`);",
+  },
+  {
+    id: 'tag-drops-the-tone-modifier',
+    file: presentationRulePath,
+    suite: 'src/components/tag/VfTag.characterization.spec.ts',
+    description: 'a non-neutral tone stops emitting its modifier class',
+    find: "  if (tone !== 'neutral') classes.push(`vf-tag--${tone}`);",
+    replace: '',
+  },
+  {
+    id: 'tag-becomes-a-badge',
+    file: presentationRulePath,
+    suite: 'src/components/tag/VfTag.characterization.spec.ts',
+    description: "VfBadge's block name is reused for VfTag (the substitution this batch exists to catch)",
+    find: "  const classes = ['vf-tag'];\n\n  if (tone !== 'neutral') classes.push(`vf-tag--${tone}`);",
+    replace: "  const classes = ['vf-badge'];\n\n  if (tone !== 'neutral') classes.push(`vf-badge--${tone}`);",
+  },
+  {
+    id: 'tag-renders-a-div-root',
+    file: tagSourcePath,
+    suite: 'src/components/tag/VfTag.characterization.spec.ts',
+    description: 'the tag root stops being an inline span',
+    find: '  <span :class="classes" v-bind="attrs">\n    <slot />\n  </span>',
+    replace: '  <div :class="classes" v-bind="attrs">\n    <slot />\n  </div>',
+  },
+  {
+    id: 'tag-lets-the-caller-class-win',
+    file: tagSourcePath,
+    suite: 'src/components/tag/VfTag.characterization.spec.ts',
+    description: 'attrs are bound before the class, so a caller class replaces the canonical classes',
+    find: '  <span :class="classes" v-bind="attrs">',
+    replace: '  <span v-bind="attrs" :class="classes">',
+  },
+  {
+    id: 'tag-loses-its-slot',
+    file: tagSourcePath,
+    suite: 'src/components/tag/VfTag.characterization.spec.ts',
+    description: 'the default slot stops rendering',
+    find: '    <slot />\n',
+    replace: '',
+  },
+];
+
+export const dividerMutations = [
+  {
+    id: 'divider-renders-an-hr',
+    file: dividerSourcePath,
+    suite: 'src/components/divider/VfDivider.characterization.spec.ts',
+    description: 'the divider is "corrected" to the conventional hr element',
+    find: '  <div :class="classes" :aria-orientation="props.orientation" :role="role" v-bind="attrs" />',
+    replace: '  <hr :class="classes" :aria-orientation="props.orientation" :role="role" v-bind="attrs" />',
+  },
+  {
+    id: 'divider-always-emits-the-role',
+    file: presentationRulePath,
+    suite: 'src/components/divider/VfDivider.characterization.spec.ts',
+    description: 'the horizontal divider is "corrected" to expose role=separator as well',
+    find: "  return orientation === 'vertical' ? 'separator' : undefined;",
+    replace: "  return 'separator';",
+  },
+  {
+    id: 'divider-never-emits-the-role',
+    file: presentationRulePath,
+    suite: 'src/components/divider/VfDivider.characterization.spec.ts',
+    description: 'the vertical divider loses role=separator',
+    find: "  return orientation === 'vertical' ? 'separator' : undefined;",
+    replace: '  return undefined;',
+  },
+  {
+    id: 'divider-drops-aria-orientation',
+    file: dividerSourcePath,
+    suite: 'src/components/divider/VfDivider.characterization.spec.ts',
+    description: 'aria-orientation is "cleaned up" off the roleless horizontal divider',
+    find: ' :aria-orientation="props.orientation"',
+    replace: '',
+  },
+  {
+    id: 'divider-prevents-caller-overrides',
+    file: dividerSourcePath,
+    suite: 'src/components/divider/VfDivider.characterization.spec.ts',
+    description: 'attrs are bound first, so a caller can no longer override role or aria-orientation',
+    find: '  <div :class="classes" :aria-orientation="props.orientation" :role="role" v-bind="attrs" />',
+    replace: '  <div v-bind="attrs" :class="classes" :aria-orientation="props.orientation" :role="role" />',
+  },
+  {
+    id: 'divider-drops-the-orientation-modifier',
+    file: presentationRulePath,
+    suite: 'src/components/divider/VfDivider.characterization.spec.ts',
+    description: 'the orientation modifier is suppressed at the default, copying the toned-span convention',
+    find: "  return ['vf-divider', `vf-divider--${orientation}`];",
+    replace: "  return orientation === 'horizontal' ? ['vf-divider'] : ['vf-divider', `vf-divider--${orientation}`];",
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -715,4 +879,7 @@ export const componentMutations = [
   ...checkboxMutations,
   ...radioMutations,
   ...switchMutations,
+  ...badgeMutations,
+  ...tagMutations,
+  ...dividerMutations,
 ];

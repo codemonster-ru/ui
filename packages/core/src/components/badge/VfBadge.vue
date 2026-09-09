@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
+import { resolveBadgeClasses } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfBadgeTone } from '@/types/components';
 
@@ -17,7 +18,7 @@ const props = withDefaults(defineProps<VfBadgeProps>(), {
 
 const attrs = useAttrs();
 
-const classes = computed(() => cx('vf-badge', props.tone !== 'neutral' && `vf-badge--${props.tone}`));
+const classes = computed(() => cx(...resolveBadgeClasses(props.tone)));
 </script>
 
 <template>

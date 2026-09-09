@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
+import { resolveDividerClasses, resolveDividerRole } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfDividerOrientation } from '@/types/components';
 
@@ -17,15 +18,10 @@ const props = withDefaults(defineProps<VfDividerProps>(), {
 
 const attrs = useAttrs();
 
-const isVertical = computed(() => props.orientation === 'vertical');
-const classes = computed(() => cx('vf-divider', `vf-divider--${props.orientation}`));
+const role = computed(() => resolveDividerRole(props.orientation));
+const classes = computed(() => cx(...resolveDividerClasses(props.orientation)));
 </script>
 
 <template>
-  <div
-    :class="classes"
-    :aria-orientation="props.orientation"
-    :role="isVertical ? 'separator' : undefined"
-    v-bind="attrs"
-  />
+  <div :class="classes" :aria-orientation="props.orientation" :role="role" v-bind="attrs" />
 </template>

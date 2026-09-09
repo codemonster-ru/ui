@@ -92,7 +92,7 @@ function runSuite(mutationId) {
   };
 }
 
-function mutationOutcome(run) {
+function mutationOutcome(run, mutation) {
   if (!run.applied) return 'NOT APPLIED';
   if (run.error || run.signal || run.status === null || !run.report) return 'RUN FAILED';
   if (run.status === 0) return 'MISSED';
@@ -106,13 +106,38 @@ function mutationOutcome(run) {
       (suite) =>
         suite.status === 'failed' && !suite.assertionResults?.some((assertion) => assertion.status === 'failed'),
     );
-  return run.status === 1 &&
+  const wellFormedFailure =
+    run.status === 1 &&
     !suiteLoadFailure &&
     !run.report.numRuntimeErrorTestSuites &&
     failedAssertions.length > 0 &&
-    failedAssertions.length === run.report.numFailedTests
-    ? 'detected'
-    : 'RUN FAILED';
+    failedAssertions.length === run.report.numFailedTests;
+
+  if (!wellFormedFailure) return 'RUN FAILED';
+
+  // A mutation may name the characterization suite that has to be the one that
+  // fails. M15 needs it: VfBadge and VfTag are near-identical, so "the run
+  // failed somewhere" would let a Badge mutation be credited to Tag's evidence.
+  // A batch is only worth running if one component's failure cannot stand in as
+  // another component's proof.
+  //
+  // The rule is deliberately narrow: the named suite must fail, and no *other
+  // component's* characterization suite may fail. A shared catalog suite such as
+  // components.spec.ts is allowed to fail alongside it - a real regression
+  // should break that too, and forbidding it would only reward weaker mutations.
+  if (mutation?.suite) {
+    const failingSuites = (suites ?? [])
+      .filter((suite) => (suite.assertionResults ?? []).some((assertion) => assertion.status === 'failed'))
+      .map((suite) => (suite.name ?? '').split('\\').join('/'));
+    const namedSuiteFailed = failingSuites.some((name) => name.endsWith(mutation.suite));
+    const otherComponentFailed = failingSuites.some(
+      (name) => name.endsWith('.characterization.spec.ts') && !name.endsWith(mutation.suite),
+    );
+
+    if (!namedSuiteFailed || otherComponentFailed) return 'WRONG SUITE';
+  }
+
+  return 'detected';
 }
 
 // The child must reach the ordinary preflight and exit unsuccessfully. Merely
@@ -186,7 +211,7 @@ process.stdout.write('  passed\n\n');
 
 for (const mutation of mutations) {
   const run = runSuite(mutation.id);
-  const status = mutationOutcome(run);
+  const status = mutationOutcome(run, mutation);
   if (status !== 'detected') {
     failures.push(`${mutation.id}: ${status}; no completed failing assertion proves detection`);
     if (status === 'RUN FAILED') process.stderr.write(`${run.stdout ?? ''}\n${run.stderr ?? ''}\n`);
@@ -239,5 +264,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  `All ${componentMutations.length} VfInput, VfIconButton, VfField, VfButton, VfTextarea, VfCheckbox, VfRadio and VfSwitch regressions are detected by the characterization suites.\n`,
+  `All ${componentMutations.length} VfInput, VfIconButton, VfField, VfButton, VfTextarea, VfCheckbox, VfRadio, VfSwitch, VfBadge, VfTag and VfDivider regressions are detected by the characterization suites.\n`,
 );

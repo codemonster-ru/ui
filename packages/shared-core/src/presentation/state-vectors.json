@@ -1,0 +1,91 @@
+{
+  "$comment": "Shared input/expected vectors for the three M15 presentation components. The TypeScript rules in presentation/state.ts and the PHP mirror in packages/razor/src/Support/PresentationState.php both run these. Badge and Tag are enumerated separately even though their vectors read alike: one catalog covering both would let either implementation stand in for the other, which is exactly what the batch has to disprove. Divider shares nothing with them and is enumerated on its own terms.",
+  "resolveBadgeClasses": [
+    {
+      "tone": "neutral",
+      "expected": ["vf-badge"]
+    },
+    {
+      "tone": "primary",
+      "expected": ["vf-badge", "vf-badge--primary"]
+    },
+    {
+      "tone": "success",
+      "expected": ["vf-badge", "vf-badge--success"]
+    },
+    {
+      "tone": "info",
+      "expected": ["vf-badge", "vf-badge--info"]
+    },
+    {
+      "tone": "warn",
+      "expected": ["vf-badge", "vf-badge--warn"]
+    },
+    {
+      "tone": "help",
+      "expected": ["vf-badge", "vf-badge--help"]
+    },
+    {
+      "tone": "danger",
+      "expected": ["vf-badge", "vf-badge--danger"]
+    },
+    {
+      "tone": "contrast",
+      "expected": ["vf-badge", "vf-badge--contrast"]
+    }
+  ],
+  "resolveTagClasses": [
+    {
+      "tone": "neutral",
+      "expected": ["vf-tag"]
+    },
+    {
+      "tone": "primary",
+      "expected": ["vf-tag", "vf-tag--primary"]
+    },
+    {
+      "tone": "success",
+      "expected": ["vf-tag", "vf-tag--success"]
+    },
+    {
+      "tone": "info",
+      "expected": ["vf-tag", "vf-tag--info"]
+    },
+    {
+      "tone": "warn",
+      "expected": ["vf-tag", "vf-tag--warn"]
+    },
+    {
+      "tone": "help",
+      "expected": ["vf-tag", "vf-tag--help"]
+    },
+    {
+      "tone": "danger",
+      "expected": ["vf-tag", "vf-tag--danger"]
+    },
+    {
+      "tone": "contrast",
+      "expected": ["vf-tag", "vf-tag--contrast"]
+    }
+  ],
+  "resolveDividerClasses": [
+    {
+      "orientation": "horizontal",
+      "expected": ["vf-divider", "vf-divider--horizontal"]
+    },
+    {
+      "orientation": "vertical",
+      "expected": ["vf-divider", "vf-divider--vertical"]
+    }
+  ],
+  "resolveDividerRole": [
+    {
+      "orientation": "horizontal",
+      "expected": null
+    },
+    {
+      "orientation": "vertical",
+      "expected": "separator"
+    }
+  ]
+}
