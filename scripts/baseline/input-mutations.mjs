@@ -10,6 +10,9 @@ export const iconButtonSourcePath = 'packages/core/src/components/icon-button/Vf
 export const fieldSourcePath = 'packages/core/src/components/field/VfField.vue';
 export const buttonSourcePath = 'packages/core/src/components/button/VfButton.vue';
 export const textareaSourcePath = 'packages/core/src/components/textarea/VfTextarea.vue';
+export const checkboxSourcePath = 'packages/core/src/components/checkbox/VfCheckbox.vue';
+export const radioSourcePath = 'packages/core/src/components/radio/VfRadio.vue';
+export const switchSourcePath = 'packages/core/src/components/switch/VfSwitch.vue';
 
 /** The shared rules VfTextarea and the Razor adapter both derive their presentation from. */
 export const textareaRulePath = 'packages/shared-core/src/textarea/state.ts';
@@ -461,10 +464,252 @@ export const textareaMutations = [
   },
 ];
 
+// M14. Three checkable controls that look alike and are not alike, so each gets
+// its own mutations rather than a shared set. The ones worth reading are the
+// differences: the checkbox's indeterminate is a DOM property that exists only
+// because the component assigns it, the radio's checked state is a strict
+// comparison rather than a boolean it owns, and the switch decides it has
+// content by walking VNodes rather than asking whether a slot was passed.
+export const checkboxMutations = [
+  {
+    id: 'checkbox-does-not-reflect-its-model',
+    file: checkboxSourcePath,
+    description: 'the model stops reaching the native checked state',
+    find: '      :checked="props.modelValue"\n',
+    replace: '',
+  },
+  {
+    id: 'checkbox-stops-emitting-updates',
+    file: checkboxSourcePath,
+    description: 'toggling no longer updates the model, so v-model is one-way',
+    find: "  emit('update:modelValue', nextValue);",
+    replace: '',
+  },
+  {
+    id: 'checkbox-stops-emitting-change',
+    file: checkboxSourcePath,
+    description: 'the change event disappears while update:modelValue survives',
+    find: "  emit('change', nextValue);",
+    replace: '',
+  },
+  {
+    id: 'checkbox-never-syncs-indeterminate',
+    file: checkboxSourcePath,
+    description: 'the indeterminate DOM property is never assigned, so it exists nowhere',
+    find: '    input.value.indeterminate = props.indeterminate;',
+    replace: '',
+  },
+  {
+    id: 'checkbox-reports-indeterminate-as-checked',
+    file: checkboxSourcePath,
+    description: 'aria-checked stops saying mixed and falls back to the model',
+    find: "      :aria-checked=\"props.indeterminate ? 'mixed' : props.modelValue ? 'true' : 'false'\"",
+    replace: "      :aria-checked=\"props.modelValue ? 'true' : 'false'\"",
+  },
+  {
+    id: 'checkbox-drops-the-indeterminate-mark',
+    file: checkboxSourcePath,
+    description: 'an indeterminate checkbox renders the ordinary tick',
+    find: '      <span v-if="props.indeterminate" class="vf-checkbox__indeterminate-mark" />\n      <span v-else class="vf-checkbox__mark" />',
+    replace: '      <span class="vf-checkbox__mark" />',
+  },
+  {
+    id: 'checkbox-uses-a-radio-input',
+    file: checkboxSourcePath,
+    description: 'the native element becomes a radio, which cannot be unchecked by clicking it',
+    find: '      type="checkbox"',
+    replace: '      type="radio"',
+  },
+  {
+    id: 'checkbox-ignores-its-disabled-prop',
+    file: checkboxSourcePath,
+    description: 'a disabled checkbox becomes operable',
+    find: '      :disabled="props.disabled"\n',
+    replace: '',
+  },
+  {
+    id: 'checkbox-drops-attribute-forwarding',
+    file: checkboxSourcePath,
+    description: 'inherited attrs stop reaching the input, losing id, name and required',
+    find: '      v-bind="inputAttrs"\n',
+    replace: '',
+  },
+  {
+    id: 'checkbox-moves-the-consumer-class-to-the-input',
+    file: checkboxSourcePath,
+    description: 'the consumer class lands on the input instead of the root label',
+    find: '    attrs.class as string | undefined,',
+    replace: '',
+  },
+  {
+    id: 'checkbox-drops-the-content-element',
+    file: checkboxSourcePath,
+    description: 'the label text disappears, leaving an unlabelled control',
+    find: '    <span v-if="label || $slots.default" class="vf-checkbox__content">',
+    replace: '    <span v-if="false" class="vf-checkbox__content">',
+  },
+];
+
+export const radioMutations = [
+  {
+    id: 'radio-compares-loosely',
+    file: radioSourcePath,
+    description: 'strict equality becomes loose, so 1 and the string 1 select the same radio',
+    find: 'const isChecked = computed(() => props.modelValue === props.value);',
+    replace: 'const isChecked = computed(() => props.modelValue == props.value);',
+  },
+  {
+    id: 'radio-emits-a-boolean-like-a-checkbox',
+    file: radioSourcePath,
+    description: 'the radio emits true instead of its own value, which is the checkbox contract',
+    find: "  emit('update:modelValue', props.value);",
+    replace: "  emit('update:modelValue', true);",
+  },
+  {
+    id: 'radio-announces-being-unchecked',
+    file: radioSourcePath,
+    description: 'the early return goes, so a radio emits when another member of its group wins',
+    find: '  if (!(event.target as HTMLInputElement).checked) {\n    return;\n  }\n\n',
+    replace: '',
+  },
+  {
+    id: 'radio-stops-rendering-its-value',
+    file: radioSourcePath,
+    description: 'the value never reaches the input, so a submitted group carries nothing',
+    find: '      :value="props.value"\n',
+    replace: '',
+  },
+  {
+    id: 'radio-does-not-reflect-its-checked-state',
+    file: radioSourcePath,
+    description: 'the computed checked state stops reaching the input',
+    find: '      :checked="isChecked"\n',
+    replace: '',
+  },
+  {
+    id: 'radio-uses-a-checkbox-input',
+    file: radioSourcePath,
+    description: 'the native element becomes a checkbox, so a group loses mutual exclusion',
+    find: '      type="radio"',
+    replace: '      type="checkbox"',
+  },
+  {
+    id: 'radio-drops-the-checked-modifier',
+    file: radioSourcePath,
+    description: 'the selected member stops looking selected',
+    find: "    isChecked.value && 'vf-radio--checked',",
+    replace: '',
+  },
+  {
+    id: 'radio-ignores-its-disabled-prop',
+    file: radioSourcePath,
+    description: 'a disabled radio becomes operable',
+    find: '      :disabled="props.disabled"\n',
+    replace: '',
+  },
+  {
+    id: 'radio-drops-attribute-forwarding',
+    file: radioSourcePath,
+    description: 'inherited attrs stop reaching the input, losing the group name',
+    find: '      v-bind="inputAttrs"\n',
+    replace: '',
+  },
+  {
+    id: 'radio-moves-the-consumer-class-to-the-input',
+    file: radioSourcePath,
+    description: 'the consumer class lands on the input instead of the root label',
+    find: '    attrs.class as string | undefined,',
+    replace: '',
+  },
+];
+
+export const switchMutations = [
+  {
+    id: 'switch-drops-its-role',
+    file: switchSourcePath,
+    description: 'the control stops calling itself a switch and reads as a plain checkbox',
+    find: '      role="switch"\n',
+    replace: '',
+  },
+  {
+    id: 'switch-does-not-reflect-its-model',
+    file: switchSourcePath,
+    description: 'the model stops reaching the native checked state',
+    find: '      :checked="props.modelValue"\n',
+    replace: '',
+  },
+  {
+    id: 'switch-stops-emitting-updates',
+    file: switchSourcePath,
+    description: 'toggling no longer updates the model',
+    find: "  emit('update:modelValue', nextValue);",
+    replace: '',
+  },
+  {
+    id: 'switch-drops-the-static-modifier',
+    file: switchSourcePath,
+    description: 'the static presentation disappears',
+    find: "    props.static && 'vf-switch--static',",
+    replace: '',
+  },
+  {
+    id: 'switch-always-emits-a-thumb-contrast',
+    file: switchSourcePath,
+    description: 'the auto contrast starts emitting a modifier the stylesheet never defined',
+    find: "    props.thumbContrast !== 'auto' && `vf-switch--thumb-contrast-${props.thumbContrast}`,",
+    replace: '    `vf-switch--thumb-contrast-${props.thumbContrast}`,',
+  },
+  {
+    id: 'switch-drops-the-checked-modifier',
+    file: switchSourcePath,
+    description: 'an on switch stops looking on',
+    find: "    props.modelValue && 'vf-switch--checked',",
+    replace: '',
+  },
+  {
+    id: 'switch-treats-whitespace-as-content',
+    file: switchSourcePath,
+    description: 'the VNode walk stops trimming, so a blank slot renders an empty content element',
+    find: "      return String(node.children ?? '').trim().length > 0;",
+    replace: "      return String(node.children ?? '').length > 0;",
+  },
+  {
+    id: 'switch-treats-comments-as-content',
+    file: switchSourcePath,
+    description: 'a comment-only slot starts counting as content',
+    find: '    if (node.type === Comment) {\n      return false;\n    }\n\n',
+    replace: '',
+  },
+  {
+    id: 'switch-loses-the-thumb-slot-scope',
+    file: switchSourcePath,
+    description: 'the thumb slot stops being told whether the switch is on',
+    find: '<slot name="thumb" :checked="props.modelValue" />',
+    replace: '<slot name="thumb" />',
+  },
+  {
+    id: 'switch-ignores-its-disabled-prop',
+    file: switchSourcePath,
+    description: 'a disabled switch becomes operable',
+    find: '      :disabled="props.disabled"\n',
+    replace: '',
+  },
+  {
+    id: 'switch-drops-attribute-forwarding',
+    file: switchSourcePath,
+    description: 'inherited attrs stop reaching the input',
+    find: '      v-bind="inputAttrs"\n',
+    replace: '',
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
   ...fieldMutations,
   ...buttonMutations,
   ...textareaMutations,
+  ...checkboxMutations,
+  ...radioMutations,
+  ...switchMutations,
 ];
