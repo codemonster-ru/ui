@@ -28,4 +28,12 @@ export const styleSources = [
   'packages/styles/src/components/checkbox.css',
   'packages/styles/src/components/radio.css',
   'packages/styles/src/components/switch.css',
+  // The three M15 presentation components, also standalone closures. Badge and
+  // Tag are listed as two files rather than folded together: their tone
+  // modifiers do different things - a badge tone paints a background, a tag
+  // tone only a border and text colour - and merging them is the one change
+  // that would make the two components visually interchangeable.
+  'packages/styles/src/components/badge.css',
+  'packages/styles/src/components/tag.css',
+  'packages/styles/src/components/divider.css',
 ];

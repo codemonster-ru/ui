@@ -370,7 +370,10 @@ test('an exact-value approval cannot waive a different value, path or case', () 
   // A different outcome on the same field is not the approved outcome.
   assert.equal(classify(actualPolicy, caseId, direction, [{ ...difference, right: 'clear' }]).failures.length, 1);
   // The same outcome on another field is not covered either.
-  assert.equal(classify(actualPolicy, caseId, direction, [{ ...difference, path: 'controlClasses' }]).failures.length, 1);
+  assert.equal(
+    classify(actualPolicy, caseId, direction, [{ ...difference, path: 'controlClasses' }]).failures.length,
+    1,
+  );
   // Nor is it covered in a case the approval does not list.
   assert.equal(classify(actualPolicy, 'input/plain-empty', direction, [difference]).failures.length, 1);
 });

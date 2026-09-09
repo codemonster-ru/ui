@@ -558,6 +558,14 @@ const INTERACTION_FIELDS = {
   // The three checkable controls. liveChecked and liveIndeterminate are
   // properties rather than attributes, and after any interaction they are the
   // only truthful record of what the control ended up being.
+  // The M15 static profile. These four are the whole snapshot of a component
+  // that has nothing to drive, and they are compared like any other field: a
+  // target that stopped reporting them, or reported a different posture, moves
+  // static.noInteraction rather than passing silently.
+  interactionPosture: { dimension: 'static.noInteraction' },
+  caseRendered: { dimension: 'static.noInteraction' },
+  focusableCount: { dimension: 'static.noInteraction' },
+  interactiveRoleCount: { dimension: 'static.noInteraction' },
   liveChecked: { dimension: 'interaction.state' },
   liveIndeterminate: { dimension: 'interaction.state' },
   ariaChecked: { dimension: 'interaction.state' },

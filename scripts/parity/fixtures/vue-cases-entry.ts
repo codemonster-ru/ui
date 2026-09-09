@@ -15,6 +15,9 @@ import VfTextarea from '@parity/core/components/textarea/VfTextarea.vue';
 import VfCheckbox from '@parity/core/components/checkbox/VfCheckbox.vue';
 import VfRadio from '@parity/core/components/radio/VfRadio.vue';
 import VfSwitch from '@parity/core/components/switch/VfSwitch.vue';
+import VfBadge from '@parity/core/components/badge/VfBadge.vue';
+import VfTag from '@parity/core/components/tag/VfTag.vue';
+import VfDivider from '@parity/core/components/divider/VfDivider.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -45,6 +48,8 @@ interface ParityCase {
     error?: CaseContent;
     /** VfButton writes its icon into the default slot; there is no icon prop. */
     icon?: string;
+    /** The M15 toned spans put their whole content in the default slot. */
+    text?: string;
   };
   field?: CaseField;
   /** The VfField catalog splits the control's own props out of `props`. */
@@ -208,6 +213,38 @@ function renderCheckable(component: string, parityCase: ParityCase): VNode {
   return h(target as never, { ...parityCase.props, ...parityCase.attrs }, slots);
 }
 
+/**
+ * One of the two toned spans, or the divider.
+ *
+ * Three branches rather than one parameterised "toned span" renderer: the
+ * fixture is where a substitution would be easiest to introduce and hardest to
+ * see, so each component names its own import. `content.text` is the default
+ * slot; VfDivider has no slot and ignores it.
+ */
+function renderBadge(parityCase: ParityCase): VNode {
+  const text = (parityCase.content as { text?: string } | undefined)?.text;
+
+  return h(
+    VfBadge,
+    { ...parityCase.props, ...parityCase.attrs },
+    text === undefined ? undefined : { default: () => text },
+  );
+}
+
+function renderTag(parityCase: ParityCase): VNode {
+  const text = (parityCase.content as { text?: string } | undefined)?.text;
+
+  return h(
+    VfTag,
+    { ...parityCase.props, ...parityCase.attrs },
+    text === undefined ? undefined : { default: () => text },
+  );
+}
+
+function renderDivider(parityCase: ParityCase): VNode {
+  return h(VfDivider, { ...parityCase.props, ...parityCase.attrs });
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -215,6 +252,18 @@ function renderIconButton(parityCase: ParityCase): VNode {
 }
 
 function renderCase(parityCase: ParityCase): VNode {
+  if (catalog.component === 'badge') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderBadge(parityCase)]);
+  }
+
+  if (catalog.component === 'tag') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderTag(parityCase)]);
+  }
+
+  if (catalog.component === 'divider') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderDivider(parityCase)]);
+  }
+
   if (catalog.component === 'icon-button') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
   }

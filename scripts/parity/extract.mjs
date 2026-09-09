@@ -31,6 +31,12 @@ export const COMPARED_ATTRIBUTES = [
   'spellcheck',
   'role',
   'aria-busy',
+  // VfDivider. Found missing by the attribute-coverage gate in M15: the
+  // divider's whole accessibility contract is role plus aria-orientation, and
+  // no comparison would have reported a difference in the second one. That is
+  // the third time this gate has caught an attribute nothing compared - after
+  // aria-busy in M12 and four native attributes in M13.
+  'aria-orientation',
   // The checkable controls. `checked` is the attribute the server rendered -
   // the live property is recorded separately, because after an interaction the
   // two say different things and only the property is true.
@@ -542,6 +548,52 @@ async function pressKey(page, key) {
 }
 
 /**
+ * What a component with nothing to drive reports.
+ *
+ * M15 is the first batch whose components have no interaction at all, and the
+ * obvious implementation - skip the stage - is the one thing this must not do.
+ * A skipped stage is indistinguishable from a stage that ran and found nothing,
+ * so a target that silently stopped producing interaction evidence would still
+ * report PASS. That is the M07 failure mode the contracts README describes.
+ *
+ * So "there is nothing to drive" is measured instead of assumed. The snapshot
+ * asserts the case root exists, then counts what a user could actually reach
+ * inside it: focusable elements, and elements exposing an interactive role. For
+ * VfBadge, VfTag and VfDivider all of those are zero, and zero recorded on both
+ * targets is evidence. If either adapter ever rendered a button, a link or a
+ * tabindex inside one of these components, the counts would differ and the
+ * static.noInteraction dimension would move.
+ */
+function staticInteractionExpression(caseId) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const elements = Array.from(root.querySelectorAll('*'));
+
+    return {
+      // Declared rather than derived: the profile said this component has no
+      // scenario, and the snapshot records that claim next to the measurement
+      // that tests it. A run that produced no measurement at all would be
+      // missing these keys, and the comparator rejects mismatched shapes.
+      interactionPosture: 'none',
+      caseRendered: true,
+      focusableCount: root.querySelectorAll(FOCUSABLE).length,
+      interactiveRoleCount: elements.filter((element) => INTERACTIVE_ROLES.has(element.getAttribute('role') ?? ''))
+        .length,
+      // Nothing was driven, so nothing inside the case may hold focus. This is
+      // what notices an adapter that autofocuses something the other does not.
+      focusRole: root.contains(document.activeElement) ? 'inside-case' : 'outside-case',
+    };
+  })()`;
+}
+
+/**
  * Reports the actual post-scenario state before any visual focus normalization.
  *
  * The shape is component-specific - a caret position means nothing on a button,
@@ -549,6 +601,10 @@ async function pressKey(page, key) {
  * it. Everything downstream compares whatever shape comes back, key by key.
  */
 export function interactionExpression(caseId, snapshot = 'input') {
+  if (snapshot === 'static') {
+    return staticInteractionExpression(caseId);
+  }
+
   if (snapshot === 'checkable') {
     return checkableInteractionExpression(
       caseId,

@@ -47,12 +47,23 @@ $checkableComponents = [
     'radio' => $registry->resolve('vf-radio'),
     'switch' => $registry->resolve('vf-switch'),
 ];
+// The M15 presentation components. Resolved separately rather than through a
+// shared list: a fixture that looked up "the toned span for this catalog" is
+// exactly where VfBadge could quietly start rendering VfTag.
+$badgeComponent = $registry->resolve('vf-badge');
+$tagComponent = $registry->resolve('vf-tag');
+$dividerComponent = $registry->resolve('vf-divider');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
     || $buttonComponent === null || $textareaComponent === null
 ) {
     fwrite(STDERR, "The VueForge components are not registered.\n");
+    exit(1);
+}
+
+if ($badgeComponent === null || $tagComponent === null || $dividerComponent === null) {
+    fwrite(STDERR, "The VueForge presentation components are not registered.\n");
     exit(1);
 }
 
@@ -338,12 +349,59 @@ $renderCheckable = static function (array $case, string $component) use ($checka
     return $target->render(new ComponentRenderContext($base, $slots))->value();
 };
 
+/**
+ * One of the two toned spans.
+ *
+ * The component is passed in rather than chosen here, so the caller decides
+ * which one is being rendered and the two paths cannot converge. `content.text`
+ * is the default slot; the Razor slot contract takes already-rendered markup,
+ * so the text is escaped before it is handed over.
+ */
+$renderTonedSpan = static function (array $case, $component) use ($escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $slots = [];
+    if (isset($case['content']['text'])) {
+        $text = $escape((string) $case['content']['text']);
+        $slots['default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($text);
+    }
+
+    return $component->render(new ComponentRenderContext($props, $slots))->value();
+};
+
+/** The divider, which has no slot at all. */
+$renderDivider = static function (array $case) use ($dividerComponent): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    return $dividerComponent->render(new ComponentRenderContext($props, []))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'icon-button') {
+    if ($component === 'badge') {
+        $body = $renderTonedSpan($case, $badgeComponent);
+    } elseif ($component === 'tag') {
+        $body = $renderTonedSpan($case, $tagComponent);
+    } elseif ($component === 'divider') {
+        $body = $renderDivider($case);
+    } elseif ($component === 'icon-button') {
         $body = $renderIconButton($case);
     } elseif (in_array($component, ['checkbox', 'radio', 'switch'], true)) {
         $body = $renderCheckable($case, $component);

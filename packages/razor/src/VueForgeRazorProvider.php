@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Codemonster\VueForge\Razor;
 
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
+use Codemonster\VueForge\Razor\Components\BadgeComponent;
 use Codemonster\VueForge\Razor\Components\ButtonComponent;
 use Codemonster\VueForge\Razor\Components\CheckboxComponent;
+use Codemonster\VueForge\Razor\Components\DividerComponent;
 use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
 use Codemonster\VueForge\Razor\Components\RadioComponent;
 use Codemonster\VueForge\Razor\Components\SwitchComponent;
+use Codemonster\VueForge\Razor\Components\TagComponent;
 use Codemonster\VueForge\Razor\Components\TextareaComponent;
 
 /**
@@ -39,13 +42,16 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
     public function components(): array
     {
         return [
+            'badge' => new BadgeComponent(),
             'button' => new ButtonComponent(),
             'checkbox' => new CheckboxComponent(),
+            'divider' => new DividerComponent(),
             'field' => new FieldComponent(),
             'icon-button' => new IconButtonComponent(),
             'input' => new InputComponent(),
             'radio' => new RadioComponent(),
             'switch' => new SwitchComponent(),
+            'tag' => new TagComponent(),
             'textarea' => new TextareaComponent(),
         ];
     }

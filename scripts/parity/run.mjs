@@ -236,6 +236,21 @@ async function captureTarget(
     const interactions = {};
     const interactionScreenshots = {};
     const naturalInteractionScreenshots = {};
+    // A component with no interaction still has to produce interaction
+    // evidence. Recording the posture per case is what makes "nothing to drive"
+    // a measurement instead of a stage that quietly did not run; see
+    // staticInteractionExpression in extract.mjs.
+    if (catalog.profile.snapshot === 'static') {
+      for (const parityCase of selectedCases) {
+        if (parityCase.interaction) {
+          throw new Error(
+            `Case ${parityCase.id} declares an interaction, but the ${catalog.profile.id} profile is static.`,
+          );
+        }
+        interactions[parityCase.id] = await page.evaluate(interactionExpression(parityCase.id, 'static'));
+      }
+    }
+
     for (const parityCase of selectedCases) {
       if (!parityCase.interaction) continue;
       await navigate();
@@ -479,6 +494,24 @@ export function compareCaptures(captures, catalog, policy) {
           ...compareStyles(left.extracted[id].styles, right.extracted[id].styles),
           ...compareAccessibility(left.accessibility[id], right.accessibility[id]),
         ];
+
+        // The static posture is compared for every case, not only for cases
+        // that declared a scenario - a static profile has none by definition,
+        // so gating this on `parityCase.interaction` would compare nothing and
+        // report a clean pass, which is exactly the silent skip forbidden here.
+        if (catalog.profile.snapshot === 'static') {
+          const leftStatic = left.interactions[id];
+          const rightStatic = right.interactions[id];
+
+          if (!leftStatic || !rightStatic) {
+            throw new Error(
+              `The ${catalog.profile.id} profile is static but case ${id} produced no interaction snapshot on ` +
+                `${!leftStatic ? direction.from : direction.to}. A missing measurement is a failure, not a skip.`,
+            );
+          }
+
+          raw.push(...compareInteraction(leftStatic, rightStatic));
+        }
 
         if (parityCase.interaction) {
           raw.push(...compareInteraction(left.interactions[id], right.interactions[id]));

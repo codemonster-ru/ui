@@ -285,6 +285,75 @@ export const profiles = {
     ],
     snapshot: 'checkable',
   },
+  // The three M15 presentation components. Each has a single measured role,
+  // because each renders exactly one element and nothing inside it. They are
+  // the first profiles whose snapshot is `static`: nothing here can be driven,
+  // and that fact is measured rather than skipped.
+  //
+  // Three profiles rather than one shared 'presentation' profile. Badge and Tag
+  // differ only in a block name at this level, and collapsing them would mean
+  // one report, one artifact directory and one policy for two components - so a
+  // difference in either would arrive without saying which one it belonged to.
+  badge: {
+    id: 'badge',
+    label: 'VfBadge',
+    component: 'badge',
+    casesPath: 'contracts/badge/cases.json',
+    policyPath: 'contracts/badge/parity-policy.json',
+    artifactDirectory: 'parity-badge',
+    reportName: 'badge-parity-report.json',
+    measuredRoles: {
+      root: '.vf-badge',
+    },
+    // Listed so the absence is measured rather than assumed: a badge is a plain
+    // span, exposing no role and no accessible name. An adapter that started
+    // exposing one - role=status, say - would be an accessibility improvement
+    // and a product change, and this is what notices.
+    accessibilityRoles: {
+      root: '.vf-badge',
+    },
+    semanticAttributes: ['class', 'style', 'role', 'aria-label', 'data-testid'],
+    snapshot: 'static',
+  },
+  tag: {
+    id: 'tag',
+    label: 'VfTag',
+    component: 'tag',
+    casesPath: 'contracts/tag/cases.json',
+    policyPath: 'contracts/tag/parity-policy.json',
+    artifactDirectory: 'parity-tag',
+    reportName: 'tag-parity-report.json',
+    measuredRoles: {
+      root: '.vf-tag',
+    },
+    accessibilityRoles: {
+      root: '.vf-tag',
+    },
+    semanticAttributes: ['class', 'style', 'role', 'aria-label', 'data-testid'],
+    snapshot: 'static',
+  },
+  divider: {
+    id: 'divider',
+    label: 'VfDivider',
+    component: 'divider',
+    casesPath: 'contracts/divider/cases.json',
+    policyPath: 'contracts/divider/parity-policy.json',
+    artifactDirectory: 'parity-divider',
+    reportName: 'divider-parity-report.json',
+    measuredRoles: {
+      root: '.vf-divider',
+    },
+    // The only accessibility surface in the batch, and the reason this entry
+    // matters: a horizontal divider must expose *no* role, which is only a
+    // measurement because the selector is queried in both orientations.
+    accessibilityRoles: {
+      root: '.vf-divider',
+    },
+    // role and aria-orientation are the contract here, not incidental markup:
+    // one is conditional on the orientation and both are overridable.
+    semanticAttributes: ['class', 'style', 'role', 'aria-orientation', 'data-testid'],
+    snapshot: 'static',
+  },
 };
 
 export function loadProfile(id) {

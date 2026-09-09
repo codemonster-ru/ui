@@ -20,6 +20,14 @@ import { profiles } from '../parity/profiles.mjs';
 
 /** How an attribute reaches a comparison, or null when nothing compares it. */
 function comparedBy(attribute) {
+  // `class` is never read as an attribute string. The extractor captures the
+  // whole classList of every element and the comparator reports differences as
+  // dom.canonicalClasses, which is a stricter comparison than an attribute
+  // match: consumer classes are included, so where a consumer class lands
+  // relative to the canonical ones is compared too. M15 is the first batch
+  // whose components' entire contract is a class list, which is why this path
+  // has to be stated rather than left implicit.
+  if (attribute === 'class') return 'dom.canonicalClasses';
   if (COMPARED_ATTRIBUTES.includes(attribute)) return 'dom.nativeAttributes';
   if (REFERENCE_ATTRIBUTES.includes(attribute)) return 'dom.relationships';
   // Some semantics have no attribute to compare. `indeterminate` has none at
