@@ -21,6 +21,7 @@ import {
 
 import { enhanceVueForgeFields } from './field.js';
 import { enhanceVueForgeTextareas } from './textarea.js';
+import { enhanceVueForgeCheckables } from './checkable.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -255,9 +256,10 @@ function enhanceAll(root: ParentNode = document): void {
   // it attaches, and the textarea's own marker should already be correct.
   enhanceVueForgeTextareas(root);
   enhanceVueForgeFields(root);
+  enhanceVueForgeCheckables(root);
 }
 
-export { enhanceVueForgeFields, enhanceVueForgeTextareas };
+export { enhanceVueForgeCheckables, enhanceVueForgeFields, enhanceVueForgeTextareas };
 
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
