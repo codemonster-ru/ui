@@ -21,7 +21,7 @@
     },
     "dom.nativeAttributes": {
       "classification": "exact",
-      "description": "class, style, role and aria-orientation, plus any consumer attribute that reaches the root div. role and aria-orientation are the contract here rather than incidental: one is conditional on the orientation and both can be overridden by the consumer."
+      "description": "class and style on the root div, plus any native attribute a consumer forwards. role and aria-orientation are compared as dom.aria and are the contract here rather than incidental markup: one is conditional on the orientation and both are overridable."
     },
     "dom.text": {
       "classification": "exact",
@@ -29,7 +29,7 @@
     },
     "dom.aria": {
       "classification": "exact",
-      "description": "aria-* attributes and role, wherever either adapter writes one."
+      "description": "aria-* attributes and role. This is the dimension the divider's historical quirk lives in: aria-orientation on both orientations, role=separator on the vertical one only, and a consumer able to override either."
     },
     "dom.productData": {
       "classification": "exact",

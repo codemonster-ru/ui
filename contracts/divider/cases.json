@@ -35,7 +35,7 @@
       "title": "A consumer class is appended after the canonical classes",
       "props": {},
       "attrs": {
-        "class": "parity-consumer parity-divider-consumer"
+        "class": "consumer-divider"
       },
       "visual": true
     },

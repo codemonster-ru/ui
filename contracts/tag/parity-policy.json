@@ -21,7 +21,7 @@
     },
     "dom.nativeAttributes": {
       "classification": "exact",
-      "description": "class, style, role, aria-label and any consumer attribute that reaches the root span. The component itself writes no native attribute other than class."
+      "description": "class and style on the root span, plus any native attribute a consumer forwards. role and aria-* are compared as dom.aria; the component itself writes neither."
     },
     "dom.text": {
       "classification": "exact",
@@ -29,7 +29,7 @@
     },
     "dom.aria": {
       "classification": "exact",
-      "description": "aria-* attributes and role, wherever either adapter writes one."
+      "description": "aria-* attributes and role. The component writes none of its own, so every value compared here came from the consumer, and the absence when none is supplied is compared too."
     },
     "dom.productData": {
       "classification": "exact",

@@ -118,7 +118,7 @@
         "tone": "primary"
       },
       "attrs": {
-        "class": "parity-consumer parity-badge-consumer"
+        "class": "consumer-badge"
       },
       "content": {
         "text": "Consumer class"
@@ -130,7 +130,7 @@
       "title": "A consumer class on a neutral tone, where there is no modifier for it to follow",
       "props": {},
       "attrs": {
-        "class": "parity-consumer"
+        "class": "consumer-badge-neutral"
       },
       "content": {
         "text": "Consumer class"

@@ -19,6 +19,23 @@ body {
   box-sizing: border-box;
 }
 
+/* VfDivider has no intrinsic size of its own. A horizontal one is a border
+   width tall and spans its container; a vertical one is a border width wide and
+   takes its height from a flex parent through align-self: stretch. Dropped into
+   a bare block container it is therefore zero pixels high, which is not a
+   product defect - it is the component asking its consumer for a layout, and
+   the harness has to be that consumer or there is nothing to screenshot.
+
+   Page chrome, applied identically to all three targets, so it can produce no
+   difference between them. The product rules that decide the divider's colour,
+   thickness and stretch behaviour still come from divider.css and are still
+   what the comparison measures. */
+.parity-case:has(> .vf-divider) {
+  display: flex;
+  align-items: stretch;
+  height: 48px;
+}
+
 /* The post-interaction screenshots leave controls focused, and a blinking caret
    would make those frames depend on when the shot was taken. No stylesheet in
    the Input closure sets caret-color, so hiding it masks no product rule; the

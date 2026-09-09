@@ -26,6 +26,17 @@ import {
   loadParityPolicy,
   runDirectoryFor,
 } from './run.mjs';
+import {
+  badgeBrowserMutations,
+  badgeParityMutations,
+  badgePolicyMutations,
+  dividerBrowserMutations,
+  dividerParityMutations,
+  dividerPolicyMutations,
+  tagBrowserMutations,
+  tagParityMutations,
+  tagPolicyMutations,
+} from './presentation-mutations.mjs';
 import { browserMutations } from './browser-mutations.mjs';
 import { assessMutation, MutationNotApplied, parityMutations, policyMutations } from './mutations.mjs';
 import {
@@ -74,6 +85,13 @@ const mutationSets = {
   },
   radio: { capture: radioParityMutations, policy: radioPolicyMutations, browser: radioBrowserMutations },
   switch: { capture: switchParityMutations, policy: switchPolicyMutations, browser: switchBrowserMutations },
+  badge: { capture: badgeParityMutations, policy: badgePolicyMutations, browser: badgeBrowserMutations },
+  tag: { capture: tagParityMutations, policy: tagPolicyMutations, browser: tagBrowserMutations },
+  divider: {
+    capture: dividerParityMutations,
+    policy: dividerPolicyMutations,
+    browser: dividerBrowserMutations,
+  },
 };
 
 const profile = profileFromArgv();

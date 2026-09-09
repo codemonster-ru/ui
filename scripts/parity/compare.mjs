@@ -37,7 +37,12 @@ export const directions = [
 export const targets = ['reference', 'current', 'razor'];
 
 /** Dimensions that describe an unexplained difference and may never be waived. */
-export const neverApprovable = new Set(['dom.structure', 'visual', 'visual.postInteraction']);
+//
+// static.noInteraction joins the list in M15. It is the record that the
+// interaction stage ran and found nothing to drive, so an approval on it would
+// waive the evidence that the measurement happened at all - the exact silent
+// skip the static snapshot exists to make impossible.
+export const neverApprovable = new Set(['dom.structure', 'visual', 'visual.postInteraction', 'static.noInteraction']);
 
 /** Dimensions whose approval has to name the element it applies to. */
 const pathScopedDimensions = new Set([
