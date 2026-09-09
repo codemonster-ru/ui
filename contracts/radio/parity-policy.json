@@ -1,0 +1,146 @@
+{
+  "$comment": "Parity policy for the shared VfRadio cases. Plain data: no DSL, no waiver engine. Written per component rather than shared across the M14 batch: a batch-wide policy would let one component’s approval excuse another’s difference, which is exactly what batching must not buy.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, how content is composed, how state is stored.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "checked, disabled, required, name, value, aria-invalid, aria-label and style, plus the live checked property."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element. See the approved divergence: a textarea is the one element whose text is a value rather than content, and the two adapters transport it differently."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "role, aria-label, aria-describedby, aria-invalid and aria-hidden. The required marker must be aria-hidden on both adapters so the asterisk is not announced."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-vf-* attributes that carry product semantics, such as data-vf-filled."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether the button exists and whether it is operable. VfIconButton has no inert-until-enhanced state, so unlike VfInput there is nothing here that either adapter may render differently."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "label[for], aria-describedby, aria-labelledby and aria-controls compared as a resolved relationship graph. Generated id values are canonicalised to their document position; the edges they create are not."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it, and exact rather than framework-specific: a render-only button has no wrapper either adapter may add. If this ever produces a difference, something is wrong."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason as dom.wrapperPresence. VfIconButton renders no inert action, so a difference here is a defect, not a platform trait."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where token drift shows."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction scenario has run, per theme. This is what makes an interaction case detect a change that leaves the DOM intact, such as content that is present but invisible."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the control and of every action."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the control and of every action."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "disabled, readonly, required and invalid as exposed to assistive tech."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which role owns focus after the scenario. Reported as a role rather than an element, because the adapters generate different ids and the question is whether the control got focus."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The post-scenario snapshot: the live checked state, focus, operability, the value and name, and the root class list."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no value, so this never produces a difference."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no caret, so this never produces a difference."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. VfIconButton renders no wrapper that could appear on one side only."
+    },
+    "interaction.relationships": {
+      "classification": "semantic",
+      "description": "Whether the label still reaches this control after the scenario, and what each aria-describedby token resolves to."
+    },
+    "interaction.group": {
+      "classification": "exact",
+      "description": "Group size, how many members are checked, and which one. This is where mutual exclusion is compared: a group that lost it renders identically and differs only here."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "size-modifier-is-always-emitted",
+      "description": "The default md size still emits vf-radio--md.",
+      "classification": "exact",
+      "reason": "Shared with the other two checkable controls and preserved.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/checkable/state-vectors.json"
+    },
+    {
+      "id": "selection-is-a-strict-comparison",
+      "description": "A radio is selected when the model strictly equals its value, so a numeric model does not select a string-valued radio.",
+      "classification": "exact",
+      "reason": "Loosening it would silently select two members at once. Pinned in the shared vectors and exercised by a catalog case.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/radio/cases.json#radio/strict-mismatch"
+    },
+    {
+      "id": "a-radio-stays-silent-when-unchecked",
+      "description": "The change handler returns early when the event finds the control unchecked, so a radio never announces being deselected by another member of its group.",
+      "classification": "exact",
+      "reason": "A Vue event-level behaviour with no rendered counterpart, so it is pinned in the characterization suite rather than compared here.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/radio/VfRadio.characterization.spec.ts"
+    },
+    {
+      "id": "no-aria-checked",
+      "description": "Unlike VfCheckbox, the radio sets no aria-checked and relies on the element own state.",
+      "classification": "exact",
+      "reason": "Reproduced rather than reconciled.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/radio/VfRadio.characterization.spec.ts"
+    }
+  ],
+  "approvedDivergences": []
+}

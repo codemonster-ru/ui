@@ -42,6 +42,11 @@ $iconButton = $registry->resolve('vf-icon-button');
 $fieldComponent = $registry->resolve('vf-field');
 $buttonComponent = $registry->resolve('vf-button');
 $textareaComponent = $registry->resolve('vf-textarea');
+$checkableComponents = [
+    'checkbox' => $registry->resolve('vf-checkbox'),
+    'radio' => $registry->resolve('vf-radio'),
+    'switch' => $registry->resolve('vf-switch'),
+];
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -277,6 +282,62 @@ $renderTextareaCase = static function (array $case, string $controlId) use ($tex
     return $fieldComponent->render(new ComponentRenderContext($fieldProps, ['default' => $control]))->value();
 };
 
+/**
+ * One of the three checkable controls, or a whole radio group.
+ *
+ * The neutral catalog spells props the Vue way; the map below is the only place
+ * that difference lives. A group renders several members sharing the case's
+ * name, because mutual exclusion is native and belongs to the group.
+ */
+$renderCheckable = static function (array $case, string $component) use ($checkableComponents, $escape): string {
+    $target = $checkableComponents[$component];
+    // The neutral catalog spells props the Vue way; this is the only place
+    // that difference lives.
+    $rename = static function (string $name) use ($component): string {
+        if ($name === 'modelValue') {
+            return $component === 'radio' ? 'model-value' : 'checked';
+        }
+        if ($name === 'thumbContrast') {
+            return 'thumb-contrast';
+        }
+
+        return $name;
+    };
+
+    $base = [];
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $base[$rename($name)] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $base[$name] = $value;
+    }
+
+    $slots = [];
+    if (isset($case['content']['label'])) {
+        $text = $escape((string) $case['content']['label']);
+        $slots['default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($text);
+    }
+    if (isset($case['content']['thumb'])) {
+        $thumb = $escape((string) $case['content']['thumb']);
+        $slots['thumb'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($thumb);
+    }
+
+    if (isset($case['group']) && is_array($case['group'])) {
+        $markup = '<div class="parity-group">';
+        foreach ($case['group'] as $member) {
+            $props = $base;
+            foreach ($member as $name => $value) {
+                $props[$rename($name)] = $value;
+            }
+            $markup .= $target->render(new ComponentRenderContext($props, []))->value();
+        }
+
+        return $markup . '</div>';
+    }
+
+    return $target->render(new ComponentRenderContext($base, $slots))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -284,6 +345,8 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'icon-button') {
         $body = $renderIconButton($case);
+    } elseif (in_array($component, ['checkbox', 'radio', 'switch'], true)) {
+        $body = $renderCheckable($case, $component);
     } elseif ($component === 'textarea') {
         $body = $renderTextareaCase($case, str_replace('/', '-', $caseId) . '-control');
     } elseif ($component === 'button') {

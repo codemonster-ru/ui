@@ -1,0 +1,146 @@
+{
+  "$comment": "Parity policy for the shared VfSwitch cases. Plain data: no DSL, no waiver engine. Written per component rather than shared across the M14 batch: a batch-wide policy would let one component’s approval excuse another’s difference, which is exactly what batching must not buy.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, how content is composed, how state is stored.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "checked, disabled, required, name, role, aria-invalid, aria-label and style, plus the live checked property."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element. See the approved divergence: a textarea is the one element whose text is a value rather than content, and the two adapters transport it differently."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "role, aria-label, aria-describedby, aria-invalid and aria-hidden. The required marker must be aria-hidden on both adapters so the asterisk is not announced."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-vf-* attributes that carry product semantics, such as data-vf-filled."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether the button exists and whether it is operable. VfIconButton has no inert-until-enhanced state, so unlike VfInput there is nothing here that either adapter may render differently."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "label[for], aria-describedby, aria-labelledby and aria-controls compared as a resolved relationship graph. Generated id values are canonicalised to their document position; the edges they create are not."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it, and exact rather than framework-specific: a render-only button has no wrapper either adapter may add. If this ever produces a difference, something is wrong."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason as dom.wrapperPresence. VfIconButton renders no inert action, so a difference here is a defect, not a platform trait."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where token drift shows."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction scenario has run, per theme. This is what makes an interaction case detect a change that leaves the DOM intact, such as content that is present but invisible."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the control and of every action."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the control and of every action."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "disabled, readonly, required and invalid as exposed to assistive tech."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which role owns focus after the scenario. Reported as a role rather than an element, because the adapters generate different ids and the question is whether the control got focus."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The post-scenario snapshot: the live checked state, focus, operability, the role, and the root class list."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no value, so this never produces a difference."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A button carries no caret, so this never produces a difference."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. VfIconButton renders no wrapper that could appear on one side only."
+    },
+    "interaction.relationships": {
+      "classification": "semantic",
+      "description": "Whether the label still reaches this control after the scenario, and what each aria-describedby token resolves to."
+    },
+    "interaction.group": {
+      "classification": "exact",
+      "description": "How many controls in the case are checked. A switch is a group of one."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "size-modifier-is-always-emitted",
+      "description": "The default md size still emits vf-switch--md.",
+      "classification": "exact",
+      "reason": "Shared with the other two checkable controls and preserved.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/checkable/state-vectors.json"
+    },
+    {
+      "id": "a-switch-is-a-checkbox-with-a-role",
+      "description": "The element is input[type=checkbox] carrying role=switch, and it sets no aria-checked - the checkbox does, the switch does not.",
+      "classification": "exact",
+      "reason": "WAI-ARIA conventions are not imposed on top: changing what assistive technology hears would be a product decision nobody made in this milestone.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/switch/cases.json#switch/default"
+    },
+    {
+      "id": "whitespace-only-slot-content-counts-as-none",
+      "description": "The component walks the slot VNodes and treats whitespace and comments as no content, so no content element is rendered. VfCheckbox only asks whether a slot exists.",
+      "classification": "exact",
+      "reason": "The Razor adapter trims rendered markup to reach the same observable result. The mechanisms differ, the rendered DOM does not.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/switch/cases.json#switch/whitespace-slot"
+    },
+    {
+      "id": "the-thumb-slot-has-no-scope-in-razor",
+      "description": "Vue passes the checked state into the thumb slot; a Razor slot has no scope to receive it.",
+      "classification": "semantic",
+      "reason": "A caller that needs the value already knows the value it passed in, so no rendered difference follows. Recorded because it is a real API-shape difference between the adapters.",
+      "razorDiffers": true,
+      "coveredBy": "contracts/switch/cases.json#switch/thumb-slot"
+    }
+  ],
+  "approvedDivergences": []
+}

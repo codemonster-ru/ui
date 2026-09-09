@@ -180,6 +180,111 @@ export const profiles = {
     ],
     snapshot: 'textarea',
   },
+  checkbox: {
+    id: 'checkbox',
+    label: 'VfCheckbox',
+    component: 'checkbox',
+    casesPath: 'contracts/checkbox/cases.json',
+    policyPath: 'contracts/checkbox/parity-policy.json',
+    artifactDirectory: 'parity-checkbox',
+    reportName: 'checkbox-parity-report.json',
+    measuredRoles: {
+      root: '.vf-checkbox',
+      control: 'input.vf-checkbox__input',
+      mark: '.vf-checkbox__mark',
+      indeterminateMark: '.vf-checkbox__indeterminate-mark',
+      content: '.vf-checkbox__content',
+    },
+    // The control is what carries the role, the name and the checked state. The
+    // decorative parts are listed so their absence from the tree is measured
+    // rather than assumed.
+    accessibilityRoles: {
+      control: 'input.vf-checkbox__input',
+      content: '.vf-checkbox__content',
+    },
+    semanticAttributes: [
+      'checked',
+      'indeterminate',
+      'disabled',
+      'required',
+      'name',
+      'value',
+      'aria-checked',
+      'aria-invalid',
+      'aria-label',
+      'style',
+      'data-testid',
+    ],
+    snapshot: 'checkable',
+  },
+  radio: {
+    id: 'radio',
+    label: 'VfRadio',
+    component: 'radio',
+    casesPath: 'contracts/radio/cases.json',
+    policyPath: 'contracts/radio/parity-policy.json',
+    artifactDirectory: 'parity-radio',
+    reportName: 'radio-parity-report.json',
+    measuredRoles: {
+      root: '.vf-radio',
+      control: 'input.vf-radio__input',
+      dot: '.vf-radio__dot',
+      content: '.vf-radio__content',
+    },
+    // The control is what carries the role, the name and the checked state. The
+    // decorative parts are listed so their absence from the tree is measured
+    // rather than assumed.
+    accessibilityRoles: {
+      control: 'input.vf-radio__input',
+      content: '.vf-radio__content',
+    },
+    semanticAttributes: [
+      'checked',
+      'disabled',
+      'required',
+      'name',
+      'value',
+      'aria-invalid',
+      'aria-label',
+      'style',
+      'data-testid',
+    ],
+    snapshot: 'checkable',
+  },
+  switch: {
+    id: 'switch',
+    label: 'VfSwitch',
+    component: 'switch',
+    casesPath: 'contracts/switch/cases.json',
+    policyPath: 'contracts/switch/parity-policy.json',
+    artifactDirectory: 'parity-switch',
+    reportName: 'switch-parity-report.json',
+    measuredRoles: {
+      root: '.vf-switch',
+      control: 'input.vf-switch__input',
+      thumb: '.vf-switch__thumb',
+      content: '.vf-switch__content',
+    },
+    // The control is what carries the role, the name and the checked state. The
+    // decorative parts are listed so their absence from the tree is measured
+    // rather than assumed.
+    accessibilityRoles: {
+      control: 'input.vf-switch__input',
+      content: '.vf-switch__content',
+    },
+    semanticAttributes: [
+      'checked',
+      'disabled',
+      'required',
+      'name',
+      'role',
+      'aria-invalid',
+      'aria-label',
+      'style',
+      'data-testid',
+    ],
+    snapshot: 'checkable',
+  },
 };
 
 export function loadProfile(id) {

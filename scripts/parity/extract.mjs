@@ -31,6 +31,11 @@ export const COMPARED_ATTRIBUTES = [
   'spellcheck',
   'role',
   'aria-busy',
+  // The checkable controls. `checked` is the attribute the server rendered -
+  // the live property is recorded separately, because after an interaction the
+  // two say different things and only the property is true.
+  'checked',
+  'aria-checked',
   'aria-invalid',
   'aria-label',
   'aria-pressed',
@@ -58,6 +63,16 @@ export const COMPARED_ATTRIBUTES = [
 const FRAMEWORK_ATTRIBUTE_PATTERN = /^(data-v-|data-vf-razor)/;
 
 /** Relationship attributes whose values are id references. */
+/**
+ * Semantics the extractor records as live DOM properties rather than attributes.
+ *
+ * `indeterminate` has no HTML attribute at all, and `checked` as a property
+ * diverges from the attribute the moment a user touches the control. A profile
+ * may declare these as part of its contract, and
+ * scripts/ci/attribute-coverage.test.mjs accepts them on that basis.
+ */
+export const LIVE_PROPERTIES = ['checked', 'indeterminate', 'value'];
+
 export const REFERENCE_ATTRIBUTES = ['for', 'aria-describedby', 'aria-labelledby', 'aria-controls'];
 
 /**
@@ -165,6 +180,15 @@ export function extractCasesExpression(measuredRoles) {
     if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
       node.liveValue = element.value;
       node.operable = !element.disabled;
+    }
+
+    // A checkable control's state is a property, and after any interaction it
+    // is the only truthful source: the checked attribute records what the
+    // server said, not what the user did. indeterminate has no attribute at
+    // all, so without this it would be compared by nothing.
+    if (element instanceof HTMLInputElement && (element.type === 'checkbox' || element.type === 'radio')) {
+      node.liveChecked = element.checked;
+      node.liveIndeterminate = element.indeterminate;
     }
 
     // A textarea is the one element whose text is a value rather than content,
@@ -329,6 +353,35 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
         continue;
       }
       await pointerClick(page, selector, actionSelector);
+    } else if (step.action === 'focusCheckable') {
+      await page.evaluate(`(() => {
+        const control = document.querySelector(${JSON.stringify(selector)})
+          .querySelectorAll('input.vf-checkbox__input, input.vf-radio__input, input.vf-switch__input')[${step.index ?? 0}];
+        if (!control) throw new Error('missing checkable control');
+        control.focus();
+      })()`);
+    } else if (step.action === 'clickCheckable') {
+      // The visible control, not the input. All three components hide the
+      // native input (1px, clipped, opacity 0) and paint a span in its place,
+      // so the span is what a person's pointer actually lands on - and the
+      // wrapping label is what delivers the click to the input. Clicking the
+      // hidden input instead would be testing something no user can do, and
+      // would also skip the label indirection this contract depends on.
+      await pointerClick(
+        page,
+        selector,
+        '.vf-checkbox__control, .vf-radio__control, .vf-switch__control',
+        step.index ?? 0,
+      );
+    } else if (step.action === 'clickCheckableContent') {
+      // A click on the label text. The root of all three components is a
+      // <label>, so this must reach the input natively - no `for`, no JS.
+      await pointerClick(
+        page,
+        selector,
+        '.vf-checkbox__content, .vf-radio__content, .vf-switch__content',
+        step.index ?? 0,
+      );
     } else if (step.action === 'focusTextarea') {
       await page.evaluate(`(() => {
         const control = document.querySelector(${JSON.stringify(selector)}).querySelector('textarea.vf-textarea');
@@ -385,9 +438,12 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
  * would happily "click" a control that is covered, zero-sized or disabled, and
  * report success where a user would get nothing.
  */
-async function pointerClick(page, caseSelector, targetSelector) {
+async function pointerClick(page, caseSelector, targetSelector, index = 0) {
   const point = await page.evaluate(`(() => {
-    const action = document.querySelector(${JSON.stringify(caseSelector)}).querySelector(${JSON.stringify(targetSelector)});
+    // index picks a member of a group; every other caller wants the first
+    // match, which is what a plain querySelector already gave them.
+    const action = document.querySelector(${JSON.stringify(caseSelector)})
+      .querySelectorAll(${JSON.stringify(targetSelector)})[${index}];
     if (!action) throw new Error('missing interaction action');
     action.scrollIntoView({ block: 'center' });
     const rect = action.getBoundingClientRect();
@@ -493,6 +549,13 @@ async function pressKey(page, key) {
  * it. Everything downstream compares whatever shape comes back, key by key.
  */
 export function interactionExpression(caseId, snapshot = 'input') {
+  if (snapshot === 'checkable') {
+    return checkableInteractionExpression(
+      caseId,
+      'input.vf-checkbox__input, input.vf-radio__input, input.vf-switch__input',
+    );
+  }
+
   if (snapshot === 'textarea') {
     return textareaInteractionExpression(caseId);
   }
@@ -570,6 +633,63 @@ export function interactionExpression(caseId, snapshot = 'input') {
         ? [...root.querySelector('.vf-input-wrap').classList].filter((name) => name.startsWith('vf-')).sort()
         : null,
       controlClasses: [...liveControl.classList].filter((name) => name.startsWith('vf-')).sort(),
+    };
+  })()`;
+}
+
+/**
+ * Post-scenario state of a checkable control.
+ *
+ * One snapshot for VfCheckbox, VfRadio and VfSwitch, and unlike their class
+ * lists this really is one shape: did it end up checked, is it indeterminate,
+ * where did focus land, and - for a radio - what happened to the rest of its
+ * group. The selector comes from the profile.
+ *
+ * Group state is recorded for every component rather than only radios, so a
+ * checkbox that started behaving like a radio would show up here rather than
+ * being invisible because nobody looked.
+ */
+function checkableInteractionExpression(caseId, selector) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+    const controls = [...root.querySelectorAll('${selector}')];
+    if (controls.length === 0) throw new Error('missing ${selector} in case ${caseId}');
+    const control = controls[0];
+    const active = document.activeElement;
+    const focusRole = controls.indexOf(active) !== -1
+      ? 'control'
+      : active === document.body
+        ? 'body'
+        : root.contains(active) ? 'other-inside-case' : 'outside-case';
+
+    const rect = root.getBoundingClientRect();
+    const checkedMembers = controls.filter((candidate) => candidate.checked);
+
+    return {
+      clip: {
+        x: Math.round(rect.left + window.scrollX),
+        y: Math.round(rect.top + window.scrollY),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      },
+      // The property, not the attribute: after a click the attribute still
+      // says whatever the server rendered.
+      liveChecked: control.checked,
+      liveIndeterminate: control.indeterminate,
+      focusRole,
+      disabled: control.disabled,
+      operable: !control.disabled,
+      ariaChecked: control.getAttribute('aria-checked'),
+      controlRole: control.getAttribute('role'),
+      controlValue: control.getAttribute('value'),
+      controlName: control.getAttribute('name'),
+      rootClasses: [...(root.firstElementChild?.classList ?? [])].filter((name) => name.startsWith('vf-')).sort(),
+      // Group state. For a lone control this is the control itself, which is
+      // exactly what a broken mutual exclusion would change.
+      groupSize: controls.length,
+      groupCheckedCount: checkedMembers.length,
+      groupChecked: checkedMembers.length === 1 ? checkedMembers[0].getAttribute('value') : null,
     };
   })()`;
 }

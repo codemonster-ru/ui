@@ -12,6 +12,9 @@ import VfIconButton from '@parity/core/components/icon-button/VfIconButton.vue';
 import VfField from '@parity/core/components/field/VfField.vue';
 import VfButton from '@parity/core/components/button/VfButton.vue';
 import VfTextarea from '@parity/core/components/textarea/VfTextarea.vue';
+import VfCheckbox from '@parity/core/components/checkbox/VfCheckbox.vue';
+import VfRadio from '@parity/core/components/radio/VfRadio.vue';
+import VfSwitch from '@parity/core/components/switch/VfSwitch.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -170,6 +173,41 @@ function renderTextarea(parityCase: ParityCase): VNode {
   );
 }
 
+/**
+ * One of the three checkable controls, or a whole radio group.
+ *
+ * A group is a list of members sharing the case's `name`, because mutual
+ * exclusion belongs to the group rather than to any one control.
+ */
+function renderCheckable(component: string, parityCase: ParityCase): VNode {
+  const componentFor: Record<string, unknown> = { checkbox: VfCheckbox, radio: VfRadio, switch: VfSwitch };
+  const target = componentFor[component];
+  const content = (parityCase.content ?? {}) as { label?: string; thumb?: string };
+  const slots: Record<string, unknown> = {};
+
+  if (content.label !== undefined) slots.default = () => content.label;
+  if (content.thumb !== undefined) slots.thumb = () => content.thumb;
+
+  const group = (parityCase as { group?: Record<string, unknown>[] }).group;
+
+  if (Array.isArray(group)) {
+    return h(
+      'div',
+      { class: 'parity-group' },
+      group.map((member, index) =>
+        h(target as never, {
+          ...parityCase.props,
+          ...parityCase.attrs,
+          ...member,
+          key: index,
+        }),
+      ),
+    );
+  }
+
+  return h(target as never, { ...parityCase.props, ...parityCase.attrs }, slots);
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -179,6 +217,12 @@ function renderIconButton(parityCase: ParityCase): VNode {
 function renderCase(parityCase: ParityCase): VNode {
   if (catalog.component === 'icon-button') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderIconButton(parityCase)]);
+  }
+
+  if (['checkbox', 'radio', 'switch'].includes(catalog.component ?? '')) {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [
+      renderCheckable(catalog.component as string, parityCase),
+    ]);
   }
 
   if (catalog.component === 'textarea') {

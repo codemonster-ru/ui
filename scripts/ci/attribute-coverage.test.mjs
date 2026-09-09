@@ -15,13 +15,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { COMPARED_ATTRIBUTES, REFERENCE_ATTRIBUTES } from '../parity/extract.mjs';
+import { COMPARED_ATTRIBUTES, LIVE_PROPERTIES, REFERENCE_ATTRIBUTES } from '../parity/extract.mjs';
 import { profiles } from '../parity/profiles.mjs';
 
 /** How an attribute reaches a comparison, or null when nothing compares it. */
 function comparedBy(attribute) {
   if (COMPARED_ATTRIBUTES.includes(attribute)) return 'dom.nativeAttributes';
   if (REFERENCE_ATTRIBUTES.includes(attribute)) return 'dom.relationships';
+  // Some semantics have no attribute to compare. `indeterminate` has none at
+  // all, and a checkable control's `checked` property stops agreeing with its
+  // attribute the moment someone clicks it, so both are recorded as live
+  // properties on the node instead.
+  if (LIVE_PROPERTIES.includes(attribute)) return 'dom.nativeAttributes (live property)';
   // Every data-* attribute is captured, except the renderer's own markers.
   if (attribute.startsWith('data-') && !attribute.startsWith('data-vf-razor')) return 'dom.productData';
 
@@ -57,6 +62,7 @@ test('the check itself fails when an attribute is not compared', () => {
   // everything would make the gate above vacuous.
   assert.equal(comparedBy('there-is-no-such-attribute'), null);
   assert.equal(comparedBy('rows'), 'dom.nativeAttributes');
+  assert.equal(comparedBy('indeterminate'), 'dom.nativeAttributes (live property)');
   assert.equal(comparedBy('aria-describedby'), 'dom.relationships');
 });
 

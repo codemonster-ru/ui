@@ -301,13 +301,15 @@
           }
         ],
         "expect": {
-          "liveChecked": true,
+          "liveChecked": false,
           "groupChecked": "b",
-          "groupCheckedCount": 1
+          "groupCheckedCount": 1,
+          "groupSize": 2
         }
       },
       "attrs": {},
-      "visual": true
+      "visual": true,
+      "$comment": "liveChecked is the first member, and false is the point: clicking the second member is what unchecked it. groupChecked names the member that won, so the case proves both halves of mutual exclusion rather than only that something got selected."
     },
     {
       "id": "radio/interaction-disabled-pointer",

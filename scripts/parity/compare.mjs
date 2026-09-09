@@ -536,6 +536,21 @@ const INTERACTION_FIELDS = {
   // owner cannot be masked by the other still being right.
   controlFilled: { dimension: 'interaction.state' },
   readOnly: { dimension: 'interaction.state' },
+  // The three checkable controls. liveChecked and liveIndeterminate are
+  // properties rather than attributes, and after any interaction they are the
+  // only truthful record of what the control ended up being.
+  liveChecked: { dimension: 'interaction.state' },
+  liveIndeterminate: { dimension: 'interaction.state' },
+  ariaChecked: { dimension: 'interaction.state' },
+  controlRole: { dimension: 'interaction.state' },
+  controlValue: { dimension: 'interaction.state' },
+  controlName: { dimension: 'interaction.state' },
+  rootClasses: { dimension: 'interaction.state', format: 'classList' },
+  // Group state is its own dimension: a group that lost mutual exclusion
+  // renders identically and differs only in how many members are checked.
+  groupSize: { dimension: 'interaction.group' },
+  groupCheckedCount: { dimension: 'interaction.group' },
+  groupChecked: { dimension: 'interaction.group' },
 };
 
 /**
