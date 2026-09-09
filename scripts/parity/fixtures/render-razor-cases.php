@@ -350,14 +350,15 @@ $renderCheckable = static function (array $case, string $component) use ($checka
 };
 
 /**
- * One of the two toned spans.
+ * VfBadge, for the badge catalog.
  *
- * The component is passed in rather than chosen here, so the caller decides
- * which one is being rendered and the two paths cannot converge. `content.text`
- * is the default slot; the Razor slot contract takes already-rendered markup,
- * so the text is escaped before it is handed over.
+ * Written out separately from the tag renderer rather than as one helper taking
+ * the component. The fixture is where a substitution would be easiest to
+ * introduce and hardest to see, so each component names its own here, exactly
+ * as the Vue fixture does. `content.text` is the default slot; the Razor slot
+ * contract takes already-rendered markup, so the text is escaped first.
  */
-$renderTonedSpan = static function (array $case, $component) use ($escape): string {
+$renderBadge = static function (array $case) use ($badgeComponent, $escape): string {
     $props = [];
 
     foreach ($case['props'] ?? [] as $name => $value) {
@@ -373,7 +374,27 @@ $renderTonedSpan = static function (array $case, $component) use ($escape): stri
         $slots['default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($text);
     }
 
-    return $component->render(new ComponentRenderContext($props, $slots))->value();
+    return $badgeComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
+/** VfTag, for the tag catalog. Deliberately not the badge renderer. */
+$renderTag = static function (array $case) use ($tagComponent, $escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $slots = [];
+    if (isset($case['content']['text'])) {
+        $text = $escape((string) $case['content']['text']);
+        $slots['default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($text);
+    }
+
+    return $tagComponent->render(new ComponentRenderContext($props, $slots))->value();
 };
 
 /** The divider, which has no slot at all. */
@@ -396,9 +417,9 @@ foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
     if ($component === 'badge') {
-        $body = $renderTonedSpan($case, $badgeComponent);
+        $body = $renderBadge($case);
     } elseif ($component === 'tag') {
-        $body = $renderTonedSpan($case, $tagComponent);
+        $body = $renderTag($case);
     } elseif ($component === 'divider') {
         $body = $renderDivider($case);
     } elseif ($component === 'icon-button') {
