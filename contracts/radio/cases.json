@@ -1,0 +1,336 @@
+{
+  "$comment": "Shared VfRadio cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. A radio owns no boolean: it carries a value and is selected when the model strictly equals it, which is why \"value\" and \"modelValue\" are separate. \"group\" renders several members sharing one name, because mutual exclusion is a property of a group rather than of one control.",
+  "component": "radio",
+  "propVocabulary": {
+    "value": "Required. The value this member carries and emits when chosen.",
+    "modelValue": "The group selection. This member is checked when it strictly equals value.",
+    "size": "sm | md | lg. Defaults to md, which still emits a modifier.",
+    "invalid": "Adds the invalid modifier and aria-invalid.",
+    "disabled": "Disables the input natively.",
+    "label": "Label text, overridden by default slot content."
+  },
+  "cases": [
+    {
+      "id": "radio/default",
+      "title": "An unselected radio",
+      "props": {
+        "value": "a",
+        "label": "Alpha"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/checked",
+      "title": "A radio whose value matches the model",
+      "props": {
+        "value": "a",
+        "modelValue": "a",
+        "label": "Alpha"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/numeric-value",
+      "title": "A numeric value matching a numeric model",
+      "props": {
+        "value": 1,
+        "modelValue": 1,
+        "label": "One"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/strict-mismatch",
+      "title": "A string value against a numeric model stays unselected, because the comparison is strict",
+      "props": {
+        "value": "1",
+        "modelValue": 1,
+        "label": "One"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/size-sm",
+      "title": "The small size",
+      "props": {
+        "value": "a",
+        "size": "sm",
+        "label": "Small"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/size-md",
+      "title": "The medium size, which still emits a modifier",
+      "props": {
+        "value": "a",
+        "size": "md",
+        "label": "Medium"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/size-lg",
+      "title": "The large size",
+      "props": {
+        "value": "a",
+        "size": "lg",
+        "label": "Large"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/disabled",
+      "title": "A disabled radio",
+      "props": {
+        "value": "a",
+        "disabled": true,
+        "label": "Alpha"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/disabled-checked",
+      "title": "A disabled selected radio",
+      "props": {
+        "value": "a",
+        "modelValue": "a",
+        "disabled": true,
+        "label": "Alpha"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/invalid",
+      "title": "An invalid radio",
+      "props": {
+        "value": "a",
+        "invalid": true,
+        "label": "Alpha"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/no-label",
+      "title": "A radio with no label",
+      "props": {
+        "value": "a"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/native-attributes",
+      "title": "Name and required reach the input",
+      "props": {
+        "value": "a",
+        "label": "Alpha"
+      },
+      "attrs": {
+        "name": "solo",
+        "required": true
+      },
+      "visual": true
+    },
+    {
+      "id": "radio/consumer-class",
+      "title": "A consumer class merges onto the root label",
+      "props": {
+        "value": "a",
+        "label": "Alpha"
+      },
+      "attrs": {
+        "class": "consumer-radio"
+      },
+      "visual": true
+    },
+    {
+      "id": "radio/data-attribute",
+      "title": "A data attribute reaches the input",
+      "props": {
+        "value": "a",
+        "label": "Alpha"
+      },
+      "attrs": {
+        "data-testid": "alpha"
+      },
+      "visual": true
+    },
+    {
+      "id": "radio/group-first-selected",
+      "title": "A two-member group with the first selected",
+      "group": [
+        {
+          "value": "a",
+          "label": "Alpha",
+          "modelValue": "a"
+        },
+        {
+          "value": "b",
+          "label": "Beta",
+          "modelValue": "a"
+        }
+      ],
+      "props": {
+        "name": "pick"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/group-second-selected",
+      "title": "A two-member group with the second selected",
+      "group": [
+        {
+          "value": "a",
+          "label": "Alpha",
+          "modelValue": "b"
+        },
+        {
+          "value": "b",
+          "label": "Beta",
+          "modelValue": "b"
+        }
+      ],
+      "props": {
+        "name": "pick2"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/group-with-disabled-member",
+      "title": "A group whose second member is disabled",
+      "group": [
+        {
+          "value": "a",
+          "label": "Alpha",
+          "modelValue": "a"
+        },
+        {
+          "value": "b",
+          "label": "Beta",
+          "modelValue": "a",
+          "disabled": true
+        }
+      ],
+      "props": {
+        "name": "pick3"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/interaction-pointer",
+      "title": "A real pointer click selects a radio",
+      "props": {
+        "value": "a",
+        "label": "Alpha"
+      },
+      "attrs": {
+        "name": "solo-click"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": true,
+          "focusRole": "control"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "radio/interaction-label-click",
+      "title": "Clicking the label selects the radio",
+      "props": {
+        "value": "a",
+        "label": "Alpha"
+      },
+      "attrs": {
+        "name": "solo-label"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckableContent"
+          }
+        ],
+        "expect": {
+          "liveChecked": true
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "radio/interaction-group-exclusion",
+      "title": "Selecting the second member unselects the first",
+      "group": [
+        {
+          "value": "a",
+          "label": "Alpha",
+          "modelValue": "a"
+        },
+        {
+          "value": "b",
+          "label": "Beta",
+          "modelValue": "a"
+        }
+      ],
+      "props": {
+        "name": "exclusive"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable",
+            "index": 1
+          }
+        ],
+        "expect": {
+          "liveChecked": true,
+          "groupChecked": "b",
+          "groupCheckedCount": 1
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "radio/interaction-disabled-pointer",
+      "title": "A disabled radio ignores the pointer",
+      "props": {
+        "value": "a",
+        "disabled": true,
+        "label": "Alpha"
+      },
+      "attrs": {
+        "name": "solo-disabled"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": false
+        }
+      },
+      "visual": true
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+  "$comment": "Shared VfSwitch cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. A native checkbox with role=\"switch\" and, deliberately, no aria-checked - the reference sets it on the checkbox and not here, and both are reproduced. Two presentation props the other checkable controls have no equivalent for.",
+  "component": "switch",
+  "propVocabulary": {
+    "modelValue": "Whether the switch is on. Defaults to false.",
+    "size": "sm | md | lg. Defaults to md, which still emits a modifier.",
+    "static": "A presentation variant with no interactive affordance change.",
+    "thumbContrast": "auto | inverse. auto emits no modifier.",
+    "invalid": "Adds the invalid modifier and aria-invalid.",
+    "disabled": "Disables the input natively.",
+    "label": "Label text, overridden by default slot content. Whitespace-only slot content counts as none."
+  },
+  "cases": [
+    {
+      "id": "switch/default",
+      "title": "An off switch",
+      "props": {
+        "label": "Notify me"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/checked",
+      "title": "An on switch",
+      "props": {
+        "modelValue": true,
+        "label": "Notify me"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/size-sm",
+      "title": "The small size",
+      "props": {
+        "size": "sm",
+        "label": "Small"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/size-md",
+      "title": "The medium size, which still emits a modifier",
+      "props": {
+        "size": "md",
+        "label": "Medium"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/size-lg",
+      "title": "The large size",
+      "props": {
+        "size": "lg",
+        "label": "Large"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/static",
+      "title": "The static presentation",
+      "props": {
+        "static": true,
+        "label": "Static"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/thumb-contrast-inverse",
+      "title": "The inverse thumb contrast",
+      "props": {
+        "thumbContrast": "inverse",
+        "modelValue": true,
+        "label": "Inverse"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/disabled",
+      "title": "A disabled switch",
+      "props": {
+        "disabled": true,
+        "label": "Cannot change"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/disabled-checked",
+      "title": "A disabled on switch",
+      "props": {
+        "disabled": true,
+        "modelValue": true,
+        "label": "Locked on"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/invalid",
+      "title": "An invalid switch",
+      "props": {
+        "invalid": true,
+        "label": "Required"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/no-label",
+      "title": "A switch with no label",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/whitespace-slot",
+      "title": "A whitespace-only slot counts as no content at all",
+      "props": {},
+      "content": {
+        "label": "   "
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/slot-content",
+      "title": "Content from the default slot",
+      "props": {},
+      "content": {
+        "label": "On"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/thumb-slot",
+      "title": "A thumb slot rendered inside the control",
+      "props": {
+        "modelValue": true,
+        "label": "Notify me"
+      },
+      "content": {
+        "thumb": "✓"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/native-attributes",
+      "title": "Name and required reach the input",
+      "props": {
+        "label": "Notify me"
+      },
+      "attrs": {
+        "name": "notify",
+        "required": true
+      },
+      "visual": true
+    },
+    {
+      "id": "switch/consumer-class",
+      "title": "A consumer class merges onto the root label",
+      "props": {
+        "label": "Notify me"
+      },
+      "attrs": {
+        "class": "consumer-switch"
+      },
+      "visual": true
+    },
+    {
+      "id": "switch/data-attribute",
+      "title": "A data attribute reaches the input",
+      "props": {
+        "label": "Notify me"
+      },
+      "attrs": {
+        "data-testid": "notify"
+      },
+      "visual": true
+    },
+    {
+      "id": "switch/interaction-pointer",
+      "title": "A real pointer click switches it on",
+      "props": {
+        "label": "Notify me"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": true,
+          "focusRole": "control"
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/interaction-space",
+      "title": "Space switches the focused control, because it is a native checkbox",
+      "props": {
+        "label": "Notify me"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusCheckable"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "liveChecked": true,
+          "focusRole": "control"
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/interaction-off",
+      "title": "A real pointer click switches an on switch off",
+      "props": {
+        "modelValue": true,
+        "label": "Notify me"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": false
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/interaction-label-click",
+      "title": "Clicking the label reaches the input",
+      "props": {
+        "label": "Notify me"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckableContent"
+          }
+        ],
+        "expect": {
+          "liveChecked": true
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "switch/interaction-disabled-pointer",
+      "title": "A disabled switch ignores the pointer",
+      "props": {
+        "disabled": true,
+        "label": "Cannot change"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": false
+        }
+      },
+      "attrs": {},
+      "visual": true
+    }
+  ]
+}

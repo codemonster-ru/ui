@@ -1,0 +1,336 @@
+{
+  "$comment": "Shared VfCheckbox cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Deliberately not shared with the radio or switch catalogs: the three components only look alike. \"props\" are declared component props, \"attrs\" fall through to the input, and \"content\" is default slot text. scripts/ci/checkable-coverage.mjs is what stops the list eroding.",
+  "component": "checkbox",
+  "propVocabulary": {
+    "modelValue": "Whether the box is checked. Defaults to false.",
+    "size": "sm | md | lg. Defaults to md, which still emits a modifier - unlike VfInput.",
+    "indeterminate": "A DOM property with no HTML attribute. Wins over the model in aria-checked.",
+    "invalid": "Adds the invalid modifier and aria-invalid.",
+    "disabled": "Disables the input natively.",
+    "label": "Label text, overridden by default slot content."
+  },
+  "cases": [
+    {
+      "id": "checkbox/default",
+      "title": "An unchecked checkbox at the default size",
+      "props": {
+        "label": "Ship it"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/checked",
+      "title": "A checked checkbox",
+      "props": {
+        "modelValue": true,
+        "label": "Ship it"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/indeterminate",
+      "title": "An indeterminate checkbox, which is a DOM property rather than an attribute",
+      "props": {
+        "indeterminate": true,
+        "label": "Some selected"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/indeterminate-checked",
+      "title": "Indeterminate wins over the model in aria-checked",
+      "props": {
+        "indeterminate": true,
+        "modelValue": true,
+        "label": "Some selected"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/size-sm",
+      "title": "The small size",
+      "props": {
+        "size": "sm",
+        "label": "Small"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/size-md",
+      "title": "The medium size, which still emits a modifier",
+      "props": {
+        "size": "md",
+        "label": "Medium"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/size-lg",
+      "title": "The large size",
+      "props": {
+        "size": "lg",
+        "label": "Large"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/disabled",
+      "title": "A disabled checkbox",
+      "props": {
+        "disabled": true,
+        "label": "Cannot change"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/disabled-checked",
+      "title": "A disabled checked checkbox",
+      "props": {
+        "disabled": true,
+        "modelValue": true,
+        "label": "Locked on"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/invalid",
+      "title": "An invalid checkbox",
+      "props": {
+        "invalid": true,
+        "label": "Required"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/no-label",
+      "title": "A checkbox with no label at all, so no content element",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/slot-content",
+      "title": "Content from the default slot",
+      "props": {},
+      "content": {
+        "label": "From slot"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/native-attributes",
+      "title": "Name, value and required reach the input",
+      "props": {
+        "label": "Ship it"
+      },
+      "attrs": {
+        "name": "ship",
+        "value": "yes",
+        "required": true
+      },
+      "visual": true
+    },
+    {
+      "id": "checkbox/consumer-class",
+      "title": "A consumer class merges onto the root label",
+      "props": {
+        "label": "Ship it"
+      },
+      "attrs": {
+        "class": "consumer-checkbox"
+      },
+      "visual": true
+    },
+    {
+      "id": "checkbox/consumer-style",
+      "title": "A consumer style reaches the root label",
+      "props": {
+        "label": "Ship it"
+      },
+      "attrs": {
+        "style": "margin: 4px"
+      },
+      "visual": true
+    },
+    {
+      "id": "checkbox/data-attribute",
+      "title": "A data attribute reaches the input",
+      "props": {
+        "label": "Ship it"
+      },
+      "attrs": {
+        "data-testid": "ship"
+      },
+      "visual": true
+    },
+    {
+      "id": "checkbox/aria-label",
+      "title": "A consumer accessible name on the input",
+      "props": {},
+      "attrs": {
+        "aria-label": "Ship it"
+      },
+      "visual": true
+    },
+    {
+      "id": "checkbox/interaction-pointer",
+      "title": "A real pointer click checks the box",
+      "props": {
+        "label": "Ship it"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": true,
+          "focusRole": "control"
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/interaction-space",
+      "title": "Space checks the focused box",
+      "props": {
+        "label": "Ship it"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusCheckable"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "liveChecked": true,
+          "focusRole": "control"
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/interaction-uncheck",
+      "title": "A real pointer click unchecks a checked box",
+      "props": {
+        "modelValue": true,
+        "label": "Ship it"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": false
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/interaction-label-click",
+      "title": "Clicking the label reaches the input, because the root is the label",
+      "props": {
+        "label": "Ship it"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckableContent"
+          }
+        ],
+        "expect": {
+          "liveChecked": true,
+          "focusRole": "control"
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/interaction-disabled-pointer",
+      "title": "A disabled checkbox ignores the pointer",
+      "props": {
+        "disabled": true,
+        "label": "Cannot change"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": false
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/interaction-disabled-space",
+      "title": "A disabled checkbox ignores Space",
+      "props": {
+        "disabled": true,
+        "label": "Cannot change"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusCheckable"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "liveChecked": false
+        }
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "checkbox/interaction-indeterminate-click",
+      "title": "Clicking an indeterminate box resolves it to checked, natively",
+      "props": {
+        "indeterminate": true,
+        "label": "Some selected"
+      },
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickCheckable"
+          }
+        ],
+        "expect": {
+          "liveChecked": true,
+          "liveIndeterminate": false
+        }
+      },
+      "attrs": {},
+      "visual": true
+    }
+  ]
+}
