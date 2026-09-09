@@ -548,6 +548,26 @@ async function pressKey(page, key) {
 }
 
 /**
+ * The fields a static snapshot must carry.
+ *
+ * Exported because the runner checks for them rather than trusting that the
+ * expression ran: a snapshot that came back empty on *every* target would
+ * otherwise compare equal to itself and report a clean pass, which is the
+ * silent skip this whole mechanism exists to prevent. The comparator only ever
+ * sees differences; absence on both sides is not one.
+ *
+ * Found by the M15 adversarial proof: the first implementation compared the
+ * snapshots faithfully and still passed when both of them were empty.
+ */
+export const STATIC_SNAPSHOT_FIELDS = [
+  'interactionPosture',
+  'caseRendered',
+  'focusableCount',
+  'interactiveRoleCount',
+  'focusRole',
+];
+
+/**
  * What a component with nothing to drive reports.
  *
  * M15 is the first batch whose components have no interaction at all, and the

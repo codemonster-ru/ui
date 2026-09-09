@@ -25,7 +25,7 @@ import {
   summariseApprovals,
   validatePolicy,
 } from './compare.mjs';
-import { extractCasesExpression, driveInteraction, interactionExpression } from './extract.mjs';
+import { STATIC_SNAPSHOT_FIELDS, extractCasesExpression, driveInteraction, interactionExpression } from './extract.mjs';
 import { buildCurrentTarget, buildRazorTarget, buildReferenceTarget } from './targets.mjs';
 
 export const themes = ['light', 'dark'];
@@ -247,7 +247,29 @@ async function captureTarget(
             `Case ${parityCase.id} declares an interaction, but the ${catalog.profile.id} profile is static.`,
           );
         }
-        interactions[parityCase.id] = await page.evaluate(interactionExpression(parityCase.id, 'static'));
+        const snapshot = await page.evaluate(interactionExpression(parityCase.id, 'static'));
+        // Fail closed on a snapshot that came back without its measurements.
+        // An empty snapshot on every target compares equal to itself, so the
+        // comparator would report a clean pass for a stage that measured
+        // nothing - the exact silent skip the static profile exists to make
+        // impossible. Absence has to be caught here, where there is still a
+        // target to name, rather than in a comparison that never sees it.
+        const missing = STATIC_SNAPSHOT_FIELDS.filter((field) => !(field in (snapshot ?? {})));
+        if (missing.length > 0) {
+          throw new Error(
+            `The static snapshot for ${parityCase.id} on ${label} (${theme}) is missing ` +
+              `[${missing.join(', ')}]. A stage that records nothing is a failure, not a pass.`,
+          );
+        }
+        if (snapshot.interactionPosture !== 'none' || snapshot.caseRendered !== true) {
+          throw new Error(
+            `The static snapshot for ${parityCase.id} on ${label} (${theme}) reports ` +
+              `posture=${JSON.stringify(snapshot.interactionPosture)} ` +
+              `rendered=${JSON.stringify(snapshot.caseRendered)}.`,
+          );
+        }
+
+        interactions[parityCase.id] = snapshot;
       }
     }
 
