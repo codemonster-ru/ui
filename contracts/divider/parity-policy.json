@@ -1,0 +1,102 @@
+{
+  "$comment": "Parity policy for the shared VfDivider cases. Plain data: no DSL, no waiver engine. The only component in the M15 batch with an accessibility surface, and the one whose historical behaviour a standards-minded port would 'fix'.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class, style, role and aria-orientation, plus any consumer attribute that reaches the root div. role and aria-orientation are the contract here rather than incidental: one is conditional on the orientation and both can be overridden by the consumer."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role, wherever either adapter writes one."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. A target that reports a different interaction posture than its peers is a difference like any other."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-root-is-a-div-not-an-hr",
+      "description": "The separator is a div. HTML has hr for exactly this and the reference does not use it.",
+      "classification": "exact",
+      "reason": "Switching to hr would change the element, its default styles and its implicit role. It is a product change, not a cleanup.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/divider/VfDivider.characterization.spec.ts"
+    },
+    {
+      "id": "aria-orientation-without-a-role-when-horizontal",
+      "description": "aria-orientation is written on both orientations, but role=separator only on the vertical one. A horizontal divider is therefore a roleless div carrying an ARIA attribute, which is inert.",
+      "classification": "exact",
+      "reason": "The single most tempting thing to correct in this batch. Reproduced exactly; the a11y.role dimension measures the absence rather than assuming it.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/divider/cases.json#divider/horizontal"
+    },
+    {
+      "id": "consumers-can-override-role-and-aria-orientation",
+      "description": "v-bind=\"attrs\" is bound after :role and :aria-orientation, so a consumer attribute replaces either. A consumer aria-orientation can contradict the orientation class and nothing reconciles them.",
+      "classification": "exact",
+      "reason": "Sanitising the override away would be a silent API removal. Both adapters let the consumer win.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/divider/cases.json#divider/conflicting-overrides"
+    },
+    {
+      "id": "the-orientation-modifier-is-always-emitted",
+      "description": "vf-divider--horizontal is present at the default orientation, unlike VfBadge and VfTag in the same batch where the default tone emits nothing.",
+      "classification": "exact",
+      "reason": "Two conventions inside one milestone. Preserved rather than reconciled.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/presentation/state-vectors.json"
+    }
+  ],
+  "approvedDivergences": []
+}

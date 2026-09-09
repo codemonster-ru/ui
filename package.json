@@ -86,7 +86,7 @@
     "check:asset-boundary": "node ./scripts/ci/check-asset-boundary.mjs",
     "test:asset-boundary": "node --test ./scripts/ci/asset-boundary.test.mjs",
     "test:icon-ownership": "node --test ./scripts/ci/icon-ownership.test.mjs",
-    "test:case-coverage": "node --test ./scripts/ci/case-coverage.test.mjs ./scripts/ci/case-coverage-erosion.test.mjs ./scripts/ci/field-coverage.test.mjs ./scripts/ci/button-coverage.test.mjs ./scripts/ci/textarea-coverage.test.mjs ./scripts/ci/checkable-coverage.test.mjs",
+    "test:case-coverage": "node --test ./scripts/ci/case-coverage.test.mjs ./scripts/ci/case-coverage-erosion.test.mjs ./scripts/ci/field-coverage.test.mjs ./scripts/ci/button-coverage.test.mjs ./scripts/ci/textarea-coverage.test.mjs ./scripts/ci/checkable-coverage.test.mjs ./scripts/ci/presentation-coverage.test.mjs",
     "razor:package": "node ./scripts/release/build-razor-package.mjs",
     "check:razor-package": "node ./scripts/ci/check-razor-package.mjs",
     "check:razor-packaged-consumer": "node ./scripts/ci/check-razor-packaged-consumer.mjs",

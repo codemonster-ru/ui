@@ -1,0 +1,102 @@
+{
+  "$comment": "Parity policy for the shared VfTag cases. Plain data: no DSL, no waiver engine. A separate file from VfBadge's on purpose - a shared policy would let a badge approval excuse a tag difference, and the whole point of migrating the pair together is to prove that cannot happen.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class, style, role, aria-label and any consumer attribute that reaches the root span. The component itself writes no native attribute other than class."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role, wherever either adapter writes one."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. A target that reports a different interaction posture than its peers is a difference like any other."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "neutral-tone-emits-no-modifier",
+      "description": "tone=\"neutral\" produces the bare vf-tag class. Recorded here on VfTag's own evidence rather than by reference to VfBadge.",
+      "classification": "exact",
+      "reason": "The default tone is expressed by absence. Two conventions coexist in the library and both are preserved.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/presentation/state-vectors.json"
+    },
+    {
+      "id": "consumer-class-is-appended-not-substituted",
+      "description": "Canonical classes stay first and the consumer's are appended, because Vue merges class rather than replacing it.",
+      "classification": "exact",
+      "reason": "A port would reasonably let the consumer class win. Both adapters append.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/tag/VfTag.characterization.spec.ts"
+    },
+    {
+      "id": "the-tag-writes-no-aria-of-its-own",
+      "description": "A tag is a plain span with no role and no accessible name, and it is not dismissible: there is no remove affordance and no event.",
+      "classification": "exact",
+      "reason": "Absence is the contract. A tag that looks like a chip in other libraries is not one here.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tag/cases.json#tag/consumer-aria"
+    },
+    {
+      "id": "tag-tones-never-paint-a-background",
+      "description": "A tag tone modifier sets border-colour and colour only. VfBadge's also sets background. Both use the same eight tone names.",
+      "classification": "exact",
+      "reason": "The distinction that stops VfTag being VfBadge under another block name. If tag tones ever gained a background the visual and style.colour dimensions would move here and nowhere else.",
+      "razorDiffers": false,
+      "coveredBy": "packages/styles/src/components/tag.css"
+    }
+  ],
+  "approvedDivergences": []
+}

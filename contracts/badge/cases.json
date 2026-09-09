@@ -1,0 +1,204 @@
+{
+  "$comment": "Shared VfBadge cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Deliberately not shared with, and not generated from, the VfTag catalog: the two components have the same shape, so a catalog that served both would let either implementation satisfy the other's evidence. \"props\" are declared component props, \"attrs\" fall through to the root span, and \"content.text\" is default slot text. scripts/ci/presentation-coverage.mjs is what stops the list eroding.",
+  "component": "badge",
+  "propVocabulary": {
+    "tone": "VfBadgeTone: neutral | primary | success | info | warn | help | danger | contrast. Defaults to neutral, which emits no modifier class - the opposite of the checkable controls' always-present size modifier."
+  },
+  "cases": [
+    {
+      "id": "badge/neutral-default",
+      "title": "The default badge: neutral, and neutral emits no modifier class at all",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "text": "Draft"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/neutral-explicit",
+      "title": "Neutral passed explicitly still emits no modifier, so the default is not a special case",
+      "props": {
+        "tone": "neutral"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Draft"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/tone-primary",
+      "title": "The primary tone",
+      "props": {
+        "tone": "primary"
+      },
+      "attrs": {},
+      "content": {
+        "text": "New"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/tone-success",
+      "title": "The success tone",
+      "props": {
+        "tone": "success"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Live"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/tone-info",
+      "title": "The info tone",
+      "props": {
+        "tone": "info"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Preview"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/tone-warn",
+      "title": "The warn tone",
+      "props": {
+        "tone": "warn"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Deprecated"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/tone-help",
+      "title": "The help tone",
+      "props": {
+        "tone": "help"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Experimental"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/tone-danger",
+      "title": "The danger tone",
+      "props": {
+        "tone": "danger"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Blocked"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/tone-contrast",
+      "title": "The contrast tone",
+      "props": {
+        "tone": "contrast"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Internal"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/consumer-class",
+      "title": "A consumer class is appended after the canonical classes, never instead of them",
+      "props": {
+        "tone": "primary"
+      },
+      "attrs": {
+        "class": "parity-consumer parity-badge-consumer"
+      },
+      "content": {
+        "text": "Consumer class"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/consumer-class-neutral",
+      "title": "A consumer class on a neutral tone, where there is no modifier for it to follow",
+      "props": {},
+      "attrs": {
+        "class": "parity-consumer"
+      },
+      "content": {
+        "text": "Consumer class"
+      },
+      "visual": false
+    },
+    {
+      "id": "badge/consumer-style",
+      "title": "An inline style reaches the root",
+      "props": {
+        "tone": "info"
+      },
+      "attrs": {
+        "style": "letter-spacing: 0.08em"
+      },
+      "content": {
+        "text": "Letterspaced"
+      },
+      "visual": true
+    },
+    {
+      "id": "badge/product-data",
+      "title": "A product data attribute reaches the root and is compared",
+      "props": {
+        "tone": "success"
+      },
+      "attrs": {
+        "data-testid": "badge-product-data"
+      },
+      "content": {
+        "text": "Instrumented"
+      },
+      "visual": false
+    },
+    {
+      "id": "badge/consumer-aria",
+      "title": "The component writes no ARIA of its own; a consumer role and name are forwarded verbatim",
+      "props": {
+        "tone": "warn"
+      },
+      "attrs": {
+        "role": "status",
+        "aria-label": "Two items pending"
+      },
+      "content": {
+        "text": "2"
+      },
+      "visual": false
+    },
+    {
+      "id": "badge/hostile-text",
+      "title": "Hostile slot text is rendered as text on both platforms, never as markup",
+      "props": {
+        "tone": "danger"
+      },
+      "attrs": {},
+      "content": {
+        "text": "</span><img src=x onerror=alert(1)> & \"quoted\" 'single'"
+      },
+      "visual": false
+    },
+    {
+      "id": "badge/empty",
+      "title": "No slot content at all: the component has one content channel and no fallback",
+      "props": {},
+      "attrs": {},
+      "content": {},
+      "visual": false
+    }
+  ]
+}

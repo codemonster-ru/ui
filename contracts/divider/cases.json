@@ -1,0 +1,104 @@
+{
+  "$comment": "Shared VfDivider cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. The component has no slot, so there is no \"content\". The catalog's job is the accessibility quirk: aria-orientation is written on both orientations, role=separator only on the vertical one, and a consumer can override either because attrs are bound after the component's own attributes. scripts/ci/presentation-coverage.mjs is what stops the list eroding.",
+  "component": "divider",
+  "propVocabulary": {
+    "orientation": "VfDividerOrientation: horizontal | vertical. Defaults to horizontal. Unlike the toned spans in the same batch, the modifier is always emitted, including at the default."
+  },
+  "cases": [
+    {
+      "id": "divider/horizontal",
+      "title": "The default horizontal divider: aria-orientation is present and there is no role at all",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "divider/horizontal-explicit",
+      "title": "Horizontal passed explicitly behaves identically to the default",
+      "props": {
+        "orientation": "horizontal"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "divider/vertical",
+      "title": "The vertical divider, the only orientation that exposes role=separator",
+      "props": {
+        "orientation": "vertical"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "divider/consumer-class",
+      "title": "A consumer class is appended after the canonical classes",
+      "props": {},
+      "attrs": {
+        "class": "parity-consumer parity-divider-consumer"
+      },
+      "visual": true
+    },
+    {
+      "id": "divider/consumer-style",
+      "title": "An inline style reaches the root",
+      "props": {
+        "orientation": "vertical"
+      },
+      "attrs": {
+        "style": "opacity: 0.6"
+      },
+      "visual": true
+    },
+    {
+      "id": "divider/product-data",
+      "title": "A product data attribute reaches the root and is compared",
+      "props": {},
+      "attrs": {
+        "data-testid": "divider-product-data"
+      },
+      "visual": false
+    },
+    {
+      "id": "divider/role-override-horizontal",
+      "title": "A consumer role reaches a horizontal divider that would otherwise expose none",
+      "props": {},
+      "attrs": {
+        "role": "presentation"
+      },
+      "visual": false
+    },
+    {
+      "id": "divider/role-override-vertical",
+      "title": "A consumer role replaces the separator role the component would have written",
+      "props": {
+        "orientation": "vertical"
+      },
+      "attrs": {
+        "role": "none"
+      },
+      "visual": false
+    },
+    {
+      "id": "divider/aria-orientation-override",
+      "title": "A consumer aria-orientation contradicts the prop, and nothing reconciles the two: the class still says horizontal",
+      "props": {},
+      "attrs": {
+        "aria-orientation": "vertical"
+      },
+      "visual": false
+    },
+    {
+      "id": "divider/conflicting-overrides",
+      "title": "Both role and aria-orientation overridden at once on a vertical divider",
+      "props": {
+        "orientation": "vertical"
+      },
+      "attrs": {
+        "role": "presentation",
+        "aria-orientation": "horizontal"
+      },
+      "visual": false
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "$comment": "Parity policy for the shared VfBadge cases. Plain data: no DSL, no waiver engine. Written per component rather than shared across the M15 batch: a batch-wide policy would let one component's approval excuse another's difference, which is exactly what batching must not buy. VfTag has its own file even though the two read alike.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class, style, role, aria-label and any consumer attribute that reaches the root span. The component itself writes no native attribute other than class."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role, wherever either adapter writes one."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. A target that reports a different interaction posture than its peers is a difference like any other."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "neutral-tone-emits-no-modifier",
+      "description": "tone=\"neutral\" produces the bare vf-badge class. The default tone is expressed by the absence of a modifier, unlike VfCheckbox/VfRadio/VfSwitch where the default size still emits one.",
+      "classification": "exact",
+      "reason": "Two conventions coexist in the library and both are preserved. Recorded because it looks like an inconsistency and is one.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/presentation/state-vectors.json"
+    },
+    {
+      "id": "consumer-class-is-appended-not-substituted",
+      "description": "inheritAttrs is false and v-bind=\"attrs\" follows :class, but Vue merges class rather than replacing it, so canonical classes stay first and the consumer's are appended.",
+      "classification": "exact",
+      "reason": "A port would reasonably bind attrs first and let the consumer class win. Both adapters append.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/badge/VfBadge.characterization.spec.ts"
+    },
+    {
+      "id": "the-badge-writes-no-aria-of-its-own",
+      "description": "A badge is a plain span. It has no role, no accessible name, and nothing marks it as status. Whatever ARIA it carries came from the consumer.",
+      "classification": "exact",
+      "reason": "Absence is the contract. Adding role=status would be an accessibility improvement and therefore a product change.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/badge/cases.json#badge/consumer-aria"
+    },
+    {
+      "id": "badge-tones-paint-a-background",
+      "description": "A badge tone modifier sets background, border-colour and colour. VfTag's sets border-colour and colour only. The class lists look interchangeable; the stylesheets are not.",
+      "classification": "exact",
+      "reason": "This is the distinction that makes VfBadge and VfTag different components rather than one component with two block names. Asserted visually and through style.colour.",
+      "razorDiffers": false,
+      "coveredBy": "packages/styles/src/components/badge.css"
+    }
+  ],
+  "approvedDivergences": []
+}

@@ -1,0 +1,204 @@
+{
+  "$comment": "Shared VfTag cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Authored independently of the VfBadge catalog rather than copied from it: the two read alike on purpose, and holding two separately auditable lists is what makes a substitution visible. Note the tone semantics differ where it is not visible here - a tag tone sets border-colour and colour and never a background, which the stylesheet contract asserts. scripts/ci/presentation-coverage.mjs is what stops the list eroding.",
+  "component": "tag",
+  "propVocabulary": {
+    "tone": "VfFeedbackTone: neutral | primary | success | info | warn | help | danger | contrast. A distinct public type from VfBadgeTone with the same members today. Defaults to neutral, which emits no modifier class."
+  },
+  "cases": [
+    {
+      "id": "tag/neutral-default",
+      "title": "The default tag: neutral, and neutral emits no modifier class at all",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "text": "Unassigned"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/neutral-explicit",
+      "title": "Neutral passed explicitly still emits no modifier, so the default is not a special case",
+      "props": {
+        "tone": "neutral"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Unassigned"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/tone-primary",
+      "title": "The primary tone",
+      "props": {
+        "tone": "primary"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Platform"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/tone-success",
+      "title": "The success tone",
+      "props": {
+        "tone": "success"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Shipped"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/tone-info",
+      "title": "The info tone",
+      "props": {
+        "tone": "info"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Docs"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/tone-warn",
+      "title": "The warn tone",
+      "props": {
+        "tone": "warn"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Flaky"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/tone-help",
+      "title": "The help tone",
+      "props": {
+        "tone": "help"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Needs triage"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/tone-danger",
+      "title": "The danger tone",
+      "props": {
+        "tone": "danger"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Regression"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/tone-contrast",
+      "title": "The contrast tone",
+      "props": {
+        "tone": "contrast"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Private"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/consumer-class",
+      "title": "A consumer class is appended after the canonical classes, never instead of them",
+      "props": {
+        "tone": "primary"
+      },
+      "attrs": {
+        "class": "parity-consumer parity-tag-consumer"
+      },
+      "content": {
+        "text": "Consumer class"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/consumer-class-neutral",
+      "title": "A consumer class on a neutral tone, where there is no modifier for it to follow",
+      "props": {},
+      "attrs": {
+        "class": "parity-consumer"
+      },
+      "content": {
+        "text": "Consumer class"
+      },
+      "visual": false
+    },
+    {
+      "id": "tag/consumer-style",
+      "title": "An inline style reaches the root",
+      "props": {
+        "tone": "info"
+      },
+      "attrs": {
+        "style": "letter-spacing: 0.08em"
+      },
+      "content": {
+        "text": "Letterspaced"
+      },
+      "visual": true
+    },
+    {
+      "id": "tag/product-data",
+      "title": "A product data attribute reaches the root and is compared",
+      "props": {
+        "tone": "success"
+      },
+      "attrs": {
+        "data-testid": "tag-product-data"
+      },
+      "content": {
+        "text": "Instrumented"
+      },
+      "visual": false
+    },
+    {
+      "id": "tag/consumer-aria",
+      "title": "The component writes no ARIA of its own; a consumer role and name are forwarded verbatim",
+      "props": {
+        "tone": "warn"
+      },
+      "attrs": {
+        "role": "status",
+        "aria-label": "Filter: regression"
+      },
+      "content": {
+        "text": "Regression"
+      },
+      "visual": false
+    },
+    {
+      "id": "tag/hostile-text",
+      "title": "Hostile slot text is rendered as text on both platforms, never as markup",
+      "props": {
+        "tone": "danger"
+      },
+      "attrs": {},
+      "content": {
+        "text": "</span><img src=x onerror=alert(1)> & \"quoted\" 'single'"
+      },
+      "visual": false
+    },
+    {
+      "id": "tag/empty",
+      "title": "No slot content at all: the component has one content channel and no fallback",
+      "props": {},
+      "attrs": {},
+      "content": {},
+      "visual": false
+    }
+  ]
+}
