@@ -187,7 +187,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/checkbox/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/checkbox/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/checkbox",
+          "razor": "/"
         }
       }
     },
@@ -658,7 +667,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/radio/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/radio/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/radio",
+          "razor": "/"
         }
       }
     },
@@ -766,7 +784,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/switch/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/switch/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/switch",
+          "razor": "/"
         }
       }
     },

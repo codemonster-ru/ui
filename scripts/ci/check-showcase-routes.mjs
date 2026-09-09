@@ -100,6 +100,9 @@ const controlSelectors = {
   VfField: '.vf-field',
   VfButton: 'button.vf-button',
   VfTextarea: 'textarea.vf-textarea',
+  VfCheckbox: 'label.vf-checkbox',
+  VfRadio: 'label.vf-radio',
+  VfSwitch: 'label.vf-switch',
 };
 
 /**
@@ -152,7 +155,17 @@ check(
 );
 check(
   'only components with a real Razor adapter are marked implemented',
-  JSON.stringify(razorImplemented) === JSON.stringify(['VfButton', 'VfField', 'VfIconButton', 'VfInput', 'VfTextarea']),
+  JSON.stringify(razorImplemented) ===
+    JSON.stringify([
+      'VfButton',
+      'VfCheckbox',
+      'VfField',
+      'VfIconButton',
+      'VfInput',
+      'VfRadio',
+      'VfSwitch',
+      'VfTextarea',
+    ]),
   razorImplemented.join(', '),
 );
 check(
@@ -373,7 +386,12 @@ try {
     // VfIconButton and VfButton have nothing to enhance: a native button is
     // complete server-side, so neither carries an ownership marker and the gate
     // must not demand one they have no reason to render.
-    const enhanced = name === 'VfInput' || name === 'VfField' || name === 'VfTextarea';
+    // VfCheckbox, VfRadio and VfSwitch ship no controller: the root of each is
+    // a label wrapping a native input, so the pointer, the keyboard and the
+    // disabled state are the platform's. The checkbox marks only an
+    // indeterminate control, which no showcase case renders as the whole page,
+    // so none of the three is treated as an enhanced component here.
+    const enhanced = ['VfInput', 'VfField', 'VfTextarea'].includes(name);
 
     for (const theme of themes) {
       const vue = await readShowcase(

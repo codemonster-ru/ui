@@ -14,6 +14,9 @@ const iconButtonShowcasePattern = /^\/icon-button\/?(\?.*)?$/;
 const fieldShowcasePattern = /^\/field\/?(\?.*)?$/;
 const buttonShowcasePattern = /^\/button\/?(\?.*)?$/;
 const textareaShowcasePattern = /^\/textarea\/?(\?.*)?$/;
+const checkboxShowcasePattern = /^\/checkbox\/?(\?.*)?$/;
+const radioShowcasePattern = /^\/radio\/?(\?.*)?$/;
+const switchShowcasePattern = /^\/switch\/?(\?.*)?$/;
 
 function vueforgeShowcaseHistoryFallback(): Plugin {
   const rewriteShowcaseSection = (req: IncomingMessage, _res: ServerResponse, next: (err?: unknown) => void) => {
@@ -34,6 +37,15 @@ function vueforgeShowcaseHistoryFallback(): Plugin {
     } else if (req.url && textareaShowcasePattern.test(req.url)) {
       const [, query = ''] = req.url.split('?');
       req.url = query ? `/textarea.html?${query}` : '/textarea.html';
+    } else if (req.url && checkboxShowcasePattern.test(req.url)) {
+      const [, query = ''] = req.url.split('?');
+      req.url = query ? `/checkbox.html?${query}` : '/checkbox.html';
+    } else if (req.url && radioShowcasePattern.test(req.url)) {
+      const [, query = ''] = req.url.split('?');
+      req.url = query ? `/radio.html?${query}` : '/radio.html';
+    } else if (req.url && switchShowcasePattern.test(req.url)) {
+      const [, query = ''] = req.url.split('?');
+      req.url = query ? `/switch.html?${query}` : '/switch.html';
     }
 
     next();
@@ -116,6 +128,9 @@ export default defineConfig({
         field: fileURLToPath(new URL('./field.html', import.meta.url)),
         button: fileURLToPath(new URL('./button.html', import.meta.url)),
         textarea: fileURLToPath(new URL('./textarea.html', import.meta.url)),
+        checkbox: fileURLToPath(new URL('./checkbox.html', import.meta.url)),
+        radio: fileURLToPath(new URL('./radio.html', import.meta.url)),
+        switch: fileURLToPath(new URL('./switch.html', import.meta.url)),
       },
     },
   },
@@ -166,6 +181,18 @@ export default defineConfig({
       {
         find: /^@vueforge\/textarea-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/textarea/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/checkbox-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/checkbox/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/radio-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/radio/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/switch-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/switch/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

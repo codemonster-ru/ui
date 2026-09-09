@@ -172,6 +172,9 @@ $iconButton = $registry->resolve('vf-icon-button');
 $field = $registry->resolve('vf-field');
 $button = $registry->resolve('vf-button');
 $textarea = $registry->resolve('vf-textarea');
+$checkbox = $registry->resolve('vf-checkbox');
+$radio = $registry->resolve('vf-radio');
+$switch = $registry->resolve('vf-switch');
 $assetPath = VueForgeRazorProvider::assetPath();
 
 echo json_encode([
@@ -181,6 +184,9 @@ echo json_encode([
         'vf-field' => $registry->handles('vf-field'),
         'vf-button' => $registry->handles('vf-button'),
         'vf-textarea' => $registry->handles('vf-textarea'),
+        'vf-checkbox' => $registry->handles('vf-checkbox'),
+        'vf-radio' => $registry->handles('vf-radio'),
+        'vf-switch' => $registry->handles('vf-switch'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -230,6 +236,32 @@ echo json_encode([
         ['label' => 'Release notes', 'description' => 'Shown to everyone', 'label-placement' => 'floating'],
         ['default' => static fn () => $textarea->render(new ComponentRenderContext(['value' => 'Shipped it'], []))],
     ))->value(),
+    // The three checkable controls. The indeterminate checkbox and the real
+    // radio group are the states packaging could plausibly break without
+    // breaking a tag.
+    'checkbox' => $checkbox->render(new ComponentRenderContext(
+        ['checked' => true, 'label' => 'Ship it', 'name' => 'ship'],
+        [],
+    ))->value(),
+    'indeterminateCheckbox' => $checkbox->render(new ComponentRenderContext(
+        ['indeterminate' => true, 'label' => 'Some selected'],
+        [],
+    ))->value(),
+    'radioGroup' => $radio->render(new ComponentRenderContext(
+        ['name' => 'pick', 'value' => 'a', 'model-value' => 'a', 'label' => 'Alpha'],
+        [],
+    ))->value() . $radio->render(new ComponentRenderContext(
+        ['name' => 'pick', 'value' => 'b', 'model-value' => 'a', 'label' => 'Beta'],
+        [],
+    ))->value(),
+    'switchOn' => $switch->render(new ComponentRenderContext(
+        ['checked' => true, 'label' => 'Notify me'],
+        [],
+    ))->value(),
+    'checkableCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-checkbox')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-radio')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-switch'),
     'assetPath' => $assetPath,
     'css' => is_file($assetPath . '/vueforge-razor.css') ? filesize($assetPath . '/vueforge-razor.css') : 0,
     'textareaCss' => is_file($assetPath . '/vueforge-razor.css')
@@ -259,9 +291,16 @@ echo json_encode([
   check('the consumer renders the packaged icon data', rendered.markup.includes('<svg'));
   check(
     'the installed provider registers every migrated component',
-    ['vf-input', 'vf-icon-button', 'vf-field', 'vf-button', 'vf-textarea'].every(
-      (tag) => rendered.handles[tag] === true,
-    ),
+    [
+      'vf-input',
+      'vf-icon-button',
+      'vf-field',
+      'vf-button',
+      'vf-textarea',
+      'vf-checkbox',
+      'vf-radio',
+      'vf-switch',
+    ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
 
@@ -415,6 +454,49 @@ echo json_encode([
     'the packaged stylesheet carries the textarea rules',
     rendered.textareaCss,
     'the textarea would render unstyled in a consumer application',
+  );
+
+  // --------------------------------------- vf-checkbox, vf-radio, vf-switch
+  check(
+    'the packaged checkbox renders a label wrapping a native checkbox',
+    rendered.checkbox.includes('<label class="vf-checkbox vf-checkbox--md vf-checkbox--checked"') &&
+      rendered.checkbox.includes('type="checkbox"') &&
+      rendered.checkbox.includes('checked'),
+    rendered.checkbox.slice(0, 160),
+  );
+  check('the packaged checkbox carries its explicit aria-checked', rendered.checkbox.includes('aria-checked="true"'));
+  check(
+    'the packaged indeterminate checkbox reports mixed and marks itself for enhancement',
+    rendered.indeterminateCheckbox.includes('aria-checked="mixed"') &&
+      rendered.indeterminateCheckbox.includes('vf-checkbox--indeterminate') &&
+      rendered.indeterminateCheckbox.includes('data-vf-razor="checkbox-indeterminate"'),
+    rendered.indeterminateCheckbox.slice(0, 200),
+  );
+  check(
+    'the packaged radio group shares one name and selects exactly one member',
+    (rendered.radioGroup.match(/name="pick"/g) ?? []).length === 2 &&
+      (rendered.radioGroup.match(/\schecked/g) ?? []).length === 1,
+    rendered.radioGroup.slice(0, 200),
+  );
+  check(
+    'the packaged radio group gives each member its own value',
+    rendered.radioGroup.includes('value="a"') && rendered.radioGroup.includes('value="b"'),
+  );
+  check(
+    'the packaged switch is a native checkbox carrying the switch role and no aria-checked',
+    rendered.switchOn.includes('type="checkbox"') &&
+      rendered.switchOn.includes('role="switch"') &&
+      !rendered.switchOn.includes('aria-checked'),
+    rendered.switchOn.slice(0, 160),
+  );
+  check(
+    'neither the radio nor the switch needs a browser controller',
+    !rendered.radioGroup.includes('data-vf-razor') && !rendered.switchOn.includes('data-vf-razor'),
+  );
+  check(
+    'the packaged stylesheet carries all three checkable rule sets',
+    rendered.checkableCss,
+    'a checkable control would render unstyled in a consumer application',
   );
 
   check('the packaged stylesheet exists and is not empty', rendered.css > 10_000, `${rendered.css} bytes`);

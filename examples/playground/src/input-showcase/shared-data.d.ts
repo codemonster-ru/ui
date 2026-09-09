@@ -26,6 +26,21 @@ declare module '@vueforge/textarea-cases' {
   export default catalog;
 }
 
+declare module '@vueforge/checkbox-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
+declare module '@vueforge/radio-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
+declare module '@vueforge/switch-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
 declare module '@vueforge/showcase-index' {
   interface ShowcasePlatform {
     label: string;
