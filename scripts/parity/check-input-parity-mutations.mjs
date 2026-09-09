@@ -36,6 +36,17 @@ import {
 import { fieldBrowserMutations, fieldParityMutations, fieldPolicyMutations } from './field-mutations.mjs';
 import { buttonBrowserMutations, buttonParityMutations, buttonPolicyMutations } from './button-mutations.mjs';
 import { textareaBrowserMutations, textareaParityMutations, textareaPolicyMutations } from './textarea-mutations.mjs';
+import {
+  checkboxBrowserMutations,
+  checkboxParityMutations,
+  checkboxPolicyMutations,
+  radioBrowserMutations,
+  radioParityMutations,
+  radioPolicyMutations,
+  switchBrowserMutations,
+  switchParityMutations,
+  switchPolicyMutations,
+} from './checkable-mutations.mjs';
 
 /**
  * The negative fixture is component-specific even though the harness is not.
@@ -56,6 +67,13 @@ const mutationSets = {
     policy: textareaPolicyMutations,
     browser: textareaBrowserMutations,
   },
+  checkbox: {
+    capture: checkboxParityMutations,
+    policy: checkboxPolicyMutations,
+    browser: checkboxBrowserMutations,
+  },
+  radio: { capture: radioParityMutations, policy: radioPolicyMutations, browser: radioBrowserMutations },
+  switch: { capture: switchParityMutations, policy: switchPolicyMutations, browser: switchBrowserMutations },
 };
 
 const profile = profileFromArgv();

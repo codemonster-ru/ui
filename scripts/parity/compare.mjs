@@ -400,6 +400,25 @@ function compareNodeProperties(left, right, nodePath, differences) {
     });
   }
 
+  // A checkable control's state is a property. The `checked` attribute records
+  // what the server said; these record what the element actually is, and
+  // `indeterminate` has no attribute behind it at all - so without these two
+  // comparisons the batch's whole live-state claim would rest on nothing.
+  for (const [field, detail] of [
+    ['liveChecked', 'live checked'],
+    ['liveIndeterminate', 'live indeterminate'],
+  ]) {
+    if ((left[field] ?? null) !== (right[field] ?? null)) {
+      differences.push({
+        dimension: 'dom.nativeAttributes',
+        path: nodePath,
+        detail,
+        left: left[field] ?? null,
+        right: right[field] ?? null,
+      });
+    }
+  }
+
   if ((left.operable ?? null) !== (right.operable ?? null)) {
     differences.push({
       dimension: 'dom.actionPresence',
