@@ -26,9 +26,9 @@
     {
       "files": [
         "packages/core/src/styles/entries/accordion.css",
-        "packages/core/src/styles/entries/checkbox.css",
-        "packages/core/src/styles/entries/radio.css",
-        "packages/core/src/styles/entries/switch.css"
+        "packages/styles/src/components/checkbox.css",
+        "packages/styles/src/components/radio.css",
+        "packages/styles/src/components/switch.css"
       ],
       "rules": {
         "no-descending-specificity": null
