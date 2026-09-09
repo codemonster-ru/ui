@@ -124,7 +124,9 @@ describe('VfSwitch characterization: classes', () => {
         .classes()
         .some((name) => name.includes('thumb-contrast')),
     ).toBe(false);
-    expect(mountSwitch({ props: { thumbContrast: 'light' } }).classes()).toContain('vf-switch--thumb-contrast-light');
+    expect(mountSwitch({ props: { thumbContrast: 'inverse' } }).classes()).toContain(
+      'vf-switch--thumb-contrast-inverse',
+    );
   });
 
   it('emits state modifiers in a fixed order', () => {
@@ -132,7 +134,7 @@ describe('VfSwitch characterization: classes', () => {
       props: {
         size: 'sm',
         static: true,
-        thumbContrast: 'dark',
+        thumbContrast: 'inverse',
         modelValue: true,
         invalid: true,
         disabled: true,
@@ -143,7 +145,7 @@ describe('VfSwitch characterization: classes', () => {
       'vf-switch',
       'vf-switch--sm',
       'vf-switch--static',
-      'vf-switch--thumb-contrast-dark',
+      'vf-switch--thumb-contrast-inverse',
       'vf-switch--checked',
       'vf-switch--invalid',
       'vf-switch--disabled',

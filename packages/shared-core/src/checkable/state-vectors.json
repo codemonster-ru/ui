@@ -1,0 +1,1843 @@
+{
+  "$comment": "Shared input/expected vectors for the three checkable controls. The TypeScript rules in checkable/state.ts and the PHP mirror in packages/razor/src/Support/CheckableState.php both run these. Deliberately three separate rule sets in one file: the components share one line of behaviour (the size modifier is always emitted) and nothing else, so each is enumerated on its own.",
+  "resolveCheckboxClasses": [
+    {
+      "size": "sm",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--sm",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--sm",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid"
+      ]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--sm",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--checked", "vf-checkbox--indeterminate"]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--sm",
+        "vf-checkbox--checked",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--checked", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--checked", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--checked"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--sm",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--indeterminate", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--indeterminate", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--indeterminate"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--invalid", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--sm", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--sm"]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--md",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--md",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid"
+      ]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--md",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--checked", "vf-checkbox--indeterminate"]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--md",
+        "vf-checkbox--checked",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--checked", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--checked", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--checked"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--md",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--indeterminate", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--indeterminate", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--indeterminate"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--invalid", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--md", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--md"]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--lg",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--lg",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid"
+      ]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--lg",
+        "vf-checkbox--checked",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--checked", "vf-checkbox--indeterminate"]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--lg",
+        "vf-checkbox--checked",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--checked", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--checked", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--checked"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-checkbox",
+        "vf-checkbox--lg",
+        "vf-checkbox--indeterminate",
+        "vf-checkbox--invalid",
+        "vf-checkbox--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--indeterminate", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--indeterminate", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "indeterminate": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--indeterminate"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--invalid", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--invalid"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-checkbox", "vf-checkbox--lg", "vf-checkbox--disabled"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--lg"]
+    },
+    {
+      "size": "xl",
+      "checked": false,
+      "indeterminate": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-checkbox", "vf-checkbox--xl"]
+    }
+  ],
+  "resolveCheckboxAriaChecked": [
+    {
+      "checked": true,
+      "indeterminate": true,
+      "expected": "mixed"
+    },
+    {
+      "checked": true,
+      "indeterminate": false,
+      "expected": "true"
+    },
+    {
+      "checked": false,
+      "indeterminate": true,
+      "expected": "mixed"
+    },
+    {
+      "checked": false,
+      "indeterminate": false,
+      "expected": "false"
+    }
+  ],
+  "resolveRadioClasses": [
+    {
+      "size": "sm",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--sm", "vf-radio--checked", "vf-radio--invalid", "vf-radio--disabled"]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--sm", "vf-radio--checked", "vf-radio--invalid"]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--sm", "vf-radio--checked", "vf-radio--disabled"]
+    },
+    {
+      "size": "sm",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--sm", "vf-radio--checked"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--sm", "vf-radio--invalid", "vf-radio--disabled"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--sm", "vf-radio--invalid"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--sm", "vf-radio--disabled"]
+    },
+    {
+      "size": "sm",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--sm"]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--md", "vf-radio--checked", "vf-radio--invalid", "vf-radio--disabled"]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--md", "vf-radio--checked", "vf-radio--invalid"]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--md", "vf-radio--checked", "vf-radio--disabled"]
+    },
+    {
+      "size": "md",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--md", "vf-radio--checked"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--md", "vf-radio--invalid", "vf-radio--disabled"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--md", "vf-radio--invalid"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--md", "vf-radio--disabled"]
+    },
+    {
+      "size": "md",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--md"]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--lg", "vf-radio--checked", "vf-radio--invalid", "vf-radio--disabled"]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--lg", "vf-radio--checked", "vf-radio--invalid"]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--lg", "vf-radio--checked", "vf-radio--disabled"]
+    },
+    {
+      "size": "lg",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--lg", "vf-radio--checked"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--lg", "vf-radio--invalid", "vf-radio--disabled"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--lg", "vf-radio--invalid"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-radio", "vf-radio--lg", "vf-radio--disabled"]
+    },
+    {
+      "size": "lg",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--lg"]
+    },
+    {
+      "size": "xl",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-radio", "vf-radio--xl"]
+    }
+  ],
+  "isRadioChecked": [
+    {
+      "modelValue": "a",
+      "value": "a",
+      "expected": true
+    },
+    {
+      "modelValue": "a",
+      "value": "b",
+      "expected": false
+    },
+    {
+      "modelValue": 1,
+      "value": 1,
+      "expected": true
+    },
+    {
+      "modelValue": "1",
+      "value": 1,
+      "expected": false
+    },
+    {
+      "modelValue": 1,
+      "value": "1",
+      "expected": false
+    },
+    {
+      "modelValue": false,
+      "value": false,
+      "expected": true
+    },
+    {
+      "modelValue": null,
+      "value": "a",
+      "expected": false
+    },
+    {
+      "modelValue": true,
+      "value": true,
+      "expected": true
+    }
+  ],
+  "resolveSwitchClasses": [
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--static",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--static", "vf-switch--checked", "vf-switch--invalid"]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--static", "vf-switch--checked", "vf-switch--disabled"]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--static", "vf-switch--checked"]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--static", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--static", "vf-switch--invalid"]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--static", "vf-switch--disabled"]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--static"]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--static", "vf-switch--thumb-contrast-inverse"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--checked", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--checked", "vf-switch--invalid"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--checked", "vf-switch--disabled"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--checked"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--invalid"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--disabled"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--thumb-contrast-inverse", "vf-switch--checked"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--sm",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--thumb-contrast-inverse", "vf-switch--invalid"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--thumb-contrast-inverse", "vf-switch--disabled"]
+    },
+    {
+      "size": "sm",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--sm", "vf-switch--thumb-contrast-inverse"]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--static",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--static", "vf-switch--checked", "vf-switch--invalid"]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--static", "vf-switch--checked", "vf-switch--disabled"]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--static", "vf-switch--checked"]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--static", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--static", "vf-switch--invalid"]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--static", "vf-switch--disabled"]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--static"]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--static", "vf-switch--thumb-contrast-inverse"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--checked", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--checked", "vf-switch--invalid"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--checked", "vf-switch--disabled"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--checked"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--invalid"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--disabled"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--thumb-contrast-inverse", "vf-switch--checked"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--md",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--thumb-contrast-inverse", "vf-switch--invalid"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--thumb-contrast-inverse", "vf-switch--disabled"]
+    },
+    {
+      "size": "md",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--md", "vf-switch--thumb-contrast-inverse"]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--static",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--static", "vf-switch--checked", "vf-switch--invalid"]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--static", "vf-switch--checked", "vf-switch--disabled"]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--static", "vf-switch--checked"]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--static", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--static", "vf-switch--invalid"]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--static", "vf-switch--disabled"]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--static"]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--static",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": true,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--static", "vf-switch--thumb-contrast-inverse"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--checked", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--checked", "vf-switch--invalid"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--checked", "vf-switch--disabled"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--checked"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--invalid", "vf-switch--disabled"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--invalid"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--disabled"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": true,
+      "disabled": false,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--invalid"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--checked",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": true,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--thumb-contrast-inverse", "vf-switch--checked"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": true,
+      "expected": [
+        "vf-switch",
+        "vf-switch--lg",
+        "vf-switch--thumb-contrast-inverse",
+        "vf-switch--invalid",
+        "vf-switch--disabled"
+      ]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": true,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--thumb-contrast-inverse", "vf-switch--invalid"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": true,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--thumb-contrast-inverse", "vf-switch--disabled"]
+    },
+    {
+      "size": "lg",
+      "isStatic": false,
+      "thumbContrast": "inverse",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--lg", "vf-switch--thumb-contrast-inverse"]
+    },
+    {
+      "size": "xl",
+      "isStatic": false,
+      "thumbContrast": "auto",
+      "checked": false,
+      "invalid": false,
+      "disabled": false,
+      "expected": ["vf-switch", "vf-switch--xl"]
+    }
+  ]
+}

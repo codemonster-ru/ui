@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, useAttrs, type StyleValue } from 'vue';
+import { isRadioChecked, resolveRadioClasses } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfControlSize } from '@/types/components';
 
@@ -32,15 +33,16 @@ const emit = defineEmits<{
 }>();
 
 const attrs = useAttrs();
-const isChecked = computed(() => props.modelValue === props.value);
+const isChecked = computed(() => isRadioChecked(props.modelValue, props.value));
 
 const rootClasses = computed(() =>
   cx(
-    'vf-radio',
-    `vf-radio--${props.size}`,
-    isChecked.value && 'vf-radio--checked',
-    props.invalid && 'vf-radio--invalid',
-    props.disabled && 'vf-radio--disabled',
+    ...resolveRadioClasses({
+      size: props.size,
+      checked: isChecked.value,
+      invalid: props.invalid,
+      disabled: props.disabled,
+    }),
     attrs.class as string | undefined,
   ),
 );

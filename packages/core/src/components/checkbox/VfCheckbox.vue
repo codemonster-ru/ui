@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, useAttrs, watch, type StyleValue } from 'vue';
+import { resolveCheckboxAriaChecked, resolveCheckboxClasses } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfControlSize } from '@/types/components';
 
@@ -44,14 +45,18 @@ onMounted(syncIndeterminate);
 
 const rootClasses = computed(() =>
   cx(
-    'vf-checkbox',
-    `vf-checkbox--${props.size}`,
-    props.modelValue && 'vf-checkbox--checked',
-    props.indeterminate && 'vf-checkbox--indeterminate',
-    props.invalid && 'vf-checkbox--invalid',
-    props.disabled && 'vf-checkbox--disabled',
+    ...resolveCheckboxClasses({
+      size: props.size,
+      checked: props.modelValue,
+      indeterminate: props.indeterminate,
+      invalid: props.invalid,
+      disabled: props.disabled,
+    }),
     attrs.class as string | undefined,
   ),
+);
+const ariaChecked = computed(() =>
+  resolveCheckboxAriaChecked({ checked: props.modelValue, indeterminate: props.indeterminate }),
 );
 
 const rootStyles = computed<StyleValue>(() => attrs.style as StyleValue);
@@ -75,7 +80,7 @@ function handleChange(event: Event) {
       :checked="props.modelValue"
       :disabled="props.disabled"
       :aria-invalid="props.invalid || undefined"
-      :aria-checked="props.indeterminate ? 'mixed' : props.modelValue ? 'true' : 'false'"
+      :aria-checked="ariaChecked"
       v-bind="inputAttrs"
       @change="handleChange"
     />

@@ -23,4 +23,9 @@ export const styleSources = [
   // VfTextarea, whose only declared dependency is field.css - already neutral
   // and already reached through input.css, so this adds one file, not a closure.
   'packages/styles/src/components/textarea.css',
+  // The three checkable controls. Each is a standalone closure - none of them
+  // imports another stylesheet - so this adds three files, not three closures.
+  'packages/styles/src/components/checkbox.css',
+  'packages/styles/src/components/radio.css',
+  'packages/styles/src/components/switch.css',
 ];

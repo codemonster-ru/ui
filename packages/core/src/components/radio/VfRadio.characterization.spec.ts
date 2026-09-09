@@ -157,23 +157,16 @@ describe('VfRadio characterization: real groups', () => {
     setup() {
       const chosen = ref<string | undefined>('a');
 
-      return () =>
-        h('div', [
-          h(VfRadio, {
-            name: 'pick',
-            value: 'a',
-            label: 'Alpha',
-            modelValue: chosen.value,
-            'onUpdate:modelValue': (value: string) => (chosen.value = value),
-          }),
-          h(VfRadio, {
-            name: 'pick',
-            value: 'b',
-            label: 'Beta',
-            modelValue: chosen.value,
-            'onUpdate:modelValue': (value: string) => (chosen.value = value),
-          }),
-        ]);
+      const member = (value: string, label: string) =>
+        h(VfRadio, {
+          name: 'pick',
+          value,
+          label,
+          modelValue: chosen.value,
+          'onUpdate:modelValue': (next: string | number | boolean) => (chosen.value = String(next)),
+        } as never);
+
+      return () => h('div', [member('a', 'Alpha'), member('b', 'Beta')]);
     },
   });
 

@@ -14,6 +14,9 @@ export const checkboxSourcePath = 'packages/core/src/components/checkbox/VfCheck
 export const radioSourcePath = 'packages/core/src/components/radio/VfRadio.vue';
 export const switchSourcePath = 'packages/core/src/components/switch/VfSwitch.vue';
 
+/** The shared rules the three checkable controls and the Razor adapter derive from. */
+export const checkableRulePath = 'packages/shared-core/src/checkable/state.ts';
+
 /** The shared rules VfTextarea and the Razor adapter both derive their presentation from. */
 export const textareaRulePath = 'packages/shared-core/src/textarea/state.ts';
 
@@ -501,10 +504,10 @@ export const checkboxMutations = [
   },
   {
     id: 'checkbox-reports-indeterminate-as-checked',
-    file: checkboxSourcePath,
+    file: checkableRulePath,
     description: 'aria-checked stops saying mixed and falls back to the model',
-    find: "      :aria-checked=\"props.indeterminate ? 'mixed' : props.modelValue ? 'true' : 'false'\"",
-    replace: "      :aria-checked=\"props.modelValue ? 'true' : 'false'\"",
+    find: "  if (indeterminate) return 'mixed';",
+    replace: '',
   },
   {
     id: 'checkbox-drops-the-indeterminate-mark',
@@ -553,10 +556,10 @@ export const checkboxMutations = [
 export const radioMutations = [
   {
     id: 'radio-compares-loosely',
-    file: radioSourcePath,
+    file: checkableRulePath,
     description: 'strict equality becomes loose, so 1 and the string 1 select the same radio',
-    find: 'const isChecked = computed(() => props.modelValue === props.value);',
-    replace: 'const isChecked = computed(() => props.modelValue == props.value);',
+    find: '  return modelValue === value;',
+    replace: '  return modelValue == value;',
   },
   {
     id: 'radio-emits-a-boolean-like-a-checkbox',
@@ -595,9 +598,9 @@ export const radioMutations = [
   },
   {
     id: 'radio-drops-the-checked-modifier',
-    file: radioSourcePath,
+    file: checkableRulePath,
     description: 'the selected member stops looking selected',
-    find: "    isChecked.value && 'vf-radio--checked',",
+    find: "  if (checked) classes.push('vf-radio--checked');",
     replace: '',
   },
   {
@@ -647,23 +650,23 @@ export const switchMutations = [
   },
   {
     id: 'switch-drops-the-static-modifier',
-    file: switchSourcePath,
+    file: checkableRulePath,
     description: 'the static presentation disappears',
-    find: "    props.static && 'vf-switch--static',",
+    find: "  if (isStatic) classes.push('vf-switch--static');",
     replace: '',
   },
   {
     id: 'switch-always-emits-a-thumb-contrast',
-    file: switchSourcePath,
+    file: checkableRulePath,
     description: 'the auto contrast starts emitting a modifier the stylesheet never defined',
-    find: "    props.thumbContrast !== 'auto' && `vf-switch--thumb-contrast-${props.thumbContrast}`,",
-    replace: '    `vf-switch--thumb-contrast-${props.thumbContrast}`,',
+    find: "  if (thumbContrast !== 'auto') classes.push(`vf-switch--thumb-contrast-${thumbContrast}`);",
+    replace: '  classes.push(`vf-switch--thumb-contrast-${thumbContrast}`);',
   },
   {
     id: 'switch-drops-the-checked-modifier',
-    file: switchSourcePath,
+    file: checkableRulePath,
     description: 'an on switch stops looking on',
-    find: "    props.modelValue && 'vf-switch--checked',",
+    find: "  if (checked) classes.push('vf-switch--checked');",
     replace: '',
   },
   {

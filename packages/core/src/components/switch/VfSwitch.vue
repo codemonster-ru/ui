@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Comment, Fragment, Text, computed, useAttrs, useSlots, type StyleValue, type VNode } from 'vue';
+import { resolveSwitchClasses } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfControlSize, VfSwitchThumbContrast } from '@/types/components';
 
@@ -37,13 +38,14 @@ const slots = useSlots();
 
 const rootClasses = computed(() =>
   cx(
-    'vf-switch',
-    `vf-switch--${props.size}`,
-    props.static && 'vf-switch--static',
-    props.thumbContrast !== 'auto' && `vf-switch--thumb-contrast-${props.thumbContrast}`,
-    props.modelValue && 'vf-switch--checked',
-    props.invalid && 'vf-switch--invalid',
-    props.disabled && 'vf-switch--disabled',
+    ...resolveSwitchClasses({
+      size: props.size,
+      isStatic: props.static,
+      thumbContrast: props.thumbContrast,
+      checked: props.modelValue,
+      invalid: props.invalid,
+      disabled: props.disabled,
+    }),
     attrs.class as string | undefined,
   ),
 );

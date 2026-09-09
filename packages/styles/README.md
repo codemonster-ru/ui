@@ -20,6 +20,8 @@ M04 moved the first closure into it, unchanged.
   affordance the button composes, so its rules travel with the button;
 - `textarea.css` — the `.vf-textarea` rules, sizes, states and the floating
   selectors it shares with `field.css`, which it imports.
+- `checkbox.css`, `radio.css`, `switch.css` — the three checkable controls.
+  Each is a standalone closure importing nothing, so each moved as one file.
 
 That is the declared `@import` closure of `input.css` and of `button.css`, and
 nothing more. The
@@ -33,7 +35,7 @@ attributes and presets are never renamed as part of a move.
 
 ## How consumers still reach it
 
-`packages/core/src/styles/entries/{input,field,icon-button,button,progress-spinner,textarea}.css` are single-line
+`packages/core/src/styles/entries/{input,field,icon-button,button,progress-spinner,textarea,checkbox,radio,switch}.css` are single-line
 forwards to the files above. Every existing path keeps working untouched: the
 `@codemonster-ru/vueforge-core/input.css` subpath, the browser auto-CSS entries,
 `styles.css`, and the core entries that import `./field.css`, `./icon-button.css`,
