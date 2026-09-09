@@ -167,3 +167,26 @@ body {
   background: var(--vf-color-background-subtle);
   color: var(--vf-color-text-secondary);
 }
+
+/*
+ * VfDivider showcase frame.
+ *
+ * The component has no size of its own: a vertical divider takes its height
+ * from a flex parent through align-self: stretch, so without a layout around it
+ * there would be nothing to see. Showcase chrome, not product CSS - the rules
+ * that decide the divider's colour and thickness come from the packaged
+ * stylesheet.
+ */
+.razor-showcase__divider-frame {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px 0;
+}
+
+.razor-showcase__divider-side {
+  align-self: center;
+  color: var(--vf-color-text-secondary);
+  font-size: var(--vf-font-size-sm);
+}

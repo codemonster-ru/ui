@@ -103,6 +103,11 @@ const controlSelectors = {
   VfCheckbox: 'label.vf-checkbox',
   VfRadio: 'label.vf-radio',
   VfSwitch: 'label.vf-switch',
+  // The M15 presentation components. Each renders exactly one element, so the
+  // selector is the component's own root and nothing else.
+  VfBadge: 'span.vf-badge',
+  VfTag: 'span.vf-tag',
+  VfDivider: 'div.vf-divider',
 };
 
 /**
@@ -157,13 +162,16 @@ check(
   'only components with a real Razor adapter are marked implemented',
   JSON.stringify(razorImplemented) ===
     JSON.stringify([
+      'VfBadge',
       'VfButton',
       'VfCheckbox',
+      'VfDivider',
       'VfField',
       'VfIconButton',
       'VfInput',
       'VfRadio',
       'VfSwitch',
+      'VfTag',
       'VfTextarea',
     ]),
   razorImplemented.join(', '),
@@ -391,6 +399,10 @@ try {
     // disabled state are the platform's. The checkbox marks only an
     // indeterminate control, which no showcase case renders as the whole page,
     // so none of the three is treated as an enhanced component here.
+    // VfBadge, VfTag and VfDivider ship no controller either, and for a
+    // stronger reason than the checkable controls: there is no interaction to
+    // enhance at all. Their parity profiles say the same thing through the
+    // static snapshot.
     const enhanced = ['VfInput', 'VfField', 'VfTextarea'].includes(name);
 
     for (const theme of themes) {

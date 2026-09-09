@@ -130,7 +130,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/badge/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/badge/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/badge",
+          "razor": "/"
         }
       }
     },
@@ -316,7 +325,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/divider/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/divider/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/divider",
+          "razor": "/"
         }
       }
     },
@@ -841,7 +859,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/tag/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/tag/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/tag",
+          "razor": "/"
         }
       }
     },

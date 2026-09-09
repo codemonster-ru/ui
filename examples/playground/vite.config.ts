@@ -131,6 +131,9 @@ export default defineConfig({
         checkbox: fileURLToPath(new URL('./checkbox.html', import.meta.url)),
         radio: fileURLToPath(new URL('./radio.html', import.meta.url)),
         switch: fileURLToPath(new URL('./switch.html', import.meta.url)),
+        badge: fileURLToPath(new URL('./badge.html', import.meta.url)),
+        tag: fileURLToPath(new URL('./tag.html', import.meta.url)),
+        divider: fileURLToPath(new URL('./divider.html', import.meta.url)),
       },
     },
   },
@@ -193,6 +196,18 @@ export default defineConfig({
       {
         find: /^@vueforge\/switch-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/switch/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/badge-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/badge/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/tag-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/tag/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/divider-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/divider/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

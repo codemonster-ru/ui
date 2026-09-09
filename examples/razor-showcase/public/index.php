@@ -83,7 +83,7 @@ $showcaseIndex = readSharedJson($repositoryRoot . '/examples/shared/showcase-ind
  * view. The list is derived from the shared index rather than written here, so
  * this application cannot claim support the index does not record.
  */
-$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase', 'VfButton' => 'button-showcase', 'VfTextarea' => 'textarea-showcase', 'VfCheckbox' => 'checkbox-showcase', 'VfRadio' => 'radio-showcase', 'VfSwitch' => 'switch-showcase'];
+$views = ['VfInput' => 'input-showcase', 'VfIconButton' => 'icon-button-showcase', 'VfField' => 'field-showcase', 'VfButton' => 'button-showcase', 'VfTextarea' => 'textarea-showcase', 'VfCheckbox' => 'checkbox-showcase', 'VfRadio' => 'radio-showcase', 'VfSwitch' => 'switch-showcase', 'VfBadge' => 'badge-showcase', 'VfTag' => 'tag-showcase', 'VfDivider' => 'divider-showcase'];
 $supported = [];
 
 foreach ($showcaseIndex['components'] as $entry) {
@@ -159,7 +159,11 @@ foreach ($cases as $case) {
     // two platforms. Everything the field itself decides - its classes, its
     // description and error ids, aria-describedby, whether it is invalid -
     // moved into the vf-field component in M11, which is what closed M4.
-    if (in_array($component, ['VfIconButton', 'VfButton', 'VfCheckbox', 'VfRadio', 'VfSwitch'], true)) {
+    if (in_array(
+        $component,
+        ['VfIconButton', 'VfButton', 'VfCheckbox', 'VfRadio', 'VfSwitch', 'VfBadge', 'VfTag', 'VfDivider'],
+        true,
+    )) {
         continue;
     }
 

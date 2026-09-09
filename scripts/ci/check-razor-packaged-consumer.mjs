@@ -175,6 +175,9 @@ $textarea = $registry->resolve('vf-textarea');
 $checkbox = $registry->resolve('vf-checkbox');
 $radio = $registry->resolve('vf-radio');
 $switch = $registry->resolve('vf-switch');
+$badge = $registry->resolve('vf-badge');
+$tag = $registry->resolve('vf-tag');
+$divider = $registry->resolve('vf-divider');
 $assetPath = VueForgeRazorProvider::assetPath();
 
 echo json_encode([
@@ -187,6 +190,9 @@ echo json_encode([
         'vf-checkbox' => $registry->handles('vf-checkbox'),
         'vf-radio' => $registry->handles('vf-radio'),
         'vf-switch' => $registry->handles('vf-switch'),
+        'vf-badge' => $registry->handles('vf-badge'),
+        'vf-tag' => $registry->handles('vf-tag'),
+        'vf-divider' => $registry->handles('vf-divider'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -258,6 +264,34 @@ echo json_encode([
         ['checked' => true, 'label' => 'Notify me'],
         [],
     ))->value(),
+    // The three M15 presentation components. Neutral and non-neutral are both
+    // rendered because the neutral tone is expressed by the *absence* of a
+    // modifier, which is the half a packaging defect could silently produce.
+    'badgeNeutral' => $badge->render(new ComponentRenderContext(
+        [],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Draft')],
+    ))->value(),
+    'badgeToned' => $badge->render(new ComponentRenderContext(
+        ['tone' => 'danger', 'class' => 'consumer-badge'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Blocked')],
+    ))->value(),
+    'tagNeutral' => $tag->render(new ComponentRenderContext(
+        [],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Unassigned')],
+    ))->value(),
+    'tagToned' => $tag->render(new ComponentRenderContext(
+        ['tone' => 'info', 'class' => 'consumer-tag'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Docs')],
+    ))->value(),
+    // Both orientations, because the divider's historical accessibility
+    // behaviour differs between them and only one of them exposes a role.
+    'dividerHorizontal' => $divider->render(new ComponentRenderContext([], []))->value(),
+    'dividerVertical' => $divider->render(new ComponentRenderContext(['orientation' => 'vertical'], []))->value(),
+    'dividerOverride' => $divider->render(new ComponentRenderContext(['role' => 'presentation'], []))->value(),
+    'presentationCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-badge')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tag')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-divider'),
     'checkableCss' => is_file($assetPath . '/vueforge-razor.css')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-checkbox')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-radio')
@@ -300,6 +334,9 @@ echo json_encode([
       'vf-checkbox',
       'vf-radio',
       'vf-switch',
+      'vf-badge',
+      'vf-tag',
+      'vf-divider',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -497,6 +534,62 @@ echo json_encode([
     'the packaged stylesheet carries all three checkable rule sets',
     rendered.checkableCss,
     'a checkable control would render unstyled in a consumer application',
+  );
+
+  // ------------------------------------------- vf-badge, vf-tag, vf-divider
+  // The M15 batch. What packaging could plausibly break without breaking a tag
+  // is the neutral tone - which is the *absence* of a modifier - and the
+  // divider's conditional role, so both are read out of the markup rather than
+  // assumed from the components resolving.
+  check(
+    'the consumer renders a neutral badge with no tone modifier at all',
+    rendered.badgeNeutral === '<span class="vf-badge">Draft</span>',
+    rendered.badgeNeutral,
+  );
+  check(
+    'the consumer renders a toned badge with its consumer class appended after the canonical ones',
+    rendered.badgeToned.includes('class="vf-badge vf-badge--danger consumer-badge"'),
+    rendered.badgeToned,
+  );
+  check(
+    'the consumer renders a neutral tag with no tone modifier at all',
+    rendered.tagNeutral === '<span class="vf-tag">Unassigned</span>',
+    rendered.tagNeutral,
+  );
+  check(
+    'the consumer renders a toned tag with its consumer class appended after the canonical ones',
+    rendered.tagToned.includes('class="vf-tag vf-tag--info consumer-tag"'),
+    rendered.tagToned,
+  );
+  check(
+    'the packaged badge and tag stay distinct components rather than one block name',
+    !rendered.badgeToned.includes('vf-tag') && !rendered.tagToned.includes('vf-badge'),
+    `${rendered.badgeToned} | ${rendered.tagToned}`,
+  );
+  // The historical quirk, proved from the installed package: a horizontal
+  // divider is a div carrying aria-orientation and no role at all, and only the
+  // vertical one is a separator.
+  check(
+    'the consumer renders a horizontal divider as a roleless div carrying aria-orientation',
+    rendered.dividerHorizontal ===
+      '<div class="vf-divider vf-divider--horizontal" aria-orientation="horizontal"></div>',
+    rendered.dividerHorizontal,
+  );
+  check(
+    'the consumer renders a vertical divider with role=separator',
+    rendered.dividerVertical ===
+      '<div class="vf-divider vf-divider--vertical" aria-orientation="vertical" role="separator"></div>',
+    rendered.dividerVertical,
+  );
+  check(
+    'a consumer role reaches a horizontal divider that would otherwise expose none',
+    rendered.dividerOverride.includes('role="presentation"'),
+    rendered.dividerOverride,
+  );
+  check(
+    'the packaged stylesheet carries the presentation rules',
+    rendered.presentationCss,
+    'a badge, tag or divider would render unstyled in a consumer application',
   );
 
   check('the packaged stylesheet exists and is not empty', rendered.css > 10_000, `${rendered.css} bytes`);
