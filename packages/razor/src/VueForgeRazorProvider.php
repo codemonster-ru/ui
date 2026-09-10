@@ -16,6 +16,7 @@ use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
 use Codemonster\VueForge\Razor\Components\RadioComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonComponent;
+use Codemonster\VueForge\Razor\Components\SkeletonGateComponent;
 use Codemonster\VueForge\Razor\Components\SwitchComponent;
 use Codemonster\VueForge\Razor\Components\TagComponent;
 use Codemonster\VueForge\Razor\Components\TextareaComponent;
@@ -44,6 +45,14 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
     /** @inheritDoc */
     public function components(): array
     {
+        // One SkeletonComponent, registered as `vf-skeleton` and handed to the
+        // gate. Not two instances of the same class: the gate must render the
+        // *canonical* skeleton, and sharing the instance is what makes that
+        // checkable rather than merely likely - VueForgeRazorProviderTest
+        // asserts the identity, so a future refactor that gave the gate its own
+        // copy fails there instead of drifting quietly.
+        $skeleton = new SkeletonComponent();
+
         return [
             'avatar' => new AvatarComponent(),
             'badge' => new BadgeComponent(),
@@ -55,7 +64,8 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'icon-button' => new IconButtonComponent(),
             'input' => new InputComponent(),
             'radio' => new RadioComponent(),
-            'skeleton' => new SkeletonComponent(),
+            'skeleton' => $skeleton,
+            'skeleton-gate' => new SkeletonGateComponent($skeleton),
             'switch' => new SwitchComponent(),
             'tag' => new TagComponent(),
             'textarea' => new TextareaComponent(),

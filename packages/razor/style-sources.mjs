@@ -44,4 +44,12 @@ export const styleSources = [
   'packages/styles/src/components/skeleton.css',
   'packages/styles/src/components/avatar.css',
   'packages/styles/src/components/card.css',
+  // VfSkeletonGate, the first migrated component that renders another. Its
+  // stylesheet is a standalone closure like the rest - it imports nothing, and
+  // in particular it does not import skeleton.css. The gate styles the fade,
+  // the overlay box and the content wrapper; the skeleton styles itself, and
+  // reaches this artifact one line above on its own account rather than as the
+  // gate's dependency. Listed after skeleton.css so the cascade order matches
+  // the order packages/core/src/styles/components.css imports them in.
+  'packages/styles/src/components/skeleton-gate.css',
 ];

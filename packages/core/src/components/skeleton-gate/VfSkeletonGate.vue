@@ -2,11 +2,7 @@
   <div class="vf-skeleton-gate" :style="rootStyle" :aria-busy="!ready || undefined">
     <div
       ref="contentRef"
-      class="vf-skeleton-gate__content"
-      :class="{
-        'vf-skeleton-gate__content--ready': ready,
-        'vf-skeleton-gate__content--normalize-spacing': normalizeContentSpacing,
-      }"
+      :class="contentClasses"
       :style="contentStyle"
       :aria-hidden="!ready || undefined"
       :inert="!ready ? true : undefined"
@@ -25,6 +21,12 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import {
+  resolveSkeletonGateContentClasses,
+  resolveSkeletonGateMinHeight,
+  resolveSkeletonGateOverlayStyle,
+  resolveSkeletonGateRootStyle,
+} from '@codemonster-ru/vueforge-shared-core';
 import VfSkeleton from '@/components/skeleton/VfSkeleton.vue';
 
 defineOptions({ name: 'VfSkeletonGate' });
@@ -50,42 +52,40 @@ const props = withDefaults(
   },
 );
 
-const toCssLength = (value: string | number | undefined): string | undefined => {
-  if (value == null) {
-    return undefined;
-  }
-
-  return typeof value === 'number' ? `${value}px` : value;
-};
-
 const contentRef = ref<HTMLElement | null>(null);
 const measuredContentHeight = ref<number | null>(null);
 let resizeObserver: ResizeObserver | null = null;
 
-const resolvedMinHeight = computed(() => {
-  if (props.preserveLastHeight && measuredContentHeight.value != null && !props.ready) {
-    return `${measuredContentHeight.value}px`;
-  }
+const resolvedMinHeight = computed(() =>
+  resolveSkeletonGateMinHeight(
+    props.ready,
+    props.minHeight,
+    props.reserveHeight,
+    props.preserveLastHeight,
+    measuredContentHeight.value,
+  ),
+);
 
-  const reserveHeight = toCssLength(props.reserveHeight);
-  if (reserveHeight != null) {
-    return reserveHeight;
-  }
+// Object.fromEntries over the shared declarations, which is how every migrated
+// component reaches its style attribute. The rules keep an empty value as an
+// empty value rather than dropping it, so the object handed to Vue here is the
+// same object the reference built and both serialisers behave as they always
+// did: the client drops the property, SSR writes `min-height:;`.
+const rootStyle = computed(() =>
+  Object.fromEntries(resolveSkeletonGateRootStyle(resolvedMinHeight.value, props.radius, props.fadeDuration)),
+);
 
-  return toCssLength(props.minHeight);
-});
-
-const rootStyle = computed(() => ({
-  minHeight: resolvedMinHeight.value,
-  borderRadius: props.radius,
-  '--vf-skeleton-gate-fade-duration': `${props.fadeDuration}ms`,
-}));
-
+// A computed that always returns an empty object, exactly as the reference
+// wrote it. It renders no attribute on the client and `style=""` under SSR.
+// Removing the binding would be an obvious tidy-up and would change the server
+// output of every gate.
 const contentStyle = computed(() => ({}));
 
-const overlayStyle = computed(() => ({
-  borderRadius: props.radius,
-}));
+const contentClasses = computed(() =>
+  resolveSkeletonGateContentClasses(props.ready, props.normalizeContentSpacing),
+);
+
+const overlayStyle = computed(() => Object.fromEntries(resolveSkeletonGateOverlayStyle(props.radius)));
 
 const syncMeasuredHeight = () => {
   const height = contentRef.value?.offsetHeight;

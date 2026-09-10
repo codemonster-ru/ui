@@ -1,0 +1,175 @@
+{
+  "$comment": "Shared input/expected vectors for VfSkeletonGate. The TypeScript rules in skeleton-gate/state.ts and the PHP mirror in packages/razor/src/Support/SkeletonGateState.php both run this file. Its own file rather than an addition to skeleton/state-vectors.json: the gate renders the skeleton, and a shared vector catalog is exactly how the parent's evidence starts standing in for the child's.",
+  "resolveSkeletonGateLength": [
+    { "value": null, "expected": null },
+    { "value": 0, "expected": "0px" },
+    { "value": 40, "expected": "40px" },
+    { "value": 12.5, "expected": "12.5px" },
+    { "value": "3rem", "expected": "3rem" },
+    { "value": "50%", "expected": "50%" },
+    { "value": "var(--vf-space-8)", "expected": "var(--vf-space-8)" },
+    { "$why": "The empty string is not absence. This is what the reserve quirk rests on.", "value": "", "expected": "" }
+  ],
+  "resolveSkeletonGateMinHeight": [
+    {
+      "$why": "The default: nothing to reserve at all.",
+      "ready": false,
+      "minHeight": null,
+      "reserveHeight": null,
+      "preserveLastHeight": false,
+      "measuredContentHeight": null,
+      "expected": null
+    },
+    {
+      "$why": "minHeight alone.",
+      "ready": false,
+      "minHeight": 40,
+      "reserveHeight": null,
+      "preserveLastHeight": false,
+      "measuredContentHeight": null,
+      "expected": "40px"
+    },
+    {
+      "$why": "reserveHeight outranks minHeight.",
+      "ready": false,
+      "minHeight": 40,
+      "reserveHeight": 120,
+      "preserveLastHeight": false,
+      "measuredContentHeight": null,
+      "expected": "120px"
+    },
+    {
+      "$why": "Zero is a reservation, not an absence. A truthiness check loses this one.",
+      "ready": false,
+      "minHeight": 50,
+      "reserveHeight": 0,
+      "preserveLastHeight": false,
+      "measuredContentHeight": null,
+      "expected": "0px"
+    },
+    {
+      "$why": "The quirk: an empty reserveHeight wins the contest and then evaporates, swallowing the minHeight the caller also passed.",
+      "ready": false,
+      "minHeight": 50,
+      "reserveHeight": "",
+      "preserveLastHeight": false,
+      "measuredContentHeight": null,
+      "expected": ""
+    },
+    {
+      "$why": "reserveHeight applies just as much once the gate is ready.",
+      "ready": true,
+      "minHeight": 40,
+      "reserveHeight": 120,
+      "preserveLastHeight": false,
+      "measuredContentHeight": null,
+      "expected": "120px"
+    },
+    {
+      "$why": "A measured height outranks everything while loading.",
+      "ready": false,
+      "minHeight": 40,
+      "reserveHeight": 120,
+      "preserveLastHeight": true,
+      "measuredContentHeight": 84,
+      "expected": "84px"
+    },
+    {
+      "$why": "The measurement stands down the moment content appears.",
+      "ready": true,
+      "minHeight": 40,
+      "reserveHeight": 120,
+      "preserveLastHeight": true,
+      "measuredContentHeight": 84,
+      "expected": "120px"
+    },
+    {
+      "$why": "preserveLastHeight with nothing measured yet is the SSR state and the first rendered frame.",
+      "ready": false,
+      "minHeight": 40,
+      "reserveHeight": null,
+      "preserveLastHeight": true,
+      "measuredContentHeight": null,
+      "expected": "40px"
+    },
+    {
+      "$why": "A measurement is ignored entirely when the prop is off.",
+      "ready": false,
+      "minHeight": 40,
+      "reserveHeight": null,
+      "preserveLastHeight": false,
+      "measuredContentHeight": 84,
+      "expected": "40px"
+    }
+  ],
+  "resolveSkeletonGateRootStyle": [
+    {
+      "$why": "The default. The fade duration is written even when nothing else is.",
+      "minHeight": null,
+      "radius": null,
+      "fadeDuration": 220,
+      "expected": [["--vf-skeleton-gate-fade-duration", "220ms"]]
+    },
+    {
+      "$why": "Everything set, in the order the reference template writes it.",
+      "minHeight": "120px",
+      "radius": "8px",
+      "fadeDuration": 0,
+      "expected": [
+        ["min-height", "120px"],
+        ["border-radius", "8px"],
+        ["--vf-skeleton-gate-fade-duration", "0ms"]
+      ]
+    },
+    {
+      "$why": "An empty value is kept as an empty value; the platform serialiser decides what to do with it.",
+      "minHeight": "",
+      "radius": "",
+      "fadeDuration": 220,
+      "expected": [
+        ["min-height", ""],
+        ["border-radius", ""],
+        ["--vf-skeleton-gate-fade-duration", "220ms"]
+      ]
+    },
+    {
+      "$why": "A zero fade duration is a duration, not an absence.",
+      "minHeight": null,
+      "radius": null,
+      "fadeDuration": 0,
+      "expected": [["--vf-skeleton-gate-fade-duration", "0ms"]]
+    }
+  ],
+  "resolveSkeletonGateOverlayStyle": [
+    { "$why": "No radius, no declarations, and therefore no style attribute.", "radius": null, "expected": [] },
+    { "radius": "8px", "expected": [["border-radius", "8px"]] },
+    {
+      "$why": "An empty radius is kept here and dropped by the serialiser, exactly as on the root.",
+      "radius": "",
+      "expected": [["border-radius", ""]]
+    }
+  ],
+  "resolveSkeletonGateContentClasses": [
+    { "ready": false, "normalizeContentSpacing": false, "expected": ["vf-skeleton-gate__content"] },
+    {
+      "ready": true,
+      "normalizeContentSpacing": false,
+      "expected": ["vf-skeleton-gate__content", "vf-skeleton-gate__content--ready"]
+    },
+    {
+      "ready": false,
+      "normalizeContentSpacing": true,
+      "expected": ["vf-skeleton-gate__content", "vf-skeleton-gate__content--normalize-spacing"]
+    },
+    {
+      "$why": "The ready modifier is written before the spacing modifier.",
+      "ready": true,
+      "normalizeContentSpacing": true,
+      "expected": [
+        "vf-skeleton-gate__content",
+        "vf-skeleton-gate__content--ready",
+        "vf-skeleton-gate__content--normalize-spacing"
+      ]
+    }
+  ]
+}
