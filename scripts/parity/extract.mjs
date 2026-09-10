@@ -55,6 +55,15 @@ export const COMPARED_ATTRIBUTES = [
   'aria-pressed',
   'aria-hidden',
   'aria-required',
+  // VfSkeletonGate. Found missing by the attribute-coverage gate in M17, the
+  // fifth time it has caught an attribute nothing compared - after aria-busy in
+  // M12, four native attributes in M13, aria-orientation in M15 and alt/src in
+  // M16. `inert` is half the gate's loading contract: aria-hidden takes the
+  // faded content out of the accessibility tree, and `inert` is what takes it
+  // out of reach of a pointer and the tab order. A gate that stopped writing it
+  // would leave a consumer's buttons clickable underneath a skeleton, and every
+  // class, style and ARIA comparison would still pass.
+  'inert',
   'style',
   'hidden',
   'viewBox',

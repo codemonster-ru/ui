@@ -1,0 +1,223 @@
+{
+  "$comment": "Shared VfSkeletonGate cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Its own catalog, sharing nothing with contracts/skeleton: the gate renders the skeleton, and one catalog for both would be how the parent's evidence starts standing in for the child's. The word 'branch' is used throughout for readability, but the component has none: both halves are in the DOM at all times and only their presentation changes. scripts/ci/skeleton-gate-coverage.mjs is what stops the list eroding.",
+  "component": "skeleton-gate",
+  "propVocabulary": {
+    "ready": "boolean, default false. The predicate. It selects nothing away: it toggles a modifier on the content wrapper, drops aria-busy, drops aria-hidden and inert, and gives the overlay display:none.",
+    "minHeight": "string | number, default undefined. Reserved on the root when nothing outranks it, and forwarded to the child skeleton always.",
+    "reserveHeight": "string | number, default undefined. Outranks minHeight on the root and is never forwarded to the child. Zero reserves 0px; the empty string wins the contest and then writes nothing.",
+    "preserveLastHeight": "boolean, default false. A post-mount ResizeObserver measurement. No server-rendered effect and no effect on a content wrapper with no height.",
+    "normalizeContentSpacing": "boolean, default false. A second modifier on the content wrapper, written after the ready modifier.",
+    "radius": "string, default undefined. Written on the root and the overlay, and forwarded to the child - whose own default supplies the token when the gate has none.",
+    "fadeDuration": "number, default 220. Written into a custom property on every render, so a gate always carries a style attribute."
+  },
+  "contentVocabulary": {
+    "body": "The default slot. `text` is plain text; `markup` is rich consumer markup; `control` is a real consumer button, unmarked and unwrapped.",
+    "skeleton": "The skeleton slot, which replaces the child component entirely."
+  },
+  "transitionVocabulary": {
+    "$comment": "A case with a `transition` is driven in the browser: the fixture flips the named props on the live component and the harness re-extracts the case. `matches` names the case whose initial render the result must equal. That is the invariant a stale branch breaks - a transition has to converge on the canonical state rather than on a hybrid of the two - and it is checked on every target that can transition, while the named case is itself compared three ways by the ordinary run.",
+    "to": "The props to set after mount.",
+    "matches": "The case id whose initial DOM the post-transition DOM must equal."
+  },
+  "cases": [
+    {
+      "id": "skeleton-gate/default",
+      "title": "The default gate: loading, no content, the child skeleton at its own defaults",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/ready-empty",
+      "title": "ready with no content: the overlay is hidden rather than removed",
+      "props": { "ready": true },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/loading-content",
+      "title": "Loading with consumer content: the content is present, faded, aria-hidden and inert",
+      "props": { "minHeight": 64 },
+      "attrs": {},
+      "content": { "body": { "text": "Workspace usage for the current billing period." } },
+      "transition": { "to": { "ready": true }, "matches": "skeleton-gate/ready-content" },
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/ready-content",
+      "title": "ready with the same consumer content: the canonical state a transition has to land on",
+      "props": { "minHeight": 64, "ready": true },
+      "attrs": {},
+      "content": { "body": { "text": "Workspace usage for the current billing period." } },
+      "transition": { "to": { "ready": false }, "matches": "skeleton-gate/loading-content" },
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/ready-explicit-false",
+      "title": "ready passed explicitly as false behaves identically to the default",
+      "props": { "ready": false },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/min-height-number",
+      "title": "A numeric minHeight reserves the root and reaches the child as pixels",
+      "props": { "minHeight": 96 },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/min-height-string",
+      "title": "A string minHeight passes through untouched to both the root and the child",
+      "props": { "minHeight": "5rem" },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/reserve-height",
+      "title": "reserveHeight outranks minHeight on the root while the child still receives minHeight",
+      "props": { "minHeight": 40, "reserveHeight": 140 },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/reserve-height-zero",
+      "title": "The edge of the predicate: a zero reserveHeight is a reservation, not an absence",
+      "props": { "minHeight": 50, "reserveHeight": 0 },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/reserve-height-empty",
+      "title": "The quirk: an empty reserveHeight wins the precedence contest and then writes nothing, swallowing the minHeight",
+      "props": { "minHeight": 50, "reserveHeight": "" },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/radius",
+      "title": "A radius reaches the root, the overlay and the child skeleton",
+      "props": { "minHeight": 72, "radius": "16px" },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/radius-empty",
+      "title": "Two components' quirks composing: an empty radius drops the declaration on the gate and leaves the child with no style attribute at all",
+      "props": { "radius": "" },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/fade-duration",
+      "title": "A caller fade duration replaces the default in the custom property",
+      "props": { "fadeDuration": 0 },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/normalize-spacing",
+      "title": "The spacing modifier is written after the ready modifier",
+      "props": { "ready": true, "normalizeContentSpacing": true },
+      "attrs": {},
+      "content": { "body": { "markup": "paragraphs" } },
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/preserve-last-height",
+      "title": "preserveLastHeight with nothing to measure: the prop is accepted and the root is unchanged",
+      "$why": "Deliberately paired with an empty content wrapper. The measurement is a post-mount browser behaviour of the Vue adapter alone, and a wrapper with no height leaves it null on every target - which is the same state the reference is in during SSR and in its own first rendered frame. A case with measurable content would compare a Vue runtime against a server render and would need an approval; this one compares the prop's plumbing with nothing approved. The measuring path is covered by the characterization suite instead.",
+      "props": { "preserveLastHeight": true, "reserveHeight": 88 },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/skeleton-slot",
+      "title": "The skeleton slot replaces the child component entirely",
+      "props": {},
+      "attrs": {},
+      "content": { "skeleton": { "markup": "bars" } },
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/skeleton-slot-ready",
+      "title": "A custom skeleton is still rendered, and still hidden, when the gate is ready",
+      "props": { "ready": true },
+      "attrs": {},
+      "content": { "skeleton": { "markup": "bars" }, "body": { "text": "Loaded." } },
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/rich-content-loading",
+      "title": "Rich consumer markup while loading: preserved exactly, and unreachable",
+      "props": { "minHeight": 120 },
+      "attrs": {},
+      "content": { "body": { "markup": "article" } },
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/rich-content-ready",
+      "title": "The same rich markup once ready",
+      "props": { "minHeight": 120, "ready": true },
+      "attrs": {},
+      "content": { "body": { "markup": "article" } },
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/consumer-class",
+      "title": "A consumer class is appended after the canonical one, on the root and nowhere else",
+      "props": {},
+      "attrs": { "class": "consumer-gate" },
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/consumer-style",
+      "title": "A consumer style is merged after the component's own declarations",
+      "props": { "minHeight": 48 },
+      "attrs": { "style": "opacity: 0.6" },
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/consumer-data",
+      "title": "A product data attribute reaches the root rather than either half",
+      "props": { "ready": true },
+      "attrs": { "data-testid": "usage-gate" },
+      "content": { "body": { "text": "Loaded." } },
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/aria-busy-override",
+      "title": "The quirk: a consumer aria-busy replaces the one the loading gate wrote",
+      "props": {},
+      "attrs": { "aria-busy": "false" },
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/aria-busy-on-ready",
+      "title": "A consumer aria-busy also reaches a ready gate, which writes none of its own",
+      "props": { "ready": true },
+      "attrs": { "aria-busy": "true" },
+      "content": { "body": { "text": "Loaded." } },
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/interactive-content-ready",
+      "title": "A consumer control in the content slot: consumer interaction is not component interaction",
+      "props": { "ready": true },
+      "attrs": {},
+      "content": { "body": { "text": "Nothing to show.", "control": { "text": "Retry" } } },
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "skeleton-gate/interactive-content-loading",
+      "title": "The same control while loading: still in the DOM, still counted, and inert",
+      "$why": "The pair matters. `inert` removes the control from the tab order without removing it from the document, so the focusable count is the same in both states and the difference is the attribute. A gate that stopped writing inert would leave the consumer's button clickable underneath the skeleton and would look identical to every class and geometry comparison.",
+      "props": { "minHeight": 56 },
+      "attrs": {},
+      "content": { "body": { "text": "Nothing to show.", "control": { "text": "Retry" } } },
+      "consumerInteractive": 1,
+      "visual": true
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "$comment": "Parity policy for the shared VfSkeletonGate cases. Plain data: no DSL, no waiver engine. The first policy for a component that renders another migrated component, so a difference here can originate in either - the diagnostics name the element, and dom.childSkeleton exists so a defect in the child is never reported as a defect in the parent's composition.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData.",
+    "commentNodes": "The explanatory comment beside the default skeleton is reproduced by both adapters and is pinned by both unit suites, but the extractor describes elements rather than nodes, so it reaches no dimension here. It is markup provenance, not product."
+  },
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead. This is not an approval list: an approval tolerates a measured difference, and these are inputs the catalog does not present to the comparison at all. Keeping them here rather than silently omitting them is the point.",
+    "preserveLastHeightMeasurement": "preserveLastHeight with content tall enough to measure. The measurement is a post-mount ResizeObserver behaviour of the Vue adapter, and the Razor adapter renders on the server with nothing measured - which is exactly the reference's own SSR output and its own first rendered frame, so the two are not in disagreement about any state that exists at render time. Comparing them would compare a client runtime against a server render and would need an approval to pass. The catalog instead carries skeleton-gate/preserve-last-height, where the wrapper has no height and the measurement is null on every target, and the measuring path is covered by the ten preserveLastHeight cases in VfSkeletonGate.characterization.spec.ts plus testPreserveLastHeightIsAcceptedAndHasNoServerRenderedEffect in SkeletonGateComponentTest.php.",
+    "ssrEmptyStyleSerialisation": "The reference's SSR serialiser writes `min-height:;` for an empty reserveHeight where its client serialiser drops the property. The parity harness renders Vue in a browser, so only the client form is ever on the page. Both forms are pinned by VfSkeletonGate.characterization.spec.ts."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. This is what notices a gate that stopped rendering one of its two halves, or that grew a third. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. The ready modifier on the content wrapper is the predicate's whole visible output, and the consumer class on the root is included, because where it lands relative to the canonical one is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class, style and inert on the three elements, plus any native attribute a consumer forwards. style is the contract here rather than incidental markup: the gate writes a reserved height, a radius and a fade-duration custom property, and merges a consumer style over them. inert is half the loading contract and is what stops a faded consumer control being clickable."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element. The consumer's content is preserved exactly, in both states."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. aria-busy on the root, aria-hidden on the content wrapper while loading and on the overlay always, and the absence of any role anywhere. The fact that a consumer can replace aria-busy is part of that contract."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role, including the child skeleton's."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Rendered screenshot after a transition has been driven."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none. The gate writes no role at all, and the faded content and the overlay are both expected to be absent from the tree entirely."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the gate declares no interaction of its own, and that the harness measured this rather than skipping the stage. Includes the focusable and interactive-role counts, which are asserted against the number the case declares its consumer put in a slot - so a control the gate grew itself fails even when every target grows it."
+    },
+    "transition.branch": {
+      "classification": "exact",
+      "description": "The state a case reports after its declared transition has been driven: which half is presented, what the root's ARIA says, and whether the content wrapper is still inert. A target whose transition did not run, ran halfway, or left a stale overlay behind differs here."
+    },
+    "transition.convergence": {
+      "classification": "exact",
+      "description": "Whether a transitioned case's DOM equals the DOM of the case its catalog entry names as the state it should land in, measured on the same target. This is the dimension a hybrid of the two states fails: it is a within-target invariant, so it holds even where a target cannot be compared against another target's transition."
+    },
+    "transition.identity": {
+      "classification": "exact",
+      "description": "Whether the consumer's content element and the child skeleton element survive the transition, rather than being destroyed and recreated. A v-if rewrite of either half passes every other dimension in this file and fails here."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "both-halves-are-always-rendered",
+      "description": "The gate selects nothing away. The content wrapper always holds the default slot and the overlay always holds the skeleton; ready toggles a class, three attributes and the overlay's display. There is no branch and no mutual exclusivity.",
+      "classification": "exact",
+      "reason": "A v-if rewrite is the obvious reading of the component's name. It would delete the fade the component exists for and destroy consumer DOM on every state change, and every static snapshot of either state would still look correct.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/ready-content"
+    },
+    {
+      "id": "aria-busy-is-absent-rather-than-false",
+      "description": "aria-busy is written as `!ready || undefined`, so a ready gate has no aria-busy attribute at all rather than aria-busy=\"false\".",
+      "classification": "exact",
+      "reason": "Writing the negated value is the obvious port and would announce every settled gate to assistive technology as explicitly not busy.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/ready-empty"
+    },
+    {
+      "id": "a-consumer-can-override-aria-busy",
+      "description": "aria-busy is a bound attribute on a component that does not set inheritAttrs: false, so an inherited attribute of the same name replaces it and aria-busy=\"false\" on a loading gate is reachable.",
+      "classification": "exact",
+      "reason": "Blocking the override would be a silent API removal. Both adapters let the consumer win, as they do for VfSkeleton's aria-hidden.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/aria-busy-override"
+    },
+    {
+      "id": "the-reserve-height-outranks-the-child-height",
+      "description": "reserveHeight decides what the root reserves; minHeight is what the child skeleton is asked for. The two legitimately disagree, and reserveHeight is never forwarded.",
+      "classification": "exact",
+      "reason": "Forwarding the resolved root height instead would make the two agree, look tidier, and change the size of every skeleton drawn inside a gate that reserves space.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/reserve-height"
+    },
+    {
+      "id": "an-empty-reserve-height-swallows-the-min-height",
+      "description": "The reserve check is a null check applied after the length conversion, so reserveHeight=\"\" wins the precedence contest and then produces no declaration - and the minHeight the caller also passed never reaches the root.",
+      "classification": "exact",
+      "reason": "A truthiness check would look equivalent and would change two inputs at once: a zero reserve would stop reserving and an empty one would start falling through.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/reserve-height-empty"
+    },
+    {
+      "id": "a-zero-reserve-height-is-a-reservation",
+      "description": "reserveHeight accepts a number and appends px, so 0 becomes 0px rather than being dropped as falsy.",
+      "classification": "exact",
+      "reason": "Treating 0 as absent is the obvious defect and silently hands the root back to minHeight.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/reserve-height-zero"
+    },
+    {
+      "id": "the-child-supplies-its-own-radius-default",
+      "description": "The gate's radius default is undefined, not a token. The border-radius on a default gate's skeleton comes from VfSkeleton's own default, and an empty radius reaches the child and leaves it with no style attribute at all.",
+      "classification": "exact",
+      "reason": "A gate that hardcoded the token would render identically until the child's default changed, at which point the two would silently disagree - which is precisely the contract collapse this milestone exists to rule out.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/radius-empty"
+    },
+    {
+      "id": "the-fade-duration-is-always-written",
+      "description": "The fade-duration custom property is written on every render, so every gate carries a style attribute even at the default.",
+      "classification": "exact",
+      "reason": "Omitting it at the default would be the natural optimisation and would leave the stylesheet's own default token to supply the value - which is the same number today and need not stay so.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/default"
+    },
+    {
+      "id": "faded-content-is-inert-rather-than-absent",
+      "description": "While loading, the content wrapper keeps its consumer content and is marked aria-hidden and inert. The content is present, laid out, and unreachable by pointer, keyboard and assistive technology alike.",
+      "classification": "exact",
+      "reason": "An adapter that dropped inert would leave a consumer's controls clickable underneath the skeleton, and every class, geometry and screenshot comparison would still pass.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton-gate/cases.json#skeleton-gate/interactive-content-loading"
+    }
+  ],
+  "approvedDivergences": []
+}
