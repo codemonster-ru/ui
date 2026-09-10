@@ -49,12 +49,21 @@ function snapshot({ focusableCount = 0, interactiveRoleCount = 0, ...rest } = {}
 
 const inert = { id: 'skeleton/default' };
 const cardWithConsumerButton = load('card').find((entry) => entry.id === 'card/interactive-slot-content');
+const panelWithConsumerButton = load('panel').find((entry) => entry.id === 'panel/interactive-slot-content');
+const panelWithHeaderButton = load('panel').find((entry) => entry.id === 'panel/interactive-header-content');
 
 test('the fixture case this proof depends on is still in the shipped catalog', () => {
   // If someone deletes the case, this proof must stop rather than quietly
   // testing a hypothetical.
   assert.ok(cardWithConsumerButton, 'card/interactive-slot-content is gone from the catalog');
   assert.equal(cardWithConsumerButton.consumerInteractive, 1);
+});
+
+test('the VfPanel fixture cases this proof depends on are still in the shipped catalog', () => {
+  assert.ok(panelWithConsumerButton, 'panel/interactive-slot-content is gone from the catalog');
+  assert.equal(panelWithConsumerButton.consumerInteractive, 1);
+  assert.ok(panelWithHeaderButton, 'panel/interactive-header-content is gone from the catalog');
+  assert.equal(panelWithHeaderButton.consumerInteractive, 1);
 });
 
 // ------------------------------------------------- direction 1: component-owned
@@ -151,6 +160,88 @@ test('no snapshot at all is a failure rather than a skip', () => {
 test('a snapshot that stopped declaring its posture fails', () => {
   assert.ok(staticOwnershipViolations(inert, snapshot({ interactionPosture: 'driven' })).length > 0);
   assert.ok(staticOwnershipViolations(inert, snapshot({ caseRendered: false })).length > 0);
+});
+
+// --------------------------------------------------------------- M18: VfPanel
+//
+// The same two directions, asserted for a component whose slot content is
+// *unwrapped*. VfCard's consumer controls sit inside a classed div; a panel's
+// sit directly in the section, so there is no wrapper an implementation could
+// use to tell "the component's own markup" from "whatever the consumer passed".
+// The declared budget is the only thing that separates them, which is why both
+// panel slots that render get a fixture rather than one standing in for both.
+
+test('a consumer control in the panel default slot does not fail', () => {
+  assert.deepEqual(staticOwnershipViolations(panelWithConsumerButton, snapshot({ focusableCount: 1 })), []);
+});
+
+test('a consumer control in the panel header slot does not fail either', () => {
+  assert.deepEqual(staticOwnershipViolations(panelWithHeaderButton, snapshot({ focusableCount: 1 })), []);
+});
+
+test('a panel that grew a control beside the consumer button fails', () => {
+  // The M18 version of the case a three-way comparison is structurally blind
+  // to: every target renders the extra control identically, so nothing differs
+  // and only the declared budget notices.
+  const violations = staticOwnershipViolations(panelWithConsumerButton, snapshot({ focusableCount: 2 }));
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /measured 2 focusable element\(s\) but the catalog declares 1/);
+});
+
+test('an accidental control in any panel case that declares none fails', () => {
+  for (const parityCase of load('panel')) {
+    if ((parityCase.consumerInteractive ?? 0) !== 0) continue;
+
+    assert.ok(
+      staticOwnershipViolations(parityCase, snapshot({ focusableCount: 1 })).length > 0,
+      `${parityCase.id} accepted a focusable element the component would have had to render`,
+    );
+  }
+});
+
+test('every shipped panel case passes when its declared consumer controls are the only focusable elements', () => {
+  for (const parityCase of load('panel')) {
+    assert.deepEqual(
+      staticOwnershipViolations(parityCase, snapshot({ focusableCount: parityCase.consumerInteractive ?? 0 })),
+      [],
+      `${parityCase.id} was reported as violating its own static contract`,
+    );
+  }
+});
+
+test('a panel slot whose consumer control went missing on one target also fails', () => {
+  const violations = staticOwnershipViolations(panelWithConsumerButton, snapshot({ focusableCount: 0 }));
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /measured 0 focusable element\(s\) but the catalog declares 1/);
+});
+
+test('a missing measurement on a panel case is a failure rather than a skip', () => {
+  // Fail-closed, asserted for this component rather than inherited from the
+  // skeleton fixture: a component with slots is where "the stage did not run"
+  // is easiest to mistake for "the stage found nothing".
+  for (const field of STATIC_SNAPSHOT_FIELDS) {
+    const partial = snapshot({ focusableCount: 1 });
+    delete partial[field];
+
+    const violations = staticOwnershipViolations(panelWithConsumerButton, partial);
+    assert.ok(violations.length > 0, `a panel snapshot missing ${field} was accepted`);
+    assert.match(violations[0], /is missing/);
+  }
+});
+
+test('the card and panel budgets are read from their own catalogs, not from a shared one', () => {
+  // Cross-isolation. A card case must not be able to satisfy a panel case's
+  // budget by accident: the function takes the case it was given, and the two
+  // catalogs are separate files. The one card case with no consumer control
+  // must reject the count the panel case declares, and vice versa.
+  const cardWithoutControl = load('card').find((entry) => (entry.consumerInteractive ?? 0) === 0);
+  const panelWithoutControl = load('panel').find((entry) => (entry.consumerInteractive ?? 0) === 0);
+
+  assert.ok(cardWithoutControl && panelWithoutControl);
+  assert.ok(staticOwnershipViolations(cardWithoutControl, snapshot({ focusableCount: 1 })).length > 0);
+  assert.ok(staticOwnershipViolations(panelWithoutControl, snapshot({ focusableCount: 1 })).length > 0);
 });
 
 // ------------------------------------------------------ M15 is not weakened

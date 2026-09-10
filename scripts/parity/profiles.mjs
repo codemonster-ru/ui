@@ -458,6 +458,53 @@ export const profiles = {
     semanticAttributes: ['class', 'style', 'role', 'aria-label', 'data-testid'],
     snapshot: 'static',
   },
+  // The M18 component, and the profile written to be *unlike* its neighbour.
+  //
+  // The measured roles are where that shows. VfCard's profile names five roles;
+  // this one names three, and two of the missing ones are named here anyway as
+  // absences the harness must keep measuring: `cardBody` and `footer` are
+  // selectors for elements a panel does not have. A role that resolves to
+  // nothing on every target is a clean measurement of "nothing is here"; a role
+  // that started resolving on any target is a Card-shaped implementation, and
+  // it fails as a structural difference rather than going unnoticed because
+  // nobody thought to look for an element the component never renders.
+  panel: {
+    id: 'panel',
+    label: 'VfPanel',
+    component: 'panel',
+    casesPath: 'contracts/panel/cases.json',
+    policyPath: 'contracts/panel/parity-policy.json',
+    artifactDirectory: 'parity-panel',
+    reportName: 'panel-parity-report.json',
+    measuredRoles: {
+      root: '.vf-panel',
+      // Addressed as a direct child rather than by class, because it has no
+      // class - the historical detail this component shares with VfCard and
+      // that both preserve independently.
+      header: '.vf-panel > header',
+      title: '.vf-panel__title',
+      // The two elements a panel does not have, measured so that their absence
+      // is a fact rather than an omission. A card renders both.
+      body: '.vf-panel__body',
+      footer: '.vf-panel > footer',
+    },
+    // A section with no accessible name exposes no landmark role, and the panel
+    // never names itself. Listing the root is how "no landmark" becomes a
+    // measurement instead of an assumption; listing the title is how "the
+    // heading is a heading" stays one.
+    accessibilityRoles: {
+      root: '.vf-panel',
+      title: '.vf-panel__title',
+    },
+    semanticAttributes: ['class', 'style', 'role', 'aria-label', 'data-testid'],
+    snapshot: 'static',
+    // Redundant beside `snapshot: 'static'`, which already selects the ownership
+    // assertion, and declared anyway: the M17 separation exists so that a
+    // profile whose snapshot shape changes does not silently stop being checked
+    // for component-owned interaction. A panel owns none, and says so here
+    // rather than inheriting the claim from a snapshot name.
+    staticOwnership: true,
+  },
   // The M17 component, and the first profile that declares two things at once.
   // VfSkeletonGate owns no interaction, so it needs the static ownership
   // measurement every M15/M16 component has; and its state can change after

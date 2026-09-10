@@ -57,6 +57,9 @@ $dividerComponent = $registry->resolve('vf-divider');
 $skeletonComponent = $registry->resolve('vf-skeleton');
 $avatarComponent = $registry->resolve('vf-avatar');
 $cardComponent = $registry->resolve('vf-card');
+// The M18 component. Resolved on its own account, never through the card:
+// these two are the pair M18 exists to keep apart.
+$panelComponent = $registry->resolve('vf-panel');
 // The M17 component. Resolved through the registry like every other one, which
 // is also how the gate reaches its child: the provider hands the registered
 // skeleton to the gate, so this single resolve() produces a gate that renders
@@ -79,6 +82,11 @@ if ($badgeComponent === null || $tagComponent === null || $dividerComponent === 
 
 if ($skeletonComponent === null || $avatarComponent === null || $cardComponent === null) {
     fwrite(STDERR, "The VueForge M16 components are not registered.\n");
+    exit(1);
+}
+
+if ($panelComponent === null) {
+    fwrite(STDERR, "The VueForge vf-panel component is not registered.\n");
     exit(1);
 }
 
@@ -523,6 +531,59 @@ $renderCard = static function (array $case) use ($cardComponent, $escape): strin
 };
 
 /**
+ * VfPanel, for the panel catalog.
+ *
+ * Its own closure, and deliberately not $renderCard pointed at another
+ * component. Three things differ and all three are visible here:
+ *
+ *   - the `footer` slot is handed to the panel even though a panel has no
+ *     footer. The component must drop it, and a slot that is never handed over
+ *     is a rule that is never tested;
+ *   - the default slot may carry a `markup` shape, which puts several
+ *     root-level nodes in it. A card wraps them; a panel does not;
+ *   - an empty slot is still handed over. For a card that opens an empty
+ *     classed wrapper; for a panel it produces nothing at all.
+ *
+ * A control is a real consumer button, unmarked and unwrapped. The static
+ * snapshot is asserted against the number the case declares, not against
+ * anything recognisable in the markup.
+ */
+$renderPanel = static function (array $case) use ($panelComponent, $escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $slots = [];
+    foreach (['header' => 'header', 'body' => 'default', 'footer' => 'footer'] as $from => $to) {
+        if (!array_key_exists($from, $case['content'] ?? [])) {
+            continue;
+        }
+
+        $slot = $case['content'][$from];
+        $markup = '';
+
+        if (isset($slot['text']) && $slot['text'] !== '') {
+            $markup .= $escape((string) $slot['text']);
+        }
+        if (($slot['markup'] ?? null) === 'paragraphs') {
+            $markup .= '<p>Storage, seats and outbound transfer.</p><p>Updated hourly.</p>';
+        }
+        if (isset($slot['control'])) {
+            $markup .= '<button type="button">' . $escape((string) $slot['control']['text']) . '</button>';
+        }
+
+        $slots[$to] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    return $panelComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
+/**
  * The consumer markup a gate case names, built the same way in both fixtures.
  *
  * The catalog names a shape rather than carrying HTML, so this and the Vue
@@ -610,6 +671,8 @@ foreach ($catalog['cases'] as $case) {
         $body = $renderAvatar($case);
     } elseif ($component === 'card') {
         $body = $renderCard($case);
+    } elseif ($component === 'panel') {
+        $body = $renderPanel($case);
     } elseif ($component === 'badge') {
         $body = $renderBadge($case);
     } elseif ($component === 'tag') {

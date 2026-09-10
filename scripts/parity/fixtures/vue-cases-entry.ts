@@ -21,6 +21,7 @@ import VfDivider from '@parity/core/components/divider/VfDivider.vue';
 import VfSkeleton from '@parity/core/components/skeleton/VfSkeleton.vue';
 import VfAvatar from '@parity/core/components/avatar/VfAvatar.vue';
 import VfCard from '@parity/core/components/card/VfCard.vue';
+import VfPanel from '@parity/core/components/panel/VfPanel.vue';
 import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
@@ -39,6 +40,21 @@ interface CaseContent {
  */
 interface CardSlot {
   text?: string;
+  control?: { text: string };
+}
+
+/**
+ * One VfPanel slot, as the shared catalog spells it.
+ *
+ * Its own interface rather than a reuse of `CardSlot`, for the reason the render
+ * function below is its own function: a panel slot can carry a `markup` shape -
+ * the multi-node case that proves nothing wraps default-slot content - and a
+ * card slot cannot, because a card's content is always inside one wrapper. One
+ * shared slot type would make that difference unstatable.
+ */
+interface PanelSlot {
+  text?: string;
+  markup?: 'paragraphs';
   control?: { text: string };
 }
 
@@ -82,8 +98,8 @@ interface ParityCase {
     /** VfCard's three slots. Each may be absent, empty, or carry a consumer control. */
     header?: CardSlot;
     footer?: CardSlot;
-    /** VfCard's body slot, and VfSkeletonGate's default slot. */
-    body?: CardSlot & GateSlot;
+    /** VfCard's body slot, VfPanel's default slot, and VfSkeletonGate's default slot. */
+    body?: CardSlot & GateSlot & PanelSlot;
     /** VfSkeletonGate's skeleton slot, which replaces the child component. */
     skeleton?: GateSlot;
   };
@@ -344,6 +360,49 @@ function renderCard(parityCase: ParityCase): VNode {
 }
 
 /**
+ * VfPanel, for the panel catalog.
+ *
+ * Its own function, and deliberately not `renderCard` with a different
+ * component: the fixture is where a substitution would be easiest to introduce
+ * and hardest to see, and these two components are the pair M18 exists to keep
+ * apart. Three things differ and all three are visible here:
+ *
+ *   - the `footer` slot is passed to the panel even though a panel has no
+ *     footer. That is the point: the component must drop it, and a slot that is
+ *     never handed over is a rule that is never tested;
+ *   - the default slot may carry a `markup` shape, which puts several
+ *     root-level nodes in it. A card wraps them; a panel does not;
+ *   - an empty slot is still passed. For a card that opens an empty classed
+ *     wrapper; for a panel it produces nothing at all, and the difference is
+ *     only observable if the slot is actually handed over.
+ */
+function renderPanel(parityCase: ParityCase): VNode {
+  const content = (parityCase.content ?? {}) as { header?: PanelSlot; body?: PanelSlot; footer?: PanelSlot };
+  const slots: Record<string, () => unknown> = {};
+  const children = (slot: PanelSlot) => {
+    const nodes: unknown[] = [];
+
+    if (slot.text !== undefined && slot.text !== '') nodes.push(slot.text);
+    if (slot.markup === 'paragraphs') {
+      nodes.push(h('p', 'Storage, seats and outbound transfer.'), h('p', 'Updated hourly.'));
+    }
+    // A real button, unmarked and unwrapped: the consumer writes what it likes
+    // and the harness must not decorate it into something recognisable.
+    if (slot.control !== undefined) nodes.push(h('button', { type: 'button' }, slot.control.text));
+
+    return nodes;
+  };
+
+  if (content.header !== undefined) slots.header = () => children(content.header!);
+  if (content.body !== undefined) slots.default = () => children(content.body!);
+  // Handed over on purpose. VfPanel declares no footer slot, so Vue drops it -
+  // which is the behaviour the case is there to measure.
+  if (content.footer !== undefined) slots.footer = () => children(content.footer!);
+
+  return h(VfPanel, { ...parityCase.props, ...parityCase.attrs }, slots);
+}
+
+/**
  * The consumer markup a gate case names, built the same way in both fixtures.
  *
  * Real elements with no marker on them: the static snapshot is asserted against
@@ -441,6 +500,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'card') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderCard(parityCase)]);
+  }
+
+  if (catalog.component === 'panel') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderPanel(parityCase)]);
   }
 
   if (catalog.component === 'skeleton-gate') {

@@ -48,6 +48,7 @@ import {
   skeletonParityMutations,
   skeletonPolicyMutations,
 } from './m16-mutations.mjs';
+import { panelBrowserMutations, panelParityMutations, panelPolicyMutations } from './panel-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
@@ -119,6 +120,7 @@ const mutationSets = {
     browser: avatarBrowserMutations,
   },
   card: { capture: cardParityMutations, policy: cardPolicyMutations, browser: cardBrowserMutations },
+  panel: { capture: panelParityMutations, policy: panelPolicyMutations, browser: panelBrowserMutations },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
     policy: skeletonGatePolicyMutations,
