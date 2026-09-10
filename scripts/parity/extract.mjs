@@ -840,7 +840,16 @@ export function transitionExpression(caseId, to) {
 }
 
 /**
- * Marks the two elements a transition must not destroy, and reads the marks back.
+ * Marks the two elements a VfSkeletonGate transition must not destroy, and reads
+ * the marks back.
+ *
+ * Component-specific, and named so since M17.1. It selects the gate's own
+ * elements, exactly as skeletonGateInteractionExpression above it does, and the
+ * generic name it shipped with in M17 hid that: the LOC accounting counted it
+ * as reusable infrastructure, and a second component declaring a transition
+ * would have inherited selectors that match nothing. transitionViolations now
+ * refuses a run where the marks came back empty, so the next component gets a
+ * failure instead of a dimension that measures zero.
  *
  * `phase` is 'mark' before the transition and 'read' after it. The mark is an
  * expando property rather than an attribute, so it cannot reach the DOM
@@ -854,7 +863,7 @@ export function transitionExpression(caseId, to) {
  * uncontrolled input's value, a playing media element - which nothing else
  * here would notice.
  */
-export function transitionIdentityExpression(caseId, phase) {
+export function skeletonGateIdentityExpression(caseId, phase) {
   return `(() => {
     const root = document.querySelector('[data-parity-case="${caseId}"]');
     if (!root) throw new Error('missing case ${caseId}');
@@ -885,6 +894,47 @@ export function transitionIdentityExpression(caseId, phase) {
     }
     return read;
   })()`;
+}
+
+/**
+ * Whether a target's actual transition capability matches what its profile declared.
+ *
+ * Extracted from the runner in M17.1. It was an inline `throw` in run.mjs,
+ * which meant the guard M17 relied on to make `transitionTargets` mean
+ * something could not be tested and never had been - see
+ * transition-evidence.test.mjs. It is the same shape as
+ * staticOwnershipViolations: a pure function the runner calls, so both
+ * directions are assertable.
+ *
+ * Both directions matter, and the second is the one an inline check tends to
+ * omit:
+ *
+ *   - a target the profile expects to drive a transition, reporting no
+ *     support, has quietly lost its mechanism. Without this it would be
+ *     excused as "that one does not transition" and take the stage down with
+ *     it silently;
+ *   - a target the profile does *not* expect to drive one, reporting support,
+ *     has grown client behaviour the reference component never had. For the
+ *     Razor adapter that would be an API appearing out of nowhere.
+ *
+ * A profile that declares no targets is read strictly - every target is
+ * expected to transition - so a future profile that forgets the field gets a
+ * loud failure rather than a silent exemption.
+ *
+ * Returns the problem as a string, or null when the capability is as declared.
+ */
+export function transitionCapabilityViolation(profile, label, supported, caseId) {
+  const declared = (profile.transitionTargets ?? ['reference', 'current', 'razor']).includes(label);
+
+  if (declared === (supported === true)) {
+    return null;
+  }
+
+  return (
+    `Transition capability on ${label} contradicts the ${profile.id} profile: ` +
+    `the profile ${declared ? 'expects' : 'does not expect'} ${label} to drive ${caseId}, ` +
+    `but it reported supported=${JSON.stringify(supported)}.`
+  );
 }
 
 /**
@@ -929,6 +979,41 @@ export function transitionViolations(parityCase, result, postDom, expectedDom) {
     problems.push(
       `case ${parityCase.id} did not converge on ${parityCase.transition.matches}. ` +
         'A transition has to land on the state a fresh render of that state produces, not on a hybrid of the two.',
+    );
+  }
+
+  // The identity measurement has to have measured something.
+  //
+  // Added in M17.1, after the audit reproduced the hole in a real browser: the
+  // identity expression finds its nodes by selector, and the comparator only
+  // reports a difference for a node that was marked *and* came back recreated.
+  // Selectors matching nothing therefore produce an all-absent mark, an
+  // all-absent read, no difference, and a clean pass - transition.identity
+  // measuring zero while looking like live protection.
+  //
+  // Checked per role rather than "at least one was marked", so a component
+  // whose overlay stopped being found cannot keep passing on the strength of
+  // the half that still works. What each marked node *became* is not judged
+  // here: a recreated node is a difference for the comparator, and throwing on
+  // it would abort the mutation harness before it could report the recreation
+  // it was built to find.
+  const marks = result.identityBefore;
+  const unmeasured =
+    marks && typeof marks === 'object'
+      ? Object.entries(marks)
+          .filter(([, value]) => value !== 'marked')
+          .map(([role]) => role)
+      : null;
+
+  if (unmeasured === null || Object.keys(marks).length === 0) {
+    problems.push(
+      `case ${parityCase.id} marked no node for the identity measurement, so transition.identity compared ` +
+        'nothing. A dimension that can measure zero and pass is not protection.',
+    );
+  } else if (unmeasured.length > 0) {
+    problems.push(
+      `case ${parityCase.id} marked no node for [${unmeasured.join(', ')}], so transition.identity is blind ` +
+        'to those roles while still reporting on the others.',
     );
   }
 

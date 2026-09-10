@@ -30,9 +30,10 @@ import {
   driveInteraction,
   interactionExpression,
   staticOwnershipViolations,
+  transitionCapabilityViolation,
   transitionExpression,
-  transitionIdentityExpression,
   transitionViolations,
+  skeletonGateIdentityExpression,
 } from './extract.mjs';
 import { buildCurrentTarget, buildRazorTarget, buildReferenceTarget } from './targets.mjs';
 
@@ -310,27 +311,28 @@ async function captureTarget(
       const context = { target: label, theme, caseId: parityCase.id };
       await applyBrowserMutation(page, mutation, 'beforeTransition', context, evidence);
       // Marked before the state changes, read after it. See
-      // transitionIdentityExpression: the mark is an expando, so it reaches no
-      // other dimension.
-      const identityBefore = await page.evaluate(transitionIdentityExpression(parityCase.id, 'mark'));
+      // skeletonGateIdentityExpression: the mark is an expando, so it reaches
+      // no other dimension. The expression is component-specific - it names the
+      // gate's own elements - and is selected here the way the snapshot
+      // expression beside it is.
+      const identityBefore = await page.evaluate(skeletonGateIdentityExpression(parityCase.id, 'mark'));
       const driven = await page.evaluate(transitionExpression(parityCase.id, parityCase.transition.to));
       await page.evaluate(settleExpression);
       await applyBrowserMutation(page, mutation, 'afterTransition', context, evidence);
 
-      // The declared capability, asserted in both directions. A profile that
-      // names the targets which can be driven is only worth anything if a
-      // target disagreeing with it fails: without the second branch below, a
-      // Vue target that quietly lost its transition mechanism would report
-      // supported:false, be excused as "this one does not transition", and take
-      // the whole stage down with it silently.
-      const declared = (catalog.profile.transitionTargets ?? ['reference', 'current', 'razor']).includes(label);
-
-      if (declared !== (driven.supported === true)) {
-        throw new Error(
-          `Transition capability on ${label} (${theme}) contradicts the ${catalog.profile.id} profile: ` +
-            `the profile ${declared ? 'expects' : 'does not expect'} ${label} to drive ${parityCase.id}, ` +
-            `but it reported supported=${JSON.stringify(driven.supported)}.`,
-        );
+      // The declared capability, asserted in both directions. The check itself
+      // lives in extract.mjs so it can be tested against the function the
+      // runner calls - M17 had it inline here, where nothing could reach it,
+      // and transition-evidence.test.mjs is what M17.1 added to make both
+      // directions assertable.
+      const capabilityProblem = transitionCapabilityViolation(
+        catalog.profile,
+        label,
+        driven.supported,
+        parityCase.id,
+      );
+      if (capabilityProblem) {
+        throw new Error(`${capabilityProblem} (${theme})`);
       }
 
       if (driven.supported !== true) {
@@ -342,7 +344,7 @@ async function captureTarget(
       }
 
       const state = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
-      const identity = await page.evaluate(transitionIdentityExpression(parityCase.id, 'read'));
+      const identity = await page.evaluate(skeletonGateIdentityExpression(parityCase.id, 'read'));
       const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
 
       transitions[parityCase.id] = {
