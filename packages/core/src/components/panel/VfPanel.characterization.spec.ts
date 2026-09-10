@@ -30,6 +30,8 @@
 //     nothing brings it back.
 import { mount } from '@vue/test-utils';
 import { renderToString } from '@vue/server-renderer';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createSSRApp, h } from 'vue';
 import { describe, expect, it } from 'vitest';
 
@@ -330,6 +332,38 @@ describe('VfPanel characterization: ARIA and attrs', () => {
 
     expect(panel.find('header').attributes('data-testid')).toBeUndefined();
     expect(panel.find('p').attributes('data-testid')).toBeUndefined();
+  });
+});
+
+describe('VfPanel: independence from VfCard', () => {
+  // Not characterization - nothing here describes what the reference renders -
+  // and in the suite anyway, because it is the Vue half of the proof
+  // PanelComponentTest carries on the PHP side.
+  //
+  // It exists because of a substitution that this file's behavioural
+  // assertions provably do not catch. The panel template reads exactly one
+  // field of its region rule, `header`, and the card's rule computes that field
+  // from the same predicate. So a VfPanel that imported `resolveCardRegions`,
+  // passed `hasFooterSlot: false`, and ignored the two fields it does not need
+  // renders byte-identical markup in every case in this file, and every one of
+  // them passes.
+  //
+  // That substitution is the exact thing M18 exists to prevent: from then on
+  // the two components share one rule, a change reviewed for the card silently
+  // changes the panel, and no gate anywhere would say so. Since no observable
+  // behaviour distinguishes it, the source is what has to be asserted.
+  const source = readFileSync(resolve(__dirname, 'VfPanel.vue'), 'utf8');
+  const code = source.replace(/\/\/[^\n]*/g, '');
+
+  it('derives its rules from the panel module', () => {
+    expect(code).toContain('resolvePanelClasses');
+    expect(code).toContain('resolvePanelRegions');
+  });
+
+  it('names no VfCard rule and no card block name', () => {
+    expect(code).not.toContain('resolveCard');
+    expect(code).not.toContain('VfCard');
+    expect(code).not.toContain('vf-card');
   });
 });
 
