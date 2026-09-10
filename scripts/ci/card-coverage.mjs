@@ -101,6 +101,21 @@ export function cardCoverageViolations(cases) {
     entry,
   ) => slot(entry, 'footer')?.control !== undefined);
 
+  // The declaration the static snapshot is asserted against has to match the
+  // controls the fixtures actually render, or a case could declare a budget of
+  // five and hide four component-grown buttons inside it.
+  for (const entry of cases) {
+    const rendered = ['header', 'body', 'footer'].filter((name) => slot(entry, name)?.control !== undefined).length;
+    const declared = entry.consumerInteractive ?? 0;
+
+    if (rendered !== declared) {
+      violations.push(
+        `${entry.id} renders ${rendered} consumer control(s) but declares consumerInteractive ${declared}; ` +
+          'the static snapshot is asserted against the declaration, so the two must agree',
+      );
+    }
+  }
+
   for (const entry of cases) {
     if (!entry.id?.startsWith('card/')) {
       violations.push(`${entry.id} is not a card case, so it cannot count towards card coverage`);

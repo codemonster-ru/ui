@@ -80,6 +80,16 @@ export function skeletonCoverageViolations(cases) {
   ) => attrs(entry)['aria-hidden'] === undefined && attrs(entry).role === undefined);
 
   // Fail closed on a catalog that stopped being about this component.
+  // VfSkeleton has no slot at all, so no case may buy itself a
+  // static-interaction budget: every skeleton case must measure zero focusable
+  // elements, and a case that raised that ceiling would be how a
+  // component-grown control got through.
+  for (const entry of cases) {
+    if (entry.consumerInteractive !== undefined) {
+      violations.push(`${entry.id} declares consumerInteractive, and VfSkeleton has no slot at all`);
+    }
+  }
+
   for (const entry of cases) {
     if (entry.content !== undefined) {
       violations.push(`${entry.id} declares slot content, and VfSkeleton has no slot`);

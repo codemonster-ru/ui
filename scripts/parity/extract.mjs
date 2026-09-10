@@ -583,6 +583,9 @@ export const STATIC_SNAPSHOT_FIELDS = [
  * targets is evidence. If either adapter ever rendered a button, a link or a
  * tabindex inside one of these components, the counts would differ and the
  * static.noInteraction dimension would move.
+ *
+ * The snapshot itself is unchanged in M16. What changed is what the runner does
+ * with it - see staticOwnershipViolations below.
  */
 function staticInteractionExpression(caseId) {
   return `(() => {
@@ -611,6 +614,89 @@ function staticInteractionExpression(caseId) {
       focusRole: root.contains(document.activeElement) ? 'inside-case' : 'outside-case',
     };
   })()`;
+}
+
+/**
+ * Whether a static snapshot matches what the case said the consumer put in it.
+ *
+ * M16 is the first batch with a component whose slots hold arbitrary consumer
+ * content, and it exposed a hole in how M15 used this measurement - not a false
+ * failure, which is what the plan anticipated, but the opposite.
+ *
+ * M15 compared the counts between targets and required nothing of their value.
+ * That works for VfBadge, VfTag and VfDivider because their counts are zero, and
+ * the file above says so in as many words: "zero recorded on both targets is
+ * evidence". But the comparator only ever sees differences. Put a consumer
+ * button inside a VfCard slot and every target reports focusableCount 1, the
+ * comparison is clean, and the snapshot goes on declaring interactionPosture
+ * 'none' next to a measurement that now contradicts it. Nothing fails, and the
+ * absolute half of the evidence - the half that made zero mean something -
+ * quietly stops existing.
+ *
+ * So the value is asserted, against a number the *case* declares rather than a
+ * number the component can influence:
+ *
+ *   - a case that declares nothing must measure zero. That is every case of
+ *     every M15 component and most of M16, and it is strictly stronger than
+ *     what M15 required, not weaker;
+ *   - a case that says "the consumer puts one control in a slot" must measure
+ *     exactly one. Not "at most" - exactly, so a component that added a control
+ *     of its own next to the consumer's still fails;
+ *   - a missing measurement is a failure, never a skip.
+ *
+ * The declaration cannot be forged by an adapter: it lives in the shared case
+ * catalog, both adapters render from it, and neither can see it. A component
+ * that started rendering a button would be measured against the consumer's
+ * number and exceed it on both targets at once - which is exactly the case the
+ * three-way comparison cannot catch, because two identically wrong adapters
+ * agree.
+ *
+ * Explicit ARIA roles are held at zero: no case gives consumer slot content an
+ * interactive role attribute, so a non-zero count here is always the component's
+ * doing. If a future case needs one, this is where that would be declared, and
+ * refusing to guess is the point.
+ *
+ * Returns the problems as strings so a test can drive it directly.
+ */
+export function staticOwnershipViolations(parityCase, snapshot) {
+  const violations = [];
+  const declared = parityCase.consumerInteractive ?? 0;
+
+  if (!snapshot || typeof snapshot !== 'object') {
+    return [`case ${parityCase.id} produced no static snapshot at all`];
+  }
+
+  const missing = STATIC_SNAPSHOT_FIELDS.filter((field) => !(field in snapshot));
+  if (missing.length > 0) {
+    return [
+      `case ${parityCase.id} is missing [${missing.join(', ')}]. ` +
+        'A stage that records nothing is a failure, not a pass.',
+    ];
+  }
+
+  if (snapshot.interactionPosture !== 'none' || snapshot.caseRendered !== true) {
+    violations.push(
+      `case ${parityCase.id} reports posture=${JSON.stringify(snapshot.interactionPosture)} ` +
+        `rendered=${JSON.stringify(snapshot.caseRendered)}`,
+    );
+  }
+
+  if (snapshot.focusableCount !== declared) {
+    violations.push(
+      `case ${parityCase.id} measured ${snapshot.focusableCount} focusable element(s) but the catalog declares ` +
+        `${declared} consumer-provided control(s). A component whose own markup is focusable fails here even when ` +
+        'every target agrees, which is the failure a three-way comparison cannot see.',
+    );
+  }
+
+  if (snapshot.interactiveRoleCount !== 0) {
+    violations.push(
+      `case ${parityCase.id} measured ${snapshot.interactiveRoleCount} element(s) carrying an interactive role. ` +
+        'No case gives consumer slot content an explicit role, so this is the component exposing one.',
+    );
+  }
+
+  return violations;
 }
 
 /**

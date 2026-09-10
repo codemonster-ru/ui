@@ -1,5 +1,5 @@
 {
-  "$comment": "Shared VfCard cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Three slots, so the catalog covers each region alone, each pair, and all three - a single composed case would let a whole region disappear unnoticed. The interactive case is the one section 23 of the M16 plan is about: a consumer control inside a slot must not read as component-owned interaction. VfPanel has no cases here and must not be given any.",
+  "$comment": "Shared VfCard cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Three slots, so the catalog covers each region alone, each pair, and all three - a single composed case would let a whole region disappear unnoticed. The interactive case is the one section 23 of the M16 plan is about: a consumer control inside a slot must not read as component-owned interaction. VfPanel has no cases here and must not be given any. Cases whose slot content is interactive declare consumerInteractive: the number of focusable controls the *consumer* put in the card. The static snapshot is asserted against that number rather than against zero, so a control the component itself grew still fails even when every target grows it identically.",
   "component": "card",
   "propVocabulary": {
     "title": "string, default undefined. Opens the header and fills the fallback heading. Tested for truthiness, so an empty string opens nothing.",
@@ -323,6 +323,7 @@
           "text": "Updated 3 minutes ago"
         }
       },
+      "consumerInteractive": 1,
       "visual": true
     },
     {
@@ -337,6 +338,7 @@
           }
         }
       },
+      "consumerInteractive": 1,
       "visual": true
     }
   ]

@@ -113,6 +113,20 @@ export function avatarCoverageViolations(cases) {
     entry,
   ) => attrs(entry).role === undefined && attrs(entry)['aria-label'] === undefined);
 
+  // VfAvatar does have a default slot a consumer could put a control in, and no
+  // case does. The rule is therefore not "it is impossible" but "no case has
+  // bought itself a static-interaction budget": every avatar case must measure
+  // zero focusable elements, and a case that quietly raised that ceiling would
+  // be how a component-grown control got through.
+  for (const entry of cases) {
+    if (entry.consumerInteractive !== undefined) {
+      violations.push(
+        `${entry.id} declares consumerInteractive; no avatar case puts a control in the default slot, so the ` +
+          'static snapshot must be asserted against zero',
+      );
+    }
+  }
+
   for (const entry of cases) {
     if (!entry.id?.startsWith('avatar/')) {
       violations.push(`${entry.id} is not an avatar case, so it cannot count towards avatar coverage`);

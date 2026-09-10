@@ -25,7 +25,12 @@ import {
   summariseApprovals,
   validatePolicy,
 } from './compare.mjs';
-import { STATIC_SNAPSHOT_FIELDS, extractCasesExpression, driveInteraction, interactionExpression } from './extract.mjs';
+import {
+  extractCasesExpression,
+  driveInteraction,
+  interactionExpression,
+  staticOwnershipViolations,
+} from './extract.mjs';
 import { buildCurrentTarget, buildRazorTarget, buildReferenceTarget } from './targets.mjs';
 
 export const themes = ['light', 'dark'];
@@ -248,25 +253,18 @@ async function captureTarget(
           );
         }
         const snapshot = await page.evaluate(interactionExpression(parityCase.id, 'static'));
-        // Fail closed on a snapshot that came back without its measurements.
-        // An empty snapshot on every target compares equal to itself, so the
-        // comparator would report a clean pass for a stage that measured
-        // nothing - the exact silent skip the static profile exists to make
-        // impossible. Absence has to be caught here, where there is still a
-        // target to name, rather than in a comparison that never sees it.
-        const missing = STATIC_SNAPSHOT_FIELDS.filter((field) => !(field in (snapshot ?? {})));
-        if (missing.length > 0) {
-          throw new Error(
-            `The static snapshot for ${parityCase.id} on ${label} (${theme}) is missing ` +
-              `[${missing.join(', ')}]. A stage that records nothing is a failure, not a pass.`,
-          );
-        }
-        if (snapshot.interactionPosture !== 'none' || snapshot.caseRendered !== true) {
-          throw new Error(
-            `The static snapshot for ${parityCase.id} on ${label} (${theme}) reports ` +
-              `posture=${JSON.stringify(snapshot.interactionPosture)} ` +
-              `rendered=${JSON.stringify(snapshot.caseRendered)}.`,
-          );
+        // Fail closed on a snapshot that came back without its measurements, and
+        // on one whose measurements contradict what the case declared. An empty
+        // snapshot on every target compares equal to itself, so the comparator
+        // would report a clean pass for a stage that measured nothing - the
+        // exact silent skip the static profile exists to make impossible - and
+        // a component that grew a control of its own would be measured
+        // identically wrong on every target, which a three-way comparison
+        // cannot see either. Both have to be caught here, where there is still
+        // a target to name.
+        const violations = staticOwnershipViolations(parityCase, snapshot);
+        if (violations.length > 0) {
+          throw new Error(`Static ownership failed on ${label} (${theme}): ${violations.join('; ')}.`);
         }
 
         interactions[parityCase.id] = snapshot;
