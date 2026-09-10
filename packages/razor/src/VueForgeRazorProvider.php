@@ -14,6 +14,7 @@ use Codemonster\VueForge\Razor\Components\DividerComponent;
 use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
+use Codemonster\VueForge\Razor\Components\PanelComponent;
 use Codemonster\VueForge\Razor\Components\RadioComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonGateComponent;
@@ -63,6 +64,8 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'field' => new FieldComponent(),
             'icon-button' => new IconButtonComponent(),
             'input' => new InputComponent(),
+            // Registered beside the card, never through it. See PanelComponent.
+            'panel' => new PanelComponent(),
             'radio' => new RadioComponent(),
             'skeleton' => $skeleton,
             'skeleton-gate' => new SkeletonGateComponent($skeleton),
