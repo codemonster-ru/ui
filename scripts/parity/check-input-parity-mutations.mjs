@@ -37,6 +37,17 @@ import {
   tagParityMutations,
   tagPolicyMutations,
 } from './presentation-mutations.mjs';
+import {
+  avatarBrowserMutations,
+  avatarParityMutations,
+  avatarPolicyMutations,
+  cardBrowserMutations,
+  cardParityMutations,
+  cardPolicyMutations,
+  skeletonBrowserMutations,
+  skeletonParityMutations,
+  skeletonPolicyMutations,
+} from './m16-mutations.mjs';
 import { browserMutations } from './browser-mutations.mjs';
 import { assessMutation, MutationNotApplied, parityMutations, policyMutations } from './mutations.mjs';
 import {
@@ -92,6 +103,17 @@ const mutationSets = {
     policy: dividerPolicyMutations,
     browser: dividerBrowserMutations,
   },
+  skeleton: {
+    capture: skeletonParityMutations,
+    policy: skeletonPolicyMutations,
+    browser: skeletonBrowserMutations,
+  },
+  avatar: {
+    capture: avatarParityMutations,
+    policy: avatarPolicyMutations,
+    browser: avatarBrowserMutations,
+  },
+  card: { capture: cardParityMutations, policy: cardPolicyMutations, browser: cardBrowserMutations },
 };
 
 const profile = profileFromArgv();

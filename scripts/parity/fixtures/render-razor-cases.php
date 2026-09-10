@@ -53,6 +53,10 @@ $checkableComponents = [
 $badgeComponent = $registry->resolve('vf-badge');
 $tagComponent = $registry->resolve('vf-tag');
 $dividerComponent = $registry->resolve('vf-divider');
+// The M16 components. Resolved separately for the same reason.
+$skeletonComponent = $registry->resolve('vf-skeleton');
+$avatarComponent = $registry->resolve('vf-avatar');
+$cardComponent = $registry->resolve('vf-card');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -64,6 +68,11 @@ if (
 
 if ($badgeComponent === null || $tagComponent === null || $dividerComponent === null) {
     fwrite(STDERR, "The VueForge presentation components are not registered.\n");
+    exit(1);
+}
+
+if ($skeletonComponent === null || $avatarComponent === null || $cardComponent === null) {
+    fwrite(STDERR, "The VueForge M16 components are not registered.\n");
     exit(1);
 }
 
@@ -411,12 +420,109 @@ $renderDivider = static function (array $case) use ($dividerComponent): string {
     return $dividerComponent->render(new ComponentRenderContext($props, []))->value();
 };
 
+/**
+ * VfSkeleton, for the skeleton catalog. No slot at all.
+ *
+ * min-height reaches the component as the catalog wrote it, including as a JSON
+ * number, because the prop is typed `string | number` and the two travel
+ * different paths through the length rule.
+ */
+$renderSkeleton = static function (array $case) use ($skeletonComponent): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name === 'minHeight' ? 'min-height' : $name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    return $skeletonComponent->render(new ComponentRenderContext($props, []))->value();
+};
+
+/**
+ * VfAvatar, for the avatar catalog.
+ *
+ * The default slot is passed only when the case declares slot content: "no
+ * slot" and "a slot rendering nothing" are different inputs to the fallback
+ * chain, and the catalog distinguishes them.
+ */
+$renderAvatar = static function (array $case) use ($avatarComponent, $escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name === 'imageAlt' ? 'image-alt' : $name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $slots = [];
+    if (isset($case['content']['text'])) {
+        $text = $escape((string) $case['content']['text']);
+        $slots['default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($text);
+    }
+
+    return $avatarComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
+/**
+ * VfCard, for the card catalog.
+ *
+ * Each slot is passed only when the case declares it, because every one of the
+ * card's wrappers is keyed on the slot being present rather than on what it
+ * renders. Passing all three unconditionally would make every card render every
+ * wrapper and would delete the component's contract from the fixture.
+ *
+ * A control is a real consumer button, unmarked and unwrapped. The static
+ * snapshot is asserted against the number the case declares, not against
+ * anything recognisable in the markup, so there is nothing here for the
+ * component to imitate.
+ */
+$renderCard = static function (array $case) use ($cardComponent, $escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $slots = [];
+    foreach (['header' => 'header', 'body' => 'default', 'footer' => 'footer'] as $from => $to) {
+        if (!array_key_exists($from, $case['content'] ?? [])) {
+            continue;
+        }
+
+        $slot = $case['content'][$from];
+        $markup = '';
+
+        if (isset($slot['text']) && $slot['text'] !== '') {
+            $markup .= $escape((string) $slot['text']);
+        }
+        if (isset($slot['control'])) {
+            $markup .= '<button type="button">' . $escape((string) $slot['control']['text']) . '</button>';
+        }
+
+        $slots[$to] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    return $cardComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'badge') {
+    if ($component === 'skeleton') {
+        $body = $renderSkeleton($case);
+    } elseif ($component === 'avatar') {
+        $body = $renderAvatar($case);
+    } elseif ($component === 'card') {
+        $body = $renderCard($case);
+    } elseif ($component === 'badge') {
         $body = $renderBadge($case);
     } elseif ($component === 'tag') {
         $body = $renderTag($case);

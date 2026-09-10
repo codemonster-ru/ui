@@ -18,12 +18,27 @@ import VfSwitch from '@parity/core/components/switch/VfSwitch.vue';
 import VfBadge from '@parity/core/components/badge/VfBadge.vue';
 import VfTag from '@parity/core/components/tag/VfTag.vue';
 import VfDivider from '@parity/core/components/divider/VfDivider.vue';
+import VfSkeleton from '@parity/core/components/skeleton/VfSkeleton.vue';
+import VfAvatar from '@parity/core/components/avatar/VfAvatar.vue';
+import VfCard from '@parity/core/components/card/VfCard.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
 
 interface CaseContent {
   text?: string;
+}
+
+/**
+ * One VfCard slot, as the shared catalog spells it.
+ *
+ * `control` is a real consumer-provided button. It is what section 23 of the
+ * M16 plan is about: the card owns no interaction, its slots may hold as much
+ * as a consumer likes, and the static snapshot has to tell the two apart.
+ */
+interface CardSlot {
+  text?: string;
+  control?: { text: string };
 }
 
 interface CaseField {
@@ -48,8 +63,12 @@ interface ParityCase {
     error?: CaseContent;
     /** VfButton writes its icon into the default slot; there is no icon prop. */
     icon?: string;
-    /** The M15 toned spans put their whole content in the default slot. */
+    /** The M15 toned spans and the VfAvatar default slot put their whole content in the default slot. */
     text?: string;
+    /** VfCard's three slots. Each may be absent, empty, or carry a consumer control. */
+    header?: CardSlot;
+    body?: CardSlot;
+    footer?: CardSlot;
   };
   field?: CaseField;
   /** The VfField catalog splits the control's own props out of `props`. */
@@ -245,6 +264,66 @@ function renderDivider(parityCase: ParityCase): VNode {
   return h(VfDivider, { ...parityCase.props, ...parityCase.attrs });
 }
 
+/**
+ * VfSkeleton, for the skeleton catalog. No slot at all.
+ *
+ * `minHeight` reaches the component as the catalog wrote it - a number stays a
+ * number - because the prop is typed `string | number` and the two travel
+ * different paths through the length rule.
+ */
+function renderSkeleton(parityCase: ParityCase): VNode {
+  return h(VfSkeleton, { ...parityCase.props, ...parityCase.attrs });
+}
+
+/**
+ * VfAvatar, for the avatar catalog.
+ *
+ * The default slot is passed only when the case declares slot content, because
+ * "no slot" and "a slot rendering nothing" are different inputs to the fallback
+ * chain and the catalog distinguishes them.
+ */
+function renderAvatar(parityCase: ParityCase): VNode {
+  const text = (parityCase.content as { text?: string } | undefined)?.text;
+
+  return h(
+    VfAvatar,
+    { ...parityCase.props, ...parityCase.attrs },
+    text === undefined ? undefined : { default: () => text },
+  );
+}
+
+/**
+ * VfCard, for the card catalog.
+ *
+ * Each slot is passed only when the case declares it, because every one of the
+ * card's wrappers is keyed on the slot being present rather than on what it
+ * renders. Passing all three unconditionally would make every card render every
+ * wrapper and would delete the component's entire contract from the fixture.
+ *
+ * A slot declaring an empty string is passed and renders nothing, which is the
+ * input that brings the header's fallback heading back.
+ */
+function renderCard(parityCase: ParityCase): VNode {
+  const content = (parityCase.content ?? {}) as { header?: CardSlot; body?: CardSlot; footer?: CardSlot };
+  const slots: Record<string, () => unknown> = {};
+  const children = (slot: CardSlot) => {
+    const nodes: unknown[] = [];
+
+    if (slot.text !== undefined && slot.text !== '') nodes.push(slot.text);
+    // A real button, unmarked and unwrapped: the consumer writes what it likes
+    // and the harness must not decorate it into something recognisable.
+    if (slot.control !== undefined) nodes.push(h('button', { type: 'button' }, slot.control.text));
+
+    return nodes;
+  };
+
+  if (content.header !== undefined) slots.header = () => children(content.header!);
+  if (content.body !== undefined) slots.default = () => children(content.body!);
+  if (content.footer !== undefined) slots.footer = () => children(content.footer!);
+
+  return h(VfCard, { ...parityCase.props, ...parityCase.attrs }, slots);
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -262,6 +341,21 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'divider') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderDivider(parityCase)]);
+  }
+
+  // Three branches rather than one parameterised renderer, for the reason the
+  // M15 toned spans got three: the fixture is where a substitution would be
+  // easiest to introduce and hardest to see.
+  if (catalog.component === 'skeleton') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderSkeleton(parityCase)]);
+  }
+
+  if (catalog.component === 'avatar') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderAvatar(parityCase)]);
+  }
+
+  if (catalog.component === 'card') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderCard(parityCase)]);
   }
 
   if (catalog.component === 'icon-button') {

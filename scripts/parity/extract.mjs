@@ -37,6 +37,14 @@ export const COMPARED_ATTRIBUTES = [
   // the third time this gate has caught an attribute nothing compared - after
   // aria-busy in M12 and four native attributes in M13.
   'aria-orientation',
+  // VfAvatar. Found missing by the attribute-coverage gate in M16, which is the
+  // fourth time it has caught an attribute nothing compared - after aria-busy
+  // in M12, four native attributes in M13 and aria-orientation in M15. `alt` is
+  // half the avatar's accessibility contract: it is always written, and its
+  // empty default is what makes the image decorative rather than unlabelled.
+  // `src` is the other half of the image branch and had no comparison at all.
+  'alt',
+  'src',
   // The checkable controls. `checked` is the attribute the server rendered -
   // the live property is recorded separately, because after an interaction the
   // two say different things and only the property is true.
@@ -115,17 +123,37 @@ export function extractCasesExpression(measuredRoles) {
       .join(' ');
   }
 
+  // A style attribute is compared as a set of declarations, parsed by the
+  // browser rather than by this function.
+  //
+  // The two renderers do not produce the attribute the same way. Vue sets style
+  // properties through the CSSOM, so what lands in the attribute is the
+  // browser's own serialisation; the Razor adapter writes the attribute text
+  // directly, so what lands there is what the server wrote. Those differ for
+  // values the CSSOM canonicalises - a zero border-radius becomes 0px on the
+  // Vue side and stays 0 on the Razor side - and that is a difference in
+  // serialisation, not in the product: the computed style, the geometry and the
+  // screenshot are identical.
+  //
+  // Found by the M16 skeleton parity run, which is the first component whose own
+  // inline style a consumer can also write into.
+  //
+  // Running both sides through the browser's parser is what removes the whole
+  // class of difference, and it does so without this file knowing any CSS: the
+  // authority is the same engine both targets are rendered in. It is stricter
+  // than comparing text, not looser - a declaration the browser rejects
+  // disappears, so an adapter writing something unparseable differs from one
+  // writing a real declaration. Two adapters writing the *same* unparseable
+  // declaration compare equal, which is the same blind spot text comparison had
+  // and is what the reference direction exists to cover.
+  const styleProbe = document.createElement('div');
+
   function normaliseStyle(value) {
-    return value
-      .split(';')
-      .map((declaration) => declaration.trim())
-      .filter(Boolean)
-      .map((declaration) => {
-        const separator = declaration.indexOf(':');
-        return separator === -1
-          ? declaration
-          : declaration.slice(0, separator).trim() + ':' + declaration.slice(separator + 1).trim();
-      })
+    styleProbe.style.cssText = '';
+    styleProbe.style.cssText = value;
+
+    return [...styleProbe.style]
+      .map((property) => property + ':' + styleProbe.style.getPropertyValue(property).trim())
       .sort()
       .join(';');
   }

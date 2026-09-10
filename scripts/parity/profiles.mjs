@@ -354,6 +354,110 @@ export const profiles = {
     semanticAttributes: ['class', 'style', 'role', 'aria-orientation', 'data-testid'],
     snapshot: 'static',
   },
+  // The three M16 components. Also `static`, and the first batch where that
+  // word means two different things: VfSkeleton and VfAvatar own no interaction
+  // and hold nothing that could, while VfCard owns none and holds slots that
+  // may hold anything. The profiles are identical in shape; what differs is
+  // what the case catalog declares, and staticOwnershipViolations in extract.mjs
+  // is where that difference is decided.
+  //
+  // Three profiles rather than one shared 'M16' profile, for the reason M15
+  // recorded: one report, one artifact directory and one policy for three
+  // components would mean a difference arriving without saying whose it was.
+  skeleton: {
+    id: 'skeleton',
+    label: 'VfSkeleton',
+    component: 'skeleton',
+    casesPath: 'contracts/skeleton/cases.json',
+    policyPath: 'contracts/skeleton/parity-policy.json',
+    artifactDirectory: 'parity-skeleton',
+    reportName: 'skeleton-parity-report.json',
+    measuredRoles: {
+      root: '.vf-skeleton',
+    },
+    // Listed so the absence is measured rather than assumed: a skeleton is
+    // aria-hidden, so it should be absent from the accessibility tree entirely.
+    // An adapter that started exposing it - as role=status, say - would be an
+    // accessibility improvement and a product change, and this is what notices.
+    accessibilityRoles: {
+      root: '.vf-skeleton',
+    },
+    // style is the contract here rather than incidental markup: the component
+    // writes min-height and border-radius itself and merges a consumer style
+    // over them, and it is the only migrated component that does both.
+    semanticAttributes: ['class', 'style', 'aria-hidden', 'role', 'aria-label', 'data-testid'],
+    snapshot: 'static',
+  },
+  avatar: {
+    id: 'avatar',
+    label: 'VfAvatar',
+    component: 'avatar',
+    casesPath: 'contracts/avatar/cases.json',
+    policyPath: 'contracts/avatar/parity-policy.json',
+    artifactDirectory: 'parity-avatar',
+    reportName: 'avatar-parity-report.json',
+    // One role per branch of the fallback chain, so a branch that stopped
+    // rendering is a missing measurement rather than a silently smaller DOM.
+    measuredRoles: {
+      root: '.vf-avatar',
+      image: '.vf-avatar__image',
+      label: '.vf-avatar__label',
+      glyphWrapper: '.vf-avatar .vf-icon-wrapper',
+      glyph: '.vf-avatar__icon',
+    },
+    // The root and the image are listed because their absence from the tree is
+    // the contract - an avatar exposes no role, and a decorative image exposes
+    // nothing either. The glyph is listed for the same reason: it is
+    // aria-hidden, so an icon-only avatar must contribute no accessible name,
+    // and that is only a measurement if the selector is queried.
+    accessibilityRoles: {
+      root: '.vf-avatar',
+      image: '.vf-avatar__image',
+      glyph: '.vf-avatar__icon',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'alt',
+      'src',
+      'aria-hidden',
+      'role',
+      'aria-label',
+      'width',
+      'height',
+      'data-testid',
+    ],
+    snapshot: 'static',
+  },
+  card: {
+    id: 'card',
+    label: 'VfCard',
+    component: 'card',
+    casesPath: 'contracts/card/cases.json',
+    policyPath: 'contracts/card/parity-policy.json',
+    artifactDirectory: 'parity-card',
+    reportName: 'card-parity-report.json',
+    // One role per region. The header and footer are addressed as direct
+    // children of the root rather than by class, because they have no class -
+    // which is the historical detail this component is here to preserve.
+    measuredRoles: {
+      root: '.vf-card',
+      header: '.vf-card > header',
+      title: '.vf-card__title',
+      body: '.vf-card__body',
+      footer: '.vf-card > footer',
+    },
+    // A section with no accessible name exposes no landmark role, and the card
+    // never names itself. Listing the root is how "no landmark" becomes a
+    // measurement instead of an assumption; listing the title is how "the
+    // heading is a heading" stays one.
+    accessibilityRoles: {
+      root: '.vf-card',
+      title: '.vf-card__title',
+    },
+    semanticAttributes: ['class', 'style', 'role', 'aria-label', 'data-testid'],
+    snapshot: 'static',
+  },
 };
 
 export function loadProfile(id) {
