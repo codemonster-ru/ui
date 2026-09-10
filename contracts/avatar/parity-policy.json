@@ -1,0 +1,118 @@
+{
+  "$comment": "Parity policy for the shared VfAvatar cases. Plain data: no DSL, no waiver engine. The one component in M16 whose contract is an ordering rather than a mapping, and the one that renders through the neutral icon registry.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class and style on the root span, the src and alt of the image branch, and the glyph's own svg attributes. alt is the contract rather than incidental markup: it is always written, and its default empty value is what makes the image decorative."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The avatar writes none of its own; the only ARIA it emits is the aria-hidden on the glyph, which is why an icon-only avatar has no accessible name."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. Includes the component-owned focusable and interactive-role counts, which for an avatar are zero on every target."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-fallback-chain-is-the-contract",
+      "description": "image -> label -> icon -> default slot, decided by v-if/v-else-if. A reordering renders an avatar for every input, so nothing about the result looks wrong.",
+      "classification": "exact",
+      "reason": "The single most plausible port defect in M16. Every branch and every adjacent pair has its own case.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/avatar/cases.json#avatar/label-beats-icon"
+    },
+    {
+      "id": "an-empty-string-does-not-select-its-branch",
+      "description": "The tests are plain truthiness, so image=\"\" falls through to the label exactly as an absent image does, and there is no way to request an empty label.",
+      "classification": "exact",
+      "reason": "Switching to a presence test would render an empty img or an empty label span where the reference renders the next branch.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/avatar/cases.json#avatar/empty-image-falls-through"
+    },
+    {
+      "id": "the-image-is-decorative-by-default",
+      "description": "imageAlt defaults to '' rather than to undefined, so the image branch always carries an alt attribute. A missing alt and an empty one are different things to a screen reader.",
+      "classification": "exact",
+      "reason": "Dropping the attribute would turn every unlabelled avatar into an unlabelled image announced by its filename.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/avatar/cases.json#avatar/image-decorative"
+    },
+    {
+      "id": "the-avatar-class-lands-on-the-glyph",
+      "description": "VueIconify sets inheritAttrs: false and spreads its attrs onto the inner svg, so class=\"vf-avatar__icon\" reaches the glyph rather than the wrapper span, and so does aria-hidden.",
+      "classification": "exact",
+      "reason": "Not a decision this component made, but one it depends on: the avatar stylesheet sizes .vf-avatar__icon, and moving it to the wrapper would size the wrong box.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/avatar/cases.json#avatar/icon"
+    },
+    {
+      "id": "the-two-modifiers-are-suppressed-by-two-rules",
+      "description": "The size modifier is suppressed by comparing against md; the shape modifier exists only for circle. square is not the value the shape modifier is named after.",
+      "classification": "exact",
+      "reason": "Folding them into one 'suppress the default' loop is the obvious simplification and emits vf-avatar--square, which no stylesheet defines.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/avatar/state-vectors.json"
+    },
+    {
+      "id": "an-unknown-glyph-name-is-handled-differently-by-the-two-adapters",
+      "description": "The Vue icon component silently substitutes a placeholder glyph for a name it does not know; the neutral Razor registry throws. No case exercises an unknown name, so no comparison depends on this.",
+      "classification": "framework-specific",
+      "reason": "It is a property of the icon packages, not of VfAvatar, and reconciling it would change the icon contract for every component rather than for this one. Recorded rather than approved: there is no divergence to approve, because no case produces one.",
+      "razorDiffers": true,
+      "coveredBy": "packages/razor/tests/Components/AvatarComponentTest.php"
+    }
+  ],
+  "approvedDivergences": []
+}

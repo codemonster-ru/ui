@@ -1,0 +1,340 @@
+{
+  "$comment": "Shared VfAvatar cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. The catalog's job is the four-branch fallback chain image -> label -> icon -> default slot: every branch is covered alone, and every adjacent pair is covered together, because a reordering renders an avatar either way and only a case holding both props can tell which one won. The image is an inline data URI so all three targets load byte-identical pixels with no network.",
+  "component": "avatar",
+  "propVocabulary": {
+    "image": "string, default undefined. Wins over everything. Tested for truthiness, so an empty string falls through.",
+    "imageAlt": "string, default ''. Always written on the image branch, which makes the image decorative rather than unlabelled.",
+    "label": "string, default undefined. Beats the icon and the slot.",
+    "icon": "IconName | string, default undefined. Rendered through the neutral icon registry, decorative.",
+    "size": "VfControlSize: sm | md | lg. md emits no modifier.",
+    "shape": "VfAvatarShape: square | circle. Only circle emits a modifier."
+  },
+  "cases": [
+    {
+      "id": "avatar/empty",
+      "title": "No prop and no slot: a valid empty avatar, not an error",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/image",
+      "title": "The image branch alone",
+      "props": {
+        "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyBmaWxsPScjM2I2ZmQ0Jy8+PGNpcmNsZSBjeD0nMTYnIGN5PScxMicgcj0nNicgZmlsbD0nI2RjZTZmYScvPjxwYXRoIGQ9J000IDMyYzItOCA2LTExIDEyLTExczEwIDMgMTIgMTF6JyBmaWxsPScjZGNlNmZhJy8+PC9zdmc+",
+        "imageAlt": "Maya Chen"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/image-decorative",
+      "title": "No imageAlt, so alt=\"\" marks the image decorative rather than unlabelled",
+      "props": {
+        "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyBmaWxsPScjM2I2ZmQ0Jy8+PGNpcmNsZSBjeD0nMTYnIGN5PScxMicgcj0nNicgZmlsbD0nI2RjZTZmYScvPjxwYXRoIGQ9J000IDMyYzItOCA2LTExIDEyLTExczEwIDMgMTIgMTF6JyBmaWxsPScjZGNlNmZhJy8+PC9zdmc+"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/image-beats-label",
+      "title": "An image wins over a label",
+      "props": {
+        "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyBmaWxsPScjM2I2ZmQ0Jy8+PGNpcmNsZSBjeD0nMTYnIGN5PScxMicgcj0nNicgZmlsbD0nI2RjZTZmYScvPjxwYXRoIGQ9J000IDMyYzItOCA2LTExIDEyLTExczEwIDMgMTIgMTF6JyBmaWxsPScjZGNlNmZhJy8+PC9zdmc+",
+        "imageAlt": "Maya Chen",
+        "label": "MC"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "avatar/image-beats-icon",
+      "title": "An image wins over an icon",
+      "props": {
+        "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyBmaWxsPScjM2I2ZmQ0Jy8+PGNpcmNsZSBjeD0nMTYnIGN5PScxMicgcj0nNicgZmlsbD0nI2RjZTZmYScvPjxwYXRoIGQ9J000IDMyYzItOCA2LTExIDEyLTExczEwIDMgMTIgMTF6JyBmaWxsPScjZGNlNmZhJy8+PC9zdmc+",
+        "imageAlt": "Maya Chen",
+        "icon": "user"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "avatar/image-beats-everything",
+      "title": "An image wins over a label, an icon and the slot at once",
+      "props": {
+        "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyBmaWxsPScjM2I2ZmQ0Jy8+PGNpcmNsZSBjeD0nMTYnIGN5PScxMicgcj0nNicgZmlsbD0nI2RjZTZmYScvPjxwYXRoIGQ9J000IDMyYzItOCA2LTExIDEyLTExczEwIDMgMTIgMTF6JyBmaWxsPScjZGNlNmZhJy8+PC9zdmc+",
+        "imageAlt": "Maya Chen",
+        "label": "MC",
+        "icon": "user"
+      },
+      "attrs": {},
+      "content": {
+        "text": "SLOT"
+      },
+      "visual": false
+    },
+    {
+      "id": "avatar/label",
+      "title": "The label branch alone",
+      "props": {
+        "label": "MC"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/label-beats-icon",
+      "title": "A label wins over an icon: the adjacent pair most easily reversed",
+      "props": {
+        "label": "MC",
+        "icon": "user"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/label-beats-slot",
+      "title": "A label wins over the default slot",
+      "props": {
+        "label": "MC"
+      },
+      "attrs": {},
+      "content": {
+        "text": "SLOT"
+      },
+      "visual": false
+    },
+    {
+      "id": "avatar/label-long",
+      "title": "A long label is ellipsised by the stylesheet, not truncated by the component",
+      "props": {
+        "label": "Margarethe Chen-Okonkwo"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/label-hostile",
+      "title": "Hostile label text is escaped as interpolated content",
+      "props": {
+        "label": "<img src=x onerror=alert(1)>"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "avatar/icon",
+      "title": "The icon branch alone, rendered through the neutral registry",
+      "props": {
+        "icon": "user"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/icon-beats-slot",
+      "title": "An icon wins over the default slot",
+      "props": {
+        "icon": "user"
+      },
+      "attrs": {},
+      "content": {
+        "text": "SLOT"
+      },
+      "visual": false
+    },
+    {
+      "id": "avatar/icon-circle-lg",
+      "title": "The icon branch at a non-default size and shape",
+      "props": {
+        "icon": "user",
+        "size": "lg",
+        "shape": "circle"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/slot",
+      "title": "The default slot branch, reached only when all three props are absent",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "text": "JS"
+      },
+      "visual": true
+    },
+    {
+      "id": "avatar/slot-hostile",
+      "title": "Hostile slot content is escaped by whatever renders it, not by the avatar",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "text": "<b>bold</b>"
+      },
+      "visual": false
+    },
+    {
+      "id": "avatar/empty-image-falls-through",
+      "title": "An empty image does not select its branch",
+      "props": {
+        "image": "",
+        "label": "MC"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "avatar/empty-label-falls-through",
+      "title": "An empty label falls through to the icon rather than rendering an empty span",
+      "props": {
+        "label": "",
+        "icon": "user"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "avatar/empty-icon-falls-through",
+      "title": "An empty icon falls through to the slot",
+      "props": {
+        "icon": ""
+      },
+      "attrs": {},
+      "content": {
+        "text": "JS"
+      },
+      "visual": false
+    },
+    {
+      "id": "avatar/size-sm",
+      "title": "The sm size modifier",
+      "props": {
+        "label": "MC",
+        "size": "sm"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/size-md-explicit",
+      "title": "md passed explicitly emits no modifier",
+      "props": {
+        "label": "MC",
+        "size": "md"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "avatar/size-lg",
+      "title": "The lg size modifier",
+      "props": {
+        "label": "MC",
+        "size": "lg"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/shape-square-explicit",
+      "title": "square passed explicitly emits no modifier, suppressed by a different rule than the size",
+      "props": {
+        "label": "MC",
+        "shape": "square"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "avatar/shape-circle",
+      "title": "The circle modifier, emitted after the size modifier",
+      "props": {
+        "label": "MC",
+        "shape": "circle"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/size-and-shape",
+      "title": "Both modifiers at once, in the order the reference emits them",
+      "props": {
+        "label": "MC",
+        "size": "sm",
+        "shape": "circle"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/image-circle",
+      "title": "A circular image avatar, the composition every product uses",
+      "props": {
+        "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyBmaWxsPScjM2I2ZmQ0Jy8+PGNpcmNsZSBjeD0nMTYnIGN5PScxMicgcj0nNicgZmlsbD0nI2RjZTZmYScvPjxwYXRoIGQ9J000IDMyYzItOCA2LTExIDEyLTExczEwIDMgMTIgMTF6JyBmaWxsPScjZGNlNmZhJy8+PC9zdmc+",
+        "imageAlt": "Maya Chen",
+        "shape": "circle",
+        "size": "lg"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "avatar/consumer-class",
+      "title": "A consumer class is appended after the canonical classes",
+      "props": {
+        "label": "MC",
+        "size": "sm"
+      },
+      "attrs": {
+        "class": "consumer-avatar"
+      },
+      "visual": true
+    },
+    {
+      "id": "avatar/consumer-class-default",
+      "title": "A consumer class with no modifier to follow sits in a different position in the list",
+      "props": {
+        "label": "MC"
+      },
+      "attrs": {
+        "class": "consumer-avatar"
+      },
+      "visual": false
+    },
+    {
+      "id": "avatar/consumer-style",
+      "title": "A consumer style reaches the root",
+      "props": {
+        "label": "MC"
+      },
+      "attrs": {
+        "style": "opacity: 0.6"
+      },
+      "visual": true
+    },
+    {
+      "id": "avatar/product-data",
+      "title": "A product data attribute reaches the root and is compared",
+      "props": {
+        "label": "MC"
+      },
+      "attrs": {
+        "data-testid": "avatar-product-data"
+      },
+      "visual": false
+    },
+    {
+      "id": "avatar/consumer-aria",
+      "title": "A consumer role and name reach a component that writes neither",
+      "props": {
+        "icon": "user"
+      },
+      "attrs": {
+        "role": "img",
+        "aria-label": "Maya Chen"
+      },
+      "visual": false
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "$comment": "Parity policy for the shared VfSkeleton cases. Plain data: no DSL, no waiver engine. The component has no children and no interaction, so almost everything it can get wrong is an attribute.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class and style on the root div, plus any native attribute a consumer forwards. style is the contract here rather than incidental markup: the component writes min-height and border-radius itself and merges a consumer style over them."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. aria-hidden is the whole accessibility contract of this component, and the fact that a consumer can replace it is part of that contract."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. Includes the component-owned focusable and interactive-role counts, which for a skeleton are zero on every target."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-animation-modifier-is-present-at-the-default",
+      "description": "animated defaults to true, so vf-skeleton--animated is on every skeleton unless a caller switches it off. Every modifier migrated before this one works the other way round.",
+      "classification": "exact",
+      "reason": "A port that copied the M15 'the default emits nothing' convention would ship a skeleton that never shimmers, and the static box would look correct.",
+      "razorDiffers": false,
+      "coveredBy": "packages/shared-core/src/skeleton/state-vectors.json"
+    },
+    {
+      "id": "an-empty-radius-drops-the-declaration",
+      "description": "radius=\"\" does not round the corners to zero; Vue omits a style property whose value is '', so the declaration disappears and a skeleton with an empty radius and no min-height has no style attribute at all.",
+      "classification": "exact",
+      "reason": "Normalising the empty string into border-radius:0 would change what the stylesheet is allowed to decide.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton/cases.json#skeleton/radius-empty"
+    },
+    {
+      "id": "a-consumer-can-override-aria-hidden",
+      "description": "aria-hidden is a static attribute on a component that does not set inheritAttrs: false, so an inherited attribute of the same name replaces it and aria-hidden=\"false\" on a skeleton is reachable.",
+      "classification": "exact",
+      "reason": "Blocking the override would be a silent API removal. Both adapters let the consumer win.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton/cases.json#skeleton/aria-hidden-override"
+    },
+    {
+      "id": "zero-is-a-length",
+      "description": "minHeight accepts a number and appends px, so 0 becomes 0px rather than being dropped as falsy.",
+      "classification": "exact",
+      "reason": "Treating 0 as absent is the obvious defect and produces a placeholder with no reserved height.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/skeleton/cases.json#skeleton/min-height-zero"
+    }
+  ],
+  "approvedDivergences": []
+}

@@ -1,0 +1,110 @@
+{
+  "$comment": "Parity policy for the shared VfCard cases. Plain data: no DSL, no waiver engine. The first migrated component whose slots may hold arbitrary consumer content, which is why static.noInteraction distinguishes component-owned interaction from consumer-owned interaction here.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. Never approvable; comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class and style on the root section, plus any native attribute a consumer forwards. The header and footer wrappers have no attributes at all, and that absence is the contract."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The card writes none of its own: a section with no accessible name exposes no landmark role, and naming it would add a landmark to every existing card."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. For a slot container the counts are split: consumer-provided controls inside a slot are counted and compared, but only the component-owned count is required to be zero."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-header-and-footer-wrappers-carry-no-class",
+      "description": "Only the fallback heading and the body wrapper are classed. There is no vf-card__header and no vf-card__footer.",
+      "classification": "exact",
+      "reason": "The first thing a reviewer would add. A card with those classes looks identical and selects differently.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/card/cases.json#card/full"
+    },
+    {
+      "id": "an-empty-string-title-renders-no-header",
+      "description": "title is tested for truthiness, so title=\"\" renders no header element at all rather than an empty one.",
+      "classification": "exact",
+      "reason": "An empty header would be the charitable reading and is not what happens.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/card/cases.json#card/title-empty"
+    },
+    {
+      "id": "the-wrapper-and-the-heading-are-keyed-on-different-questions",
+      "description": "The header wrapper asks whether a header slot was passed; the fallback heading asks whether that slot produced content. A header slot rendering nothing therefore yields a header element with the h3 back inside it, and with no title that h3 is empty.",
+      "classification": "exact",
+      "reason": "The subtlest rule in M16. Keying both on one question is the obvious simplification and changes what such a card renders. Vue answers the second question through slot fallback; Razor decides it explicitly, because a Razor slot arrives as rendered markup.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/card/cases.json#card/header-slot-empty"
+    },
+    {
+      "id": "the-body-and-footer-wrappers-are-keyed-on-slot-presence",
+      "description": "Not on what the slot renders. A slot producing nothing still emits an empty wrapper, which still takes a row and a column gap in the flex layout.",
+      "classification": "exact",
+      "reason": "Keying on the rendered result would silently close the gap the reference leaves.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/card/cases.json#card/body-empty"
+    },
+    {
+      "id": "the-card-owns-no-interaction-and-its-slots-may-own-plenty",
+      "description": "The component renders no focusable element in any configuration. Consumer slot content is free to be as interactive as it likes, and that content belongs to the consumer.",
+      "classification": "exact",
+      "reason": "Not a quirk so much as the boundary M16 had to make measurable: the static snapshot counts both, and requires only the component-owned count to be zero.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/card/cases.json#card/interactive-slot-content"
+    }
+  ],
+  "approvedDivergences": []
+}

@@ -1,0 +1,343 @@
+{
+  "$comment": "Shared VfCard cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. Three slots, so the catalog covers each region alone, each pair, and all three - a single composed case would let a whole region disappear unnoticed. The interactive case is the one section 23 of the M16 plan is about: a consumer control inside a slot must not read as component-owned interaction. VfPanel has no cases here and must not be given any.",
+  "component": "card",
+  "propVocabulary": {
+    "title": "string, default undefined. Opens the header and fills the fallback heading. Tested for truthiness, so an empty string opens nothing.",
+    "compact": "boolean, default false."
+  },
+  "slotVocabulary": {
+    "header": "Replaces the fallback h3 when it renders content. A header slot that renders nothing still opens the wrapper and brings the heading back.",
+    "body": "The default slot. Its presence, not its output, decides whether div.vf-card__body renders.",
+    "footer": "Same keying as the body, and no prop opens it."
+  },
+  "cases": [
+    {
+      "id": "card/empty",
+      "title": "An empty card: three regions, none of them rendered",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "card/body-only",
+      "title": "The body alone, in its classed wrapper",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Everything in this workspace is shared with your team."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/title-only",
+      "title": "A title alone opens the header and fills the fallback heading",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "card/footer-only",
+      "title": "A footer with no header and no body: the three regions are independent, not ordered gates",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "footer": {
+          "text": "Updated 3 minutes ago"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/header-slot-only",
+      "title": "A header slot opens the header on its own, with no title anywhere",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": "Custom header"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/header-slot-beats-title",
+      "title": "A header slot drops the fallback heading even when a title was passed, and the title goes unused",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": "Custom header"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/header-slot-empty",
+      "title": "A header slot that renders nothing still opens the wrapper and brings the fallback heading back",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": ""
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/header-slot-empty-no-title",
+      "title": "The same with no title: an empty header holding an empty heading",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "card/title-empty",
+      "title": "The quirk: an empty-string title is falsy, so it renders no header rather than an empty one",
+      "props": {
+        "title": ""
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "card/body-empty",
+      "title": "An empty default slot still produces its wrapper, which still takes a row and a gap in the flex column",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": ""
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/footer-empty",
+      "title": "An empty footer slot still produces its wrapper",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "footer": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "card/title-and-body",
+      "title": "Header and body with no footer",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Shared with your team."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/body-and-footer",
+      "title": "Body and footer with no header",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Shared with your team."
+        },
+        "footer": {
+          "text": "Updated 3 minutes ago"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/title-and-footer",
+      "title": "Header and footer with no body",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "footer": {
+          "text": "Updated 3 minutes ago"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/full",
+      "title": "All three regions, in the order the reference renders them",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Shared with your team."
+        },
+        "footer": {
+          "text": "Updated 3 minutes ago"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/compact",
+      "title": "The compact modifier changes the padding and the column gap",
+      "props": {
+        "title": "Workspace",
+        "compact": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Shared with your team."
+        },
+        "footer": {
+          "text": "Updated 3 minutes ago"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/compact-empty",
+      "title": "The compact modifier on an empty card, where only the padding is visible",
+      "props": {
+        "compact": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "card/title-hostile",
+      "title": "A hostile title is escaped as interpolated content",
+      "props": {
+        "title": "<img src=x onerror=alert(1)>"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "card/consumer-class",
+      "title": "A consumer class is appended after the canonical classes",
+      "props": {
+        "compact": true
+      },
+      "attrs": {
+        "class": "consumer-card"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/consumer-class-default",
+      "title": "A consumer class with no modifier to follow sits in a different position in the list",
+      "props": {},
+      "attrs": {
+        "class": "consumer-card"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "card/consumer-style",
+      "title": "A consumer style reaches the root",
+      "props": {},
+      "attrs": {
+        "style": "opacity: 0.6"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/product-data",
+      "title": "A product data attribute reaches the root and is compared",
+      "props": {},
+      "attrs": {
+        "data-testid": "card-product-data"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "card/consumer-aria",
+      "title": "A consumer role and name reach a section that exposes neither of its own",
+      "props": {},
+      "attrs": {
+        "role": "region",
+        "aria-label": "Workspace"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "card/interactive-slot-content",
+      "title": "A consumer control inside the body slot. The component owns no interaction; this content is the consumer's, and the static snapshot must say so",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Rename this workspace.",
+          "control": {
+            "text": "Rename"
+          }
+        },
+        "footer": {
+          "text": "Updated 3 minutes ago"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "card/interactive-footer-content",
+      "title": "A consumer control in the footer as well, so slot ownership is not proved by one slot alone",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "footer": {
+          "control": {
+            "text": "Archive"
+          }
+        }
+      },
+      "visual": true
+    }
+  ]
+}

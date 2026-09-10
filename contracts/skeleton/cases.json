@@ -1,0 +1,171 @@
+{
+  "$comment": "Shared VfSkeleton cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. The component has no slot, so there is no \"content\". Two things the catalog exists to hold still: the animation modifier is present at the default rather than absent, and an empty radius drops the declaration rather than meaning zero. scripts/ci/surface-coverage.mjs is what stops the list eroding.",
+  "component": "skeleton",
+  "propVocabulary": {
+    "minHeight": "string | number, default undefined. A number becomes pixels; a string passes through untouched. Zero is a length, not an absence.",
+    "radius": "string, default 'var(--vf-radius-surface)'. Always written unless empty, in which case the declaration is dropped entirely.",
+    "animated": "boolean, default true. The only migrated modifier whose default state is the one that emits."
+  },
+  "cases": [
+    {
+      "id": "skeleton/default",
+      "title": "The default skeleton: animated, radius token written, no min-height",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton/animated-explicit",
+      "title": "animated passed explicitly behaves identically to the default",
+      "props": {
+        "animated": true
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton/static",
+      "title": "animated=false is the only way to drop the modifier",
+      "props": {
+        "animated": false
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton/min-height-number",
+      "title": "A numeric min-height becomes pixels and is written before the radius",
+      "props": {
+        "minHeight": 40
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton/min-height-zero",
+      "title": "Zero is a length rather than an absence",
+      "props": {
+        "minHeight": 0
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton/min-height-string",
+      "title": "A string min-height passes through untouched",
+      "props": {
+        "minHeight": "3rem"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton/min-height-token",
+      "title": "A custom-property min-height reaches CSS verbatim",
+      "props": {
+        "minHeight": "var(--vf-space-8)"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton/radius-custom",
+      "title": "A caller radius replaces the default token",
+      "props": {
+        "minHeight": 32,
+        "radius": "0"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton/radius-pill",
+      "title": "A large radius rounds the placeholder into a pill",
+      "props": {
+        "minHeight": 16,
+        "radius": "999px"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton/radius-empty",
+      "title": "The quirk: an empty radius drops the declaration, and with no min-height there is no style attribute at all",
+      "props": {
+        "radius": ""
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "skeleton/consumer-class",
+      "title": "A consumer class is appended after the canonical classes",
+      "props": {},
+      "attrs": {
+        "class": "consumer-skeleton"
+      },
+      "visual": true
+    },
+    {
+      "id": "skeleton/consumer-class-static",
+      "title": "A consumer class with no modifier to follow sits in a different position in the list",
+      "props": {
+        "animated": false
+      },
+      "attrs": {
+        "class": "consumer-skeleton"
+      },
+      "visual": false
+    },
+    {
+      "id": "skeleton/consumer-style",
+      "title": "A consumer style is merged after the component's own declarations",
+      "props": {
+        "minHeight": 24
+      },
+      "attrs": {
+        "style": "opacity: 0.6"
+      },
+      "visual": true
+    },
+    {
+      "id": "skeleton/consumer-style-overrides-radius",
+      "title": "A consumer style replaces the radius rather than duplicating the declaration",
+      "props": {
+        "minHeight": 24
+      },
+      "attrs": {
+        "style": "border-radius: 2px"
+      },
+      "visual": false
+    },
+    {
+      "id": "skeleton/product-data",
+      "title": "A product data attribute reaches the root and is compared",
+      "props": {},
+      "attrs": {
+        "data-testid": "skeleton-product-data"
+      },
+      "visual": false
+    },
+    {
+      "id": "skeleton/aria-hidden-override",
+      "title": "A consumer aria-hidden replaces the one the component writes, which is historically reachable",
+      "props": {},
+      "attrs": {
+        "aria-hidden": "false"
+      },
+      "visual": false
+    },
+    {
+      "id": "skeleton/consumer-role",
+      "title": "A consumer role and name reach a component that writes neither",
+      "props": {},
+      "attrs": {
+        "role": "status",
+        "aria-label": "Loading workspace"
+      },
+      "visual": false
+    }
+  ]
+}
