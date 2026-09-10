@@ -6,7 +6,7 @@
 // Which component it renders is decided by the catalog's `component` field. The
 // entry itself contains no component implementation and no expectations — it
 // only maps the neutral case data onto the historical Vue props and slots.
-import { createApp, defineComponent, h, type VNode } from 'vue';
+import { createApp, defineComponent, h, nextTick, reactive, type VNode } from 'vue';
 import VfInput from '@parity/core/components/input/VfInput.vue';
 import VfIconButton from '@parity/core/components/icon-button/VfIconButton.vue';
 import VfField from '@parity/core/components/field/VfField.vue';
@@ -21,6 +21,7 @@ import VfDivider from '@parity/core/components/divider/VfDivider.vue';
 import VfSkeleton from '@parity/core/components/skeleton/VfSkeleton.vue';
 import VfAvatar from '@parity/core/components/avatar/VfAvatar.vue';
 import VfCard from '@parity/core/components/card/VfCard.vue';
+import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -51,6 +52,19 @@ interface CaseField {
   required?: boolean;
 }
 
+/**
+ * One VfSkeletonGate slot, as the shared catalog spells it.
+ *
+ * `markup` names a shape rather than carrying HTML, so the catalog stays plain
+ * data and both fixtures build the same elements from the same name. `control`
+ * is a real consumer-provided button, unmarked and unwrapped.
+ */
+interface GateSlot {
+  text?: string;
+  markup?: 'paragraphs' | 'article' | 'bars';
+  control?: { text: string };
+}
+
 interface ParityCase {
   id: string;
   props: Record<string, unknown>;
@@ -67,9 +81,14 @@ interface ParityCase {
     text?: string;
     /** VfCard's three slots. Each may be absent, empty, or carry a consumer control. */
     header?: CardSlot;
-    body?: CardSlot;
     footer?: CardSlot;
+    /** VfCard's body slot, and VfSkeletonGate's default slot. */
+    body?: CardSlot & GateSlot;
+    /** VfSkeletonGate's skeleton slot, which replaces the child component. */
+    skeleton?: GateSlot;
   };
+  /** VfSkeletonGate: the props to set after mount, and the case it must converge on. */
+  transition?: { to: Record<string, unknown>; matches: string };
   field?: CaseField;
   /** The VfField catalog splits the control's own props out of `props`. */
   control?: Record<string, unknown>;
@@ -324,6 +343,72 @@ function renderCard(parityCase: ParityCase): VNode {
   return h(VfCard, { ...parityCase.props, ...parityCase.attrs }, slots);
 }
 
+/**
+ * The consumer markup a gate case names, built the same way in both fixtures.
+ *
+ * Real elements with no marker on them: the static snapshot is asserted against
+ * the number the case declares, not against anything recognisable here, so
+ * there is nothing for the component to imitate.
+ */
+function gateSlotChildren(slot: GateSlot): unknown[] {
+  const nodes: unknown[] = [];
+
+  if (slot.text !== undefined && slot.text !== '') nodes.push(slot.text);
+
+  if (slot.markup === 'paragraphs') {
+    nodes.push(h('p', 'Storage, seats and outbound transfer.'), h('p', 'Updated hourly.'));
+  }
+  if (slot.markup === 'article') {
+    nodes.push(
+      h('h4', 'Billing period'),
+      h('p', 'Storage, seats and outbound transfer for the current period.'),
+      h('ul', [h('li', 'Storage: 42 GB'), h('li', 'Seats: 12')]),
+    );
+  }
+  if (slot.markup === 'bars') {
+    nodes.push(
+      h('div', { class: 'parity-bar', style: 'height: 12px; background: #ccc' }),
+      h('div', { class: 'parity-bar', style: 'height: 12px; background: #ccc; margin-top: 6px' }),
+    );
+  }
+  if (slot.control !== undefined) nodes.push(h('button', { type: 'button' }, slot.control.text));
+
+  return nodes;
+}
+
+/**
+ * The reactive props each VfSkeletonGate case is rendered with.
+ *
+ * A gate case is the first in the harness whose props are not constant: the
+ * transition stage sets `ready` on the live component and the component
+ * re-renders, which is what the historical component actually does when a
+ * consumer's data arrives. Holding them in one reactive map here - rather than
+ * re-mounting or re-rendering the page - is what makes the measurement a
+ * transition rather than a second static render.
+ */
+const gateProps = reactive<Record<string, Record<string, unknown>>>({});
+
+/**
+ * VfSkeletonGate, for the skeleton-gate catalog.
+ *
+ * Each slot is passed only when the case declares it, because "no skeleton
+ * slot" and "a skeleton slot" are different inputs: the first renders the
+ * canonical child component and the second replaces it. Passing the slot
+ * unconditionally would delete the gate's whole composition contract from the
+ * fixture, which is the one thing this milestone exists to measure.
+ */
+function renderSkeletonGate(parityCase: ParityCase): VNode {
+  const content = (parityCase.content ?? {}) as { body?: GateSlot; skeleton?: GateSlot };
+  const slots: Record<string, () => unknown> = {};
+
+  if (content.body !== undefined) slots.default = () => gateSlotChildren(content.body!);
+  if (content.skeleton !== undefined) slots.skeleton = () => gateSlotChildren(content.skeleton!);
+
+  gateProps[parityCase.id] ??= reactive({ ...parityCase.props, ...parityCase.attrs });
+
+  return h(VfSkeletonGate, gateProps[parityCase.id], slots);
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -356,6 +441,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'card') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderCard(parityCase)]);
+  }
+
+  if (catalog.component === 'skeleton-gate') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderSkeletonGate(parityCase)]);
   }
 
   if (catalog.component === 'icon-button') {
@@ -416,6 +505,34 @@ function renderCase(parityCase: ParityCase): VNode {
 const Cases = defineComponent({
   render: () => h('div', { class: 'parity-cases' }, catalog.cases.map(renderCase)),
 });
+
+/**
+ * The transition mechanism, exposed to the harness.
+ *
+ * Sets props on a mounted component and waits for the render to flush. This is
+ * the historical public API - a consumer changes `ready` and the gate reacts -
+ * and it is the only thing the harness is given: it cannot reach into the
+ * component, cannot re-render the page, and cannot fabricate a state the
+ * component did not produce.
+ *
+ * Declared on window rather than exported because the harness drives it through
+ * CDP, from outside the module graph.
+ */
+declare global {
+  interface Window {
+    __parityTransition?: (caseId: string, to: Record<string, unknown>) => Promise<boolean>;
+  }
+}
+
+window.__parityTransition = async (caseId, to) => {
+  const props = gateProps[caseId];
+  if (!props) return false;
+
+  Object.assign(props, to);
+  await nextTick();
+
+  return true;
+};
 
 const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
 document.documentElement.setAttribute('data-vf-theme', theme);

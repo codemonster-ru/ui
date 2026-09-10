@@ -85,6 +85,43 @@ const report = {
       ),
     ]),
   ),
+  // The transition stage's own evidence, per target and theme, so a reader can
+  // see which targets were driven, what they became, whether they converged on
+  // the case the catalog named, and whether either half survived as the same
+  // DOM node. Omitted entirely for components that declare no transition, so an
+  // empty object never stands in for a stage that did not run.
+  ...(Object.values(captures).some((byTheme) =>
+    Object.values(byTheme).some((capture) => Object.keys(capture.transitions ?? {}).length > 0),
+  )
+    ? {
+        transitionEvidence: Object.fromEntries(
+          Object.entries(captures).map(([target, byTheme]) => [
+            target,
+            Object.fromEntries(
+              Object.entries(byTheme).map(([theme, capture]) => [
+                theme,
+                Object.fromEntries(
+                  Object.entries(capture.transitions ?? {}).map(([caseId, transition]) => [
+                    caseId,
+                    {
+                      supported: transition.supported,
+                      applied: transition.applied,
+                      state: transition.state,
+                      identity: transition.identity,
+                      converged:
+                        transition.supported === true
+                          ? JSON.stringify(transition.dom) === JSON.stringify(transition.convergesWith)
+                          : null,
+                      postTransitionScreenshot: capture.transitionScreenshots?.[caseId],
+                    },
+                  ]),
+                ),
+              ]),
+            ),
+          ]),
+        ),
+      }
+    : {}),
   failures: result.failures,
   approvedDivergences: result.approved,
   pageErrors,
@@ -98,6 +135,15 @@ process.stdout.write(
     `= ${result.summary.caseComparisons} case comparisons, ` +
     `${result.summary.visualComparisons} initial screenshot comparisons, ` +
     `${result.summary.postInteractionVisualComparisons} post-interaction screenshot comparisons.\n` +
+    // Printed only when the component has transitions, and printed as two
+    // numbers rather than one. A single "transitions checked" count would let a
+    // stage that compared nothing look like a stage that passed, which is the
+    // failure mode every measurement in this harness is shaped against.
+    (result.summary.transitionComparisons > 0 || result.summary.transitionsCarriedByConvergence > 0
+      ? `${result.summary.transitionComparisons} transition state comparisons, ` +
+        `${result.summary.transitionsCarriedByConvergence} direction(s) where the transition contract is carried ` +
+        `by convergence on the case the catalog names.\n`
+      : '') +
     `Report: ${relative(repositoryRoot, reportPath)}\n`,
 );
 

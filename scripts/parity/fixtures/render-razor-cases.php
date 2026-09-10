@@ -57,6 +57,12 @@ $dividerComponent = $registry->resolve('vf-divider');
 $skeletonComponent = $registry->resolve('vf-skeleton');
 $avatarComponent = $registry->resolve('vf-avatar');
 $cardComponent = $registry->resolve('vf-card');
+// The M17 component. Resolved through the registry like every other one, which
+// is also how the gate reaches its child: the provider hands the registered
+// skeleton to the gate, so this single resolve() produces a gate that renders
+// the canonical migrated skeleton and there is nothing here that could
+// substitute a different one.
+$skeletonGateComponent = $registry->resolve('vf-skeleton-gate');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -73,6 +79,11 @@ if ($badgeComponent === null || $tagComponent === null || $dividerComponent === 
 
 if ($skeletonComponent === null || $avatarComponent === null || $cardComponent === null) {
     fwrite(STDERR, "The VueForge M16 components are not registered.\n");
+    exit(1);
+}
+
+if ($skeletonGateComponent === null) {
+    fwrite(STDERR, "The VueForge vf-skeleton-gate component is not registered.\n");
     exit(1);
 }
 
@@ -511,12 +522,89 @@ $renderCard = static function (array $case) use ($cardComponent, $escape): strin
     return $cardComponent->render(new ComponentRenderContext($props, $slots))->value();
 };
 
+/**
+ * The consumer markup a gate case names, built the same way in both fixtures.
+ *
+ * The catalog names a shape rather than carrying HTML, so this and the Vue
+ * entry build the same elements from the same name and neither can quietly
+ * render something the other does not.
+ */
+$gateSlotMarkup = static function (array $slot) use ($escape): string {
+    $markup = '';
+
+    if (isset($slot['text']) && $slot['text'] !== '') {
+        $markup .= $escape((string) $slot['text']);
+    }
+
+    $shape = $slot['markup'] ?? null;
+    if ($shape === 'paragraphs') {
+        $markup .= '<p>Storage, seats and outbound transfer.</p><p>Updated hourly.</p>';
+    }
+    if ($shape === 'article') {
+        $markup .= '<h4>Billing period</h4>'
+            . '<p>Storage, seats and outbound transfer for the current period.</p>'
+            . '<ul><li>Storage: 42 GB</li><li>Seats: 12</li></ul>';
+    }
+    if ($shape === 'bars') {
+        $markup .= '<div class="parity-bar" style="height: 12px; background: #ccc"></div>'
+            . '<div class="parity-bar" style="height: 12px; background: #ccc; margin-top: 6px"></div>';
+    }
+
+    if (isset($slot['control'])) {
+        $markup .= '<button type="button">' . $escape((string) $slot['control']['text']) . '</button>';
+    }
+
+    return $markup;
+};
+
+/**
+ * VfSkeletonGate, for the skeleton-gate catalog.
+ *
+ * Each slot is passed only when the case declares it: "no skeleton slot" and "a
+ * skeleton slot" are different inputs, and the first is what makes the gate
+ * render the canonical child component. Passing it unconditionally would delete
+ * the composition contract from the fixture.
+ *
+ * There is no transition mechanism here, and that is the contract rather than a
+ * gap. In Vue it is the *consumer* that changes `ready`; the component owns no
+ * client behaviour at all. A Razor gate is a server render of one state, and
+ * inventing a browser controller to flip it would give this adapter an API the
+ * reference component never had.
+ */
+$renderSkeletonGate = static function (array $case) use ($skeletonGateComponent, $gateSlotMarkup): string {
+    $rename = ['minHeight' => 'min-height', 'reserveHeight' => 'reserve-height',
+        'preserveLastHeight' => 'preserve-last-height', 'normalizeContentSpacing' => 'normalize-content-spacing',
+        'fadeDuration' => 'fade-duration'];
+
+    $props = [];
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$rename[$name] ?? $name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $slots = [];
+    foreach (['body' => 'default', 'skeleton' => 'skeleton'] as $from => $to) {
+        if (!array_key_exists($from, $case['content'] ?? [])) {
+            continue;
+        }
+
+        $markup = $gateSlotMarkup($case['content'][$from]);
+        $slots[$to] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    return $skeletonGateComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'skeleton') {
+    if ($component === 'skeleton-gate') {
+        $body = $renderSkeletonGate($case);
+    } elseif ($component === 'skeleton') {
         $body = $renderSkeleton($case);
     } elseif ($component === 'avatar') {
         $body = $renderAvatar($case);

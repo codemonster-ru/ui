@@ -189,8 +189,26 @@ export function extractCasesExpression(measuredRoles) {
       // A style attribute is compared as a set of declarations. The two
       // renderers serialise the same declarations with different whitespace;
       // the declarations themselves are product semantics and are compared.
-      attributes[name] =
-        name === 'style' ? normaliseStyle(element.getAttribute(name)) : element.getAttribute(name);
+      if (name === 'style') {
+        const declarations = normaliseStyle(element.getAttribute(name));
+        // A style attribute holding no declarations is not a style. It is
+        // recorded as absent rather than as an empty string, because the two
+        // are indistinguishable to the CSSOM, to rendering and to a user, and
+        // the difference between them is pure framework bookkeeping.
+        //
+        // Found by the M17 transition stage. Vue's v-show remembers an
+        // element's display at mount and restores it when the element becomes
+        // visible again, and restoring an element that never had an inline
+        // display leaves the attribute behind, empty. So a gate driven ready
+        // and back carries style="" on its overlay where a gate rendered
+        // loading from the start carries no attribute at all - a difference
+        // that is real in the DOM and is nothing at all in the product. The
+        // quirk itself is pinned by VfSkeletonGate.characterization.spec.ts;
+        // this is what stops it being reported as a product divergence.
+        if (declarations !== '') attributes[name] = declarations;
+        continue;
+      }
+      attributes[name] = element.getAttribute(name);
     }
 
     for (const name of REFERENCE_ATTRIBUTES) {
@@ -737,6 +755,182 @@ export function staticOwnershipViolations(parityCase, snapshot) {
 }
 
 /**
+ * What a VfSkeletonGate case reports.
+ *
+ * The static ownership fields first, because the gate owns no interaction and
+ * has to say so the same way VfBadge and VfCard do - and because its content
+ * slot may hold a consumer control, so the declared-budget assertion in
+ * staticOwnershipViolations applies unchanged.
+ *
+ * Then the state fields, which are the part that is new. They describe which
+ * half the gate is presenting *as measured*, not as configured:
+ *
+ *   - `overlayDisplay` is the computed display of the overlay, so a target that
+ *     left a stale skeleton visible after a transition differs here even though
+ *     its markup still contains both halves;
+ *   - `contentReady`, `rootBusy` and `contentInert` are the three outputs the
+ *     predicate drives, read back off the live DOM;
+ *   - `childSkeletonPresent` is whether the canonical child is in the overlay.
+ *
+ * Together these are what a "branch" means for a component that has none. A
+ * case whose intended state disappeared cannot pass by resembling another valid
+ * case, because the state is recorded per case and compared per case.
+ */
+function skeletonGateInteractionExpression(caseId) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const elements = Array.from(root.querySelectorAll('*'));
+    const gate = root.querySelector('.vf-skeleton-gate');
+    const content = root.querySelector('.vf-skeleton-gate__content');
+    const overlay = root.querySelector('.vf-skeleton-gate__overlay');
+    if (!gate || !content || !overlay) throw new Error('case ${caseId} rendered no gate');
+
+    return {
+      interactionPosture: 'none',
+      caseRendered: true,
+      focusableCount: root.querySelectorAll(FOCUSABLE).length,
+      interactiveRoleCount: elements.filter((element) => INTERACTIVE_ROLES.has(element.getAttribute('role') ?? ''))
+        .length,
+      focusRole: root.contains(document.activeElement) ? 'inside-case' : 'outside-case',
+      // The presented state, measured rather than configured.
+      contentReady: content.classList.contains('vf-skeleton-gate__content--ready'),
+      rootBusy: gate.getAttribute('aria-busy'),
+      contentHidden: content.getAttribute('aria-hidden'),
+      contentInert: content.hasAttribute('inert'),
+      overlayDisplay: getComputedStyle(overlay).display,
+      overlayHidden: overlay.getAttribute('aria-hidden'),
+      childSkeletonPresent: overlay.querySelector('.vf-skeleton') !== null,
+      contentText: (content.textContent ?? '').replace(/\\s+/g, ' ').trim(),
+    };
+  })()`;
+}
+
+/**
+ * Drives a declared transition and reports what the case became.
+ *
+ * The mechanism is the component's own public API: the fixture holds `ready` in
+ * reactive state and exposes a setter, and this calls it. Nothing here reaches
+ * into the component, and nothing re-renders the page - which is the difference
+ * between measuring a transition and generating a second static page that
+ * happens to show the other state.
+ *
+ * A target that has no setter reports `supported: false` rather than being
+ * skipped. The distinction matters: a skipped stage and a stage that ran and
+ * found nothing compare equal to each other, and a target that quietly stopped
+ * supporting transitions would otherwise pass.
+ */
+export function transitionExpression(caseId, to) {
+  return `(async () => {
+    const apply = window.__parityTransition;
+    if (typeof apply !== 'function') {
+      return { supported: false };
+    }
+
+    const applied = await apply(${JSON.stringify(caseId)}, ${JSON.stringify(to)});
+
+    return { supported: true, applied };
+  })()`;
+}
+
+/**
+ * Marks the two elements a transition must not destroy, and reads the marks back.
+ *
+ * `phase` is 'mark' before the transition and 'read' after it. The mark is an
+ * expando property rather than an attribute, so it cannot reach the DOM
+ * comparison and cannot change what any other dimension sees. A recreated
+ * element is a fresh object and carries no property, which is exactly the
+ * signal wanted: the question is node identity, not markup equality.
+ *
+ * This is what a `v-if` rewrite of either half fails. Such a rewrite produces
+ * the correct markup in both states and converges on the right one, and it
+ * destroys the consumer's DOM on every change - scroll position, focus, an
+ * uncontrolled input's value, a playing media element - which nothing else
+ * here would notice.
+ */
+export function transitionIdentityExpression(caseId, phase) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+    const content = root.querySelector('.vf-skeleton-gate__content');
+    const overlay = root.querySelector('.vf-skeleton-gate__overlay');
+    const nodes = {
+      contentChild: content ? content.firstElementChild : null,
+      overlayChild: overlay ? overlay.firstElementChild : null,
+    };
+
+    if (${JSON.stringify(phase)} === 'mark') {
+      const marked = {};
+      for (const [name, node] of Object.entries(nodes)) {
+        if (node) node.__parityIdentity = name;
+        marked[name] = node ? 'marked' : 'absent';
+      }
+      return marked;
+    }
+
+    const read = {};
+    for (const [name, node] of Object.entries(nodes)) {
+      read[name] = node ? (node.__parityIdentity === name ? 'same-node' : 'recreated') : 'absent';
+    }
+    return read;
+  })()`;
+}
+
+/**
+ * Whether a transition's result is well formed, and converged.
+ *
+ * Returns problems as strings so a test can drive it directly.
+ *
+ * Three things are checked, and the third is the one that matters:
+ *
+ *   - the transition ran at all on a target that claims to support it. A run
+ *     that reported nothing is a failure, never a skip;
+ *   - the case ended up in the state it was driven to;
+ *   - the case's DOM equals the DOM of the case the catalog names as the state
+ *     it should land in, on the same target. That is what a hybrid fails: a
+ *     gate that updated its classes but left a stale overlay visible is in the
+ *     right state by every attribute and still not equal to a gate that
+ *     rendered that state from the start.
+ */
+export function transitionViolations(parityCase, result, postDom, expectedDom) {
+  const problems = [];
+  const to = parityCase.transition?.to ?? {};
+
+  if (!result || typeof result !== 'object') {
+    return [`case ${parityCase.id} produced no transition result at all`];
+  }
+  if (result.supported !== true) {
+    return [
+      `case ${parityCase.id} declares a transition, but this target exposes no way to drive it. ` +
+        'A target that cannot transition has to say so where it is rendered, not by producing no evidence.',
+    ];
+  }
+  if (result.applied !== true) {
+    problems.push(`case ${parityCase.id} reported applied=${JSON.stringify(result.applied)}`);
+  }
+  if (typeof to.ready === 'boolean' && result.state?.contentReady !== to.ready) {
+    problems.push(
+      `case ${parityCase.id} was driven to ready=${to.ready} but reports contentReady=` +
+        `${JSON.stringify(result.state?.contentReady)}`,
+    );
+  }
+  if (JSON.stringify(postDom) !== JSON.stringify(expectedDom)) {
+    problems.push(
+      `case ${parityCase.id} did not converge on ${parityCase.transition.matches}. ` +
+        'A transition has to land on the state a fresh render of that state produces, not on a hybrid of the two.',
+    );
+  }
+
+  return problems;
+}
+
+/**
  * Reports the actual post-scenario state before any visual focus normalization.
  *
  * The shape is component-specific - a caret position means nothing on a button,
@@ -746,6 +940,10 @@ export function staticOwnershipViolations(parityCase, snapshot) {
 export function interactionExpression(caseId, snapshot = 'input') {
   if (snapshot === 'static') {
     return staticInteractionExpression(caseId);
+  }
+
+  if (snapshot === 'skeleton-gate') {
+    return skeletonGateInteractionExpression(caseId);
   }
 
   if (snapshot === 'checkable') {

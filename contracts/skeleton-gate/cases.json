@@ -23,14 +23,22 @@
     {
       "id": "skeleton-gate/default",
       "title": "The default gate: loading, no content, the child skeleton at its own defaults",
+      "$why": "Not a visual case, and the reason is a finding rather than an omission. The overlay is absolutely positioned, so the skeleton contributes no height at all; a gate's height comes entirely from its content or from a reserved height. A default gate with neither is a zero-height box whose skeleton is invisible, and it cannot be screenshotted because there are no pixels. skeleton-gate/reserved-empty is the screenshot of a default skeleton in a box that has room for it.",
       "props": {},
       "attrs": {},
-      "visual": true
+      "visual": false
     },
     {
       "id": "skeleton-gate/ready-empty",
       "title": "ready with no content: the overlay is hidden rather than removed",
       "props": { "ready": true },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "skeleton-gate/reserved-empty",
+      "title": "A reserved empty gate: the default skeleton filling the space its consumer's content will take",
+      "props": { "reserveHeight": 96 },
       "attrs": {},
       "visual": true
     },
@@ -104,7 +112,7 @@
     {
       "id": "skeleton-gate/radius-empty",
       "title": "Two components' quirks composing: an empty radius drops the declaration on the gate and leaves the child with no style attribute at all",
-      "props": { "radius": "" },
+      "props": { "radius": "", "reserveHeight": 48 },
       "attrs": {},
       "visual": true
     },
@@ -134,7 +142,7 @@
     {
       "id": "skeleton-gate/skeleton-slot",
       "title": "The skeleton slot replaces the child component entirely",
-      "props": {},
+      "props": { "reserveHeight": 48 },
       "attrs": {},
       "content": { "skeleton": { "markup": "bars" } },
       "visual": true
@@ -166,7 +174,7 @@
     {
       "id": "skeleton-gate/consumer-class",
       "title": "A consumer class is appended after the canonical one, on the root and nowhere else",
-      "props": {},
+      "props": { "reserveHeight": 48 },
       "attrs": { "class": "consumer-gate" },
       "visual": true
     },

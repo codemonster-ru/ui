@@ -30,6 +30,9 @@ import {
   driveInteraction,
   interactionExpression,
   staticOwnershipViolations,
+  transitionExpression,
+  transitionIdentityExpression,
+  transitionViolations,
 } from './extract.mjs';
 import { buildCurrentTarget, buildRazorTarget, buildReferenceTarget } from './targets.mjs';
 
@@ -245,14 +248,21 @@ async function captureTarget(
     // evidence. Recording the posture per case is what makes "nothing to drive"
     // a measurement instead of a stage that quietly did not run; see
     // staticInteractionExpression in extract.mjs.
-    if (catalog.profile.snapshot === 'static') {
+    // Keyed on the profile's own declaration rather than on the snapshot name.
+    // Until M17 those were the same thing, because every component that owned
+    // no interaction also had nothing to drive. VfSkeletonGate owns no
+    // interaction *and* has a state that can be driven, so the two questions
+    // are asked separately: `staticOwnership` says the component must prove it
+    // grew no controls of its own, and `snapshot` says what shape its evidence
+    // takes.
+    if (catalog.profile.staticOwnership || catalog.profile.snapshot === 'static') {
       for (const parityCase of selectedCases) {
         if (parityCase.interaction) {
           throw new Error(
             `Case ${parityCase.id} declares an interaction, but the ${catalog.profile.id} profile is static.`,
           );
         }
-        const snapshot = await page.evaluate(interactionExpression(parityCase.id, 'static'));
+        const snapshot = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
         // Fail closed on a snapshot that came back without its measurements, and
         // on one whose measurements contradict what the case declared. An empty
         // snapshot on every target compares equal to itself, so the comparator
@@ -268,6 +278,98 @@ async function captureTarget(
         }
 
         interactions[parityCase.id] = snapshot;
+      }
+    }
+
+    // The transition stage. A case that declares one is driven through the
+    // component's own public API - the fixture holds `ready` in reactive state
+    // and exposes a setter - and then re-extracted, so what is recorded is a
+    // component that changed rather than a page that was re-rendered.
+    //
+    // Each transition gets a fresh page, for the reason every interaction
+    // scenario does: a transition driven on a page another transition has
+    // already touched is measuring two things at once.
+    const transitions = {};
+    const transitionScreenshots = {};
+
+    for (const parityCase of selectedCases) {
+      if (!parityCase.transition) continue;
+      await navigate();
+      const context = { target: label, theme, caseId: parityCase.id };
+      await applyBrowserMutation(page, mutation, 'beforeTransition', context, evidence);
+      // Marked before the state changes, read after it. See
+      // transitionIdentityExpression: the mark is an expando, so it reaches no
+      // other dimension.
+      const identityBefore = await page.evaluate(transitionIdentityExpression(parityCase.id, 'mark'));
+      const driven = await page.evaluate(transitionExpression(parityCase.id, parityCase.transition.to));
+      await page.evaluate(settleExpression);
+      await applyBrowserMutation(page, mutation, 'afterTransition', context, evidence);
+
+      // The declared capability, asserted in both directions. A profile that
+      // names the targets which can be driven is only worth anything if a
+      // target disagreeing with it fails: without the second branch below, a
+      // Vue target that quietly lost its transition mechanism would report
+      // supported:false, be excused as "this one does not transition", and take
+      // the whole stage down with it silently.
+      const declared = (catalog.profile.transitionTargets ?? ['reference', 'current', 'razor']).includes(label);
+
+      if (declared !== (driven.supported === true)) {
+        throw new Error(
+          `Transition capability on ${label} (${theme}) contradicts the ${catalog.profile.id} profile: ` +
+            `the profile ${declared ? 'expects' : 'does not expect'} ${label} to drive ${parityCase.id}, ` +
+            `but it reported supported=${JSON.stringify(driven.supported)}.`,
+        );
+      }
+
+      if (driven.supported !== true) {
+        // Recorded rather than skipped. The record is what the comparison reads
+        // to see that this target was asked and answered, instead of a missing
+        // key that would compare equal to another missing key.
+        transitions[parityCase.id] = { supported: false, declared: false };
+        continue;
+      }
+
+      const state = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
+      const identity = await page.evaluate(transitionIdentityExpression(parityCase.id, 'read'));
+      const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
+
+      transitions[parityCase.id] = {
+        supported: true,
+        declared: true,
+        applied: driven.applied,
+        state,
+        identityBefore,
+        identity,
+        // The DOM the case ended up with, kept so the convergence check can
+        // compare it against a fresh render of the state it was driven to.
+        dom: after.cases[parityCase.id].dom,
+        convergesWith: after.cases[parityCase.transition.matches]?.dom ?? null,
+      };
+
+      if (parityCase.visual) {
+        transitionScreenshots[parityCase.id] = await screenshot(
+          page,
+          after.cases[parityCase.id].clip,
+          screenshotDirectory,
+          `${filePrefix}-${theme}-transitioned-${parityCase.id.replace(/\//g, '_')}.png`,
+        );
+      }
+
+      // Fail closed on a transition that ran and did not do what it said, on
+      // the target that did it. Only on an unmutated capture: a mutation
+      // deliberately breaks a transition, and catching that is the
+      // comparator's job - throwing here would abort the mutation harness
+      // before it could report the defect it was built to find.
+      if (!mutation) {
+        const violations = transitionViolations(
+          parityCase,
+          transitions[parityCase.id],
+          transitions[parityCase.id].dom,
+          transitions[parityCase.id].convergesWith,
+        );
+        if (violations.length > 0) {
+          throw new Error(`Transition failed on ${label} (${theme}): ${violations.join('; ')}.`);
+        }
       }
     }
 
@@ -360,6 +462,8 @@ async function captureTarget(
       interactions,
       interactionScreenshots,
       naturalInteractionScreenshots,
+      transitions,
+      transitionScreenshots,
       diagnostics: page.diagnostics,
     };
   } finally {
@@ -375,6 +479,8 @@ function mergeCapture(target, recaptured) {
     'interactions',
     'interactionScreenshots',
     'naturalInteractionScreenshots',
+    'transitions',
+    'transitionScreenshots',
   ])
     Object.assign(target[key], recaptured[key]);
   for (const key of Object.keys(target.diagnostics)) {
@@ -500,6 +606,8 @@ export function compareCaptures(captures, catalog, policy) {
   let visualComparisons = 0;
   let postInteractionComparisons = 0;
   let naturalPostInteractionComparisons = 0;
+  let transitionComparisons = 0;
+  let transitionsCarriedByConvergence = 0;
   let visualDifferences = 0;
 
   for (const direction of directions) {
@@ -519,7 +627,7 @@ export function compareCaptures(captures, catalog, policy) {
         // that declared a scenario - a static profile has none by definition,
         // so gating this on `parityCase.interaction` would compare nothing and
         // report a clean pass, which is exactly the silent skip forbidden here.
-        if (catalog.profile.snapshot === 'static') {
+        if (catalog.profile.staticOwnership || catalog.profile.snapshot === 'static') {
           const leftStatic = left.interactions[id];
           const rightStatic = right.interactions[id];
 
@@ -531,6 +639,101 @@ export function compareCaptures(captures, catalog, policy) {
           }
 
           raw.push(...compareInteraction(leftStatic, rightStatic));
+        }
+
+        // The transition comparison. Three things, in order of what they can
+        // tell apart:
+        //
+        //   - whether both targets could transition at all. A target that lost
+        //     its mechanism reports supported:false and differs here, rather
+        //     than producing no evidence and comparing equal to itself;
+        //   - the state each landed in, field by field, which is what a stale
+        //     overlay or a half-updated attribute set moves;
+        //   - convergence, which is a *within-target* invariant and therefore
+        //     the one that survives a target with no transition of its own:
+        //     each target's transitioned DOM must equal its own render of the
+        //     case the catalog names. Compared per direction so a failure is
+        //     attributed to a target rather than to the pair.
+        if (parityCase.transition) {
+          const leftTransition = left.transitions[id];
+          const rightTransition = right.transitions[id];
+
+          if (!leftTransition || !rightTransition) {
+            throw new Error(
+              `Case ${id} declares a transition but produced no transition evidence on ` +
+                `${!leftTransition ? direction.from : direction.to}. A missing measurement is a failure, not a skip.`,
+            );
+          }
+
+          // A target's capability having to match what the profile declared is
+          // asserted at capture time, where the target can be named. Here the
+          // only question left is whether the two sides of *this* direction can
+          // both be driven. When they cannot, the transition contract for this
+          // direction is carried by the case the catalog names as the state to
+          // land on - which this same loop compares three ways, on every
+          // dimension, a few lines above.
+          if (leftTransition.supported !== rightTransition.supported) {
+            transitionsCarriedByConvergence += 1;
+          } else if (leftTransition.supported) {
+            transitionComparisons += 1;
+            raw.push(...compareInteraction(leftTransition.state, rightTransition.state));
+
+            for (const [side, capture, target] of [
+              ['left', leftTransition, direction.from],
+              ['right', rightTransition, direction.to],
+            ]) {
+              // Node identity is a within-target invariant like convergence:
+              // each target must keep the elements it had, and a target that
+              // recreated them is named rather than the pair being reported.
+              const recreated = Object.entries(capture.identity ?? {})
+                .filter(([name, value]) => value === 'recreated' && capture.identityBefore?.[name] === 'marked')
+                .map(([name]) => name);
+
+              if (recreated.length > 0) {
+                raw.push({
+                  dimension: 'transition.identity',
+                  path: `${target}/${recreated.join(',')}`,
+                  detail:
+                    `${target} destroyed and recreated [${recreated.join(', ')}] across the transition. ` +
+                    'Both halves are permanent elements; recreating one discards whatever DOM state it held.',
+                  left: side === 'left' ? 'recreated' : 'same-node',
+                  right: side === 'right' ? 'recreated' : 'same-node',
+                });
+              }
+            }
+
+            for (const [side, capture, target] of [
+              ['left', leftTransition, direction.from],
+              ['right', rightTransition, direction.to],
+            ]) {
+              if (JSON.stringify(capture.dom) !== JSON.stringify(capture.convergesWith)) {
+                raw.push({
+                  dimension: 'transition.convergence',
+                  path: `${target}/${parityCase.transition.matches}`,
+                  detail:
+                    `the transitioned case does not equal ${target}'s own render of ` +
+                    `${parityCase.transition.matches}; a transition has to land on that state, not on a hybrid`,
+                  left: side === 'left' ? 'diverged' : 'converged',
+                  right: side === 'right' ? 'diverged' : 'converged',
+                });
+              }
+            }
+
+            if (parityCase.visual) {
+              const leftShot = left.transitionScreenshots[id];
+              const rightShot = right.transitionScreenshots[id];
+              if (leftShot && rightShot && leftShot.sha256 !== rightShot.sha256) {
+                visualDifferences += 1;
+                raw.push({
+                  dimension: 'visual.postInteraction',
+                  path: `theme=${theme}/transitioned`,
+                  detail: 'post-transition screenshot',
+                  left: `${leftShot.fileName} ${leftShot.sha256.slice(0, 12)}`,
+                  right: `${rightShot.fileName} ${rightShot.sha256.slice(0, 12)}`,
+                });
+              }
+            }
+          }
         }
 
         if (parityCase.interaction) {
@@ -607,6 +810,8 @@ export function compareCaptures(captures, catalog, policy) {
       visualComparisons,
       postInteractionVisualComparisons: postInteractionComparisons,
       naturalPostInteractionVisualComparisons: naturalPostInteractionComparisons,
+      transitionComparisons,
+      transitionsCarriedByConvergence,
       visualDifferences,
       failures: failures.length,
       approvedDivergences: approved.length,

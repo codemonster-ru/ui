@@ -226,7 +226,21 @@ export function skeletonGateCoverageViolations(cases) {
 
   const visual = cases.filter((entry) => entry.visual === true);
   const seen = [
-    ['a default loading gate', (entry) => isLoading(entry) && !hasContent(entry) && props(entry).radius === undefined],
+    // A gate with no content and no reserved height is a zero-height box: the
+    // overlay is absolutely positioned, so the skeleton contributes no height
+    // and there are no pixels to capture. The screenshot that stands for "a
+    // default skeleton" is therefore a reserved empty gate, and requiring the
+    // reservation here is what stops someone flagging the truly-empty case
+    // visual again and getting a capture failure instead of a picture.
+    [
+      'a default skeleton in a box with room for it',
+      (entry) =>
+        isLoading(entry) &&
+        !hasContent(entry) &&
+        skeletonSlot(entry) === undefined &&
+        props(entry).radius === undefined &&
+        (props(entry).reserveHeight !== undefined || props(entry).minHeight !== undefined),
+    ],
     ['a ready gate', isReady],
     ['a loading gate with content behind the skeleton', (entry) => isLoading(entry) && hasContent(entry)],
     ['a ready gate with content', (entry) => isReady(entry) && hasContent(entry)],

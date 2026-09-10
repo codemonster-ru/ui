@@ -659,6 +659,30 @@ describe('VfSkeletonGate characterization: live transitions', () => {
     expect(transitioned.html()).toBe(fresh.html());
   });
 
+  it("the quirk: coming back from ready leaves v-show's empty style attribute on the overlay", async () => {
+    // Vue's v-show remembers the element's display at mount and restores it
+    // when the element becomes visible again. The overlay never had an inline
+    // display, so restoring it writes '' - and an element that has had a style
+    // property written and removed keeps an empty style attribute.
+    //
+    // So a gate driven ready and back is not byte-identical to a gate rendered
+    // loading from the start. Nothing about the rendering, the computed style
+    // or the accessibility tree differs; only the attribute is there. Recorded
+    // rather than normalised away, because a port that "fixed" it would have to
+    // stop using v-show, and scripts/parity/extract.mjs is where the parity
+    // harness decides not to call an empty style attribute a style.
+    const transitioned = mountGate({ props: { ready: true }, slots: { default: () => 'Body' } });
+    await transitioned.setProps({ ready: false } as Partial<GateProps>);
+    await nextTick();
+
+    const fresh = mountGate({ slots: { default: () => 'Body' } });
+
+    expect(overlay(transitioned).getAttribute('style')).toBe('');
+    expect(overlay(fresh).hasAttribute('style')).toBe(false);
+    // And the difference is exactly that one attribute: nothing else moved.
+    expect(transitioned.html().replace(' style=""', '')).toBe(fresh.html());
+  });
+
   it('does not change the forwarded child props when ready flips', async () => {
     const wrapper = mountGate({ props: { minHeight: 40, radius: '8px' } });
     const before = skeleton(wrapper)!.outerHTML;

@@ -42,7 +42,20 @@ export const targets = ['reference', 'current', 'razor'];
 // interaction stage ran and found nothing to drive, so an approval on it would
 // waive the evidence that the measurement happened at all - the exact silent
 // skip the static snapshot exists to make impossible.
-export const neverApprovable = new Set(['dom.structure', 'visual', 'visual.postInteraction', 'static.noInteraction']);
+//
+// The three transition dimensions join in M17, for the same reason. They are
+// the record that a state change was driven and landed where it should; an
+// approval on one would waive the evidence that the component still updates
+// after mount, which is the whole of what the transition stage measures.
+export const neverApprovable = new Set([
+  'dom.structure',
+  'visual',
+  'visual.postInteraction',
+  'static.noInteraction',
+  'transition.branch',
+  'transition.convergence',
+  'transition.identity',
+]);
 
 /** Dimensions whose approval has to name the element it applies to. */
 const pathScopedDimensions = new Set([
@@ -583,6 +596,20 @@ const INTERACTION_FIELDS = {
   groupSize: { dimension: 'interaction.group' },
   groupCheckedCount: { dimension: 'interaction.group' },
   groupChecked: { dimension: 'interaction.group' },
+  // VfSkeletonGate. Which half the gate is presenting, measured off the live
+  // DOM rather than read back from the props. `overlayDisplay` is the computed
+  // display of the overlay, so a stale skeleton left visible after a transition
+  // moves this even though the markup still contains both halves - which is the
+  // failure a structural comparison cannot see, because both halves are always
+  // in the markup by design.
+  contentReady: { dimension: 'transition.branch' },
+  rootBusy: { dimension: 'transition.branch' },
+  contentHidden: { dimension: 'transition.branch' },
+  contentInert: { dimension: 'transition.branch' },
+  overlayDisplay: { dimension: 'transition.branch' },
+  overlayHidden: { dimension: 'transition.branch' },
+  childSkeletonPresent: { dimension: 'transition.branch' },
+  contentText: { dimension: 'transition.branch' },
 };
 
 /**

@@ -458,6 +458,81 @@ export const profiles = {
     semanticAttributes: ['class', 'style', 'role', 'aria-label', 'data-testid'],
     snapshot: 'static',
   },
+  // The M17 component, and the first profile that declares two things at once.
+  // VfSkeletonGate owns no interaction, so it needs the static ownership
+  // measurement every M15/M16 component has; and its state can change after
+  // mount, so it also needs a driven transition. Those used to be the same
+  // switch - `snapshot: 'static'` selected both the snapshot shape and the
+  // ownership assertion - so the two are separated here into `snapshot` and
+  // `staticOwnership`. That is the whole infrastructure change: no new stage,
+  // no new engine, one flag that says what a profile already meant.
+  'skeleton-gate': {
+    id: 'skeleton-gate',
+    label: 'VfSkeletonGate',
+    component: 'skeleton-gate',
+    casesPath: 'contracts/skeleton-gate/cases.json',
+    policyPath: 'contracts/skeleton-gate/parity-policy.json',
+    artifactDirectory: 'parity-skeleton-gate',
+    reportName: 'skeleton-gate-parity-report.json',
+    // One role per element, including the child skeleton. The child is listed
+    // under its own name rather than folded into the overlay: a gate that
+    // stopped rendering it, or rendered something else that happened to fill
+    // the overlay, is a missing measurement here rather than an overlay that
+    // merely looks the same.
+    measuredRoles: {
+      root: '.vf-skeleton-gate',
+      content: '.vf-skeleton-gate__content',
+      overlay: '.vf-skeleton-gate__overlay',
+      childSkeleton: '.vf-skeleton-gate__overlay .vf-skeleton',
+    },
+    // All four are listed because their absence from the accessibility tree is
+    // the contract. The gate writes no role anywhere; the overlay is
+    // aria-hidden in both states; the content wrapper is aria-hidden and inert
+    // while loading and must appear once ready, which is the one entry here
+    // that is expected to be present in some cases and absent in others - and
+    // that difference is the predicate's accessibility output.
+    accessibilityRoles: {
+      root: '.vf-skeleton-gate',
+      content: '.vf-skeleton-gate__content',
+      overlay: '.vf-skeleton-gate__overlay',
+      childSkeleton: '.vf-skeleton-gate__overlay .vf-skeleton',
+    },
+    // aria-busy and inert are the contract here rather than incidental markup:
+    // one is the loading state's announcement and the other is what makes the
+    // faded content unreachable. `inert` had no comparison at all before M17.
+    semanticAttributes: ['class', 'style', 'aria-busy', 'aria-hidden', 'inert', 'role', 'data-testid'],
+    snapshot: 'skeleton-gate',
+    staticOwnership: true,
+    // Which targets can be driven through a state change, and why the third
+    // cannot.
+    //
+    // `ready` is a prop. In Vue it is the *consumer* that changes it and the
+    // component that reacts; the component owns no client behaviour of its own
+    // and exposes no client API. The Razor adapter's equivalent of a consumer
+    // changing a prop is the consumer rendering the page again, so a Razor gate
+    // is a server render of one state and there is nothing to drive. Giving it
+    // a browser controller that flipped `ready` would hand this adapter an API
+    // the reference component never had.
+    //
+    // That is not a hole in the evidence, because the transition contract is
+    // proved in two halves that meet:
+    //
+    //   - on the Vue targets, a driven transition must converge on the DOM of
+    //     the case the catalog names - a within-target invariant, checked on
+    //     reference and current independently;
+    //   - that named case is itself compared three ways by the ordinary run,
+    //     Razor included.
+    //
+    // So "a transition lands on the canonical state" and "Razor renders the
+    // canonical state" together give "a transition lands on what Razor renders",
+    // and each half is measured rather than assumed.
+    //
+    // Declared here rather than inferred from what each target happens to do,
+    // which is the whole point: the runner asserts the actual capability
+    // against this list in both directions. A Vue target that silently stopped
+    // transitioning fails, and so does a Razor target that started.
+    transitionTargets: ['reference', 'current'],
+  },
 };
 
 export function loadProfile(id) {
