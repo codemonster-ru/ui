@@ -264,5 +264,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  `All ${componentMutations.length} VfInput, VfIconButton, VfField, VfButton, VfTextarea, VfCheckbox, VfRadio, VfSwitch, VfBadge, VfTag and VfDivider regressions are detected by the characterization suites.\n`,
+  `All ${componentMutations.length} VfInput, VfIconButton, VfField, VfButton, VfTextarea, VfCheckbox, VfRadio, VfSwitch, VfBadge, VfTag, VfDivider, VfSkeleton, VfAvatar and VfCard regressions are detected by the characterization suites.\n`,
 );
