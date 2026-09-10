@@ -76,6 +76,11 @@ declare module '@vueforge/skeleton-gate-cases' {
   export default catalog;
 }
 
+declare module '@vueforge/panel-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
 declare module '@vueforge/showcase-index' {
   interface ShowcasePlatform {
     label: string;

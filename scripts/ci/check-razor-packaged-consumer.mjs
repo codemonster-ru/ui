@@ -181,6 +181,7 @@ $divider = $registry->resolve('vf-divider');
 $skeleton = $registry->resolve('vf-skeleton');
 $avatar = $registry->resolve('vf-avatar');
 $card = $registry->resolve('vf-card');
+$panel = $registry->resolve('vf-panel');
 $skeletonGate = $registry->resolve('vf-skeleton-gate');
 $assetPath = VueForgeRazorProvider::assetPath();
 
@@ -200,6 +201,7 @@ echo json_encode([
         'vf-skeleton' => $registry->handles('vf-skeleton'),
         'vf-avatar' => $registry->handles('vf-avatar'),
         'vf-card' => $registry->handles('vf-card'),
+        'vf-panel' => $registry->handles('vf-panel'),
         'vf-skeleton-gate' => $registry->handles('vf-skeleton-gate'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
@@ -345,6 +347,37 @@ echo json_encode([
         [],
         ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button">Rename</button>')],
     ))->value(),
+    // VfPanel, the sixteenth component and the one whose packaging proof is
+    // written against its neighbour. Four renders, because the defect this
+    // component can have that no other can is *rendering as a card*: the first
+    // proves the header and the unwrapped default slot, the second that an
+    // empty default slot produces nothing where a card produces an empty
+    // classed div, the third that a footer slot is dropped rather than
+    // rendered, and the fourth the modifier, the consumer class and the
+    // forwarded attributes.
+    'panelFull' => $panel->render(new ComponentRenderContext(
+        ['title' => 'Workspace'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Shared with your team.')],
+    ))->value(),
+    'panelEmptyContent' => $panel->render(new ComponentRenderContext(
+        ['title' => 'Workspace'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('')],
+    ))->value(),
+    'panelIgnoredFooter' => $panel->render(new ComponentRenderContext(
+        ['title' => 'Workspace'],
+        [
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Shared with your team.'),
+            'footer' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Updated 3 minutes ago'),
+        ],
+    ))->value(),
+    'panelSubtle' => $panel->render(new ComponentRenderContext(
+        ['subtle' => true, 'class' => 'consumer-panel', 'style' => 'opacity: 0.6', 'data-testid' => 'notes'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Quick notes.')],
+    ))->value(),
+    'panelHeaderSlotControl' => $panel->render(new ComponentRenderContext(
+        [],
+        ['header' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button">Edit</button>')],
+    ))->value(),
     // VfSkeletonGate, the fifteenth component and the first that renders
     // another. Five renders, because a packaging defect here has a shape no
     // other component's does: the gate could install and resolve perfectly and
@@ -388,8 +421,19 @@ echo json_encode([
     'm16Css' => is_file($assetPath . '/vueforge-razor.css')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-skeleton')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-avatar')
-        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-card')
-        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-panel'),
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-card'),
+    // VfPanel's own rules, and its own stylesheet. The three selectors are
+    // asserted individually rather than as one substring, because '.vf-panel'
+    // alone would also be satisfied by a card stylesheet with the block name
+    // rewritten - and the modifier is the rule that says which component this
+    // actually is. A compact modifier is asserted absent for the same reason:
+    // a stylesheet folded together with the card's would carry one.
+    'panelCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-panel {')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-panel--subtle')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-panel__title')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-panel--compact')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-panel__body'),
     'presentationCss' => is_file($assetPath . '/vueforge-razor.css')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-badge')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tag')
@@ -442,6 +486,7 @@ echo json_encode([
       'vf-skeleton',
       'vf-avatar',
       'vf-card',
+      'vf-panel',
       'vf-skeleton-gate',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
@@ -815,7 +860,62 @@ echo json_encode([
       '<section class="vf-card"><div class="vf-card__body"><button type="button">Rename</button></div></section>',
     rendered.cardSlotControl,
   );
-  check('the packaged stylesheet carries the M16 rules and none for the unmigrated VfPanel', rendered.m16Css);
+  check('the packaged stylesheet carries the M16 rules', rendered.m16Css);
+
+  // ------------------------------------------------------------------ vf-panel
+  //
+  // The sixteenth component. Every assertion here is written against VfCard:
+  // a packaged panel that had become a card would satisfy a looser proof.
+  check(
+    'the consumer renders a panel whose default slot goes straight into the section, with no body wrapper',
+    rendered.panelFull ===
+      '<section class="vf-panel"><header><h3 class="vf-panel__title">Workspace</h3></header>' +
+        'Shared with your team.</section>',
+    rendered.panelFull,
+  );
+  check(
+    'an empty default slot produces nothing at all, where a card would produce an empty classed div',
+    rendered.panelEmptyContent ===
+      '<section class="vf-panel"><header><h3 class="vf-panel__title">Workspace</h3></header></section>',
+    rendered.panelEmptyContent,
+  );
+  check(
+    'a footer slot handed to the packaged panel is dropped rather than rendered',
+    rendered.panelIgnoredFooter ===
+      '<section class="vf-panel"><header><h3 class="vf-panel__title">Workspace</h3></header>' +
+        'Shared with your team.</section>',
+    rendered.panelIgnoredFooter,
+  );
+  check(
+    'the subtle modifier, the consumer class, the style and a data attribute all survive packaging',
+    // Forwarded consumer attributes are serialised before the component's own
+    // class and style, which is the same order CardComponent produces. Order
+    // carries no meaning - the parity extractor sorts attributes into a map -
+    // but this assertion is a literal byte comparison, so it states the order
+    // the adapter actually emits rather than a tidier one.
+    rendered.panelSubtle ===
+      '<section data-testid="notes" class="vf-panel vf-panel--subtle consumer-panel" style="opacity: 0.6">' +
+        'Quick notes.</section>',
+    rendered.panelSubtle,
+  );
+  check(
+    'a consumer control inside a panel header slot survives packaging unchanged',
+    rendered.panelHeaderSlotControl ===
+      '<section class="vf-panel"><header><button type="button">Edit</button></header></section>',
+    rendered.panelHeaderSlotControl,
+  );
+  check(
+    'the packaged panel never renders a card block name',
+    !rendered.panelFull.includes('vf-card') &&
+      !rendered.panelSubtle.includes('vf-card') &&
+      !rendered.panelIgnoredFooter.includes('vf-card'),
+    rendered.panelFull,
+  );
+  check(
+    'the packaged stylesheet carries VfPanel rules of its own, with no card-shaped modifier or body rule',
+    rendered.panelCss,
+    'vueforge-razor.css is missing .vf-panel rules, or carries rules a panel stylesheet never had',
+  );
   check(
     'the packaged stylesheet carries the presentation rules',
     rendered.presentationCss,

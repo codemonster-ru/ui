@@ -118,6 +118,10 @@ const controlSelectors = {
   // are always rendered, but a case with a skeleton slot holds no vf-skeleton
   // at all, so the child is deliberately not the selector here.
   VfSkeletonGate: 'div.vf-skeleton-gate',
+  // The M18 component. Its root is the only element every case has - the header
+  // is optional and there is no body wrapper to select at all, which is the
+  // difference from VfCard that this milestone exists to keep.
+  VfPanel: 'section.vf-panel',
 };
 
 /**
@@ -181,6 +185,7 @@ check(
       'VfField',
       'VfIconButton',
       'VfInput',
+      'VfPanel',
       'VfRadio',
       'VfSkeleton',
       'VfSkeletonGate',
