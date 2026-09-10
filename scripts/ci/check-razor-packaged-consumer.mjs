@@ -181,6 +181,7 @@ $divider = $registry->resolve('vf-divider');
 $skeleton = $registry->resolve('vf-skeleton');
 $avatar = $registry->resolve('vf-avatar');
 $card = $registry->resolve('vf-card');
+$skeletonGate = $registry->resolve('vf-skeleton-gate');
 $assetPath = VueForgeRazorProvider::assetPath();
 
 echo json_encode([
@@ -199,6 +200,7 @@ echo json_encode([
         'vf-skeleton' => $registry->handles('vf-skeleton'),
         'vf-avatar' => $registry->handles('vf-avatar'),
         'vf-card' => $registry->handles('vf-card'),
+        'vf-skeleton-gate' => $registry->handles('vf-skeleton-gate'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -343,6 +345,46 @@ echo json_encode([
         [],
         ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button">Rename</button>')],
     ))->value(),
+    // VfSkeletonGate, the fifteenth component and the first that renders
+    // another. Five renders, because a packaging defect here has a shape no
+    // other component's does: the gate could install and resolve perfectly and
+    // still be missing the class it delegates to.
+    //
+    // The loading render is the one that matters. Its overlay must contain the
+    // canonical vf-skeleton markup, produced by SkeletonComponent inside the
+    // installed package - not by anything this file wrote, and not by markup
+    // copied into the gate. The composition check below asserts exactly
+    // that: the same bytes the standalone vf-skeleton produces for the same two
+    // props appear inside the gate's overlay.
+    'gateLoading' => $skeletonGate->render(new ComponentRenderContext(
+        ['min-height' => '64'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Usage for this period.')],
+    ))->value(),
+    'gateReady' => $skeletonGate->render(new ComponentRenderContext(
+        ['min-height' => '64', 'ready' => true],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Usage for this period.')],
+    ))->value(),
+    // The forwarded child configuration, and the standalone render of the same
+    // two props. If the gate ever grew its own copy of the skeleton, these two
+    // would drift and the comparison in the gate would fail.
+    'gateForwarded' => $skeletonGate->render(new ComponentRenderContext(
+        ['min-height' => '40', 'radius' => '8px', 'reserve-height' => '120'],
+        [],
+    ))->value(),
+    'gateChildStandalone' => $skeleton->render(new ComponentRenderContext(
+        ['min-height' => '40', 'radius' => '8px'],
+        [],
+    ))->value(),
+    'gateConsumerAttributes' => $skeletonGate->render(new ComponentRenderContext(
+        ['class' => 'consumer-gate', 'style' => 'opacity: 0.6', 'data-testid' => 'usage', 'aria-busy' => 'false'],
+        [],
+    ))->value(),
+    'gateCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-skeleton-gate')
+        && str_contains(
+            (string) file_get_contents($assetPath . '/vueforge-razor.css'),
+            '.vf-skeleton-gate__content--ready',
+        ),
     'm16Css' => is_file($assetPath . '/vueforge-razor.css')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-skeleton')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-avatar')
@@ -400,6 +442,7 @@ echo json_encode([
       'vf-skeleton',
       'vf-avatar',
       'vf-card',
+      'vf-skeleton-gate',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -706,6 +749,65 @@ echo json_encode([
     'an empty card renders no region at all',
     rendered.cardEmpty === '<section class="vf-card"></section>',
     rendered.cardEmpty,
+  );
+
+  // ------------------------------------------------------ vf-skeleton-gate
+  //
+  // The fifteenth component, and the only packaging assertion in this file that
+  // is about two components at once.
+  check(
+    'the packaged gate renders both halves while loading',
+    rendered.gateLoading.startsWith(
+      '<div class="vf-skeleton-gate" style="min-height: 64px; --vf-skeleton-gate-fade-duration: 220ms;"' +
+        ' aria-busy="true"><div class="vf-skeleton-gate__content" aria-hidden="true" inert>' +
+        'Usage for this period.</div>',
+    ) && rendered.gateLoading.includes('vf-skeleton-gate__overlay'),
+    rendered.gateLoading.slice(0, 200),
+  );
+  check(
+    'the packaged gate marks its faded content inert rather than removing it',
+    rendered.gateLoading.includes('inert') && rendered.gateLoading.includes('Usage for this period.'),
+    rendered.gateLoading.slice(0, 200),
+  );
+  check(
+    'the packaged gate hides the overlay rather than dropping it once ready',
+    rendered.gateReady.includes('<div class="vf-skeleton-gate__overlay" style="display: none;" aria-hidden="true">') &&
+      rendered.gateReady.includes('vf-skeleton vf-skeleton--animated') &&
+      !rendered.gateReady.includes('aria-busy'),
+    rendered.gateReady.slice(0, 240),
+  );
+  check(
+    'the packaged gate marks its content ready rather than revealing it by removing the skeleton',
+    rendered.gateReady.includes('class="vf-skeleton-gate__content vf-skeleton-gate__content--ready"'),
+    rendered.gateReady.slice(0, 240),
+  );
+  // The composition assertion. Not "the overlay looks like a skeleton" but
+  // "the overlay contains, byte for byte, what the packaged vf-skeleton
+  // produces for the props the gate forwards". A gate carrying its own copy of
+  // the markup passes every other check in this block and fails this one.
+  check(
+    'the packaged gate renders the canonical packaged skeleton rather than a copy of its markup',
+    rendered.gateForwarded.includes(rendered.gateChildStandalone),
+    `${rendered.gateChildStandalone}\n  not found in\n  ${rendered.gateForwarded}`,
+  );
+  check(
+    'the packaged gate forwards min-height to the child while reserving the reserve-height itself',
+    rendered.gateForwarded.includes('style="min-height: 120px;') &&
+      rendered.gateForwarded.includes('style="min-height: 40px; border-radius: 8px;"'),
+    rendered.gateForwarded.slice(0, 260),
+  );
+  check(
+    'the packaged gate merges consumer class, style and attributes onto its root',
+    rendered.gateConsumerAttributes.includes('class="vf-skeleton-gate consumer-gate"') &&
+      rendered.gateConsumerAttributes.includes('--vf-skeleton-gate-fade-duration: 220ms; opacity: 0.6;') &&
+      rendered.gateConsumerAttributes.includes('data-testid="usage"') &&
+      rendered.gateConsumerAttributes.includes('aria-busy="false"'),
+    rendered.gateConsumerAttributes.slice(0, 260),
+  );
+  check(
+    'the packaged stylesheet carries the gate rules the component depends on',
+    rendered.gateCss,
+    'vueforge-razor.css is missing .vf-skeleton-gate rules',
   );
   check(
     'a consumer control inside a card slot survives packaging unchanged',

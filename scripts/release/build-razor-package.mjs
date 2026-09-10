@@ -56,6 +56,17 @@ export const requiredEntries = [
   'src/Support/IconButtonState.php',
   'src/Support/IconRenderer.php',
   'src/Support/InputState.php',
+  // The M17 composition pair, listed together and deliberately so. The gate is
+  // unusable without the child it renders: an artifact that shipped
+  // SkeletonGateComponent and left SkeletonComponent behind would install, and
+  // would fatal the first time a consumer rendered a gate without a skeleton
+  // slot. Naming both is how "the release contains everything the gate needs"
+  // becomes an assertion rather than a consequence of how git archive happens
+  // to work.
+  'src/Components/SkeletonGateComponent.php',
+  'src/Components/SkeletonComponent.php',
+  'src/Support/SkeletonGateState.php',
+  'src/Support/SkeletonState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

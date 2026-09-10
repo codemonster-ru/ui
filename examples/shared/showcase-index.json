@@ -793,7 +793,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/skeleton-gate/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/skeleton-gate/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/skeleton-gate",
+          "razor": "/"
         }
       }
     },

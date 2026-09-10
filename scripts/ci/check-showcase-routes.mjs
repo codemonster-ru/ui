@@ -114,6 +114,10 @@ const controlSelectors = {
   VfSkeleton: 'div.vf-skeleton',
   VfAvatar: 'span.vf-avatar',
   VfCard: 'section.vf-card',
+  // The M17 component. Its root is the only element every case has: both halves
+  // are always rendered, but a case with a skeleton slot holds no vf-skeleton
+  // at all, so the child is deliberately not the selector here.
+  VfSkeletonGate: 'div.vf-skeleton-gate',
 };
 
 /**
@@ -179,6 +183,7 @@ check(
       'VfInput',
       'VfRadio',
       'VfSkeleton',
+      'VfSkeletonGate',
       'VfSwitch',
       'VfTag',
       'VfTextarea',

@@ -130,11 +130,29 @@ function mutationOutcome(run, mutation) {
       .filter((suite) => (suite.assertionResults ?? []).some((assertion) => assertion.status === 'failed'))
       .map((suite) => (suite.name ?? '').split('\\').join('/'));
     const namedSuiteFailed = failingSuites.some((name) => name.endsWith(mutation.suite));
+    // M17 is the first milestone with a component that renders another, and it
+    // breaks the "exactly one component's suite may fail" rule for a real
+    // reason: a defect in VfSkeleton *should* reach VfSkeletonGate's evidence,
+    // because the gate's loading half is whatever the child renders. Leaving
+    // that as a tolerated exception would have made the rule mean "one or two,
+    // whichever happened", so a mutation instead declares which consumer suites
+    // it expects to take down, and each of them has to actually fail. The
+    // coupling becomes a measured claim rather than a hole:
+    //
+    //   - a child mutation that stopped reaching the gate fails here, which is
+    //     how "the gate really consumes the canonical skeleton" stays true;
+    //   - a gate mutation that reached the *skeleton's* suite fails here too,
+    //     because it declares no alsoFails, and that is the other direction of
+    //     the same proof - the dependency runs one way.
+    const expected = new Set([mutation.suite, ...(mutation.alsoFails ?? [])]);
+    const declaredButPassing = (mutation.alsoFails ?? []).filter(
+      (name) => !failingSuites.some((failing) => failing.endsWith(name)),
+    );
     const otherComponentFailed = failingSuites.some(
-      (name) => name.endsWith('.characterization.spec.ts') && !name.endsWith(mutation.suite),
+      (name) => name.endsWith('.characterization.spec.ts') && ![...expected].some((allow) => name.endsWith(allow)),
     );
 
-    if (!namedSuiteFailed || otherComponentFailed) return 'WRONG SUITE';
+    if (!namedSuiteFailed || otherComponentFailed || declaredButPassing.length > 0) return 'WRONG SUITE';
   }
 
   return 'detected';

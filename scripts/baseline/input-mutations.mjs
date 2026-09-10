@@ -19,6 +19,19 @@ export const dividerSourcePath = 'packages/core/src/components/divider/VfDivider
 export const skeletonSourcePath = 'packages/core/src/components/skeleton/VfSkeleton.vue';
 export const avatarSourcePath = 'packages/core/src/components/avatar/VfAvatar.vue';
 export const cardSourcePath = 'packages/core/src/components/card/VfCard.vue';
+export const skeletonGateSourcePath = 'packages/core/src/components/skeleton-gate/VfSkeletonGate.vue';
+
+/** The shared rules VfSkeletonGate and the Razor adapter both derive from. */
+export const skeletonGateRulePath = 'packages/shared-core/src/skeleton-gate/state.ts';
+
+/**
+ * The consumer suite a VfSkeleton defect is expected to reach.
+ *
+ * VfSkeletonGate renders VfSkeleton, so a child defect is a gate defect too.
+ * Naming it turns the coupling into a claim the gate checks - see the
+ * attribution rule in check-input-characterization.mjs.
+ */
+const gateSuite = 'src/components/skeleton-gate/VfSkeletonGate.characterization.spec.ts';
 
 /** The shared rules VfSkeleton and the Razor adapter both derive from. */
 export const skeletonRulePath = 'packages/shared-core/src/skeleton/state.ts';
@@ -888,9 +901,35 @@ export const dividerMutations = [
 // M16 needs it more than M15 did, because these three break in three different
 // places - a template, a class rule and a branch order - and a run that merely
 // went red would say nothing about which.
+/**
+ * VfSkeleton regressions.
+ *
+ * Seven of these declare `alsoFails`, and that list is the M17 child-mutation
+ * isolation proof running in both directions at once. VfSkeletonGate renders
+ * VfSkeleton, so a defect in the child's markup is a defect in the gate's
+ * loading half - and the gate's suite failing is therefore required, not
+ * tolerated. A mutation whose declared consumer suite stayed green fails the
+ * gate, which is how "the gate really consumes the canonical skeleton" remains
+ * a measurement rather than a claim about the source.
+ *
+ * The mutations *without* the declaration are as informative as the ones with
+ * it. `skeleton-always-animates` and `skeleton-treats-zero-as-absent` do not
+ * reach the gate, because no gate case switches the animation off or passes a
+ * zero height: the gate's evidence depends on the child exactly where the gate
+ * exercises the child, and nowhere else.
+ *
+ * Note which of these does *not* travel: the length conversion. VfSkeletonGate
+ * has its own copy of that rule, deliberately duplicated in
+ * shared-core/skeleton-gate/state.ts, so `skeleton-drops-the-px-suffix` changes
+ * the child's height inside a gate and leaves the gate's own reserved height
+ * alone. That is the two contracts staying separate while one composes the
+ * other.
+ */
 export const skeletonMutations = [
   {
     id: 'skeleton-drops-aria-hidden',
+    // Reaches VfSkeletonGate: the gate asserts the child's whole markup, aria-hidden included.
+    alsoFails: [gateSuite],
     file: skeletonSourcePath,
     suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
     description: 'the loading placeholder stops hiding itself from the accessibility tree',
@@ -899,6 +938,8 @@ export const skeletonMutations = [
   },
   {
     id: 'skeleton-announces-itself',
+    // Reaches VfSkeletonGate: the gate renders the child, so a child that announces itself announces inside a gate.
+    alsoFails: [gateSuite],
     file: skeletonSourcePath,
     suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
     description: 'the skeleton is "improved" into a live region that announces loading',
@@ -907,6 +948,8 @@ export const skeletonMutations = [
   },
   {
     id: 'skeleton-suppresses-the-animation-modifier',
+    // Reaches VfSkeletonGate: the gate has no animated prop, so the child is animated inside a gate or the contract is gone.
+    alsoFails: [gateSuite],
     file: skeletonRulePath,
     suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
     description: 'the animation modifier is suppressed at the default, copying the M15 toned-span convention',
@@ -923,6 +966,8 @@ export const skeletonMutations = [
   },
   {
     id: 'skeleton-normalises-the-empty-radius-to-zero',
+    // Reaches VfSkeletonGate: the gate forwards an empty radius into the child's own empty-value rule.
+    alsoFails: [gateSuite],
     file: skeletonRulePath,
     suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
     description: 'an empty radius is "cleaned up" into an actual border-radius:0 declaration',
@@ -932,6 +977,8 @@ export const skeletonMutations = [
   },
   {
     id: 'skeleton-drops-the-radius-declaration',
+    // Reaches VfSkeletonGate: the token on a default gate's skeleton comes from the child's default.
+    alsoFails: [gateSuite],
     file: skeletonRulePath,
     suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
     description: 'the radius stops reaching the style attribute at all',
@@ -940,6 +987,8 @@ export const skeletonMutations = [
   },
   {
     id: 'skeleton-drops-the-px-suffix',
+    // Reaches VfSkeletonGate: the gate forwards min-height verbatim and the child converts it.
+    alsoFails: [gateSuite],
     file: skeletonRulePath,
     suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
     description: 'a numeric minHeight reaches CSS as a bare number, which is not a length',
@@ -956,6 +1005,8 @@ export const skeletonMutations = [
   },
   {
     id: 'skeleton-renders-a-span-root',
+    // Reaches VfSkeletonGate: the gate asserts the tag of the child it renders.
+    alsoFails: [gateSuite],
     file: skeletonSourcePath,
     suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
     description: 'the skeleton root stops being a block-level div',
@@ -1155,6 +1206,230 @@ export const cardMutations = [
   },
 ];
 
+/**
+ * VfSkeletonGate regressions.
+ *
+ * The first migrated component that renders another, so the list has two halves
+ * that must stay distinguishable: defects in what the gate composes, and defects
+ * in what it hands the child. A mutation in the second half has to fail the
+ * gate's suite *without* failing VfSkeleton's, or the two components' evidence
+ * has collapsed into one.
+ *
+ * The most valuable ones here are the mutations that produce plausible markup.
+ * `gate-uses-v-if` renders correctly in both states and destroys consumer DOM on
+ * every change; `gate-hardcodes-the-child-radius` is byte-identical at the
+ * default and diverges only where the child's own empty-value rule applies.
+ */
+export const skeletonGateMutations = [
+  {
+    id: 'gate-inverts-the-overlay-predicate',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the overlay is shown when ready and hidden when loading',
+    find: '<div v-show="!ready" class="vf-skeleton-gate__overlay"',
+    replace: '<div v-show="ready" class="vf-skeleton-gate__overlay"',
+  },
+  {
+    id: 'gate-inverts-the-busy-predicate',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'aria-busy is announced on a settled gate and dropped on a loading one',
+    find: '<div class="vf-skeleton-gate" :style="rootStyle" :aria-busy="!ready || undefined">',
+    replace: '<div class="vf-skeleton-gate" :style="rootStyle" :aria-busy="ready || undefined">',
+  },
+  {
+    id: 'gate-writes-aria-busy-false',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'a settled gate announces aria-busy="false" instead of dropping the attribute',
+    find: ':aria-busy="!ready || undefined">',
+    replace: ':aria-busy="String(!ready)">',
+  },
+  {
+    id: 'gate-uses-v-if-instead-of-v-show',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the overlay becomes a real branch, so a settled gate unmounts its skeleton',
+    find: '<div v-show="!ready" class="vf-skeleton-gate__overlay"',
+    replace: '<div v-if="!ready" class="vf-skeleton-gate__overlay"',
+  },
+  {
+    id: 'gate-renders-the-skeleton-in-both-halves',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'a second skeleton is drawn inside the content wrapper',
+    find: '      <slot />\n    </div>',
+    replace: '      <slot />\n      <VfSkeleton :min-height="minHeight" :radius="radius" />\n    </div>',
+  },
+  {
+    id: 'gate-renders-the-content-in-both-halves',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the consumer content is drawn inside the overlay as well',
+    find: '      <slot name="skeleton">',
+    replace: '      <slot />\n      <slot name="skeleton">',
+  },
+  {
+    id: 'gate-duplicates-the-consumer-content',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the default slot is rendered twice',
+    find: '      <slot />\n    </div>',
+    replace: '      <slot />\n      <slot />\n    </div>',
+  },
+  {
+    id: 'gate-adds-a-wrapper-around-the-content',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'an extra element appears between the content wrapper and the consumer content',
+    find: '      <slot />\n    </div>',
+    replace: '      <div class="vf-skeleton-gate__inner"><slot /></div>\n    </div>',
+  },
+  {
+    id: 'gate-drops-the-inert-attribute',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'faded content stays reachable by pointer and keyboard underneath the skeleton',
+    find: '      :inert="!ready ? true : undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'gate-drops-the-content-aria-hidden',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'faded content stays in the accessibility tree while the skeleton is shown',
+    find: '      :aria-hidden="!ready || undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'gate-drops-the-overlay-aria-hidden',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the skeleton stops being hidden from assistive technology',
+    find: 'class="vf-skeleton-gate__overlay" :style="overlayStyle" aria-hidden="true">',
+    replace: 'class="vf-skeleton-gate__overlay" :style="overlayStyle">',
+  },
+  {
+    id: 'gate-drops-the-empty-content-style-binding',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the always-empty content style binding is tidied away, changing every gate\'s server output',
+    find: '      :style="contentStyle"\n',
+    replace: '',
+  },
+  // What reaches the child. These four are the composition contract, and each
+  // must fail the gate's suite while leaving VfSkeleton's untouched.
+  {
+    id: 'gate-drops-the-forwarded-radius',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the radius stops reaching the child, so a rounded gate holds a square skeleton',
+    find: '<VfSkeleton :min-height="minHeight" :radius="radius" />',
+    replace: '<VfSkeleton :min-height="minHeight" />',
+  },
+  {
+    id: 'gate-drops-the-forwarded-min-height',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the min-height stops reaching the child',
+    find: '<VfSkeleton :min-height="minHeight" :radius="radius" />',
+    replace: '<VfSkeleton :radius="radius" />',
+  },
+  {
+    id: 'gate-hardcodes-the-child-radius-default',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: "the gate supplies the child's default token itself instead of letting the child supply it",
+    find: '<VfSkeleton :min-height="minHeight" :radius="radius" />',
+    replace: "<VfSkeleton :min-height=\"minHeight\" :radius=\"radius || 'var(--vf-radius-surface)'\" />",
+  },
+  {
+    id: 'gate-forwards-the-resolved-height-to-the-child',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: 'the child is asked for the reserved height rather than the min-height, so the two stop disagreeing',
+    find: '<VfSkeleton :min-height="minHeight" :radius="radius" />',
+    replace: '<VfSkeleton :min-height="resolvedMinHeight" :radius="radius" />',
+  },
+  {
+    id: 'gate-forwards-consumer-attributes-to-the-child',
+    file: skeletonGateSourcePath,
+    suite: gateSuite,
+    description: "the consumer's attributes are passed down to the skeleton as well as onto the root",
+    find: '<VfSkeleton :min-height="minHeight" :radius="radius" />',
+    replace: '<VfSkeleton v-bind="$attrs" :min-height="minHeight" :radius="radius" />',
+  },
+  // The shared rules, which the Razor adapter derives from the same file.
+  {
+    id: 'gate-reserve-uses-truthiness',
+    file: skeletonGateRulePath,
+    suite: gateSuite,
+    description: 'the reserve precedence becomes a truthiness check, so zero stops reserving and empty starts falling through',
+    find: '  if (reserve !== undefined) {',
+    replace: '  if (reserve) {',
+  },
+  {
+    id: 'gate-reserve-is-checked-before-conversion',
+    file: skeletonGateRulePath,
+    suite: gateSuite,
+    description: 'the reserve is checked before the length conversion, so a zero reserve is read as a number rather than a length',
+    find: '  const reserve = resolveSkeletonGateLength(reserveHeight);\n  if (reserve !== undefined) {',
+    replace: '  const reserve = reserveHeight === null || reserveHeight === undefined ? undefined : resolveSkeletonGateLength(reserveHeight);\n  if (reserve !== undefined && reserve !== \'\') {',
+  },
+  {
+    id: 'gate-measured-height-ignores-ready',
+    file: skeletonGateRulePath,
+    suite: gateSuite,
+    description: 'the preserved height keeps applying once content has appeared',
+    find: '  if (preserveLastHeight && measuredContentHeight !== null && !ready) {',
+    replace: '  if (preserveLastHeight && measuredContentHeight !== null) {',
+  },
+  {
+    id: 'gate-drops-empty-style-values',
+    file: skeletonGateRulePath,
+    suite: gateSuite,
+    description: "the rule drops empty values itself, changing the reference's server output",
+    find: "  if (minHeight !== undefined) declarations.push(['min-height', minHeight]);",
+    replace: "  if (minHeight !== undefined && minHeight !== '') declarations.push(['min-height', minHeight]);",
+  },
+  {
+    id: 'gate-omits-the-fade-duration-at-the-default',
+    file: skeletonGateRulePath,
+    suite: gateSuite,
+    description: 'the fade duration is written only when it differs from the default token value',
+    find: "  declarations.push(['--vf-skeleton-gate-fade-duration', `${fadeDuration}ms`]);",
+    replace: "  if (fadeDuration !== 220) declarations.push(['--vf-skeleton-gate-fade-duration', `${fadeDuration}ms`]);",
+  },
+  {
+    id: 'gate-overlay-receives-the-reserved-height',
+    file: skeletonGateRulePath,
+    suite: gateSuite,
+    description: 'the overlay starts carrying declarations that belong to the root only',
+    find: "  return [['border-radius', radius]];",
+    replace: "  return [['border-radius', radius], ['min-height', 'inherit']];",
+  },
+  {
+    id: 'gate-content-loses-the-ready-modifier',
+    file: skeletonGateRulePath,
+    suite: gateSuite,
+    description: 'the content wrapper never gets the modifier the stylesheet fades on',
+    find: "  if (ready) classes.push('vf-skeleton-gate__content--ready');",
+    replace: "  if (!ready) classes.push('vf-skeleton-gate__content--ready');",
+  },
+  {
+    id: 'gate-content-modifier-order-swaps',
+    file: skeletonGateRulePath,
+    suite: gateSuite,
+    description: 'the spacing modifier is written before the ready modifier',
+    find:
+      "  if (ready) classes.push('vf-skeleton-gate__content--ready');\n" +
+      "  if (normalizeContentSpacing) classes.push('vf-skeleton-gate__content--normalize-spacing');",
+    replace:
+      "  if (normalizeContentSpacing) classes.push('vf-skeleton-gate__content--normalize-spacing');\n" +
+      "  if (ready) classes.push('vf-skeleton-gate__content--ready');",
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -1170,4 +1445,5 @@ export const componentMutations = [
   ...skeletonMutations,
   ...avatarMutations,
   ...cardMutations,
+  ...skeletonGateMutations,
 ];
