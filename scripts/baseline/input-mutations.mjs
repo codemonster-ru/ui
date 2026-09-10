@@ -41,6 +41,9 @@ export const avatarRulePath = 'packages/shared-core/src/avatar/state.ts';
 
 /** The shared rules VfCard and the Razor adapter both derive from. */
 export const cardRulePath = 'packages/shared-core/src/card/state.ts';
+export const panelSourcePath = 'packages/core/src/components/panel/VfPanel.vue';
+/** The shared rules VfPanel and the Razor adapter both derive from. */
+export const panelRulePath = 'packages/shared-core/src/panel/state.ts';
 
 /** The shared rules the three M15 presentation components and the Razor adapter derive from. */
 export const presentationRulePath = 'packages/shared-core/src/presentation/state.ts';
@@ -1207,6 +1210,158 @@ export const cardMutations = [
 ];
 
 /**
+ * VfPanel regressions.
+ *
+ * The M18 set, and the first written against a neighbour. VfCard renders nearly
+ * the same markup, so the mutations that carry this milestone are the ones that
+ * turn a panel into a card:
+ *
+ *   - `panel-wraps-its-content-in-a-card-body` adds the classed wrapper the card
+ *     has. The rendered panel looks almost identical and selects entirely
+ *     differently, and an empty default slot gains a row and a gap;
+ *   - `panel-grows-a-footer` starts rendering the footer slot a panel drops;
+ *   - `panel-becomes-a-card` and `panel-modifier-becomes-compact` reuse the
+ *     neighbour's block name and modifier.
+ *
+ * Every one of these fails VfPanel's own suite and none of them touches VfCard's
+ * source or its rules, which is the cross-isolation the milestone asks for.
+ */
+export const panelMutations = [
+  {
+    id: 'panel-wraps-its-content-in-a-card-body',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: "VfCard's classed body wrapper appears around the panel's default slot",
+    find: '    <slot />\n  </section>',
+    replace: '    <div class="vf-panel__body"><slot /></div>\n  </section>',
+  },
+  {
+    id: 'panel-keys-its-content-on-the-slot',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'the default slot gains the presence condition a card wraps its body in',
+    find: '    <slot />\n  </section>',
+    replace: '    <slot v-if="$slots.default" />\n  </section>',
+  },
+  {
+    id: 'panel-grows-a-footer',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'the footer slot a panel drops starts rendering a footer element',
+    find: '    <slot />\n  </section>',
+    replace: '    <slot />\n\n    <footer v-if="$slots.footer">\n      <slot name="footer" />\n    </footer>\n  </section>',
+  },
+  {
+    id: 'panel-header-gains-a-class',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'the unclassed header wrapper gains the vf-panel__header class it historically lacks',
+    find: '    <header v-if="regions.header">',
+    replace: '    <header v-if="regions.header" class="vf-panel__header">',
+  },
+  {
+    id: 'panel-header-becomes-a-div',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'the native header element is replaced by a generic div, losing its implicit semantics',
+    find:
+      '    <header v-if="regions.header">\n      <slot name="header">\n' +
+      '        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>\n    </header>',
+    replace:
+      '    <div v-if="regions.header">\n      <slot name="header">\n' +
+      '        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>\n    </div>',
+  },
+  {
+    id: 'panel-title-becomes-a-card-title',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: "the fallback heading is classed with the neighbour's block name",
+    find: '        <h3 class="vf-panel__title">{{ props.title }}</h3>',
+    replace: '        <h3 class="vf-card__title">{{ props.title }}</h3>',
+  },
+  {
+    id: 'panel-drops-the-title-fallback',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'the header slot loses its fallback content, so a title alone renders an empty header',
+    find:
+      '      <slot name="header">\n        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>',
+    replace: '      <slot name="header" />',
+  },
+  {
+    id: 'panel-reorders-the-header-and-the-content',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'the default slot is rendered before the header',
+    find:
+      '    <header v-if="regions.header">\n      <slot name="header">\n' +
+      '        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>\n    </header>\n\n    <slot />',
+    replace:
+      '    <slot />\n\n    <header v-if="regions.header">\n      <slot name="header">\n' +
+      '        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>\n    </header>',
+  },
+  {
+    id: 'panel-lets-the-caller-class-win',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'attrs are bound before the class, so a caller class replaces the canonical classes',
+    find: '  <section :class="classes" v-bind="attrs">',
+    replace: '  <section v-bind="attrs" :class="classes">',
+  },
+  {
+    // The whole template block, because both tags have to move together: an SFC
+    // whose root opens as a div and closes as a section does not compile, and a
+    // mutation that breaks the compiler proves nothing about the suite.
+    id: 'panel-root-becomes-a-div',
+    file: panelSourcePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'the section root becomes a div, which looks identical and exposes a different element',
+    find:
+      '  <section :class="classes" v-bind="attrs">\n' +
+      '    <header v-if="regions.header">\n      <slot name="header">\n' +
+      '        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>\n    </header>\n\n' +
+      '    <slot />\n  </section>',
+    replace:
+      '  <div :class="classes" v-bind="attrs">\n' +
+      '    <header v-if="regions.header">\n      <slot name="header">\n' +
+      '        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>\n    </header>\n\n' +
+      '    <slot />\n  </div>',
+  },
+  {
+    id: 'panel-opens-the-header-for-an-empty-title',
+    file: panelRulePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'presence replaces truthiness, so title="" renders an empty header',
+    find: '    header: Boolean(input.title) || input.hasHeaderSlot,',
+    replace: '    header: input.title !== undefined || input.hasHeaderSlot,',
+  },
+  {
+    id: 'panel-drops-the-subtle-modifier',
+    file: panelRulePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: 'the subtle prop stops reaching the class list',
+    find: "  if (subtle) classes.push('vf-panel--subtle');",
+    replace: '',
+  },
+  {
+    id: 'panel-modifier-becomes-compact',
+    file: panelRulePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: "the modifier is spelled as VfCard's compact, which no panel stylesheet defines",
+    find: "  if (subtle) classes.push('vf-panel--subtle');",
+    replace: "  if (subtle) classes.push('vf-panel--compact');",
+  },
+  {
+    id: 'panel-becomes-a-card',
+    file: panelRulePath,
+    suite: 'src/components/panel/VfPanel.characterization.spec.ts',
+    description: "VfCard's block name is reused for VfPanel (the substitution the adjacent component makes possible)",
+    find: "  const classes = ['vf-panel'];\n\n  if (subtle) classes.push('vf-panel--subtle');",
+    replace: "  const classes = ['vf-card'];\n\n  if (subtle) classes.push('vf-card--compact');",
+  },
+];
+
+/**
  * VfSkeletonGate regressions.
  *
  * The first migrated component that renders another, so the list has two halves
@@ -1446,4 +1601,5 @@ export const componentMutations = [
   ...avatarMutations,
   ...cardMutations,
   ...skeletonGateMutations,
+  ...panelMutations,
 ];

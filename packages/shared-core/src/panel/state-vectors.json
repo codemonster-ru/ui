@@ -1,0 +1,85 @@
+{
+  "$comment": "Shared input/expected vectors for VfPanel. The TypeScript rules in panel/state.ts and the PHP mirror in packages/razor/src/Support/PanelState.php both run this file. resolvePanelRegions carries both hasHeaderSlot and headerSlotContent because the header wrapper and the fallback heading are keyed on different questions. This file is not card/state-vectors.json and must never be merged with it: the two components' header predicates read alike, and one shared vector catalog would let either implementation satisfy the other's evidence. The expected shape here has two fields where the card's has four, which is the difference stated as data.",
+  "resolvePanelClasses": [
+    {
+      "subtle": false,
+      "expected": ["vf-panel"]
+    },
+    {
+      "subtle": true,
+      "expected": ["vf-panel", "vf-panel--subtle"]
+    }
+  ],
+  "resolvePanelRegions": [
+    {
+      "$why": "An empty panel: no header, and a default slot that needs no decision.",
+      "title": null,
+      "hasHeaderSlot": false,
+      "headerSlotContent": false,
+      "expected": {
+        "header": false,
+        "headerTitle": true
+      }
+    },
+    {
+      "$why": "A title alone opens the header and fills it with the fallback heading.",
+      "title": "Workspace",
+      "hasHeaderSlot": false,
+      "headerSlotContent": false,
+      "expected": {
+        "header": true,
+        "headerTitle": true
+      }
+    },
+    {
+      "$why": "The quirk: an empty-string title is falsy, so it renders no header rather than an empty one.",
+      "title": "",
+      "hasHeaderSlot": false,
+      "headerSlotContent": false,
+      "expected": {
+        "header": false,
+        "headerTitle": true
+      }
+    },
+    {
+      "$why": "A header slot opens the header on its own, with no title anywhere, and suppresses the fallback heading.",
+      "title": null,
+      "hasHeaderSlot": true,
+      "headerSlotContent": true,
+      "expected": {
+        "header": true,
+        "headerTitle": false
+      }
+    },
+    {
+      "$why": "A header slot that renders content drops the fallback heading even when a title was passed. The title is then silently unused.",
+      "title": "Workspace",
+      "hasHeaderSlot": true,
+      "headerSlotContent": true,
+      "expected": {
+        "header": true,
+        "headerTitle": false
+      }
+    },
+    {
+      "$why": "A header slot that renders nothing still opens the wrapper, and the fallback heading comes back inside it.",
+      "title": "Workspace",
+      "hasHeaderSlot": true,
+      "headerSlotContent": false,
+      "expected": {
+        "header": true,
+        "headerTitle": true
+      }
+    },
+    {
+      "$why": "The same with no title: an empty header holding an empty heading.",
+      "title": null,
+      "hasHeaderSlot": true,
+      "headerSlotContent": false,
+      "expected": {
+        "header": true,
+        "headerTitle": true
+      }
+    }
+  ]
+}

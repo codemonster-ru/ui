@@ -47,6 +47,8 @@ export { resolveAvatarBranch, resolveAvatarClasses } from './avatar/state.js';
 export type { VfAvatarBranch, VfAvatarShapeName, VfAvatarSizeName } from './avatar/state.js';
 export { resolveCardClasses, resolveCardRegions } from './card/state.js';
 export type { VfCardRegions } from './card/state.js';
+export { resolvePanelClasses, resolvePanelRegions } from './panel/state.js';
+export type { VfPanelRegions } from './panel/state.js';
 export {
   resolveBadgeClasses,
   resolveDividerClasses,

@@ -88,6 +88,7 @@ export default defineConfig({
       'src/components/skeleton/VfSkeleton.characterization.spec.ts',
       'src/components/avatar/VfAvatar.characterization.spec.ts',
       'src/components/card/VfCard.characterization.spec.ts',
+      'src/components/panel/VfPanel.characterization.spec.ts',
       'src/components/skeleton-gate/VfSkeletonGate.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',
       'src/components/components.spec.ts',
