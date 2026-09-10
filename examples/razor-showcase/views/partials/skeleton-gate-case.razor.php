@@ -22,11 +22,6 @@
      real consumer control, written the way any consumer would write it - the
      gate owns no interaction, and what is in its slots is the consumer's. --}}
 @php
-    $props = $case['props'] ?? [];
-    $attrs = $case['attrs'] ?? [];
-    $body = $case['content']['body'] ?? null;
-    $skeletonSlot = $case['content']['skeleton'] ?? null;
-
     $shapeMarkup = static function (?array $slot): string {
         if ($slot === null) {
             return '';
@@ -59,36 +54,36 @@
         return $markup;
     };
 
-    $bodyMarkup = $shapeMarkup($body);
-    $skeletonMarkup = $shapeMarkup($skeletonSlot);
+    $bodyMarkup = $shapeMarkup($case['content']['body'] ?? null);
+    $skeletonMarkup = $shapeMarkup($case['content']['skeleton'] ?? null);
 @endphp
 
-@if ($skeletonSlot !== null)
+@if (array_key_exists('skeleton', $case['content'] ?? []))
     <vf-skeleton-gate
-        :ready="($props['ready'] ?? false) ? true : null"
-        :min-height="$props['minHeight'] ?? null"
-        :reserve-height="array_key_exists('reserveHeight', $props) ? $props['reserveHeight'] : null"
-        :preserve-last-height="($props['preserveLastHeight'] ?? false) ? true : null"
-        :normalize-content-spacing="($props['normalizeContentSpacing'] ?? false) ? true : null"
-        :radius="array_key_exists('radius', $props) ? $props['radius'] : null"
-        :fade-duration="array_key_exists('fadeDuration', $props) ? $props['fadeDuration'] : null"
-        :class="$attrs['class'] ?? null"
-        :style="$attrs['style'] ?? null"
-        :aria-busy="$attrs['aria-busy'] ?? null"
-        :data-testid="$attrs['data-testid'] ?? null"
+        :ready="($case['props']['ready'] ?? false) ? true : null"
+        :min-height="$case['props']['minHeight'] ?? null"
+        :reserve-height="array_key_exists('reserveHeight', $case['props'] ?? []) ? $case['props']['reserveHeight'] : null"
+        :preserve-last-height="($case['props']['preserveLastHeight'] ?? false) ? true : null"
+        :normalize-content-spacing="($case['props']['normalizeContentSpacing'] ?? false) ? true : null"
+        :radius="array_key_exists('radius', $case['props'] ?? []) ? $case['props']['radius'] : null"
+        :fade-duration="array_key_exists('fadeDuration', $case['props'] ?? []) ? $case['props']['fadeDuration'] : null"
+        :class="$case['attrs']['class'] ?? null"
+        :style="$case['attrs']['style'] ?? null"
+        :aria-busy="$case['attrs']['aria-busy'] ?? null"
+        :data-testid="$case['attrs']['data-testid'] ?? null"
     ><razor-slot name="skeleton">{!! $skeletonMarkup !!}</razor-slot>{!! $bodyMarkup !!}</vf-skeleton-gate>
 @else
     <vf-skeleton-gate
-        :ready="($props['ready'] ?? false) ? true : null"
-        :min-height="$props['minHeight'] ?? null"
-        :reserve-height="array_key_exists('reserveHeight', $props) ? $props['reserveHeight'] : null"
-        :preserve-last-height="($props['preserveLastHeight'] ?? false) ? true : null"
-        :normalize-content-spacing="($props['normalizeContentSpacing'] ?? false) ? true : null"
-        :radius="array_key_exists('radius', $props) ? $props['radius'] : null"
-        :fade-duration="array_key_exists('fadeDuration', $props) ? $props['fadeDuration'] : null"
-        :class="$attrs['class'] ?? null"
-        :style="$attrs['style'] ?? null"
-        :aria-busy="$attrs['aria-busy'] ?? null"
-        :data-testid="$attrs['data-testid'] ?? null"
+        :ready="($case['props']['ready'] ?? false) ? true : null"
+        :min-height="$case['props']['minHeight'] ?? null"
+        :reserve-height="array_key_exists('reserveHeight', $case['props'] ?? []) ? $case['props']['reserveHeight'] : null"
+        :preserve-last-height="($case['props']['preserveLastHeight'] ?? false) ? true : null"
+        :normalize-content-spacing="($case['props']['normalizeContentSpacing'] ?? false) ? true : null"
+        :radius="array_key_exists('radius', $case['props'] ?? []) ? $case['props']['radius'] : null"
+        :fade-duration="array_key_exists('fadeDuration', $case['props'] ?? []) ? $case['props']['fadeDuration'] : null"
+        :class="$case['attrs']['class'] ?? null"
+        :style="$case['attrs']['style'] ?? null"
+        :aria-busy="$case['attrs']['aria-busy'] ?? null"
+        :data-testid="$case['attrs']['data-testid'] ?? null"
     >{!! $bodyMarkup !!}</vf-skeleton-gate>
 @endif
