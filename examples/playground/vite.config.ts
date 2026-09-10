@@ -134,6 +134,9 @@ export default defineConfig({
         badge: fileURLToPath(new URL('./badge.html', import.meta.url)),
         tag: fileURLToPath(new URL('./tag.html', import.meta.url)),
         divider: fileURLToPath(new URL('./divider.html', import.meta.url)),
+        skeleton: fileURLToPath(new URL('./skeleton.html', import.meta.url)),
+        avatar: fileURLToPath(new URL('./avatar.html', import.meta.url)),
+        card: fileURLToPath(new URL('./card.html', import.meta.url)),
       },
     },
   },
@@ -208,6 +211,18 @@ export default defineConfig({
       {
         find: /^@vueforge\/divider-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/divider/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/skeleton-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/skeleton/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/avatar-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/avatar/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/card-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/card/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

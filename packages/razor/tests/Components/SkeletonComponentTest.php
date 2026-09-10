@@ -107,6 +107,20 @@ final class SkeletonComponentTest extends TestCase
         }
     }
 
+    public function testANullRadiusIsAbsenceAndTheEmptyStringIsARefusal(): void
+    {
+        // A Razor template binds every attribute it names, so a case with no
+        // radius arrives as an explicit null rather than as a missing key. Null
+        // has to mean "the caller said nothing" and keep the default token,
+        // while the empty string has to keep meaning "write no declaration".
+        // Found by the showcase route, where every skeleton lost its radius.
+        self::assertStringContainsString(
+            'border-radius: var(--vf-radius-surface)',
+            $this->render(['radius' => null]),
+        );
+        self::assertStringNotContainsString('style=', $this->render(['radius' => '']));
+    }
+
     public function testAnEmptyRadiusDropsTheDeclarationRatherThanMeaningZero(): void
     {
         // The quirk. Not border-radius:0 - no declaration at all, and with no

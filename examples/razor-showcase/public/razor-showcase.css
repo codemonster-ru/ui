@@ -190,3 +190,14 @@ body {
   color: var(--vf-color-text-secondary);
   font-size: var(--vf-font-size-sm);
 }
+
+/*
+ * VfSkeleton has no size of its own: it fills the box it is given and is zero
+ * pixels tall in a container that has none. Showcase chrome, exactly like the
+ * divider frame above it - the product rules still come from the packaged
+ * stylesheet.
+ */
+.razor-showcase__skeleton-frame {
+  height: 48px;
+  padding: 8px 0;
+}

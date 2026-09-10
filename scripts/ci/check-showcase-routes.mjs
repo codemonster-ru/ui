@@ -108,6 +108,12 @@ const controlSelectors = {
   VfBadge: 'span.vf-badge',
   VfTag: 'span.vf-tag',
   VfDivider: 'div.vf-divider',
+  // The M16 components. Skeleton and Avatar render one root; Card renders a
+  // section whose regions are all optional, so its root is the only element
+  // every case is guaranteed to have.
+  VfSkeleton: 'div.vf-skeleton',
+  VfAvatar: 'span.vf-avatar',
+  VfCard: 'section.vf-card',
 };
 
 /**
@@ -162,14 +168,17 @@ check(
   'only components with a real Razor adapter are marked implemented',
   JSON.stringify(razorImplemented) ===
     JSON.stringify([
+      'VfAvatar',
       'VfBadge',
       'VfButton',
+      'VfCard',
       'VfCheckbox',
       'VfDivider',
       'VfField',
       'VfIconButton',
       'VfInput',
       'VfRadio',
+      'VfSkeleton',
       'VfSwitch',
       'VfTag',
       'VfTextarea',

@@ -56,6 +56,21 @@ declare module '@vueforge/divider-cases' {
   export default catalog;
 }
 
+declare module '@vueforge/skeleton-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
+declare module '@vueforge/avatar-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
+declare module '@vueforge/card-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
 declare module '@vueforge/showcase-index' {
   interface ShowcasePlatform {
     label: string;

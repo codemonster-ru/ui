@@ -178,6 +178,9 @@ $switch = $registry->resolve('vf-switch');
 $badge = $registry->resolve('vf-badge');
 $tag = $registry->resolve('vf-tag');
 $divider = $registry->resolve('vf-divider');
+$skeleton = $registry->resolve('vf-skeleton');
+$avatar = $registry->resolve('vf-avatar');
+$card = $registry->resolve('vf-card');
 $assetPath = VueForgeRazorProvider::assetPath();
 
 echo json_encode([
@@ -193,6 +196,9 @@ echo json_encode([
         'vf-badge' => $registry->handles('vf-badge'),
         'vf-tag' => $registry->handles('vf-tag'),
         'vf-divider' => $registry->handles('vf-divider'),
+        'vf-skeleton' => $registry->handles('vf-skeleton'),
+        'vf-avatar' => $registry->handles('vf-avatar'),
+        'vf-card' => $registry->handles('vf-card'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -288,6 +294,60 @@ echo json_encode([
     'dividerHorizontal' => $divider->render(new ComponentRenderContext([], []))->value(),
     'dividerVertical' => $divider->render(new ComponentRenderContext(['orientation' => 'vertical'], []))->value(),
     'dividerOverride' => $divider->render(new ComponentRenderContext(['role' => 'presentation'], []))->value(),
+    // The three M16 components.
+    //
+    // VfSkeleton twice, because its whole contract is two attributes: the
+    // animation modifier is present at the default and absent only when the
+    // caller says so, and an empty radius drops the declaration rather than
+    // zeroing it. A packaging defect could produce either half silently.
+    'skeletonDefault' => $skeleton->render(new ComponentRenderContext([], []))->value(),
+    'skeletonSized' => $skeleton->render(new ComponentRenderContext(
+        ['min-height' => '40', 'animated' => 'false', 'class' => 'consumer-skeleton'],
+        [],
+    ))->value(),
+    'skeletonEmptyRadius' => $skeleton->render(new ComponentRenderContext(['radius' => ''], []))->value(),
+    // VfAvatar once per branch of the fallback chain. The icon branch is the
+    // one that matters most here: it renders through the neutral glyph registry
+    // shipped inside the artifact, so this is where "no Node runtime" stops
+    // being a claim about the build and becomes a claim about the glyph on the
+    // page. The label case also carries an icon, so a reordered chain fails.
+    'avatarImage' => $avatar->render(new ComponentRenderContext(
+        ['image' => '/avatar.png', 'image-alt' => 'Maya Chen'],
+        [],
+    ))->value(),
+    'avatarLabel' => $avatar->render(new ComponentRenderContext(
+        ['label' => 'MC', 'icon' => 'user', 'size' => 'sm'],
+        [],
+    ))->value(),
+    'avatarIcon' => $avatar->render(new ComponentRenderContext(
+        ['icon' => 'user', 'shape' => 'circle'],
+        [],
+    ))->value(),
+    'avatarSlot' => $avatar->render(new ComponentRenderContext(
+        [],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<b>JS</b>')],
+    ))->value(),
+    // VfCard composed and empty. The composed one proves the region order and
+    // the unclassed wrappers; the empty one proves that no region renders
+    // without its slot, which is what a packaging defect would get wrong by
+    // rendering all three.
+    'cardFull' => $card->render(new ComponentRenderContext(
+        ['title' => 'Workspace'],
+        [
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Shared with your team.'),
+            'footer' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Updated 3 minutes ago'),
+        ],
+    ))->value(),
+    'cardEmpty' => $card->render(new ComponentRenderContext([], []))->value(),
+    'cardSlotControl' => $card->render(new ComponentRenderContext(
+        [],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button">Rename</button>')],
+    ))->value(),
+    'm16Css' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-skeleton')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-avatar')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-card')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-panel'),
     'presentationCss' => is_file($assetPath . '/vueforge-razor.css')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-badge')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tag')
@@ -337,6 +397,9 @@ echo json_encode([
       'vf-badge',
       'vf-tag',
       'vf-divider',
+      'vf-skeleton',
+      'vf-avatar',
+      'vf-card',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -586,6 +649,71 @@ echo json_encode([
     rendered.dividerOverride.includes('role="presentation"'),
     rendered.dividerOverride,
   );
+  // ------------------------------------------ vf-skeleton, vf-avatar, vf-card
+
+  check(
+    'the consumer renders a default skeleton with its animation modifier and radius',
+    rendered.skeletonDefault ===
+      '<div class="vf-skeleton vf-skeleton--animated" style="border-radius: var(--vf-radius-surface);" ' +
+        'aria-hidden="true"></div>',
+    rendered.skeletonDefault,
+  );
+  check(
+    'the consumer renders a sized, unanimated skeleton with its consumer class appended',
+    rendered.skeletonSized ===
+      '<div class="vf-skeleton consumer-skeleton" style="min-height: 40px; border-radius: var(--vf-radius-surface);" ' +
+        'aria-hidden="true"></div>',
+    rendered.skeletonSized,
+  );
+  check(
+    'an empty radius drops the declaration rather than zeroing it, through the packaged component',
+    rendered.skeletonEmptyRadius === '<div class="vf-skeleton vf-skeleton--animated" aria-hidden="true"></div>',
+    rendered.skeletonEmptyRadius,
+  );
+  check(
+    'the consumer renders the avatar image branch with its decorative alt',
+    rendered.avatarImage ===
+      '<span class="vf-avatar"><img class="vf-avatar__image" src="/avatar.png" alt="Maya Chen">' + '</span>',
+    rendered.avatarImage,
+  );
+  check(
+    'the label branch beats the icon branch through the packaged component',
+    rendered.avatarLabel === '<span class="vf-avatar vf-avatar--sm"><span class="vf-avatar__label">MC</span></span>',
+    rendered.avatarLabel,
+  );
+  check(
+    'the consumer renders the avatar icon branch from the neutral glyph registry, with no Node runtime',
+    rendered.avatarIcon.includes('<span class="vf-icon-wrapper"') &&
+      rendered.avatarIcon.includes('<svg class="vf-avatar__icon vf-icon') &&
+      rendered.avatarIcon.includes('aria-hidden="true"') &&
+      rendered.avatarIcon.includes('<circle') &&
+      rendered.avatarIcon.startsWith('<span class="vf-avatar vf-avatar--circle">'),
+    rendered.avatarIcon,
+  );
+  check(
+    'the consumer renders the avatar default slot branch',
+    rendered.avatarSlot === '<span class="vf-avatar"><b>JS</b></span>',
+    rendered.avatarSlot,
+  );
+  check(
+    'the consumer renders a composed card with unclassed header and footer wrappers',
+    rendered.cardFull ===
+      '<section class="vf-card"><header><h3 class="vf-card__title">Workspace</h3></header>' +
+        '<div class="vf-card__body">Shared with your team.</div><footer>Updated 3 minutes ago</footer></section>',
+    rendered.cardFull,
+  );
+  check(
+    'an empty card renders no region at all',
+    rendered.cardEmpty === '<section class="vf-card"></section>',
+    rendered.cardEmpty,
+  );
+  check(
+    'a consumer control inside a card slot survives packaging unchanged',
+    rendered.cardSlotControl ===
+      '<section class="vf-card"><div class="vf-card__body"><button type="button">Rename</button></div></section>',
+    rendered.cardSlotControl,
+  );
+  check('the packaged stylesheet carries the M16 rules and none for the unmigrated VfPanel', rendered.m16Css);
   check(
     'the packaged stylesheet carries the presentation rules',
     rendered.presentationCss,

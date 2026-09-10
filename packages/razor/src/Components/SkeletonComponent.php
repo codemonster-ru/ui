@@ -46,7 +46,15 @@ final class SkeletonComponent implements ComponentInterface
     public function render(ComponentRenderContext $context): RenderedHtml
     {
         $minHeight = $this->lengthProp($context);
-        $radius = $context->hasProp('radius') ? $this->stringProp($context, 'radius') : 'var(--vf-radius-surface)';
+        // `?? default` rather than a hasProp() check, which is both the
+        // convention every other component here follows and the only spelling
+        // that survives a template. A Razor template binds every attribute it
+        // names, so `:radius="$maybeNull"` makes hasProp() true with a null
+        // value, and a hasProp() check would read that as "the caller asked for
+        // no radius" and drop the default. Null is absence; the empty string is
+        // the caller explicitly asking for no declaration, and stringProp keeps
+        // the two apart.
+        $radius = $this->stringProp($context, 'radius') ?? 'var(--vf-radius-surface)';
         $animated = $this->booleanProp($context, 'animated');
 
         // The component's own attributes first, in the order the reference
