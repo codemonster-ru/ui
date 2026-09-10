@@ -185,7 +185,8 @@ function bindings(parityCase: ShowcaseCase) {
   // the first showcase component whose state a visitor can change, and binding
   // the catalog value straight onto the prop would make the toggle below do
   // nothing. Every other prop comes from the catalog untouched.
-  const { ready: unusedReady, ...props } = parityCase.props ?? {};
+  const props = { ...(parityCase.props ?? {}) };
+  delete props.ready;
 
   return {
     ...props,
