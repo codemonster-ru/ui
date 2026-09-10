@@ -1,0 +1,64 @@
+{
+  "$comment": "Shared input/expected vectors for VfSkeleton. The TypeScript rules in skeleton/state.ts and the PHP mirror in packages/razor/src/Support/SkeletonState.php both run this file. Its own file rather than an addition to presentation/state-vectors.json: a shared vector catalog is exactly how one component's evidence starts standing in for another's.",
+  "resolveSkeletonClasses": [
+    { "animated": true, "expected": ["vf-skeleton", "vf-skeleton--animated"] },
+    { "animated": false, "expected": ["vf-skeleton"] }
+  ],
+  "resolveSkeletonLength": [
+    { "value": null, "expected": null },
+    { "value": 0, "expected": "0px" },
+    { "value": 40, "expected": "40px" },
+    { "value": 12.5, "expected": "12.5px" },
+    { "value": "3rem", "expected": "3rem" },
+    { "value": "50%", "expected": "50%" },
+    { "value": "var(--vf-space-8)", "expected": "var(--vf-space-8)" },
+    { "value": "", "expected": "" }
+  ],
+  "resolveSkeletonStyle": [
+    {
+      "$why": "The default. minHeight is absent, so only the radius token is written.",
+      "minHeight": null,
+      "radius": "var(--vf-radius-surface)",
+      "expected": [["border-radius", "var(--vf-radius-surface)"]]
+    },
+    {
+      "$why": "A numeric minHeight becomes pixels and is written first.",
+      "minHeight": 40,
+      "radius": "var(--vf-radius-surface)",
+      "expected": [
+        ["min-height", "40px"],
+        ["border-radius", "var(--vf-radius-surface)"]
+      ]
+    },
+    {
+      "$why": "Zero is a length, not an absence.",
+      "minHeight": 0,
+      "radius": "8px",
+      "expected": [
+        ["min-height", "0px"],
+        ["border-radius", "8px"]
+      ]
+    },
+    {
+      "$why": "A string minHeight is passed through untouched.",
+      "minHeight": "3rem",
+      "radius": "0",
+      "expected": [
+        ["min-height", "3rem"],
+        ["border-radius", "0"]
+      ]
+    },
+    {
+      "$why": "The quirk: an empty radius drops the declaration rather than meaning zero.",
+      "minHeight": 40,
+      "radius": "",
+      "expected": [["min-height", "40px"]]
+    },
+    {
+      "$why": "The same quirk on both properties leaves no declarations at all, and therefore no style attribute.",
+      "minHeight": "",
+      "radius": "",
+      "expected": []
+    }
+  ]
+}

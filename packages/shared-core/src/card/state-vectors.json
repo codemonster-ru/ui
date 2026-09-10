@@ -1,0 +1,181 @@
+{
+  "$comment": "Shared input/expected vectors for VfCard. The TypeScript rules in card/state.ts and the PHP mirror in packages/razor/src/Support/CardState.php both run this file. resolveCardRegions carries both hasHeaderSlot and headerSlotContent because the header wrapper and the fallback heading are keyed on different questions. VfPanel is not in this file and must not be added to it: the two components look alike enough that one shared vector catalog would let either implementation satisfy the other's evidence.",
+  "resolveCardClasses": [
+    {
+      "compact": false,
+      "expected": ["vf-card"]
+    },
+    {
+      "compact": true,
+      "expected": ["vf-card", "vf-card--compact"]
+    }
+  ],
+  "resolveCardRegions": [
+    {
+      "$why": "An empty card: three regions, none of them rendered.",
+      "title": null,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "header": false,
+        "headerTitle": true,
+        "body": false,
+        "footer": false
+      },
+      "headerSlotContent": false
+    },
+    {
+      "$why": "A title alone opens the header and fills it with the fallback heading.",
+      "title": "Workspace",
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "header": true,
+        "headerTitle": true,
+        "body": false,
+        "footer": false
+      },
+      "headerSlotContent": false
+    },
+    {
+      "$why": "The quirk: an empty-string title is falsy, so it renders no header rather than an empty one.",
+      "title": "",
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "header": false,
+        "headerTitle": true,
+        "body": false,
+        "footer": false
+      },
+      "headerSlotContent": false
+    },
+    {
+      "$why": "A header slot opens the header on its own, with no title anywhere.",
+      "title": null,
+      "hasHeaderSlot": true,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "header": true,
+        "headerTitle": false,
+        "body": false,
+        "footer": false
+      },
+      "headerSlotContent": true
+    },
+    {
+      "$why": "The second quirk: a header slot suppresses the fallback heading even when a title was passed, and the title is then silently unused.",
+      "title": "Workspace",
+      "hasHeaderSlot": true,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "header": true,
+        "headerTitle": false,
+        "body": false,
+        "footer": false
+      },
+      "headerSlotContent": true
+    },
+    {
+      "$why": "The body wrapper is keyed on the slot existing, never on the title or on any prop.",
+      "title": null,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": true,
+      "hasFooterSlot": false,
+      "expected": {
+        "header": false,
+        "headerTitle": true,
+        "body": true,
+        "footer": false
+      },
+      "headerSlotContent": false
+    },
+    {
+      "$why": "The footer has no prop at all: the slot is its only trigger.",
+      "title": null,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": true,
+      "expected": {
+        "header": false,
+        "headerTitle": true,
+        "body": false,
+        "footer": true
+      },
+      "headerSlotContent": false
+    },
+    {
+      "$why": "A footer with no header proves the three regions are independent rather than ordered gates.",
+      "title": null,
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": true,
+      "hasFooterSlot": true,
+      "expected": {
+        "header": false,
+        "headerTitle": true,
+        "body": true,
+        "footer": true
+      },
+      "headerSlotContent": false
+    },
+    {
+      "title": "Workspace",
+      "hasHeaderSlot": false,
+      "hasDefaultSlot": true,
+      "hasFooterSlot": true,
+      "expected": {
+        "header": true,
+        "headerTitle": true,
+        "body": true,
+        "footer": true
+      },
+      "headerSlotContent": false
+    },
+    {
+      "title": "Workspace",
+      "hasHeaderSlot": true,
+      "hasDefaultSlot": true,
+      "hasFooterSlot": true,
+      "expected": {
+        "header": true,
+        "headerTitle": false,
+        "body": true,
+        "footer": true
+      },
+      "headerSlotContent": true
+    },
+    {
+      "$why": "The subtlest rule in M16: a header slot that renders nothing still opens the header wrapper, and the fallback heading comes back inside it.",
+      "title": "Workspace",
+      "hasHeaderSlot": true,
+      "headerSlotContent": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "header": true,
+        "headerTitle": true,
+        "body": false,
+        "footer": false
+      }
+    },
+    {
+      "$why": "The same, with no title: an empty header element containing an empty h3.",
+      "title": null,
+      "hasHeaderSlot": true,
+      "headerSlotContent": false,
+      "hasDefaultSlot": false,
+      "hasFooterSlot": false,
+      "expected": {
+        "header": true,
+        "headerTitle": true,
+        "body": false,
+        "footer": false
+      }
+    }
+  ]
+}

@@ -16,6 +16,18 @@ export const switchSourcePath = 'packages/core/src/components/switch/VfSwitch.vu
 export const badgeSourcePath = 'packages/core/src/components/badge/VfBadge.vue';
 export const tagSourcePath = 'packages/core/src/components/tag/VfTag.vue';
 export const dividerSourcePath = 'packages/core/src/components/divider/VfDivider.vue';
+export const skeletonSourcePath = 'packages/core/src/components/skeleton/VfSkeleton.vue';
+export const avatarSourcePath = 'packages/core/src/components/avatar/VfAvatar.vue';
+export const cardSourcePath = 'packages/core/src/components/card/VfCard.vue';
+
+/** The shared rules VfSkeleton and the Razor adapter both derive from. */
+export const skeletonRulePath = 'packages/shared-core/src/skeleton/state.ts';
+
+/** The shared rules VfAvatar and the Razor adapter both derive from, including the fallback chain. */
+export const avatarRulePath = 'packages/shared-core/src/avatar/state.ts';
+
+/** The shared rules VfCard and the Razor adapter both derive from. */
+export const cardRulePath = 'packages/shared-core/src/card/state.ts';
 
 /** The shared rules the three M15 presentation components and the Razor adapter derive from. */
 export const presentationRulePath = 'packages/shared-core/src/presentation/state.ts';
@@ -870,6 +882,279 @@ export const dividerMutations = [
   },
 ];
 
+// The three M16 components. Each set names the characterization suite that must
+// be the one to fail, for the reason M15 introduced attribution: a batch is only
+// worth running if one component's failure cannot stand in as another's proof.
+// M16 needs it more than M15 did, because these three break in three different
+// places - a template, a class rule and a branch order - and a run that merely
+// went red would say nothing about which.
+export const skeletonMutations = [
+  {
+    id: 'skeleton-drops-aria-hidden',
+    file: skeletonSourcePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'the loading placeholder stops hiding itself from the accessibility tree',
+    find: ' aria-hidden="true" />',
+    replace: ' />',
+  },
+  {
+    id: 'skeleton-announces-itself',
+    file: skeletonSourcePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'the skeleton is "improved" into a live region that announces loading',
+    find: ' aria-hidden="true" />',
+    replace: ' role="status" aria-live="polite" />',
+  },
+  {
+    id: 'skeleton-suppresses-the-animation-modifier',
+    file: skeletonRulePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'the animation modifier is suppressed at the default, copying the M15 toned-span convention',
+    find: "  if (animated) classes.push('vf-skeleton--animated');",
+    replace: "  if (!animated) classes.push('vf-skeleton--animated');",
+  },
+  {
+    id: 'skeleton-always-animates',
+    file: skeletonRulePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'animated=false stops being honoured, so every skeleton shimmers',
+    find: "  if (animated) classes.push('vf-skeleton--animated');",
+    replace: "  classes.push('vf-skeleton--animated');",
+  },
+  {
+    id: 'skeleton-normalises-the-empty-radius-to-zero',
+    file: skeletonRulePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'an empty radius is "cleaned up" into an actual border-radius:0 declaration',
+    find: "  if (radius !== undefined && radius !== null && radius !== '') declarations.push(['border-radius', radius]);",
+    replace:
+      "  if (radius !== undefined && radius !== null) declarations.push(['border-radius', radius === '' ? '0' : radius]);",
+  },
+  {
+    id: 'skeleton-drops-the-radius-declaration',
+    file: skeletonRulePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'the radius stops reaching the style attribute at all',
+    find: "  if (radius !== undefined && radius !== null && radius !== '') declarations.push(['border-radius', radius]);",
+    replace: '',
+  },
+  {
+    id: 'skeleton-drops-the-px-suffix',
+    file: skeletonRulePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'a numeric minHeight reaches CSS as a bare number, which is not a length',
+    find: "  return typeof value === 'number' ? `${value}px` : value;",
+    replace: '  return String(value);',
+  },
+  {
+    id: 'skeleton-treats-zero-as-absent',
+    file: skeletonRulePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'minHeight 0 is dropped as falsy instead of becoming 0px',
+    find: '  if (value === null || value === undefined) {',
+    replace: '  if (!value) {',
+  },
+  {
+    id: 'skeleton-renders-a-span-root',
+    file: skeletonSourcePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'the skeleton root stops being a block-level div',
+    find: '  <div :class="classes" :style="rootStyle" aria-hidden="true" />',
+    replace: '  <span :class="classes" :style="rootStyle" aria-hidden="true" />',
+  },
+  {
+    id: 'skeleton-stops-inheriting-attrs',
+    file: skeletonSourcePath,
+    suite: 'src/components/skeleton/VfSkeleton.characterization.spec.ts',
+    description: 'inheritAttrs is switched off, so the consumer class, style and data attributes vanish',
+    find: "defineOptions({ name: 'VfSkeleton' });",
+    replace: "defineOptions({ name: 'VfSkeleton', inheritAttrs: false });",
+  },
+];
+
+export const avatarMutations = [
+  {
+    id: 'avatar-renders-the-icon-before-the-label',
+    file: avatarRulePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'the fallback chain is reordered to image, icon, label, slot',
+    find: "  if (content.label) return 'label';\n  if (content.icon) return 'icon';",
+    replace: "  if (content.icon) return 'icon';\n  if (content.label) return 'label';",
+  },
+  {
+    id: 'avatar-renders-the-slot-before-the-icon',
+    file: avatarRulePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'the default slot is promoted above the icon branch',
+    find: "  if (content.icon) return 'icon';\n\n  return 'slot';",
+    replace: "  return content.icon ? 'slot' : 'slot';",
+  },
+  {
+    id: 'avatar-demotes-the-image',
+    file: avatarRulePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'a label now beats an image, which is the reverse of the historical priority',
+    find: "  if (content.image) return 'image';\n  if (content.label) return 'label';",
+    replace: "  if (content.label) return 'label';\n  if (content.image) return 'image';",
+  },
+  {
+    id: 'avatar-lets-an-empty-string-select-its-branch',
+    file: avatarRulePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'presence replaces truthiness, so image="" renders an empty image instead of falling through',
+    find: "  if (content.image) return 'image';",
+    replace: "  if (content.image !== undefined && content.image !== null) return 'image';",
+  },
+  {
+    id: 'avatar-emits-a-square-modifier',
+    file: avatarRulePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'the default square shape starts emitting a modifier class',
+    find: "  if (shape === 'circle') classes.push('vf-avatar--circle');",
+    replace: '  classes.push(`vf-avatar--${shape}`);',
+  },
+  {
+    id: 'avatar-emits-the-default-size-modifier',
+    file: avatarRulePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'the md size stops being suppressed, copying the M14 checkable convention',
+    find: "  if (size !== 'md') classes.push(`vf-avatar--${size}`);",
+    replace: '  classes.push(`vf-avatar--${size}`);',
+  },
+  {
+    id: 'avatar-suppresses-the-circle-modifier',
+    file: avatarRulePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'the circle shape loses its modifier, so every avatar renders square',
+    find: "  if (shape === 'circle') classes.push('vf-avatar--circle');",
+    replace: '',
+  },
+  {
+    id: 'avatar-loses-the-alt',
+    file: avatarSourcePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'the image branch stops writing alt, turning a decorative image into an unlabelled one',
+    find: ' :alt="props.imageAlt" />',
+    replace: ' />',
+  },
+  {
+    id: 'avatar-exposes-the-decorative-glyph',
+    file: avatarSourcePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'the icon loses aria-hidden, so an icon-only avatar starts announcing its glyph',
+    find: ':icon="props.icon" aria-hidden="true" />',
+    replace: ':icon="props.icon" />',
+  },
+  {
+    id: 'avatar-lets-the-caller-class-win',
+    file: avatarSourcePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'attrs are bound before the class, so a caller class replaces the canonical classes',
+    find: '  <span :class="classes" v-bind="attrs">',
+    replace: '  <span v-bind="attrs" :class="classes">',
+  },
+  {
+    id: 'avatar-renders-the-slot-alongside-every-branch',
+    file: avatarSourcePath,
+    suite: 'src/components/avatar/VfAvatar.characterization.spec.ts',
+    description: 'the slot loses its v-else, so it renders next to the image, the label or the glyph',
+    find: '    <slot v-else />',
+    replace: '    <slot />',
+  },
+];
+
+export const cardMutations = [
+  {
+    id: 'card-header-gains-a-class',
+    file: cardSourcePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: 'the unclassed header wrapper gains the vf-card__header class it historically lacks',
+    find: '    <header v-if="regions.header">',
+    replace: '    <header v-if="regions.header" class="vf-card__header">',
+  },
+  {
+    id: 'card-footer-gains-a-class',
+    file: cardSourcePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: 'the unclassed footer wrapper gains the vf-card__footer class it historically lacks',
+    find: '    <footer v-if="regions.footer">',
+    replace: '    <footer v-if="regions.footer" class="vf-card__footer">',
+  },
+  {
+    id: 'card-header-becomes-a-div',
+    file: cardSourcePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: 'the native header element is replaced by a generic div, losing its implicit semantics',
+    find: '    <header v-if="regions.header">\n      <slot name="header">\n        <h3 class="vf-card__title">{{ props.title }}</h3>\n      </slot>\n    </header>',
+    replace:
+      '    <div v-if="regions.header">\n      <slot name="header">\n        <h3 class="vf-card__title">{{ props.title }}</h3>\n      </slot>\n    </div>',
+  },
+  {
+    id: 'card-drops-the-body-wrapper',
+    file: cardSourcePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: 'the classed body wrapper disappears and the default slot renders bare',
+    find: '    <div v-if="regions.body" class="vf-card__body">\n      <slot />\n    </div>',
+    replace: '    <slot />',
+  },
+  {
+    id: 'card-reorders-the-regions',
+    file: cardSourcePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: 'the footer is rendered before the body',
+    find: '    <div v-if="regions.body" class="vf-card__body">\n      <slot />\n    </div>\n\n    <footer v-if="regions.footer">\n      <slot name="footer" />\n    </footer>',
+    replace:
+      '    <footer v-if="regions.footer">\n      <slot name="footer" />\n    </footer>\n\n    <div v-if="regions.body" class="vf-card__body">\n      <slot />\n    </div>',
+  },
+  {
+    id: 'card-lets-the-caller-class-win',
+    file: cardSourcePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: 'attrs are bound before the class, so a caller class replaces the canonical classes',
+    find: '  <section :class="classes" v-bind="attrs">',
+    replace: '  <section v-bind="attrs" :class="classes">',
+  },
+  {
+    id: 'card-opens-the-header-for-an-empty-title',
+    file: cardRulePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: 'presence replaces truthiness, so title="" renders an empty header',
+    find: '    header: Boolean(input.title) || input.hasHeaderSlot,',
+    replace: '    header: input.title !== undefined || input.hasHeaderSlot,',
+  },
+  {
+    // `headerTitle` has no Vue mutation here on purpose: the Vue template never
+    // reads it. The compiler answers that question through slot fallback, so
+    // the field exists only for the Razor adapter, and breaking it changes
+    // nothing the Vue suite can observe. It is covered by the shared vectors
+    // and by CardComponentTest instead. Writing a Vue mutation for it anyway
+    // would produce a mutation that can never be detected, which the driver
+    // would report as MISSED - correctly.
+    id: 'card-keys-the-body-on-the-footer-slot',
+    file: cardRulePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: "the body and footer wrappers are keyed on each other's slots",
+    find: '    body: input.hasDefaultSlot,\n    footer: input.hasFooterSlot,',
+    replace: '    body: input.hasFooterSlot,\n    footer: input.hasDefaultSlot,',
+  },
+  {
+    id: 'card-drops-the-compact-modifier',
+    file: cardRulePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: 'the compact prop stops reaching the class list',
+    find: "  if (compact) classes.push('vf-card--compact');",
+    replace: '',
+  },
+  {
+    id: 'card-becomes-a-panel',
+    file: cardRulePath,
+    suite: 'src/components/card/VfCard.characterization.spec.ts',
+    description: "VfPanel's block name is reused for VfCard (the substitution the unmigrated neighbour makes possible)",
+    find: "  const classes = ['vf-card'];\n\n  if (compact) classes.push('vf-card--compact');",
+    replace: "  const classes = ['vf-panel'];\n\n  if (compact) classes.push('vf-panel--subtle');",
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -882,4 +1167,7 @@ export const componentMutations = [
   ...badgeMutations,
   ...tagMutations,
   ...dividerMutations,
+  ...skeletonMutations,
+  ...avatarMutations,
+  ...cardMutations,
 ];

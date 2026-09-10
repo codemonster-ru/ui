@@ -1,9 +1,11 @@
 <template>
-  <div class="vf-skeleton" :class="{ 'vf-skeleton--animated': props.animated }" :style="rootStyle" aria-hidden="true" />
+  <div :class="classes" :style="rootStyle" aria-hidden="true" />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { resolveSkeletonClasses, resolveSkeletonStyle } from '@codemonster-ru/vueforge-shared-core';
+import { cx } from '@/utils/classes';
 
 defineOptions({ name: 'VfSkeleton' });
 
@@ -20,16 +22,7 @@ const props = withDefaults(
   },
 );
 
-const toCssLength = (value: string | number | undefined): string | undefined => {
-  if (value == null) {
-    return undefined;
-  }
+const classes = computed(() => cx(...resolveSkeletonClasses(props.animated)));
 
-  return typeof value === 'number' ? `${value}px` : value;
-};
-
-const rootStyle = computed(() => ({
-  minHeight: toCssLength(props.minHeight),
-  borderRadius: props.radius,
-}));
+const rootStyle = computed(() => Object.fromEntries(resolveSkeletonStyle(props.minHeight, props.radius)));
 </script>

@@ -1,0 +1,60 @@
+{
+  "$comment": "Shared input/expected vectors for VfAvatar. The TypeScript rules in avatar/state.ts and the PHP mirror in packages/razor/src/Support/AvatarState.php both run this file. resolveAvatarBranch is enumerated exhaustively over the sixteen combinations of the three props plus the slot, because the fallback order is the component's public contract and a reordering that only shows up in one combination is the defect this exists to catch.",
+  "resolveAvatarClasses": [
+    { "size": "md", "shape": "square", "expected": ["vf-avatar"] },
+    { "size": "sm", "shape": "square", "expected": ["vf-avatar", "vf-avatar--sm"] },
+    { "size": "lg", "shape": "square", "expected": ["vf-avatar", "vf-avatar--lg"] },
+    { "size": "md", "shape": "circle", "expected": ["vf-avatar", "vf-avatar--circle"] },
+    { "size": "sm", "shape": "circle", "expected": ["vf-avatar", "vf-avatar--sm", "vf-avatar--circle"] },
+    { "size": "lg", "shape": "circle", "expected": ["vf-avatar", "vf-avatar--lg", "vf-avatar--circle"] }
+  ],
+  "resolveAvatarBranch": [
+    {
+      "$why": "Nothing at all still resolves: the slot branch is the one with no condition.",
+      "image": null,
+      "label": null,
+      "icon": null,
+      "expected": "slot"
+    },
+    { "image": "/a.png", "label": null, "icon": null, "expected": "image" },
+    { "image": null, "label": "MC", "icon": null, "expected": "label" },
+    { "image": null, "label": null, "icon": "user", "expected": "icon" },
+    {
+      "$why": "The whole point of the chain: an image beats everything after it.",
+      "image": "/a.png",
+      "label": "MC",
+      "icon": "user",
+      "expected": "image"
+    },
+    { "image": "/a.png", "label": "MC", "icon": null, "expected": "image" },
+    { "image": "/a.png", "label": null, "icon": "user", "expected": "image" },
+    {
+      "$why": "A label beats an icon. Reversing these two is the single most plausible port defect.",
+      "image": null,
+      "label": "MC",
+      "icon": "user",
+      "expected": "label"
+    },
+    {
+      "$why": "An empty image is falsy, so it does not select its own branch.",
+      "image": "",
+      "label": "MC",
+      "icon": "user",
+      "expected": "label"
+    },
+    {
+      "$why": "An empty label falls through to the icon rather than rendering an empty label span.",
+      "image": "",
+      "label": "",
+      "icon": "user",
+      "expected": "icon"
+    },
+    {
+      "$why": "Every channel empty falls all the way through to the slot.",
+      "image": "",
+      "label": "",
+      "icon": "",
+      "expected": "slot"
+    }
+  ]
+}

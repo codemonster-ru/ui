@@ -33,6 +33,12 @@ export type {
 } from './checkable/state.js';
 export type { VfTextareaAppearance, VfTextareaSizeName } from './textarea/state.js';
 export type { VfButtonAppearance, VfButtonSizeName, VfButtonVariantName } from './button/state.js';
+export { resolveSkeletonClasses, resolveSkeletonLength, resolveSkeletonStyle } from './skeleton/state.js';
+export type { VfSkeletonDeclaration } from './skeleton/state.js';
+export { resolveAvatarBranch, resolveAvatarClasses } from './avatar/state.js';
+export type { VfAvatarBranch, VfAvatarShapeName, VfAvatarSizeName } from './avatar/state.js';
+export { resolveCardClasses, resolveCardRegions } from './card/state.js';
+export type { VfCardRegions } from './card/state.js';
 export {
   resolveBadgeClasses,
   resolveDividerClasses,
