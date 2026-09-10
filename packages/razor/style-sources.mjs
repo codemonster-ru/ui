@@ -36,11 +36,7 @@ export const styleSources = [
   'packages/styles/src/components/badge.css',
   'packages/styles/src/components/tag.css',
   'packages/styles/src/components/divider.css',
-  // The three M16 components, also standalone closures. Card is listed and
-  // Panel is not: VfPanel is the nearest structural neighbour VfCard has and is
-  // deliberately not migrated, so its stylesheet has no business in an artifact
-  // that ships only migrated components. Adding it "for later" would put rules
-  // for an unmigrated component into the cascade with nothing comparing them.
+  // The three M16 components, also standalone closures.
   'packages/styles/src/components/skeleton.css',
   'packages/styles/src/components/avatar.css',
   'packages/styles/src/components/card.css',
@@ -52,4 +48,13 @@ export const styleSources = [
   // gate's dependency. Listed after skeleton.css so the cascade order matches
   // the order packages/core/src/styles/components.css imports them in.
   'packages/styles/src/components/skeleton-gate.css',
+  // VfPanel, the M18 component and a standalone closure of three rules. It is a
+  // separate file from card.css and must stay one: the two stylesheets share a
+  // shape - a flex column, a padding, a bordered radius, a title rule - and
+  // nothing else. Their modifiers do different things (compact changes padding
+  // and gap, subtle changes background and shadow) and panel.css has no
+  // `__body` rule at all, because a panel has no body wrapper. Folding them
+  // into one "surface" stylesheet is the single change that would make the two
+  // components visually interchangeable.
+  'packages/styles/src/components/panel.css',
 ];
