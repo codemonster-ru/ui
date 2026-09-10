@@ -860,8 +860,13 @@ export function transitionIdentityExpression(caseId, phase) {
     if (!root) throw new Error('missing case ${caseId}');
     const content = root.querySelector('.vf-skeleton-gate__content');
     const overlay = root.querySelector('.vf-skeleton-gate__overlay');
+    // firstChild rather than firstElementChild for the content, because a
+    // consumer's content is often a bare text node and its identity is just as
+    // load-bearing: a recreated text node means the wrapper was rebuilt and
+    // whatever the consumer had inside it is gone. The overlay's child is
+    // always an element - the skeleton, or whatever a skeleton slot rendered.
     const nodes = {
-      contentChild: content ? content.firstElementChild : null,
+      contentChild: content ? content.firstChild : null,
       overlayChild: overlay ? overlay.firstElementChild : null,
     };
 

@@ -48,6 +48,11 @@ import {
   skeletonParityMutations,
   skeletonPolicyMutations,
 } from './m16-mutations.mjs';
+import {
+  skeletonGateBrowserMutations,
+  skeletonGateParityMutations,
+  skeletonGatePolicyMutations,
+} from './skeleton-gate-mutations.mjs';
 import { browserMutations } from './browser-mutations.mjs';
 import { assessMutation, MutationNotApplied, parityMutations, policyMutations } from './mutations.mjs';
 import {
@@ -114,6 +119,11 @@ const mutationSets = {
     browser: avatarBrowserMutations,
   },
   card: { capture: cardParityMutations, policy: cardPolicyMutations, browser: cardBrowserMutations },
+  'skeleton-gate': {
+    capture: skeletonGateParityMutations,
+    policy: skeletonGatePolicyMutations,
+    browser: skeletonGateBrowserMutations,
+  },
 };
 
 const profile = profileFromArgv();

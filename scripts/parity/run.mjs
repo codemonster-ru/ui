@@ -272,7 +272,19 @@ async function captureTarget(
         // identically wrong on every target, which a three-way comparison
         // cannot see either. Both have to be caught here, where there is still
         // a target to name.
-        const violations = staticOwnershipViolations(parityCase, snapshot);
+        // Only on an unmutated capture, for the reason the interaction
+        // expectations below are: a browser mutation deliberately grows a
+        // control the component does not have, and catching that is the
+        // comparator's job. Throwing here would abort the mutation harness
+        // before it could report the defect it was constructed to find, and
+        // the defect would be recorded as a harness failure rather than as a
+        // detection.
+        //
+        // Nothing is weakened by this. The unmutated run - the one that decides
+        // whether the gate passes - still fails closed here, and a mutated run
+        // still moves both static.noInteraction and dom.structure in the
+        // comparison, which is what the mutation declares it expects.
+        const violations = mutation ? [] : staticOwnershipViolations(parityCase, snapshot);
         if (violations.length > 0) {
           throw new Error(`Static ownership failed on ${label} (${theme}): ${violations.join('; ')}.`);
         }
