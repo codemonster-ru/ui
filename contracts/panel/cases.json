@@ -1,0 +1,335 @@
+{
+  "$comment": "Shared VfPanel cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. This catalog is not derived from contracts/card/cases.json and must never be replaced by cases that are: VfCard is the nearest structural neighbour this component has, and a Card-shaped implementation of VfPanel passes every case that does not name a difference. The cases that name one are panel/content-empty (a panel emits nothing where a card emits an empty classed div), panel/ignored-footer-slot (a panel has no footer at all), panel/content-only and panel/multiple-root-nodes (the default slot renders straight into the section with no wrapper), and panel/subtle-* (a modifier that repaints rather than tightens). Cases whose slot content is interactive declare consumerInteractive: the number of focusable controls the *consumer* put in the panel. The static snapshot is asserted against that number rather than against zero, so a control the component itself grew still fails even when every target grows it identically.",
+  "component": "panel",
+  "propVocabulary": {
+    "title": "string, default undefined. Opens the header and fills the fallback heading. Tested for truthiness, so an empty string opens nothing.",
+    "subtle": "boolean, default false. Repaints the background and removes the shadow. It is not VfCard's compact, which tightens padding and column gap instead."
+  },
+  "slotVocabulary": {
+    "header": "Replaces the fallback h3 when it renders content. A header slot that renders nothing still opens the wrapper and brings the heading back.",
+    "body": "The default slot. It renders straight into the section: no wrapper, no condition, nothing emitted when it renders nothing.",
+    "footer": "Not a panel slot. Declared by one case so that 'a panel renders no footer' is measured rather than assumed; the component ignores it exactly as it ignores any undeclared slot."
+  },
+  "cases": [
+    {
+      "id": "panel/empty",
+      "title": "An empty panel: a bare section with nothing in it",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "panel/content-only",
+      "title": "The default slot alone, rendered straight into the section with no wrapper",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Everything in this workspace is shared with your team."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/title-only",
+      "title": "A title alone opens the header and fills the fallback heading",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "panel/title-and-content",
+      "title": "Header and content, which is the composition a panel is usually written as",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Shared with your team."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/header-slot-only",
+      "title": "A header slot opens the header on its own, with no title anywhere",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": "Custom header"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/header-slot-and-content",
+      "title": "A custom header above the default slot",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": "Custom header"
+        },
+        "body": {
+          "text": "Shared with your team."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/header-slot-beats-title",
+      "title": "A header slot drops the fallback heading even when a title was passed, and the title goes unused",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": "Custom header"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/header-slot-empty",
+      "title": "A header slot that renders nothing still opens the wrapper and brings the fallback heading back",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": ""
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/header-slot-empty-no-title",
+      "title": "The same with no title: an empty header holding an empty heading",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "panel/title-empty",
+      "title": "The quirk: an empty-string title is falsy, so it renders no header rather than an empty one",
+      "props": {
+        "title": ""
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "panel/content-empty",
+      "title": "An empty default slot renders nothing at all - there is no wrapper to emit, where a card would emit an empty classed div holding a row and a gap open",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": ""
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/ignored-footer-slot",
+      "title": "A footer slot handed to a panel renders nothing: a panel has no footer element, where a card renders one keyed on the slot being present",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Shared with your team."
+        },
+        "footer": {
+          "text": "Updated 3 minutes ago"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/multiple-root-nodes",
+      "title": "Several default-slot nodes become siblings of the header, because nothing wraps them",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "markup": "paragraphs"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/subtle",
+      "title": "The subtle modifier repaints the background and removes the shadow",
+      "props": {
+        "subtle": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Shared with your team."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/subtle-empty",
+      "title": "The subtle modifier on an empty panel, where only the repainted background is visible",
+      "props": {
+        "subtle": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "panel/title-and-subtle",
+      "title": "The modifier and the header together",
+      "props": {
+        "title": "Quick notes",
+        "subtle": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Shared with your team."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/title-hostile",
+      "title": "A hostile title is escaped as interpolated content",
+      "props": {
+        "title": "<img src=x onerror=alert(1)>"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "panel/consumer-class",
+      "title": "A consumer class is appended after the canonical classes",
+      "props": {
+        "subtle": true
+      },
+      "attrs": {
+        "class": "consumer-panel"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/consumer-class-default",
+      "title": "A consumer class with no modifier to follow sits in a different position in the list",
+      "props": {},
+      "attrs": {
+        "class": "consumer-panel"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "panel/consumer-style",
+      "title": "A consumer style reaches the root",
+      "props": {},
+      "attrs": {
+        "style": "opacity: 0.6"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "panel/product-data",
+      "title": "A product data attribute reaches the root and is compared",
+      "props": {},
+      "attrs": {
+        "data-testid": "panel-product-data"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "panel/consumer-aria",
+      "title": "A consumer role and name reach a section that exposes neither of its own",
+      "props": {},
+      "attrs": {
+        "role": "region",
+        "aria-label": "Workspace"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "panel/interactive-slot-content",
+      "title": "A consumer control in the default slot, sitting directly in the section. The component owns no interaction; this content is the consumer's, and the static snapshot must say so",
+      "props": {
+        "title": "Workspace"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Rename this workspace.",
+          "control": {
+            "text": "Rename"
+          }
+        }
+      },
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "panel/interactive-header-content",
+      "title": "A consumer control in the header slot as well, so slot ownership is not proved by one slot alone",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "header": {
+          "text": "Workspace",
+          "control": {
+            "text": "Edit"
+          }
+        },
+        "body": {
+          "text": "Shared with your team."
+        }
+      },
+      "consumerInteractive": 1,
+      "visual": true
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "$comment": "Parity policy for the shared VfPanel cases. Plain data: no DSL, no waiver engine. Written for this component rather than copied from contracts/card/parity-policy.json - the dimensions are the harness's and are the same everywhere, but the quirks below are the panel's own and three of them are statements about elements the panel does not have.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. The dimension that carries this milestone: a body wrapper the panel grew, or a footer it started rendering, is a structural difference and never approvable. Comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class and style on the root section, plus any native attribute a consumer forwards. The header wrapper has no attributes at all, and that absence is the contract."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The panel writes none of its own: a section with no accessible name exposes no landmark role, and naming it would add a landmark to every existing panel."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role. The subtle modifier is a colour change and nothing else, so this dimension is where it is actually proved."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. For a slot container the counts are split: consumer-provided controls inside a slot are counted and compared, but only the component-owned count is required to be zero."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-default-slot-has-no-wrapper-and-no-condition",
+      "description": "Default slot content renders straight into the section as direct children. There is no div.vf-panel__body, and an empty default slot emits nothing at all.",
+      "classification": "exact",
+      "reason": "The sharpest difference from VfCard, whose default slot is wrapped in a classed div emitted on slot presence rather than on content. A panel that grew that wrapper looks identical, styles almost identically, and selects differently - and its empty case gains a row and a column gap the reference never had.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/panel/cases.json#panel/content-empty"
+    },
+    {
+      "id": "a-panel-has-no-footer",
+      "description": "A footer slot handed to a panel renders nothing. There is no footer element in the template at all, so an undeclared slot is dropped exactly as any other is.",
+      "classification": "exact",
+      "reason": "VfCard renders a footer keyed on the slot being present, and a Card-shaped implementation of VfPanel brings that with it. Passing a footer slot is how 'renders nothing' becomes a measurement rather than an assumption.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/panel/cases.json#panel/ignored-footer-slot"
+    },
+    {
+      "id": "the-header-wrapper-carries-no-class",
+      "description": "Only the fallback heading is classed. There is no vf-panel__header.",
+      "classification": "exact",
+      "reason": "The first thing a reviewer would add. A panel with that class looks identical and selects differently.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/panel/cases.json#panel/title-and-content"
+    },
+    {
+      "id": "an-empty-string-title-renders-no-header",
+      "description": "title is tested for truthiness, so title=\"\" renders no header element at all rather than an empty one.",
+      "classification": "exact",
+      "reason": "An empty header would be the charitable reading and is not what happens.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/panel/cases.json#panel/title-empty"
+    },
+    {
+      "id": "the-wrapper-and-the-heading-are-keyed-on-different-questions",
+      "description": "The header wrapper asks whether a header slot was passed; the fallback heading asks whether that slot produced content. A header slot rendering nothing therefore yields a header element with the h3 back inside it, and with no title that h3 is empty.",
+      "classification": "exact",
+      "reason": "Keying both on one question is the obvious simplification and changes what such a panel renders. Vue answers the second question through slot fallback; Razor decides it explicitly, because a Razor slot arrives as rendered markup.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/panel/cases.json#panel/header-slot-empty"
+    },
+    {
+      "id": "subtle-is-not-compact",
+      "description": "The panel's modifier repaints the background and removes the shadow. It does not change padding or column gap, which is what VfCard's compact modifier does.",
+      "classification": "exact",
+      "reason": "The two modifiers are different products rather than different spellings. A shared toned-surface rule would make them interchangeable in the only place the difference is decided, and the difference is a colour rather than a geometry - which is why style.colour rather than style.geometry is where it lands.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/panel/cases.json#panel/subtle-empty"
+    },
+    {
+      "id": "the-panel-owns-no-interaction-and-its-slots-may-own-plenty",
+      "description": "The component renders no focusable element in any configuration. Consumer slot content is free to be as interactive as it likes, and that content belongs to the consumer.",
+      "classification": "exact",
+      "reason": "The boundary M16 made measurable, restated for a component whose slot content is unwrapped: the static snapshot counts both, and requires only the component-owned count to be zero.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/panel/cases.json#panel/interactive-slot-content"
+    }
+  ],
+  "approvedDivergences": []
+}
