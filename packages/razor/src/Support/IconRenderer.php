@@ -43,9 +43,18 @@ final class IconRenderer
      * `$size` is written into width/height exactly as the Vue icon does, so the
      * same custom properties drive both adapters. `$ariaHidden` mirrors the flag
      * the Vue adapter passes for an icon inside a labelled action button.
+     *
+     * `$extraClass` is prepended to the glyph's own classes, which is where a
+     * class passed to the Vue icon component lands: VueIconify sets
+     * inheritAttrs: false and spreads its attrs onto the inner svg, not onto the
+     * wrapper span. VfAvatar is the first migrated component to use that path.
      */
-    public static function render(string $name, string $size, bool $ariaHidden = false): string
-    {
+    public static function render(
+        string $name,
+        string $size,
+        bool $ariaHidden = false,
+        ?string $extraClass = null,
+    ): string {
         $icons = self::icons();
 
         if (!isset($icons[$name])) {
@@ -60,6 +69,11 @@ final class IconRenderer
 
         $icon = $icons[$name];
         $attributes = $icon['attributes'];
+
+        if ($extraClass !== null && $extraClass !== '') {
+            $attributes['class'] = $extraClass . ' ' . $attributes['class'];
+        }
+
         $attributes['width'] = $size;
         $attributes['height'] = $size;
 

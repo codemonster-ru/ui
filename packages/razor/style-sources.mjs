@@ -36,4 +36,12 @@ export const styleSources = [
   'packages/styles/src/components/badge.css',
   'packages/styles/src/components/tag.css',
   'packages/styles/src/components/divider.css',
+  // The three M16 components, also standalone closures. Card is listed and
+  // Panel is not: VfPanel is the nearest structural neighbour VfCard has and is
+  // deliberately not migrated, so its stylesheet has no business in an artifact
+  // that ships only migrated components. Adding it "for later" would put rules
+  // for an unmigrated component into the cascade with nothing comparing them.
+  'packages/styles/src/components/skeleton.css',
+  'packages/styles/src/components/avatar.css',
+  'packages/styles/src/components/card.css',
 ];
