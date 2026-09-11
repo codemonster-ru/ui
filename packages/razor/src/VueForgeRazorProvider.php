@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codemonster\VueForge\Razor;
 
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
+use Codemonster\VueForge\Razor\Components\AlertComponent;
 use Codemonster\VueForge\Razor\Components\AvatarComponent;
 use Codemonster\VueForge\Razor\Components\BadgeComponent;
 use Codemonster\VueForge\Razor\Components\ButtonComponent;
@@ -55,6 +56,9 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
         $skeleton = new SkeletonComponent();
 
         return [
+            // Server-complete: an alert owns a role and no interaction. See
+            // AlertComponent.
+            'alert' => new AlertComponent(),
             'avatar' => new AvatarComponent(),
             'badge' => new BadgeComponent(),
             'button' => new ButtonComponent(),
