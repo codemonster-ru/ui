@@ -57,4 +57,14 @@ export const styleSources = [
   // into one "surface" stylesheet is the single change that would make the two
   // components visually interchangeable.
   'packages/styles/src/components/panel.css',
+  // VfAlert, the M19 component and a standalone closure of 17 rules: the root,
+  // six tone modifiers, the icon container with its six tone colours, the
+  // content wrapper, the title and the body. Listed last, which keeps it after
+  // badge.css and tag.css as packages/core/src/styles/components.css has it;
+  // no alert selector overlaps another file's, so nothing else about the
+  // position matters. Its tone modifiers share names with badge.css and tag.css and nothing else:
+  // an alert tone repaints a bordered surface and recolours a glyph, and no
+  // rule in this file exists in either of theirs. There is no dismiss-control
+  // selector, because the reference has no dismiss control.
+  'packages/styles/src/components/alert.css',
 ];
