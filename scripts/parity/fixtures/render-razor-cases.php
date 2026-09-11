@@ -63,6 +63,10 @@ $panelComponent = $registry->resolve('vf-panel');
 // The M19 component. Resolved on its own account, never through the badge or
 // the tag whose tone names it shares.
 $alertComponent = $registry->resolve('vf-alert');
+// The M20 component. Resolved on its own account, never through the button
+// whose loading state renders it: the button reaches this same instance
+// through the provider, and this fixture renders the standalone tag.
+$progressSpinnerComponent = $registry->resolve('vf-progress-spinner');
 // The M17 component. Resolved through the registry like every other one, which
 // is also how the gate reaches its child: the provider hands the registered
 // skeleton to the gate, so this single resolve() produces a gate that renders
@@ -100,6 +104,11 @@ if ($skeletonGateComponent === null) {
 
 if ($alertComponent === null) {
     fwrite(STDERR, "The VueForge vf-alert component is not registered.\n");
+    exit(1);
+}
+
+if ($progressSpinnerComponent === null) {
+    fwrite(STDERR, "The VueForge vf-progress-spinner component is not registered.\n");
     exit(1);
 }
 
@@ -641,6 +650,28 @@ $renderAlert = static function (array $case) use ($alertComponent, $escape): str
 };
 
 /**
+ * VfProgressSpinner, for the progress-spinner catalog.
+ *
+ * No slots. `strokeWidth` is the one prop whose Razor spelling differs from
+ * the neutral vocabulary; everything else is the same word, and attrs are
+ * merged the way every other leaf merges them. Not `$renderButton` with a
+ * loading prop: the button renders this component, and a fixture that reached
+ * the spinner through the button would measure the button's subset.
+ */
+$renderProgressSpinner = static function (array $case) use ($progressSpinnerComponent): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name === 'strokeWidth' ? 'stroke-width' : $name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    return $progressSpinnerComponent->render(new ComponentRenderContext($props, []))->value();
+};
+
+/**
  * The consumer markup a gate case names, built the same way in both fixtures.
  *
  * The catalog names a shape rather than carrying HTML, so this and the Vue
@@ -720,7 +751,9 @@ $sections = '';
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'skeleton-gate') {
+    if ($component === 'progress-spinner') {
+        $body = $renderProgressSpinner($case);
+    } elseif ($component === 'skeleton-gate') {
         $body = $renderSkeletonGate($case);
     } elseif ($component === 'skeleton') {
         $body = $renderSkeleton($case);

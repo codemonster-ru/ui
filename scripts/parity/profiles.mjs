@@ -575,6 +575,70 @@ export const profiles = {
     snapshot: 'static',
     staticOwnership: true,
   },
+  // The M20 component, and the first profile for a component another profile
+  // already measures: the button's `spinner` and `spinnerArtwork` roles are
+  // this component, composed. This profile is the standalone one, and it
+  // measures what the button never sends - eight tones, every size form, the
+  // stroke on the track - as well as what a consumer can do to the root.
+  //
+  // Four roles rather than one, because the geometry is the contract: the
+  // root box is the custom property resolved, the svg fills it, and the two
+  // circles carry the radius and the stroke the stylesheet's dash lengths
+  // were computed against. The circles are listed as roles so a radius that
+  // moved is a geometry difference on a named node, not a screenshot.
+  'progress-spinner': {
+    id: 'progress-spinner',
+    label: 'VfProgressSpinner',
+    component: 'progress-spinner',
+    casesPath: 'contracts/progress-spinner/cases.json',
+    policyPath: 'contracts/progress-spinner/parity-policy.json',
+    artifactDirectory: 'parity-progress-spinner',
+    reportName: 'progress-spinner-parity-report.json',
+    measuredRoles: {
+      root: '.vf-progress-spinner',
+      artwork: '.vf-progress-spinner__svg',
+      track: '.vf-progress-spinner__track',
+      value: '.vf-progress-spinner__value',
+    },
+    // The root is listed because exposing `progressbar` with a name is the
+    // contract - for every tone, `status` only when a consumer says so, and
+    // no value unless a consumer forwards one. The artwork is listed for the
+    // opposite reason: it is aria-hidden, so its absence from the tree is the
+    // contract, and that is only a measurement if the selector is queried.
+    accessibilityRoles: {
+      root: '.vf-progress-spinner',
+      artwork: '.vf-progress-spinner__svg',
+    },
+    // role, aria-label and aria-hidden are the contract rather than incidental
+    // markup: the root is the first migrated progressbar, its name is a prop,
+    // and the svg's aria-hidden is what makes the artwork decorative. The
+    // three aria-value* names are listed because their *absence* is the
+    // contract - the reference writes none - and a comparison that never
+    // looked at them could not report an adapter that started writing one.
+    // focusable is the other half of the artwork's contract. viewBox and the
+    // circle attributes are the geometry the stylesheet's dash keyframes were
+    // computed against; stroke-width is the one prop that reaches the svg.
+    semanticAttributes: [
+      'class',
+      'style',
+      'role',
+      'aria-label',
+      'aria-hidden',
+      'aria-valuenow',
+      'aria-valuemin',
+      'aria-valuemax',
+      'focusable',
+      'viewBox',
+      'cx',
+      'cy',
+      'r',
+      'fill',
+      'stroke-width',
+      'data-testid',
+    ],
+    snapshot: 'static',
+    staticOwnership: true,
+  },
   // The M17 component, and the first profile that declares two things at once.
   // VfSkeletonGate owns no interaction, so it needs the static ownership
   // measurement every M15/M16 component has; and its state can change after

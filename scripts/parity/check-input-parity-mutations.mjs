@@ -51,6 +51,11 @@ import {
 import { panelBrowserMutations, panelParityMutations, panelPolicyMutations } from './panel-mutations.mjs';
 import { alertBrowserMutations, alertParityMutations, alertPolicyMutations } from './alert-mutations.mjs';
 import {
+  progressSpinnerBrowserMutations,
+  progressSpinnerParityMutations,
+  progressSpinnerPolicyMutations,
+} from './progress-spinner-mutations.mjs';
+import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
   skeletonGatePolicyMutations,
@@ -123,6 +128,11 @@ const mutationSets = {
   card: { capture: cardParityMutations, policy: cardPolicyMutations, browser: cardBrowserMutations },
   panel: { capture: panelParityMutations, policy: panelPolicyMutations, browser: panelBrowserMutations },
   alert: { capture: alertParityMutations, policy: alertPolicyMutations, browser: alertBrowserMutations },
+  'progress-spinner': {
+    capture: progressSpinnerParityMutations,
+    policy: progressSpinnerPolicyMutations,
+    browser: progressSpinnerBrowserMutations,
+  },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
     policy: skeletonGatePolicyMutations,

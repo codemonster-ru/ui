@@ -73,6 +73,19 @@ export const COMPARED_ATTRIBUTES = [
   // would leave a consumer's buttons clickable underneath a skeleton, and every
   // class, style and ARIA comparison would still pass.
   'inert',
+  // VfProgressSpinner. Found missing by the attribute-coverage gate in M20,
+  // the seventh time it has caught an attribute nothing compared. The
+  // spinner's root is a progressbar that writes *no* value - no aria-valuenow,
+  // aria-valuemin or aria-valuemax - and passes a consumer's through; before
+  // M20 an adapter that started writing aria-valuemin="0" aria-valuemax="100"
+  // on every spinner would have compared equal. `focusable` is the other half
+  // of the artwork's accessibility contract beside aria-hidden: it keeps the
+  // svg out of the tab order of engines that still put it there, and the
+  // reference writes it on every spinner.
+  'aria-valuenow',
+  'aria-valuemin',
+  'aria-valuemax',
+  'focusable',
   'style',
   'hidden',
   'viewBox',

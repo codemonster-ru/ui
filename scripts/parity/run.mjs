@@ -123,13 +123,39 @@ async function readAccessibility(page, caseId, roles) {
       // aria-live - are the announcement contract. Before M19 nothing recorded
       // them, so an adapter exposing a polite alert where the reference
       // exposes an assertive one compared equal.
+      // `valuenow`, `valuemin` and `valuemax` joined in M20: VfProgressSpinner
+      // is the first migrated component whose root is a progressbar, and the
+      // value the browser derives - none, for the reference, which writes no
+      // aria-value* at all - is the contract. Without them a spinner that
+      // started exposing 0..100 compared equal to one exposing nothing.
       if (
-        ['disabled', 'readonly', 'required', 'invalid', 'pressed', 'focusable', 'live', 'atomic'].includes(
-          property.name,
-        )
+        [
+          'disabled',
+          'readonly',
+          'required',
+          'invalid',
+          'pressed',
+          'focusable',
+          'live',
+          'atomic',
+          'valuenow',
+          'valuemin',
+          'valuemax',
+        ].includes(property.name)
       ) {
         states[property.name] = String(property.value?.value ?? '');
       }
+    }
+
+    // The current value of a range widget is not a property: CDP carries it
+    // in the node's `value` field. Recorded as a state only when it is a
+    // number, which is what a progressbar, a slider or a spinbutton exposes -
+    // a textbox's string value is content, not state, and is compared as
+    // dom.liveValue. Without this, a spinner given aria-valuenow="0" on one
+    // target compared equal to one exposing no value at all, because Chrome
+    // reports valuemin=0 and valuemax=100 for every progressbar by default.
+    if (node.value?.type === 'number') {
+      states.valuenow = String(node.value.value);
     }
 
     exposed[role] = { role: node.role?.value ?? null, name: (node.name?.value ?? '').trim(), states };
@@ -335,12 +361,7 @@ async function captureTarget(
       // runner calls - M17 had it inline here, where nothing could reach it,
       // and transition-evidence.test.mjs is what M17.1 added to make both
       // directions assertable.
-      const capabilityProblem = transitionCapabilityViolation(
-        catalog.profile,
-        label,
-        driven.supported,
-        parityCase.id,
-      );
+      const capabilityProblem = transitionCapabilityViolation(catalog.profile, label, driven.supported, parityCase.id);
       if (capabilityProblem) {
         throw new Error(`${capabilityProblem} (${theme})`);
       }

@@ -23,6 +23,7 @@ import VfAvatar from '@parity/core/components/avatar/VfAvatar.vue';
 import VfCard from '@parity/core/components/card/VfCard.vue';
 import VfPanel from '@parity/core/components/panel/VfPanel.vue';
 import VfAlert from '@parity/core/components/alert/VfAlert.vue';
+import VfProgressSpinner from '@parity/core/components/progress-spinner/VfProgressSpinner.vue';
 import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
@@ -461,6 +462,23 @@ function renderAlert(parityCase: ParityCase): VNode {
 }
 
 /**
+ * VfProgressSpinner, for the progress-spinner catalog.
+ *
+ * No slots and no wrapper: the historical component is a leaf, and the case
+ * root is the only element around it. Props and attrs are merged the way every
+ * other leaf's are - `size`, `strokeWidth`, `tone` and `label` reach the
+ * component as props, and everything else falls through onto its root.
+ *
+ * Its own function, and deliberately not renderButton with `loading: true`:
+ * the button renders this component, and the fixture is where "the standalone
+ * catalog is really the button's loading catalog" would be easiest to
+ * introduce and hardest to see.
+ */
+function renderProgressSpinner(parityCase: ParityCase): VNode {
+  return h(VfProgressSpinner, { ...parityCase.props, ...parityCase.attrs } as Record<string, unknown>);
+}
+
+/**
  * The consumer markup a gate case names, built the same way in both fixtures.
  *
  * Real elements with no marker on them: the static snapshot is asserted against
@@ -566,6 +584,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'alert') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderAlert(parityCase)]);
+  }
+
+  if (catalog.component === 'progress-spinner') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderProgressSpinner(parityCase)]);
   }
 
   if (catalog.component === 'skeleton-gate') {

@@ -390,6 +390,83 @@ test('the alert budgets are read from their own catalog, not from the badge or t
   assert.ok(staticOwnershipViolations(alertWithConsumerButton, snapshot()).length > 0);
 });
 
+// ------------------------------------------------------ M20: VfProgressSpinner
+//
+// The first migrated component with no slot at all. Nothing a consumer writes
+// can reach the DOM through it, so every case declares nothing and every case
+// must measure zero - and the one way a consumer can still put a focusable
+// inside the case is by forwarding an attribute onto the root, which the
+// catalog never does and which this test proves would be caught.
+
+test('every shipped spinner case declares no consumer control, and passes only at zero', () => {
+  const cases = load('progress-spinner');
+  assert.ok(cases.length > 0, 'the spinner catalog is empty');
+
+  for (const parityCase of cases) {
+    assert.equal(parityCase.consumerInteractive, undefined, `${parityCase.id} bought a consumer budget`);
+    assert.deepEqual(staticOwnershipViolations(parityCase, snapshot()), []);
+
+    // An accidental control on every target at once: the case a three-way
+    // comparison is structurally blind to, and the one the budget catches.
+    const grown = staticOwnershipViolations(parityCase, snapshot({ focusableCount: 1 }));
+    assert.equal(grown.length, 1, `${parityCase.id} accepted a focusable element the component would have rendered`);
+    assert.match(grown[0], /measured 1 focusable element\(s\) but the catalog declares 0/);
+
+    // A progressbar is not an interactive role, so a spinner that started
+    // exposing one - by its own attribute or by a consumer's - fails.
+    assert.match(staticOwnershipViolations(parityCase, snapshot({ interactiveRoleCount: 1 }))[0], /interactive role/);
+  }
+});
+
+test('a consumer attribute cannot create a hidden ownership assumption on the spinner', () => {
+  // The catalog's consumer-attribute cases forward role, aria-*, class, style
+  // and data attributes. None forwards tabindex or an interactive role, so
+  // the measured counts stay zero and every one of these cases is held to
+  // zero - a case that started forwarding tabindex="0" would measure one and
+  // fail here with no budget to hide behind.
+  for (const parityCase of load('progress-spinner')) {
+    assert.equal(parityCase.attrs?.tabindex, undefined, `${parityCase.id} makes the root focusable`);
+    assert.ok(
+      !['button', 'link', 'switch', 'checkbox'].includes(parityCase.attrs?.role),
+      `${parityCase.id} gives the root an interactive role`,
+    );
+  }
+  const consumerRole = load('progress-spinner').find((entry) => entry.id === 'progress-spinner/consumer-role');
+  assert.ok(consumerRole, 'progress-spinner/consumer-role is gone from the catalog');
+  assert.equal(consumerRole.attrs.role, 'status');
+  assert.deepEqual(staticOwnershipViolations(consumerRole, snapshot()), []);
+});
+
+test('an empty or missing spinner measurement is a failure rather than a skip', () => {
+  const spinner = load('progress-spinner').find((entry) => entry.id === 'progress-spinner/default');
+  assert.ok(spinner, 'progress-spinner/default is gone from the catalog');
+
+  assert.ok(staticOwnershipViolations(spinner, undefined).length > 0);
+  assert.match(staticOwnershipViolations(spinner, {})[0], /is missing/);
+  for (const field of STATIC_SNAPSHOT_FIELDS) {
+    const partial = snapshot();
+    delete partial[field];
+    assert.match(
+      staticOwnershipViolations(spinner, partial)[0],
+      /is missing/,
+      `a spinner snapshot missing ${field} was accepted`,
+    );
+  }
+});
+
+test('the spinner budgets are not the button budgets', () => {
+  // The button catalog has no static budgets at all - a button is the
+  // control - so a button case cannot stand in for a spinner case here, and
+  // a spinner case cannot be satisfied by a snapshot with the button's one
+  // focusable element.
+  for (const parityCase of load('button')) {
+    assert.equal(parityCase.consumerInteractive, undefined);
+  }
+  for (const parityCase of load('progress-spinner')) {
+    assert.ok(staticOwnershipViolations(parityCase, snapshot({ focusableCount: 1 })).length > 0);
+  }
+});
+
 // ------------------------------------------------------ M15 is not weakened
 
 test('every M15 static case is still asserted against exactly zero', () => {
