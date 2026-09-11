@@ -1,0 +1,127 @@
+{
+  "$comment": "Parity policy for the shared VfAlert cases. Plain data: no DSL, no waiver engine. Written for this component rather than copied from the badge's or the tag's - the dimensions are the harness's and are the same everywhere, but the quirks below are the alert's own, and two of them are statements about things the alert does not have: a dismiss control and a tone-dependent role.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData.",
+    "unknownIconNames": "The Vue icon package falls back to its own default glyph for a name it does not know; the Razor registry throws. No case names an unknown glyph, so no comparison ever reaches the difference. It is a property of the icon pipeline shared by every icon-rendering component, and it is pinned on each side by its own suite."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch. A dismiss button the alert grew is a structural difference before it is anything else, and never approvable. Comparison continues through tag differences so meaningful attribute/child diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root and its tone modifier, the icon container, the glyph wrapper and glyph classes, the content, title and body wrappers. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class and style on the root section, the glyph's width and height (the large size the alert asks for explicitly), plus any native attribute a consumer forwards."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The alert writes exactly two of its own: role=alert on the section, for every tone, and aria-hidden=true on the icon container. It writes no aria-live, no aria-atomic and no name, and a consumer role replaces its own. Tone changing the role, or a live-region attribute appearing, lands here."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role. The two-column grid, the icon offset, the content gap and the body max-width are all here."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of every measured role. A tone modifier is a surface repaint plus an icon recolour and nothing else, so this dimension is where the seven paints are actually proved - and where the neutral modifier is proved to paint nothing."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none. The root exposes alert for every tone and status when a consumer says so; the icon container and its glyph expose nothing; the title exposes what a paragraph exposes; a consumer control exposes its own role."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none. The root has none unless a consumer names it; the decorative glyph contributes none."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. Consumer-provided controls inside a slot are counted and compared against the number the case declares, and only the component-owned count is required to be zero - which is how 'the alert has no dismiss control' is a measurement on all three targets rather than a reading of one template."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-alert-has-no-dismiss-control",
+      "description": "No prop makes a close button appear, no button is rendered in any configuration, and nothing is emitted. Whatever is interactive inside an alert is the consumer's slot content.",
+      "classification": "exact",
+      "reason": "The one thing a migration would 'complete'. Every case declares zero component-owned controls, and the static snapshot is asserted against the consumer's number, so a dismiss button fails on every target at once - the case a three-way comparison is structurally blind to.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/alert/cases.json#alert/interactive-slot-content"
+    },
+    {
+      "id": "tone-is-paint-and-glyph-not-semantics",
+      "description": "Every tone writes role=alert. No tone writes aria-live, aria-atomic or a name, and no tone exposes a different role. Tone changes the surface colours and the fallback glyph and nothing else.",
+      "classification": "exact",
+      "reason": "A 'danger is assertive, info is polite' mapping would be an accessibility improvement and a product change. The danger and info cases are compared on dom.aria and a11y.role like every other, and both must expose alert.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/alert/cases.json#alert/tone-danger"
+    },
+    {
+      "id": "a-consumer-role-replaces-the-component-role",
+      "description": "role=alert is written before the forwarded attrs, so a consumer role wins and the component's is gone rather than duplicated.",
+      "classification": "exact",
+      "reason": "This is how an application turns an alert into a status region without a second component. An adapter that wrote its own role after the consumer's, or wrote both, would differ in dom.aria and a11y.role.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/alert/cases.json#alert/consumer-role"
+    },
+    {
+      "id": "the-neutral-modifier-paints-nothing",
+      "description": "tone=neutral emits vf-alert--neutral, a class the stylesheet has no rule for, so a neutral alert paints exactly like a primary one. tone=primary emits no modifier at all.",
+      "classification": "exact",
+      "reason": "The opposite of the badge and the tag, which suppress neutral and emit primary. An alert whose tone rule was borrowed from either would emit the wrong class at two tones and the difference lands in dom.canonicalClasses - while the paint, being identical, would never notice.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/alert/cases.json#alert/tone-neutral"
+    },
+    {
+      "id": "the-icon-container-is-decorative-whatever-it-holds",
+      "description": "aria-hidden=true is on div.vf-alert__icon, not on the glyph, and it stays there when a consumer icon slot replaces the glyph. hideIcon removes the container with the consumer's slot inside it.",
+      "classification": "exact",
+      "reason": "A consumer icon slot with meaning would need the container un-hidden, and the reference never does that. An adapter writing aria-hidden on the svg as well would differ in dom.aria on a node nothing can see.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/alert/cases.json#alert/icon-slot"
+    },
+    {
+      "id": "an-empty-string-title-renders-no-paragraph-but-an-empty-title-slot-renders-an-empty-one",
+      "description": "title is tested for truthiness, so title=\"\" alone renders no p.vf-alert__title. A title slot opens the paragraph regardless, and a title slot that renders nothing falls back to the prop - so title=\"\" with an empty title slot renders an empty paragraph that still takes a row of the content gap.",
+      "classification": "exact",
+      "reason": "The paragraph and its fallback are keyed on different questions, as the panel's header and heading are. Vue answers the second through slot fallback; Razor decides it explicitly, because a Razor slot arrives as rendered markup.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/alert/cases.json#alert/title-slot-empty-no-title"
+    },
+    {
+      "id": "the-body-wrapper-is-unconditional",
+      "description": "div.vf-alert__body renders whether or not the default slot was passed and whether or not it rendered anything.",
+      "classification": "exact",
+      "reason": "The opposite of VfPanel's unwrapped default slot and of VfCard's slot-keyed wrapper. An adapter keying it on the slot would differ in dom.structure on the empty cases.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/alert/cases.json#alert/content-empty"
+    }
+  ],
+  "approvedDivergences": []
+}

@@ -1,0 +1,535 @@
+{
+  "$comment": "Shared VfAlert cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. This catalog is not derived from contracts/badge/cases.json or contracts/tag/cases.json and must never be replaced by cases that are: the three components share eight tone names and nothing else. An alert's tone selects a modifier (suppressed at primary, not at neutral - the opposite of the two spans) and a fallback glyph, and changes nothing about the role. There is no dismissible case here because the reference has no dismiss control: no prop, no button, no event. Every case therefore declares zero component-owned controls, and the static snapshot is asserted against the number of controls the *consumer* put in a slot (consumerInteractive), so a dismiss button the component grew fails even when every target grows it identically.",
+  "component": "alert",
+  "propVocabulary": {
+    "tone": "One of neutral | primary | success | info | warn | help | danger | contrast, default primary. Selects the root modifier (none at primary) and the fallback glyph (four tones share info-circle). Never changes the role.",
+    "title": "string, default undefined. Opens the title paragraph and fills it. Tested for truthiness, so an empty string opens nothing on its own.",
+    "icon": "Registry glyph name, default undefined. Replaces the tone glyph. Tested with ??, so an empty string is a name.",
+    "hideIcon": "boolean, default false. Removes the icon container entirely, consumer icon slot included."
+  },
+  "slotVocabulary": {
+    "icon": "Replaces the glyph inside the aria-hidden container. An icon slot that renders nothing brings the glyph back.",
+    "title": "Replaces the interpolated title prop inside the paragraph, and opens the paragraph on its own. A title slot that renders nothing brings the prop text back.",
+    "body": "The default slot. Always wrapped in div.vf-alert__body, which renders whether or not anything is in it."
+  },
+  "cases": [
+    {
+      "id": "alert/default",
+      "title": "An empty alert: the primary surface, the info glyph, no title, an empty body",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "alert/content",
+      "title": "The default slot alone, inside the body wrapper",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Changes were saved successfully."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/title-and-content",
+      "title": "Title and content, which is the composition an alert is usually written as",
+      "props": {
+        "title": "Saved"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Changes were saved successfully."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/tone-neutral",
+      "title": "The neutral tone emits a modifier no stylesheet defines, so it paints exactly like primary and differs only in its class list",
+      "props": {
+        "tone": "neutral",
+        "title": "Note"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Nothing in particular."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/tone-success",
+      "title": "The success tone: green surface, check-circle glyph",
+      "props": {
+        "tone": "success",
+        "title": "Saved"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Changes were saved successfully."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/tone-info",
+      "title": "The info tone: blue surface, info-circle glyph",
+      "props": {
+        "tone": "info",
+        "title": "Heads up"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Exports run nightly."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/tone-warn",
+      "title": "The warn tone: amber surface, alert-circle glyph",
+      "props": {
+        "tone": "warn",
+        "title": "Attention"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Double-check required fields before publishing."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/tone-help",
+      "title": "The help tone: violet surface, question-circle glyph",
+      "props": {
+        "tone": "help",
+        "title": "Tip"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Drag a column header to reorder."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/tone-danger",
+      "title": "The danger tone: red surface, x-circle glyph - and the same role as every other tone",
+      "props": {
+        "tone": "danger",
+        "title": "Failed"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/tone-contrast",
+      "title": "The contrast tone: inverted surface, info-circle glyph",
+      "props": {
+        "tone": "contrast",
+        "title": "Notice"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Maintenance window on Sunday."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/title-only",
+      "title": "A title alone: the paragraph above an empty body",
+      "props": {
+        "title": "Saved"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "alert/title-empty",
+      "title": "The quirk: an empty-string title is falsy, so it renders no paragraph rather than an empty one",
+      "props": {
+        "title": ""
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/title-slot",
+      "title": "A title slot opens the paragraph on its own, with no prop anywhere",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "title": {
+          "text": "Custom title"
+        },
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/title-slot-beats-title",
+      "title": "A title slot drops the prop text even when a title was passed, and the prop goes unused",
+      "props": {
+        "title": "Saved"
+      },
+      "attrs": {},
+      "content": {
+        "title": {
+          "text": "Custom title"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/title-slot-empty",
+      "title": "A title slot that renders nothing brings the prop text back",
+      "props": {
+        "title": "Saved"
+      },
+      "attrs": {},
+      "content": {
+        "title": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/title-slot-empty-no-title",
+      "title": "The same with an empty prop: an empty paragraph, which still takes a row of the content gap",
+      "props": {
+        "title": ""
+      },
+      "attrs": {},
+      "content": {
+        "title": {
+          "text": ""
+        },
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/title-hostile",
+      "title": "A hostile title is escaped as interpolated content",
+      "props": {
+        "title": "<img src=x onerror=alert(1)>"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "alert/icon-prop",
+      "title": "An explicit icon replaces the tone glyph and keeps the tone surface",
+      "props": {
+        "tone": "danger",
+        "icon": "user",
+        "title": "Account"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Your session has expired."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/icon-slot",
+      "title": "An icon slot replaces the glyph inside the container, which stays aria-hidden around it",
+      "props": {
+        "title": "Custom glyph"
+      },
+      "attrs": {},
+      "content": {
+        "icon": {
+          "text": "!"
+        },
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/icon-slot-empty",
+      "title": "An icon slot that renders nothing brings the tone glyph back",
+      "props": {
+        "tone": "warn"
+      },
+      "attrs": {},
+      "content": {
+        "icon": {
+          "text": ""
+        },
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/hide-icon",
+      "title": "hideIcon removes the icon container, so the content starts in the first grid column",
+      "props": {
+        "hideIcon": true,
+        "tone": "success",
+        "title": "Saved"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Changes were saved successfully."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/hide-icon-with-icon-slot",
+      "title": "hideIcon discards a consumer icon slot along with the container",
+      "props": {
+        "hideIcon": true
+      },
+      "attrs": {},
+      "content": {
+        "icon": {
+          "text": "!"
+        },
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/hide-icon-empty",
+      "title": "hideIcon on an otherwise empty alert: the content wrapper is the only child",
+      "props": {
+        "hideIcon": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "alert/content-empty",
+      "title": "An empty default slot still renders the body wrapper, exactly as no slot does",
+      "props": {
+        "title": "Saved"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": ""
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/multiple-root-nodes",
+      "title": "Several default-slot nodes inside the one body wrapper",
+      "props": {
+        "title": "Usage"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "markup": "paragraphs"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/long-content",
+      "title": "Long content wraps inside the body's max-width while the glyph stays aligned to the first line",
+      "props": {
+        "tone": "info",
+        "title": "Before you continue"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "This workspace is shared with everyone on the billing account. Changes you make to roles, permissions and integrations apply immediately for all members, and some of them cannot be undone without contacting support. Review the audit log if you are unsure who else has access."
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/consumer-class",
+      "title": "A consumer class is appended after the canonical classes",
+      "props": {
+        "tone": "warn"
+      },
+      "attrs": {
+        "class": "consumer-alert"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/consumer-class-default",
+      "title": "A consumer class with no modifier to follow sits in a different position in the list",
+      "props": {},
+      "attrs": {
+        "class": "consumer-alert"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/consumer-style",
+      "title": "A consumer style reaches the root",
+      "props": {},
+      "attrs": {
+        "style": "opacity: 0.6"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "alert/product-data",
+      "title": "A product data attribute reaches the root and is compared",
+      "props": {},
+      "attrs": {
+        "data-testid": "alert-product-data"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/consumer-role",
+      "title": "A consumer role replaces the component's own, because the role is written before the forwarded attrs",
+      "props": {
+        "tone": "info",
+        "title": "Saved"
+      },
+      "attrs": {
+        "role": "status"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/consumer-live-region",
+      "title": "A consumer may add live-region attributes and an accessible name beside the role the component keeps",
+      "props": {
+        "tone": "danger",
+        "title": "Failed"
+      },
+      "attrs": {
+        "aria-live": "polite",
+        "aria-atomic": "false",
+        "aria-label": "Export status"
+      },
+      "content": {
+        "body": {
+          "text": "Body"
+        }
+      },
+      "visual": false
+    },
+    {
+      "id": "alert/interactive-slot-content",
+      "title": "A consumer control in the default slot. The component owns no interaction - and in particular no dismiss control - so this button is the only focusable element, and it is the consumer's",
+      "props": {
+        "tone": "danger",
+        "title": "Failed"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started.",
+          "control": {
+            "text": "Retry"
+          }
+        }
+      },
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "alert/interactive-title-content",
+      "title": "A consumer control in the title slot as well, so slot ownership is not proved by one slot alone",
+      "props": {
+        "tone": "info"
+      },
+      "attrs": {},
+      "content": {
+        "title": {
+          "text": "Read the guide",
+          "control": {
+            "text": "Open"
+          }
+        },
+        "body": {
+          "text": "Body"
+        }
+      },
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "alert/interactive-slot-content-hidden-icon",
+      "title": "A consumer control with the icon hidden, so the ownership measurement does not depend on the container being present",
+      "props": {
+        "hideIcon": true,
+        "title": "Failed"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started.",
+          "control": {
+            "text": "Retry"
+          }
+        }
+      },
+      "consumerInteractive": 1,
+      "visual": false
+    }
+  ]
+}
