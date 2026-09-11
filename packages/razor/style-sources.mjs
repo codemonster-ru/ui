@@ -16,9 +16,18 @@ export const styleSources = [
   // renderer stop injecting those declarations as an inline style attribute.
   'packages/styles/src/components/icon.css',
   'packages/styles/src/components/input.css',
-  // VfButton, which pulls in the progress spinner it renders while loading.
-  // The spinner is not a migrated component of its own: it is the loading
-  // affordance the button composes, so its rules travel with the button.
+  // VfProgressSpinner, the M20 component and a standalone closure of 12 rules
+  // plus two keyframes. Until M20 it reached this artifact only as the import
+  // at the top of button.css, which is how the button's loading state got its
+  // spinner styled; that import is still there, because it is the historical
+  // stylesheet's, and the builder inlines each file once. Listed here on its
+  // own account, before the button, so the artifact's provenance names the
+  // spinner as an owner rather than as something the button happened to pull
+  // in - and so an artifact built without the button would still have it.
+  'packages/styles/src/components/progress-spinner.css',
+  // VfButton. Its first line imports progress-spinner.css, which the entry
+  // above has already inlined, so the import resolves to nothing here and the
+  // spinner rules appear exactly once, in the same position they always had.
   'packages/styles/src/components/button.css',
   // VfTextarea, whose only declared dependency is field.css - already neutral
   // and already reached through input.css, so this adds one file, not a closure.

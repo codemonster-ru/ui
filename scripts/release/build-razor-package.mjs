@@ -47,7 +47,6 @@ export const requiredEntries = [
   'src/Support/CheckableState.php',
   'src/Support/TextareaState.php',
   'src/Support/ButtonState.php',
-  'src/Support/ProgressSpinner.php',
   'src/Support/FieldContext.php',
   'src/Support/FieldIds.php',
   'src/Support/FieldState.php',
@@ -71,6 +70,13 @@ export const requiredEntries = [
   // it, and dist/vueforge-razor.js must not grow one on its account.
   'src/Components/AlertComponent.php',
   'src/Support/AlertState.php',
+  // The M20 component, and the one renderer of spinner markup in the package:
+  // the button's loading state renders this same instance. Server-complete -
+  // no browser controller travels with it. There is no Support/ProgressSpinner
+  // any more, and the packaged-consumer proof asserts nothing ships under that
+  // name.
+  'src/Components/ProgressSpinnerComponent.php',
+  'src/Support/ProgressSpinnerState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

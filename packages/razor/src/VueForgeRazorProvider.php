@@ -16,6 +16,7 @@ use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
 use Codemonster\VueForge\Razor\Components\PanelComponent;
+use Codemonster\VueForge\Razor\Components\ProgressSpinnerComponent;
 use Codemonster\VueForge\Razor\Components\RadioComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonGateComponent;
@@ -54,6 +55,13 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
         // asserts the identity, so a future refactor that gave the gate its own
         // copy fails there instead of drifting quietly.
         $skeleton = new SkeletonComponent();
+        // The same arrangement for the spinner, since M20. One
+        // ProgressSpinnerComponent, registered as `vf-progress-spinner` and
+        // handed to the button, whose loading state renders it. Before M20 the
+        // button rendered a Support\ProgressSpinner of its own that reproduced
+        // the subset it needed; now there is one spinner renderer in the
+        // package, and ButtonComponentTest asserts the button holds this one.
+        $progressSpinner = new ProgressSpinnerComponent();
 
         return [
             // Server-complete: an alert owns a role and no interaction. See
@@ -61,7 +69,7 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'alert' => new AlertComponent(),
             'avatar' => new AvatarComponent(),
             'badge' => new BadgeComponent(),
-            'button' => new ButtonComponent(),
+            'button' => new ButtonComponent($progressSpinner),
             'card' => new CardComponent(),
             'checkbox' => new CheckboxComponent(),
             'divider' => new DividerComponent(),
@@ -70,6 +78,7 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'input' => new InputComponent(),
             // Registered beside the card, never through it. See PanelComponent.
             'panel' => new PanelComponent(),
+            'progress-spinner' => $progressSpinner,
             'radio' => new RadioComponent(),
             'skeleton' => $skeleton,
             'skeleton-gate' => new SkeletonGateComponent($skeleton),
