@@ -126,6 +126,11 @@ const controlSelectors = {
   // container and the title are optional - and it is the first root here that
   // carries a role of the component's own.
   VfAlert: 'section.vf-alert',
+  // The M20 component. One root, no slot, no optional region; it is the first
+  // root here that another route (the button's loading cases) also renders,
+  // and this selector counts the standalone one only because the spinner
+  // route is the only route asked for it.
+  VfProgressSpinner: 'span.vf-progress-spinner',
 };
 
 /**
@@ -191,6 +196,7 @@ check(
       'VfIconButton',
       'VfInput',
       'VfPanel',
+      'VfProgressSpinner',
       'VfRadio',
       'VfSkeleton',
       'VfSkeletonGate',

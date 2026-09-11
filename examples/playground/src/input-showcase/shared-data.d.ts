@@ -86,6 +86,11 @@ declare module '@vueforge/alert-cases' {
   export default catalog;
 }
 
+declare module '@vueforge/progress-spinner-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
 declare module '@vueforge/showcase-index' {
   interface ShowcasePlatform {
     label: string;

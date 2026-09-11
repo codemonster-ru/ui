@@ -183,6 +183,7 @@ $avatar = $registry->resolve('vf-avatar');
 $card = $registry->resolve('vf-card');
 $panel = $registry->resolve('vf-panel');
 $alert = $registry->resolve('vf-alert');
+$progressSpinner = $registry->resolve('vf-progress-spinner');
 $skeletonGate = $registry->resolve('vf-skeleton-gate');
 $assetPath = VueForgeRazorProvider::assetPath();
 
@@ -204,6 +205,7 @@ echo json_encode([
         'vf-card' => $registry->handles('vf-card'),
         'vf-panel' => $registry->handles('vf-panel'),
         'vf-alert' => $registry->handles('vf-alert'),
+        'vf-progress-spinner' => $registry->handles('vf-progress-spinner'),
         'vf-skeleton-gate' => $registry->handles('vf-skeleton-gate'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
@@ -413,6 +415,38 @@ echo json_encode([
     // reference owns no interaction, so there is nothing for a browser to do.
     'alertBrowserCode' => is_file($assetPath . '/vueforge-razor.js')
         && preg_match('/vf-alert|data-vf-razor="alert"|alert-enhanced/', (string) file_get_contents($assetPath . '/vueforge-razor.js')) === 1,
+    // VfProgressSpinner, the eighteenth component and the one the button had
+    // been rendering since M12. Five renders: the bare default; a numeric size
+    // with a tone, a thick stroke and a custom name; a consumer role and name
+    // replacing the component's; a consumer class, style, data attribute and
+    // value attributes; and the exact three props the button forwards, whose
+    // bytes the composition check below expects inside the loading button.
+    'spinnerDefault' => $progressSpinner->render(new ComponentRenderContext([], []))->value(),
+    'spinnerComposed' => $progressSpinner->render(new ComponentRenderContext(
+        ['size' => 48, 'tone' => 'danger', 'stroke-width' => 6, 'label' => 'Exporting'],
+        [],
+    ))->value(),
+    'spinnerConsumerRole' => $progressSpinner->render(new ComponentRenderContext(
+        ['role' => 'status', 'aria-label' => 'Busy'],
+        [],
+    ))->value(),
+    'spinnerConsumerAttributes' => $progressSpinner->render(new ComponentRenderContext(
+        ['class' => 'consumer-spinner', 'style' => 'margin: 4px', 'data-testid' => 'export', 'aria-valuenow' => '40'],
+        [],
+    ))->value(),
+    'spinnerAsTheButtonForwardsIt' => $progressSpinner->render(new ComponentRenderContext(
+        ['class' => 'vf-button__spinner', 'size' => 'var(--vf-icon-current-size)', 'stroke-width' => 5],
+        [],
+    ))->value(),
+    // The old support renderer must not ship: one spinner renderer in the
+    // package, and the button holds the registered one.
+    'spinnerSupportFile' => is_file(dirname((new ReflectionClass(VueForgeRazorProvider::class))->getFileName()) . '/Support/ProgressSpinner.php'),
+    'spinnerSupportClass' => class_exists('Codemonster\\VueForge\\Razor\\Support\\ProgressSpinner'),
+    'buttonHoldsTheRegisteredSpinner' => (new ReflectionClass($button))->getProperty('spinner')->getValue($button) === $progressSpinner,
+    // The packaged controller must not have grown a spinner enhancement: the
+    // animation is the stylesheet's, so there is nothing for a browser to do.
+    'spinnerBrowserCode' => is_file($assetPath . '/vueforge-razor.js')
+        && preg_match('/vf-progress-spinner|data-vf-razor="progress-spinner"|spinner-enhanced/', (string) file_get_contents($assetPath . '/vueforge-razor.js')) === 1,
     // VfSkeletonGate, the fifteenth component and the first that renders
     // another. Five renders, because a packaging defect here has a shape no
     // other component's does: the gate could install and resolve perfectly and
@@ -484,7 +518,12 @@ echo json_encode([
     'buttonCss' => is_file($assetPath . '/vueforge-razor.css')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-button'),
     'spinnerCss' => is_file($assetPath . '/vueforge-razor.css')
-        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-spinner'),
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-spinner {')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-spinner--danger')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-spinner-rotate')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-spinner-dash')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-spinner-dash') === 1
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-spinner--primary'),
     'js' => is_file($assetPath . '/vueforge-razor.js') ? filesize($assetPath . '/vueforge-razor.js') : 0,
 ]);
 `,
@@ -524,6 +563,7 @@ echo json_encode([
       'vf-panel',
       'vf-skeleton-gate',
       'vf-alert',
+      'vf-progress-spinner',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -1007,6 +1047,70 @@ echo json_encode([
     'the packaged controller carries no alert code, because the alert owns no interaction',
     rendered.alertBrowserCode === false,
     'vueforge-razor.js mentions the alert; the reference has no browser behaviour for it',
+  );
+
+  // ------------------------------------------------------ vf-progress-spinner
+  //
+  // The eighteenth component, proved from the same installed package - and
+  // the one the button had been rendering all along. What matters most is the
+  // composition: the loading button must contain, byte for byte, what the
+  // installed vf-progress-spinner produces for the three props the button
+  // forwards, and the package must ship exactly one renderer of that markup.
+  check(
+    'the consumer renders a standalone spinner: a named progressbar holding aria-hidden artwork',
+    rendered.spinnerDefault ===
+      '<span class="vf-progress-spinner" role="progressbar" aria-label="Loading">' +
+        '<svg class="vf-progress-spinner__svg" viewBox="0 0 50 50" aria-hidden="true" focusable="false">' +
+        '<circle class="vf-progress-spinner__track" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>' +
+        '<circle class="vf-progress-spinner__value" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>' +
+        '</svg></span>',
+    rendered.spinnerDefault,
+  );
+  check(
+    'the packaged spinner carries its tone modifier, its pixel size, its stroke on both circles and its name',
+    rendered.spinnerComposed.startsWith(
+      '<span class="vf-progress-spinner vf-progress-spinner--danger" style="--vf-progress-spinner-size: 48px;" role="progressbar" aria-label="Exporting">',
+    ) && (rendered.spinnerComposed.match(/stroke-width="6"/g) ?? []).length === 2,
+    rendered.spinnerComposed.slice(0, 200),
+  );
+  check(
+    "a consumer role and name replace the packaged spinner's own",
+    rendered.spinnerConsumerRole.startsWith('<span class="vf-progress-spinner" role="status" aria-label="Busy">') &&
+      !rendered.spinnerConsumerRole.includes('progressbar'),
+    rendered.spinnerConsumerRole.slice(0, 200),
+  );
+  check(
+    'the consumer class, style, data attribute and value attribute survive packaging on the root only',
+    rendered.spinnerConsumerAttributes.startsWith(
+      '<span class="vf-progress-spinner consumer-spinner" style="margin: 4px;" role="progressbar" aria-label="Loading" data-testid="export" aria-valuenow="40">',
+    ) && !rendered.spinnerConsumerAttributes.includes('<svg data-testid'),
+    rendered.spinnerConsumerAttributes.slice(0, 220),
+  );
+  check(
+    'the packaged loading button contains, byte for byte, what the packaged spinner renders for the three props the button forwards',
+    rendered.spinnerAsTheButtonForwardsIt.startsWith('<span class="vf-progress-spinner vf-button__spinner"') &&
+      rendered.loadingButton.includes(rendered.spinnerAsTheButtonForwardsIt),
+    `${rendered.spinnerAsTheButtonForwardsIt}\n  not found in\n  ${rendered.loadingButton}`,
+  );
+  check(
+    'the packaged button holds the registered spinner instance, not a copy',
+    rendered.buttonHoldsTheRegisteredSpinner === true,
+    'the installed ButtonComponent renders a spinner other than the one registered as vf-progress-spinner',
+  );
+  check(
+    'the package ships no second spinner renderer',
+    rendered.spinnerSupportFile === false && rendered.spinnerSupportClass === false,
+    'src/Support/ProgressSpinner.php is still in the artifact',
+  );
+  check(
+    'the packaged stylesheet carries the spinner rules once, with both keyframes and no primary modifier',
+    rendered.spinnerCss,
+    'vueforge-razor.css is missing spinner rules, duplicates them, or carries a rule the stylesheet never had',
+  );
+  check(
+    "the packaged controller carries no spinner code, because the animation is the stylesheet's",
+    rendered.spinnerBrowserCode === false,
+    'vueforge-razor.js mentions the spinner; the reference has no browser behaviour for it',
   );
 
   check(

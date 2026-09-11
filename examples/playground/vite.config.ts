@@ -140,6 +140,7 @@ export default defineConfig({
         skeletonGate: fileURLToPath(new URL('./skeleton-gate.html', import.meta.url)),
         panel: fileURLToPath(new URL('./panel.html', import.meta.url)),
         alert: fileURLToPath(new URL('./alert.html', import.meta.url)),
+        progressSpinner: fileURLToPath(new URL('./progress-spinner.html', import.meta.url)),
       },
     },
   },
@@ -238,6 +239,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/alert-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/alert/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/progress-spinner-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/progress-spinner/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

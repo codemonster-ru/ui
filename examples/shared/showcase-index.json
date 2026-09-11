@@ -709,7 +709,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/progress-spinner/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/progress-spinner/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/progress-spinner",
+          "razor": "/"
         }
       }
     },
