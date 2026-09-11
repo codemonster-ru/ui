@@ -1,0 +1,128 @@
+{
+  "$comment": "Parity policy for the shared VfProgressSpinner cases. Plain data: no DSL, no waiver engine. Written for this component rather than copied from the button's - the button's policy names the spinner once, as the child its loading state renders, and this one names the whole public contract the button never exercises: eight tones, every size form, the stroke on both circles, and a consumer replacing the role and the name.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData.",
+    "serverStyleSerialisation": "The Vue targets are client-rendered, so the empty style attribute Vue's SSR writes for an absent size (style=\"\") and the empty declaration it writes for an empty-string size (--vf-progress-spinner-size:;) never reach a capture. The Razor adapter writes neither, which is the client form every hydrated page ends up with; the extractor records an empty style attribute as absent in any case. Both server outputs are pinned by VfProgressSpinner.characterization.spec.ts on the Vue side and ProgressSpinnerComponentTest on the Razor side.",
+    "animationPhase": "The spinner is animated by two stylesheet keyframes. Every target is captured under forced prefers-reduced-motion, where the foundation stylesheet collapses every vf-* animation to one 0.01ms iteration, so every screenshot shows the final keyframe of both animations on every target. The intermediate phases are not compared; the animation's existence, its element and its tokens are pinned by the characterization suite and the canonical stylesheet by baseline:css."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch: a span holding one svg holding two circles, the track first. A lost track, a gained width attribute or a div root is a structural difference before it is anything else, and never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root and its tone modifier, the svg, the track and the value arc. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class and style on the root, the svg's viewBox and focusable, and both circles' cx, cy, r, fill and stroke-width - the geometry the stylesheet's dash lengths are computed against - plus any native attribute a consumer forwards."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element. A spinner has none, and a slot that started rendering would land here."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The spinner writes exactly three of its own: role=progressbar and aria-label on the root, aria-hidden=true on the svg. It writes no aria-valuenow, aria-valuemin, aria-valuemax or aria-busy, and a consumer role or name replaces its own. A value that appeared, or a root that hid itself, lands here."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role. The root box is the custom property's resolved value on both axes; the svg fills it. Every size form - number, string, token, zero, empty - is proved here as a resolved box, not as attribute text."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour of every measured role. A tone modifier sets the value colour and nothing else, so this dimension is where the seven paints are actually proved."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme, at the final animation keyframe."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none. The root exposes progressbar for every tone and status when a consumer says so; the svg exposes nothing."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none. The root is named by its label prop, or by a consumer's aria-label; the artwork contributes nothing."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node. A progressbar with no value exposes no value."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. Every case declares zero controls, consumer-provided or otherwise: the spinner has no slot, so nothing a consumer writes can reach the DOM through it, and any focusable element or interactive role inside a case is the component's doing."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-spinner-is-not-decorative",
+      "description": "The root carries role=progressbar and an accessible name; only the svg is aria-hidden. A loading state is announced by the spinner itself.",
+      "classification": "exact",
+      "reason": "It would be easy to assume a spinner is decorative and hide it, or to leave it as an unnamed graphic. The reference exposes it and names it, on every tone, and both adapters reproduce that.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-spinner/cases.json#progress-spinner/default"
+    },
+    {
+      "id": "the-progressbar-has-no-value",
+      "description": "No aria-valuenow, aria-valuemin, aria-valuemax or aria-valuetext is written, so the progressbar is indeterminate by omission. A consumer may forward them and the component passes them through.",
+      "classification": "exact",
+      "reason": "Writing aria-valuemin=0 and aria-valuemax=100 would be an accessibility 'completion' and a product change. The default case is compared on dom.aria and a11y.states with nothing there, and the consumer case with the consumer's values.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-spinner/cases.json#progress-spinner/consumer-value-semantics"
+    },
+    {
+      "id": "tone-suppresses-primary-not-neutral",
+      "description": "tone=primary emits no modifier; every other value emits one, neutral included. The alert's convention and the opposite of the badge's and the tag's.",
+      "classification": "exact",
+      "reason": "A spinner whose tone rule was borrowed from either span would emit the wrong class at two tones. The neutral case paints with the secondary icon colour, so the difference is visible as well as structural.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-spinner/cases.json#progress-spinner/tone-neutral"
+    },
+    {
+      "id": "size-is-a-custom-property-not-a-width",
+      "description": "A number becomes pixels and a string passes through, both into --vf-progress-spinner-size on the root. No width or height attribute is written anywhere; the stylesheet sizes the box from the property and the svg fills it.",
+      "classification": "exact",
+      "reason": "A port that wrote width and height on the svg would look identical at one size and stop responding to a consumer's override of the property. The token case forwards the exact form VfButton forwards.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-spinner/cases.json#progress-spinner/size-token"
+    },
+    {
+      "id": "an-empty-size-writes-no-declaration",
+      "description": "size=\"\" writes no declaration on the client, so the spinner is sized by the theme token exactly as the default is. Zero, by contrast, is a length and collapses the box.",
+      "classification": "exact",
+      "reason": "Vue omits a style property whose value is the empty string. An adapter that wrote --vf-progress-spinner-size: ; would either be dropped by the browser's parser or, if it survived, size the box to nothing; either way the empty case is compared on style.geometry against the default box.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-spinner/cases.json#progress-spinner/size-empty"
+    },
+    {
+      "id": "a-consumer-role-and-name-replace-the-components-own",
+      "description": "role=progressbar and aria-label are written before the forwarded attrs, so a consumer role or aria-label wins and the component's is gone rather than duplicated.",
+      "classification": "exact",
+      "reason": "This is how an application turns a spinner into a status region or renames it without a second component. An adapter that wrote its own after the consumer's, or wrote both, would differ in dom.aria, a11y.role and a11y.name.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-spinner/cases.json#progress-spinner/consumer-role"
+    },
+    {
+      "id": "the-stroke-width-is-on-both-circles",
+      "description": "strokeWidth is written on the track and on the value arc alike, so a thick spinner has a thick track under its arc. Zero is written as 0 and draws nothing.",
+      "classification": "exact",
+      "reason": "A port that styled only the arc would produce a plausible spinner with a hairline track. Both circles are measured roles with stroke-width compared as a native attribute.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-spinner/cases.json#progress-spinner/stroke-width-thick"
+    }
+  ],
+  "approvedDivergences": []
+}

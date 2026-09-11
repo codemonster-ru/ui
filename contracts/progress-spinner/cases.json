@@ -1,0 +1,307 @@
+{
+  "$comment": "Shared VfProgressSpinner cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. This catalog is the standalone public component's, not VfButton's: no case here is a loading button, and contracts/button/cases.json must never stand in for it - the button forwards one size, one stroke width and one class, and a catalog derived from it would measure exactly that subset and call it the spinner. Four dimensions are real: size (a number, zero, a fraction, a string, a token reference, an empty string), stroke width (default, thick, fractional, zero), tone (eight values, primary suppressed), and the consumer contract (class order, style merge, the custom property overridden, a role and a name replacing the component's own, aria-hidden, value semantics passed through, product data). Every case declares zero component-owned controls and no consumer control, because the spinner has no slot: nothing a consumer writes can reach the DOM through it.",
+  "component": "progress-spinner",
+  "propVocabulary": {
+    "label": "string, default \"Loading\". Written verbatim as aria-label on the root; an empty string is written empty, not dropped.",
+    "size": "string | number, default undefined. Written as the --vf-progress-spinner-size custom property: a number becomes pixels, a string passes through, absent writes nothing so the theme token applies, and an empty string writes no declaration either.",
+    "strokeWidth": "number, default 4. Written as stroke-width on both circles, the track and the value arc.",
+    "tone": "One of neutral | primary | success | info | warn | help | danger | contrast, default primary. Selects the root modifier (none at primary, one for every other value including neutral). Never changes the role."
+  },
+  "cases": [
+    {
+      "id": "progress-spinner/default",
+      "title": "A bare spinner: the theme token sizes it, the primary colour paints the arc, the default stroke of 4, named Loading",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/size-number",
+      "title": "A numeric size, written as pixels into the custom property",
+      "props": {
+        "size": 40
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/size-zero",
+      "title": "A zero size, which is a length rather than an absence: the box collapses and the artwork with it",
+      "props": {
+        "size": 0
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/size-string",
+      "title": "A string size, passed through verbatim as a length",
+      "props": {
+        "size": "3rem"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/size-token",
+      "title": "A token reference as the size - the form VfButton forwards - resolved by the stylesheet, not the component",
+      "props": {
+        "size": "var(--vf-icon-size-lg)"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/size-fractional",
+      "title": "A fractional numeric size, which keeps its decimals on the way to pixels",
+      "props": {
+        "size": 24.5
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/size-empty",
+      "title": "An empty-string size, which writes no declaration and sizes exactly like the default",
+      "props": {
+        "size": ""
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/stroke-width-thick",
+      "title": "A thick stroke on both circles, the track included",
+      "props": {
+        "strokeWidth": 8
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/stroke-width-fractional",
+      "title": "A fractional stroke width, written as-is",
+      "props": {
+        "strokeWidth": 2.5
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/stroke-width-zero",
+      "title": "A zero stroke width: both circles are present and nothing is drawn",
+      "props": {
+        "strokeWidth": 0
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/tone-neutral",
+      "title": "The neutral tone: a modifier the stylesheet paints with the secondary icon colour",
+      "props": {
+        "tone": "neutral"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/tone-primary",
+      "title": "The primary tone named explicitly, which emits no modifier and renders exactly like the default",
+      "props": {
+        "tone": "primary"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/tone-success",
+      "title": "The success tone",
+      "props": {
+        "tone": "success"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/tone-info",
+      "title": "The info tone",
+      "props": {
+        "tone": "info"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/tone-warn",
+      "title": "The warn tone",
+      "props": {
+        "tone": "warn"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/tone-help",
+      "title": "The help tone",
+      "props": {
+        "tone": "help"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/tone-danger",
+      "title": "The danger tone",
+      "props": {
+        "tone": "danger"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/tone-contrast",
+      "title": "The contrast tone, painted with the primary icon colour",
+      "props": {
+        "tone": "contrast"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/label-custom",
+      "title": "A custom accessible name",
+      "props": {
+        "label": "Saving changes"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/label-empty",
+      "title": "An empty accessible name: the attribute is present and empty, not absent",
+      "props": {
+        "label": ""
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/consumer-class",
+      "title": "A consumer class, appended after the block class",
+      "props": {},
+      "attrs": {
+        "class": "consumer-spinner"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/consumer-class-with-tone",
+      "title": "A consumer class after a tone modifier, so the order of all three is measured",
+      "props": {
+        "tone": "info"
+      },
+      "attrs": {
+        "class": "consumer-spinner"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/consumer-style",
+      "title": "A consumer style beside no size declaration of the component's own",
+      "props": {},
+      "attrs": {
+        "style": "margin: 4px"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/consumer-style-with-size",
+      "title": "A consumer style merged after the component's size declaration",
+      "props": {
+        "size": 40
+      },
+      "attrs": {
+        "style": "margin: 4px"
+      },
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/consumer-style-overrides-size",
+      "title": "A consumer declaration of the size property, which wins over the prop",
+      "props": {
+        "size": 40
+      },
+      "attrs": {
+        "style": "--vf-progress-spinner-size: 16px"
+      },
+      "visual": true
+    },
+    {
+      "id": "progress-spinner/consumer-role",
+      "title": "A consumer role, which replaces progressbar rather than sitting beside it",
+      "props": {},
+      "attrs": {
+        "role": "status"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/consumer-aria-label",
+      "title": "A consumer aria-label, which replaces the label prop's name",
+      "props": {
+        "label": "Loading"
+      },
+      "attrs": {
+        "aria-label": "Busy"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/consumer-aria-hidden",
+      "title": "A consumer aria-hidden on the root: the spinner leaves the tree while keeping its role attribute",
+      "props": {},
+      "attrs": {
+        "aria-hidden": "true"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/consumer-value-semantics",
+      "title": "Consumer value attributes forwarded onto the progressbar, which the component neither writes nor rejects",
+      "props": {},
+      "attrs": {
+        "aria-valuenow": "40",
+        "aria-valuemin": "0",
+        "aria-valuemax": "100"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/product-data",
+      "title": "A product data attribute and an id, forwarded onto the root and never onto the svg",
+      "props": {},
+      "attrs": {
+        "data-testid": "export-spinner",
+        "id": "export-spinner"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-spinner/composed",
+      "title": "Everything at once: a large danger spinner with a thick stroke, a consumer class, style and name",
+      "props": {
+        "size": 64,
+        "tone": "danger",
+        "strokeWidth": 6,
+        "label": "Exporting"
+      },
+      "attrs": {
+        "class": "consumer-spinner",
+        "style": "margin: 4px",
+        "data-testid": "export"
+      },
+      "visual": true
+    }
+  ]
+}
