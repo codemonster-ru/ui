@@ -139,6 +139,7 @@ export default defineConfig({
         card: fileURLToPath(new URL('./card.html', import.meta.url)),
         skeletonGate: fileURLToPath(new URL('./skeleton-gate.html', import.meta.url)),
         panel: fileURLToPath(new URL('./panel.html', import.meta.url)),
+        alert: fileURLToPath(new URL('./alert.html', import.meta.url)),
       },
     },
   },
@@ -233,6 +234,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/panel-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/panel/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/alert-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/alert/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

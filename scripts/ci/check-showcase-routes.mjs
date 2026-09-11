@@ -122,6 +122,10 @@ const controlSelectors = {
   // is optional and there is no body wrapper to select at all, which is the
   // difference from VfCard that this milestone exists to keep.
   VfPanel: 'section.vf-panel',
+  // The M19 component. Its root is the only element every case has - the icon
+  // container and the title are optional - and it is the first root here that
+  // carries a role of the component's own.
+  VfAlert: 'section.vf-alert',
 };
 
 /**
@@ -176,6 +180,7 @@ check(
   'only components with a real Razor adapter are marked implemented',
   JSON.stringify(razorImplemented) ===
     JSON.stringify([
+      'VfAlert',
       'VfAvatar',
       'VfBadge',
       'VfButton',

@@ -70,7 +70,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/alert/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/alert/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/alert",
+          "razor": "/"
         }
       }
     },

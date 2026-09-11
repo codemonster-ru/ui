@@ -67,6 +67,10 @@ export const requiredEntries = [
   'src/Components/SkeletonComponent.php',
   'src/Support/SkeletonGateState.php',
   'src/Support/SkeletonState.php',
+  // The M19 component. Server-complete - no browser controller travels with
+  // it, and dist/vueforge-razor.js must not grow one on its account.
+  'src/Components/AlertComponent.php',
+  'src/Support/AlertState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

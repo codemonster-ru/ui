@@ -182,6 +182,7 @@ $skeleton = $registry->resolve('vf-skeleton');
 $avatar = $registry->resolve('vf-avatar');
 $card = $registry->resolve('vf-card');
 $panel = $registry->resolve('vf-panel');
+$alert = $registry->resolve('vf-alert');
 $skeletonGate = $registry->resolve('vf-skeleton-gate');
 $assetPath = VueForgeRazorProvider::assetPath();
 
@@ -202,6 +203,7 @@ echo json_encode([
         'vf-avatar' => $registry->handles('vf-avatar'),
         'vf-card' => $registry->handles('vf-card'),
         'vf-panel' => $registry->handles('vf-panel'),
+        'vf-alert' => $registry->handles('vf-alert'),
         'vf-skeleton-gate' => $registry->handles('vf-skeleton-gate'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
@@ -378,6 +380,39 @@ echo json_encode([
         [],
         ['header' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button">Edit</button>')],
     ))->value(),
+    // VfAlert, the seventeenth component and the first whose root carries a
+    // role of its own. Five renders: the composition with its tone, glyph and
+    // role; the danger tone with the *same* role, because tone is paint; a
+    // consumer role replacing the component's; a consumer control in the body
+    // as the only focusable element; and the hidden icon. What none of them
+    // renders is a dismiss button, and the proof below says so by absence.
+    'alertFull' => $alert->render(new ComponentRenderContext(
+        ['tone' => 'success', 'title' => 'Saved'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Changes were saved.')],
+    ))->value(),
+    'alertDanger' => $alert->render(new ComponentRenderContext(
+        ['tone' => 'danger', 'title' => 'Failed', 'class' => 'consumer-alert', 'style' => 'opacity: 0.6', 'data-testid' => 'export'],
+        [],
+    ))->value(),
+    'alertConsumerRole' => $alert->render(new ComponentRenderContext(
+        ['role' => 'status', 'aria-label' => 'Export status'],
+        [],
+    ))->value(),
+    'alertSlotControl' => $alert->render(new ComponentRenderContext(
+        ['hide-icon' => true],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button">Retry</button>')],
+    ))->value(),
+    'alertGlyph' => $alert->render(new ComponentRenderContext(['tone' => 'warn'], []))->value(),
+    'alertCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-alert {')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-alert--danger .vf-alert__icon')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-alert__body')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-alert--neutral')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-alert__dismiss'),
+    // The packaged controller must not have grown an alert enhancement: the
+    // reference owns no interaction, so there is nothing for a browser to do.
+    'alertBrowserCode' => is_file($assetPath . '/vueforge-razor.js')
+        && preg_match('/vf-alert|data-vf-razor="alert"|alert-enhanced/', (string) file_get_contents($assetPath . '/vueforge-razor.js')) === 1,
     // VfSkeletonGate, the fifteenth component and the first that renders
     // another. Five renders, because a packaging defect here has a shape no
     // other component's does: the gate could install and resolve perfectly and
@@ -488,6 +523,7 @@ echo json_encode([
       'vf-card',
       'vf-panel',
       'vf-skeleton-gate',
+      'vf-alert',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -916,6 +952,63 @@ echo json_encode([
     rendered.panelCss,
     'vueforge-razor.css is missing .vf-panel rules, or carries rules a panel stylesheet never had',
   );
+  // ------------------------------------------------------------------ vf-alert
+  //
+  // The seventeenth component. The assertions are literal, and the two that
+  // matter most are absences: no dismiss button in any render, and no alert
+  // code in the packaged controller.
+  check(
+    'the consumer renders an alert with its role, its tone modifier, its decorative glyph and its body wrapper',
+    rendered.alertFull.startsWith('<section class="vf-alert vf-alert--success" role="alert">') &&
+      rendered.alertFull.includes('<div class="vf-alert__icon" aria-hidden="true"><span class="vf-icon-wrapper"') &&
+      rendered.alertFull.includes('width="var(--vf-icon-size-lg)"') &&
+      rendered.alertFull.includes('<p class="vf-alert__title">Saved</p>') &&
+      rendered.alertFull.endsWith('<div class="vf-alert__body">Changes were saved.</div></div></section>'),
+    rendered.alertFull.slice(0, 200),
+  );
+  check(
+    'the danger tone keeps role=alert, and the consumer class, style and data attribute survive packaging',
+    rendered.alertDanger.startsWith(
+      '<section data-testid="export" class="vf-alert vf-alert--danger consumer-alert" style="opacity: 0.6" role="alert">',
+    ) && !rendered.alertDanger.includes('aria-live'),
+    rendered.alertDanger.slice(0, 200),
+  );
+  check(
+    'a consumer role and accessible name replace and extend the component role',
+    rendered.alertConsumerRole.startsWith('<section role="status" aria-label="Export status" class="vf-alert">') &&
+      !rendered.alertConsumerRole.includes('role="alert"'),
+    rendered.alertConsumerRole.slice(0, 200),
+  );
+  check(
+    'a consumer control in the alert body is the only focusable element, and the hidden icon renders no container',
+    rendered.alertSlotControl ===
+      '<section class="vf-alert" role="alert"><div class="vf-alert__content">' +
+        '<div class="vf-alert__body"><button type="button">Retry</button></div></div></section>',
+    rendered.alertSlotControl,
+  );
+  check(
+    'the packaged alert renders no dismiss control in any configuration',
+    [rendered.alertFull, rendered.alertDanger, rendered.alertConsumerRole, rendered.alertGlyph].every(
+      (markup) => !markup.includes('<button') && !markup.includes('dismiss') && !markup.includes('tabindex'),
+    ) && (rendered.alertSlotControl.match(/<button/g) ?? []).length === 1,
+    'a packaged alert grew a control the reference never had',
+  );
+  check(
+    'the warn tone renders the alert-circle glyph through the packaged registry',
+    rendered.alertGlyph.includes('<svg') && rendered.alertGlyph.includes('vf-alert--warn'),
+    rendered.alertGlyph.slice(0, 200),
+  );
+  check(
+    'the packaged stylesheet carries VfAlert rules of its own, with no neutral paint and no dismiss selector',
+    rendered.alertCss,
+    'vueforge-razor.css is missing .vf-alert rules, or carries rules an alert stylesheet never had',
+  );
+  check(
+    'the packaged controller carries no alert code, because the alert owns no interaction',
+    rendered.alertBrowserCode === false,
+    'vueforge-razor.js mentions the alert; the reference has no browser behaviour for it',
+  );
+
   check(
     'the packaged stylesheet carries the presentation rules',
     rendered.presentationCss,
