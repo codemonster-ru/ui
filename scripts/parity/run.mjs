@@ -117,7 +117,17 @@ async function readAccessibility(page, caseId, roles) {
 
     const states = {};
     for (const property of node.properties ?? []) {
-      if (['disabled', 'readonly', 'required', 'invalid', 'pressed', 'focusable'].includes(property.name)) {
+      // `live` and `atomic` joined the list in M19: VfAlert is the first
+      // migrated component whose root is a live region, and the politeness
+      // and atomicity the browser derives from its role - or from a consumer
+      // aria-live - are the announcement contract. Before M19 nothing recorded
+      // them, so an adapter exposing a polite alert where the reference
+      // exposes an assertive one compared equal.
+      if (
+        ['disabled', 'readonly', 'required', 'invalid', 'pressed', 'focusable', 'live', 'atomic'].includes(
+          property.name,
+        )
+      ) {
         states[property.name] = String(property.value?.value ?? '');
       }
     }

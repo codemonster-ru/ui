@@ -22,6 +22,7 @@ import VfSkeleton from '@parity/core/components/skeleton/VfSkeleton.vue';
 import VfAvatar from '@parity/core/components/avatar/VfAvatar.vue';
 import VfCard from '@parity/core/components/card/VfCard.vue';
 import VfPanel from '@parity/core/components/panel/VfPanel.vue';
+import VfAlert from '@parity/core/components/alert/VfAlert.vue';
 import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
@@ -53,6 +54,21 @@ interface CardSlot {
  * shared slot type would make that difference unstatable.
  */
 interface PanelSlot {
+  text?: string;
+  markup?: 'paragraphs';
+  control?: { text: string };
+}
+
+/**
+ * One VfAlert slot, as the shared catalog spells it.
+ *
+ * Its own interface for the reason the render function below is its own
+ * function: an alert has an `icon` slot and a `title` slot that no other
+ * migrated component has, and a `control` in either is a real consumer
+ * button. There is no dismiss control to spell here, because the reference
+ * has none.
+ */
+interface AlertSlot {
   text?: string;
   markup?: 'paragraphs';
   control?: { text: string };
@@ -91,15 +107,17 @@ interface ParityCase {
     label?: CaseContent | string;
     description?: CaseContent;
     error?: CaseContent;
-    /** VfButton writes its icon into the default slot; there is no icon prop. */
-    icon?: string;
+    /** VfButton writes its icon into the default slot; there is no icon prop. VfAlert's icon slot replaces its glyph. */
+    icon?: string | AlertSlot;
+    /** VfAlert's title slot, which opens the title paragraph on its own. */
+    title?: AlertSlot;
     /** The M15 toned spans and the VfAvatar default slot put their whole content in the default slot. */
     text?: string;
     /** VfCard's three slots. Each may be absent, empty, or carry a consumer control. */
     header?: CardSlot;
     footer?: CardSlot;
     /** VfCard's body slot, VfPanel's default slot, and VfSkeletonGate's default slot. */
-    body?: CardSlot & GateSlot & PanelSlot;
+    body?: CardSlot & GateSlot & PanelSlot & AlertSlot;
     /** VfSkeletonGate's skeleton slot, which replaces the child component. */
     skeleton?: GateSlot;
   };
@@ -403,6 +421,46 @@ function renderPanel(parityCase: ParityCase): VNode {
 }
 
 /**
+ * VfAlert, for the alert catalog.
+ *
+ * Its own function, and deliberately not renderBadge or renderTag with a
+ * different component: the three share eight tone names and the fixture is
+ * where a substitution would be easiest to introduce and hardest to see.
+ *
+ * Each slot is passed only when the case declares it, because "no slot" and
+ * "a slot rendering nothing" are different inputs to both fallbacks: an icon
+ * slot yielding nothing brings the tone glyph back, and a title slot yielding
+ * nothing brings the prop text back. An empty-string text is passed as a slot
+ * that renders nothing.
+ *
+ * A control is a real button, unmarked and unwrapped. The static snapshot is
+ * asserted against the number the case declares, so there is nothing here for
+ * the component to imitate - and nothing here that renders a dismiss control,
+ * because the reference has none.
+ */
+function renderAlert(parityCase: ParityCase): VNode {
+  const content = (parityCase.content ?? {}) as { icon?: AlertSlot; title?: AlertSlot; body?: AlertSlot };
+  const slots: Record<string, () => unknown> = {};
+  const children = (slot: AlertSlot) => {
+    const nodes: unknown[] = [];
+
+    if (slot.text !== undefined && slot.text !== '') nodes.push(slot.text);
+    if (slot.markup === 'paragraphs') {
+      nodes.push(h('p', 'Storage, seats and outbound transfer.'), h('p', 'Updated hourly.'));
+    }
+    if (slot.control !== undefined) nodes.push(h('button', { type: 'button' }, slot.control.text));
+
+    return nodes;
+  };
+
+  if (content.icon !== undefined) slots.icon = () => children(content.icon!);
+  if (content.title !== undefined) slots.title = () => children(content.title!);
+  if (content.body !== undefined) slots.default = () => children(content.body!);
+
+  return h(VfAlert, { ...parityCase.props, ...parityCase.attrs }, slots);
+}
+
+/**
  * The consumer markup a gate case names, built the same way in both fixtures.
  *
  * Real elements with no marker on them: the static snapshot is asserted against
@@ -504,6 +562,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'panel') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderPanel(parityCase)]);
+  }
+
+  if (catalog.component === 'alert') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderAlert(parityCase)]);
   }
 
   if (catalog.component === 'skeleton-gate') {

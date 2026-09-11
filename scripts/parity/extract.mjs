@@ -55,6 +55,15 @@ export const COMPARED_ATTRIBUTES = [
   'aria-pressed',
   'aria-hidden',
   'aria-required',
+  // VfAlert. Found missing by the attribute-coverage gate in M19, the sixth
+  // time it has caught an attribute nothing compared. The alert is the first
+  // migrated component whose root carries a live-region role, and the
+  // reference writes *neither* of the two attributes that would tune it - no
+  // aria-live, no aria-atomic. Their absence is the contract, and an adapter
+  // that started writing aria-live="polite" on a danger alert would change
+  // how it is announced while every class, style and role comparison passed.
+  'aria-live',
+  'aria-atomic',
   // VfSkeletonGate. Found missing by the attribute-coverage gate in M17, the
   // fifth time it has caught an attribute nothing compared - after aria-busy in
   // M12, four native attributes in M13, aria-orientation in M15 and alt/src in

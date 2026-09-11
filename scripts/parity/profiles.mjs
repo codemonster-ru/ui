@@ -505,6 +505,76 @@ export const profiles = {
     // rather than inheriting the claim from a snapshot name.
     staticOwnership: true,
   },
+  // The M19 component, and the first profile whose root is expected to expose
+  // a role of the component's own making.
+  //
+  // Everything the alert writes is measured, and so are the two things it
+  // does not have. The glyph, its wrapper and the icon container are three
+  // roles rather than one: the container is where aria-hidden lives, the
+  // wrapper is what the icon package emits, and the glyph is where the large
+  // size lands. `ownedControl` is a selector for a focusable element sitting
+  // directly in the section or directly in the content wrapper - the only
+  // places a control the *component* rendered could be, since consumer slot
+  // content is always inside the icon container, the title paragraph or the
+  // body. It resolves to nothing on every target, and a target where it
+  // started resolving has grown a dismiss button.
+  alert: {
+    id: 'alert',
+    label: 'VfAlert',
+    component: 'alert',
+    casesPath: 'contracts/alert/cases.json',
+    policyPath: 'contracts/alert/parity-policy.json',
+    artifactDirectory: 'parity-alert',
+    reportName: 'alert-parity-report.json',
+    measuredRoles: {
+      root: '.vf-alert',
+      icon: '.vf-alert__icon',
+      glyphWrapper: '.vf-alert__icon .vf-icon-wrapper',
+      glyph: '.vf-alert__icon svg',
+      content: '.vf-alert__content',
+      title: '.vf-alert__title',
+      body: '.vf-alert__body',
+      ownedControl:
+        '.vf-alert > button, .vf-alert > a, .vf-alert > [tabindex], ' +
+        '.vf-alert__content > button, .vf-alert__content > a, .vf-alert__content > [tabindex]',
+    },
+    // The root is listed because exposing `alert` is the contract - for every
+    // tone, and `status` only when a consumer says so. The icon container and
+    // the glyph are listed because their absence from the tree is the
+    // contract: the container is aria-hidden and the glyph is inside it, so an
+    // alert contributes no name through its icon. The title is listed so "the
+    // title is a paragraph and not a heading" stays a measurement. The consumer
+    // control is listed so a consumer's button exposes its own role and name
+    // and the alert adds nothing to either.
+    accessibilityRoles: {
+      root: '.vf-alert',
+      icon: '.vf-alert__icon',
+      glyph: '.vf-alert__icon svg',
+      title: '.vf-alert__title',
+      consumerControl: '.vf-alert button, .vf-alert a[href]',
+    },
+    // role and aria-hidden are the contract here rather than incidental
+    // markup: the section's role is the first a migrated component writes
+    // unconditionally, and the container's aria-hidden is what makes the glyph
+    // decorative. aria-live and aria-atomic are listed because their *absence*
+    // is the contract - the reference writes neither - and a comparison that
+    // never looked at them could not report an adapter that started writing
+    // one. width and height carry the large size the alert asks for.
+    semanticAttributes: [
+      'class',
+      'style',
+      'role',
+      'aria-hidden',
+      'aria-live',
+      'aria-atomic',
+      'aria-label',
+      'width',
+      'height',
+      'data-testid',
+    ],
+    snapshot: 'static',
+    staticOwnership: true,
+  },
   // The M17 component, and the first profile that declares two things at once.
   // VfSkeletonGate owns no interaction, so it needs the static ownership
   // measurement every M15/M16 component has; and its state can change after

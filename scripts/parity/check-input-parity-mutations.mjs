@@ -49,6 +49,7 @@ import {
   skeletonPolicyMutations,
 } from './m16-mutations.mjs';
 import { panelBrowserMutations, panelParityMutations, panelPolicyMutations } from './panel-mutations.mjs';
+import { alertBrowserMutations, alertParityMutations, alertPolicyMutations } from './alert-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
@@ -121,6 +122,7 @@ const mutationSets = {
   },
   card: { capture: cardParityMutations, policy: cardPolicyMutations, browser: cardBrowserMutations },
   panel: { capture: panelParityMutations, policy: panelPolicyMutations, browser: panelBrowserMutations },
+  alert: { capture: alertParityMutations, policy: alertPolicyMutations, browser: alertBrowserMutations },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
     policy: skeletonGatePolicyMutations,
