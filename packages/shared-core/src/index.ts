@@ -52,6 +52,12 @@ export type { VfPanelRegions } from './panel/state.js';
 export { resolveAlertClasses, resolveAlertIcon, resolveAlertRegions } from './alert/state.js';
 export type { VfAlertRegions } from './alert/state.js';
 export {
+  resolveProgressSpinnerClasses,
+  resolveProgressSpinnerSize,
+  resolveProgressSpinnerStyle,
+} from './progress-spinner/state.js';
+export type { VfProgressSpinnerDeclaration } from './progress-spinner/state.js';
+export {
   resolveBadgeClasses,
   resolveDividerClasses,
   resolveDividerRole,

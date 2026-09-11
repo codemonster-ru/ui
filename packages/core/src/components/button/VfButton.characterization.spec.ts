@@ -11,8 +11,10 @@
 // exposed to assistive technology rather than hidden from it.
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
+import { h } from 'vue';
 
 import VfButton from './VfButton.vue';
+import VfProgressSpinner from '../progress-spinner/VfProgressSpinner.vue';
 
 type ButtonProps = InstanceType<typeof VfButton>['$props'];
 
@@ -286,6 +288,77 @@ describe('VfButton characterization: loading', () => {
         .get('button')
         .attributes('disabled'),
     ).toBeDefined();
+  });
+});
+
+describe('VfButton characterization: spinner composition', () => {
+  // M20. The loading spinner is the public VfProgressSpinner component, not
+  // markup the button authors itself. Pinned three ways, because "the output
+  // looks like a spinner" is exactly what a copied template would also
+  // produce: the component instance is found in the tree, it is handed the
+  // three props the reference template forwards and nothing else, and a stub
+  // standing in for it is what the button renders.
+  it('renders the VfProgressSpinner component while loading', () => {
+    const button = mountButton({ props: { loading: true } });
+    const spinner = button.findComponent(VfProgressSpinner);
+
+    expect(spinner.exists()).toBe(true);
+    // The component's root *is* the classed element: the class is an inherited
+    // attr on the child, not a wrapper the button puts around it.
+    expect(spinner.element).toBe(button.get('.vf-button__spinner').element);
+  });
+
+  it('renders no VfProgressSpinner component when it is not loading', () => {
+    expect(mountButton().findComponent(VfProgressSpinner).exists()).toBe(false);
+  });
+
+  it('forwards exactly the icon size token and a stroke width of 5, leaving label and tone at their defaults', () => {
+    // Not "at least": a button that also forwarded its own size name as the
+    // spinner's size, or a tone from its variant, would render a plausible
+    // spinner and be a different component.
+    const spinner = mountButton({ props: { loading: true, size: 'lg', variant: 'danger' } }).findComponent(
+      VfProgressSpinner,
+    );
+
+    expect(spinner.props()).toEqual({
+      size: 'var(--vf-icon-current-size)',
+      strokeWidth: 5,
+      label: 'Loading',
+      tone: 'primary',
+    });
+  });
+
+  it('uses one spinner size for every button size', () => {
+    // The spinner is sized by the token the button's own size modifier sets,
+    // not by a size name mapped onto the spinner. Every button size forwards
+    // the same string.
+    for (const size of ['sm', 'md', 'lg'] as const) {
+      expect(
+        mountButton({ props: { loading: true, size } })
+          .findComponent(VfProgressSpinner)
+          .props('size'),
+      ).toBe('var(--vf-icon-current-size)');
+    }
+  });
+
+  it('renders whatever stands in for the spinner, so the loading affordance is a composition and not a copy', () => {
+    // The probe: VfProgressSpinner replaced by a component that renders a tag
+    // no spinner would. The button's loading output has to contain it and has
+    // to contain no spinner markup of its own; the non-loading output has to
+    // contain neither.
+    const Probe = { name: 'VfProgressSpinner', render: () => h('probe-child') };
+    const loading = mount(VfButton, {
+      props: { loading: true },
+      slots: { default: 'Save' },
+      global: { stubs: { VfProgressSpinner: Probe } },
+    });
+    const idle = mount(VfButton, { slots: { default: 'Save' }, global: { stubs: { VfProgressSpinner: Probe } } });
+
+    expect(loading.html()).toContain('<probe-child');
+    expect(loading.html()).not.toContain('vf-progress-spinner');
+    expect(loading.html()).not.toContain('<svg');
+    expect(idle.html()).not.toContain('<probe-child');
+    expect(idle.html()).not.toContain('vf-progress-spinner');
   });
 });
 

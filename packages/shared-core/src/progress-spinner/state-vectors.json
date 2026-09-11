@@ -1,0 +1,51 @@
+{
+  "$comment": "Shared input/expected vectors for VfProgressSpinner. The TypeScript rules in progress-spinner/state.ts and the PHP mirror in packages/razor/src/Support/ProgressSpinnerState.php both run this file. Three rules: the class list (which suppresses the modifier at primary - the alert's convention, not the badge's - and passes an unknown tone through unchecked), the size (a number becomes pixels, a string passes through, zero is a length) and the root style (one custom property, absent when the size is absent, kept empty when the size is empty). There is no rule about the role, the label or the artwork, because none of them has a decision in it. This file is not skeleton/state-vectors.json and must never be merged with it: the two length rules agree today and are two contracts.",
+  "resolveProgressSpinnerClasses": [
+    { "tone": "primary", "expected": ["vf-progress-spinner"] },
+    { "tone": "neutral", "expected": ["vf-progress-spinner", "vf-progress-spinner--neutral"] },
+    { "tone": "success", "expected": ["vf-progress-spinner", "vf-progress-spinner--success"] },
+    { "tone": "info", "expected": ["vf-progress-spinner", "vf-progress-spinner--info"] },
+    { "tone": "warn", "expected": ["vf-progress-spinner", "vf-progress-spinner--warn"] },
+    { "tone": "help", "expected": ["vf-progress-spinner", "vf-progress-spinner--help"] },
+    { "tone": "danger", "expected": ["vf-progress-spinner", "vf-progress-spinner--danger"] },
+    { "tone": "contrast", "expected": ["vf-progress-spinner", "vf-progress-spinner--contrast"] },
+    {
+      "$why": "The reference interpolates the prop without checking it, so a value outside the union still becomes a modifier.",
+      "tone": "nonsense",
+      "expected": ["vf-progress-spinner", "vf-progress-spinner--nonsense"]
+    }
+  ],
+  "resolveProgressSpinnerSize": [
+    { "$why": "null in JSON stands for the absent prop.", "value": null, "expected": null },
+    { "value": 40, "expected": "40px" },
+    { "$why": "Zero is a number like any other.", "value": 0, "expected": "0px" },
+    { "value": 12.5, "expected": "12.5px" },
+    { "value": "2em", "expected": "2em" },
+    { "value": "50%", "expected": "50%" },
+    {
+      "$why": "The value VfButton forwards: a token reference, passed through verbatim.",
+      "value": "var(--vf-icon-current-size)",
+      "expected": "var(--vf-icon-current-size)"
+    },
+    {
+      "$why": "An empty string is passed through as a length; the style rule is what drops it.",
+      "value": "",
+      "expected": ""
+    }
+  ],
+  "resolveProgressSpinnerStyle": [
+    { "$why": "Absent: no declaration, so the token default applies.", "size": null, "expected": [] },
+    {
+      "$why": "Empty is kept, as the reference keeps it: the platform serialiser decides. Vue's client drops it, Vue's SSR writes an empty value, the Razor adapter drops it.",
+      "size": "",
+      "expected": [["--vf-progress-spinner-size", ""]]
+    },
+    { "size": 40, "expected": [["--vf-progress-spinner-size", "40px"]] },
+    { "size": 0, "expected": [["--vf-progress-spinner-size", "0px"]] },
+    { "size": "3rem", "expected": [["--vf-progress-spinner-size", "3rem"]] },
+    {
+      "size": "var(--vf-icon-current-size)",
+      "expected": [["--vf-progress-spinner-size", "var(--vf-icon-current-size)"]]
+    }
+  ]
+}

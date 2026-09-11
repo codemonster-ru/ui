@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { resolveProgressSpinnerClasses, resolveProgressSpinnerStyle } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfFeedbackTone } from '@/types/components';
 
@@ -21,20 +22,12 @@ const props = withDefaults(defineProps<VfProgressSpinnerProps>(), {
   tone: 'primary',
 });
 
-const classes = computed(() =>
-  cx('vf-progress-spinner', props.tone !== 'primary' && `vf-progress-spinner--${props.tone}`),
-);
-const rootStyle = computed(() => ({
-  '--vf-progress-spinner-size': toCssLength(props.size),
-}));
-
-function toCssLength(value: string | number | undefined): string | undefined {
-  if (value == null) {
-    return undefined;
-  }
-
-  return typeof value === 'number' ? `${value}px` : value;
-}
+const classes = computed(() => cx(...resolveProgressSpinnerClasses(props.tone)));
+// A plain object handed to Vue's serialisers, as the reference did. An absent
+// size gives an empty object, which both serialisers treat exactly as the
+// historical `{ '--x': undefined }`; an empty-string size keeps its empty
+// declaration, which the client drops and the server writes as `--x:;`.
+const rootStyle = computed(() => Object.fromEntries(resolveProgressSpinnerStyle(props.size)));
 </script>
 
 <template>

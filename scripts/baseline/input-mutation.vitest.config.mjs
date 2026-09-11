@@ -90,6 +90,7 @@ export default defineConfig({
       'src/components/card/VfCard.characterization.spec.ts',
       'src/components/panel/VfPanel.characterization.spec.ts',
       'src/components/alert/VfAlert.characterization.spec.ts',
+      'src/components/progress-spinner/VfProgressSpinner.characterization.spec.ts',
       'src/components/skeleton-gate/VfSkeletonGate.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',
       'src/components/components.spec.ts',

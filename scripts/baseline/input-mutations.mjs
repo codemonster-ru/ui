@@ -47,6 +47,21 @@ export const panelRulePath = 'packages/shared-core/src/panel/state.ts';
 export const alertSourcePath = 'packages/core/src/components/alert/VfAlert.vue';
 /** The shared rules VfAlert and the Razor adapter both derive from. */
 export const alertRulePath = 'packages/shared-core/src/alert/state.ts';
+export const progressSpinnerSourcePath = 'packages/core/src/components/progress-spinner/VfProgressSpinner.vue';
+/** The shared rules VfProgressSpinner and the Razor adapter both derive from. */
+export const progressSpinnerRulePath = 'packages/shared-core/src/progress-spinner/state.ts';
+
+/**
+ * The consumer suite a VfProgressSpinner defect is expected to reach.
+ *
+ * VfButton renders VfProgressSpinner while loading, so a spinner defect is a
+ * button defect wherever the button exercises the spinner - the M17 rule,
+ * applied to the second composing component. The button mutations name this
+ * suite as their own, which is the other half of the same proof: a button
+ * defect must never reach the spinner's suite.
+ */
+const buttonSuite = 'src/components/button/VfButton.characterization.spec.ts';
+const spinnerSuite = 'src/components/progress-spinner/VfProgressSpinner.characterization.spec.ts';
 
 /** The shared rules the three M15 presentation components and the Razor adapter derive from. */
 export const presentationRulePath = 'packages/shared-core/src/presentation/state.ts';
@@ -318,10 +333,19 @@ export const fieldMutations = [
 // worth reading are the loading ones: loading applies the native disabled
 // attribute, so a regression there does not change how the button looks, it
 // just makes an inert control operable again.
+/**
+ * Every one names the button's suite since M20, and none declares `alsoFails`.
+ * That is the reverse-isolation half of the spinner composition proof: a
+ * button defect - its loading text, its disabled rule, its root class, its
+ * size mapping - must fail the button's evidence and leave the standalone
+ * spinner's green. A button mutation that reached VfProgressSpinner's suite
+ * would fail the gate as WRONG SUITE, because the dependency runs one way.
+ */
 export const buttonMutations = [
   {
     id: 'button-submits-by-default',
     file: buttonSourcePath,
+    suite: buttonSuite,
     description: 'the default type becomes submit, so a button inside a form posts it',
     find: "  type: 'button',",
     replace: "  type: 'submit',",
@@ -329,6 +353,7 @@ export const buttonMutations = [
   {
     id: 'button-drops-the-variant-modifier',
     file: buttonRulePath,
+    suite: buttonSuite,
     description: 'the variant modifier disappears, so every button renders as the base style',
     find: "  const classes = ['vf-button', `vf-button--${variant}`];",
     replace: "  const classes = ['vf-button'];",
@@ -336,6 +361,7 @@ export const buttonMutations = [
   {
     id: 'button-emits-a-default-size-modifier',
     file: buttonRulePath,
+    suite: buttonSuite,
     description: 'the medium size starts emitting a modifier the stylesheet never defined',
     find: "  if (size !== 'md') classes.push(`vf-button--${size}`);",
     replace: '  classes.push(`vf-button--${size}`);',
@@ -343,6 +369,7 @@ export const buttonMutations = [
   {
     id: 'button-drops-the-block-modifier',
     file: buttonRulePath,
+    suite: buttonSuite,
     description: 'a block button stops filling its container',
     find: "  if (block) classes.push('vf-button--block');",
     replace: '',
@@ -350,6 +377,7 @@ export const buttonMutations = [
   {
     id: 'button-drops-the-loading-modifier',
     file: buttonRulePath,
+    suite: buttonSuite,
     description: 'a loading button stops looking like one',
     find: "  if (loading) classes.push('vf-button--loading');",
     replace: '',
@@ -357,6 +385,7 @@ export const buttonMutations = [
   {
     id: 'button-loading-stops-disabling',
     file: buttonRulePath,
+    suite: buttonSuite,
     description: 'a loading button becomes operable again, which no snapshot would show',
     find: '  return loading || disabled;',
     replace: '  return disabled;',
@@ -364,6 +393,7 @@ export const buttonMutations = [
   {
     id: 'button-ignores-the-disabled-attribute',
     file: buttonSourcePath,
+    suite: buttonSuite,
     description: 'a disabled button becomes operable',
     find: ' :disabled="isDisabled"',
     replace: '',
@@ -371,6 +401,7 @@ export const buttonMutations = [
   {
     id: 'button-drops-attribute-forwarding',
     file: buttonSourcePath,
+    suite: buttonSuite,
     description: 'inherited attrs stop reaching the button, losing aria-label, name and consumer class',
     find: 'v-bind="attrs" ',
     replace: '',
@@ -378,6 +409,7 @@ export const buttonMutations = [
   {
     id: 'button-drops-its-slot',
     file: buttonSourcePath,
+    suite: buttonSuite,
     description: 'the button renders empty, so it has no label at all',
     find: '    <slot />\n',
     replace: '',
@@ -385,6 +417,7 @@ export const buttonMutations = [
   {
     id: 'button-renders-the-spinner-after-its-label',
     file: buttonSourcePath,
+    suite: buttonSuite,
     description: 'the loading spinner moves to the far side of the label',
     find: '    <VfProgressSpinner\n      v-if="props.loading"\n      class="vf-button__spinner"\n      size="var(--vf-icon-current-size)"\n      :stroke-width="5"\n    />\n    <slot />',
     replace:
@@ -393,6 +426,7 @@ export const buttonMutations = [
   {
     id: 'button-drops-aria-busy',
     file: buttonRulePath,
+    suite: buttonSuite,
     description: 'a loading button stops announcing itself busy',
     find: "  return loading ? 'true' : undefined;",
     replace: '  return undefined;',
@@ -400,6 +434,7 @@ export const buttonMutations = [
   {
     id: 'button-hides-the-spinner-from-assistive-tech',
     file: buttonSourcePath,
+    suite: buttonSuite,
     description: 'the spinner loses its own class, so the loading affordance is unnamed',
     find: '      class="vf-button__spinner"\n',
     replace: '',
@@ -1252,7 +1287,8 @@ export const panelMutations = [
     suite: 'src/components/panel/VfPanel.characterization.spec.ts',
     description: 'the footer slot a panel drops starts rendering a footer element',
     find: '    <slot />\n  </section>',
-    replace: '    <slot />\n\n    <footer v-if="$slots.footer">\n      <slot name="footer" />\n    </footer>\n  </section>',
+    replace:
+      '    <slot />\n\n    <footer v-if="$slots.footer">\n      <slot name="footer" />\n    </footer>\n  </section>',
   },
   {
     id: 'panel-header-gains-a-class',
@@ -1287,8 +1323,7 @@ export const panelMutations = [
     file: panelSourcePath,
     suite: 'src/components/panel/VfPanel.characterization.spec.ts',
     description: 'the header slot loses its fallback content, so a title alone renders an empty header',
-    find:
-      '      <slot name="header">\n        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>',
+    find: '      <slot name="header">\n        <h3 class="vf-panel__title">{{ props.title }}</h3>\n      </slot>',
     replace: '      <slot name="header" />',
   },
   {
@@ -1770,7 +1805,7 @@ export const skeletonGateMutations = [
     id: 'gate-drops-the-empty-content-style-binding',
     file: skeletonGateSourcePath,
     suite: gateSuite,
-    description: 'the always-empty content style binding is tidied away, changing every gate\'s server output',
+    description: "the always-empty content style binding is tidied away, changing every gate's server output",
     find: '      :style="contentStyle"\n',
     replace: '',
   },
@@ -1798,7 +1833,7 @@ export const skeletonGateMutations = [
     suite: gateSuite,
     description: "the gate supplies the child's default token itself instead of letting the child supply it",
     find: '<VfSkeleton :min-height="minHeight" :radius="radius" />',
-    replace: "<VfSkeleton :min-height=\"minHeight\" :radius=\"radius || 'var(--vf-radius-surface)'\" />",
+    replace: '<VfSkeleton :min-height="minHeight" :radius="radius || \'var(--vf-radius-surface)\'" />',
   },
   {
     id: 'gate-forwards-the-resolved-height-to-the-child',
@@ -1821,7 +1856,8 @@ export const skeletonGateMutations = [
     id: 'gate-reserve-uses-truthiness',
     file: skeletonGateRulePath,
     suite: gateSuite,
-    description: 'the reserve precedence becomes a truthiness check, so zero stops reserving and empty starts falling through',
+    description:
+      'the reserve precedence becomes a truthiness check, so zero stops reserving and empty starts falling through',
     find: '  if (reserve !== undefined) {',
     replace: '  if (reserve) {',
   },
@@ -1829,9 +1865,11 @@ export const skeletonGateMutations = [
     id: 'gate-reserve-is-checked-before-conversion',
     file: skeletonGateRulePath,
     suite: gateSuite,
-    description: 'the reserve is checked before the length conversion, so a zero reserve is read as a number rather than a length',
+    description:
+      'the reserve is checked before the length conversion, so a zero reserve is read as a number rather than a length',
     find: '  const reserve = resolveSkeletonGateLength(reserveHeight);\n  if (reserve !== undefined) {',
-    replace: '  const reserve = reserveHeight === null || reserveHeight === undefined ? undefined : resolveSkeletonGateLength(reserveHeight);\n  if (reserve !== undefined && reserve !== \'\') {',
+    replace:
+      "  const reserve = reserveHeight === null || reserveHeight === undefined ? undefined : resolveSkeletonGateLength(reserveHeight);\n  if (reserve !== undefined && reserve !== '') {",
   },
   {
     id: 'gate-measured-height-ignores-ready',
@@ -1855,7 +1893,8 @@ export const skeletonGateMutations = [
     suite: gateSuite,
     description: 'the fade duration is written only when it differs from the default token value',
     find: "  declarations.push(['--vf-skeleton-gate-fade-duration', `${fadeDuration}ms`]);",
-    replace: "  if (fadeDuration !== 220) declarations.push(['--vf-skeleton-gate-fade-duration', `${fadeDuration}ms`]);",
+    replace:
+      "  if (fadeDuration !== 220) declarations.push(['--vf-skeleton-gate-fade-duration', `${fadeDuration}ms`]);",
   },
   {
     id: 'gate-overlay-receives-the-reserved-height',
@@ -1887,6 +1926,274 @@ export const skeletonGateMutations = [
   },
 ];
 
+/**
+ * VfProgressSpinner regressions.
+ *
+ * The M20 set, for the component VfButton has composed since M12. Twelve
+ * declare `alsoFails: [buttonSuite]`, and the list is the M17 child-mutation
+ * attribution running in both directions: the button renders the spinner, so
+ * a defect in the spinner's root class, its role, its name, its artwork's
+ * aria-hidden and focusable, its size property, its stroke forwarding or its
+ * attribute inheritance is a defect in the button's loading state - and the button's
+ * suite failing is required, not tolerated.
+ *
+ * The mutations *without* the declaration are as informative. The button
+ * forwards a string size, so the number-to-pixels rule and the zero rule never
+ * reach it; it forwards no tone, so the primary/neutral rule never reaches it;
+ * it never asserts the svg's viewBox, its class, its circle count or the root
+ * tag, so those stay standalone. The button's evidence depends on the spinner
+ * exactly where the button exercises the spinner, and nowhere else. The
+ * parity suite covers the rest of the composed markup by structure.
+ */
+export const progressSpinnerMutations = [
+  {
+    id: 'spinner-drops-the-root-class',
+    // Reaches VfButton: the button asserts its spinner carries the canonical block class.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerRulePath,
+    suite: spinnerSuite,
+    description: 'the block class stops reaching the root, so no stylesheet rule sizes or animates the spinner',
+    find: "  const classes = ['vf-progress-spinner'];",
+    replace: '  const classes = [];',
+  },
+  {
+    id: 'spinner-becomes-a-badge-block',
+    // Reaches VfButton: the button asserts the block class, and a badge block is not it.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerRulePath,
+    suite: spinnerSuite,
+    description:
+      "VfBadge's block name is emitted in place of the spinner's - the substitution shared tone names invite",
+    find: "  const classes = ['vf-progress-spinner'];",
+    replace: "  const classes = ['vf-badge'];",
+  },
+  {
+    id: 'spinner-suppresses-neutral-instead-of-primary',
+    // Not declared for VfButton: the button forwards no tone and never asserts the modifier list.
+    file: progressSpinnerRulePath,
+    suite: spinnerSuite,
+    description: 'the tone rule is borrowed from VfBadge, so neutral emits nothing and primary emits a modifier',
+    find: "  if (tone !== 'primary') classes.push(`vf-progress-spinner--${tone}`);",
+    replace: "  if (tone !== 'neutral') classes.push(`vf-progress-spinner--${tone}`);",
+  },
+  {
+    id: 'spinner-uses-the-alert-resolver',
+    // Reaches VfButton: the alert's block name replaces the spinner's on the button's spinner too.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the class rule is taken from VfAlert, whose suppressed tone matches and whose block name does not',
+    find: "import { resolveProgressSpinnerClasses, resolveProgressSpinnerStyle } from '@codemonster-ru/vueforge-shared-core';",
+    replace:
+      "import { resolveAlertClasses as resolveProgressSpinnerClasses, resolveProgressSpinnerStyle } from '@codemonster-ru/vueforge-shared-core';",
+  },
+  {
+    id: 'spinner-changes-its-default-size',
+    // Not declared for VfButton: the button always forwards a size.
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the default size becomes a number, so the theme token stops sizing a bare spinner',
+    find: '  size: undefined,',
+    replace: '  size: 32,',
+  },
+  {
+    id: 'spinner-drops-the-px-suffix',
+    // Not declared for VfButton: the button forwards a string, which this rule passes through.
+    file: progressSpinnerRulePath,
+    suite: spinnerSuite,
+    description: 'a numeric size reaches the custom property as a bare number, which is not a length',
+    find: "  return typeof value === 'number' ? `${value}px` : value;",
+    replace: '  return String(value);',
+  },
+  {
+    id: 'spinner-treats-zero-as-absent',
+    file: progressSpinnerRulePath,
+    suite: spinnerSuite,
+    description: 'size 0 is dropped as falsy instead of becoming 0px',
+    find: '  if (value === null || value === undefined) {',
+    replace: '  if (!value) {',
+  },
+  {
+    id: 'spinner-drops-the-empty-declaration',
+    // Not declared for VfButton: only the server output of an empty-string size moves.
+    file: progressSpinnerRulePath,
+    suite: spinnerSuite,
+    description: "an empty size is tidied away in the rule, changing the reference's server output",
+    find: '  if (length === undefined) return [];',
+    replace: "  if (length === undefined || length === '') return [];",
+  },
+  {
+    id: 'spinner-sizes-with-width-instead-of-the-custom-property',
+    // Reaches VfButton: the button asserts the custom property carries its icon size token.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerRulePath,
+    suite: spinnerSuite,
+    description:
+      'the size is written as width and height declarations rather than the custom property the stylesheet reads',
+    find: "  return [['--vf-progress-spinner-size', length]];",
+    replace: "  return [\n    ['width', length],\n    ['height', length],\n  ];",
+  },
+  {
+    id: 'spinner-changes-its-default-label',
+    // Reaches VfButton: the button asserts its spinner is named exactly Loading.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the default accessible name gains an ellipsis',
+    find: "  label: 'Loading',",
+    replace: "  label: 'Loading…',",
+  },
+  {
+    id: 'spinner-changes-its-default-stroke-width',
+    // Not declared for VfButton: the button always forwards a stroke width.
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the default stroke thins from 4 to 3',
+    find: '  strokeWidth: 4,',
+    replace: '  strokeWidth: 3,',
+  },
+  {
+    id: 'spinner-strokes-only-the-value-arc',
+    // Reaches VfButton: the button reads the stroke width off the first circle, the track.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the track keeps the default stroke and only the value arc takes the prop',
+    find: '<circle class="vf-progress-spinner__track" cx="25" cy="25" r="20" fill="none" :stroke-width="props.strokeWidth" />',
+    replace: '<circle class="vf-progress-spinner__track" cx="25" cy="25" r="20" fill="none" stroke-width="4" />',
+  },
+  {
+    id: 'spinner-loses-its-role',
+    // Reaches VfButton: the button asserts its spinner is a progressbar.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the root stops being a progressbar, so a loading state is announced by nothing',
+    find: ' role="progressbar" :aria-label="props.label">',
+    replace: ' :aria-label="props.label">',
+  },
+  {
+    id: 'spinner-becomes-decorative',
+    // Reaches VfButton: the button asserts its spinner is exposed and named, not hidden.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the root is hidden from assistive technology instead of exposed as a named progressbar',
+    find: ' role="progressbar" :aria-label="props.label">',
+    replace: ' aria-hidden="true">',
+  },
+  {
+    id: 'spinner-hides-itself-as-well-as-its-artwork',
+    // Not declared for VfButton: the button never asserts the absence of aria-hidden on the root.
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'aria-hidden is written on the root as well as on the svg, so the name is exposed to nothing',
+    find: '<span :class="classes" :style="rootStyle" role="progressbar"',
+    replace: '<span :class="classes" :style="rootStyle" aria-hidden="true" role="progressbar"',
+  },
+  {
+    id: 'spinner-exposes-its-artwork',
+    // Reaches VfButton: the button asserts the artwork is aria-hidden.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the svg stops being aria-hidden, so the tree gains a nameless graphic beside the progressbar',
+    find: ' aria-hidden="true" focusable="false">',
+    replace: ' focusable="false">',
+  },
+  {
+    id: 'spinner-artwork-becomes-focusable',
+    // Reaches VfButton: the button asserts its spinner's artwork is both aria-hidden and unfocusable.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'focusable="false" leaves the svg, which puts the artwork in the tab order of older engines',
+    find: ' aria-hidden="true" focusable="false">',
+    replace: ' aria-hidden="true">',
+  },
+  {
+    id: 'spinner-loses-the-svg-class',
+    // Not declared for VfButton: the button selects the svg by tag, not by class.
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the svg loses the class the rotate animation is keyed on',
+    find: '<svg class="vf-progress-spinner__svg" viewBox="0 0 50 50"',
+    replace: '<svg viewBox="0 0 50 50"',
+  },
+  {
+    id: 'spinner-changes-the-viewbox',
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the viewBox shrinks to 48 units, so the 20-unit circles no longer fit their dash lengths',
+    find: 'viewBox="0 0 50 50"',
+    replace: 'viewBox="0 0 48 48"',
+  },
+  {
+    id: 'spinner-pins-the-svg-to-fifty-pixels',
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the svg gains width and height attributes, so the custom property stops sizing the artwork',
+    find: 'viewBox="0 0 50 50"',
+    replace: 'viewBox="0 0 50 50" width="50" height="50"',
+  },
+  {
+    id: 'spinner-loses-the-track',
+    // Not declared for VfButton: the button asserts nothing about the circle count.
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'the track circle is removed, leaving the arc to spin over nothing',
+    find: '      <circle class="vf-progress-spinner__track" cx="25" cy="25" r="20" fill="none" :stroke-width="props.strokeWidth" />\n',
+    replace: '',
+  },
+  {
+    id: 'spinner-shrinks-the-radius',
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'both circles draw at radius 18, which the dash keyframes were not computed for',
+    find: 'r="20"',
+    replace: 'r="18"',
+    all: true,
+  },
+  {
+    id: 'spinner-renders-a-div-root',
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description:
+      'the inline span becomes a div, which looks the same at the default display and is a different element',
+    find: 'span',
+    replace: 'div',
+    all: true,
+  },
+  {
+    id: 'spinner-stops-inheriting-attrs',
+    // Reaches VfButton: its class, the only thing that marks the spinner as the button's, is an inherited attr.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'inheritAttrs is switched off, so the consumer class, style, role and data attributes vanish',
+    find: "defineOptions({\n  name: 'VfProgressSpinner',\n});",
+    replace: "defineOptions({\n  name: 'VfProgressSpinner',\n  inheritAttrs: false,\n});",
+  },
+  {
+    id: 'spinner-lets-a-consumer-class-replace-its-own',
+    // Reaches VfButton: the button's class replaces the block class on the button's spinner.
+    alsoFails: [buttonSuite],
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'a consumer class wins over the canonical classes instead of being appended after them',
+    find: '<span :class="classes"',
+    replace: '<span :class="$attrs.class ?? classes"',
+  },
+  {
+    id: 'spinner-renders-a-slot',
+    file: progressSpinnerSourcePath,
+    suite: spinnerSuite,
+    description: 'a default slot is rendered after the artwork, which is an API the reference does not have',
+    find: '    </svg>\n  </span>',
+    replace: '    </svg>\n    <slot />\n  </span>',
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -1905,4 +2212,5 @@ export const componentMutations = [
   ...skeletonGateMutations,
   ...panelMutations,
   ...alertMutations,
+  ...progressSpinnerMutations,
 ];
