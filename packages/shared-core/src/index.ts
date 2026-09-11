@@ -49,6 +49,8 @@ export { resolveCardClasses, resolveCardRegions } from './card/state.js';
 export type { VfCardRegions } from './card/state.js';
 export { resolvePanelClasses, resolvePanelRegions } from './panel/state.js';
 export type { VfPanelRegions } from './panel/state.js';
+export { resolveAlertClasses, resolveAlertIcon, resolveAlertRegions } from './alert/state.js';
+export type { VfAlertRegions } from './alert/state.js';
 export {
   resolveBadgeClasses,
   resolveDividerClasses,

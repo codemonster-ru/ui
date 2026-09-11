@@ -44,6 +44,9 @@ export const cardRulePath = 'packages/shared-core/src/card/state.ts';
 export const panelSourcePath = 'packages/core/src/components/panel/VfPanel.vue';
 /** The shared rules VfPanel and the Razor adapter both derive from. */
 export const panelRulePath = 'packages/shared-core/src/panel/state.ts';
+export const alertSourcePath = 'packages/core/src/components/alert/VfAlert.vue';
+/** The shared rules VfAlert and the Razor adapter both derive from. */
+export const alertRulePath = 'packages/shared-core/src/alert/state.ts';
 
 /** The shared rules the three M15 presentation components and the Razor adapter derive from. */
 export const presentationRulePath = 'packages/shared-core/src/presentation/state.ts';
@@ -1362,6 +1365,305 @@ export const panelMutations = [
 ];
 
 /**
+ * VfAlert regressions.
+ *
+ * The M19 set. The reference alert owns a semantic role and no interaction, so
+ * the mutations that carry this milestone are the ones a migration would call
+ * improvements:
+ *
+ *   - `alert-grows-a-dismiss-button` adds the close button every other design
+ *     system's alert has. There is no prop to key it on because the reference
+ *     has none, so it is always rendered - and every "no interactive element
+ *     of its own" assertion fails;
+ *   - `alert-declares-a-dismiss-emit` gives the component an event contract it
+ *     never had;
+ *   - `alert-tone-changes-the-role` and `alert-gains-a-live-region` turn tone
+ *     into semantics;
+ *   - `alert-uses-the-badge-resolver` borrows VfBadge's class rule, which
+ *     differs at exactly two tones and in the block name everywhere.
+ *
+ * Every one of these fails VfAlert's own suite and none of them touches
+ * VfBadge's or VfTag's source or rules.
+ */
+export const alertMutations = [
+  {
+    id: 'alert-grows-a-dismiss-button',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'a component-owned close button is rendered after the content - the control the reference never had',
+    find: '      <div class="vf-alert__body">\n        <slot />\n      </div>\n    </div>\n  </section>',
+    replace:
+      '      <div class="vf-alert__body">\n        <slot />\n      </div>\n    </div>\n' +
+      '    <button type="button" class="vf-alert__dismiss" aria-label="Dismiss">×</button>\n  </section>',
+  },
+  {
+    id: 'alert-declares-a-dismiss-emit',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the component declares a dismiss event it never emitted',
+    find: 'const attrs = useAttrs();\nconst slots = useSlots();',
+    replace: 'defineEmits<{ dismiss: [] }>();\n\nconst attrs = useAttrs();\nconst slots = useSlots();',
+  },
+  {
+    id: 'alert-root-becomes-a-status',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the section writes role=status instead of role=alert',
+    find: '  <section :class="classes" role="alert" v-bind="attrs">',
+    replace: '  <section :class="classes" role="status" v-bind="attrs">',
+  },
+  {
+    id: 'alert-tone-changes-the-role',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'tone starts carrying semantics: danger and warn stay alerts, every other tone becomes a status',
+    find: '  <section :class="classes" role="alert" v-bind="attrs">',
+    replace:
+      "  <section :class=\"classes\" :role=\"props.tone === 'danger' || props.tone === 'warn' ? 'alert' : 'status'\" v-bind=\"attrs\">",
+  },
+  {
+    id: 'alert-gains-a-live-region',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the section writes aria-live and aria-atomic of its own beside the role',
+    find: '  <section :class="classes" role="alert" v-bind="attrs">',
+    replace: '  <section :class="classes" role="alert" aria-live="assertive" aria-atomic="true" v-bind="attrs">',
+  },
+  {
+    id: 'alert-names-itself',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the section labels itself with the title, which the reference never does',
+    find: '  <section :class="classes" role="alert" v-bind="attrs">',
+    replace: '  <section :class="classes" role="alert" :aria-label="props.title" v-bind="attrs">',
+  },
+  {
+    id: 'alert-lets-its-own-role-beat-the-consumer',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the role is bound after the attrs, so a consumer role no longer replaces it',
+    find: '  <section :class="classes" role="alert" v-bind="attrs">',
+    replace: '  <section :class="classes" v-bind="attrs" role="alert">',
+  },
+  {
+    id: 'alert-lets-the-caller-class-win',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'attrs are bound before the class, so a caller class replaces the canonical classes',
+    find: '  <section :class="classes" role="alert" v-bind="attrs">',
+    replace: '  <section v-bind="attrs" :class="classes" role="alert">',
+  },
+  {
+    id: 'alert-moves-attrs-to-the-content-wrapper',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'forwarded attrs land on the content wrapper rather than on the section',
+    find:
+      '  <section :class="classes" role="alert" v-bind="attrs">\n' +
+      '    <div v-if="regions.icon" class="vf-alert__icon" aria-hidden="true">\n' +
+      '      <slot name="icon">\n' +
+      '        <VueIconify :icon="iconName" size="var(--vf-icon-size-lg)" />\n' +
+      '      </slot>\n' +
+      '    </div>\n\n' +
+      '    <div class="vf-alert__content">',
+    replace:
+      '  <section :class="classes" role="alert">\n' +
+      '    <div v-if="regions.icon" class="vf-alert__icon" aria-hidden="true">\n' +
+      '      <slot name="icon">\n' +
+      '        <VueIconify :icon="iconName" size="var(--vf-icon-size-lg)" />\n' +
+      '      </slot>\n' +
+      '    </div>\n\n' +
+      '    <div class="vf-alert__content" v-bind="attrs">',
+  },
+  {
+    // The whole template block, because both tags have to move together: an
+    // SFC whose root opens as a div and closes as a section does not compile.
+    id: 'alert-root-becomes-a-div',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the section root becomes a div, which looks identical and exposes a different element',
+    find:
+      '  <section :class="classes" role="alert" v-bind="attrs">\n' +
+      '    <div v-if="regions.icon" class="vf-alert__icon" aria-hidden="true">\n' +
+      '      <slot name="icon">\n' +
+      '        <VueIconify :icon="iconName" size="var(--vf-icon-size-lg)" />\n' +
+      '      </slot>\n' +
+      '    </div>\n\n' +
+      '    <div class="vf-alert__content">\n' +
+      '      <p v-if="regions.title" class="vf-alert__title">\n' +
+      '        <slot name="title">\n' +
+      '          {{ props.title }}\n' +
+      '        </slot>\n' +
+      '      </p>\n\n' +
+      '      <div class="vf-alert__body">\n' +
+      '        <slot />\n' +
+      '      </div>\n' +
+      '    </div>\n' +
+      '  </section>',
+    replace:
+      '  <div :class="classes" role="alert" v-bind="attrs">\n' +
+      '    <div v-if="regions.icon" class="vf-alert__icon" aria-hidden="true">\n' +
+      '      <slot name="icon">\n' +
+      '        <VueIconify :icon="iconName" size="var(--vf-icon-size-lg)" />\n' +
+      '      </slot>\n' +
+      '    </div>\n\n' +
+      '    <div class="vf-alert__content">\n' +
+      '      <p v-if="regions.title" class="vf-alert__title">\n' +
+      '        <slot name="title">\n' +
+      '          {{ props.title }}\n' +
+      '        </slot>\n' +
+      '      </p>\n\n' +
+      '      <div class="vf-alert__body">\n' +
+      '        <slot />\n' +
+      '      </div>\n' +
+      '    </div>\n' +
+      '  </div>',
+  },
+  {
+    id: 'alert-icon-stops-being-decorative',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'aria-hidden leaves the icon container, so the glyph enters the accessibility tree',
+    find: '    <div v-if="regions.icon" class="vf-alert__icon" aria-hidden="true">',
+    replace: '    <div v-if="regions.icon" class="vf-alert__icon">',
+  },
+  {
+    id: 'alert-hides-the-glyph-twice',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'aria-hidden is passed to the glyph as well as written on the container',
+    find: '        <VueIconify :icon="iconName" size="var(--vf-icon-size-lg)" />',
+    replace: '        <VueIconify :icon="iconName" size="var(--vf-icon-size-lg)" aria-hidden="true" />',
+  },
+  {
+    id: 'alert-glyph-loses-the-large-size',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: "the glyph is rendered at the icon package's default size rather than the large size",
+    find: '        <VueIconify :icon="iconName" size="var(--vf-icon-size-lg)" />',
+    replace: '        <VueIconify :icon="iconName" />',
+  },
+  {
+    id: 'alert-always-renders-the-icon',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'hideIcon stops removing the container',
+    find: '    <div v-if="regions.icon" class="vf-alert__icon" aria-hidden="true">',
+    replace: '    <div class="vf-alert__icon" aria-hidden="true">',
+  },
+  {
+    id: 'alert-title-becomes-a-heading',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the title paragraph becomes an h3, adding a heading to every alert',
+    find:
+      '      <p v-if="regions.title" class="vf-alert__title">\n        <slot name="title">\n' +
+      '          {{ props.title }}\n        </slot>\n      </p>',
+    replace:
+      '      <h3 v-if="regions.title" class="vf-alert__title">\n        <slot name="title">\n' +
+      '          {{ props.title }}\n        </slot>\n      </h3>',
+  },
+  {
+    id: 'alert-drops-the-title-fallback',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the title slot loses its fallback content, so a title prop alone renders an empty paragraph',
+    find: '        <slot name="title">\n          {{ props.title }}\n        </slot>',
+    replace: '        <slot name="title" />',
+  },
+  {
+    id: 'alert-keys-the-body-on-the-slot',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the unconditional body wrapper starts rendering only when the default slot was passed',
+    find: '      <div class="vf-alert__body">\n        <slot />\n      </div>',
+    replace: '      <div v-if="$slots.default" class="vf-alert__body">\n        <slot />\n      </div>',
+  },
+  {
+    id: 'alert-body-gains-a-role',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the body wrapper starts exposing a role of its own, where the reference exposes none',
+    find: '      <div class="vf-alert__body">\n        <slot />\n      </div>',
+    replace: '      <div class="vf-alert__body" role="status">\n        <slot />\n      </div>',
+  },
+  {
+    id: 'alert-uses-the-badge-resolver',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: "the class list is derived from VfBadge's rule - the substitution the shared tone vocabulary invites",
+    find: "import { resolveAlertClasses, resolveAlertIcon, resolveAlertRegions } from '@codemonster-ru/vueforge-shared-core';",
+    replace:
+      "import { resolveBadgeClasses, resolveAlertIcon, resolveAlertRegions } from '@codemonster-ru/vueforge-shared-core';\n" +
+      'const resolveAlertClasses = resolveBadgeClasses;',
+  },
+  {
+    id: 'alert-changes-the-default-tone',
+    file: alertSourcePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the default tone becomes neutral, so a bare alert emits a modifier it never emitted',
+    find: "  tone: 'primary',\n  title: undefined,",
+    replace: "  tone: 'neutral',\n  title: undefined,",
+  },
+  {
+    id: 'alert-suppresses-neutral-instead-of-primary',
+    file: alertRulePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: "the tone rule suppresses neutral rather than primary - VfBadge's rule under the alert's block name",
+    find: "  if (tone !== 'primary') classes.push(`vf-alert--${tone}`);",
+    replace: "  if (tone !== 'neutral') classes.push(`vf-alert--${tone}`);",
+  },
+  {
+    id: 'alert-drops-the-danger-modifier',
+    file: alertRulePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'one tone stops reaching the class list',
+    find: "  if (tone !== 'primary') classes.push(`vf-alert--${tone}`);",
+    replace: "  if (tone !== 'primary' && tone !== 'danger') classes.push(`vf-alert--${tone}`);",
+  },
+  {
+    id: 'alert-becomes-a-badge',
+    file: alertRulePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: "VfBadge's block name is reused for VfAlert",
+    find: "  const classes = ['vf-alert'];\n\n  if (tone !== 'primary') classes.push(`vf-alert--${tone}`);",
+    replace: "  const classes = ['vf-badge'];\n\n  if (tone !== 'neutral') classes.push(`vf-badge--${tone}`);",
+  },
+  {
+    id: 'alert-success-falls-back-to-the-info-glyph',
+    file: alertRulePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'the success tone loses its glyph and falls to the default',
+    find: "    case 'success':\n      return 'check-circle';",
+    replace: "    case 'success':\n      return 'info-circle';",
+  },
+  {
+    id: 'alert-tests-the-icon-for-truthiness',
+    file: alertRulePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'an empty icon prop falls back to the tone glyph rather than being passed through as a name',
+    find: '  if (input.icon !== undefined && input.icon !== null) return input.icon;',
+    replace: '  if (input.icon) return input.icon;',
+  },
+  {
+    id: 'alert-opens-the-title-for-an-empty-string',
+    file: alertRulePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'presence replaces truthiness, so title="" renders an empty paragraph',
+    find: '    title: Boolean(input.title) || input.hasTitleSlot,',
+    replace: '    title: input.title !== undefined || input.hasTitleSlot,',
+  },
+  {
+    id: 'alert-keys-the-icon-on-the-slot-too',
+    file: alertRulePath,
+    suite: 'src/components/alert/VfAlert.characterization.spec.ts',
+    description: 'hideIcon stops discarding a consumer icon slot',
+    find: '    icon: !input.hideIcon,',
+    replace: '    icon: !input.hideIcon || input.hasIconSlot,',
+  },
+];
+
+/**
  * VfSkeletonGate regressions.
  *
  * The first migrated component that renders another, so the list has two halves
@@ -1602,4 +1904,5 @@ export const componentMutations = [
   ...cardMutations,
   ...skeletonGateMutations,
   ...panelMutations,
+  ...alertMutations,
 ];

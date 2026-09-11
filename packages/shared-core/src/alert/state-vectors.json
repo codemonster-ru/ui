@@ -1,0 +1,163 @@
+{
+  "$comment": "Shared input/expected vectors for VfAlert. The TypeScript rules in alert/state.ts and the PHP mirror in packages/razor/src/Support/AlertState.php both run this file. Three rules: the class list (which suppresses the modifier at primary, not at neutral - the opposite of the badge and the tag), the fallback glyph (which four tones share), and the regions (two containers keyed on different questions, two slot fallbacks keyed on whether the slot produced content). There is no rule about a role: every alert writes role=alert and tone never changes it. There is no rule about a dismiss control: the reference has none. This file is not presentation/state-vectors.json and must never be merged with it.",
+  "resolveAlertClasses": [
+    { "tone": "primary", "expected": ["vf-alert"] },
+    { "tone": "neutral", "expected": ["vf-alert", "vf-alert--neutral"] },
+    { "tone": "success", "expected": ["vf-alert", "vf-alert--success"] },
+    { "tone": "info", "expected": ["vf-alert", "vf-alert--info"] },
+    { "tone": "warn", "expected": ["vf-alert", "vf-alert--warn"] },
+    { "tone": "help", "expected": ["vf-alert", "vf-alert--help"] },
+    { "tone": "danger", "expected": ["vf-alert", "vf-alert--danger"] },
+    { "tone": "contrast", "expected": ["vf-alert", "vf-alert--contrast"] }
+  ],
+  "resolveAlertIcon": [
+    {
+      "$why": "The default tone falls to the chain's final default.",
+      "tone": "primary",
+      "icon": null,
+      "expected": "info-circle"
+    },
+    {
+      "$why": "neutral is not named in the chain and falls to the same default. Four tones share this glyph.",
+      "tone": "neutral",
+      "icon": null,
+      "expected": "info-circle"
+    },
+    { "tone": "success", "icon": null, "expected": "check-circle" },
+    { "tone": "info", "icon": null, "expected": "info-circle" },
+    { "tone": "warn", "icon": null, "expected": "alert-circle" },
+    { "tone": "help", "icon": null, "expected": "question-circle" },
+    { "tone": "danger", "icon": null, "expected": "x-circle" },
+    {
+      "$why": "contrast names info-circle explicitly rather than falling to it.",
+      "tone": "contrast",
+      "icon": null,
+      "expected": "info-circle"
+    },
+    { "$why": "An explicit icon wins over the tone.", "tone": "danger", "icon": "user", "expected": "user" },
+    {
+      "$why": "The quirk: the reference tests icon with ??, so an empty string is a glyph name rather than no icon.",
+      "tone": "danger",
+      "icon": "",
+      "expected": ""
+    },
+    {
+      "$why": "The alert validates nothing. An unknown name is passed through and the icon package decides what it renders.",
+      "tone": "primary",
+      "icon": "no-such-glyph",
+      "expected": "no-such-glyph"
+    }
+  ],
+  "resolveAlertRegions": [
+    {
+      "$why": "An empty alert: the icon container with its glyph, no title paragraph.",
+      "hideIcon": false,
+      "hasIconSlot": false,
+      "iconSlotContent": false,
+      "title": null,
+      "hasTitleSlot": false,
+      "titleSlotContent": false,
+      "expected": { "icon": true, "iconGlyph": true, "title": false, "titleText": true }
+    },
+    {
+      "$why": "A title alone opens the paragraph and fills it with the prop.",
+      "hideIcon": false,
+      "hasIconSlot": false,
+      "iconSlotContent": false,
+      "title": "Saved",
+      "hasTitleSlot": false,
+      "titleSlotContent": false,
+      "expected": { "icon": true, "iconGlyph": true, "title": true, "titleText": true }
+    },
+    {
+      "$why": "The quirk: an empty-string title is falsy, so it renders no paragraph rather than an empty one.",
+      "hideIcon": false,
+      "hasIconSlot": false,
+      "iconSlotContent": false,
+      "title": "",
+      "hasTitleSlot": false,
+      "titleSlotContent": false,
+      "expected": { "icon": true, "iconGlyph": true, "title": false, "titleText": true }
+    },
+    {
+      "$why": "A title slot opens the paragraph on its own and suppresses the prop text.",
+      "hideIcon": false,
+      "hasIconSlot": false,
+      "iconSlotContent": false,
+      "title": null,
+      "hasTitleSlot": true,
+      "titleSlotContent": true,
+      "expected": { "icon": true, "iconGlyph": true, "title": true, "titleText": false }
+    },
+    {
+      "$why": "A title slot suppresses the prop text even when a title was passed; the prop then goes unused.",
+      "hideIcon": false,
+      "hasIconSlot": false,
+      "iconSlotContent": false,
+      "title": "Saved",
+      "hasTitleSlot": true,
+      "titleSlotContent": true,
+      "expected": { "icon": true, "iconGlyph": true, "title": true, "titleText": false }
+    },
+    {
+      "$why": "A title slot that renders nothing still opens the paragraph and brings the prop text back.",
+      "hideIcon": false,
+      "hasIconSlot": false,
+      "iconSlotContent": false,
+      "title": "Saved",
+      "hasTitleSlot": true,
+      "titleSlotContent": false,
+      "expected": { "icon": true, "iconGlyph": true, "title": true, "titleText": true }
+    },
+    {
+      "$why": "The same with an empty prop: an empty paragraph, because the slot opened it and the fallback is empty.",
+      "hideIcon": false,
+      "hasIconSlot": false,
+      "iconSlotContent": false,
+      "title": "",
+      "hasTitleSlot": true,
+      "titleSlotContent": false,
+      "expected": { "icon": true, "iconGlyph": true, "title": true, "titleText": true }
+    },
+    {
+      "$why": "An icon slot replaces the glyph but not the container.",
+      "hideIcon": false,
+      "hasIconSlot": true,
+      "iconSlotContent": true,
+      "title": null,
+      "hasTitleSlot": false,
+      "titleSlotContent": false,
+      "expected": { "icon": true, "iconGlyph": false, "title": false, "titleText": true }
+    },
+    {
+      "$why": "An icon slot that renders nothing brings the glyph back.",
+      "hideIcon": false,
+      "hasIconSlot": true,
+      "iconSlotContent": false,
+      "title": null,
+      "hasTitleSlot": false,
+      "titleSlotContent": false,
+      "expected": { "icon": true, "iconGlyph": true, "title": false, "titleText": true }
+    },
+    {
+      "$why": "hideIcon removes the container whether or not a consumer icon slot was passed; the slot is discarded with it.",
+      "hideIcon": true,
+      "hasIconSlot": true,
+      "iconSlotContent": true,
+      "title": "Saved",
+      "hasTitleSlot": false,
+      "titleSlotContent": false,
+      "expected": { "icon": false, "iconGlyph": false, "title": true, "titleText": true }
+    },
+    {
+      "$why": "hideIcon with nothing else: the content wrapper is the only child.",
+      "hideIcon": true,
+      "hasIconSlot": false,
+      "iconSlotContent": false,
+      "title": null,
+      "hasTitleSlot": false,
+      "titleSlotContent": false,
+      "expected": { "icon": false, "iconGlyph": true, "title": false, "titleText": true }
+    }
+  ]
+}
