@@ -129,6 +129,33 @@ test('a PHP require that escapes the package is rejected', () => {
   assert.match(violations[0], /escapes the package/);
 });
 
+test('a PHP require that escapes the package through dirname() is rejected', () => {
+  // The M21 boundary attack: `dirname(__DIR__, 3)` from src/Components/ is
+  // packages/, and the scanner read only `../`. Three levels from a file two
+  // below the package root escapes; two levels does not.
+  const escaping = analyzePhpIncludes({
+    rootDir: '/repo',
+    files: ['packages/razor/src/Components/ProgressBarComponent.php'],
+    readFile: () => `<?php require_once dirname(__DIR__, 3) . '/core/src/utils/classes.ts';`,
+  });
+  assert.equal(escaping.length, 1);
+  assert.match(escaping[0], /escapes the package/);
+
+  const nested = analyzePhpIncludes({
+    rootDir: '/repo',
+    files: ['packages/razor/src/Components/ProgressBarComponent.php'],
+    readFile: () => `<?php require dirname(dirname(dirname(__DIR__))) . '/core/x.php';`,
+  });
+  assert.equal(nested.length, 1);
+
+  const inside = analyzePhpIncludes({
+    rootDir: '/repo',
+    files: ['packages/razor/src/Components/ProgressBarComponent.php'],
+    readFile: () => `<?php require dirname(__DIR__, 2) . '/vendor/autoload.php';`,
+  });
+  assert.deepEqual(inside, []);
+});
+
 test('a PHP require inside the package is accepted', () => {
   const violations = analyzePhpIncludes({
     rootDir: '/repo',

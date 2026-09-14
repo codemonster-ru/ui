@@ -55,8 +55,31 @@ const repositoryPathPattern = /(?:packages|examples)\/[A-Za-z0-9._-]+(?:\/[A-Za-
  * under-reporting is exactly the failure this guard exists to prevent.
  */
 /** Where a `/` can only begin a regular expression, never a division. */
-const REGEX_PRECEDING_CHARACTERS = new Set(['(', ',', '=', ':', '[', '!', '&', '|', '?', '{', '}', ';', '+', '-', '*', '%', '~', '^', '<', '>', '\n']);
-const REGEX_PRECEDING_KEYWORDS = /(?:^|[^A-Za-z0-9_$])(return|typeof|instanceof|in|of|new|delete|void|throw|case|do|else|yield|await)$/;
+const REGEX_PRECEDING_CHARACTERS = new Set([
+  '(',
+  ',',
+  '=',
+  ':',
+  '[',
+  '!',
+  '&',
+  '|',
+  '?',
+  '{',
+  '}',
+  ';',
+  '+',
+  '-',
+  '*',
+  '%',
+  '~',
+  '^',
+  '<',
+  '>',
+  '\n',
+]);
+const REGEX_PRECEDING_KEYWORDS =
+  /(?:^|[^A-Za-z0-9_$])(return|typeof|instanceof|in|of|new|delete|void|throw|case|do|else|yield|await)$/;
 
 export function scanSource(source, { hashComments = false, regexLiterals = !hashComments } = {}) {
   const literals = [];
@@ -373,9 +396,24 @@ export function analyzePhpIncludes({ rootDir, files, readFile }) {
       continue;
     }
 
+    // How many directories the file sits below the package root: a
+    // `dirname(__DIR__, n)` that climbs further than that leaves the package
+    // as surely as a `../` does. Found by the M21 boundary attack, which
+    // wrote its escape with dirname() and was not caught.
+    const depth = file.split('/').length - 3;
+
     for (const match of source.matchAll(/\b(require|require_once|include|include_once)\b\s*[^;]*/g)) {
       const statement = match[0];
-      if (/\.\.\s*\/\s*\.\./.test(statement) || /\.\.\//.test(statement.replace(/\s+/g, ''))) {
+      const climbs = [...statement.matchAll(/dirname\(\s*__DIR__\s*(?:,\s*(\d+))?\s*\)/g)].reduce(
+        (total, [, levels]) => total + Number(levels ?? 1),
+        0,
+      );
+      if (
+        /\.\.\s*\/\s*\.\./.test(statement) ||
+        /\.\.\//.test(statement.replace(/\s+/g, '')) ||
+        climbs > depth ||
+        /dirname\(\s*dirname\(/.test(statement)
+      ) {
         violations.push(
           `${file}: ${match[1]} escapes the package (${statement.trim().slice(0, 80)}). ` +
             'Installed code is found through Composer autoloading, not relative paths.',
