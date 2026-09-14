@@ -28,6 +28,12 @@ function comparedBy(attribute) {
   // whose components' entire contract is a class list, which is why this path
   // has to be stated rather than left implicit.
   if (attribute === 'class') return 'dom.canonicalClasses';
+  // `id` is never compared as a literal either: the extractor rewrites every
+  // id to its document position and every reference through the same map, so
+  // an id is compared as the relationship edges it takes part in. M22 is the
+  // first profile to declare it, because the accordion's trigger and panel
+  // ids are the whole of its aria-controls/aria-labelledby graph.
+  if (attribute === 'id') return 'dom.relationships';
   if (COMPARED_ATTRIBUTES.includes(attribute)) return 'dom.nativeAttributes';
   if (REFERENCE_ATTRIBUTES.includes(attribute)) return 'dom.relationships';
   // Some semantics have no attribute to compare. `indeterminate` has none at

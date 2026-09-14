@@ -94,6 +94,17 @@ export const COMPARED_ATTRIBUTES = [
   // adapter that wrote aria-valuetext="50%" on every determinate bar would
   // have compared equal.
   'aria-valuetext',
+  // VfAccordion. Found missing by the attribute-coverage gate in M22, the
+  // ninth time it has caught an attribute nothing compared. `aria-expanded`
+  // is the accordion's whole announced state: before M22 no migrated
+  // component wrote it, and an adapter whose trigger announced the opposite
+  // of its panel would have compared equal on every attribute while the
+  // relationship graph and the screenshot both passed. `aria-disabled` is the
+  // other half of the disabled contract - the reference writes the native
+  // attribute and *never* this one, and an adapter that wrote both would
+  // announce the trigger twice.
+  'aria-expanded',
+  'aria-disabled',
   'focusable',
   'style',
   'hidden',
@@ -155,11 +166,22 @@ export function extractCasesExpression(measuredRoles) {
     return map;
   }
 
+  // A reference outside the case keeps its literal: it is a consumer's own id,
+  // written into the catalog, and a target that rewrote it would differ. A
+  // reference that resolves *nowhere* in the document is recorded as
+  // #dangling, without the literal. Found by M22: a closed accordion's
+  // aria-controls names the generated id of a panel v-if has removed, on
+  // every target, and the generated literal differs by construction - so the
+  // literal would have made the closed state a permanent difference while
+  // saying nothing about the product. The dangling form is still a difference
+  // against a resolved one, which is what the relationship attacks need.
   function canonicaliseReference(value, idMap) {
     return value
       .split(/\\s+/)
       .filter(Boolean)
-      .map((token) => idMap.get(token) ?? ('#unresolved:' + token))
+      .map((token) =>
+        idMap.get(token) ?? (document.getElementById(token) ? '#outside-case:' + token : '#dangling'),
+      )
       .join(' ');
   }
 
@@ -259,7 +281,17 @@ export function extractCasesExpression(measuredRoles) {
       classes: classes.filter((name) => name.startsWith('vf-')).sort(),
       consumerClasses: classes.filter((name) => !name.startsWith('vf-') && !name.startsWith('parity-')).sort(),
       attributes: Object.fromEntries(Object.entries(attributes).sort(([a], [b]) => (a < b ? -1 : 1))),
-      children: [...element.children].map((child) => describe(child, idMap)),
+      // A <template> carrying the Razor ownership marker is the adapter's
+      // deferred content store - the closed accordion's panel, waiting to be
+      // rendered on open - and not product DOM: it is inert, unpainted and
+      // absent from the accessibility tree, and the reference has no node
+      // there at all. It is the one element dropped here, and only with the
+      // marker: a consumer's own <template> in a slot is compared, and any
+      // other element with the marker is compared. What the template holds is
+      // compared the moment it renders, by the post-interaction DOM.
+      children: [...element.children]
+        .filter((child) => !(child.tagName === 'TEMPLATE' && child.hasAttribute('data-vf-razor')))
+        .map((child) => describe(child, idMap)),
     };
 
     const text = directText(element);
@@ -1052,19 +1084,315 @@ export function transitionViolations(parityCase, result, postDom, expectedDom) {
 }
 
 /**
+ * The fields an ownership snapshot must carry.
+ *
+ * Exported for the same reason STATIC_SNAPSHOT_FIELDS is: the runner checks
+ * for them rather than trusting that the expression ran, because a snapshot
+ * that came back without them on every target compares equal to itself.
+ */
+export const OWNERSHIP_SNAPSHOT_FIELDS = [
+  'ownershipPosture',
+  'componentControls',
+  'consumerControlCount',
+  'focusableTotal',
+  'interactiveRoleTotal',
+];
+
+/**
+ * Whether an ownership snapshot matches what the case and the profile declare.
+ *
+ * The other direction from staticOwnershipViolations. M15 to M21 proved
+ * "expected component-owned controls = 0" on eight components; M22 is the
+ * first whose component renders a control of its own, and the measurement has
+ * to say more than a count. What is asserted, against declarations no adapter
+ * can see:
+ *
+ *   - the profile names the controls the component owns - a role, the
+ *     selector that finds it and the tag it has to be. A profile that names
+ *     none has nothing to measure and fails closed rather than passing
+ *     vacuously;
+ *   - the case declares how many such controls it renders, and the snapshot
+ *     must contain exactly that many. Missing, extra and duplicated all
+ *     differ from the number;
+ *   - each one has the declared tag. A div with role=button is found by the
+ *     selector and rejected by its tag: identity, not count;
+ *   - the consumer controls - every focusable element that is not one of the
+ *     component's - number what the case declares for the state it is in, or
+ *     what the scenario declares for the state it ends in;
+ *   - the totals add up. A node counted as the component's *and* the
+ *     consumer's, or counted twice as the component's, breaks the equation
+ *     against the plain focusable count of the case;
+ *   - no explicit interactive role. The reference's trigger is a native
+ *     button and its region is not interactive.
+ *
+ * The declarations cannot be forged by an adapter: the budget lives in the
+ * shared catalog and the identity in the profile, and both adapters render
+ * from the catalog without seeing either. A component that rendered its
+ * trigger as a div, or grew a second one, on every target at once - the case
+ * a three-way comparison is blind to - fails here.
+ *
+ * Returns the problems as strings so a test can drive it directly.
+ */
+export function controlOwnershipViolations(parityCase, snapshot, profile, { consumerInteractive } = {}) {
+  const declared = profile?.controlOwnership;
+  const roles = declared && typeof declared === 'object' ? Object.entries(declared) : [];
+
+  if (roles.length === 0) {
+    return [
+      `the ${profile?.id ?? 'unknown'} profile declares no component-owned control, so the ownership stage has ` +
+        'nothing to look for. An expression that can measure nothing and pass is not evidence.',
+    ];
+  }
+  for (const [role, rule] of roles) {
+    if (
+      typeof rule?.selector !== 'string' ||
+      rule.selector === '' ||
+      typeof rule?.tag !== 'string' ||
+      rule.tag === ''
+    ) {
+      return [`the ${profile.id} profile declares control [${role}] without a selector and a tag; identity needs both`];
+    }
+  }
+
+  if (!snapshot || typeof snapshot !== 'object') {
+    return [`case ${parityCase.id} produced no ownership snapshot at all`];
+  }
+  const missing = OWNERSHIP_SNAPSHOT_FIELDS.filter((field) => !(field in snapshot));
+  if (missing.length > 0) {
+    return [
+      `case ${parityCase.id} is missing [${missing.join(', ')}]. A stage that records nothing is a failure, not a pass.`,
+    ];
+  }
+
+  const violations = [];
+  const controls = Array.isArray(snapshot.componentControls) ? snapshot.componentControls : null;
+  if (snapshot.ownershipPosture !== 'component' || controls === null) {
+    return [`case ${parityCase.id} reports posture=${JSON.stringify(snapshot.ownershipPosture)} with no control list`];
+  }
+
+  const expected = parityCase.componentInteractive;
+  if (!Number.isInteger(expected)) {
+    violations.push(
+      `case ${parityCase.id} declares no componentInteractive budget. A profile that owns controls needs every case ` +
+        'to say how many, or the measurement has nothing to be wrong against.',
+    );
+  } else if (controls.length !== expected) {
+    violations.push(
+      `case ${parityCase.id} measured ${controls.length} component-owned control(s) but the catalog declares ` +
+        `${expected}. Missing, duplicated and extra all fail here, on every target at once.`,
+    );
+  }
+
+  for (const control of controls) {
+    const rule = declared[control.role];
+    if (!rule) {
+      violations.push(
+        `case ${parityCase.id} measured a control with role [${control.role}] the profile does not declare`,
+      );
+      continue;
+    }
+    if (control.tag !== rule.tag) {
+      violations.push(
+        `case ${parityCase.id}: the ${control.role} is a <${control.tag}>, not the historical <${rule.tag}>. ` +
+          'Tag identity is part of the contract; a div with role=button is not the trigger.',
+      );
+    }
+  }
+
+  const consumerBudget = consumerInteractive ?? parityCase.consumerInteractive ?? 0;
+  if (snapshot.consumerControlCount !== consumerBudget) {
+    violations.push(
+      `case ${parityCase.id} measured ${snapshot.consumerControlCount} consumer control(s) but the catalog declares ` +
+        `${consumerBudget}. A component control counted as the consumer's, or a consumer control the component ` +
+        'grew, fails here.',
+    );
+  }
+
+  if (snapshot.focusableTotal !== controls.length + snapshot.consumerControlCount) {
+    violations.push(
+      `case ${parityCase.id}: ${controls.length} component + ${snapshot.consumerControlCount} consumer controls do not ` +
+        `add up to the ${snapshot.focusableTotal} focusable element(s) measured. A node was counted twice or ` +
+        'classified as both.',
+    );
+  }
+
+  if (snapshot.interactiveRoleTotal !== 0) {
+    violations.push(
+      `case ${parityCase.id} measured ${snapshot.interactiveRoleTotal} element(s) carrying an explicit interactive ` +
+        'role. The historical trigger is a native button and needs none.',
+    );
+  }
+
+  return violations;
+}
+
+/**
+ * What a VfAccordion case reports, before and after an interaction.
+ *
+ * Component-specific and named so, like skeletonGateInteractionExpression. It
+ * selects the accordion's own elements; what it records falls into four
+ * groups, each compared as its own dimension so a defect is attributed to the
+ * half it is in:
+ *
+ *   - ownership: every control the profile says the component owns, with its
+ *     tag, type, place and state, and every focusable element that is not one
+ *     of them. Measured by the profile's selector and classified by identity,
+ *     not by containment, so a consumer control nested inside the trigger
+ *     slot is still the consumer's;
+ *   - state: aria-expanded of every trigger, whether the first trigger's panel
+ *     is in the DOM and painted, the icon modifier, the panel text, and
+ *     whether the transition has settled;
+ *   - relationships: whether the first trigger's aria-controls resolves to a
+ *     panel that points back at it, measured on the live DOM rather than read
+ *     as attribute text;
+ *   - the scenario's own record: activations, focus, and the neutral event log
+ *     the fixture keeps.
+ *
+ * Asynchronous, because the reference's enter and leave hooks hold inline
+ * declarations for the theme's normal duration and remove a leaving panel
+ * only when that timer fires. A snapshot taken on the next frame would
+ * measure a panel mid-flight on every target and compare equal to itself. So
+ * the expression waits until no panel in the case carries an inline
+ * transition, bounded, and records whether it got there: `settled` is a
+ * field the catalog expects and the comparator compares.
+ */
+function accordionInteractionExpression(caseId, controlOwnership = {}) {
+  return `(async () => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+
+    const panels = () => [...root.querySelectorAll('.vf-accordion__content')];
+    const unsettled = () => panels().some((panel) => panel.style.transition !== '');
+    const deadline = performance.now() + 2500;
+    while (unsettled() && performance.now() < deadline) {
+      await new Promise((tick) => setTimeout(tick, 25));
+    }
+    const settled = !unsettled();
+
+    const pathOf = (element) => {
+      const segments = [];
+      for (let node = element; node && node !== root; node = node.parentElement) {
+        const classes = [...node.classList].filter((name) => name.startsWith('vf-')).sort();
+        segments.unshift(node.tagName.toLowerCase() + (classes.length ? '.' + classes.join('.') : ''));
+      }
+      return segments.join('>');
+    };
+
+    const focusable = [...root.querySelectorAll(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        const controls = element.getAttribute('aria-controls');
+        const target = controls ? document.getElementById(controls) : null;
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            type: element.getAttribute('type'),
+            path: pathOf(element),
+            expanded: element.getAttribute('aria-expanded'),
+            disabled: element.hasAttribute('disabled'),
+            focusable: focusable.includes(element),
+            controls: !controls
+              ? 'none'
+              : !target
+                ? 'dangling'
+                : root.contains(target) && target.getAttribute('aria-labelledby') === element.id
+                  ? 'panel'
+                  : 'other',
+            name: (element.textContent ?? '').replace(/\\s+/g, ' ').trim(),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const triggers = owned.filter((entry) => entry.record.role === 'trigger').map((entry) => entry.element);
+    const first = triggers[0] ?? null;
+    const firstControls = first?.getAttribute('aria-controls') ?? null;
+    const panel = firstControls ? document.getElementById(firstControls) : null;
+    const panelInCase = panel && root.contains(panel) ? panel : null;
+    const rect = panelInCase?.getBoundingClientRect();
+    const style = panelInCase ? getComputedStyle(panelInCase) : null;
+
+    const activeElement = document.activeElement;
+    const focusRole = first && activeElement === first
+      ? 'trigger'
+      : triggers.includes(activeElement)
+        ? 'other-trigger'
+        : panelInCase && panelInCase.contains(activeElement)
+          ? 'panel'
+          : activeElement === document.body
+            ? 'body'
+            : root.contains(activeElement) ? 'other-inside-case' : 'outside-case';
+
+    const caseRect = root.getBoundingClientRect();
+
+    return {
+      clip: {
+        x: Math.round(caseRect.left + window.scrollX),
+        y: Math.round(caseRect.top + window.scrollY),
+        width: Math.round(caseRect.width),
+        height: Math.round(caseRect.height),
+      },
+      // Ownership. Declared posture beside the measurement, as the static
+      // snapshot does; the list is what the count is derived from.
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: [...root.querySelectorAll('*')].filter((element) =>
+        INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      // State, on the live DOM.
+      expanded: first?.getAttribute('aria-expanded') ?? null,
+      expandedStates: triggers.map((trigger) => trigger.getAttribute('aria-expanded')),
+      panelPresent: panelInCase !== null,
+      panelCount: panels().length,
+      panelVisible: panelInCase !== null && style.display !== 'none' && style.visibility !== 'hidden' && rect.height > 0,
+      panelRole: panelInCase?.getAttribute('role') ?? null,
+      iconOpen: first?.querySelector('.vf-accordion__icon')?.classList.contains('vf-accordion__icon--open') ?? null,
+      panelText: panelInCase ? (panelInCase.textContent ?? '').replace(/\\s+/g, ' ').trim() : null,
+      settled,
+      // Relationships, resolved rather than read.
+      controlsResolved: first === null ? null : !firstControls ? 'none' : !panel ? 'dangling' : panelInCase ? 'panel' : 'outside-case',
+      panelLabelledBy: panelInCase === null
+        ? null
+        : panelInCase.getAttribute('aria-labelledby') === first.id ? 'trigger' : 'other',
+      // The scenario's own record.
+      activations: window.__parityActivations ?? 0,
+      focusRole,
+      events: window.__parityAccordionEvents?.[${JSON.stringify(caseId)}] ?? [],
+    };
+  })()`;
+}
+
+/**
  * Reports the actual post-scenario state before any visual focus normalization.
  *
  * The shape is component-specific - a caret position means nothing on a button,
  * an activation count means nothing on a text field - so the profile selects
  * it. Everything downstream compares whatever shape comes back, key by key.
  */
-export function interactionExpression(caseId, snapshot = 'input') {
+export function interactionExpression(caseId, snapshot = 'input', controlOwnership = undefined) {
   if (snapshot === 'static') {
     return staticInteractionExpression(caseId);
   }
 
   if (snapshot === 'skeleton-gate') {
     return skeletonGateInteractionExpression(caseId);
+  }
+
+  if (snapshot === 'accordion') {
+    return accordionInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

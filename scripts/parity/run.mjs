@@ -26,6 +26,7 @@ import {
   validatePolicy,
 } from './compare.mjs';
 import {
+  controlOwnershipViolations,
   extractCasesExpression,
   driveInteraction,
   interactionExpression,
@@ -141,6 +142,13 @@ async function readAccessibility(page, caseId, roles) {
           'valuenow',
           'valuemin',
           'valuemax',
+          // `expanded` joined in M22: VfAccordion is the first migrated
+          // component whose control announces an expanded state, and the
+          // value Chrome derives from aria-expanded - before and after a
+          // gesture - is the announcement contract. Without it a trigger
+          // whose panel opened while aria-expanded stayed false compared
+          // equal in the tree.
+          'expanded',
         ].includes(property.name)
       ) {
         states[property.name] = String(property.value?.value ?? '');
@@ -281,6 +289,10 @@ async function captureTarget(
     const interactions = {};
     const interactionScreenshots = {};
     const naturalInteractionScreenshots = {};
+    // Live parity records, filled only for a profile that declares liveParity.
+    const interactionDom = {};
+    const interactionConvergence = {};
+    const interactionAccessibility = {};
     // A component with no interaction still has to produce interaction
     // evidence. Recording the posture per case is what makes "nothing to drive"
     // a measurement instead of a stage that quietly did not run; see
@@ -326,6 +338,28 @@ async function captureTarget(
           throw new Error(`Static ownership failed on ${label} (${theme}): ${violations.join('; ')}.`);
         }
 
+        interactions[parityCase.id] = snapshot;
+      }
+    }
+
+    // The ownership stage for a profile whose component owns controls - the
+    // other direction from the static stage above, added in M22. Every case
+    // is measured, interaction or not, and the measurement is asserted
+    // against the budget the case declares and the identity the profile
+    // declares, on this target, before any comparison: a trigger rendered as
+    // a div on every target at once is what a three-way comparison cannot
+    // see. Only on an unmutated capture, for the reason the static stage
+    // gives. Interaction cases are measured again after their scenario, in
+    // the loop below, and that measurement replaces this one in the record.
+    if (catalog.profile.controlOwnership) {
+      for (const parityCase of selectedCases) {
+        const snapshot = await page.evaluate(
+          interactionExpression(parityCase.id, catalog.profile.snapshot, catalog.profile.controlOwnership),
+        );
+        const violations = mutation ? [] : controlOwnershipViolations(parityCase, snapshot, catalog.profile);
+        if (violations.length > 0) {
+          throw new Error(`Control ownership failed on ${label} (${theme}): ${violations.join('; ')}.`);
+        }
         interactions[parityCase.id] = snapshot;
       }
     }
@@ -430,8 +464,55 @@ async function captureTarget(
         catalog.profile.activationSelector,
       );
       await applyBrowserMutation(page, mutation, 'afterInteraction', context, evidence);
-      const result = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
+      const result = await page.evaluate(
+        interactionExpression(parityCase.id, catalog.profile.snapshot, catalog.profile.controlOwnership),
+      );
       interactions[parityCase.id] = { ...result, inputEvents };
+
+      // Live parity, added in M22 for the first component whose gesture
+      // changes its DOM. The snapshot above is the component-shaped record;
+      // this is everything the initial stage measured, measured again: the
+      // ownership assertion against the scenario's own budget, the DOM
+      // description, the accessibility tree. And convergence, borrowed from
+      // the M17 transition stage as a concept rather than as machinery: the
+      // DOM the gesture produced has to equal this target's own render of the
+      // initial case the catalog names, or the toggle landed on a hybrid.
+      // Gated on the profile because the earlier interaction profiles carry
+      // their live contract inside their snapshots and their approvals are
+      // counted exactly; a stage they did not opt into must not move them.
+      if (catalog.profile.liveParity) {
+        if (!mutation) {
+          const violations = controlOwnershipViolations(parityCase, result, catalog.profile, {
+            consumerInteractive: parityCase.interaction.consumerInteractive,
+          });
+          if (violations.length > 0) {
+            throw new Error(
+              `Control ownership failed after ${parityCase.id} on ${label} (${theme}): ${violations.join('; ')}.`,
+            );
+          }
+        }
+        const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
+        interactionDom[parityCase.id] = after.cases[parityCase.id].dom;
+        interactionConvergence[parityCase.id] =
+          parityCase.interaction.matches === undefined
+            ? null
+            : (after.cases[parityCase.interaction.matches]?.dom ?? null);
+        interactionAccessibility[parityCase.id] = await readAccessibility(
+          page,
+          parityCase.id,
+          catalog.profile.accessibilityRoles,
+        );
+        if (
+          !mutation &&
+          parityCase.interaction.matches !== undefined &&
+          JSON.stringify(interactionDom[parityCase.id]) !== JSON.stringify(interactionConvergence[parityCase.id])
+        ) {
+          throw new Error(
+            `${parityCase.id} on ${label} (${theme}) did not converge on ${parityCase.interaction.matches}: ` +
+              'the gesture has to land on the state a fresh render of that case produces, not on a hybrid.',
+          );
+        }
+      }
 
       // Declared interaction outcomes are checked against what the target
       // actually did, on every target, in both themes.
@@ -509,6 +590,9 @@ async function captureTarget(
       naturalInteractionScreenshots,
       transitions,
       transitionScreenshots,
+      interactionDom,
+      interactionConvergence,
+      interactionAccessibility,
       diagnostics: page.diagnostics,
     };
   } finally {
@@ -526,6 +610,9 @@ function mergeCapture(target, recaptured) {
     'naturalInteractionScreenshots',
     'transitions',
     'transitionScreenshots',
+    'interactionDom',
+    'interactionConvergence',
+    'interactionAccessibility',
   ])
     Object.assign(target[key], recaptured[key]);
   for (const key of Object.keys(target.diagnostics)) {
@@ -653,6 +740,7 @@ export function compareCaptures(captures, catalog, policy) {
   let naturalPostInteractionComparisons = 0;
   let transitionComparisons = 0;
   let transitionsCarriedByConvergence = 0;
+  let liveComparisons = 0;
   let visualDifferences = 0;
 
   for (const direction of directions) {
@@ -684,6 +772,24 @@ export function compareCaptures(captures, catalog, policy) {
           }
 
           raw.push(...compareInteraction(leftStatic, rightStatic));
+        }
+
+        // The ownership snapshot of a component that owns controls, compared
+        // for every case that has no scenario - a scenario case's snapshot is
+        // its post-scenario one and is compared below. Missing on either side
+        // is a failure: the M15 rule, in the other direction.
+        if (catalog.profile.controlOwnership && !parityCase.interaction) {
+          const leftOwnership = left.interactions[id];
+          const rightOwnership = right.interactions[id];
+
+          if (!leftOwnership || !rightOwnership) {
+            throw new Error(
+              `The ${catalog.profile.id} profile owns controls but case ${id} produced no ownership snapshot on ` +
+                `${!leftOwnership ? direction.from : direction.to}. A missing measurement is a failure, not a skip.`,
+            );
+          }
+
+          raw.push(...compareInteraction(leftOwnership, rightOwnership));
         }
 
         // The transition comparison. Three things, in order of what they can
@@ -784,6 +890,50 @@ export function compareCaptures(captures, catalog, policy) {
         if (parityCase.interaction) {
           raw.push(...compareInteraction(left.interactions[id], right.interactions[id]));
 
+          // Live parity: the post-scenario DOM and accessibility tree compared
+          // exactly as the initial ones are, on their own dimensions with the
+          // path prefixed so a report tells the two apart, and convergence as
+          // a within-target invariant attributed to the target that broke it.
+          if (catalog.profile.liveParity) {
+            for (const [side, capture, target] of [
+              ['left', left, direction.from],
+              ['right', right, direction.to],
+            ]) {
+              if (!capture.interactionDom?.[id] || !capture.interactionAccessibility?.[id]) {
+                throw new Error(
+                  `Case ${id} declares a live interaction but ${target} produced no post-interaction ` +
+                    `${!capture.interactionDom?.[id] ? 'DOM' : 'accessibility'} record. A missing measurement is a ` +
+                    'failure, not a skip.',
+                );
+              }
+              const expectedDom = capture.interactionConvergence?.[id];
+              if (
+                parityCase.interaction.matches !== undefined &&
+                JSON.stringify(capture.interactionDom[id]) !== JSON.stringify(expectedDom ?? null)
+              ) {
+                raw.push({
+                  dimension: 'interaction.convergence',
+                  path: `${target}/${parityCase.interaction.matches}`,
+                  detail:
+                    `the post-interaction DOM does not equal ${target}'s own render of ` +
+                    `${parityCase.interaction.matches}; a gesture has to land on that state, not on a hybrid`,
+                  left: side === 'left' ? 'diverged' : 'converged',
+                  right: side === 'right' ? 'diverged' : 'converged',
+                });
+              }
+            }
+            raw.push(
+              ...compareDom(left.interactionDom[id], right.interactionDom[id]).map((entry) => ({
+                ...entry,
+                path: `post-interaction/${entry.path}`,
+              })),
+              ...compareAccessibility(left.interactionAccessibility[id], right.interactionAccessibility[id]).map(
+                (entry) => ({ ...entry, path: `post-interaction/${entry.path}` }),
+              ),
+            );
+            liveComparisons += 1;
+          }
+
           if (parityCase.interaction.visualFocus === 'blur-after-recording' && direction.to === 'current') {
             naturalPostInteractionComparisons += 1;
             const naturalLeft = left.naturalInteractionScreenshots[id];
@@ -857,6 +1007,7 @@ export function compareCaptures(captures, catalog, policy) {
       naturalPostInteractionVisualComparisons: naturalPostInteractionComparisons,
       transitionComparisons,
       transitionsCarriedByConvergence,
+      liveComparisons,
       visualDifferences,
       failures: failures.length,
       approvedDivergences: approved.length,

@@ -55,6 +55,17 @@ export const neverApprovable = new Set([
   'transition.branch',
   'transition.convergence',
   'transition.identity',
+  // M22. The live half of a component that owns a control: which controls
+  // are the component's, what state it is in after a gesture, whether its
+  // relationships resolve, what it told its host, and whether it landed on
+  // the state a fresh render produces. An approval on any of these would be
+  // the "Razor is different because JS" waiver the browser enhancement
+  // exists to make unnecessary. No existing policy approved any of them.
+  'ownership.controls',
+  'interaction.state',
+  'interaction.relationships',
+  'interaction.events',
+  'interaction.convergence',
 ]);
 
 /** Dimensions whose approval has to name the element it applies to. */
@@ -610,6 +621,32 @@ const INTERACTION_FIELDS = {
   overlayHidden: { dimension: 'transition.branch' },
   childSkeletonPresent: { dimension: 'transition.branch' },
   contentText: { dimension: 'transition.branch' },
+  // VfAccordion. The first component-owned control, measured in four groups.
+  // Ownership is its own dimension because it is the M22 evidence: the list
+  // of component controls with their identity, the consumer count beside it,
+  // and the totals they have to add up to. The state fields are the live
+  // contract after a gesture - aria-expanded and the panel's presence are
+  // separate fields on purpose, so a trigger that announces the opposite of
+  // its panel moves this dimension on the field that is wrong. The two
+  // relationship fields are resolved on the live DOM rather than read as
+  // text, and `events` is the neutral notification log each fixture keeps.
+  ownershipPosture: { dimension: 'ownership.controls' },
+  componentControls: { dimension: 'ownership.controls', format: 'json' },
+  consumerControlCount: { dimension: 'ownership.controls' },
+  focusableTotal: { dimension: 'ownership.controls' },
+  interactiveRoleTotal: { dimension: 'ownership.controls' },
+  expanded: { dimension: 'interaction.state' },
+  expandedStates: { dimension: 'interaction.state', format: 'json' },
+  panelPresent: { dimension: 'interaction.state' },
+  panelCount: { dimension: 'interaction.state' },
+  panelVisible: { dimension: 'interaction.state' },
+  panelRole: { dimension: 'interaction.state' },
+  iconOpen: { dimension: 'interaction.state' },
+  settled: { dimension: 'interaction.state' },
+  panelText: { dimension: 'interaction.state' },
+  controlsResolved: { dimension: 'interaction.relationships' },
+  panelLabelledBy: { dimension: 'interaction.relationships' },
+  events: { dimension: 'interaction.events', format: 'json' },
 };
 
 /**

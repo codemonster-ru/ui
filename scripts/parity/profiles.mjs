@@ -771,6 +771,63 @@ export const profiles = {
     // transitioning fails, and so does a Razor target that started.
     transitionTargets: ['reference', 'current'],
   },
+  accordion: {
+    id: 'accordion',
+    label: 'VfAccordion',
+    component: 'accordion',
+    casesPath: 'contracts/accordion/cases.json',
+    policyPath: 'contracts/accordion/parity-policy.json',
+    artifactDirectory: 'parity-accordion',
+    reportName: 'accordion-parity-report.json',
+    measuredRoles: {
+      root: '.vf-accordion',
+      trigger: '.vf-accordion__trigger',
+      icon: '.vf-accordion__icon',
+      glyph: '.vf-accordion__icon svg',
+      panel: '.vf-accordion__content',
+      inner: '.vf-accordion__content-inner',
+    },
+    // The trigger carries the role, the name, the expanded and disabled
+    // states; the panel is a region named by the trigger. The icon and its
+    // glyph are listed for the opposite reason - aria-hidden, so expected
+    // absent, which is only a measurement if the selector is queried.
+    accessibilityRoles: {
+      trigger: '.vf-accordion__trigger',
+      panel: '.vf-accordion__content',
+      icon: '.vf-accordion__icon',
+      glyph: '.vf-accordion__icon svg',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'type',
+      'disabled',
+      'role',
+      'hidden',
+      'aria-expanded',
+      'aria-controls',
+      'aria-labelledby',
+      'aria-disabled',
+      'aria-label',
+      'aria-hidden',
+      'data-testid',
+    ],
+    snapshot: 'accordion',
+    activationSelector: '.vf-accordion__trigger',
+    // The first profile whose component owns a control, and the declaration
+    // the ownership stage measures every case against: the role, the selector
+    // that finds it, and the tag it has to be. The count comes from each case
+    // (`componentInteractive`); the identity comes from here. A profile
+    // declaring `{}` fails closed - see controlOwnershipViolations.
+    controlOwnership: {
+      trigger: { selector: '.vf-accordion__trigger', tag: 'button' },
+    },
+    // Every scenario is re-measured after it runs: DOM, accessibility tree,
+    // ownership against the scenario's budget, and convergence on the case it
+    // names. See the interaction loop in run.mjs.
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {
