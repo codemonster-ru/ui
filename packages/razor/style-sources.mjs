@@ -76,4 +76,17 @@ export const styleSources = [
   // rule in this file exists in either of theirs. There is no dismiss-control
   // selector, because the reference has no dismiss control.
   'packages/styles/src/components/alert.css',
+  // VfProgressBar, the M21 component and a standalone closure of 17 rules
+  // plus three keyframes: the track, the fill, the striped fill, seven tone
+  // modifiers, the label, the indeterminate fill and its two pseudo-elements,
+  // the animated stripes and a reduced-motion override. It was Vue-owned
+  // until M21 and reached no Razor artifact at all. Listed after alert.css,
+  // which keeps the order packages/core/src/styles/components.css has for the
+  // two files that matter here: progress-bar.css before progress-spinner.css.
+  // It is a separate file from progress-spinner.css and must stay one: the
+  // two share the tone names and nothing else - a bar tone recolours a fill
+  // and a label, a spinner tone recolours an arc - and no selector in this
+  // file exists in that one. Folding them into one "progress" stylesheet is
+  // the single change that would make the two components look interchangeable.
+  'packages/styles/src/components/progress-bar.css',
 ];
