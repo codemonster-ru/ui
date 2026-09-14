@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codemonster\VueForge\Razor;
 
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
+use Codemonster\VueForge\Razor\Components\AccordionComponent;
 use Codemonster\VueForge\Razor\Components\AlertComponent;
 use Codemonster\VueForge\Razor\Components\AvatarComponent;
 use Codemonster\VueForge\Razor\Components\BadgeComponent;
@@ -65,6 +66,9 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
         $progressSpinner = new ProgressSpinnerComponent();
 
         return [
+            // The first component that owns a control of its own; its browser
+            // enhancement lives in browser/accordion.ts. See AccordionComponent.
+            'accordion' => new AccordionComponent(),
             // Server-complete: an alert owns a role and no interaction. See
             // AlertComponent.
             'alert' => new AlertComponent(),
