@@ -47,7 +47,9 @@ function sourceOf(mutation) {
 
 /** Whether the mutation can still find what it was written to break. */
 function isStale(mutation) {
-  return !sourceOf(mutation).includes(mutation.find);
+  const source = sourceOf(mutation);
+
+  return (mutation.edits ?? [mutation]).some((edit) => !source.includes(edit.find));
 }
 
 function runSuite(mutationId) {
@@ -282,5 +284,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  `All ${componentMutations.length} VfInput, VfIconButton, VfField, VfButton, VfTextarea, VfCheckbox, VfRadio, VfSwitch, VfBadge, VfTag, VfDivider, VfSkeleton, VfAvatar, VfCard, VfSkeletonGate, VfPanel, VfAlert and VfProgressSpinner regressions are detected by the characterization suites.\n`,
+  `All ${componentMutations.length} VfInput, VfIconButton, VfField, VfButton, VfTextarea, VfCheckbox, VfRadio, VfSwitch, VfBadge, VfTag, VfDivider, VfSkeleton, VfAvatar, VfCard, VfSkeletonGate, VfPanel, VfAlert, VfProgressSpinner and VfProgressBar regressions are detected by the characterization suites.\n`,
 );

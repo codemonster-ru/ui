@@ -37,8 +37,14 @@ function inputMutationPlugin() {
       }
 
       const source = readFileSync(mutationFile, 'utf8');
-      if (!source.includes(mutation.find)) {
-        throw new Error(`Mutation ${mutation.id} no longer matches ${mutation.file ?? inputSourcePath}.`);
+      // A mutation is one find/replace, or - since M21, for a defect that
+      // cannot be expressed in one place - a list of them, each of which must
+      // still match.
+      const edits = mutation.edits ?? [mutation];
+      for (const edit of edits) {
+        if (!source.includes(edit.find)) {
+          throw new Error(`Mutation ${mutation.id} no longer matches ${mutation.file ?? inputSourcePath}.`);
+        }
       }
 
       // Records that the mutation really reached the module under test. Without
@@ -51,9 +57,11 @@ function inputMutationPlugin() {
         appendFileSync(marker, `${mutation.id}\n`);
       }
 
-      return mutation.all
-        ? source.replaceAll(mutation.find, mutation.replace)
-        : source.replace(mutation.find, mutation.replace);
+      return edits.reduce(
+        (mutated, edit) =>
+          edit.all ? mutated.replaceAll(edit.find, edit.replace) : mutated.replace(edit.find, edit.replace),
+        source,
+      );
     },
   };
 }
@@ -91,6 +99,7 @@ export default defineConfig({
       'src/components/panel/VfPanel.characterization.spec.ts',
       'src/components/alert/VfAlert.characterization.spec.ts',
       'src/components/progress-spinner/VfProgressSpinner.characterization.spec.ts',
+      'src/components/progress-bar/VfProgressBar.characterization.spec.ts',
       'src/components/skeleton-gate/VfSkeletonGate.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',
       'src/components/components.spec.ts',

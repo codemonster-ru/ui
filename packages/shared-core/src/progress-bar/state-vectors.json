@@ -1,0 +1,305 @@
+{
+  "$comment": "Shared input/expected vectors for VfProgressBar. The TypeScript rules in progress-bar/state.ts and the PHP mirror in packages/razor/src/Support/ProgressBarState.php both run this file. This is the value/max contract of the reference at fd793696, quirks included: a maximum that is not a finite positive number falls back to 100 (zero, a negative, a numeric string), a value that is not finite falls back to 0 and is otherwise clamped into [0, max], the percentage is the raw ratio serialised as JavaScript serialises a number, and the label is the ratio rounded half-up. NaN and Infinity are not representable in JSON and are pinned by each language's own suite. This file is not progress-spinner/state-vectors.json and must never be merged with it: the two components share the role name and the tone union, and no rule here exists over there.",
+  "formatProgressBarNumber": [
+    { "value": 0, "expected": "0" },
+    { "value": 100, "expected": "100" },
+    { "$why": "An integral float is written without a decimal point.", "value": 100.0, "expected": "100" },
+    { "value": 12.5, "expected": "12.5" },
+    { "value": 33.3333, "expected": "33.3333" },
+    {
+      "$why": "Shortest round-trip digits, seventeen of them; never the fourteen PHP's precision ini would print.",
+      "value": 58.333333333333336,
+      "expected": "58.333333333333336"
+    },
+    { "value": 33.33333333333333, "expected": "33.33333333333333" },
+    { "value": 66.66666666666666, "expected": "66.66666666666666" },
+    { "value": 0.3, "expected": "0.3" },
+    { "value": 123456.789, "expected": "123456.789" },
+    { "$why": "JavaScript keeps positional notation down to 1e-6.", "value": 0.000001, "expected": "0.000001" },
+    {
+      "$why": "Below 1e-6 JavaScript switches to exponent form, with no `.0` and no zero padding: not `1.0E-7`.",
+      "value": 1e-7,
+      "expected": "1e-7"
+    },
+    { "value": 9.999999999999998e-8, "expected": "9.999999999999998e-8" },
+    {
+      "$why": "At 1e21 and above JavaScript switches to exponent form with an explicit plus sign.",
+      "value": 1e21,
+      "expected": "1e+21"
+    }
+  ],
+  "resolveProgressBarMax": [
+    { "$why": "null in JSON stands for the absent prop.", "max": null, "expected": 100 },
+    { "max": 100, "expected": 100 },
+    { "max": 12, "expected": 12 },
+    { "max": 3, "expected": 3 },
+    { "$why": "A fractional maximum below 1 is finite and positive, so it is kept.", "max": 0.5, "expected": 0.5 },
+    { "max": 0.3, "expected": 0.3 },
+    {
+      "$why": "Zero is not positive, so the reference falls back to 100 rather than dividing by it.",
+      "max": 0,
+      "expected": 100
+    },
+    { "max": -10, "expected": 100 },
+    {
+      "$why": "Number.isFinite is false for a string, so a numeric string is not a maximum. The Razor adapter parses template text before calling the rule; the rule itself does not.",
+      "max": "10",
+      "expected": 100
+    },
+    { "max": "", "expected": 100 }
+  ],
+  "resolveProgressBarValue": [
+    { "$why": "null in JSON stands for the absent prop.", "value": null, "max": 100, "expected": 0 },
+    { "value": 0, "max": 100, "expected": 0 },
+    { "value": 50, "max": 100, "expected": 50 },
+    { "value": 100, "max": 100, "expected": 100 },
+    { "$why": "Clamped to the maximum, not written through.", "value": 150, "max": 100, "expected": 100 },
+    { "$why": "Clamped to zero, not written through.", "value": -20, "max": 100, "expected": 0 },
+    { "value": 7, "max": 12, "expected": 7 },
+    { "$why": "Clamped to a custom maximum.", "value": 15, "max": 12, "expected": 12 },
+    { "value": 33.3333, "max": 100, "expected": 33.3333 },
+    { "value": 0.1, "max": 0.3, "expected": 0.1 },
+    { "$why": "Clamped to a fractional maximum.", "value": 5, "max": 0.5, "expected": 0.5 },
+    { "value": 1e-7, "max": 100, "expected": 1e-7 },
+    {
+      "$why": "A numeric string is not finite to the rule, so it is 0, not 40.",
+      "value": "40",
+      "max": 100,
+      "expected": 0
+    },
+    { "value": "abc", "max": 100, "expected": 0 }
+  ],
+  "resolveProgressBarPercentage": [
+    { "value": 0, "max": 100, "expected": "0%" },
+    { "value": 50, "max": 100, "expected": "50%" },
+    { "value": 100, "max": 100, "expected": "100%" },
+    { "value": 5, "max": 100, "expected": "5%" },
+    { "value": 1, "max": 3, "expected": "33.33333333333333%" },
+    { "value": 2, "max": 3, "expected": "66.66666666666666%" },
+    { "value": 7, "max": 12, "expected": "58.333333333333336%" },
+    { "value": 1, "max": 8, "expected": "12.5%" },
+    { "value": 33.3333, "max": 100, "expected": "33.3333%" },
+    {
+      "$why": "The ratio of two fractions carries the floating-point residue into the attribute.",
+      "value": 0.1,
+      "max": 0.3,
+      "expected": "33.333333333333336%"
+    },
+    { "value": 0.5, "max": 0.5, "expected": "100%" },
+    {
+      "$why": "A tiny value reaches the attribute in exponent form.",
+      "value": 1e-7,
+      "max": 100,
+      "expected": "9.999999999999998e-8%"
+    }
+  ],
+  "resolveProgressBarValueLabel": [
+    { "value": 0, "max": 100, "expected": "0%" },
+    { "value": 50, "max": 100, "expected": "50%" },
+    { "value": 100, "max": 100, "expected": "100%" },
+    { "value": 1, "max": 3, "expected": "33%" },
+    { "value": 2, "max": 3, "expected": "67%" },
+    { "$why": "A half rounds up: 12.5 reads 13.", "value": 1, "max": 8, "expected": "13%" },
+    { "value": 7, "max": 12, "expected": "58%" },
+    {
+      "$why": "14.499999999999998 rounds down, as Math.round does and a floor(x + 0.5) would not.",
+      "value": 0.145,
+      "max": 1,
+      "expected": "14%"
+    },
+    { "value": 1e-7, "max": 100, "expected": "0%" }
+  ],
+  "resolveProgressBarClasses": [
+    { "tone": "primary", "striped": false, "animated": false, "indeterminate": false, "expected": ["vf-progress-bar"] },
+    {
+      "tone": "neutral",
+      "striped": false,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--neutral"]
+    },
+    {
+      "tone": "success",
+      "striped": false,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--success"]
+    },
+    {
+      "tone": "info",
+      "striped": false,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--info"]
+    },
+    {
+      "tone": "warn",
+      "striped": false,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--warn"]
+    },
+    {
+      "tone": "help",
+      "striped": false,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--help"]
+    },
+    {
+      "tone": "danger",
+      "striped": false,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--danger"]
+    },
+    {
+      "tone": "contrast",
+      "striped": false,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--contrast"]
+    },
+    {
+      "$why": "The reference interpolates the prop without checking it.",
+      "tone": "nonsense",
+      "striped": false,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--nonsense"]
+    },
+    {
+      "tone": "primary",
+      "striped": true,
+      "animated": false,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--striped"]
+    },
+    {
+      "$why": "animated alone emits nothing: there are no stripes to move.",
+      "tone": "primary",
+      "striped": false,
+      "animated": true,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar"]
+    },
+    {
+      "tone": "primary",
+      "striped": true,
+      "animated": true,
+      "indeterminate": false,
+      "expected": ["vf-progress-bar", "vf-progress-bar--striped", "vf-progress-bar--animated"]
+    },
+    {
+      "tone": "primary",
+      "striped": false,
+      "animated": false,
+      "indeterminate": true,
+      "expected": ["vf-progress-bar", "vf-progress-bar--indeterminate"]
+    },
+    {
+      "$why": "Everything at once, in the reference's order: tone, striped, animated, indeterminate.",
+      "tone": "info",
+      "striped": true,
+      "animated": true,
+      "indeterminate": true,
+      "expected": [
+        "vf-progress-bar",
+        "vf-progress-bar--info",
+        "vf-progress-bar--striped",
+        "vf-progress-bar--animated",
+        "vf-progress-bar--indeterminate"
+      ]
+    }
+  ],
+  "resolveProgressBarHeight": [
+    { "$why": "null in JSON stands for the absent prop.", "value": null, "expected": null },
+    { "value": 12, "expected": "12px" },
+    { "$why": "Zero is a number like any other.", "value": 0, "expected": "0px" },
+    { "value": 6.5, "expected": "6.5px" },
+    { "value": "1rem", "expected": "1rem" },
+    { "value": "var(--vf-space-2)", "expected": "var(--vf-space-2)" },
+    {
+      "$why": "An empty string is passed through as a length; the style rule is what keeps it.",
+      "value": "",
+      "expected": ""
+    }
+  ],
+  "resolveProgressBarRootStyle": [
+    { "$why": "Absent: no declaration, so the token default applies.", "height": null, "expected": [] },
+    {
+      "$why": "Empty is kept, as the reference keeps it: the platform serialiser decides. Vue's client drops it, Vue's SSR writes an empty value, the Razor adapter drops it.",
+      "height": "",
+      "expected": [["--vf-progress-bar-height", ""]]
+    },
+    { "height": 12, "expected": [["--vf-progress-bar-height", "12px"]] },
+    { "height": 0, "expected": [["--vf-progress-bar-height", "0px"]] },
+    { "height": "1rem", "expected": [["--vf-progress-bar-height", "1rem"]] }
+  ],
+  "resolveProgressBarValueStyle": [
+    { "indeterminate": false, "percentage": "50%", "expected": [["inline-size", "50%"]] },
+    {
+      "$why": "Zero is written, not dropped: inline-size 0% is a declaration.",
+      "indeterminate": false,
+      "percentage": "0%",
+      "expected": [["inline-size", "0%"]]
+    },
+    {
+      "indeterminate": false,
+      "percentage": "58.333333333333336%",
+      "expected": [["inline-size", "58.333333333333336%"]]
+    },
+    {
+      "$why": "Indeterminate writes no size: the stylesheet stretches the fill.",
+      "indeterminate": true,
+      "percentage": "50%",
+      "expected": []
+    }
+  ],
+  "resolveProgressBarValueSemantics": [
+    {
+      "indeterminate": false,
+      "value": 0,
+      "max": 100,
+      "expected": { "valuemin": "0", "valuemax": "100", "valuenow": "0" }
+    },
+    {
+      "indeterminate": false,
+      "value": 50,
+      "max": 100,
+      "expected": { "valuemin": "0", "valuemax": "100", "valuenow": "50" }
+    },
+    {
+      "indeterminate": false,
+      "value": 7,
+      "max": 12,
+      "expected": { "valuemin": "0", "valuemax": "12", "valuenow": "7" }
+    },
+    {
+      "indeterminate": false,
+      "value": 0.1,
+      "max": 0.3,
+      "expected": { "valuemin": "0", "valuemax": "0.3", "valuenow": "0.1" }
+    },
+    {
+      "indeterminate": false,
+      "value": 33.3333,
+      "max": 100,
+      "expected": { "valuemin": "0", "valuemax": "100", "valuenow": "33.3333" }
+    },
+    {
+      "$why": "Exponent form reaches aria-valuenow exactly as it reaches the width.",
+      "indeterminate": false,
+      "value": 1e-7,
+      "max": 100,
+      "expected": { "valuemin": "0", "valuemax": "100", "valuenow": "1e-7" }
+    },
+    {
+      "$why": "Indeterminate writes none of the three, whatever value and max were passed.",
+      "indeterminate": true,
+      "value": 40,
+      "max": 100,
+      "expected": null
+    }
+  ]
+}

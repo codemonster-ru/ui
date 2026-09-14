@@ -50,6 +50,9 @@ export const alertRulePath = 'packages/shared-core/src/alert/state.ts';
 export const progressSpinnerSourcePath = 'packages/core/src/components/progress-spinner/VfProgressSpinner.vue';
 /** The shared rules VfProgressSpinner and the Razor adapter both derive from. */
 export const progressSpinnerRulePath = 'packages/shared-core/src/progress-spinner/state.ts';
+export const progressBarSourcePath = 'packages/core/src/components/progress-bar/VfProgressBar.vue';
+/** The shared rules VfProgressBar and the Razor adapter both derive from. */
+export const progressBarRulePath = 'packages/shared-core/src/progress-bar/state.ts';
 
 /**
  * The consumer suite a VfProgressSpinner defect is expected to reach.
@@ -62,6 +65,7 @@ export const progressSpinnerRulePath = 'packages/shared-core/src/progress-spinne
  */
 const buttonSuite = 'src/components/button/VfButton.characterization.spec.ts';
 const spinnerSuite = 'src/components/progress-spinner/VfProgressSpinner.characterization.spec.ts';
+const barSuite = 'src/components/progress-bar/VfProgressBar.characterization.spec.ts';
 
 /** The shared rules the three M15 presentation components and the Razor adapter derive from. */
 export const presentationRulePath = 'packages/shared-core/src/presentation/state.ts';
@@ -2194,6 +2198,414 @@ export const progressSpinnerMutations = [
   },
 ];
 
+/**
+ * VfProgressBar regressions.
+ *
+ * The M21 set. No mutation declares `alsoFails`: nothing migrated composes
+ * the bar, and the bar composes nothing - which is half of the independence
+ * proof beside the spinner. Every mutation names `barSuite`, so a bar defect
+ * credited to the spinner's evidence, or the reverse, is WRONG SUITE.
+ *
+ * The groups are the milestone's dimensions: the value/max arithmetic (the
+ * defaults, the fallbacks, both clamps, the formula, the serialisation), the
+ * ARIA (each of the three value attributes dropped on its own, the value
+ * written while indeterminate, the floor moved, the role lost or downgraded),
+ * the fill (the width lost, moved to the root, written as `width`, kept while
+ * indeterminate), the label (always, while indeterminate, floored, made the
+ * name, moved out of the fill), the classes (the spinner's resolver, the
+ * spinner's block name, the badge's tone rule, animated without stripes, the
+ * indeterminate modifier lost), the height, and the consumer contract.
+ */
+export const progressBarMutations = [
+  // ---------------------------------------------------------------- defaults
+  {
+    id: 'bar-changes-its-default-value',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the default value becomes 1, so a bare bar is no longer empty',
+    find: '  value: 0,',
+    replace: '  value: 1,',
+  },
+  {
+    id: 'bar-changes-its-default-max',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the default maximum becomes 200, so every default-max value is announced against the wrong range',
+    find: '  max: 100,',
+    replace: '  max: 200,',
+  },
+  {
+    id: 'bar-changes-its-default-label',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the default accessible name gains an ellipsis',
+    find: "  label: 'Progress',",
+    replace: "  label: 'Progress…',",
+  },
+
+  // ------------------------------------------------------------ value and max
+  {
+    id: 'bar-changes-the-fallback-maximum',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'a non-positive or non-finite maximum falls back to 1 instead of 100',
+    find: "  return typeof max === 'number' && Number.isFinite(max) && max > 0 ? max : 100;",
+    replace: "  return typeof max === 'number' && Number.isFinite(max) && max > 0 ? max : 1;",
+  },
+  {
+    id: 'bar-accepts-a-zero-maximum',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'max 0 is kept rather than falling back, so the ratio divides by zero',
+    find: "  return typeof max === 'number' && Number.isFinite(max) && max > 0 ? max : 100;",
+    replace: "  return typeof max === 'number' && Number.isFinite(max) && max >= 0 ? max : 100;",
+  },
+  {
+    id: 'bar-stops-clamping-the-overflow',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'a value above the maximum is written through, so the width exceeds 100%',
+    find: '  return Math.min(Math.max(value, 0), max);',
+    replace: '  return Math.max(value, 0);',
+  },
+  {
+    id: 'bar-stops-clamping-the-negative',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'a negative value is written through, so aria-valuenow goes below the floor',
+    find: '  return Math.min(Math.max(value, 0), max);',
+    replace: '  return Math.min(value, max);',
+  },
+  {
+    id: 'bar-parses-a-numeric-string',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'a numeric string is coerced to its number instead of being treated as non-finite - the "obvious fix"',
+    find: "  if (typeof value !== 'number' || !Number.isFinite(value)) {\n    return 0;\n  }\n\n  return Math.min(Math.max(value, 0), max);",
+    replace:
+      '  if (!Number.isFinite(Number(value))) {\n    return 0;\n  }\n\n  return Math.min(Math.max(Number(value), 0), max);',
+  },
+  {
+    id: 'bar-changes-the-percentage-formula',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'the width ignores the maximum, so 7 of 12 paints as 7%',
+    find: '  return `${formatProgressBarNumber((value / max) * 100)}%`;',
+    replace: '  return `${formatProgressBarNumber(value)}%`;',
+  },
+  {
+    id: 'bar-rounds-the-width',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'the width is rounded to a whole percent, which the reference never does',
+    find: '  return `${formatProgressBarNumber((value / max) * 100)}%`;',
+    replace: '  return `${formatProgressBarNumber(Math.round((value / max) * 100))}%`;',
+  },
+  {
+    id: 'bar-rounds-the-value',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'aria-valuenow is rounded while the width is not, so the announced value and the paint disagree',
+    find: "  return { valuemin: '0', valuemax: formatProgressBarNumber(max), valuenow: formatProgressBarNumber(value) };",
+    replace:
+      "  return { valuemin: '0', valuemax: formatProgressBarNumber(max), valuenow: formatProgressBarNumber(Math.round(value)) };",
+  },
+  {
+    id: 'bar-serialises-with-fixed-precision',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'a fractional number is written with two decimals instead of the shortest round-trip digits',
+    find: '  return String(value);',
+    replace: '  return Number.isInteger(value) ? String(value) : value.toFixed(2);',
+  },
+
+  // -------------------------------------------------------------------- ARIA
+  {
+    id: 'bar-loses-its-role',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the root stops being a progressbar, so the value is announced by nothing',
+    find: '    role="progressbar"\n',
+    replace: '',
+  },
+  {
+    id: 'bar-becomes-a-status',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the root exposes role=status instead of progressbar',
+    find: '    role="progressbar"\n',
+    replace: '    role="status"\n',
+  },
+  {
+    id: 'bar-drops-aria-valuemin',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'aria-valuemin stops being written, leaving the range to the browser default',
+    find: '    :aria-valuemin="valueSemantics?.valuemin"\n',
+    replace: '',
+  },
+  {
+    id: 'bar-drops-aria-valuemax',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'aria-valuemax stops being written, so a custom maximum is announced against 100',
+    find: '    :aria-valuemax="valueSemantics?.valuemax"\n',
+    replace: '',
+  },
+  {
+    id: 'bar-drops-aria-valuenow',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description:
+      'aria-valuenow stops being written while the width still moves - a determinate bar that announces nothing',
+    find: '    :aria-valuenow="valueSemantics?.valuenow"\n',
+    replace: '',
+  },
+  {
+    id: 'bar-always-writes-the-value-semantics',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'the three value attributes are written while indeterminate too, which the reference omits',
+    find: '  if (indeterminate) return null;\n\n  return { valuemin',
+    replace: '  return { valuemin',
+  },
+  {
+    id: 'bar-raises-the-floor',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'aria-valuemin becomes 1',
+    find: "  return { valuemin: '0', valuemax",
+    replace: "  return { valuemin: '1', valuemax",
+  },
+  {
+    id: 'bar-label-becomes-the-name',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the visible percentage replaces the label prop as the accessible name whenever it is shown',
+    find: '    :aria-label="props.label"',
+    replace: '    :aria-label="props.showValue ? valueLabel : props.label"',
+  },
+
+  // ---------------------------------------------------------------- the fill
+  {
+    id: 'bar-fill-loses-its-width',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the fill stops receiving its inline size, so every determinate bar paints empty',
+    find: '<span class="vf-progress-bar__value" :style="valueStyle">',
+    replace: '<span class="vf-progress-bar__value">',
+  },
+  {
+    id: 'bar-writes-the-width-onto-the-root',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the inline size is written on the root as well as the fill, so the track itself shrinks',
+    find: '    :style="rootStyle"\n    role="progressbar"',
+    replace: '    :style="[rootStyle, valueStyle]"\n    role="progressbar"',
+  },
+  {
+    id: 'bar-writes-the-width-as-width',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'the fill is sized with width instead of inline-size',
+    find: "  return [['inline-size', percentage]];",
+    replace: "  return [['width', percentage]];",
+  },
+  {
+    id: 'bar-indeterminate-keeps-its-width',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'the indeterminate fill keeps an inline size, so the stylesheet sweep runs inside a clamped box',
+    find: "  if (indeterminate) return [];\n\n  return [['inline-size', percentage]];",
+    replace: "  return [['inline-size', percentage]];",
+  },
+  {
+    id: 'bar-loses-the-fill-class',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the fill loses the class every stylesheet rule about it is keyed on',
+    find: '<span class="vf-progress-bar__value" :style="valueStyle">',
+    replace: '<span :style="valueStyle">',
+  },
+
+  // --------------------------------------------------------------- the label
+  {
+    id: 'bar-always-renders-the-label',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the percentage label is rendered without showValue',
+    find: 'v-if="props.showValue && !props.indeterminate"',
+    replace: 'v-if="!props.indeterminate"',
+  },
+  {
+    id: 'bar-renders-the-label-while-indeterminate',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the percentage label is rendered while indeterminate, where there is no percentage',
+    find: 'v-if="props.showValue && !props.indeterminate"',
+    replace: 'v-if="props.showValue"',
+  },
+  {
+    id: 'bar-floors-the-label',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'the label is floored rather than rounded, so 12.5% reads 12%',
+    find: '  return `${Math.round((value / max) * 100)}%`;',
+    replace: '  return `${Math.floor((value / max) * 100)}%`;',
+  },
+  {
+    id: 'bar-moves-the-label-out-of-the-fill',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the label is rendered beside the fill rather than inside it',
+    find: '    <span class="vf-progress-bar__value" :style="valueStyle">\n      <span v-if="props.showValue && !props.indeterminate" class="vf-progress-bar__label">\n        {{ valueLabel }}\n      </span>\n    </span>',
+    replace:
+      '    <span class="vf-progress-bar__value" :style="valueStyle"></span>\n    <span v-if="props.showValue && !props.indeterminate" class="vf-progress-bar__label">\n      {{ valueLabel }}\n    </span>',
+  },
+
+  // ------------------------------------------------------------- the classes
+  {
+    id: 'bar-uses-the-spinner-resolver',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description:
+      'the class rule is taken from VfProgressSpinner, which knows a tone and nothing about stripes or indeterminacy',
+    find: '  resolveProgressBarClasses,\n',
+    replace: '  resolveProgressSpinnerClasses as resolveProgressBarClasses,\n',
+  },
+  {
+    id: 'bar-gains-the-spinner-class',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: "the spinner's block class is emitted beside the bar's",
+    find: "  const classes = ['vf-progress-bar'];",
+    replace: "  const classes = ['vf-progress-bar', 'vf-progress-spinner'];",
+  },
+  {
+    id: 'bar-suppresses-neutral-instead-of-primary',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'the tone rule is borrowed from VfBadge, so neutral emits nothing and primary emits a modifier',
+    find: "  if (tone !== 'primary') classes.push(`vf-progress-bar--${tone}`);",
+    replace: "  if (tone !== 'neutral') classes.push(`vf-progress-bar--${tone}`);",
+  },
+  {
+    id: 'bar-animates-without-stripes',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'animated emits its modifier without striped',
+    find: "  if (striped && animated) classes.push('vf-progress-bar--animated');",
+    replace: "  if (animated) classes.push('vf-progress-bar--animated');",
+  },
+  {
+    id: 'bar-drops-the-indeterminate-modifier',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'the indeterminate modifier is never emitted, so the sweep never runs',
+    find: "  if (indeterminate) classes.push('vf-progress-bar--indeterminate');\n",
+    replace: '',
+  },
+
+  // -------------------------------------------------------------- the height
+  {
+    id: 'bar-drops-the-px-suffix',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'a numeric height reaches the custom property as a bare number, which is not a length',
+    find: "  return typeof value === 'number' ? `${value}px` : value;",
+    replace: '  return String(value);',
+  },
+  {
+    id: 'bar-treats-zero-height-as-absent',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: 'height 0 is dropped as falsy instead of becoming 0px',
+    find: '  if (value === null || value === undefined) {',
+    replace: '  if (!value) {',
+  },
+  {
+    id: 'bar-drops-the-empty-declaration',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description: "an empty height is tidied away in the rule, changing the reference's server output",
+    find: '  if (length === undefined) return [];',
+    replace: "  if (length === undefined || length === '') return [];",
+  },
+  {
+    id: 'bar-writes-the-height-as-block-size',
+    file: progressBarRulePath,
+    suite: barSuite,
+    description:
+      'the height is written as a block-size declaration rather than the custom property the stylesheet reads',
+    find: "  return [['--vf-progress-bar-height', length]];",
+    replace: "  return [['block-size', length]];",
+  },
+
+  // ---------------------------------------------------------- the structure
+  {
+    id: 'bar-renders-a-section-root',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'the div root becomes a section, which looks identical and is a different element',
+    find: 'div',
+    replace: 'section',
+    all: true,
+  },
+  {
+    id: 'bar-renders-a-slot',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'a default slot is rendered after the fill, which is an API the reference does not have',
+    find: '    </span>\n  </div>',
+    replace: '    </span>\n    <slot />\n  </div>',
+  },
+
+  // ---------------------------------------------------------- the consumer
+  {
+    id: 'bar-stops-inheriting-attrs',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'inheritAttrs is switched off, so the consumer class, style, role and aria-value overrides vanish',
+    find: "defineOptions({\n  name: 'VfProgressBar',\n});",
+    replace: "defineOptions({\n  name: 'VfProgressBar',\n  inheritAttrs: false,\n});",
+  },
+  {
+    id: 'bar-lets-a-consumer-class-replace-its-own',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description: 'a consumer class wins over the canonical classes instead of being appended after them',
+    find: '    :class="classes"',
+    replace: '    :class="$attrs.class ?? classes"',
+  },
+  {
+    // Three edits, because Vue offers no single place to invert the order:
+    // with attrs inherited, the consumer's style is always merged after the
+    // component's. The defect is the port that turned inheritance off and
+    // rebound the attrs by hand with the two style sources the wrong way
+    // round - the one change that lets the prop beat a consumer override.
+    id: 'bar-lets-the-prop-beat-the-consumer-style',
+    file: progressBarSourcePath,
+    suite: barSuite,
+    description:
+      "the component's height declaration is merged after the consumer's, so a consumer override of the property loses",
+    edits: [
+      {
+        find: "defineOptions({\n  name: 'VfProgressBar',\n});",
+        replace: "defineOptions({\n  name: 'VfProgressBar',\n  inheritAttrs: false,\n});",
+      },
+      {
+        find: '    :class="classes"\n    :style="rootStyle"',
+        replace: '    :class="[classes, $attrs.class]"\n    :style="[$attrs.style, rootStyle]"',
+      },
+      {
+        find: '    :aria-valuenow="valueSemantics?.valuenow"\n  >',
+        replace:
+          '    :aria-valuenow="valueSemantics?.valuenow"\n    v-bind="{ ...$attrs, class: undefined, style: undefined }"\n  >',
+      },
+    ],
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -2213,4 +2625,5 @@ export const componentMutations = [
   ...panelMutations,
   ...alertMutations,
   ...progressSpinnerMutations,
+  ...progressBarMutations,
 ];

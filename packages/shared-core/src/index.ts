@@ -58,6 +58,23 @@ export {
 } from './progress-spinner/state.js';
 export type { VfProgressSpinnerDeclaration } from './progress-spinner/state.js';
 export {
+  formatProgressBarNumber,
+  resolveProgressBarClasses,
+  resolveProgressBarHeight,
+  resolveProgressBarMax,
+  resolveProgressBarPercentage,
+  resolveProgressBarRootStyle,
+  resolveProgressBarValue,
+  resolveProgressBarValueLabel,
+  resolveProgressBarValueSemantics,
+  resolveProgressBarValueStyle,
+} from './progress-bar/state.js';
+export type {
+  VfProgressBarClassInput,
+  VfProgressBarDeclaration,
+  VfProgressBarValueSemantics,
+} from './progress-bar/state.js';
+export {
   resolveBadgeClasses,
   resolveDividerClasses,
   resolveDividerRole,
