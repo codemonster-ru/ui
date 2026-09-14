@@ -184,6 +184,7 @@ $card = $registry->resolve('vf-card');
 $panel = $registry->resolve('vf-panel');
 $alert = $registry->resolve('vf-alert');
 $progressSpinner = $registry->resolve('vf-progress-spinner');
+$progressBar = $registry->resolve('vf-progress-bar');
 $skeletonGate = $registry->resolve('vf-skeleton-gate');
 $assetPath = VueForgeRazorProvider::assetPath();
 
@@ -206,6 +207,7 @@ echo json_encode([
         'vf-panel' => $registry->handles('vf-panel'),
         'vf-alert' => $registry->handles('vf-alert'),
         'vf-progress-spinner' => $registry->handles('vf-progress-spinner'),
+        'vf-progress-bar' => $registry->handles('vf-progress-bar'),
         'vf-skeleton-gate' => $registry->handles('vf-skeleton-gate'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
@@ -447,6 +449,32 @@ echo json_encode([
     // animation is the stylesheet's, so there is nothing for a browser to do.
     'spinnerBrowserCode' => is_file($assetPath . '/vueforge-razor.js')
         && preg_match('/vf-progress-spinner|data-vf-razor="progress-spinner"|spinner-enhanced/', (string) file_get_contents($assetPath . '/vueforge-razor.js')) === 1,
+    // VfProgressBar, the nineteenth component and the last static progress
+    // leaf. Six renders: the bare default; a custom maximum with an
+    // unrounded ratio; a template's numeric text; the indeterminate branch;
+    // the visible label beside a custom name, with a height and a tone; and a
+    // consumer role, class, style, data attribute and value attribute. The
+    // adjacency proof is the last two fields: the bar shares no class, no
+    // renderer and no state with the spinner installed beside it.
+    'barDefault' => $progressBar->render(new ComponentRenderContext([], []))->value(),
+    'barCustomMax' => $progressBar->render(new ComponentRenderContext(['value' => 7, 'max' => 12], []))->value(),
+    'barTemplateText' => $progressBar->render(new ComponentRenderContext(['value' => '40', 'max' => '80'], []))->value(),
+    'barIndeterminate' => $progressBar->render(new ComponentRenderContext(['indeterminate' => true, 'value' => 40], []))->value(),
+    'barComposed' => $progressBar->render(new ComponentRenderContext(
+        ['value' => 1, 'max' => 8, 'show-value' => true, 'label' => 'Exporting', 'height' => 16, 'tone' => 'danger', 'striped' => true, 'animated' => true],
+        [],
+    ))->value(),
+    'barConsumerAttributes' => $progressBar->render(new ComponentRenderContext(
+        ['value' => 50, 'role' => 'status', 'class' => 'consumer-bar', 'style' => 'margin: 4px', 'data-testid' => 'export', 'aria-valuenow' => '40'],
+        [],
+    ))->value(),
+    'barIsNotTheSpinner' => $progressBar !== $progressSpinner && get_class($progressBar) !== get_class($progressSpinner),
+    'barConstructorTakesNothing' => (new ReflectionClass($progressBar))->getConstructor() === null,
+    // The packaged controller must not have grown a bar enhancement: the
+    // sweep and the stripes are the stylesheet's, so there is nothing for a
+    // browser to do.
+    'barBrowserCode' => is_file($assetPath . '/vueforge-razor.js')
+        && preg_match('/vf-progress-bar|data-vf-razor="progress-bar"|progress-bar-enhanced/', (string) file_get_contents($assetPath . '/vueforge-razor.js')) === 1,
     // VfSkeletonGate, the fifteenth component and the first that renders
     // another. Five renders, because a packaging defect here has a shape no
     // other component's does: the gate could install and resolve perfectly and
@@ -524,6 +552,16 @@ echo json_encode([
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-spinner-dash')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-spinner-dash') === 1
         && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-spinner--primary'),
+    'barCss' => is_file($assetPath . '/vueforge-razor.css')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-bar {')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-bar__value {')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-bar__label {')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-bar--danger')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-bar--indeterminate .vf-progress-bar__value::before')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-bar-indeterminate {') === 1
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-bar-indeterminate-short {') === 1
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-bar-stripes {') === 1
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-bar--primary'),
     'js' => is_file($assetPath . '/vueforge-razor.js') ? filesize($assetPath . '/vueforge-razor.js') : 0,
 ]);
 `,
@@ -564,6 +602,7 @@ echo json_encode([
       'vf-skeleton-gate',
       'vf-alert',
       'vf-progress-spinner',
+      'vf-progress-bar',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -1111,6 +1150,72 @@ echo json_encode([
     "the packaged controller carries no spinner code, because the animation is the stylesheet's",
     rendered.spinnerBrowserCode === false,
     'vueforge-razor.js mentions the spinner; the reference has no browser behaviour for it',
+  );
+
+  // ---------------------------------------------------------- vf-progress-bar
+  //
+  // The nineteenth component, proved from the same installed package, beside
+  // the spinner it shares a role name with. What matters most is the value
+  // arithmetic surviving packaging: the ratio unrounded, the serialisation
+  // JavaScript's, a template's numeric text parsed, indeterminate writing no
+  // value - and the two progress components installed as two classes.
+  check(
+    'the consumer renders a standalone bar: a named determinate progressbar at 0 of 100 holding an empty fill',
+    rendered.barDefault ===
+      '<div class="vf-progress-bar" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+        '<span class="vf-progress-bar__value" style="inline-size: 0%;"></span></div>',
+    rendered.barDefault,
+  );
+  check(
+    'the packaged bar writes a custom maximum and the unrounded ratio, serialised as JavaScript would',
+    rendered.barCustomMax ===
+      '<div class="vf-progress-bar" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="12" aria-valuenow="7">' +
+        '<span class="vf-progress-bar__value" style="inline-size: 58.333333333333336%;"></span></div>',
+    rendered.barCustomMax,
+  );
+  check(
+    "the packaged bar reads a template's numeric text as a number",
+    rendered.barTemplateText.includes('aria-valuemax="80" aria-valuenow="40"') &&
+      rendered.barTemplateText.includes('style="inline-size: 50%;"'),
+    rendered.barTemplateText,
+  );
+  check(
+    'the packaged indeterminate bar writes the modifier, no value attribute and no fill size',
+    rendered.barIndeterminate ===
+      '<div class="vf-progress-bar vf-progress-bar--indeterminate" role="progressbar" aria-label="Progress">' +
+        '<span class="vf-progress-bar__value"></span></div>',
+    rendered.barIndeterminate,
+  );
+  check(
+    'the packaged bar carries its tone and stripe modifiers, its height property, its name and a rounded label inside a 12.5% fill',
+    rendered.barComposed ===
+      '<div class="vf-progress-bar vf-progress-bar--danger vf-progress-bar--striped vf-progress-bar--animated" style="--vf-progress-bar-height: 16px;" role="progressbar" aria-label="Exporting" aria-valuemin="0" aria-valuemax="8" aria-valuenow="1">' +
+        '<span class="vf-progress-bar__value" style="inline-size: 12.5%;"><span class="vf-progress-bar__label">13%</span></span></div>',
+    rendered.barComposed,
+  );
+  check(
+    "a consumer role, class, style, data attribute and value attribute replace or join the packaged bar's own on the root only, while the fill keeps the prop",
+    rendered.barConsumerAttributes.startsWith(
+      '<div class="vf-progress-bar consumer-bar" style="margin: 4px;" role="status" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" data-testid="export">',
+    ) &&
+      rendered.barConsumerAttributes.includes('<span class="vf-progress-bar__value" style="inline-size: 50%;">') &&
+      !rendered.barConsumerAttributes.includes('progressbar'),
+    rendered.barConsumerAttributes.slice(0, 260),
+  );
+  check(
+    'the installed bar and the installed spinner are two components of two classes, and the bar is handed nothing',
+    rendered.barIsNotTheSpinner === true && rendered.barConstructorTakesNothing === true,
+    'vf-progress-bar resolves to the spinner, shares its class, or takes a constructor argument',
+  );
+  check(
+    'the packaged stylesheet carries the bar rules once, with all three keyframes, the label rule and no primary modifier',
+    rendered.barCss,
+    'vueforge-razor.css is missing bar rules, duplicates a keyframe, or carries a rule the stylesheet never had',
+  );
+  check(
+    "the packaged controller carries no bar code, because the sweep and the stripes are the stylesheet's",
+    rendered.barBrowserCode === false,
+    'vueforge-razor.js mentions the bar; the reference has no browser behaviour for it',
   );
 
   check(

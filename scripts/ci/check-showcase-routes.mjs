@@ -131,6 +131,10 @@ const controlSelectors = {
   // and this selector counts the standalone one only because the spinner
   // route is the only route asked for it.
   VfProgressSpinner: 'span.vf-progress-spinner',
+  // The M21 component. One root, no slot; the fill is always rendered and the
+  // label only sometimes, so the root is the selector. A div beside the
+  // spinner's span, which is one more way the two are not the same element.
+  VfProgressBar: 'div.vf-progress-bar',
 };
 
 /**
@@ -196,6 +200,7 @@ check(
       'VfIconButton',
       'VfInput',
       'VfPanel',
+      'VfProgressBar',
       'VfProgressSpinner',
       'VfRadio',
       'VfSkeleton',

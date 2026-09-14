@@ -697,7 +697,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/progress-bar/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/progress-bar/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/progress-bar",
+          "razor": "/"
         }
       }
     },

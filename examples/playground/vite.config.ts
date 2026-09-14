@@ -141,6 +141,7 @@ export default defineConfig({
         panel: fileURLToPath(new URL('./panel.html', import.meta.url)),
         alert: fileURLToPath(new URL('./alert.html', import.meta.url)),
         progressSpinner: fileURLToPath(new URL('./progress-spinner.html', import.meta.url)),
+        progressBar: fileURLToPath(new URL('./progress-bar.html', import.meta.url)),
       },
     },
   },
@@ -243,6 +244,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/progress-spinner-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/progress-spinner/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/progress-bar-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/progress-bar/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

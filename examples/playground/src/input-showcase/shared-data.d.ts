@@ -91,6 +91,11 @@ declare module '@vueforge/progress-spinner-cases' {
   export default catalog;
 }
 
+declare module '@vueforge/progress-bar-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
 declare module '@vueforge/showcase-index' {
   interface ShowcasePlatform {
     label: string;
