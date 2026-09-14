@@ -89,4 +89,14 @@ export const styleSources = [
   // file exists in that one. Folding them into one "progress" stylesheet is
   // the single change that would make the two components look interchangeable.
   'packages/styles/src/components/progress-bar.css',
+  // VfAccordion, the M22 component and a standalone closure of 10 rules: the
+  // root, the trigger with its expanded, focus and hover states, the icon
+  // with its rotation, and the region with its inner wrapper. It was
+  // Vue-owned until M22 and reached no Razor artifact at all. Listed last;
+  // no accordion selector overlaps another file's, so nothing else about the
+  // position matters. What is *not* here is anything the JavaScript
+  // transition writes: height, opacity, overflow and the transition itself
+  // are inline declarations the controller owns, exactly as the reference's
+  // hooks own them, and the stylesheet carries only the resting states.
+  'packages/styles/src/components/accordion.css',
 ];
