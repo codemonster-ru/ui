@@ -116,8 +116,21 @@ async function pressKey(page, key) {
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
 }
 
-/** A real pointer click at the centre of the first element the selector finds. */
+/**
+ * A real pointer click at the centre of the first element the selector finds.
+ *
+ * Layout is allowed to settle first: an accordion panel entering or leaving
+ * above the target moves it, and a point computed mid-flight lands beside it.
+ * This page does not emulate reduced motion, so the real 320ms height
+ * transition runs; the wait is bounded and ends as soon as no panel carries
+ * an inline transition.
+ */
 async function clickAt(page, selector) {
+  await page.evaluate(`(async () => {
+    const deadline = performance.now() + 1500;
+    const inFlight = () => [...document.querySelectorAll('.vf-accordion__content')].some((panel) => panel.style.transition !== '');
+    while (inFlight() && performance.now() < deadline) await new Promise((tick) => setTimeout(tick, 25));
+  })()`);
   const point = await page.evaluate(`(() => {
     const element = document.querySelector(${JSON.stringify(selector)});
     if (!element) throw new Error('missing ' + ${JSON.stringify(selector)});
