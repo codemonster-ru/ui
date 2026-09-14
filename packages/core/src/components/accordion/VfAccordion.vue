@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { resolveAccordionIconClasses, resolveAccordionTransition } from '@codemonster-ru/vueforge-shared-core';
 import { useDisclosure, useId } from '@/composables';
 import { vfMotionDurationsMs } from '@/theme/motion';
 
@@ -35,11 +36,13 @@ const disclosure = useDisclosure({
   },
 });
 const isOpen = disclosure.isOpen;
+const iconClasses = computed(() => resolveAccordionIconClasses(isOpen.value));
 
-const accordionTransition = [
-  'height var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)',
-  'opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)',
-].join(', ');
+// The state itself stays in useDisclosure, which the dialog, drawer and
+// popover share; only the decisions the Razor adapter also makes moved to
+// shared-core. The enter and leave hooks below are element-bound behaviour and
+// are reproduced, not shared - see packages/shared-core/src/accordion/state.ts.
+const accordionTransition = resolveAccordionTransition();
 
 function getContentHeight(target: HTMLElement) {
   const inner = target.firstElementChild as HTMLElement | null;
@@ -128,7 +131,7 @@ function onAfterLeave(el: Element) {
         <span>{{ title }}</span>
       </slot>
 
-      <span aria-hidden="true" :class="['vf-accordion__icon', isOpen && 'vf-accordion__icon--open']">
+      <span aria-hidden="true" :class="iconClasses">
         <VueIconify :icon="icons.chevronDown" size="var(--vf-icon-size-sm)" />
       </span>
     </button>

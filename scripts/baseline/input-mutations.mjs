@@ -55,6 +55,8 @@ export const progressBarSourcePath = 'packages/core/src/components/progress-bar/
 export const progressBarRulePath = 'packages/shared-core/src/progress-bar/state.ts';
 
 export const accordionSourcePath = 'packages/core/src/components/accordion/VfAccordion.vue';
+/** The shared rules VfAccordion, its Razor controller and the PHP adapter derive from. */
+export const accordionRulePath = 'packages/shared-core/src/accordion/state.ts';
 /**
  * The disclosure composable VfAccordion's state model lives in. Not migrated
  * and not accordion-specific - the dialog, drawer and popover share it - so a
@@ -2864,11 +2866,36 @@ export const accordionMutations = [
   },
   {
     id: 'accordion-icon-loses-its-open-modifier',
+    file: accordionRulePath,
+    suite: accordionSuite,
+    description: 'the shared icon rule never adds the open modifier, so the chevron never rotates',
+    find: "  if (open) classes.push('vf-accordion__icon--open');",
+    replace: '',
+  },
+  {
+    id: 'accordion-icon-modifier-lands-on-the-wrong-element',
     file: accordionSourcePath,
     suite: accordionSuite,
-    description: 'the chevron never rotates',
-    find: "isOpen && 'vf-accordion__icon--open'",
-    replace: 'false',
+    description: 'the open modifier is written on the trigger instead of the icon wrapper',
+    edits: [
+      {
+        find: '      <span aria-hidden="true" :class="iconClasses">',
+        replace: '      <span aria-hidden="true" class="vf-accordion__icon">',
+      },
+      {
+        find: '      class="vf-accordion__trigger"\n      type="button"',
+        replace:
+          '      :class="[\'vf-accordion__trigger\', isOpen && \'vf-accordion__icon--open\']"\n      type="button"',
+      },
+    ],
+  },
+  {
+    id: 'accordion-transition-drops-the-opacity-fade',
+    file: accordionRulePath,
+    suite: accordionSuite,
+    description: 'the shared transition declaration animates height only',
+    find: "    'opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)',\n",
+    replace: '',
   },
   {
     id: 'accordion-swaps-the-glyph',

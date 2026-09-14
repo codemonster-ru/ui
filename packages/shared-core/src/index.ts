@@ -105,3 +105,8 @@ export type {
   VfInputPasswordRevealAvailability,
   VfInputTypeResolution,
 } from './input/state.js';
+export {
+  resolveAccordionIconClasses,
+  resolveAccordionOpen,
+  resolveAccordionTransition,
+} from './accordion/state.js';

@@ -1,0 +1,27 @@
+{
+  "$comment": "Shared input/expected vectors for VfAccordion. The TypeScript rules in accordion/state.ts and the PHP mirror in packages/razor/src/Support/AccordionState.php both run this file. resolveAccordionOpen takes `open` as undefined (spelled as an absent key here) or a boolean: the Vue reference tests `!== undefined`, and the Razor adapter maps its own null-attribute convention onto absence before the rule runs. There is deliberately no vector for a toggle, a listener or a next-state transition: the rule set holds no state, and a vector file that described one would be the first line of the disclosure state machine the plan forbids.",
+  "resolveAccordionOpen": [
+    { "$why": "Nothing said: closed.", "expected": false },
+    { "$why": "defaultOpen alone seeds the state.", "defaultOpen": true, "expected": true },
+    { "$why": "defaultOpen false is the same as absent.", "defaultOpen": false, "expected": false },
+    { "$why": "open alone controls.", "open": true, "expected": true },
+    { "open": false, "expected": false },
+    {
+      "$why": "The controlled prop wins over the seed, in both directions.",
+      "open": false,
+      "defaultOpen": true,
+      "expected": false
+    },
+    { "open": true, "defaultOpen": false, "expected": true },
+    { "open": true, "defaultOpen": true, "expected": true }
+  ],
+  "resolveAccordionIconClasses": [
+    { "open": false, "expected": ["vf-accordion__icon"] },
+    { "open": true, "expected": ["vf-accordion__icon", "vf-accordion__icon--open"] }
+  ],
+  "resolveAccordionTransition": [
+    {
+      "expected": "height var(--vf-motion-duration-normal) var(--vf-motion-ease-standard), opacity var(--vf-motion-duration-normal) var(--vf-motion-ease-standard)"
+    }
+  ]
+}
