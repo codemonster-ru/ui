@@ -290,7 +290,13 @@ export function extractCasesExpression(measuredRoles) {
       // other element with the marker is compared. What the template holds is
       // compared the moment it renders, by the post-interaction DOM.
       children: [...element.children]
-        .filter((child) => !(child.tagName === 'TEMPLATE' && child.hasAttribute('data-vf-razor')))
+        .filter(
+          (child) =>
+            !(
+              child.tagName === 'TEMPLATE' &&
+              [...child.attributes].some((attribute) => attribute.name.startsWith('data-vf-razor'))
+            ),
+        )
         .map((child) => describe(child, idMap)),
     };
 
@@ -532,7 +538,9 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
       // in the only way that matters to a user - not by reading the attribute.
       await pointerClick(page, selector, step.selector ?? '.vf-field__label');
     } else if (step.action === 'clickButton') {
-      await pointerClick(page, selector, step.selector ?? '.vf-icon-button');
+      // `index` picks a member of a group or a nested pair, as it does for the
+      // checkable controls; every earlier button case wanted the first match.
+      await pointerClick(page, selector, step.selector ?? '.vf-icon-button', step.index ?? 0);
     } else if (step.action === 'pressKey') {
       await pressKey(page, step.key);
     } else if (step.action === 'focusButton') {

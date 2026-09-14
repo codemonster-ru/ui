@@ -26,6 +26,7 @@ import VfAlert from '@parity/core/components/alert/VfAlert.vue';
 import VfProgressSpinner from '@parity/core/components/progress-spinner/VfProgressSpinner.vue';
 import VfProgressBar from '@parity/core/components/progress-bar/VfProgressBar.vue';
 import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate.vue';
+import VfAccordion from '@parity/core/components/accordion/VfAccordion.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -99,6 +100,20 @@ interface GateSlot {
   control?: { text: string };
 }
 
+/**
+ * One VfAccordion slot, as the shared catalog spells it.
+ *
+ * `control` in the body is a real consumer button; in the trigger slot it is a
+ * real consumer link, because a button inside the trigger button is not a
+ * shape a consumer can write. `accordion` nests a second real VfAccordion.
+ */
+interface AccordionSlot {
+  text?: string;
+  markup?: 'article';
+  control?: { text: string };
+  accordion?: { title?: string; defaultOpen?: boolean; text?: string };
+}
+
 interface ParityCase {
   id: string;
   props: Record<string, unknown>;
@@ -122,7 +137,13 @@ interface ParityCase {
     body?: CardSlot & GateSlot & PanelSlot & AlertSlot;
     /** VfSkeletonGate's skeleton slot, which replaces the child component. */
     skeleton?: GateSlot;
+    /** VfAccordion's trigger slot. */
+    trigger?: AccordionSlot;
   };
+  /** VfAccordion siblings rendered side by side, each with its own props. */
+  group?: Record<string, unknown>[];
+  /** The number of component-owned controls the case declares; read by the harness, not by this fixture. */
+  componentInteractive?: number;
   /** VfSkeletonGate: the props to set after mount, and the case it must converge on. */
   transition?: { to: Record<string, unknown>; matches: string };
   field?: CaseField;
@@ -571,6 +592,114 @@ function renderSkeletonGate(parityCase: ParityCase): VNode {
   return h(VfSkeletonGate, gateProps[parityCase.id], slots);
 }
 
+/**
+ * The reactive props each VfAccordion instance is rendered with.
+ *
+ * Held reactively for one reason: a controlled case (`open` in its props) is
+ * rendered the way a v-model consumer renders it, with update:open written
+ * back into the prop. That is the historical public protocol, and the only
+ * way a controlled accordion visibly changes state. An uncontrolled case is
+ * left to the component.
+ */
+const accordionProps = reactive<Record<string, Record<string, unknown>>>({});
+
+/**
+ * The neutral event log the harness reads after a scenario.
+ *
+ * One entry per openChange the component emitted, for every instance in the
+ * case - nested and sibling instances included - so the log says how many
+ * times, and to which value, the case's accordions told their consumer they
+ * changed. The Razor fixture keeps the same log from its controller's event.
+ */
+declare global {
+  interface Window {
+    __parityAccordionEvents?: Record<string, { open: boolean }[]>;
+  }
+}
+window.__parityAccordionEvents = {};
+
+function accordionSlotChildren(slot: AccordionSlot, caseId: string, inTrigger: boolean): unknown[] {
+  const nodes: unknown[] = [];
+
+  if (slot.text !== undefined && slot.text !== '') nodes.push(slot.text);
+  if (slot.markup === 'article') {
+    nodes.push(
+      h('h4', 'Billing period'),
+      h('p', 'Storage, seats and outbound transfer for the current period.'),
+      h('ul', [h('li', 'Storage: 42 GB'), h('li', 'Seats: 12')]),
+    );
+  }
+  // A real consumer control, unmarked and unwrapped: a link inside the
+  // trigger, a button inside the panel.
+  if (slot.control !== undefined) {
+    nodes.push(
+      inTrigger ? h('a', { href: '#' }, slot.control.text) : h('button', { type: 'button' }, slot.control.text),
+    );
+  }
+  if (slot.accordion !== undefined) {
+    const { text, ...props } = slot.accordion;
+    nodes.push(
+      renderAccordionInstance(caseId, `${caseId}/nested`, props, {}, text === undefined ? {} : { body: { text } }),
+    );
+  }
+
+  return nodes;
+}
+
+function renderAccordionInstance(
+  caseId: string,
+  key: string,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: { trigger?: AccordionSlot; body?: AccordionSlot },
+): VNode {
+  const slots: Record<string, (scope: { open: boolean }) => unknown> = {};
+  if (content.trigger !== undefined) slots.trigger = () => accordionSlotChildren(content.trigger!, caseId, true);
+  if (content.body !== undefined) slots.default = () => accordionSlotChildren(content.body!, caseId, false);
+
+  accordionProps[key] ??= reactive({ ...props, ...attrs });
+  const live = accordionProps[key];
+  const log = (window.__parityAccordionEvents![caseId] ??= []);
+
+  return h(
+    VfAccordion,
+    {
+      ...live,
+      key,
+      onOpenChange: (open: boolean) => log.push({ open }),
+      // v-model:open, spelled out. A consumer that binds `open` writes the
+      // emitted value back; an uncontrolled instance never has the prop and
+      // the write is inert.
+      ...('open' in live ? { 'onUpdate:open': (open: boolean) => (live.open = open) } : {}),
+    },
+    slots,
+  );
+}
+
+/**
+ * VfAccordion, for the accordion catalog.
+ *
+ * Its own function, and deliberately not renderPanel or renderCard with a
+ * trigger bolted on: the accordion is the first component with a control of
+ * its own, and the fixture is where "the trigger is really a consumer button
+ * the fixture wrote" would be easiest to introduce and hardest to see. Nothing
+ * here renders a button that is not the consumer's declared control.
+ *
+ * A `group` renders each member as its own instance with the case's content;
+ * the case-level props are ignored for a group, as the catalog says.
+ */
+function renderAccordion(parityCase: ParityCase): VNode[] {
+  const content = (parityCase.content ?? {}) as { trigger?: AccordionSlot; body?: AccordionSlot };
+
+  if (Array.isArray(parityCase.group)) {
+    return parityCase.group.map((member, index) =>
+      renderAccordionInstance(parityCase.id, `${parityCase.id}/${index}`, member, parityCase.attrs, content),
+    );
+  }
+
+  return [renderAccordionInstance(parityCase.id, parityCase.id, parityCase.props, parityCase.attrs, content)];
+}
+
 function renderIconButton(parityCase: ParityCase): VNode {
   // No slots and no wrapper: the historical VfIconButton renders one button
   // carrying one glyph, and the case root is the only element around it.
@@ -623,6 +752,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'skeleton-gate') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderSkeletonGate(parityCase)]);
+  }
+
+  if (catalog.component === 'accordion') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderAccordion(parityCase));
   }
 
   if (catalog.component === 'icon-button') {

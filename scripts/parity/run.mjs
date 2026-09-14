@@ -542,7 +542,10 @@ async function captureTarget(
           );
         }
 
-        if (got !== want) {
+        // A list claim - `expandedStates` for a group - is compared by value.
+        const matches =
+          want !== null && typeof want === 'object' ? JSON.stringify(got) === JSON.stringify(want) : got === want;
+        if (!matches) {
           throw new Error(
             `${parityCase.id} on ${label} (${theme}): the catalog expects ${key}=${JSON.stringify(want)}, ` +
               `but the component recorded ${JSON.stringify(got)}.`,

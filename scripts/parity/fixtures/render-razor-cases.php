@@ -77,6 +77,10 @@ $progressBarComponent = $registry->resolve('vf-progress-bar');
 // the canonical migrated skeleton and there is nothing here that could
 // substitute a different one.
 $skeletonGateComponent = $registry->resolve('vf-skeleton-gate');
+// The M22 component. Resolved on its own account: the first component with a
+// control of its own, and nothing else in the fixture renders a button that is
+// not a consumer's declared control.
+$accordionComponent = $registry->resolve('vf-accordion');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -118,6 +122,11 @@ if ($progressSpinnerComponent === null) {
 
 if ($progressBarComponent === null) {
     fwrite(STDERR, "The VueForge vf-progress-bar component is not registered.\n");
+    exit(1);
+}
+
+if ($accordionComponent === null) {
+    fwrite(STDERR, "The VueForge vf-accordion component is not registered.\n");
     exit(1);
 }
 
@@ -784,12 +793,103 @@ $renderSkeletonGate = static function (array $case) use ($skeletonGateComponent,
     return $skeletonGateComponent->render(new ComponentRenderContext($props, $slots))->value();
 };
 
+/**
+ * One VfAccordion slot's markup, built the same way the Vue fixture builds it.
+ *
+ * A control is a real consumer link inside the trigger and a real consumer
+ * button inside the panel, unmarked and unwrapped. A nested accordion is a
+ * real vf-accordion render placed into the slot markup, exactly as a template
+ * engine would place it.
+ */
+$accordionSlotMarkup = static function (array $slot, bool $inTrigger) use (&$renderAccordionInstance, $escape): string {
+    $markup = '';
+
+    if (isset($slot['text']) && $slot['text'] !== '') {
+        $markup .= $escape((string) $slot['text']);
+    }
+    if (($slot['markup'] ?? null) === 'article') {
+        $markup .= '<h4>Billing period</h4>'
+            . '<p>Storage, seats and outbound transfer for the current period.</p>'
+            . '<ul><li>Storage: 42 GB</li><li>Seats: 12</li></ul>';
+    }
+    if (isset($slot['control'])) {
+        $markup .= $inTrigger
+            ? '<a href="#">' . $escape((string) $slot['control']['text']) . '</a>'
+            : '<button type="button">' . $escape((string) $slot['control']['text']) . '</button>';
+    }
+    if (isset($slot['accordion'])) {
+        $nested = $slot['accordion'];
+        $text = $nested['text'] ?? null;
+        unset($nested['text']);
+        $markup .= $renderAccordionInstance($nested, [], $text === null ? [] : ['body' => ['text' => $text]]);
+    }
+
+    return $markup;
+};
+
+/**
+ * One vf-accordion render from neutral props, attrs and slots.
+ *
+ * `defaultOpen` is spelled `default-open` here, as a template would spell it.
+ * There is no v-model to wire: the Razor adapter reads `open` as the initial
+ * state and its controller toggles on its own.
+ */
+$renderAccordionInstance = static function (array $props, array $attrs, array $content) use (
+    $accordionComponent,
+    $accordionSlotMarkup,
+): string {
+    $rename = ['defaultOpen' => 'default-open'];
+    $resolved = [];
+    foreach ($props as $name => $value) {
+        $resolved[$rename[$name] ?? $name] = $value;
+    }
+    foreach ($attrs as $name => $value) {
+        $resolved[$name] = $value;
+    }
+
+    $slots = [];
+    foreach (['trigger' => true, 'body' => false] as $from => $inTrigger) {
+        if (!array_key_exists($from, $content)) {
+            continue;
+        }
+        $markup = $accordionSlotMarkup($content[$from], $inTrigger);
+        $slots[$inTrigger ? 'trigger' : 'default'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    return $accordionComponent->render(new ComponentRenderContext($resolved, $slots))->value();
+};
+
+/**
+ * VfAccordion, for the accordion catalog.
+ *
+ * Its own closure, and deliberately not $renderPanel or $renderCard with a
+ * trigger bolted on: the fixture is where "the trigger is really a consumer
+ * button the fixture wrote" would be easiest to introduce and hardest to see.
+ * A `group` renders each member as its own instance with the case's content.
+ */
+$renderAccordion = static function (array $case) use ($renderAccordionInstance): string {
+    $content = $case['content'] ?? [];
+
+    if (isset($case['group']) && is_array($case['group'])) {
+        $markup = '';
+        foreach ($case['group'] as $member) {
+            $markup .= $renderAccordionInstance($member, $case['attrs'] ?? [], $content);
+        }
+
+        return $markup;
+    }
+
+    return $renderAccordionInstance($case['props'] ?? [], $case['attrs'] ?? [], $content);
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'progress-bar') {
+    if ($component === 'accordion') {
+        $body = $renderAccordion($case);
+    } elseif ($component === 'progress-bar') {
         $body = $renderProgressBar($case);
     } elseif ($component === 'progress-spinner') {
         $body = $renderProgressSpinner($case);
@@ -848,6 +948,16 @@ $html = <<<HTML
 <div id="parity-root"><div class="parity-cases">{$sections}</div></div>
 <script type="module" src="./vueforge-razor.js"></script>
 <script type="module">
+  // The neutral accordion event log the harness reads after a scenario: one
+  // entry per open-change the controller dispatched, keyed by the case that
+  // contains the accordion. The Vue fixture keeps the same log from the
+  // component's openChange emit.
+  window.__parityAccordionEvents = {};
+  document.addEventListener('vf-accordion:open-change', (event) => {
+    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
+    if (!caseId) return;
+    (window.__parityAccordionEvents[caseId] ??= []).push({ open: event.detail.open });
+  });
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);
   document.documentElement.setAttribute('data-parity-ready', 'true');
