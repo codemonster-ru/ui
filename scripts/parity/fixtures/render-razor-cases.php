@@ -67,6 +67,10 @@ $alertComponent = $registry->resolve('vf-alert');
 // whose loading state renders it: the button reaches this same instance
 // through the provider, and this fixture renders the standalone tag.
 $progressSpinnerComponent = $registry->resolve('vf-progress-spinner');
+// The M21 component. Resolved on its own account, never through the spinner
+// whose role name it shares: the two are registered side by side and the
+// provider hands neither to the other.
+$progressBarComponent = $registry->resolve('vf-progress-bar');
 // The M17 component. Resolved through the registry like every other one, which
 // is also how the gate reaches its child: the provider hands the registered
 // skeleton to the gate, so this single resolve() produces a gate that renders
@@ -109,6 +113,11 @@ if ($alertComponent === null) {
 
 if ($progressSpinnerComponent === null) {
     fwrite(STDERR, "The VueForge vf-progress-spinner component is not registered.\n");
+    exit(1);
+}
+
+if ($progressBarComponent === null) {
+    fwrite(STDERR, "The VueForge vf-progress-bar component is not registered.\n");
     exit(1);
 }
 
@@ -672,6 +681,35 @@ $renderProgressSpinner = static function (array $case) use ($progressSpinnerComp
 };
 
 /**
+ * VfProgressBar, for the progress-bar catalog.
+ *
+ * No slots. `showValue` is the one prop whose Razor spelling differs from the
+ * neutral vocabulary; everything else is the same word, and attrs are merged
+ * the way every other leaf merges them. Not `$renderProgressSpinner` with a
+ * value: the two components share a role name and no rule, and a fixture
+ * that reached one through the other would measure the wrong contract. The
+ * labelledby heading is appended after the bar, as it is in the Vue entry.
+ */
+$renderProgressBar = static function (array $case) use ($progressBarComponent, $escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name === 'showValue' ? 'show-value' : $name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $markup = $progressBarComponent->render(new ComponentRenderContext($props, []))->value();
+
+    if (($case['attrs']['aria-labelledby'] ?? null) === 'progress-bar-heading') {
+        $markup .= '<p id="progress-bar-heading" class="parity-hint">' . $escape('Upload progress') . '</p>';
+    }
+
+    return $markup;
+};
+
+/**
  * The consumer markup a gate case names, built the same way in both fixtures.
  *
  * The catalog names a shape rather than carrying HTML, so this and the Vue
@@ -751,7 +789,9 @@ $sections = '';
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'progress-spinner') {
+    if ($component === 'progress-bar') {
+        $body = $renderProgressBar($case);
+    } elseif ($component === 'progress-spinner') {
         $body = $renderProgressSpinner($case);
     } elseif ($component === 'skeleton-gate') {
         $body = $renderSkeletonGate($case);

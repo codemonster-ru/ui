@@ -85,6 +85,15 @@ export const COMPARED_ATTRIBUTES = [
   'aria-valuenow',
   'aria-valuemin',
   'aria-valuemax',
+  // VfProgressBar. Found missing by the attribute-coverage gate in M21, the
+  // eighth time it has caught an attribute nothing compared. The bar is the
+  // first migrated progressbar that writes a value, and aria-valuetext is
+  // the one attribute that would change how that value is announced while
+  // leaving aria-valuenow, the width and every screenshot alone. The
+  // reference never writes it and forwards a consumer's; before M21 an
+  // adapter that wrote aria-valuetext="50%" on every determinate bar would
+  // have compared equal.
+  'aria-valuetext',
   'focusable',
   'style',
   'hidden',

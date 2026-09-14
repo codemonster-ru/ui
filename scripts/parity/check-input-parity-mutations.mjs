@@ -56,6 +56,11 @@ import {
   progressSpinnerPolicyMutations,
 } from './progress-spinner-mutations.mjs';
 import {
+  progressBarBrowserMutations,
+  progressBarParityMutations,
+  progressBarPolicyMutations,
+} from './progress-bar-mutations.mjs';
+import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
   skeletonGatePolicyMutations,
@@ -132,6 +137,11 @@ const mutationSets = {
     capture: progressSpinnerParityMutations,
     policy: progressSpinnerPolicyMutations,
     browser: progressSpinnerBrowserMutations,
+  },
+  'progress-bar': {
+    capture: progressBarParityMutations,
+    policy: progressBarPolicyMutations,
+    browser: progressBarBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,

@@ -639,6 +639,63 @@ export const profiles = {
     snapshot: 'static',
     staticOwnership: true,
   },
+  // The M21 component, and the profile beside the spinner's: the two share
+  // the role name and the tone union, and this profile measures everything
+  // the spinner's cannot - a value, a maximum, a fill whose width *is* the
+  // value, and a label inside it.
+  //
+  // Three roles. The fill is listed because its box width is the painted
+  // value measured in pixels of the track, which is how a wrong formula, a
+  // rounded ratio or a fill that kept its width while indeterminate is caught
+  // on a named node without a screenshot. The label is listed so its
+  // presence, its text and its placement inside the fill stay measurements.
+  'progress-bar': {
+    id: 'progress-bar',
+    label: 'VfProgressBar',
+    component: 'progress-bar',
+    casesPath: 'contracts/progress-bar/cases.json',
+    policyPath: 'contracts/progress-bar/parity-policy.json',
+    artifactDirectory: 'parity-progress-bar',
+    reportName: 'progress-bar-parity-report.json',
+    measuredRoles: {
+      root: '.vf-progress-bar',
+      fill: '.vf-progress-bar__value',
+      label: '.vf-progress-bar__label',
+    },
+    // The root is listed because exposing `progressbar` with a name *and a
+    // value* is the contract: the browser derives valuenow, valuemin and
+    // valuemax from the three attributes, and the a11y.states dimension is
+    // where a stale or missing one is caught from the tree rather than from
+    // the markup. The fill and the label are listed for the opposite reason:
+    // neither has a role, so what they expose - nothing, or a static text -
+    // is only a measurement if the selector is queried.
+    accessibilityRoles: {
+      root: '.vf-progress-bar',
+      fill: '.vf-progress-bar__value',
+      label: '.vf-progress-bar__label',
+    },
+    // The three aria-value* names are the contract here rather than
+    // incidental markup: the bar is the first migrated progressbar that
+    // *writes* them, and their presence while determinate and absence while
+    // indeterminate are both compared. aria-valuetext is listed because a
+    // consumer forwards it and the reference never writes it. aria-labelledby
+    // is a relationship edge; style on the fill is the painted value.
+    semanticAttributes: [
+      'class',
+      'style',
+      'role',
+      'aria-label',
+      'aria-labelledby',
+      'aria-valuenow',
+      'aria-valuemin',
+      'aria-valuemax',
+      'aria-valuetext',
+      'aria-hidden',
+      'data-testid',
+    ],
+    snapshot: 'static',
+    staticOwnership: true,
+  },
   // The M17 component, and the first profile that declares two things at once.
   // VfSkeletonGate owns no interaction, so it needs the static ownership
   // measurement every M15/M16 component has; and its state can change after

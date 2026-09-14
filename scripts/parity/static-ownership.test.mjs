@@ -467,6 +467,76 @@ test('the spinner budgets are not the button budgets', () => {
   }
 });
 
+// ---------------------------------------------------------- M21: VfProgressBar
+//
+// The second migrated component with no slot, beside the spinner. Every case
+// declares nothing and every case must measure zero; the consumer-attribute
+// cases forward role, aria-*, class, style and data attributes and never a
+// tabindex or an interactive role. A progressbar is not an interactive role,
+// and neither is the status a consumer can turn it into.
+
+test('every shipped bar case declares no consumer control, and passes only at zero', () => {
+  const cases = load('progress-bar');
+  assert.ok(cases.length > 0, 'the bar catalog is empty');
+
+  for (const parityCase of cases) {
+    assert.equal(parityCase.consumerInteractive, undefined, `${parityCase.id} bought a consumer budget`);
+    assert.deepEqual(staticOwnershipViolations(parityCase, snapshot()), []);
+
+    const grown = staticOwnershipViolations(parityCase, snapshot({ focusableCount: 1 }));
+    assert.equal(grown.length, 1, `${parityCase.id} accepted a focusable element the component would have rendered`);
+    assert.match(grown[0], /measured 1 focusable element\(s\) but the catalog declares 0/);
+    assert.match(staticOwnershipViolations(parityCase, snapshot({ interactiveRoleCount: 1 }))[0], /interactive role/);
+  }
+});
+
+test('a consumer attribute cannot create a hidden ownership assumption on the bar', () => {
+  for (const parityCase of load('progress-bar')) {
+    assert.equal(parityCase.attrs?.tabindex, undefined, `${parityCase.id} makes the root focusable`);
+    assert.ok(
+      !['button', 'link', 'switch', 'checkbox', 'slider', 'spinbutton'].includes(parityCase.attrs?.role),
+      `${parityCase.id} gives the root an interactive role`,
+    );
+  }
+  const consumerRole = load('progress-bar').find((entry) => entry.id === 'progress-bar/consumer-role');
+  assert.ok(consumerRole, 'progress-bar/consumer-role is gone from the catalog');
+  assert.equal(consumerRole.attrs.role, 'status');
+  assert.deepEqual(staticOwnershipViolations(consumerRole, snapshot()), []);
+});
+
+test('an empty or missing bar measurement is a failure rather than a skip', () => {
+  const bar = load('progress-bar').find((entry) => entry.id === 'progress-bar/default');
+  assert.ok(bar, 'progress-bar/default is gone from the catalog');
+
+  assert.ok(staticOwnershipViolations(bar, undefined).length > 0);
+  assert.match(staticOwnershipViolations(bar, {})[0], /is missing/);
+  for (const field of STATIC_SNAPSHOT_FIELDS) {
+    const partial = snapshot();
+    delete partial[field];
+    assert.match(
+      staticOwnershipViolations(bar, partial)[0],
+      /is missing/,
+      `a bar snapshot missing ${field} was accepted`,
+    );
+  }
+});
+
+test('the bar budgets and the spinner budgets are separate catalogs, and neither has any', () => {
+  // Both catalogs are all-zero, and that is exactly why a reviewer might read
+  // one for the other. They are read from their own files: a bar case is
+  // held to zero on its own account, and so is a spinner case.
+  for (const component of ['progress-bar', 'progress-spinner']) {
+    for (const parityCase of load(component)) {
+      assert.equal(parityCase.consumerInteractive, undefined);
+      assert.ok(staticOwnershipViolations(parityCase, snapshot({ focusableCount: 1 })).length > 0);
+    }
+  }
+  assert.notDeepEqual(
+    load('progress-bar').map((entry) => entry.id),
+    load('progress-spinner').map((entry) => entry.id),
+  );
+});
+
 // ------------------------------------------------------ M15 is not weakened
 
 test('every M15 static case is still asserted against exactly zero', () => {

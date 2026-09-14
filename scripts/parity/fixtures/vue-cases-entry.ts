@@ -24,6 +24,7 @@ import VfCard from '@parity/core/components/card/VfCard.vue';
 import VfPanel from '@parity/core/components/panel/VfPanel.vue';
 import VfAlert from '@parity/core/components/alert/VfAlert.vue';
 import VfProgressSpinner from '@parity/core/components/progress-spinner/VfProgressSpinner.vue';
+import VfProgressBar from '@parity/core/components/progress-bar/VfProgressBar.vue';
 import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
@@ -479,6 +480,32 @@ function renderProgressSpinner(parityCase: ParityCase): VNode {
 }
 
 /**
+ * VfProgressBar, for the progress-bar catalog.
+ *
+ * No slots and no wrapper: the historical component is a leaf. Props and
+ * attrs are merged the way every other leaf's are - `value`, `max`,
+ * `indeterminate`, `label`, `height`, `showValue`, `tone`, `striped` and
+ * `animated` reach the component as props, and everything else falls through
+ * onto its root.
+ *
+ * Its own function, and deliberately not a branch of renderProgressSpinner:
+ * the two components share a role name, and the fixture is where "the bar's
+ * catalog is really the spinner's with a value bolted on" would be easiest to
+ * introduce and hardest to see. The labelledby case needs the element it
+ * points at to exist, or the name cannot be resolved on any side; the
+ * heading is appended after the bar, as the describedby hint is for VfInput.
+ */
+function renderProgressBar(parityCase: ParityCase): VNode[] {
+  const nodes: VNode[] = [h(VfProgressBar, { ...parityCase.props, ...parityCase.attrs } as Record<string, unknown>)];
+
+  if (parityCase.attrs['aria-labelledby'] === 'progress-bar-heading') {
+    nodes.push(h('p', { id: 'progress-bar-heading', class: 'parity-hint' }, 'Upload progress'));
+  }
+
+  return nodes;
+}
+
+/**
  * The consumer markup a gate case names, built the same way in both fixtures.
  *
  * Real elements with no marker on them: the static snapshot is asserted against
@@ -588,6 +615,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'progress-spinner') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, [renderProgressSpinner(parityCase)]);
+  }
+
+  if (catalog.component === 'progress-bar') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderProgressBar(parityCase));
   }
 
   if (catalog.component === 'skeleton-gate') {
