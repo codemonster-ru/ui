@@ -54,6 +54,16 @@ export const progressBarSourcePath = 'packages/core/src/components/progress-bar/
 /** The shared rules VfProgressBar and the Razor adapter both derive from. */
 export const progressBarRulePath = 'packages/shared-core/src/progress-bar/state.ts';
 
+export const accordionSourcePath = 'packages/core/src/components/accordion/VfAccordion.vue';
+/**
+ * The disclosure composable VfAccordion's state model lives in. Not migrated
+ * and not accordion-specific - the dialog, drawer and popover share it - so a
+ * mutation here is attributed to the accordion suite alone because no other
+ * consumer of it has a characterization suite yet.
+ */
+export const disclosureComposablePath = 'packages/core/src/composables/useDisclosure.ts';
+const accordionSuite = 'src/components/accordion/VfAccordion.characterization.spec.ts';
+
 /**
  * The consumer suite a VfProgressSpinner defect is expected to reach.
  *
@@ -2606,6 +2616,347 @@ export const progressBarMutations = [
   },
 ];
 
+/**
+ * VfAccordion regressions.
+ *
+ * The M22 set, and the first for a component that owns a control. The groups
+ * are the milestone's dimensions: the initial state, the identity of the
+ * trigger (tag, type, count), the ARIA state and the id relationships, the
+ * click and keyboard activation including the keys that must *not* activate,
+ * the two emits (presence, count, payload, order), the controlled-state
+ * protocol, the disabled guard, DOM retention (v-if, not v-show), the icon,
+ * the JavaScript transition (cleanup, delayed removal, duration, no CSS
+ * classes), and the consumer-attribute contract. No mutation declares
+ * `alsoFails`: the accordion composes no migrated component and nothing
+ * migrated composes it.
+ */
+export const accordionMutations = [
+  // ------------------------------------------------------------ initial state
+  {
+    id: 'accordion-opens-by-default',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the default becomes open, so a bare accordion renders its panel',
+    find: '  defaultOpen: false,',
+    replace: '  defaultOpen: true,',
+  },
+  {
+    id: 'accordion-ignores-the-controlled-prop',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description:
+      'the open prop is never handed to the disclosure, so the component is uncontrolled whatever the consumer says',
+    find: '  open: computed(() => props.open),',
+    replace: '  open: undefined,',
+  },
+  {
+    id: 'accordion-syncs-the-controlled-value-on-mount',
+    file: disclosureComposablePath,
+    suite: accordionSuite,
+    description:
+      'the internal state is seeded from the controlled prop at mount, so releasing control no longer reveals the seeded default',
+    find: '        internalOpen.value = value;\n      }\n    },\n  );',
+    replace: '        internalOpen.value = value;\n      }\n    },\n    { immediate: true },\n  );',
+  },
+
+  // -------------------------------------------------------- trigger identity
+  {
+    id: 'accordion-trigger-becomes-a-div',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the native button is replaced by a div with role=button and tabindex=0',
+    edits: [
+      {
+        find: '    <button\n      :id="triggerId"',
+        replace: '    <div\n      role="button"\n      tabindex="0"\n      :id="triggerId"',
+      },
+      { find: '      </span>\n    </button>', replace: '      </span>\n    </div>' },
+    ],
+  },
+  {
+    id: 'accordion-trigger-becomes-a-submit-button',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the trigger submits a surrounding form',
+    find: '      type="button"',
+    replace: '      type="submit"',
+  },
+  {
+    id: 'accordion-renders-a-second-trigger',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'a second component-owned button appears beside the trigger',
+    find: '    <Transition\n',
+    replace:
+      '    <button type="button" class="vf-accordion__trigger" @click="toggle">{{ title }}</button>\n    <Transition\n',
+  },
+  {
+    id: 'accordion-trigger-listens-on-the-root',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the click handler moves from the trigger to the section, so a click anywhere in the panel toggles',
+    edits: [
+      { find: '  <section class="vf-accordion">', replace: '  <section class="vf-accordion" @click="toggle">' },
+      { find: '      @click="toggle"\n', replace: '' },
+    ],
+  },
+
+  // ---------------------------------------------------------- ARIA and ids
+  {
+    id: 'accordion-inverts-aria-expanded',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'aria-expanded announces the opposite of the state while the DOM is right',
+    find: '      :aria-expanded="isOpen"',
+    replace: '      :aria-expanded="!isOpen"',
+  },
+  {
+    id: 'accordion-aria-controls-points-at-the-trigger',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'aria-controls names the trigger itself rather than the panel',
+    find: '      :aria-controls="contentId"',
+    replace: '      :aria-controls="triggerId"',
+  },
+  {
+    id: 'accordion-panel-loses-its-id',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the panel has no id, so aria-controls resolves to nothing even when open',
+    find: '      <div v-if="isOpen" :id="contentId" :aria-labelledby',
+    replace: '      <div v-if="isOpen" :aria-labelledby',
+  },
+  {
+    id: 'accordion-panel-is-labelled-by-itself',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'aria-labelledby points at the panel instead of the trigger',
+    find: ':aria-labelledby="triggerId"',
+    replace: ':aria-labelledby="contentId"',
+  },
+  {
+    id: 'accordion-region-becomes-a-group',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the panel loses its landmark role',
+    find: 'class="vf-accordion__content" role="region"',
+    replace: 'class="vf-accordion__content" role="group"',
+  },
+  {
+    id: 'accordion-changes-its-id-prefix',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the generated trigger id changes its prefix',
+    find: "useId({ prefix: 'vf-accordion-trigger' })",
+    replace: "useId({ prefix: 'vf-accordion-header' })",
+  },
+  {
+    id: 'accordion-shares-one-id-between-trigger-and-panel',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description:
+      'the panel reuses the trigger id, so aria-controls resolves to the trigger and two elements share an id',
+    find: "const contentId = useId({ prefix: 'vf-accordion-content' });",
+    replace: 'const contentId = triggerId;',
+  },
+
+  // -------------------------------------------------------------- activation
+  {
+    id: 'accordion-disabled-still-toggles',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the disabled guard is removed from toggle',
+    find: '  if (!props.disabled) {\n    disclosure.toggle();\n  }',
+    replace: '  disclosure.toggle();',
+  },
+  {
+    id: 'accordion-click-stops-toggling',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the click listener is gone; only the keyboard toggles',
+    find: '      @click="toggle"\n',
+    replace: '',
+  },
+  {
+    id: 'accordion-enter-stops-toggling',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'Enter is no longer an activation key',
+    find: "  if (event.key === 'Enter' || event.key === ' ') {",
+    replace: "  if (event.key === ' ') {",
+  },
+  {
+    id: 'accordion-space-stops-toggling',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'Space is no longer an activation key',
+    find: "  if (event.key === 'Enter' || event.key === ' ') {",
+    replace: "  if (event.key === 'Enter') {",
+  },
+  {
+    id: 'accordion-adds-arrow-key-activation',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'ArrowDown toggles too - a WAI-ARIA "improvement" the reference never had',
+    find: "  if (event.key === 'Enter' || event.key === ' ') {",
+    replace: "  if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {",
+  },
+  {
+    id: 'accordion-keyboard-stops-preventing-default',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description:
+      'keydown no longer prevents the default, so a native click would follow the handler toggle in a browser',
+    find: '    event.preventDefault();\n    toggle();',
+    replace: '    toggle();',
+  },
+
+  // ------------------------------------------------------------------ events
+  {
+    id: 'accordion-drops-open-change',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'openChange is never emitted',
+    find: "    emit('openChange', value);\n",
+    replace: '',
+  },
+  {
+    id: 'accordion-doubles-update-open',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'update:open is emitted twice per toggle',
+    find: "    emit('update:open', value);",
+    replace: "    emit('update:open', value);\n    emit('update:open', value);",
+  },
+  {
+    id: 'accordion-emits-the-previous-value',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'both events carry the state being left rather than the state being entered',
+    find: "    emit('update:open', value);\n    emit('openChange', value);",
+    replace: "    emit('update:open', !value);\n    emit('openChange', !value);",
+  },
+  {
+    id: 'accordion-swaps-the-event-order',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'openChange fires before update:open',
+    find: "    emit('update:open', value);\n    emit('openChange', value);",
+    replace: "    emit('openChange', value);\n    emit('update:open', value);",
+  },
+
+  // ------------------------------------------------------- retention & icon
+  {
+    id: 'accordion-retains-the-panel-with-v-show',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the panel stays mounted and hidden instead of being destroyed',
+    find: '      <div v-if="isOpen" :id="contentId"',
+    replace: '      <div v-show="isOpen" :id="contentId"',
+  },
+  {
+    id: 'accordion-drops-the-inner-wrapper',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the slot renders straight into the region without the inner div the transition measures',
+    find: '        <div class="vf-accordion__content-inner">\n          <slot :open="isOpen" />\n        </div>',
+    replace: '        <slot :open="isOpen" />',
+  },
+  {
+    id: 'accordion-icon-loses-its-open-modifier',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the chevron never rotates',
+    find: "isOpen && 'vf-accordion__icon--open'",
+    replace: 'false',
+  },
+  {
+    id: 'accordion-swaps-the-glyph',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the trigger renders chevron-up',
+    find: 'icons.chevronDown',
+    replace: 'icons.chevronUp',
+  },
+  {
+    id: 'accordion-drops-the-empty-title-span',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the title span is rendered only for a non-empty title',
+    find: '        <span>{{ title }}</span>',
+    replace: '        <span v-if="title">{{ title }}</span>',
+  },
+
+  // -------------------------------------------------------------- transition
+  {
+    id: 'accordion-skips-the-enter-cleanup',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the inline height, opacity, overflow and transition survive the enter',
+    find: 'function onAfterEnter(el: Element) {\n  const target = el as HTMLElement;',
+    replace: 'function onAfterEnter(el: Element) {\n  if (el) return;\n  const target = el as HTMLElement;',
+  },
+  {
+    id: 'accordion-removes-the-panel-immediately',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'leave completes at once, so the panel is torn out without its collapse',
+    find: "  target.style.opacity = '0';\n\n  window.setTimeout(done, vfMotionDurationsMs.normal);",
+    replace: "  target.style.opacity = '0';\n\n  done();",
+  },
+  {
+    id: 'accordion-animates-with-the-fast-duration',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'both hooks wait the fast duration rather than the normal one',
+    find: 'vfMotionDurationsMs.normal',
+    replace: 'vfMotionDurationsMs.fast',
+    all: true,
+  },
+  {
+    id: 'accordion-uses-css-transition-classes',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'the transition applies enter/leave classes as well as the JavaScript hooks',
+    find: '      :css="false"',
+    replace: '      :css="true"',
+  },
+
+  // ------------------------------------------------------- consumer attrs
+  {
+    id: 'accordion-moves-consumer-attrs-onto-the-trigger',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'attribute inheritance is turned off and the attrs are rebound onto the button',
+    edits: [
+      {
+        find: 'interface VfAccordionProps {',
+        replace: 'defineOptions({ inheritAttrs: false });\n\ninterface VfAccordionProps {',
+      },
+      {
+        find: '      class="vf-accordion__trigger"\n      type="button"',
+        replace: '      class="vf-accordion__trigger"\n      type="button"\n      v-bind="$attrs"',
+      },
+    ],
+  },
+  {
+    id: 'accordion-lets-a-consumer-class-replace-its-own',
+    file: accordionSourcePath,
+    suite: accordionSuite,
+    description: 'a consumer class wins over the canonical root class instead of being appended after it',
+    edits: [
+      {
+        find: 'interface VfAccordionProps {',
+        replace: 'defineOptions({ inheritAttrs: false });\n\ninterface VfAccordionProps {',
+      },
+      {
+        find: '  <section class="vf-accordion">',
+        replace: '  <section :class="$attrs.class ?? \'vf-accordion\'" v-bind="{ ...$attrs, class: undefined }">',
+      },
+    ],
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -2626,4 +2977,5 @@ export const componentMutations = [
   ...alertMutations,
   ...progressSpinnerMutations,
   ...progressBarMutations,
+  ...accordionMutations,
 ];

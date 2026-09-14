@@ -100,6 +100,7 @@ export default defineConfig({
       'src/components/alert/VfAlert.characterization.spec.ts',
       'src/components/progress-spinner/VfProgressSpinner.characterization.spec.ts',
       'src/components/progress-bar/VfProgressBar.characterization.spec.ts',
+      'src/components/accordion/VfAccordion.characterization.spec.ts',
       'src/components/skeleton-gate/VfSkeletonGate.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',
       'src/components/components.spec.ts',
