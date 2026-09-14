@@ -1,0 +1,161 @@
+{
+  "$comment": "Parity policy for the shared VfProgressBar cases. Plain data: no DSL, no waiver engine. Written for this component rather than copied from the spinner's: the spinner's policy has no value dimension, because the spinner has no value. This one names the two things the harness must keep apart - the announced value (dom.aria and a11y.states) and the painted value (dom.nativeAttributes on the fill's style and style.geometry on the fill's box) - and requires that neither can be excused by the other.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData.",
+    "serverStyleSerialisation": "The Vue targets are client-rendered, so the empty style attribute Vue's SSR writes for an absent height (style=\"\") and for the indeterminate fill, and the empty declaration it writes for an empty-string height (--vf-progress-bar-height:;), never reach a capture. The Razor adapter writes none of them, which is the client form every hydrated page ends up with; the extractor records an empty style attribute as absent in any case. Both server outputs are pinned by VfProgressBar.characterization.spec.ts on the Vue side and ProgressBarComponentTest on the Razor side.",
+    "labelWhitespace": "The visible label's text node carries the template's newline and indentation on each side on the Vue targets and none on the Razor target. The extractor collapses whitespace and trims direct text, so both read as 13%; the raw bytes are pinned by the two characterization suites.",
+    "animationPhase": "The indeterminate sweep and the stripe drift are stylesheet keyframes, and the fill's width has a stylesheet transition. Every target is captured under forced prefers-reduced-motion, where the foundation stylesheet collapses every vf-* animation to one 0.01ms iteration and every transition to 0.01ms, so every screenshot shows the final keyframe and the settled width. The intermediate phases are not compared; the animations' existence, their elements and their tokens are pinned by the characterization suite and the canonical stylesheet by baseline:css."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, invalid wrapper arrangement, or tag mismatch: a div holding one fill span, which holds the label span only with showValue while determinate. A label rendered beside the fill, a fill that vanished, a second wrapper or a section root is a structural difference before it is anything else, and never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root with its tone, striped, animated and indeterminate modifiers, the fill and the label. Consumer classes included, because where a consumer class lands relative to the canonical ones is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "class and style on the root, and style on the fill - which is where the painted value lives as an inline-size declaration. A fill at 40% under a root announcing 50 differs here, on the fill, whatever the root says. Plus any native attribute a consumer forwards."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element. The label span's rounded percentage is the only text a bar has; a label that read 12% where the reference reads 13%, or appeared without showValue, lands here."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The bar writes role=progressbar and aria-label on the root always, and aria-valuemin=0, aria-valuemax and aria-valuenow while determinate only. A missing aria-valuenow on a determinate bar, a present one on an indeterminate bar, a stale aria-valuemax under a custom maximum, or a component value beating a consumer's all land here - independently of what the fill paints."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of every measured role. The fill's box width is the painted value as pixels of the track, measured without a screenshot: a formula that ignored the maximum, a rounded ratio, a fill that kept its width while indeterminate or lost it while determinate all move the fill's boxWidth here while every ARIA comparison could still pass. The root's height is the custom property resolved."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour of every measured role. A tone modifier sets the fill colour and the label colour, so this dimension is where the seven paints are actually proved."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme, at the settled width and the final animation keyframe."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role each measured node exposes in the accessibility tree, including exposing none. The root exposes progressbar for every tone and status when a consumer says so; the fill and the label expose nothing of their own."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name each measured node exposes, including exposing none. The root is named by its label prop, by a consumer's aria-label, or by a consumer's aria-labelledby; the visible percentage never names it."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by each measured node: for the root, the value, the minimum and the maximum the browser derives from aria-value*. A determinate bar exposes all three from its own attributes; an indeterminate bar exposes the browser's default range and no value; a consumer aria-valuenow is what the tree exposes, not the prop. Measured from the tree rather than the attributes, so a target whose attributes said one thing and whose tree said another would differ here."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The recorded fact that the component declares no interaction to drive, and that the harness measured this rather than skipping the stage. Every case declares zero controls, consumer-provided or otherwise: the bar has no slot, so nothing a consumer writes can reach the DOM through it, and any focusable element or interactive role inside a case is the component's doing."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "a-missing-value-is-zero-not-indeterminate",
+      "description": "The default is a determinate bar at 0 of 100 with aria-valuenow=0 and an empty fill. Indeterminate is an explicit prop, never inferred from an absent value.",
+      "classification": "exact",
+      "reason": "Every other progress library treats no value as indeterminate. The reference does not, and the default case is compared with aria-valuenow=0 present on dom.aria and value 0 on a11y.states.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/default"
+    },
+    {
+      "id": "a-non-positive-maximum-falls-back-to-100",
+      "description": "max <= 0, NaN or Infinity is not an error and not an empty bar: the maximum becomes 100, so 5 of 0 is 5 of 100.",
+      "classification": "exact",
+      "reason": "An adapter that kept a zero maximum would divide by zero and write NaN% or Infinity%; one that treated it as an error would render nothing. Both cases are compared on dom.aria (aria-valuemax=100) and on the fill's geometry.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/max-zero"
+    },
+    {
+      "id": "the-value-is-clamped-and-never-rounded",
+      "description": "Overflow reads as the maximum, a negative as zero, and everything between is written as-is on both the attribute and the width: aria-valuenow=33.3333, inline-size 58.333333333333336%.",
+      "classification": "exact",
+      "reason": "A port that rounded either the attribute or the width would pass a screenshot and fail here. The custom-max case carries seventeen significant digits into the fill's style, which dom.nativeAttributes compares after the browser has parsed it and style.geometry compares as a box.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/custom-max"
+    },
+    {
+      "id": "numbers-are-written-as-javascript-writes-them",
+      "description": "A value below 1e-6 reaches aria-valuenow as 1e-7 and the fill as 9.999999999999998e-8%; an integral maximum is written without a decimal point.",
+      "classification": "exact",
+      "reason": "PHP's default string conversion of a float uses fourteen significant digits and writes 1.0E-7. The Razor adapter carries its own serialiser, and the tiny-value case is where it is compared on dom.aria and on the fill's declaration.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/tiny-value"
+    },
+    {
+      "id": "indeterminate-writes-no-value-and-no-size",
+      "description": "With indeterminate, none of aria-valuemin, aria-valuemax or aria-valuenow is written and the fill carries no inline-size, whatever value and max were passed. The stylesheet stretches the fill and animates two pseudo-elements.",
+      "classification": "exact",
+      "reason": "Writing aria-valuemin=0 aria-valuemax=100 on an indeterminate bar is the ARIA-recommended shape and a product change; keeping the fill's width would clamp the sweep. Both are compared: the attributes on dom.aria, the fill's absent declaration on dom.nativeAttributes, and its full-track box on style.geometry.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/indeterminate-with-value"
+    },
+    {
+      "id": "the-visible-label-is-not-the-accessible-name",
+      "description": "showValue renders the rounded percentage inside the fill and changes nothing about the root's name, which stays the label prop. No aria-valuetext is written.",
+      "classification": "exact",
+      "reason": "It would be easy to make the visible text the name, or to write it as aria-valuetext. The show-value-custom-name case is compared with the text 50% on dom.text and the name Upload on a11y.name, and the labelledby case proves the reverse: the name moves by a consumer attribute while the visible text does not.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/show-value-custom-name"
+    },
+    {
+      "id": "the-label-rounds-half-up-while-the-width-does-not",
+      "description": "1 of 8 paints a 12.5% fill and reads 13%.",
+      "classification": "exact",
+      "reason": "A floor, a banker's rounding or a rounded width would each move one of the three measurements - dom.text, the fill's style, the fill's box - and not the others.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/show-value-rounds"
+    },
+    {
+      "id": "a-consumer-aria-value-attribute-replaces-the-components-own",
+      "description": "aria-valuenow, aria-valuemin and aria-valuemax are written before the forwarded attrs, so a consumer's wins on the attribute; the fill does not read the attribute and keeps the prop's width.",
+      "classification": "exact",
+      "reason": "This is how an application announces a different value from the one it paints - and it is the reference's contract, not a defect to correct. The consumer-valuenow case is where the harness proves it measures the announced and the painted values apart: the tree exposes 40, the fill measures 50%.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/consumer-valuenow"
+    },
+    {
+      "id": "tone-suppresses-primary-not-neutral",
+      "description": "tone=primary emits no modifier; every other value emits one, neutral included. The spinner's and the alert's convention and the opposite of the badge's and the tag's.",
+      "classification": "exact",
+      "reason": "A bar whose tone rule was borrowed from either span would emit the wrong class at two tones. The neutral case paints with the secondary icon colour, so the difference is visible as well as structural.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/tone-neutral"
+    },
+    {
+      "id": "animated-needs-striped",
+      "description": "animated alone emits no modifier and no motion; striped and animated together emit both modifiers.",
+      "classification": "exact",
+      "reason": "An adapter that emitted --animated on its own would gain a class no stylesheet rule matches; one that emitted --striped for animated would paint stripes the reference does not.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/animated-only"
+    },
+    {
+      "id": "height-is-a-custom-property-not-a-block-size",
+      "description": "A number becomes pixels and a string passes through, both into --vf-progress-bar-height on the root. No block-size or height declaration is written; the stylesheet sizes the track from the property.",
+      "classification": "exact",
+      "reason": "A port that wrote block-size would look identical at one height and stop responding to a consumer's override of the property. The override case is compared on style.geometry against the consumer's 4px.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/progress-bar/cases.json#progress-bar/consumer-style-overrides-height"
+    }
+  ],
+  "approvedDivergences": []
+}

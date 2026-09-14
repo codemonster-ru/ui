@@ -1,0 +1,586 @@
+{
+  "$comment": "Shared VfProgressBar cases. Plain data only. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. This catalog is the bar's, not VfProgressSpinner's: the two share the role name and the tone union and nothing else, and contracts/progress-spinner/cases.json must never stand in for it - a spinner case has no value, no maximum, no fill and no label, so a catalog derived from it would measure a tone and a name and call it progress. Six dimensions are real: the value (zero, mid, full, overflow, negative, fractional, tiny), the maximum (default, custom, zero, negative, fractional, below one), the determinate/indeterminate branch (explicit, with an ignored value, composed), the visible label (shown, rounded, zero, beside a custom name), the consumer contract (class order, style merge, the custom property overridden, a role, a name, a labelledby, each aria-value attribute and aria-valuetext replacing or joining the component's own, aria-hidden, product data), and the paint (eight tones, stripes, height forms). Every case declares zero component-owned controls and no consumer control, because the bar has no slot.",
+  "component": "progress-bar",
+  "propVocabulary": {
+    "value": "number, default 0. Non-finite is 0; otherwise clamped into [0, max]. Written as aria-valuenow and, as a ratio of max, as the fill's inline-size - both serialised as JavaScript serialises a number.",
+    "max": "number, default 100. Kept when finite and greater than zero; zero, a negative, NaN, Infinity and a numeric string fall back to 100. Written as aria-valuemax.",
+    "indeterminate": "boolean, default false. Adds vf-progress-bar--indeterminate, drops aria-valuemin, aria-valuemax and aria-valuenow, drops the fill's inline-size and hides the visible label. The stylesheet animates the fill.",
+    "label": "string, default \"Progress\". Written verbatim as aria-label on the root; an empty string is written empty, not dropped. Not the visible percentage.",
+    "height": "string | number, default undefined. Written as the --vf-progress-bar-height custom property: a number becomes pixels, a string passes through, absent writes nothing so the theme token applies, and an empty string writes no declaration either.",
+    "showValue": "boolean, default false. Renders span.vf-progress-bar__label inside the fill with the ratio rounded half-up to a whole percent, while determinate only.",
+    "tone": "One of neutral | primary | success | info | warn | help | danger | contrast, default primary. Selects the root modifier (none at primary, one for every other value including neutral). Never changes the role.",
+    "striped": "boolean, default false. Adds vf-progress-bar--striped.",
+    "animated": "boolean, default false. Adds vf-progress-bar--animated only beside striped; alone it emits nothing."
+  },
+  "cases": [
+    {
+      "id": "progress-bar/default",
+      "title": "A bare bar: value 0 of 100, an empty fill, named Progress, sized by the theme token",
+      "props": {},
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/zero",
+      "title": "An explicit zero, which is written as aria-valuenow=0 and inline-size 0% rather than dropped",
+      "props": {
+        "value": 0
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/middle",
+      "title": "A mid-range value: half the track and aria-valuenow=50",
+      "props": {
+        "value": 50
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/third",
+      "title": "One of three: an unrounded 33.33333333333333% width beside aria-valuemax=3 and aria-valuenow=1",
+      "props": {
+        "value": 1,
+        "max": 3
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/full",
+      "title": "The maximum: a full track and aria-valuenow=100",
+      "props": {
+        "value": 100
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/overflow",
+      "title": "A value above the maximum, clamped to it on both the attribute and the width",
+      "props": {
+        "value": 150
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/negative",
+      "title": "A negative value, clamped to zero on both the attribute and the width",
+      "props": {
+        "value": -20
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/custom-max",
+      "title": "Seven of twelve: aria-valuemax=12, aria-valuenow=7 and a 58.333333333333336% fill",
+      "props": {
+        "value": 7,
+        "max": 12
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/custom-max-overflow",
+      "title": "Fifteen of twelve, clamped to twelve",
+      "props": {
+        "value": 15,
+        "max": 12
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/max-zero",
+      "title": "A zero maximum, which falls back to 100 rather than dividing by zero: 5 of 100",
+      "props": {
+        "value": 5,
+        "max": 0
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/max-negative",
+      "title": "A negative maximum, which falls back to 100: 5 of 100",
+      "props": {
+        "value": 5,
+        "max": -10
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/fractional-value",
+      "title": "A fractional value kept unrounded on the attribute and the width",
+      "props": {
+        "value": 33.3333
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/fractional-max",
+      "title": "A fractional maximum and value, whose ratio carries the floating-point residue into the width",
+      "props": {
+        "value": 0.1,
+        "max": 0.3
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/max-below-one",
+      "title": "A value clamped to a maximum below one: aria-valuemax=0.5, aria-valuenow=0.5, a full track",
+      "props": {
+        "value": 5,
+        "max": 0.5
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/tiny-value",
+      "title": "A value below 1e-6, which reaches aria-valuenow and the width in exponent form",
+      "props": {
+        "value": 1e-7
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/indeterminate",
+      "title": "An indeterminate bar: the modifier, no aria-value* attribute, no inline size, the stylesheet sweep",
+      "props": {
+        "indeterminate": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/indeterminate-with-value",
+      "title": "A value, a maximum and showValue passed beside indeterminate, all of which are ignored",
+      "props": {
+        "indeterminate": true,
+        "value": 40,
+        "max": 80,
+        "showValue": true
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/indeterminate-composed",
+      "title": "An indeterminate info bar with stripes, so the modifiers are measured together",
+      "props": {
+        "indeterminate": true,
+        "tone": "info",
+        "striped": true,
+        "animated": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/show-value",
+      "title": "The visible percentage inside the fill",
+      "props": {
+        "value": 50,
+        "showValue": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/show-value-rounds",
+      "title": "A 12.5% fill whose visible label reads 13% while aria-valuenow stays 1",
+      "props": {
+        "value": 1,
+        "max": 8,
+        "showValue": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/show-value-zero",
+      "title": "A visible 0% label on an empty fill",
+      "props": {
+        "value": 0,
+        "showValue": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/show-value-custom-name",
+      "title": "A visible percentage beside a custom accessible name: the label is not the name",
+      "props": {
+        "value": 50,
+        "showValue": true,
+        "label": "Upload"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/label-custom",
+      "title": "A custom accessible name",
+      "props": {
+        "label": "Upload progress"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/label-empty",
+      "title": "An empty accessible name: the attribute is present and empty, not absent",
+      "props": {
+        "label": ""
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/height-number",
+      "title": "A numeric height, written as pixels into the custom property",
+      "props": {
+        "value": 50,
+        "height": 12
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/height-zero",
+      "title": "A zero height, which is a length rather than an absence: the track collapses",
+      "props": {
+        "value": 50,
+        "height": 0
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/height-string",
+      "title": "A string height, passed through verbatim",
+      "props": {
+        "value": 50,
+        "height": "1rem"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/height-empty",
+      "title": "An empty-string height, which writes no declaration and sizes exactly like the default",
+      "props": {
+        "value": 50,
+        "height": ""
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/tone-neutral",
+      "title": "The neutral tone: the modifier a badge-derived rule would suppress",
+      "props": {
+        "value": 60,
+        "tone": "neutral"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/tone-primary",
+      "title": "The primary tone: named explicitly, which emits no modifier and renders exactly like the default",
+      "props": {
+        "value": 60,
+        "tone": "primary"
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/tone-success",
+      "title": "The success tone",
+      "props": {
+        "value": 60,
+        "tone": "success"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/tone-info",
+      "title": "The info tone",
+      "props": {
+        "value": 60,
+        "tone": "info"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/tone-warn",
+      "title": "The warn tone",
+      "props": {
+        "value": 60,
+        "tone": "warn"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/tone-help",
+      "title": "The help tone",
+      "props": {
+        "value": 60,
+        "tone": "help"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/tone-danger",
+      "title": "The danger tone",
+      "props": {
+        "value": 60,
+        "tone": "danger"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/tone-contrast",
+      "title": "The contrast tone",
+      "props": {
+        "value": 60,
+        "tone": "contrast"
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/striped",
+      "title": "A striped fill",
+      "props": {
+        "value": 60,
+        "striped": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/animated-only",
+      "title": "animated without striped, which emits no modifier: there are no stripes to move",
+      "props": {
+        "value": 60,
+        "animated": true
+      },
+      "attrs": {},
+      "visual": false
+    },
+    {
+      "id": "progress-bar/striped-animated",
+      "title": "Animated stripes, which the stylesheet moves and reduced motion stops",
+      "props": {
+        "value": 60,
+        "striped": true,
+        "animated": true
+      },
+      "attrs": {},
+      "visual": true
+    },
+    {
+      "id": "progress-bar/consumer-class",
+      "title": "A consumer class, appended after the block class",
+      "props": {},
+      "attrs": {
+        "class": "consumer-bar"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-class-with-modifiers",
+      "title": "A consumer class after a tone and a stripe modifier, so the order of all four is measured",
+      "props": {
+        "tone": "info",
+        "striped": true
+      },
+      "attrs": {
+        "class": "consumer-bar"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-style",
+      "title": "A consumer style beside no height declaration of the component's own",
+      "props": {},
+      "attrs": {
+        "style": "margin: 4px"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-style-with-height",
+      "title": "A consumer style merged after the component's height declaration",
+      "props": {
+        "value": 50,
+        "height": 12
+      },
+      "attrs": {
+        "style": "margin: 4px"
+      },
+      "visual": true
+    },
+    {
+      "id": "progress-bar/consumer-style-overrides-height",
+      "title": "A consumer declaration of the height property, which wins over the prop",
+      "props": {
+        "value": 50,
+        "height": 12
+      },
+      "attrs": {
+        "style": "--vf-progress-bar-height: 4px"
+      },
+      "visual": true
+    },
+    {
+      "id": "progress-bar/consumer-role",
+      "title": "A consumer role, which replaces progressbar while the value attributes stay",
+      "props": {
+        "value": 50
+      },
+      "attrs": {
+        "role": "status"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-aria-label",
+      "title": "A consumer aria-label, which replaces the label prop's name",
+      "props": {
+        "label": "Upload"
+      },
+      "attrs": {
+        "aria-label": "Busy"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-aria-labelledby",
+      "title": "A consumer aria-labelledby pointing at a heading, which names the bar over its own aria-label",
+      "props": {
+        "value": 50
+      },
+      "attrs": {
+        "aria-labelledby": "progress-bar-heading"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-valuenow",
+      "title": "A consumer aria-valuenow of 40 on a bar painted at 50%: the attribute is replaced, the fill is not",
+      "props": {
+        "value": 50
+      },
+      "attrs": {
+        "aria-valuenow": "40"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-valuemax",
+      "title": "A consumer aria-valuemax, which replaces the resolved maximum on the attribute only",
+      "props": {
+        "value": 50
+      },
+      "attrs": {
+        "aria-valuemax": "200"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-valuemin",
+      "title": "A consumer aria-valuemin, which replaces the fixed zero floor",
+      "props": {
+        "value": 50
+      },
+      "attrs": {
+        "aria-valuemin": "10"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-valuetext",
+      "title": "A consumer aria-valuetext, forwarded beside the numeric value",
+      "props": {
+        "value": 50
+      },
+      "attrs": {
+        "aria-valuetext": "half way"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-valuenow-indeterminate",
+      "title": "A consumer aria-valuenow on an indeterminate bar, forwarded rather than stripped, with no range beside it",
+      "props": {
+        "indeterminate": true
+      },
+      "attrs": {
+        "aria-valuenow": "40"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/consumer-aria-hidden",
+      "title": "A consumer aria-hidden on the root: the bar leaves the tree while keeping its role attribute",
+      "props": {
+        "value": 50
+      },
+      "attrs": {
+        "aria-hidden": "true"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/product-data",
+      "title": "A product data attribute and an id, forwarded onto the root and never onto the fill",
+      "props": {
+        "value": 50
+      },
+      "attrs": {
+        "data-testid": "export-bar",
+        "id": "export-bar"
+      },
+      "visual": false
+    },
+    {
+      "id": "progress-bar/composed",
+      "title": "Everything at once: 64 of 80, danger, animated stripes, a visible label, a 16px track, a custom name, a consumer class, style and data attribute",
+      "props": {
+        "value": 64,
+        "max": 80,
+        "tone": "danger",
+        "striped": true,
+        "animated": true,
+        "showValue": true,
+        "height": 16,
+        "label": "Exporting"
+      },
+      "attrs": {
+        "class": "consumer-bar",
+        "style": "margin: 4px",
+        "data-testid": "export"
+      },
+      "visual": true
+    }
+  ]
+}
