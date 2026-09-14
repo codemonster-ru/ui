@@ -34,7 +34,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/accordion/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/accordion/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/accordion",
+          "razor": "/"
         }
       }
     },

@@ -82,6 +82,11 @@ export const requiredEntries = [
   // the packaged-consumer proof asserts the controller never mentions it.
   'src/Components/ProgressBarComponent.php',
   'src/Support/ProgressBarState.php',
+  // The M22 component: the first with a control of its own and a browser
+  // controller that owns a state change. The controller travels inside
+  // dist/vueforge-razor.js; the packaged-consumer proof asserts it is there.
+  'src/Components/AccordionComponent.php',
+  'src/Support/AccordionState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

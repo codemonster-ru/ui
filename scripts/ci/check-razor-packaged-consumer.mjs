@@ -186,7 +186,9 @@ $alert = $registry->resolve('vf-alert');
 $progressSpinner = $registry->resolve('vf-progress-spinner');
 $progressBar = $registry->resolve('vf-progress-bar');
 $skeletonGate = $registry->resolve('vf-skeleton-gate');
+$accordion = $registry->resolve('vf-accordion');
 $assetPath = VueForgeRazorProvider::assetPath();
+$controllerSource = is_file($assetPath . '/vueforge-razor.js') ? (string) file_get_contents($assetPath . '/vueforge-razor.js') : '';
 
 echo json_encode([
     'handles' => [
@@ -209,6 +211,7 @@ echo json_encode([
         'vf-progress-spinner' => $registry->handles('vf-progress-spinner'),
         'vf-progress-bar' => $registry->handles('vf-progress-bar'),
         'vf-skeleton-gate' => $registry->handles('vf-skeleton-gate'),
+        'vf-accordion' => $registry->handles('vf-accordion'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -563,6 +566,50 @@ echo json_encode([
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '@keyframes vf-progress-bar-stripes {') === 1
         && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-progress-bar--primary'),
     'js' => is_file($assetPath . '/vueforge-razor.js') ? filesize($assetPath . '/vueforge-razor.js') : 0,
+    // VfAccordion, the twentieth component and the first with a control of
+    // its own and a browser controller that owns a state change. Five renders
+    // for the server contract - closed with deferred content, open, disabled,
+    // a consumer button in a closed panel, two siblings and a nested pair -
+    // and the packaged controller inspected for the accordion enhancement it
+    // must now carry, with nothing from the Vue adapter carried beside it.
+    'accordionClosed' => $accordion->render(new ComponentRenderContext(
+        ['title' => 'Billing period'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<p>Storage and seats.</p>')],
+    ))->value(),
+    'accordionOpen' => $accordion->render(new ComponentRenderContext(
+        ['title' => 'Billing period', 'default-open' => true, 'class' => 'consumer-accordion', 'data-testid' => 'billing'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<p>Storage and seats.</p>')],
+    ))->value(),
+    'accordionDisabled' => $accordion->render(new ComponentRenderContext(['title' => 'Locked', 'disabled' => true, 'open' => false, 'default-open' => true], []))->value(),
+    'accordionConsumerClosed' => $accordion->render(new ComponentRenderContext(
+        ['title' => 'Export'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Failed.<button type="button">Retry</button>')],
+    ))->value(),
+    'accordionSiblings' => $accordion->render(new ComponentRenderContext(['title' => 'First'], []))->value()
+        . $accordion->render(new ComponentRenderContext(['title' => 'Second', 'default-open' => true], []))->value(),
+    'accordionNested' => $accordion->render(new ComponentRenderContext(
+        ['title' => 'Outer', 'open' => true],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString(
+            $accordion->render(new ComponentRenderContext(['title' => 'Inner'], []))->value(),
+        )],
+    ))->value(),
+    'accordionConstructorTakesNothing' => (new ReflectionClass($accordion))->getConstructor() === null,
+    'accordionBrowserCode' => str_contains($controllerSource, 'data-vf-razor="accordion"')
+        && str_contains($controllerSource, 'vf-accordion:open-change')
+        && str_contains($controllerSource, 'data-vf-razor-accordion-enhanced')
+        && substr_count($controllerSource, 'data-vf-razor-accordion-enhanced') >= 1
+        && str_contains($controllerSource, 'vf-accordion__icon--open'),
+    'controllerImportsNothing' => preg_match('/^\\s*import\\s/m', $controllerSource) !== 1
+        && !str_contains($controllerSource, 'from "vue"')
+        && !str_contains($controllerSource, "from 'vue'")
+        && !str_contains($controllerSource, 'packages/core')
+        && !str_contains($controllerSource, 'createApp('),
+    'accordionCss' => is_file($assetPath . '/vueforge-razor.css')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-accordion {') === 1
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-accordion__trigger {') === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), ".vf-accordion__trigger[aria-expanded='true']")
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-accordion__icon--open')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-accordion__content-inner {'),
 ]);
 `,
   );
@@ -603,6 +650,7 @@ echo json_encode([
       'vf-alert',
       'vf-progress-spinner',
       'vf-progress-bar',
+      'vf-accordion',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -1218,6 +1266,110 @@ echo json_encode([
     'vueforge-razor.js mentions the bar; the reference has no browser behaviour for it',
   );
 
+  // -------------------------------------------------------------- vf-accordion
+  //
+  // The twentieth component, proved from the same installed package: the
+  // first with a control of its own. The server half is asserted here as
+  // markup; the browser half is asserted below, on the packaged controller
+  // served to a real browser with no Node available.
+  const iconMarkup = (open) =>
+    `<span aria-hidden="true" class="vf-accordion__icon${open ? ' vf-accordion__icon--open' : ''}">`;
+  check(
+    'the consumer renders a closed accordion: one native trigger, aria-expanded=false, no panel, content deferred in a marked template',
+    /^<section class="vf-accordion" data-vf-razor="accordion"><button id="vf-accordion-trigger-r-\d+" aria-controls="vf-accordion-content-r-\d+" aria-expanded="false" class="vf-accordion__trigger" type="button"><span>Billing period<\/span>/.test(
+      rendered.accordionClosed,
+    ) &&
+      rendered.accordionClosed.includes(iconMarkup(false)) &&
+      rendered.accordionClosed.endsWith(
+        '<template data-vf-razor-accordion="content"><p>Storage and seats.</p></template></section>',
+      ) &&
+      !rendered.accordionClosed.includes('vf-accordion__content"') &&
+      (rendered.accordionClosed.match(/<button/g) ?? []).length === 1,
+    rendered.accordionClosed,
+  );
+  check(
+    'the packaged accordion writes the same ids into aria-controls and the panel, and aria-labelledby back at the trigger',
+    (() => {
+      const trigger = rendered.accordionOpen.match(
+        /id="(vf-accordion-trigger-r-\d+)" aria-controls="(vf-accordion-content-r-\d+)" aria-expanded="true"/,
+      );
+      return (
+        trigger !== null &&
+        rendered.accordionOpen.includes(
+          `<div id="${trigger[2]}" aria-labelledby="${trigger[1]}" class="vf-accordion__content" role="region"><div class="vf-accordion__content-inner"><p>Storage and seats.</p></div></div></section>`,
+        ) &&
+        rendered.accordionOpen.includes(iconMarkup(true)) &&
+        rendered.accordionOpen.startsWith(
+          '<section data-testid="billing" class="vf-accordion consumer-accordion" data-vf-razor="accordion">',
+        ) &&
+        !rendered.accordionOpen.includes('<template')
+      );
+    })(),
+    rendered.accordionOpen,
+  );
+  check(
+    'the packaged accordion writes the native disabled attribute only, and open=false beats default-open=true',
+    rendered.accordionDisabled.includes(
+      'aria-expanded="false" disabled class="vf-accordion__trigger" type="button">',
+    ) &&
+      !rendered.accordionDisabled.includes('aria-disabled') &&
+      !rendered.accordionDisabled.includes('role="region"'),
+    rendered.accordionDisabled,
+  );
+  check(
+    "a consumer button in a closed panel waits in the template beside the component's single trigger",
+    rendered.accordionConsumerClosed.includes(
+      '<template data-vf-razor-accordion="content">Failed.<button type="button">Retry</button></template>',
+    ) &&
+      (rendered.accordionConsumerClosed.replace(/<template.*<\/template>/s, '').match(/<button/g) ?? []).length === 1,
+    rendered.accordionConsumerClosed,
+  );
+  check(
+    'two packaged siblings get distinct ids with local relationships',
+    (() => {
+      const ids = [...rendered.accordionSiblings.matchAll(/ id="([^"]+)"/g)].map((match) => match[1]);
+      const controls = [...rendered.accordionSiblings.matchAll(/aria-controls="([^"]+)"/g)].map((match) => match[1]);
+      return (
+        new Set(ids).size === ids.length &&
+        ids.length === 3 &&
+        new Set(controls).size === 2 &&
+        ids.includes(controls[1]) &&
+        !ids.includes(controls[0])
+      );
+    })(),
+    rendered.accordionSiblings,
+  );
+  check(
+    'a packaged nested accordion renders inside the outer panel with its own ids and its own deferred template',
+    (rendered.accordionNested.match(/<button/g) ?? []).length === 2 &&
+      (rendered.accordionNested.match(/data-vf-razor="accordion"/g) ?? []).length === 2 &&
+      rendered.accordionNested.includes(
+        '<div class="vf-accordion__content-inner"><section class="vf-accordion" data-vf-razor="accordion">',
+      ) &&
+      rendered.accordionNested.includes('<template data-vf-razor-accordion="content"></template>'),
+    rendered.accordionNested,
+  );
+  check(
+    'the installed accordion takes no constructor argument',
+    rendered.accordionConstructorTakesNothing === true,
+    'vf-accordion takes a constructor argument',
+  );
+  check(
+    'the packaged controller carries the accordion enhancement: the ownership marker it mounts on, the event it dispatches, the marker it sets and the icon modifier it toggles',
+    rendered.accordionBrowserCode === true,
+    'vueforge-razor.js does not carry the accordion controller',
+  );
+  check(
+    'the packaged controller is self-contained: no import statement, no Vue, no Vue adapter path',
+    rendered.controllerImportsNothing === true,
+    'vueforge-razor.js imports something a Composer consumer cannot serve',
+  );
+  check(
+    'the packaged stylesheet carries the accordion rules once, expanded and open-icon states included',
+    rendered.accordionCss === true,
+    'vueforge-razor.css is missing accordion rules or duplicates them',
+  );
+
   check(
     'the packaged stylesheet carries the presentation rules',
     rendered.presentationCss,
@@ -1241,6 +1393,7 @@ echo json_encode([
 <link rel="stylesheet" href="/assets/vueforge-razor.css"></head><body>
 ${rendered.markup}
 ${rendered.password}
+<div id="accordion-smoke">${rendered.accordionClosed}</div>
 <script type="module" src="/assets/vueforge-razor.js"></script></body></html>`,
     );
 
@@ -1306,6 +1459,80 @@ ${rendered.password}
         smoke.typeBefore === 'password' && smoke.typeAfter === 'text',
         JSON.stringify(smoke),
       );
+      // The accordion, through the packaged controller alone: a real pointer
+      // click, a real Enter, the state read back after the transition, the
+      // event counted, and exactly one bootstrap script on the page.
+      const scriptTags = await page.evaluate(
+        `document.querySelectorAll('script[src$="/assets/vueforge-razor.js"]').length`,
+      );
+      check('the browser enhancement asset is included exactly once', scriptTags === 1, `${scriptTags} script tag(s)`);
+      const accordionPoint = await page.evaluate(`(() => {
+        const root = document.querySelector('#accordion-smoke [data-vf-razor="accordion"]');
+        window.__accordionEvents = [];
+        root.addEventListener('vf-accordion:open-change', (event) => window.__accordionEvents.push(event.detail.open));
+        const trigger = root.querySelector('button.vf-accordion__trigger');
+        trigger.scrollIntoView({ block: 'center' });
+        const rect = trigger.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, enhanced: root.hasAttribute('data-vf-razor-accordion-enhanced') };
+      })()`);
+      check('the packaged controller mounted the accordion root', accordionPoint.enhanced === true);
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: accordionPoint.x, y: accordionPoint.y });
+      await page.send('Input.dispatchMouseEvent', {
+        type: 'mousePressed',
+        x: accordionPoint.x,
+        y: accordionPoint.y,
+        button: 'left',
+        clickCount: 1,
+      });
+      await page.send('Input.dispatchMouseEvent', {
+        type: 'mouseReleased',
+        x: accordionPoint.x,
+        y: accordionPoint.y,
+        button: 'left',
+        clickCount: 1,
+      });
+      await delay(450);
+      const opened = await page.evaluate(`(() => {
+        const root = document.querySelector('#accordion-smoke [data-vf-razor="accordion"]');
+        const trigger = root.querySelector('button.vf-accordion__trigger');
+        const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+        return {
+          expanded: trigger.getAttribute('aria-expanded'),
+          panel: panel !== null && root.contains(panel) && panel.getAttribute('role') === 'region' && panel.getAttribute('aria-labelledby') === trigger.id,
+          text: panel?.textContent.trim() ?? null,
+          settled: panel?.style.transition === '' && panel?.getAttribute('style') === '',
+          focused: document.activeElement === trigger,
+          events: window.__accordionEvents,
+        };
+      })()`);
+      check(
+        'a real click on the packaged accordion opens it: aria-expanded, region, content, settled transition, focus kept, one event',
+        opened.expanded === 'true' &&
+          opened.panel === true &&
+          opened.text === 'Storage and seats.' &&
+          opened.settled === true &&
+          opened.focused === true &&
+          JSON.stringify(opened.events) === '[true]',
+        JSON.stringify(opened),
+      );
+      const enterKey = { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 };
+      await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...enterKey });
+      await page.send('Input.dispatchKeyEvent', { type: 'char', ...enterKey, text: '\r', unmodifiedText: '\r' });
+      await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...enterKey });
+      await delay(450);
+      const closedAgain = await page.evaluate(`(() => {
+        const root = document.querySelector('#accordion-smoke [data-vf-razor="accordion"]');
+        const trigger = root.querySelector('button.vf-accordion__trigger');
+        return { expanded: trigger.getAttribute('aria-expanded'), panels: root.querySelectorAll('.vf-accordion__content').length, events: window.__accordionEvents };
+      })()`);
+      check(
+        'Enter on the focused packaged trigger closes it again and removes the panel, with a second event',
+        closedAgain.expanded === 'false' &&
+          closedAgain.panels === 0 &&
+          JSON.stringify(closedAgain.events) === '[true,false]',
+        JSON.stringify(closedAgain),
+      );
+
       check(
         'the page produced no script error',
         page.diagnostics.pageErrors.length === 0,

@@ -135,6 +135,21 @@ const controlSelectors = {
   // label only sometimes, so the root is the selector. A div beside the
   // spinner's span, which is one more way the two are not the same element.
   VfProgressBar: 'div.vf-progress-bar',
+  // The M22 component. The trigger is the selector rather than the root: it
+  // is the control the component owns, and a case that rendered the section
+  // without its native button would still have a root.
+  VfAccordion: 'button.vf-accordion__trigger',
+};
+
+/**
+ * How many Razor roots a case renders, for the components whose cases can
+ * hold more than one instance. The accordion's sibling cases render each
+ * member and its nested cases render a second accordion inside the first;
+ * every other component renders exactly one root per case.
+ */
+const rootsPerCase = {
+  VfAccordion: (parityCase) =>
+    (Array.isArray(parityCase.group) ? parityCase.group.length : 1) + (parityCase.content?.body?.accordion ? 1 : 0),
 };
 
 /**
@@ -148,6 +163,7 @@ const ownershipMarkers = {
   VfInput: { root: '[data-vf-razor="input"]', enhanced: '[data-vf-razor-enhanced]' },
   VfField: { root: '[data-vf-razor="input"]', enhanced: '[data-vf-razor-enhanced]' },
   VfTextarea: { root: '[data-vf-razor="textarea"]', enhanced: '[data-vf-razor-textarea-enhanced]' },
+  VfAccordion: { root: '[data-vf-razor="accordion"]', enhanced: '[data-vf-razor-accordion-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -162,6 +178,10 @@ const components = showcaseIndex.components
       razorPath: entry.showcase.routes.razor,
       controlSelector: controlSelectors[entry.name],
       caseIds: catalog.cases.map((parityCase) => parityCase.id),
+      expectedRoots: catalog.cases.reduce(
+        (total, parityCase) => total + (rootsPerCase[entry.name]?.(parityCase) ?? 1),
+        0,
+      ),
     };
   });
 
@@ -189,6 +209,7 @@ check(
   'only components with a real Razor adapter are marked implemented',
   JSON.stringify(razorImplemented) ===
     JSON.stringify([
+      'VfAccordion',
       'VfAlert',
       'VfAvatar',
       'VfBadge',
@@ -386,6 +407,60 @@ async function readShowcase(origin, path, theme, label, controlSelector, markers
   }
 }
 
+/** Clicks the default accordion case's trigger on one platform and reads the state back once it has settled. */
+async function probeAccordionToggle(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(
+      `Boolean(document.querySelector('[data-showcase-case="accordion/default"] button.vf-accordion__trigger'))`,
+    );
+    await delay(300);
+
+    const point = await page.evaluate(`(() => {
+      const trigger = document.querySelector('[data-showcase-case="accordion/default"] button.vf-accordion__trigger');
+      trigger.scrollIntoView({ block: 'center' });
+      const rect = trigger.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, before: trigger.getAttribute('aria-expanded') };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: point.x, y: point.y });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: point.x,
+      y: point.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: point.x,
+      y: point.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await delay(500);
+
+    const after = await page.evaluate(`(() => {
+      const root = document.querySelector('[data-showcase-case="accordion/default"] .vf-accordion');
+      const trigger = root.querySelector('button.vf-accordion__trigger');
+      const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+      return {
+        after: trigger.getAttribute('aria-expanded'),
+        panel: panel !== null && root.contains(panel) && panel.getAttribute('role') === 'region',
+        settled: panel !== null && panel.style.transition === '',
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /accordion/i.test(script.textContent)).length,
+      };
+    })()`);
+
+    return { before: point.before, ...after };
+  } finally {
+    await page.close();
+  }
+}
+
 /** Opens a case address on one platform and reports which case it selected. */
 async function readSelectedCase(origin, path) {
   const page = await openPage(chrome.endpoint);
@@ -438,7 +513,7 @@ try {
     // stronger reason than the checkable controls: there is no interaction to
     // enhance at all. Their parity profiles say the same thing through the
     // static snapshot.
-    const enhanced = ['VfInput', 'VfField', 'VfTextarea'].includes(name);
+    const enhanced = ['VfInput', 'VfField', 'VfTextarea', 'VfAccordion'].includes(name);
 
     for (const theme of themes) {
       const vue = await readShowcase(
@@ -489,13 +564,13 @@ try {
       if (enhanced) {
         check(
           `[${name}/${theme}] every Razor case comes from the real adapter`,
-          razor.razorRoots === componentCaseIds.length,
-          `${razor.razorRoots} ownership markers`,
+          razor.razorRoots === component.expectedRoots,
+          `${razor.razorRoots} ownership markers, expected ${component.expectedRoots}`,
         );
         check(
           `[${name}/${theme}] the packaged Razor controller enhanced every root`,
-          razor.razorEnhanced === componentCaseIds.length,
-          `${razor.razorEnhanced} enhanced`,
+          razor.razorEnhanced === component.expectedRoots,
+          `${razor.razorEnhanced} enhanced, expected ${component.expectedRoots}`,
         );
       } else {
         check(
@@ -527,6 +602,34 @@ try {
           (href) => !/\/assets\/(index|input|icon-button)-/.test(href ?? ''),
         ),
       );
+
+      // --------------------------------------------- the accordion actually toggles
+      //
+      // M22: the Razor showcase has to toggle through the packaged controller
+      // and the Vue showcase through the real component, with no showcase
+      // script on either. A real pointer click on the first closed trigger of
+      // the default case, on both pages, read back after the transition.
+      if (name === 'VfAccordion') {
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const toggled = await probeAccordionToggle(origin, route);
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens the default case on a real click`,
+            toggled.before === 'false' &&
+              toggled.after === 'true' &&
+              toggled.panel === true &&
+              toggled.settled === true,
+            JSON.stringify(toggled),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to make that happen`,
+            toggled.inlineScripts === 0,
+            `${toggled.inlineScripts} inline script(s)`,
+          );
+        }
+      }
 
       // ------------------------------------------------------------- the catalog
       const expectedCatalog = showcaseIndex.components.map((entry) => [entry.name, entry.platforms.razor.status]);
