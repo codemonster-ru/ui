@@ -335,6 +335,24 @@ export function analyzeAssetBoundary({ rootDir, files, readFile }) {
 
       named = extractRepositoryPaths(source, scanOptions);
 
+      // A relative literal that climbs out of the package. Found by the M22
+      // boundary attack, the JavaScript twin of M21's dirname(__DIR__, n): a
+      // `readFileSync(resolve(packageRoot, '../core/src/...'))` in the asset
+      // build names no `packages/` path, so the repository-path scan above
+      // never saw it, and it is not an import, so the dependency guard never
+      // saw it either. Every `../` literal is resolved against the file's own
+      // directory and judged as the repository path it reaches.
+      for (const literal of scanSource(source, scanOptions).literals) {
+        if (!/^\.\.\//.test(literal)) continue;
+        const segments = file.split('/').slice(0, -1);
+        for (const part of literal.split('/')) {
+          if (part === '..') segments.pop();
+          else if (part !== '.' && part !== '') segments.push(part);
+        }
+        const reached = segments.join('/');
+        if (/^(?:packages|examples)\//.test(reached) && !named.includes(reached)) named.push(reached);
+      }
+
       // Belt and braces after M10 found the literal scan silently blind. A
       // forbidden package that appears in the code but in no literal is either
       // a construction this walk does not model or an attempt to hide one;

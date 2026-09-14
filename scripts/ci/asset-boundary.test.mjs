@@ -166,6 +166,48 @@ test('a PHP require inside the package is accepted', () => {
   assert.deepEqual(violations, []);
 });
 
+// ------------------------------------------------------------ relative escape
+
+test('a relative literal that climbs into a Vue adapter package is rejected', () => {
+  // The M22 boundary attack. `../core/...` from packages/razor/ names no
+  // `packages/` path and is not an import, so before M22 it reached both
+  // gates and neither reported it - the H3 shape through a relative path.
+  const { violations } = analyze({
+    'packages/razor/build-assets.mjs': `
+      const smuggled = readFileSync(resolve(packageRoot, '../core/src/styles/entries/accordion.css'), 'utf8');`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /packages\/core\/src\/styles\/entries\/accordion\.css/);
+  assert.match(violations[0], /belongs to packages\/core/);
+});
+
+test('a relative literal from a nested file resolves against that file, not the package root', () => {
+  const { violations } = analyze({
+    'packages/razor/browser/accordion.ts': `const x = '../../core/src/utils/classes';`,
+  });
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /packages\/core\/src\/utils\/classes/);
+
+  // One level fewer stays inside the package.
+  const inside = analyze({
+    'packages/razor/browser/accordion.ts': `const x = '../src/Support/Html.php';`,
+  });
+  assert.deepEqual(inside.violations, []);
+});
+
+test('a relative literal into a neutral package is an edge, not a violation', () => {
+  const { violations, edges } = analyze({
+    'packages/razor/build-assets.mjs': `const tokens = resolve(packageRoot, '../theme/.generated/theme/tokens.css');`,
+  });
+
+  assert.deepEqual(violations, []);
+  assert.deepEqual(
+    edges.map((edge) => edge.path),
+    ['packages/theme/.generated/theme/tokens.css'],
+  );
+});
+
 // ----------------------------------------------------------------------- prose
 
 test('a comment explaining what the package used to read is not a dependency', () => {
