@@ -1,0 +1,188 @@
+{
+  "$comment": "Parity policy for the shared VfAccordion cases. Plain data: no DSL, no waiver engine. The first policy for a component that owns a control and changes state on a user gesture, so it names the dimensions that carry the live half of the contract - ownership.controls, interaction.state, interaction.relationships, interaction.events, interaction.convergence - beside the initial ones. It starts empty and M22 finished with it still empty: the Razor browser enhancement exists precisely so that 'Razor is different because JS' never becomes an approval.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour, live state, ownership.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. Generated id values, how content is composed, how state is stored, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Any other data-* attribute is compared as dom.productData.",
+    "deferredContentTemplate": "A closed Razor accordion keeps its panel content in an inert <template> element carrying the Razor ownership marker, so the enhancement can render it on open without a round trip. The reference keeps no such node: under v-if a closed panel simply does not exist. The extractor drops template elements that carry a Razor marker and nothing else - a consumer <template> in a slot is still compared - and the rule is narrow by construction: a template without the marker, or any other element with it, is compared. What the template holds is compared the moment it is rendered, by the post-interaction DOM and by convergence on the open case.",
+    "danglingReferenceLiteral": "A closed accordion's aria-controls names an id no element carries, on every target. The extractor records such a reference as #dangling rather than as the literal, because the literal is a generated id and differs by construction; a reference that resolves inside the case is canonicalised to the element's document position, and one that resolves elsewhere in the document keeps its literal. The dangling form on one side against a resolved form on the other is still a dom.relationships difference.",
+    "eventTransport": "How each adapter delivers a state change to its host - Vue emits update:open and openChange, the Razor controller dispatches a bubbling vf-accordion:open-change CustomEvent - is transport. What is compared is the neutral log each fixture keeps of every open-change notification with its value, as interaction.events.",
+    "intermediateFrames": "The enter and leave animations are not screenshotted mid-flight. Both adapters write the same inline declarations in the same order (pinned by their unit suites), and the parity harness waits until no inline transition remains before measuring; the endpoints are compared as DOM, snapshot, accessibility tree and pixels."
+  },
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "controlledWithoutConsumer": "A controlled Vue accordion whose consumer never writes update:open back: the click emits and nothing changes. The Razor adapter has no consumer protocol - a server-rendered accordion has no parent to ask, so its controller toggles directly - and the two are not comparable after the click. The catalog carries accordion/interaction-controlled-model, where the Vue fixtures write the value back as v-model does and all three targets land on the same state; the emit-without-change behaviour is pinned by VfAccordion.characterization.spec.ts.",
+    "releasingControl": "Switching open from a value back to undefined after mount, and the mount-time seed it reveals. A prop transition with no server analogue; pinned by the characterization suite.",
+    "disabledPointerClick": "A real pointer click on a disabled trigger. The harness refuses to dispatch a click at an element the browser would not deliver it to, which is the same refusal a user meets; the disabled contract is driven through focus and the keyboard instead, and the click guard is pinned by the characterization suite and by the Razor browser gate."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a missing panel, a trigger that is not a button, an extra trigger. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element, including the icon's open modifier. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type and disabled on the trigger, the style attribute, and every native attribute a consumer forwards onto the root."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element: the title span, the trigger slot, the panel content."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-expanded on the trigger, role=region on the panel, aria-hidden on the icon, and every consumer ARIA attribute on the root."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that carry product semantics, such as a consumer data-testid."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "aria-controls and aria-labelledby compared as a resolved relationship graph. Concrete generated id values are canonicalised; the edges they create, and whether an edge resolves at all, are not."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether the trigger is operable. A disabled trigger is inoperable on every target."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. An accordion has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. An accordion renders no inert action."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height of the root, the trigger, the icon, the region and the inner wrapper."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where token drift shows."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction has settled, per theme. The transition endpoint."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the trigger and of the region, and the absence of the decorative icon from the tree."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the trigger (its text) and of the region (through aria-labelledby)."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "expanded, disabled and focusable as exposed to assistive tech, before and after an interaction."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned controls measured in the case - their count, tag, type and place - beside the consumer-owned count and the totals they must add up to. Never approvable: this is the M22 evidence that the trigger is the historical native button and that a consumer control cannot stand in for it."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario: aria-expanded, panel presence and count, the icon modifier, the region's role, activation count, whether the transition settled, the panel text. Never approvable."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Whether aria-controls resolves to the panel and aria-labelledby to the trigger, measured after the scenario and separately from the attribute values. Never approvable."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "The neutral log of open-change notifications the fixture recorded during the scenario, with their values. Correct state with a missing or duplicated notification fails here. Never approvable."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether the post-interaction DOM equals the target's own render of the initial case the catalog names. A toggle that landed on a hybrid - a stale inline style, a hidden rather than removed panel - fails here. Never approvable."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which element owns focus after the scenario. A pointer click and a key press must leave focus on the trigger on every target."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. An accordion carries no value."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. An accordion carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. An accordion renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "closed-trigger-controls-a-missing-panel",
+      "description": "While closed, aria-controls names the content id although v-if has removed the panel, so the reference resolves to nothing.",
+      "classification": "semantic",
+      "reason": "Reproduced rather than corrected: the id relationship is stable across a toggle, and the dangling state is the closed state. Both adapters write it; the extractor canonicalises a dangling reference as #dangling so the generated literal does not become a difference.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/accordion/VfAccordion.characterization.spec.ts"
+    },
+    {
+      "id": "keyboard-toggle-produces-no-native-click",
+      "description": "Enter and Space are handled on keydown with preventDefault, so a keyboard toggle records zero native activations while the panel opens.",
+      "classification": "exact",
+      "reason": "The Razor controller reproduces the handler rather than relying on native button activation, so all three targets record the same zero. It is also what keeps the cross-browser behaviour identical, Space's keyup click included.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/accordion/cases.json#accordion/interaction-enter-opens"
+    },
+    {
+      "id": "entered-panel-keeps-an-empty-style-attribute",
+      "description": "After the enter transition clears its inline declarations the style attribute survives, empty. A panel rendered open from the start has none.",
+      "classification": "semantic",
+      "reason": "Both adapters clear the declarations the same way and leave the same empty attribute; the extractor records an empty style as absent, which is the M17 rule for exactly this shape of difference, so convergence on the open case holds.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/accordion/VfAccordion.characterization.spec.ts"
+    },
+    {
+      "id": "empty-title-still-renders-the-span",
+      "description": "An absent or empty title renders an empty span before the icon.",
+      "classification": "exact",
+      "reason": "Both adapters render it; the closed and no-title cases compare it as dom.structure.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/accordion/cases.json#accordion/no-title"
+    },
+    {
+      "id": "disabling-does-not-close",
+      "description": "A disabled accordion that is open stays open; disabled only stops the trigger.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as accordion/disabled-open.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/accordion/cases.json#accordion/disabled-open"
+    },
+    {
+      "id": "razor-has-no-controlled-mode",
+      "description": "The Razor adapter reads open as the initial state and its controller toggles on its own; there is no parent to emit a request to.",
+      "classification": "framework-specific",
+      "reason": "A server-rendered accordion has no consumer protocol. The catalog compares the controlled prop through a consumer that accepts, which is the state all three targets share; the Vue-only emit-without-change behaviour is pinned by the characterization suite.",
+      "razorDiffers": true,
+      "coveredBy": "packages/razor/tests/Components/AccordionComponentTest.php"
+    },
+    {
+      "id": "razor-closed-content-waits-in-a-template",
+      "description": "A closed Razor accordion carries its panel content in an inert template element the controller renders on open; without JavaScript that content is unreachable, exactly as a closed reference panel is.",
+      "classification": "framework-specific",
+      "reason": "The honest server shape for a v-if panel: the DOM the reference produces has no panel, and the enhancement needs the content from somewhere. The template is inert, unexposed and unpainted; the extractor drops it by its Razor marker and nothing else.",
+      "razorDiffers": true,
+      "coveredBy": "packages/razor/tests/Components/AccordionComponentTest.php"
+    }
+  ],
+  "approvedDivergences": []
+}

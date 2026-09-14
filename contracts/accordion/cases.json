@@ -1,0 +1,892 @@
+{
+  "$comment": "Shared VfAccordion cases. Plain data only: no Vue, no PHP, no renderer objects. Each adapter maps these neutral fields onto its own API. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. The first catalog for a component that owns a control: every case declares `componentInteractive`, the number of controls the component itself renders - one trigger per instance - and `consumerInteractive`, the number a consumer put in a slot that actually reaches the DOM in that state. An interaction case names the action, the semantic effect it must produce on every target, and the initial case whose DOM the result must converge on. scripts/ci/accordion-coverage.mjs is what stops the list eroding.",
+  "component": "accordion",
+  "propVocabulary": {
+    "open": "boolean | undefined, default undefined. The controlled state; wins whenever defined. A Vue consumer pairs it with update:open (v-model:open). The Razor adapter reads it as the initial state and toggles on its own, because a server-rendered accordion has no parent to ask.",
+    "defaultOpen": "boolean, default false. Seeds the uncontrolled state; read once.",
+    "title": "string, default undefined. Rendered in a bare span inside the trigger unless a trigger slot replaces it. An absent or empty title still renders the empty span.",
+    "disabled": "boolean, default false. The native disabled attribute on the trigger and nothing else. Does not close an open accordion."
+  },
+  "contentVocabulary": {
+    "trigger": "The trigger slot. `text` replaces the title span; `control` is a real consumer link inside the trigger, unmarked - a control the consumer placed, not the trigger.",
+    "body": "The default slot, rendered inside div.vf-accordion__content-inner only while open. `text` is plain text; `markup` is rich consumer markup; `control` is a real consumer button; `accordion` nests a second accordion with its own title, defaultOpen and text.",
+    "group": "A list of sibling accordions rendered side by side in one case, each with its own props. The case-level title is ignored."
+  },
+  "ownershipVocabulary": {
+    "componentInteractive": "The exact number of controls the component itself renders in this case: one button.vf-accordion__trigger per instance. Asserted on every target against the measured component-owned controls, and their tag identity against the profile - a div with role=button is not the trigger.",
+    "consumerInteractive": "The exact number of consumer controls that reach the DOM in this case's initial state. Zero when a slot with a control is closed, because v-if renders nothing."
+  },
+  "interactionVocabulary": {
+    "$comment": "A case with an `interaction` is driven in the browser with real pointer and key events, then re-measured: the snapshot, the DOM and the accessibility tree are all taken again after the transition has settled.",
+    "steps": "clickButton (a real pointer click at the element's centre; `index` picks a trigger in a group or a nested pair), focusButton, pressKey with Enter or Space.",
+    "expect": "Claims checked against the snapshot on every target: `activates` is whether a native click reached the trigger, `expanded` and `expandedStates` are the trigger's aria-expanded, `panelPresent`/`panelCount` whether the region is in the DOM, `consumerControlCount` the consumer controls after the action, `focusRole` where focus ended, `settled` that no inline transition declaration remained.",
+    "matches": "The initial case whose DOM the post-interaction DOM must equal on the same target. A toggle has to land on the state a fresh render produces, not on a hybrid with leftover inline styles or a hidden panel.",
+    "consumerInteractive": "The consumer-control budget after the action, when it differs from the case's initial budget."
+  },
+  "cases": [
+    {
+      "id": "accordion/default",
+      "title": "Closed by default: the trigger alone, aria-expanded=false, no panel in the DOM",
+      "$why": "The closed state is where the reference's v-if is visible as an absence: no region, no content, and an aria-controls that names an id nothing carries.",
+      "props": {
+        "title": "Billing period"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/default-open",
+      "title": "defaultOpen seeds the uncontrolled state open: region, inner wrapper, rotated chevron",
+      "props": {
+        "title": "Billing period",
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/controlled-open",
+      "title": "The controlled prop alone opens it",
+      "props": {
+        "title": "Billing period",
+        "open": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/controlled-closed-over-default",
+      "title": "open=false wins over defaultOpen=true: closed, whatever the seed said",
+      "$why": "The precedence rule measured in the one direction where the two props disagree. A port that read defaultOpen first would render the panel.",
+      "props": {
+        "title": "Billing period",
+        "open": false,
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/disabled",
+      "title": "Disabled and closed: the native disabled attribute on the trigger, nothing else",
+      "props": {
+        "title": "Billing period",
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/disabled-open",
+      "title": "Disabled while open: disabling does not close an open accordion",
+      "$why": "A port that treated disabled as 'inert and collapsed' would render this closed. The reference keeps the panel and only stops the trigger.",
+      "props": {
+        "title": "Billing period",
+        "disabled": true,
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/no-title",
+      "title": "No title and no trigger slot: the fallback renders an empty span before the chevron",
+      "$why": "The empty span is the quirk. A port that dropped the span for a missing title would change the trigger's child list while looking identical.",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/empty-title",
+      "title": "An empty-string title renders the same empty span",
+      "props": {
+        "title": ""
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/long-title",
+      "title": "A long title wraps inside the flex trigger with the chevron pinned at the end",
+      "props": {
+        "title": "Storage, seats, outbound transfer and every other line item on the invoice for the current billing period"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/trigger-slot",
+      "title": "A trigger slot replaces the title span and receives the open state",
+      "$why": "The title prop is passed and must go unused: the slot is fallback content, and the parity comparison sees the text that actually rendered.",
+      "props": {
+        "title": "Ignored"
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Custom trigger"
+        },
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/trigger-slot-open",
+      "title": "The trigger slot while open, so the slot scope's open=true is measured too",
+      "props": {
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Custom trigger"
+        },
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/rich-content",
+      "title": "Rich consumer markup in the panel, open",
+      "props": {
+        "title": "Usage",
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "markup": "article"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/empty-content",
+      "title": "Open with no default slot: the region and the inner wrapper still render, empty",
+      "$why": "The wrappers are unconditional. A port that skipped the region for an empty slot would still pass every closed case.",
+      "props": {
+        "title": "Nothing here",
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/content-closed-hidden",
+      "title": "Rich content while closed: nothing of it reaches the DOM",
+      "props": {
+        "title": "Usage"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "markup": "article"
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/consumer-control-open",
+      "title": "A consumer button inside the open panel: one component-owned trigger and one consumer control, separately",
+      "$why": "Section 52 of the M22 plan. The total focusable count is two; the ownership evidence has to say which one is the component's.",
+      "props": {
+        "title": "Export",
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started.",
+          "control": {
+            "text": "Retry"
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/consumer-control-closed",
+      "title": "The same consumer button while closed: not in the DOM, so the consumer count is zero and the trigger is the only control",
+      "$why": "v-if, measured as ownership: the consumer control's presence depends on state, and the budget follows the state rather than the slot.",
+      "props": {
+        "title": "Export"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started.",
+          "control": {
+            "text": "Retry"
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "accordion/consumer-control-in-trigger",
+      "title": "A consumer link inside the trigger slot: still one component-owned button, plus one consumer control nested in it",
+      "$why": "A control the consumer places inside the trigger slot is not the trigger. The ownership measurement classifies by the component's own selector, not by containment.",
+      "props": {
+        "defaultOpen": false
+      },
+      "attrs": {},
+      "content": {
+        "trigger": {
+          "text": "Terms",
+          "control": {
+            "text": "read"
+          }
+        },
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/nested",
+      "title": "An accordion inside another accordion's panel: two component-owned triggers, distinct ids, local relationships",
+      "$why": "Ordinary slot use, and the case where 'the trigger' is ambiguous. Each trigger is owned by its own instance; the count is two and the relationships must not cross.",
+      "props": {
+        "title": "Outer",
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Outer content.",
+          "accordion": {
+            "title": "Inner",
+            "defaultOpen": false,
+            "text": "Inner content."
+          }
+        }
+      },
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "accordion/siblings",
+      "title": "Two sibling accordions in one case, one closed and one open",
+      "$why": "Two instances side by side: ids must not collide, aria-controls must stay local, and the ownership count is two.",
+      "props": {
+        "title": "Ignored"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "group": [
+        {
+          "title": "First"
+        },
+        {
+          "title": "Second",
+          "defaultOpen": true
+        }
+      ],
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "accordion/consumer-class",
+      "title": "A consumer class is appended to the root after the canonical one",
+      "props": {
+        "title": "Billing period"
+      },
+      "attrs": {
+        "class": "consumer-accordion"
+      },
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/consumer-style",
+      "title": "A consumer inline style lands on the root section",
+      "props": {
+        "title": "Billing period",
+        "defaultOpen": true
+      },
+      "attrs": {
+        "style": "margin: 4px; max-width: 320px"
+      },
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/consumer-attributes",
+      "title": "id, data-* and an accessible name fall through to the root, never to the trigger or the panel",
+      "props": {
+        "title": "Billing period",
+        "defaultOpen": true
+      },
+      "attrs": {
+        "id": "faq-billing",
+        "data-testid": "billing-accordion",
+        "aria-label": "Billing"
+      },
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/consumer-role",
+      "title": "A consumer role lands on the root; the panel keeps role=region",
+      "props": {
+        "title": "Billing period",
+        "defaultOpen": true
+      },
+      "attrs": {
+        "role": "group"
+      },
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "accordion/consumer-aria-expanded-on-root",
+      "title": "The quirk: a consumer aria-expanded lands on the section and leaves the trigger's own state alone",
+      "$why": "Nothing forwards consumer ARIA onto the trigger. A port that merged attrs into the button would announce an open accordion that is closed.",
+      "props": {
+        "title": "Billing period"
+      },
+      "attrs": {
+        "aria-expanded": "true"
+      },
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "accordion/interaction-click-opens",
+      "title": "A real pointer click on the closed trigger opens it, and the result is the open case's DOM",
+      "props": {
+        "title": "Billing period"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-accordion__trigger"
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "expanded": "true",
+          "panelPresent": true,
+          "focusRole": "trigger",
+          "settled": true
+        },
+        "matches": "accordion/default-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-click-closes",
+      "title": "A real pointer click on the open trigger closes it, and the panel is gone once the leave completes",
+      "props": {
+        "title": "Billing period",
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-accordion__trigger"
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "expanded": "false",
+          "panelPresent": false,
+          "settled": true
+        },
+        "matches": "accordion/default"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-click-twice",
+      "title": "Two clicks return to closed: the panel is destroyed, not hidden",
+      "props": {
+        "title": "Billing period"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-accordion__trigger"
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-accordion__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "false",
+          "panelPresent": false,
+          "settled": true
+        },
+        "matches": "accordion/default"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-enter-opens",
+      "title": "Enter on the focused trigger opens it - through the keydown handler, so no native click is counted",
+      "$why": "Section 20 of the M22 plan. The reference handles Enter itself and prevents the default, so a keyboard toggle records zero activations while the DOM opens. A port that relied on native button activation would record one.",
+      "props": {
+        "title": "Billing period"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-accordion__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "expanded": "true",
+          "panelPresent": true,
+          "focusRole": "trigger",
+          "settled": true
+        },
+        "matches": "accordion/default-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-space-opens",
+      "title": "Space on the focused trigger opens it the same way",
+      "props": {
+        "title": "Billing period"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-accordion__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "expanded": "true",
+          "panelPresent": true,
+          "settled": true
+        },
+        "matches": "accordion/default-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-enter-closes",
+      "title": "Enter on the focused open trigger closes it",
+      "props": {
+        "title": "Billing period",
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-accordion__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "expanded": "false",
+          "panelPresent": false,
+          "settled": true
+        },
+        "matches": "accordion/default"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-disabled-keyboard",
+      "title": "A disabled trigger takes no focus and ignores Enter",
+      "props": {
+        "title": "Billing period",
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-accordion__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "expanded": "false",
+          "panelPresent": false,
+          "focusRole": "body"
+        },
+        "matches": "accordion/disabled"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-disabled-space",
+      "title": "A disabled trigger ignores Space",
+      "props": {
+        "title": "Billing period",
+        "disabled": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-accordion__trigger"
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "expanded": "false",
+          "panelPresent": false
+        },
+        "matches": "accordion/disabled"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-controlled-model",
+      "title": "A v-model consumer: the click emits, the consumer writes the value back, and the accordion opens",
+      "$why": "The controlled protocol round-tripped through a consumer that accepts. The Vue fixtures wire update:open back into the prop, which is v-model; the Razor adapter has no parent to ask and toggles directly. All three land on the same state.",
+      "props": {
+        "title": "Billing period",
+        "open": false
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-accordion__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "settled": true
+        },
+        "matches": "accordion/controlled-open"
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-consumer-control-appears",
+      "title": "Opening brings the consumer's button into the DOM: the consumer count goes from zero to one, the component count stays one",
+      "props": {
+        "title": "Export"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "The export could not be started.",
+          "control": {
+            "text": "Retry"
+          }
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-accordion__trigger"
+          }
+        ],
+        "expect": {
+          "expanded": "true",
+          "panelPresent": true,
+          "consumerControlCount": 1,
+          "settled": true
+        },
+        "matches": "accordion/consumer-control-open",
+        "consumerInteractive": 1
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-sibling-isolation",
+      "title": "Clicking the first of two siblings opens it and leaves the second alone",
+      "props": {
+        "title": "Ignored"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "group": [
+        {
+          "title": "First"
+        },
+        {
+          "title": "Second",
+          "defaultOpen": true
+        }
+      ],
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-accordion__trigger",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "expandedStates": ["true", "true"],
+          "panelCount": 2,
+          "settled": true
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-nested-inner",
+      "title": "Clicking the inner trigger opens the inner accordion and leaves the outer one open",
+      "props": {
+        "title": "Outer",
+        "defaultOpen": true
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Outer content.",
+          "accordion": {
+            "title": "Inner",
+            "defaultOpen": false,
+            "text": "Inner content."
+          }
+        }
+      },
+      "componentInteractive": 2,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-accordion__trigger",
+            "index": 1
+          }
+        ],
+        "expect": {
+          "expandedStates": ["true", "true"],
+          "panelCount": 2,
+          "settled": true
+        }
+      },
+      "visual": true
+    },
+    {
+      "id": "accordion/interaction-focus-only",
+      "title": "Focusing the trigger changes nothing: no activation, no state change, focus on the trigger",
+      "props": {
+        "title": "Billing period"
+      },
+      "attrs": {},
+      "content": {
+        "body": {
+          "text": "Storage, seats and outbound transfer for the current billing period."
+        }
+      },
+      "componentInteractive": 1,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-accordion__trigger"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "expanded": "false",
+          "panelPresent": false,
+          "focusRole": "trigger"
+        },
+        "matches": "accordion/default"
+      },
+      "visual": true
+    }
+  ]
+}
