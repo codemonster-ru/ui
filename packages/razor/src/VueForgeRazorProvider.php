@@ -16,6 +16,7 @@ use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
 use Codemonster\VueForge\Razor\Components\PanelComponent;
+use Codemonster\VueForge\Razor\Components\ProgressBarComponent;
 use Codemonster\VueForge\Razor\Components\ProgressSpinnerComponent;
 use Codemonster\VueForge\Razor\Components\RadioComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonComponent;
@@ -78,6 +79,9 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'input' => new InputComponent(),
             // Registered beside the card, never through it. See PanelComponent.
             'panel' => new PanelComponent(),
+            // Registered beside the spinner, never through it: the two share a
+            // role name and a tone union and no rule. See ProgressBarComponent.
+            'progress-bar' => new ProgressBarComponent(),
             'progress-spinner' => $progressSpinner,
             'radio' => new RadioComponent(),
             'skeleton' => $skeleton,

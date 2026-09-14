@@ -77,6 +77,11 @@ export const requiredEntries = [
   // name.
   'src/Components/ProgressSpinnerComponent.php',
   'src/Support/ProgressSpinnerState.php',
+  // The M21 component, registered beside the spinner and sharing no code
+  // with it. Server-complete - no browser controller travels with it, and
+  // the packaged-consumer proof asserts the controller never mentions it.
+  'src/Components/ProgressBarComponent.php',
+  'src/Support/ProgressBarState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',
