@@ -61,6 +61,11 @@ import {
   progressBarPolicyMutations,
 } from './progress-bar-mutations.mjs';
 import {
+  accordionBrowserMutations,
+  accordionParityMutations,
+  accordionPolicyMutations,
+} from './accordion-mutations.mjs';
+import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
   skeletonGatePolicyMutations,
@@ -142,6 +147,11 @@ const mutationSets = {
     capture: progressBarParityMutations,
     policy: progressBarPolicyMutations,
     browser: progressBarBrowserMutations,
+  },
+  accordion: {
+    capture: accordionParityMutations,
+    policy: accordionPolicyMutations,
+    browser: accordionBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
