@@ -4,6 +4,8 @@
 // file against the PHP mirror. If either implementation drifts, one of the two
 // suites fails on the vector that moved. NaN and Infinity cannot travel through
 // JSON, so they are pinned here and in the PHP suite separately.
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import vectors from '../src/progress-bar/state-vectors.json' with { type: 'json' };
 import {
@@ -100,6 +102,32 @@ describe('shared progress bar state vectors', () => {
       valuemax: '12',
       valuenow: '7',
     });
+  });
+
+  // The substitution attack M21 section 32 asks for, run and found to pass:
+  // a bar rule that mapped the spinner's class list onto its own block name
+  // and forwarded its height to the spinner's size rule renders byte-identical
+  // output on every vector and every case, and every behavioural gate above
+  // stayed green. From then on the two components share a rule, and a change
+  // reviewed for the spinner silently changes the bar. Since no observable
+  // behaviour distinguishes "the same rule" from "one rule for two", the
+  // source is what has to be asserted - the M18 finding, applied again.
+  const barSource = readFileSync(resolve(__dirname, '../src/progress-bar/state.ts'), 'utf8').replace(/\/\/[^\n]*/g, '');
+  const spinnerSource = readFileSync(resolve(__dirname, '../src/progress-spinner/state.ts'), 'utf8').replace(
+    /\/\/[^\n]*/g,
+    '',
+  );
+
+  it('imports nothing: every bar rule is its own', () => {
+    expect(barSource).not.toMatch(/^import /m);
+    expect(barSource).not.toContain('resolveProgressSpinner');
+    expect(barSource).not.toContain('vf-progress-spinner');
+  });
+
+  it('is imported by nothing in the spinner module either', () => {
+    expect(spinnerSource).not.toMatch(/^import /m);
+    expect(spinnerSource).not.toContain('resolveProgressBar');
+    expect(spinnerSource).not.toContain('vf-progress-bar');
   });
 
   it.each(vectors.formatProgressBarNumber)('formatProgressBarNumber($value) -> $expected', (vector) => {

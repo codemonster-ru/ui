@@ -532,6 +532,39 @@ describe('VfProgressBar characterization: attrs and style', () => {
   });
 });
 
+describe('VfProgressBar characterization: independence from VfProgressSpinner', () => {
+  // The other half of the M21 substitution attack. The template reads the
+  // bar's rules by name, and a component that reached the spinner's rules
+  // instead - directly, or through a "progress" helper that served both -
+  // could render identical markup in every case above. Since no observable
+  // behaviour distinguishes it, the source is what has to be asserted, as
+  // VfPanel asserts it against VfCard.
+  const source = readFileSync(resolve(__dirname, 'VfProgressBar.vue'), 'utf8');
+  const code = source.replace(/\/\/[^\n]*/g, '');
+
+  it('derives its rules from the progress-bar module', () => {
+    for (const rule of [
+      'resolveProgressBarClasses',
+      'resolveProgressBarMax',
+      'resolveProgressBarPercentage',
+      'resolveProgressBarRootStyle',
+      'resolveProgressBarValue',
+      'resolveProgressBarValueLabel',
+      'resolveProgressBarValueSemantics',
+      'resolveProgressBarValueStyle',
+    ]) {
+      expect(code).toContain(rule);
+    }
+  });
+
+  it('names no VfProgressSpinner rule, component or block name', () => {
+    expect(code).not.toContain('resolveProgressSpinner');
+    expect(code).not.toContain('VfProgressSpinner');
+    expect(code).not.toContain('vf-progress-spinner');
+    expect(code).not.toMatch(/resolveProgress[A-Z][a-z]*\(/);
+  });
+});
+
 describe('VfProgressBar characterization: SSR', () => {
   it('renders the default bar with an empty root style attribute on the server', async () => {
     // The one place the client and server outputs differ, and it is a Vue
