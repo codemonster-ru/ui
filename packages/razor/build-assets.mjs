@@ -94,6 +94,10 @@ execFileSync(
     '--format=esm',
     '--target=es2022',
     `--alias:@codemonster-ru/vueforge-shared-core=${resolve(repositoryRoot, 'packages/shared-core/src/index.ts')}`,
+    // The theme package is neutral and published, but the controller is
+    // bundled from source so a host never needs its dist: the accordion reads
+    // the motion duration from it, exactly as the reference component does.
+    `--alias:@codemonster-ru/vueforge-theme=${resolve(repositoryRoot, 'packages/theme/src/index.ts')}`,
     `--outfile=${resolve(distDirectory, 'vueforge-razor.js')}`,
   ],
   { stdio: ['ignore', 'ignore', 'pipe'] },
@@ -106,7 +110,7 @@ const manifest = {
   styles: provenance,
   browser: {
     entry: 'packages/razor/browser/input.ts',
-    bundles: 'packages/shared-core/src/index.ts',
+    bundles: ['packages/shared-core/src/index.ts', 'packages/theme/src/index.ts'],
     tool: `esbuild ${esbuildVersion}`,
   },
   artifacts: Object.fromEntries(

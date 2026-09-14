@@ -22,6 +22,7 @@ import {
 import { enhanceVueForgeFields } from './field.js';
 import { enhanceVueForgeTextareas } from './textarea.js';
 import { enhanceVueForgeCheckables } from './checkable.js';
+import { enhanceVueForgeAccordions } from './accordion.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -257,9 +258,13 @@ function enhanceAll(root: ParentNode = document): void {
   enhanceVueForgeTextareas(root);
   enhanceVueForgeFields(root);
   enhanceVueForgeCheckables(root);
+  // The accordion is handed this same function so that whatever the server
+  // rendered inside a closed panel - an input, a field, another accordion -
+  // mounts when the panel opens, as a fresh render would mount it.
+  enhanceVueForgeAccordions(root, enhanceAll);
 }
 
-export { enhanceVueForgeCheckables, enhanceVueForgeFields, enhanceVueForgeTextareas };
+export { enhanceVueForgeAccordions, enhanceVueForgeCheckables, enhanceVueForgeFields, enhanceVueForgeTextareas };
 
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {

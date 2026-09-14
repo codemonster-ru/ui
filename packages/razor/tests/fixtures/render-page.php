@@ -136,6 +136,47 @@ $sections .= '<section class="case" data-case="field-floating"><h2>field-floatin
     ], true)
     . '</section>';
 
+// ---------------------------------------------------------------- accordion
+//
+// The M22 sections. Real vf-accordion renders in the states the browser suite
+// drives: closed, open, disabled, a consumer button in the panel, two
+// siblings, a nested pair, an input inside a closed panel (so the content the
+// controller renders on open is itself enhanced), and a copy of the accordion
+// markup *without* the ownership marker, which the controller must ignore.
+$accordion = $registry->resolve('vf-accordion');
+if ($accordion === null) {
+    fwrite(STDERR, "vf-accordion must be registered.\n");
+    exit(1);
+}
+$renderAccordion = static function (array $props, array $slots = []) use ($accordion): string {
+    $closures = [];
+    foreach ($slots as $name => $markup) {
+        $closures[$name] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    return $accordion->render(new ComponentRenderContext($props, $closures))->value();
+};
+$accordionCases = [
+    'accordion-closed' => $renderAccordion(['title' => 'Closed'], ['default' => '<p>Closed content.</p>']),
+    'accordion-open' => $renderAccordion(['title' => 'Open', 'default-open' => true], ['default' => '<p>Open content.</p>']),
+    'accordion-disabled' => $renderAccordion(['title' => 'Disabled', 'disabled' => true], ['default' => '<p>Never.</p>']),
+    'accordion-consumer' => $renderAccordion(['title' => 'Export'], ['default' => '<p>Failed.</p><button type="button" id="consumer-retry">Retry</button>']),
+    'accordion-siblings' => $renderAccordion(['title' => 'First']) . $renderAccordion(['title' => 'Second', 'default-open' => true], ['default' => '<p>Second content.</p>']),
+    'accordion-nested' => $renderAccordion(
+        ['title' => 'Outer', 'default-open' => true],
+        ['default' => '<p>Outer content.</p>' . $renderAccordion(['title' => 'Inner'], ['default' => '<p>Inner content.</p>'])],
+    ),
+    'accordion-with-input' => $renderAccordion(
+        ['title' => 'Form'],
+        ['default' => $render(['name' => 'inside', 'id' => 'inside-accordion', 'value' => 'typed', 'clearable' => true])],
+    ),
+    // The same markup with the marker stripped: not Razor-owned, must not mount.
+    'accordion-unowned' => str_replace(' data-vf-razor="accordion"', '', $renderAccordion(['title' => 'Unowned'], ['default' => '<p>No.</p>'])),
+];
+foreach ($accordionCases as $name => $markup) {
+    $sections .= '<section class="case" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'

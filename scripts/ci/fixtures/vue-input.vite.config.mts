@@ -18,6 +18,10 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('packages/core/src/components/input/VfInput.vue', repositoryRoot)),
       },
       {
+        find: '@codemonster-ru/vueforge-core/src/components/accordion/VfAccordion.vue',
+        replacement: fileURLToPath(new URL('packages/core/src/components/accordion/VfAccordion.vue', repositoryRoot)),
+      },
+      {
         find: '@codemonster-ru/vueforge-shared-core',
         replacement: fileURLToPath(new URL('packages/shared-core/src/index.ts', repositoryRoot)),
       },
