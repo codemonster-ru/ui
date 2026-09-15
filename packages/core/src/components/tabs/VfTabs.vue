@@ -1,5 +1,19 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch, type CSSProperties } from 'vue';
+import {
+  isTabsItemSelected,
+  resolveTabsActiveIndex,
+  resolveTabsActiveValue,
+  resolveTabsControlledPanelId,
+  resolveTabsFallbackValue,
+  resolveTabsIndicatorStyle,
+  resolveTabsNavigationTarget,
+  resolveTabsPanelId,
+  resolveTabsScrollerState,
+  resolveTabsTabId,
+  resolveTabsTabIndex,
+  TABS_INDICATOR_HIDDEN,
+} from '@codemonster-ru/vueforge-shared-core';
 import VfHorizontalScroller from '@/components/internal/VfHorizontalScroller.vue';
 import { useId } from '@/composables';
 import type { VfTabItem } from '@/types/components';
@@ -30,17 +44,13 @@ const scrollControlsReady = ref(false);
 const scrollControlsAnimated = ref(false);
 const isListScrolling = ref(false);
 const indicatorReady = ref(false);
-const indicatorStyle = ref<CSSProperties>({
-  opacity: '0',
-  transform: 'translateX(0)',
-  width: '0',
-});
+const indicatorStyle = ref<CSSProperties>(Object.fromEntries(TABS_INDICATOR_HIDDEN));
 
-const fallbackValue = computed(() => props.items.find((item) => !item.disabled)?.value);
+const fallbackValue = computed(() => resolveTabsFallbackValue(props.items));
 const internalValue = ref(props.defaultValue ?? fallbackValue.value);
 const isControlled = computed(() => props.modelValue !== undefined);
-const activeValue = computed(() => props.modelValue ?? internalValue.value ?? fallbackValue.value);
-const activeItem = computed(() => props.items.find((item) => item.value === activeValue.value));
+const activeValue = computed(() => resolveTabsActiveValue(props.modelValue, internalValue.value, props.items));
+const activeItem = computed(() => props.items[resolveTabsActiveIndex(props.items, activeValue.value)]);
 
 let listResizeObserver: ResizeObserver | null = null;
 
@@ -53,13 +63,17 @@ function updateScrollState() {
     return;
   }
 
-  const maxScrollLeft = list.scrollWidth - list.clientWidth;
   const directionHost = list.closest('[dir]');
   const isRtl =
     directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' || window.getComputedStyle(list).direction === 'rtl';
-  const scrollOffset = isRtl ? Math.abs(Math.min(list.scrollLeft, 0)) : list.scrollLeft;
-  canScrollLeft.value = isRtl ? maxScrollLeft - scrollOffset > 1 : scrollOffset > 1;
-  canScrollRight.value = isRtl ? scrollOffset > 1 : maxScrollLeft - scrollOffset > 1;
+  const state = resolveTabsScrollerState({
+    scrollWidth: list.scrollWidth,
+    clientWidth: list.clientWidth,
+    scrollLeft: list.scrollLeft,
+    isRtl,
+  });
+  canScrollLeft.value = state.canScrollLeft;
+  canScrollRight.value = state.canScrollRight;
 }
 
 watch(
@@ -89,100 +103,53 @@ function activateTab(item: VfTabItem) {
   }
 }
 
-function getEnabledItems() {
-  return props.items.filter((item) => !item.disabled);
-}
-
 function focusTabByValue(value: string) {
   const index = props.items.findIndex((item) => item.value === value);
   tabRefs.value[index]?.focus();
 }
 
 function handleKeydown(event: KeyboardEvent, currentItem: VfTabItem) {
-  const enabledItems = getEnabledItems();
-  const currentIndex = enabledItems.findIndex((item) => item.value === currentItem.value);
-
-  if (currentIndex === -1) {
-    return;
-  }
-
   const target = event.currentTarget instanceof Element ? event.currentTarget : null;
   const directionHost = target?.closest('[dir]');
   const isRtl =
     directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' ||
     (!directionHost && document.documentElement.getAttribute('dir')?.toLowerCase() === 'rtl');
-  const movesForward =
-    event.key === 'ArrowDown' || (isRtl ? event.key === 'ArrowLeft' : event.key === 'ArrowRight');
-  const movesBackward =
-    event.key === 'ArrowUp' || (isRtl ? event.key === 'ArrowRight' : event.key === 'ArrowLeft');
+  const nextItem = resolveTabsNavigationTarget(props.items, currentItem.value, event.key, isRtl);
 
-  if (movesForward) {
-    event.preventDefault();
-    const nextItem = enabledItems[(currentIndex + 1) % enabledItems.length];
-    activateTab(nextItem);
-    focusTabByValue(nextItem.value);
+  if (!nextItem) {
     return;
   }
 
-  if (movesBackward) {
-    event.preventDefault();
-    const nextItem = enabledItems[(currentIndex - 1 + enabledItems.length) % enabledItems.length];
-    activateTab(nextItem);
-    focusTabByValue(nextItem.value);
-    return;
-  }
-
-  if (event.key === 'Home') {
-    event.preventDefault();
-    const firstItem = enabledItems[0];
-    activateTab(firstItem);
-    focusTabByValue(firstItem.value);
-    return;
-  }
-
-  if (event.key === 'End') {
-    event.preventDefault();
-    const lastItem = enabledItems[enabledItems.length - 1];
-    activateTab(lastItem);
-    focusTabByValue(lastItem.value);
-  }
+  event.preventDefault();
+  activateTab(nextItem as VfTabItem);
+  focusTabByValue(nextItem.value);
 }
 
 function tabId(item: VfTabItem) {
-  return item.tabId ?? `${baseId.value}-tab-${item.value}`;
+  return resolveTabsTabId(baseId.value, item);
 }
 
 function panelId(item: VfTabItem) {
-  return item.panelId ?? `${baseId.value}-panel-${item.value}`;
+  return resolveTabsPanelId(baseId.value, item);
 }
 
 function controlledPanelId(item: VfTabItem) {
-  if (!slots.panel && !item.panelId) {
-    return undefined;
-  }
-
-  return panelId(item);
+  return resolveTabsControlledPanelId(baseId.value, item, Boolean(slots.panel));
 }
 
 function updateIndicator() {
   const list = listRef.value;
   const listContainer = list?.parentElement;
-  const activeIndex = props.items.findIndex((item) => item.value === activeValue.value);
+  const activeIndex = resolveTabsActiveIndex(props.items, activeValue.value);
   const activeTab = activeIndex >= 0 ? tabRefs.value[activeIndex] : null;
 
   if (!activeTab || !list) {
-    indicatorStyle.value = {
-      opacity: '0',
-      transform: 'translateX(0)',
-      width: '0',
-    };
+    indicatorStyle.value = Object.fromEntries(resolveTabsIndicatorStyle(null));
     return;
   }
 
   const listBounds = list.getBoundingClientRect();
   const tabBounds = activeTab.getBoundingClientRect();
-  const tabStart = tabBounds.left - listBounds.left;
-  const tabEnd = tabStart + tabBounds.width;
   const leftScrollButton =
     canScrollLeft.value && listContainer
       ? (listContainer.querySelector('.vf-tabs__scroll-button--left') as HTMLElement | null)
@@ -191,18 +158,17 @@ function updateIndicator() {
     canScrollRight.value && listContainer
       ? (listContainer.querySelector('.vf-tabs__scroll-button--right') as HTMLElement | null)
       : null;
-  const visibleInsetStart = leftScrollButton?.offsetWidth ?? 0;
-  const visibleInsetEnd = rightScrollButton?.offsetWidth ?? 0;
-  const visibleStart = Math.max(visibleInsetStart, tabStart);
-  const visibleEnd = Math.min(list.clientWidth - visibleInsetEnd, tabEnd);
-  const visibleWidth = Math.max(0, visibleEnd - visibleStart);
-  const isVisible = visibleWidth > 0;
 
-  indicatorStyle.value = {
-    opacity: isVisible ? '1' : '0',
-    transform: `translateX(${visibleStart}px)`,
-    width: `${visibleWidth}px`,
-  };
+  indicatorStyle.value = Object.fromEntries(
+    resolveTabsIndicatorStyle({
+      listLeft: listBounds.left,
+      listClientWidth: list.clientWidth,
+      tabLeft: tabBounds.left,
+      tabWidth: tabBounds.width,
+      insetStart: leftScrollButton?.offsetWidth ?? 0,
+      insetEnd: rightScrollButton?.offsetWidth ?? 0,
+    }),
+  );
 
   updateScrollState();
 }
@@ -309,16 +275,16 @@ onBeforeUnmount(() => {
             }
           "
           :aria-controls="controlledPanelId(item)"
-          :aria-selected="activeValue === item.value"
+          :aria-selected="isTabsItemSelected(activeValue, item)"
           :disabled="item.disabled"
-          :tabindex="activeValue === item.value ? 0 : -1"
+          :tabindex="resolveTabsTabIndex(activeValue, item)"
           class="vf-tabs__tab"
           role="tab"
           type="button"
           @click="activateTab(item)"
           @keydown="handleKeydown($event, item)"
         >
-          <slot name="tab" v-bind="{ item, isActive: activeValue === item.value, index }">
+          <slot name="tab" v-bind="{ item, isActive: isTabsItemSelected(activeValue, item), index }">
             {{ item.label }}
           </slot>
         </button>

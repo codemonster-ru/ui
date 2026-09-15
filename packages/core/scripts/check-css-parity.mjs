@@ -169,10 +169,20 @@ for (const forbiddenSelector of ['.vf-nav-menu', '.vf-menu-bar', '.vf-tabs', '.v
   }
 }
 
+// The tabs entry forwards to packages/styles since M24 and menu-bar is still
+// core's own; both are read through their canonical source, and the scroller
+// import each carries has to resolve - through the core forward or directly -
+// to the one canonical file rather than inline its rules.
+const canonicalScrollerPath = resolveStyleEntrySource(join(componentsDir, 'horizontal-scroller.css'));
 for (const fileName of ['menu-bar.css', 'tabs.css']) {
-  const source = readFileSync(join(entriesDir, fileName), 'utf8');
-  if (!source.includes("@import '../components/horizontal-scroller.css';")) {
-    fail(`${fileName} must import the shared horizontal scroller.`);
+  const sourcePath = resolveStyleEntrySource(join(entriesDir, fileName));
+  const source = readFileSync(sourcePath, 'utf8');
+  const scrollerImports = importsOf(source).filter((importPath) => importPath.endsWith('horizontal-scroller.css'));
+  if (
+    scrollerImports.length !== 1 ||
+    resolveStyleEntrySource(resolve(dirname(sourcePath), scrollerImports[0])) !== canonicalScrollerPath
+  ) {
+    fail(`${fileName} must import the shared horizontal scroller from its canonical source.`);
   }
   if (stripImportsAndComments(source).includes('.vf-horizontal-scroller {')) {
     fail(`${fileName} duplicates the shared horizontal scroller rules.`);

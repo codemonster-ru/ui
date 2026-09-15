@@ -112,4 +112,24 @@ export const styleSources = [
   // not a progress bar's track, and the trigger is not an accordion's -
   // no rule in this file exists in either of theirs.
   'packages/styles/src/components/stepper.css',
+  // The internal horizontal scroller VfTabs renders, the M24 closure's first
+  // half: the scroller root with its custom properties, the viewport, the two
+  // controls with their hidden and not-yet-ready states, and the two fades.
+  // Not a migrated component: it is the internal implementation VfTabs owns,
+  // and it is listed on its own account, before the tabs, because tabs.css
+  // imports it first and the builder inlines each file once - so the
+  // provenance names the scroller as an owner rather than as something the
+  // tabs happened to pull in. In packages/core it also serves the unmigrated
+  // VfMenuBar through the core forward; that entry is not in this artifact.
+  'packages/styles/src/components/horizontal-scroller.css',
+  // VfTabs, the M24 component. Its first line imports horizontal-scroller.css,
+  // which the entry above has already inlined, so the import resolves to
+  // nothing here and the scroller rules appear exactly once, in the same
+  // position they always had. What follows is the tabs closure: the root, the
+  // list, the viewport, the tablist, the scroll buttons with their hidden
+  // modifier, the baseline, the tab with its selected, hover, active, disabled
+  // and focus states, the indicator with its ready and no-transition
+  // modifiers, and the panel. It was Vue-owned until M24 and reached no Razor
+  // artifact at all. Listed last; no tabs selector overlaps another file's.
+  'packages/styles/src/components/tabs.css',
 ];

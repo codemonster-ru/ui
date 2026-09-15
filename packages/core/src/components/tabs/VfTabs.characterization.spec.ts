@@ -326,7 +326,7 @@ describe('VfTabs characterization: ids and relationships', () => {
   it('builds tab and panel ids from one useId base and the raw value', () => {
     const wrapper = mountTabs({ slots: { panel: panelSlot } });
     const ids = tabs(wrapper).map((button) => button.attributes('id'));
-    const base = ids[0].replace(/-tab-overview$/, '');
+    const base = ids[0]!.replace(/-tab-overview$/, '');
 
     expect(base).toMatch(/^vf-tabs-v-\d+$/);
     expect(ids).toEqual([`${base}-tab-overview`, `${base}-tab-settings`, `${base}-tab-billing`]);
@@ -399,9 +399,9 @@ describe('VfTabs characterization: ids and relationships', () => {
     expect(selectedValues(wrapper)).toEqual(['true', 'true', 'false']);
     expect(tabindexes(wrapper)).toEqual(['0', '0', '-1']);
     expect(tabs(wrapper).map((button) => button.attributes('aria-controls'))).toEqual([
-      ids[0].replace('-tab-', '-panel-'),
-      ids[0].replace('-tab-', '-panel-'),
-      ids[2].replace('-tab-', '-panel-'),
+      ids[0]!.replace('-tab-', '-panel-'),
+      ids[0]!.replace('-tab-', '-panel-'),
+      ids[2]!.replace('-tab-', '-panel-'),
     ]);
     expect(wrapper.findAll('[role="tabpanel"]')).toHaveLength(1);
     expect(panel(wrapper).text()).toBe('panel:overview');
@@ -732,7 +732,7 @@ describe('VfTabs characterization: keyboard', () => {
   ])('leaves %s to the browser: not prevented, no emit, no selection change', async (_label, key) => {
     const { log, attrs } = emitLog();
     const wrapper = mountTabs({ attrs, attachTo: document.body });
-    tabs(wrapper)[1].element.focus();
+    (tabs(wrapper)[1].element as HTMLElement).focus();
 
     expect(keydown(tabs(wrapper)[1], key)).toBe(false);
     await nextTick();
@@ -852,7 +852,7 @@ describe('VfTabs characterization: keyboard', () => {
     const { log, attrs } = emitLog();
     const wrapper = mountTabs({ attrs, attachTo: document.body });
 
-    tabs(wrapper)[2].element.focus();
+    (tabs(wrapper)[2].element as HTMLElement).focus();
     await nextTick();
     expect(log).toEqual([]);
     expect(selectedValues(wrapper)).toEqual(['true', 'false', 'false']);

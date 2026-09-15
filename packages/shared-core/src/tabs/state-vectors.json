@@ -1,0 +1,534 @@
+{
+  "$comment": "Shared input/expected vectors for VfTabs. The TypeScript rules in tabs/state.ts run every section; the PHP mirror in packages/razor/src/Support/TabsState.php runs the sections a server can decide (listed in $serverRules) and deliberately has no method for the others - the navigation ring, the indicator geometry and the scroller state are browser measurements a server never holds. The contract of the reference at fd793696, quirks included: the fallback is the first enabled item; the active value is modelValue ?? internalValue ?? fallback, so an empty string is a value and null an absence (spelled as an absent key here for `undefined` and as JSON null for `null`); selected is value equality alone, so a disabled seed stays selected, an unknown value selects nothing and a duplicated value selects twice; tabindex is 0 on every selected tab; ids embed the raw value; aria-controls is written with a panel slot or an own panelId; ArrowDown/ArrowUp navigate the horizontal ring; the indicator is unrounded and computed in the LTR frame; a scrollable edge needs more than one pixel. There is deliberately no vector for a selection change, a focus move, a timer or an event: the rule set holds no state.",
+  "$serverRules": [
+    "isTabsItemSelected",
+    "resolveTabsActiveIndex",
+    "resolveTabsActiveValue",
+    "resolveTabsControlledPanelId",
+    "resolveTabsFallbackValue",
+    "resolveTabsPanelId",
+    "resolveTabsTabId",
+    "resolveTabsTabIndex"
+  ],
+  "resolveTabsFallbackValue": [
+    { "items": [{ "value": "a" }, { "value": "b" }], "expected": "a" },
+    { "items": [{ "value": "a", "disabled": true }, { "value": "b" }], "expected": "b" },
+    {
+      "items": [
+        { "value": "a", "disabled": true },
+        { "value": "b", "disabled": true }
+      ],
+      "expected": null
+    },
+    { "items": [], "expected": null },
+    { "$why": "disabled: false is enabled.", "items": [{ "value": "a", "disabled": false }], "expected": "a" }
+  ],
+  "resolveTabsActiveValue": [
+    { "items": [{ "value": "a" }, { "value": "b" }], "expected": "a" },
+    { "items": [{ "value": "a" }, { "value": "b" }], "internalValue": "b", "expected": "b" },
+    { "items": [{ "value": "a" }, { "value": "b" }], "modelValue": "b", "internalValue": "a", "expected": "b" },
+    {
+      "$why": "An empty string is a controlled value.",
+      "items": [{ "value": "a" }],
+      "modelValue": "",
+      "internalValue": "a",
+      "expected": ""
+    },
+    {
+      "$why": "Null is an absence.",
+      "items": [{ "value": "a" }],
+      "modelValue": null,
+      "internalValue": "a",
+      "expected": "a"
+    },
+    { "$why": "An unknown value is kept.", "items": [{ "value": "a" }], "modelValue": "nope", "expected": "nope" },
+    {
+      "$why": "An unknown seed is kept too.",
+      "items": [{ "value": "a" }],
+      "internalValue": "nope",
+      "expected": "nope"
+    },
+    {
+      "$why": "A disabled seed is kept.",
+      "items": [{ "value": "a" }, { "value": "b", "disabled": true }],
+      "internalValue": "b",
+      "expected": "b"
+    },
+    { "items": [{ "value": "a", "disabled": true }, { "value": "b" }], "expected": "b" },
+    { "items": [], "expected": null }
+  ],
+  "resolveTabsActiveIndex": [
+    { "items": [{ "value": "a" }, { "value": "b" }], "activeValue": "b", "expected": 1 },
+    { "items": [{ "value": "a" }, { "value": "b" }], "activeValue": "nope", "expected": -1 },
+    { "items": [{ "value": "a" }, { "value": "b" }], "expected": -1 },
+    {
+      "$why": "The first occurrence of a duplicated value.",
+      "items": [{ "value": "a" }, { "value": "a" }],
+      "activeValue": "a",
+      "expected": 0
+    },
+    {
+      "$why": "Disabled does not hide the match.",
+      "items": [{ "value": "a", "disabled": true }],
+      "activeValue": "a",
+      "expected": 0
+    }
+  ],
+  "isTabsItemSelected": [
+    { "activeValue": "a", "item": { "value": "a" }, "expected": true },
+    { "activeValue": "a", "item": { "value": "b" }, "expected": false },
+    {
+      "$why": "Selected is value equality alone: a disabled seed stays selected.",
+      "activeValue": "a",
+      "item": { "value": "a", "disabled": true },
+      "expected": true
+    },
+    { "item": { "value": "a" }, "expected": false },
+    { "activeValue": "", "item": { "value": "a" }, "expected": false },
+    {
+      "$why": "An empty-string item value matches an empty-string active value.",
+      "activeValue": "",
+      "item": { "value": "" },
+      "expected": true
+    }
+  ],
+  "resolveTabsTabIndex": [
+    { "activeValue": "a", "item": { "value": "a" }, "expected": 0 },
+    { "activeValue": "a", "item": { "value": "b" }, "expected": -1 },
+    { "activeValue": "a", "item": { "value": "a", "disabled": true }, "expected": 0 },
+    { "item": { "value": "a" }, "expected": -1 }
+  ],
+  "resolveTabsTabId": [
+    { "baseId": "vf-tabs-v-0", "item": { "value": "overview" }, "expected": "vf-tabs-v-0-tab-overview" },
+    { "baseId": "vf-tabs-v-0", "item": { "value": "overview", "tabId": "custom" }, "expected": "custom" },
+    {
+      "$why": "The raw value, spaces included.",
+      "baseId": "vf-tabs-v-0",
+      "item": { "value": "a b" },
+      "expected": "vf-tabs-v-0-tab-a b"
+    },
+    {
+      "$why": "panelId does not touch the tab id.",
+      "baseId": "vf-tabs-v-0",
+      "item": { "value": "x", "panelId": "p" },
+      "expected": "vf-tabs-v-0-tab-x"
+    }
+  ],
+  "resolveTabsPanelId": [
+    { "baseId": "vf-tabs-v-0", "item": { "value": "overview" }, "expected": "vf-tabs-v-0-panel-overview" },
+    { "baseId": "vf-tabs-v-0", "item": { "value": "overview", "panelId": "custom" }, "expected": "custom" },
+    { "baseId": "vf-tabs-v-0", "item": { "value": "a b" }, "expected": "vf-tabs-v-0-panel-a b" },
+    {
+      "$why": "tabId does not touch the panel id.",
+      "baseId": "vf-tabs-v-0",
+      "item": { "value": "x", "tabId": "t" },
+      "expected": "vf-tabs-v-0-panel-x"
+    }
+  ],
+  "resolveTabsControlledPanelId": [
+    { "baseId": "vf-tabs-v-0", "item": { "value": "a" }, "hasPanelSlot": true, "expected": "vf-tabs-v-0-panel-a" },
+    { "baseId": "vf-tabs-v-0", "item": { "value": "a" }, "hasPanelSlot": false, "expected": null },
+    {
+      "$why": "An own panelId is written even without a panel slot.",
+      "baseId": "vf-tabs-v-0",
+      "item": { "value": "a", "panelId": "external" },
+      "hasPanelSlot": false,
+      "expected": "external"
+    },
+    {
+      "baseId": "vf-tabs-v-0",
+      "item": { "value": "a", "panelId": "external" },
+      "hasPanelSlot": true,
+      "expected": "external"
+    }
+  ],
+  "resolveTabsNavigationTarget": [
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "a",
+      "key": "ArrowRight",
+      "isRtl": false,
+      "expected": "b"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "a",
+      "key": "ArrowDown",
+      "isRtl": false,
+      "expected": "b"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "a",
+      "key": "ArrowLeft",
+      "isRtl": false,
+      "expected": "c"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "a",
+      "key": "ArrowUp",
+      "isRtl": false,
+      "expected": "c"
+    },
+    {
+      "$why": "Wraps forward.",
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "c",
+      "key": "ArrowRight",
+      "isRtl": false,
+      "expected": "a"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "b",
+      "key": "Home",
+      "isRtl": false,
+      "expected": "a"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "b",
+      "key": "End",
+      "isRtl": false,
+      "expected": "c"
+    },
+    {
+      "$why": "RTL swaps the horizontal pair only.",
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "a",
+      "key": "ArrowLeft",
+      "isRtl": true,
+      "expected": "b"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "a",
+      "key": "ArrowRight",
+      "isRtl": true,
+      "expected": "c"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "a",
+      "key": "ArrowDown",
+      "isRtl": true,
+      "expected": "b"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "currentValue": "a",
+      "key": "ArrowUp",
+      "isRtl": true,
+      "expected": "c"
+    },
+    {
+      "$why": "The ring skips disabled items in both directions and at the ends.",
+      "items": [
+        { "value": "a", "disabled": true },
+        { "value": "b" },
+        { "value": "c", "disabled": true },
+        { "value": "d" }
+      ],
+      "currentValue": "b",
+      "key": "ArrowRight",
+      "isRtl": false,
+      "expected": "d"
+    },
+    {
+      "items": [
+        { "value": "a", "disabled": true },
+        { "value": "b" },
+        { "value": "c", "disabled": true },
+        { "value": "d" }
+      ],
+      "currentValue": "b",
+      "key": "ArrowLeft",
+      "isRtl": false,
+      "expected": "d"
+    },
+    {
+      "items": [
+        { "value": "a", "disabled": true },
+        { "value": "b" },
+        { "value": "c", "disabled": true },
+        { "value": "d" }
+      ],
+      "currentValue": "d",
+      "key": "Home",
+      "isRtl": false,
+      "expected": "b"
+    },
+    {
+      "items": [
+        { "value": "a", "disabled": true },
+        { "value": "b" },
+        { "value": "c", "disabled": true },
+        { "value": "d" }
+      ],
+      "currentValue": "b",
+      "key": "End",
+      "isRtl": false,
+      "expected": "d"
+    },
+    {
+      "$why": "A disabled origin is outside the ring: not handled.",
+      "items": [{ "value": "a" }, { "value": "b", "disabled": true }],
+      "currentValue": "b",
+      "key": "ArrowRight",
+      "isRtl": false,
+      "expected": null
+    },
+    {
+      "$why": "Enter, Space and Tab are not handled.",
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "currentValue": "a",
+      "key": "Enter",
+      "isRtl": false,
+      "expected": null
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "currentValue": "a",
+      "key": " ",
+      "isRtl": false,
+      "expected": null
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "currentValue": "a",
+      "key": "Tab",
+      "isRtl": false,
+      "expected": null
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "currentValue": "a",
+      "key": "PageDown",
+      "isRtl": false,
+      "expected": null
+    },
+    {
+      "$why": "A single enabled item wraps onto itself.",
+      "items": [{ "value": "a" }],
+      "currentValue": "a",
+      "key": "ArrowRight",
+      "isRtl": false,
+      "expected": "a"
+    },
+    {
+      "$why": "A duplicated origin resolves to its first enabled occurrence, so the ring moves on from there.",
+      "items": [{ "value": "a" }, { "value": "a" }, { "value": "b" }],
+      "currentValue": "a",
+      "key": "ArrowRight",
+      "isRtl": false,
+      "expected": "a"
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "a" }, { "value": "b" }],
+      "currentValue": "b",
+      "key": "ArrowRight",
+      "isRtl": false,
+      "expected": "a"
+    }
+  ],
+  "resolveTabsIndicatorStyle": [
+    {
+      "$why": "No measurement: the seed, with the literal translateX(0).",
+      "measurement": null,
+      "expected": [
+        ["opacity", "0"],
+        ["transform", "translateX(0)"],
+        ["width", "0"]
+      ]
+    },
+    {
+      "$why": "Chrome's own fractional widths, unrounded.",
+      "measurement": {
+        "listLeft": 24,
+        "listClientWidth": 360,
+        "tabLeft": 121.359375,
+        "tabWidth": 85.671875,
+        "insetStart": 0,
+        "insetEnd": 0
+      },
+      "expected": [
+        ["opacity", "1"],
+        ["transform", "translateX(97.359375px)"],
+        ["width", "85.671875px"]
+      ]
+    },
+    {
+      "measurement": {
+        "listLeft": 24,
+        "listClientWidth": 360,
+        "tabLeft": 24,
+        "tabWidth": 93.359375,
+        "insetStart": 0,
+        "insetEnd": 0
+      },
+      "expected": [
+        ["opacity", "1"],
+        ["transform", "translateX(0px)"],
+        ["width", "93.359375px"]
+      ]
+    },
+    {
+      "$why": "Clipped by the shown left button: starts at the inset, width reduced.",
+      "measurement": {
+        "listLeft": 24,
+        "listClientWidth": 360,
+        "tabLeft": -36,
+        "tabWidth": 93.359375,
+        "insetStart": 28,
+        "insetEnd": 28
+      },
+      "expected": [
+        ["opacity", "1"],
+        ["transform", "translateX(28px)"],
+        ["width", "5.359375px"]
+      ]
+    },
+    {
+      "$why": "Scrolled out of view: hidden at the inset with zero width.",
+      "measurement": {
+        "listLeft": 24,
+        "listClientWidth": 360,
+        "tabLeft": -176,
+        "tabWidth": 93.359375,
+        "insetStart": 28,
+        "insetEnd": 28
+      },
+      "expected": [
+        ["opacity", "0"],
+        ["transform", "translateX(28px)"],
+        ["width", "0px"]
+      ]
+    },
+    {
+      "$why": "Clipped by the shown right button.",
+      "measurement": {
+        "listLeft": 24,
+        "listClientWidth": 240,
+        "tabLeft": 211.03125,
+        "tabWidth": 68.921875,
+        "insetStart": 0,
+        "insetEnd": 28
+      },
+      "expected": [
+        ["opacity", "1"],
+        ["transform", "translateX(187.03125px)"],
+        ["width", "24.96875px"]
+      ]
+    },
+    {
+      "$why": "Beyond the right edge with no button shown: hidden at its own offset.",
+      "measurement": {
+        "listLeft": 0,
+        "listClientWidth": 360,
+        "tabLeft": 622.625,
+        "tabWidth": 137.890625,
+        "insetStart": 0,
+        "insetEnd": 0
+      },
+      "expected": [
+        ["opacity", "0"],
+        ["transform", "translateX(622.625px)"],
+        ["width", "0px"]
+      ]
+    },
+    {
+      "$why": "The LTR frame under RTL: the offset from the list's left edge.",
+      "measurement": {
+        "listLeft": 24,
+        "listClientWidth": 360,
+        "tabLeft": 200.96875,
+        "tabWidth": 85.671875,
+        "insetStart": 0,
+        "insetEnd": 0
+      },
+      "expected": [
+        ["opacity", "1"],
+        ["transform", "translateX(176.96875px)"],
+        ["width", "85.671875px"]
+      ]
+    },
+    {
+      "$why": "A zero-width tab is hidden at its offset.",
+      "measurement": {
+        "listLeft": 0,
+        "listClientWidth": 360,
+        "tabLeft": 40,
+        "tabWidth": 0,
+        "insetStart": 0,
+        "insetEnd": 0
+      },
+      "expected": [
+        ["opacity", "0"],
+        ["transform", "translateX(40px)"],
+        ["width", "0px"]
+      ]
+    }
+  ],
+  "resolveTabsScrollerState": [
+    {
+      "measurement": { "scrollWidth": 360, "clientWidth": 360, "scrollLeft": 0, "isRtl": false },
+      "expected": { "canScrollLeft": false, "canScrollRight": false }
+    },
+    {
+      "measurement": { "scrollWidth": 398, "clientWidth": 360, "scrollLeft": 0, "isRtl": false },
+      "expected": { "canScrollLeft": false, "canScrollRight": true }
+    },
+    {
+      "measurement": { "scrollWidth": 761, "clientWidth": 360, "scrollLeft": 216, "isRtl": false },
+      "expected": { "canScrollLeft": true, "canScrollRight": true }
+    },
+    {
+      "measurement": { "scrollWidth": 761, "clientWidth": 360, "scrollLeft": 401, "isRtl": false },
+      "expected": { "canScrollLeft": true, "canScrollRight": false }
+    },
+    {
+      "$why": "More than one pixel: exactly one is not scrollable.",
+      "measurement": { "scrollWidth": 361, "clientWidth": 360, "scrollLeft": 0, "isRtl": false },
+      "expected": { "canScrollLeft": false, "canScrollRight": false }
+    },
+    {
+      "measurement": { "scrollWidth": 362, "clientWidth": 360, "scrollLeft": 1, "isRtl": false },
+      "expected": { "canScrollLeft": false, "canScrollRight": false }
+    },
+    {
+      "measurement": { "scrollWidth": 363, "clientWidth": 360, "scrollLeft": 1, "isRtl": false },
+      "expected": { "canScrollLeft": false, "canScrollRight": true }
+    },
+    {
+      "measurement": { "scrollWidth": 363, "clientWidth": 360, "scrollLeft": 2, "isRtl": false },
+      "expected": { "canScrollLeft": true, "canScrollRight": false }
+    },
+    {
+      "$why": "RTL at the start: scrollLeft is 0 and the travel is to the left.",
+      "measurement": { "scrollWidth": 761, "clientWidth": 360, "scrollLeft": 0, "isRtl": true },
+      "expected": { "canScrollLeft": true, "canScrollRight": false }
+    },
+    {
+      "$why": "RTL in the middle: a negative scrollLeft.",
+      "measurement": { "scrollWidth": 761, "clientWidth": 360, "scrollLeft": -216, "isRtl": true },
+      "expected": { "canScrollLeft": true, "canScrollRight": true }
+    },
+    {
+      "measurement": { "scrollWidth": 761, "clientWidth": 360, "scrollLeft": -401, "isRtl": true },
+      "expected": { "canScrollLeft": false, "canScrollRight": true }
+    },
+    {
+      "$why": "A positive scrollLeft under RTL counts as zero.",
+      "measurement": { "scrollWidth": 761, "clientWidth": 360, "scrollLeft": 40, "isRtl": true },
+      "expected": { "canScrollLeft": true, "canScrollRight": false }
+    }
+  ],
+  "resolveTabsScrollerStep": [
+    { "clientWidth": 360, "expected": 216 },
+    { "$why": "Never less than 120.", "clientWidth": 150, "expected": 120 },
+    { "clientWidth": 199, "expected": 120 },
+    { "clientWidth": 201, "expected": 121 },
+    { "$why": "Rounded, not truncated.", "clientWidth": 301, "expected": 181 }
+  ]
+}

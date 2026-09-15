@@ -105,11 +105,7 @@ export type {
   VfInputPasswordRevealAvailability,
   VfInputTypeResolution,
 } from './input/state.js';
-export {
-  resolveAccordionIconClasses,
-  resolveAccordionOpen,
-  resolveAccordionTransition,
-} from './accordion/state.js';
+export { resolveAccordionIconClasses, resolveAccordionOpen, resolveAccordionTransition } from './accordion/state.js';
 export {
   formatStepperProgressFactor,
   resolveStepperActiveIndex,
@@ -127,3 +123,25 @@ export type {
   VfStepperOrientationName,
   VfStepperStepStateName,
 } from './stepper/state.js';
+export {
+  isTabsItemSelected,
+  resolveTabsActiveIndex,
+  resolveTabsActiveValue,
+  resolveTabsControlledPanelId,
+  resolveTabsFallbackValue,
+  resolveTabsIndicatorStyle,
+  resolveTabsNavigationTarget,
+  resolveTabsPanelId,
+  resolveTabsScrollerState,
+  resolveTabsScrollerStep,
+  resolveTabsTabId,
+  resolveTabsTabIndex,
+  TABS_INDICATOR_HIDDEN,
+} from './tabs/state.js';
+export type {
+  VfTabsDeclaration,
+  VfTabsIndicatorMeasurement,
+  VfTabsItemLike,
+  VfTabsScrollerMeasurement,
+  VfTabsScrollerState,
+} from './tabs/state.js';

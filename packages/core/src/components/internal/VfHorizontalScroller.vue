@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, type CSSProperties } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import { resolveTabsScrollerState, resolveTabsScrollerStep } from '@codemonster-ru/vueforge-shared-core';
 
 interface VfHorizontalScrollerProps {
   leftAriaLabel?: string;
@@ -81,13 +82,18 @@ function updateScrollState() {
     return;
   }
 
-  const maxScrollLeft = viewport.scrollWidth - viewport.clientWidth;
   const directionHost = viewport.closest('[dir]');
   const isRtl =
-    directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' || window.getComputedStyle(viewport).direction === 'rtl';
-  const scrollOffset = isRtl ? Math.abs(Math.min(viewport.scrollLeft, 0)) : viewport.scrollLeft;
-  canScrollLeft.value = isRtl ? maxScrollLeft - scrollOffset > 1 : scrollOffset > 1;
-  canScrollRight.value = isRtl ? scrollOffset > 1 : maxScrollLeft - scrollOffset > 1;
+    directionHost?.getAttribute('dir')?.toLowerCase() === 'rtl' ||
+    window.getComputedStyle(viewport).direction === 'rtl';
+  const state = resolveTabsScrollerState({
+    scrollWidth: viewport.scrollWidth,
+    clientWidth: viewport.clientWidth,
+    scrollLeft: viewport.scrollLeft,
+    isRtl,
+  });
+  canScrollLeft.value = state.canScrollLeft;
+  canScrollRight.value = state.canScrollRight;
   emitState();
 }
 
@@ -125,7 +131,7 @@ function scrollBy(direction: 'left' | 'right') {
     return;
   }
 
-  const delta = Math.max(props.minStep, Math.round(viewport.clientWidth * props.stepRatio));
+  const delta = resolveTabsScrollerStep(viewport.clientWidth, props.stepRatio, props.minStep);
   const nextScrollLeft = direction === 'left' ? viewport.scrollLeft - delta : viewport.scrollLeft + delta;
 
   viewport.scrollTo({
@@ -230,7 +236,11 @@ onBeforeUnmount(() => {
       :disabled="!controlsReady || !canScrollRight"
       @click="scrollBy('right')"
     >
-      <VueIconify :icon="icons.chevronRight" aria-hidden="true" size="var(--vf-horizontal-scroller-control-icon-size)" />
+      <VueIconify
+        :icon="icons.chevronRight"
+        aria-hidden="true"
+        size="var(--vf-horizontal-scroller-control-icon-size)"
+      />
     </button>
 
     <slot name="overlay" />

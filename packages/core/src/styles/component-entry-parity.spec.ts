@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   themeTokensToCssVars,
@@ -122,13 +122,25 @@ describe('component entry CSS parity', () => {
   });
 
   it('uses the canonical shared horizontal-scroller source', () => {
-    const menuBarSource = readFileSync(resolve(entriesDir, 'menu-bar.css'), 'utf8');
-    const tabsSource = readFileSync(resolve(entriesDir, 'tabs.css'), 'utf8');
+    // Both entries are inspected through their canonical source (the tabs
+    // entry forwards to packages/styles since M24; menu-bar is still core's
+    // own). Each has to import the scroller by a relative path rather than
+    // inline its rules, and both imports - one through the core forward, one
+    // directly - have to resolve to the single canonical file.
+    const canonicalScroller = resolveStyleEntrySource(resolve(componentsDir, 'horizontal-scroller.css'));
+    expect(canonicalScroller).toBe(resolve(stylesDir, '../../../styles/src/components/horizontal-scroller.css'));
 
-    expect(menuBarSource).toContain("@import '../components/horizontal-scroller.css';");
-    expect(tabsSource).toContain("@import '../components/horizontal-scroller.css';");
-    expect(stripImports(menuBarSource)).not.toContain('.vf-horizontal-scroller {');
-    expect(stripImports(tabsSource)).not.toContain('.vf-horizontal-scroller {');
+    for (const name of ['menu-bar.css', 'tabs.css']) {
+      const sourcePath = resolveStyleEntrySource(resolve(entriesDir, name));
+      const source = readFileSync(sourcePath, 'utf8');
+      const scrollerImport = [...source.matchAll(/^@import\s+'(\.[^']*horizontal-scroller\.css)';$/gm)].map(
+        (match) => match[1],
+      );
+
+      expect(scrollerImport, name).toHaveLength(1);
+      expect(resolveStyleEntrySource(resolve(dirname(sourcePath), scrollerImport[0]!)), name).toBe(canonicalScroller);
+      expect(stripImports(source), name).not.toContain('.vf-horizontal-scroller {');
+    }
   });
 
   it('locks the reconciled form and navigation contracts into full composition', () => {
