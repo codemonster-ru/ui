@@ -65,6 +65,7 @@ import {
   accordionParityMutations,
   accordionPolicyMutations,
 } from './accordion-mutations.mjs';
+import { stepperBrowserMutations, stepperParityMutations, stepperPolicyMutations } from './stepper-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
@@ -153,6 +154,7 @@ const mutationSets = {
     policy: accordionPolicyMutations,
     browser: accordionBrowserMutations,
   },
+  stepper: { capture: stepperParityMutations, policy: stepperPolicyMutations, browser: stepperBrowserMutations },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
     policy: skeletonGatePolicyMutations,
