@@ -22,6 +22,7 @@ use Codemonster\VueForge\Razor\Components\ProgressSpinnerComponent;
 use Codemonster\VueForge\Razor\Components\RadioComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonGateComponent;
+use Codemonster\VueForge\Razor\Components\StepperComponent;
 use Codemonster\VueForge\Razor\Components\SwitchComponent;
 use Codemonster\VueForge\Razor\Components\TagComponent;
 use Codemonster\VueForge\Razor\Components\TextareaComponent;
@@ -90,6 +91,10 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'radio' => new RadioComponent(),
             'skeleton' => $skeleton,
             'skeleton-gate' => new SkeletonGateComponent($skeleton),
+            // The second component that owns controls - one native button per
+            // item; its browser enhancement lives in browser/stepper.ts. See
+            // StepperComponent.
+            'stepper' => new StepperComponent(),
             'switch' => new SwitchComponent(),
             'tag' => new TagComponent(),
             'textarea' => new TextareaComponent(),
