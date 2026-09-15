@@ -1,0 +1,240 @@
+{
+  "$comment": "Parity policy for the shared VfTabs cases. Plain data: no DSL, no waiver engine. The third policy for a component that owns controls and changes state on a user gesture, and the first for one whose controls carry an explicit interactive role, a roving tabindex, aria-selected, an aria-controls / aria-labelledby graph with a 0-or-1 panel, a measured indicator and an internal scroller. It names the live dimensions beside the initial ones and starts empty; M24 finished with it still empty. What the Razor adapter cannot represent - a consumer that refuses the emitted value, a live items mutation, the isActive slot prop, the multi-createApp id collision - is not a catalog case and not an approval: it is recorded below with where it is covered instead.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour, live state, ownership, inline indicator geometry.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how state is stored, how a renderer marks its own output, which literal a generated id has.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs, and so is the inert <template data-vf-razor-tabs-panel> the Razor server writes for each inactive panel's content - it is unpainted, unexposed and reaches nothing without a script, exactly as the accordion's deferred content is. Everything it holds is compared the moment the controller renders it into the one product panel.",
+    "generatedIdLiterals": "Vue's useId writes vf-tabs-v-N and the Razor server writes vf-tabs-r-N; the extractor rewrites every id to its document position and every aria-controls / aria-labelledby through the same map, so the graph is compared and the literal is not. A consumer's own tabId / panelId is a literal on every target and is compared as one. A reference that resolves nowhere is compared as #dangling: with a panel slot, N-1 tabs dangle by design and a target that resolved them, or dangled the active one, differs.",
+    "eventTransport": "How each adapter delivers a selection to its host - Vue emits update:modelValue and then change, the Razor controller dispatches one bubbling vf-tabs:change CustomEvent with { value } - is transport. What is compared is the neutral log each fixture keeps of every change notification with its value, as interaction.events; a click on the current tab notifies again on every target. The Vue pair's order and count are pinned by the characterization suite.",
+    "styleSerialisation": "Both adapters write the indicator's inline style through the CSSOM at run time, and the Razor server writes the pre-mount seed as attribute text. The extractor parses both through the browser and compares the declarations, so `translateX(97.359375px)` written by two scripts compares equal and `translateX(97px)` does not - the rounding attack is a dom.nativeAttributes difference.",
+    "nodeIdentity": "Whether the same button or panel element survives a selection change is not measured by a node-identity primitive: the reference keeps every tab and patches the one panel in place, and adding a generic identity framework for one component is what the plan forbids. Persistence is proved structurally: the post-interaction DOM must equal a fresh render of the target state, tab for tab, panel included."
+  },
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "controlledWithoutConsumer": "A controlled Vue tabs whose consumer never writes update:modelValue back: the click or the arrow emits the pair, focus moves to the target tab, and aria-selected, tabindex, the panel and the indicator all stay on the old tab - the selected/focused split at its widest. The Razor adapter has no consumer protocol - a server-rendered tabs has no parent to ask, so its controller selects directly - and the two are not comparable after the gesture. The catalog carries tabs/interaction-controlled-model, where the Vue fixture writes the value back as v-model does and all three targets land on the same state; the refusal is pinned by VfTabs.characterization.spec.ts. The narrower split - a focused, unselected tab, and navigation starting from it - is in the catalog on every target (tabs/interaction-focus-only, tabs/interaction-focused-not-selected-navigates).",
+    "deepItemsWatch": "The reference watches `items` deeply and reseeds the fallback - emitting the pair - when the active item is removed or disabled after mount; a controlled consumer that refuses keeps the selection on the disabled tab. A Vue-only live prop-update behaviour: the Razor adapter renders items once and has no reactive prop surface, and giving it one would be the generic reactive runtime the plan forbids. Pinned by the characterization suite; the initial-render half of the same rule (a disabled seed survives because the watch is not immediate) is compared as tabs/disabled-selected.",
+    "isActiveSlotProp": "The tab slot receives isActive and re-renders when the selection moves. A Razor named slot is server-rendered text that no gesture re-renders, so the catalog's tab slot is static per item (`numbered`: item and index reach the slot on every target) and isActive is pinned by the characterization suite.",
+    "multiCreateAppIdCollision": "Two separate Vue createApp roots each restart Vue's useId counter, so two tabs mounted as two apps share vf-tabs-v-0 ids. A fixture artifact of a multi-app page: the parity fixture, like any real page, mounts one app, in which every instance gets its own base, and the Razor server's counter is per request. Reproduced and pinned by the characterization suite; not reproduced in Razor, not a catalog case, not an approval.",
+    "disabledPointerClick": "A real pointer click on a disabled tab. The harness refuses to dispatch a click at an element the browser would not deliver it to, which is the same refusal a user meets; the disabled contract is driven through focus and the keyboard instead (tabs/interaction-disabled-keyboard), and the Razor browser gate dispatches a real click at a disabled tab's coordinates and asserts nothing happens.",
+    "windowResizeAndResizeObserver": "The reference re-measures the indicator and the scroll state on window resize and through a ResizeObserver on the viewport. A viewport change has no gesture in the driver's vocabulary and no fresh server render; both listeners are pinned by the characterization suite, and the Razor browser gate resizes the viewport and asserts the re-measurement.",
+    "scrollingStateMidFlight": "The 140 ms scrolling state itself - the indicator's no-transition class and the viewport's scrollbar-width variable while a scroll is in flight - is measured by the characterization suite with fake timers. The parity snapshot waits, bounded, for it to end and records `settled`, so a scenario measures the converged state and fails loudly if it never arrives rather than measuring a frame that depends on when the capture ran."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a missing tab, a tab that is not a button, an extra tab, a second panel, an inactive panel left in the product DOM, a fade rendered before the animated frame, a scroll button that is a div. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root's scroll-controls-ready and -animated modifiers, the scroller's controls-ready, controls-animated and can-scroll modifiers (with the tabs' own aliases), each scroll button's hidden modifier, the indicator's ready and no-transition modifiers, the panel class. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type on every button, disabled on a disabled tab and on a hidden scroll button, tabindex on every tab (the roving projection: 0 on every selected tab, -1 elsewhere), on both scroll buttons and on the panel, the indicator's inline style (opacity, translateX and width, declarations compared through the browser's parser, unrounded), the viewport's scrollbar-width variable, and every native attribute a consumer forwards onto the root. tabindex joined the compared attribute set in M24 - the attribute-coverage gate's eleventh finding, and the first reproduced as a false PASS on a real capture."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element: each tab's label or slot content, the panel's slot content."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "role=tablist with aria-orientation on the list, role=tab and aria-selected on every tab (true on every selected tab, false elsewhere - never absent), role=tabpanel on the panel, aria-label and aria-hidden on both scroll buttons, aria-hidden on the fades, the baseline and the indicator, and every consumer ARIA attribute on the root. aria-selected joined the compared attribute set in M24 beside tabindex."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that carry product semantics: a consumer data-testid on the root. The tabs write none of their own."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "The id graph, compared through document-position tokens: every tab's id, aria-controls on every tab when a panel slot exists (N-1 of them dangling by design) and on a panelId item without one, the panel's id and its aria-labelledby resolving to the selected tab. A consumer tabId / panelId is a literal. Duplicate values produce duplicate ids and the same token twice, on every target."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether each button is operable: a disabled tab and a hidden scroll button are inoperable on every target."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. A tabs has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. A tabs renders no inert action: the hidden scroll buttons exist on every target alike."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height of the root, the list, the viewport, the tablist, each tab, the scroll buttons, the baseline, the indicator and the panel."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where the selected tab's colour, the disabled tab's colour and the indicator's colour show."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the tablist, of each tab, of the panel and of a shown scroll button; the absence of a hidden scroll button from the tree."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of each tab (its text), of the panel (through aria-labelledby, the selected tab's text) and of a shown scroll button (its aria-label)."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "disabled, focusable and selected as exposed to assistive tech, before and after an interaction. Chrome 153 exposes `selected` for role=tab, so a stale aria-selected fails here independently of dom.aria; `selected` joined the read states in M24. Tabindex is invisible to the tree and is compared only as dom.nativeAttributes and through where native Tab lands."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned controls measured in the case - every tab with its tag, type, explicit role, value, place and state, both scroll buttons, the panel - beside the consumer-owned count and the totals they must add up to. Never approvable: this is the M24 evidence that every tab is a historical native button carrying exactly the declared `tab` role, that both scroll buttons and the panel are the component's, and that a consumer control before the tabs or inside the panel is not."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario, each half separately: the selected value(s), aria-selected and tabindex per tab, the disabled tabs, the panel's presence and text, the indicator's three inline declarations and classes, the scroll position, the scroll state and both buttons' hidden, aria-hidden, tabindex and disabled state, the fades, the scrolling state and the settled flag, the activation count, whether each keydown was prevented. Never approvable."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "The neutral log of change notifications the fixture recorded during the scenario, with their values. Correct state with a missing, duplicated or reordered notification fails here; so does a current re-click that stopped notifying. Never approvable."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether the post-interaction DOM equals the target's own render of the initial case the catalog names. A selection change that landed on a hybrid - a stale aria-selected, a stale tabindex, a stale indicator, a second panel - fails here. Post-only scroll scenarios name no target and claim their state absolutely instead. Never approvable."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which tab owns focus after the scenario, by value and instance, and where focus is when it is not on a tab: the panel, a scroll button, the body, a consumer control. A handled navigation key must move focus to the target tab on every target; native Tab must land where the roving tabindex sends it."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Whether the panel's aria-labelledby resolves to the selected tab after the gesture, measured on the live DOM rather than read as text. A panel patched with a stale id fails here."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. The tabs' value is compared as interaction.state (selectedValue), not as a control value."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A tabs carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A tabs renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "current-reactivation-emits-again",
+      "description": "Activating the already-selected tab emits update:modelValue and change again; there is no 'already current' guard.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as tabs/interaction-click-current: one notification in the log on every target.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/interaction-click-current"
+    },
+    {
+      "id": "roving-tabindex-is-a-projection",
+      "description": "tabindex is 0 on every tab whose value equals the active value and -1 elsewhere, so an unknown or empty controlled value leaves zero tabs tabbable and a duplicated value leaves two.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as tabs/model-value-unknown, tabs/model-value-empty and tabs/duplicate-values. The comparator carries no 'exactly one tabindex=0' invariant on purpose.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/model-value-unknown"
+    },
+    {
+      "id": "disabled-seed-stays-selected",
+      "description": "A defaultValue naming a disabled item is kept: the disabled tab is selected, tabindex=0, and its panel is rendered. The items watch that would reseed it is not immediate.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as tabs/disabled-selected.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/disabled-selected"
+    },
+    {
+      "id": "duplicate-values-duplicate-ids",
+      "description": "Two items sharing a value share their generated tab id and aria-controls, are both selected and both tabbable; one panel is rendered for the first occurrence; keyboard navigation from another tab lands on the first occurrence.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as tabs/duplicate-values. A within-case duplicate id is compared through the same document-position token on every target; the capture's cross-case duplicate-id refusal is kept.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/duplicate-values"
+    },
+    {
+      "id": "raw-value-in-ids",
+      "description": "Generated ids embed the item value unchanged, a space included.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as tabs/value-with-space.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/value-with-space"
+    },
+    {
+      "id": "vertical-arrows-navigate-a-horizontal-tablist",
+      "description": "ArrowDown moves forward and ArrowUp backward although aria-orientation is horizontal, exactly as ArrowRight and ArrowLeft do.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as tabs/interaction-arrow-down and tabs/interaction-arrow-up.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/interaction-arrow-down"
+    },
+    {
+      "id": "enter-and-space-are-native-activation",
+      "description": "There is no keydown handler for Enter or Space: the browser synthesises the click, one activation is counted, and the keydown is not prevented.",
+      "classification": "exact",
+      "reason": "The Razor controller binds click only, exactly as the reference does, so all three targets record one activation and an unprevented keydown for both keys.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/interaction-enter"
+    },
+    {
+      "id": "keyboard-direction-ignores-computed-style",
+      "description": "The keyboard reads dir from closest('[dir]') and, across a shadow boundary, from the document element; it never reads the computed direction. The scroller reads the same attribute and falls back to the computed direction.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters; the attribute path is compared as the RTL cases, the asymmetry is pinned by the characterization suite.",
+      "razorDiffers": false,
+      "coveredBy": "packages/core/src/components/tabs/VfTabs.characterization.spec.ts"
+    },
+    {
+      "id": "indicator-computed-in-the-ltr-frame",
+      "description": "Under dir=rtl the indicator's translateX is the active tab's offset from the list's left edge, as under LTR, although the indicator is positioned from the inline start.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as tabs/overflow-rtl and the three RTL cases: the inline style and the screenshot agree on every target.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/overflow-rtl"
+    },
+    {
+      "id": "clipped-indicator-keeps-its-offset",
+      "description": "An active tab scrolled out of view leaves the indicator at opacity 0 and width 0 with translateX at the covering button's inset; before any measurement, and with no active tab, the seed is the literal translateX(0).",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as tabs/overflow-end-hidden, tabs/interaction-scroll-right-many and the unknown-value cases.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/tabs/cases.json#tabs/overflow-end-hidden"
+    },
+    {
+      "id": "razor-has-no-controlled-mode",
+      "description": "The Razor adapter reads modelValue as the initial value and its controller selects on its own; there is no parent to emit a request to.",
+      "classification": "framework-specific",
+      "reason": "A server-rendered tabs has no consumer protocol. The catalog compares the controlled prop through a consumer that accepts, which is the state all three targets share; the Vue-only refusal is pinned by the characterization suite.",
+      "razorDiffers": true,
+      "coveredBy": "packages/razor/tests/Components/TabsComponentTest.php"
+    },
+    {
+      "id": "razor-does-not-watch-items",
+      "description": "The reference reseeds the state when the items prop changes after mount; the Razor adapter renders items once.",
+      "classification": "framework-specific",
+      "reason": "A live prop update has no server analogue and the adapter has no reactive prop surface. Pinned by the characterization suite; the initial-render half is compared.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/tabs/VfTabs.characterization.spec.ts"
+    },
+    {
+      "id": "razor-panel-slots-are-per-item",
+      "description": "The Vue panel slot is one function of activeValue; the Razor adapter takes a `panel` slot for every item and `panel{index}` slots per item, serialised once, and its controller renders the active item's content into the one product panel.",
+      "classification": "framework-specific",
+      "reason": "A named Razor slot takes no argument, so value-dependent content is spelled per item. The product DOM - one panel, the active item's content - is compared on every target; the inert per-item templates are adapter metadata the extractor drops.",
+      "razorDiffers": true,
+      "coveredBy": "packages/razor/tests/Components/TabsComponentTest.php"
+    }
+  ],
+  "approvedDivergences": []
+}

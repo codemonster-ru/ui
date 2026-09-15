@@ -1,0 +1,3294 @@
+{
+  "$comment": "Shared VfTabs cases. Plain data only: no Vue, no PHP, no renderer objects. Each adapter maps these neutral fields onto its own API. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. The third catalog for a component that owns controls, and the first whose controls carry an explicit interactive role (tab), a roving tabindex, aria-selected and a relationship graph with a 0-or-1 panel: every case declares `componentInteractive` - one tab per item plus the two scroll buttons of every instance, plus the active panel when a panel slot exists and an item is active - and `consumerInteractive` for a consumer control before the tabs or inside the panel slot. An interaction case names the gesture, the semantic effect it must produce on every target - selection, aria-selected, tabindex, panel, focus, indicator, scroll state, prevented keys and the event log as separate claims - and the initial case whose DOM the result must converge on, or `postOnly` with the reason a scrolled viewport has no fresh render. scripts/ci/tabs-coverage.mjs is what stops the list eroding.",
+  "component": "tabs",
+  "propVocabulary": {
+    "items": "VfTabItem[], required. Each item is { value, label, disabled?, tabId?, panelId? }. Rendered in order as button.vf-tabs__tab[role=tab][type=button] inside div[role=tablist]; disabled writes the native attribute; tabId and panelId override the generated ids.",
+    "modelValue": "string | null | undefined, default undefined. The controlled value; wins whenever defined, an empty string included, and null falls through to the seed. A Vue consumer pairs it with update:modelValue (v-model). The Razor adapter reads it as the initial value and selects on its own.",
+    "defaultValue": "string | undefined. Seeds the uncontrolled state once; an unknown or disabled value is kept as-is."
+  },
+  "contentVocabulary": {
+    "panel": "The panel slot, rendered for the active tab only: `text` followed by the active value in a paragraph, so the slot's activeValue is visible; `control` is a real consumer button inside the panel. Its presence is what makes every tab write aria-controls.",
+    "tab": "The tab slot: `numbered` renders \"N. Label\" for each item, so the slot's item and index are visible. Static per item on every target; the isActive slot prop is Vue-only and pinned by the characterization suite.",
+    "before": "A consumer control rendered as a sibling *before* the tabs root, inside the case: `control` is a real consumer button, the origin of the native Tab scenario."
+  },
+  "groupVocabulary": "A list of sibling tabs rendered side by side in one case, each with its own props; the case-level props are ignored, the content applies to each. Values may be shared: the reference focuses through the instance's own refs, so nothing depends on document order.",
+  "ownershipVocabulary": {
+    "componentInteractive": "The exact number of controls the component itself renders in this case: one button.vf-tabs__tab per item and the two scroll buttons of every instance (hidden or shown), plus one div.vf-tabs__panel[tabindex=0] per instance that has a panel slot and an active item. Asserted on every target against the measured component-owned controls, their tag identity and the explicit `tab` role against the profile.",
+    "consumerInteractive": "The exact number of consumer controls in the case: one for a `before` control, one for a `panel.control` when the panel is rendered."
+  },
+  "interactionVocabulary": {
+    "$comment": "A case with an `interaction` is driven in the browser with real pointer and key events, then re-measured: the snapshot, the DOM and the accessibility tree are all taken again. The snapshot waits, bounded, for the scroller's 140 ms scrolling state to end.",
+    "steps": "clickButton (a real pointer click at the element's centre; `selector` is .vf-tabs__tab, a scroll button, or a consumer control class; `index` picks a match in document order across every instance), focusButton (`selector` and `index` likewise), pressKey with Enter, Space, Tab, ArrowRight, ArrowLeft, ArrowUp, ArrowDown, Home, End or PageDown.",
+    "expect": "Claims checked against the snapshot on every target. `activates` is whether a native click reached a tab - true for a pointer click on a tab and for Enter/Space, false for every handled navigation key and for a scroll-button click. `selectedValue` is the value of the first selected tab of the first instance (null when none), `selectedValues` the same per instance, `ariaSelected` and `tabindexes` the per-tab attributes of the first instance, `disabledValues` the tabs with the native attribute. `panelPresent` and `panelLabelledByActive` describe the panel of the first instance. `focusRole` is tab, panel, scroll-left, scroll-right, body, other-inside-case or outside-case; `focusValue` the focused tab's value; `focusInstance` which instance holds it. `indicatorOpacity`, `indicatorTransform` and `indicatorWidth` are the inline declarations, unrounded. `scrollLeft`, `canScrollLeft`, `canScrollRight`, `leftHidden`, `rightHidden`, `leftAriaHidden`, `rightAriaHidden`, `leftTabindex`, `rightTabindex`, `leftDisabled`, `rightDisabled`, `fades`, `scrolling`, `scrollbarWidth` and `settled` are the scroller state. `keydownPrevented` is whether each keydown was prevented, in order. `events` is the neutral change log the fixture keeps. A key of the form `a11y:<role>.<state>` is a claim about the accessibility tree read after the action; Chrome 153 exposes `selected` for role=tab, so the selection is claimed there as well as in the DOM.",
+    "matches": "The initial case whose DOM the post-interaction DOM must equal on the same target. Every tab persists across a selection change and the panel is patched, so the result of a gesture has to be exactly the DOM a fresh render of the target state produces.",
+    "postOnly": "The reason a scenario names no `matches`: only for a viewport left scrolled, which no server render can express. Such a scenario must claim scrollLeft and the scroller state absolutely."
+  },
+  "cases": [
+    {
+      "id": "tabs/default",
+      "title": "Nothing given, no panel slot: the first item is selected, no aria-controls, no panel",
+      "$why": "The fallback itself, and the no-panel half of the relationship contract: every tab has an id and no aria-controls, and nothing carries role=tabpanel.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 5,
+      "visual": true
+    },
+    {
+      "id": "tabs/panel",
+      "title": "A panel slot: every tab writes aria-controls, the active panel exists with aria-labelledby and tabindex=0",
+      "$why": "The panel half. Two of the three aria-controls references dangle by design: only the active panel is rendered.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/default-value-settings",
+      "title": "defaultValue seeds the middle tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/default-value-billing",
+      "title": "defaultValue seeds the last tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "billing"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/model-value-settings",
+      "title": "A controlled modelValue selects the middle tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "modelValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/model-value-billing",
+      "title": "A controlled modelValue selects the last tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "modelValue": "billing"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/model-value-over-default",
+      "title": "modelValue wins over a different defaultValue",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "modelValue": "billing",
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/model-value-unknown",
+      "title": "An unknown controlled value: no tab selected, every tabindex -1, no panel, hidden indicator",
+      "$why": "The roving tabindex is a projection of the value, not an invariant: zero tabs are tabbable here, on every target.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "modelValue": "nope"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 5,
+      "visual": true
+    },
+    {
+      "id": "tabs/model-value-empty",
+      "title": "An empty-string controlled value selects nothing",
+      "$why": "The ?? boundary: an empty string is a value.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "modelValue": ""
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 5,
+      "visual": true
+    },
+    {
+      "id": "tabs/model-value-null",
+      "title": "A null modelValue falls through to defaultValue",
+      "$why": "Null is an absence for rendering. The Vue side is still controlled for emitting, which the characterization suite pins.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "modelValue": null,
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/disabled-first",
+      "title": "A disabled first item: the fallback skips it",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview",
+            "disabled": true
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/disabled-middle",
+      "title": "A disabled middle item beside the selected first one",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings",
+            "disabled": true
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/disabled-middle-billing",
+      "title": "A disabled middle item with the last one selected",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings",
+            "disabled": true
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "billing"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/disabled-last",
+      "title": "A disabled last item",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing",
+            "disabled": true
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/disabled-last-settings",
+      "title": "A disabled last item with the middle one selected",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing",
+            "disabled": true
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": false
+    },
+    {
+      "id": "tabs/disabled-selected",
+      "title": "defaultValue names a disabled item: it stays selected, tabbable, with its panel",
+      "$why": "Selected is value equality alone. The disabled tab carries aria-selected=true and tabindex=0 and its panel is rendered.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings",
+            "disabled": true
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/all-disabled",
+      "title": "Every item disabled: no selection, no panel",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview",
+            "disabled": true
+          },
+          {
+            "value": "settings",
+            "label": "Settings",
+            "disabled": true
+          },
+          {
+            "value": "billing",
+            "label": "Billing",
+            "disabled": true
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 5,
+      "visual": true
+    },
+    {
+      "id": "tabs/empty-items",
+      "title": "No items: an empty tablist, no panel, hidden indicator",
+      "$why": "Zero tabs, two scroll buttons, no panel: the ownership budget is 2. Not photographed: a zero-height list has nothing to clip.",
+      "props": {
+        "items": []
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 2,
+      "visual": false
+    },
+    {
+      "id": "tabs/single-item",
+      "title": "One item, selected",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 4,
+      "visual": true
+    },
+    {
+      "id": "tabs/duplicate-values",
+      "title": "Two items share a value: duplicate ids, two selected tabs, two tabindex=0, one panel",
+      "$why": "The pathology the reference produces and a port would be tempted to normalise: the first two tabs carry the same id, the same aria-controls, aria-selected=true and tabindex=0; the panel is the first occurrence's.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "overview",
+            "label": "Again"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/tab-id-override",
+      "title": "An item with its own tabId: the tab id and the panel aria-labelledby use it",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview",
+            "tabId": "consumer-overview-tab"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/panel-id-override",
+      "title": "An item with its own panelId: the tab aria-controls and the panel id use it",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview",
+            "panelId": "consumer-overview-panel"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/panel-id-without-slot",
+      "title": "A panelId item without a panel slot: aria-controls on that tab only, no panel",
+      "$why": "An external panel the consumer renders elsewhere. The reference writes the reference without the panel; the other tabs write nothing.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview",
+            "panelId": "external-overview-panel"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 5,
+      "visual": true
+    },
+    {
+      "id": "tabs/value-with-space",
+      "title": "A value with a space is embedded into the ids unchanged",
+      "props": {
+        "items": [
+          {
+            "value": "a b",
+            "label": "A and B"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 5,
+      "visual": false
+    },
+    {
+      "id": "tabs/tab-slot",
+      "title": "A tab slot replaces the label: numbered content receives item and index",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "tab": {
+          "numbered": true
+        },
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/consumer-class-style",
+      "title": "A consumer class after the canonical class and a consumer style on the root",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {
+        "class": "consumer-tabs",
+        "style": "margin-top: 4px"
+      },
+      "componentInteractive": 5,
+      "visual": true
+    },
+    {
+      "id": "tabs/consumer-attrs",
+      "title": "Consumer id, data-testid and aria-label forwarded onto the root",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {
+        "id": "consumer-tabs-root",
+        "data-testid": "tabs",
+        "aria-label": "Sections"
+      },
+      "componentInteractive": 5,
+      "visual": false
+    },
+    {
+      "id": "tabs/rtl",
+      "title": "dir=rtl on the root: the tabs lay out right to left",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {
+        "dir": "rtl"
+      },
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/rtl-settings",
+      "title": "dir=rtl with the middle tab selected",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {
+        "dir": "rtl"
+      },
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/rtl-billing",
+      "title": "dir=rtl with the last tab selected",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "billing"
+      },
+      "attrs": {
+        "dir": "rtl"
+      },
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true
+    },
+    {
+      "id": "tabs/overflow",
+      "title": "Four items overflow the 360px case: right button shown, right fade, indicator on the first tab",
+      "$why": "The overflow state at scrollLeft 0: can-scroll-right on the list, the right button visible and tabbable, the left one hidden, aria-hidden, tabindex -1 and disabled, one fade, and the indicator unclipped.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 7,
+      "visual": true
+    },
+    {
+      "id": "tabs/overflow-active-clipped",
+      "title": "The selected last tab is partly under the right scroll button: the indicator is clipped to the visible span",
+      "$why": "A fractional, clipped indicator: the tab starts inside the viewport and ends beyond the button, so the width is the visible span and the offset is the tab's own.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          }
+        ],
+        "defaultValue": "docs"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 7,
+      "visual": true
+    },
+    {
+      "id": "tabs/overflow-many",
+      "title": "Seven items: a long overflow at scrollLeft 0",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          },
+          {
+            "value": "release",
+            "label": "Release notes"
+          },
+          {
+            "value": "security",
+            "label": "Security"
+          },
+          {
+            "value": "team",
+            "label": "Team members"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 9,
+      "visual": true
+    },
+    {
+      "id": "tabs/overflow-end-hidden",
+      "title": "The selected last of seven items is entirely out of view: opacity 0, width 0, offset kept",
+      "$why": "The clipped-to-nothing case: the indicator keeps the tab's offset and hides. A port that kept it visible, or reset the offset, differs in the inline style.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          },
+          {
+            "value": "release",
+            "label": "Release notes"
+          },
+          {
+            "value": "security",
+            "label": "Security"
+          },
+          {
+            "value": "team",
+            "label": "Team members"
+          }
+        ],
+        "defaultValue": "team"
+      },
+      "attrs": {},
+      "componentInteractive": 9,
+      "visual": true
+    },
+    {
+      "id": "tabs/overflow-rtl",
+      "title": "Seven items under dir=rtl: the left button is the one shown, the left fade, and the LTR-frame indicator",
+      "$why": "The scroller reads the direction and mirrors its state; the indicator does not, and computes its offset from the list's left edge in the LTR frame - the historical quirk, reproduced on every target.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          },
+          {
+            "value": "release",
+            "label": "Release notes"
+          },
+          {
+            "value": "security",
+            "label": "Security"
+          },
+          {
+            "value": "team",
+            "label": "Team members"
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {
+        "dir": "rtl"
+      },
+      "componentInteractive": 9,
+      "visual": true
+    },
+    {
+      "id": "tabs/siblings",
+      "title": "Two instances sharing values, the second seeded to the middle tab: separate ids, separate selection",
+      "$why": "Shared values between siblings are honest here: the reference focuses through its own refs, so nothing depends on document order. Ten component-owned controls: six tabs, four scroll buttons - plus two panels.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "group": [
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ]
+        },
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ],
+          "defaultValue": "settings"
+        }
+      ],
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 12,
+      "visual": true
+    },
+    {
+      "id": "tabs/siblings-both-settings",
+      "title": "Two instances both on the middle tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "group": [
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ],
+          "defaultValue": "settings"
+        },
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ],
+          "defaultValue": "settings"
+        }
+      ],
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 12,
+      "visual": false
+    },
+    {
+      "id": "tabs/siblings-first-settings",
+      "title": "Two instances, the first on the middle tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "group": [
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ],
+          "defaultValue": "settings"
+        },
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ]
+        }
+      ],
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 12,
+      "visual": false
+    },
+    {
+      "id": "tabs/before-consumer-button",
+      "title": "A consumer button before the tabs, with the middle tab selected",
+      "$why": "The consumer control that Tab starts from in tabs/interaction-tab-into-list: the roving tabindex is proved by where native focus lands.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "before": {
+          "control": {
+            "text": "Before"
+          }
+        },
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "tabs/panel-consumer-control",
+      "title": "A consumer button inside the panel slot",
+      "$why": "A consumer control inside component-owned markup: counted as the consumer's, never as the component's, and never as a tab.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for",
+          "control": {
+            "text": "Save"
+          }
+        }
+      },
+      "componentInteractive": 6,
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "tabs/interaction-click-settings",
+      "title": "A real pointer click on the middle tab selects it: aria-selected, tabindex, panel, indicator move; one change",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__tab",
+            "index": 1
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "events": [
+            {
+              "value": "settings"
+            }
+          ],
+          "a11y:secondTab.selected": "true",
+          "a11y:firstTab.selected": "false",
+          "indicatorOpacity": "1"
+        },
+        "matches": "tabs/default-value-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-click-current",
+      "title": "A click on the current tab changes nothing and still emits the pair",
+      "$why": "No \"already current\" guard: the reference emits update:modelValue and change again. A port that suppressed the re-activation fails on the event log.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "overview",
+          "events": [
+            {
+              "value": "overview"
+            }
+          ]
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-click-billing-then-overview",
+      "title": "Two clicks: the panel is patched twice, the log has both values in order",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__tab",
+            "index": 2
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "overview",
+          "events": [
+            {
+              "value": "billing"
+            },
+            {
+              "value": "overview"
+            }
+          ]
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-enter",
+      "title": "Enter on a focused, unselected tab activates it natively: one click, keydown not prevented",
+      "$why": "No Enter handler: the browser synthesises the click. A port that handled Enter itself would prevent the keydown or count two activations.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [false],
+          "events": [
+            {
+              "value": "settings"
+            }
+          ]
+        },
+        "matches": "tabs/default-value-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-space",
+      "title": "Space on a focused, unselected tab activates it natively",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "selectedValue": "billing",
+          "ariaSelected": ["false", "false", "true"],
+          "tabindexes": ["-1", "-1", "0"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "billing",
+          "keydownPrevented": [false],
+          "events": [
+            {
+              "value": "billing"
+            }
+          ]
+        },
+        "matches": "tabs/default-value-billing"
+      }
+    },
+    {
+      "id": "tabs/interaction-arrow-right",
+      "title": "ArrowRight from the first tab: prevented, the next tab selected and focused",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "settings"
+            }
+          ]
+        },
+        "matches": "tabs/default-value-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-arrow-left",
+      "title": "ArrowLeft from the middle tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowLeft"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "overview",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "overview"
+            }
+          ]
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-arrow-down",
+      "title": "ArrowDown moves forward on the horizontal tablist",
+      "$why": "The vertical pair is handled although the tablist is horizontal. A port that followed the ARIA pattern instead of the source would leave this key to the page.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "settings"
+            }
+          ]
+        },
+        "matches": "tabs/default-value-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-arrow-up",
+      "title": "ArrowUp moves backward on the horizontal tablist",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "overview",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "overview"
+            }
+          ]
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-home",
+      "title": "Home from the last tab selects and focuses the first",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "billing"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "overview",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "overview"
+            }
+          ]
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-end",
+      "title": "End from the first tab selects and focuses the last",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "billing",
+          "ariaSelected": ["false", "false", "true"],
+          "tabindexes": ["-1", "-1", "0"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "billing",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "billing"
+            }
+          ]
+        },
+        "matches": "tabs/default-value-billing"
+      }
+    },
+    {
+      "id": "tabs/interaction-wrap-forward",
+      "title": "ArrowRight from the last tab wraps to the first",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "billing"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "overview",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "overview"
+            }
+          ]
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-wrap-backward",
+      "title": "ArrowLeft from the first tab wraps to the last",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowLeft"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "billing",
+          "ariaSelected": ["false", "false", "true"],
+          "tabindexes": ["-1", "-1", "0"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "billing",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "billing"
+            }
+          ]
+        },
+        "matches": "tabs/default-value-billing"
+      }
+    },
+    {
+      "id": "tabs/interaction-skip-disabled-forward",
+      "title": "ArrowRight skips the disabled middle tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings",
+            "disabled": true
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "billing",
+          "ariaSelected": ["false", "false", "true"],
+          "tabindexes": ["-1", "-1", "0"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "billing",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "billing"
+            }
+          ]
+        },
+        "matches": "tabs/disabled-middle-billing"
+      }
+    },
+    {
+      "id": "tabs/interaction-skip-disabled-backward",
+      "title": "ArrowLeft skips the disabled middle tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings",
+            "disabled": true
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "billing"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowLeft"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "overview",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "overview"
+            }
+          ]
+        },
+        "matches": "tabs/disabled-middle"
+      }
+    },
+    {
+      "id": "tabs/interaction-end-skips-disabled",
+      "title": "End lands on the last enabled tab",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing",
+            "disabled": true
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "settings"
+            }
+          ]
+        },
+        "matches": "tabs/disabled-last-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-unhandled-key",
+      "title": "PageDown is left to the page: not prevented, nothing changes",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "PageDown"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [false],
+          "events": []
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-disabled-keyboard",
+      "title": "A disabled tab refuses focus, so a key pressed after it reaches nothing",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings",
+            "disabled": true
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "$why": "button.focus() on a disabled button is a no-op, so focus stays on the body and the keydown never reaches a tab.",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "body",
+          "focusValue": null,
+          "keydownPrevented": [false],
+          "events": [],
+          "disabledValues": ["settings"],
+          "a11y:secondTab.disabled": "true"
+        },
+        "matches": "tabs/disabled-middle"
+      }
+    },
+    {
+      "id": "tabs/interaction-focus-only",
+      "title": "Focusing an unselected tab changes no state: focus and selection are two halves",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 2
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "billing",
+          "events": []
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-focused-not-selected-navigates",
+      "title": "Navigation starts from the focused tab, not the selected one: ArrowLeft from a focused last tab lands on the middle",
+      "$why": "From the selected first tab ArrowLeft would wrap to the last; from the focused last tab it goes to the middle. Only the second is the reference.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowLeft"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "settings"
+            }
+          ]
+        },
+        "matches": "tabs/default-value-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-tab-to-panel",
+      "title": "Tab from the selected tab moves native focus to the panel: not prevented, nothing selected",
+      "$why": "Tab is unhandled. The panel carries tabindex=0, so it is the next tabbable element after the tablist.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Tab"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "panel",
+          "focusValue": null,
+          "keydownPrevented": [false],
+          "events": []
+        },
+        "matches": "tabs/panel"
+      }
+    },
+    {
+      "id": "tabs/interaction-tab-into-list",
+      "title": "Tab from a consumer button before the tabs lands on the selected (tabindex 0) tab, skipping the first",
+      "$why": "The roving tabindex proved by native focus movement: the first tab has tabindex -1 and is skipped, the selected middle tab has 0 and receives focus. A target whose tabindex was inverted or all-zero fails on where focus lands.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "defaultValue": "settings"
+      },
+      "attrs": {},
+      "content": {
+        "before": {
+          "control": {
+            "text": "Before"
+          }
+        },
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "consumerInteractive": 1,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".parity-before",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Tab"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [false],
+          "events": []
+        },
+        "matches": "tabs/before-consumer-button"
+      }
+    },
+    {
+      "id": "tabs/interaction-rtl-arrow-left",
+      "title": "ArrowLeft under dir=rtl moves forward",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {
+        "dir": "rtl"
+      },
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowLeft"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "settings"
+            }
+          ]
+        },
+        "matches": "tabs/rtl-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-rtl-arrow-right",
+      "title": "ArrowRight under dir=rtl moves backward and wraps",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {
+        "dir": "rtl"
+      },
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "billing",
+          "ariaSelected": ["false", "false", "true"],
+          "tabindexes": ["-1", "-1", "0"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "billing",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "billing"
+            }
+          ]
+        },
+        "matches": "tabs/rtl-billing"
+      }
+    },
+    {
+      "id": "tabs/interaction-controlled-model",
+      "title": "A v-model consumer: the click emits, the consumer writes the value back, the selection moves",
+      "$why": "The controlled protocol round-tripped through a consumer that accepts. The Razor adapter has no parent to ask and selects directly; all three land on the same state.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ],
+        "modelValue": "overview"
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 6,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__tab",
+            "index": 2
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "selectedValue": "billing",
+          "ariaSelected": ["false", "false", "true"],
+          "tabindexes": ["-1", "-1", "0"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "billing",
+          "events": [
+            {
+              "value": "billing"
+            }
+          ]
+        },
+        "matches": "tabs/model-value-billing"
+      }
+    },
+    {
+      "id": "tabs/interaction-sibling-click",
+      "title": "A click in the second instance moves only its selection and its panel",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "group": [
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ],
+          "defaultValue": "settings"
+        },
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ]
+        }
+      ],
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 12,
+      "visual": true,
+      "$why": "Two instances sharing values: the state, the events and the focus stay in the instance that was clicked. selectedValue and the per-tab arrays describe the first instance; selectedValues describes both.",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__tab",
+            "index": 4
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "events": [
+            {
+              "value": "settings"
+            }
+          ],
+          "selectedValues": ["settings", "settings"],
+          "focusInstance": 1
+        },
+        "matches": "tabs/siblings-both-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-sibling-keyboard",
+      "title": "ArrowRight in the second instance: its selection and its focus move, the first is untouched",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "group": [
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ],
+          "defaultValue": "settings"
+        },
+        {
+          "items": [
+            {
+              "value": "overview",
+              "label": "Overview"
+            },
+            {
+              "value": "settings",
+              "label": "Settings"
+            },
+            {
+              "value": "billing",
+              "label": "Billing"
+            }
+          ]
+        }
+      ],
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 12,
+      "visual": true,
+      "$why": "Focus isolation with shared values, honest in the catalog: the reference focuses through the instance's own refs.",
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-tabs__tab",
+            "index": 3
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "settings",
+          "ariaSelected": ["false", "true", "false"],
+          "tabindexes": ["-1", "0", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "settings",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "settings"
+            }
+          ],
+          "selectedValues": ["settings", "settings"],
+          "focusInstance": 1
+        },
+        "matches": "tabs/siblings-both-settings"
+      }
+    },
+    {
+      "id": "tabs/interaction-click-clipped",
+      "title": "A click on the partly visible last tab selects it: the indicator is clipped to the visible span after the move",
+      "$why": "Post-selection indicator geometry under clipping, converging on the same state rendered fresh.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 7,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__tab",
+            "index": 3
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "selectedValue": "docs",
+          "ariaSelected": ["false", "false", "false", "true"],
+          "tabindexes": ["-1", "-1", "-1", "0"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "tab",
+          "focusValue": "docs",
+          "events": [
+            {
+              "value": "docs"
+            }
+          ],
+          "indicatorOpacity": "1",
+          "canScrollLeft": false,
+          "canScrollRight": true
+        },
+        "matches": "tabs/overflow-active-clipped"
+      }
+    },
+    {
+      "id": "tabs/interaction-scroll-right",
+      "title": "The right scroll button scrolls the four-item list to its end: the left button shows, the right hides, the selected first tab is clipped by the left button",
+      "$why": "The scroll step is max(120, round(360 * 0.6)) = 216, clamped by the 38px of overflow. The snapshot waits for the 140 ms scrolling state to end before measuring; scrolling and scrollbarWidth are claimed settled.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for"
+        }
+      },
+      "componentInteractive": 7,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__scroll-button--right",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false", "false"],
+          "tabindexes": ["0", "-1", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "scroll-right",
+          "focusValue": null,
+          "events": [],
+          "canScrollLeft": true,
+          "canScrollRight": false,
+          "scrollLeft": 38,
+          "leftHidden": false,
+          "rightHidden": true,
+          "leftTabindex": "0",
+          "rightTabindex": "-1",
+          "leftAriaHidden": "false",
+          "rightAriaHidden": "true",
+          "rightDisabled": true,
+          "fades": ["left"],
+          "indicatorOpacity": "1",
+          "indicatorTransform": "translateX(28px)",
+          "scrolling": false,
+          "scrollbarWidth": "none",
+          "settled": true
+        },
+        "postOnly": "A scrolled viewport cannot be rendered fresh by the server: scrollLeft is browser state. The absolute claims here stand in for convergence."
+      }
+    },
+    {
+      "id": "tabs/interaction-scroll-right-many",
+      "title": "The right scroll button scrolls the seven-item list by 216px: both buttons, both fades, the selected first tab hidden under the left button",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          },
+          {
+            "value": "release",
+            "label": "Release notes"
+          },
+          {
+            "value": "security",
+            "label": "Security"
+          },
+          {
+            "value": "team",
+            "label": "Team members"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 9,
+      "visual": true,
+      "$why": "The selected tab is entirely to the left of the shown left button: opacity 0 at the button's inset, width 0.",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__scroll-button--right",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false", "false", "false", "false", "false"],
+          "tabindexes": ["0", "-1", "-1", "-1", "-1", "-1", "-1"],
+          "panelPresent": false,
+          "panelLabelledByActive": null,
+          "focusRole": "scroll-right",
+          "focusValue": null,
+          "events": [],
+          "canScrollLeft": true,
+          "canScrollRight": true,
+          "scrollLeft": 216,
+          "leftHidden": false,
+          "rightHidden": false,
+          "fades": ["left", "right"],
+          "indicatorOpacity": "0",
+          "indicatorTransform": "translateX(28px)",
+          "indicatorWidth": "0px",
+          "scrolling": false,
+          "scrollbarWidth": "none",
+          "settled": true
+        },
+        "postOnly": "A scrolled viewport cannot be rendered fresh by the server."
+      }
+    },
+    {
+      "id": "tabs/interaction-scroll-right-then-left",
+      "title": "Right then left returns the seven-item list to its start and converges on the initial render",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          },
+          {
+            "value": "docs",
+            "label": "Documentation"
+          },
+          {
+            "value": "release",
+            "label": "Release notes"
+          },
+          {
+            "value": "security",
+            "label": "Security"
+          },
+          {
+            "value": "team",
+            "label": "Team members"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 9,
+      "visual": true,
+      "$why": "The one scroll scenario with an honest convergence target: two opposite steps land on scrollLeft 0, which is the fresh render. Focus stays on the left button the pointer pressed, which is hidden again - a hidden control keeps focus until it moves.",
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__scroll-button--right",
+            "index": 0
+          },
+          {
+            "action": "clickButton",
+            "selector": ".vf-tabs__scroll-button--left",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false", "false", "false", "false", "false"],
+          "tabindexes": ["0", "-1", "-1", "-1", "-1", "-1", "-1"],
+          "panelPresent": false,
+          "panelLabelledByActive": null,
+          "focusRole": "scroll-left",
+          "focusValue": null,
+          "events": [],
+          "canScrollLeft": false,
+          "canScrollRight": true,
+          "scrollLeft": 0,
+          "leftHidden": true,
+          "rightHidden": false,
+          "fades": ["right"],
+          "indicatorOpacity": "1",
+          "indicatorTransform": "translateX(0px)",
+          "scrolling": false,
+          "scrollbarWidth": "none",
+          "settled": true
+        },
+        "matches": "tabs/overflow-many"
+      }
+    },
+    {
+      "id": "tabs/interaction-panel-consumer-click",
+      "title": "A click on the consumer button inside the panel changes nothing of the tabs",
+      "$why": "The consumer control stays the consumer's: no tab event, no selection change, focus reported as inside the case but on no tab.",
+      "props": {
+        "items": [
+          {
+            "value": "overview",
+            "label": "Overview"
+          },
+          {
+            "value": "settings",
+            "label": "Settings"
+          },
+          {
+            "value": "billing",
+            "label": "Billing"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "panel": {
+          "text": "Panel for",
+          "control": {
+            "text": "Save"
+          }
+        }
+      },
+      "componentInteractive": 6,
+      "consumerInteractive": 1,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".parity-panel-control",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "selectedValue": "overview",
+          "ariaSelected": ["true", "false", "false"],
+          "tabindexes": ["0", "-1", "-1"],
+          "panelPresent": true,
+          "panelLabelledByActive": true,
+          "focusRole": "other-inside-case",
+          "focusValue": null,
+          "events": []
+        },
+        "matches": "tabs/panel-consumer-control"
+      }
+    }
+  ]
+}
