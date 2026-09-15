@@ -93,6 +93,15 @@ export const requiredEntries = [
   // dist/vueforge-razor.js; the packaged-consumer proof asserts it is there.
   'src/Components/StepperComponent.php',
   'src/Support/StepperState.php',
+  // The M24 component: the third with controls of its own and the first
+  // whose controls carry an explicit interactive role - N tabs, two scroll
+  // buttons and at most one panel per instance - and a browser controller
+  // that moves the selection, the focus and the panel, measures the
+  // indicator and drives the internal scroller. The controller travels
+  // inside dist/vueforge-razor.js; the packaged-consumer proof asserts it
+  // is there, and that the stylesheet carries the scroller and the tabs.
+  'src/Components/TabsComponent.php',
+  'src/Support/TabsState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

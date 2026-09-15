@@ -23,6 +23,7 @@ use Codemonster\VueForge\Razor\Components\RadioComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonComponent;
 use Codemonster\VueForge\Razor\Components\SkeletonGateComponent;
 use Codemonster\VueForge\Razor\Components\StepperComponent;
+use Codemonster\VueForge\Razor\Components\TabsComponent;
 use Codemonster\VueForge\Razor\Components\SwitchComponent;
 use Codemonster\VueForge\Razor\Components\TagComponent;
 use Codemonster\VueForge\Razor\Components\TextareaComponent;
@@ -96,6 +97,12 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             // StepperComponent.
             'stepper' => new StepperComponent(),
             'switch' => new SwitchComponent(),
+            // The third component that owns controls, and the first whose
+            // controls carry an explicit interactive role - one native
+            // button[role=tab] per item, two scroll buttons and at most one
+            // tabpanel; its browser enhancement lives in browser/tabs.ts.
+            // See TabsComponent.
+            'tabs' => new TabsComponent(),
             'tag' => new TagComponent(),
             'textarea' => new TextareaComponent(),
         ];
