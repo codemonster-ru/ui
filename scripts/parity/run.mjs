@@ -319,6 +319,17 @@ async function captureTarget(
     // in the comparison, which is what the mutation declares it expects.
     const ownsControls = Boolean(catalog.profile.controlOwnership);
     const isStatic = catalog.profile.staticOwnership || catalog.profile.snapshot === 'static';
+    const assertOwnership = (parityCase, snapshot, when = '', options = {}) => {
+      if (mutation) return;
+      const violations = ownsControls
+        ? controlOwnershipViolations(parityCase, snapshot, catalog.profile, options)
+        : staticOwnershipViolations(parityCase, snapshot);
+      if (violations.length > 0) {
+        throw new Error(
+          `${ownsControls ? 'Control' : 'Static'} ownership failed ${when}on ${label} (${theme}): ${violations.join('; ')}.`,
+        );
+      }
+    };
     if (isStatic || ownsControls) {
       for (const parityCase of selectedCases) {
         if (isStatic && parityCase.interaction) {
@@ -329,17 +340,7 @@ async function captureTarget(
         const snapshot = await page.evaluate(
           interactionExpression(parityCase.id, catalog.profile.snapshot, catalog.profile.controlOwnership),
         );
-        const violations = mutation
-          ? []
-          : ownsControls
-            ? controlOwnershipViolations(parityCase, snapshot, catalog.profile)
-            : staticOwnershipViolations(parityCase, snapshot);
-        if (violations.length > 0) {
-          throw new Error(
-            `${ownsControls ? 'Control' : 'Static'} ownership failed on ${label} (${theme}): ${violations.join('; ')}.`,
-          );
-        }
-
+        assertOwnership(parityCase, snapshot);
         interactions[parityCase.id] = snapshot;
       }
     }
@@ -462,15 +463,10 @@ async function captureTarget(
       // their live contract inside their snapshots and their approvals are
       // counted exactly; a stage they did not opt into must not move them.
       if (catalog.profile.liveParity) {
-        if (!mutation) {
-          const violations = controlOwnershipViolations(parityCase, result, catalog.profile, {
+        if (ownsControls) {
+          assertOwnership(parityCase, result, `after ${parityCase.id} `, {
             consumerInteractive: parityCase.interaction.consumerInteractive,
           });
-          if (violations.length > 0) {
-            throw new Error(
-              `Control ownership failed after ${parityCase.id} on ${label} (${theme}): ${violations.join('; ')}.`,
-            );
-          }
         }
         const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
         interactionDom[parityCase.id] = after.cases[parityCase.id].dom;
@@ -498,46 +494,37 @@ async function captureTarget(
       // before it could report the defect it was constructed to find.
       const expected = mutation ? undefined : parityCase.interaction.expect;
       for (const [key, want] of Object.entries(expected ?? {})) {
-        // `a11y:<role>.<state>` is a claim about the accessibility tree after
-        // the gesture, read back from the tree rather than from the DOM. M22.1
-        // added it after the fail-open review: a live stage that copied the
-        // initial tree instead of re-reading it would have agreed with itself
-        // on every target, and only a per-target claim can notice.
-        if (key.startsWith('a11y:')) {
-          const [role, state] = key.slice('a11y:'.length).split('.');
-          const node = interactionAccessibility[parityCase.id]?.[role];
-          if (!node) {
-            throw new Error(
-              `${parityCase.id} on ${label} (${theme}): the catalog expects ${key}, but no live accessibility ` +
-                `record exposes [${role}]. A claim about a tree that was not read is not evidence.`,
-            );
-          }
-          if ((node.states[state] ?? null) !== want) {
-            throw new Error(
-              `${parityCase.id} on ${label} (${theme}): the catalog expects ${key}=${JSON.stringify(want)}, ` +
-                `but the tree recorded ${JSON.stringify(node.states[state] ?? null)}.`,
-            );
-          }
-          continue;
-        }
-        // `activates` is a claim about a counter; everything else is a claim
-        // about a snapshot field of the same name.
-        const got = key === 'activates' ? (result.activations ?? 0) > 0 : result[key];
-
-        if (key !== 'activates' && !(key in result)) {
+        // Three kinds of claim, one comparison. `activates` is a claim about
+        // the click counter; `a11y:<role>.<state>` (M22.1) is a claim about the
+        // accessibility tree read after the gesture - a live stage that copied
+        // the initial tree instead of re-reading it would agree with itself on
+        // every target, and only a per-target claim can notice; everything
+        // else is a claim about a snapshot field of the same name. A claim
+        // about something no record measured is an error, not a miss.
+        const a11yClaim = key.startsWith('a11y:') ? key.slice('a11y:'.length).split('.') : null;
+        const a11yNode = a11yClaim ? interactionAccessibility[parityCase.id]?.[a11yClaim[0]] : undefined;
+        const measured = a11yClaim ? a11yNode !== undefined : key === 'activates' || key in result;
+        if (!measured) {
           throw new Error(
-            `${parityCase.id} on ${label} (${theme}): the catalog expects [${key}], ` +
-              "which this component's interaction snapshot does not record.",
+            `${parityCase.id} on ${label} (${theme}): the catalog expects [${key}], which ` +
+              (a11yClaim
+                ? 'no live accessibility record exposes'
+                : "this component's interaction snapshot does not record") +
+              '. A claim about something that was not measured is not evidence.',
           );
         }
+        const got = a11yClaim
+          ? (a11yNode.states[a11yClaim[1]] ?? null)
+          : key === 'activates'
+            ? (result.activations ?? 0) > 0
+            : result[key];
 
-        // A list claim - `expandedStates` for a group - is compared by value.
         const matches =
           want !== null && typeof want === 'object' ? JSON.stringify(got) === JSON.stringify(want) : got === want;
         if (!matches) {
           throw new Error(
             `${parityCase.id} on ${label} (${theme}): the catalog expects ${key}=${JSON.stringify(want)}, ` +
-              `but the component recorded ${JSON.stringify(got)}.`,
+              `but the ${a11yClaim ? 'tree' : 'component'} recorded ${JSON.stringify(got)}.`,
           );
         }
       }
