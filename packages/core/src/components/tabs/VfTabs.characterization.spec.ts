@@ -1345,14 +1345,12 @@ describe('VfTabs characterization: horizontal scroller', () => {
 
     vi.stubGlobal(
       'matchMedia',
-      vi
-        .fn()
-        .mockReturnValue({
-          matches: true,
-          media: '(prefers-reduced-motion: reduce)',
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-        }),
+      vi.fn().mockReturnValue({
+        matches: true,
+        media: '(prefers-reduced-motion: reduce)',
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
     );
     await rightButton(wrapper).trigger('click');
     expect(scrollTo).toHaveBeenLastCalledWith({ left: 170, behavior: 'auto' });
