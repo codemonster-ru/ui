@@ -220,6 +220,10 @@ export function extractCasesExpression(measuredRoles) {
       .join(';');
   }
 
+  function isAdapterTemplate(element) {
+    return element.tagName === 'TEMPLATE' && [...element.attributes].some((attribute) => attribute.name.startsWith('data-vf-razor'));
+  }
+
   function directText(element) {
     return [...element.childNodes]
       .filter((node) => node.nodeType === Node.TEXT_NODE)
@@ -289,15 +293,7 @@ export function extractCasesExpression(measuredRoles) {
       // marker: a consumer's own <template> in a slot is compared, and any
       // other element with the marker is compared. What the template holds is
       // compared the moment it renders, by the post-interaction DOM.
-      children: [...element.children]
-        .filter(
-          (child) =>
-            !(
-              child.tagName === 'TEMPLATE' &&
-              [...child.attributes].some((attribute) => attribute.name.startsWith('data-vf-razor'))
-            ),
-        )
-        .map((child) => describe(child, idMap)),
+      children: [...element.children].filter((child) => !isAdapterTemplate(child)).map((child) => describe(child, idMap)),
     };
 
     const text = directText(element);
@@ -1141,97 +1137,108 @@ export const OWNERSHIP_SNAPSHOT_FIELDS = [
  *
  * Returns the problems as strings so a test can drive it directly.
  */
+/**
+ * The checks that accumulate once the snapshot is well formed, as a table.
+ *
+ * M22.1: eight `if (...) violations.push(...)` branches differed only by a
+ * predicate and a message, and their messages named the accordion's trigger
+ * from inside a function that must know nothing about accordions. Each row
+ * is one independent claim with its own diagnostic; a row that fires says
+ * exactly which claim failed, so a mutation is still attributed to the reason
+ * it was built to violate rather than to "ownership differed".
+ */
+const OWNERSHIP_CHECKS = [
+  {
+    problem: ({ controls, expected, id }) =>
+      !Number.isInteger(expected)
+        ? `case ${id} declares no componentInteractive budget. A profile that owns controls needs every case to say ` +
+          'how many, or the measurement has nothing to be wrong against.'
+        : controls.length !== expected
+          ? `case ${id} measured ${controls.length} component-owned control(s) but the catalog declares ${expected}. ` +
+            'Missing, duplicated and extra all fail here, on every target at once.'
+          : null,
+  },
+  {
+    problem: ({ controls, declared, id }) =>
+      controls
+        .map((control) => {
+          const rule = declared[control.role];
+          if (!rule) return `case ${id} measured a control with role [${control.role}] the profile does not declare`;
+          if (control.tag !== rule.tag) {
+            return (
+              `case ${id}: the ${control.role} is a <${control.tag}>, not the declared <${rule.tag}>. ` +
+              'Tag identity is part of the contract; an element with the right role attribute is not the control.'
+            );
+          }
+          return null;
+        })
+        .filter(Boolean)
+        .join('; ') || null,
+  },
+  {
+    problem: ({ snapshot, consumerBudget, id }) =>
+      snapshot.consumerControlCount !== consumerBudget
+        ? `case ${id} measured ${snapshot.consumerControlCount} consumer control(s) but the catalog declares ` +
+          `${consumerBudget}. A component control counted as the consumer's, or a consumer control the component ` +
+          'grew, fails here.'
+        : null,
+  },
+  {
+    problem: ({ snapshot, controls, id }) =>
+      snapshot.focusableTotal !== controls.length + snapshot.consumerControlCount
+        ? `case ${id}: ${controls.length} component + ${snapshot.consumerControlCount} consumer controls do not add ` +
+          `up to the ${snapshot.focusableTotal} focusable element(s) measured. A node was counted twice or classified as both.`
+        : null,
+  },
+  {
+    problem: ({ snapshot, id }) =>
+      snapshot.interactiveRoleTotal !== 0
+        ? `case ${id} measured ${snapshot.interactiveRoleTotal} element(s) carrying an explicit interactive role. ` +
+          'A component whose controls are native elements needs none.'
+        : null,
+  },
+];
+
 export function controlOwnershipViolations(parityCase, snapshot, profile, { consumerInteractive } = {}) {
   const declared = profile?.controlOwnership;
   const roles = declared && typeof declared === 'object' ? Object.entries(declared) : [];
+  const id = parityCase.id;
 
+  // Fail closed, in order: nothing to look for, an unusable declaration, no
+  // snapshot, a snapshot without its fields, a snapshot of the wrong shape.
   if (roles.length === 0) {
     return [
       `the ${profile?.id ?? 'unknown'} profile declares no component-owned control, so the ownership stage has ` +
         'nothing to look for. An expression that can measure nothing and pass is not evidence.',
     ];
   }
-  for (const [role, rule] of roles) {
-    if (
-      typeof rule?.selector !== 'string' ||
-      rule.selector === '' ||
-      typeof rule?.tag !== 'string' ||
-      rule.tag === ''
-    ) {
-      return [`the ${profile.id} profile declares control [${role}] without a selector and a tag; identity needs both`];
-    }
+  const unusable = roles.find(([, rule]) => !rule?.selector || !rule?.tag);
+  if (unusable) {
+    return [
+      `the ${profile.id} profile declares control [${unusable[0]}] without a selector and a tag; identity needs both`,
+    ];
   }
-
   if (!snapshot || typeof snapshot !== 'object') {
-    return [`case ${parityCase.id} produced no ownership snapshot at all`];
+    return [`case ${id} produced no ownership snapshot at all`];
   }
   const missing = OWNERSHIP_SNAPSHOT_FIELDS.filter((field) => !(field in snapshot));
   if (missing.length > 0) {
-    return [
-      `case ${parityCase.id} is missing [${missing.join(', ')}]. A stage that records nothing is a failure, not a pass.`,
-    ];
+    return [`case ${id} is missing [${missing.join(', ')}]. A stage that records nothing is a failure, not a pass.`];
+  }
+  if (snapshot.ownershipPosture !== 'component' || !Array.isArray(snapshot.componentControls)) {
+    return [`case ${id} reports posture=${JSON.stringify(snapshot.ownershipPosture)} with no control list`];
   }
 
-  const violations = [];
-  const controls = Array.isArray(snapshot.componentControls) ? snapshot.componentControls : null;
-  if (snapshot.ownershipPosture !== 'component' || controls === null) {
-    return [`case ${parityCase.id} reports posture=${JSON.stringify(snapshot.ownershipPosture)} with no control list`];
-  }
+  const context = {
+    id,
+    snapshot,
+    declared,
+    controls: snapshot.componentControls,
+    expected: parityCase.componentInteractive,
+    consumerBudget: consumerInteractive ?? parityCase.consumerInteractive ?? 0,
+  };
 
-  const expected = parityCase.componentInteractive;
-  if (!Number.isInteger(expected)) {
-    violations.push(
-      `case ${parityCase.id} declares no componentInteractive budget. A profile that owns controls needs every case ` +
-        'to say how many, or the measurement has nothing to be wrong against.',
-    );
-  } else if (controls.length !== expected) {
-    violations.push(
-      `case ${parityCase.id} measured ${controls.length} component-owned control(s) but the catalog declares ` +
-        `${expected}. Missing, duplicated and extra all fail here, on every target at once.`,
-    );
-  }
-
-  for (const control of controls) {
-    const rule = declared[control.role];
-    if (!rule) {
-      violations.push(
-        `case ${parityCase.id} measured a control with role [${control.role}] the profile does not declare`,
-      );
-      continue;
-    }
-    if (control.tag !== rule.tag) {
-      violations.push(
-        `case ${parityCase.id}: the ${control.role} is a <${control.tag}>, not the historical <${rule.tag}>. ` +
-          'Tag identity is part of the contract; a div with role=button is not the trigger.',
-      );
-    }
-  }
-
-  const consumerBudget = consumerInteractive ?? parityCase.consumerInteractive ?? 0;
-  if (snapshot.consumerControlCount !== consumerBudget) {
-    violations.push(
-      `case ${parityCase.id} measured ${snapshot.consumerControlCount} consumer control(s) but the catalog declares ` +
-        `${consumerBudget}. A component control counted as the consumer's, or a consumer control the component ` +
-        'grew, fails here.',
-    );
-  }
-
-  if (snapshot.focusableTotal !== controls.length + snapshot.consumerControlCount) {
-    violations.push(
-      `case ${parityCase.id}: ${controls.length} component + ${snapshot.consumerControlCount} consumer controls do not ` +
-        `add up to the ${snapshot.focusableTotal} focusable element(s) measured. A node was counted twice or ` +
-        'classified as both.',
-    );
-  }
-
-  if (snapshot.interactiveRoleTotal !== 0) {
-    violations.push(
-      `case ${parityCase.id} measured ${snapshot.interactiveRoleTotal} element(s) carrying an explicit interactive ` +
-        'role. The historical trigger is a native button and needs none.',
-    );
-  }
-
-  return violations;
+  return OWNERSHIP_CHECKS.map((check) => check.problem(context)).filter(Boolean);
 }
 
 /**

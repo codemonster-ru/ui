@@ -120,7 +120,7 @@ test('D. a div with role=button in place of the trigger fails on identity, not o
   const violations = controlOwnershipViolations(plain, snapshot({ componentControls: [impostor] }), profile);
 
   assert.equal(violations.length, 1);
-  assert.match(violations[0], /the trigger is a <div>, not the historical <button>/);
+  assert.match(violations[0], /the trigger is a <div>, not the declared <button>/);
   assert.doesNotMatch(violations[0], /declares 1/);
 });
 

@@ -186,7 +186,7 @@ test('a missing ownership snapshot on a case without a scenario is a failure, no
 
   assert.throws(
     () => compareCaptures(broken, catalog, policy),
-    /owns controls but case a\/closed produced no ownership snapshot on reference/,
+    /measures ownership but case a\/closed produced no ownership snapshot on reference/,
   );
 });
 

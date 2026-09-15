@@ -296,70 +296,51 @@ async function captureTarget(
     // A component with no interaction still has to produce interaction
     // evidence. Recording the posture per case is what makes "nothing to drive"
     // a measurement instead of a stage that quietly did not run; see
-    // staticInteractionExpression in extract.mjs.
-    // Keyed on the profile's own declaration rather than on the snapshot name.
-    // Until M17 those were the same thing, because every component that owned
-    // no interaction also had nothing to drive. VfSkeletonGate owns no
-    // interaction *and* has a state that can be driven, so the two questions
-    // are asked separately: `staticOwnership` says the component must prove it
-    // grew no controls of its own, and `snapshot` says what shape its evidence
-    // takes.
-    if (catalog.profile.staticOwnership || catalog.profile.snapshot === 'static') {
+    // staticInteractionExpression in extract.mjs. Keyed on the profile's own
+    // declaration rather than on the snapshot name: VfSkeletonGate owns no
+    // interaction *and* has a state that can be driven, so `staticOwnership`
+    // says the component must prove it grew no controls of its own, and
+    // `snapshot` says what shape its evidence takes.
+    // Two ownership models, one stage. A static profile proves it owns no
+    // control; a profile with `controlOwnership` (M22) proves it owns exactly
+    // the controls it declares, by identity. Either way every case is
+    // measured, the measurement is asserted against the declaration on this
+    // target before any comparison, and a missing or contradictory snapshot
+    // fails here - where there is still a target to name - rather than
+    // comparing equal to itself across three targets. An interaction case's
+    // record is replaced by its post-scenario measurement in the loop below.
+    //
+    // Only on an unmutated capture, for the reason the interaction
+    // expectations below are: a browser mutation deliberately grows or removes
+    // a control on purpose, and catching that is the comparator's job.
+    // Throwing here would abort the mutation harness before it could report
+    // the defect it was constructed to find. Nothing is weakened by this: the
+    // unmutated run - the one that decides whether the gate passes - still
+    // fails closed here, and a mutated run still moves the ownership dimension
+    // in the comparison, which is what the mutation declares it expects.
+    const ownsControls = Boolean(catalog.profile.controlOwnership);
+    const isStatic = catalog.profile.staticOwnership || catalog.profile.snapshot === 'static';
+    if (isStatic || ownsControls) {
       for (const parityCase of selectedCases) {
-        if (parityCase.interaction) {
+        if (isStatic && parityCase.interaction) {
           throw new Error(
             `Case ${parityCase.id} declares an interaction, but the ${catalog.profile.id} profile is static.`,
           );
         }
-        const snapshot = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
-        // Fail closed on a snapshot that came back without its measurements, and
-        // on one whose measurements contradict what the case declared. An empty
-        // snapshot on every target compares equal to itself, so the comparator
-        // would report a clean pass for a stage that measured nothing - the
-        // exact silent skip the static profile exists to make impossible - and
-        // a component that grew a control of its own would be measured
-        // identically wrong on every target, which a three-way comparison
-        // cannot see either. Both have to be caught here, where there is still
-        // a target to name.
-        // Only on an unmutated capture, for the reason the interaction
-        // expectations below are: a browser mutation deliberately grows a
-        // control the component does not have, and catching that is the
-        // comparator's job. Throwing here would abort the mutation harness
-        // before it could report the defect it was constructed to find, and
-        // the defect would be recorded as a harness failure rather than as a
-        // detection.
-        //
-        // Nothing is weakened by this. The unmutated run - the one that decides
-        // whether the gate passes - still fails closed here, and a mutated run
-        // still moves both static.noInteraction and dom.structure in the
-        // comparison, which is what the mutation declares it expects.
-        const violations = mutation ? [] : staticOwnershipViolations(parityCase, snapshot);
-        if (violations.length > 0) {
-          throw new Error(`Static ownership failed on ${label} (${theme}): ${violations.join('; ')}.`);
-        }
-
-        interactions[parityCase.id] = snapshot;
-      }
-    }
-
-    // The ownership stage for a profile whose component owns controls - the
-    // other direction from the static stage above, added in M22. Every case
-    // is measured, interaction or not, and the measurement is asserted
-    // against the budget the case declares and the identity the profile
-    // declares, on this target, before any comparison: a trigger rendered as
-    // a div on every target at once is what a three-way comparison cannot
-    // see. Only on an unmutated capture, for the reason the static stage
-    // gives. Interaction cases are measured again after their scenario, in
-    // the loop below, and that measurement replaces this one in the record.
-    if (catalog.profile.controlOwnership) {
-      for (const parityCase of selectedCases) {
         const snapshot = await page.evaluate(
           interactionExpression(parityCase.id, catalog.profile.snapshot, catalog.profile.controlOwnership),
         );
-        const violations = mutation ? [] : controlOwnershipViolations(parityCase, snapshot, catalog.profile);
+        const violations = mutation
+          ? []
+          : ownsControls
+            ? controlOwnershipViolations(parityCase, snapshot, catalog.profile)
+            : staticOwnershipViolations(parityCase, snapshot);
         if (violations.length > 0) {
-          throw new Error(`Control ownership failed on ${label} (${theme}): ${violations.join('; ')}.`);
+          throw new Error(
+            `${ownsControls ? 'Control' : 'Static'} ownership failed on ${label} (${theme}): ${violations.join('; ')}.`,
+          );
         }
+
         interactions[parityCase.id] = snapshot;
       }
     }
@@ -473,10 +454,11 @@ async function captureTarget(
       // changes its DOM. The snapshot above is the component-shaped record;
       // this is everything the initial stage measured, measured again: the
       // ownership assertion against the scenario's own budget, the DOM
-      // description, the accessibility tree. And convergence, borrowed from
-      // the M17 transition stage as a concept rather than as machinery: the
-      // DOM the gesture produced has to equal this target's own render of the
-      // initial case the catalog names, or the toggle landed on a hybrid.
+      // description, the accessibility tree, and the fresh render of the case
+      // the scenario names. Convergence - the gesture's DOM has to equal that
+      // render, or the toggle landed on a hybrid - is judged in compareCaptures,
+      // where it is a within-target invariant reported per direction and never
+      // approvable; M22.1 removed the duplicate throw that judged it here too.
       // Gated on the profile because the earlier interaction profiles carry
       // their live contract inside their snapshots and their approvals are
       // counted exactly; a stage they did not opt into must not move them.
@@ -493,25 +475,12 @@ async function captureTarget(
         }
         const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
         interactionDom[parityCase.id] = after.cases[parityCase.id].dom;
-        interactionConvergence[parityCase.id] =
-          parityCase.interaction.matches === undefined
-            ? null
-            : (after.cases[parityCase.interaction.matches]?.dom ?? null);
+        interactionConvergence[parityCase.id] = after.cases[parityCase.interaction.matches]?.dom ?? null;
         interactionAccessibility[parityCase.id] = await readAccessibility(
           page,
           parityCase.id,
           catalog.profile.accessibilityRoles,
         );
-        if (
-          !mutation &&
-          parityCase.interaction.matches !== undefined &&
-          JSON.stringify(interactionDom[parityCase.id]) !== JSON.stringify(interactionConvergence[parityCase.id])
-        ) {
-          throw new Error(
-            `${parityCase.id} on ${label} (${theme}) did not converge on ${parityCase.interaction.matches}: ` +
-              'the gesture has to land on the state a fresh render of that case produces, not on a hybrid.',
-          );
-        }
       }
 
       // Declared interaction outcomes are checked against what the target
@@ -763,31 +732,24 @@ export function compareCaptures(captures, catalog, policy) {
         // that declared a scenario - a static profile has none by definition,
         // so gating this on `parityCase.interaction` would compare nothing and
         // report a clean pass, which is exactly the silent skip forbidden here.
-        if (catalog.profile.staticOwnership || catalog.profile.snapshot === 'static') {
-          const leftStatic = left.interactions[id];
-          const rightStatic = right.interactions[id];
-
-          if (!leftStatic || !rightStatic) {
-            throw new Error(
-              `The ${catalog.profile.id} profile is static but case ${id} produced no interaction snapshot on ` +
-                `${!leftStatic ? direction.from : direction.to}. A missing measurement is a failure, not a skip.`,
-            );
-          }
-
-          raw.push(...compareInteraction(leftStatic, rightStatic));
-        }
-
-        // The ownership snapshot of a component that owns controls, compared
-        // for every case that has no scenario - a scenario case's snapshot is
-        // its post-scenario one and is compared below. Missing on either side
-        // is a failure: the M15 rule, in the other direction.
-        if (catalog.profile.controlOwnership && !parityCase.interaction) {
+        // The ownership snapshot, compared for every case the capture measured
+        // it on: every case of a static profile, and every case without a
+        // scenario of a profile that owns controls - a scenario case's snapshot
+        // is its post-scenario one and is compared below. Not gated on
+        // `parityCase.interaction` for the static profile, whose cases have
+        // none by definition; a missing snapshot on either side is a failure,
+        // never a skip, because absence on both sides compares equal.
+        const ownershipMeasured =
+          catalog.profile.staticOwnership ||
+          catalog.profile.snapshot === 'static' ||
+          (catalog.profile.controlOwnership && !parityCase.interaction);
+        if (ownershipMeasured) {
           const leftOwnership = left.interactions[id];
           const rightOwnership = right.interactions[id];
 
           if (!leftOwnership || !rightOwnership) {
             throw new Error(
-              `The ${catalog.profile.id} profile owns controls but case ${id} produced no ownership snapshot on ` +
+              `The ${catalog.profile.id} profile measures ownership but case ${id} produced no ownership snapshot on ` +
                 `${!leftOwnership ? direction.from : direction.to}. A missing measurement is a failure, not a skip.`,
             );
           }
