@@ -1,0 +1,300 @@
+{
+  "$comment": "Shared input/expected vectors for VfStepper. The TypeScript rules in stepper/state.ts and the PHP mirror in packages/razor/src/Support/StepperState.php both run this file. The contract of the reference at fd793696, quirks included: the fallback is the first enabled item; the active value is modelValue ?? internalValue ?? fallback, so an empty string is a value and null an absence (spelled as an absent key here for `undefined` and as JSON null for `null`); an unknown value matches nothing and normalises to index 0 for the factor; the state precedence is disabled, current, complete, upcoming; the factor is index / (count - 1), written as JavaScript writes the division - `0.3333333333333333`, never fourteen digits - and only for two or more items. There is deliberately no vector for a next step, a previous step, a wrap, a focus move or an event: the rule set holds no state and knows no keyboard, and a vector file that described either would be the first line of the selection controller the plan forbids.",
+  "resolveStepperContentPosition": [
+    { "orientation": "horizontal", "expected": "below" },
+    { "orientation": "horizontal", "contentPosition": "below", "expected": "below" },
+    { "orientation": "horizontal", "contentPosition": "above", "expected": "above" },
+    {
+      "$why": "A vertical position on a horizontal stepper is the default, not an error.",
+      "orientation": "horizontal",
+      "contentPosition": "start",
+      "expected": "below"
+    },
+    { "orientation": "horizontal", "contentPosition": "end", "expected": "below" },
+    { "orientation": "vertical", "expected": "end" },
+    { "orientation": "vertical", "contentPosition": "end", "expected": "end" },
+    { "orientation": "vertical", "contentPosition": "start", "expected": "start" },
+    { "orientation": "vertical", "contentPosition": "above", "expected": "end" },
+    { "orientation": "vertical", "contentPosition": "below", "expected": "end" }
+  ],
+  "resolveStepperClasses": [
+    {
+      "orientation": "horizontal",
+      "expected": ["vf-stepper", "vf-stepper--horizontal", "vf-stepper--content-below"]
+    },
+    {
+      "orientation": "horizontal",
+      "contentPosition": "above",
+      "expected": ["vf-stepper", "vf-stepper--horizontal", "vf-stepper--content-above"]
+    },
+    {
+      "orientation": "vertical",
+      "expected": ["vf-stepper", "vf-stepper--vertical", "vf-stepper--content-end"]
+    },
+    {
+      "orientation": "vertical",
+      "contentPosition": "start",
+      "expected": ["vf-stepper", "vf-stepper--vertical", "vf-stepper--content-start"]
+    }
+  ],
+  "resolveStepperFallbackValue": [
+    { "items": [], "expected": null },
+    { "items": [{ "value": "a" }, { "value": "b" }], "expected": "a" },
+    {
+      "$why": "The first enabled item, not the first item.",
+      "items": [{ "value": "a", "disabled": true }, { "value": "b" }],
+      "expected": "b"
+    },
+    {
+      "items": [
+        { "value": "a", "disabled": true },
+        { "value": "b", "disabled": true }
+      ],
+      "expected": null
+    }
+  ],
+  "resolveStepperActiveValue": [
+    { "$why": "Nothing said: the fallback.", "items": [{ "value": "a" }, { "value": "b" }], "expected": "a" },
+    { "$why": "The seed alone.", "internalValue": "b", "items": [{ "value": "a" }, { "value": "b" }], "expected": "b" },
+    {
+      "$why": "The controlled prop wins over the seed.",
+      "modelValue": "b",
+      "internalValue": "a",
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "expected": "b"
+    },
+    {
+      "$why": "An empty string is a value under ??, not an absence: it is kept and matches nothing.",
+      "modelValue": "",
+      "internalValue": "a",
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "expected": ""
+    },
+    {
+      "$why": "null is an absence under ??: the seed shows through.",
+      "modelValue": null,
+      "internalValue": "b",
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "expected": "b"
+    },
+    {
+      "$why": "An unknown value is kept, not corrected.",
+      "modelValue": "missing",
+      "items": [{ "value": "a" }],
+      "expected": "missing"
+    },
+    {
+      "$why": "An unknown seed is kept too.",
+      "internalValue": "missing",
+      "items": [{ "value": "a" }],
+      "expected": "missing"
+    },
+    {
+      "$why": "All disabled and nothing said: no value at all.",
+      "items": [{ "value": "a", "disabled": true }],
+      "expected": null
+    }
+  ],
+  "resolveStepperStepState": [
+    {
+      "$why": "Before, at, after the active index.",
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "activeValue": "b",
+      "expected": ["complete", "current", "upcoming"]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "activeValue": "a",
+      "expected": ["current", "upcoming", "upcoming"]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "activeValue": "c",
+      "expected": ["complete", "complete", "current"]
+    },
+    {
+      "$why": "Disabled first, on either side of the active step.",
+      "items": [{ "value": "a", "disabled": true }, { "value": "b" }, { "value": "c" }],
+      "activeValue": "c",
+      "expected": ["disabled", "complete", "current"]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c", "disabled": true }],
+      "activeValue": "a",
+      "expected": ["current", "upcoming", "disabled"]
+    },
+    {
+      "$why": "A disabled active item is disabled, not current; the steps before it are still complete.",
+      "items": [{ "value": "a" }, { "value": "b", "disabled": true }, { "value": "c" }],
+      "activeValue": "b",
+      "expected": ["complete", "disabled", "upcoming"]
+    },
+    {
+      "$why": "An unknown value: every enabled step upcoming, none current.",
+      "items": [{ "value": "a" }, { "value": "b", "disabled": true }, { "value": "c" }],
+      "activeValue": "missing",
+      "expected": ["upcoming", "disabled", "upcoming"]
+    },
+    {
+      "$why": "No value at all (spelled as an absent key): the same.",
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "expected": ["upcoming", "upcoming"]
+    },
+    {
+      "$why": "Duplicate values resolve to the first occurrence, so both share a state.",
+      "items": [{ "value": "a" }, { "value": "a" }, { "value": "b" }],
+      "activeValue": "b",
+      "expected": ["complete", "complete", "current"]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "a" }, { "value": "b" }],
+      "activeValue": "a",
+      "expected": ["current", "current", "upcoming"]
+    },
+    { "items": [], "activeValue": "a", "expected": [] }
+  ],
+  "formatStepperProgressFactor": [
+    { "factor": 0, "expected": "0" },
+    { "factor": 1, "expected": "1" },
+    { "factor": 0.5, "expected": "0.5" },
+    { "factor": 0.25, "expected": "0.25" },
+    { "factor": 0.75, "expected": "0.75" },
+    { "factor": 0.2, "expected": "0.2" },
+    { "factor": 0.4, "expected": "0.4" },
+    { "factor": 0.6, "expected": "0.6" },
+    { "factor": 0.8, "expected": "0.8" },
+    {
+      "$why": "1/3 as JavaScript writes it: sixteen digits, the shortest string that round-trips. PHP's default precision would print 0.33333333333333.",
+      "factor": 0.3333333333333333,
+      "expected": "0.3333333333333333"
+    },
+    { "factor": 0.6666666666666666, "expected": "0.6666666666666666" },
+    { "$why": "1/6.", "factor": 0.16666666666666666, "expected": "0.16666666666666666" },
+    { "$why": "5/6 rounds the last digit up.", "factor": 0.8333333333333334, "expected": "0.8333333333333334" },
+    { "$why": "1/7.", "factor": 0.14285714285714285, "expected": "0.14285714285714285" },
+    { "$why": "1/9.", "factor": 0.1111111111111111, "expected": "0.1111111111111111" },
+    {
+      "$why": "1/11: a factor small enough to need a leading zero, still positional.",
+      "factor": 0.09090909090909091,
+      "expected": "0.09090909090909091"
+    },
+    { "$why": "1/101: two leading zeros.", "factor": 0.009900990099009901, "expected": "0.009900990099009901" }
+  ],
+  "resolveStepperRootStyle": [
+    { "items": [], "expected": [["--vf-stepper-item-count", "0"]] },
+    {
+      "$why": "One item: the count only, no factor.",
+      "items": [{ "value": "a" }],
+      "activeValue": "a",
+      "expected": [["--vf-stepper-item-count", "1"]]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "activeValue": "a",
+      "expected": [
+        ["--vf-stepper-item-count", "2"],
+        ["--vf-stepper-progress-factor", "0"]
+      ]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }],
+      "activeValue": "b",
+      "expected": [
+        ["--vf-stepper-item-count", "2"],
+        ["--vf-stepper-progress-factor", "1"]
+      ]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }],
+      "activeValue": "b",
+      "expected": [
+        ["--vf-stepper-item-count", "3"],
+        ["--vf-stepper-progress-factor", "0.5"]
+      ]
+    },
+    {
+      "$why": "Four items with the second active: 1/3, unrounded.",
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }, { "value": "d" }],
+      "activeValue": "b",
+      "expected": [
+        ["--vf-stepper-item-count", "4"],
+        ["--vf-stepper-progress-factor", "0.3333333333333333"]
+      ]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }, { "value": "d" }],
+      "activeValue": "c",
+      "expected": [
+        ["--vf-stepper-item-count", "4"],
+        ["--vf-stepper-progress-factor", "0.6666666666666666"]
+      ]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }, { "value": "d" }],
+      "activeValue": "d",
+      "expected": [
+        ["--vf-stepper-item-count", "4"],
+        ["--vf-stepper-progress-factor", "1"]
+      ]
+    },
+    {
+      "$why": "An unknown value normalises to index 0.",
+      "items": [{ "value": "a" }, { "value": "b" }, { "value": "c" }, { "value": "d" }],
+      "activeValue": "missing",
+      "expected": [
+        ["--vf-stepper-item-count", "4"],
+        ["--vf-stepper-progress-factor", "0"]
+      ]
+    },
+    {
+      "$why": "Disabled items count, and the factor follows the active index whether or not it is disabled.",
+      "items": [{ "value": "a", "disabled": true }, { "value": "b", "disabled": true }, { "value": "c" }],
+      "activeValue": "c",
+      "expected": [
+        ["--vf-stepper-item-count", "3"],
+        ["--vf-stepper-progress-factor", "1"]
+      ]
+    },
+    {
+      "items": [{ "value": "a" }, { "value": "b", "disabled": true }, { "value": "c" }],
+      "activeValue": "b",
+      "expected": [
+        ["--vf-stepper-item-count", "3"],
+        ["--vf-stepper-progress-factor", "0.5"]
+      ]
+    },
+    {
+      "$why": "Seven items with the second active: 1/6.",
+      "items": [
+        { "value": "s0" },
+        { "value": "s1" },
+        { "value": "s2" },
+        { "value": "s3" },
+        { "value": "s4" },
+        { "value": "s5" },
+        { "value": "s6" }
+      ],
+      "activeValue": "s1",
+      "expected": [
+        ["--vf-stepper-item-count", "7"],
+        ["--vf-stepper-progress-factor", "0.16666666666666666"]
+      ]
+    },
+    {
+      "items": [
+        { "value": "s0" },
+        { "value": "s1" },
+        { "value": "s2" },
+        { "value": "s3" },
+        { "value": "s4" },
+        { "value": "s5" },
+        { "value": "s6" }
+      ],
+      "activeValue": "s5",
+      "expected": [
+        ["--vf-stepper-item-count", "7"],
+        ["--vf-stepper-progress-factor", "0.8333333333333334"]
+      ]
+    }
+  ]
+}

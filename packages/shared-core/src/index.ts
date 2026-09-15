@@ -110,3 +110,20 @@ export {
   resolveAccordionOpen,
   resolveAccordionTransition,
 } from './accordion/state.js';
+export {
+  formatStepperProgressFactor,
+  resolveStepperActiveIndex,
+  resolveStepperActiveValue,
+  resolveStepperClasses,
+  resolveStepperContentPosition,
+  resolveStepperFallbackValue,
+  resolveStepperRootStyle,
+  resolveStepperStepState,
+} from './stepper/state.js';
+export type {
+  VfStepperContentPositionName,
+  VfStepperDeclaration,
+  VfStepperItemLike,
+  VfStepperOrientationName,
+  VfStepperStepStateName,
+} from './stepper/state.js';

@@ -14,7 +14,10 @@ const items: VfStepperItem[] = [
 
 describe('VfStepper', () => {
   it('keeps its palette semantic-first without bypassing existing component tokens', () => {
-    const stepperCss = readFileSync(resolve(process.cwd(), 'src/styles/entries/stepper.css'), 'utf8');
+    // Since M23 the canonical stylesheet lives in packages/styles and the Vue
+    // entry is an @import shim; the assertions are about the rules, so they
+    // read the file that owns them.
+    const stepperCss = readFileSync(resolve(process.cwd(), '../styles/src/components/stepper.css'), 'utf8');
 
     expect(stepperCss).not.toContain('var(--vf-palette-');
     expect(stepperCss).toContain('var(--vf-stepper-rail-color)');
@@ -25,7 +28,7 @@ describe('VfStepper', () => {
   });
 
   it('keeps horizontal connector segments flush at shared seams', () => {
-    const stepperCss = readFileSync(resolve(process.cwd(), 'src/styles/entries/stepper.css'), 'utf8');
+    const stepperCss = readFileSync(resolve(process.cwd(), '../styles/src/components/stepper.css'), 'utf8');
 
     expect(stepperCss).toMatch(/\.vf-stepper--horizontal \.vf-stepper__connector\s*{[^}]*border-radius: 0;/);
   });

@@ -56,6 +56,8 @@ export const progressBarRulePath = 'packages/shared-core/src/progress-bar/state.
 
 export const accordionSourcePath = 'packages/core/src/components/accordion/VfAccordion.vue';
 export const stepperSourcePath = 'packages/core/src/components/stepper/VfStepper.vue';
+/** The shared rules VfStepper, its Razor controller and the PHP adapter derive from. */
+export const stepperRulePath = 'packages/shared-core/src/stepper/state.ts';
 const stepperSuite = 'src/components/stepper/VfStepper.characterization.spec.ts';
 /** The shared rules VfAccordion, its Razor controller and the PHP adapter derive from. */
 export const accordionRulePath = 'packages/shared-core/src/accordion/state.ts';
@@ -2998,11 +3000,11 @@ export const stepperMutations = [
   // ------------------------------------------------------------ state model
   {
     id: 'stepper-falls-back-to-the-first-item',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'the fallback is the first item rather than the first enabled item',
-    find: 'const fallbackValue = computed(() => props.items.find((item) => !item.disabled)?.value);',
-    replace: 'const fallbackValue = computed(() => props.items[0]?.value);',
+    find: '  return items.find((item) => !item.disabled)?.value;',
+    replace: '  return items[0]?.value;',
   },
   {
     id: 'stepper-treats-null-as-uncontrolled',
@@ -3022,25 +3024,25 @@ export const stepperMutations = [
   },
   {
     id: 'stepper-normalises-empty-model-value',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'an empty-string modelValue falls through to the internal state',
-    find: 'const activeValue = computed(() => props.modelValue ?? internalValue.value ?? fallbackValue.value);',
-    replace: 'const activeValue = computed(() => props.modelValue || internalValue.value || fallbackValue.value);',
+    find: '  return modelValue ?? internalValue ?? resolveStepperFallbackValue(items);',
+    replace: '  return modelValue || internalValue || resolveStepperFallbackValue(items);',
   },
 
   // -------------------------------------------------------------- step state
   {
     id: 'stepper-current-beats-disabled',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'a disabled active item is reported current rather than disabled',
-    find: "  if (item.disabled) {\n    return 'disabled';\n  }\n\n  const activeIndex",
-    replace: "  const activeIndex",
+    find: "  if (item.disabled) {\n    return 'disabled';\n  }\n\n  const activeIndex = resolveStepperActiveIndex",
+    replace: '  const activeIndex = resolveStepperActiveIndex',
   },
   {
     id: 'stepper-complete-after-current',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'the steps after the current one are complete and the ones before it upcoming',
     find: '  if (activeIndex >= 0 && currentIndex < activeIndex) {',
@@ -3048,12 +3050,11 @@ export const stepperMutations = [
   },
   {
     id: 'stepper-unknown-value-marks-first-current',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'an unknown active value falls back to the first step for the state, though not for the value',
-    find: "  const activeIndex = props.items.findIndex((entry) => entry.value === activeValue.value);\n  const currentIndex",
-    replace:
-      "  const activeIndex = Math.max(0, props.items.findIndex((entry) => entry.value === activeValue.value));\n  const currentIndex",
+    find: '  const activeIndex = resolveStepperActiveIndex(items, activeValue);\n  const currentIndex',
+    replace: '  const activeIndex = Math.max(0, resolveStepperActiveIndex(items, activeValue));\n  const currentIndex',
   },
   {
     id: 'stepper-aria-current-true',
@@ -3091,43 +3092,51 @@ export const stepperMutations = [
   // -------------------------------------------------------------- root style
   {
     id: 'stepper-counts-enabled-items',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'the item count custom property counts enabled items only',
-    find: "    '--vf-stepper-item-count': `${props.items.length}`,\n    '--vf-stepper-progress-factor'",
-    replace: "    '--vf-stepper-item-count': `${getEnabledItems().length}`,\n    '--vf-stepper-progress-factor'",
+    find: '  const count = items.length;',
+    replace: '  const count = items.filter((item) => !item.disabled).length;',
   },
   {
     id: 'stepper-factor-over-count',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'the progress factor divides by the count instead of the count minus one',
-    find: '  const progressFactor = normalizedActiveIndex / (props.items.length - 1);',
-    replace: '  const progressFactor = normalizedActiveIndex / props.items.length;',
+    find: 'formatStepperProgressFactor(normalizedActiveIndex / (count - 1))',
+    replace: 'formatStepperProgressFactor(normalizedActiveIndex / count)',
   },
   {
     id: 'stepper-factor-rounded',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'the progress factor is rounded to two decimals, so 1/3 is written as 0.33',
-    find: "    '--vf-stepper-progress-factor': `${progressFactor}`,",
-    replace: "    '--vf-stepper-progress-factor': `${Math.round(progressFactor * 100) / 100}`,",
+    find: '  return String(factor);',
+    replace: '  return String(Math.round(factor * 100) / 100);',
+  },
+  {
+    id: 'stepper-factor-fourteen-digits',
+    file: stepperRulePath,
+    suite: stepperSuite,
+    description: "the progress factor is written with PHP's default fourteen significant digits: 0.33333333333333",
+    find: '  return String(factor);',
+    replace: '  return String(Number(factor.toPrecision(14)));',
   },
   {
     id: 'stepper-factor-for-one-item',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'a single item writes a progress factor as well',
-    find: '  if (props.items.length <= 1) {',
-    replace: '  if (props.items.length < 1) {',
+    find: '  if (count <= 1) {',
+    replace: '  if (count < 1) {',
   },
   {
     id: 'stepper-unknown-value-negative-factor',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'an unknown active value is not normalised, so the factor goes negative',
-    find: '  const normalizedActiveIndex = activeIndex.value < 0 ? 0 : activeIndex.value;',
-    replace: '  const normalizedActiveIndex = activeIndex.value;',
+    find: '  const normalizedActiveIndex = activeIndex < 0 ? 0 : activeIndex;',
+    replace: '  const normalizedActiveIndex = activeIndex;',
   },
 
   // ------------------------------------------------------------------ events
@@ -3177,7 +3186,7 @@ export const stepperMutations = [
     suite: stepperSuite,
     description: 'the events carry the item index instead of its value',
     find: '    setActiveValue(item.value);\n  }\n}',
-    replace: '    setActiveValue(item.value);\n    emit(\'change\', String(props.items.indexOf(item)));\n  }\n}',
+    replace: "    setActiveValue(item.value);\n    emit('change', String(props.items.indexOf(item)));\n  }\n}",
   },
 
   // ---------------------------------------------------- native Enter / Space
@@ -3347,7 +3356,8 @@ export const stepperMutations = [
     suite: stepperSuite,
     description: 'the watch writes the fallback without emitting',
     find: '    if (!hasActiveItem && fallbackValue.value) {\n      setActiveValue(fallbackValue.value);\n    }',
-    replace: '    if (!hasActiveItem && fallbackValue.value) {\n      internalValue.value = fallbackValue.value;\n    }',
+    replace:
+      '    if (!hasActiveItem && fallbackValue.value) {\n      internalValue.value = fallbackValue.value;\n    }',
   },
 
   // ---------------------------------------------------------------- markup
@@ -3390,11 +3400,11 @@ export const stepperMutations = [
   },
   {
     id: 'stepper-vertical-content-above',
-    file: stepperSourcePath,
+    file: stepperRulePath,
     suite: stepperSuite,
     description: 'a vertical stepper accepts the horizontal content positions',
-    find: "    return props.contentPosition === 'start' ? 'start' : 'end';",
-    replace: "    return props.contentPosition ?? 'end';",
+    find: "    return contentPosition === 'start' ? 'start' : 'end';",
+    replace: "    return contentPosition ?? 'end';",
   },
   {
     id: 'stepper-list-is-unordered',
@@ -3423,10 +3433,17 @@ export const stepperMutations = [
     file: stepperSourcePath,
     suite: stepperSuite,
     description: 'a consumer class is written before the canonical classes',
-    find:
-      "    'vf-stepper',\n    `vf-stepper--${props.orientation}`,\n    `vf-stepper--content-${resolvedContentPosition.value}`,\n    attrs.class as string | undefined,",
+    find: '  cx(...resolveStepperClasses(props.orientation, props.contentPosition), attrs.class as string | undefined),',
     replace:
-      "    attrs.class as string | undefined,\n    'vf-stepper',\n    `vf-stepper--${props.orientation}`,\n    `vf-stepper--content-${resolvedContentPosition.value}`,",
+      '  cx(attrs.class as string | undefined, ...resolveStepperClasses(props.orientation, props.contentPosition)),',
+  },
+  {
+    id: 'stepper-ignores-the-shared-state-rule',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the component stops consulting the shared step-state rule and reports every step upcoming',
+    find: '  return resolveStepperStepState(props.items, activeValue.value, item);',
+    replace: "  return item.disabled ? 'disabled' : 'upcoming';",
   },
   {
     id: 'stepper-attrs-land-on-the-triggers',

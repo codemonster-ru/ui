@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, useAttrs, watch, type CSSProperties } from 'vue';
+import {
+  resolveStepperActiveValue,
+  resolveStepperClasses,
+  resolveStepperFallbackValue,
+  resolveStepperRootStyle,
+  resolveStepperStepState,
+} from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfStepperContentPosition, VfStepperItem, VfStepperOrientation } from '@/types/components';
 
@@ -29,46 +36,21 @@ const emit = defineEmits<{
   change: [value: string];
 }>();
 
-const resolvedContentPosition = computed(() => {
-  if (props.orientation === 'vertical') {
-    return props.contentPosition === 'start' ? 'start' : 'end';
-  }
-
-  return props.contentPosition === 'above' ? 'above' : 'below';
-});
-
 const attrs = useAttrs();
 const rootClasses = computed(() =>
-  cx(
-    'vf-stepper',
-    `vf-stepper--${props.orientation}`,
-    `vf-stepper--content-${resolvedContentPosition.value}`,
-    attrs.class as string | undefined,
-  ),
+  cx(...resolveStepperClasses(props.orientation, props.contentPosition), attrs.class as string | undefined),
 );
 const rootAttrs = computed(() => Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class')));
 
-const fallbackValue = computed(() => props.items.find((item) => !item.disabled)?.value);
+const fallbackValue = computed(() => resolveStepperFallbackValue(props.items));
 const internalValue = ref(props.defaultValue ?? fallbackValue.value);
 const isControlled = computed(() => props.modelValue !== undefined);
-const activeValue = computed(() => props.modelValue ?? internalValue.value ?? fallbackValue.value);
-const activeIndex = computed(() => props.items.findIndex((item) => item.value === activeValue.value));
-const rootStyle = computed<CSSProperties>(() => {
-  const normalizedActiveIndex = activeIndex.value < 0 ? 0 : activeIndex.value;
-
-  if (props.items.length <= 1) {
-    return {
-      '--vf-stepper-item-count': `${props.items.length}`,
-    };
-  }
-
-  const progressFactor = normalizedActiveIndex / (props.items.length - 1);
-
-  return {
-    '--vf-stepper-item-count': `${props.items.length}`,
-    '--vf-stepper-progress-factor': `${progressFactor}`,
-  };
-});
+const activeValue = computed(() => resolveStepperActiveValue(props.modelValue, internalValue.value, props.items));
+// A plain object handed to Vue's serialisers, as the reference's was: the
+// count always, the factor for two or more items, in that order.
+const rootStyle = computed<CSSProperties>(() =>
+  Object.fromEntries(resolveStepperRootStyle(props.items, activeValue.value)),
+);
 
 watch(
   () => props.items,
@@ -150,22 +132,7 @@ function handleKeydown(event: KeyboardEvent, currentItem: VfStepperItem) {
 }
 
 function stepState(item: VfStepperItem) {
-  if (item.disabled) {
-    return 'disabled';
-  }
-
-  const activeIndex = props.items.findIndex((entry) => entry.value === activeValue.value);
-  const currentIndex = props.items.findIndex((entry) => entry.value === item.value);
-
-  if (currentIndex === activeIndex) {
-    return 'current';
-  }
-
-  if (activeIndex >= 0 && currentIndex < activeIndex) {
-    return 'complete';
-  }
-
-  return 'upcoming';
+  return resolveStepperStepState(props.items, activeValue.value, item);
 }
 </script>
 

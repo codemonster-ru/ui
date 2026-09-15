@@ -302,7 +302,11 @@ describe('VfStepper characterization: consumer attributes', () => {
     expect(wrapper.attributes('data-testid')).toBe('steps');
     // A consumer aria-current lands on the root; the triggers keep their own.
     expect(wrapper.attributes('aria-current')).toBe('page');
-    expect(triggers(wrapper).map((button) => button.attributes('aria-current'))).toEqual(['step', undefined, undefined]);
+    expect(triggers(wrapper).map((button) => button.attributes('aria-current'))).toEqual([
+      'step',
+      undefined,
+      undefined,
+    ]);
     expect(wrapper.get('ol').attributes()).toEqual({ class: 'vf-stepper__list' });
     expect(Object.keys(trigger(wrapper, 'profile').attributes()).sort()).toEqual([
       'class',
@@ -430,15 +434,15 @@ describe('VfStepper characterization: step state precedence', () => {
   });
 
   it('puts disabled before every other state, whichever side of the active step it is on', () => {
-    expect(itemStates(mountStepper({ props: { items: withDisabled(ITEMS, 'account'), defaultValue: 'confirm' } }))).toEqual(
-      ['disabled', 'complete', 'current'],
-    );
-    expect(itemStates(mountStepper({ props: { items: withDisabled(ITEMS, 'confirm'), defaultValue: 'account' } }))).toEqual(
-      ['current', 'upcoming', 'disabled'],
-    );
-    expect(itemStates(mountStepper({ props: { items: withDisabled(ITEMS, 'profile'), defaultValue: 'account' } }))).toEqual(
-      ['current', 'disabled', 'upcoming'],
-    );
+    expect(
+      itemStates(mountStepper({ props: { items: withDisabled(ITEMS, 'account'), defaultValue: 'confirm' } })),
+    ).toEqual(['disabled', 'complete', 'current']);
+    expect(
+      itemStates(mountStepper({ props: { items: withDisabled(ITEMS, 'confirm'), defaultValue: 'account' } })),
+    ).toEqual(['current', 'upcoming', 'disabled']);
+    expect(
+      itemStates(mountStepper({ props: { items: withDisabled(ITEMS, 'profile'), defaultValue: 'account' } })),
+    ).toEqual(['current', 'disabled', 'upcoming']);
   });
 
   it('writes the native disabled attribute on a disabled trigger and nothing else', () => {
@@ -453,7 +457,11 @@ describe('VfStepper characterization: step state precedence', () => {
   });
 
   it('marks the last step current with everything before it complete', () => {
-    expect(itemStates(mountStepper({ props: { defaultValue: 'confirm' } }))).toEqual(['complete', 'complete', 'current']);
+    expect(itemStates(mountStepper({ props: { defaultValue: 'confirm' } }))).toEqual([
+      'complete',
+      'complete',
+      'current',
+    ]);
   });
 
   it('marks every step upcoming when the active value is unknown, disabled ones excepted', () => {
@@ -698,7 +706,7 @@ describe('VfStepper characterization: Arrow, Home and End navigation', () => {
 
   it.each([VERTICAL_NEXT, VERTICAL_PREVIOUS])('horizontal: %s is ignored and not prevented', async (key) => {
     const wrapper = mountStepper({ attachTo: document.body, props: { defaultValue: 'profile' } });
-    trigger(wrapper, 'profile').element.focus();
+    (trigger(wrapper, 'profile').element as HTMLElement).focus();
 
     const prevented = keydown(wrapper, 'profile', key);
     await nextTick();
@@ -845,7 +853,7 @@ describe('VfStepper characterization: Arrow, Home and End navigation', () => {
 
   it('Home on the first step and End on the last step still prevent and focus, but emit nothing', async () => {
     const wrapper = mountStepper({ attachTo: document.body });
-    trigger(wrapper, 'confirm').element.focus();
+    (trigger(wrapper, 'confirm').element as HTMLElement).focus();
 
     expect(keydown(wrapper, 'account', 'Home')).toBe(true);
     await nextTick();
@@ -1083,13 +1091,21 @@ describe('VfStepper characterization: server rendering', () => {
       'data-testid': 'steps',
     });
 
-    expect(html.startsWith(
-      '<nav class="vf-stepper vf-stepper--vertical vf-stepper--content-start checkout" ' +
-        'style="--vf-stepper-item-count:3;--vf-stepper-progress-factor:0.5;color:red;" aria-label="Progress" ' +
-        'id="steps" data-testid="steps"><ol class="vf-stepper__list"><!--[-->',
-    )).toBe(true);
-    expect(html).toContain('<li class="vf-stepper__item vf-stepper__item--complete"><button type="button" class="vf-stepper__trigger" data-vf-stepper-value="account">');
-    expect(html).toContain('<li class="vf-stepper__item vf-stepper__item--current"><button type="button" class="vf-stepper__trigger vf-stepper__trigger--current" data-vf-stepper-value="profile" aria-current="step">');
-    expect(html).toContain('<li class="vf-stepper__item vf-stepper__item--disabled"><button type="button" class="vf-stepper__trigger" data-vf-stepper-value="confirm" disabled>');
+    expect(
+      html.startsWith(
+        '<nav class="vf-stepper vf-stepper--vertical vf-stepper--content-start checkout" ' +
+          'style="--vf-stepper-item-count:3;--vf-stepper-progress-factor:0.5;color:red;" aria-label="Progress" ' +
+          'id="steps" data-testid="steps"><ol class="vf-stepper__list"><!--[-->',
+      ),
+    ).toBe(true);
+    expect(html).toContain(
+      '<li class="vf-stepper__item vf-stepper__item--complete"><button type="button" class="vf-stepper__trigger" data-vf-stepper-value="account">',
+    );
+    expect(html).toContain(
+      '<li class="vf-stepper__item vf-stepper__item--current"><button type="button" class="vf-stepper__trigger vf-stepper__trigger--current" data-vf-stepper-value="profile" aria-current="step">',
+    );
+    expect(html).toContain(
+      '<li class="vf-stepper__item vf-stepper__item--disabled"><button type="button" class="vf-stepper__trigger" data-vf-stepper-value="confirm" disabled>',
+    );
   });
 });

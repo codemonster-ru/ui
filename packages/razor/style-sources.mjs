@@ -99,4 +99,17 @@ export const styleSources = [
   // are inline declarations the controller owns, exactly as the reference's
   // hooks own them, and the stylesheet carries only the resting states.
   'packages/styles/src/components/accordion.css',
+  // VfStepper, the M23 component and a standalone closure of 48 rules: the
+  // root, the list with its vertical rail pseudo-elements (the progress
+  // scale is the `--vf-stepper-progress-factor` custom property the server
+  // writes inline), the item, the trigger in both orientations, the rail,
+  // the connectors, the marker, the content, the label and description, the
+  // four item states, the first/last connector fades, the disabled item,
+  // focus-visible and the content-position variants. It was Vue-owned until
+  // M23 and reached no Razor artifact at all. Listed last; no stepper
+  // selector overlaps another file's. It is a separate file from
+  // progress-bar.css and from accordion.css and must stay one: the rail is
+  // not a progress bar's track, and the trigger is not an accordion's -
+  // no rule in this file exists in either of theirs.
+  'packages/styles/src/components/stepper.css',
 ];
