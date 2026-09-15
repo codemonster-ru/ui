@@ -101,6 +101,11 @@ declare module '@vueforge/accordion-cases' {
   export default catalog;
 }
 
+declare module '@vueforge/stepper-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
 declare module '@vueforge/showcase-index' {
   interface ShowcasePlatform {
     label: string;

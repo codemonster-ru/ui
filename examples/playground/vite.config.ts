@@ -143,6 +143,7 @@ export default defineConfig({
         progressSpinner: fileURLToPath(new URL('./progress-spinner.html', import.meta.url)),
         progressBar: fileURLToPath(new URL('./progress-bar.html', import.meta.url)),
         accordion: fileURLToPath(new URL('./accordion.html', import.meta.url)),
+        stepper: fileURLToPath(new URL('./stepper.html', import.meta.url)),
       },
     },
   },
@@ -253,6 +254,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/accordion-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/accordion/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/stepper-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/stepper/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

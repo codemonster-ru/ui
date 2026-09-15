@@ -871,7 +871,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/stepper/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/stepper/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/stepper",
+          "razor": "/"
         }
       }
     },

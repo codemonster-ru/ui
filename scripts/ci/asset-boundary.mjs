@@ -341,9 +341,13 @@ export function analyzeAssetBoundary({ rootDir, files, readFile }) {
       // build names no `packages/` path, so the repository-path scan above
       // never saw it, and it is not an import, so the dependency guard never
       // saw it either. Every `../` literal is resolved against the file's own
-      // directory and judged as the repository path it reaches.
+      // directory and judged as the repository path it reaches. M23 added the
+      // `/../` prefix: PHP spells the same climb as `__DIR__ . '/../../core'`,
+      // and a literal that starts with the slash was neither a `../` literal
+      // nor a `packages/` path, so it reached the gate unseen - the PHP twin
+      // of the M22 finding.
       for (const literal of scanSource(source, scanOptions).literals) {
-        if (!/^\.\.\//.test(literal)) continue;
+        if (!/^\/?\.\.\//.test(literal)) continue;
         const segments = file.split('/').slice(0, -1);
         for (const part of literal.split('/')) {
           if (part === '..') segments.pop();

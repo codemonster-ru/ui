@@ -187,7 +187,13 @@ $progressSpinner = $registry->resolve('vf-progress-spinner');
 $progressBar = $registry->resolve('vf-progress-bar');
 $skeletonGate = $registry->resolve('vf-skeleton-gate');
 $accordion = $registry->resolve('vf-accordion');
+$stepper = $registry->resolve('vf-stepper');
 $assetPath = VueForgeRazorProvider::assetPath();
+$stepperItems = [
+    ['value' => 'account', 'label' => 'Account'],
+    ['value' => 'profile', 'label' => 'Profile', 'description' => 'Tell us about yourself'],
+    ['value' => 'confirm', 'label' => 'Confirm', 'disabled' => true],
+];
 $controllerSource = is_file($assetPath . '/vueforge-razor.js') ? (string) file_get_contents($assetPath . '/vueforge-razor.js') : '';
 
 echo json_encode([
@@ -212,6 +218,7 @@ echo json_encode([
         'vf-progress-bar' => $registry->handles('vf-progress-bar'),
         'vf-skeleton-gate' => $registry->handles('vf-skeleton-gate'),
         'vf-accordion' => $registry->handles('vf-accordion'),
+        'vf-stepper' => $registry->handles('vf-stepper'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -604,6 +611,36 @@ echo json_encode([
         && !str_contains($controllerSource, "from 'vue'")
         && !str_contains($controllerSource, 'packages/core')
         && !str_contains($controllerSource, 'createApp('),
+    // VfStepper, the twenty-first component and the second with controls of
+    // its own - several native buttons per instance - and a browser
+    // controller that moves a selection and the focus between them. Four
+    // renders for the server contract - the default, a controlled vertical
+    // one with consumer attributes, a four-item one whose factor is 1/3, and
+    // two siblings - and the packaged controller inspected for the stepper
+    // enhancement it must now carry.
+    'stepperDefault' => $stepper->render(new ComponentRenderContext(['items' => $stepperItems], []))->value(),
+    'stepperControlled' => $stepper->render(new ComponentRenderContext(
+        ['items' => $stepperItems, 'model-value' => 'profile', 'orientation' => 'vertical', 'content-position' => 'start', 'class' => 'consumer-steps', 'data-testid' => 'checkout', 'aria-label' => 'Checkout'],
+        [],
+    ))->value(),
+    'stepperFraction' => $stepper->render(new ComponentRenderContext(
+        ['items' => [['value' => 'a', 'label' => 'A'], ['value' => 'b', 'label' => 'B'], ['value' => 'c', 'label' => 'C'], ['value' => 'd', 'label' => 'D']], 'default-value' => 'b'],
+        [],
+    ))->value(),
+    'stepperSiblings' => $stepper->render(new ComponentRenderContext(['items' => $stepperItems, 'aria-label' => 'First'], []))->value()
+        . $stepper->render(new ComponentRenderContext(['items' => $stepperItems, 'aria-label' => 'Second', 'default-value' => 'profile'], []))->value(),
+    'stepperConstructorTakesNothing' => (new ReflectionClass($stepper))->getConstructor() === null,
+    'stepperBrowserCode' => str_contains($controllerSource, 'data-vf-razor="stepper"')
+        && str_contains($controllerSource, 'vf-stepper:change')
+        && str_contains($controllerSource, 'data-vf-razor-stepper-enhanced')
+        && str_contains($controllerSource, 'vf-stepper__trigger--current')
+        && str_contains($controllerSource, '--vf-stepper-progress-factor'),
+    'stepperCss' => is_file($assetPath . '/vueforge-razor.css')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-stepper {') === 1
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), "\n.vf-stepper__trigger {") === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-stepper__item--current .vf-stepper__marker')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), 'scaleY(var(--vf-stepper-progress-factor, 0))')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-stepper--vertical.vf-stepper--content-start .vf-stepper__trigger'),
     'accordionCss' => is_file($assetPath . '/vueforge-razor.css')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-accordion {') === 1
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-accordion__trigger {') === 1
@@ -651,6 +688,7 @@ echo json_encode([
       'vf-progress-spinner',
       'vf-progress-bar',
       'vf-accordion',
+      'vf-stepper',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -1370,6 +1408,63 @@ echo json_encode([
     'vueforge-razor.css is missing accordion rules or duplicates them',
   );
 
+  // ---------------------------------------------------------------- vf-stepper
+  //
+  // The twenty-first component, proved from the same installed package: the
+  // second with controls of its own and the first with several. The server
+  // half is asserted here as markup; the browser half below, on the packaged
+  // controller served to a real browser with no Node available.
+  check(
+    'the consumer renders a default stepper: nav, ol, three items, three native triggers, the first current, the disabled one native',
+    rendered.stepperDefault.startsWith(
+      '<nav class="vf-stepper vf-stepper--horizontal vf-stepper--content-below" style="--vf-stepper-item-count: 3; --vf-stepper-progress-factor: 0;" aria-label="Progress" data-vf-razor="stepper"><ol class="vf-stepper__list"><li class="vf-stepper__item vf-stepper__item--current"><button type="button" class="vf-stepper__trigger vf-stepper__trigger--current" data-vf-stepper-value="account" aria-current="step">',
+    ) &&
+      rendered.stepperDefault.includes(
+        '<li class="vf-stepper__item vf-stepper__item--disabled"><button type="button" class="vf-stepper__trigger" data-vf-stepper-value="confirm" disabled>',
+      ) &&
+      rendered.stepperDefault.includes('<span class="vf-stepper__description">Tell us about yourself</span>') &&
+      (rendered.stepperDefault.match(/<button/g) ?? []).length === 3 &&
+      (rendered.stepperDefault.match(/aria-current/g) ?? []).length === 1 &&
+      !rendered.stepperDefault.includes(' id=') &&
+      !rendered.stepperDefault.includes('aria-disabled'),
+    rendered.stepperDefault,
+  );
+  check(
+    'the packaged stepper renders a controlled vertical stepper with the consumer attributes on the nav and the state before it complete',
+    rendered.stepperControlled.startsWith(
+      '<nav class="vf-stepper vf-stepper--vertical vf-stepper--content-start consumer-steps" style="--vf-stepper-item-count: 3; --vf-stepper-progress-factor: 0.5;" aria-label="Checkout" data-vf-razor="stepper" data-testid="checkout"><ol class="vf-stepper__list"><li class="vf-stepper__item vf-stepper__item--complete">',
+    ) && rendered.stepperControlled.includes('data-vf-stepper-value="profile" aria-current="step"'),
+    rendered.stepperControlled,
+  );
+  check(
+    "the packaged stepper writes the progress factor as JavaScript does: sixteen digits, not PHP's fourteen",
+    rendered.stepperFraction.includes('--vf-stepper-progress-factor: 0.3333333333333333;') &&
+      !rendered.stepperFraction.includes('0.33333333333333;'),
+    rendered.stepperFraction,
+  );
+  check(
+    'two packaged siblings render six triggers with one current step each',
+    (rendered.stepperSiblings.match(/<button/g) ?? []).length === 6 &&
+      (rendered.stepperSiblings.match(/aria-current="step"/g) ?? []).length === 2 &&
+      (rendered.stepperSiblings.match(/data-vf-razor="stepper"/g) ?? []).length === 2,
+    rendered.stepperSiblings,
+  );
+  check(
+    'the installed stepper takes no constructor argument',
+    rendered.stepperConstructorTakesNothing === true,
+    'vf-stepper takes a constructor argument',
+  );
+  check(
+    'the packaged controller carries the stepper enhancement: the ownership marker it mounts on, the event it dispatches, the marker it sets, the modifier and the factor it rewrites',
+    rendered.stepperBrowserCode === true,
+    'vueforge-razor.js does not carry the stepper controller',
+  );
+  check(
+    'the packaged stylesheet carries the stepper rules once, states, vertical rail scale and content-start included',
+    rendered.stepperCss === true,
+    'vueforge-razor.css is missing stepper rules or duplicates them',
+  );
+
   check(
     'the packaged stylesheet carries the presentation rules',
     rendered.presentationCss,
@@ -1394,6 +1489,7 @@ echo json_encode([
 ${rendered.markup}
 ${rendered.password}
 <div id="accordion-smoke">${rendered.accordionClosed}</div>
+<div id="stepper-smoke">${rendered.stepperDefault}</div>
 <script type="module" src="/assets/vueforge-razor.js"></script></body></html>`,
     );
 
@@ -1531,6 +1627,74 @@ ${rendered.password}
           closedAgain.panels === 0 &&
           JSON.stringify(closedAgain.events) === '[true,false]',
         JSON.stringify(closedAgain),
+      );
+
+      // The stepper, through the packaged controller alone: a real pointer
+      // click on the second trigger, then a real ArrowRight - which has to
+      // skip the disabled third step and wrap to the first - with every half
+      // of the state, the focus and the events read back.
+      const stepperPoint = await page.evaluate(`(() => {
+        const root = document.querySelector('#stepper-smoke [data-vf-razor="stepper"]');
+        window.__stepperEvents = [];
+        root.addEventListener('vf-stepper:change', (event) => window.__stepperEvents.push(event.detail.value));
+        const trigger = root.querySelectorAll('button.vf-stepper__trigger')[1];
+        trigger.scrollIntoView({ block: 'center' });
+        const rect = trigger.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, enhanced: root.hasAttribute('data-vf-razor-stepper-enhanced') };
+      })()`);
+      check('the packaged controller mounted the stepper root', stepperPoint.enhanced === true);
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: stepperPoint.x, y: stepperPoint.y });
+      await page.send('Input.dispatchMouseEvent', {
+        type: 'mousePressed',
+        x: stepperPoint.x,
+        y: stepperPoint.y,
+        button: 'left',
+        clickCount: 1,
+      });
+      await page.send('Input.dispatchMouseEvent', {
+        type: 'mouseReleased',
+        x: stepperPoint.x,
+        y: stepperPoint.y,
+        button: 'left',
+        clickCount: 1,
+      });
+      await delay(100);
+      const readStepper = `(() => {
+        const root = document.querySelector('#stepper-smoke [data-vf-razor="stepper"]');
+        const triggers = [...root.querySelectorAll('button.vf-stepper__trigger')];
+        return {
+          current: triggers.find((t) => t.getAttribute('aria-current') === 'step')?.dataset.vfStepperValue ?? null,
+          currentClass: triggers.find((t) => t.classList.contains('vf-stepper__trigger--current'))?.dataset.vfStepperValue ?? null,
+          states: [...root.querySelectorAll('.vf-stepper__item')].map((item) => [...item.classList].find((c) => c.startsWith('vf-stepper__item--')).slice(18)),
+          factor: root.style.getPropertyValue('--vf-stepper-progress-factor').trim(),
+          focused: root.contains(document.activeElement) ? document.activeElement.dataset.vfStepperValue : null,
+          events: window.__stepperEvents,
+        };
+      })()`;
+      const selected = await page.evaluate(readStepper);
+      check(
+        'a real click on the packaged stepper selects the second step: aria-current, trigger modifier, item classes, factor, focus, one event',
+        selected.current === 'profile' &&
+          selected.currentClass === 'profile' &&
+          JSON.stringify(selected.states) === '["complete","current","disabled"]' &&
+          selected.factor === '0.5' &&
+          selected.focused === 'profile' &&
+          JSON.stringify(selected.events) === '["profile"]',
+        JSON.stringify(selected),
+      );
+      const arrowRight = { key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39, nativeVirtualKeyCode: 39 };
+      await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...arrowRight });
+      await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...arrowRight });
+      await delay(100);
+      const wrapped = await page.evaluate(readStepper);
+      check(
+        'ArrowRight on the focused packaged trigger skips the disabled last step and wraps to the first, with a second event',
+        wrapped.current === 'account' &&
+          JSON.stringify(wrapped.states) === '["current","upcoming","disabled"]' &&
+          wrapped.factor === '0' &&
+          wrapped.focused === 'account' &&
+          JSON.stringify(wrapped.events) === '["profile","account"]',
+        JSON.stringify(wrapped),
       );
 
       check(

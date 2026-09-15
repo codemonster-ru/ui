@@ -196,6 +196,40 @@ test('a relative literal from a nested file resolves against that file, not the 
   assert.deepEqual(inside.violations, []);
 });
 
+test('a relative literal reaching the Vue stepper from the Razor stepper controller is rejected in every JavaScript shape', () => {
+  // The M23 boundary attack: the same H3-through-a-relative-path shape as
+  // M22, aimed at the Vue stepper from the controller that must not know it
+  // exists - as a dynamic import, as a URL built from import.meta.url, and
+  // as a bare literal handed to the bundler. None of the three is a static
+  // import specifier, so the dependency guard never sees them.
+  for (const expression of [
+    `const vue = await import('../../core/src/components/stepper/VfStepper.vue');`,
+    `const source = new URL('../../core/src/components/stepper/VfStepper.vue', import.meta.url);`,
+    `const entry = '../../core/src/entries/stepper.ts';`,
+  ]) {
+    const { violations } = analyze({ 'packages/razor/browser/stepper.ts': expression });
+    assert.equal(violations.length, 1, `expected a violation for ${expression}`);
+    assert.match(violations[0], /packages\/core\/src\/(components\/stepper\/VfStepper\.vue|entries\/stepper\.ts)/);
+  }
+
+  // The controller's real dependency - the neutral shared core, resolved by
+  // the bundler alias rather than by path - stays clean.
+  const { violations } = analyze({
+    'packages/razor/browser/stepper.ts': `import { resolveStepperRootStyle } from '@codemonster-ru/vueforge-shared-core';`,
+  });
+  assert.deepEqual(violations, []);
+});
+
+test('a relative literal reaching the Vue stepper stylesheet from a Razor PHP file is rejected', () => {
+  const { violations } = analyze({
+    'packages/razor/src/Support/StepperState.php': `<?php
+      $css = file_get_contents(__DIR__ . '/../../../core/src/styles/entries/stepper.css');`,
+  });
+
+  assert.equal(violations.length, 1);
+  assert.match(violations[0], /packages\/core\/src\/styles\/entries\/stepper\.css/);
+});
+
 test('a relative literal into a neutral package is an edge, not a violation', () => {
   const { violations, edges } = analyze({
     'packages/razor/build-assets.mjs': `const tokens = resolve(packageRoot, '../theme/.generated/theme/tokens.css');`,

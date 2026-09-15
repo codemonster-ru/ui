@@ -139,6 +139,25 @@ const controlSelectors = {
   // is the control the component owns, and a case that rendered the section
   // without its native button would still have a root.
   VfAccordion: 'button.vf-accordion__trigger',
+  // The M23 component. The trigger again: one per item, and the control the
+  // component owns. Counted by the case's items rather than one per root
+  // (see controlsPerCase).
+  VfStepper: 'button.vf-stepper__trigger',
+};
+
+/**
+ * How many controls a case renders, for the components whose cases hold a
+ * variable number of them. The stepper renders one trigger per item, over
+ * every instance - and its empty-list case renders none, which is the one
+ * case on any route that legitimately shows no control; every other
+ * component renders one control per root.
+ */
+const controlsPerCase = {
+  VfStepper: (parityCase) =>
+    (Array.isArray(parityCase.group) ? parityCase.group : [parityCase.props]).reduce(
+      (total, member) => total + (member.items?.length ?? 0),
+      0,
+    ),
 };
 
 /**
@@ -150,6 +169,7 @@ const controlSelectors = {
 const rootsPerCase = {
   VfAccordion: (parityCase) =>
     (Array.isArray(parityCase.group) ? parityCase.group.length : 1) + (parityCase.content?.body?.accordion ? 1 : 0),
+  VfStepper: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
 };
 
 /**
@@ -164,6 +184,7 @@ const ownershipMarkers = {
   VfField: { root: '[data-vf-razor="input"]', enhanced: '[data-vf-razor-enhanced]' },
   VfTextarea: { root: '[data-vf-razor="textarea"]', enhanced: '[data-vf-razor-textarea-enhanced]' },
   VfAccordion: { root: '[data-vf-razor="accordion"]', enhanced: '[data-vf-razor-accordion-enhanced]' },
+  VfStepper: { root: '[data-vf-razor="stepper"]', enhanced: '[data-vf-razor-stepper-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -182,6 +203,8 @@ const components = showcaseIndex.components
         (total, parityCase) => total + (rootsPerCase[entry.name]?.(parityCase) ?? 1),
         0,
       ),
+      casesWithControls: catalog.cases.filter((parityCase) => (controlsPerCase[entry.name]?.(parityCase) ?? 1) > 0)
+        .length,
     };
   });
 
@@ -226,6 +249,7 @@ check(
       'VfRadio',
       'VfSkeleton',
       'VfSkeletonGate',
+      'VfStepper',
       'VfSwitch',
       'VfTag',
       'VfTextarea',
@@ -461,6 +485,66 @@ async function probeAccordionToggle(origin, path) {
   }
 }
 
+/** Clicks the default stepper case's third trigger on one platform and reads every half of the state back. */
+async function probeStepperSelect(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(
+      `Boolean(document.querySelector('[data-showcase-case="stepper/default"] button.vf-stepper__trigger'))`,
+    );
+    await delay(300);
+
+    const point = await page.evaluate(`(() => {
+      const root = document.querySelector('[data-showcase-case="stepper/default"] .vf-stepper');
+      const trigger = root.querySelectorAll('button.vf-stepper__trigger')[2];
+      trigger.scrollIntoView({ block: 'center' });
+      const rect = trigger.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        before: root.querySelector('[aria-current="step"]')?.dataset.vfStepperValue ?? null,
+      };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: point.x, y: point.y });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: point.x,
+      y: point.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: point.x,
+      y: point.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await delay(200);
+
+    const after = await page.evaluate(`(() => {
+      const root = document.querySelector('[data-showcase-case="stepper/default"] .vf-stepper');
+      const triggers = [...root.querySelectorAll('button.vf-stepper__trigger')];
+      return {
+        after: root.querySelector('[aria-current="step"]')?.dataset.vfStepperValue ?? null,
+        currentClass: triggers.find((t) => t.classList.contains('vf-stepper__trigger--current'))?.dataset.vfStepperValue ?? null,
+        states: [...root.querySelectorAll('.vf-stepper__item')].map((item) => [...item.classList].find((c) => c.startsWith('vf-stepper__item--')).slice(18)),
+        factor: root.style.getPropertyValue('--vf-stepper-progress-factor').trim(),
+        items: root.querySelectorAll('.vf-stepper__item').length,
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /stepper/i.test(script.textContent)).length,
+      };
+    })()`);
+
+    return { before: point.before, ...after };
+  } finally {
+    await page.close();
+  }
+}
+
 /** Opens a case address on one platform and reports which case it selected. */
 async function readSelectedCase(origin, path) {
   const page = await openPage(chrome.endpoint);
@@ -513,7 +597,7 @@ try {
     // stronger reason than the checkable controls: there is no interaction to
     // enhance at all. Their parity profiles say the same thing through the
     // static snapshot.
-    const enhanced = ['VfInput', 'VfField', 'VfTextarea', 'VfAccordion'].includes(name);
+    const enhanced = ['VfInput', 'VfField', 'VfTextarea', 'VfAccordion', 'VfStepper'].includes(name);
 
     for (const theme of themes) {
       const vue = await readShowcase(
@@ -550,14 +634,14 @@ try {
         `${razor.caseIds.length} of ${componentCaseIds.length}`,
       );
       check(
-        `[${name}/${theme}] every Vue case renders a real control`,
-        vue.controls === componentCaseIds.length,
-        `${vue.controls} of ${componentCaseIds.length}`,
+        `[${name}/${theme}] every Vue case that declares a control renders a real one`,
+        vue.controls === component.casesWithControls,
+        `${vue.controls} of ${component.casesWithControls}`,
       );
       check(
-        `[${name}/${theme}] every Razor case renders a real control`,
-        razor.controls === componentCaseIds.length,
-        `${razor.controls} of ${componentCaseIds.length}`,
+        `[${name}/${theme}] every Razor case that declares a control renders a real one`,
+        razor.controls === component.casesWithControls,
+        `${razor.controls} of ${component.casesWithControls}`,
       );
 
       // ------------------------------------------------- the real Razor pipeline
@@ -627,6 +711,36 @@ try {
             `[${name}/${theme}] the ${platform} showcase adds no script of its own to make that happen`,
             toggled.inlineScripts === 0,
             `${toggled.inlineScripts} inline script(s)`,
+          );
+        }
+      }
+
+      // ------------------------------------------- the stepper actually selects
+      //
+      // M23: the same proof for the second interactive component. A real
+      // pointer click on the third trigger of the default case, on both
+      // pages, must move every half of the state - aria-current, the trigger
+      // modifier, the item classes and the factor - with no showcase script.
+      if (name === 'VfStepper') {
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const selected = await probeStepperSelect(origin, route);
+          check(
+            `[${name}/${theme}] the ${platform} showcase selects the last step of the default case on a real click`,
+            selected.before === 'account' &&
+              selected.after === 'confirm' &&
+              selected.currentClass === 'confirm' &&
+              JSON.stringify(selected.states) === '["complete","complete","current"]' &&
+              selected.factor === '1' &&
+              selected.items === 3,
+            JSON.stringify(selected),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to make that happen`,
+            selected.inlineScripts === 0,
+            `${selected.inlineScripts} inline script(s)`,
           );
         }
       }

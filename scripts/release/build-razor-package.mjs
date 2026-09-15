@@ -87,6 +87,12 @@ export const requiredEntries = [
   // dist/vueforge-razor.js; the packaged-consumer proof asserts it is there.
   'src/Components/AccordionComponent.php',
   'src/Support/AccordionState.php',
+  // The M23 component: the second with controls of its own - several native
+  // buttons per instance - and a browser controller that moves a selection
+  // and the focus between them. The controller travels inside
+  // dist/vueforge-razor.js; the packaged-consumer proof asserts it is there.
+  'src/Components/StepperComponent.php',
+  'src/Support/StepperState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',
