@@ -102,7 +102,6 @@ function capture() {
     transitions: {},
     transitionScreenshots: {},
     interactionDom: { 'a/click': dom('true') },
-    interactionConvergence: { 'a/click': dom('true') },
     interactionAccessibility: { 'a/click': accessibility('true') },
     diagnostics: { pageErrors: [] },
   };
@@ -156,7 +155,8 @@ test('a target whose gesture landed on a hybrid fails convergence, attributed to
 test('a post-interaction DOM difference between targets fails on the DOM dimension with a prefixed path', () => {
   const stale = captures();
   stale.razor.light.interactionDom['a/click'] = dom('false');
-  stale.razor.light.interactionConvergence['a/click'] = dom('false');
+  // The fresh render of a/open is the same on this target, so convergence
+  // fails too; the assertion below is about the DOM dimension beside it.
 
   const result = compareCaptures(stale, catalog, policy);
   const aria = result.failures.filter((entry) => entry.dimension === 'dom.aria' && entry.detail === 'aria-expanded');
@@ -177,6 +177,20 @@ test('a post-interaction accessibility difference fails on the a11y dimension', 
 
   assert.ok(
     result.failures.some((entry) => entry.dimension === 'a11y.states' && entry.path === 'post-interaction/trigger'),
+  );
+});
+
+test('convergence is judged against the initial extraction of the named case, so it cannot be satisfied by itself', () => {
+  // The J attack of the M22.1 fail-open review: a harness that recorded the
+  // post-gesture DOM as its own baseline would converge trivially. There is
+  // no such record any more; the baseline is what the initial stage
+  // extracted, and a scenario naming a case that was not extracted fails.
+  const elsewhere = structuredClone(catalog);
+  elsewhere.cases[2].interaction.matches = 'a/never-rendered';
+
+  assert.throws(
+    () => compareCaptures(captures(), elsewhere, policy),
+    /converges on a\/never-rendered, which reference did not extract/,
   );
 });
 
@@ -207,7 +221,6 @@ test('a profile that did not opt in is not reached by the live stage', () => {
   for (const target of Object.values(withoutLive)) {
     for (const theme of Object.values(target)) {
       theme.interactionDom = {};
-      theme.interactionConvergence = {};
       theme.interactionAccessibility = {};
       for (const id of Object.keys(theme.interactions)) {
         theme.interactions[id] = {

@@ -44,6 +44,9 @@ const EXPECT_FIELDS = [
   'consumerControlCount',
   'focusRole',
   'settled',
+  'controlsResolved',
+  'panelLabelledBy',
+  'a11y:trigger.expanded',
 ];
 
 const props = (entry) => entry.props ?? {};
@@ -287,6 +290,24 @@ export function accordionCoverageViolations(cases) {
       violations.push(
         `${entry.id} expects aria-expanded=false with a panel, which is not a state the reference produces`,
       );
+    }
+    // The relationship and the tree are separate evidence from the attribute:
+    // a scenario that claims a state has to claim what the trigger controls,
+    // what labels the panel, and what the tree announces, so a measurement of
+    // any of the three that stopped happening fails on every target.
+    if (expect.expanded === 'true' || expect.expanded === 'false') {
+      const open = expect.expanded === 'true';
+      if (expect.controlsResolved !== (open ? 'panel' : 'dangling')) {
+        violations.push(
+          `${entry.id} claims aria-expanded=${expect.expanded} without claiming what aria-controls resolves to`,
+        );
+      }
+      if (!('panelLabelledBy' in expect) || expect.panelLabelledBy !== (open ? 'trigger' : null)) {
+        violations.push(`${entry.id} claims aria-expanded=${expect.expanded} without claiming what labels the panel`);
+      }
+      if (expect['a11y:trigger.expanded'] !== expect.expanded) {
+        violations.push(`${entry.id} claims aria-expanded=${expect.expanded} without claiming the tree announces it`);
+      }
     }
     if (entry.interaction.matches !== undefined) {
       const target = cases.find((candidate) => candidate.id === entry.interaction.matches);

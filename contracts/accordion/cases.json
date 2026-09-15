@@ -19,7 +19,7 @@
   "interactionVocabulary": {
     "$comment": "A case with an `interaction` is driven in the browser with real pointer and key events, then re-measured: the snapshot, the DOM and the accessibility tree are all taken again after the transition has settled.",
     "steps": "clickButton (a real pointer click at the element's centre; `index` picks a trigger in a group or a nested pair), focusButton, pressKey with Enter or Space.",
-    "expect": "Claims checked against the snapshot on every target: `activates` is whether a native click reached the trigger, `expanded` and `expandedStates` are the trigger's aria-expanded, `panelPresent`/`panelCount` whether the region is in the DOM, `consumerControlCount` the consumer controls after the action, `focusRole` where focus ended, `settled` that no inline transition declaration remained.",
+    "expect": "Claims checked against the snapshot on every target: `activates` is whether a native click reached the trigger, `expanded` and `expandedStates` are the trigger's aria-expanded, `panelPresent`/`panelCount` whether the region is in the DOM, `consumerControlCount` the consumer controls after the action, `focusRole` where focus ended, `settled` that no inline transition declaration remained, `controlsResolved` whether the trigger's aria-controls resolves to its own panel (`panel`) or to nothing (`dangling`) after the action, `panelLabelledBy` whether that panel names the trigger (null when there is no panel). A key of the form `a11y:<role>.<state>` is a claim about the accessibility tree read after the action - `a11y:trigger.expanded` is what assistive technology is told - so a tree that was not re-read cannot pass.",
     "matches": "The initial case whose DOM the post-interaction DOM must equal on the same target. A toggle has to land on the state a fresh render produces, not on a hybrid with leftover inline styles or a hidden panel.",
     "consumerInteractive": "The consumer-control budget after the action, when it differs from the case's initial budget."
   },
@@ -475,7 +475,10 @@
           "expanded": "true",
           "panelPresent": true,
           "focusRole": "trigger",
-          "settled": true
+          "settled": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true"
         },
         "matches": "accordion/default-open"
       },
@@ -506,7 +509,10 @@
           "activates": true,
           "expanded": "false",
           "panelPresent": false,
-          "settled": true
+          "settled": true,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false"
         },
         "matches": "accordion/default"
       },
@@ -539,7 +545,10 @@
         "expect": {
           "expanded": "false",
           "panelPresent": false,
-          "settled": true
+          "settled": true,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false"
         },
         "matches": "accordion/default"
       },
@@ -575,7 +584,10 @@
           "expanded": "true",
           "panelPresent": true,
           "focusRole": "trigger",
-          "settled": true
+          "settled": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true"
         },
         "matches": "accordion/default-open"
       },
@@ -609,7 +621,10 @@
           "activates": false,
           "expanded": "true",
           "panelPresent": true,
-          "settled": true
+          "settled": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true"
         },
         "matches": "accordion/default-open"
       },
@@ -644,7 +659,10 @@
           "activates": false,
           "expanded": "false",
           "panelPresent": false,
-          "settled": true
+          "settled": true,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false"
         },
         "matches": "accordion/default"
       },
@@ -679,7 +697,10 @@
           "activates": false,
           "expanded": "false",
           "panelPresent": false,
-          "focusRole": "body"
+          "focusRole": "body",
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false"
         },
         "matches": "accordion/disabled"
       },
@@ -713,7 +734,10 @@
         "expect": {
           "activates": false,
           "expanded": "false",
-          "panelPresent": false
+          "panelPresent": false,
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false"
         },
         "matches": "accordion/disabled"
       },
@@ -744,7 +768,10 @@
         "expect": {
           "expanded": "true",
           "panelPresent": true,
-          "settled": true
+          "settled": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true"
         },
         "matches": "accordion/controlled-open"
       },
@@ -778,7 +805,10 @@
           "expanded": "true",
           "panelPresent": true,
           "consumerControlCount": 1,
-          "settled": true
+          "settled": true,
+          "controlsResolved": "panel",
+          "panelLabelledBy": "trigger",
+          "a11y:trigger.expanded": "true"
         },
         "matches": "accordion/consumer-control-open",
         "consumerInteractive": 1
@@ -882,7 +912,10 @@
           "activates": false,
           "expanded": "false",
           "panelPresent": false,
-          "focusRole": "trigger"
+          "focusRole": "trigger",
+          "controlsResolved": "dangling",
+          "panelLabelledBy": null,
+          "a11y:trigger.expanded": "false"
         },
         "matches": "accordion/default"
       },

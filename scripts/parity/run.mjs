@@ -291,7 +291,6 @@ async function captureTarget(
     const naturalInteractionScreenshots = {};
     // Live parity records, filled only for a profile that declares liveParity.
     const interactionDom = {};
-    const interactionConvergence = {};
     const interactionAccessibility = {};
     // A component with no interaction still has to produce interaction
     // evidence. Recording the posture per case is what makes "nothing to drive"
@@ -454,11 +453,11 @@ async function captureTarget(
       // changes its DOM. The snapshot above is the component-shaped record;
       // this is everything the initial stage measured, measured again: the
       // ownership assertion against the scenario's own budget, the DOM
-      // description, the accessibility tree, and the fresh render of the case
-      // the scenario names. Convergence - the gesture's DOM has to equal that
-      // render, or the toggle landed on a hybrid - is judged in compareCaptures,
+      // description, the accessibility tree. Convergence - the gesture's DOM
+      // has to equal this target's initial extraction of the case the scenario
+      // names, or the toggle landed on a hybrid - is judged in compareCaptures,
       // where it is a within-target invariant reported per direction and never
-      // approvable; M22.1 removed the duplicate throw that judged it here too.
+      // approvable.
       // Gated on the profile because the earlier interaction profiles carry
       // their live contract inside their snapshots and their approvals are
       // counted exactly; a stage they did not opt into must not move them.
@@ -475,7 +474,6 @@ async function captureTarget(
         }
         const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
         interactionDom[parityCase.id] = after.cases[parityCase.id].dom;
-        interactionConvergence[parityCase.id] = after.cases[parityCase.interaction.matches]?.dom ?? null;
         interactionAccessibility[parityCase.id] = await readAccessibility(
           page,
           parityCase.id,
@@ -500,6 +498,28 @@ async function captureTarget(
       // before it could report the defect it was constructed to find.
       const expected = mutation ? undefined : parityCase.interaction.expect;
       for (const [key, want] of Object.entries(expected ?? {})) {
+        // `a11y:<role>.<state>` is a claim about the accessibility tree after
+        // the gesture, read back from the tree rather than from the DOM. M22.1
+        // added it after the fail-open review: a live stage that copied the
+        // initial tree instead of re-reading it would have agreed with itself
+        // on every target, and only a per-target claim can notice.
+        if (key.startsWith('a11y:')) {
+          const [role, state] = key.slice('a11y:'.length).split('.');
+          const node = interactionAccessibility[parityCase.id]?.[role];
+          if (!node) {
+            throw new Error(
+              `${parityCase.id} on ${label} (${theme}): the catalog expects ${key}, but no live accessibility ` +
+                `record exposes [${role}]. A claim about a tree that was not read is not evidence.`,
+            );
+          }
+          if ((node.states[state] ?? null) !== want) {
+            throw new Error(
+              `${parityCase.id} on ${label} (${theme}): the catalog expects ${key}=${JSON.stringify(want)}, ` +
+                `but the tree recorded ${JSON.stringify(node.states[state] ?? null)}.`,
+            );
+          }
+          continue;
+        }
         // `activates` is a claim about a counter; everything else is a claim
         // about a snapshot field of the same name.
         const got = key === 'activates' ? (result.activations ?? 0) > 0 : result[key];
@@ -563,7 +583,6 @@ async function captureTarget(
       transitions,
       transitionScreenshots,
       interactionDom,
-      interactionConvergence,
       interactionAccessibility,
       diagnostics: page.diagnostics,
     };
@@ -583,7 +602,6 @@ function mergeCapture(target, recaptured) {
     'transitions',
     'transitionScreenshots',
     'interactionDom',
-    'interactionConvergence',
     'interactionAccessibility',
   ])
     Object.assign(target[key], recaptured[key]);
@@ -871,10 +889,21 @@ export function compareCaptures(captures, catalog, policy) {
                     'failure, not a skip.',
                 );
               }
-              const expectedDom = capture.interactionConvergence?.[id];
+              // The state to converge on is the target's own initial extraction
+              // of the case the catalog names - captured on the same page, by
+              // the same expression, before any gesture. M22.1 removed the
+              // separate post-gesture baseline that M22 recorded beside the
+              // result: a harness that filled it from the result itself would
+              // have made convergence vacuous, and nothing could have noticed.
+              const expectedDom = capture.extracted[parityCase.interaction.matches]?.dom;
+              if (parityCase.interaction.matches !== undefined && expectedDom === undefined) {
+                throw new Error(
+                  `Case ${id} converges on ${parityCase.interaction.matches}, which ${target} did not extract.`,
+                );
+              }
               if (
-                parityCase.interaction.matches !== undefined &&
-                JSON.stringify(capture.interactionDom[id]) !== JSON.stringify(expectedDom ?? null)
+                expectedDom !== undefined &&
+                JSON.stringify(capture.interactionDom[id]) !== JSON.stringify(expectedDom)
               ) {
                 raw.push({
                   dimension: 'interaction.convergence',

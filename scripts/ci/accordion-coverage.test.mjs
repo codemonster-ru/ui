@@ -352,6 +352,24 @@ test('H. an interaction that expects aria-expanded without the panel, or the two
   );
 });
 
+test('H. an interaction that claims a state without its relationship and tree claims is rejected', () => {
+  // The M22.1 fail-open review: a relationship or tree measurement that
+  // stopped happening would agree with itself on every target, so the catalog
+  // has to claim all three beside aria-expanded.
+  for (const dropped of ['controlsResolved', 'panelLabelledBy', 'a11y:trigger.expanded']) {
+    const eroded = load('accordion').map((entry) => {
+      if (entry.id !== 'accordion/interaction-click-opens') return entry;
+      const expect = { ...entry.interaction.expect };
+      delete expect[dropped];
+      return { ...entry, interaction: { ...entry.interaction, expect } };
+    });
+    assert.ok(
+      accordionCoverageViolations(eroded).some((violation) => violation.includes('without claiming')),
+      `dropping ${dropped} was accepted`,
+    );
+  }
+});
+
 test('H. an interaction that converges on a case rendering the other state is rejected', () => {
   const eroded = load('accordion').map((entry) =>
     entry.id === 'accordion/interaction-click-opens'
