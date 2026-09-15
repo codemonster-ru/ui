@@ -177,6 +177,44 @@ foreach ($accordionCases as $name => $markup) {
     $sections .= '<section class="case" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
 }
 
+// ------------------------------------------------------------------ stepper
+//
+// The M23 sections. Real vf-stepper renders in the states the browser suite
+// drives: a horizontal default, a vertical one, one with a disabled middle
+// step, two siblings *sharing* values (the shared-value focus quirk the Razor
+// controller does not reproduce), a consumer button beside a stepper, and a
+// copy of the stepper markup without the ownership marker, which the
+// controller must ignore.
+$stepper = $registry->resolve('vf-stepper');
+if ($stepper === null) {
+    fwrite(STDERR, "vf-stepper must be registered.\n");
+    exit(1);
+}
+$stepperItems = [
+    ['value' => 'account', 'label' => 'Account'],
+    ['value' => 'profile', 'label' => 'Profile', 'description' => 'Tell us about yourself'],
+    ['value' => 'confirm', 'label' => 'Confirm'],
+];
+$renderStepper = static function (array $props) use ($stepper, $stepperItems): string {
+    return $stepper->render(new ComponentRenderContext($props + ['items' => $stepperItems], []))->value();
+};
+$stepperCases = [
+    'stepper-horizontal' => $renderStepper([]),
+    'stepper-vertical' => $renderStepper(['orientation' => 'vertical', 'default-value' => 'profile']),
+    'stepper-disabled' => $renderStepper(['items' => [
+        $stepperItems[0],
+        $stepperItems[1] + ['disabled' => true],
+        $stepperItems[2],
+    ]]),
+    'stepper-siblings' => $renderStepper(['aria-label' => 'First']) . $renderStepper(['aria-label' => 'Second', 'default-value' => 'confirm']),
+    'stepper-consumer' => $renderStepper(['default-value' => 'profile']) . '<button type="button" id="stepper-continue">Continue</button>',
+    // The same markup with the marker stripped: not Razor-owned, must not mount.
+    'stepper-unowned' => str_replace(' data-vf-razor="stepper"', '', $renderStepper(['aria-label' => 'Unowned'])),
+];
+foreach ($stepperCases as $name => $markup) {
+    $sections .= '<section class="case" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'

@@ -105,6 +105,15 @@ export const COMPARED_ATTRIBUTES = [
   // announce the trigger twice.
   'aria-expanded',
   'aria-disabled',
+  // VfStepper. Found missing by the attribute-coverage gate in M23, the
+  // tenth time it has caught an attribute nothing compared. `aria-current`
+  // is the stepper's whole announced selection: before M23 no migrated
+  // component wrote it, and a target whose current trigger lost it - or
+  // whose every trigger gained aria-current="false" - compared equal on
+  // every attribute while the classes, the factor and the screenshot all
+  // passed. The reference writes `step` on the current trigger and nothing
+  // elsewhere, and forwards a consumer's onto the nav.
+  'aria-current',
   'focusable',
   'style',
   'hidden',
@@ -540,8 +549,11 @@ export async function driveInteraction(page, caseId, steps, activationSelector =
     } else if (step.action === 'pressKey') {
       await pressKey(page, step.key);
     } else if (step.action === 'focusButton') {
+      // `index` picks a member, as it does for clickButton since M22; a
+      // stepper (M23) owns several buttons and its keyboard scenarios start
+      // from a named one.
       await page.evaluate(`(() => {
-        const button = document.querySelector(${JSON.stringify(selector)}).querySelector(${JSON.stringify(step.selector ?? '.vf-icon-button')});
+        const button = document.querySelector(${JSON.stringify(selector)}).querySelectorAll(${JSON.stringify(step.selector ?? '.vf-icon-button')})[${step.index ?? 0}];
         if (!button) throw new Error('missing interaction button');
         button.focus();
       })()`);
@@ -635,6 +647,15 @@ const KEY_CODES = {
   Enter: { code: 'Enter', virtualKeyCode: 13, text: '\r' },
   ' ': { code: 'Space', virtualKeyCode: 32, text: ' ' },
   Tab: { code: 'Tab', virtualKeyCode: 9, text: undefined },
+  // The navigation keys, added for VfStepper (M23): the first component
+  // whose keyboard contract is movement between owned controls rather than
+  // activation of one. None produces a character.
+  Home: { code: 'Home', virtualKeyCode: 36, text: undefined },
+  End: { code: 'End', virtualKeyCode: 35, text: undefined },
+  ArrowLeft: { code: 'ArrowLeft', virtualKeyCode: 37, text: undefined },
+  ArrowUp: { code: 'ArrowUp', virtualKeyCode: 38, text: undefined },
+  ArrowRight: { code: 'ArrowRight', virtualKeyCode: 39, text: undefined },
+  ArrowDown: { code: 'ArrowDown', virtualKeyCode: 40, text: undefined },
 };
 
 /**
@@ -1391,6 +1412,134 @@ function accordionInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfStepper case reports, before and after an interaction.
+ *
+ * Component-specific and named so, like accordionInteractionExpression. It
+ * selects the stepper's own elements; what it records falls into three
+ * groups, each compared as its own dimension so a defect is attributed to the
+ * half it is in:
+ *
+ *   - ownership: every control the profile says the component owns - here
+ *     several of one role - with its tag, type, value, place and state, and
+ *     every focusable element that is not one of them. A consumer button
+ *     beside the stepper is classified by identity, not containment;
+ *   - state, on the live DOM and in four separately recorded halves: which
+ *     trigger carries aria-current, which carries the trigger's own current
+ *     modifier, every item's state modifier, and the root's inline progress
+ *     factor - beside the disabled triggers, the item and trigger counts,
+ *     and (for a group) the current value of every instance. A port that
+ *     moves one half and not another differs on the half that is wrong;
+ *   - the scenario's own record: activations, which trigger has focus, whether
+ *     each keydown was prevented, and the neutral change log the fixture
+ *     keeps.
+ *
+ * Synchronous: the stepper has no transition to wait out. Every item stays in
+ * the DOM across a selection change, which is what lets convergence compare
+ * the whole post-gesture DOM against a fresh render of the target case.
+ */
+function stepperInteractionExpression(caseId, controlOwnership = {}) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+
+    const pathOf = (element) => {
+      const segments = [];
+      for (let node = element; node && node !== root; node = node.parentElement) {
+        const classes = [...node.classList].filter((name) => name.startsWith('vf-')).sort();
+        segments.unshift(node.tagName.toLowerCase() + (classes.length ? '.' + classes.join('.') : ''));
+      }
+      return segments.join('>');
+    };
+
+    const focusable = [...root.querySelectorAll(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            type: element.getAttribute('type'),
+            path: pathOf(element),
+            value: element.getAttribute('data-vf-stepper-value'),
+            current: element.getAttribute('aria-current'),
+            currentClass: element.classList.contains('vf-stepper__trigger--current'),
+            disabled: element.hasAttribute('disabled'),
+            focusable: focusable.includes(element),
+            name: (element.textContent ?? '').replace(/\\s+/g, ' ').trim(),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const roots = [...root.querySelectorAll('.vf-stepper')];
+    const first = roots[0] ?? null;
+    const triggersOf = (stepper) => [...stepper.querySelectorAll('.vf-stepper__trigger')];
+    const currentOf = (stepper) =>
+      triggersOf(stepper).find((trigger) => trigger.getAttribute('aria-current') === 'step')?.getAttribute('data-vf-stepper-value') ?? null;
+    const stateOf = (item) =>
+      [...item.classList].find((name) => name.startsWith('vf-stepper__item--'))?.slice('vf-stepper__item--'.length) ?? null;
+
+    const activeElement = document.activeElement;
+    const focusedTrigger = triggersOf(root).find((trigger) => trigger === activeElement) ?? null;
+    const focusRole = focusedTrigger
+      ? 'trigger'
+      : activeElement === document.body
+        ? 'body'
+        : root.contains(activeElement) ? 'other-inside-case' : 'outside-case';
+
+    const caseRect = root.getBoundingClientRect();
+
+    return {
+      clip: {
+        x: Math.round(caseRect.left + window.scrollX),
+        y: Math.round(caseRect.top + window.scrollY),
+        width: Math.round(caseRect.width),
+        height: Math.round(caseRect.height),
+      },
+      // Ownership. Declared posture beside the measurement, as the static
+      // snapshot does; the list is what the count is derived from.
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: [...root.querySelectorAll('*')].filter((element) =>
+        INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      // State, on the live DOM, one half per field.
+      currentValue: first ? currentOf(first) : null,
+      currentValues: roots.map(currentOf),
+      currentClassValue: first
+        ? (triggersOf(first).find((trigger) => trigger.classList.contains('vf-stepper__trigger--current'))?.getAttribute('data-vf-stepper-value') ?? null)
+        : null,
+      itemStates: first ? [...first.querySelectorAll('.vf-stepper__item')].map(stateOf) : [],
+      itemCount: first ? first.querySelectorAll('.vf-stepper__item').length : 0,
+      triggerCount: first ? triggersOf(first).length : 0,
+      progressFactor: first ? (first.style.getPropertyValue('--vf-stepper-progress-factor').trim() || null) : null,
+      itemCountVariable: first ? (first.style.getPropertyValue('--vf-stepper-item-count').trim() || null) : null,
+      disabledValues: first
+        ? triggersOf(first).filter((trigger) => trigger.hasAttribute('disabled')).map((trigger) => trigger.getAttribute('data-vf-stepper-value'))
+        : [],
+      // The scenario's own record.
+      activations: window.__parityActivations ?? 0,
+      focusRole,
+      focusValue: focusedTrigger?.getAttribute('data-vf-stepper-value') ?? null,
+      keydownPrevented: (window.__parityInputEvents ?? []).filter((entry) => entry.type === 'keydown').map((entry) => entry.defaultPrevented),
+      events: window.__parityStepperEvents?.[${JSON.stringify(caseId)}] ?? [],
+    };
+  })()`;
+}
+
+/**
  * Reports the actual post-scenario state before any visual focus normalization.
  *
  * The shape is component-specific - a caret position means nothing on a button,
@@ -1408,6 +1557,10 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
 
   if (snapshot === 'accordion') {
     return accordionInteractionExpression(caseId, controlOwnership);
+  }
+
+  if (snapshot === 'stepper') {
+    return stepperInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

@@ -647,6 +647,25 @@ const INTERACTION_FIELDS = {
   controlsResolved: { dimension: 'interaction.relationships' },
   panelLabelledBy: { dimension: 'interaction.relationships' },
   events: { dimension: 'interaction.events', format: 'json' },
+  // VfStepper. Ownership reuses the five fields above. The state is
+  // recorded in halves on purpose: aria-current, the trigger's own modifier,
+  // the item modifiers and the progress factor are four fields a port can
+  // move separately, and each moves this dimension on the field that is
+  // wrong. `focusValue` is which owned trigger has focus, by value;
+  // `keydownPrevented` is the per-key record of whether the component
+  // handled it - the difference between a navigation key and a wrong-axis
+  // key, and between native Enter and a handled one.
+  currentValue: { dimension: 'interaction.state' },
+  currentValues: { dimension: 'interaction.state', format: 'json' },
+  currentClassValue: { dimension: 'interaction.state' },
+  itemStates: { dimension: 'interaction.state', format: 'json' },
+  itemCount: { dimension: 'interaction.state' },
+  triggerCount: { dimension: 'interaction.state' },
+  progressFactor: { dimension: 'interaction.state' },
+  itemCountVariable: { dimension: 'interaction.state' },
+  disabledValues: { dimension: 'interaction.state', format: 'json' },
+  focusValue: { dimension: 'interaction.focus' },
+  keydownPrevented: { dimension: 'interaction.state', format: 'json' },
 };
 
 /**

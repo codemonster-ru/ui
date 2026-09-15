@@ -99,6 +99,13 @@ async function pressKey(page, key) {
   const descriptor = {
     Enter: { code: 'Enter', keyCode: 13, text: '\r' },
     ' ': { code: 'Space', keyCode: 32, text: ' ' },
+    // The stepper's navigation keys (M23); none produces a character.
+    Home: { code: 'Home', keyCode: 36 },
+    End: { code: 'End', keyCode: 35 },
+    ArrowLeft: { code: 'ArrowLeft', keyCode: 37 },
+    ArrowUp: { code: 'ArrowUp', keyCode: 38 },
+    ArrowRight: { code: 'ArrowRight', keyCode: 39 },
+    ArrowDown: { code: 'ArrowDown', keyCode: 40 },
   }[key];
   const base = {
     key,
@@ -107,12 +114,14 @@ async function pressKey(page, key) {
     nativeVirtualKeyCode: descriptor.keyCode,
   };
   await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
-  await page.send('Input.dispatchKeyEvent', {
-    type: 'char',
-    ...base,
-    text: descriptor.text,
-    unmodifiedText: descriptor.text,
-  });
+  if (descriptor.text !== undefined) {
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'char',
+      ...base,
+      text: descriptor.text,
+      unmodifiedText: descriptor.text,
+    });
+  }
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
 }
 
@@ -179,6 +188,60 @@ const readAccordion = (caseName, triggerText) => `(() => {
     focused: document.activeElement === trigger,
     events: window.__accordionEvents?.['${caseName}/' + ${JSON.stringify(triggerText)}] ?? null,
     triggerCount: root.querySelectorAll('.vf-accordion__trigger').length,
+  };
+})()`;
+
+/**
+ * Installs a per-root log of the stepper's change events and a per-root
+ * native click counter, keyed by the case name and the nav's accessible name.
+ * The click counter is what tells native Enter/Space activation (one click)
+ * from a handled key (none).
+ */
+const installStepperLog = `(() => {
+  window.__stepperEvents = {};
+  window.__stepperClicks = {};
+  window.__stepperKeydowns = {};
+  for (const root of document.querySelectorAll('[data-case] .vf-stepper')) {
+    const name = root.closest('[data-case]').dataset.case + '/' + root.getAttribute('aria-label');
+    window.__stepperEvents[name] = [];
+    window.__stepperClicks[name] = 0;
+    window.__stepperKeydowns[name] = [];
+    root.addEventListener('vf-stepper:change', (event) => {
+      if (event.target !== root) return;
+      window.__stepperEvents[name].push({ value: event.detail.value, bubbles: event.bubbles });
+    });
+    root.addEventListener('click', (event) => {
+      if (event.target.closest('.vf-stepper__trigger')) window.__stepperClicks[name] += 1;
+    });
+    root.addEventListener('keydown', (event) => {
+      const entry = { key: event.key, prevented: false };
+      window.__stepperKeydowns[name].push(entry);
+      setTimeout(() => { entry.prevented = event.defaultPrevented; }, 0);
+    });
+  }
+  return Object.keys(window.__stepperEvents).length;
+})()`;
+
+/** The stepper in a case as the suite reads it, by its accessible name. */
+const readStepper = (caseName, label) => `(() => {
+  const root = [...document.querySelectorAll('[data-case="${caseName}"] .vf-stepper')]
+    .find((candidate) => candidate.getAttribute('aria-label') === ${JSON.stringify(label)});
+  const triggers = [...root.querySelectorAll('.vf-stepper__trigger')];
+  const key = '${caseName}/' + ${JSON.stringify(label)};
+  return {
+    enhanced: root.hasAttribute('data-vf-razor-stepper-enhanced'),
+    current: triggers.find((t) => t.getAttribute('aria-current') === 'step')?.dataset.vfStepperValue ?? null,
+    currentClass: triggers.find((t) => t.classList.contains('vf-stepper__trigger--current'))?.dataset.vfStepperValue ?? null,
+    ariaCurrentValues: triggers.map((t) => t.getAttribute('aria-current')),
+    states: [...root.querySelectorAll('.vf-stepper__item')].map((item) => [...item.classList].find((c) => c.startsWith('vf-stepper__item--')).slice(18)),
+    factor: root.style.getPropertyValue('--vf-stepper-progress-factor').trim(),
+    count: root.style.getPropertyValue('--vf-stepper-item-count').trim(),
+    itemCount: root.querySelectorAll('.vf-stepper__item').length,
+    triggerCount: triggers.length,
+    focused: root.contains(document.activeElement) ? document.activeElement.dataset.vfStepperValue ?? 'inside' : null,
+    events: window.__stepperEvents?.[key] ?? null,
+    clicks: window.__stepperClicks?.[key] ?? null,
+    keydowns: window.__stepperKeydowns?.[key] ?? null,
   };
 })()`;
 
@@ -754,6 +817,384 @@ try {
       page.diagnostics.pageErrors.length === 0,
       page.diagnostics.pageErrors.join('; '),
     );
+  });
+
+  // ------------------------------------------------------------- stepper
+  //
+  // The M23 sections: one root per case enhanced by its marker, a real click
+  // that moves every half of the state and dispatches one event, Enter and
+  // Space that reach the click handler through native activation (one click
+  // each), the six navigation keys with their axis, wrapping and disabled
+  // skipping, focus that stays inside the root even when a sibling shares
+  // the value, a consumer button beside the stepper that is left alone, and
+  // an unowned copy that is not mounted.
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-stepper-enhanced]'))`);
+    const logged = await page.evaluate(installStepperLog);
+    check('the stepper event log covers every stepper on the page', logged === 7, `logged ${logged}`);
+
+    const roots = await page.evaluate(`({
+      owned: document.querySelectorAll('[data-vf-razor="stepper"]').length,
+      enhanced: document.querySelectorAll('[data-vf-razor="stepper"][data-vf-razor-stepper-enhanced]').length,
+      unowned: document.querySelectorAll('[data-case="stepper-unowned"] .vf-stepper[data-vf-razor-stepper-enhanced]').length,
+      unownedRoots: document.querySelectorAll('[data-case="stepper-unowned"] .vf-stepper').length,
+      triggers: document.querySelectorAll('[data-vf-razor="stepper"] button.vf-stepper__trigger').length,
+    })`);
+    check(
+      'every Razor-owned stepper root is enhanced',
+      roots.owned === 6 && roots.enhanced === 6,
+      JSON.stringify(roots),
+    );
+    check(
+      'a stepper copy without the ownership marker is not mounted',
+      roots.unownedRoots === 1 && roots.unowned === 0,
+      JSON.stringify(roots),
+    );
+    check('the owned steppers carry one native button per item', roots.triggers === 18, `triggers ${roots.triggers}`);
+
+    // -- click: every half of the state moves, one event
+    const before = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'a horizontal stepper starts with the first step current and factor 0',
+      before.current === 'account' &&
+        before.currentClass === 'account' &&
+        before.factor === '0' &&
+        JSON.stringify(before.states) === '["current","upcoming","upcoming"]',
+      JSON.stringify(before),
+    );
+    await clickAt(page, '[data-case="stepper-horizontal"] .vf-stepper__item:nth-child(3) .vf-stepper__trigger');
+    await delay(50);
+    const clicked = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'a real click moves aria-current, the trigger modifier, the item classes and the factor together',
+      clicked.current === 'confirm' &&
+        clicked.currentClass === 'confirm' &&
+        JSON.stringify(clicked.states) === '["complete","complete","current"]' &&
+        clicked.factor === '1' &&
+        JSON.stringify(clicked.ariaCurrentValues) === '[null,null,"step"]',
+      JSON.stringify(clicked),
+    );
+    check(
+      'every item survives the click',
+      clicked.itemCount === 3 && clicked.triggerCount === 3 && clicked.count === '3',
+    );
+    check(
+      'one click dispatches one bubbling change event with the value',
+      JSON.stringify(clicked.events) === '[{"value":"confirm","bubbles":true}]',
+      JSON.stringify(clicked.events),
+    );
+    check(
+      'a click leaves focus on the clicked trigger',
+      clicked.focused === 'confirm',
+      JSON.stringify(clicked.focused),
+    );
+
+    // -- click on the current step: counted, suppressed
+    await clickAt(page, '[data-case="stepper-horizontal"] .vf-stepper__item:nth-child(3) .vf-stepper__trigger');
+    await delay(50);
+    const reclicked = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'a click on the current step reaches the trigger and changes nothing',
+      reclicked.clicks === 2 && reclicked.current === 'confirm' && reclicked.events.length === 1,
+      JSON.stringify(reclicked),
+    );
+
+    // -- Enter and Space: native activation, one click each, keydown not prevented
+    await page.evaluate(
+      `document.querySelector('[data-case="stepper-horizontal"] .vf-stepper__item:nth-child(1) .vf-stepper__trigger').focus()`,
+    );
+    await pressKey(page, 'Enter');
+    await delay(50);
+    const afterEnter = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'Enter activates natively: one more click counted, the selection moves, the keydown is not prevented',
+      afterEnter.clicks === 3 &&
+        afterEnter.current === 'account' &&
+        afterEnter.keydowns.at(-1).key === 'Enter' &&
+        afterEnter.keydowns.at(-1).prevented === false,
+      JSON.stringify(afterEnter),
+    );
+    await page.evaluate(
+      `document.querySelector('[data-case="stepper-horizontal"] .vf-stepper__item:nth-child(2) .vf-stepper__trigger').focus()`,
+    );
+    await pressKey(page, ' ');
+    await delay(50);
+    const afterSpace = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'Space activates natively as well',
+      afterSpace.clicks === 4 &&
+        afterSpace.current === 'profile' &&
+        afterSpace.factor === '0.5' &&
+        afterSpace.keydowns.at(-1).key === ' ' &&
+        afterSpace.keydowns.at(-1).prevented === false,
+      JSON.stringify(afterSpace),
+    );
+    check(
+      'the three changes are logged in order',
+      JSON.stringify(afterSpace.events.map((e) => e.value)) === '["confirm","account","profile"]',
+      JSON.stringify(afterSpace.events),
+    );
+
+    // -- ArrowRight/ArrowLeft, wrap, Home, End, wrong axis
+    await pressKey(page, 'ArrowRight');
+    await delay(50);
+    const right = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'ArrowRight is prevented, activates the next step and focuses it, with no native click',
+      right.current === 'confirm' &&
+        right.focused === 'confirm' &&
+        right.clicks === 4 &&
+        right.keydowns.at(-1).prevented === true,
+      JSON.stringify(right),
+    );
+    await pressKey(page, 'ArrowRight');
+    await delay(50);
+    const wrapped = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'ArrowRight from the last step wraps to the first',
+      wrapped.current === 'account' && wrapped.focused === 'account',
+      JSON.stringify(wrapped),
+    );
+    await pressKey(page, 'ArrowLeft');
+    await delay(50);
+    const left = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'ArrowLeft from the first step wraps to the last',
+      left.current === 'confirm' && left.focused === 'confirm',
+      JSON.stringify(left),
+    );
+    await pressKey(page, 'Home');
+    await delay(50);
+    const home = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'Home activates and focuses the first step',
+      home.current === 'account' && home.focused === 'account' && home.keydowns.at(-1).prevented === true,
+      JSON.stringify(home),
+    );
+    await pressKey(page, 'End');
+    await delay(50);
+    const end = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'End activates and focuses the last step',
+      end.current === 'confirm' && end.focused === 'confirm' && end.keydowns.at(-1).prevented === true,
+      JSON.stringify(end),
+    );
+    await pressKey(page, 'ArrowDown');
+    await delay(50);
+    const wrongAxis = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'ArrowDown on a horizontal stepper is ignored and not prevented',
+      wrongAxis.current === 'confirm' &&
+        wrongAxis.focused === 'confirm' &&
+        wrongAxis.keydowns.at(-1).key === 'ArrowDown' &&
+        wrongAxis.keydowns.at(-1).prevented === false &&
+        wrongAxis.events.length === end.events.length,
+      JSON.stringify(wrongAxis),
+    );
+
+    // -- vertical axis
+    await page.evaluate(
+      `document.querySelector('[data-case="stepper-vertical"] .vf-stepper__item:nth-child(2) .vf-stepper__trigger').focus()`,
+    );
+    await pressKey(page, 'ArrowRight');
+    await pressKey(page, 'ArrowDown');
+    await delay(50);
+    const vertical = await page.evaluate(readStepper('stepper-vertical', 'Progress'));
+    check(
+      'a vertical stepper ignores ArrowRight and navigates on ArrowDown',
+      vertical.current === 'confirm' &&
+        vertical.focused === 'confirm' &&
+        vertical.keydowns[0].prevented === false &&
+        vertical.keydowns[1].prevented === true &&
+        vertical.events.length === 1,
+      JSON.stringify(vertical),
+    );
+    await pressKey(page, 'ArrowUp');
+    await pressKey(page, 'ArrowUp');
+    await delay(50);
+    const up = await page.evaluate(readStepper('stepper-vertical', 'Progress'));
+    check(
+      'ArrowUp twice goes back through the middle to the first step',
+      up.current === 'account' && up.focused === 'account',
+      JSON.stringify(up),
+    );
+
+    // -- disabled: skipped by keys, no focus, no click
+    await page.evaluate(
+      `document.querySelector('[data-case="stepper-disabled"] .vf-stepper__item:nth-child(1) .vf-stepper__trigger').focus()`,
+    );
+    await pressKey(page, 'ArrowRight');
+    await delay(50);
+    const skipped = await page.evaluate(readStepper('stepper-disabled', 'Progress'));
+    check(
+      'ArrowRight skips the disabled middle step',
+      skipped.current === 'confirm' &&
+        skipped.focused === 'confirm' &&
+        JSON.stringify(skipped.states) === '["complete","disabled","current"]',
+      JSON.stringify(skipped),
+    );
+    await page.evaluate(
+      `document.querySelector('[data-case="stepper-disabled"] .vf-stepper__item:nth-child(2) .vf-stepper__trigger').focus()`,
+    );
+    const disabledPoint = await page.evaluate(`(() => {
+      const element = document.querySelector('[data-case="stepper-disabled"] .vf-stepper__item:nth-child(2) .vf-stepper__trigger');
+      element.scrollIntoView({ block: 'center' });
+      const rect = element.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...disabledPoint });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      ...disabledPoint,
+      button: 'left',
+      clickCount: 1,
+    });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      ...disabledPoint,
+      button: 'left',
+      clickCount: 1,
+    });
+    await page.evaluate(
+      `document.querySelector('[data-case="stepper-disabled"] .vf-stepper__item:nth-child(2) .vf-stepper__trigger').dispatchEvent(new MouseEvent('click', { bubbles: true }))`,
+    );
+    await delay(50);
+    const disabled = await page.evaluate(readStepper('stepper-disabled', 'Progress'));
+    check(
+      'a disabled trigger takes no focus and a real or synthetic click on it selects nothing',
+      disabled.current === 'confirm' && disabled.focused !== 'profile' && disabled.events.length === 1,
+      JSON.stringify(disabled),
+    );
+
+    // -- siblings sharing values: state and focus stay in their own root
+    await page.evaluate(
+      `document.querySelector('[data-case="stepper-siblings"] .vf-stepper:last-of-type .vf-stepper__item:nth-child(1) .vf-stepper__trigger').focus()`,
+    );
+    await pressKey(page, 'ArrowRight');
+    await delay(50);
+    const firstSibling = await page.evaluate(readStepper('stepper-siblings', 'First'));
+    const secondSibling = await page.evaluate(readStepper('stepper-siblings', 'Second'));
+    check(
+      'ArrowRight in the second sibling changes the second sibling only',
+      secondSibling.current === 'profile' &&
+        secondSibling.events.length === 1 &&
+        firstSibling.current === 'account' &&
+        firstSibling.events.length === 0,
+      JSON.stringify({ firstSibling, secondSibling }),
+    );
+    check(
+      'the Razor controller focuses within its own root although the first sibling shares the value - the historical document-wide lookup is not reproduced',
+      secondSibling.focused === 'profile' && firstSibling.focused === null,
+      JSON.stringify({ firstFocused: firstSibling.focused, secondFocused: secondSibling.focused }),
+    );
+
+    // -- a consumer button beside the stepper is the consumer's
+    const consumerBefore = await page.evaluate(`(() => {
+      const button = document.querySelector('#stepper-continue');
+      window.__continueClicks = 0;
+      button.addEventListener('click', () => { window.__continueClicks += 1; });
+      return { classed: button.classList.contains('vf-stepper__trigger'), buttons: document.querySelectorAll('[data-case="stepper-consumer"] button').length };
+    })()`);
+    await clickAt(page, '#stepper-continue');
+    await delay(50);
+    const consumer = await page.evaluate(readStepper('stepper-consumer', 'Progress'));
+    const continueClicks = await page.evaluate('window.__continueClicks');
+    check(
+      'clicking the consumer button beside the stepper reaches the consumer and selects nothing',
+      consumerBefore.classed === false &&
+        consumerBefore.buttons === 4 &&
+        continueClicks === 1 &&
+        consumer.current === 'profile' &&
+        consumer.events.length === 0,
+      JSON.stringify({ consumerBefore, continueClicks, consumer }),
+    );
+
+    check(
+      'the stepper page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // -------------------------------------------------------- stepper, no-js
+  await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
+    const noJs = await page.evaluate(`(() => {
+      const trigger = document.querySelector('[data-case="stepper-horizontal"] .vf-stepper__item:nth-child(2) .vf-stepper__trigger');
+      const before = document.querySelector('[data-case="stepper-horizontal"] [aria-current="step"]').dataset.vfStepperValue;
+      trigger.click();
+      return {
+        enhanced: document.querySelectorAll('[data-vf-razor-stepper-enhanced]').length,
+        currentBefore: before,
+        currentAfterClick: document.querySelector('[data-case="stepper-horizontal"] [aria-current="step"]').dataset.vfStepperValue,
+        states: [...document.querySelectorAll('[data-case="stepper-vertical"] .vf-stepper__item')].map((item) => [...item.classList].find((c) => c.startsWith('vf-stepper__item--')).slice(18)),
+        disabledTrigger: document.querySelector('[data-case="stepper-disabled"] .vf-stepper__item:nth-child(2) .vf-stepper__trigger').disabled,
+        triggerType: trigger.type,
+        triggers: document.querySelectorAll('[data-vf-razor="stepper"] button.vf-stepper__trigger').length,
+        links: document.querySelectorAll('[data-vf-razor="stepper"] a, [data-vf-razor="stepper"] form').length,
+      };
+    })()`);
+    check('no stepper controller runs without its script', noJs.enhanced === 0, JSON.stringify(noJs));
+    check(
+      'the initial selection, classes and disabled state are truthful without javascript',
+      noJs.currentBefore === 'account' &&
+        JSON.stringify(noJs.states) === '["complete","current","upcoming"]' &&
+        noJs.disabledTrigger === true,
+      JSON.stringify(noJs),
+    );
+    check(
+      'a click changes no selection without javascript - the documented limitation, not a lie',
+      noJs.currentAfterClick === 'account',
+    );
+    check(
+      'the triggers are type=button that submit nothing, and no link or form was substituted',
+      noJs.triggerType === 'button' && noJs.links === 0 && noJs.triggers === 18,
+      JSON.stringify(noJs),
+    );
+  });
+
+  // ---------------------------------------------------- stepper, ownership
+  await withPage(chrome, server.origin, 'fixture-mixed.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('#vue-stepper-root'))`);
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-stepper-enhanced]'))`);
+    await delay(150);
+    await page.evaluate(`(() => {
+      window.__vueStepperRazorEvents = 0;
+      document.querySelector('#vue-stepper-root').addEventListener('vf-stepper:change', () => { window.__vueStepperRazorEvents += 1; });
+    })()`);
+    await clickAt(page, '#vue-stepper-root .vf-stepper__item:nth-child(2) .vf-stepper__trigger');
+    await delay(100);
+    const vue = await page.evaluate(`(() => {
+      const root = document.querySelector('#vue-stepper-root');
+      return {
+        markedByRazor: root.hasAttribute('data-vf-razor-stepper-enhanced') || root.hasAttribute('data-vf-razor'),
+        current: root.querySelector('[aria-current="step"]')?.dataset.vfStepperValue ?? null,
+        razorEvents: window.__vueStepperRazorEvents,
+      };
+    })()`);
+    check('the Razor controller marks no Vue stepper root', vue.markedByRazor === false, JSON.stringify(vue));
+    check(
+      'the Vue stepper selects through its own handler and receives no Razor event',
+      vue.current === 'profile' && vue.razorEvents === 0,
+      JSON.stringify(vue),
+    );
+  });
+
+  // ------------------------------------------ stepper, double bootstrap
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-stepper-enhanced]'))`);
+    await page.evaluate(installStepperLog);
+    await page.evaluate(`import('./vueforge-razor.js?bootstrap=stepper').then(() => true)`);
+    await delay(250);
+    await clickAt(page, '[data-case="stepper-horizontal"] .vf-stepper__item:nth-child(2) .vf-stepper__trigger');
+    await delay(50);
+    const twice = await page.evaluate(readStepper('stepper-horizontal', 'Progress'));
+    check(
+      'after a second bootstrap one click is one selection: profile current, one event',
+      twice.current === 'profile' && twice.events.length === 1 && twice.clicks === 1,
+      JSON.stringify(twice),
+    );
+    const markers = await page.evaluate(`document.querySelectorAll('[data-vf-razor-stepper-enhanced]').length`);
+    check('a second bootstrap adds no stepper ownership marker', markers === 6, `markers ${markers}`);
   });
 
   // ------------------------------------------------------ accordion, no-js

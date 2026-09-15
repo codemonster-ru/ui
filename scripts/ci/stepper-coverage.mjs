@@ -415,13 +415,17 @@ export function stepperCoverageViolations(cases) {
     }
     const keyPresses = stepsOf(entry).filter((step) => step.action === 'pressKey');
     if (keyPresses.length > 0) {
-      if (!Array.isArray(expect.keydownPrevented) || expect.keydownPrevented.length !== keyPresses.length) {
+      // A key pressed while focus is on the body reaches no trigger and is
+      // recorded by nothing inside the case: the truthful claim is an empty
+      // list, and the disabled-trigger scenario is the one that makes it.
+      const reaching = expect.focusRole === 'body' ? 0 : keyPresses.length;
+      if (!Array.isArray(expect.keydownPrevented) || expect.keydownPrevented.length !== reaching) {
         violations.push(
           `${entry.id} presses ${keyPresses.length} key(s) without claiming whether each keydown was prevented`,
         );
       } else {
-        keyPresses.forEach((step, index) => {
-          const handled = NAVIGATION_KEYS.includes(step.key) && onAxis(entry, step.key) && expect.focusRole !== 'body';
+        keyPresses.slice(0, reaching).forEach((step, index) => {
+          const handled = NAVIGATION_KEYS.includes(step.key) && onAxis(entry, step.key);
           if (expect.keydownPrevented[index] !== handled) {
             violations.push(
               `${entry.id} claims keydownPrevented=${expect.keydownPrevented[index]} for ${JSON.stringify(step.key)}; the reference ${handled ? 'prevents' : 'does not prevent'} it`,

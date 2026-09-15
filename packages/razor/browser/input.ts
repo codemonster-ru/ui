@@ -23,6 +23,7 @@ import { enhanceVueForgeFields } from './field.js';
 import { enhanceVueForgeTextareas } from './textarea.js';
 import { enhanceVueForgeCheckables } from './checkable.js';
 import { enhanceVueForgeAccordions } from './accordion.js';
+import { enhanceVueForgeSteppers } from './stepper.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -250,7 +251,7 @@ export function enhanceVueForgeInputs(root: ParentNode = document): void {
   }
 }
 
-/** Enhances both Razor-owned components, each owning only its own subtree. */
+/** Enhances every Razor-owned component, each owning only its own subtree. */
 function enhanceAll(root: ParentNode = document): void {
   enhanceVueForgeInputs(root);
   // Textareas before fields: the field reads the control's current value when
@@ -262,9 +263,16 @@ function enhanceAll(root: ParentNode = document): void {
   // rendered inside a closed panel - an input, a field, another accordion -
   // mounts when the panel opens, as a fresh render would mount it.
   enhanceVueForgeAccordions(root, enhanceAll);
+  enhanceVueForgeSteppers(root);
 }
 
-export { enhanceVueForgeAccordions, enhanceVueForgeCheckables, enhanceVueForgeFields, enhanceVueForgeTextareas };
+export {
+  enhanceVueForgeAccordions,
+  enhanceVueForgeCheckables,
+  enhanceVueForgeFields,
+  enhanceVueForgeSteppers,
+  enhanceVueForgeTextareas,
+};
 
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {

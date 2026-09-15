@@ -81,6 +81,8 @@ $skeletonGateComponent = $registry->resolve('vf-skeleton-gate');
 // control of its own, and nothing else in the fixture renders a button that is
 // not a consumer's declared control.
 $accordionComponent = $registry->resolve('vf-accordion');
+// The M23 component. Resolved on its own account.
+$stepperComponent = $registry->resolve('vf-stepper');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -125,6 +127,10 @@ if ($progressBarComponent === null) {
     exit(1);
 }
 
+if ($stepperComponent === null) {
+    fwrite(STDERR, "The VueForge vf-stepper component is not registered.\n");
+    exit(1);
+}
 if ($accordionComponent === null) {
     fwrite(STDERR, "The VueForge vf-accordion component is not registered.\n");
     exit(1);
@@ -882,12 +888,66 @@ $renderAccordion = static function (array $case) use ($renderAccordionInstance):
     return $renderAccordionInstance($case['props'] ?? [], $case['attrs'] ?? [], $content);
 };
 
+/**
+ * One vf-stepper render from neutral props and attrs.
+ *
+ * `modelValue`, `defaultValue`, `contentPosition` and `ariaLabel` are spelled
+ * in kebab-case here, as a template would spell them. There is no v-model to
+ * wire: the Razor adapter reads `model-value` as the initial value and its
+ * controller selects on its own.
+ */
+$renderStepperInstance = static function (array $props, array $attrs) use ($stepperComponent): string {
+    $rename = [
+        'modelValue' => 'model-value',
+        'defaultValue' => 'default-value',
+        'contentPosition' => 'content-position',
+        'ariaLabel' => 'aria-label',
+    ];
+    $resolved = [];
+    foreach ($props as $name => $value) {
+        $resolved[$rename[$name] ?? $name] = $value;
+    }
+    foreach ($attrs as $name => $value) {
+        $resolved[$name] = $value;
+    }
+
+    return $stepperComponent->render(new ComponentRenderContext($resolved, []))->value();
+};
+
+/**
+ * VfStepper, for the stepper catalog.
+ *
+ * Its own closure. The stepper has no slot, so the only consumer control a
+ * case can hold is the `beside` one: a real button written after the
+ * stepper's root, the way any consumer would write it. A `group` renders each
+ * member as its own instance.
+ */
+$renderStepper = static function (array $case) use ($renderStepperInstance, $escape): string {
+    $markup = '';
+
+    if (isset($case['group']) && is_array($case['group'])) {
+        foreach ($case['group'] as $member) {
+            $markup .= $renderStepperInstance($member, $case['attrs'] ?? []);
+        }
+    } else {
+        $markup .= $renderStepperInstance($case['props'] ?? [], $case['attrs'] ?? []);
+    }
+
+    if (isset($case['content']['beside']['control'])) {
+        $markup .= '<button type="button">' . $escape((string) $case['content']['beside']['control']['text']) . '</button>';
+    }
+
+    return $markup;
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'accordion') {
+    if ($component === 'stepper') {
+        $body = $renderStepper($case);
+    } elseif ($component === 'accordion') {
         $body = $renderAccordion($case);
     } elseif ($component === 'progress-bar') {
         $body = $renderProgressBar($case);
@@ -957,6 +1017,14 @@ $html = <<<HTML
     const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
     if (!caseId) return;
     (window.__parityAccordionEvents[caseId] ??= []).push({ open: event.detail.open });
+  });
+  // The neutral stepper change log, from the controller's one event. The Vue
+  // fixture keeps the same log from the component's change emit.
+  window.__parityStepperEvents = {};
+  document.addEventListener('vf-stepper:change', (event) => {
+    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
+    if (!caseId) return;
+    (window.__parityStepperEvents[caseId] ??= []).push({ value: event.detail.value });
   });
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);

@@ -27,6 +27,7 @@ import VfProgressSpinner from '@parity/core/components/progress-spinner/VfProgre
 import VfProgressBar from '@parity/core/components/progress-bar/VfProgressBar.vue';
 import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate.vue';
 import VfAccordion from '@parity/core/components/accordion/VfAccordion.vue';
+import VfStepper from '@parity/core/components/stepper/VfStepper.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -139,6 +140,8 @@ interface ParityCase {
     skeleton?: GateSlot;
     /** VfAccordion's trigger slot. */
     trigger?: AccordionSlot;
+    /** A consumer control rendered beside VfStepper, which has no slot of its own. */
+    beside?: { control?: { text: string } };
   };
   /** VfAccordion siblings rendered side by side, each with its own props. */
   group?: Record<string, unknown>[];
@@ -677,6 +680,67 @@ function renderAccordionInstance(
 }
 
 /**
+ * The reactive props each VfStepper instance is rendered with, for the same
+ * reason the accordion's are: a controlled case (`modelValue` in its props) is
+ * rendered the way a v-model consumer renders it, with update:modelValue
+ * written back into the prop. An uncontrolled case is left to the component.
+ */
+const stepperProps = reactive<Record<string, Record<string, unknown>>>({});
+
+/**
+ * The neutral change log the harness reads after a stepper scenario: one entry
+ * per `change` the component emitted, for every instance in the case. The
+ * Razor fixture keeps the same log from its controller's `vf-stepper:change`.
+ * The `update:modelValue` emit that precedes each `change` is the v-model
+ * transport, pinned with its order by the characterization suite.
+ */
+declare global {
+  interface Window {
+    __parityStepperEvents?: Record<string, { value: string }[]>;
+  }
+}
+window.__parityStepperEvents = {};
+
+function renderStepperInstance(caseId: string, key: string, props: Record<string, unknown>, attrs: Record<string, unknown>): VNode {
+  stepperProps[key] ??= reactive({ ...props, ...attrs });
+  const live = stepperProps[key];
+  const log = (window.__parityStepperEvents![caseId] ??= []);
+
+  return h(VfStepper, {
+    ...live,
+    key,
+    onChange: (value: string) => log.push({ value }),
+    // v-model, spelled out. A consumer that binds `modelValue` writes the
+    // emitted value back; an uncontrolled instance never has the prop and
+    // the write is inert.
+    ...('modelValue' in live ? { 'onUpdate:modelValue': (value: string) => (live.modelValue = value) } : {}),
+  });
+}
+
+/**
+ * VfStepper, for the stepper catalog.
+ *
+ * Its own function. The stepper has no slot, so the only consumer control a
+ * case can hold is the `beside` one, rendered as a real sibling button after
+ * the stepper's root - a control the consumer placed, never a trigger. A
+ * `group` renders each member as its own instance; the case-level props are
+ * ignored for a group, as the catalog says.
+ */
+function renderStepper(parityCase: ParityCase): VNode[] {
+  const nodes: VNode[] = Array.isArray(parityCase.group)
+    ? parityCase.group.map((member, index) =>
+        renderStepperInstance(parityCase.id, `${parityCase.id}/${index}`, member, parityCase.attrs),
+      )
+    : [renderStepperInstance(parityCase.id, parityCase.id, parityCase.props, parityCase.attrs)];
+
+  if (parityCase.content?.beside?.control !== undefined) {
+    nodes.push(h('button', { type: 'button' }, parityCase.content.beside.control.text));
+  }
+
+  return nodes;
+}
+
+/**
  * VfAccordion, for the accordion catalog.
  *
  * Its own function, and deliberately not renderPanel or renderCard with a
@@ -756,6 +820,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'accordion') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderAccordion(parityCase));
+  }
+
+  if (catalog.component === 'stepper') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderStepper(parityCase));
   }
 
   if (catalog.component === 'icon-button') {

@@ -828,6 +828,65 @@ export const profiles = {
     // names. See the interaction loop in run.mjs.
     liveParity: true,
   },
+  stepper: {
+    id: 'stepper',
+    label: 'VfStepper',
+    component: 'stepper',
+    casesPath: 'contracts/stepper/cases.json',
+    policyPath: 'contracts/stepper/parity-policy.json',
+    artifactDirectory: 'parity-stepper',
+    reportName: 'stepper-parity-report.json',
+    measuredRoles: {
+      root: '.vf-stepper',
+      list: '.vf-stepper__list',
+      item: '.vf-stepper__item',
+      trigger: '.vf-stepper__trigger',
+      rail: '.vf-stepper__rail',
+      connector: '.vf-stepper__connector',
+      marker: '.vf-stepper__marker',
+      content: '.vf-stepper__content',
+      label: '.vf-stepper__label',
+      description: '.vf-stepper__description',
+    },
+    // The nav carries the accessible name; each trigger carries the role, its
+    // name, disabled and focusable. Three triggers are listed by position so
+    // a post-interaction claim can name the one that moved. The rail is
+    // listed for the opposite reason - aria-hidden, so expected absent. What
+    // the tree does *not* expose is the current step: Chrome 153 derives no
+    // changing property from aria-current=step, so the selection is proved
+    // by the DOM and never claimed here (the coverage gate refuses the claim).
+    accessibilityRoles: {
+      nav: '.vf-stepper',
+      firstTrigger: '.vf-stepper__item:nth-child(1) > .vf-stepper__trigger',
+      secondTrigger: '.vf-stepper__item:nth-child(2) > .vf-stepper__trigger',
+      thirdTrigger: '.vf-stepper__item:nth-child(3) > .vf-stepper__trigger',
+      rail: '.vf-stepper__rail',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'type',
+      'disabled',
+      'role',
+      'aria-current',
+      'aria-label',
+      'aria-hidden',
+      'aria-disabled',
+      'data-vf-stepper-value',
+      'data-testid',
+    ],
+    snapshot: 'stepper',
+    activationSelector: '.vf-stepper__trigger',
+    // The second profile whose component owns controls, and the first whose
+    // instance owns several of one role. The identity is the same shape as
+    // the accordion's: a role, the selector that finds it, the tag it has to
+    // be. The count comes from each case (`componentInteractive`, one per
+    // item over every instance); nothing here knows what an item is.
+    controlOwnership: {
+      trigger: { selector: '.vf-stepper__trigger', tag: 'button' },
+    },
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {

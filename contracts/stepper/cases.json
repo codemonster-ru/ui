@@ -441,13 +441,13 @@
     {
       "id": "stepper/empty-items",
       "title": "No items: an empty list, the count custom property only",
-      "$why": "Zero component-owned controls is a legitimate budget for this component, and the root writes no factor for fewer than two items.",
+      "$why": "Zero component-owned controls is a legitimate budget for this component, and the root writes no factor for fewer than two items. Not screenshotted: an empty list paints nothing and has no height to clip; the DOM, style and ownership comparisons carry the case.",
       "props": {
         "items": []
       },
       "attrs": {},
       "componentInteractive": 0,
-      "visual": true
+      "visual": false
     },
     {
       "id": "stepper/single-item",
@@ -2231,12 +2231,13 @@
           "focusRole": "body",
           "focusValue": null,
           "disabledValues": ["profile"],
-          "keydownPrevented": [false],
+          "keydownPrevented": [],
           "events": [],
           "a11y:secondTrigger.disabled": "true"
         },
         "matches": "stepper/disabled-middle"
-      }
+      },
+      "$why": "A disabled button cannot take focus, so the key is pressed with focus on the body: it never reaches a trigger, no keydown is recorded in the case, and nothing moves."
     },
     {
       "id": "stepper/interaction-controlled-model",

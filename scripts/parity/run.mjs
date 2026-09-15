@@ -436,6 +436,18 @@ async function captureTarget(
     for (const parityCase of selectedCases) {
       if (!parityCase.interaction) continue;
       await navigate();
+      // The scenario is driven with its case alone in the document. Found by
+      // M23: the reference stepper moves keyboard focus through a
+      // document-wide lookup by value, so on a page of sixty-five cases
+      // sharing the same values a key pressed in one case focused a trigger
+      // in an earlier one - an artifact of the catalog page, not of the
+      // component, and one that would have made every focus claim depend on
+      // document order. Every other case is removed before the gesture; the
+      // initial stage has already measured them all on the full page, and
+      // convergence still compares against that extraction.
+      await page.evaluate(
+        `document.querySelectorAll('[data-parity-case]:not([data-parity-case="${parityCase.id}"])').forEach((node) => node.remove())`,
+      );
       const context = { target: label, theme, caseId: parityCase.id };
       await applyBrowserMutation(page, mutation, 'beforeInteraction', context, evidence);
       const inputEvents = await driveInteraction(

@@ -10,11 +10,14 @@
 import { createApp, h } from 'vue';
 import VfInput from '@codemonster-ru/vueforge-core/src/components/input/VfInput.vue';
 import VfAccordion from '@codemonster-ru/vueforge-core/src/components/accordion/VfAccordion.vue';
+import VfStepper from '@codemonster-ru/vueforge-core/src/components/stepper/VfStepper.vue';
 
-// One app, two real components. The accordion joined in M22: its trigger is
+// One app, three real components. The accordion joined in M22: its trigger is
 // a native button with the same classes the Razor controller mounts on - minus
 // the ownership marker - so it is the sharpest test that the controller mounts
-// by marker and not by class.
+// by marker and not by class. The stepper joined in M23 for the same reason,
+// with the same item values the Razor fixtures use: the Razor controller must
+// neither mount it nor move its focus into a Vue trigger.
 createApp({
   data: () => ({ value: 'vue-value' }),
   render() {
@@ -29,6 +32,14 @@ createApp({
         },
       }),
       h(VfAccordion, { id: 'vue-accordion-root', title: 'Vue accordion' }, { default: () => 'Vue content.' }),
+      h(VfStepper, {
+        id: 'vue-stepper-root',
+        items: [
+          { value: 'account', label: 'Account' },
+          { value: 'profile', label: 'Profile' },
+          { value: 'confirm', label: 'Confirm' },
+        ],
+      }),
     ]);
   },
 }).mount('#vue-input');
