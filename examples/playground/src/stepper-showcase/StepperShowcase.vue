@@ -186,7 +186,7 @@ const StepperInstance = defineComponent({
 
     return () =>
       h(VfStepper, {
-        ...(live as StepperProps),
+        ...(live as unknown as StepperProps),
         ...('modelValue' in live ? { 'onUpdate:modelValue': (value: string) => (live.modelValue = value) } : {}),
       });
   },

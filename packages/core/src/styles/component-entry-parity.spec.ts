@@ -108,7 +108,9 @@ describe('component entry CSS parity', () => {
   });
 
   it('keeps Stepper isolated from unrelated navigation and overlay CSS', () => {
-    const source = readFileSync(resolve(entriesDir, 'stepper.css'), 'utf8');
+    // The entry forwards to packages/styles since M23; its own text is the
+    // canonical source the forward resolves to, as for the M04 entries.
+    const source = readFileSync(resolveStyleEntrySource(resolve(entriesDir, 'stepper.css')), 'utf8');
     const standaloneCss = inlineCssImports(resolve(entriesDir, 'stepper.css'));
 
     expect(source).toContain('.vf-stepper');

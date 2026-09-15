@@ -153,7 +153,9 @@ if ((fullCss.match(/\.vf-horizontal-scroller \{/g) ?? []).length !== 1) {
 }
 
 const stepperPath = join(entriesDir, 'stepper.css');
-const stepperSource = readFileSync(stepperPath, 'utf8');
+// The entry forwards to packages/styles since M23; its own text is the
+// canonical source the forward resolves to, as for the M04 entries.
+const stepperSource = readFileSync(resolveStyleEntrySource(stepperPath), 'utf8');
 const stepperArtifact = inlineCssFiles([transitionGuardPath, stepperPath]);
 if (!stepperSource.includes('.vf-stepper {')) {
   fail('Stepper entry is missing its own rules.');
