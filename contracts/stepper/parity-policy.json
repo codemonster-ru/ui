@@ -1,0 +1,206 @@
+{
+  "$comment": "Parity policy for the shared VfStepper cases. Plain data: no DSL, no waiver engine. The second policy for a component that owns controls and changes state on a user gesture, and the first for one that owns several controls of the same role, keeps every item in the DOM while the selection moves, and leaves Enter and Space to native activation. It names the live dimensions beside the initial ones and starts empty; M23 finished with it still empty. The one framework-specific difference - the reference moves keyboard focus with a document-wide lookup and the Razor controller does not - is not a catalog case and not an approval: it is recorded below as a historical quirk with razorDiffers=true, kept out of the catalog by construction (distinct values between siblings), pinned on the Vue side by the characterization suite and on the Razor side by its browser gate.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour, live state, ownership.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how state is stored, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. data-vf-stepper-value is not a renderer marker: it is the historical product attribute the reference writes on every trigger, and it is compared as dom.productData.",
+    "eventTransport": "How each adapter delivers a selection change to its host - Vue emits update:modelValue and then change, the Razor controller dispatches one bubbling vf-stepper:change CustomEvent with { value } - is transport. What is compared is the neutral log each fixture keeps of every change notification with its value, as interaction.events. The Vue pair's order and count are pinned by the characterization suite; the Razor event is not claimed to be identical to a Vue emit, only to carry the same observable value at the same moments.",
+    "styleSerialisation": "Both adapters write the root custom properties inline; Vue serialises through the CSSOM and the Razor server writes the attribute text. The extractor parses both through the browser and compares the declarations, so `--vf-stepper-progress-factor: 0.5` and `--vf-stepper-progress-factor:0.5` are equal while `0.3333333333333333` against `0.33333333333333` is not.",
+    "nodeIdentity": "Whether the same li element survives a selection change is not measured by a node-identity primitive: identity is not a historical contract of the stepper (the reference keys by value and Vue may or may not patch in place), and adding a generic identity framework for one component is what the plan forbids. Persistence is proved structurally: the post-interaction DOM must equal a fresh render of the target state, item for item."
+  },
+  "outsideTheCatalog": {
+    "$comment": "Behaviour that is part of the contract and deliberately not represented as a parity case, each with where it is covered instead.",
+    "controlledWithoutConsumer": "A controlled Vue stepper whose consumer never writes update:modelValue back: the click emits the pair and nothing changes, and the next click emits it again. The Razor adapter has no consumer protocol - a server-rendered stepper has no parent to ask, so its controller selects directly - and the two are not comparable after the click. The catalog carries stepper/interaction-controlled-model, where the Vue fixtures write the value back as v-model does and all three targets land on the same state; the emit-without-change behaviour is pinned by VfStepper.characterization.spec.ts.",
+    "documentWideFocus": "The reference's focusStepByValue runs document.querySelector('[data-vf-stepper-value=…]'), so two steppers on one page sharing a value send the second stepper's Arrow/Home/End focus into the first stepper's trigger while the second stepper's state changes. Reproduced against the immutable reference and pinned by the characterization suite. It is not in the catalog: every sibling case uses distinct values, so no parity case depends on document order. It is not reproduced in Razor: the controller is instance-scoped, and a document-global lookup would have to be written deliberately to weaken instance isolation for the sake of a bug. State isolation between siblings is compared (stepper/interaction-sibling-isolation, stepper/interaction-sibling-keyboard); focus isolation with shared values is a claim the reference does not satisfy and the Razor browser gate asserts on its own. Recorded as a framework-specific historical quirk below, not approved away.",
+    "deepItemsWatch": "The reference watches `items` deeply and reseeds the state to the fallback - emitting the pair - when the active item disappears or becomes disabled after mount. A Vue-only live prop-update behaviour: the Razor adapter renders items once and has no reactive prop surface, and giving it one would be the generic reactive runtime the plan forbids. Pinned by the characterization suite; the initial-render half of the same rule (a disabled seed survives because the watch is not immediate) is compared as stepper/disabled-current-seed.",
+    "releasingControl": "Switching modelValue from a value back to undefined after mount, and the seed it reveals. A prop transition with no server analogue; pinned by the characterization suite.",
+    "disabledPointerClick": "A real pointer click on a disabled trigger. The harness refuses to dispatch a click at an element the browser would not deliver it to, which is the same refusal a user meets; the disabled contract is driven through focus and the keyboard instead (stepper/interaction-disabled-keyboard), the click guard is pinned by the characterization suite, and the Razor browser gate dispatches a real click at a disabled trigger's coordinates and asserts nothing happens.",
+    "duplicateValues": "Two items sharing a value resolve to the first occurrence and share a state. Pinned by the characterization suite and the shared vectors; not a catalog case because Vue logs a duplicate-key warning the capture treats as a page error."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, a missing item, a trigger that is not a button, an extra trigger, a description span for an item without one. Never approvable."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on every element: the root's orientation and content-position modifiers, each item's state modifier, the trigger's current modifier. Consumer classes included."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "type and disabled on every trigger, the style attribute with the root's custom properties (declarations compared through the browser's parser), and every native attribute a consumer forwards onto the nav."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element: the marker number, the label, the description."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-current on the current trigger and its absence everywhere else, aria-label on the nav, aria-hidden on the rail, and every consumer ARIA attribute on the nav. aria-current joined the compared attribute set in M23 - the attribute-coverage gate's tenth finding."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that carry product semantics: data-vf-stepper-value on every trigger, and a consumer data-testid."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "Present for the shared comparator. A stepper writes no id and no aria-controls, aria-labelledby or aria-describedby; the extractor's relationship graph is empty on every target, and a target that started writing one would differ here."
+    },
+    "dom.actionPresence": {
+      "classification": "exact",
+      "description": "Whether each trigger is operable. A disabled trigger is inoperable on every target."
+    },
+    "dom.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present so the comparator has a classification for it. A stepper has no wrapper either adapter may add."
+    },
+    "dom.inertAction": {
+      "classification": "exact",
+      "description": "Present for the same reason. A stepper renders no inert action."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "width, height, padding, border width and radius, font size, line height of the nav, the list, every item, trigger, rail, marker, connector, content, label and description."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "colour, background colour and border colour, which is where the marker's state colours and the connector's progress colour show."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root in its initial state, per theme."
+    },
+    "visual.postInteraction": {
+      "classification": "exact",
+      "description": "Clipped screenshot of the case root after the interaction, per theme."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "Computed role of the nav, of the list, of each trigger, and the absence of the aria-hidden rail from the tree."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "Accessible name of the nav (aria-label) and of each trigger (its marker, label and description text)."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "disabled and focusable as exposed to assistive tech, before and after an interaction. Not the current step: Chrome 153 exposes no changing `current` property for button[aria-current=step] through the CDP tree, so the tree is not evidence of the selection and the DOM is (interaction.state)."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned controls measured in the case - their count, tag, type, value, place and state - beside the consumer-owned count and the totals they must add up to. Never approvable: this is the M23 evidence that every trigger is a historical native button, that a disabled one is still the component's, and that a neighbouring consumer control is not."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The live state after a scenario, each half separately: the trigger carrying aria-current, the trigger carrying the current modifier, the item modifiers, the progress factor, the disabled triggers, the item and trigger counts, the activation count, whether each keydown was prevented. Never approvable."
+    },
+    "interaction.events": {
+      "classification": "exact",
+      "description": "The neutral log of change notifications the fixture recorded during the scenario, with their values. Correct state with a missing, duplicated or reordered notification fails here. Never approvable."
+    },
+    "interaction.convergence": {
+      "classification": "exact",
+      "description": "Whether the post-interaction DOM equals the target's own render of the initial case the catalog names. A selection change that landed on a hybrid - a stale class, a stale factor, a re-created item - fails here. Never approvable."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Which trigger owns focus after the scenario, by value, and where focus is when it is not on a trigger. A handled navigation key must move focus to the target trigger on every target."
+    },
+    "interaction.relationships": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A stepper resolves no relationship after a gesture; the snapshot records none."
+    },
+    "interaction.value": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. The stepper's value is compared as interaction.state (currentValue), not as a control value."
+    },
+    "interaction.selection": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A stepper carries no caret."
+    },
+    "interaction.wrapperPresence": {
+      "classification": "exact",
+      "description": "Present for the shared comparator. A stepper renders no wrapper that could appear on one side only."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "empty-string-model-value-is-a-value",
+      "description": "modelValue='' is controlled (!== undefined) and matches no item: no current step, every enabled step upcoming, factor 0.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as stepper/controlled-empty-string.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/stepper/cases.json#stepper/controlled-empty-string"
+    },
+    {
+      "id": "disabled-seed-survives-mount",
+      "description": "A defaultValue naming a disabled item is kept as the active value: the steps before it are complete, it is disabled, and nothing carries aria-current. The items watch that would reseed it is not immediate.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as stepper/disabled-current-seed.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/stepper/cases.json#stepper/disabled-current-seed"
+    },
+    {
+      "id": "unknown-value-normalises-to-index-zero",
+      "description": "An unknown active value renders no current step but writes progress factor 0, as if the first step were active.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as stepper/controlled-unknown.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/stepper/cases.json#stepper/controlled-unknown"
+    },
+    {
+      "id": "other-axis-position-is-the-default",
+      "description": "contentPosition from the other orientation's axis resolves to that orientation's default rather than being rejected.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as stepper/vertical-content-above and stepper/horizontal-content-start.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/stepper/cases.json#stepper/vertical-content-above"
+    },
+    {
+      "id": "enter-and-space-are-native-activation",
+      "description": "There is no keydown handler for Enter or Space: the browser synthesises the click, one activation is counted, and the keydown is not prevented.",
+      "classification": "exact",
+      "reason": "The Razor controller binds click only, exactly as the reference does, so all three targets record one activation and an unprevented keydown for both keys.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/stepper/cases.json#stepper/interaction-enter"
+    },
+    {
+      "id": "wrong-axis-arrow-is-not-prevented",
+      "description": "An arrow key from the other orientation's axis is ignored and its default is not prevented, so the page scrolls as it would anywhere.",
+      "classification": "exact",
+      "reason": "Reproduced on both adapters and compared as keydownPrevented in the two wrong-axis cases.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/stepper/cases.json#stepper/interaction-horizontal-wrong-axis"
+    },
+    {
+      "id": "focus-lookup-is-document-wide",
+      "description": "focusStepByValue queries the whole document for [data-vf-stepper-value], so two steppers sharing a value send the second's keyboard focus into the first; the second's state still changes.",
+      "classification": "framework-specific",
+      "reason": "Reproduced against the immutable reference and kept in current Vue unchanged. The Razor controller is instance-scoped: reproducing the quirk would mean deliberately weakening instance isolation. Not in the catalog (sibling cases use distinct values) and therefore never a comparison difference and never an approval; the difference is stated here, pinned on the Vue side by the characterization suite and on the Razor side by the browser gate's shared-value sibling assertion.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/stepper/VfStepper.characterization.spec.ts"
+    },
+    {
+      "id": "razor-has-no-controlled-mode",
+      "description": "The Razor adapter reads modelValue as the initial value and its controller selects on its own; there is no parent to emit a request to.",
+      "classification": "framework-specific",
+      "reason": "A server-rendered stepper has no consumer protocol. The catalog compares the controlled prop through a consumer that accepts, which is the state all three targets share; the Vue-only emit-without-change behaviour is pinned by the characterization suite.",
+      "razorDiffers": true,
+      "coveredBy": "packages/razor/tests/Components/StepperComponentTest.php"
+    },
+    {
+      "id": "razor-does-not-watch-items",
+      "description": "The reference reseeds the state when the items prop changes after mount; the Razor adapter renders items once.",
+      "classification": "framework-specific",
+      "reason": "A live prop update has no server analogue and the adapter has no reactive prop surface. Pinned by the characterization suite; the initial-render half is compared.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/stepper/VfStepper.characterization.spec.ts"
+    }
+  ],
+  "approvedDivergences": []
+}

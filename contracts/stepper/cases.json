@@ -1,0 +1,2497 @@
+{
+  "$comment": "Shared VfStepper cases. Plain data only: no Vue, no PHP, no renderer objects. Each adapter maps these neutral fields onto its own API. The vocabulary is the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963. The second catalog for a component that owns controls, and the first where one instance owns several of the same role: every case declares `componentInteractive`, the number of triggers the component renders - one per item, across every instance in the case, zero for an empty list - and `consumerInteractive` only when a consumer control stands beside the stepper (it has no slots). An interaction case names the gesture, the semantic effect it must produce on every target - aria-current, item classes, the trigger's own modifier, the progress factor, focus, prevented keys and the event log as separate claims - and the initial case whose DOM the result must converge on. scripts/ci/stepper-coverage.mjs is what stops the list eroding.",
+  "component": "stepper",
+  "propVocabulary": {
+    "items": "VfStepperItem[], required. Each item is { value, label, description?, disabled? }. Rendered in order as li.vf-stepper__item > button.vf-stepper__trigger; the description span exists only for a non-empty description; disabled writes the native attribute on the trigger.",
+    "modelValue": "string | undefined, default undefined. The controlled value; wins whenever defined, an empty string included. A Vue consumer pairs it with update:modelValue (v-model). The Razor adapter reads it as the initial value and selects on its own.",
+    "defaultValue": "string | undefined. Seeds the uncontrolled state once; an unknown or disabled value is kept as-is.",
+    "orientation": "'horizontal' | 'vertical', default horizontal. Decides the modifier class and which arrow keys navigate.",
+    "contentPosition": "'above' | 'below' (horizontal) or 'start' | 'end' (vertical). A position from the other axis resolves to that axis's default.",
+    "ariaLabel": "string, default 'Progress'. The nav's accessible name."
+  },
+  "contentVocabulary": {
+    "beside": "A consumer control rendered as a sibling *after* the stepper's root, inside the case: `control` is a real consumer button. The stepper renders no slot; this is the only way a consumer control can share a case with it."
+  },
+  "groupVocabulary": "A list of sibling steppers rendered side by side in one case, each with its own props; the case-level props are ignored. Values must be distinct between members: the reference moves keyboard focus with a document-wide lookup, and a shared value would make a keyboard case depend on document order.",
+  "ownershipVocabulary": {
+    "componentInteractive": "The exact number of controls the component itself renders in this case: one button.vf-stepper__trigger per item, summed over every instance. Zero for an empty list. Asserted on every target against the measured component-owned controls, and their tag identity against the profile - a div with role=button is not a trigger, and a disabled trigger is still the component's.",
+    "consumerInteractive": "The exact number of consumer controls in the case. Zero unless a `beside` control is declared."
+  },
+  "interactionVocabulary": {
+    "$comment": "A case with an `interaction` is driven in the browser with real pointer and key events, then re-measured: the snapshot, the DOM and the accessibility tree are all taken again.",
+    "steps": "clickButton (a real pointer click at the trigger's centre; `index` picks a trigger in document order across every instance), focusButton (`index` likewise), pressKey with Enter, Space, ArrowRight, ArrowLeft, ArrowUp, ArrowDown, Home or End.",
+    "expect": "Claims checked against the snapshot on every target. `activates` is whether a native click reached a trigger - true for a pointer click and for Enter/Space, which the reference leaves to native activation, false for every handled navigation key. `currentValue` is the value of the trigger carrying aria-current in the first instance (null when none), `currentValues` the same per instance, `currentClassValue` the value of the trigger carrying vf-stepper__trigger--current - claimed separately so a port that moved one and not the other fails. `itemStates` is the item modifier of every item in order, `progressFactor` the inline --vf-stepper-progress-factor of the first root, `disabledValues` the triggers with the native attribute. `focusValue` is the value of the focused trigger (null when focus is elsewhere) and `focusRole` where focus is when it is not on a trigger. `keydownPrevented` is whether each keydown of the scenario was prevented, in order: a handled navigation key is, Enter, Space and a wrong-axis arrow are not. `events` is the neutral change log the fixture keeps: one entry per change notification with its value. A key of the form `a11y:<role>.<state>` is a claim about the accessibility tree read after the action.",
+    "matches": "The initial case whose DOM the post-interaction DOM must equal on the same target. Every stepper item persists across a selection change, so the result of a gesture has to be exactly the DOM a fresh render of the target state produces.",
+    "notClaimable": "`a11y:<trigger>.current`: Chrome 153 exposes no changing `current` property for button[aria-current=step] through the CDP accessibility tree, so the current step is proved by the live DOM (currentValue, itemStates) and never by the tree. See the policy."
+  },
+  "cases": [
+    {
+      "id": "stepper/default",
+      "title": "Nothing given: the first enabled item is current, the rest upcoming, factor 0",
+      "$why": "The fallback itself. A port that seeded nothing would render no current step; one that seeded the first item regardless of disabled is told apart by stepper/disabled-first.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/default-value-profile",
+      "title": "defaultValue seeds the middle step: one complete, one current, one upcoming, factor 0.5",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/default-value-confirm",
+      "title": "defaultValue seeds the last step: everything before it complete, factor 1",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/controlled-profile",
+      "title": "The controlled modelValue alone",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "modelValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/controlled-confirm",
+      "title": "The controlled modelValue on the last step",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "modelValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/controlled-over-default",
+      "title": "modelValue wins over defaultValue",
+      "$why": "The precedence measured in the one direction where the two props disagree. A port that read defaultValue first would mark the middle step current.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "modelValue": "confirm",
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/controlled-unknown",
+      "title": "An unknown modelValue: no step current, every enabled step upcoming, factor normalised to 0",
+      "$why": "The reference keeps the value and matches nothing; it does not fall back. A port that 'fixed' this to the first step would carry aria-current somewhere.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "modelValue": "missing"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/controlled-empty-string",
+      "title": "An empty-string modelValue is a value, not an absence: no step current",
+      "$why": "The ?? boundary. A port testing truthiness would fall through to the fallback and mark the first step current.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "modelValue": ""
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/disabled-middle",
+      "title": "A disabled middle step: native disabled on its trigger, the disabled modifier on its item, and nothing else",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself",
+            "disabled": true
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/disabled-middle-confirm",
+      "title": "A disabled middle step with the last step current: complete, disabled, current",
+      "$why": "Disabled beats complete: the middle step is before the active one and is still reported disabled, not complete.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself",
+            "disabled": true
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/disabled-first",
+      "title": "The first step disabled: the fallback is the second step, factor 0.5",
+      "$why": "The fallback is the first *enabled* item. A port seeding items[0] would mark a disabled step current.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account",
+            "disabled": true
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/disabled-first-confirm",
+      "title": "The first step disabled with the last step current: disabled, complete, current",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account",
+            "disabled": true
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/disabled-last",
+      "title": "The last step disabled with the first current: current, upcoming, disabled",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm",
+            "disabled": true
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/disabled-last-profile",
+      "title": "The last step disabled with the middle current: complete, current, disabled",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm",
+            "disabled": true
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/disabled-current-seed",
+      "title": "defaultValue names a disabled step: it is the active value, so the step before it is complete, but nothing carries aria-current",
+      "$why": "The watch is not immediate, so the disabled seed survives mount. State precedence puts disabled before current: complete, disabled, upcoming, factor 0.5, no aria-current anywhere.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself",
+            "disabled": true
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/all-disabled",
+      "title": "Every step disabled: no fallback, no current step, factor 0",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account",
+            "disabled": true
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself",
+            "disabled": true
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm",
+            "disabled": true
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/empty-items",
+      "title": "No items: an empty list, the count custom property only",
+      "$why": "Zero component-owned controls is a legitimate budget for this component, and the root writes no factor for fewer than two items.",
+      "props": {
+        "items": []
+      },
+      "attrs": {},
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "stepper/single-item",
+      "title": "One item: current, and the count only - no factor",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "stepper/two-items-second",
+      "title": "Two items with the second current: factor 1",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "stepper/four-items-second",
+      "title": "Four items with the second current: factor 1/3, written as JavaScript writes it",
+      "$why": "0.3333333333333333 - sixteen digits. A server writing PHP's default fourteen would move the vertical rail by nothing a screenshot can see, and the style comparison would report it.",
+      "props": {
+        "items": [
+          {
+            "value": "cart",
+            "label": "Cart"
+          },
+          {
+            "value": "shipping",
+            "label": "Shipping"
+          },
+          {
+            "value": "payment",
+            "label": "Payment"
+          },
+          {
+            "value": "review",
+            "label": "Review"
+          }
+        ],
+        "defaultValue": "shipping"
+      },
+      "attrs": {},
+      "componentInteractive": 4,
+      "visual": true
+    },
+    {
+      "id": "stepper/four-items-third",
+      "title": "Four items with the third current: factor 2/3",
+      "props": {
+        "items": [
+          {
+            "value": "cart",
+            "label": "Cart"
+          },
+          {
+            "value": "shipping",
+            "label": "Shipping"
+          },
+          {
+            "value": "payment",
+            "label": "Payment"
+          },
+          {
+            "value": "review",
+            "label": "Review"
+          }
+        ],
+        "defaultValue": "payment"
+      },
+      "attrs": {},
+      "componentInteractive": 4,
+      "visual": true
+    },
+    {
+      "id": "stepper/seven-items-second",
+      "title": "Seven items with the second current: factor 1/6, seventeen digits",
+      "props": {
+        "items": [
+          {
+            "value": "s0",
+            "label": "Step 1"
+          },
+          {
+            "value": "s1",
+            "label": "Step 2"
+          },
+          {
+            "value": "s2",
+            "label": "Step 3"
+          },
+          {
+            "value": "s3",
+            "label": "Step 4"
+          },
+          {
+            "value": "s4",
+            "label": "Step 5"
+          },
+          {
+            "value": "s5",
+            "label": "Step 6"
+          },
+          {
+            "value": "s6",
+            "label": "Step 7"
+          }
+        ],
+        "defaultValue": "s1"
+      },
+      "attrs": {},
+      "componentInteractive": 7,
+      "visual": true
+    },
+    {
+      "id": "stepper/seven-items-sixth",
+      "title": "Seven items with the sixth current: factor 5/6, the last digit rounded up",
+      "props": {
+        "items": [
+          {
+            "value": "s0",
+            "label": "Step 1"
+          },
+          {
+            "value": "s1",
+            "label": "Step 2"
+          },
+          {
+            "value": "s2",
+            "label": "Step 3"
+          },
+          {
+            "value": "s3",
+            "label": "Step 4"
+          },
+          {
+            "value": "s4",
+            "label": "Step 5"
+          },
+          {
+            "value": "s5",
+            "label": "Step 6"
+          },
+          {
+            "value": "s6",
+            "label": "Step 7"
+          }
+        ],
+        "defaultValue": "s5"
+      },
+      "attrs": {},
+      "componentInteractive": 7,
+      "visual": true
+    },
+    {
+      "id": "stepper/vertical",
+      "title": "Vertical orientation: content-end by default",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "orientation": "vertical"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/vertical-profile",
+      "title": "Vertical with the middle step current",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "orientation": "vertical",
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/vertical-content-start",
+      "title": "Vertical with the content before the rail",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "orientation": "vertical",
+        "contentPosition": "start"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/vertical-content-above",
+      "title": "A horizontal position on a vertical stepper resolves to the default: content-end",
+      "$why": "The other axis's position is the default, not an error. A port validating the union would throw or write content-above.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "orientation": "vertical",
+        "contentPosition": "above"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/horizontal-content-above",
+      "title": "Horizontal with the content above the rail",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "contentPosition": "above"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/horizontal-content-start",
+      "title": "A vertical position on a horizontal stepper resolves to the default: content-below",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "contentPosition": "start"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/descriptions-all",
+      "title": "Every step carries a description",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account",
+            "description": "Sign in or register"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm",
+            "description": "Check and submit"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/descriptions-none",
+      "title": "No step carries a description: the description span is absent everywhere",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/vertical-descriptions",
+      "title": "Vertical with descriptions on every step",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account",
+            "description": "Sign in or register"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm",
+            "description": "Check and submit"
+          }
+        ],
+        "orientation": "vertical",
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/long-labels",
+      "title": "Labels and descriptions long enough to wrap",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Create your organisation account and invite the first administrators",
+            "description": "Everything here can be changed later from the workspace settings page"
+          },
+          {
+            "value": "profile",
+            "label": "Profile"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm and submit the request for review by the compliance team"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/aria-label",
+      "title": "A custom accessible name on the nav",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "ariaLabel": "Checkout progress"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/consumer-class-style",
+      "title": "A consumer class after the canonical ones and a consumer style after the root custom properties",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {
+        "class": "checkout-steps",
+        "style": "margin-block-end: 24px"
+      },
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/consumer-attrs",
+      "title": "Consumer id, data attribute, role and aria-current land on the nav, never on a trigger",
+      "$why": "inheritAttrs is false and everything but class is spread onto the nav. A consumer aria-current on the root must not disturb the trigger's own.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {
+        "id": "checkout-steps",
+        "data-testid": "steps",
+        "role": "group",
+        "aria-current": "page"
+      },
+      "componentInteractive": 3,
+      "visual": true
+    },
+    {
+      "id": "stepper/siblings",
+      "title": "Two steppers side by side with distinct values: each owns its own triggers and its own current step",
+      "$why": "Five component-owned controls across two instances. The values are deliberately distinct: the reference moves keyboard focus with a document-wide lookup, and a shared value would make the case order-dependent (see the policy's outsideTheCatalog).",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "group": [
+        {
+          "items": [
+            {
+              "value": "account",
+              "label": "Account"
+            },
+            {
+              "value": "profile",
+              "label": "Profile",
+              "description": "Tell us about yourself"
+            },
+            {
+              "value": "confirm",
+              "label": "Confirm"
+            }
+          ],
+          "defaultValue": "profile"
+        },
+        {
+          "items": [
+            {
+              "value": "ship",
+              "label": "Shipping"
+            },
+            {
+              "value": "pay",
+              "label": "Payment"
+            }
+          ],
+          "defaultValue": "pay",
+          "orientation": "vertical"
+        }
+      ],
+      "componentInteractive": 5,
+      "visual": true
+    },
+    {
+      "id": "stepper/beside-consumer-button",
+      "title": "A consumer's own Continue button beside the stepper is the consumer's, not the component's",
+      "$why": "The one case with a non-zero consumer budget. The stepper has no slots, so a consumer control can only stand beside it; ownership must classify it by identity and leave the component's count at three.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "content": {
+        "beside": {
+          "control": {
+            "text": "Continue"
+          }
+        }
+      },
+      "componentInteractive": 3,
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "stepper/interaction-click-forward",
+      "title": "A real pointer click on the middle trigger moves the selection forward: aria-current, item classes, trigger class and factor all move, one change event",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 1
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValue": "profile",
+          "currentClassValue": "profile",
+          "itemStates": ["complete", "current", "upcoming"],
+          "progressFactor": "0.5",
+          "focusValue": "profile",
+          "events": [
+            {
+              "value": "profile"
+            }
+          ],
+          "a11y:secondTrigger.focusable": "true"
+        },
+        "matches": "stepper/default-value-profile"
+      }
+    },
+    {
+      "id": "stepper/interaction-click-backward",
+      "title": "A click on the first trigger moves the selection backward",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValue": "account",
+          "currentClassValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "account",
+          "events": [
+            {
+              "value": "account"
+            }
+          ]
+        },
+        "matches": "stepper/default"
+      }
+    },
+    {
+      "id": "stepper/interaction-click-current",
+      "title": "A click on the current trigger changes nothing and emits nothing",
+      "$why": "The native click reaches the trigger (activates) and the component suppresses the change: same state, empty log.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValue": "account",
+          "currentClassValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "account",
+          "events": []
+        },
+        "matches": "stepper/default"
+      }
+    },
+    {
+      "id": "stepper/interaction-click-then-arrow",
+      "title": "A click on the middle trigger and then ArrowRight from it: navigation starts from the newly focused trigger",
+      "$why": "Two selection changes on a persistent DOM: the same three items carry three successive state layouts, and the log has both values in order.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValue": "confirm",
+          "currentClassValue": "confirm",
+          "itemStates": ["complete", "complete", "current"],
+          "progressFactor": "1",
+          "focusValue": "confirm",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "profile"
+            },
+            {
+              "value": "confirm"
+            }
+          ]
+        },
+        "matches": "stepper/default-value-confirm"
+      }
+    },
+    {
+      "id": "stepper/interaction-enter",
+      "title": "Enter on the focused middle trigger activates it natively: one click is counted, the selection moves",
+      "$why": "Section 20: the opposite of the accordion. There is no keydown handler for Enter; the browser synthesises the click. A port that handled Enter itself and prevented the default would record zero activations while the DOM moved.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValue": "profile",
+          "currentClassValue": "profile",
+          "itemStates": ["complete", "current", "upcoming"],
+          "progressFactor": "0.5",
+          "focusValue": "profile",
+          "keydownPrevented": [false],
+          "events": [
+            {
+              "value": "profile"
+            }
+          ]
+        },
+        "matches": "stepper/default-value-profile"
+      }
+    },
+    {
+      "id": "stepper/interaction-space",
+      "title": "Space on the focused middle trigger activates it natively as well",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": " "
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValue": "profile",
+          "currentClassValue": "profile",
+          "itemStates": ["complete", "current", "upcoming"],
+          "progressFactor": "0.5",
+          "focusValue": "profile",
+          "keydownPrevented": [false],
+          "events": [
+            {
+              "value": "profile"
+            }
+          ]
+        },
+        "matches": "stepper/default-value-profile"
+      }
+    },
+    {
+      "id": "stepper/interaction-enter-on-current",
+      "title": "Enter on the focused current trigger: the native click is counted and the component suppresses the change",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Enter"
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "focusValue": "account",
+          "keydownPrevented": [false],
+          "events": []
+        },
+        "matches": "stepper/default"
+      }
+    },
+    {
+      "id": "stepper/interaction-arrow-right",
+      "title": "ArrowRight from the first trigger of a horizontal stepper: prevented, the next step activated and focused, no native click",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "profile",
+          "currentClassValue": "profile",
+          "itemStates": ["complete", "current", "upcoming"],
+          "progressFactor": "0.5",
+          "focusValue": "profile",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "profile"
+            }
+          ],
+          "a11y:secondTrigger.focusable": "true"
+        },
+        "matches": "stepper/default-value-profile"
+      }
+    },
+    {
+      "id": "stepper/interaction-arrow-left",
+      "title": "ArrowLeft from the last trigger goes to the previous step",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowLeft"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "profile",
+          "currentClassValue": "profile",
+          "itemStates": ["complete", "current", "upcoming"],
+          "progressFactor": "0.5",
+          "focusValue": "profile",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "profile"
+            }
+          ]
+        },
+        "matches": "stepper/default-value-profile"
+      }
+    },
+    {
+      "id": "stepper/interaction-horizontal-wrong-axis",
+      "title": "ArrowDown on a horizontal stepper is ignored: not prevented, nothing moves, nothing is emitted",
+      "$why": "Section 21: the wrong axis is ignored *and* not prevented. A port that mapped both axes would move; one that prevented and ignored would trap the page's own scrolling.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "account",
+          "keydownPrevented": [false],
+          "events": []
+        },
+        "matches": "stepper/default"
+      }
+    },
+    {
+      "id": "stepper/interaction-vertical-arrow-down",
+      "title": "ArrowDown from the first trigger of a vertical stepper activates and focuses the next",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "orientation": "vertical"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowDown"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "profile",
+          "currentClassValue": "profile",
+          "itemStates": ["complete", "current", "upcoming"],
+          "progressFactor": "0.5",
+          "focusValue": "profile",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "profile"
+            }
+          ]
+        },
+        "matches": "stepper/vertical-profile"
+      }
+    },
+    {
+      "id": "stepper/interaction-vertical-arrow-up",
+      "title": "ArrowUp from the middle trigger of a vertical stepper goes to the previous",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "orientation": "vertical",
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "currentClassValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "account",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "account"
+            }
+          ]
+        },
+        "matches": "stepper/vertical"
+      }
+    },
+    {
+      "id": "stepper/interaction-vertical-wrong-axis",
+      "title": "ArrowRight on a vertical stepper is ignored and not prevented",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "orientation": "vertical"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "account",
+          "keydownPrevented": [false],
+          "events": []
+        },
+        "matches": "stepper/vertical"
+      }
+    },
+    {
+      "id": "stepper/interaction-home",
+      "title": "Home from the last trigger activates and focuses the first enabled step",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "currentClassValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "account",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "account"
+            }
+          ]
+        },
+        "matches": "stepper/default"
+      }
+    },
+    {
+      "id": "stepper/interaction-end",
+      "title": "End from the first trigger activates and focuses the last enabled step",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "confirm",
+          "currentClassValue": "confirm",
+          "itemStates": ["complete", "complete", "current"],
+          "progressFactor": "1",
+          "focusValue": "confirm",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "confirm"
+            }
+          ]
+        },
+        "matches": "stepper/default-value-confirm"
+      }
+    },
+    {
+      "id": "stepper/interaction-home-on-first",
+      "title": "Home from the first trigger when it is already current: prevented, focus stays, nothing emitted",
+      "$why": "Activation is suppressed on the current step while the key is still handled: prevented, focus moved to the same trigger.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "focusValue": "account",
+          "keydownPrevented": [true],
+          "events": []
+        },
+        "matches": "stepper/default"
+      }
+    },
+    {
+      "id": "stepper/interaction-skip-disabled",
+      "title": "ArrowRight from the first trigger skips the disabled middle step",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself",
+            "disabled": true
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "confirm",
+          "currentClassValue": "confirm",
+          "itemStates": ["complete", "disabled", "current"],
+          "progressFactor": "1",
+          "focusValue": "confirm",
+          "disabledValues": ["profile"],
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "confirm"
+            }
+          ],
+          "a11y:secondTrigger.disabled": "true",
+          "a11y:thirdTrigger.focusable": "true"
+        },
+        "matches": "stepper/disabled-middle-confirm"
+      }
+    },
+    {
+      "id": "stepper/interaction-skip-disabled-backward",
+      "title": "ArrowLeft from the last trigger skips the disabled middle step",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself",
+            "disabled": true
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowLeft"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "currentClassValue": "account",
+          "itemStates": ["current", "disabled", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "account",
+          "disabledValues": ["profile"],
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "account"
+            }
+          ]
+        },
+        "matches": "stepper/disabled-middle"
+      }
+    },
+    {
+      "id": "stepper/interaction-wrap-forward",
+      "title": "ArrowRight from the last trigger wraps to the first",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "currentClassValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "account",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "account"
+            }
+          ]
+        },
+        "matches": "stepper/default"
+      }
+    },
+    {
+      "id": "stepper/interaction-wrap-backward",
+      "title": "ArrowLeft from the first trigger wraps to the last",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowLeft"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "confirm",
+          "currentClassValue": "confirm",
+          "itemStates": ["complete", "complete", "current"],
+          "progressFactor": "1",
+          "focusValue": "confirm",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "confirm"
+            }
+          ]
+        },
+        "matches": "stepper/default-value-confirm"
+      }
+    },
+    {
+      "id": "stepper/interaction-home-skips-disabled",
+      "title": "Home with the first step disabled lands on the second",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account",
+            "disabled": true
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "confirm"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 2
+          },
+          {
+            "action": "pressKey",
+            "key": "Home"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "profile",
+          "currentClassValue": "profile",
+          "itemStates": ["disabled", "current", "upcoming"],
+          "progressFactor": "0.5",
+          "focusValue": "profile",
+          "disabledValues": ["account"],
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "profile"
+            }
+          ]
+        },
+        "matches": "stepper/disabled-first"
+      }
+    },
+    {
+      "id": "stepper/interaction-end-skips-disabled",
+      "title": "End with the last step disabled lands on the second",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm",
+            "disabled": true
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 0
+          },
+          {
+            "action": "pressKey",
+            "key": "End"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "profile",
+          "currentClassValue": "profile",
+          "itemStates": ["complete", "current", "disabled"],
+          "progressFactor": "0.5",
+          "focusValue": "profile",
+          "disabledValues": ["confirm"],
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "profile"
+            }
+          ]
+        },
+        "matches": "stepper/disabled-last-profile"
+      }
+    },
+    {
+      "id": "stepper/interaction-disabled-keyboard",
+      "title": "A disabled trigger takes no focus, so ArrowRight reaches nothing",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself",
+            "disabled": true
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 1
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowRight"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "itemStates": ["current", "disabled", "upcoming"],
+          "focusRole": "body",
+          "focusValue": null,
+          "disabledValues": ["profile"],
+          "keydownPrevented": [false],
+          "events": [],
+          "a11y:secondTrigger.disabled": "true"
+        },
+        "matches": "stepper/disabled-middle"
+      }
+    },
+    {
+      "id": "stepper/interaction-controlled-model",
+      "title": "A v-model consumer: the click emits, the consumer writes the value back, the selection moves",
+      "$why": "The controlled protocol round-tripped through a consumer that accepts. The Razor adapter has no parent to ask and selects directly; all three land on the same state.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "modelValue": "account"
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 2
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValue": "confirm",
+          "currentClassValue": "confirm",
+          "itemStates": ["complete", "complete", "current"],
+          "progressFactor": "1",
+          "focusValue": "confirm",
+          "events": [
+            {
+              "value": "confirm"
+            }
+          ]
+        },
+        "matches": "stepper/controlled-confirm"
+      }
+    },
+    {
+      "id": "stepper/interaction-focus-only",
+      "title": "Focusing the middle trigger changes nothing",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 3,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 1
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValue": "account",
+          "itemStates": ["current", "upcoming", "upcoming"],
+          "progressFactor": "0",
+          "focusValue": "profile",
+          "focusRole": "trigger",
+          "events": []
+        },
+        "matches": "stepper/default"
+      }
+    },
+    {
+      "id": "stepper/interaction-sibling-isolation",
+      "title": "Clicking a trigger in the second of two steppers moves its selection and leaves the first alone",
+      "$why": "State isolation between instances, measured per instance. Focus isolation is a separate claim the reference does not make (see the policy).",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "group": [
+        {
+          "items": [
+            {
+              "value": "account",
+              "label": "Account"
+            },
+            {
+              "value": "profile",
+              "label": "Profile",
+              "description": "Tell us about yourself"
+            },
+            {
+              "value": "confirm",
+              "label": "Confirm"
+            }
+          ],
+          "defaultValue": "profile"
+        },
+        {
+          "items": [
+            {
+              "value": "ship",
+              "label": "Shipping"
+            },
+            {
+              "value": "pay",
+              "label": "Payment"
+            }
+          ],
+          "defaultValue": "pay",
+          "orientation": "vertical"
+        }
+      ],
+      "componentInteractive": 5,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "clickButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 3
+          }
+        ],
+        "expect": {
+          "activates": true,
+          "currentValues": ["profile", "ship"],
+          "focusValue": "ship",
+          "events": [
+            {
+              "value": "ship"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "stepper/interaction-sibling-keyboard",
+      "title": "ArrowUp in the vertical second stepper moves its selection and focus, and the first stepper is untouched",
+      "$why": "Keyboard navigation inside the second instance with distinct values: the focus lands in the second instance on every target, because no value is shared with the first.",
+      "props": {
+        "items": [
+          {
+            "value": "account",
+            "label": "Account"
+          },
+          {
+            "value": "profile",
+            "label": "Profile",
+            "description": "Tell us about yourself"
+          },
+          {
+            "value": "confirm",
+            "label": "Confirm"
+          }
+        ],
+        "defaultValue": "profile"
+      },
+      "attrs": {},
+      "group": [
+        {
+          "items": [
+            {
+              "value": "account",
+              "label": "Account"
+            },
+            {
+              "value": "profile",
+              "label": "Profile",
+              "description": "Tell us about yourself"
+            },
+            {
+              "value": "confirm",
+              "label": "Confirm"
+            }
+          ],
+          "defaultValue": "profile"
+        },
+        {
+          "items": [
+            {
+              "value": "ship",
+              "label": "Shipping"
+            },
+            {
+              "value": "pay",
+              "label": "Payment"
+            }
+          ],
+          "defaultValue": "pay",
+          "orientation": "vertical"
+        }
+      ],
+      "componentInteractive": 5,
+      "visual": true,
+      "interaction": {
+        "steps": [
+          {
+            "action": "focusButton",
+            "selector": ".vf-stepper__trigger",
+            "index": 4
+          },
+          {
+            "action": "pressKey",
+            "key": "ArrowUp"
+          }
+        ],
+        "expect": {
+          "activates": false,
+          "currentValues": ["profile", "ship"],
+          "focusValue": "ship",
+          "keydownPrevented": [true],
+          "events": [
+            {
+              "value": "ship"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
