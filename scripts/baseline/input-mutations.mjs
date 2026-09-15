@@ -55,6 +55,8 @@ export const progressBarSourcePath = 'packages/core/src/components/progress-bar/
 export const progressBarRulePath = 'packages/shared-core/src/progress-bar/state.ts';
 
 export const accordionSourcePath = 'packages/core/src/components/accordion/VfAccordion.vue';
+export const stepperSourcePath = 'packages/core/src/components/stepper/VfStepper.vue';
+const stepperSuite = 'src/components/stepper/VfStepper.characterization.spec.ts';
 /** The shared rules VfAccordion, its Razor controller and the PHP adapter derive from. */
 export const accordionRulePath = 'packages/shared-core/src/accordion/state.ts';
 /**
@@ -2984,6 +2986,466 @@ export const accordionMutations = [
   },
 ];
 
+/**
+ * VfStepper. The second component that owns controls, and a mutation set that
+ * has to prove a different set of things from the accordion's: selection on
+ * a string with a fallback, per-item state precedence, the progress factor's
+ * arithmetic and serialisation, native Enter/Space beside handled Arrow, Home
+ * and End, focus that moves between the owned buttons - document-wide, which
+ * is the historical quirk pinned as such - and the deep items watch.
+ */
+export const stepperMutations = [
+  // ------------------------------------------------------------ state model
+  {
+    id: 'stepper-falls-back-to-the-first-item',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the fallback is the first item rather than the first enabled item',
+    find: 'const fallbackValue = computed(() => props.items.find((item) => !item.disabled)?.value);',
+    replace: 'const fallbackValue = computed(() => props.items[0]?.value);',
+  },
+  {
+    id: 'stepper-treats-null-as-uncontrolled',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'controlled means "not nullish", so a null modelValue writes the internal state on click',
+    find: 'const isControlled = computed(() => props.modelValue !== undefined);',
+    replace: 'const isControlled = computed(() => props.modelValue != null);',
+  },
+  {
+    id: 'stepper-ignores-default-value',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'defaultValue no longer seeds the internal state',
+    find: 'const internalValue = ref(props.defaultValue ?? fallbackValue.value);',
+    replace: 'const internalValue = ref(fallbackValue.value);',
+  },
+  {
+    id: 'stepper-normalises-empty-model-value',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'an empty-string modelValue falls through to the internal state',
+    find: 'const activeValue = computed(() => props.modelValue ?? internalValue.value ?? fallbackValue.value);',
+    replace: 'const activeValue = computed(() => props.modelValue || internalValue.value || fallbackValue.value);',
+  },
+
+  // -------------------------------------------------------------- step state
+  {
+    id: 'stepper-current-beats-disabled',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'a disabled active item is reported current rather than disabled',
+    find: "  if (item.disabled) {\n    return 'disabled';\n  }\n\n  const activeIndex",
+    replace: "  const activeIndex",
+  },
+  {
+    id: 'stepper-complete-after-current',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the steps after the current one are complete and the ones before it upcoming',
+    find: '  if (activeIndex >= 0 && currentIndex < activeIndex) {',
+    replace: '  if (activeIndex >= 0 && currentIndex > activeIndex) {',
+  },
+  {
+    id: 'stepper-unknown-value-marks-first-current',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'an unknown active value falls back to the first step for the state, though not for the value',
+    find: "  const activeIndex = props.items.findIndex((entry) => entry.value === activeValue.value);\n  const currentIndex",
+    replace:
+      "  const activeIndex = Math.max(0, props.items.findIndex((entry) => entry.value === activeValue.value));\n  const currentIndex",
+  },
+  {
+    id: 'stepper-aria-current-true',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'aria-current is written as "true" instead of "step"',
+    find: ":aria-current=\"stepState(item) === 'current' ? 'step' : undefined\"",
+    replace: ":aria-current=\"stepState(item) === 'current' ? 'true' : undefined\"",
+  },
+  {
+    id: 'stepper-aria-current-on-every-trigger',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'aria-current="false" is written on the non-current triggers',
+    find: ":aria-current=\"stepState(item) === 'current' ? 'step' : undefined\"",
+    replace: ":aria-current=\"stepState(item) === 'current' ? 'step' : 'false'\"",
+  },
+  {
+    id: 'stepper-trigger-current-class-dropped',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the trigger loses its own current modifier; only the item carries state',
+    find: ":class=\"stepState(item) === 'current' && 'vf-stepper__trigger--current'\"",
+    replace: '',
+  },
+  {
+    id: 'stepper-disabled-becomes-aria-disabled',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the native disabled attribute is replaced by aria-disabled',
+    find: '          :disabled="item.disabled"',
+    replace: '          :aria-disabled="item.disabled ? \'true\' : undefined"',
+  },
+
+  // -------------------------------------------------------------- root style
+  {
+    id: 'stepper-counts-enabled-items',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the item count custom property counts enabled items only',
+    find: "    '--vf-stepper-item-count': `${props.items.length}`,\n    '--vf-stepper-progress-factor'",
+    replace: "    '--vf-stepper-item-count': `${getEnabledItems().length}`,\n    '--vf-stepper-progress-factor'",
+  },
+  {
+    id: 'stepper-factor-over-count',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the progress factor divides by the count instead of the count minus one',
+    find: '  const progressFactor = normalizedActiveIndex / (props.items.length - 1);',
+    replace: '  const progressFactor = normalizedActiveIndex / props.items.length;',
+  },
+  {
+    id: 'stepper-factor-rounded',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the progress factor is rounded to two decimals, so 1/3 is written as 0.33',
+    find: "    '--vf-stepper-progress-factor': `${progressFactor}`,",
+    replace: "    '--vf-stepper-progress-factor': `${Math.round(progressFactor * 100) / 100}`,",
+  },
+  {
+    id: 'stepper-factor-for-one-item',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'a single item writes a progress factor as well',
+    find: '  if (props.items.length <= 1) {',
+    replace: '  if (props.items.length < 1) {',
+  },
+  {
+    id: 'stepper-unknown-value-negative-factor',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'an unknown active value is not normalised, so the factor goes negative',
+    find: '  const normalizedActiveIndex = activeIndex.value < 0 ? 0 : activeIndex.value;',
+    replace: '  const normalizedActiveIndex = activeIndex.value;',
+  },
+
+  // ------------------------------------------------------------------ events
+  {
+    id: 'stepper-emits-change-first',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'change is emitted before update:modelValue',
+    find: "  emit('update:modelValue', value);\n  emit('change', value);",
+    replace: "  emit('change', value);\n  emit('update:modelValue', value);",
+  },
+  {
+    id: 'stepper-skips-update-model-value',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'only change is emitted',
+    find: "  emit('update:modelValue', value);\n  emit('change', value);",
+    replace: "  emit('change', value);",
+  },
+  {
+    id: 'stepper-current-reclick-emits',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'clicking the current step emits the pair again',
+    find: '  if (!item.disabled && item.value !== activeValue.value) {',
+    replace: '  if (!item.disabled) {',
+  },
+  {
+    id: 'stepper-disabled-activates',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the disabled guard is gone from activation',
+    find: '  if (!item.disabled && item.value !== activeValue.value) {',
+    replace: '  if (item.value !== activeValue.value) {',
+  },
+  {
+    id: 'stepper-writes-internal-state-when-controlled',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the internal state is written even in controlled mode',
+    find: '  if (!isControlled.value) {\n    internalValue.value = value;\n  }',
+    replace: '  internalValue.value = value;',
+  },
+  {
+    id: 'stepper-emits-the-index',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the events carry the item index instead of its value',
+    find: '    setActiveValue(item.value);\n  }\n}',
+    replace: '    setActiveValue(item.value);\n    emit(\'change\', String(props.items.indexOf(item)));\n  }\n}',
+  },
+
+  // ---------------------------------------------------- native Enter / Space
+  {
+    id: 'stepper-handles-enter-manually',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'Enter is handled on keydown with preventDefault and manual activation instead of native activation',
+    find: "  const nextKey = props.orientation === 'vertical' ? 'ArrowDown' : 'ArrowRight';",
+    replace:
+      "  if (event.key === 'Enter') {\n    event.preventDefault();\n    activateStep(currentItem);\n    return;\n  }\n\n" +
+      "  const nextKey = props.orientation === 'vertical' ? 'ArrowDown' : 'ArrowRight';",
+  },
+  {
+    id: 'stepper-handles-space-manually',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'Space is handled on keydown with preventDefault and manual activation instead of native activation',
+    find: "  const nextKey = props.orientation === 'vertical' ? 'ArrowDown' : 'ArrowRight';",
+    replace:
+      "  if (event.key === ' ') {\n    event.preventDefault();\n    activateStep(currentItem);\n    return;\n  }\n\n" +
+      "  const nextKey = props.orientation === 'vertical' ? 'ArrowDown' : 'ArrowRight';",
+  },
+
+  // ------------------------------------------------------------- navigation
+  {
+    id: 'stepper-horizontal-keys-swapped',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'horizontal navigation listens to ArrowDown/ArrowUp',
+    find:
+      "  const nextKey = props.orientation === 'vertical' ? 'ArrowDown' : 'ArrowRight';\n" +
+      "  const previousKey = props.orientation === 'vertical' ? 'ArrowUp' : 'ArrowLeft';",
+    replace:
+      "  const nextKey = props.orientation === 'vertical' ? 'ArrowDown' : 'ArrowDown';\n" +
+      "  const previousKey = props.orientation === 'vertical' ? 'ArrowUp' : 'ArrowUp';",
+  },
+  {
+    id: 'stepper-vertical-keys-swapped',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'vertical navigation listens to ArrowRight/ArrowLeft',
+    find:
+      "  const nextKey = props.orientation === 'vertical' ? 'ArrowDown' : 'ArrowRight';\n" +
+      "  const previousKey = props.orientation === 'vertical' ? 'ArrowUp' : 'ArrowLeft';",
+    replace:
+      "  const nextKey = props.orientation === 'vertical' ? 'ArrowRight' : 'ArrowRight';\n" +
+      "  const previousKey = props.orientation === 'vertical' ? 'ArrowLeft' : 'ArrowLeft';",
+  },
+  {
+    id: 'stepper-handles-both-axes',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the wrong axis is handled as well: ArrowDown navigates a horizontal stepper',
+    find: '  if (event.key === nextKey) {',
+    replace: "  if (event.key === nextKey || event.key === 'ArrowDown' || event.key === 'ArrowRight') {",
+  },
+  {
+    id: 'stepper-arrow-without-prevent-default',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the next-arrow branch no longer prevents the default',
+    find: '  if (event.key === nextKey) {\n    event.preventDefault();',
+    replace: '  if (event.key === nextKey) {',
+  },
+  {
+    id: 'stepper-arrow-does-not-wrap',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'ArrowRight on the last enabled step stays on it instead of wrapping',
+    find: '    const nextItem = enabledItems[(currentIndex + 1) % enabledItems.length];',
+    replace: '    const nextItem = enabledItems[Math.min(currentIndex + 1, enabledItems.length - 1)];',
+  },
+  {
+    id: 'stepper-arrow-does-not-skip-disabled',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'navigation walks every item, disabled ones included',
+    find: '  return props.items.filter((item) => !item.disabled);',
+    replace: '  return props.items;',
+  },
+  {
+    id: 'stepper-home-goes-to-second',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'Home lands on the second enabled step',
+    find: '    const firstItem = enabledItems[0];',
+    replace: '    const firstItem = enabledItems[1] ?? enabledItems[0];',
+  },
+  {
+    id: 'stepper-end-goes-to-first',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'End lands on the first enabled step',
+    find: '    const lastItem = enabledItems[enabledItems.length - 1];',
+    replace: '    const lastItem = enabledItems[0];',
+  },
+  {
+    id: 'stepper-arrow-does-not-move-focus',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'ArrowRight activates the next step without focusing it',
+    find: '    activateStep(nextItem);\n    focusStepByValue(nextItem.value);',
+    replace: '    activateStep(nextItem);',
+  },
+  {
+    id: 'stepper-home-focuses-without-activating',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'Home moves focus but does not activate',
+    find: '    activateStep(firstItem);\n    focusStepByValue(firstItem.value);',
+    replace: '    focusStepByValue(firstItem.value);',
+  },
+  {
+    id: 'stepper-navigates-relative-to-the-active-step',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'navigation starts from the active step rather than from the focused trigger',
+    find: '  const currentIndex = enabledItems.findIndex((item) => item.value === currentItem.value);',
+    replace: '  const currentIndex = enabledItems.findIndex((item) => item.value === activeValue.value);',
+  },
+  {
+    id: 'stepper-focuses-within-the-instance',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description:
+      'focusStepByValue is scoped to the instance root, so two steppers sharing values no longer cross - the ' +
+      'historical document-wide quirk, corrected, which the characterization must refuse',
+    edits: [
+      {
+        find: "import { computed, ref, useAttrs, watch, type CSSProperties } from 'vue';",
+        replace: "import { computed, ref, useAttrs, useTemplateRef, watch, type CSSProperties } from 'vue';",
+      },
+      {
+        find: 'function focusStepByValue(value: string) {\n  const element = document.querySelector<HTMLElement>(',
+        replace:
+          "const rootElement = useTemplateRef<HTMLElement>('root');\n\n" +
+          'function focusStepByValue(value: string) {\n  const element = rootElement.value?.querySelector<HTMLElement>(',
+      },
+      {
+        find: '  <nav :class="rootClasses"',
+        replace: '  <nav ref="root" :class="rootClasses"',
+      },
+    ],
+  },
+
+  // -------------------------------------------------------------- items watch
+  {
+    id: 'stepper-watch-removed',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the items watch is gone, so a disabled or removed active item keeps the stale value',
+    find: '    if (!hasActiveItem && fallbackValue.value) {\n      setActiveValue(fallbackValue.value);\n    }',
+    replace: '    void hasActiveItem;',
+  },
+  {
+    id: 'stepper-watch-immediate',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the items watch runs at mount, so a disabled defaultValue is reseeded and emitted at once',
+    find: '  { deep: true },\n);',
+    replace: '  { deep: true, immediate: true },\n);',
+  },
+  {
+    id: 'stepper-watch-reseeds-silently',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the watch writes the fallback without emitting',
+    find: '    if (!hasActiveItem && fallbackValue.value) {\n      setActiveValue(fallbackValue.value);\n    }',
+    replace: '    if (!hasActiveItem && fallbackValue.value) {\n      internalValue.value = fallbackValue.value;\n    }',
+  },
+
+  // ---------------------------------------------------------------- markup
+  {
+    id: 'stepper-trigger-becomes-a-div',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the native button is replaced by a div with role=button and tabindex=0',
+    edits: [
+      {
+        find: '        <button\n          type="button"\n          class="vf-stepper__trigger"',
+        replace: '        <div\n          role="button"\n          tabindex="0"\n          class="vf-stepper__trigger"',
+      },
+      { find: '          </span>\n        </button>', replace: '          </span>\n        </div>' },
+    ],
+  },
+  {
+    id: 'stepper-trigger-becomes-a-submit-button',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the trigger submits a surrounding form',
+    find: '        <button\n          type="button"',
+    replace: '        <button\n          type="submit"',
+  },
+  {
+    id: 'stepper-description-for-empty-string',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'an empty description renders its span',
+    find: '<span v-if="item.description" class="vf-stepper__description">',
+    replace: '<span v-if="item.description !== undefined" class="vf-stepper__description">',
+  },
+  {
+    id: 'stepper-marker-from-zero',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the marker numbers from zero',
+    find: '            {{ index + 1 }}',
+    replace: '            {{ index }}',
+  },
+  {
+    id: 'stepper-vertical-content-above',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'a vertical stepper accepts the horizontal content positions',
+    find: "    return props.contentPosition === 'start' ? 'start' : 'end';",
+    replace: "    return props.contentPosition ?? 'end';",
+  },
+  {
+    id: 'stepper-list-is-unordered',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the ordered list becomes an unordered one',
+    edits: [
+      { find: '    <ol class="vf-stepper__list">', replace: '    <ul class="vf-stepper__list">' },
+      { find: '    </ol>', replace: '    </ul>' },
+    ],
+  },
+  {
+    id: 'stepper-root-is-a-div',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the nav becomes a div',
+    edits: [
+      { find: '  <nav :class="rootClasses"', replace: '  <div :class="rootClasses"' },
+      { find: '  </nav>', replace: '  </div>' },
+    ],
+  },
+
+  // ------------------------------------------------------------------ attrs
+  {
+    id: 'stepper-consumer-class-first',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'a consumer class is written before the canonical classes',
+    find:
+      "    'vf-stepper',\n    `vf-stepper--${props.orientation}`,\n    `vf-stepper--content-${resolvedContentPosition.value}`,\n    attrs.class as string | undefined,",
+    replace:
+      "    attrs.class as string | undefined,\n    'vf-stepper',\n    `vf-stepper--${props.orientation}`,\n    `vf-stepper--content-${resolvedContentPosition.value}`,",
+  },
+  {
+    id: 'stepper-attrs-land-on-the-triggers',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'forwarded attributes are written onto every trigger as well as the root',
+    find: '          :disabled="item.disabled"',
+    replace: '          :disabled="item.disabled"\n          v-bind="rootAttrs"',
+  },
+  {
+    id: 'stepper-aria-label-default-dropped',
+    file: stepperSourcePath,
+    suite: stepperSuite,
+    description: 'the nav has no accessible name by default',
+    find: "  ariaLabel: 'Progress',",
+    replace: '  ariaLabel: undefined,',
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -3005,4 +3467,5 @@ export const componentMutations = [
   ...progressSpinnerMutations,
   ...progressBarMutations,
   ...accordionMutations,
+  ...stepperMutations,
 ];
