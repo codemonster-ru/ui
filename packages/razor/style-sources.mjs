@@ -132,4 +132,14 @@ export const styleSources = [
   // modifiers, and the panel. It was Vue-owned until M24 and reached no Razor
   // artifact at all. Listed last; no tabs selector overlaps another file's.
   'packages/styles/src/components/tabs.css',
+  // VfLink, the M25 component and a standalone closure of eight rules: the
+  // anchor with its border, colour, type and transition, the hover and active
+  // colours, the hover-underline modifier, the focus ring, the muted tone, the
+  // always-underline modifier, and the two focus overrides that drop the
+  // underline while the ring is shown. It imports nothing and nothing imports
+  // it. There is no rule for a router's active or exact-active class, because
+  // the reference styles none: the stylesheet knows one element, `a.vf-link`,
+  // whichever branch rendered it. Listed last; no link selector overlaps
+  // another file's.
+  'packages/styles/src/components/link.css',
 ];
