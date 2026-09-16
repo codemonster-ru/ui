@@ -144,6 +144,7 @@ export default defineConfig({
         progressBar: fileURLToPath(new URL('./progress-bar.html', import.meta.url)),
         accordion: fileURLToPath(new URL('./accordion.html', import.meta.url)),
         stepper: fileURLToPath(new URL('./stepper.html', import.meta.url)),
+        tabs: fileURLToPath(new URL('./tabs.html', import.meta.url)),
       },
     },
   },
@@ -258,6 +259,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/stepper-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/stepper/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/tabs-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/tabs/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

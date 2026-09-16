@@ -106,6 +106,8 @@ async function pressKey(page, key) {
     ArrowUp: { code: 'ArrowUp', keyCode: 38 },
     ArrowRight: { code: 'ArrowRight', keyCode: 39 },
     ArrowDown: { code: 'ArrowDown', keyCode: 40 },
+    // The tabs' one unhandled key (M24): native focus navigation.
+    Tab: { code: 'Tab', keyCode: 9 },
   }[key];
   const base = {
     key,
@@ -113,14 +115,22 @@ async function pressKey(page, key) {
     windowsVirtualKeyCode: descriptor.keyCode,
     nativeVirtualKeyCode: descriptor.keyCode,
   };
-  await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
+  // A character key is one keyDown carrying its text, which Chrome expands
+  // into keydown and keypress; rawKeyDown followed by a char event is what
+  // Chrome 153 routed to the browser as an accelerator for an unhandled
+  // Enter or Space, opening a page of its own and leaving this one hidden
+  // without animation frames - found in M24 through the tabs' readiness
+  // classes, and reproduced in the parity driver. One native click, keydown
+  // not prevented, as before.
   if (descriptor.text !== undefined) {
     await page.send('Input.dispatchKeyEvent', {
-      type: 'char',
+      type: 'keyDown',
       ...base,
       text: descriptor.text,
       unmodifiedText: descriptor.text,
     });
+  } else {
+    await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
   }
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
 }
@@ -188,6 +198,76 @@ const readAccordion = (caseName, triggerText) => `(() => {
     focused: document.activeElement === trigger,
     events: window.__accordionEvents?.['${caseName}/' + ${JSON.stringify(triggerText)}] ?? null,
     triggerCount: root.querySelectorAll('.vf-accordion__trigger').length,
+  };
+})()`;
+
+/**
+ * Installs a per-root log of the tabs' change events, a per-root native click
+ * counter and a per-root keydown record, keyed by the case name and the
+ * root's accessible name.
+ */
+const installTabsLog = `(() => {
+  window.__tabsEvents = {};
+  window.__tabsClicks = {};
+  window.__tabsKeydowns = {};
+  for (const root of document.querySelectorAll('[data-case] .vf-tabs')) {
+    const name = root.closest('[data-case]').dataset.case + '/' + root.getAttribute('aria-label');
+    window.__tabsEvents[name] = [];
+    window.__tabsClicks[name] = 0;
+    window.__tabsKeydowns[name] = [];
+    root.addEventListener('vf-tabs:change', (event) => {
+      if (event.target !== root) return;
+      window.__tabsEvents[name].push({ value: event.detail.value, bubbles: event.bubbles });
+    });
+    root.addEventListener('click', (event) => {
+      if (event.target.closest('.vf-tabs__tab')) window.__tabsClicks[name] += 1;
+    });
+    root.addEventListener('keydown', (event) => {
+      const entry = { key: event.key, prevented: false };
+      window.__tabsKeydowns[name].push(entry);
+      setTimeout(() => { entry.prevented = event.defaultPrevented; }, 0);
+    });
+  }
+  return Object.keys(window.__tabsEvents).length;
+})()`;
+
+/** The tabs in a case as the suite reads them, by the root's accessible name. */
+const readTabs = (caseName, label) => `(() => {
+  const root = [...document.querySelectorAll('[data-case="${caseName}"] .vf-tabs')]
+    .find((candidate) => candidate.getAttribute('aria-label') === ${JSON.stringify(label)});
+  const tabs = [...root.querySelectorAll('[role="tablist"] > .vf-tabs__tab')];
+  const value = (tab) => tab?.getAttribute('data-vf-razor-tabs-value') ?? null;
+  const panel = root.querySelector(':scope > .vf-tabs__panel');
+  const indicator = root.querySelector('.vf-tabs__indicator');
+  const viewport = root.querySelector('.vf-tabs__list-scroller');
+  const left = root.querySelector('.vf-tabs__scroll-button--left');
+  const right = root.querySelector('.vf-tabs__scroll-button--right');
+  const key = '${caseName}/' + ${JSON.stringify(label)};
+  return {
+    enhanced: root.hasAttribute('data-vf-razor-tabs-enhanced'),
+    selected: tabs.filter((t) => t.getAttribute('aria-selected') === 'true').map(value),
+    tabindexes: tabs.map((t) => t.getAttribute('tabindex')),
+    roles: tabs.map((t) => t.getAttribute('role')),
+    tabCount: tabs.length,
+    panels: root.querySelectorAll('.vf-tabs__panel').length,
+    panelText: panel?.textContent.trim() ?? null,
+    panelLabelledBySelected: panel ? document.getElementById(panel.getAttribute('aria-labelledby')) === tabs.find((t) => t.getAttribute('aria-selected') === 'true') : null,
+    panelIdMatchesControls: panel ? panel.id === tabs.find((t) => t.getAttribute('aria-selected') === 'true')?.getAttribute('aria-controls') : null,
+    templates: root.querySelectorAll(':scope > template[data-vf-razor-tabs-panel]').length,
+    indicator: { opacity: indicator.style.opacity, transform: indicator.style.transform, width: indicator.style.width, ready: indicator.classList.contains('vf-tabs__indicator--ready'), noTransition: indicator.classList.contains('vf-tabs__indicator--no-transition') },
+    ready: root.classList.contains('vf-tabs--scroll-controls-ready'),
+    animated: root.classList.contains('vf-tabs--scroll-controls-animated'),
+    scrollLeft: viewport.scrollLeft,
+    scrollbarWidth: viewport.style.getPropertyValue('--vf-horizontal-scroller-scrollbar-width').trim(),
+    canScrollLeft: root.querySelector('.vf-tabs__list').classList.contains('vf-tabs__list--can-scroll-left'),
+    canScrollRight: root.querySelector('.vf-tabs__list').classList.contains('vf-tabs__list--can-scroll-right'),
+    left: { hidden: left.classList.contains('vf-tabs__scroll-button--hidden'), ariaHidden: left.getAttribute('aria-hidden'), tabindex: left.getAttribute('tabindex'), disabled: left.disabled },
+    right: { hidden: right.classList.contains('vf-tabs__scroll-button--hidden'), ariaHidden: right.getAttribute('aria-hidden'), tabindex: right.getAttribute('tabindex'), disabled: right.disabled },
+    fades: [...root.querySelectorAll('.vf-horizontal-scroller__fade')].map((f) => f.classList.contains('vf-horizontal-scroller__fade--left') ? 'left' : 'right'),
+    focused: root.contains(document.activeElement) ? (value(document.activeElement.closest('.vf-tabs__tab')) ?? (document.activeElement.classList.contains('vf-tabs__panel') ? 'panel' : 'inside')) : null,
+    events: window.__tabsEvents?.[key] ?? null,
+    clicks: window.__tabsClicks?.[key] ?? null,
+    keydowns: window.__tabsKeydowns?.[key] ?? null,
   };
 })()`;
 
@@ -1197,6 +1277,576 @@ try {
     check('a second bootstrap adds no stepper ownership marker', markers === 6, `markers ${markers}`);
   });
 
+  // ---------------------------------------------------------------- tabs
+  //
+  // The M24 sections: one root per case enhanced by its marker, readiness in
+  // two frames, a real click that moves every half of the state - the
+  // selection projection, the one panel, the measured indicator - and
+  // dispatches one event, a click on the current tab that notifies again,
+  // Enter and Space that reach the click handler through native activation
+  // (one click each), the six navigation keys with their wrapping and
+  // disabled skipping from the tab that received the key, native Tab that
+  // lands on the panel, the scroller of an overflowing list with its
+  // buttons, fades and 140 ms scrolling state, siblings sharing values whose
+  // state and focus stay in their own root, a consumer button inside the
+  // panel that is left alone, a controlled unknown value, and an unowned
+  // copy that is not mounted.
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-tabs-enhanced]'))`);
+    await page.waitFor(
+      `document.querySelector('[data-case="tabs-default"] .vf-tabs').classList.contains('vf-tabs--scroll-controls-animated')`,
+    );
+    const logged = await page.evaluate(installTabsLog);
+    check('the tabs event log covers every tabs on the page', logged === 8, `logged ${logged}`);
+
+    const roots = await page.evaluate(`({
+      owned: document.querySelectorAll('[data-vf-razor="tabs"]').length,
+      enhanced: document.querySelectorAll('[data-vf-razor="tabs"][data-vf-razor-tabs-enhanced]').length,
+      unowned: document.querySelectorAll('[data-case="tabs-unowned"] .vf-tabs[data-vf-razor-tabs-enhanced]').length,
+      unownedRoots: document.querySelectorAll('[data-case="tabs-unowned"] .vf-tabs').length,
+      unownedReady: document.querySelectorAll('[data-case="tabs-unowned"] .vf-tabs--scroll-controls-ready').length,
+      tabs: document.querySelectorAll('[data-vf-razor="tabs"] [role="tablist"] > button.vf-tabs__tab[role="tab"]').length,
+      scrollButtons: document.querySelectorAll('[data-vf-razor="tabs"] button.vf-tabs__scroll-button').length,
+      panels: document.querySelectorAll('[data-vf-razor="tabs"] > .vf-tabs__panel').length,
+    })`);
+    check('every Razor-owned tabs root is enhanced', roots.owned === 7 && roots.enhanced === 7, JSON.stringify(roots));
+    check(
+      'a tabs copy without the ownership marker is not mounted and never becomes ready',
+      roots.unownedRoots === 1 && roots.unowned === 0 && roots.unownedReady === 0,
+      JSON.stringify(roots),
+    );
+    check(
+      'the owned tabs carry one native button[role=tab] per item, two scroll buttons each, and one panel where a panel slot and a selection exist',
+      roots.tabs === 25 && roots.scrollButtons === 14 && roots.panels === 5,
+      JSON.stringify(roots),
+    );
+
+    // -- readiness and the initial measurement
+    const before = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'a tabs starts with the first tab selected and tabbable, its panel labelled and named by it, ready and animated',
+      JSON.stringify(before.selected) === '["overview"]' &&
+        JSON.stringify(before.tabindexes) === '["0","-1","-1"]' &&
+        JSON.stringify(before.roles) === '["tab","tab","tab"]' &&
+        before.panels === 1 &&
+        before.panelText === 'Panel for overview' &&
+        before.panelLabelledBySelected === true &&
+        before.panelIdMatchesControls === true &&
+        before.templates === 3 &&
+        before.ready === true &&
+        before.animated === true &&
+        before.indicator.ready === true,
+      JSON.stringify(before),
+    );
+    check(
+      'the indicator is measured to the fraction of a pixel under the first tab, and nothing overflows',
+      before.indicator.opacity === '1' &&
+        before.indicator.transform === 'translateX(0px)' &&
+        /^\d+\.\d+px$/.test(before.indicator.width) &&
+        before.canScrollLeft === false &&
+        before.canScrollRight === false &&
+        before.left.hidden === true &&
+        before.right.hidden === true &&
+        before.left.disabled === true &&
+        before.left.tabindex === '-1' &&
+        before.left.ariaHidden === 'true' &&
+        before.fades.length === 0,
+      JSON.stringify(before),
+    );
+
+    // -- click: every half of the state moves, one event
+    await clickAt(page, '[data-case="tabs-default"] [role="tablist"] > .vf-tabs__tab:nth-child(2)');
+    await delay(50);
+    const clicked = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'a real click moves aria-selected, the roving tabindex, the one panel and the indicator together',
+      JSON.stringify(clicked.selected) === '["settings"]' &&
+        JSON.stringify(clicked.tabindexes) === '["-1","0","-1"]' &&
+        clicked.panels === 1 &&
+        clicked.panelText === 'Panel for settings' &&
+        clicked.panelLabelledBySelected === true &&
+        clicked.panelIdMatchesControls === true &&
+        clicked.indicator.opacity === '1' &&
+        /^translateX\(\d+\.\d+px\)$/.test(clicked.indicator.transform) &&
+        clicked.indicator.transform !== before.indicator.transform,
+      JSON.stringify(clicked),
+    );
+    check(
+      'every tab and the templates survive the click',
+      clicked.tabCount === 3 && clicked.templates === 3,
+      JSON.stringify(clicked),
+    );
+    check(
+      'one click dispatches one bubbling change event with the value, and leaves focus on the clicked tab',
+      JSON.stringify(clicked.events) === '[{"value":"settings","bubbles":true}]' && clicked.focused === 'settings',
+      JSON.stringify(clicked),
+    );
+
+    // -- click on the current tab: counted and notified again
+    await clickAt(page, '[data-case="tabs-default"] [role="tablist"] > .vf-tabs__tab:nth-child(2)');
+    await delay(50);
+    const reclicked = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'a click on the current tab reaches the tab, changes nothing and notifies again',
+      reclicked.clicks === 2 &&
+        JSON.stringify(reclicked.selected) === '["settings"]' &&
+        JSON.stringify(reclicked.events.map((e) => e.value)) === '["settings","settings"]',
+      JSON.stringify(reclicked),
+    );
+
+    // -- Enter and Space: native activation, one click each, keydown not prevented
+    await page.evaluate(
+      `document.querySelector('[data-case="tabs-default"] [role="tablist"] > .vf-tabs__tab:nth-child(3)').focus()`,
+    );
+    await pressKey(page, 'Enter');
+    await delay(50);
+    const afterEnter = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'Enter activates natively: one more click counted, the selection moves, the keydown is not prevented',
+      afterEnter.clicks === 3 &&
+        JSON.stringify(afterEnter.selected) === '["billing"]' &&
+        afterEnter.keydowns.at(-1).key === 'Enter' &&
+        afterEnter.keydowns.at(-1).prevented === false,
+      JSON.stringify(afterEnter),
+    );
+    await page.evaluate(
+      `document.querySelector('[data-case="tabs-default"] [role="tablist"] > .vf-tabs__tab:nth-child(1)').focus()`,
+    );
+    await pressKey(page, ' ');
+    await delay(50);
+    const afterSpace = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'Space activates natively as well',
+      afterSpace.clicks === 4 &&
+        JSON.stringify(afterSpace.selected) === '["overview"]' &&
+        afterSpace.keydowns.at(-1).key === ' ' &&
+        afterSpace.keydowns.at(-1).prevented === false,
+      JSON.stringify(afterSpace),
+    );
+
+    // -- the six navigation keys, from the focused tab, wrapping
+    await pressKey(page, 'ArrowRight');
+    await delay(50);
+    const right = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'ArrowRight is prevented, selects the next tab and focuses it, with no native click',
+      JSON.stringify(right.selected) === '["settings"]' &&
+        right.focused === 'settings' &&
+        right.clicks === 4 &&
+        right.keydowns.at(-1).prevented === true,
+      JSON.stringify(right),
+    );
+    await pressKey(page, 'ArrowDown');
+    await delay(50);
+    const down = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'ArrowDown moves forward on the horizontal tablist, prevented',
+      JSON.stringify(down.selected) === '["billing"]' &&
+        down.focused === 'billing' &&
+        down.keydowns.at(-1).prevented === true,
+      JSON.stringify(down),
+    );
+    await pressKey(page, 'ArrowRight');
+    await delay(50);
+    const wrapped = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'ArrowRight from the last tab wraps to the first',
+      JSON.stringify(wrapped.selected) === '["overview"]' && wrapped.focused === 'overview',
+      JSON.stringify(wrapped),
+    );
+    await pressKey(page, 'ArrowUp');
+    await delay(50);
+    const up = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'ArrowUp from the first tab wraps backward to the last',
+      JSON.stringify(up.selected) === '["billing"]' && up.focused === 'billing',
+      JSON.stringify(up),
+    );
+    await pressKey(page, 'ArrowLeft');
+    await delay(50);
+    const left = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'ArrowLeft goes to the previous tab',
+      JSON.stringify(left.selected) === '["settings"]' && left.focused === 'settings',
+      JSON.stringify(left),
+    );
+    await pressKey(page, 'End');
+    await delay(50);
+    const end = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'End selects and focuses the last tab',
+      JSON.stringify(end.selected) === '["billing"]' &&
+        end.focused === 'billing' &&
+        end.keydowns.at(-1).prevented === true,
+      JSON.stringify(end),
+    );
+    await pressKey(page, 'Home');
+    await delay(50);
+    const home = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'Home selects and focuses the first tab',
+      JSON.stringify(home.selected) === '["overview"]' &&
+        home.focused === 'overview' &&
+        home.keydowns.at(-1).prevented === true,
+      JSON.stringify(home),
+    );
+    check(
+      'the eight changes are logged in order and the panel followed each',
+      JSON.stringify(home.events.map((e) => e.value)) ===
+        '["settings","settings","billing","overview","settings","billing","overview","billing","settings","billing","overview"]' &&
+        home.panelText === 'Panel for overview' &&
+        home.panels === 1,
+      JSON.stringify(home.events),
+    );
+
+    // -- navigation starts from the focused tab, not the selected one
+    await page.evaluate(
+      `document.querySelector('[data-case="tabs-default"] [role="tablist"] > .vf-tabs__tab:nth-child(3)').focus()`,
+    );
+    const focusedOnly = await page.evaluate(readTabs('tabs-default', 'Default'));
+    await pressKey(page, 'ArrowLeft');
+    await delay(50);
+    const fromFocused = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'focus alone selects nothing, and ArrowLeft from the focused last tab lands on the middle one',
+      JSON.stringify(focusedOnly.selected) === '["overview"]' &&
+        focusedOnly.focused === 'billing' &&
+        JSON.stringify(fromFocused.selected) === '["settings"]' &&
+        fromFocused.focused === 'settings',
+      JSON.stringify({ focusedOnly, fromFocused }),
+    );
+
+    // -- native Tab lands on the panel
+    await pressKey(page, 'Tab');
+    await delay(50);
+    const tabbed = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'Tab is unhandled and native focus lands on the panel',
+      tabbed.focused === 'panel' &&
+        tabbed.keydowns.at(-1).key === 'Tab' &&
+        tabbed.keydowns.at(-1).prevented === false &&
+        JSON.stringify(tabbed.selected) === '["settings"]',
+      JSON.stringify(tabbed),
+    );
+
+    // -- disabled: skipped by keys, no focus, no click
+    await page.evaluate(
+      `document.querySelector('[data-case="tabs-disabled"] [role="tablist"] > .vf-tabs__tab:nth-child(1)').focus()`,
+    );
+    await pressKey(page, 'ArrowRight');
+    await delay(50);
+    const skipped = await page.evaluate(readTabs('tabs-disabled', 'Disabled'));
+    check(
+      'ArrowRight skips the disabled middle tab',
+      JSON.stringify(skipped.selected) === '["billing"]' && skipped.focused === 'billing',
+      JSON.stringify(skipped),
+    );
+    await page.evaluate(
+      `document.querySelector('[data-case="tabs-disabled"] [role="tablist"] > .vf-tabs__tab:nth-child(2)').focus()`,
+    );
+    const disabledPoint = await page.evaluate(`(() => {
+      const element = document.querySelector('[data-case="tabs-disabled"] [role="tablist"] > .vf-tabs__tab:nth-child(2)');
+      element.scrollIntoView({ block: 'center' });
+      const rect = element.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...disabledPoint });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      ...disabledPoint,
+      button: 'left',
+      clickCount: 1,
+    });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      ...disabledPoint,
+      button: 'left',
+      clickCount: 1,
+    });
+    await page.evaluate(
+      `document.querySelector('[data-case="tabs-disabled"] [role="tablist"] > .vf-tabs__tab:nth-child(2)').dispatchEvent(new MouseEvent('click', { bubbles: true }))`,
+    );
+    await delay(50);
+    const disabled = await page.evaluate(readTabs('tabs-disabled', 'Disabled'));
+    check(
+      'a disabled tab takes no focus and a real or synthetic click on it selects nothing',
+      JSON.stringify(disabled.selected) === '["billing"]' &&
+        disabled.focused !== 'settings' &&
+        disabled.events.length === 1,
+      JSON.stringify(disabled),
+    );
+
+    // -- the scroller: overflow, buttons, fades, the scrolling state, the clipped indicator
+    const overflow = await page.evaluate(readTabs('tabs-overflow', 'Overflow'));
+    check(
+      'an overflowing list shows the right button and fade, hides the left one, and the indicator is unclipped',
+      overflow.canScrollLeft === false &&
+        overflow.canScrollRight === true &&
+        overflow.left.hidden === true &&
+        overflow.right.hidden === false &&
+        overflow.right.ariaHidden === 'false' &&
+        overflow.right.tabindex === '0' &&
+        overflow.right.disabled === false &&
+        JSON.stringify(overflow.fades) === '["right"]' &&
+        overflow.scrollLeft === 0 &&
+        overflow.indicator.opacity === '1' &&
+        overflow.panels === 0,
+      JSON.stringify(overflow),
+    );
+    await clickAt(page, '[data-case="tabs-overflow"] .vf-tabs__scroll-button--right');
+    // The scroll event fires on the next frame; the scrolling state lasts
+    // 140 ms from there.
+    await delay(30);
+    const midScroll = await page.evaluate(readTabs('tabs-overflow', 'Overflow'));
+    await delay(250);
+    const scrolled = await page.evaluate(readTabs('tabs-overflow', 'Overflow'));
+    check(
+      'a click on the right button scrolls by max(120, round(0.6 * width)) and marks 140 ms of scrolling, which then ends',
+      midScroll.scrollLeft === 216 &&
+        midScroll.scrollbarWidth === 'thin' &&
+        midScroll.indicator.noTransition === true &&
+        scrolled.scrollLeft === 216 &&
+        scrolled.scrollbarWidth === 'none' &&
+        scrolled.indicator.noTransition === false,
+      JSON.stringify({ midScroll, scrolled }),
+    );
+    check(
+      'in the middle both buttons and both fades show, and the selected first tab is hidden under the left button',
+      scrolled.canScrollLeft === true &&
+        scrolled.canScrollRight === true &&
+        scrolled.left.hidden === false &&
+        scrolled.right.hidden === false &&
+        JSON.stringify(scrolled.fades) === '["left","right"]' &&
+        scrolled.indicator.opacity === '0' &&
+        scrolled.indicator.transform === 'translateX(28px)' &&
+        scrolled.indicator.width === '0px',
+      JSON.stringify(scrolled),
+    );
+    await clickAt(page, '[data-case="tabs-overflow"] .vf-tabs__scroll-button--left');
+    await delay(250);
+    const back = await page.evaluate(readTabs('tabs-overflow', 'Overflow'));
+    check(
+      'the left button scrolls back to the start and the state returns to the initial one',
+      back.scrollLeft === 0 &&
+        back.canScrollLeft === false &&
+        back.canScrollRight === true &&
+        JSON.stringify(back.fades) === '["right"]' &&
+        back.indicator.opacity === '1' &&
+        back.indicator.transform === 'translateX(0px)' &&
+        back.events.length === 0,
+      JSON.stringify(back),
+    );
+
+    // -- resize: the indicator and the scroll state are re-measured
+    await page.evaluate(
+      `(() => { const section = document.querySelector('[data-case="tabs-overflow"]'); section.style.width = '900px'; section.style.maxWidth = 'none'; })()`,
+    );
+    await delay(100);
+    const widened = await page.evaluate(readTabs('tabs-overflow', 'Overflow'));
+    check(
+      'widening the case through the ResizeObserver removes the overflow: no buttons, no fades, the indicator unclipped',
+      widened.canScrollRight === false &&
+        widened.right.hidden === true &&
+        widened.fades.length === 0 &&
+        widened.indicator.opacity === '1',
+      JSON.stringify(widened),
+    );
+    await page.evaluate(
+      `(() => { const section = document.querySelector('[data-case="tabs-overflow"]'); section.style.width = ''; section.style.maxWidth = ''; })()`,
+    );
+    await delay(100);
+
+    // -- siblings sharing values: state and focus stay in their own root
+    await page.evaluate(
+      `document.querySelector('[data-case="tabs-siblings"] .vf-tabs:last-of-type [role="tablist"] > .vf-tabs__tab:nth-child(1)').focus()`,
+    );
+    await pressKey(page, 'ArrowRight');
+    await delay(50);
+    const firstSibling = await page.evaluate(readTabs('tabs-siblings', 'First'));
+    const secondSibling = await page.evaluate(readTabs('tabs-siblings', 'Second'));
+    check(
+      'ArrowRight in the second sibling changes the second sibling only, its panel included',
+      JSON.stringify(secondSibling.selected) === '["settings"]' &&
+        secondSibling.panelText === 'Panel for settings' &&
+        secondSibling.events.length === 1 &&
+        JSON.stringify(firstSibling.selected) === '["overview"]' &&
+        firstSibling.panelText === 'Panel for overview' &&
+        firstSibling.events.length === 0,
+      JSON.stringify({ firstSibling, secondSibling }),
+    );
+    check(
+      'the Razor controller focuses within its own root although the first sibling shares the value',
+      secondSibling.focused === 'settings' && firstSibling.focused === null,
+      JSON.stringify({ firstFocused: firstSibling.focused, secondFocused: secondSibling.focused }),
+    );
+    const siblingIds = await page.evaluate(`(() => {
+      const ids = [...document.querySelectorAll('[data-case="tabs-siblings"] [id]')].map((e) => e.id);
+      return { ids: ids.length, unique: new Set(ids).size };
+    })()`);
+    check(
+      'two siblings sharing values keep distinct ids',
+      siblingIds.ids === siblingIds.unique && siblingIds.ids === 8,
+      JSON.stringify(siblingIds),
+    );
+
+    // -- a consumer button inside the panel is the consumer's
+    const consumerBefore = await page.evaluate(`(() => {
+      const button = document.querySelector('[data-case="tabs-consumer"] .vf-tabs__panel .tabs-panel-control');
+      window.__saveClicks = 0;
+      button.addEventListener('click', () => { window.__saveClicks += 1; });
+      return { classed: button.classList.contains('vf-tabs__tab'), role: button.getAttribute('role') };
+    })()`);
+    await clickAt(page, '[data-case="tabs-consumer"] .vf-tabs__panel .tabs-panel-control');
+    await delay(50);
+    const consumer = await page.evaluate(readTabs('tabs-consumer', 'Consumer'));
+    const saveClicks = await page.evaluate('window.__saveClicks');
+    check(
+      'clicking the consumer button inside the panel reaches the consumer and selects nothing',
+      consumerBefore.classed === false &&
+        consumerBefore.role === null &&
+        saveClicks === 1 &&
+        JSON.stringify(consumer.selected) === '["overview"]' &&
+        consumer.events.length === 0,
+      JSON.stringify({ consumerBefore, saveClicks, consumer }),
+    );
+
+    // -- an unknown controlled value: nothing selected, the first click selects
+    const unknown = await page.evaluate(readTabs('tabs-unknown', 'Unknown'));
+    check(
+      'an unknown value selects nothing: no aria-selected, every tabindex -1, no panel, the indicator hidden',
+      unknown.selected.length === 0 &&
+        JSON.stringify(unknown.tabindexes) === '["-1","-1","-1"]' &&
+        unknown.panels === 0 &&
+        unknown.templates === 3 &&
+        unknown.indicator.opacity === '0',
+      JSON.stringify(unknown),
+    );
+    await clickAt(page, '[data-case="tabs-unknown"] [role="tablist"] > .vf-tabs__tab:nth-child(3)');
+    await delay(50);
+    const nowSelected = await page.evaluate(readTabs('tabs-unknown', 'Unknown'));
+    check(
+      'the first click on it creates the one panel from the inert template and selects the tab',
+      JSON.stringify(nowSelected.selected) === '["billing"]' &&
+        nowSelected.panels === 1 &&
+        nowSelected.panelText === 'Panel for billing' &&
+        nowSelected.panelLabelledBySelected === true &&
+        nowSelected.indicator.opacity === '1',
+      JSON.stringify(nowSelected),
+    );
+
+    check(
+      'the tabs page produced no script errors',
+      page.diagnostics.pageErrors.length === 0,
+      page.diagnostics.pageErrors.join('; '),
+    );
+  });
+
+  // ----------------------------------------------------------- tabs, no-js
+  await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
+    const noJs = await page.evaluate(`(() => {
+      const tab = document.querySelector('[data-case="tabs-default"] [role="tablist"] > .vf-tabs__tab:nth-child(2)');
+      const selectedBefore = document.querySelector('[data-case="tabs-default"] [role="tab"][aria-selected="true"]').textContent.trim();
+      tab.click();
+      const root = document.querySelector('[data-case="tabs-default"] .vf-tabs');
+      return {
+        enhanced: document.querySelectorAll('[data-vf-razor-tabs-enhanced]').length,
+        selectedBefore,
+        selectedAfterClick: document.querySelector('[data-case="tabs-default"] [role="tab"][aria-selected="true"]').textContent.trim(),
+        panels: root.querySelectorAll('.vf-tabs__panel').length,
+        panelText: root.querySelector('.vf-tabs__panel').textContent.trim(),
+        templatesInert: [...root.querySelectorAll('template[data-vf-razor-tabs-panel]')].every((t) => t.getClientRects().length === 0),
+        ready: root.className,
+        indicator: root.querySelector('.vf-tabs__indicator').getAttribute('style'),
+        buttonsHidden: [...root.querySelectorAll('.vf-tabs__scroll-button')].every((b) => b.disabled && b.getAttribute('aria-hidden') === 'true' && b.getAttribute('tabindex') === '-1'),
+        overflowButtonsHidden: [...document.querySelectorAll('[data-case="tabs-overflow"] .vf-tabs__scroll-button')].every((b) => b.disabled),
+        disabledTab: document.querySelector('[data-case="tabs-disabled"] [role="tablist"] > .vf-tabs__tab:nth-child(2)').disabled,
+        tabType: tab.type,
+        tabs: document.querySelectorAll('[data-vf-razor="tabs"] button.vf-tabs__tab[role="tab"]').length,
+        links: document.querySelectorAll('[data-vf-razor="tabs"] a, [data-vf-razor="tabs"] form').length,
+      };
+    })()`);
+    check('no tabs controller runs without its script', noJs.enhanced === 0, JSON.stringify(noJs));
+    check(
+      'the initial selection, the one panel and the disabled state are truthful without javascript',
+      noJs.selectedBefore === 'Overview' &&
+        noJs.panels === 1 &&
+        noJs.panelText === 'Panel for overview' &&
+        noJs.templatesInert === true &&
+        noJs.disabledTab === true,
+      JSON.stringify(noJs),
+    );
+    check(
+      'nothing pretends to be measured without javascript: no readiness, the indicator at its seed, every scroll button hidden even on the overflow',
+      noJs.ready === 'vf-tabs' &&
+        noJs.indicator === 'opacity:0;transform:translateX(0);width:0;' &&
+        noJs.buttonsHidden === true &&
+        noJs.overflowButtonsHidden === true,
+      JSON.stringify(noJs),
+    );
+    check(
+      'a click changes no selection without javascript - the documented limitation, not a lie',
+      noJs.selectedAfterClick === 'Overview',
+    );
+    check(
+      'the tabs are type=button that submit nothing, and no link or form was substituted',
+      noJs.tabType === 'button' && noJs.links === 0 && noJs.tabs === 25,
+      JSON.stringify(noJs),
+    );
+  });
+
+  // ------------------------------------------------------- tabs, ownership
+  await withPage(chrome, server.origin, 'fixture-mixed.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('#vue-tabs-root'))`);
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-tabs-enhanced]'))`);
+    await delay(150);
+    await page.evaluate(`(() => {
+      window.__vueTabsRazorEvents = 0;
+      document.querySelector('#vue-tabs-root').addEventListener('vf-tabs:change', () => { window.__vueTabsRazorEvents += 1; });
+    })()`);
+    await clickAt(page, '#vue-tabs-root [role="tablist"] > .vf-tabs__tab:nth-child(2)');
+    await delay(100);
+    const vue = await page.evaluate(`(() => {
+      const root = document.querySelector('#vue-tabs-root');
+      return {
+        markedByRazor: root.hasAttribute('data-vf-razor-tabs-enhanced') || root.hasAttribute('data-vf-razor'),
+        selected: root.querySelector('[role="tab"][aria-selected="true"]')?.textContent.trim() ?? null,
+        panelText: root.querySelector('.vf-tabs__panel')?.textContent.trim() ?? null,
+        templates: root.querySelectorAll('template').length,
+        razorEvents: window.__vueTabsRazorEvents,
+      };
+    })()`);
+    check('the Razor controller marks no Vue tabs root', vue.markedByRazor === false, JSON.stringify(vue));
+    check(
+      'the Vue tabs select through their own handler, with no template and no Razor event',
+      vue.selected === 'Settings' &&
+        vue.panelText === 'Vue panel settings' &&
+        vue.templates === 0 &&
+        vue.razorEvents === 0,
+      JSON.stringify(vue),
+    );
+  });
+
+  // ------------------------------------------------ tabs, double bootstrap
+  await withPage(chrome, server.origin, 'fixture-enhanced.html', async (page) => {
+    await page.waitFor(`Boolean(document.querySelector('[data-vf-razor-tabs-enhanced]'))`);
+    await page.evaluate(installTabsLog);
+    await page.evaluate(`import('./vueforge-razor.js?bootstrap=tabs').then(() => true)`);
+    await delay(250);
+    await clickAt(page, '[data-case="tabs-default"] [role="tablist"] > .vf-tabs__tab:nth-child(2)');
+    await delay(50);
+    const twice = await page.evaluate(readTabs('tabs-default', 'Default'));
+    check(
+      'after a second bootstrap one click is one selection: settings selected, one event, one panel',
+      JSON.stringify(twice.selected) === '["settings"]' &&
+        twice.events.length === 1 &&
+        twice.clicks === 1 &&
+        twice.panels === 1,
+      JSON.stringify(twice),
+    );
+    const markers = await page.evaluate(`document.querySelectorAll('[data-vf-razor-tabs-enhanced]').length`);
+    check('a second bootstrap adds no tabs ownership marker', markers === 7, `markers ${markers}`);
+  });
+
   // ------------------------------------------------------ accordion, no-js
   await withPage(chrome, server.origin, 'fixture-no-js.html', async (page) => {
     const noJs = await page.evaluate(`(() => {
@@ -1321,5 +1971,5 @@ if (failures.length > 0) {
 }
 
 process.stdout.write(
-  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion controller.\n',
+  '[razor-browser] OK: enhanced interactions, no-JS fallback, mixed Vue/Razor ownership and the accordion, stepper and tabs controllers.\n',
 );

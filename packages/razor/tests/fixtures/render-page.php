@@ -215,6 +215,61 @@ foreach ($stepperCases as $name => $markup) {
     $sections .= '<section class="case" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
 }
 
+// --------------------------------------------------------------------- tabs
+//
+// The M24 sections. Real vf-tabs renders in the states the browser suite
+// drives: three tabs with a per-item panel, one with a disabled middle tab, an
+// overflowing seven-tab list in a 360px case, two siblings *sharing* values
+// (the Razor controller focuses within its own root), a consumer button
+// inside the panel, a controlled unknown value, and a copy of the tabs markup
+// without the ownership marker, which the controller must ignore.
+$tabs = $registry->resolve('vf-tabs');
+if ($tabs === null) {
+    fwrite(STDERR, "vf-tabs must be registered.\n");
+    exit(1);
+}
+$tabItems = [
+    ['value' => 'overview', 'label' => 'Overview'],
+    ['value' => 'settings', 'label' => 'Settings'],
+    ['value' => 'billing', 'label' => 'Billing'],
+];
+$manyTabItems = [
+    ...$tabItems,
+    ['value' => 'docs', 'label' => 'Documentation'],
+    ['value' => 'release', 'label' => 'Release notes'],
+    ['value' => 'security', 'label' => 'Security'],
+    ['value' => 'team', 'label' => 'Team members'],
+];
+$renderTabs = static function (array $props, ?string $panelText = 'Panel for', bool $control = false) use ($tabs, $tabItems): string {
+    $items = $props['items'] ?? $tabItems;
+    $slots = [];
+    if ($panelText !== null) {
+        foreach ($items as $index => $item) {
+            $markup = '<p>' . $panelText . ' ' . htmlspecialchars($item['value'], ENT_QUOTES) . '</p>'
+                . ($control ? '<button type="button" class="tabs-panel-control">Save</button>' : '');
+            $slots['panel' . $index] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+        }
+    }
+    return $tabs->render(new ComponentRenderContext($props + ['items' => $tabItems], $slots))->value();
+};
+$tabsCases = [
+    'tabs-default' => $renderTabs(['aria-label' => 'Default']),
+    'tabs-disabled' => $renderTabs(['aria-label' => 'Disabled', 'items' => [
+        $tabItems[0],
+        $tabItems[1] + ['disabled' => true],
+        $tabItems[2],
+    ]]),
+    'tabs-overflow' => $renderTabs(['aria-label' => 'Overflow', 'items' => $manyTabItems], null),
+    'tabs-siblings' => $renderTabs(['aria-label' => 'First']) . $renderTabs(['aria-label' => 'Second', 'default-value' => 'billing']),
+    'tabs-consumer' => $renderTabs(['aria-label' => 'Consumer'], 'Panel for', true),
+    'tabs-unknown' => $renderTabs(['aria-label' => 'Unknown', 'model-value' => 'nope']),
+    // The same markup with the marker stripped: not Razor-owned, must not mount.
+    'tabs-unowned' => str_replace(' data-vf-razor="tabs"', '', $renderTabs(['aria-label' => 'Unowned'])),
+];
+foreach ($tabsCases as $name => $markup) {
+    $sections .= '<section class="case case--tabs" data-case="' . $name . '"><h2>' . $name . '</h2>' . $markup . '</section>';
+}
+
 $withVue = ($argv[2] ?? '') === '--with-vue';
 $vueSection = $withVue
     ? '<section class="case" data-case="vue"><h2>vue</h2><div id="vue-input"></div></section>'
@@ -235,6 +290,7 @@ $html = <<<HTML
 <style>
 body { margin: 0; padding: 24px; background: var(--vf-color-background-canvas); font-family: var(--vf-font-family-base); }
 .case { margin-bottom: 20px; max-width: 420px; }
+.case--tabs { width: 360px; }
 .case h2 { font-size: 12px; margin: 0 0 6px; color: var(--vf-color-text-secondary); font-weight: 400; }
 </style>
 </head>

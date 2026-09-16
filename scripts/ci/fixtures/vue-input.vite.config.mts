@@ -26,6 +26,10 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('packages/core/src/components/stepper/VfStepper.vue', repositoryRoot)),
       },
       {
+        find: '@codemonster-ru/vueforge-core/src/components/tabs/VfTabs.vue',
+        replacement: fileURLToPath(new URL('packages/core/src/components/tabs/VfTabs.vue', repositoryRoot)),
+      },
+      {
         find: '@codemonster-ru/vueforge-shared-core',
         replacement: fileURLToPath(new URL('packages/shared-core/src/index.ts', repositoryRoot)),
       },

@@ -188,7 +188,17 @@ $progressBar = $registry->resolve('vf-progress-bar');
 $skeletonGate = $registry->resolve('vf-skeleton-gate');
 $accordion = $registry->resolve('vf-accordion');
 $stepper = $registry->resolve('vf-stepper');
+$tabs = $registry->resolve('vf-tabs');
 $assetPath = VueForgeRazorProvider::assetPath();
+$tabItems = [
+    ['value' => 'overview', 'label' => 'Overview'],
+    ['value' => 'settings', 'label' => 'Settings'],
+    ['value' => 'billing', 'label' => 'Billing', 'disabled' => true],
+];
+$tabPanels = [];
+foreach ($tabItems as $index => $item) {
+    $tabPanels['panel' . $index] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<p>Panel for ' . $item['value'] . '</p>');
+}
 $stepperItems = [
     ['value' => 'account', 'label' => 'Account'],
     ['value' => 'profile', 'label' => 'Profile', 'description' => 'Tell us about yourself'],
@@ -219,6 +229,7 @@ echo json_encode([
         'vf-skeleton-gate' => $registry->handles('vf-skeleton-gate'),
         'vf-accordion' => $registry->handles('vf-accordion'),
         'vf-stepper' => $registry->handles('vf-stepper'),
+        'vf-tabs' => $registry->handles('vf-tabs'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -641,6 +652,37 @@ echo json_encode([
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-stepper__item--current .vf-stepper__marker')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), 'scaleY(var(--vf-stepper-progress-factor, 0))')
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-stepper--vertical.vf-stepper--content-start .vf-stepper__trigger'),
+    // VfTabs, the twenty-second component and the first whose controls carry
+    // an explicit interactive role: rendered from the installed package with a
+    // per-item panel slot, the ids, the roving tabindex, the inert templates,
+    // and the packaged controller and stylesheet inspected for the tabs and
+    // the internal scroller.
+    'tabsDefault' => $tabs->render(new ComponentRenderContext(['items' => $tabItems], $tabPanels))->value(),
+    'tabsControlled' => $tabs->render(new ComponentRenderContext(
+        ['items' => $tabItems, 'model-value' => 'settings', 'class' => 'consumer-tabs', 'data-testid' => 'sections', 'aria-label' => 'Sections'],
+        $tabPanels,
+    ))->value(),
+    'tabsUnknown' => $tabs->render(new ComponentRenderContext(['items' => $tabItems, 'model-value' => 'nope'], $tabPanels))->value(),
+    'tabsNoPanel' => $tabs->render(new ComponentRenderContext(['items' => $tabItems], []))->value(),
+    'tabsSiblings' => $tabs->render(new ComponentRenderContext(['items' => $tabItems, 'aria-label' => 'First'], $tabPanels))->value()
+        . $tabs->render(new ComponentRenderContext(['items' => $tabItems, 'aria-label' => 'Second', 'default-value' => 'settings'], $tabPanels))->value(),
+    'tabsConstructorTakesNothing' => (new ReflectionClass($tabs))->getConstructor() === null,
+    'tabsBrowserCode' => str_contains($controllerSource, 'data-vf-razor="tabs"')
+        && str_contains($controllerSource, 'vf-tabs:change')
+        && str_contains($controllerSource, 'data-vf-razor-tabs-enhanced')
+        && str_contains($controllerSource, 'data-vf-razor-tabs-panel')
+        && str_contains($controllerSource, 'vf-tabs__indicator--ready')
+        && str_contains($controllerSource, '--vf-horizontal-scroller-scrollbar-width')
+        && str_contains($controllerSource, 'prefers-reduced-motion: reduce'),
+    'tabsCss' => is_file($assetPath . '/vueforge-razor.css')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tabs {') === 1
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-horizontal-scroller {') === 1
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tabs__tab {') === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), ".vf-tabs__tab[aria-selected='true']:not(:disabled)")
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tabs__indicator--no-transition')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-horizontal-scroller__fade--right')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-horizontal-scroller:not(.vf-horizontal-scroller--controls-ready) .vf-horizontal-scroller__control')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu-bar'),
     'accordionCss' => is_file($assetPath . '/vueforge-razor.css')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-accordion {') === 1
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-accordion__trigger {') === 1
@@ -689,6 +731,7 @@ echo json_encode([
       'vf-progress-bar',
       'vf-accordion',
       'vf-stepper',
+      'vf-tabs',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -1465,6 +1508,91 @@ echo json_encode([
     'vueforge-razor.css is missing stepper rules or duplicates them',
   );
 
+  // ------------------------------------------------------------------- vf-tabs
+  //
+  // The twenty-second component, proved from the same installed package: the
+  // pre-mount markup with the tab role, the roving tabindex, the ids and the
+  // inert templates; the controlled and unknown values; siblings with distinct
+  // ids; and the packaged assets carrying the controller, the scroller and
+  // the tabs rules without dragging the unmigrated menu bar in.
+  // The consumer's id counter is shared by every component this render
+  // produced, so the generated ids are compared by shape rather than number.
+  const tabsDefault = rendered.tabsDefault.replace(/vf-tabs-r-\d+/g, 'vf-tabs-r-N');
+  const tabsControlled = rendered.tabsControlled.replace(/vf-tabs-r-\d+/g, 'vf-tabs-r-N');
+  check(
+    'the consumer renders a default tabs: root, hidden scroll buttons, tablist, three native tabs with the role, the first selected and tabbable, the disabled one native, one panel, three templates',
+    tabsDefault.startsWith(
+      '<div class="vf-tabs" data-vf-razor="tabs"><div class="vf-horizontal-scroller vf-tabs__list"><button class="vf-horizontal-scroller__control vf-horizontal-scroller__control--left vf-tabs__scroll-button vf-tabs__scroll-button--left vf-horizontal-scroller__control--hidden vf-tabs__scroll-button--hidden" type="button" aria-label="Scroll tabs left" aria-hidden="true" tabindex="-1" disabled>',
+    ) &&
+      tabsDefault.includes(
+        '<div role="tablist" aria-orientation="horizontal"><button id="vf-tabs-r-N-tab-overview" aria-controls="vf-tabs-r-N-panel-overview" aria-selected="true" tabindex="0" class="vf-tabs__tab" role="tab" type="button" data-vf-razor-tabs-value="overview">Overview</button>',
+      ) &&
+      tabsDefault.includes(
+        'aria-selected="false" disabled tabindex="-1" class="vf-tabs__tab" role="tab" type="button" data-vf-razor-tabs-value="billing">Billing</button>',
+      ) &&
+      tabsDefault.includes(
+        '<span aria-hidden="true" class="vf-tabs__indicator" style="opacity:0;transform:translateX(0);width:0;"></span></div><div id="vf-tabs-r-N-panel-overview" aria-labelledby="vf-tabs-r-N-tab-overview" class="vf-tabs__panel" role="tabpanel" tabindex="0"><p>Panel for overview</p></div>',
+      ) &&
+      (tabsDefault.match(/<button/g) ?? []).length === 5 &&
+      (tabsDefault.match(/role="tab"/g) ?? []).length === 3 &&
+      (tabsDefault.match(/<template data-vf-razor-tabs-panel=/g) ?? []).length === 3 &&
+      (tabsDefault.match(/role="tabpanel"/g) ?? []).length === 1 &&
+      !tabsDefault.includes('aria-disabled') &&
+      !tabsDefault.includes('scroll-controls-ready'),
+    tabsDefault,
+  );
+  check(
+    'the packaged tabs render a controlled value with the consumer attributes on the root and the panel of that tab',
+    tabsControlled.startsWith(
+      '<div class="vf-tabs consumer-tabs" data-testid="sections" aria-label="Sections" data-vf-razor="tabs">',
+    ) &&
+      tabsControlled.includes(
+        'aria-selected="true" tabindex="0" class="vf-tabs__tab" role="tab" type="button" data-vf-razor-tabs-value="settings">',
+      ) &&
+      tabsControlled.includes(
+        'aria-labelledby="vf-tabs-r-N-tab-settings" class="vf-tabs__panel" role="tabpanel" tabindex="0"><p>Panel for settings</p></div>',
+      ),
+    tabsControlled,
+  );
+  check(
+    'the packaged tabs keep an unknown controlled value: no tab selected, every tabindex -1, no panel, every template',
+    (rendered.tabsUnknown.match(/aria-selected="false"/g) ?? []).length === 3 &&
+      (rendered.tabsUnknown.match(/tabindex="-1"/g) ?? []).length === 5 &&
+      !rendered.tabsUnknown.includes('tabpanel') &&
+      (rendered.tabsUnknown.match(/<template data-vf-razor-tabs-panel=/g) ?? []).length === 3,
+    rendered.tabsUnknown,
+  );
+  check(
+    'without a panel slot the packaged tabs write no aria-controls, no panel and no template',
+    !rendered.tabsNoPanel.includes('aria-controls') &&
+      !rendered.tabsNoPanel.includes('tabpanel') &&
+      !rendered.tabsNoPanel.includes('<template'),
+    rendered.tabsNoPanel,
+  );
+  check(
+    'two packaged siblings render ten buttons, two panels and distinct ids',
+    (rendered.tabsSiblings.match(/<button/g) ?? []).length === 10 &&
+      (rendered.tabsSiblings.match(/role="tabpanel"/g) ?? []).length === 2 &&
+      (rendered.tabsSiblings.match(/data-vf-razor="tabs"/g) ?? []).length === 2 &&
+      new Set(rendered.tabsSiblings.match(/ id="[^"]+"/g)).size === 8,
+    rendered.tabsSiblings,
+  );
+  check(
+    'the installed tabs take no constructor argument',
+    rendered.tabsConstructorTakesNothing === true,
+    'vf-tabs takes a constructor argument',
+  );
+  check(
+    'the packaged controller carries the tabs enhancement: the ownership marker it mounts on, the event it dispatches, the marker it sets, the panel templates it reads, the readiness class, the scroller variable and the reduced-motion query',
+    rendered.tabsBrowserCode === true,
+    'vueforge-razor.js does not carry the tabs controller',
+  );
+  check(
+    'the packaged stylesheet carries the scroller once and the tabs once - selected, no-transition, fades and the pre-ready control state - and no menu bar',
+    rendered.tabsCss === true,
+    'vueforge-razor.css is missing scroller or tabs rules, duplicates them, or carries the menu bar',
+  );
+
   check(
     'the packaged stylesheet carries the presentation rules',
     rendered.presentationCss,
@@ -1490,6 +1618,7 @@ ${rendered.markup}
 ${rendered.password}
 <div id="accordion-smoke">${rendered.accordionClosed}</div>
 <div id="stepper-smoke">${rendered.stepperDefault}</div>
+<div id="tabs-smoke" style="width: 360px">${rendered.tabsDefault}</div>
 <script type="module" src="/assets/vueforge-razor.js"></script></body></html>`,
     );
 
@@ -1695,6 +1824,94 @@ ${rendered.password}
           wrapped.focused === 'account' &&
           JSON.stringify(wrapped.events) === '["profile","account"]',
         JSON.stringify(wrapped),
+      );
+
+      // The tabs, through the packaged controller alone: readiness in two
+      // frames and a measured indicator, a real pointer click on the second
+      // tab that moves the selection, the roving tabindex and the one panel
+      // from its template, then a real ArrowRight that skips the disabled
+      // third tab and wraps to the first, with focus and the events read back.
+      const tabsPoint = await page.evaluate(`(() => {
+        const root = document.querySelector('#tabs-smoke [data-vf-razor="tabs"]');
+        window.__tabsEvents = [];
+        root.addEventListener('vf-tabs:change', (event) => window.__tabsEvents.push(event.detail.value));
+        const tab = root.querySelectorAll('button.vf-tabs__tab')[1];
+        tab.scrollIntoView({ block: 'center' });
+        const rect = tab.getBoundingClientRect();
+        const indicator = root.querySelector('.vf-tabs__indicator');
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+          enhanced: root.hasAttribute('data-vf-razor-tabs-enhanced'),
+          ready: root.classList.contains('vf-tabs--scroll-controls-animated') && indicator.classList.contains('vf-tabs__indicator--ready'),
+          indicator: indicator.style.opacity + ' ' + indicator.style.transform + ' ' + indicator.style.width,
+        };
+      })()`);
+      check(
+        'the packaged controller mounted the tabs root, readied it and measured the indicator',
+        tabsPoint.enhanced === true &&
+          tabsPoint.ready === true &&
+          /^1 translateX\(0px\) \d+\.\d+px$/.test(tabsPoint.indicator),
+        JSON.stringify(tabsPoint),
+      );
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: tabsPoint.x, y: tabsPoint.y });
+      await page.send('Input.dispatchMouseEvent', {
+        type: 'mousePressed',
+        x: tabsPoint.x,
+        y: tabsPoint.y,
+        button: 'left',
+        clickCount: 1,
+      });
+      await page.send('Input.dispatchMouseEvent', {
+        type: 'mouseReleased',
+        x: tabsPoint.x,
+        y: tabsPoint.y,
+        button: 'left',
+        clickCount: 1,
+      });
+      await delay(100);
+      const readTabs = `(() => {
+        const root = document.querySelector('#tabs-smoke [data-vf-razor="tabs"]');
+        const tabs = [...root.querySelectorAll('button.vf-tabs__tab')];
+        const panel = root.querySelector('.vf-tabs__panel');
+        const selected = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
+        return {
+          selected: selected?.dataset.vfRazorTabsValue ?? null,
+          tabindexes: tabs.map((t) => t.getAttribute('tabindex')),
+          panels: root.querySelectorAll('.vf-tabs__panel').length,
+          panelText: panel?.textContent.trim() ?? null,
+          panelLabelled: panel?.getAttribute('aria-labelledby') === selected?.id && panel?.id === selected?.getAttribute('aria-controls'),
+          indicator: root.querySelector('.vf-tabs__indicator').style.transform,
+          focused: root.contains(document.activeElement) ? (document.activeElement.dataset.vfRazorTabsValue ?? 'inside') : null,
+          events: window.__tabsEvents,
+        };
+      })()`;
+      const tabSelected = await page.evaluate(readTabs);
+      check(
+        'a real click on the packaged tabs selects the second tab: aria-selected, roving tabindex, the one panel patched from its template, the indicator moved, focus, one event',
+        tabSelected.selected === 'settings' &&
+          JSON.stringify(tabSelected.tabindexes) === '["-1","0","-1"]' &&
+          tabSelected.panels === 1 &&
+          tabSelected.panelText === 'Panel for settings' &&
+          tabSelected.panelLabelled === true &&
+          /^translateX\(\d+\.\d+px\)$/.test(tabSelected.indicator) &&
+          tabSelected.focused === 'settings' &&
+          JSON.stringify(tabSelected.events) === '["settings"]',
+        JSON.stringify(tabSelected),
+      );
+      await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...arrowRight });
+      await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...arrowRight });
+      await delay(100);
+      const tabWrapped = await page.evaluate(readTabs);
+      check(
+        'ArrowRight on the focused packaged tab skips the disabled last tab and wraps to the first, panel and focus following, with a second event',
+        tabWrapped.selected === 'overview' &&
+          JSON.stringify(tabWrapped.tabindexes) === '["0","-1","-1"]' &&
+          tabWrapped.panelText === 'Panel for overview' &&
+          tabWrapped.indicator === 'translateX(0px)' &&
+          tabWrapped.focused === 'overview' &&
+          JSON.stringify(tabWrapped.events) === '["settings","overview"]',
+        JSON.stringify(tabWrapped),
       );
 
       check(

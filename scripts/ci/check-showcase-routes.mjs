@@ -143,6 +143,11 @@ const controlSelectors = {
   // component owns. Counted by the case's items rather than one per root
   // (see controlsPerCase).
   VfStepper: 'button.vf-stepper__trigger',
+  // The M24 component. The tab: one per item, and the control the component
+  // owns with its explicit role. Counted by the case's items (see
+  // controlsPerCase); the two scroll buttons and the panel are the
+  // component's too, and the click probe below reads them.
+  VfTabs: 'button.vf-tabs__tab[role="tab"]',
 };
 
 /**
@@ -154,6 +159,11 @@ const controlSelectors = {
  */
 const controlsPerCase = {
   VfStepper: (parityCase) =>
+    (Array.isArray(parityCase.group) ? parityCase.group : [parityCase.props]).reduce(
+      (total, member) => total + (member.items?.length ?? 0),
+      0,
+    ),
+  VfTabs: (parityCase) =>
     (Array.isArray(parityCase.group) ? parityCase.group : [parityCase.props]).reduce(
       (total, member) => total + (member.items?.length ?? 0),
       0,
@@ -170,6 +180,7 @@ const rootsPerCase = {
   VfAccordion: (parityCase) =>
     (Array.isArray(parityCase.group) ? parityCase.group.length : 1) + (parityCase.content?.body?.accordion ? 1 : 0),
   VfStepper: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  VfTabs: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
 };
 
 /**
@@ -185,6 +196,7 @@ const ownershipMarkers = {
   VfTextarea: { root: '[data-vf-razor="textarea"]', enhanced: '[data-vf-razor-textarea-enhanced]' },
   VfAccordion: { root: '[data-vf-razor="accordion"]', enhanced: '[data-vf-razor-accordion-enhanced]' },
   VfStepper: { root: '[data-vf-razor="stepper"]', enhanced: '[data-vf-razor-stepper-enhanced]' },
+  VfTabs: { root: '[data-vf-razor="tabs"]', enhanced: '[data-vf-razor-tabs-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -251,6 +263,7 @@ check(
       'VfSkeletonGate',
       'VfStepper',
       'VfSwitch',
+      'VfTabs',
       'VfTag',
       'VfTextarea',
     ]),
@@ -545,6 +558,70 @@ async function probeStepperSelect(origin, path) {
   }
 }
 
+/** Clicks the panel case's middle tab on one platform and reads every half of the state back. */
+async function probeTabsSelect(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(document.querySelector('[data-showcase-case="tabs/panel"] button.vf-tabs__tab'))`);
+    await delay(300);
+
+    const point = await page.evaluate(`(() => {
+      const root = document.querySelector('[data-showcase-case="tabs/panel"] .vf-tabs');
+      const tab = root.querySelectorAll('button.vf-tabs__tab')[1];
+      tab.scrollIntoView({ block: 'center' });
+      const rect = tab.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        before: root.querySelector('[role="tab"][aria-selected="true"]')?.textContent.trim() ?? null,
+        ready: root.classList.contains('vf-tabs--scroll-controls-animated'),
+      };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: point.x, y: point.y });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: point.x,
+      y: point.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await page.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: point.x,
+      y: point.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await delay(200);
+
+    const after = await page.evaluate(`(() => {
+      const root = document.querySelector('[data-showcase-case="tabs/panel"] .vf-tabs');
+      const tabs = [...root.querySelectorAll('button.vf-tabs__tab')];
+      const panel = root.querySelector('[role="tabpanel"]');
+      const indicator = root.querySelector('.vf-tabs__indicator');
+      return {
+        after: root.querySelector('[role="tab"][aria-selected="true"]')?.textContent.trim() ?? null,
+        tabindexes: tabs.map((t) => t.getAttribute('tabindex')),
+        panels: root.querySelectorAll('[role="tabpanel"]').length,
+        panelText: panel?.textContent.trim() ?? null,
+        panelLabelledBySelected: panel ? document.getElementById(panel.getAttribute('aria-labelledby')) === tabs[1] : false,
+        indicatorTransform: indicator.style.transform,
+        indicatorOpacity: indicator.style.opacity,
+        scrollButtons: root.querySelectorAll('.vf-tabs__scroll-button').length,
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /tabs/i.test(script.textContent)).length,
+      };
+    })()`);
+
+    return { before: point.before, ready: point.ready, ...after };
+  } finally {
+    await page.close();
+  }
+}
+
 /** Opens a case address on one platform and reports which case it selected. */
 async function readSelectedCase(origin, path) {
   const page = await openPage(chrome.endpoint);
@@ -597,7 +674,7 @@ try {
     // stronger reason than the checkable controls: there is no interaction to
     // enhance at all. Their parity profiles say the same thing through the
     // static snapshot.
-    const enhanced = ['VfInput', 'VfField', 'VfTextarea', 'VfAccordion', 'VfStepper'].includes(name);
+    const enhanced = ['VfInput', 'VfField', 'VfTextarea', 'VfAccordion', 'VfStepper', 'VfTabs'].includes(name);
 
     for (const theme of themes) {
       const vue = await readShowcase(
@@ -735,6 +812,42 @@ try {
               JSON.stringify(selected.states) === '["complete","complete","current"]' &&
               selected.factor === '1' &&
               selected.items === 3,
+            JSON.stringify(selected),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to make that happen`,
+            selected.inlineScripts === 0,
+            `${selected.inlineScripts} inline script(s)`,
+          );
+        }
+      }
+
+      // --------------------------------------------- the tabs actually select
+      //
+      // M24: the same proof for the third interactive component. A real
+      // pointer click on the middle tab of the panel case, on both pages,
+      // must move every half of the state - aria-selected, the roving
+      // tabindex, the one panel with its label and content, the measured
+      // indicator - with no showcase script, on a page whose scroller had
+      // reached its animated frame.
+      if (name === 'VfTabs') {
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const selected = await probeTabsSelect(origin, route);
+          check(
+            `[${name}/${theme}] the ${platform} showcase selects the middle tab of the panel case on a real click`,
+            selected.ready === true &&
+              selected.before === 'Overview' &&
+              selected.after === 'Settings' &&
+              JSON.stringify(selected.tabindexes) === '["-1","0","-1"]' &&
+              selected.panels === 1 &&
+              selected.panelText === 'Panel for settings' &&
+              selected.panelLabelledBySelected === true &&
+              selected.indicatorOpacity === '1' &&
+              /^translateX\(9[0-9](\.[0-9]+)?px\)$/.test(selected.indicatorTransform) &&
+              selected.scrollButtons === 2,
             JSON.stringify(selected),
           );
           check(
