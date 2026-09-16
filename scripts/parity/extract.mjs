@@ -1656,6 +1656,12 @@ function tabsInteractionExpression(caseId, controlOwnership = {}) {
       return segments.join('>');
     };
     const valueOf = (tab) => tab.id.replace(/^.*-tab-/, '');
+    // A consumer's own tabId / panelId is a literal the id graph cannot see:
+    // the extractor rewrites every id to its document position, so a target
+    // that ignored the override and generated its own id would form the same
+    // graph. The literal is recorded here as itself, a generated id as the
+    // word 'generated' - the two adapters' generated ids differ by design.
+    const idLiteral = (id) => (/^vf-tabs-[a-z]+-\\d+-(tab|panel)-/.test(id) ? 'generated' : id);
 
     const focusable = [...root.querySelectorAll(FOCUSABLE)];
     const owned = [];
@@ -1756,6 +1762,8 @@ function tabsInteractionExpression(caseId, controlOwnership = {}) {
         ? document.getElementById(panel.getAttribute('aria-labelledby') ?? '') === firstSelected && firstSelected !== null
         : null,
       controlsResolvedPerTab: first ? resolvedControls(first) : [],
+      tabIdLiterals: first ? tabsOf(first).map((tab) => idLiteral(tab.id)) : [],
+      panelIdLiteral: panel ? idLiteral(panel.id) : null,
       // The indicator, as the CSSOM holds the inline declarations.
       indicatorOpacity: indicator?.style.opacity ?? null,
       indicatorTransform: indicator?.style.transform ?? null,

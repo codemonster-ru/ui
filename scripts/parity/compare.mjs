@@ -684,6 +684,8 @@ const INTERACTION_FIELDS = {
   panelTabindex: { dimension: 'interaction.state' },
   controlsResolvedPerTab: { dimension: 'interaction.relationships', format: 'json' },
   panelLabelledByActive: { dimension: 'interaction.relationships' },
+  tabIdLiterals: { dimension: 'interaction.relationships', format: 'json' },
+  panelIdLiteral: { dimension: 'interaction.relationships' },
   indicatorOpacity: { dimension: 'interaction.state' },
   indicatorTransform: { dimension: 'interaction.state' },
   indicatorWidth: { dimension: 'interaction.state' },
