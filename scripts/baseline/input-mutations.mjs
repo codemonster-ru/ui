@@ -55,6 +55,10 @@ export const progressBarSourcePath = 'packages/core/src/components/progress-bar/
 export const progressBarRulePath = 'packages/shared-core/src/progress-bar/state.ts';
 
 export const accordionSourcePath = 'packages/core/src/components/accordion/VfAccordion.vue';
+export const linkSourcePath = 'packages/core/src/components/link/VfLink.vue';
+/** The shared rules VfLink and the Razor adapter both derive from: the class list and the rel derivation. */
+export const linkRulePath = 'packages/shared-core/src/link/state.ts';
+const linkSuite = 'src/components/link/VfLink.characterization.spec.ts';
 export const stepperSourcePath = 'packages/core/src/components/stepper/VfStepper.vue';
 /** The shared rules VfStepper, its Razor controller and the PHP adapter derive from. */
 export const stepperRulePath = 'packages/shared-core/src/stepper/state.ts';
@@ -4136,6 +4140,194 @@ export const tabsMutations = [
   },
 ];
 
+/**
+ * VfLink regressions.
+ *
+ * The M25 set. The reference link has two branches and one derivation, and
+ * the mutations that carry this milestone are the ones a migration would call
+ * improvements or would make while "simplifying" the branch selection:
+ *
+ *   - `link-root-becomes-a-span` and `link-router-branch-made-native` change
+ *     what element renders. The second is the tempting one: with no router
+ *     registered, an `<a>` looks more useful than the literal unresolved
+ *     element the reference renders - and it is a different contract;
+ *   - `link-native-branch-routed` and `link-routes-without-to` select the
+ *     router branch when the reference selects the anchor;
+ *   - `link-href-survives-to` and `link-href-forwarded-to-router` keep an
+ *     href the reference discards, `link-to-serialised` and
+ *     `link-object-to-altered` touch a destination the reference passes
+ *     through untouched, and `link-attrs-dropped-from-handoff` loses what
+ *     the router component is owed;
+ *   - the rel mutations, on the shared rule: derived for `_self`, never
+ *     derived, merged with an explicit value, or overriding one;
+ *   - `link-consumer-class-first` and the two modifier typos, on the class
+ *     merge and the shared class rule.
+ *
+ * Every one fails VfLink's own suite and none touches another component.
+ */
+export const linkMutations = [
+  {
+    id: 'link-root-becomes-a-span',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'the native branch renders a span instead of an anchor, which looks the same and is not a link',
+    find: "  if (!isRouterLink.value) {\n    return 'a';\n  }",
+    replace: "  if (!isRouterLink.value) {\n    return 'span';\n  }",
+  },
+  {
+    id: 'link-router-branch-made-native',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'the router branch falls back to a native anchor instead of resolving RouterLink',
+    find: "  return props.component ?? resolveDynamicComponent('RouterLink');",
+    replace: "  return props.component ?? 'a';",
+  },
+  {
+    id: 'link-native-branch-routed',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'the native branch is routed through RouterLink whenever one is registered',
+    find: "  if (!isRouterLink.value) {\n    return 'a';\n  }\n\n  return props.component ?? resolveDynamicComponent('RouterLink');",
+    replace:
+      "  const resolved = resolveDynamicComponent('RouterLink');\n" +
+      "  if (!isRouterLink.value && typeof resolved === 'string') {\n    return 'a';\n  }\n\n  return props.component ?? resolved;",
+  },
+  {
+    id: 'link-routes-without-to',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'the router branch is selected on href being absent rather than on to being present',
+    find: 'const isRouterLink = computed(() => props.to !== undefined);',
+    replace: 'const isRouterLink = computed(() => props.href === undefined);',
+  },
+  {
+    id: 'link-href-survives-to',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'href is kept beside to instead of being discarded',
+    find: '    return {\n      to: props.to,\n      target: props.target,\n      rel: resolvedRel.value,\n    };',
+    replace:
+      '    return {\n      to: props.to,\n      href: props.href,\n      target: props.target,\n      rel: resolvedRel.value,\n    };',
+  },
+  {
+    id: 'link-href-forwarded-to-router',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'the router component is handed an href derived from a string destination',
+    find: '    return {\n      to: props.to,\n      target: props.target,\n      rel: resolvedRel.value,\n    };',
+    replace:
+      "    return {\n      to: props.to,\n      href: typeof props.to === 'string' ? props.to : undefined,\n      target: props.target,\n      rel: resolvedRel.value,\n    };",
+  },
+  {
+    id: 'link-to-serialised',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'an object destination is JSON-encoded before the handoff instead of passed through untouched',
+    find: '    return {\n      to: props.to,\n      target: props.target,\n      rel: resolvedRel.value,\n    };',
+    replace:
+      "    return {\n      to: typeof props.to === 'string' ? props.to : JSON.stringify(props.to),\n      target: props.target,\n      rel: resolvedRel.value,\n    };",
+  },
+  {
+    id: 'link-object-to-altered',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'an object destination is copied and given a default before the handoff',
+    find: '    return {\n      to: props.to,\n      target: props.target,\n      rel: resolvedRel.value,\n    };',
+    replace:
+      "    return {\n      to: typeof props.to === 'string' ? props.to : { replace: false, ...props.to },\n      target: props.target,\n      rel: resolvedRel.value,\n    };",
+  },
+  {
+    id: 'link-attrs-dropped-from-handoff',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'consumer attrs stop reaching the rendered element',
+    find: 'const componentProps = computed(() => ({\n  ...attrs,\n  ...linkProps.value,',
+    replace: 'const componentProps = computed(() => ({\n  ...linkProps.value,',
+  },
+  {
+    id: 'link-consumer-class-first',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'the consumer class is merged before the canonical classes',
+    find: '  class: [classes.value, externalClass.value],',
+    replace: '  class: [externalClass.value, classes.value],',
+  },
+  {
+    id: 'link-rel-derived-for-self',
+    file: linkRulePath,
+    suite: linkSuite,
+    description: 'rel is derived for _self as well as for _blank',
+    find: "  return target === '_blank' ? 'noopener noreferrer' : undefined;",
+    replace: "  return target === '_blank' || target === '_self' ? 'noopener noreferrer' : undefined;",
+  },
+  {
+    id: 'link-rel-never-derived',
+    file: linkRulePath,
+    suite: linkSuite,
+    description: 'the derived rel is dropped, so a _blank link opens without noopener',
+    find: "  return target === '_blank' ? 'noopener noreferrer' : undefined;",
+    replace: '  return undefined;',
+  },
+  {
+    id: 'link-rel-appended-to-explicit',
+    file: linkRulePath,
+    suite: linkSuite,
+    description: 'the derived rel is appended to an explicit one instead of the explicit one winning',
+    find: "  if (rel) return rel;\n\n  return target === '_blank' ? 'noopener noreferrer' : undefined;",
+    replace:
+      "  const derived = target === '_blank' ? 'noopener noreferrer' : undefined;\n" +
+      '  if (rel) return derived ? `${rel} ${derived}` : rel;\n\n  return derived;',
+  },
+  {
+    id: 'link-rel-explicit-overridden',
+    file: linkRulePath,
+    suite: linkSuite,
+    description: 'the derived rel overrides an explicit one for _blank',
+    find: "  if (rel) return rel;\n\n  return target === '_blank' ? 'noopener noreferrer' : undefined;",
+    replace: "  if (target === '_blank') return 'noopener noreferrer';\n\n  return rel || undefined;",
+  },
+  {
+    id: 'link-empty-rel-wins',
+    file: linkRulePath,
+    suite: linkSuite,
+    description: 'an empty-string rel is treated as given, so a _blank link loses the derivation',
+    find: '  if (rel) return rel;',
+    replace: '  if (rel !== undefined && rel !== null) return rel || undefined;',
+  },
+  {
+    id: 'link-underline-modifier-typo',
+    file: linkRulePath,
+    suite: linkSuite,
+    description: 'the always modifier is misspelled, which no stylesheet rule matches',
+    find: "  if (underline === 'always') classes.push('vf-link--underline-always');",
+    replace: "  if (underline === 'always') classes.push('vf-link--underlined');",
+  },
+  {
+    id: 'link-tone-modifier-before-underline',
+    file: linkRulePath,
+    suite: linkSuite,
+    description: 'the tone modifier is emitted before the underline modifier',
+    find:
+      "  if (underline === 'hover') classes.push('vf-link--underline-hover');\n" +
+      "  if (underline === 'always') classes.push('vf-link--underline-always');\n" +
+      "  if (tone === 'muted') classes.push('vf-link--muted');",
+    replace:
+      "  if (tone === 'muted') classes.push('vf-link--muted');\n" +
+      "  if (underline === 'hover') classes.push('vf-link--underline-hover');\n" +
+      "  if (underline === 'always') classes.push('vf-link--underline-always');",
+  },
+  {
+    id: 'link-no-destination-gets-a-role',
+    file: linkSourcePath,
+    suite: linkSuite,
+    description: 'an anchor with no destination is given role=link and a tabindex to make it "accessible"',
+    find: '  return {\n    href: props.href,\n    target: props.target,\n    rel: resolvedRel.value,\n  };',
+    replace:
+      "  return {\n    href: props.href,\n    role: props.href === undefined ? 'link' : undefined,\n" +
+      "    tabindex: props.href === undefined ? '0' : undefined,\n    target: props.target,\n    rel: resolvedRel.value,\n  };",
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -4159,4 +4351,5 @@ export const componentMutations = [
   ...accordionMutations,
   ...stepperMutations,
   ...tabsMutations,
+  ...linkMutations,
 ];

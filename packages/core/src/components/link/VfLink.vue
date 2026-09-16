@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, resolveDynamicComponent, useAttrs } from 'vue';
 import type { Component } from 'vue';
+import { resolveLinkClasses, resolveLinkRel } from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfLinkTone, VfLinkUnderline } from '@/types/components';
 
@@ -29,6 +30,11 @@ const props = withDefaults(defineProps<VfLinkProps>(), {
 });
 
 const attrs = useAttrs();
+// The router branch is this adapter's own. `to` selects it, the component is
+// resolved by the name a Vue application registers, and nothing here reads a
+// route: the destination is handed over untouched, and with nothing registered
+// Vue renders a literal unresolved element. The shared rules below know nothing
+// about any of this, which is what keeps the Razor adapter from needing to.
 const isRouterLink = computed(() => props.to !== undefined);
 const externalClass = computed(() => attrs.class);
 const resolvedComponent = computed(() => {
@@ -39,22 +45,9 @@ const resolvedComponent = computed(() => {
   return props.component ?? resolveDynamicComponent('RouterLink');
 });
 
-const resolvedRel = computed(() => {
-  if (props.rel) {
-    return props.rel;
-  }
+const resolvedRel = computed(() => resolveLinkRel(props.rel, props.target));
 
-  return props.target === '_blank' ? 'noopener noreferrer' : undefined;
-});
-
-const classes = computed(() =>
-  cx(
-    'vf-link',
-    props.underline === 'hover' && 'vf-link--underline-hover',
-    props.underline === 'always' && 'vf-link--underline-always',
-    props.tone === 'muted' && 'vf-link--muted',
-  ),
-);
+const classes = computed(() => cx(...resolveLinkClasses(props.underline, props.tone)));
 
 const linkProps = computed(() => {
   if (isRouterLink.value) {

@@ -1,0 +1,86 @@
+{
+  "$comment": "Shared input/expected vectors for VfLink. The TypeScript rules in link/state.ts and the PHP mirror in packages/razor/src/Support/LinkState.php both run this file. Two rules only: the class list and the rel derivation. There is deliberately no vector for the router branch - which element renders, what `to` becomes, what RouterLink receives - because that branch is Vue's handoff to a component the reference never ships, and a vector for it would be the shared core describing a navigation contract that has no second implementation.",
+  "resolveLinkClasses": [
+    {
+      "underline": "none",
+      "tone": "default",
+      "expected": ["vf-link"]
+    },
+    {
+      "underline": "hover",
+      "tone": "default",
+      "expected": ["vf-link", "vf-link--underline-hover"]
+    },
+    {
+      "underline": "always",
+      "tone": "default",
+      "expected": ["vf-link", "vf-link--underline-always"]
+    },
+    {
+      "underline": "none",
+      "tone": "muted",
+      "expected": ["vf-link", "vf-link--muted"]
+    },
+    {
+      "$why": "The underline modifier comes before the tone modifier.",
+      "underline": "hover",
+      "tone": "muted",
+      "expected": ["vf-link", "vf-link--underline-hover", "vf-link--muted"]
+    },
+    {
+      "underline": "always",
+      "tone": "muted",
+      "expected": ["vf-link", "vf-link--underline-always", "vf-link--muted"]
+    }
+  ],
+  "resolveLinkRel": [
+    {
+      "$why": "No target and no rel: nothing is written.",
+      "rel": null,
+      "target": null,
+      "expected": null
+    },
+    {
+      "$why": "The one derivation: _blank without an explicit rel.",
+      "rel": null,
+      "target": "_blank",
+      "expected": "noopener noreferrer"
+    },
+    {
+      "$why": "An explicit rel wins as given and is not merged with the default.",
+      "rel": "nofollow",
+      "target": "_blank",
+      "expected": "nofollow"
+    },
+    {
+      "$why": "An explicit rel is written with no target at all.",
+      "rel": "me",
+      "target": null,
+      "expected": "me"
+    },
+    {
+      "$why": "Nothing is derived for _self.",
+      "rel": null,
+      "target": "_self",
+      "expected": null
+    },
+    {
+      "$why": "Nothing is derived for any other target either.",
+      "rel": null,
+      "target": "preview",
+      "expected": null
+    },
+    {
+      "$why": "The quirk: an empty-string rel is falsy, so the derivation still applies.",
+      "rel": "",
+      "target": "_blank",
+      "expected": "noopener noreferrer"
+    },
+    {
+      "$why": "An empty-string rel with no target writes nothing.",
+      "rel": "",
+      "target": null,
+      "expected": null
+    }
+  ]
+}
