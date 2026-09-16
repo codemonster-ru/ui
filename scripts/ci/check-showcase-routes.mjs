@@ -148,6 +148,12 @@ const controlSelectors = {
   // controlsPerCase); the two scroll buttons and the panel are the
   // component's too, and the click probe below reads them.
   VfTabs: 'button.vf-tabs__tab[role="tab"]',
+  // The M25 component. The anchor *with a destination*: it is the control
+  // the component owns, and a case that rendered the anchor without its href
+  // would still have an `a.vf-link` - the inert one the reference renders
+  // for a link with no destination, which declares no control at all (see
+  // controlsPerCase).
+  VfLink: 'a.vf-link[href]',
 };
 
 /**
@@ -168,6 +174,9 @@ const controlsPerCase = {
       (total, member) => total + (member.items?.length ?? 0),
       0,
     ),
+  // One anchor per case, and it is a control exactly when the case has an
+  // href - which is what the catalog declares as componentInteractive.
+  VfLink: (parityCase) => parityCase.componentInteractive ?? 0,
 };
 
 /**
@@ -255,6 +264,7 @@ check(
       'VfField',
       'VfIconButton',
       'VfInput',
+      'VfLink',
       'VfPanel',
       'VfProgressBar',
       'VfProgressSpinner',
@@ -558,6 +568,52 @@ async function probeStepperSelect(origin, path) {
   }
 }
 
+/**
+ * Focuses the two anchors that decide what a link is on one platform: the
+ * plain href case, which must take focus, and the no-destination case, which
+ * must refuse it. Both through the element's own focus(), on the real page,
+ * with no script of the showcase's involved; what is read back is where the
+ * document's focus actually landed, plus the two attributes that make the
+ * difference and whether either anchor was given a role or a tabindex.
+ */
+async function probeLinkFocus(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(document.querySelector('[data-showcase-case="link/no-destination"] a.vf-link'))`);
+    await delay(200);
+
+    return await page.evaluate(`(() => {
+      const describe = (caseId) => {
+        const anchor = document.querySelector('[data-showcase-case="' + caseId + '"] a.vf-link');
+        if (!anchor) return null;
+        anchor.focus();
+        return {
+          tag: anchor.tagName.toLowerCase(),
+          href: anchor.getAttribute('href'),
+          role: anchor.getAttribute('role'),
+          tabindex: anchor.getAttribute('tabindex'),
+          focused: document.activeElement === anchor,
+        };
+      };
+      return {
+        href: describe('link/href'),
+        none: describe('link/no-destination'),
+        blank: (() => {
+          const anchor = document.querySelector('[data-showcase-case="link/blank-derived-rel"] a.vf-link');
+          return anchor ? { target: anchor.getAttribute('target'), rel: anchor.getAttribute('rel') } : null;
+        })(),
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /link/i.test(script.textContent)).length,
+      };
+    })()`);
+  } finally {
+    await page.close();
+  }
+}
+
 /** Clicks the panel case's middle tab on one platform and reads every half of the state back. */
 async function probeTabsSelect(origin, path) {
   const page = await openPage(chrome.endpoint);
@@ -854,6 +910,47 @@ try {
             `[${name}/${theme}] the ${platform} showcase adds no script of its own to make that happen`,
             selected.inlineScripts === 0,
             `${selected.inlineScripts} inline script(s)`,
+          );
+        }
+      }
+
+      // ------------------------------------------------ the link is a native link
+      //
+      // M25: nothing to click and nothing to toggle - activation is the
+      // browser's. What both real pages have to prove instead is what makes
+      // an anchor a link: the href case takes focus through its own focus(),
+      // the no-destination case refuses it and carries no role and no
+      // tabindex, and the _blank case carries the derived rel. No showcase
+      // script is involved on either platform.
+      if (name === 'VfLink') {
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const links = await probeLinkFocus(origin, route);
+          check(
+            `[${name}/${theme}] the ${platform} showcase's href anchor is a focusable native link`,
+            links.href?.tag === 'a' && links.href.href === '/docs' && links.href.focused === true,
+            JSON.stringify(links.href),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's no-destination anchor refuses focus and carries no role or tabindex`,
+            links.none?.tag === 'a' &&
+              links.none.href === null &&
+              links.none.role === null &&
+              links.none.tabindex === null &&
+              links.none.focused === false,
+            JSON.stringify(links.none),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's _blank anchor carries the derived rel`,
+            links.blank?.target === '_blank' && links.blank.rel === 'noopener noreferrer',
+            JSON.stringify(links.blank),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to the link`,
+            links.inlineScripts === 0,
+            `${links.inlineScripts} inline script(s)`,
           );
         }
       }

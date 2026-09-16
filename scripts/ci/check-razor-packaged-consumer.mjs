@@ -189,6 +189,7 @@ $skeletonGate = $registry->resolve('vf-skeleton-gate');
 $accordion = $registry->resolve('vf-accordion');
 $stepper = $registry->resolve('vf-stepper');
 $tabs = $registry->resolve('vf-tabs');
+$link = $registry->resolve('vf-link');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -230,6 +231,7 @@ echo json_encode([
         'vf-accordion' => $registry->handles('vf-accordion'),
         'vf-stepper' => $registry->handles('vf-stepper'),
         'vf-tabs' => $registry->handles('vf-tabs'),
+        'vf-link' => $registry->handles('vf-link'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -674,6 +676,65 @@ echo json_encode([
         && str_contains($controllerSource, 'vf-tabs__indicator--ready')
         && str_contains($controllerSource, '--vf-horizontal-scroller-scrollbar-width')
         && str_contains($controllerSource, 'prefers-reduced-motion: reduce'),
+    // VfLink, the twenty-third component: the first whose owned control is an
+    // anchor and one that ships no controller. Six renders: the plain link;
+    // the _blank link with its derived rel; the explicit rel that wins without
+    // merging; both modifiers with the consumer class after them, a style, an
+    // id, a data attribute and consumer ARIA; the no-destination anchor, which
+    // must stay inert; and a consumer button inside the anchor. Two refusals:
+    // to and component are the Vue adapter's router branch and the
+    // installed package must refuse them by name rather than render an anchor.
+    'linkPlain' => $link->render(new ComponentRenderContext(
+        ['href' => '/docs'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Documentation')],
+    ))->value(),
+    'linkBlank' => $link->render(new ComponentRenderContext(
+        ['href' => 'https://example.com/', 'target' => '_blank'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Example')],
+    ))->value(),
+    'linkExplicitRel' => $link->render(new ComponentRenderContext(
+        ['href' => 'https://example.com/', 'target' => '_blank', 'rel' => 'nofollow'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Example')],
+    ))->value(),
+    'linkDecorated' => $link->render(new ComponentRenderContext(
+        ['href' => '/docs', 'underline' => 'always', 'tone' => 'muted', 'class' => 'consumer-link', 'style' => 'opacity: 0.6', 'id' => 'docs-link', 'data-testid' => 'docs', 'aria-current' => 'page'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Documentation')],
+    ))->value(),
+    'linkNoDestination' => $link->render(new ComponentRenderContext(
+        [],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Nowhere')],
+    ))->value(),
+    'linkConsumerControl' => $link->render(new ComponentRenderContext(
+        ['href' => '/docs'],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('Documentation<button type="button">Pin</button>')],
+    ))->value(),
+    'linkRefusesTo' => (static function () use ($link): string {
+        try {
+            $link->render(new ComponentRenderContext(['to' => '/docs'], []));
+        } catch (\\InvalidArgumentException $exception) {
+            return $exception->getMessage();
+        }
+        return 'rendered';
+    })(),
+    'linkRefusesComponent' => (static function () use ($link): string {
+        try {
+            $link->render(new ComponentRenderContext(['href' => '/docs', 'component' => 'span'], []));
+        } catch (\\InvalidArgumentException $exception) {
+            return $exception->getMessage();
+        }
+        return 'rendered';
+    })(),
+    'linkConstructorTakesNothing' => (new ReflectionClass($link))->getConstructor() === null,
+    // The packaged controller must not have grown a link enhancement: the
+    // reference owns no interaction, so there is nothing for a browser to do.
+    'linkBrowserCode' => preg_match('/vf-link|data-vf-razor="link"|link-enhanced/', $controllerSource) === 1,
+    'linkCss' => is_file($assetPath . '/vueforge-razor.css')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-link {') === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-link--underline-hover:hover')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-link--underline-always')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-link--muted')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-link:focus-visible')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), 'router-link'),
     'tabsCss' => is_file($assetPath . '/vueforge-razor.css')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-tabs {') === 1
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-horizontal-scroller {') === 1
@@ -732,6 +793,7 @@ echo json_encode([
       'vf-accordion',
       'vf-stepper',
       'vf-tabs',
+      'vf-link',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -1591,6 +1653,68 @@ echo json_encode([
     'the packaged stylesheet carries the scroller once and the tabs once - selected, no-transition, fades and the pre-ready control state - and no menu bar',
     rendered.tabsCss === true,
     'vueforge-razor.css is missing scroller or tabs rules, duplicates them, or carries the menu bar',
+  );
+
+  // -------------------------------------------------------------------- vf-link
+  //
+  // The twenty-third component, and one with no controller at all: the
+  // assertions are about the anchor the installed package writes, the two
+  // props it refuses, and the controller that must not mention it.
+  check(
+    'the consumer renders a plain link: one anchor with href and the canonical class',
+    rendered.linkPlain === '<a href="/docs" class="vf-link">Documentation</a>',
+    rendered.linkPlain,
+  );
+  check(
+    'a _blank link carries the derived rel',
+    rendered.linkBlank ===
+      '<a href="https://example.com/" target="_blank" rel="noopener noreferrer" class="vf-link">Example</a>',
+    rendered.linkBlank,
+  );
+  check(
+    'an explicit rel wins without the default merged in',
+    rendered.linkExplicitRel ===
+      '<a href="https://example.com/" target="_blank" rel="nofollow" class="vf-link">Example</a>',
+    rendered.linkExplicitRel,
+  );
+  check(
+    'both modifiers, the consumer class after them, the style, the id, a data attribute and consumer ARIA all survive packaging',
+    rendered.linkDecorated ===
+      '<a id="docs-link" data-testid="docs" aria-current="page" href="/docs" ' +
+        'class="vf-link vf-link--underline-always vf-link--muted consumer-link" style="opacity: 0.6">Documentation</a>',
+    rendered.linkDecorated,
+  );
+  check(
+    'an anchor with no destination stays inert: no href, no role, no tabindex, no placeholder',
+    rendered.linkNoDestination === '<a class="vf-link">Nowhere</a>',
+    rendered.linkNoDestination,
+  );
+  check(
+    'a consumer button inside the anchor survives unchanged',
+    rendered.linkConsumerControl ===
+      '<a href="/docs" class="vf-link">Documentation<button type="button">Pin</button></a>',
+    rendered.linkConsumerControl,
+  );
+  check(
+    'the installed package refuses `to` by name rather than rendering an anchor for a route',
+    rendered.linkRefusesTo.startsWith('vf-link does not accept [to]'),
+    rendered.linkRefusesTo,
+  );
+  check(
+    'the installed package refuses `component` by name',
+    rendered.linkRefusesComponent.startsWith('vf-link does not accept [component]'),
+    rendered.linkRefusesComponent,
+  );
+  check('the link component takes no constructor argument', rendered.linkConstructorTakesNothing === true);
+  check(
+    'the packaged controller does not mention the link: the reference has no browser behaviour for it',
+    rendered.linkBrowserCode === false,
+    'vueforge-razor.js mentions the link',
+  );
+  check(
+    'the packaged stylesheet carries the link rules once, and no router-link rule',
+    rendered.linkCss === true,
+    'vueforge-razor.css is missing link rules, duplicates them, or carries a router-link selector',
   );
 
   check(

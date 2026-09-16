@@ -111,6 +111,11 @@ declare module '@vueforge/tabs-cases' {
   export default catalog;
 }
 
+declare module '@vueforge/link-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}
+
 declare module '@vueforge/showcase-index' {
   interface ShowcasePlatform {
     label: string;

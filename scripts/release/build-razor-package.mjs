@@ -102,6 +102,12 @@ export const requiredEntries = [
   // is there, and that the stylesheet carries the scroller and the tabs.
   'src/Components/TabsComponent.php',
   'src/Support/TabsState.php',
+  // The M25 component: the first whose owned control is a native anchor, and
+  // server-complete - no browser controller travels with it, and the
+  // packaged-consumer proof asserts the controller never mentions it. The
+  // Vue adapter's router branch has no file here by design.
+  'src/Components/LinkComponent.php',
+  'src/Support/LinkState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',
