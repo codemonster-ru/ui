@@ -18,7 +18,7 @@
   },
   "interactionVocabulary": {
     "$comment": "A case with an `interaction` is driven in the browser with real pointer and key events, then re-measured: the snapshot, the DOM and the accessibility tree are all taken again. The snapshot waits, bounded, for the scroller's 140 ms scrolling state to end.",
-    "steps": "clickButton (a real pointer click at the element's centre; `selector` is .vf-tabs__tab, a scroll button, or a consumer control class; `index` picks a match in document order across every instance), focusButton (`selector` and `index` likewise), pressKey with Enter, Space, Tab, ArrowRight, ArrowLeft, ArrowUp, ArrowDown, Home, End or PageDown.",
+    "steps": "clickButton (a real pointer click at the element's centre; `selector` is .vf-tabs__tab, a scroll button, or a consumer control class; `index` picks a match in document order across every instance), focusButton (`selector` and `index` likewise), pressKey with Enter, Space, Tab, ArrowRight, ArrowLeft, ArrowUp, ArrowDown, Home or End. Tab is the one key the component leaves unhandled that the catalog presses: a key the page itself leaves to the browser (PageDown, Escape) is answered by Chrome 153 opening a page of its own, so it cannot be driven deterministically and is pinned by the characterization suite instead.",
     "expect": "Claims checked against the snapshot on every target. `activates` is whether a native click reached a tab - true for a pointer click on a tab and for Enter/Space, false for every handled navigation key and for a scroll-button click. `selectedValue` is the value of the first selected tab of the first instance (null when none), `selectedValues` the same per instance, `ariaSelected` and `tabindexes` the per-tab attributes of the first instance, `disabledValues` the tabs with the native attribute. `panelPresent` and `panelLabelledByActive` describe the panel of the first instance. `focusRole` is tab, panel, scroll-left, scroll-right, body, other-inside-case or outside-case; `focusValue` the focused tab's value; `focusInstance` which instance holds it. `indicatorOpacity`, `indicatorTransform` and `indicatorWidth` are the inline declarations, unrounded. `scrollLeft`, `canScrollLeft`, `canScrollRight`, `leftHidden`, `rightHidden`, `leftAriaHidden`, `rightAriaHidden`, `leftTabindex`, `rightTabindex`, `leftDisabled`, `rightDisabled`, `fades`, `scrolling`, `scrollbarWidth` and `settled` are the scroller state. `keydownPrevented` is whether each keydown was prevented, in order. `events` is the neutral change log the fixture keeps. A key of the form `a11y:<role>.<state>` is a claim about the accessibility tree read after the action; Chrome 153 exposes `selected` for role=tab, so the selection is claimed there as well as in the DOM.",
     "matches": "The initial case whose DOM the post-interaction DOM must equal on the same target. Every tab persists across a selection change and the panel is patched, so the result of a gesture has to be exactly the DOM a fresh render of the target state produces.",
     "postOnly": "The reason a scenario names no `matches`: only for a viewport left scrolled, which no server render can express. Such a scenario must claim scrollLeft and the scroller state absolutely."
@@ -2257,62 +2257,8 @@
       }
     },
     {
-      "id": "tabs/interaction-unhandled-key",
-      "title": "PageDown is left to the page: not prevented, nothing changes",
-      "props": {
-        "items": [
-          {
-            "value": "overview",
-            "label": "Overview"
-          },
-          {
-            "value": "settings",
-            "label": "Settings"
-          },
-          {
-            "value": "billing",
-            "label": "Billing"
-          }
-        ]
-      },
-      "attrs": {},
-      "content": {
-        "panel": {
-          "text": "Panel for"
-        }
-      },
-      "componentInteractive": 6,
-      "visual": true,
-      "interaction": {
-        "steps": [
-          {
-            "action": "focusButton",
-            "selector": ".vf-tabs__tab",
-            "index": 1
-          },
-          {
-            "action": "pressKey",
-            "key": "PageDown"
-          }
-        ],
-        "expect": {
-          "activates": false,
-          "selectedValue": "overview",
-          "ariaSelected": ["true", "false", "false"],
-          "tabindexes": ["0", "-1", "-1"],
-          "panelPresent": true,
-          "panelLabelledByActive": true,
-          "focusRole": "tab",
-          "focusValue": "settings",
-          "keydownPrevented": [false],
-          "events": []
-        },
-        "matches": "tabs/panel"
-      }
-    },
-    {
-      "id": "tabs/interaction-disabled-keyboard",
-      "title": "A disabled tab refuses focus, so a key pressed after it reaches nothing",
+      "id": "tabs/interaction-disabled-focus",
+      "title": "A disabled tab refuses focus: nothing is selected, nothing notified, the tree says disabled",
       "props": {
         "items": [
           {
@@ -2338,17 +2284,13 @@
       },
       "componentInteractive": 6,
       "visual": true,
-      "$why": "button.focus() on a disabled button is a no-op, so focus stays on the body and the keydown never reaches a tab.",
+      "$why": "button.focus() on a disabled button is a no-op, so focus stays on the body. No key is pressed after it: a key the page leaves entirely to the browser is answered by Chrome 153 opening a page of its own, and once focus is on the body the key reaches no tab anyway - the keyboard guard on a disabled origin is pinned by the shared vectors and the characterization suite.",
       "interaction": {
         "steps": [
           {
             "action": "focusButton",
             "selector": ".vf-tabs__tab",
             "index": 1
-          },
-          {
-            "action": "pressKey",
-            "key": "ArrowRight"
           }
         ],
         "expect": {
@@ -2360,7 +2302,6 @@
           "panelLabelledByActive": true,
           "focusRole": "body",
           "focusValue": null,
-          "keydownPrevented": [false],
           "events": [],
           "disabledValues": ["settings"],
           "a11y:secondTab.disabled": "true"
@@ -2957,8 +2898,8 @@
     },
     {
       "id": "tabs/interaction-click-clipped",
-      "title": "A click on the partly visible last tab selects it: the indicator is clipped to the visible span after the move",
-      "$why": "Post-selection indicator geometry under clipping, converging on the same state rendered fresh.",
+      "title": "A pointer click on the partly hidden last tab: the pointer scrolls it into view first, then selects it, and the indicator follows the scrolled tab",
+      "$why": "Post-selection indicator geometry on a scrolled viewport: the tab starts at 259.953125 - 38 in the list frame and is no longer clipped, so the width is its full fractional width and the offset carries the scroll.",
       "props": {
         "items": [
           {
@@ -3009,17 +2950,28 @@
               "value": "docs"
             }
           ],
+          "scrollLeft": 38,
+          "canScrollLeft": true,
+          "canScrollRight": false,
+          "leftHidden": false,
+          "rightHidden": true,
+          "leftTabindex": "0",
+          "rightTabindex": "-1",
+          "fades": ["left"],
           "indicatorOpacity": "1",
-          "canScrollLeft": false,
-          "canScrollRight": true
+          "indicatorTransform": "translateX(221.953px)",
+          "indicatorWidth": "137.609px",
+          "scrolling": false,
+          "scrollbarWidth": "none",
+          "settled": true
         },
-        "matches": "tabs/overflow-active-clipped"
+        "postOnly": "The pointer brings the partly hidden tab fully into view before pressing it, as a user would scroll first; the viewport is left scrolled by the 38px of overflow, which no server render expresses."
       }
     },
     {
       "id": "tabs/interaction-scroll-right",
       "title": "The right scroll button scrolls the four-item list to its end: the left button shows, the right hides, the selected first tab is clipped by the left button",
-      "$why": "The scroll step is max(120, round(360 * 0.6)) = 216, clamped by the 38px of overflow. The snapshot waits for the 140 ms scrolling state to end before measuring; scrolling and scrollbarWidth are claimed settled.",
+      "$why": "The scroll step is max(120, round(360 * 0.6)) = 216, clamped by the 38px of overflow. The pressed button becomes hidden and disabled, so the browser drops its focus to the body. The snapshot waits for the 140 ms scrolling state to end before measuring; scrolling and scrollbarWidth are claimed settled.",
       "props": {
         "items": [
           {
@@ -3063,7 +3015,7 @@
           "tabindexes": ["0", "-1", "-1", "-1"],
           "panelPresent": true,
           "panelLabelledByActive": true,
-          "focusRole": "scroll-right",
+          "focusRole": "body",
           "focusValue": null,
           "events": [],
           "canScrollLeft": true,
@@ -3197,7 +3149,7 @@
       "attrs": {},
       "componentInteractive": 9,
       "visual": true,
-      "$why": "The one scroll scenario with an honest convergence target: two opposite steps land on scrollLeft 0, which is the fresh render. Focus stays on the left button the pointer pressed, which is hidden again - a hidden control keeps focus until it moves.",
+      "$why": "The one scroll scenario with an honest convergence target: two opposite steps land on scrollLeft 0, which is the fresh render. The left button the pointer pressed is hidden and disabled again, so the browser drops its focus to the body.",
       "interaction": {
         "steps": [
           {
@@ -3218,7 +3170,7 @@
           "tabindexes": ["0", "-1", "-1", "-1", "-1", "-1", "-1"],
           "panelPresent": false,
           "panelLabelledByActive": null,
-          "focusRole": "scroll-left",
+          "focusRole": "body",
           "focusValue": null,
           "events": [],
           "canScrollLeft": false,

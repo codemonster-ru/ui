@@ -28,6 +28,7 @@ import VfProgressBar from '@parity/core/components/progress-bar/VfProgressBar.vu
 import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate.vue';
 import VfAccordion from '@parity/core/components/accordion/VfAccordion.vue';
 import VfStepper from '@parity/core/components/stepper/VfStepper.vue';
+import VfTabs from '@parity/core/components/tabs/VfTabs.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -142,6 +143,12 @@ interface ParityCase {
     trigger?: AccordionSlot;
     /** A consumer control rendered beside VfStepper, which has no slot of its own. */
     beside?: { control?: { text: string } };
+    /** VfTabs' panel slot: a paragraph showing the active value, and optionally a consumer control. */
+    panel?: { text?: string; control?: { text: string } };
+    /** VfTabs' tab slot: numbered content from the item and its index. */
+    tab?: { numbered?: boolean };
+    /** A consumer control rendered before VfTabs' root, the origin of the native Tab scenario. */
+    before?: { control?: { text: string } };
   };
   /** VfAccordion siblings rendered side by side, each with its own props. */
   group?: Record<string, unknown>[];
@@ -701,7 +708,12 @@ declare global {
 }
 window.__parityStepperEvents = {};
 
-function renderStepperInstance(caseId: string, key: string, props: Record<string, unknown>, attrs: Record<string, unknown>): VNode {
+function renderStepperInstance(
+  caseId: string,
+  key: string,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+): VNode {
   stepperProps[key] ??= reactive({ ...props, ...attrs });
   const live = stepperProps[key];
   const log = (window.__parityStepperEvents![caseId] ??= []);
@@ -735,6 +747,96 @@ function renderStepper(parityCase: ParityCase): VNode[] {
 
   if (parityCase.content?.beside?.control !== undefined) {
     nodes.push(h('button', { type: 'button' }, parityCase.content.beside.control.text));
+  }
+
+  return nodes;
+}
+
+/**
+ * The reactive props each VfTabs instance is rendered with, for the same
+ * reason the stepper's are: a controlled case (`modelValue` in its props) is
+ * rendered the way a v-model consumer renders it, with update:modelValue
+ * written back into the prop. An uncontrolled case is left to the component.
+ */
+const tabsProps = reactive<Record<string, Record<string, unknown>>>({});
+
+/**
+ * The neutral change log the harness reads after a tabs scenario: one entry
+ * per `change` the component emitted, for every instance in the case. The
+ * Razor fixture keeps the same log from its controller's `vf-tabs:change`.
+ * The `update:modelValue` emit that precedes each `change` is the v-model
+ * transport, pinned with its order by the characterization suite.
+ */
+declare global {
+  interface Window {
+    __parityTabsEvents?: Record<string, { value: string }[]>;
+  }
+}
+window.__parityTabsEvents = {};
+
+function renderTabsInstance(
+  caseId: string,
+  key: string,
+  props: Record<string, unknown>,
+  attrs: Record<string, unknown>,
+  content: NonNullable<ParityCase['content']>,
+): VNode {
+  tabsProps[key] ??= reactive({ ...props, ...attrs });
+  const live = tabsProps[key];
+  const log = (window.__parityTabsEvents![caseId] ??= []);
+  const slots: Record<string, (scope: never) => VNode | VNode[]> = {};
+
+  // The panel slot, as the catalog spells it: the text followed by the active
+  // value in one paragraph - so the slot's activeValue is visible - and a
+  // real consumer button after it when the case declares one. The Razor
+  // fixture writes the same paragraph per item into `panel{index}` slots.
+  if (content.panel !== undefined) {
+    const panel = content.panel;
+    slots.panel = ({ activeValue }: { activeValue: string }) => {
+      const nodes = [h('p', `${panel.text ?? ''} ${activeValue}`)];
+      if (panel.control) nodes.push(h('button', { type: 'button', class: 'parity-panel-control' }, panel.control.text));
+      return nodes;
+    };
+  }
+  if (content.tab?.numbered) {
+    slots.tab = ({ item, index }: { item: { label: string }; index: number }) =>
+      h('span', `${index + 1}. ${item.label}`);
+  }
+
+  return h(
+    VfTabs,
+    {
+      ...live,
+      key,
+      onChange: (value: string) => log.push({ value }),
+      ...('modelValue' in live ? { 'onUpdate:modelValue': (value: string) => (live.modelValue = value) } : {}),
+    },
+    slots,
+  );
+}
+
+/**
+ * VfTabs, for the tabs catalog.
+ *
+ * Its own function. A `before` control is a real consumer button written
+ * before the root; a `group` renders each member as its own instance with the
+ * case's content, and the case-level props are ignored for a group, as the
+ * catalog says. Nothing here renders a button that is not the consumer's
+ * declared control.
+ */
+function renderTabs(parityCase: ParityCase): VNode[] {
+  const content = parityCase.content ?? {};
+  const nodes: VNode[] = [];
+
+  if (content.before?.control !== undefined) {
+    nodes.push(h('button', { type: 'button', class: 'parity-before' }, content.before.control.text));
+  }
+  if (Array.isArray(parityCase.group)) {
+    parityCase.group.forEach((member, index) => {
+      nodes.push(renderTabsInstance(parityCase.id, `${parityCase.id}/${index}`, member, parityCase.attrs, content));
+    });
+  } else {
+    nodes.push(renderTabsInstance(parityCase.id, parityCase.id, parityCase.props, parityCase.attrs, content));
   }
 
   return nodes;
@@ -824,6 +926,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'stepper') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderStepper(parityCase));
+  }
+
+  if (catalog.component === 'tabs') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderTabs(parityCase));
   }
 
   if (catalog.component === 'icon-button') {

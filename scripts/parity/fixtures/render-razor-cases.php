@@ -83,6 +83,8 @@ $skeletonGateComponent = $registry->resolve('vf-skeleton-gate');
 $accordionComponent = $registry->resolve('vf-accordion');
 // The M23 component. Resolved on its own account.
 $stepperComponent = $registry->resolve('vf-stepper');
+// The M24 component. Resolved on its own account.
+$tabsComponent = $registry->resolve('vf-tabs');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -129,6 +131,10 @@ if ($progressBarComponent === null) {
 
 if ($stepperComponent === null) {
     fwrite(STDERR, "The VueForge vf-stepper component is not registered.\n");
+    exit(1);
+}
+if ($tabsComponent === null) {
+    fwrite(STDERR, "The VueForge vf-tabs component is not registered.\n");
     exit(1);
 }
 if ($accordionComponent === null) {
@@ -940,12 +946,83 @@ $renderStepper = static function (array $case) use ($renderStepperInstance, $esc
     return $markup;
 };
 
+/**
+ * One vf-tabs render from neutral props, attrs and content.
+ *
+ * `modelValue` and `defaultValue` are spelled in kebab-case here, as a
+ * template would spell them. There is no v-model to wire: the Razor adapter
+ * reads `model-value` as the initial value and its controller selects on its
+ * own. The panel slot is spelled per item - `panel{index}` - because a Razor
+ * named slot takes no argument: each holds the same paragraph the Vue slot
+ * renders for that item's value, and the consumer button after it when the
+ * case declares one. The tab slot is `tab{index}`, static per item.
+ */
+$renderTabsInstance = static function (array $props, array $attrs, array $content) use ($tabsComponent, $escape): string {
+    $rename = ['modelValue' => 'model-value', 'defaultValue' => 'default-value'];
+    $resolved = [];
+    foreach ($props as $name => $value) {
+        $resolved[$rename[$name] ?? $name] = $value;
+    }
+    foreach ($attrs as $name => $value) {
+        $resolved[$name] = $value;
+    }
+
+    $slots = [];
+    foreach ($props['items'] ?? [] as $index => $item) {
+        if (array_key_exists('panel', $content)) {
+            $markup = '<p>' . $escape((string) ($content['panel']['text'] ?? '')) . ' ' . $escape((string) $item['value']) . '</p>';
+            if (isset($content['panel']['control'])) {
+                $markup .= '<button type="button" class="parity-panel-control">' . $escape((string) $content['panel']['control']['text']) . '</button>';
+            }
+            $slots['panel' . $index] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+        }
+        if (($content['tab']['numbered'] ?? false) === true) {
+            $label = '<span>' . ($index + 1) . '. ' . $escape((string) $item['label']) . '</span>';
+            $slots['tab' . $index] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($label);
+        }
+    }
+    // A panel slot with no items still has to be a panel slot: the shared
+    // `panel` is what an empty list declares it through.
+    if (array_key_exists('panel', $content) && ($props['items'] ?? []) === []) {
+        $slots['panel'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString('');
+    }
+
+    return $tabsComponent->render(new ComponentRenderContext($resolved, $slots))->value();
+};
+
+/**
+ * VfTabs, for the tabs catalog.
+ *
+ * Its own closure. A `before` control is a real consumer button written
+ * before the root, the way any consumer would write it; a `group` renders
+ * each member as its own instance with the case's content.
+ */
+$renderTabs = static function (array $case) use ($renderTabsInstance, $escape): string {
+    $content = $case['content'] ?? [];
+    $markup = '';
+
+    if (isset($content['before']['control'])) {
+        $markup .= '<button type="button" class="parity-before">' . $escape((string) $content['before']['control']['text']) . '</button>';
+    }
+    if (isset($case['group']) && is_array($case['group'])) {
+        foreach ($case['group'] as $member) {
+            $markup .= $renderTabsInstance($member, $case['attrs'] ?? [], $content);
+        }
+    } else {
+        $markup .= $renderTabsInstance($case['props'] ?? [], $case['attrs'] ?? [], $content);
+    }
+
+    return $markup;
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'stepper') {
+    if ($component === 'tabs') {
+        $body = $renderTabs($case);
+    } elseif ($component === 'stepper') {
         $body = $renderStepper($case);
     } elseif ($component === 'accordion') {
         $body = $renderAccordion($case);
@@ -1025,6 +1102,14 @@ $html = <<<HTML
     const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
     if (!caseId) return;
     (window.__parityStepperEvents[caseId] ??= []).push({ value: event.detail.value });
+  });
+  // The neutral tabs change log, from the controller's one event. The Vue
+  // fixture keeps the same log from the component's change emit.
+  window.__parityTabsEvents = {};
+  document.addEventListener('vf-tabs:change', (event) => {
+    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
+    if (!caseId) return;
+    (window.__parityTabsEvents[caseId] ??= []).push({ value: event.detail.value });
   });
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);

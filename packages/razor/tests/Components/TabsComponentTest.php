@@ -106,9 +106,9 @@ final class TabsComponentTest extends TestCase
         self::assertStringStartsWith('<div class="vf-tabs" data-vf-razor="tabs"><div class="vf-horizontal-scroller vf-tabs__list">' . self::HIDDEN_LEFT, $markup);
         self::assertStringContainsString(
             '<div class="vf-horizontal-scroller__viewport vf-tabs__list-scroller" style="--vf-horizontal-scroller-scrollbar-width:none;"><div role="tablist" aria-orientation="horizontal">'
-            . '<button id="vf-tabs-r-0-tab-overview" aria-controls="vf-tabs-r-0-panel-overview" aria-selected="true" tabindex="0" class="vf-tabs__tab" role="tab" type="button">Overview</button>'
-            . '<button id="vf-tabs-r-0-tab-settings" aria-controls="vf-tabs-r-0-panel-settings" aria-selected="false" tabindex="-1" class="vf-tabs__tab" role="tab" type="button">Settings</button>'
-            . '<button id="vf-tabs-r-0-tab-billing" aria-controls="vf-tabs-r-0-panel-billing" aria-selected="false" tabindex="-1" class="vf-tabs__tab" role="tab" type="button">Billing</button>'
+            . '<button id="vf-tabs-r-0-tab-overview" aria-controls="vf-tabs-r-0-panel-overview" aria-selected="true" tabindex="0" class="vf-tabs__tab" role="tab" type="button" data-vf-razor-tabs-value="overview">Overview</button>'
+            . '<button id="vf-tabs-r-0-tab-settings" aria-controls="vf-tabs-r-0-panel-settings" aria-selected="false" tabindex="-1" class="vf-tabs__tab" role="tab" type="button" data-vf-razor-tabs-value="settings">Settings</button>'
+            . '<button id="vf-tabs-r-0-tab-billing" aria-controls="vf-tabs-r-0-panel-billing" aria-selected="false" tabindex="-1" class="vf-tabs__tab" role="tab" type="button" data-vf-razor-tabs-value="billing">Billing</button>'
             . '</div></div>' . self::HIDDEN_RIGHT,
             $markup,
         );
@@ -140,6 +140,7 @@ final class TabsComponentTest extends TestCase
     {
         $markup = $this->render();
 
+        self::assertSame(3, substr_count($markup, 'data-vf-razor-tabs-value='), 'the value marker is adapter metadata on every tab');
         self::assertSame(5, substr_count($markup, '<button'));
         self::assertSame(3, substr_count($markup, 'role="tab"'));
         self::assertSame(1, substr_count($markup, 'role="tablist"'));
@@ -328,15 +329,15 @@ final class TabsComponentTest extends TestCase
     {
         $markup = $this->render([], ['tab1' => '<span>2. Settings</span>']);
 
-        self::assertStringContainsString('role="tab" type="button">Overview</button>', $markup);
-        self::assertStringContainsString('role="tab" type="button"><span>2. Settings</span></button>', $markup);
+        self::assertStringContainsString('data-vf-razor-tabs-value="overview">Overview</button>', $markup);
+        self::assertStringContainsString('data-vf-razor-tabs-value="settings"><span>2. Settings</span></button>', $markup);
     }
 
     public function testLabelsAreEscaped(): void
     {
         $markup = $this->render(['items' => [['value' => 'x', 'label' => '<b>&']]]);
 
-        self::assertStringContainsString('type="button">&lt;b&gt;&amp;</button>', $markup);
+        self::assertStringContainsString('data-vf-razor-tabs-value="x">&lt;b&gt;&amp;</button>', $markup);
         self::assertStringContainsString('id="vf-tabs-r-0-tab-x"', $markup);
     }
 
@@ -411,7 +412,7 @@ final class TabsComponentTest extends TestCase
         self::assertStringContainsString(self::HIDDEN_RIGHT, $markup);
         self::assertStringContainsString('style="opacity:0;transform:translateX(0);width:0;"', $markup);
         // The selection is announced and the panel is there; nothing is a form.
-        self::assertStringContainsString('aria-selected="true" tabindex="0" class="vf-tabs__tab" role="tab" type="button">Settings</button>', $markup);
+        self::assertStringContainsString('aria-selected="true" tabindex="0" class="vf-tabs__tab" role="tab" type="button" data-vf-razor-tabs-value="settings">Settings</button>', $markup);
         self::assertStringNotContainsString('<form', $markup);
         self::assertStringNotContainsString('<a ', $markup);
         self::assertStringNotContainsString('href', $markup);

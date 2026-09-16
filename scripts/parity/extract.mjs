@@ -114,6 +114,20 @@ export const COMPARED_ATTRIBUTES = [
   // passed. The reference writes `step` on the current trigger and nothing
   // elsewhere, and forwards a consumer's onto the nav.
   'aria-current',
+  // VfTabs. Found missing by the attribute-coverage gate in M24, the
+  // eleventh time it has caught an attribute nothing compared, and the first
+  // time the hole was also reproduced as a false PASS on a real capture: a
+  // Razor page whose roving tabindex was inverted (the selected tab at -1,
+  // the others at 0) and one whose aria-selected stayed on the wrong tab
+  // both compared equal to the reference on every DOM dimension. `tabindex`
+  // is the tabs' whole keyboard-reachability contract - which tab Tab lands
+  // on - and no accessibility tree exposes it; `aria-selected` is the tabs'
+  // whole announced selection. Neither is an invariant the comparator knows
+  // ("exactly one 0", "exactly one true"): the reference legitimately writes
+  // zero of each for an unknown value and two of each for a duplicated one,
+  // and the comparison is of what the reference wrote.
+  'tabindex',
+  'aria-selected',
   'focusable',
   'style',
   'hidden',
@@ -386,11 +400,19 @@ export function extractCasesExpression(measuredRoles) {
   // compared: a collision is wrong on every target at once, so there is nothing
   // for a three-way comparison to disagree about, and it would silently make
   // one field's label reach another field's control.
+  //
+  // Across cases only, since M24. Two items of one VfTabs sharing a value
+  // share their generated id - the immutable reference renders
+  // tabs/duplicate-values that way, and this check refused the historical
+  // contract itself. A duplicate *inside* a case is compared, not refused:
+  // both elements take the same position token, so a target that
+  // de-duplicated them differs on dom.relationships against the reference,
+  // and a normal case cannot pass with one because the reference has none.
   const seenIds = new Map();
   const duplicateIds = [];
   for (const element of document.querySelectorAll('[data-parity-case] [id]')) {
     const owner = element.closest('[data-parity-case]').getAttribute('data-parity-case');
-    if (seenIds.has(element.id)) {
+    if (seenIds.has(element.id) && seenIds.get(element.id) !== owner) {
       duplicateIds.push({ id: element.id, cases: [seenIds.get(element.id), owner] });
       continue;
     }
@@ -678,14 +700,28 @@ async function pressKey(page, key) {
     windowsVirtualKeyCode: descriptor.virtualKeyCode,
     nativeVirtualKeyCode: descriptor.virtualKeyCode,
   };
-  await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
+  // A key that produces a character is sent as one keyDown carrying it, which
+  // Chrome expands into the keydown and the keypress itself. Until M24 it was
+  // sent as rawKeyDown followed by a separate char event, and Chrome 153
+  // routed that pair for an unhandled Enter or Space to the browser as an
+  // accelerator: a chrome://settings/help page opened, became the active
+  // target, and every later scenario on the page ran with
+  // document.visibilityState === 'hidden' and no animation frame - found
+  // when the tabs' readiness classes never appeared after the Enter case
+  // (the stepper's Enter and Space scenarios had run that way in M23, with
+  // nothing frame-dependent to notice). Any key the page leaves entirely to
+  // the browser does the same, which is why no scenario presses one. The
+  // activation contract is unchanged: one native click, keydown not
+  // prevented, as the Enter and Space scenarios of every profile still claim.
   if (descriptor.text !== undefined) {
     await page.send('Input.dispatchKeyEvent', {
-      type: 'char',
+      type: 'keyDown',
       ...base,
       text: descriptor.text,
       unmodifiedText: descriptor.text,
     });
+  } else {
+    await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base });
   }
   await page.send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
 }
@@ -1191,6 +1227,13 @@ const OWNERSHIP_CHECKS = [
               'Tag identity is part of the contract; an element with the right role attribute is not the control.'
             );
           }
+          // M24: a rule may declare the explicit role its controls carry, and
+          // then every one of them must carry exactly it - a missing or
+          // substituted role fails here by identity. A rule that declares
+          // none is unchanged: its controls are covered by the total below.
+          if (rule.ariaRole !== undefined && control.ariaRole !== rule.ariaRole) {
+            return `case ${id}: the ${control.role} carries role=${JSON.stringify(control.ariaRole ?? null)}, not the declared role=${JSON.stringify(rule.ariaRole)}`;
+          }
           return null;
         })
         .filter(Boolean)
@@ -1212,10 +1255,15 @@ const OWNERSHIP_CHECKS = [
         : null,
   },
   {
-    problem: ({ snapshot, id }) =>
-      snapshot.interactiveRoleTotal !== 0
+    // The explicit-role total equals the number of owned controls whose rule
+    // declares one - zero for every profile that declares none, which is the
+    // pre-M24 rule unchanged. An undeclared role anywhere in the case, on an
+    // owned control or a consumer's, still fails here.
+    problem: ({ snapshot, controls, declared, id }) =>
+      snapshot.interactiveRoleTotal !==
+      controls.filter((control) => declared[control.role]?.ariaRole !== undefined).length
         ? `case ${id} measured ${snapshot.interactiveRoleTotal} element(s) carrying an explicit interactive role. ` +
-          'A component whose controls are native elements needs none.'
+          'A component whose controls are native elements needs none beyond the roles its profile declares.'
         : null,
   },
 ];
@@ -1233,10 +1281,12 @@ export function controlOwnershipViolations(parityCase, snapshot, profile, { cons
         'nothing to look for. An expression that can measure nothing and pass is not evidence.',
     ];
   }
-  const unusable = roles.find(([, rule]) => !rule?.selector || !rule?.tag);
+  const unusable = roles.find(
+    ([, rule]) => !rule?.selector || !rule?.tag || (rule.ariaRole !== undefined && !rule.ariaRole),
+  );
   if (unusable) {
     return [
-      `the ${profile.id} profile declares control [${unusable[0]}] without a selector and a tag; identity needs both`,
+      `the ${profile.id} profile declares control [${unusable[0]}] without a selector and a tag, or with an empty ariaRole; identity needs all of them`,
     ];
   }
   if (!snapshot || typeof snapshot !== 'object') {
@@ -1540,6 +1590,208 @@ function stepperInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfTabs case reports, before and after an interaction.
+ *
+ * Component-specific and named so, like stepperInteractionExpression. It
+ * selects the tabs' own elements; what it records falls into five groups,
+ * each compared as its own dimension so a defect is attributed to the half
+ * it is in:
+ *
+ *   - ownership: every control the profile says the component owns - the
+ *     tabs with their explicit role, both scroll buttons, the panel - with
+ *     tag, type, role, place and state, and every focusable element that is
+ *     not one of them;
+ *   - selection: the selected value(s) - read as the value part of the
+ *     selected tab's generated id, `…-tab-<value>` - aria-selected and
+ *     tabindex per tab, the disabled tabs, the panel's presence, text and
+ *     tabindex, resolved on the live DOM;
+ *   - indicator: the three inline declarations as the CSSOM holds them,
+ *     unrounded, and the ready / no-transition classes;
+ *   - scroller: scrollLeft, the can-scroll state, both buttons' four hidden
+ *     halves, the fades, the scrolling state, the readiness classes;
+ *   - the scenario's own record: activations, focus by role, value and
+ *     instance, prevented keys, and the neutral event log the fixture keeps.
+ *
+ * Asynchronous, and bounded: the scroller marks 140 ms of scrolling on the
+ * viewport's scrollbar-width variable and the indicator's no-transition
+ * class, and a scroll-button scenario measured on the next frame would catch
+ * that state mid-flight on every target and compare equal to itself. So the
+ * expression waits until no instance in the case is scrolling - at most a
+ * second, polled - and records whether it got there: `settled` is a field
+ * the catalog claims and the comparator compares, and a wait that ran out
+ * is a recorded false, never a silent pass.
+ */
+function tabsInteractionExpression(caseId, controlOwnership = {}) {
+  return `(async () => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+
+    const isScrolling = () =>
+      [...root.querySelectorAll('.vf-tabs__list-scroller')].some((viewport) =>
+        viewport.style.getPropertyValue('--vf-horizontal-scroller-scrollbar-width').trim() === 'thin') ||
+      root.querySelector('.vf-tabs__indicator--no-transition') !== null;
+    const settled = await new Promise((resolve) => {
+      const started = performance.now();
+      const check = () => {
+        if (!isScrolling()) return resolve(true);
+        if (performance.now() - started > 1000) return resolve(false);
+        setTimeout(check, 20);
+      };
+      check();
+    });
+
+    const pathOf = (element) => {
+      const segments = [];
+      for (let node = element; node && node !== root; node = node.parentElement) {
+        const classes = [...node.classList].filter((name) => name.startsWith('vf-')).sort();
+        segments.unshift(node.tagName.toLowerCase() + (classes.length ? '.' + classes.join('.') : ''));
+      }
+      return segments.join('>');
+    };
+    const valueOf = (tab) => tab.id.replace(/^.*-tab-/, '');
+
+    const focusable = [...root.querySelectorAll(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            type: element.getAttribute('type'),
+            ariaRole: element.getAttribute('role'),
+            path: pathOf(element),
+            selected: element.getAttribute('aria-selected'),
+            tabindex: element.getAttribute('tabindex'),
+            hidden: element.classList.contains('vf-tabs__scroll-button--hidden'),
+            ariaHidden: element.getAttribute('aria-hidden'),
+            disabled: element.hasAttribute('disabled'),
+            focusable: focusable.includes(element),
+            name: (element.textContent ?? '').replace(/\\s+/g, ' ').trim(),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const roots = [...root.querySelectorAll('.vf-tabs')];
+    const first = roots[0] ?? null;
+    const tabsOf = (tabs) => [...tabs.querySelectorAll('[role="tablist"] > .vf-tabs__tab')];
+    const selectedOf = (tabs) => tabsOf(tabs).filter((tab) => tab.getAttribute('aria-selected') === 'true');
+    const panelOf = (tabs) => tabs.querySelector(':scope > .vf-tabs__panel');
+    const listOf = (tabs) => tabs.querySelector(':scope > .vf-tabs__list');
+    const viewportOf = (tabs) => tabs.querySelector('.vf-tabs__list-scroller');
+    const buttonOf = (tabs, side) => tabs.querySelector('.vf-tabs__scroll-button--' + side);
+    const indicatorOf = (tabs) => tabs.querySelector('.vf-tabs__indicator');
+    const resolvedControls = (tabs) =>
+      tabsOf(tabs).map((tab) => {
+        const controls = tab.getAttribute('aria-controls');
+        if (controls === null) return null;
+        const target = document.getElementById(controls);
+        if (!target) return 'dangling';
+        return target === panelOf(tabs) ? 'panel' : 'foreign';
+      });
+
+    const activeElement = document.activeElement;
+    const focusedTab = roots.flatMap(tabsOf).find((tab) => tab === activeElement) ?? null;
+    const focusedInstance = roots.findIndex((tabs) => tabs.contains(activeElement));
+    const focusRole = focusedTab
+      ? 'tab'
+      : activeElement?.classList?.contains('vf-tabs__panel') && root.contains(activeElement)
+        ? 'panel'
+        : activeElement?.classList?.contains('vf-tabs__scroll-button--left') && root.contains(activeElement)
+          ? 'scroll-left'
+          : activeElement?.classList?.contains('vf-tabs__scroll-button--right') && root.contains(activeElement)
+            ? 'scroll-right'
+            : activeElement === document.body
+              ? 'body'
+              : root.contains(activeElement) ? 'other-inside-case' : 'outside-case';
+
+    const caseRect = root.getBoundingClientRect();
+    const indicator = first ? indicatorOf(first) : null;
+    const viewport = first ? viewportOf(first) : null;
+    const left = first ? buttonOf(first, 'left') : null;
+    const right = first ? buttonOf(first, 'right') : null;
+    const panel = first ? panelOf(first) : null;
+    const firstSelected = first ? (selectedOf(first)[0] ?? null) : null;
+
+    return {
+      clip: {
+        x: Math.round(caseRect.left + window.scrollX),
+        y: Math.round(caseRect.top + window.scrollY),
+        width: Math.round(caseRect.width),
+        height: Math.round(caseRect.height),
+      },
+      // Ownership. Declared posture beside the measurement, as the static
+      // snapshot does; the list is what the count is derived from.
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: [...root.querySelectorAll('*')].filter((element) =>
+        INTERACTIVE_ROLES.has(element.getAttribute('role') ?? '')).length,
+      // Selection, on the live DOM, one half per field.
+      selectedValue: firstSelected ? valueOf(firstSelected) : null,
+      selectedValues: roots.map((tabs) => (selectedOf(tabs)[0] ? valueOf(selectedOf(tabs)[0]) : null)),
+      selectedCount: first ? selectedOf(first).length : 0,
+      ariaSelected: first ? tabsOf(first).map((tab) => tab.getAttribute('aria-selected')) : [],
+      tabindexes: first ? tabsOf(first).map((tab) => tab.getAttribute('tabindex')) : [],
+      disabledValues: first ? tabsOf(first).filter((tab) => tab.hasAttribute('disabled')).map(valueOf) : [],
+      tabCount: first ? tabsOf(first).length : 0,
+      panelPresent: panel !== null,
+      panelCount: root.querySelectorAll('.vf-tabs__panel').length,
+      panelRole: panel?.getAttribute('role') ?? null,
+      panelTabindex: panel?.getAttribute('tabindex') ?? null,
+      panelText: panel ? (panel.textContent ?? '').replace(/\\s+/g, ' ').trim() : null,
+      panelLabelledByActive: panel
+        ? document.getElementById(panel.getAttribute('aria-labelledby') ?? '') === firstSelected && firstSelected !== null
+        : null,
+      controlsResolvedPerTab: first ? resolvedControls(first) : [],
+      // The indicator, as the CSSOM holds the inline declarations.
+      indicatorOpacity: indicator?.style.opacity ?? null,
+      indicatorTransform: indicator?.style.transform ?? null,
+      indicatorWidth: indicator?.style.width ?? null,
+      indicatorReady: indicator?.classList.contains('vf-tabs__indicator--ready') ?? null,
+      scrolling: indicator?.classList.contains('vf-tabs__indicator--no-transition') ?? null,
+      // The scroller.
+      scrollLeft: viewport?.scrollLeft ?? null,
+      scrollbarWidth: viewport?.style.getPropertyValue('--vf-horizontal-scroller-scrollbar-width').trim() ?? null,
+      canScrollLeft: first ? listOf(first).classList.contains('vf-tabs__list--can-scroll-left') : null,
+      canScrollRight: first ? listOf(first).classList.contains('vf-tabs__list--can-scroll-right') : null,
+      leftHidden: left?.classList.contains('vf-tabs__scroll-button--hidden') ?? null,
+      rightHidden: right?.classList.contains('vf-tabs__scroll-button--hidden') ?? null,
+      leftAriaHidden: left?.getAttribute('aria-hidden') ?? null,
+      rightAriaHidden: right?.getAttribute('aria-hidden') ?? null,
+      leftTabindex: left?.getAttribute('tabindex') ?? null,
+      rightTabindex: right?.getAttribute('tabindex') ?? null,
+      leftDisabled: left?.disabled ?? null,
+      rightDisabled: right?.disabled ?? null,
+      fades: first ? [...listOf(first).querySelectorAll(':scope > .vf-horizontal-scroller__fade')].map((fade) =>
+        fade.classList.contains('vf-horizontal-scroller__fade--left') ? 'left' : 'right') : [],
+      controlsReady: first?.classList.contains('vf-tabs--scroll-controls-ready') ?? null,
+      controlsAnimated: first?.classList.contains('vf-tabs--scroll-controls-animated') ?? null,
+      settled,
+      // The scenario's own record.
+      activations: window.__parityActivations ?? 0,
+      focusRole,
+      focusValue: focusedTab ? valueOf(focusedTab) : null,
+      focusInstance: focusedInstance,
+      keydownPrevented: (window.__parityInputEvents ?? []).filter((entry) => entry.type === 'keydown').map((entry) => entry.defaultPrevented),
+      events: window.__parityTabsEvents?.[${JSON.stringify(caseId)}] ?? [],
+    };
+  })()`;
+}
+
+/**
  * Reports the actual post-scenario state before any visual focus normalization.
  *
  * The shape is component-specific - a caret position means nothing on a button,
@@ -1561,6 +1813,10 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
 
   if (snapshot === 'stepper') {
     return stepperInteractionExpression(caseId, controlOwnership);
+  }
+
+  if (snapshot === 'tabs') {
+    return tabsInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

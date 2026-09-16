@@ -666,6 +666,45 @@ const INTERACTION_FIELDS = {
   disabledValues: { dimension: 'interaction.state', format: 'json' },
   focusValue: { dimension: 'interaction.focus' },
   keydownPrevented: { dimension: 'interaction.state', format: 'json' },
+  // VfTabs. Ownership reuses the five fields above (each control record now
+  // also carries its explicit ariaRole). The selection is recorded in halves
+  // on purpose - the selected value, aria-selected per tab, tabindex per tab,
+  // the panel's presence, text and label - so a port that moved one and not
+  // the others fails on the field that is wrong. The indicator's three
+  // inline declarations are three fields; the scroller's state is one field
+  // per half a port can get wrong on its own. `focusInstance` is which
+  // instance holds focus, beside the focused value; `settled` records that
+  // the bounded wait for the scrolling state ended.
+  selectedValue: { dimension: 'interaction.state' },
+  selectedValues: { dimension: 'interaction.state', format: 'json' },
+  selectedCount: { dimension: 'interaction.state' },
+  ariaSelected: { dimension: 'interaction.state', format: 'json' },
+  tabindexes: { dimension: 'interaction.state', format: 'json' },
+  tabCount: { dimension: 'interaction.state' },
+  panelTabindex: { dimension: 'interaction.state' },
+  controlsResolvedPerTab: { dimension: 'interaction.relationships', format: 'json' },
+  panelLabelledByActive: { dimension: 'interaction.relationships' },
+  indicatorOpacity: { dimension: 'interaction.state' },
+  indicatorTransform: { dimension: 'interaction.state' },
+  indicatorWidth: { dimension: 'interaction.state' },
+  indicatorReady: { dimension: 'interaction.state' },
+  scrolling: { dimension: 'interaction.state' },
+  scrollLeft: { dimension: 'interaction.state' },
+  scrollbarWidth: { dimension: 'interaction.state' },
+  canScrollLeft: { dimension: 'interaction.state' },
+  canScrollRight: { dimension: 'interaction.state' },
+  leftHidden: { dimension: 'interaction.state' },
+  rightHidden: { dimension: 'interaction.state' },
+  leftAriaHidden: { dimension: 'interaction.state' },
+  rightAriaHidden: { dimension: 'interaction.state' },
+  leftTabindex: { dimension: 'interaction.state' },
+  rightTabindex: { dimension: 'interaction.state' },
+  leftDisabled: { dimension: 'interaction.state' },
+  rightDisabled: { dimension: 'interaction.state' },
+  fades: { dimension: 'interaction.state', format: 'json' },
+  controlsReady: { dimension: 'interaction.state' },
+  controlsAnimated: { dimension: 'interaction.state' },
+  focusInstance: { dimension: 'interaction.focus' },
 };
 
 /**

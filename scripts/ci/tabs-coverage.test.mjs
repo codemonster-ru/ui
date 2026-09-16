@@ -16,7 +16,7 @@
 //   - remove RTL; remove the scroll interactions; remove the indicator clipping.
 //
 // Beyond the letters, the vocabulary and the claim shapes are attacked: an
-// orientation prop, an Escape key, a stepper-shaped claim, a claim on a hidden
+// orientation prop, a PageDown key, a stepper-shaped claim, a claim on a hidden
 // scroll button's tree node, a gesture without an index, `items.length` as the
 // budget, a post-only scenario that did not scroll, a scenario that both
 // converges and claims post-only, aria-selected that disagrees with tabindex,
@@ -356,7 +356,7 @@ test('removing the disabled-keyboard, focus-only and consumer-panel scenarios fa
     load('tabs'),
     (entry) =>
       [
-        'tabs/interaction-disabled-keyboard',
+        'tabs/interaction-disabled-focus',
         'tabs/interaction-panel-consumer-click',
         'tabs/interaction-controlled-model',
       ].includes(entry.id),
@@ -375,10 +375,10 @@ test('removing the disabled-keyboard, focus-only and consumer-panel scenarios fa
 
 // ------------------------------------------------------------ vocabulary
 
-test('an orientation prop, an Escape key, a stepper-shaped claim and a hidden-button tree claim are rejected', () => {
+test('an orientation prop, a PageDown key, a stepper-shaped claim and a hidden-button tree claim are rejected', () => {
   const orientation = { ...padding(1)[0], id: 'tabs/vertical', props: { items: ITEMS, orientation: 'vertical' } };
   const escape = shippedCase('tabs/interaction-arrow-right');
-  escape.interaction.steps[1] = { action: 'pressKey', key: 'Escape' };
+  escape.interaction.steps[1] = { action: 'pressKey', key: 'PageDown' };
   const stepperShaped = shippedCase('tabs/interaction-arrow-right');
   stepperShaped.interaction.expect.currentValue = 'settings';
   const hiddenTree = shippedCase('tabs/interaction-arrow-right');
@@ -389,7 +389,7 @@ test('an orientation prop, an Escape key, a stepper-shaped claim and a hidden-bu
     violations,
     [
       'declares prop [orientation]',
-      'presses [Escape]',
+      'presses [PageDown]',
       'expects [currentValue], which no tabs snapshot records',
       'expects [a11y:scrollLeft.hidden]',
     ],

@@ -24,6 +24,7 @@ import { enhanceVueForgeTextareas } from './textarea.js';
 import { enhanceVueForgeCheckables } from './checkable.js';
 import { enhanceVueForgeAccordions } from './accordion.js';
 import { enhanceVueForgeSteppers } from './stepper.js';
+import { enhanceVueForgeTabs } from './tabs.js';
 
 const ROOT_SELECTOR = '[data-vf-razor="input"]';
 const ENHANCED_ATTRIBUTE = 'data-vf-razor-enhanced';
@@ -264,6 +265,9 @@ function enhanceAll(root: ParentNode = document): void {
   // mounts when the panel opens, as a fresh render would mount it.
   enhanceVueForgeAccordions(root, enhanceAll);
   enhanceVueForgeSteppers(root);
+  // The tabs are handed this same function for the same reason: whatever the
+  // server rendered into a panel's template mounts when that panel is shown.
+  enhanceVueForgeTabs(root, enhanceAll);
 }
 
 export {
@@ -271,6 +275,7 @@ export {
   enhanceVueForgeCheckables,
   enhanceVueForgeFields,
   enhanceVueForgeSteppers,
+  enhanceVueForgeTabs,
   enhanceVueForgeTextareas,
 };
 

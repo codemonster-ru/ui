@@ -149,6 +149,13 @@ async function readAccessibility(page, caseId, roles) {
           // whose panel opened while aria-expanded stayed false compared
           // equal in the tree.
           'expanded',
+          // `selected` joined in M24: VfTabs is the first migrated component
+          // whose controls announce a selected state, and Chrome 153 derives
+          // it from aria-selected on role=tab (reproduced before it was
+          // added: the tree recorded null for a claimed selected tab). It is
+          // what makes the tree an independent proof of the selection beside
+          // dom.aria - unlike aria-current (M23), which Chrome does not expose.
+          'selected',
         ].includes(property.name)
       ) {
         states[property.name] = String(property.value?.value ?? '');

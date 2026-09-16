@@ -146,6 +146,10 @@ final class TabsComponent implements ComponentInterface
                 'class' => 'vf-tabs__tab',
                 'role' => 'tab',
                 'type' => 'button',
+                // The item value the browser controller reads back: adapter
+                // metadata by its prefix, never product DOM. The reference
+                // keeps the value in a closure and writes no attribute for it.
+                'data-vf-razor-tabs-value' => $item['value'],
             ]) . '>';
             $markup .= $context->hasSlot('tab' . $index)
                 ? $context->slot('tab' . $index)->value()

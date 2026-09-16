@@ -20,7 +20,7 @@
 //     *natively* - one click counted, the key not prevented - each of the
 //     four arrows, Home and End, wrapping in both directions, skipping a
 //     disabled tab in both directions and for End, a disabled tab that takes
-//     no focus, an unhandled key, focus alone, navigation from a focused but
+//     no focus, focus alone, navigation from a focused but
 //     unselected tab, Tab into the panel, Tab into the list from before it -
 //     the roving tabindex proved by native focus - the two RTL arrows, a
 //     controlled consumer that writes the value back, two siblings sharing
@@ -50,7 +50,7 @@ const TAB_KEYS = ['numbered'];
 const BEFORE_KEYS = ['control'];
 const NAVIGATION_KEYS = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
 const ACTIVATION_KEYS = ['Enter', ' '];
-const UNHANDLED_KEYS = ['Tab', 'PageDown'];
+const UNHANDLED_KEYS = ['Tab'];
 const KEYS = [...ACTIVATION_KEYS, ...NAVIGATION_KEYS, ...UNHANDLED_KEYS];
 const STEP_ACTIONS = ['clickButton', 'focusButton', 'pressKey'];
 const TAB = '.vf-tabs__tab';
@@ -199,7 +199,7 @@ export function tabsCoverageViolations(cases) {
       }
       if (step.action === 'pressKey' && !KEYS.includes(step.key)) {
         violations.push(
-          `${entry.id} presses [${step.key}]. The reference handles the six navigation keys and leaves Enter, Space and Tab to the browser; PageDown is the one unhandled key the catalog drives`,
+          `${entry.id} presses [${step.key}]. The reference handles the six navigation keys and leaves Enter, Space and Tab to the browser; a key the page itself leaves to the browser cannot be driven deterministically and is pinned by the characterization suite`,
         );
       }
     }
@@ -494,20 +494,21 @@ export function tabsCoverageViolations(cases) {
     const keyPresses = stepsOf(entry).filter((step) => step.action === 'pressKey');
     if (keyPresses.length > 0) {
       // A key pressed while focus is on the body reaches no tab and is recorded
-      // by nothing inside the case: the truthful claim is one unprevented
-      // entry per press, and the disabled-tab scenario is the one that makes it.
-      if (!Array.isArray(expect.keydownPrevented) || expect.keydownPrevented.length !== keyPresses.length) {
+      // by nothing inside the case: the truthful claim is an empty list, and
+      // the disabled-tab scenario is the one that makes it.
+      const allFocuses = stepsOf(entry).filter((step) => step.action === 'focusButton');
+      const reaches =
+        clicks(entry).length > 0 ||
+        (allFocuses.length > 0 &&
+          !focuses(entry).some((focus) => disabledValues(members(entry)[0]).includes(tabsOfFirst[focus.index]?.value)));
+      const reaching = reaches ? keyPresses.length : 0;
+      if (!Array.isArray(expect.keydownPrevented) || expect.keydownPrevented.length !== reaching) {
         violations.push(
           `${entry.id} presses ${keyPresses.length} key(s) without claiming whether each keydown was prevented`,
         );
       } else {
-        keyPresses.forEach((step, index) => {
-          const reaches =
-            focuses(entry).length > 0 &&
-            !focuses(entry).some((focus) =>
-              disabledValues(members(entry)[0]).includes(tabsOfFirst[focus.index]?.value),
-            );
-          const handled = reaches && NAVIGATION_KEYS.includes(step.key);
+        keyPresses.slice(0, reaching).forEach((step, index) => {
+          const handled = NAVIGATION_KEYS.includes(step.key);
           if (expect.keydownPrevented[index] !== handled) {
             violations.push(
               `${entry.id} claims keydownPrevented=${expect.keydownPrevented[index]} for ${JSON.stringify(step.key)}; the reference ${handled ? 'prevents' : 'does not prevent'} it`,
@@ -579,7 +580,7 @@ export function tabsCoverageViolations(cases) {
       violations.push(
         `${entry.id} names no initial case to converge on and gives no reason; a gesture on a persistent DOM has to land on a fresh render's DOM`,
       );
-    } else if (scrolls.length === 0 || expect.scrollLeft === 0 || expect.scrollLeft === undefined) {
+    } else if (!(expect.scrollLeft > 0)) {
       violations.push(
         `${entry.id} is post-only without leaving the viewport scrolled; only a scrolled viewport has no fresh render`,
       );
@@ -693,13 +694,9 @@ export function tabsCoverageViolations(cases) {
     navigates(entry, 'End') &&
     disabledValues(props(entry))[0] === itemsOf(props(entry))[2]?.value &&
     selects(entry, 1));
-  require('no shared tabs case proves an unhandled key is left to the page - not prevented, nothing changed', (entry) =>
-    navigates(entry, 'PageDown') &&
-    stayed(entry) &&
-    expectOf(entry).keydownPrevented?.[0] === false &&
-    expectOf(entry).focusRole === 'tab');
-  require('no shared tabs case proves a disabled tab takes no focus, so a key from it reaches nothing', (entry) =>
+  require('no shared tabs case proves a disabled tab takes no focus', (entry) =>
     single(entry) &&
+    stepsOf(entry).length === 1 &&
     focuses(entry).some((step) => disabledValues(props(entry)).includes(itemsOf(props(entry))[step.index]?.value)) &&
     expectOf(entry).focusRole === 'body' &&
     stayed(entry) &&
@@ -775,7 +772,7 @@ export function tabsCoverageViolations(cases) {
     clicks(entry).length === 2 &&
     (expectOf(entry).events?.length ?? 0) === 2 &&
     typeof entry.interaction.matches === 'string');
-  require('no shared tabs case clicks the partly clipped tab of an overflowing list and claims the indicator after it', (
+  require('no shared tabs case clicks the partly clipped tab of an overflowing list and claims the scrolled indicator after it', (
     entry,
   ) =>
     single(entry) &&
@@ -783,7 +780,9 @@ export function tabsCoverageViolations(cases) {
     clickAt(entry, 3) &&
     selects(entry, 3) &&
     expectOf(entry).indicatorOpacity === '1' &&
-    typeof entry.interaction.matches === 'string');
+    typeof expectOf(entry).indicatorTransform === 'string' &&
+    typeof expectOf(entry).indicatorWidth === 'string' &&
+    expectOf(entry).scrollLeft > 0);
   require('no shared tabs case scrolls a list to its end with the right button, so the clamped scroll and the left-clipped indicator are never measured', (
     entry,
   ) =>

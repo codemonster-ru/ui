@@ -887,6 +887,79 @@ export const profiles = {
     },
     liveParity: true,
   },
+  tabs: {
+    id: 'tabs',
+    label: 'VfTabs',
+    component: 'tabs',
+    casesPath: 'contracts/tabs/cases.json',
+    policyPath: 'contracts/tabs/parity-policy.json',
+    artifactDirectory: 'parity-tabs',
+    reportName: 'tabs-parity-report.json',
+    measuredRoles: {
+      root: '.vf-tabs',
+      list: '.vf-tabs__list',
+      viewport: '.vf-tabs__list-scroller',
+      tablist: '[role="tablist"]',
+      tab: '.vf-tabs__tab',
+      scrollLeft: '.vf-tabs__scroll-button--left',
+      scrollRight: '.vf-tabs__scroll-button--right',
+      fade: '.vf-horizontal-scroller__fade',
+      baseline: '.vf-tabs__baseline',
+      indicator: '.vf-tabs__indicator',
+      panel: '.vf-tabs__panel',
+    },
+    // The tablist carries the orientation; each tab carries the role, its
+    // name, disabled, focusable and - Chrome 153 exposes it for role=tab -
+    // selected, which is what makes the tree an independent proof of the
+    // selection beside dom.aria. Three tabs are listed by position so a
+    // post-interaction claim can name the one that moved. The panel is named
+    // through aria-labelledby by the selected tab. The two scroll buttons are
+    // listed for the opposite reason while hidden - aria-hidden, so expected
+    // absent - and exposed as named buttons once an overflow shows them.
+    accessibilityRoles: {
+      tablist: '[role="tablist"]',
+      firstTab: '[role="tablist"] > .vf-tabs__tab:nth-child(1)',
+      secondTab: '[role="tablist"] > .vf-tabs__tab:nth-child(2)',
+      thirdTab: '[role="tablist"] > .vf-tabs__tab:nth-child(3)',
+      panel: '.vf-tabs__panel',
+      scrollLeft: '.vf-tabs__scroll-button--left',
+      scrollRight: '.vf-tabs__scroll-button--right',
+    },
+    semanticAttributes: [
+      'class',
+      'style',
+      'type',
+      'disabled',
+      'role',
+      'id',
+      'tabindex',
+      'aria-selected',
+      'aria-controls',
+      'aria-labelledby',
+      'aria-orientation',
+      'aria-label',
+      'aria-hidden',
+      'data-testid',
+    ],
+    snapshot: 'tabs',
+    activationSelector: '.vf-tabs__tab',
+    // The third profile whose component owns controls, and the first whose
+    // controls carry an explicit interactive role and come in several kinds:
+    // one tab per item, the two scroll buttons of the internal scroller, and
+    // the panel (tabindex 0, so focusable, and the component's). Each rule is
+    // the same shape as before - a role, the selector that finds it, the tag
+    // it has to be - and the tab rule adds the one thing M24 needed: the
+    // explicit `ariaRole` every matched control must carry. The count comes
+    // from each case (`componentInteractive`); nothing here knows what an
+    // item is.
+    controlOwnership: {
+      tab: { selector: '.vf-tabs__tab', tag: 'button', ariaRole: 'tab' },
+      scrollLeft: { selector: '.vf-tabs__scroll-button--left', tag: 'button' },
+      scrollRight: { selector: '.vf-tabs__scroll-button--right', tag: 'button' },
+      panel: { selector: '.vf-tabs__panel', tag: 'div' },
+    },
+    liveParity: true,
+  },
 };
 
 export function loadProfile(id) {
