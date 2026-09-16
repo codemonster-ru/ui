@@ -5877,3 +5877,517 @@ M15–M21 и три интерактивных милстоуна не разо�
 владению *другую* ARIA-связь (`aria-controls` на N контролах), которой у
 степпера намеренно нет. VfMenu тянет немигрированные composables; VfTooltip
 — портал. M23.1 не нужен: 16 < 25.
+
+## Приложение Э. Результаты M24
+
+Один мигрированный компонент, VfTabs — третий с собственными интерактивными
+контролами и намеренно третьей формы: N нативных кнопок с *явной*
+интерактивной ролью `tab` внутри `tablist`, roving tabindex и
+`aria-selected` как две проекции одного значения, сгенерированные id и граф
+`aria-controls`/`aria-labelledby` с 0/1 панелью и N−1 висящими рёбрами,
+две кнопки внутреннего горизонтального скроллера, индикатор с
+геометрией, измеренной из DOM до долей пикселя, состояние переполнения,
+fades, таймер 140 мс и двухкадровая готовность. Центральная гипотеза §2 —
+что принятая инфраструктура выдержит третьего, материально другого
+потребителя без Tabs/selection/scroller-архитектуры — проверена:
+генерическая дельта **14 строк** при нуле абстракций; из них одна
+логическая правка (допуск явной роли во владении) требует внимания
+ревьюера независимо от числа строк (Э.6). Каждая генерическая строка —
+по воспроизведённому отказу или воспроизведённому ложному PASS.
+
+Милстоун прерывался по исчерпанию контекста после серверного слоя Razor
+(HEAD `889b0362`, `browser/tabs.ts` не закоммичен) и продолжен из
+состояния репозитория без переделки завершённых стадий.
+
+### Э.1. Исторический контракт VfTabs
+
+Снят эмпирически по `fd793696` до правок: смонтированный DOM, SSR, эмиты,
+реальные keydown с `cancelable`, два экземпляра в одном приложении и в двух,
+затем в Chrome 153 — геометрия, состояние прокрутки, дерево доступности.
+
+| измерение | значение |
+| --- | --- |
+| пропсы | `items: VfTabItem[]` (value, label, disabled?, tabId?, panelId?), `modelValue?: string`, `defaultValue?: string`; ни orientation, ни size, ни activation-mode — лишний пропс падает атрибутом на корень |
+| эмиты | `update:modelValue(value)`, затем `change(value)` — по одному на активацию; **активация текущей вкладки эмитит пару снова** (guard «уже текущая» отсутствует) |
+| слоты | `tab` `{ item, isActive, index }` с fallback в `label`; `panel` `{ activeValue }`; default не рендерится |
+| состояние | `activeValue = modelValue ?? internalValue ?? fallback`, fallback — первый enabled, seed — `defaultValue ?? fallback`; controlled ⇔ `modelValue !== undefined`; `''` и unknown — controlled без выбора; `null` — controlled для эмита, сквозной для рендера |
+| проекция | `aria-selected` и `tabindex` — обе `activeValue === item.value`: unknown/`''` → ноль `tabindex=0`, дубли → два; disabled seed остаётся выбранным (watch не immediate) |
+| id | `${baseId}-tab-${value}` / `${baseId}-panel-${value}` без санитизации (пробел внутри), `tabId`/`panelId` переопределяют; `aria-controls` на каждой вкладке при слоте panel и у `panelId`-элемента без слота; N−1 ссылок висят — только активная панель существует |
+| панель | один `div[role=tabpanel][tabindex=0]` под `v-if="activeItem && slots.panel"`; при переключении **тот же элемент патчится** (id, aria-labelledby, содержимое) — аудит ожидал пересоздания; пересоздание только через отсутствующее состояние |
+| клавиатура | ArrowRight/ArrowLeft **и** ArrowDown/ArrowUp, Home, End — keydown с preventDefault, кольцо по enabled от вкладки, получившей клавишу (не от выбранной), с обходом; активация + фокус; Enter/Space/Tab не обрабатываются; disabled-исток игнорируется без preventDefault |
+| направление | клавиатура: `closest('[dir]')`, затем `documentElement[dir]` — но ветка documentElement достижима **только через shadow-границу** (иначе `closest` находит `<html dir>`); computed style никогда; скроллер: тот же атрибут, затем computed style |
+| фокус | через собственные `tabRefs` — соседи с общими значениями изолированы; два `createApp` делят счётчик `useId` (`vf-tabs-v-0` дважды) — артефакт фикстуры, вне каталога |
+| индикатор | `opacity`, `transform: translateX(…px)`, `width` из rect списка, rect активной вкладки, clientWidth и offsetWidth *показанной* кнопки; дробные пиксели; вкладка вне viewport — `opacity 0`, `width 0`, translateX остаётся; без активной — литерал `translateX(0)`; **под RTL — арифметика в LTR-системе** (translateX(176.97px) при вкладке справа) |
+| скроллер | `scrollWidth − clientWidth` против `scrollLeft` (под RTL — `|min(scrollLeft, 0)|`), порог `> 1`; кнопка скрыта четырьмя половинами (класс, aria-hidden, tabindex −1, disabled); fades только `controlsAnimated && canScroll`; шаг `max(120, round(0.6·cw))`, smooth/auto по reduced-motion; 140 мс `thin`/`--no-transition` с перезапуском; ResizeObserver на viewport (дважды: скроллер и вкладки), window resize, teardown |
+| готовность | кадр 1: `--scroll-controls-ready` (корень и скроллер), `vf-tabs__indicator--ready`; кадр 2: `--scroll-controls-animated`; до первого кадра обе кнопки скрыты при любом переполнении |
+
+Расхождения с аудитом, разрешённые в пользу эталона: панель патчится, а
+не пересоздаётся; RTL-индикатор в LTR-кадре; ветка `documentElement` —
+только за shadow-границей; Chrome 153 **экспонирует** `selected` для
+`role=tab` (Э.8).
+
+### Э.2. Характеризация и мутации
+
+84 проверки в `VfTabs.characterization.spec.ts`: точная SSR-разметка со
+слотом и без, топология скроллера, пять нативных кнопок, пустой список,
+attrs, id и граф (пробел, tabId, panelId с панелью и без, висящие ссылки,
+дубли — дубли id/два selected/два tabindex=0/одна панель, коллизия между
+двумя createApp и изоляция в одном), выбор во всех формах §4, слоты,
+жизненный цикл панели (тот же элемент; удаление и свежее создание при
+controlled unknown→known; вкладки сохраняются), пара событий при
+повторной активации, controlled без записи назад и с v-model, null,
+клавиатура (пять необрабатываемых клавиш, шесть обрабатываемых, обход,
+пропуск disabled, disabled-исток, старт от сфокусированной, дубли —
+первое вхождение), направление (ancestor dir, регистр, shadow-граница,
+computed style игнорируется клавиатурой, а скроллером — нет), соседи в
+одном приложении, deep watch (шесть проверок: disable/remove/нет
+fallback/не immediate/controlled refusal/reorder), геометрия индикатора
+с пиннованными rect (дробные, клиппинг слева/справа, вне viewport, RTL в
+LTR-кадре, `--ready` через кадр, но не на тике mount), скроллер (порог
+1px, середина/конец, шаг и reduced-motion, 140 мс с перезапуском,
+ResizeObserver и teardown).
+
+79 мутаций характеризации (VfTabs.vue, внутренний VfHorizontalScroller.vue
+и после выноса — `shared-core/tabs/state.ts`), все обнаружены набором
+вкладок; три гнезда, найденные первым прогоном (computed direction в
+jsdom не наследуется — пиннуется spy; ветка documentElement мертва вне
+shadow — добавлен shadow-случай; `--ready` на тике mount) закрыты
+проверками, а не ослаблением; одна мутация (`activateTab` без guard
+disabled) снята как эквивалентная — браузер не доставляет click
+disabled-кнопке, guard недостижим. Перенацеливание после выноса: 35
+мутаций на файл общих правил.
+
+### Э.3. Shared-core и PHP-зеркало (§24)
+
+Двенадцать чистых правил в `shared-core/src/tabs/state.ts` — Tabs-именованных,
+без состояния, слушателей, элементов и кадров: fallback, активное
+значение и индекс (первое вхождение), проекция выбора и tabindex, id с
+переопределениями, controlled panel id, `resolveTabsNavigationTarget`
+(кольцо по enabled от значения-истока; обе оси; RTL меняет только
+горизонтальную пару; disabled-исток и чужая клавиша → undefined),
+`resolveTabsIndicatorStyle` (шесть чисел → три декларации, без
+округления, LTR-кадр), `resolveTabsScrollerState` (четыре числа → две
+булевы; RTL через `|min(scrollLeft, 0)|`; порог `> 1`),
+`resolveTabsScrollerStep`. 95 векторов; `$serverRules` называет
+серверное подмножество (8), `TabsState.php` зеркалит ровно его и тест
+утверждает отсутствие методов навигации, геометрии и прокрутки (9 тестов,
+45 утверждений). VfTabs.vue и VfHorizontalScroller.vue (общий с
+немигрированным VfMenuBar) читают правила; двойное значение `(1/3+2/3)−1/3
+= 0.6666666666666667` пиннуется как то, что пишет JavaScript.
+
+### Э.4. Каталог и покрытие (§36–§37)
+
+71 случай, 31 интеракция, 65 визуальных (пустой список и служебные
+варианты не фотографируются). Семейства: fallback без панели и с панелью,
+defaultValue (середина, конец), controlled, приоритет, unknown, `''`,
+null, disabled первый/средний/последний/seed, все disabled, пусто, один,
+дубли, tabId/panelId с панелью и без, пробел, слот tab (`numbered` —
+item и index видны), attrs, RTL (три), переполнение (старт, частично
+клипнутый активный индикатор `72.0469px`, полностью скрытый
+`translateX(622.625px)`, RTL с зеркальным состоянием и LTR-индикатором),
+соседи с общими значениями (честно: эталон фокусирует через свои refs),
+контрол перед вкладками и внутри панели. Интеракции: клик, повторный
+клик (пара снова), два клика, Enter/Space нативно, четыре стрелки,
+Home/End, обход обоих направлений, пропуск disabled (обе стороны, End),
+disabled-focus, только фокус, навигация от сфокусированной, Tab в панель,
+Tab в список от контрола перед ним (roving tabindex через реальный
+фокус: первая вкладка с −1 пропущена), RTL-стрелки, v-model, соседи
+(клик, клавиатура), клик по частично клипнутой вкладке, прокрутка вправо
+(FOUR: клэмп 38px), вправо (SEVEN: 216px), вправо-влево (сходимость на
+свежем рендере), контрол в панели.
+
+Три исправления каталога по воспроизведённым фактам среды, не по
+слабости эталона: (1) PageDown и любая клавиша, которую страница целиком
+отдаёт браузеру, в Chrome 153 headless открывают `chrome://settings/help`
+и заливают страницу 156 keydown `Unidentified` за 30 мс — недетерминируемо;
+семейство «необрабатываемая клавиша» несёт Tab (два сценария), PageDown/
+Escape пиннуются характеризацией; (2) `disabled-keyboard` → `disabled-focus`:
+после отказа в фокусе клавиша уходит в body и в тот же браузерный путь;
+(3) `click-clipped` — post-only: генерический `pointerClick` вызывает
+`scrollIntoView`, viewport прокручивается на 38px на всех целях, свежего
+рендера нет; абсолютные утверждения `scrollLeft 38`, `translateX(221.953px)`,
+`137.609px`.
+
+Гейт покрытия — закрытый словарь (пропсы, ключи элемента, три слота,
+шаги с обязательным `index`, девять клавиш, 31 поле ожиданий, семь
+AX-ролей и три состояния, семь focusRole), бюджет владения = вкладки +
+2 кнопки на экземпляр + активная панель, потребительский бюджет по
+`before`/`panel.control`, согласованность aria-selected↔tabindex↔
+selectedValue, панель по слоту и выбору, фокус, журнал, prevented по
+ключам и по достижимости, прокрутка с обязательным settled, postOnly
+только при `scrollLeft > 0`, сходимость на начальный случай того же
+значения и формы. 35 эрозионных атак §37 (ArrowDown снят/заменён,
+повторный клик снят/заглушён, unknown, дубли, no-panel/panel, tabId/
+panelId, переполнение, соседи, split, tabindex-патологии, Tab, RTL,
+прокрутка, клиппинг, Enter/Space, дерево, три сценария, словарь,
+`items.length`, потребитель, split-претензии, панель/фокус, post-only,
+сходимость, чужой каталог). Общий гейт — 317.
+
+### Э.5. Razor: три слоя (§29–§33)
+
+**Сервер.** `TabsComponent`: разметка эталона *до монтирования* — корень,
+скроллер с двумя скрытыми и инертными кнопками и шевронами из нейтрального
+реестра, viewport с переменной `scrollbar-width`, tablist, по
+`button[role=tab]` с id, aria-controls, aria-selected и tabindex из общих
+правил, native disabled, baseline, индикатор в seed-состоянии
+`opacity:0;transform:translateX(0);width:0`, одна активная панель. Значение
+элемента — `data-vf-razor-tabs-value` (adapter-метаданные по префиксу).
+Слоты: `panel` и `panel{i}` — именованный слот Razor без аргумента
+(грамматика `[a-z][A-Za-z0-9]*`), содержимое каждого элемента ждёт в
+инертном `<template data-vf-razor-tabs-panel="i">` в конце корня;
+`tab{i}` статичен. Причуды воспроизведены (Э.1). Валидация items: лишний
+ключ, нестроковые value/label/tabId/panelId, небулев disabled — отказ. 29
+PHP-тестов, провайдер — 22 компонента, 798 тестов пакета.
+
+**Без JavaScript.** Выбранная вкладка объявлена, её панель видна,
+disabled инертна, обе кнопки прокрутки скрыты и инертны при любом
+переполнении, индикатор невидим, ни одного класса готовности; `type=button`
+ничего не переключает — ограничение задокументировано (браузерный гейт
+измеряет и это).
+
+**Усиление.** `browser/tabs.ts` (403 строки) монтируется только на
+`data-vf-razor="tabs"`, идемпотентен (маркер), instance-scoped (`:scope >`,
+фокус через свой список), состояния не хранит — выбор читает из
+`aria-selected`, элементы из DOM; клик (текущая уведомляет снова), шесть
+клавиш через `resolveTabsNavigationTarget` от вкладки-истока, направление
+по `closest('[dir]')`/documentElement; проекция через общие правила; одна
+панель патчится на месте (id из aria-controls, label из id вкладки,
+содержимое из шаблона) или создаётся; индикатор из
+`resolveTabsIndicatorStyle` по rect и offsetWidth показанной кнопки;
+скроллер: четыре половины кнопок, fades только после второго кадра,
+шаг из общего правила, `matchMedia` reduced-motion, 140 мс на переменной
+и классе индикатора, ResizeObserver, resize, два кадра готовности; одно
+`vf-tabs:change` `{ value }`.
+
+### Э.6. Владение по видам и допуск явной роли (§18–§19) — REVIEWER ATTENTION — EXPLICIT INTERACTIVE ROLE OWNERSHIP
+
+**Какой старый инвариант отвергал корректный VfTabs?** Пятая строка
+`OWNERSHIP_CHECKS`: `snapshot.interactiveRoleTotal !== 0` → «A component
+whose controls are native elements needs none».
+
+**Какой отказ воспроизведён?** Первый прогон паритета на эталоне (light):
+`Control ownership failed on reference (light): case tabs/default measured
+3 element(s) carrying an explicit interactive role.` — отказ *корректного
+эталонного рендера*; лог сохранён в свидетельствах прогона.
+
+**Что изменилось в генерическом правиле?** Правило владения может объявить
+`ariaRole`. Строка идентичности: если `rule.ariaRole !== undefined`, каждый
+контрол правила несёт ровно его (`control.ariaRole !== rule.ariaRole` —
+отказ по идентичности, до того как тег уже проверен). Строка суммы:
+`interactiveRoleTotal` равен числу контролов, чьё правило объявляет роль —
+для профиля без объявлений это по-прежнему `=== 0`, прежний инвариант
+без изменений (тест B на реальном профиле степпера). Пустой `ariaRole` —
+непригодное объявление, отказ до сравнения (J).
+
+**Могут ли пройти необъявленные явные роли?** Нет: любая роль на узле, чьё
+правило её не объявляет (кнопка прокрутки, baseline, контрол потребителя),
+поднимает `interactiveRoleTotal` над числом объявленных (E, H; браузерные
+`scroll-button-wears-the-tab-role`, `undeclared-interactive-role`).
+
+**Может ли пройти отсутствующая роль?** Нет: `null !== 'tab'` по
+идентичности (C; снимок без поля `ariaRole` — I; браузерная `role-removed`).
+
+**Может ли пройти чужая роль?** Нет: `'button' !== 'tab'` при неизменной
+сумме ролей (D; браузерная `role-substituted`).
+
+**Может ли пройти count-preserving подстановка?** Роль, перенесённая с
+вкладки на кнопку прокрутки при неизменной сумме — нет (F): вкладка
+падает по идентичности. Вкладка снята и кнопка прокрутки добавлена при
+неизменной сумме контролов и согласованной сумме ролей (атака O §19) —
+утверждение *само по себе* принимает (L, записанный предел: сумма +
+идентичность каждого контрола), а прогон ловит в эталонном направлении
+на `ownership.controls` (три записи tab против двух) и `dom.structure`
+(захватная `tab-removed-scroll-button-added`, браузерная
+`browser-tabs-tab-removed-scroll-button-added`). Per-role бюджет не
+добавлен по §19: эталонное направление уже видит.
+
+**Содержит ли генерический код tab/VfTabs?** Нет — тест
+`tabs-ownership.test.mjs` читает область `OWNERSHIP_CHECKS` →
+`controlOwnershipViolations` и утверждает отсутствие `'tab'`, `VfTabs`,
+`vf-tabs`.
+
+**Сколько генерических строк?** 6: строка идентичности 3, строка суммы 1
+(нетто; условие разбито prettier), guard объявления 2 (нетто).
+
+**Какие атаки доказывают fail-closed?** 19 тестов против реальной функции
+(A–L, генерический код без «tab»); 8 захватных и 13 браузерных мутаций
+владения на реальных страницах (Э.13); контрольный случай — корректно
+объявленная роль проходит на всех 71 случаях трёх целей.
+
+Владение по видам: четыре правила (tab с ariaRole, scrollLeft,
+scrollRight, panel — `div` с tabindex=0, фокусируемый, компонентный),
+бюджет случая — сумма; идентичность каждой записи (тег, роль, путь,
+selected, tabindex, hidden, aria-hidden, disabled, focusable, имя)
+сравнивается на трёх целях для каждого из 71 случая.
+
+### Э.7. Живой паритет и воспроизведённые нужды (§40–§43)
+
+Профиль `tabs`: одиннадцать ролей измерения, семь AX-ролей (tablist,
+три вкладки по позиции, панель, две кнопки прокрутки — ожидаемо
+отсутствующие пока скрыты), четырнадцать семантических атрибутов,
+`controlOwnership` четырёх видов, `liveParity`, снимок `tabs` —
+асинхронный, ждёт (ограниченно, 1 с) конца scrolling-состояния и пишет
+`settled`. Каждая генерическая правка — по отказу реального гейта:
+
+| нужда | воспроизведено | добавлено |
+| --- | --- | --- |
+| дубли id внутри случая (§21) | `reference (light) rendered duplicate ids across cases: vf-tabs-v-57-tab-overview in tabs/duplicate-values and tabs/duplicate-values` — эталон | 1 изменённая строка: отказ только между случаями; внутри случая — общий токен позиции, сравнивается |
+| явная роль (§18) | `measured 3 element(s) carrying an explicit interactive role` на `tabs/default` эталона | 6 строк `OWNERSHIP_CHECKS` (Э.6) |
+| AX `selected` (§17) | `the catalog expects a11y:secondTab.selected="true", but the tree recorded null` | 1 строка `readAccessibility` |
+| `tabindex`/`aria-selected` (§15–§16) | гейт атрибутов: `tabs: tabindex`, `tabs: aria-selected` — одиннадцатая находка; **и ложный PASS на реальном захвате**: браузерные мутации `tabindex-inverted` и `aria-selected-stale` на Razor — MISSED на `dom.nativeAttributes`/`dom.aria` во всех направлениях и темах (a11y.states aria-selected уже ловил) | 2 строки `COMPARED_ATTRIBUTES`; после — detected (40 и 76 расхождений) |
+| диспетчер снимка | — | 3 строки |
+| драйвер клавиш | после `interaction-enter` все дальнейшие сценарии страницы шли при `visibilityState: hidden` без rAF: `rawKeyDown`+`char` для Enter/Space Chrome 153 отдавал браузеру как акселератор, открывалась `chrome://settings/help` — классы готовности вкладок не появлялись; **в M23 сценарии степпера после Enter молча бежали так же** (ничего кадрозависимого) | `keyDown` с текстом для символьных клавиш: 2 строки нетто; один клик, keydown не prevented — контракт не изменился |
+
+Не потребовалось: `PageDown` в `KEY_CODES` (добавлен и снят — Э.4),
+`Page.bringToFront` (добавлен и снят — не нужен без клавиш, отдаваемых
+браузеру), модификаторы Shift+Tab (§42 — не требуется: roving tabindex
+нагружен через Tab от контрола перед вкладками).
+
+**71 × 2 × 3 = 426 сравнений, 390 + 186 скриншотов, 186 живых сравнений;
+0 одобрений, 0 расхождений** — после семи прогонов, каждый из которых
+остановлен названным отказом гейта или ошибкой утверждения каталога, ни
+один — ослаблением.
+
+### Э.8. tabindex, aria-selected и AX selected (§15–§17)
+
+Ложный PASS воспроизведён на реальном захвате до правки, закрыт двумя
+строками, тот же дефект — detected. Инвариант «ровно один tabindex=0» не
+введён: `tabs/model-value-unknown` и `tabs/model-value-empty` — ноль,
+`tabs/duplicate-values` — два, на всех целях; сравнивается то, что пишет
+эталон. Chrome 153.0.8010.37 экспонирует `selected: true|false` для
+`role=tab` (и `disabled`, `focusable`; tabpanel — имя через labelledby;
+скрытая кнопка — `ignored`): `selected` — независимое доказательство
+выбора рядом с `dom.aria` (мутация `aria-selected-stale-after-click`
+падает на `interaction.state`, `dom.aria`, `a11y.states` и сходимости).
+Tabindex дереву невидим — сравнивается как `dom.nativeAttributes` и через
+то, куда приземляется нативный Tab (`interaction-tab-into-list`,
+браузерная `every-tab-tabbable-before-native-tab`).
+
+### Э.9. Связи и id (§20–§21)
+
+Граф сравнивается токенами позиции: N−1 висящих `#dangling` — контракт;
+мутации: чужая цель, панель с чужим label, разрешённая висящая, висящая
+активная, ребро в другой случай (`#outside-case:`), дубли разведены — все
+`dom.relationships` (+`interaction.relationships`). Литералы `tabId`/`panelId`
+потребителя графу невидимы (все id токенизируются) — снимок пишет
+`tabIdLiterals`/`panelIdLiteral` (`generated` для `vf-tabs-[vr]-N-…`, иначе
+литерал): мутации N/O §48 ловятся `interaction.relationships`. Коллизия
+между двумя createApp — вне каталога (характеризация; фикстура паритета —
+одно приложение; Razor — счётчик на запрос; соседи в браузерном гейте —
+восемь различных id).
+
+### Э.10. Фокус и соседи (§14)
+
+Эталон фокусирует через `tabRefs` — соседи с общими значениями честно в
+каталоге: `interaction-sibling-click`/`-keyboard` сравнивают состояние,
+панель, журнал и `focusInstance` на трёх целях. Split фокус/выбор:
+`focus-only`, `focused-not-selected-navigates`; мутации «выбор без фокуса»
+(`interaction.focus`) и «фокус без выбора» (`interaction.state`/`events`/
+сходимость) — независимо. Controlled refusal — вне каталога (характеризация:
+фокус уходит, aria-selected/tabindex/панель/индикатор остаются).
+
+### Э.11. Геометрия и детерминизм (§23, §47)
+
+Три извлечения подряд на каждой цели — один и тот же хэш DOM+стилей
+(`2bd07e962af50bbd`), и тот же хэш на всех трёх целях; допусков нет.
+Индикатор сравнивается как inline-стиль через CSSOM (`translateX(97.3594px)`,
+`85.6719px`) и как три поля снимка. Случай §51 «0 пикселей»: скриншот
+снимается с `captureBeyondViewport`, который даёт `resize`, и оба адаптера,
+как эталон, перемеряют индикатор — поэтому inline-дефект индикатора
+(`clipped-indicator-visible`, `indicator-rounded`) никогда не доходит до
+пикселей и ловится **только** `dom.nativeAttributes`. Дефект правила
+геометрии дошёл бы до обоих.
+
+### Э.12. Скроллер и settle (§25–§27)
+
+Состояние прокрутки — набор половин снимка (`scrollLeft`, `canScroll*`,
+`*Hidden`, `*AriaHidden`, `*Tabindex`, `*Disabled`, `fades`, `scrolling`,
+`scrollbarWidth`, `controlsReady/Animated`, `settled`). Ожидание конца
+140 мс — Tabs-специфичное, в выражении снимка: ограничено секундой, при
+таймауте пишет `settled: false` и падает на утверждении каталога; общий
+settle не изменён. Воспроизведение необходимости: без ожидания снимок
+после кнопки прокрутки ловил `thin`/`--no-transition` в полёте (пробы;
+браузерный гейт измеряет обе фазы: `thin` через 30 мс, `none` через 250).
+Мутации состояния скроллера применяются `afterScrollSettle` — контроллер,
+как эталон `emitState`, перекрашивает по таймеру. Фокус после нажатой
+кнопки, ставшей скрытой и disabled, браузер сбрасывает на body —
+записано как утверждение. RTL-прокрутка: `overflow-rtl` (левая кнопка,
+левый fade, `scrollLeft 0`).
+
+### Э.13. Мутации паритета (§48–§53)
+
+48 захватных, 61 браузерная, 14 отклонённых одобрений — все пойманы
+заявленным измерением. Первый полный прогон — 5 MISSED, каждая — факт
+фикстуры, не гейта: регистр `translateX` в нормализованном стиле;
+таймер-перекраска (две); `visibility:hidden` для дерева; resize перед
+скриншотом (Э.11). Ни одна не устранена ослаблением ожиданий гейта.
+
+| атака | измерение |
+| --- | --- |
+| §19/§49 владение (снята вкладка при неизменной сумме, div, дубль, роль снята/заменена/на кнопке прокрутки, необъявленная роль, кнопки прокрутки снята/продублирована/div, O, потребитель с классом/вместо вкладки, панель снята/продублирована/вынесена, шаблон → скрытая панель) | `ownership.controls` (+ `dom.structure`/`dom.aria`/`dom.canonicalClasses`) |
+| §20 связи | `dom.relationships` + `interaction.relationships` |
+| §48 A–F, G/H, I–O, AE/AF/AG | `interaction.state` по своему полю + `dom.aria`/`dom.nativeAttributes`/`dom.relationships`/`dom.text` + `a11y.states` (aria-selected) + сходимость |
+| §48 P (controlled refusal) | вне каталога — характеризация |
+| §48 Q/R, label вместо value | `interaction.events` |
+| §50 клавиатура | `interaction.state`/`focus`/`events`/сходимость; без preventDefault — только `keydownPrevented`; Enter/Space обработаны — `activations`/`keydownPrevented` |
+| §51 скроллер/геометрия | `interaction.state`, `dom.canonicalClasses`, `dom.aria`, `dom.nativeAttributes`, `dom.structure` |
+| §52 направления | current-only с `verifyIsolation` (эталон и Razor пересняты свежими); identically-wrong current+razor — только `reference-vs-current` и `reference-vs-razor` |
+| §53 AN/AO/AP/AQ | `MUTATION_NOT_APPLIED` (наблюдалось вживую: `still scrolling`, `not moved`); claim без записи — отказ раннера; W — сходимость; settled false — утверждение |
+| одобрения | 8 smuggled (валидатор), 6 idle (учёт вхождений; focus и a11y.states — одобряемые измерения, но пустые на чистом прогоне) |
+
+### Э.14. CSS (§34, §57)
+
+`tabs.css` и `horizontal-scroller.css` перенесены побайтово в
+`packages/styles`; `entries/tabs.css` — форвард, `components/horizontal-scroller.css`
+— форвард, который по-прежнему обслуживает немигрированный `menu-bar.css`.
+Три исходниковых проверки, читавшие сырой вход (`check-css-parity`,
+`component-entry-parity.spec`, css-contract через `resolveStyleEntrySource`),
+воспроизведённо падали и усилены: импорт скроллера каждого входа
+разрешается через форварды в **один** канонический файл; инлайн правил —
+отказ (проверено инлайном). `baseline:css` — 53 таблицы побайтово,
+скроллер в полном CSS ровно раз. Артефакт Razor: скроллер перед вкладками,
+`.vf-horizontal-scroller {` и `.vf-tabs {` по разу, `.vf-menu-bar` нет
+(потребитель утверждает).
+
+### Э.15. Showcase и упаковка (§55–§57)
+
+Vue `/tabs` и Razor-view из общего каталога, без showcase-скрипта; слоты
+Razor `panel0..panel6` + `panel`, `tab0..tab2` тремя ветками тега (слоты
+собираются при компиляции — `@if` внутри не спрятал бы объявление).
+Индекс: VfTabs — 22-й. Гейт маршрутов: 937 (+50), реальный клик на обеих
+платформах. Браузерный гейт Razor: 184 (+45). Потребитель без Node: 162
+(+40), Composer-артефакт 53 файла (+2). Граница ассетов: 27 нейтральных
+рёбер, JS/PHP атаки M22/M23 зелёные.
+
+### Э.16. Fail-open review (§53 AN–AR, §59)
+
+Мутация не применилась — `MUTATION_NOT_APPLIED` с именем (наблюдалось:
+`indicator is …` при неверном регистре, `still scrolling`); заявленное
+измерение отсутствует — «the catalog expects […], which this component's
+interaction snapshot does not record» (проверено при переименовании
+`controlsResolved`); сходимость из результата — невозможна по построению
+(Ы.3), W падает; unbounded settle — ограничен секундой, `settled` в
+утверждениях; шаблон адаптера в свидетельстве — только `template[data-vf-razor*]`
+отбрасывается, реальная скрытая панель из шаблона падает (`template-becomes-a-hidden-panel`);
+M22.1/M23-атаки — `test:parity` 156 (было 137).
+
+### Э.17. Стоимость и бюджет §60
+
+| файл | строк | причина | воспроизведено | новое понятие |
+| --- | --- | --- | --- | --- |
+| extract.mjs `COMPARED_ATTRIBUTES` | +2 | `tabindex`, `aria-selected` | гейт атрибутов + ложный PASS на захвате | нет |
+| extract.mjs дубли id | 1 изменена | отказ только между случаями | отказ эталона | нет |
+| extract.mjs `OWNERSHIP_CHECKS` идентичность роли | +3 | контрол правила несёт объявленную роль | отказ эталона (роль) | **`ariaRole` в правиле — расширение существующего** |
+| extract.mjs `OWNERSHIP_CHECKS` сумма ролей | +1 | сумма явных ролей = объявленные | тот же | нет |
+| extract.mjs guard объявления | +2 | пустой `ariaRole` непригоден | fail-closed по построению | нет |
+| extract.mjs драйвер клавиш | +2 | keyDown с текстом | hidden-страница после Enter | нет |
+| extract.mjs диспетчер снимка | +3 | `snapshot: 'tabs'` | конвенция M17 | нет |
+| run.mjs AX | +1 | `selected` | `tree recorded null` | нет |
+| **итого генерического кода** | **+14** | | | **0 абстракций** |
+| реестр полей компаратора | 38 | схема снимка вкладок | — | — |
+| генерические тесты | 1 (список профилей) | | | |
+| Tabs-specific: выражение снимка ≈200, профиль ≈70, контроллер 403, PHP ≈300 + 400 тестов, shared-core ≈180 + 95 векторов, Vue −40, фикстуры, каталог, политика, покрытие, мутации ≈1200, ownership-тесты ≈250, showcase, гейты CI (browser ≈480, consumer ≈130, routes ≈90) | не в бюджете |
+
+Дельта M24 относительно `2295cebe`: **14** — целевая полоса 0–25.
+Кумулятивно относительно `9f5671ec`: 16 + 14 = **30** — в предсказанной
+полосе 28–36. Допуск явной роли (6 строк) требует внимания ревьюера
+независимо от числа (Э.6). Ничего не сокращено ради метрики; ничего не
+спрятано в хелперах.
+
+### Э.18. Адверсариальная матрица §53
+
+| атака | применена | падение | измерение |
+| --- | --- | --- | --- |
+| A wrong selected tab | захват/браузер | да | interaction.state, dom.aria, a11y.states |
+| B stale aria-selected | браузер (initial и after click), захват | да | dom.aria, a11y.states, interaction.state, сходимость |
+| C stale tabindex | браузер, захват | да | dom.nativeAttributes, interaction.state |
+| D two tabindex=0 | браузер (normal case), захват | да | dom.nativeAttributes, dom.aria, a11y.states |
+| E zero tabindex=0 | браузер | да | dom.nativeAttributes |
+| F wrong aria-controls | браузер | да | dom.relationships, interaction.relationships |
+| G wrong aria-labelledby | браузер, захват | да | dom.relationships, interaction.relationships |
+| H crossed | браузер (controls → tab, panel ← другая вкладка) | да | dom.relationships |
+| I missing panel | браузер, захват | да | ownership.controls, dom.structure, interaction.state |
+| J extra panel | браузер | да | ownership.controls, dom.structure |
+| K count preserved, identity swapped | захват F (роль перенесена) | да | ownership.controls |
+| L scroll-control pads missing tab | захват + браузер O | да (эталонное направление) | ownership.controls, dom.structure |
+| M disabled activated | браузер `disabled-not-skipped` | да | state, focus, events, nativeAttributes |
+| N disabled focused | тот же | да | interaction.focus |
+| O ArrowDown ignored | браузер | да | state, focus, events, сходимость |
+| P handled key without preventDefault | браузер | да | interaction.state |
+| Q Home wrong | браузер | да | state, focus, events |
+| R End wrong | характеризация (`end-goes-to-penultimate`); каталог End сравнивается на трёх целях | да | — |
+| S wrap wrong | браузер | да | state, focus, events |
+| T focus correct / selection wrong | браузер | да | state, events, сходимость |
+| U selection correct / focus wrong | браузер, захват | да | interaction.focus |
+| V event order wrong | браузер, захват | да | interaction.events |
+| W controlled state mutates | характеризация (`writes-state-when-controlled`) | да | — |
+| X Enter double | браузер | да | interaction.state (activations) |
+| Y Space double/handled | браузер | да | interaction.state |
+| Z sibling state leak | браузер | да | state, events |
+| AA sibling focus leak | браузер, захват | да | interaction.focus |
+| AB duplicate ids in normal case | браузер `duplicate-ids-deduplicated` (обратное) + токены | да | dom.relationships |
+| AC relationship outside owner | браузер | да | dom.relationships |
+| AD inactive panel in product DOM | браузер | да | ownership, dom.structure, state, сходимость |
+| AE indicator stale / ARIA correct | браузер, захват, current-only | да | interaction.state, dom.nativeAttributes |
+| AF ARIA stale / indicator correct | браузер | да | dom.aria, a11y.states |
+| AG rounded geometry | браузер (initial, after click), захват | да | dom.nativeAttributes |
+| AH overflow state stale | браузер | да | state, classes, aria, nativeAttributes |
+| AI hidden control tabbable | браузер | да | dom.nativeAttributes, dom.aria |
+| AJ consumer pads ownership | браузер | да | ownership.controls |
+| AK role removed | браузер, захват | да | ownership.controls, dom.aria |
+| AL role substituted | браузер, захват | да | ownership.controls, dom.aria |
+| AM current+razor identically wrong | захват | да, только эталонное направление | dom.nativeAttributes |
+| AN mutation could not apply | наблюдалось | `MUTATION_NOT_APPLIED` | — |
+| AO declared measurement missing | наблюдалось при переименовании поля | отказ раннера | — |
+| AP convergence from actual | по построению (Ы.3); W падает | — | interaction.convergence |
+| AQ unbounded settle | ограничен; `settled` | утверждение | interaction.state |
+| AR adapter template leaks | браузер `template-becomes-a-hidden-panel` | да | ownership, dom.structure |
+
+### Э.19. Регрессия (§58–§59)
+
+См. Э.21: `parity:check` — 22 профиля с мутациями; VfInput 306 / те же пять
+правил / 88 вхождений (24/24, 24/24, 28/28, 4/4, 8/8); VfAccordion 222 /
+49 + 23 + 12; VfStepper 390 / 26 + 33 + 12; VfProgressBar 330 / 47 + 17 + 8;
+VfProgressSpinner 186 / 34 + 11 + 6; VfSkeletonGate 162 / 26 + 6 + 8;
+остальные — 0 одобрений. Fail-open атаки M22.1/M23 — те же тесты, зелёные.
+
+### Э.20. Наблюдения и долг
+
+1. **Драйвер клавиш и hidden-страница.** Находка, задним числом касающаяся
+   M23: после Enter/Space степпера страница была hidden — ничего не
+   зависело от кадров, поэтому проходило. Исправление — 2 строки, контракт
+   активации не изменился. Остаточный риск: любой сценарий, отдающий
+   клавишу браузеру целиком, в этом Chrome недетерминируем — каталог таких
+   не содержит, гейт покрытия отвергает.
+2. **Скриншот перемеряет индикатор.** `captureBeyondViewport` → resize →
+   оба адаптера перемеряют; визуальное свидетельство индикатора —
+   всегда после перемера. DOM-стиль несёт inline-дефекты один (Э.11).
+3. **Атака O — предел утверждения владения.** Сумма + идентичность каждой
+   записи не отличают «вкладка → кнопка прокрутки» при равной сумме;
+   ловит эталонное направление сравнения записей. Per-role бюджет — на
+   решение ревьюера, не добавлен.
+4. `showcase` требует свежего `vendor/` (как M21–M23).
+5. Свидетельство клавиатуры и AX — только Chrome 153.
+6. Стадия transitions и `skeletonGateIdentityExpression` — без изменений.
+
+### Э.21. Финальные гейты
+
+См. отчёт в конце милстоуна (все с финального HEAD): `parity:check`
+(22 профиля), `baseline:input`, `check`, `build`, `typecheck`, `razor:check`
+(798, 184, потребитель 162), `razor:distribution` (53 файла),
+`showcase:routes` (937), `baseline:inventory`, `baseline:css` (53),
+`baseline:test`, `test:case-coverage` (317), `test:parity` (156),
+`test:asset-boundary`. Не-продуктовый дрейф — тот же, что в Ь.20:
+`lint:data` о `.claude/settings.local.json` (не тронут), предупреждения
+eslint в спеках Field/Textarea, документ не отформатирован Prettier,
+`vendor/` showcase переустановлен вручную.
+
+### Э.22. Рекомендация следующего шага
+
+**A. VfGroupBox** — статический контейнер без собственного контрола: после
+трёх интерактивных милстоунов подряд (M22–M24) дешёвая проверка, что
+статическая модель владения M15–M21 не разошлась с интерактивной; ноль
+ожидаемых генерических строк. Кумулятивная дельта 30 — внутри
+предсказанной полосы, M24.1 не нужен; допуск явной роли (Э.6) — предмет
+ревью, не переработки. VfMenu тянет немигрированные composables и
+VfHorizontalScroller как второго потребителя — после GroupBox.
