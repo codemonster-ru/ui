@@ -960,6 +960,80 @@ export const profiles = {
     },
     liveParity: true,
   },
+  // The M25 component, and the first whose owned control is a native anchor
+  // rather than a button - and the first control-owning profile with no
+  // interaction at all. A link handles no click and no key: activation is the
+  // browser's, so the catalog declares no scenario, `liveParity` is not set,
+  // and every case is measured once, in its initial state, by the same
+  // ownership stage the accordion, the stepper and the tabs run after theirs.
+  //
+  // The catalog is the native branch only. The Vue component's other branch -
+  // `to`, `component`, the RouterLink handoff and the unresolved element Vue
+  // renders without a router - is pinned by the characterization suite and is
+  // not a shape two of the three targets can render, so no case here spells
+  // it and the coverage gate refuses one that does.
+  link: {
+    id: 'link',
+    label: 'VfLink',
+    component: 'link',
+    casesPath: 'contracts/link/cases.json',
+    policyPath: 'contracts/link/parity-policy.json',
+    artifactDirectory: 'parity-link',
+    reportName: 'link-parity-report.json',
+    // One role. The anchor is the whole component; the slot content inside it
+    // is the consumer's and is compared as DOM rather than measured as a role.
+    measuredRoles: {
+      anchor: '.vf-link',
+    },
+    // The anchor is listed because exposing `link` with an href, and nothing
+    // at all without one, is the contract - an anchor with no destination is
+    // ignored by the tree, and querying it is what makes that absence a
+    // measurement. The consumer control is listed so a button a consumer put
+    // inside the anchor exposes its own role and name and the link adds
+    // nothing to either.
+    accessibilityRoles: {
+      anchor: '.vf-link',
+      consumerControl: '.vf-link button',
+    },
+    // href, target and rel are the contract: the three attributes a native
+    // link is made of, and the three M25 added to the compared vocabulary
+    // after reproducing that a wrong href, a dropped target and a dropped rel
+    // each passed unnoticed. aria-current is listed because Chrome 153 exposes
+    // no current state in the accessibility tree, so the DOM attribute is the
+    // only evidence of it. role and tabindex are listed because their
+    // *absence* is the contract - the reference writes neither on any anchor,
+    // and in particular not on the no-destination one.
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'href',
+      'target',
+      'rel',
+      'role',
+      'tabindex',
+      'aria-label',
+      'aria-current',
+      'aria-describedby',
+      'data-testid',
+    ],
+    snapshot: 'link',
+    // The owned control is the anchor *with a destination*. The selector
+    // carries `[href]` on purpose: an `<a>` without href is inert - not
+    // focusable, ignored by the accessibility tree - and the reference renders
+    // exactly that for a link with no destination, so link/no-destination
+    // declares componentInteractive 0 and this selector finds nothing there.
+    // Without the `[href]` the generic equation `owned + consumer ===
+    // focusable` would reject the correct reference render of that case, and
+    // the alternative - weakening the equation - would let every profile count
+    // an unfocusable node as a control. The tag is `a`: an element with the
+    // right attribute on the wrong tag is found by the selector and rejected
+    // by identity, and an anchor that lost its href stops being found at all
+    // and fails on count.
+    controlOwnership: {
+      anchor: { selector: '.vf-link[href]', tag: 'a' },
+    },
+  },
 };
 
 export function loadProfile(id) {

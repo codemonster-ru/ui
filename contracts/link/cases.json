@@ -1,0 +1,234 @@
+{
+  "$comment": "Shared VfLink cases. Plain data only. The vocabulary is the native branch of the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963: one anchor, href/target/rel, the rel derivation, two modifiers, and whatever a consumer forwards. The Vue component's other branch - `to`, `component`, the RouterLink handoff and the literal unresolved element Vue renders with no router registered - is deliberately absent from this catalog. It is not a cross-platform contract: it is Vue resolving a component by name and passing a destination through untouched, and a Razor target has no router to hand anything to. Those behaviours are pinned by VfLink.characterization.spec.ts; a case here that named `to` would be describing a component two of the three targets cannot render, and the coverage gate rejects it. Every case declares componentInteractive: the number of anchors the component itself renders that are controls, which is one when there is an href and zero for the no-destination anchor - an `<a>` without href is inert, not focusable and absent from the accessibility tree, and the ownership stage must measure that rather than assume every anchor is a link. Cases whose slot content is interactive declare consumerInteractive as well.",
+  "component": "link",
+  "propVocabulary": {
+    "href": "string, default undefined. The native destination. An empty string is written as an empty attribute; no href at all renders an inert anchor.",
+    "target": "string, default undefined. Written as given.",
+    "rel": "string, default undefined. Written as given when truthy; otherwise derived as 'noopener noreferrer' for target='_blank' and nothing for any other target.",
+    "underline": "'none' | 'hover' | 'always', default 'none'. hover and always emit vf-link--underline-hover / vf-link--underline-always; none emits nothing.",
+    "tone": "'default' | 'muted', default 'default'. muted emits vf-link--muted after the underline modifier; default emits nothing."
+  },
+  "slotVocabulary": {
+    "default": "The link content, rendered straight into the anchor with no wrapper. `markup: 'label'` puts the text in a consumer span; `control` adds a real consumer button after it."
+  },
+  "cases": [
+    {
+      "id": "link/href",
+      "title": "A native link: one anchor with href and the text as its content",
+      "props": {
+        "href": "/docs"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Documentation"
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "link/href-empty",
+      "title": "An empty-string href is written as an empty attribute and the anchor is still a link",
+      "props": {
+        "href": ""
+      },
+      "attrs": {},
+      "content": {
+        "text": "Here"
+      },
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "link/no-destination",
+      "title": "No href at all: an anchor that is not a control - no href, no role, no tabindex, not focusable, ignored by the accessibility tree. The component owns zero interactive controls here and the ownership stage must say so",
+      "props": {},
+      "attrs": {},
+      "content": {
+        "text": "Nowhere"
+      },
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "link/blank-derived-rel",
+      "title": "target=_blank with no rel derives rel=\"noopener noreferrer\"",
+      "props": {
+        "href": "https://example.com/",
+        "target": "_blank"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Example"
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "link/blank-explicit-rel",
+      "title": "target=_blank with an explicit rel keeps the explicit value and does not merge the default into it",
+      "props": {
+        "href": "https://example.com/",
+        "target": "_blank",
+        "rel": "nofollow"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Example"
+      },
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "link/self",
+      "title": "target=_self derives no rel",
+      "props": {
+        "href": "/docs",
+        "target": "_self"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Documentation"
+      },
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "link/rel-only",
+      "title": "An explicit rel with no target is written as given",
+      "props": {
+        "href": "https://example.com/",
+        "rel": "me"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Profile"
+      },
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "link/underline-hover",
+      "title": "underline=hover emits vf-link--underline-hover",
+      "props": {
+        "href": "/docs",
+        "underline": "hover"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Documentation"
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "link/underline-always",
+      "title": "underline=always emits vf-link--underline-always and paints the underline at rest",
+      "props": {
+        "href": "/docs",
+        "underline": "always"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Documentation"
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "link/muted",
+      "title": "tone=muted emits vf-link--muted and repaints the text colour",
+      "props": {
+        "href": "/docs",
+        "tone": "muted"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Documentation"
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "link/underline-always-muted",
+      "title": "Both modifiers, with the underline modifier before the tone modifier",
+      "props": {
+        "href": "/docs",
+        "underline": "always",
+        "tone": "muted"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Documentation"
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "link/consumer-attrs",
+      "title": "A consumer class after the canonical classes, plus style, id and a product data attribute on the anchor",
+      "props": {
+        "href": "/docs",
+        "underline": "hover"
+      },
+      "attrs": {
+        "class": "consumer-link",
+        "style": "opacity: 0.6",
+        "id": "docs-link",
+        "data-testid": "docs"
+      },
+      "content": {
+        "text": "Documentation"
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "link/consumer-aria",
+      "title": "Consumer ARIA on an anchor that writes none of its own: a name, aria-current=page, and a description that resolves outside the anchor",
+      "props": {
+        "href": "/docs"
+      },
+      "attrs": {
+        "aria-label": "Documentation home",
+        "aria-current": "page",
+        "aria-describedby": "aria-described-hint"
+      },
+      "content": {
+        "text": "Documentation"
+      },
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "link/consumer-markup",
+      "title": "Consumer markup in the slot renders straight into the anchor with no wrapper",
+      "props": {
+        "href": "/docs"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Documentation",
+        "markup": "label"
+      },
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "link/consumer-control",
+      "title": "A consumer control inside the anchor. The component owns the anchor; the button is the consumer's, and the ownership stage tells the two apart",
+      "props": {
+        "href": "/docs"
+      },
+      "attrs": {},
+      "content": {
+        "text": "Documentation",
+        "control": {
+          "text": "Pin"
+        }
+      },
+      "componentInteractive": 1,
+      "consumerInteractive": 1,
+      "visual": true
+    }
+  ]
+}

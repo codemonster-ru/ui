@@ -85,6 +85,9 @@ $accordionComponent = $registry->resolve('vf-accordion');
 $stepperComponent = $registry->resolve('vf-stepper');
 // The M24 component. Resolved on its own account.
 $tabsComponent = $registry->resolve('vf-tabs');
+// The M25 component. Resolved on its own account: the first whose owned
+// control is an anchor, and one that ships no browser controller at all.
+$linkComponent = $registry->resolve('vf-link');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -126,6 +129,11 @@ if ($progressSpinnerComponent === null) {
 
 if ($progressBarComponent === null) {
     fwrite(STDERR, "The VueForge vf-progress-bar component is not registered.\n");
+    exit(1);
+}
+
+if ($linkComponent === null) {
+    fwrite(STDERR, "The VueForge vf-link component is not registered.\n");
     exit(1);
 }
 
@@ -1015,12 +1023,51 @@ $renderTabs = static function (array $case) use ($renderTabsInstance, $escape): 
     return $markup;
 };
 
+/**
+ * VfLink, for the link catalog.
+ *
+ * The native branch only: props and attrs are handed to the component as a
+ * consumer would write them, and the default slot is the text, a consumer
+ * span, and a real consumer button. No case names `to`, and the component
+ * would refuse one that did rather than render an anchor for it.
+ */
+$renderLink = static function (array $case) use ($linkComponent, $escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $content = $case['content'] ?? [];
+    $markup = '';
+
+    if (($content['markup'] ?? null) === 'label') {
+        $markup .= '<span class="consumer-label">' . $escape((string) ($content['text'] ?? '')) . '</span>';
+    } elseif (isset($content['text']) && $content['text'] !== '') {
+        $markup .= $escape((string) $content['text']);
+    }
+    if (isset($content['control'])) {
+        $markup .= '<button type="button">' . $escape((string) $content['control']['text']) . '</button>';
+    }
+
+    $slots = $content === []
+        ? []
+        : ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup)];
+
+    return $linkComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'tabs') {
+    if ($component === 'link') {
+        $body = $renderLink($case);
+    } elseif ($component === 'tabs') {
         $body = $renderTabs($case);
     } elseif ($component === 'stepper') {
         $body = $renderStepper($case);

@@ -29,6 +29,7 @@ import VfSkeletonGate from '@parity/core/components/skeleton-gate/VfSkeletonGate
 import VfAccordion from '@parity/core/components/accordion/VfAccordion.vue';
 import VfStepper from '@parity/core/components/stepper/VfStepper.vue';
 import VfTabs from '@parity/core/components/tabs/VfTabs.vue';
+import VfLink from '@parity/core/components/link/VfLink.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -116,6 +117,22 @@ interface AccordionSlot {
   accordion?: { title?: string; defaultOpen?: boolean; text?: string };
 }
 
+/**
+ * The VfLink default slot, as the shared catalog spells it.
+ *
+ * `markup: 'label'` puts the text in a consumer span; `control` is a real
+ * consumer button inside the anchor. There is no `to` here and no router
+ * component: the catalog is the native branch, and this fixture registers
+ * nothing under the name `RouterLink`, so a case that reached the router
+ * branch would render Vue's unresolved element and differ from every other
+ * target - which is what the coverage gate refuses before it gets that far.
+ */
+interface LinkSlot {
+  text?: string;
+  markup?: 'label';
+  control?: { text: string };
+}
+
 interface ParityCase {
   id: string;
   props: Record<string, unknown>;
@@ -145,6 +162,9 @@ interface ParityCase {
     beside?: { control?: { text: string } };
     /** VfTabs' panel slot: a paragraph showing the active value, and optionally a consumer control. */
     panel?: { text?: string; control?: { text: string } };
+    /** VfLink's default slot, at the top level of `content` because the link has one slot. */
+    markup?: 'label' | 'paragraphs' | 'article' | 'bars';
+    control?: { text: string };
     /** VfTabs' tab slot: numbered content from the item and its index. */
     tab?: { numbered?: boolean };
     /** A consumer control rendered before VfTabs' root, the origin of the native Tab scenario. */
@@ -451,6 +471,38 @@ function renderPanel(parityCase: ParityCase): VNode {
   if (content.footer !== undefined) slots.footer = () => children(content.footer!);
 
   return h(VfPanel, { ...parityCase.props, ...parityCase.attrs }, slots);
+}
+
+/**
+ * VfLink, for the link catalog.
+ *
+ * The native branch only: props and attrs are spread onto the component
+ * exactly as a consumer would write them, and the slot is the text, a
+ * consumer span, and a real consumer button. Nothing here registers a
+ * RouterLink and no case names `to`.
+ *
+ * The described-by hint is the same paragraph the input fixture appends, so a
+ * consumer aria-describedby resolves to an element outside the anchor on every
+ * target.
+ */
+function renderLink(parityCase: ParityCase): VNode[] {
+  const content = (parityCase.content ?? {}) as LinkSlot;
+  const nodes: unknown[] = [];
+
+  if (content.markup === 'label') {
+    nodes.push(h('span', { class: 'consumer-label' }, content.text ?? ''));
+  } else if (content.text !== undefined && content.text !== '') {
+    nodes.push(content.text);
+  }
+  if (content.control !== undefined) nodes.push(h('button', { type: 'button' }, content.control.text));
+
+  const children: VNode[] = [h(VfLink, { ...parityCase.props, ...parityCase.attrs }, { default: () => nodes })];
+
+  if (parityCase.attrs['aria-describedby'] === 'aria-described-hint') {
+    children.push(h('p', { id: 'aria-described-hint', class: 'parity-hint' }, 'Shown in workspace settings.'));
+  }
+
+  return children;
 }
 
 /**
@@ -930,6 +982,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'tabs') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderTabs(parityCase));
+  }
+
+  if (catalog.component === 'link') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderLink(parityCase));
   }
 
   if (catalog.component === 'icon-button') {

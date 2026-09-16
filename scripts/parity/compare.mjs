@@ -707,6 +707,15 @@ const INTERACTION_FIELDS = {
   controlsReady: { dimension: 'interaction.state' },
   controlsAnimated: { dimension: 'interaction.state' },
   focusInstance: { dimension: 'interaction.focus' },
+  // The VfLink snapshot (M25): the anchor's own record beside the ownership
+  // fields above. Never approvable, like every interaction.state field: the
+  // tag and the three native link attributes are the identity of a link.
+  anchorTag: { dimension: 'interaction.state' },
+  anchorHref: { dimension: 'interaction.state' },
+  anchorTarget: { dimension: 'interaction.state' },
+  anchorRel: { dimension: 'interaction.state' },
+  anchorClasses: { dimension: 'interaction.state', format: 'classList' },
+  anchorFocusable: { dimension: 'interaction.state' },
 };
 
 /**

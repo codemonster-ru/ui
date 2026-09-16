@@ -1,0 +1,140 @@
+{
+  "$comment": "Parity policy for the shared VfLink cases. Plain data: no DSL, no waiver engine. The dimensions are the harness's and are the same everywhere; the quirks below are the link's own. One classification here is framework-specific and it is not an approval: the Vue component's router branch is recorded as a behaviour one adapter has and the other does not, with razorDiffers true and coveredBy a characterization suite - and approvedDivergences stays empty, because no shared case renders that branch on any target. Nothing about href, target, rel, the element's tag, its ownership or its accessibility tree may be approved.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. A Razor link carries no marker at all, because it has no browser controller to find it; any other data-* attribute is compared as dom.productData.",
+    "navigation": "No case follows a link. Activating a native anchor is the browser's, not the component's: the reference handles no click, no key and no navigation, so there is nothing of the component's to drive and the catalog declares no interaction. Focusability is measured instead, as the anchor's own record in the ownership snapshot.",
+    "uncatalogued forwarded attributes": "download, hreflang, referrerpolicy and title reach the anchor by ordinary attribute fall-through on both adapters and are pinned by VfLink.characterization.spec.ts and LinkComponentTest. No shared case forwards them, so no comparison claims them; they are not compared attributes and adding them to the generic vocabulary on a claim no case makes would be evidence in name only."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, wrapper or tag mismatch. The dimension that carries this milestone's semantic identity: an anchor rendered as a button, a span, or a div with role=link is a structural difference and never approvable, even where the accessibility tree would expose the same role. Comparison continues through tag differences so attribute diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on the anchor, in order. Consumer classes included, because the consumer class lands after the canonical ones and that position is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "href, target and rel on the anchor - the three attributes a native link is made of, and the three M25 added to the compared vocabulary after reproducing that a wrong href, a dropped target and a dropped rel each passed unnoticed - plus class, style and any native attribute a consumer forwards."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The link writes none of its own; a consumer's aria-label, aria-current and role reach the anchor verbatim. aria-current is compared here as DOM because Chrome 153 exposes no current state in the accessibility tree."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "aria-describedby compared as a resolved relationship: a consumer id outside the anchor keeps its literal, and whether it resolves is what is compared."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of the anchor."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of the anchor. The muted tone is a colour change and nothing else, so this dimension is where it is proved."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme. The always-underline modifier is a text decoration at rest and is proved here."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role the anchor exposes: link with an href, and nothing at all - the node is ignored - without one. A consumer role overrides it on every target alike."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name the anchor exposes, from its content or from a consumer aria-label."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Accessibility states exposed by the anchor. Chrome 153 exposes focusable for an anchor with an href and nothing for aria-current; the current state is DOM evidence only."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned anchor measured in the case - its tag, href, target, rel, classes and focusability - beside the consumer-owned count and the totals they must add up to. The owned control is the anchor with a destination: the profile's selector is .vf-link[href], so the no-destination case declares zero and measures zero rather than counting an inert element as a control. Never approvable."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The anchor's own record in the link snapshot: its tag, href, target, rel, classes and focusability, taken from the .vf-link element whether or not it has an href. The no-destination anchor is described here as a tag with no href and no focusability, so a target that gave it a placeholder differs here as well as in the DOM. Never approvable."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Where focus is after the page rendered: nothing is driven, so it must be outside the case on every target."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-router-branch-is-the-vue-adapters-own",
+      "description": "When `to` is set the Vue component resolves whatever the application registers as `RouterLink` (or the `component` prop) and hands it `to`, `target`, `rel`, the class list, every attr and the slot. It never imports vue-router, never resolves an href, never matches a route, never writes an active class or aria-current, and never intercepts a click; with nothing registered under that name Vue renders a literal unresolved <RouterLink> element that is not a link at all. The Razor adapter has no such branch and refuses `to` and `component` by name rather than translating either into an href.",
+      "classification": "framework-specific",
+      "reason": "A handoff to a component the reference never ships is not a cross-platform contract, and a server that renders a page once has nothing to hand a destination to. No shared case renders this branch on any target, so there is no difference to approve and approvedDivergences is empty; the behaviour is pinned where it exists, in the Vue characterization suite, and its absence is pinned in the Razor component's own tests.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/link/VfLink.characterization.spec.ts"
+    },
+    {
+      "id": "an-anchor-with-no-destination-is-inert",
+      "description": "With neither href nor to, the reference renders an <a> with no href, no role and no tabindex. It is not focusable and the accessibility tree ignores it. It is not given a placeholder href, a role or a tabindex to make it look like a link.",
+      "classification": "exact",
+      "reason": "The charitable reading would make the anchor reachable; the reference does not. The catalog declares componentInteractive 0 for this case and the ownership stage measures zero controls, which is the historical fact stated as a number.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/link/cases.json#link/no-destination"
+    },
+    {
+      "id": "rel-is-derived-only-for-blank-and-an-explicit-rel-is-not-merged",
+      "description": "target=\"_blank\" with no rel writes rel=\"noopener noreferrer\". An explicit rel is written as given, without the default merged in; every other target, and no target, writes no rel.",
+      "classification": "exact",
+      "reason": "Merging the safe default into an explicit rel, or deriving it for other targets, would be the obvious improvement and a different attribute value.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/link/cases.json#link/blank-explicit-rel"
+    },
+    {
+      "id": "an-empty-string-href-is-still-a-link",
+      "description": "href=\"\" is written as an empty attribute. The anchor is focusable and exposes a link role, because the attribute is present.",
+      "classification": "exact",
+      "reason": "Dropping an empty href would turn a link into the inert anchor above.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/link/cases.json#link/href-empty"
+    },
+    {
+      "id": "the-consumer-class-lands-after-the-canonical-classes",
+      "description": "The class attribute is vf-link, then the underline modifier, then the tone modifier, then the consumer's class.",
+      "classification": "exact",
+      "reason": "Vue merges the parent class after the component's own; a consumer class merged first looks the same and selects differently.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/link/cases.json#link/consumer-attrs"
+    },
+    {
+      "id": "the-link-writes-no-aria-of-its-own",
+      "description": "No role, no aria-current, no aria-label. A consumer's values reach the anchor verbatim.",
+      "classification": "exact",
+      "reason": "Writing role=link on a native anchor, or aria-current from a route, would be adding what the reference leaves to the browser and to the consumer.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/link/cases.json#link/consumer-aria"
+    },
+    {
+      "id": "the-component-owns-the-anchor-and-its-slot-may-own-more",
+      "description": "The anchor is the one control the component renders. A consumer control in the slot is the consumer's and is counted separately by the ownership stage.",
+      "classification": "exact",
+      "reason": "The ownership boundary M22 made measurable, restated for a component whose owned control is an anchor rather than a button.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/link/cases.json#link/consumer-control"
+    }
+  ],
+  "approvedDivergences": []
+}

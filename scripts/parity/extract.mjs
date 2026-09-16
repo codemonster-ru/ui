@@ -128,6 +128,15 @@ export const COMPARED_ATTRIBUTES = [
   // and the comparison is of what the reference wrote.
   'tabindex',
   'aria-selected',
+  // VfLink. Found missing by the attribute-coverage gate in M25 and reproduced
+  // as a false PASS on real captures before being added: with these absent
+  // the DOM record of an anchor described no destination at all, so a Razor
+  // page whose href pointed elsewhere, whose target=_blank was removed and
+  // whose derived rel was removed each compared equal to the reference on
+  // every DOM dimension. The three are what a native link is made of.
+  'href',
+  'target',
+  'rel',
   'focusable',
   'style',
   'hidden',
@@ -1800,6 +1809,93 @@ function tabsInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfLink case reports.
+ *
+ * Component-specific and named so, like the accordion's. The first ownership
+ * snapshot for a component that owns an anchor rather than a button, and the
+ * first taken with nothing driven: a link handles no click and no key, so
+ * there is no post-scenario state and this is measured once per case. Two
+ * groups, each compared as its own dimension:
+ *
+ *   - ownership: every control the profile says the component owns - found
+ *     by the profile's selector, which carries `[href]` because an anchor
+ *     without a destination is not a control - with its tag, its three native
+ *     link attributes, its classes and whether it is focusable; and every
+ *     focusable element that is not one of them, which is the consumer's;
+ *   - the anchor's own record: the tag, href, target, rel, classes and
+ *     focusability of the `.vf-link` element whether or not it has an href.
+ *     The no-destination case has an anchor and owns no control, and this is
+ *     where that anchor is still described - so a target that gave it a
+ *     placeholder href, or rendered it as a span, differs here as well as in
+ *     the DOM.
+ *
+ * Deliberately not a second DOM extractor: the slot content inside the anchor
+ * is compared by the ordinary DOM comparison and is not repeated here.
+ */
+function linkInteractionExpression(caseId, controlOwnership = {}) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const vfClasses = (element) => [...element.classList].filter((name) => name.startsWith('vf-')).sort();
+
+    const focusable = [...root.querySelectorAll(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            ariaRole: element.getAttribute('role'),
+            href: element.getAttribute('href'),
+            target: element.getAttribute('target'),
+            rel: element.getAttribute('rel'),
+            classes: vfClasses(element),
+            focusable: focusable.includes(element),
+            name: (element.textContent ?? '').replace(/\\s+/g, ' ').trim(),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const anchor = root.querySelector('.vf-link');
+    const activeElement = document.activeElement;
+    const focusRole = anchor && activeElement === anchor
+      ? 'anchor'
+      : activeElement === document.body
+        ? 'body'
+        : root.contains(activeElement) ? 'inside-case' : 'outside-case';
+
+    return {
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: [...root.querySelectorAll('*')].filter((element) =>
+        INTERACTIVE_ROLES.has(element.getAttribute('role') ?? ''),
+      ).length,
+      anchorTag: anchor ? anchor.tagName.toLowerCase() : null,
+      anchorHref: anchor?.getAttribute('href') ?? null,
+      anchorTarget: anchor?.getAttribute('target') ?? null,
+      anchorRel: anchor?.getAttribute('rel') ?? null,
+      anchorClasses: anchor ? vfClasses(anchor) : null,
+      anchorFocusable: anchor ? focusable.includes(anchor) : null,
+      focusRole,
+    };
+  })()`;
+}
+
+/**
  * Reports the actual post-scenario state before any visual focus normalization.
  *
  * The shape is component-specific - a caret position means nothing on a button,
@@ -1825,6 +1921,10 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
 
   if (snapshot === 'tabs') {
     return tabsInteractionExpression(caseId, controlOwnership);
+  }
+
+  if (snapshot === 'link') {
+    return linkInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

@@ -327,11 +327,11 @@ test('every shipped accordion case passes with the snapshot its declarations des
   }
 });
 
-test('only the accordion, the stepper and the tabs declare component-owned controls, and none of the static ones can', () => {
+test('only the accordion, the stepper, the tabs and the link declare component-owned controls, and none of the static ones can', () => {
   const owning = Object.values(profiles).filter((entry) => entry.controlOwnership !== undefined);
   assert.deepEqual(
     owning.map((entry) => entry.id),
-    ['accordion', 'stepper', 'tabs'],
+    ['accordion', 'stepper', 'tabs', 'link'],
   );
   for (const entry of Object.values(profiles)) {
     assert.ok(!(entry.staticOwnership && entry.controlOwnership), `${entry.id} declares both ownership models`);
