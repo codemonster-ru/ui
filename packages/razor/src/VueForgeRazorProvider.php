@@ -16,6 +16,7 @@ use Codemonster\VueForge\Razor\Components\DividerComponent;
 use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
+use Codemonster\VueForge\Razor\Components\LinkComponent;
 use Codemonster\VueForge\Razor\Components\PanelComponent;
 use Codemonster\VueForge\Razor\Components\ProgressBarComponent;
 use Codemonster\VueForge\Razor\Components\ProgressSpinnerComponent;
@@ -83,6 +84,10 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'field' => new FieldComponent(),
             'icon-button' => new IconButtonComponent(),
             'input' => new InputComponent(),
+            // Server-complete: one native anchor and nothing to enhance. The Vue
+            // component's router branch has no counterpart here by design - see
+            // LinkComponent.
+            'link' => new LinkComponent(),
             // Registered beside the card, never through it. See PanelComponent.
             'panel' => new PanelComponent(),
             // Registered beside the spinner, never through it: the two share a
