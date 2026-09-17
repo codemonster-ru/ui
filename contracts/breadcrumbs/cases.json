@@ -1,0 +1,533 @@
+{
+  "$comment": "Shared VfBreadcrumbs cases. Plain data only. The vocabulary is the native half of the historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963: a nav with an aria-label, an ordered list, one item per entry that is an anchor with href/target/rel or a span, the current-selection and link-selection rules, and an aria-hidden separator after every item but the last whose content a slot replaces. The Vue component's other branch - an item `to`, the root `component`, the RouterLink handoff and the literal unresolved element Vue renders with no router registered - is deliberately absent from this catalog. It is not a cross-platform contract: it is Vue resolving a component by name and passing a destination through untouched, and a Razor target has no router to hand it to. It is pinned by VfBreadcrumbs.characterization.spec.ts and refused by name by the Razor component; the coverage gate refuses it here. componentInteractive is the number of items that render as links under the historical rule - not N-1: the current item, a disabled item and an item with no destination are spans.",
+  "component": "breadcrumbs",
+  "propVocabulary": {
+    "items": "VfBreadcrumbItem[], required. Each item: label (string), href (string, an empty string is no destination), target (string, written as given), rel (string, written as given when truthy; otherwise derived as 'noopener noreferrer' for target='_blank' and nothing for any other target), disabled (boolean: a span with the disabled modifier and no aria-disabled), current (boolean: explicit flags are the rule when any item carries one; with none, the last item is current). The current item is always a span; its href is dropped. `to` is Vue-only and refused.",
+    "ariaLabel": "string, default 'Breadcrumb'. The nav's aria-label, written even when empty."
+  },
+  "slotVocabulary": {
+    "separator": "Replaces the content of the owned aria-hidden separator span after every item but the last. `text` renders the text; `markup: 'label'` wraps it in a consumer span. The Vue scope (item, index) has no Razor counterpart and no case relies on it."
+  },
+  "cases": [
+    {
+      "id": "breadcrumbs/trail",
+      "title": "Three items: two links and the last item as the current span, with a separator after each link",
+      "$why": "The shape itself: nav > ol > li x 3, an anchor with href for the first two items, the current span with aria-current=page for the last, and an aria-hidden separator holding the chevron after every item but the last.",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "breadcrumbs/empty",
+      "title": "No items: the nav and the empty list stay, and nothing is current",
+      "$why": "An empty trail is still a landmark with a list; zero anchors, zero aria-current, zero separators.",
+      "props": {
+        "items": []
+      },
+      "attrs": {},
+      "componentInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/one",
+      "title": "One item without a destination: the current span alone, no separator",
+      "props": {
+        "items": [
+          {
+            "label": "Only"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "breadcrumbs/one-with-href",
+      "title": "One item with an href: still the current span, its href dropped",
+      "$why": "The current item is never a link. One item is the last item, so it is current and its href is dropped; zero owned controls although the catalog names a destination.",
+      "props": {
+        "items": [
+          {
+            "label": "Only",
+            "href": "/only"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/last-href-dropped",
+      "title": "Two links with no explicit current: the last item's href is dropped and it renders as the current span",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/explicit-current",
+      "title": "An explicit current flag on the middle item, so the last item stays a link",
+      "$why": "The explicit flag is the rule when any item carries one: the middle span carries aria-current=page and the last item is an anchor.",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs",
+            "current": true
+          },
+          {
+            "label": "Leaf",
+            "href": "/leaf"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "breadcrumbs/two-currents",
+      "title": "Two explicit current flags: two current spans, two aria-current attributes, one link",
+      "$why": "The reference never enforces one current item. A target that collapsed the second flag would differ on dom.aria and dom.structure.",
+      "props": {
+        "items": [
+          {
+            "label": "A",
+            "href": "/a",
+            "current": true
+          },
+          {
+            "label": "B",
+            "href": "/b",
+            "current": true
+          },
+          {
+            "label": "C",
+            "href": "/c"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/disabled",
+      "title": "A disabled middle item: a span with the disabled modifier, no aria-current, no aria-disabled, its href dropped",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs",
+            "disabled": true
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "breadcrumbs/disabled-current",
+      "title": "A disabled last item: the span carries both the disabled modifier and aria-current=page",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Leaf",
+            "disabled": true
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "breadcrumbs/no-destination-middle",
+      "title": "A middle item with no destination: a span with the current class and no aria-current",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Section"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/href-empty",
+      "title": "An empty-string href is no destination: the item is a span, not an anchor with an empty href",
+      "$why": "Where the component differs from VfLink, which keeps href=\"\" on its anchor. The owned selector carries [href], so an anchor with an empty href would be counted and the budget of one would fail.",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Empty",
+            "href": ""
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/blank-derived-rel",
+      "title": "target=_blank with no rel derives rel=\"noopener noreferrer\"",
+      "props": {
+        "items": [
+          {
+            "label": "Example",
+            "href": "https://example.com/",
+            "target": "_blank"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/blank-explicit-rel",
+      "title": "target=_blank with an explicit rel writes the explicit value without merging",
+      "props": {
+        "items": [
+          {
+            "label": "Example",
+            "href": "https://example.com/",
+            "target": "_blank",
+            "rel": "nofollow"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/self",
+      "title": "target=_self derives no rel",
+      "props": {
+        "items": [
+          {
+            "label": "Same",
+            "href": "/same",
+            "target": "_self"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/rel-only",
+      "title": "rel without target is written on its own",
+      "props": {
+        "items": [
+          {
+            "label": "Sponsor",
+            "href": "/sponsor",
+            "rel": "sponsored"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/empty-label",
+      "title": "An empty label renders an empty anchor, a link with no name",
+      "props": {
+        "items": [
+          {
+            "label": "",
+            "href": "/"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/duplicate-destinations",
+      "title": "Two links to the same destination render as two anchors",
+      "props": {
+        "items": [
+          {
+            "label": "A",
+            "href": "/x"
+          },
+          {
+            "label": "B",
+            "href": "/x"
+          },
+          {
+            "label": "C"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 2,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/aria-label",
+      "title": "The ariaLabel prop names the nav",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ],
+        "ariaLabel": "Path"
+      },
+      "attrs": {},
+      "componentInteractive": 2,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/aria-label-empty",
+      "title": "ariaLabel=\"\" writes an empty aria-label attribute rather than restoring the default",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ],
+        "ariaLabel": ""
+      },
+      "attrs": {},
+      "componentInteractive": 2,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/consumer-attrs",
+      "title": "A consumer class after the block class, plus style, id and a product data attribute on the nav - and on nothing inside it",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {
+        "class": "consumer-trail",
+        "style": "opacity: 0.6",
+        "id": "trail",
+        "data-testid": "trail"
+      },
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "breadcrumbs/consumer-aria",
+      "title": "Consumer ARIA on the nav: a description that resolves outside it, and a title",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {
+        "aria-describedby": "aria-described-hint",
+        "title": "Where you are"
+      },
+      "componentInteractive": 2,
+      "visual": false
+    },
+    {
+      "id": "breadcrumbs/separator-text",
+      "title": "A text separator from the slot, inside the owned aria-hidden wrapper after every item but the last",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "separator": {
+          "text": "/"
+        }
+      },
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "breadcrumbs/separator-markup",
+      "title": "Consumer markup as the separator: a span inside the owned wrapper",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "content": {
+        "separator": {
+          "text": "›",
+          "markup": "label"
+        }
+      },
+      "componentInteractive": 2,
+      "visual": true
+    },
+    {
+      "id": "breadcrumbs/five",
+      "title": "A five-item trail: four links and the current span",
+      "props": {
+        "items": [
+          {
+            "label": "Home",
+            "href": "/"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Components",
+            "href": "/docs/components"
+          },
+          {
+            "label": "Navigation",
+            "href": "/docs/components/navigation"
+          },
+          {
+            "label": "Breadcrumbs"
+          }
+        ]
+      },
+      "attrs": {},
+      "componentInteractive": 4,
+      "visual": true
+    }
+  ]
+}

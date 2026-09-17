@@ -30,6 +30,7 @@ import VfAccordion from '@parity/core/components/accordion/VfAccordion.vue';
 import VfStepper from '@parity/core/components/stepper/VfStepper.vue';
 import VfTabs from '@parity/core/components/tabs/VfTabs.vue';
 import VfLink from '@parity/core/components/link/VfLink.vue';
+import VfBreadcrumbs from '@parity/core/components/breadcrumbs/VfBreadcrumbs.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -133,11 +134,28 @@ interface LinkSlot {
   control?: { text: string };
 }
 
+/**
+ * The VfBreadcrumbs separator slot, as the shared catalog spells it.
+ *
+ * `text` is the separator text; `markup: 'label'` wraps it in a consumer
+ * span. The slot is scoped with the item and its index in Vue, and no case
+ * renders content that depends on the scope: a Razor slot takes no argument,
+ * so the same content repeats after every item that has a separator. No
+ * control goes in here: it would be focusable inside an aria-hidden wrapper,
+ * which the characterization suite pins and the coverage gate keeps out.
+ */
+interface BreadcrumbsSeparatorSlot {
+  text?: string;
+  markup?: 'label';
+}
+
 interface ParityCase {
   id: string;
   props: Record<string, unknown>;
   attrs: Record<string, unknown>;
   content?: {
+    /** VfBreadcrumbs' separator slot. */
+    separator?: BreadcrumbsSeparatorSlot;
     leading?: CaseContent;
     trailing?: CaseContent;
     label?: CaseContent | string;
@@ -497,6 +515,41 @@ function renderLink(parityCase: ParityCase): VNode[] {
   if (content.control !== undefined) nodes.push(h('button', { type: 'button' }, content.control.text));
 
   const children: VNode[] = [h(VfLink, { ...parityCase.props, ...parityCase.attrs }, { default: () => nodes })];
+
+  if (parityCase.attrs['aria-describedby'] === 'aria-described-hint') {
+    children.push(h('p', { id: 'aria-described-hint', class: 'parity-hint' }, 'Shown in workspace settings.'));
+  }
+
+  return children;
+}
+
+/**
+ * VfBreadcrumbs, for the breadcrumbs catalog.
+ *
+ * The native half only: the items are handed to the component as a consumer
+ * would write them, with href/target/rel/disabled/current per item, and
+ * props and attrs are spread onto the component. Nothing here registers a
+ * RouterLink and no item names `to`: the coverage gate refuses one before it
+ * gets this far, and a case that reached the router branch would render
+ * Vue's unresolved element and differ from every other target.
+ *
+ * The separator slot, when the case has one, is the text or a consumer span.
+ * The described-by hint is the same paragraph the input fixture appends, so a
+ * consumer aria-describedby resolves to an element outside the nav on every
+ * target.
+ */
+function renderBreadcrumbs(parityCase: ParityCase): VNode[] {
+  const separator = parityCase.content?.separator;
+  const slots: Record<string, () => unknown> = {};
+
+  if (separator !== undefined) {
+    slots.separator = () =>
+      separator.markup === 'label'
+        ? h('span', { class: 'consumer-separator' }, separator.text ?? '')
+        : (separator.text ?? '');
+  }
+
+  const children: VNode[] = [h(VfBreadcrumbs, { ...parityCase.props, ...parityCase.attrs } as never, slots)];
 
   if (parityCase.attrs['aria-describedby'] === 'aria-described-hint') {
     children.push(h('p', { id: 'aria-described-hint', class: 'parity-hint' }, 'Shown in workspace settings.'));
@@ -986,6 +1039,10 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'link') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderLink(parityCase));
+  }
+
+  if (catalog.component === 'breadcrumbs') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderBreadcrumbs(parityCase));
   }
 
   if (catalog.component === 'icon-button') {

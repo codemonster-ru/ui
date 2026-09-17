@@ -1,0 +1,149 @@
+{
+  "$comment": "Parity policy for the shared VfBreadcrumbs cases. Plain data: no DSL, no waiver engine. The dimensions are the harness's and are the same everywhere; the quirks below are the breadcrumbs' own. One classification here is framework-specific and it is not an approval: the Vue component's per-item router branch is recorded as a behaviour one adapter has and the other does not, with razorDiffers true and coveredBy a characterization suite - and approvedDivergences stays empty, because no shared case renders that branch on any target. Nothing about the nav, the list, the items, href, target, rel, aria-current, the separator, ownership or the accessibility tree may be approved.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning.",
+    "classOrder": "Canonical classes are extracted as a sorted list, so the order in which a renderer serialises the current span's block class and its disabled modifier is not compared. A client-compiled Vue render function writes the block class first and an SSR-compiled template writes the modifier first; the set is the contract and the characterization suite pins it as a set.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. A Razor breadcrumb trail carries no marker at all, because it has no browser controller to find it; the separator glyph's Vue scope attribute is the one data-v-* attribute a breadcrumb page has, and it is dropped like every other.",
+    "navigation": "No case follows a link. Activating a native anchor is the browser's, not the component's: the reference handles no click, no key and no navigation, so there is nothing of the component's to drive and the catalog declares no interaction. Focusability is measured instead, per owned anchor, in the ownership snapshot.",
+    "separatorSlotScope": "The Vue separator slot is scoped with the item and its index. A Razor slot takes no argument, so the same content repeats after every item that has a separator; no shared case renders content that depends on the scope, and the scope is pinned by VfBreadcrumbs.characterization.spec.ts."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, wrapper or tag mismatch. The dimension that carries this milestone's semantic identity: a nav rendered as a div, an ol as a ul or a div, an li as a div, an anchor as a button, a span or a div with role=link, a current span rendered as an anchor, a separator missing, duplicated, after the last item or before the first - each is a structural difference and never approvable, even where the accessibility tree would expose the same role. Comparison continues through tag differences so attribute diagnostics remain visible."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on the nav, the list, the items, the links, the current spans, the separators and the glyph. Consumer classes included, because the consumer class lands after the block class on the nav and that position is part of the contract."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "href, target and rel on every anchor, in document order - the ordered DOM comparison is what makes a swapped pair of hrefs a difference at two paths - plus class, style and any native attribute a consumer forwards to the nav, and the separator glyph's geometry: the polyline points M26 added to the compared vocabulary after reproducing that a chevron-down rendered in place of chevron-right passed every DOM dimension."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element: the label of every link and every span, and a text separator."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. The nav's aria-label - prop-driven, written even when empty - aria-current=page on every current span and on no anchor, aria-hidden on every separator, and whatever a consumer forwards to the nav. aria-current is compared here as DOM because Chrome 153 exposes no current state in the accessibility tree; aria-hidden is compared here and its effect is measured in a11y, where the separator is ignored."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes that belong to the product rather than to a renderer."
+    },
+    "dom.relationships": {
+      "classification": "semantic",
+      "description": "aria-describedby on the nav compared as a resolved relationship: a consumer id outside the component keeps its literal, and whether it resolves is what is compared."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box metrics of the nav, the first link, the current span and the first separator."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colour, background and border colour of the nav, the first link, the current span and the first separator. The disabled modifier is a colour change and nothing else, so this dimension is where it is proved."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, per theme. The trail, the current span, the disabled modifier, the separator glyph and a custom separator are all painted; since M26 the glyph's identity no longer depends on this dimension alone, because its points are compared as DOM."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role the accessibility tree exposes for the nav (navigation), the list (list), the first item (listitem), the first link (link), the current span (generic, present only for its aria-current) and the first separator (absent: ignored for aria-hidden). Chrome 153 exposes a div with role=link exactly as it exposes an anchor, so that substitution is caught by dom.structure and ownership rather than here."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name: the nav's from its aria-label, each link's from its label. An empty label is an empty name."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "The states the tree exposes: focusable on every link. No current state: Chrome 153 derives none from aria-current, and the DOM carries it."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-owned anchors measured in the case - each with its tag, href, target, rel, classes, name and focusability, in document order - beside the consumer-owned count and the totals they must add up to. The owned control is an anchor with a destination: the profile's selector is a.vf-breadcrumbs__link[href], so a current, disabled or destination-less item is a span and is not counted, and a case declares exactly the number of items the historical rule renders as links. Never approvable."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The breadcrumbs' own record: the item count, the ordered item records (tag, href, target, rel, name), the indices carrying aria-current, the separator count and the nav's aria-label. Never approvable."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Where focus is when the snapshot is taken: nothing is driven, so on the body for every target."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-router-branch-is-the-vue-adapters-own",
+      "description": "When an item has `to` the Vue component resolves whatever the application registers as `RouterLink` (or the root `component` prop) and hands it `to`, `target`, `rel` and the link class - no attrs, no href. It never imports vue-router, never resolves an href, never matches a route, never writes an active class or a router-derived aria-current, and never intercepts a click; with nothing registered under that name Vue renders a literal unresolved <RouterLink> element that is not a link at all. The Razor adapter has no such branch and refuses an item `to` and the root `component` by name rather than translating either into an href.",
+      "classification": "framework-specific",
+      "reason": "A handoff to a component the reference never ships is not a cross-platform contract, and a server that renders a page once has nothing to hand a destination to. No shared case renders this branch on any target, so there is no difference to approve and approvedDivergences is empty; the behaviour is pinned where it exists, in the Vue characterization suite, and its absence is pinned in the Razor component's own tests.",
+      "razorDiffers": true,
+      "coveredBy": "packages/core/src/components/breadcrumbs/VfBreadcrumbs.characterization.spec.ts"
+    },
+    {
+      "id": "the-current-item-is-a-span-and-its-href-is-dropped",
+      "description": "The current item - every item with an explicit current flag, or the last item when no item has one - renders as a span with aria-current=page. Its href, if any, is not written anywhere.",
+      "classification": "exact",
+      "reason": "The charitable reading would render the current item as a link that is also current; the reference does not. The catalog declares the owned budget without it.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/breadcrumbs/cases.json#breadcrumbs/last-href-dropped"
+    },
+    {
+      "id": "multiple-explicit-current-flags-are-all-current",
+      "description": "Two items flagged current render as two spans with two aria-current=page attributes. The reference never enforces a single current item.",
+      "classification": "exact",
+      "reason": "Collapsing to one would be the obvious improvement and a different DOM.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/breadcrumbs/cases.json#breadcrumbs/two-currents"
+    },
+    {
+      "id": "an-empty-string-href-is-no-destination",
+      "description": "href=\"\" renders a span with the current class and no aria-current, not an anchor with an empty href. The link test is truthiness, where VfLink's is definedness.",
+      "classification": "exact",
+      "reason": "Making the two components agree would turn a span into a focusable link on one of them. The owned selector carries [href], so the budget of the case states the historical fact as a number.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/breadcrumbs/cases.json#breadcrumbs/href-empty"
+    },
+    {
+      "id": "a-disabled-item-is-a-span-with-a-modifier-and-no-aria-disabled",
+      "description": "disabled renders a span with vf-breadcrumbs__current--disabled, its href dropped, and no aria-disabled. A disabled item that is also current carries aria-current=page beside the modifier.",
+      "classification": "exact",
+      "reason": "Writing aria-disabled would be adding what the reference leaves out.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/breadcrumbs/cases.json#breadcrumbs/disabled"
+    },
+    {
+      "id": "the-separator-is-owned-and-follows-every-item-but-the-last",
+      "description": "An aria-hidden span with the chevron-right glyph at the small icon size follows every item but the last, inside the item, after the link or the span - whatever kind the item is. The slot replaces its content, never the wrapper.",
+      "classification": "exact",
+      "reason": "A separator before each item but the first, or a CSS pseudo-element, would look the same and be a different DOM.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/breadcrumbs/cases.json#breadcrumbs/separator-text"
+    },
+    {
+      "id": "the-nav-label-is-written-even-when-empty",
+      "description": "ariaLabel defaults to 'Breadcrumb'; ariaLabel=\"\" writes aria-label=\"\" rather than restoring the default, so the navigation landmark has an empty name.",
+      "classification": "exact",
+      "reason": "Restoring the default would be the charitable reading; the reference writes what it was given.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/breadcrumbs/cases.json#breadcrumbs/aria-label-empty"
+    },
+    {
+      "id": "the-component-owns-its-anchors-and-writes-no-aria-on-them",
+      "description": "Every anchor is component-owned; no anchor carries aria-current, a role or a tabindex. Consumer attrs reach the nav only.",
+      "classification": "exact",
+      "reason": "The ownership boundary M22 made measurable, restated for a component that renders N anchors at once and none of them from a consumer slot.",
+      "razorDiffers": false,
+      "coveredBy": "contracts/breadcrumbs/cases.json#breadcrumbs/five"
+    }
+  ],
+  "approvedDivergences": []
+}

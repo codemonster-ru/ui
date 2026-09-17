@@ -69,6 +69,11 @@ import { stepperBrowserMutations, stepperParityMutations, stepperPolicyMutations
 import { tabsBrowserMutations, tabsParityMutations, tabsPolicyMutations } from './tabs-mutations.mjs';
 import { linkBrowserMutations, linkParityMutations, linkPolicyMutations } from './link-mutations.mjs';
 import {
+  breadcrumbsBrowserMutations,
+  breadcrumbsParityMutations,
+  breadcrumbsPolicyMutations,
+} from './breadcrumbs-mutations.mjs';
+import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
   skeletonGatePolicyMutations,
@@ -159,6 +164,11 @@ const mutationSets = {
   stepper: { capture: stepperParityMutations, policy: stepperPolicyMutations, browser: stepperBrowserMutations },
   tabs: { capture: tabsParityMutations, policy: tabsPolicyMutations, browser: tabsBrowserMutations },
   link: { capture: linkParityMutations, policy: linkPolicyMutations, browser: linkBrowserMutations },
+  breadcrumbs: {
+    capture: breadcrumbsParityMutations,
+    policy: breadcrumbsPolicyMutations,
+    browser: breadcrumbsBrowserMutations,
+  },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
     policy: skeletonGatePolicyMutations,

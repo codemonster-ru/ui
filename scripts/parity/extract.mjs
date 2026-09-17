@@ -137,6 +137,16 @@ export const COMPARED_ATTRIBUTES = [
   'href',
   'target',
   'rel',
+  // VfBreadcrumbs. Found missing by the attribute-coverage gate in M26 - the
+  // thirteenth attribute it has caught nobody compared - and reproduced as a
+  // false PASS on real captures before being added: the separator glyph is a
+  // polyline, chevron-right and chevron-down differ in nothing but their
+  // points, and a Razor page rendering the wrong one passed every DOM
+  // dimension, every ownership check and the accessibility tree (the
+  // separator is aria-hidden) on a case with no screenshot. `d`, `cx` and
+  // the other geometry attributes below were compared already; `points` is
+  // the polyline's, and the first migrated glyph drawn with one.
+  'points',
   'focusable',
   'style',
   'hidden',
@@ -1896,6 +1906,106 @@ function linkInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfBreadcrumbs case reports.
+ *
+ * Component-specific and named so, like the link's. The second ownership
+ * snapshot for a component that owns anchors, and the first that owns N of
+ * them at once with the count decided per item by a rule. Taken once per case,
+ * with nothing driven: a breadcrumb trail handles no click and no key. Two
+ * groups, each compared as its own dimension:
+ *
+ *   - ownership: every control the profile says the component owns - found by
+ *     the profile's selector, which carries `[href]` because a span is not a
+ *     control and neither is an anchor without a destination - with its tag,
+ *     its three native link attributes, its classes, its name and whether it
+ *     is focusable, in document order; and every focusable element that is
+ *     not one of them, which is the consumer's;
+ *   - the trail's own record: the item count, the first child of every item
+ *     in order - its tag, href, target, rel and name - the indices that carry
+ *     aria-current, the separator count and the nav's label. This is where a
+ *     current item rendered as a link, a link rendered as a span, a second
+ *     current item, a swapped pair of destinations, a separator after the last
+ *     item or a renamed landmark differ on their own account, beside the DOM.
+ *
+ * Deliberately not a second DOM extractor: the separator's content and every
+ * attribute the nav forwards are compared by the ordinary DOM comparison and
+ * are not repeated here.
+ */
+function breadcrumbsInteractionExpression(caseId, controlOwnership = {}) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const vfClasses = (element) => [...element.classList].filter((name) => name.startsWith('vf-')).sort();
+    const nameOf = (element) => (element.textContent ?? '').replace(/\\s+/g, ' ').trim();
+
+    const focusable = [...root.querySelectorAll(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            ariaRole: element.getAttribute('role'),
+            href: element.getAttribute('href'),
+            target: element.getAttribute('target'),
+            rel: element.getAttribute('rel'),
+            classes: vfClasses(element),
+            focusable: focusable.includes(element),
+            name: nameOf(element),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const nav = root.querySelector('.vf-breadcrumbs');
+    const items = nav ? [...nav.querySelectorAll(':scope > ol > li')] : [];
+    const records = items.map((item) => {
+      const node = item.firstElementChild;
+      return node
+        ? {
+            tag: node.tagName.toLowerCase(),
+            href: node.getAttribute('href'),
+            target: node.getAttribute('target'),
+            rel: node.getAttribute('rel'),
+            name: nameOf(node),
+          }
+        : null;
+    });
+    const activeElement = document.activeElement;
+    const focusRole = activeElement === document.body
+      ? 'body'
+      : root.contains(activeElement) ? 'inside-case' : 'outside-case';
+
+    return {
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: [...root.querySelectorAll('*')].filter((element) =>
+        INTERACTIVE_ROLES.has(element.getAttribute('role') ?? ''),
+      ).length,
+      itemCount: items.length,
+      breadcrumbItems: records,
+      currentIndices: items.flatMap((item, index) => (item.querySelector(':scope > [aria-current]') ? [index] : [])),
+      separatorCount: nav ? nav.querySelectorAll('.vf-breadcrumbs__separator').length : null,
+      navLabel: nav?.getAttribute('aria-label') ?? null,
+      focusRole,
+    };
+  })()`;
+}
+
+/**
  * Reports the actual post-scenario state before any visual focus normalization.
  *
  * The shape is component-specific - a caret position means nothing on a button,
@@ -1925,6 +2035,10 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
 
   if (snapshot === 'link') {
     return linkInteractionExpression(caseId, controlOwnership);
+  }
+
+  if (snapshot === 'breadcrumbs') {
+    return breadcrumbsInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

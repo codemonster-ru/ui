@@ -88,6 +88,9 @@ $tabsComponent = $registry->resolve('vf-tabs');
 // The M25 component. Resolved on its own account: the first whose owned
 // control is an anchor, and one that ships no browser controller at all.
 $linkComponent = $registry->resolve('vf-link');
+// The M26 component. Resolved on its own account: N anchors at once, no
+// browser controller, and no router branch by design.
+$breadcrumbsComponent = $registry->resolve('vf-breadcrumbs');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -134,6 +137,11 @@ if ($progressBarComponent === null) {
 
 if ($linkComponent === null) {
     fwrite(STDERR, "The VueForge vf-link component is not registered.\n");
+    exit(1);
+}
+
+if ($breadcrumbsComponent === null) {
+    fwrite(STDERR, "The VueForge vf-breadcrumbs component is not registered.\n");
     exit(1);
 }
 
@@ -1060,12 +1068,48 @@ $renderLink = static function (array $case) use ($linkComponent, $escape): strin
     return $linkComponent->render(new ComponentRenderContext($props, $slots))->value();
 };
 
+/**
+ * VfBreadcrumbs, for the breadcrumbs catalog.
+ *
+ * The native half only: the items are handed to the component as a consumer
+ * would write them, props and attrs beside them, and the separator slot -
+ * when the case has one - is the text or a consumer span. No item names `to`
+ * and no case names `component`; the component would refuse either rather
+ * than render an anchor for it.
+ */
+$renderBreadcrumbs = static function (array $case) use ($breadcrumbsComponent, $escape): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $separator = $case['content']['separator'] ?? null;
+    $slots = [];
+
+    if ($separator !== null) {
+        $markup = ($separator['markup'] ?? null) === 'label'
+            ? '<span class="consumer-separator">' . $escape((string) ($separator['text'] ?? '')) . '</span>'
+            : $escape((string) ($separator['text'] ?? ''));
+        $slots['separator'] = static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup);
+    }
+
+    // The described-by hint is appended by the shared loop below, as it is for
+    // every component whose case points aria-describedby outside the root.
+    return $breadcrumbsComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
     $caseId = (string) $case['id'];
 
-    if ($component === 'link') {
+    if ($component === 'breadcrumbs') {
+        $body = $renderBreadcrumbs($case);
+    } elseif ($component === 'link') {
         $body = $renderLink($case);
     } elseif ($component === 'tabs') {
         $body = $renderTabs($case);

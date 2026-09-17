@@ -1034,6 +1034,77 @@ export const profiles = {
       anchor: { selector: '.vf-link[href]', tag: 'a' },
     },
   },
+  breadcrumbs: {
+    id: 'breadcrumbs',
+    label: 'VfBreadcrumbs',
+    component: 'breadcrumbs',
+    casesPath: 'contracts/breadcrumbs/cases.json',
+    policyPath: 'contracts/breadcrumbs/parity-policy.json',
+    artifactDirectory: 'parity-breadcrumbs',
+    reportName: 'breadcrumbs-parity-report.json',
+    // The nav, the first link, the first current span and the first separator.
+    // The disabled modifier is a colour and nothing else, and the separator
+    // box is sized by the small icon token.
+    measuredRoles: {
+      nav: '.vf-breadcrumbs',
+      link: '.vf-breadcrumbs__link',
+      current: '.vf-breadcrumbs__current',
+      separator: '.vf-breadcrumbs__separator',
+    },
+    // The landmark, the list, the first item, the first link and the first
+    // current span are listed for what they expose; the separator and the
+    // glyph inside it for what they must *not*: the separator is aria-hidden,
+    // so both are ignored by the tree and absent here, and a separator that
+    // lost its aria-hidden exposes the glyph as an image. Chrome 153 exposes
+    // no current state for aria-current, so the current span is a generic
+    // node whose presence is the whole of what the tree says about it; the
+    // DOM carries the attribute.
+    accessibilityRoles: {
+      nav: '.vf-breadcrumbs',
+      list: '.vf-breadcrumbs__list',
+      item: '.vf-breadcrumbs__item',
+      link: '.vf-breadcrumbs__link',
+      current: '.vf-breadcrumbs__current',
+      separator: '.vf-breadcrumbs__separator',
+      glyph: '.vf-breadcrumbs__separator svg',
+    },
+    // href, target and rel on every anchor, aria-current on every current
+    // span, aria-hidden on every separator, aria-label on the nav, the
+    // consumer's class, style, id, data-* and aria-describedby on the nav -
+    // and `points`, the separator glyph's geometry: the one attribute a
+    // chevron-right and a chevron-down differ in, added to the compared
+    // vocabulary in M26 after reproducing that the swap passed every DOM
+    // dimension. role and tabindex are listed because their absence is the
+    // contract: the reference writes neither on any anchor or span.
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'href',
+      'target',
+      'rel',
+      'role',
+      'tabindex',
+      'aria-label',
+      'aria-current',
+      'aria-hidden',
+      'aria-describedby',
+      'data-testid',
+      'points',
+    ],
+    snapshot: 'breadcrumbs',
+    // The owned controls are the anchors *with a destination*, however many
+    // the historical rule makes: the current item, a disabled item and an
+    // item with no destination are spans and are not found. The selector
+    // carries `[href]` for the reason the link's does - an anchor that lost
+    // its href stops being found and fails on count - and no tag, so a button
+    // or a div with role=link carrying the class is found and rejected by
+    // identity. Each case declares the number its items produce, and the
+    // coverage gate checks that number against the rule.
+    controlOwnership: {
+      link: { selector: '.vf-breadcrumbs__link[href]', tag: 'a' },
+    },
+  },
 };
 
 export function loadProfile(id) {

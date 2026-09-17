@@ -716,6 +716,15 @@ const INTERACTION_FIELDS = {
   anchorRel: { dimension: 'interaction.state' },
   anchorClasses: { dimension: 'interaction.state', format: 'classList' },
   anchorFocusable: { dimension: 'interaction.state' },
+  // The VfBreadcrumbs snapshot (M26): the trail's own record beside the
+  // ownership fields above, and `itemCount` shared with the stepper's above.
+  // Never approvable: the ordered item records are the identity of the
+  // trail, and the current indices are where a second current item or a
+  // moved one differs on its own account.
+  breadcrumbItems: { dimension: 'interaction.state', format: 'json' },
+  currentIndices: { dimension: 'interaction.state', format: 'json' },
+  separatorCount: { dimension: 'interaction.state' },
+  navLabel: { dimension: 'interaction.state' },
 };
 
 /**
