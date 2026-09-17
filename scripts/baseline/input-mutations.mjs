@@ -4167,7 +4167,12 @@ export const tabsMutations = [
  *   - `link-consumer-class-first` and the two modifier typos, on the class
  *     merge and the shared class rule.
  *
- * Every one fails VfLink's own suite and none touches another component.
+ * Every one fails VfLink's own suite. Since M26 the five rel mutations also
+ * declare `alsoFails` for VfBreadcrumbs' suite: the breadcrumbs derive their
+ * rel through the same shared rule rather than a copy, and the M17 coupling
+ * rule makes that a measured claim - a rel mutation that stopped reaching the
+ * breadcrumbs would fail here, which is how "the breadcrumbs really consume
+ * the link rule" stays true. The two class-rule mutations reach nothing else.
  */
 export const linkMutations = [
   {
@@ -4260,6 +4265,7 @@ export const linkMutations = [
     id: 'link-rel-derived-for-self',
     file: linkRulePath,
     suite: linkSuite,
+    alsoFails: [breadcrumbsSuite],
     description: 'rel is derived for _self as well as for _blank',
     find: "  return target === '_blank' ? 'noopener noreferrer' : undefined;",
     replace: "  return target === '_blank' || target === '_self' ? 'noopener noreferrer' : undefined;",
@@ -4268,6 +4274,7 @@ export const linkMutations = [
     id: 'link-rel-never-derived',
     file: linkRulePath,
     suite: linkSuite,
+    alsoFails: [breadcrumbsSuite],
     description: 'the derived rel is dropped, so a _blank link opens without noopener',
     find: "  return target === '_blank' ? 'noopener noreferrer' : undefined;",
     replace: '  return undefined;',
@@ -4276,6 +4283,7 @@ export const linkMutations = [
     id: 'link-rel-appended-to-explicit',
     file: linkRulePath,
     suite: linkSuite,
+    alsoFails: [breadcrumbsSuite],
     description: 'the derived rel is appended to an explicit one instead of the explicit one winning',
     find: "  if (rel) return rel;\n\n  return target === '_blank' ? 'noopener noreferrer' : undefined;",
     replace:
@@ -4286,6 +4294,7 @@ export const linkMutations = [
     id: 'link-rel-explicit-overridden',
     file: linkRulePath,
     suite: linkSuite,
+    alsoFails: [breadcrumbsSuite],
     description: 'the derived rel overrides an explicit one for _blank',
     find: "  if (rel) return rel;\n\n  return target === '_blank' ? 'noopener noreferrer' : undefined;",
     replace: "  if (target === '_blank') return 'noopener noreferrer';\n\n  return rel || undefined;",
@@ -4294,6 +4303,7 @@ export const linkMutations = [
     id: 'link-empty-rel-wins',
     file: linkRulePath,
     suite: linkSuite,
+    alsoFails: [breadcrumbsSuite],
     description: 'an empty-string rel is treated as given, so a _blank link loses the derivation',
     find: '  if (rel) return rel;',
     replace: '  if (rel !== undefined && rel !== null) return rel || undefined;',
