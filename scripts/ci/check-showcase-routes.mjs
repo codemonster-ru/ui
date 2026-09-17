@@ -154,6 +154,10 @@ const controlSelectors = {
   // for a link with no destination, which declares no control at all (see
   // controlsPerCase).
   VfLink: 'a.vf-link[href]',
+  // The M26 component. The anchors *with a destination*, however many the
+  // historical rule makes per case: the current item, a disabled item and an
+  // item with no destination are spans and own nothing (see controlsPerCase).
+  VfBreadcrumbs: 'a.vf-breadcrumbs__link[href]',
 };
 
 /**
@@ -177,6 +181,10 @@ const controlsPerCase = {
   // One anchor per case, and it is a control exactly when the case has an
   // href - which is what the catalog declares as componentInteractive.
   VfLink: (parityCase) => parityCase.componentInteractive ?? 0,
+  // As many anchors as the historical rule makes links - which is what the
+  // catalog declares as componentInteractive and the coverage gate checks
+  // against the rule. The empty trail and the lone item render none.
+  VfBreadcrumbs: (parityCase) => parityCase.componentInteractive ?? 0,
 };
 
 /**
@@ -257,6 +265,7 @@ check(
       'VfAlert',
       'VfAvatar',
       'VfBadge',
+      'VfBreadcrumbs',
       'VfButton',
       'VfCard',
       'VfCheckbox',
@@ -614,6 +623,92 @@ async function probeLinkFocus(origin, path) {
   }
 }
 
+/**
+ * Focuses and hovers the anchors that decide what a breadcrumb trail is on one
+ * platform: every anchor of the trail case takes focus through its own
+ * focus(), the current span refuses it, the _blank case carries the derived
+ * rel, and the landmark carries its label. Then the first anchor is reached
+ * by a real Tab key from the body and hovered by a real pointer move, and the
+ * computed colour and outline are read back in each state - the same
+ * stylesheet is loaded on both platforms, so the two pages have to agree on
+ * what a focused and a hovered link look like, and each state has to differ
+ * from rest. No script of the showcase's is involved.
+ */
+async function probeBreadcrumbsLinks(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(
+      `Boolean(document.querySelector('[data-showcase-case="breadcrumbs/trail"] a.vf-breadcrumbs__link'))`,
+    );
+    await delay(200);
+
+    const statics = await page.evaluate(`(() => {
+      const trail = document.querySelector('[data-showcase-case="breadcrumbs/trail"] nav.vf-breadcrumbs');
+      const anchors = [...trail.querySelectorAll('a.vf-breadcrumbs__link')];
+      const focused = anchors.map((anchor) => { anchor.focus(); return document.activeElement === anchor; });
+      const current = trail.querySelector('span.vf-breadcrumbs__current');
+      current.focus();
+      const blank = document.querySelector('[data-showcase-case="breadcrumbs/blank-derived-rel"] a.vf-breadcrumbs__link');
+      document.activeElement.blur();
+      return {
+        tags: anchors.map((anchor) => anchor.tagName.toLowerCase()),
+        hrefs: anchors.map((anchor) => anchor.getAttribute('href')),
+        focused,
+        roles: anchors.map((anchor) => anchor.getAttribute('role')),
+        tabindexes: anchors.map((anchor) => anchor.getAttribute('tabindex')),
+        currentFocused: document.activeElement === current,
+        currentAria: current.getAttribute('aria-current'),
+        landmark: trail.tagName.toLowerCase() + '[' + trail.getAttribute('aria-label') + ']',
+        blank: blank ? { target: blank.getAttribute('target'), rel: blank.getAttribute('rel') } : null,
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /breadcrumb/i.test(script.textContent)).length,
+      };
+    })()`);
+
+    const paint = `(() => {
+      const anchor = document.querySelector('[data-showcase-case="breadcrumbs/trail"] a.vf-breadcrumbs__link');
+      const style = getComputedStyle(anchor);
+      return { color: style.color, outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth, focusVisible: anchor.matches(':focus-visible'), hovered: anchor.matches(':hover') };
+    })()`;
+    const rest = await page.evaluate(paint);
+
+    // A real Tab from the body lands on the first focusable element of the
+    // page; the anchor is focused programmatically first and then blurred so
+    // the next Tab reaches it, and keyboard focus is what makes :focus-visible
+    // match on an anchor.
+    await page.evaluate(`(() => {
+      const anchor = document.querySelector('[data-showcase-case="breadcrumbs/trail"] a.vf-breadcrumbs__link');
+      anchor.scrollIntoView({ block: 'center' });
+      const before = document.createElement('button');
+      before.type = 'button';
+      before.id = 'parity-focus-origin';
+      anchor.closest('.vf-breadcrumbs').before(before);
+      before.focus();
+    })()`);
+    await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+    await delay(100);
+    const focus = await page.evaluate(paint);
+    await page.evaluate(`document.getElementById('parity-focus-origin')?.remove(); document.activeElement.blur();`);
+
+    const point = await page.evaluate(`(() => {
+      const anchor = document.querySelector('[data-showcase-case="breadcrumbs/trail"] a.vf-breadcrumbs__link');
+      const rect = anchor.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: point.x, y: point.y });
+    await delay(350);
+    const hover = await page.evaluate(paint);
+
+    return { ...statics, rest, focus, hover };
+  } finally {
+    await page.close();
+  }
+}
+
 /** Clicks the panel case's middle tab on one platform and reads every half of the state back. */
 async function probeTabsSelect(origin, path) {
   const page = await openPage(chrome.endpoint);
@@ -951,6 +1046,76 @@ try {
             `[${name}/${theme}] the ${platform} showcase adds no script of its own to the link`,
             links.inlineScripts === 0,
             `${links.inlineScripts} inline script(s)`,
+          );
+        }
+      }
+
+      // ------------------------------------------ the trail is N native links
+      //
+      // M26: nothing to click and nothing to toggle - activation is the
+      // browser's. What both real pages have to prove instead is what makes a
+      // breadcrumb trail: every anchor of the trail case takes focus through
+      // its own focus() and carries no role or tabindex, the current span
+      // refuses focus and carries aria-current, the landmark carries its
+      // label, the _blank case carries the derived rel - and a keyboard focus
+      // and a pointer hover each repaint the first anchor the same way on both
+      // platforms. No showcase script is involved on either.
+      if (name === 'VfBreadcrumbs') {
+        const painted = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const trail = await probeBreadcrumbsLinks(origin, route);
+          painted[platform] = trail;
+          check(
+            `[${name}/${theme}] the ${platform} showcase's trail has two focusable native anchors with their destinations in order`,
+            JSON.stringify(trail.tags) === '["a","a"]' &&
+              JSON.stringify(trail.hrefs) === '["/","/docs"]' &&
+              JSON.stringify(trail.focused) === '[true,true]' &&
+              trail.roles.every((role) => role === null) &&
+              trail.tabindexes.every((tabindex) => tabindex === null),
+            JSON.stringify({ tags: trail.tags, hrefs: trail.hrefs, focused: trail.focused }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's current item is a span that refuses focus and carries aria-current=page`,
+            trail.currentFocused === false && trail.currentAria === 'page',
+            JSON.stringify({ focused: trail.currentFocused, ariaCurrent: trail.currentAria }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's trail is a nav landmark labelled Breadcrumb`,
+            trail.landmark === 'nav[Breadcrumb]',
+            trail.landmark,
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's _blank anchor carries the derived rel`,
+            trail.blank?.target === '_blank' && trail.blank.rel === 'noopener noreferrer',
+            JSON.stringify(trail.blank),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's first anchor shows a focus ring on keyboard focus and none at rest`,
+            trail.focus.focusVisible === true &&
+              trail.focus.outlineStyle === 'solid' &&
+              trail.focus.outlineWidth !== '0px' &&
+              trail.rest.outlineStyle === 'none',
+            JSON.stringify({ rest: trail.rest, focus: trail.focus }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's first anchor changes colour on hover`,
+            trail.hover.hovered === true && trail.hover.color !== trail.rest.color,
+            JSON.stringify({ rest: trail.rest, hover: trail.hover }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to the trail`,
+            trail.inlineScripts === 0,
+            `${trail.inlineScripts} inline script(s)`,
+          );
+        }
+        for (const state of ['rest', 'focus', 'hover']) {
+          check(
+            `[${name}/${theme}] the two showcases paint the first anchor identically at ${state}`,
+            JSON.stringify(painted.vue[state]) === JSON.stringify(painted.razor[state]),
+            JSON.stringify({ vue: painted.vue[state], razor: painted.razor[state] }),
           );
         }
       }

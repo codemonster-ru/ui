@@ -146,6 +146,7 @@ export default defineConfig({
         stepper: fileURLToPath(new URL('./stepper.html', import.meta.url)),
         tabs: fileURLToPath(new URL('./tabs.html', import.meta.url)),
         link: fileURLToPath(new URL('./link.html', import.meta.url)),
+        breadcrumbs: fileURLToPath(new URL('./breadcrumbs.html', import.meta.url)),
       },
     },
   },
@@ -268,6 +269,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/link-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/link/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/breadcrumbs-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/breadcrumbs/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/showcase-index$/,

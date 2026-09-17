@@ -178,7 +178,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/breadcrumbs/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/breadcrumbs/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/breadcrumbs",
+          "razor": "/"
         }
       }
     },

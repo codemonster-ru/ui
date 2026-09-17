@@ -190,6 +190,7 @@ $accordion = $registry->resolve('vf-accordion');
 $stepper = $registry->resolve('vf-stepper');
 $tabs = $registry->resolve('vf-tabs');
 $link = $registry->resolve('vf-link');
+$breadcrumbs = $registry->resolve('vf-breadcrumbs');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -232,6 +233,7 @@ echo json_encode([
         'vf-stepper' => $registry->handles('vf-stepper'),
         'vf-tabs' => $registry->handles('vf-tabs'),
         'vf-link' => $registry->handles('vf-link'),
+        'vf-breadcrumbs' => $registry->handles('vf-breadcrumbs'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -728,6 +730,66 @@ echo json_encode([
     // The packaged controller must not have grown a link enhancement: the
     // reference owns no interaction, so there is nothing for a browser to do.
     'linkBrowserCode' => preg_match('/vf-link|data-vf-razor="link"|link-enhanced/', $controllerSource) === 1,
+    // VfBreadcrumbs, the twenty-fourth component: N native anchors and no
+    // controller. Five renders: the three-item trail with its two anchors,
+    // the current span and the chevron separators; the explicit current in
+    // the middle with the last item a link; the _blank link with its derived
+    // rel; the disabled item with its modifier and no aria-disabled; and the
+    // empty-href item that is a span, not an anchor. Three refusals: an item
+    // to, an object to and the root component are the Vue adapter's
+    // router branch and the installed package must refuse them by name.
+    'breadcrumbsTrail' => $breadcrumbs->render(new ComponentRenderContext(
+        ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Docs', 'href' => '/docs'], ['label' => 'Breadcrumbs']]],
+        [],
+    ))->value(),
+    'breadcrumbsExplicitCurrent' => $breadcrumbs->render(new ComponentRenderContext(
+        ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Docs', 'href' => '/docs', 'current' => true], ['label' => 'Leaf', 'href' => '/leaf']], 'aria-label' => 'Path'],
+        ['separator' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('/')],
+    ))->value(),
+    'breadcrumbsBlank' => $breadcrumbs->render(new ComponentRenderContext(
+        ['items' => [['label' => 'Example', 'href' => 'https://example.com/', 'target' => '_blank'], ['label' => 'Leaf']]],
+        ['separator' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('/')],
+    ))->value(),
+    'breadcrumbsDisabled' => $breadcrumbs->render(new ComponentRenderContext(
+        ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Docs', 'href' => '/docs', 'disabled' => true], ['label' => 'Leaf']]],
+        ['separator' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('/')],
+    ))->value(),
+    'breadcrumbsEmptyHref' => $breadcrumbs->render(new ComponentRenderContext(
+        ['items' => [['label' => 'Home', 'href' => '/'], ['label' => 'Empty', 'href' => ''], ['label' => 'Leaf']], 'class' => 'consumer-trail', 'id' => 'trail'],
+        ['separator' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('/')],
+    ))->value(),
+    'breadcrumbsRefusesTo' => (static function () use ($breadcrumbs): string {
+        try {
+            $breadcrumbs->render(new ComponentRenderContext(['items' => [['label' => 'Home', 'to' => '/'], ['label' => 'Leaf']]], []));
+        } catch (\\InvalidArgumentException $exception) {
+            return $exception->getMessage();
+        }
+        return 'rendered';
+    })(),
+    'breadcrumbsRefusesObjectTo' => (static function () use ($breadcrumbs): string {
+        try {
+            $breadcrumbs->render(new ComponentRenderContext(['items' => [['label' => 'Home', 'to' => ['name' => 'home']], ['label' => 'Leaf']]], []));
+        } catch (\\InvalidArgumentException $exception) {
+            return $exception->getMessage();
+        }
+        return 'rendered';
+    })(),
+    'breadcrumbsRefusesComponent' => (static function () use ($breadcrumbs): string {
+        try {
+            $breadcrumbs->render(new ComponentRenderContext(['items' => [['label' => 'Home', 'href' => '/']], 'component' => 'a'], []));
+        } catch (\\InvalidArgumentException $exception) {
+            return $exception->getMessage();
+        }
+        return 'rendered';
+    })(),
+    'breadcrumbsConstructorTakesNothing' => (new ReflectionClass($breadcrumbs))->getConstructor() === null,
+    'breadcrumbsBrowserCode' => preg_match('/vf-breadcrumbs|data-vf-razor="breadcrumbs"|breadcrumbs-enhanced/', $controllerSource) === 1,
+    'breadcrumbsCss' => is_file($assetPath . '/vueforge-razor.css')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-breadcrumbs {') === 1
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-breadcrumbs__separator {') === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-breadcrumbs__link:focus-visible')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-breadcrumbs__current--disabled')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), 'router-link'),
     'linkCss' => is_file($assetPath . '/vueforge-razor.css')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-link {') === 1
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-link--underline-hover:hover')
@@ -794,6 +856,7 @@ echo json_encode([
       'vf-stepper',
       'vf-tabs',
       'vf-link',
+      'vf-breadcrumbs',
     ].every((tag) => rendered.handles[tag] === true),
     JSON.stringify(rendered.handles),
   );
@@ -1715,6 +1778,89 @@ echo json_encode([
     'the packaged stylesheet carries the link rules once, and no router-link rule',
     rendered.linkCss === true,
     'vueforge-razor.css is missing link rules, duplicates them, or carries a router-link selector',
+  );
+
+  // ------------------------------------------------------------ vf-breadcrumbs
+  //
+  // The twenty-fourth component, and the second with no controller at all:
+  // the assertions are about the trail the installed package writes, the
+  // three things it refuses, and the controller that must not mention it.
+  const chevron =
+    '<span class="vf-breadcrumbs__separator" aria-hidden="true"><span class="vf-icon-wrapper" style="--vf-icon-scale:1;--vf-icon-offset-x:0;--vf-icon-offset-y:0;">' +
+    '<svg class="vf-icon vf-icon--regular vf-icon--classic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="var(--vf-icon-size-sm)" height="var(--vf-icon-size-sm)">' +
+    '<polyline points="8.75 5.75 15 12 8.75 18.25"/></svg></span></span>';
+  const slash = '<span class="vf-breadcrumbs__separator" aria-hidden="true">/</span>';
+  check(
+    'the consumer renders a trail: nav > ol > li, two anchors with href, the current span with aria-current and the chevron-right separators',
+    rendered.breadcrumbsTrail ===
+      '<nav class="vf-breadcrumbs" aria-label="Breadcrumb"><ol class="vf-breadcrumbs__list">' +
+        `<li class="vf-breadcrumbs__item"><a href="/" class="vf-breadcrumbs__link">Home</a>${chevron}</li>` +
+        `<li class="vf-breadcrumbs__item"><a href="/docs" class="vf-breadcrumbs__link">Docs</a>${chevron}</li>` +
+        '<li class="vf-breadcrumbs__item"><span class="vf-breadcrumbs__current" aria-current="page">Breadcrumbs</span></li></ol></nav>',
+    rendered.breadcrumbsTrail,
+  );
+  check(
+    'an explicit current flag makes the middle item the current span, the last item a link, the nav label the prop, and the separator slot repeats',
+    rendered.breadcrumbsExplicitCurrent ===
+      '<nav class="vf-breadcrumbs" aria-label="Path"><ol class="vf-breadcrumbs__list">' +
+        `<li class="vf-breadcrumbs__item"><a href="/" class="vf-breadcrumbs__link">Home</a>${slash}</li>` +
+        `<li class="vf-breadcrumbs__item"><span class="vf-breadcrumbs__current" aria-current="page">Docs</span>${slash}</li>` +
+        '<li class="vf-breadcrumbs__item"><a href="/leaf" class="vf-breadcrumbs__link">Leaf</a></li></ol></nav>',
+    rendered.breadcrumbsExplicitCurrent,
+  );
+  check(
+    'a _blank item carries the derived rel',
+    rendered.breadcrumbsBlank.includes(
+      '<a href="https://example.com/" target="_blank" rel="noopener noreferrer" class="vf-breadcrumbs__link">Example</a>',
+    ),
+    rendered.breadcrumbsBlank,
+  );
+  check(
+    'a disabled item is a span with the modifier, no aria-disabled and its href dropped',
+    rendered.breadcrumbsDisabled.includes(
+      '<span class="vf-breadcrumbs__current vf-breadcrumbs__current--disabled">Docs</span>',
+    ) &&
+      !rendered.breadcrumbsDisabled.includes('aria-disabled') &&
+      !rendered.breadcrumbsDisabled.includes('/docs'),
+    rendered.breadcrumbsDisabled,
+  );
+  check(
+    'an empty href is a span, not an anchor, and the consumer class and id land on the nav',
+    rendered.breadcrumbsEmptyHref.startsWith(
+      '<nav id="trail" class="vf-breadcrumbs consumer-trail" aria-label="Breadcrumb">',
+    ) &&
+      rendered.breadcrumbsEmptyHref.includes('<span class="vf-breadcrumbs__current">Empty</span>') &&
+      !rendered.breadcrumbsEmptyHref.includes('href=""'),
+    rendered.breadcrumbsEmptyHref,
+  );
+  check(
+    'the installed package refuses an item `to` by name rather than rendering an anchor for a route',
+    rendered.breadcrumbsRefusesTo.startsWith('Item 0 of vf-breadcrumbs does not accept [to]'),
+    rendered.breadcrumbsRefusesTo,
+  );
+  check(
+    'the installed package refuses an object `to` the same way',
+    rendered.breadcrumbsRefusesObjectTo.startsWith('Item 0 of vf-breadcrumbs does not accept [to]'),
+    rendered.breadcrumbsRefusesObjectTo,
+  );
+  check(
+    'the installed package refuses the root `component` by name',
+    rendered.breadcrumbsRefusesComponent.startsWith('vf-breadcrumbs does not accept [component]'),
+    rendered.breadcrumbsRefusesComponent,
+  );
+  check(
+    'the breadcrumbs component takes no constructor argument',
+    rendered.breadcrumbsConstructorTakesNothing === true,
+  );
+  check(
+    'the packaged controller does not mention the breadcrumbs: the reference has no browser behaviour for them',
+    rendered.breadcrumbsBrowserCode === false,
+    'vueforge-razor.js mentions the breadcrumbs',
+  );
+  check(
+    'the packaged stylesheet carries the breadcrumbs rules once, and no router-link rule',
+    rendered.breadcrumbsCss === true,
+    'vueforge-razor.css is missing breadcrumbs rules, duplicates them, or carries a router-link selector',
   );
 
   check(

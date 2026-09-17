@@ -133,3 +133,8 @@ declare module '@vueforge/showcase-index' {
   };
   export default index;
 }
+
+declare module '@vueforge/breadcrumbs-cases' {
+  const catalog: { cases: unknown[] };
+  export default catalog;
+}

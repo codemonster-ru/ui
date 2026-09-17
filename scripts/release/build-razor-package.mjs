@@ -108,6 +108,12 @@ export const requiredEntries = [
   // Vue adapter's router branch has no file here by design.
   'src/Components/LinkComponent.php',
   'src/Support/LinkState.php',
+  // The M26 component: N native anchors decided per item by a rule, and
+  // server-complete like the link - no browser controller travels with it,
+  // and the packaged-consumer proof asserts the controller never mentions
+  // it. Its rel derivation is LinkState's; its own rules are BreadcrumbsState.
+  'src/Components/BreadcrumbsComponent.php',
+  'src/Support/BreadcrumbsState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',
