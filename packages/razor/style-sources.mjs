@@ -142,4 +142,14 @@ export const styleSources = [
   // whichever branch rendered it. Listed last; no link selector overlaps
   // another file's.
   'packages/styles/src/components/link.css',
+  // VfBreadcrumbs, the M26 component and a standalone closure of eight rules:
+  // the nav, the list, the item, the type shared by the link and the current
+  // span, the link with its colour, hover and focus ring, the current span,
+  // its disabled modifier, and the separator box sized by the small icon
+  // token. It imports nothing and nothing imports it; the separator glyph is
+  // laid out by icon.css, which both adapters already load. There is no rule
+  // for a router's active class and no dependency on link.css: the anchor
+  // here is `a.vf-breadcrumbs__link`, never `a.vf-link`. Listed last; no
+  // breadcrumbs selector overlaps another file's.
+  'packages/styles/src/components/breadcrumbs.css',
 ];
