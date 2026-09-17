@@ -9,6 +9,7 @@ use Codemonster\VueForge\Razor\Components\AccordionComponent;
 use Codemonster\VueForge\Razor\Components\AlertComponent;
 use Codemonster\VueForge\Razor\Components\AvatarComponent;
 use Codemonster\VueForge\Razor\Components\BadgeComponent;
+use Codemonster\VueForge\Razor\Components\BreadcrumbsComponent;
 use Codemonster\VueForge\Razor\Components\ButtonComponent;
 use Codemonster\VueForge\Razor\Components\CardComponent;
 use Codemonster\VueForge\Razor\Components\CheckboxComponent;
@@ -77,6 +78,10 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'alert' => new AlertComponent(),
             'avatar' => new AvatarComponent(),
             'badge' => new BadgeComponent(),
+            // Server-complete: N native anchors and nothing to enhance. The Vue
+            // component's router branch has no counterpart here by design - see
+            // BreadcrumbsComponent.
+            'breadcrumbs' => new BreadcrumbsComponent(),
             'button' => new ButtonComponent($progressSpinner),
             'card' => new CardComponent(),
             'checkbox' => new CheckboxComponent(),
