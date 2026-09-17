@@ -59,6 +59,10 @@ export const linkSourcePath = 'packages/core/src/components/link/VfLink.vue';
 /** The shared rules VfLink and the Razor adapter both derive from: the class list and the rel derivation. */
 export const linkRulePath = 'packages/shared-core/src/link/state.ts';
 const linkSuite = 'src/components/link/VfLink.characterization.spec.ts';
+export const breadcrumbsSourcePath = 'packages/core/src/components/breadcrumbs/VfBreadcrumbs.vue';
+/** The shared rules VfBreadcrumbs and the Razor adapter both derive from: current selection, the link test and the span classes. */
+export const breadcrumbsRulePath = 'packages/shared-core/src/breadcrumbs/state.ts';
+const breadcrumbsSuite = 'src/components/breadcrumbs/VfBreadcrumbs.characterization.spec.ts';
 export const stepperSourcePath = 'packages/core/src/components/stepper/VfStepper.vue';
 /** The shared rules VfStepper, its Razor controller and the PHP adapter derive from. */
 export const stepperRulePath = 'packages/shared-core/src/stepper/state.ts';
@@ -4328,6 +4332,269 @@ export const linkMutations = [
   },
 ];
 
+/**
+ * VfBreadcrumbs regressions.
+ *
+ * The M26 set. The reference renders N anchors at once and decides per item
+ * whether it is a link at all, and the mutations that carry this milestone
+ * are the ones a migration would call improvements:
+ *
+ *   - the current item. `breadcrumbs-current-item-rendered-as-link` keeps the
+ *     href the reference drops; `breadcrumbs-implicit-current-ignored` reads
+ *     only explicit flags, so the last item keeps its link;
+ *     `breadcrumbs-explicit-current-ignored` always picks the last item;
+ *     `breadcrumbs-second-current-suppressed` enforces the uniqueness the
+ *     reference never did;
+ *   - the link test. `breadcrumbs-disabled-still-links` and
+ *     `breadcrumbs-disabled-gets-aria-disabled` touch what disabled means;
+ *     `breadcrumbs-empty-href-kept-as-anchor` is VfLink's rule applied where
+ *     the reference tests truthiness;
+ *   - the rel wiring, on the call into the shared link rule: derived for
+ *     `_self`, merged with an explicit value, an empty value written;
+ *   - the router branch: `to` turned into an href, href kept in the handoff,
+ *     an object `to` serialised;
+ *   - the root: attrs moved from the nav to the anchors, or dropped;
+ *   - the separator: after the last item, before the first, unhidden, its
+ *     scope losing the index;
+ *   - the element identity: an anchor as a span, the ordered list as an
+ *     unordered one, the aria-current value, the modifier spelling, the nav
+ *     label default.
+ *
+ * Every one fails VfBreadcrumbs' own suite and none touches another component.
+ */
+export const breadcrumbsMutations = [
+  {
+    id: 'breadcrumbs-anchor-becomes-a-span',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'a link item renders a span with the link class instead of an anchor',
+    find: "  return 'a';\n}",
+    replace: "  return 'span';\n}",
+  },
+  {
+    id: 'breadcrumbs-current-item-rendered-as-link',
+    file: breadcrumbsRulePath,
+    suite: breadcrumbsSuite,
+    description: 'the current item keeps its href and renders as a link that is also current',
+    find: '  return !disabled && !current && Boolean(destination);',
+    replace: '  return !disabled && Boolean(destination);',
+  },
+  {
+    id: 'breadcrumbs-implicit-current-ignored',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'only an explicit flag makes an item current, so the last item keeps its link',
+    find: '  return isBreadcrumbLink(item.disabled, isCurrent(index), item.href || item.to);',
+    replace: '  return isBreadcrumbLink(item.disabled, item.current === true, item.href || item.to);',
+  },
+  {
+    id: 'breadcrumbs-explicit-current-ignored',
+    file: breadcrumbsRulePath,
+    suite: breadcrumbsSuite,
+    description: 'the last item is always the current one, whatever the flags say',
+    find: '  return flags.map((flag, index) => flag === true || (!hasExplicitCurrent && index === flags.length - 1));',
+    replace: '  return flags.map((flag, index) => index === flags.length - 1 && (hasExplicitCurrent || true));',
+  },
+  {
+    id: 'breadcrumbs-second-current-suppressed',
+    file: breadcrumbsRulePath,
+    suite: breadcrumbsSuite,
+    description: 'only the first explicit flag counts, which enforces a uniqueness the reference never did',
+    find: '  return flags.map((flag, index) => flag === true || (!hasExplicitCurrent && index === flags.length - 1));',
+    replace:
+      '  return flags.map((flag, index) => (flag === true && flags.indexOf(true) === index) || (!hasExplicitCurrent && index === flags.length - 1));',
+  },
+  {
+    id: 'breadcrumbs-disabled-gets-aria-disabled',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'a disabled span is given aria-disabled="true", which the reference never writes',
+    find: '<span v-else :class="currentClasses(item)" :aria-current="isCurrent(index) ? \'page\' : undefined">',
+    replace:
+      '<span v-else :class="currentClasses(item)" :aria-current="isCurrent(index) ? \'page\' : undefined" :aria-disabled="item.disabled ? \'true\' : undefined">',
+  },
+  {
+    id: 'breadcrumbs-disabled-still-links',
+    file: breadcrumbsRulePath,
+    suite: breadcrumbsSuite,
+    description: 'a disabled item with a destination renders as a link',
+    find: '  return !disabled && !current && Boolean(destination);',
+    replace: '  return !current && Boolean(destination);',
+  },
+  {
+    id: 'breadcrumbs-empty-href-kept-as-anchor',
+    file: breadcrumbsRulePath,
+    suite: breadcrumbsSuite,
+    description: "the link test becomes definedness, so href='' renders an anchor with an empty href as VfLink does",
+    find: '  return !disabled && !current && Boolean(destination);',
+    replace: '  return !disabled && !current && destination !== undefined && destination !== null;',
+  },
+  {
+    id: 'breadcrumbs-rel-derived-for-self',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'rel is derived for target=_self as well as for _blank',
+    find: '  return resolveLinkRel(item.rel, item.target);',
+    replace: "  return resolveLinkRel(item.rel, item.target === '_self' ? '_blank' : item.target);",
+  },
+  {
+    id: 'breadcrumbs-explicit-rel-merged',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'the derived rel is appended to an explicit one instead of the explicit one winning',
+    find: '  return resolveLinkRel(item.rel, item.target);',
+    replace: "  return [item.rel, resolveLinkRel(undefined, item.target)].filter(Boolean).join(' ') || undefined;",
+  },
+  {
+    id: 'breadcrumbs-empty-rel-emitted',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'an empty-string rel is written as given instead of being treated as not given',
+    find: '  return resolveLinkRel(item.rel, item.target);',
+    replace: '  return item.rel !== undefined ? item.rel : resolveLinkRel(item.rel, item.target);',
+  },
+  {
+    id: 'breadcrumbs-to-converted-to-href',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'a to item renders a native anchor whose href is the stringified destination',
+    edits: [
+      {
+        find: "    return props.component ?? resolveDynamicComponent('RouterLink');",
+        replace: "    return 'a';",
+      },
+      {
+        find: '    return {\n      to: item.to,\n      target: item.target,',
+        replace: '    return {\n      href: String(item.to),\n      target: item.target,',
+      },
+    ],
+  },
+  {
+    id: 'breadcrumbs-href-retained-in-handoff',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'the router component is handed the href beside to',
+    find: '    return {\n      to: item.to,\n      target: item.target,',
+    replace: '    return {\n      to: item.to,\n      href: item.href,\n      target: item.target,',
+  },
+  {
+    id: 'breadcrumbs-object-to-serialised',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'an object to is serialised before the handoff instead of passing through untouched',
+    find: '    return {\n      to: item.to,\n      target: item.target,',
+    replace:
+      "    return {\n      to: typeof item.to === 'string' ? item.to : JSON.stringify(item.to),\n      target: item.target,",
+  },
+  {
+    id: 'breadcrumbs-attrs-moved-to-anchors',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'consumer attrs land on every link instead of on the nav',
+    edits: [
+      {
+        find: '<nav :class="rootClasses" :aria-label="props.ariaLabel" v-bind="rootAttrs">',
+        replace: '<nav :class="rootClasses" :aria-label="props.ariaLabel">',
+      },
+      {
+        find: '          v-bind="itemProps(item)"\n          class="vf-breadcrumbs__link"',
+        replace: '          v-bind="{ ...rootAttrs, ...itemProps(item) }"\n          class="vf-breadcrumbs__link"',
+      },
+    ],
+  },
+  {
+    id: 'breadcrumbs-nav-attrs-dropped',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'consumer attrs other than class are dropped instead of landing on the nav',
+    find: '<nav :class="rootClasses" :aria-label="props.ariaLabel" v-bind="rootAttrs">',
+    replace: '<nav :class="rootClasses" :aria-label="props.ariaLabel">',
+  },
+  {
+    id: 'breadcrumbs-separator-after-last',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'a separator follows every item, including the last',
+    find: '<span v-if="index < props.items.length - 1" class="vf-breadcrumbs__separator" aria-hidden="true">',
+    replace: '<span class="vf-breadcrumbs__separator" aria-hidden="true">',
+  },
+  {
+    id: 'breadcrumbs-separator-before-first',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'the separator precedes every item but the first, rather than following every item but the last',
+    edits: [
+      {
+        find: '      <li v-for="(item, index) in props.items" :key="`${item.label}-${index}`" class="vf-breadcrumbs__item">\n        <component',
+        replace:
+          '      <li v-for="(item, index) in props.items" :key="`${item.label}-${index}`" class="vf-breadcrumbs__item">\n' +
+          '        <span v-if="index > 0" class="vf-breadcrumbs__separator" aria-hidden="true">\n' +
+          '          <slot name="separator" :item="item" :index="index">\n' +
+          '            <VueIconify :icon="icons.chevronRight" size="var(--vf-icon-size-sm)" />\n' +
+          '          </slot>\n        </span>\n        <component',
+      },
+      {
+        find:
+          '        <span v-if="index < props.items.length - 1" class="vf-breadcrumbs__separator" aria-hidden="true">\n' +
+          '          <slot name="separator" :item="item" :index="index">\n' +
+          '            <VueIconify :icon="icons.chevronRight" size="var(--vf-icon-size-sm)" />\n' +
+          '          </slot>\n        </span>\n',
+        replace: '',
+      },
+    ],
+  },
+  {
+    id: 'breadcrumbs-separator-not-hidden',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'the separator wrapper loses aria-hidden, so the glyph enters the accessibility tree',
+    find: 'class="vf-breadcrumbs__separator" aria-hidden="true">',
+    replace: 'class="vf-breadcrumbs__separator">',
+  },
+  {
+    id: 'breadcrumbs-separator-scope-loses-index',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'the separator slot is scoped with the item only',
+    find: '<slot name="separator" :item="item" :index="index">',
+    replace: '<slot name="separator" :item="item">',
+  },
+  {
+    id: 'breadcrumbs-list-becomes-unordered',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'the ordered list renders as a ul',
+    edits: [
+      { find: '<ol class="vf-breadcrumbs__list">', replace: '<ul class="vf-breadcrumbs__list">' },
+      { find: '    </ol>\n  </nav>', replace: '    </ul>\n  </nav>' },
+    ],
+  },
+  {
+    id: 'breadcrumbs-aria-current-true',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'aria-current is written as "true" instead of "page"',
+    find: ':aria-current="isCurrent(index) ? \'page\' : undefined"',
+    replace: ':aria-current="isCurrent(index) ? \'true\' : undefined"',
+  },
+  {
+    id: 'breadcrumbs-disabled-modifier-typo',
+    file: breadcrumbsRulePath,
+    suite: breadcrumbsSuite,
+    description: 'the disabled modifier is misspelled, so the disabled colour is never applied',
+    find: "  if (disabled) classes.push('vf-breadcrumbs__current--disabled');",
+    replace: "  if (disabled) classes.push('vf-breadcrumbs__current--is-disabled');",
+  },
+  {
+    id: 'breadcrumbs-nav-label-default-changed',
+    file: breadcrumbsSourcePath,
+    suite: breadcrumbsSuite,
+    description: 'the default nav label is pluralised',
+    find: "  ariaLabel: 'Breadcrumb',",
+    replace: "  ariaLabel: 'Breadcrumbs',",
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -4352,4 +4619,5 @@ export const componentMutations = [
   ...stepperMutations,
   ...tabsMutations,
   ...linkMutations,
+  ...breadcrumbsMutations,
 ];

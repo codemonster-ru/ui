@@ -2,6 +2,12 @@
 import { computed, resolveDynamicComponent, useAttrs } from 'vue';
 import type { Component } from 'vue';
 import { VueIconify, icons } from '@codemonster-ru/vueforge-icons';
+import {
+  isBreadcrumbLink,
+  resolveBreadcrumbCurrentFlags,
+  resolveBreadcrumbItemClasses,
+  resolveLinkRel,
+} from '@codemonster-ru/vueforge-shared-core';
 import { cx } from '@/utils/classes';
 import type { VfBreadcrumbItem } from '@/types/components';
 
@@ -25,24 +31,33 @@ const rootClasses = computed(() => cx('vf-breadcrumbs', attrs.class as string | 
 
 const rootAttrs = computed(() => Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class')));
 
-const hasExplicitCurrent = computed(() => props.items.some((item) => item.current));
+// Which items are current is a shared rule: explicit flags if any, else the
+// last item. It is read per index below, in the order the items render.
+const currentFlags = computed(() => resolveBreadcrumbCurrentFlags(props.items.map((item) => item.current)));
 
-function isCurrent(item: VfBreadcrumbItem, index: number) {
-  return item.current || (!hasExplicitCurrent.value && index === props.items.length - 1);
+function isCurrent(index: number) {
+  return currentFlags.value[index] ?? false;
 }
 
+// The link test is the shared rule with the reference's own operand: `href ||
+// to`, tested for truthiness. What `to` *is* stays this adapter's business -
+// the rule only sees that it is truthy.
 function isLink(item: VfBreadcrumbItem, index: number) {
-  return !item.disabled && !isCurrent(item, index) && (item.href || item.to);
+  return isBreadcrumbLink(item.disabled, isCurrent(index), item.href || item.to);
 }
 
+// The rel rule is VfLink's, unchanged: the reference's inline function was the
+// same test, and a breadcrumb-specific copy would only be a place to drift.
 function resolvedRel(item: VfBreadcrumbItem) {
-  if (item.rel) {
-    return item.rel;
-  }
-
-  return item.target === '_blank' ? 'noopener noreferrer' : undefined;
+  return resolveLinkRel(item.rel, item.target);
 }
 
+// The router branch is this adapter's own. `to` selects it per item, the
+// component is resolved by the name a Vue application registers, and nothing
+// here reads a route: the destination is handed over untouched, and with
+// nothing registered Vue renders a literal unresolved element. The shared rules
+// above know nothing about any of this, which is what keeps the Razor adapter
+// from needing to.
 function resolvedComponent(item: VfBreadcrumbItem) {
   if (item.to !== undefined) {
     return props.component ?? resolveDynamicComponent('RouterLink');
@@ -66,6 +81,10 @@ function itemProps(item: VfBreadcrumbItem) {
     rel: resolvedRel(item),
   };
 }
+
+function currentClasses(item: VfBreadcrumbItem) {
+  return cx(...resolveBreadcrumbItemClasses(item.disabled));
+}
 </script>
 
 <template>
@@ -81,12 +100,7 @@ function itemProps(item: VfBreadcrumbItem) {
           {{ item.label }}
         </component>
 
-        <span
-          v-else
-          class="vf-breadcrumbs__current"
-          :class="item.disabled && 'vf-breadcrumbs__current--disabled'"
-          :aria-current="isCurrent(item, index) ? 'page' : undefined"
-        >
+        <span v-else :class="currentClasses(item)" :aria-current="isCurrent(index) ? 'page' : undefined">
           {{ item.label }}
         </span>
 

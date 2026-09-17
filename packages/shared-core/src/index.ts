@@ -106,6 +106,7 @@ export type {
   VfInputTypeResolution,
 } from './input/state.js';
 export { resolveAccordionIconClasses, resolveAccordionOpen, resolveAccordionTransition } from './accordion/state.js';
+export { isBreadcrumbLink, resolveBreadcrumbCurrentFlags, resolveBreadcrumbItemClasses } from './breadcrumbs/state.js';
 export { resolveLinkClasses, resolveLinkRel } from './link/state.js';
 export type { VfLinkToneName, VfLinkUnderlineName } from './link/state.js';
 export {

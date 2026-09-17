@@ -1,0 +1,107 @@
+{
+  "$comment": "Shared input/expected vectors for VfBreadcrumbs. The TypeScript rules in breadcrumbs/state.ts and the PHP mirror in packages/razor/src/Support/BreadcrumbsState.php both run this file. Three rules about items: which are current, whether one is a link, and the classes of one that is not. The rel derivation is not restated here because it is VfLink's rule, link/state-vectors.json, and both adapters call it. There is deliberately no vector for the router branch and none whose destination is an object: an object `to` is the Vue adapter's handoff to a component the reference never ships, pinned by the Vue characterization suite, and a vector for it would be the shared core describing a navigation contract that has no second implementation.",
+  "resolveBreadcrumbCurrentFlags": [
+    {
+      "$why": "No items: nothing is current.",
+      "flags": [],
+      "expected": []
+    },
+    {
+      "$why": "One item with no flag is the last item, so it is current.",
+      "flags": [null],
+      "expected": [true]
+    },
+    {
+      "$why": "No flags: the last item is current and no other.",
+      "flags": [null, null, null],
+      "expected": [false, false, true]
+    },
+    {
+      "$why": "An explicit flag in the middle makes that item current; the last item is not.",
+      "flags": [null, true, null],
+      "expected": [false, true, false]
+    },
+    {
+      "$why": "Two explicit flags make two current items. The reference never enforces one.",
+      "flags": [true, true, null],
+      "expected": [true, true, false]
+    },
+    {
+      "$why": "An explicit false is the same as no flag: with no true flag, the last item is current.",
+      "flags": [false, false, false],
+      "expected": [false, false, true]
+    },
+    {
+      "$why": "An explicit flag on the last item is the same as the fallback.",
+      "flags": [null, true],
+      "expected": [false, true]
+    }
+  ],
+  "isBreadcrumbLink": [
+    {
+      "$why": "A destination, not disabled, not current: a link.",
+      "disabled": null,
+      "current": false,
+      "destination": "/docs",
+      "expected": true
+    },
+    {
+      "$why": "The current item is never a link, even with a destination. Its href is dropped.",
+      "disabled": null,
+      "current": true,
+      "destination": "/docs",
+      "expected": false
+    },
+    {
+      "$why": "A disabled item is never a link, even with a destination.",
+      "disabled": true,
+      "current": false,
+      "destination": "/docs",
+      "expected": false
+    },
+    {
+      "$why": "No destination: a span.",
+      "disabled": null,
+      "current": false,
+      "destination": null,
+      "expected": false
+    },
+    {
+      "$why": "An empty-string destination is no destination. This is where the component differs from VfLink, which keeps href=\"\" on its anchor.",
+      "disabled": null,
+      "current": false,
+      "destination": "",
+      "expected": false
+    },
+    {
+      "$why": "An explicit disabled=false is not disabled.",
+      "disabled": false,
+      "current": false,
+      "destination": "/",
+      "expected": true
+    },
+    {
+      "$why": "A string the reference would test as truthy - '0' is truthy in the reference's language, and the mirror must not read it as false.",
+      "disabled": null,
+      "current": false,
+      "destination": "0",
+      "expected": true
+    }
+  ],
+  "resolveBreadcrumbItemClasses": [
+    {
+      "$why": "A non-link item that is not disabled: the block element only. The name is the reference's even when the item is not current.",
+      "disabled": null,
+      "expected": ["vf-breadcrumbs__current"]
+    },
+    {
+      "disabled": false,
+      "expected": ["vf-breadcrumbs__current"]
+    },
+    {
+      "$why": "Disabled adds the modifier after the block element.",
+      "disabled": true,
+      "expected": ["vf-breadcrumbs__current", "vf-breadcrumbs__current--disabled"]
+    }
+  ]
+}
