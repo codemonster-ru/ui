@@ -64,7 +64,10 @@ const explicitDeps = {
   'select.css': ['./field.css', './icon-button.css', './dropdown.css'],
   'textarea.css': ['./field.css'],
   'theme-switch.css': ['./button.css', './switch.css'],
-  'menu.css': ['../components/overlay-primitives.css'],
+  // The menu entry forwards to packages/styles since M27, and the contract is
+  // read through the forward, so the dependency is named as the canonical
+  // file states it: a sibling in the same package.
+  'menu.css': ['./overlay-primitives.css'],
 };
 
 const globallyAllowed = new Set(['icon', 'icon-wrapper']);

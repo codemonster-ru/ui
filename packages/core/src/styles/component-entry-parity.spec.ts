@@ -143,6 +143,89 @@ describe('component entry CSS parity', () => {
     }
   });
 
+  it('uses the canonical shared overlay-primitives source from all eight overlay entries', () => {
+    // The M27 move, checked the way M24's is. overlay-primitives.css lives in
+    // packages/styles now, because the Razor artifact may only read a neutral
+    // package and `.vf-menu__item` needs a token this file is the only
+    // definition of. The seven entries that are *not* migrated still import it
+    // by their historical path, through the one-line core forward, so their
+    // emitted bytes are unchanged and nothing about them moved.
+    const canonical = resolveStyleEntrySource(resolve(componentsDir, 'overlay-primitives.css'));
+    expect(canonical).toBe(resolve(stylesDir, '../../../styles/src/components/overlay-primitives.css'));
+
+    const entries = [
+      'command-palette.css',
+      'dialog.css',
+      'drawer.css',
+      'dropdown.css',
+      'menu-bar.css',
+      'menu.css',
+      'popover.css',
+      'tooltip.css',
+    ];
+
+    for (const name of entries) {
+      const sourcePath = resolveStyleEntrySource(resolve(entriesDir, name));
+      const source = readFileSync(sourcePath, 'utf8');
+      const overlayImport = [...source.matchAll(/^@import\s+'(\.[^']*overlay-primitives\.css)';$/gm)].map(
+        (match) => match[1],
+      );
+
+      expect(overlayImport, name).toHaveLength(1);
+      expect(resolveStyleEntrySource(resolve(dirname(sourcePath), overlayImport[0]!)), name).toBe(canonical);
+      expect(stripImports(source), name).not.toContain('--vf-overlay-border-width:');
+    }
+  });
+
+  it('keeps --vf-overlay-border-width load-bearing for the menu item and defined in exactly one place', () => {
+    // The reason the move had to happen rather than being a tidy-up. The
+    // generated theme *reads* this custom property - in
+    // --vf-overlay-float-shadow and --vf-overlay-arrow-overlap-offset-default -
+    // and never defines it; overlay-primitives.css is the only definition site
+    // in the repository. `.vf-menu__item` takes its border width from it, so an
+    // entry that lost the import would render the border shorthand invalid at
+    // computed-value time and fall back to `medium` instead of 1px. That
+    // divergence is measured on real Chrome by the menuItem parity profile;
+    // this is the same fact asserted where it is cheap to assert.
+    const canonicalMenu = readFileSync(resolveStyleEntrySource(resolve(entriesDir, 'menu.css')), 'utf8');
+    const overlay = readFileSync(
+      resolveStyleEntrySource(resolve(componentsDir, 'overlay-primitives.css')),
+      'utf8',
+    );
+
+    expect(canonicalMenu).toContain('border: var(--vf-overlay-border-width) solid transparent;');
+    expect(overlay).toContain('--vf-overlay-border-width: var(--vf-text-link-border-width);');
+    expect(stripImports(canonicalMenu)).not.toContain('--vf-overlay-border-width:');
+    // Not hardcoded to 1px anywhere in the menu closure: the width is the
+    // token's, and the token is the link border width's.
+    expect(canonicalMenu).not.toContain('border: 1px solid transparent;');
+
+    const definitions = readdirSync(componentsDir)
+      .filter((name) => name.endsWith('.css'))
+      .filter((name) =>
+        readFileSync(resolveStyleEntrySource(resolve(componentsDir, name)), 'utf8').includes(
+          '--vf-overlay-border-width:',
+        ),
+      );
+
+    expect(definitions).toEqual(['overlay-primitives.css']);
+  });
+
+  it('keeps the menu and the menu item in one closure with no descendant coupling', () => {
+    // VfMenu and VfMenuItem are one milestone because they are one stylesheet,
+    // not because either needs the other. No selector here joins them: every
+    // item rule stands on `.vf-menu__item` alone, so an item styles correctly
+    // with no `.vf-menu` ancestor, which is what makes the runtime coupling
+    // between the two components CSS-only and the parity profiles separate.
+    const canonicalMenu = readFileSync(resolveStyleEntrySource(resolve(entriesDir, 'menu.css')), 'utf8');
+
+    expect(canonicalMenu).toContain('.vf-menu {');
+    expect(canonicalMenu).toContain('.vf-menu__item {');
+    expect(canonicalMenu).not.toContain('.vf-menu .vf-menu__item');
+    expect(canonicalMenu).not.toContain('.vf-menu > ');
+    expect(canonicalMenu).not.toContain('vf-menu__item--disabled');
+  });
+
   it('locks the reconciled form and navigation contracts into full composition', () => {
     const fullCss = inlineCssImports(resolve(stylesDir, 'components.css'));
 

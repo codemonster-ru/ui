@@ -152,4 +152,30 @@ export const styleSources = [
   // here is `a.vf-breadcrumbs__link`, never `a.vf-link`. Listed last; no
   // breadcrumbs selector overlaps another file's.
   'packages/styles/src/components/breadcrumbs.css',
+  // The overlay token aliases, the M27 closure's first half: seven custom
+  // properties on `:root`, no selector and no behaviour. Not a component and
+  // not migrated on its own - seven core entries still import it through the
+  // core forward, exactly as VfMenuBar still reaches horizontal-scroller.css -
+  // and it is listed on its own account, before the menu, because menu.css
+  // imports it first and the builder inlines each file once, so the provenance
+  // names it as an owner rather than as something the menu happened to pull in.
+  //
+  // It is load-bearing rather than decorative: `--vf-overlay-border-width` is
+  // defined here and nowhere else, the generated theme *reads* it without
+  // defining it, and `.vf-menu__item` takes its border width from it. Without
+  // this file the border shorthand is invalid at computed-value time and the
+  // width falls back to `medium`, which is the divergence the measured styles
+  // would report. It is not evidence for an overlay runtime: there is no rule
+  // here to run.
+  'packages/styles/src/components/overlay-primitives.css',
+  // VfMenu and VfMenuItem, the M27 pair and one closure of ten rules: the menu
+  // column, the item, its icon and label, the disabled, focus-visible and hover
+  // states, the active modifier with its hover override, and the danger tone
+  // with its own hover and focus. One rule is the menu's and nine are the
+  // item's; they share a block name and no descendant selector, which is why
+  // `.vf-menu__item` styles correctly with no `.vf-menu` ancestor. Its first
+  // line imports overlay-primitives.css, which the entry above has already
+  // inlined, so the import resolves to nothing here and those tokens appear
+  // exactly once, in the same position they always had.
+  'packages/styles/src/components/menu.css',
 ];
