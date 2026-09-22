@@ -74,6 +74,14 @@ import {
   breadcrumbsPolicyMutations,
 } from './breadcrumbs-mutations.mjs';
 import {
+  menuBrowserMutations,
+  menuItemBrowserMutations,
+  menuItemParityMutations,
+  menuItemPolicyMutations,
+  menuParityMutations,
+  menuPolicyMutations,
+} from './menu-mutations.mjs';
+import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
   skeletonGatePolicyMutations,
@@ -168,6 +176,14 @@ const mutationSets = {
     capture: breadcrumbsParityMutations,
     policy: breadcrumbsPolicyMutations,
     browser: breadcrumbsBrowserMutations,
+  },
+  // The M27 pair, keyed by profile id. Two sets, never shared: a defect in one
+  // component must never be creditable to the other's evidence.
+  menu: { capture: menuParityMutations, policy: menuPolicyMutations, browser: menuBrowserMutations },
+  menuItem: {
+    capture: menuItemParityMutations,
+    policy: menuItemPolicyMutations,
+    browser: menuItemBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
