@@ -91,6 +91,10 @@ $linkComponent = $registry->resolve('vf-link');
 // The M26 component. Resolved on its own account: N anchors at once, no
 // browser controller, and no router branch by design.
 $breadcrumbsComponent = $registry->resolve('vf-breadcrumbs');
+// The M27 pair. Resolved separately, never through each other: vf-menu owns no
+// control and knows nothing about vf-menu-item, and each has its own catalog.
+$menuComponent = $registry->resolve('vf-menu');
+$menuItemComponent = $registry->resolve('vf-menu-item');
 
 if (
     $input === null || $iconButton === null || $fieldComponent === null
@@ -142,6 +146,11 @@ if ($linkComponent === null) {
 
 if ($breadcrumbsComponent === null) {
     fwrite(STDERR, "The VueForge vf-breadcrumbs component is not registered.\n");
+    exit(1);
+}
+
+if ($menuComponent === null || $menuItemComponent === null) {
+    fwrite(STDERR, "The VueForge vf-menu and vf-menu-item components are not registered.\n");
     exit(1);
 }
 
@@ -1102,6 +1111,76 @@ $renderBreadcrumbs = static function (array $case) use ($breadcrumbsComponent, $
     return $breadcrumbsComponent->render(new ComponentRenderContext($props, $slots))->value();
 };
 
+/**
+ * The consumer content a VfMenu case declares.
+ *
+ * Named rather than spelled as markup so this fixture and the Vue one build
+ * the same nodes from the same word. Only `button` is focusable, and nothing
+ * here carries an explicit interactive role.
+ */
+$menuChildren = static function (?string $children): string {
+    if ($children === 'text') {
+        return '<span class="parity-menu-text">Plain content</span>';
+    }
+    if ($children === 'spans') {
+        return '<span class="parity-menu-child">One</span>'
+            . '<span class="parity-menu-child">Two</span>'
+            . '<span class="parity-menu-child">Three</span>';
+    }
+    if ($children === 'nested') {
+        return '<div class="parity-menu-group"><span class="parity-menu-child">Deep</span></div>';
+    }
+    if ($children === 'button') {
+        return '<button type="button" class="consumer-control">Consumer action</button>';
+    }
+
+    return '';
+};
+
+/**
+ * VfMenu, for the menu catalog.
+ *
+ * Props and attrs go in together, because VfMenu declares no props at all and
+ * every one of them is an attr.
+ */
+$renderMenu = static function (array $case) use ($menuComponent, $menuChildren): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    $markup = $menuChildren($case['content']['children'] ?? null);
+    $slots = $markup === ''
+        ? []
+        : ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString($markup)];
+
+    return $menuComponent->render(new ComponentRenderContext($props, $slots))->value();
+};
+
+/**
+ * VfMenuItem, for the menu-item catalog.
+ *
+ * One component, props and attrs beside each other, and no slot: the component
+ * has none and its label is a prop. Nothing is refused here, because the Vue
+ * component has no router branch for this adapter to decline.
+ */
+$renderMenuItem = static function (array $case) use ($menuItemComponent): string {
+    $props = [];
+
+    foreach ($case['props'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+    foreach ($case['attrs'] ?? [] as $name => $value) {
+        $props[$name] = $value;
+    }
+
+    return $menuItemComponent->render(new ComponentRenderContext($props, []))->value();
+};
+
 $sections = '';
 
 foreach ($catalog['cases'] as $case) {
@@ -1109,6 +1188,10 @@ foreach ($catalog['cases'] as $case) {
 
     if ($component === 'breadcrumbs') {
         $body = $renderBreadcrumbs($case);
+    } elseif ($component === 'menu') {
+        $body = $renderMenu($case);
+    } elseif ($component === 'menu-item') {
+        $body = $renderMenuItem($case);
     } elseif ($component === 'link') {
         $body = $renderLink($case);
     } elseif ($component === 'tabs') {

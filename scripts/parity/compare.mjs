@@ -725,6 +725,31 @@ const INTERACTION_FIELDS = {
   currentIndices: { dimension: 'interaction.state', format: 'json' },
   separatorCount: { dimension: 'interaction.state' },
   navLabel: { dimension: 'interaction.state' },
+  // The VfMenuItem snapshot (M27): the item's own record beside the ownership
+  // fields above. It is recorded separately from the owned-control records
+  // because the ownership rules find a control only when it matches a rule,
+  // and an item that stopped matching either - a div, a span, a control that
+  // lost both its type and its href - is still described here rather than
+  // vanishing from the evidence. Never approvable: the branch a case rendered
+  // is the identity of the component.
+  itemTag: { dimension: 'interaction.state' },
+  itemType: { dimension: 'interaction.state' },
+  itemHref: { dimension: 'interaction.state' },
+  itemTarget: { dimension: 'interaction.state' },
+  itemRel: { dimension: 'interaction.state' },
+  itemDisabled: { dimension: 'interaction.state' },
+  itemAriaDisabled: { dimension: 'interaction.state' },
+  itemTabindex: { dimension: 'interaction.state' },
+  itemClasses: { dimension: 'interaction.state', format: 'classList' },
+  itemFocusable: { dimension: 'interaction.state' },
+  // Where the glyph's class actually landed. `wrapperClasses` above is shared
+  // with VfInput's wrapper and carries the presence dimension already, which
+  // is what makes an icon wrapper appearing on one side only its own failure
+  // rather than a class list that happens to differ.
+  glyphPresent: { dimension: 'interaction.state' },
+  glyphTag: { dimension: 'interaction.state' },
+  glyphClasses: { dimension: 'interaction.state', format: 'classList' },
+  glyphAriaHidden: { dimension: 'interaction.state' },
 };
 
 /**

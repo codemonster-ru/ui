@@ -1,0 +1,239 @@
+{
+  "$comment": "Shared VfMenuItem cases. Plain data only. The vocabulary is the whole historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963 - unlike VfLink and VfBreadcrumbs there is no Vue-only half to leave out, because this component has no `to`, no `component`, no RouterLink and no router import. What is left out instead is the `select` emit: it is a Vue framework event with no server analogue, it changes no DOM and no state, and a shared case that claimed to compare it would be comparing nothing. It is pinned by VfMenuItem.characterization.spec.ts. The glyph cases use `bookmark`, whose svg is a single path with the same presentation attributes and the same wrapper style as `filter` and as the `moon` fallback - the three differ only in `path[d]`. That is deliberate: this is the first migrated component whose glyph a *consumer* names, so a swapped glyph is a reachable defect rather than a hypothetical one, and these cases are the ones that exercise it. M27 expected to find a false PASS there and did not: `d` has been in the extractor's compared vocabulary since M07, and the glyph mutations are detected on dom.nativeAttributes with or without this profile declaring it.",
+  "component": "menu-item",
+  "propVocabulary": {
+    "label": "string, required. Rendered as the text of the owned `.vf-menu__item-label` span. Never a slot: the component has none.",
+    "icon": "IconName | string. A glyph NAME, never a component. An arbitrary string is public API and a name no glyph has resolves to `moon` rather than throwing or rendering nothing.",
+    "disabled": "boolean, default false. On the button branch the native `disabled` attribute plus aria-disabled and no tabindex; on the anchor branch aria-disabled and tabindex=-1, the href dropped, and target and rel kept. No modifier class on either branch.",
+    "active": "boolean, default false. A class and nothing else: no aria-selected, no aria-checked, no aria-current, no state in the accessibility tree.",
+    "tone": "'default' | 'danger', default 'default'. `default` emits no modifier rather than a --default class.",
+    "href": "string. Selects the anchor branch by TRUTHINESS, so an empty string is no destination and renders the button - where VfLink keeps href=\"\" on its anchor.",
+    "target": "string, written as given on the anchor branch and kept when the item is disabled.",
+    "rel": "string, written EXACTLY as given. There is no derivation: target='_blank' with no rel writes no rel attribute, which is where this component differs from VfLink and VfBreadcrumbs."
+  },
+  "slotVocabulary": {
+    "$comment": "VfMenuItem has no slots. The label is a prop rendered into a span, and a default slot passed to it is ignored."
+  },
+  "cases": [
+    {
+      "id": "menu-item/button",
+      "title": "No destination: a button with type=button and role=menuitem",
+      "$why": "The default shape, and the branch a migration reaches by leaving href out.",
+      "props": { "label": "Edit" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/button-disabled",
+      "title": "A disabled button: the native attribute, aria-disabled, and no tabindex",
+      "$why": "The browser removes a disabled button from the tab order itself, so the component writes no tabindex - and the aria-disabled beside the native attribute is what the CSS `:is(:disabled, [aria-disabled='true'])` rule needs to cover both branches at once.",
+      "props": { "label": "Delete", "disabled": true },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/anchor",
+      "title": "A destination: an anchor with href and role=menuitem",
+      "$why": "The other branch, and the one that keeps an explicit role on a native link.",
+      "props": { "label": "Open docs", "href": "/docs" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/anchor-disabled",
+      "title": "A disabled anchor: href dropped, target and rel kept, tabindex -1",
+      "$why": "Four separate facts that a migration would normalise into one. It stays an anchor, it takes no `disabled` attribute, only the href is guarded - target and rel are still written - and the tabindex is -1 rather than absent.",
+      "props": { "label": "Open docs", "href": "/docs", "disabled": true, "target": "_blank", "rel": "nofollow" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/empty-href",
+      "title": "href='': the BUTTON branch, because the test is truthiness",
+      "$why": "The VfLink boundary. VfLink renders `<a href=\"\">` for this input; this renders a button with no href at all, and the two must not be made to agree. A migration that used definedness flips exactly this case.",
+      "props": { "label": "Nowhere", "href": "" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/active",
+      "title": "An active item: a modifier class and no accessibility state",
+      "$why": "`active` is a class and nothing more. The accessibility tree cannot see it, so the DOM class and the computed colours are the whole of its evidence.",
+      "props": { "label": "Current view", "active": true },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/danger",
+      "title": "The danger tone",
+      "$why": "A tone modifier that repaints the text and, on hover and focus, the surface. `default` emits nothing, which the button case above covers.",
+      "props": { "label": "Delete", "tone": "danger" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/active-danger",
+      "title": "Active and danger together, in that order",
+      "$why": "The modifier order is part of the class contract: active before danger. The active background and the danger foreground also land on one element, which is where a merged tone rule would show.",
+      "props": { "label": "Delete", "active": true, "tone": "danger" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/disabled-active-danger",
+      "title": "A disabled item keeps its active and danger modifiers",
+      "$why": "Disabled is not a modifier and does not clear the others: the class list is unchanged and only the attributes differ. A migration that added a --disabled class, or that dropped the other modifiers, differs here.",
+      "props": { "label": "Delete", "disabled": true, "active": true, "tone": "danger" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/icon",
+      "title": "A leading glyph before the label",
+      "$why": "The icon class and aria-hidden land on the INNER svg, not on the wrapper span, because that is where the Vue icon component spreads its attrs - so the flex child of the item is the untouched wrapper. The glyph is `bookmark`, a single path whose svg attributes and wrapper style are identical to `filter` and `moon`; `path[d]` is the only thing that tells the three apart, and it is compared - by the extractor's global vocabulary, since M07.",
+      "props": { "label": "Save", "icon": "bookmark" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/icon-anchor",
+      "title": "A glyph on the anchor branch",
+      "$why": "The icon markup is the same on both branches; a migration that built it only for the button would differ here.",
+      "props": { "label": "Open docs", "href": "/docs", "icon": "bookmark" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/icon-camel-case",
+      "title": "A camel-case glyph name resolves to the same glyph as its kebab spelling",
+      "$why": "The public prop's type is the camel-case IconName union, and the icons package's `icons` map produces kebab. Both spellings are public API and both have to reach one glyph on both platforms.",
+      "props": { "label": "Next", "icon": "chevronRight" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/icon-unknown",
+      "title": "A glyph name no registry holds falls back to moon",
+      "$why": "The prop accepts an arbitrary string, and the Vue icon component answers an unknown one with `moon` rather than throwing or rendering nothing. The Razor renderer throws instead, so the adapter resolves the name before calling it. `moon` shares its structure and every presentation attribute with `bookmark`, so `path[d]` is the only thing that makes this case able to tell a correct fallback from a wrong glyph - and it is compared.",
+      "props": { "label": "Mystery", "icon": "no-such-glyph" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/target",
+      "title": "A target other than _blank, with no rel",
+      "$why": "Written as given, and no rel is derived for it - which is also true of VfLink, so this case alone does not separate them. The next one does.",
+      "props": { "label": "Open", "href": "/docs", "target": "_self" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu-item/blank-without-rel",
+      "title": "target=_blank with no rel writes NO rel attribute",
+      "$why": "The single most important case in this catalog. VfLink derives `noopener noreferrer` here and VfBreadcrumbs reuses VfLink's rule; this component derives nothing. Importing resolveLinkRel - the one-line change that looks like tidying - writes an attribute the reference never wrote, and it fails here on both platforms.",
+      "props": { "label": "Open externally", "href": "https://example.com", "target": "_blank" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu-item/explicit-rel",
+      "title": "An explicit rel beside target=_blank is written as given and not merged",
+      "$why": "There is nothing to merge with, because there is no derivation. The value is the prop's, verbatim.",
+      "props": { "label": "Open externally", "href": "https://example.com", "target": "_blank", "rel": "nofollow" },
+      "attrs": {},
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu-item/consumer-attrs",
+      "title": "A consumer id, data attribute and aria-label on the control",
+      "$why": "Fall-through lands on the control itself, not on a wrapper - the component renders none.",
+      "props": { "label": "Edit" },
+      "attrs": { "id": "edit-item", "data-testid": "item", "aria-label": "Edit this workspace" },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu-item/consumer-class-and-style",
+      "title": "A consumer class merges BEFORE the block class",
+      "$why": "The inverse of VfMenu and of VfLink, both of which put their own classes first. The Vue component binds attrs first, so the consumer's class is the earlier source, and that position is the contract.",
+      "props": { "label": "Edit", "active": true },
+      "attrs": { "class": "consumer-item", "style": "letter-spacing: 0.01em;" },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu-item/consumer-role-loses",
+      "title": "A consumer role does NOT override role=menuitem",
+      "$why": "The other half of the attrs-ordering inversion. The Vue template binds attrs FIRST, so every component binding wins and the item stays a menuitem however the consumer spells it. VfMenu's consumer role wins; this one loses; making them agree breaks one.",
+      "props": { "label": "Edit" },
+      "attrs": { "role": "option" },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu-item/consumer-tabindex-button",
+      "title": "A consumer tabindex survives on the button branch",
+      "$why": "The button branch binds no tabindex at all, so the consumer's value lands. Paired with the next case, which is the same input on the other branch and the opposite result.",
+      "props": { "label": "Edit" },
+      "attrs": { "tabindex": "3" },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu-item/consumer-tabindex-anchor",
+      "title": "A consumer tabindex is DROPPED on an enabled anchor",
+      "$why": "The anchor branch binds `undefined` over it, which removes the attribute. The two branches genuinely differ, and a migration that unified them changes exactly one of these two cases.",
+      "props": { "label": "Open docs", "href": "/docs" },
+      "attrs": { "tabindex": "3" },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu-item/consumer-described",
+      "title": "A consumer aria-describedby pointing outside the item",
+      "$why": "The relationship resolves to an element the fixture renders beside the item on every target.",
+      "props": { "label": "Edit" },
+      "attrs": { "aria-describedby": "aria-described-hint" },
+      "componentInteractive": 1,
+      "consumerInteractive": 0,
+      "visual": false
+    }
+  ]
+}

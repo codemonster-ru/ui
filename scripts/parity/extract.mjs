@@ -1906,6 +1906,114 @@ function linkInteractionExpression(caseId, controlOwnership = {}) {
 }
 
 /**
+ * What a VfMenuItem case reports.
+ *
+ * Component-specific and named so, like the link's. Taken once per case with
+ * nothing driven: the component handles no key, and the click it does handle
+ * changes no DOM and no state - it emits a Vue event, which has no counterpart
+ * on a server and nothing to compare. Two groups, each compared as its own
+ * dimension:
+ *
+ *   - ownership: every control the profile's two rules find, with its tag, its
+ *     explicit role, the attributes that tell the branches apart and whether it
+ *     is focusable; and every focusable element that is not one of them, which
+ *     is the consumer's;
+ *   - the item's own record: the tag, branch-identifying attributes, classes
+ *     and focusability of the `.vf-menu__item` element, plus whether a glyph is
+ *     present and which classes it carries. Recorded separately from the
+ *     ownership group because the ownership rules find a control only when it
+ *     matches a rule, and an item that stopped matching either - a div, a span,
+ *     a control that lost its type and its href at once - is still described
+ *     here rather than vanishing from the evidence.
+ *
+ * Deliberately not a second DOM extractor. The glyph's geometry is *not*
+ * repeated here: it is `path[d]`, it is compared by the ordinary DOM
+ * comparison because the profile lists the attribute, and recording it twice
+ * would mean two places to keep honest.
+ */
+function menuItemInteractionExpression(caseId, controlOwnership = {}) {
+  return `(() => {
+    const root = document.querySelector('[data-parity-case="${caseId}"]');
+    if (!root) throw new Error('missing case ${caseId}');
+
+    const OWNED = ${JSON.stringify(controlOwnership)};
+    const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+    const INTERACTIVE_ROLES = new Set([
+      'button', 'link', 'checkbox', 'radio', 'switch', 'textbox', 'combobox',
+      'listbox', 'menuitem', 'option', 'slider', 'spinbutton', 'tab',
+    ]);
+    const vfClasses = (element) => [...element.classList].filter((name) => name.startsWith('vf-')).sort();
+
+    const focusable = [...root.querySelectorAll(FOCUSABLE)];
+    const owned = [];
+    for (const [role, rule] of Object.entries(OWNED)) {
+      for (const element of root.querySelectorAll(rule.selector)) {
+        owned.push({
+          element,
+          record: {
+            role,
+            tag: element.tagName.toLowerCase(),
+            ariaRole: element.getAttribute('role'),
+            type: element.getAttribute('type'),
+            href: element.getAttribute('href'),
+            target: element.getAttribute('target'),
+            rel: element.getAttribute('rel'),
+            disabled: element.hasAttribute('disabled'),
+            ariaDisabled: element.getAttribute('aria-disabled'),
+            tabindex: element.getAttribute('tabindex'),
+            classes: vfClasses(element),
+            focusable: focusable.includes(element),
+            name: (element.textContent ?? '').replace(/\\s+/g, ' ').trim(),
+          },
+        });
+      }
+    }
+    const ownedElements = owned.map((entry) => entry.element);
+    const consumer = focusable.filter((element) => !ownedElements.includes(element));
+
+    const item = root.querySelector('.vf-menu__item');
+    const glyph = root.querySelector('.vf-menu__item-icon');
+    const wrapper = root.querySelector('.vf-icon-wrapper');
+    const activeElement = document.activeElement;
+    const focusRole = item && activeElement === item
+      ? 'item'
+      : activeElement === document.body
+        ? 'body'
+        : root.contains(activeElement) ? 'inside-case' : 'outside-case';
+
+    return {
+      ownershipPosture: 'component',
+      componentControls: owned.map((entry) => entry.record),
+      consumerControlCount: consumer.length,
+      focusableTotal: focusable.length,
+      interactiveRoleTotal: [...root.querySelectorAll('*')].filter((element) =>
+        INTERACTIVE_ROLES.has(element.getAttribute('role') ?? ''),
+      ).length,
+      itemTag: item ? item.tagName.toLowerCase() : null,
+      itemType: item?.getAttribute('type') ?? null,
+      itemHref: item?.getAttribute('href') ?? null,
+      itemTarget: item?.getAttribute('target') ?? null,
+      itemRel: item?.getAttribute('rel') ?? null,
+      itemDisabled: item ? item.hasAttribute('disabled') : null,
+      itemAriaDisabled: item?.getAttribute('aria-disabled') ?? null,
+      itemTabindex: item?.getAttribute('tabindex') ?? null,
+      itemClasses: item ? vfClasses(item) : null,
+      itemFocusable: item ? focusable.includes(item) : null,
+      // Where the glyph's class actually landed. The wrapper span is the flex
+      // child of the item and must stay untouched; the icon class belongs on
+      // the svg inside it, which is where the Vue icon component spreads its
+      // attrs.
+      glyphPresent: glyph !== null,
+      glyphTag: glyph ? glyph.tagName.toLowerCase() : null,
+      glyphClasses: glyph ? vfClasses(glyph) : null,
+      glyphAriaHidden: glyph?.getAttribute('aria-hidden') ?? null,
+      wrapperClasses: wrapper ? vfClasses(wrapper) : null,
+      focusRole,
+    };
+  })()`;
+}
+
+/**
  * What a VfBreadcrumbs case reports.
  *
  * Component-specific and named so, like the link's. The second ownership
@@ -2039,6 +2147,10 @@ export function interactionExpression(caseId, snapshot = 'input', controlOwnersh
 
   if (snapshot === 'breadcrumbs') {
     return breadcrumbsInteractionExpression(caseId, controlOwnership);
+  }
+
+  if (snapshot === 'menu-item') {
+    return menuItemInteractionExpression(caseId, controlOwnership);
   }
 
   if (snapshot === 'checkable') {

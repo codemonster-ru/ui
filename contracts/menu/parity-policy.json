@@ -1,0 +1,97 @@
+{
+  "$comment": "Parity policy for the shared VfMenu cases. Plain data: no DSL, no waiver engine. The dimensions are the harness's and are the same everywhere; the quirks below are the menu's own. approvedDivergences is empty and is expected to stay empty: VfMenu is one div with a class and a role, and there is nothing about it a server cannot render exactly. There is no framework-specific classification here either - unlike VfLink and VfBreadcrumbs, this component has no Vue-only branch at all.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning. It matters here only because the two adapters genuinely order them differently - Vue writes the component bindings around the forwarded attrs, PHP writes the forwarded ones first and overwrites in place - and neither order is the contract.",
+    "classOrder": "Canonical and consumer classes are extracted as two sorted lists, and the raw class attribute is not compared: the two renderers legitimately serialise the same classes in different orders, which is the position M26 recorded. The *position of the consumer class relative to the block class* - after it here, before it on VfMenuItem - is therefore pinned where it is observable rather than here: VfMenu.characterization.spec.ts asserts the rendered attribute, MenuComponentTest asserts the PHP one, and the characterization mutation `menu-class-order-flipped` fails if either is normalised.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Neither component has a browser controller, so no Razor output here carries a marker at all.",
+    "slotComposition": "How each adapter turns the declared `children` name into nodes is the fixture's business; both build the same elements from the same word, and the nodes themselves are compared like any other DOM."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, wrapper or tag mismatch. The dimension that carries this component's whole identity: the menu is ONE div and its content is the consumer's, placed directly in it. A root rendered as a ul, a nav or a section, a slot wrapped in a list or a div, an extra node before or after the content - each is a structural difference and never approvable, even where the accessibility tree would expose the same role."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on the root and on anything inside it. The menu has exactly one canonical class and adds none to its content; a class that appeared on a consumer child would be the component reaching into content it does not own."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "Every native attribute a consumer forwards - id, tabindex, style, data-*. The class attribute itself is not compared here; see notCompared.classOrder."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content of every element, including a bare text child of the root."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. `role=\"menu\"` is the component's, and it is OVERRIDABLE: a consumer role replaces it, because the Vue template binds attrs last. That replacement is the contract, not a defect, and a target that protected the role would differ here. A consumer aria-label is the only accessible name a menu ever has."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes a consumer forwards. The component writes none of its own."
+    },
+    "dom.relationships": {
+      "classification": "exact",
+      "description": "aria-labelledby and aria-describedby edges, resolved to the elements they point at. The menu writes none; a consumer describedby resolves to a paragraph the fixture renders beside the menu on every target."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box geometry of the root: a flex column with a gap, a minimum width of zero, and whatever a consumer style adds."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colours of the root. The menu paints no surface of its own; a difference here is a token that failed to resolve."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, for the cases that declare one."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role Chrome computes for the root. `menu` for every case but the override case, which is a `list` - and that difference is the contract."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name Chrome computes. Empty unless a consumer supplies aria-label."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Focusable, disabled and the other states Chrome exposes. A menu root is not focusable unless a consumer gives it a tabindex."
+    },
+    "static.noInteraction": {
+      "classification": "exact",
+      "description": "The static-ownership posture, measured rather than assumed: the case rendered, the posture is \"none\", the focusable count equals the number the catalog declares the consumer put there, and no element carries an explicit interactive role. This is the dimension that fails when VfMenu grows a control of its own on every target at once - the defect a three-way comparison cannot see - and when a consumer control it was given goes missing. Controls rendered by VfMenuItem are never counted here: that component has its own catalog and its own profile."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-menu-role-is-overridable",
+      "description": "The Vue template is `<div class=\"vf-menu\" role=\"menu\" v-bind=\"attrs\">`, with the attrs bound LAST. Vue's mergeProps lets the later source win for a plain attribute, so a consumer `role` replaces `role=\"menu\"` and the component does not protect its own role. Only `class` merges rather than replacing, and it merges component-first.",
+      "classification": "exact",
+      "reason": "It is reproduced rather than corrected because it is the reference's behaviour and because VfMenuItem's ordering is the exact inverse. Making the two agree - by protecting this role, or by letting the item's be overridden - would break one of them whichever way it went.",
+      "coveredBy": "contracts/menu/cases.json#menu/role-override, packages/core/src/components/menu/VfMenu.characterization.spec.ts, packages/razor/tests/Components/MenuComponentTest.php"
+    },
+    {
+      "id": "the-menu-owns-no-control-and-no-interaction",
+      "description": "VfMenu renders no button, no anchor, no tabindex and none of the ARIA a menu widget needs: no aria-orientation, no aria-activedescendant, no open state. It handles no key and no click. The arrow keys, Escape, focus-on-open and close-on-select associated with a menu belong to VfDropdown, which owns its own panel and its own role=\"menu\" and is not migrated in M27.",
+      "classification": "exact",
+      "reason": "Adding any of it would be implementing the ARIA menu pattern the reference never implemented, and it would be indistinguishable from the migration inventing behaviour. The absence is measured, not assumed.",
+      "coveredBy": "contracts/menu/cases.json#menu/consumer-control, packages/core/src/components/menu/VfMenu.characterization.spec.ts"
+    },
+    {
+      "id": "the-consumer-class-lands-after-the-block-class",
+      "description": "The class attribute is `vf-menu` and then the consumer's, because the block class is the earlier binding. VfMenuItem is the other way round.",
+      "classification": "exact",
+      "reason": "Both orderings are the reference's and making them agree breaks one. Parity compares classes as sorted sets, so this is pinned by the two characterization suites and the PHP tests rather than by a shared case.",
+      "coveredBy": "packages/core/src/components/menu/VfMenu.characterization.spec.ts, packages/razor/tests/Components/MenuComponentTest.php, scripts/baseline/input-mutations.mjs#menu-class-order-flipped"
+    }
+  ],
+  "approvedDivergences": []
+}

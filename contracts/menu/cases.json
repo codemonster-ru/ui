@@ -1,0 +1,122 @@
+{
+  "$comment": "Shared VfMenu cases. Plain data only. The vocabulary is the whole historical Vue contract at fd793696f50d3be0fcd3788f0f8f751c63869963, which is one div carrying a block class and role=menu around an unscoped default slot: no props, no emits, no state, no keyboard, no focus, no open state. Every case here is therefore about attrs and about what the menu does *not* add to its content. The consumer content is declared as a name rather than as markup, so both fixtures build the same nodes from the same word and neither can quietly render something the other does not. What is deliberately absent is content carrying role=menuitem: VfMenu owns no control, so its evidence is the static-ownership posture, whose rule is that every focusable element inside a case is the consumer's declared budget and that no element carries an explicit interactive role. A case that put a menuitem role in consumer content would need that rule relaxed for no gain - the composition of a menu with items adds no node either component does not already produce on its own, `menu.css` has no descendant selector, and VfMenu.characterization.spec.ts already pins the menu hosting raw role=menuitem children untouched. The menu items themselves are a separate catalog and a separate profile, because VfMenu does not own them.",
+  "component": "menu",
+  "propVocabulary": {
+    "$comment": "VfMenu declares no props at all. Everything a case passes is an attr, and the `attrs` map below is the whole input surface."
+  },
+  "slotVocabulary": {
+    "children": "Names the consumer content the fixtures render into the default slot: 'none' renders nothing, 'text' a bare text node, 'spans' three sibling spans, 'nested' a wrapper div holding a span, and 'button' one consumer button. Only 'button' is focusable, and no name produces an element carrying an explicit interactive role."
+  },
+  "cases": [
+    {
+      "id": "menu/empty",
+      "title": "No content: the menu is still a menu",
+      "$why": "The root exists on its own account. One div, the block class, role=menu, no children, no tabindex, and none of the ARIA a menu widget would need. No screenshot: an empty menu is a flex column with no children, no padding and no border, so it has literally no box to capture - which is itself part of what this case records, and the DOM, ARIA and ownership dimensions carry it.",
+      "props": {},
+      "attrs": {},
+      "content": { "children": "none" },
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu/text",
+      "title": "A bare text node as the whole content",
+      "$why": "The slot is unscoped and unwrapped: text lands directly in the root, with no element around it.",
+      "props": {},
+      "attrs": {},
+      "content": { "children": "text" },
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu/spans",
+      "title": "Three sibling elements in order",
+      "$why": "The menu adds no wrapper, no list, no separator and no ordering of its own; three children in, three children out.",
+      "props": {},
+      "attrs": {},
+      "content": { "children": "spans" },
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu/nested",
+      "title": "Nested consumer markup",
+      "$why": "Depth is preserved verbatim. A menu that flattened or re-parented its content would differ here.",
+      "props": {},
+      "attrs": {},
+      "content": { "children": "nested" },
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu/consumer-control",
+      "title": "One consumer button inside the menu",
+      "$why": "The budget case. Every focusable element in a menu is the consumer's, because the component owns none - so a menu that grew a control of its own fails the static-ownership count on every target at once, which is the defect a three-way comparison cannot see. The button carries no role attribute, so the explicit-interactive-role total stays zero and stays meaningful.",
+      "props": {},
+      "attrs": {},
+      "content": { "children": "button" },
+      "consumerInteractive": 1,
+      "visual": true
+    },
+    {
+      "id": "menu/attrs",
+      "title": "A consumer id and data attribute on the root",
+      "$why": "VfMenu declares no props, so every attribute is fall-through and lands on the single node.",
+      "props": {},
+      "attrs": { "id": "actions-menu", "data-testid": "menu" },
+      "content": { "children": "spans" },
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu/class-and-style",
+      "title": "A consumer class and inline style",
+      "$why": "The class merges rather than replacing, and it merges AFTER the block class: `vf-menu mine`. That position is the contract, and it is the inverse of VfMenuItem, which merges the consumer's class first.",
+      "props": {},
+      "attrs": { "class": "consumer-menu", "style": "min-width: 12rem;" },
+      "content": { "children": "spans" },
+      "consumerInteractive": 0,
+      "visual": true
+    },
+    {
+      "id": "menu/aria-label",
+      "title": "A consumer aria-label",
+      "$why": "The component writes no accessible name of its own, so the menu is unnamed unless a consumer names it. This is the case where the accessibility tree has a name to compare.",
+      "props": {},
+      "attrs": { "aria-label": "Workspace actions" },
+      "content": { "children": "spans" },
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu/aria-described",
+      "title": "A consumer aria-describedby pointing outside the menu",
+      "$why": "The relationship resolves to an element the fixture renders beside the menu on every target, which is what makes the described-by edge comparable rather than dangling.",
+      "props": {},
+      "attrs": { "aria-describedby": "aria-described-hint" },
+      "content": { "children": "spans" },
+      "consumerInteractive": 0,
+      "visual": false
+    },
+    {
+      "id": "menu/tabindex",
+      "title": "A consumer tabindex on the root",
+      "$why": "The component writes no tabindex, so a consumer's lands and makes the root itself focusable - which is why this case declares a consumer budget of one. A menu that gave itself a tabindex would exceed the budget on every target at once.",
+      "props": {},
+      "attrs": { "tabindex": "0" },
+      "content": { "children": "spans" },
+      "consumerInteractive": 1,
+      "visual": false
+    },
+    {
+      "id": "menu/role-override",
+      "title": "A consumer role replaces role=menu",
+      "$why": "Load-bearing, and the whole of what VfMenu decides. The Vue template binds attrs LAST, so a consumer role overrides the component's and the component does not protect it. This is the exact inverse of VfMenuItem, whose role=menuitem cannot be overridden - and a migration that made the two agree would break exactly one of them, whichever way it went. The accessibility tree sees a list here, not a menu.",
+      "props": {},
+      "attrs": { "role": "list" },
+      "content": { "children": "spans" },
+      "consumerInteractive": 0,
+      "visual": false
+    }
+  ]
+}

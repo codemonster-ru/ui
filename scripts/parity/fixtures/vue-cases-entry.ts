@@ -31,6 +31,8 @@ import VfStepper from '@parity/core/components/stepper/VfStepper.vue';
 import VfTabs from '@parity/core/components/tabs/VfTabs.vue';
 import VfLink from '@parity/core/components/link/VfLink.vue';
 import VfBreadcrumbs from '@parity/core/components/breadcrumbs/VfBreadcrumbs.vue';
+import VfMenu from '@parity/core/components/menu/VfMenu.vue';
+import VfMenuItem from '@parity/core/components/menu/VfMenuItem.vue';
 import { VueIconify } from '@codemonster-ru/vueforge-icons';
 import '@parity/core/styles/components.css';
 import cases from '@parity/cases.json';
@@ -149,6 +151,9 @@ interface BreadcrumbsSeparatorSlot {
   markup?: 'label';
 }
 
+/** The consumer content a VfMenu case declares, by name. */
+type MenuChildren = 'none' | 'text' | 'spans' | 'nested' | 'button';
+
 interface ParityCase {
   id: string;
   props: Record<string, unknown>;
@@ -187,6 +192,8 @@ interface ParityCase {
     tab?: { numbered?: boolean };
     /** A consumer control rendered before VfTabs' root, the origin of the native Tab scenario. */
     before?: { control?: { text: string } };
+    /** VfMenu's default slot, named rather than spelled as markup so both fixtures build the same nodes. */
+    children?: MenuChildren;
   };
   /** VfAccordion siblings rendered side by side, each with its own props. */
   group?: Record<string, unknown>[];
@@ -550,6 +557,74 @@ function renderBreadcrumbs(parityCase: ParityCase): VNode[] {
   }
 
   const children: VNode[] = [h(VfBreadcrumbs, { ...parityCase.props, ...parityCase.attrs } as never, slots)];
+
+  if (parityCase.attrs['aria-describedby'] === 'aria-described-hint') {
+    children.push(h('p', { id: 'aria-described-hint', class: 'parity-hint' }, 'Shown in workspace settings.'));
+  }
+
+  return children;
+}
+
+
+/**
+ * The consumer content a VfMenu case declares.
+ *
+ * Named rather than spelled as markup so that this fixture and the Razor one
+ * build the same nodes from the same word: a catalog carrying HTML would let
+ * the two drift silently. Only `button` is focusable, and nothing here carries
+ * an explicit interactive role - the menu's evidence is the static-ownership
+ * posture, whose rule is that every focusable element is the consumer's
+ * declared budget and that the explicit-role total is zero.
+ */
+function menuChildren(children: MenuChildren | undefined): VNode[] {
+  if (children === 'text') return [h('span', { class: 'parity-menu-text' }, 'Plain content')];
+  if (children === 'spans') {
+    return ['One', 'Two', 'Three'].map((text) => h('span', { class: 'parity-menu-child' }, text));
+  }
+  if (children === 'nested') {
+    return [h('div', { class: 'parity-menu-group' }, [h('span', { class: 'parity-menu-child' }, 'Deep')])];
+  }
+  if (children === 'button') {
+    return [h('button', { type: 'button', class: 'consumer-control' }, 'Consumer action')];
+  }
+
+  return [];
+}
+
+/**
+ * VfMenu, for the menu catalog.
+ *
+ * Props and attrs are spread onto the component together, because VfMenu
+ * declares no props at all and every one of them is an attr. The described-by
+ * hint is the same paragraph the other fixtures append, so a consumer
+ * aria-describedby resolves to an element outside the menu on every target.
+ */
+function renderMenu(parityCase: ParityCase): VNode[] {
+  const children: VNode[] = [
+    h(
+      VfMenu,
+      { ...parityCase.props, ...parityCase.attrs } as never,
+      { default: () => menuChildren(parityCase.content?.children) },
+    ),
+  ];
+
+  if (parityCase.attrs['aria-describedby'] === 'aria-described-hint') {
+    children.push(h('p', { id: 'aria-described-hint', class: 'parity-hint' }, 'Shown in workspace settings.'));
+  }
+
+  return children;
+}
+
+/**
+ * VfMenuItem, for the menu-item catalog.
+ *
+ * One component, props and attrs spread onto it. There is no slot to pass -
+ * the component has none, and its label is a prop - and no router to register:
+ * unlike VfLink and VfBreadcrumbs this component has no second branch, so
+ * every case here renders the whole contract.
+ */
+function renderMenuItem(parityCase: ParityCase): VNode[] {
+  const children: VNode[] = [h(VfMenuItem, { ...parityCase.props, ...parityCase.attrs } as never)];
 
   if (parityCase.attrs['aria-describedby'] === 'aria-described-hint') {
     children.push(h('p', { id: 'aria-described-hint', class: 'parity-hint' }, 'Shown in workspace settings.'));
@@ -1043,6 +1118,14 @@ function renderCase(parityCase: ParityCase): VNode {
 
   if (catalog.component === 'breadcrumbs') {
     return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderBreadcrumbs(parityCase));
+  }
+
+  if (catalog.component === 'menu') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderMenu(parityCase));
+  }
+
+  if (catalog.component === 'menu-item') {
+    return h('div', { class: 'parity-case', 'data-parity-case': parityCase.id }, renderMenuItem(parityCase));
   }
 
   if (catalog.component === 'icon-button') {

@@ -1,0 +1,142 @@
+{
+  "$comment": "Parity policy for the shared VfMenuItem cases. Plain data: no DSL, no waiver engine. approvedDivergences is empty and is expected to stay empty. Unlike VfLink and VfBreadcrumbs there is not even a framework-specific classification for a router branch, because this component has none. The one behaviour the Razor adapter cannot reproduce - the `select` emit - is not a divergence and is not listed as one: it changes no DOM and no state, so no shared case compares it, and it is pinned where it lives, in the Vue characterization suite.",
+  "classifications": {
+    "exact": "Must match literally across every target. Structure, canonical classes, native attributes, visible text, accessible names, computed geometry and colour.",
+    "semantic": "Framework mechanics may differ; the observable meaning must not. How content is composed, how a renderer marks its own output.",
+    "framework-specific": "Historical behaviour of one adapter that the other is not required to reproduce. Narrow, named, and covered by its own test."
+  },
+  "notCompared": {
+    "$comment": "Recorded so a reviewer can see what is deliberately outside the comparison, without leaving dead dimensions that look like live protection. Nothing here is a waiver: the extractor never produces these differences in the first place.",
+    "attributeOrder": "Attributes are extracted into a sorted map, so serialisation order cannot produce a difference. It carries no meaning. It matters here only because the two adapters genuinely order them differently - Vue writes the component bindings around the forwarded attrs, PHP writes the forwarded ones first and overwrites in place - and neither order is the contract.",
+    "classOrder": "Canonical and consumer classes are extracted as two sorted lists, and the raw class attribute is not compared: the two renderers legitimately serialise the same classes in different orders, which is the position M26 recorded. The *position of the consumer class relative to the block class* - before it here, after it on VfMenu and VfLink - is therefore pinned where it is observable rather than here: VfMenuItem.characterization.spec.ts asserts the rendered attribute, MenuItemComponentTest asserts the PHP one, and the characterization mutation `menu-item-consumer-class-last` fails if either is normalised.",
+    "rendererMarkers": "Vue scope attributes (data-v-*) and the Razor ownership marker (data-vf-razor*) are dropped by scripts/parity/extract.mjs. They identify the renderer, not the product. Neither component has a browser controller, so no Razor output here carries a marker at all.",
+    "navigation": "No case follows a link. Activating a native anchor is the browser's behaviour, not the component's, and the component does not intercept it.",
+    "selectEmit": "The `select` emit is a Vue framework event with no server analogue. It changes no DOM, sets no state and writes no attribute, so there is nothing for a three-way comparison to measure and a shared case that claimed to compare it would be comparing nothing. It is characterised in VfMenuItem.characterization.spec.ts, including the disabled guard and the fact that it never stops propagation. Inventing a data-select attribute, a synthetic browser event or a controller to make a live dimension exist would be manufacturing coverage.",
+    "nativeActivation": "Enter and Space on a button, Enter on an anchor, and a disabled control refusing focus and activation are the browser's semantics, identical on both platforms because both render the same native element. They are exercised by the showcase browser probes rather than compared as a parity dimension, because the component adds nothing to them."
+  },
+  "dimensions": {
+    "dom.structure": {
+      "classification": "exact",
+      "description": "An unexpected element, wrapper or tag mismatch. The dimension that carries this milestone's semantic identity: an anchor rendered as a button or the reverse, either rendered as a div with role=menuitem, a missing label span, an icon wrapper that vanished or gained a level. A button-to-anchor substitution preserves the owned-control total, so this dimension and the native attributes below - against the immutable reference - are what catch it."
+    },
+    "dom.canonicalClasses": {
+      "classification": "exact",
+      "description": "vf-* classes on the control, the icon wrapper, the glyph and the label span, including the active and danger modifiers."
+    },
+    "dom.nativeAttributes": {
+      "classification": "exact",
+      "description": "href, target, rel, type, disabled and tabindex on the control, style, every native attribute a consumer forwards - and `d`, the glyph's path geometry, which is what tells `bookmark`, `filter` and the `moon` fallback apart: the three have identical structure, identical svg presentation attributes and identical wrapper styles. `d` has been in the extractor's compared vocabulary since M07; this profile declares it so the attribute-coverage gate asserts it still is, which matters here because this is the first migrated component whose glyph a consumer names. The class attribute itself is not compared; see notCompared.classOrder."
+    },
+    "dom.text": {
+      "classification": "exact",
+      "description": "Visible text content: the label span's text, and the absence of any other text node."
+    },
+    "dom.aria": {
+      "classification": "exact",
+      "description": "aria-* attributes and role. `role=\"menuitem\"` is the component's on both branches and is NOT overridable - a consumer role loses, which is the inverse of VfMenu. `aria-disabled` is written on both branches for a disabled item and beside the native `disabled` on the button. `aria-hidden` is on the glyph. There is no aria-selected, aria-checked or aria-current: `active` writes none, and a target that added one would be inventing a state."
+    },
+    "dom.productData": {
+      "classification": "exact",
+      "description": "data-* attributes a consumer forwards. The component writes none of its own - in particular no stand-in for the select emit."
+    },
+    "dom.relationships": {
+      "classification": "exact",
+      "description": "aria-labelledby and aria-describedby edges, resolved to the elements they point at."
+    },
+    "style.geometry": {
+      "classification": "exact",
+      "description": "Computed box geometry of the control, the glyph and the label. This is where the overlay token proves itself: `.vf-menu__item` takes its border width from --vf-overlay-border-width, which overlay-primitives.css is the only definition of, so a target that lost that stylesheet computes a `medium` border instead of 1px and differs here."
+    },
+    "style.colour": {
+      "classification": "exact",
+      "description": "Computed colours of the control and the glyph: the resting colour, the active surface and the danger foreground."
+    },
+    "visual": {
+      "classification": "exact",
+      "description": "Rendered screenshot of the case, for the cases that declare one."
+    },
+    "a11y.role": {
+      "classification": "exact",
+      "description": "The role Chrome computes: `menuitem` on every case, from a native button or a native anchor."
+    },
+    "a11y.name": {
+      "classification": "exact",
+      "description": "The accessible name Chrome computes, which is the label span's text - the glyph is aria-hidden and contributes nothing - unless a consumer aria-label replaces it."
+    },
+    "a11y.states": {
+      "classification": "exact",
+      "description": "Focusable and disabled as Chrome exposes them. A disabled button is not focusable and is exposed as disabled; a disabled anchor has no href and is not in the tab order. `active` has no state here at all, and that absence is the contract."
+    },
+    "ownership.controls": {
+      "classification": "exact",
+      "description": "The component-ownership posture: VfMenuItem owns EXACTLY ONE control in all four of its states, found by the profile's two rules and rejected by tag identity and by declared explicit role. A div with role=menuitem is found and rejected; a missing, duplicated or extra control fails the count; a consumer control counted as the component's breaks the totals equation. This fails on every target at once, which is the defect a three-way comparison cannot see."
+    },
+    "interaction.state": {
+      "classification": "exact",
+      "description": "The item drives no scenario and owns no state: clicking it changes no class and no attribute. The posture is recorded and measured rather than skipped, so a stage that silently stopped producing evidence fails instead of passing."
+    },
+    "interaction.focus": {
+      "classification": "exact",
+      "description": "Where focus sits after the capture. Nothing is driven, so nothing inside a case may hold it."
+    }
+  },
+  "historicalQuirks": [
+    {
+      "id": "the-branch-test-is-truthiness-so-an-empty-href-is-a-button",
+      "description": "The reference tests `v-if=\"props.href\"`. An empty-string href is no destination and renders the BUTTON branch, with no href attribute at all. VfLink, tested the same way, keeps `href=\"\"` on its anchor.",
+      "classification": "exact",
+      "reason": "The two components genuinely differ and are not made to agree. Borrowing VfLink's definedness test here turns a button into an anchor with an empty href.",
+      "coveredBy": "contracts/menu-item/cases.json#menu-item/empty-href, packages/shared-core/src/menu/state-vectors.json#isMenuItemLink"
+    },
+    {
+      "id": "rel-is-written-as-given-and-never-derived",
+      "description": "The `rel` prop is bound straight to the attribute. `target=\"_blank\"` with no rel writes NO rel attribute. VfLink derives `noopener noreferrer` for exactly this input and VfBreadcrumbs reuses VfLink's rule; this component reuses neither.",
+      "classification": "exact",
+      "reason": "The absence is the contract. Calling resolveLinkRel here - the one-line change that looks like tidying - writes an attribute the reference never wrote, on both platforms at once.",
+      "coveredBy": "contracts/menu-item/cases.json#menu-item/blank-without-rel, packages/razor/tests/Support/MenuItemStateVectorsTest.php"
+    },
+    {
+      "id": "a-disabled-anchor-drops-only-its-href",
+      "description": "A disabled anchor loses its href, keeps target and rel, gains aria-disabled and tabindex=\"-1\", takes no `disabled` attribute and gains no modifier class. A disabled button takes the native `disabled` attribute and aria-disabled, and no tabindex at all.",
+      "classification": "exact",
+      "reason": "Four separate decisions that a migration would normalise into one \"disabled\" rule. The CSS covers both branches with `:is(:disabled, [aria-disabled='true'])`, which is why neither branch needs a modifier class.",
+      "coveredBy": "contracts/menu-item/cases.json#menu-item/anchor-disabled, contracts/menu-item/cases.json#menu-item/button-disabled"
+    },
+    {
+      "id": "the-menuitem-role-is-not-overridable",
+      "description": "The Vue template binds `v-bind=\"attrs\"` FIRST, before every component binding, so the component wins: a consumer `role` cannot replace `role=\"menuitem\"`, and on an enabled anchor a consumer `tabindex` is removed because the component binds undefined over it. On the button branch a consumer tabindex survives, because that branch binds none.",
+      "classification": "exact",
+      "reason": "The exact inverse of VfMenu, whose consumer role does win. The two orderings are both the reference's and making them agree breaks one.",
+      "coveredBy": "contracts/menu-item/cases.json#menu-item/consumer-role-loses, contracts/menu-item/cases.json#menu-item/consumer-tabindex-anchor"
+    },
+    {
+      "id": "the-consumer-class-lands-before-the-block-class",
+      "description": "The class attribute is the consumer's class and then `vf-menu__item` and its modifiers, because the attrs are the earlier binding. VfMenu and VfLink are the other way round.",
+      "classification": "exact",
+      "reason": "Both orderings are the reference's and making them agree breaks one. Parity compares classes as sorted sets, so this is pinned by the characterization suites and the PHP tests rather than by a shared case.",
+      "coveredBy": "packages/core/src/components/menu/VfMenuItem.characterization.spec.ts, packages/razor/tests/Components/MenuItemComponentTest.php, scripts/baseline/input-mutations.mjs#menu-item-consumer-class-last"
+    },
+    {
+      "id": "the-icon-class-lands-on-the-inner-svg",
+      "description": "The Vue icon component sets inheritAttrs: false and spreads its attrs onto the inner svg, so `vf-menu__item-icon` and `aria-hidden` are on the glyph and the flex child of the item is the untouched `span.vf-icon-wrapper`, which carries no `flex: none`.",
+      "classification": "exact",
+      "reason": "Moving the class onto the wrapper is the tidying a migration would do by accident, and it changes which element the sizing rules apply to.",
+      "coveredBy": "contracts/menu-item/cases.json#menu-item/icon"
+    },
+    {
+      "id": "an-unknown-icon-name-falls-back-to-moon",
+      "description": "The `icon` prop is typed `IconName | string`, so an arbitrary string is public API, and the Vue icon component answers a name no glyph has with the `moon` glyph rather than throwing or rendering nothing. The neutral registry's renderer throws instead, so the Razor adapter resolves the name through MenuItemState::resolveIconName before calling it - for this component only, because no other component takes a consumer's glyph name.",
+      "classification": "exact",
+      "reason": "It is reachable public behaviour, not an error path. `moon` shares its structure and every presentation attribute with the catalog's `bookmark`, so `path[d]` is the only dimension that can tell a correct fallback from a wrong glyph - and it is compared.",
+      "coveredBy": "contracts/menu-item/cases.json#menu-item/icon-unknown, packages/shared-core/src/menu/state-vectors.json#resolveMenuItemIconName"
+    },
+    {
+      "id": "active-is-a-class-and-not-a-state",
+      "description": "`active` produces `vf-menu__item--active` and nothing else: no aria-selected, no aria-checked, no aria-current, and no state in the accessibility tree.",
+      "classification": "exact",
+      "reason": "The accessibility tree cannot see it, so the DOM class and the computed colours are the whole of its evidence. Adding an ARIA state would be inventing one.",
+      "coveredBy": "contracts/menu-item/cases.json#menu-item/active"
+    }
+  ],
+  "approvedDivergences": []
+}

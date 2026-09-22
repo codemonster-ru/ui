@@ -1105,6 +1105,144 @@ export const profiles = {
       link: { selector: '.vf-breadcrumbs__link[href]', tag: 'a' },
     },
   },
+  // The M27 pair, and two profiles rather than one. VfMenu owns no control and
+  // VfMenuItem owns exactly one, and folding them together would mean either
+  // counting the items a menu contains as the menu's - which they are not, they
+  // are another public component's - or giving the item catalog a menu wrapper
+  // it does not need. The two components share a block name in one stylesheet
+  // and nothing else: no import, no inject, no delegation, no descendant
+  // selector.
+  menu: {
+    id: 'menu',
+    label: 'VfMenu',
+    component: 'menu',
+    casesPath: 'contracts/menu/cases.json',
+    policyPath: 'contracts/menu/parity-policy.json',
+    artifactDirectory: 'parity-menu',
+    reportName: 'menu-parity-report.json',
+    // One element to measure, because there is one element. The flex column
+    // and its gap are the whole of the menu's own geometry.
+    measuredRoles: {
+      menu: '.vf-menu',
+    },
+    // The root alone. What a menu contains is the consumer's and is compared
+    // as ordinary DOM; the tree is asked only what the menu itself exposes -
+    // which is a role, no name unless a consumer gives one, and no state.
+    accessibilityRoles: {
+      menu: '.vf-menu',
+    },
+    // The consumer's class, style, id, tabindex, data-* and the aria a
+    // consumer forwards - and `role`, which is listed because it is the one
+    // attribute this component writes and the one a consumer can take away
+    // from it. Compared as a raw attribute so the consumer class landing
+    // *after* the block class is part of the comparison rather than a sorted
+    // set that hides the position.
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'role',
+      'tabindex',
+      'aria-label',
+      'aria-labelledby',
+      'aria-describedby',
+      'data-testid',
+    ],
+    // The static posture, which is the honest one: the component owns no
+    // control, so what is asserted is that every focusable element in a case
+    // is the consumer's declared budget and that nothing carries an explicit
+    // interactive role. No case gives consumer content a menuitem role, so
+    // that total stays zero and stays meaningful - the composition of a menu
+    // with items adds no node either component does not already produce
+    // alone, and it is pinned by the characterization suites instead.
+    snapshot: 'static',
+  },
+  menuItem: {
+    id: 'menuItem',
+    label: 'VfMenuItem',
+    component: 'menu-item',
+    casesPath: 'contracts/menu-item/cases.json',
+    policyPath: 'contracts/menu-item/parity-policy.json',
+    artifactDirectory: 'parity-menu-item',
+    reportName: 'menu-item-parity-report.json',
+    // The control, the glyph and the label. The control is where the overlay
+    // token proves itself: its border width comes from
+    // --vf-overlay-border-width, so a target without overlay-primitives.css
+    // computes `medium` here instead of 1px.
+    measuredRoles: {
+      item: '.vf-menu__item',
+      icon: '.vf-menu__item-icon',
+      label: '.vf-menu__item-label',
+    },
+    // The control for its role, name and states; the glyph for what it must
+    // *not* expose - it is aria-hidden, so it is ignored by the tree and
+    // absent here, and a glyph that lost its aria-hidden appears as an image.
+    // Chrome exposes no state for `active`, so the item's own node is where
+    // that absence is visible: the DOM carries the modifier class and the
+    // tree carries nothing.
+    accessibilityRoles: {
+      item: '.vf-menu__item',
+      icon: '.vf-menu__item-icon',
+      label: '.vf-menu__item-label',
+    },
+    // href, target, rel, type, disabled and tabindex on the control, the
+    // consumer's style, id, data-* and aria - and `d`, the glyph's path
+    // geometry.
+    //
+    // `d` is listed for a different reason from the rest. M27 set out to
+    // reproduce a false PASS here, on the reasoning that swapped the M26
+    // chevron: this component's glyph is named by a *consumer*, and
+    // `bookmark`, `filter` and `moon` - the fallback - have identical
+    // structure, identical svg presentation attributes and identical wrapper
+    // styles, differing in nothing but this attribute. There is no false
+    // PASS. `d` has been in the extractor's compared vocabulary since M07,
+    // which the M26 note beside `points` says in as many words, and a run of
+    // the glyph mutations with `d` struck from this list still detected them
+    // on dom.nativeAttributes - because extraction reads the global list and
+    // not this one. What this declaration buys is the attribute-coverage
+    // gate, which turns it into an assertion that the global list still
+    // carries `d`: the component whose glyph a consumer names is the one that
+    // should notice if it ever stops being compared.
+    //
+    // `type` is load-bearing beyond the comparison: it is what tells the two
+    // ownership rules below which branch rendered.
+    semanticAttributes: [
+      'class',
+      'style',
+      'id',
+      'href',
+      'target',
+      'rel',
+      'role',
+      'type',
+      'disabled',
+      'tabindex',
+      'aria-label',
+      'aria-hidden',
+      'aria-disabled',
+      'aria-describedby',
+      'data-testid',
+      'd',
+    ],
+    snapshot: 'menu-item',
+    // Two rules, one per branch, because one rule cannot carry two tags. The
+    // discriminator is `type`, not `href`: a disabled anchor drops its href
+    // and would be matched by an `:not([href])` rule and rejected as the
+    // wrong tag, so an href-based split cannot even describe the reference.
+    // `type="button"` is written unconditionally on the button branch and
+    // never on the anchor branch, so it splits all four states correctly.
+    //
+    // Neither selector names a tag, which is deliberate and the same choice
+    // VfBreadcrumbs made: a div with role=menuitem carrying the class is
+    // *found* and rejected by tag identity rather than silently vanishing
+    // from the count. Both rules declare the explicit role, so the
+    // explicit-role total equals the owned-control count and a substituted or
+    // missing role fails by identity.
+    controlOwnership: {
+      action: { selector: '.vf-menu__item[type="button"]', tag: 'button', ariaRole: 'menuitem' },
+      link: { selector: '.vf-menu__item:not([type])', tag: 'a', ariaRole: 'menuitem' },
+    },
+  },
 };
 
 export function loadProfile(id) {
