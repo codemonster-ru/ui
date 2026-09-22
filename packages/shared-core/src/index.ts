@@ -109,6 +109,16 @@ export { resolveAccordionIconClasses, resolveAccordionOpen, resolveAccordionTran
 export { isBreadcrumbLink, resolveBreadcrumbCurrentFlags, resolveBreadcrumbItemClasses } from './breadcrumbs/state.js';
 export { resolveLinkClasses, resolveLinkRel } from './link/state.js';
 export type { VfLinkToneName, VfLinkUnderlineName } from './link/state.js';
+// VfMenuItem. There is deliberately no rel rule beside VfLink's: this
+// component writes `rel` exactly as given and derives nothing for
+// target=_blank, and VfMenu makes no decision at all.
+export {
+  MENU_ITEM_FALLBACK_ICON,
+  isMenuItemLink,
+  resolveMenuItemClasses,
+  resolveMenuItemIconName,
+} from './menu/state.js';
+export type { VfMenuItemToneName } from './menu/state.js';
 export {
   formatStepperProgressFactor,
   resolveStepperActiveIndex,

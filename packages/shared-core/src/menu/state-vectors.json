@@ -1,0 +1,102 @@
+{
+  "$comment": "Shared input/expected vectors for VfMenuItem. The TypeScript rules in menu/state.ts and the PHP mirror in packages/razor/src/Support/MenuItemState.php both run this file. Three rules only: the class list, the anchor-or-button test and the icon-name resolution. There is deliberately no vector for `rel` - VfMenuItem writes it exactly as given and derives nothing for target=_blank, so there is no derivation to agree on, and a vector that called VfLink's rule here would encode a behaviour the reference never had. There is no vector for `select` either: it is a Vue emit with no server analogue, and the disabled guard around it is framework event handling rather than a shared decision. VfMenu has no vectors at all because it makes no decision.",
+  "resolveMenuItemClasses": [
+    {
+      "active": false,
+      "tone": "default",
+      "expected": ["vf-menu__item"]
+    },
+    {
+      "$why": "tone=default emits no modifier rather than a --default class.",
+      "active": false,
+      "tone": "default",
+      "expected": ["vf-menu__item"]
+    },
+    {
+      "active": true,
+      "tone": "default",
+      "expected": ["vf-menu__item", "vf-menu__item--active"]
+    },
+    {
+      "active": false,
+      "tone": "danger",
+      "expected": ["vf-menu__item", "vf-menu__item--danger"]
+    },
+    {
+      "$why": "The active modifier comes before the tone modifier.",
+      "active": true,
+      "tone": "danger",
+      "expected": ["vf-menu__item", "vf-menu__item--active", "vf-menu__item--danger"]
+    }
+  ],
+  "isMenuItemLink": [
+    {
+      "$why": "No destination at all: the button branch.",
+      "href": null,
+      "expected": false
+    },
+    {
+      "$why": "Truthiness, not definedness. VfLink keeps href=\"\" on its anchor; this component renders the button, and the two are not made to agree.",
+      "href": "",
+      "expected": false
+    },
+    {
+      "href": "/docs",
+      "expected": true
+    },
+    {
+      "$why": "A fragment is a destination.",
+      "href": "#section",
+      "expected": true
+    },
+    {
+      "$why": "A single space is truthy, so it is a destination. The rule tests the value, not whether it is a usable URL.",
+      "href": " ",
+      "expected": true
+    }
+  ],
+  "resolveMenuItemIconName": [
+    {
+      "$why": "A name the registry holds is returned unchanged.",
+      "icon": "pencil",
+      "expected": "pencil"
+    },
+    {
+      "icon": "trash",
+      "expected": "trash"
+    },
+    {
+      "$why": "The registry is keyed in kebab case, which is what the icons package's `icons` map produces.",
+      "icon": "chevron-right",
+      "expected": "chevron-right"
+    },
+    {
+      "$why": "The IconName union is camel case, and the Vue icon component accepts it, so the rule camelises and kebabs back rather than failing over.",
+      "icon": "chevronRight",
+      "expected": "chevron-right"
+    },
+    {
+      "$why": "The Vue icon component lowercases a dashed name before camelising it, so a mixed-case dashed name is the same glyph.",
+      "icon": "Chevron-Right",
+      "expected": "chevron-right"
+    },
+    {
+      "$why": "An arbitrary string is public API, and the Vue icon component answers one with the moon glyph rather than throwing. The Razor renderer throws, which is why this rule runs before it.",
+      "icon": "no-such-glyph",
+      "expected": "moon"
+    },
+    {
+      "$why": "An undashed name is not camelised, so an all-caps one does not resolve to the lowercase glyph.",
+      "icon": "MOON",
+      "expected": "moon"
+    },
+    {
+      "icon": "",
+      "expected": "moon"
+    },
+    {
+      "icon": null,
+      "expected": "moon"
+    }
+  ]
+}

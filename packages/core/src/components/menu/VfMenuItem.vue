@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { VueIconify, type IconName } from '@codemonster-ru/vueforge-icons';
+import { isMenuItemLink, resolveMenuItemClasses } from '@codemonster-ru/vueforge-shared-core';
 import { computed, useAttrs } from 'vue';
 
 defineOptions({
@@ -32,11 +33,14 @@ const emit = defineEmits<{
 }>();
 
 const attrs = useAttrs();
-const classes = computed(() => [
-  'vf-menu__item',
-  props.active && 'vf-menu__item--active',
-  props.tone === 'danger' && 'vf-menu__item--danger',
-]);
+// Two shared rules and nothing else. `rel` is bound straight from the prop
+// below rather than through VfLink's `resolveLinkRel`: this component derives
+// no `noopener noreferrer` for `target="_blank"`, and reusing that rule would
+// add an attribute the reference never writes.
+const classes = computed(() => resolveMenuItemClasses(props.active, props.tone));
+// Truthiness, as the reference's `v-if="props.href"` is: `href=""` renders the
+// button branch. VfLink keeps `href=""` on its anchor, and the two do not agree.
+const isLink = computed(() => isMenuItemLink(props.href));
 
 function handleSelect(event: MouseEvent) {
   if (props.disabled) {
@@ -50,7 +54,7 @@ function handleSelect(event: MouseEvent) {
 
 <template>
   <a
-    v-if="props.href"
+    v-if="isLink"
     v-bind="attrs"
     :class="classes"
     :href="props.disabled ? undefined : props.href"

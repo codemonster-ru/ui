@@ -63,6 +63,12 @@ export const breadcrumbsSourcePath = 'packages/core/src/components/breadcrumbs/V
 /** The shared rules VfBreadcrumbs and the Razor adapter both derive from: current selection, the link test and the span classes. */
 export const breadcrumbsRulePath = 'packages/shared-core/src/breadcrumbs/state.ts';
 const breadcrumbsSuite = 'src/components/breadcrumbs/VfBreadcrumbs.characterization.spec.ts';
+export const menuSourcePath = 'packages/core/src/components/menu/VfMenu.vue';
+export const menuItemSourcePath = 'packages/core/src/components/menu/VfMenuItem.vue';
+/** The shared rules VfMenuItem and the Razor adapter both derive from: the class list, the branch test and the icon-name fallback. */
+export const menuRulePath = 'packages/shared-core/src/menu/state.ts';
+const menuSuite = 'src/components/menu/VfMenu.characterization.spec.ts';
+const menuItemSuite = 'src/components/menu/VfMenuItem.characterization.spec.ts';
 export const stepperSourcePath = 'packages/core/src/components/stepper/VfStepper.vue';
 /** The shared rules VfStepper, its Razor controller and the PHP adapter derive from. */
 export const stepperRulePath = 'packages/shared-core/src/stepper/state.ts';
@@ -4605,6 +4611,323 @@ export const breadcrumbsMutations = [
   },
 ];
 
+/**
+ * VfMenu and VfMenuItem, the M27 pair.
+ *
+ * Two components in one milestone and two suites, because the defects are not
+ * interchangeable: nothing VfMenu does can break VfMenuItem and nothing
+ * VfMenuItem does can break VfMenu. The coupling between them is the block
+ * name in one stylesheet, and a mutation that reached the other suite would be
+ * evidence that a migration had invented a dependency the reference has not.
+ *
+ * What these are built to catch is a migration reading the wrong neighbour:
+ *
+ *   - `menu-item-rel-derived-for-blank` is the milestone's headline defect.
+ *     VfLink derives `noopener noreferrer` for `target="_blank"` and
+ *     VfBreadcrumbs reuses VfLink's rule; VfMenuItem derives nothing, and
+ *     importing `resolveLinkRel` here is the one-line change that looks like
+ *     tidying and writes an attribute the reference never wrote;
+ *   - `menu-item-href-definedness` is VfLink's branch test applied here, which
+ *     turns `href=""` from a button into an anchor;
+ *   - `menu-item-consumer-class-last` and `menu-role-not-overridable` are the
+ *     two halves of the attrs-ordering inversion. VfMenu binds attrs last and
+ *     VfMenuItem binds them first, so a migration that made the two agree
+ *     breaks exactly one of them whichever way it went;
+ *   - the disabled anchor's four separate facts - href dropped, target kept,
+ *     rel kept, tabindex -1, aria-disabled, no `disabled` attribute - each get
+ *     their own mutation, because "disabled" here is not one decision.
+ *
+ * What is deliberately *not* here is the icon-name fallback. The Vue adapter
+ * hands `props.icon` to the icon component untouched, and the moon fallback
+ * for a name no glyph has is that component's own rule - so
+ * `resolveMenuItemIconName` has no Vue consumer to break, and a mutation of it
+ * would be MISSED here for the right reason. It is the Razor renderer that
+ * needs the rule, because its renderer throws where the Vue one falls back, and
+ * the evidence lives where the rule is used: the shared vectors on both sides
+ * of the language boundary, the PHP unit test, and the parity case that renders
+ * an unknown name on both platforms and compares the glyph it produced.
+ */
+export const menuMutations = [
+  {
+    id: 'menu-role-removed',
+    file: menuSourcePath,
+    suite: menuSuite,
+    description: 'the menu root renders without role=menu',
+    find: '<div class="vf-menu" role="menu" v-bind="attrs">',
+    replace: '<div class="vf-menu" v-bind="attrs">',
+  },
+  {
+    id: 'menu-role-not-overridable',
+    file: menuSourcePath,
+    suite: menuSuite,
+    description: 'attrs are bound before the role, so a consumer role no longer overrides role=menu',
+    find: '<div class="vf-menu" role="menu" v-bind="attrs">',
+    replace: '<div class="vf-menu" v-bind="attrs" role="menu">',
+  },
+  {
+    id: 'menu-root-tag-changed',
+    file: menuSourcePath,
+    suite: menuSuite,
+    description: 'the menu root is a ul rather than a div',
+    edits: [
+      { find: '<div class="vf-menu" role="menu" v-bind="attrs">', replace: '<ul class="vf-menu" role="menu" v-bind="attrs">' },
+      { find: '</div>', replace: '</ul>' },
+    ],
+  },
+  {
+    id: 'menu-class-order-flipped',
+    file: menuSourcePath,
+    suite: menuSuite,
+    description: "the consumer's class is merged before the block class, as VfMenuItem merges it",
+    find: '<div class="vf-menu" role="menu" v-bind="attrs">',
+    replace: '<div v-bind="attrs" class="vf-menu" role="menu">',
+  },
+  {
+    id: 'menu-slot-wrapped',
+    file: menuSourcePath,
+    suite: menuSuite,
+    description: 'the slot is wrapped in a list element the reference does not render',
+    find: '    <slot />',
+    replace: '    <div class="vf-menu__list"><slot /></div>',
+  },
+  {
+    id: 'menu-attrs-dropped',
+    file: menuSourcePath,
+    suite: menuSuite,
+    description: 'the root stops binding attrs, so nothing a consumer passes reaches the DOM',
+    find: '<div class="vf-menu" role="menu" v-bind="attrs">',
+    replace: '<div class="vf-menu" role="menu">',
+  },
+  {
+    id: 'menu-item-role-removed',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'neither branch writes role=menuitem',
+    all: true,
+    find: '\n    role="menuitem"',
+    replace: '',
+  },
+  {
+    id: 'menu-item-role-changed',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'the items carry role=option rather than role=menuitem',
+    all: true,
+    find: 'role="menuitem"',
+    replace: 'role="option"',
+  },
+  {
+    id: 'menu-item-role-overridable',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'attrs are bound last on the anchor, so a consumer role overrides role=menuitem as VfMenu allows',
+    edits: [
+      { find: '    v-if="isLink"\n    v-bind="attrs"\n', replace: '    v-if="isLink"\n' },
+      {
+        find: '    role="menuitem"\n    @click="handleSelect"\n  >',
+        replace: '    role="menuitem"\n    v-bind="attrs"\n    @click="handleSelect"\n  >',
+      },
+    ],
+  },
+  {
+    id: 'menu-item-href-definedness',
+    file: menuRulePath,
+    suite: menuItemSuite,
+    description: "the branch test becomes definedness, so href='' renders an anchor as VfLink does",
+    find: '  return Boolean(href);',
+    replace: '  return href !== undefined && href !== null;',
+  },
+  {
+    id: 'menu-item-rel-derived-for-blank',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: "VfLink's rel derivation is applied, so target=_blank gains a rel the reference never writes",
+    edits: [
+      {
+        find: "import { isMenuItemLink, resolveMenuItemClasses } from '@codemonster-ru/vueforge-shared-core';",
+        replace:
+          "import { isMenuItemLink, resolveLinkRel, resolveMenuItemClasses } from '@codemonster-ru/vueforge-shared-core';",
+      },
+      { find: ':rel="props.rel"', replace: ':rel="resolveLinkRel(props.rel, props.target)"' },
+    ],
+  },
+  {
+    id: 'menu-item-type-button-removed',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'the button branch stops writing type=button, the attribute that identifies it',
+    find: '    type="button"\n',
+    replace: '',
+  },
+  {
+    id: 'menu-item-consumer-class-last',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: "the consumer's class is merged after the block class, as VfMenu and VfLink merge it",
+    all: true,
+    find: '    v-bind="attrs"\n    :class="classes"',
+    replace: '    :class="classes"\n    v-bind="attrs"',
+  },
+  {
+    id: 'menu-item-disabled-anchor-keeps-href',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'a disabled anchor keeps its href and stays a working link',
+    find: ':href="props.disabled ? undefined : props.href"',
+    replace: ':href="props.href"',
+  },
+  {
+    id: 'menu-item-disabled-anchor-loses-tabindex',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'a disabled anchor keeps its place in the tab order',
+    find: '    :tabindex="props.disabled ? -1 : undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'menu-item-disabled-anchor-loses-target-and-rel',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'a disabled anchor drops target and rel along with its href, which the reference keeps',
+    edits: [
+      { find: ':target="props.target"', replace: ':target="props.disabled ? undefined : props.target"' },
+      { find: ':rel="props.rel"', replace: ':rel="props.disabled ? undefined : props.rel"' },
+    ],
+  },
+  {
+    id: 'menu-item-disabled-loses-aria-disabled',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'neither branch writes aria-disabled, so the anchor has no disabled semantics at all',
+    all: true,
+    find: '    :aria-disabled="props.disabled || undefined"\n',
+    replace: '',
+  },
+  {
+    id: 'menu-item-disabled-button-loses-disabled',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'the button branch stops writing the native disabled attribute',
+    find: '    :disabled="props.disabled"\n',
+    replace: '',
+  },
+  {
+    id: 'menu-item-disabled-emits',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'a disabled item emits select like any other',
+    find: '  if (props.disabled) {\n    event.preventDefault();\n    return;\n  }',
+    replace: '  if (props.disabled) {\n    event.preventDefault();\n  }',
+  },
+  {
+    id: 'menu-item-double-emit',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'one click emits select twice',
+    find: "  emit('select');\n}",
+    replace: "  emit('select');\n  emit('select');\n}",
+  },
+  {
+    id: 'menu-item-prevent-default-removed',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: "a disabled anchor's click is no longer prevented",
+    find: '    event.preventDefault();\n    return;',
+    replace: '    return;',
+  },
+  {
+    id: 'menu-item-stops-propagation',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'the click handler stops propagation, so a click never reaches an enclosing listener',
+    find: 'function handleSelect(event: MouseEvent) {',
+    replace: 'function handleSelect(event: MouseEvent) {\n  event.stopPropagation();',
+  },
+  {
+    id: 'menu-item-icon-class-on-wrapper',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'the icon class is moved off the svg, where a migration would tidy it onto the wrapper span',
+    all: true,
+    find: '<VueIconify v-if="props.icon" class="vf-menu__item-icon" :icon="props.icon" aria-hidden="true" />',
+    replace: '<VueIconify v-if="props.icon" :icon="props.icon" aria-hidden="true" />',
+  },
+  {
+    id: 'menu-item-icon-not-hidden',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'the icon stops being aria-hidden and is announced beside the label',
+    all: true,
+    find: ' aria-hidden="true" />',
+    replace: ' />',
+  },
+  {
+    id: 'menu-item-icon-name-changed',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'the icon name is rewritten on its way to the icon component',
+    all: true,
+    find: ':icon="props.icon"',
+    replace: ':icon="String(props.icon).replace(\'pencil\', \'trash\')"',
+  },
+  {
+    id: 'menu-item-active-modifier-removed',
+    file: menuRulePath,
+    suite: menuItemSuite,
+    description: 'the active modifier is never emitted',
+    find: "  if (active) classes.push('vf-menu__item--active');",
+    replace: '',
+  },
+  {
+    id: 'menu-item-danger-modifier-removed',
+    file: menuRulePath,
+    suite: menuItemSuite,
+    description: 'the danger tone emits no modifier',
+    find: "  if (tone === 'danger') classes.push('vf-menu__item--danger');",
+    replace: '',
+  },
+  {
+    id: 'menu-item-modifier-order-flipped',
+    file: menuRulePath,
+    suite: menuItemSuite,
+    description: 'the danger modifier is emitted before the active one',
+    edits: [
+      {
+        find: "  if (active) classes.push('vf-menu__item--active');\n  if (tone === 'danger') classes.push('vf-menu__item--danger');",
+        replace:
+          "  if (tone === 'danger') classes.push('vf-menu__item--danger');\n  if (active) classes.push('vf-menu__item--active');",
+      },
+    ],
+  },
+  {
+    id: 'menu-item-disabled-modifier-added',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'a disabled item gains a --disabled modifier, which no stylesheet selects and the reference never wrote',
+    all: true,
+    find: ':class="classes"',
+    replace: ':class="[classes, props.disabled && \'vf-menu__item--disabled\']"',
+  },
+  {
+    id: 'menu-item-attrs-dropped',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'neither branch binds attrs, so nothing a consumer passes reaches the control',
+    all: true,
+    find: '    v-bind="attrs"\n',
+    replace: '',
+  },
+  {
+    id: 'menu-item-label-slotted',
+    file: menuItemSourcePath,
+    suite: menuItemSuite,
+    description: 'the label span is replaced by a slot, which gives the component consumer content it never had',
+    all: true,
+    find: '<span class="vf-menu__item-label">{{ props.label }}</span>',
+    replace: '<span class="vf-menu__item-label"><slot>{{ props.label }}</slot></span>',
+  },
+];
+
 export const componentMutations = [
   ...inputMutations,
   ...iconButtonMutations,
@@ -4630,4 +4953,5 @@ export const componentMutations = [
   ...tabsMutations,
   ...linkMutations,
   ...breadcrumbsMutations,
+  ...menuMutations,
 ];

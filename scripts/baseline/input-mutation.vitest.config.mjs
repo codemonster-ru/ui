@@ -105,6 +105,8 @@ export default defineConfig({
       'src/components/tabs/VfTabs.characterization.spec.ts',
       'src/components/link/VfLink.characterization.spec.ts',
       'src/components/breadcrumbs/VfBreadcrumbs.characterization.spec.ts',
+      'src/components/menu/VfMenu.characterization.spec.ts',
+      'src/components/menu/VfMenuItem.characterization.spec.ts',
       'src/components/skeleton-gate/VfSkeletonGate.characterization.spec.ts',
       'src/__tests__/fixtures/historical-input-consumer.spec.ts',
       'src/components/components.spec.ts',
