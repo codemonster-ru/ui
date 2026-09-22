@@ -18,6 +18,8 @@ use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
 use Codemonster\VueForge\Razor\Components\LinkComponent;
+use Codemonster\VueForge\Razor\Components\MenuComponent;
+use Codemonster\VueForge\Razor\Components\MenuItemComponent;
 use Codemonster\VueForge\Razor\Components\PanelComponent;
 use Codemonster\VueForge\Razor\Components\ProgressBarComponent;
 use Codemonster\VueForge\Razor\Components\ProgressSpinnerComponent;
@@ -93,6 +95,14 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             // component's router branch has no counterpart here by design - see
             // LinkComponent.
             'link' => new LinkComponent(),
+            // Server-complete, and registered beside each other rather than
+            // through each other: vf-menu owns no control and knows nothing
+            // about vf-menu-item, whose control accounts for itself. The two
+            // share a block name in one stylesheet and no runtime coupling at
+            // all, which is why neither takes the other in its constructor.
+            // See MenuComponent and MenuItemComponent.
+            'menu' => new MenuComponent(),
+            'menu-item' => new MenuItemComponent(),
             // Registered beside the card, never through it. See PanelComponent.
             'panel' => new PanelComponent(),
             // Registered beside the spinner, never through it: the two share a
