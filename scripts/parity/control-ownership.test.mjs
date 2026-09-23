@@ -327,13 +327,26 @@ test('every shipped accordion case passes with the snapshot its declarations des
   }
 });
 
-test('only the accordion, the stepper, the tabs, the link and the breadcrumbs declare component-owned controls, and none of the static ones can', () => {
+test('only the accordion, the stepper, the tabs, the link, the breadcrumbs and the menu item declare component-owned controls, and none of the static ones can', () => {
   const owning = Object.values(profiles).filter((entry) => entry.controlOwnership !== undefined);
   assert.deepEqual(
     owning.map((entry) => entry.id),
-    ['accordion', 'stepper', 'tabs', 'link', 'breadcrumbs'],
+    ['accordion', 'stepper', 'tabs', 'link', 'breadcrumbs', 'menuItem'],
   );
   for (const entry of Object.values(profiles)) {
     assert.ok(!(entry.staticOwnership && entry.controlOwnership), `${entry.id} declares both ownership models`);
   }
+});
+
+test('the menu declares no owned control, because it owns none', () => {
+  // The other half of the M27 pair, and the reason the two are separate
+  // profiles. VfMenu renders no button and no anchor: what a menu holds is
+  // VfMenuItem's or the consumer's, and a controlOwnership rule here would be
+  // the menu claiming credit for a control it does not render. Its evidence is
+  // the static posture, where every focusable element is measured against the
+  // number the catalog declares the consumer put there.
+  assert.equal(profiles.menu.controlOwnership, undefined);
+  assert.equal(profiles.menu.snapshot, 'static');
+  assert.notEqual(profiles.menuItem.controlOwnership, undefined);
+  assert.notEqual(profiles.menuItem.snapshot, 'static');
 });
