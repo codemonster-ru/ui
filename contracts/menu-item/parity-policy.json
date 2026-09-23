@@ -25,7 +25,7 @@
     },
     "dom.nativeAttributes": {
       "classification": "exact",
-      "description": "href, target, rel, type, disabled and tabindex on the control, style, every native attribute a consumer forwards - and `d`, the glyph's path geometry, which is what tells `bookmark`, `filter` and the `moon` fallback apart: the three have identical structure, identical svg presentation attributes and identical wrapper styles. `d` has been in the extractor's compared vocabulary since M07; this profile declares it so the attribute-coverage gate asserts it still is, which matters here because this is the first migrated component whose glyph a consumer names. The class attribute itself is not compared; see notCompared.classOrder."
+      "description": "href, target, rel, type, disabled and tabindex on the control, style, every native attribute a consumer forwards - and `d`, the glyph's path geometry, which is what tells `bookmark`, `filter` and the `moon` fallback apart: the three have identical structure, identical svg presentation attributes and identical wrapper styles. M27 reproduced what a comparator without it gives - with `d` struck from the extractor's global vocabulary a real Razor page rendering the wrong glyph passes all fifteen non-pixel dimensions in both directions and both themes, the accessibility tree included because the glyph is aria-hidden, and only the screenshot fires. `d` has been in that global vocabulary since M07, so nothing was added to close it; this profile declares it so the attribute-coverage gate asserts it is still there, which matters here because this is the first migrated component whose glyph a consumer names. The class attribute itself is not compared; see notCompared.classOrder."
     },
     "dom.text": {
       "classification": "exact",
@@ -127,7 +127,7 @@
       "id": "an-unknown-icon-name-falls-back-to-moon",
       "description": "The `icon` prop is typed `IconName | string`, so an arbitrary string is public API, and the Vue icon component answers a name no glyph has with the `moon` glyph rather than throwing or rendering nothing. The neutral registry's renderer throws instead, so the Razor adapter resolves the name through MenuItemState::resolveIconName before calling it - for this component only, because no other component takes a consumer's glyph name.",
       "classification": "exact",
-      "reason": "It is reachable public behaviour, not an error path. `moon` shares its structure and every presentation attribute with the catalog's `bookmark`, so `path[d]` is the only dimension that can tell a correct fallback from a wrong glyph - and it is compared.",
+      "reason": "It is reachable public behaviour, not an error path. `moon` shares its structure and every presentation attribute with the catalog's `bookmark`, so `path[d]` is the only non-pixel dimension that can tell a correct fallback from a wrong glyph - and it is compared.",
       "coveredBy": "contracts/menu-item/cases.json#menu-item/icon-unknown, packages/shared-core/src/menu/state-vectors.json#resolveMenuItemIconName"
     },
     {

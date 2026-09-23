@@ -1189,20 +1189,30 @@ export const profiles = {
     // consumer's style, id, data-* and aria - and `d`, the glyph's path
     // geometry.
     //
-    // `d` is listed for a different reason from the rest. M27 set out to
-    // reproduce a false PASS here, on the reasoning that swapped the M26
-    // chevron: this component's glyph is named by a *consumer*, and
-    // `bookmark`, `filter` and `moon` - the fallback - have identical
-    // structure, identical svg presentation attributes and identical wrapper
-    // styles, differing in nothing but this attribute. There is no false
-    // PASS. `d` has been in the extractor's compared vocabulary since M07,
-    // which the M26 note beside `points` says in as many words, and a run of
-    // the glyph mutations with `d` struck from this list still detected them
-    // on dom.nativeAttributes - because extraction reads the global list and
-    // not this one. What this declaration buys is the attribute-coverage
-    // gate, which turns it into an assertion that the global list still
-    // carries `d`: the component whose glyph a consumer names is the one that
-    // should notice if it ever stops being compared.
+    // `d` is listed for a different reason from the rest. This is the first
+    // migrated component whose glyph a *consumer* names, and `bookmark`,
+    // `filter` and `moon` - the fallback - have identical structure, identical
+    // svg presentation attributes and identical wrapper styles, differing in
+    // nothing but this attribute. M27 reproduced the false PASS that follows,
+    // and the reproduction has two halves.
+    //
+    // Striking `d` from *this list* changes nothing: the glyph mutations are
+    // still detected, because extraction reads the extractor's global
+    // vocabulary and not the profile's, and `d` has been in that vocabulary
+    // since M07 - which the M26 note beside `points` says in as many words.
+    //
+    // Striking `d` from the *global vocabulary* is the genuine pre-`d`
+    // comparator, and there a real Razor page rendering `filter` where the
+    // reference renders `bookmark` passes every one of the fifteen non-pixel
+    // dimensions, in both directions and both themes; the accessibility tree
+    // cannot see it because the glyph is aria-hidden, and the capture
+    // mutations cannot even apply because the DOM record carries no geometry.
+    // Only the screenshot fires, and a screenshot-only catch is not closure.
+    //
+    // So what this declaration buys is the attribute-coverage gate, which
+    // turns it into an assertion that the global list still carries `d`: the
+    // component whose glyph a consumer names is the one that should notice if
+    // it ever stops being compared.
     //
     // `type` is load-bearing beyond the comparison: it is what tells the two
     // ownership rules below which branch rendered.

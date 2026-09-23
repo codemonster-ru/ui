@@ -35,15 +35,30 @@
 //     `path[d]`. This is the first migrated component whose glyph a *consumer*
 //     names, so the swap is a reachable defect and not a hypothetical one.
 //
-//     M27 set out to reproduce a false PASS here, the way M26 did for the
-//     chevron's `points`, and did not find one: `d` has been in the
-//     extractor's compared vocabulary since M07, which the M26 note beside
-//     `points` states, and running this set with `d` struck from the
-//     menuItem profile's declared attributes still detected both glyph
-//     mutations on dom.nativeAttributes - because extraction reads the global
-//     vocabulary rather than the profile's. The profile declares `d` anyway,
-//     which turns the attribute-coverage gate into an assertion that the
-//     global list still carries it;
+//     M27 reproduced the false PASS the way M26 did for the chevron's
+//     `points`, and the reproduction has two halves that say different things.
+//
+//     Striking `d` from the *menuItem profile* changes nothing: both glyph
+//     mutations are still detected, because extraction reads the extractor's
+//     global vocabulary and not the profile's, and `d` has been in that
+//     vocabulary since M07 - which the M26 note beside `points` states.
+//
+//     Striking `d` from the *global vocabulary* is the genuine pre-`d`
+//     comparator, and there the swap is a real false PASS. Widening this
+//     mutation's expectation to all sixteen dimensions reported every one of
+//     the fifteen non-pixel dimensions missing, across both directions and
+//     both themes: no structure, class, attribute, text, ARIA, relationship,
+//     geometry or colour difference, nothing from the accessibility tree
+//     because the glyph is aria-hidden, and nothing from the ownership
+//     snapshot because it counts controls. The two capture mutations below
+//     cannot even apply in that state - the DOM record carries no geometry to
+//     change - and report that rather than counting as detections. Only the
+//     screenshot fires, and a screenshot-only catch is not closure.
+//
+//     So `d` is load-bearing, and what this profile's declaration buys is the
+//     attribute-coverage gate: it turns the global list's continued carriage
+//     of `d` into an assertion, on the one component whose glyph a consumer
+//     names;
 //   - the three directions: a defect only current Vue has, a defect only Razor
 //     has, and the same defect in both - the last caught by the reference
 //     direction alone, which is why the reference is immutable.
