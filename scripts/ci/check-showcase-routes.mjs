@@ -761,6 +761,19 @@ async function probeMenuItemNatives(origin, path) {
     await page.waitFor(`Boolean(document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item'))`);
     await delay(200);
 
+    const paint = `(() => {
+      const element = document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item');
+      const style = getComputedStyle(element);
+      return { color: style.color, background: style.backgroundColor, borderColor: style.borderTopColor, focusVisible: element.matches(':focus-visible'), hovered: element.matches(':hover') };
+    })()`;
+    // Sampled first, before anything on this page has been focused or hovered.
+    // The item transitions its colour and border-colour, so a rest reading taken
+    // after the focus probes below catches the element on its way back and
+    // reports an interpolated colour - which is a real difference between two
+    // samples taken at different moments, and no difference between the two
+    // platforms at all.
+    const rest = await page.evaluate(paint);
+
     const statics = await page.evaluate(`(() => {
       const at = (id) => document.querySelector('[data-showcase-case="' + id + '"] .vf-menu__item');
       const probe = (id) => {
@@ -840,13 +853,6 @@ async function probeMenuItemNatives(origin, path) {
     const nativeEnterClicks = await page.evaluate('window.__parityMenuItemClicks');
     await page.evaluate('document.activeElement.blur();');
 
-    const paint = `(() => {
-      const element = document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item');
-      const style = getComputedStyle(element);
-      return { color: style.color, background: style.backgroundColor, borderColor: style.borderTopColor, focusVisible: element.matches(':focus-visible'), hovered: element.matches(':hover') };
-    })()`;
-    const rest = await page.evaluate(paint);
-
     await page.evaluate(`(() => {
       const element = document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item');
       element.scrollIntoView({ block: 'center' });
@@ -858,7 +864,9 @@ async function probeMenuItemNatives(origin, path) {
     })()`);
     await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
     await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
-    await delay(100);
+    // Long enough for the colour transition to finish, so the sample is the
+    // focused state rather than a point on the way to it.
+    await delay(400);
     const focus = await page.evaluate(paint);
     await page.evaluate(`document.getElementById('parity-focus-origin')?.remove(); document.activeElement.blur();`);
 
