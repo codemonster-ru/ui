@@ -147,6 +147,8 @@ export default defineConfig({
         tabs: fileURLToPath(new URL('./tabs.html', import.meta.url)),
         link: fileURLToPath(new URL('./link.html', import.meta.url)),
         breadcrumbs: fileURLToPath(new URL('./breadcrumbs.html', import.meta.url)),
+        menu: fileURLToPath(new URL('./menu.html', import.meta.url)),
+        'menu-item': fileURLToPath(new URL('./menu-item.html', import.meta.url)),
       },
     },
   },
@@ -269,6 +271,14 @@ export default defineConfig({
       {
         find: /^@vueforge\/link-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/link/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/menu-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/menu/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/menu-item-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/menu-item/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/breadcrumbs-cases$/,

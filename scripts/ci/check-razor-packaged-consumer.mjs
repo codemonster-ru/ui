@@ -191,6 +191,8 @@ $stepper = $registry->resolve('vf-stepper');
 $tabs = $registry->resolve('vf-tabs');
 $link = $registry->resolve('vf-link');
 $breadcrumbs = $registry->resolve('vf-breadcrumbs');
+$menu = $registry->resolve('vf-menu');
+$menuItem = $registry->resolve('vf-menu-item');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -234,6 +236,8 @@ echo json_encode([
         'vf-tabs' => $registry->handles('vf-tabs'),
         'vf-link' => $registry->handles('vf-link'),
         'vf-breadcrumbs' => $registry->handles('vf-breadcrumbs'),
+        'vf-menu' => $registry->handles('vf-menu'),
+        'vf-menu-item' => $registry->handles('vf-menu-item'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -784,6 +788,41 @@ echo json_encode([
     })(),
     'breadcrumbsConstructorTakesNothing' => (new ReflectionClass($breadcrumbs))->getConstructor() === null,
     'breadcrumbsBrowserCode' => preg_match('/vf-breadcrumbs|data-vf-razor="breadcrumbs"|breadcrumbs-enhanced/', $controllerSource) === 1,
+    // VfMenu and VfMenuItem, the M27 pair: a container and one native control,
+    // both server-complete. The menu is rendered with a consumer role to prove
+    // the installed package reproduces the historical override rather than
+    // protecting its own role; the item is rendered on every branch, and the
+    // _blank case is the one that proves no rel is derived.
+    'menuSpans' => $menu->render(new ComponentRenderContext(
+        [],
+        ['default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<span>One</span><span>Two</span>')],
+    ))->value(),
+    'menuRoleOverridden' => $menu->render(new ComponentRenderContext(['role' => 'list', 'class' => 'consumer-menu'], []))->value(),
+    'menuItemButton' => $menuItem->render(new ComponentRenderContext(['label' => 'Edit'], []))->value(),
+    'menuItemDisabledButton' => $menuItem->render(new ComponentRenderContext(['label' => 'Delete', 'disabled' => true], []))->value(),
+    'menuItemAnchor' => $menuItem->render(new ComponentRenderContext(['label' => 'Docs', 'href' => '/docs'], []))->value(),
+    'menuItemDisabledAnchor' => $menuItem->render(new ComponentRenderContext(
+        ['label' => 'Docs', 'href' => '/docs', 'disabled' => true, 'target' => '_blank', 'rel' => 'nofollow'],
+        [],
+    ))->value(),
+    'menuItemEmptyHref' => $menuItem->render(new ComponentRenderContext(['label' => 'Nowhere', 'href' => ''], []))->value(),
+    'menuItemBlank' => $menuItem->render(new ComponentRenderContext(
+        ['label' => 'Away', 'href' => 'https://example.com/', 'target' => '_blank'],
+        [],
+    ))->value(),
+    'menuItemUnknownIcon' => $menuItem->render(new ComponentRenderContext(['label' => 'Mystery', 'icon' => 'no-such-glyph'], []))->value(),
+    'menuItemRoleNotOverridable' => $menuItem->render(new ComponentRenderContext(['label' => 'Edit', 'role' => 'option'], []))->value(),
+    'menuConstructorsTakeNothing' => (new ReflectionClass($menu))->getConstructor() === null
+        && (new ReflectionClass($menuItem))->getConstructor() === null,
+    'menuBrowserCode' => preg_match('/vf-menu|data-vf-razor="menu"|menu-enhanced/', $controllerSource) === 1,
+    'menuCss' => is_file($assetPath . '/vueforge-razor.css')
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu {') === 1
+        && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu__item {') === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '--vf-overlay-border-width:')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu__item--active')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu__item--danger')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu-bar')
+        && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu__item--disabled'),
     'breadcrumbsCss' => is_file($assetPath . '/vueforge-razor.css')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-breadcrumbs {') === 1
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-breadcrumbs__separator {') === 1
@@ -1861,6 +1900,79 @@ echo json_encode([
     'the packaged stylesheet carries the breadcrumbs rules once, and no router-link rule',
     rendered.breadcrumbsCss === true,
     'vueforge-razor.css is missing breadcrumbs rules, duplicates them, or carries a router-link selector',
+  );
+
+  // ------------------------------------------------------------- the M27 pair
+  check(
+    'the consumer renders a menu: one div with the block class and role=menu around its content',
+    rendered.menuSpans === '<div class="vf-menu" role="menu"><span>One</span><span>Two</span></div>',
+    rendered.menuSpans,
+  );
+  check(
+    'a consumer role replaces role=menu, and the consumer class lands after the block class',
+    rendered.menuRoleOverridden === '<div class="vf-menu consumer-menu" role="list"></div>',
+    rendered.menuRoleOverridden,
+  );
+  check(
+    'the consumer renders a menu item as a native button with type and role',
+    rendered.menuItemButton ===
+      '<button class="vf-menu__item" type="button" role="menuitem"><span class="vf-menu__item-label">Edit</span></button>',
+    rendered.menuItemButton,
+  );
+  check(
+    'a disabled item is a button with the native attribute and aria-disabled, and no tabindex',
+    rendered.menuItemDisabledButton ===
+      '<button class="vf-menu__item" type="button" disabled aria-disabled="true" role="menuitem">' +
+        '<span class="vf-menu__item-label">Delete</span></button>',
+    rendered.menuItemDisabledButton,
+  );
+  check(
+    'an item with a destination is a native anchor with role=menuitem',
+    rendered.menuItemAnchor ===
+      '<a class="vf-menu__item" href="/docs" role="menuitem"><span class="vf-menu__item-label">Docs</span></a>',
+    rendered.menuItemAnchor,
+  );
+  check(
+    'a disabled anchor drops its href but keeps target and rel, and takes aria-disabled and tabindex=-1',
+    rendered.menuItemDisabledAnchor ===
+      '<a class="vf-menu__item" target="_blank" rel="nofollow" aria-disabled="true" tabindex="-1" role="menuitem">' +
+        '<span class="vf-menu__item-label">Docs</span></a>',
+    rendered.menuItemDisabledAnchor,
+  );
+  check(
+    "href='' renders the button branch, where VfLink would keep an empty href on an anchor",
+    rendered.menuItemEmptyHref.startsWith('<button') && !rendered.menuItemEmptyHref.includes('href'),
+    rendered.menuItemEmptyHref,
+  );
+  check(
+    'target=_blank writes NO rel: the installed package derives none, unlike vf-link and vf-breadcrumbs',
+    rendered.menuItemBlank ===
+      '<a class="vf-menu__item" href="https://example.com/" target="_blank" role="menuitem">' +
+        '<span class="vf-menu__item-label">Away</span></a>',
+    rendered.menuItemBlank,
+  );
+  check(
+    'an icon name no registry holds falls back to the moon glyph rather than throwing',
+    rendered.menuItemUnknownIcon.includes('class="vf-menu__item-icon vf-icon') &&
+      rendered.menuItemUnknownIcon.includes('M20 15.25A8.5 8.5 0 1 1 10 3.5a7.75 7.75 0 0 0 10 11.75Z'),
+    rendered.menuItemUnknownIcon,
+  );
+  check(
+    'a consumer role cannot replace role=menuitem, which is the inverse of the menu',
+    rendered.menuItemRoleNotOverridable.includes('role="menuitem"') &&
+      !rendered.menuItemRoleNotOverridable.includes('role="option"'),
+    rendered.menuItemRoleNotOverridable,
+  );
+  check('the menu and menu item components take no constructor argument', rendered.menuConstructorsTakeNothing === true);
+  check(
+    'the packaged controller does not mention the menu or its items: the reference has no browser behaviour for either',
+    rendered.menuBrowserCode === false,
+    'vueforge-razor.js mentions the menu',
+  );
+  check(
+    'the packaged stylesheet carries the menu rules once, the overlay token they need, and no menu-bar or disabled-modifier rule',
+    rendered.menuCss === true,
+    'vueforge-razor.css is missing menu rules, duplicates them, lacks --vf-overlay-border-width, or carries a selector it should not',
   );
 
   check(

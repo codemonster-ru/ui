@@ -138,3 +138,13 @@ declare module '@vueforge/breadcrumbs-cases' {
   const catalog: { cases: unknown[] };
   export default catalog;
 }
+
+declare module '@vueforge/menu-cases' {
+  const cases: { cases: unknown[] };
+  export default cases;
+}
+
+declare module '@vueforge/menu-item-cases' {
+  const cases: { cases: unknown[] };
+  export default cases;
+}

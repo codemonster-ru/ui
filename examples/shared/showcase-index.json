@@ -607,7 +607,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/menu/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/menu/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/menu",
+          "razor": "/"
         }
       }
     },
@@ -631,7 +640,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/menu-item/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/menu-item/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/menu-item",
+          "razor": "/"
         }
       }
     },

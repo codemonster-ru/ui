@@ -114,6 +114,15 @@ export const requiredEntries = [
   // it. Its rel derivation is LinkState's; its own rules are BreadcrumbsState.
   'src/Components/BreadcrumbsComponent.php',
   'src/Support/BreadcrumbsState.php',
+  // The M27 pair, server-complete like the link and the trail: no browser
+  // controller travels with either, and the packaged-consumer proof asserts
+  // the controller never mentions them. The menu has no state class at all -
+  // it makes no decision - and the item's rules are MenuItemState's, which
+  // deliberately does not include a rel derivation: that is LinkState's, and
+  // this component has none.
+  'src/Components/MenuComponent.php',
+  'src/Components/MenuItemComponent.php',
+  'src/Support/MenuItemState.php',
   'resources/icons/icon-registry.json',
   'dist/vueforge-razor.css',
   'dist/vueforge-razor.js',

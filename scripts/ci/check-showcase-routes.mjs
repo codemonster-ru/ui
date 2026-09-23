@@ -158,6 +158,20 @@ const controlSelectors = {
   // historical rule makes per case: the current item, a disabled item and an
   // item with no destination are spans and own nothing (see controlsPerCase).
   VfBreadcrumbs: 'a.vf-breadcrumbs__link[href]',
+  // The M27 pair, and the two meanings this map carries. For VfMenu the entry
+  // is the component's own root, the way VfBadge's and VfCard's are: the menu
+  // owns no interactive control at all, and what is asserted here is that each
+  // case renders the menu, not that the menu renders anything focusable. The
+  // ownership claim - zero owned controls, every focusable element the
+  // consumer's - is the parity profile's static posture, and it is not
+  // restated here.
+  //
+  // For VfMenuItem the entry really is the owned control, and the selector is
+  // the block class rather than a tag because the branch decides which tag it
+  // is: an anchor or a button, both carrying the class, and an item that
+  // stopped being either is still found and still counted.
+  VfMenu: 'div.vf-menu',
+  VfMenuItem: '.vf-menu__item',
 };
 
 /**
@@ -185,6 +199,13 @@ const controlsPerCase = {
   // catalog declares as componentInteractive and the coverage gate checks
   // against the rule. The empty trail and the lone item render none.
   VfBreadcrumbs: (parityCase) => parityCase.componentInteractive ?? 0,
+  // VfMenu has no entry: every case renders exactly one menu root, which is
+  // the default this map exists to override. What the menu does *not* render -
+  // a control of its own - is the parity profile's business, not this gate's.
+  //
+  // VfMenuItem: one control per case, in all four states: an enabled or disabled button,
+  // an enabled or disabled anchor. Never zero and never two.
+  VfMenuItem: (parityCase) => parityCase.componentInteractive ?? 0,
 };
 
 /**
@@ -274,6 +295,8 @@ check(
       'VfIconButton',
       'VfInput',
       'VfLink',
+      'VfMenu',
+      'VfMenuItem',
       'VfPanel',
       'VfProgressBar',
       'VfProgressSpinner',
@@ -709,6 +732,199 @@ async function probeBreadcrumbsLinks(origin, path) {
   }
 }
 
+
+/**
+ * The native semantics of a menu item on one platform.
+ *
+ * Nothing here is the component's own behaviour: an enabled button and an
+ * enabled anchor take focus, a disabled button refuses it, a disabled anchor
+ * with no href is out of the tab order, and Enter on a button synthesises a
+ * click. All of that is the browser's, and both platforms render the same
+ * native elements, so the two pages have to agree - which is exactly why it is
+ * measured here rather than claimed as a parity dimension.
+ *
+ * Two things that are the component's are read back too: the border width,
+ * which comes from --vf-overlay-border-width and would compute as `medium`
+ * on a page that lost overlay-primitives.css, and the glyph of the unknown-icon
+ * case, which has to be the moon path on both platforms. Then the first item is
+ * reached by a real Tab from the body and hovered by a real pointer move, and
+ * the computed colour and ring are read in each state. No showcase script is
+ * involved, and the pages carry none.
+ */
+async function probeMenuItemNatives(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item'))`);
+    await delay(200);
+
+    const statics = await page.evaluate(`(() => {
+      const at = (id) => document.querySelector('[data-showcase-case="' + id + '"] .vf-menu__item');
+      const probe = (id) => {
+        const element = at(id);
+        if (!element) return null;
+        element.focus();
+        const focused = document.activeElement === element;
+        document.activeElement.blur();
+        return {
+          tag: element.tagName.toLowerCase(),
+          role: element.getAttribute('role'),
+          type: element.getAttribute('type'),
+          href: element.getAttribute('href'),
+          target: element.getAttribute('target'),
+          rel: element.getAttribute('rel'),
+          disabled: element.hasAttribute('disabled'),
+          ariaDisabled: element.getAttribute('aria-disabled'),
+          tabindex: element.getAttribute('tabindex'),
+          borderWidth: getComputedStyle(element).borderTopWidth,
+          focused,
+        };
+      };
+
+      const glyph = document.querySelector('[data-showcase-case="menu-item/icon-unknown"] .vf-menu__item-icon path');
+      const known = document.querySelector('[data-showcase-case="menu-item/icon"] .vf-menu__item-icon path');
+      const wrapper = document.querySelector('[data-showcase-case="menu-item/icon"] .vf-icon-wrapper');
+
+      return {
+        button: probe('menu-item/button'),
+        disabledButton: probe('menu-item/button-disabled'),
+        anchor: probe('menu-item/anchor'),
+        disabledAnchor: probe('menu-item/anchor-disabled'),
+        emptyHref: probe('menu-item/empty-href'),
+        blank: probe('menu-item/blank-without-rel'),
+        unknownGlyph: glyph ? glyph.getAttribute('d') : null,
+        knownGlyph: known ? known.getAttribute('d') : null,
+        // The icon class belongs on the svg; the wrapper span must not carry it.
+        wrapperCarriesIconClass: wrapper ? wrapper.classList.contains('vf-menu__item-icon') : null,
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /menu/i.test(script.textContent)).length,
+      };
+    })()`);
+
+    // Enter on a native button synthesises a click, and the component adds no
+    // key handler of its own - so the count below is the browser's behaviour
+    // and nothing else.
+    //
+    // It has to be a real key event *carrying its text*. A KeyboardEvent built
+    // in the page is untrusted and synthesises nothing, and a `rawKeyDown` with
+    // no text does not either: Chrome derives the activation from the character
+    // the key produces, so `text` and `unmodifiedText` are what make this an
+    // Enter press rather than a key-code notification. That is precisely why
+    // the activation is worth measuring on a real page instead of asserting it
+    // in a unit test - jsdom and a synthetic event both report a pass the
+    // browser would not give.
+    await page.evaluate(`(() => {
+      const element = document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item');
+      window.__parityMenuItemClicks = 0;
+      element.addEventListener('click', () => { window.__parityMenuItemClicks += 1; });
+      element.scrollIntoView({ block: 'center' });
+      element.focus();
+    })()`);
+    const enterFocused = await page.evaluate(
+      `document.activeElement === document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item')`,
+    );
+    for (const type of ['keyDown', 'keyUp']) {
+      await page.send('Input.dispatchKeyEvent', {
+        type,
+        key: 'Enter',
+        code: 'Enter',
+        windowsVirtualKeyCode: 13,
+        nativeVirtualKeyCode: 13,
+        text: '\r',
+        unmodifiedText: '\r',
+      });
+    }
+    await delay(150);
+    const nativeEnterClicks = await page.evaluate('window.__parityMenuItemClicks');
+    await page.evaluate('document.activeElement.blur();');
+
+    const paint = `(() => {
+      const element = document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item');
+      const style = getComputedStyle(element);
+      return { color: style.color, background: style.backgroundColor, borderColor: style.borderTopColor, focusVisible: element.matches(':focus-visible'), hovered: element.matches(':hover') };
+    })()`;
+    const rest = await page.evaluate(paint);
+
+    await page.evaluate(`(() => {
+      const element = document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item');
+      element.scrollIntoView({ block: 'center' });
+      const before = document.createElement('button');
+      before.type = 'button';
+      before.id = 'parity-focus-origin';
+      element.before(before);
+      before.focus();
+    })()`);
+    await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+    await delay(100);
+    const focus = await page.evaluate(paint);
+    await page.evaluate(`document.getElementById('parity-focus-origin')?.remove(); document.activeElement.blur();`);
+
+    const point = await page.evaluate(`(() => {
+      const element = document.querySelector('[data-showcase-case="menu-item/button"] .vf-menu__item');
+      const rect = element.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    })()`);
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: point.x, y: point.y });
+    await delay(350);
+    const hover = await page.evaluate(paint);
+
+    return { ...statics, enterFocused, nativeEnterClicks, rest, focus, hover };
+  } finally {
+    await page.close();
+  }
+}
+
+/**
+ * What a menu is on one platform: a role, a gap, and nothing focusable of its
+ * own. The role-override case is read back too, because a consumer replacing
+ * it is the one decision this component makes.
+ */
+async function probeMenuShell(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(`Boolean(document.querySelector('[data-showcase-case="menu/spans"] .vf-menu'))`);
+    await delay(200);
+
+    return await page.evaluate(`(() => {
+      const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex], [contenteditable=""], [contenteditable="true"]';
+      const at = (id) => document.querySelector('[data-showcase-case="' + id + '"] .vf-menu');
+      const spans = at('menu/spans');
+      spans.focus();
+      const rootFocused = document.activeElement === spans;
+      document.activeElement.blur();
+      const style = getComputedStyle(spans);
+      const withControl = at('menu/consumer-control');
+
+      return {
+        tag: spans.tagName.toLowerCase(),
+        role: spans.getAttribute('role'),
+        overriddenRole: at('menu/role-override')?.getAttribute('role') ?? null,
+        rootFocused,
+        display: style.display,
+        flexDirection: style.flexDirection,
+        // Zero on every case but the two the catalog declares: the component
+        // renders nothing focusable, so what is here is the consumer's.
+        ownFocusable: [...at('menu/spans').querySelectorAll(FOCUSABLE)].length,
+        consumerFocusable: withControl ? [...withControl.querySelectorAll(FOCUSABLE)].length : null,
+        // A menu adds nothing to the items it holds.
+        menuitemRoles: [...spans.querySelectorAll('[role="menuitem"]')].length,
+        ariaOrientation: spans.getAttribute('aria-orientation'),
+        activeDescendant: spans.getAttribute('aria-activedescendant'),
+        inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /menu/i.test(script.textContent)).length,
+      };
+    })()`);
+  } finally {
+    await page.close();
+  }
+}
+
 /** Clicks the panel case's middle tab on one platform and reads every half of the state back. */
 async function probeTabsSelect(origin, path) {
   const page = await openPage(chrome.endpoint);
@@ -1048,6 +1264,163 @@ try {
             `${links.inlineScripts} inline script(s)`,
           );
         }
+      }
+
+      // ----------------------------------------- the menu is a shell, not a widget
+      //
+      // M27: nothing to click and nothing to toggle. What both real pages have
+      // to prove is that a menu is a role and a flex column and nothing else -
+      // not focusable, no aria-orientation, no active descendant, and nothing
+      // focusable of its own - and that a consumer role really does replace
+      // role="menu", because that override is the one decision this component
+      // makes. No showcase script is involved on either.
+      if (name === 'VfMenu') {
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const shell = await probeMenuShell(origin, route);
+          check(
+            `[${name}/${theme}] the ${platform} showcase's menu is a div with role=menu that refuses focus`,
+            shell.tag === 'div' && shell.role === 'menu' && shell.rootFocused === false,
+            JSON.stringify({ tag: shell.tag, role: shell.role, focused: shell.rootFocused }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's consumer role replaces role=menu`,
+            shell.overriddenRole === 'list',
+            String(shell.overriddenRole),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's menu is a flex column and writes no widget ARIA`,
+            shell.display === 'flex' &&
+              shell.flexDirection === 'column' &&
+              shell.ariaOrientation === null &&
+              shell.activeDescendant === null,
+            JSON.stringify(shell),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's menu renders nothing focusable and no menuitem of its own`,
+            shell.ownFocusable === 0 && shell.menuitemRoles === 0 && shell.consumerFocusable === 1,
+            JSON.stringify({
+              own: shell.ownFocusable,
+              menuitems: shell.menuitemRoles,
+              consumer: shell.consumerFocusable,
+            }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to the menu`,
+            shell.inlineScripts === 0,
+            `${shell.inlineScripts} inline script(s)`,
+          );
+        }
+      }
+
+      // --------------------------------- the item is one native control
+      //
+      // M27: the component owns one control and no behaviour beyond a Vue
+      // emit, so what both real pages prove is the native half - which element
+      // each branch is, which of them take focus, that Enter on a button is
+      // the browser's click - plus the two things the component does decide
+      // that only a real page can show: the border width the overlay token
+      // feeds, and the glyph an unknown icon name falls back to.
+      if (name === 'VfMenuItem') {
+        const painted = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const items = await probeMenuItemNatives(origin, route);
+          painted[platform] = items;
+          check(
+            `[${name}/${theme}] the ${platform} showcase's plain item is a focusable native button with type and role`,
+            items.button?.tag === 'button' &&
+              items.button.type === 'button' &&
+              items.button.role === 'menuitem' &&
+              items.button.focused === true &&
+              items.button.tabindex === null,
+            JSON.stringify(items.button),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's disabled button refuses focus and carries the native attribute`,
+            items.disabledButton?.disabled === true &&
+              items.disabledButton.ariaDisabled === 'true' &&
+              items.disabledButton.tabindex === null &&
+              items.disabledButton.focused === false,
+            JSON.stringify(items.disabledButton),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's destination item is a focusable native anchor with role=menuitem`,
+            items.anchor?.tag === 'a' &&
+              items.anchor.href === '/docs' &&
+              items.anchor.role === 'menuitem' &&
+              items.anchor.focused === true &&
+              items.anchor.tabindex === null,
+            JSON.stringify(items.anchor),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's disabled anchor keeps target and rel, drops its href and is out of the tab order`,
+            items.disabledAnchor?.tag === 'a' &&
+              items.disabledAnchor.href === null &&
+              items.disabledAnchor.target === '_blank' &&
+              items.disabledAnchor.rel === 'nofollow' &&
+              items.disabledAnchor.disabled === false &&
+              items.disabledAnchor.ariaDisabled === 'true' &&
+              items.disabledAnchor.tabindex === '-1',
+            JSON.stringify(items.disabledAnchor),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase renders href='' as the button branch`,
+            items.emptyHref?.tag === 'button' && items.emptyHref.href === null,
+            JSON.stringify(items.emptyHref),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's _blank item carries NO rel, unlike a link or a breadcrumb`,
+            items.blank?.target === '_blank' && items.blank.rel === null,
+            JSON.stringify(items.blank),
+          );
+          check(
+            `[${name}/${theme}] Enter on the focused ${platform} showcase button is the browser's click, not the component's`,
+            items.enterFocused === true && items.nativeEnterClicks === 1,
+            `focused ${items.enterFocused}, ${items.nativeEnterClicks} click(s)`,
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's item takes its border width from the overlay token, not from 'medium'`,
+            items.button?.borderWidth === '1px',
+            String(items.button?.borderWidth),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase's unknown icon name renders the moon glyph, and not the known one`,
+            items.unknownGlyph === 'M20 15.25A8.5 8.5 0 1 1 10 3.5a7.75 7.75 0 0 0 10 11.75Z' &&
+              items.knownGlyph !== null &&
+              items.unknownGlyph !== items.knownGlyph,
+            JSON.stringify({ unknown: items.unknownGlyph, known: items.knownGlyph }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase keeps the icon class on the svg, not on the wrapper span`,
+            items.wrapperCarriesIconClass === false,
+            String(items.wrapperCarriesIconClass),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase adds no script of its own to the items`,
+            items.inlineScripts === 0,
+            `${items.inlineScripts} inline script(s)`,
+          );
+          check(
+            `[${name}/${theme}] a keyboard focus and a pointer hover each repaint the ${platform} showcase's item`,
+            items.focus.focusVisible === true &&
+              items.focus.borderColor !== items.rest.borderColor &&
+              items.hover.hovered === true &&
+              items.hover.background !== items.rest.background,
+            JSON.stringify({ rest: items.rest, focus: items.focus, hover: items.hover }),
+          );
+        }
+        check(
+          `[${name}/${theme}] both platforms paint the item identically at rest, on focus and on hover`,
+          JSON.stringify(painted.vue.rest) === JSON.stringify(painted.razor.rest) &&
+            JSON.stringify(painted.vue.focus) === JSON.stringify(painted.razor.focus) &&
+            JSON.stringify(painted.vue.hover) === JSON.stringify(painted.razor.hover),
+          JSON.stringify({ vue: painted.vue, razor: painted.razor }),
+        );
       }
 
       // ------------------------------------------ the trail is N native links
