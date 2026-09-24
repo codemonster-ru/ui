@@ -263,7 +263,7 @@ async function captureTarget(
     };
     await navigate();
     await applyBrowserMutation(page, mutation, 'beforeExtract', { target: label, theme }, evidence);
-    const extraction = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
+    const extraction = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles, catalog.profile.followedReferences));
     const allExtracted = extraction.cases;
     const extracted = Object.fromEntries(selectedCases.map(({ id }) => [id, allExtracted[id]]));
 
@@ -398,7 +398,7 @@ async function captureTarget(
 
       const state = await page.evaluate(interactionExpression(parityCase.id, catalog.profile.snapshot));
       const identity = await page.evaluate(skeletonGateIdentityExpression(parityCase.id, 'read'));
-      const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
+      const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles, catalog.profile.followedReferences));
 
       transitions[parityCase.id] = {
         supported: true,
@@ -493,7 +493,7 @@ async function captureTarget(
             consumerInteractive: parityCase.interaction.consumerInteractive,
           });
         }
-        const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles));
+        const after = await page.evaluate(extractCasesExpression(catalog.profile.measuredRoles, catalog.profile.followedReferences));
         interactionDom[parityCase.id] = after.cases[parityCase.id].dom;
         interactionAccessibility[parityCase.id] = await readAccessibility(
           page,

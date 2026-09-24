@@ -183,29 +183,88 @@ export const LIVE_PROPERTIES = ['checked', 'indeterminate', 'value'];
 export const REFERENCE_ATTRIBUTES = ['for', 'aria-describedby', 'aria-labelledby', 'aria-controls'];
 
 /**
+ * What is wrong with a profile's `followedReferences` declaration, if anything.
+ *
+ * M28.0. A declaration names an element inside the case (`source`) and one id
+ * reference attribute on it (`attribute`); the element that reference names is
+ * then part of the case even when it is rendered outside the case root. That is
+ * the whole vocabulary. Nothing here knows what the source or the target is, and
+ * nothing scans the case for references on its own: only declared edges are
+ * followed, and a declaration that cannot mean anything is refused rather than
+ * skipped, because a rule the extractor silently ignores is evidence nobody has.
+ */
+export function followedReferenceProblems(declaration) {
+  if (!Array.isArray(declaration)) return ['followedReferences must be an array'];
+  const wellFormed = (rule, index) =>
+    Object.keys(rule ?? {}).every((key) => key === 'source' || key === 'attribute') &&
+    /\S/.test(typeof rule?.source === 'string' ? rule.source : '') &&
+    REFERENCE_ATTRIBUTES.includes(rule.attribute) &&
+    declaration.findIndex((other) => other?.source === rule.source && other?.attribute === rule.attribute) === index;
+  return declaration.flatMap((rule, index) =>
+    wellFormed(rule, index) ? [] : [`followedReferences[${index}] is not one unrepeated { source, attribute } rule`],
+  );
+}
+
+/**
  * Extracts every case on the page.
  *
  * `measuredRoles` comes from the component profile: the generic half of this
  * expression - the DOM description, the attribute filtering, the clip - is the
  * same for every component, and only the list of roles worth measuring differs.
+ * `followedReferences`, also from the profile, is described at
+ * followedReferenceProblems.
  */
-export function extractCasesExpression(measuredRoles) {
+export function extractCasesExpression(measuredRoles, followedReferences = []) {
+  const problems = followedReferenceProblems(followedReferences);
+  if (problems.length > 0) throw new Error(`Malformed followedReferences: ${problems.join('; ')}.`);
+
   return `(() => {
   const COMPARED_ATTRIBUTES = ${JSON.stringify(COMPARED_ATTRIBUTES)};
   const FRAMEWORK_ATTRIBUTE_PATTERN = ${FRAMEWORK_ATTRIBUTE_PATTERN.toString()};
   const REFERENCE_ATTRIBUTES = ${JSON.stringify(REFERENCE_ATTRIBUTES)};
+  const FOLLOWED_REFERENCES = ${JSON.stringify(followedReferences)};
 
   // Generated ids differ between adapters by design. They are replaced with a
   // document-order token, and every reference to them is rewritten through the
   // same map, so the relationship graph is compared while the concrete value is
   // not. A reference pointing at the wrong element still differs.
-  function buildIdMap(root) {
+  //
+  // M28.0: the map also covers the case's followed targets - elements a
+  // declared reference names that are rendered outside the case root, such as
+  // an overlay moved to the body. They are numbered after the root's ids and in
+  // their own document order, so a target is identified by where it is, never
+  // by the order it happened to be reached in. That distinction is load-bearing:
+  // numbering targets in the order the references reach them would make two
+  // consistently cross-wired instances isomorphic to two correctly wired ones.
+  function buildIdMap(root, followed = []) {
     const map = new Map();
     let index = 0;
-    for (const element of root.querySelectorAll('[id]')) {
+    for (const element of [...root.querySelectorAll('[id]'), ...followed.flatMap((node) => [node, ...node.querySelectorAll('[id]')])]) {
       map.set(element.id, '#id' + index++);
     }
     return map;
+  }
+
+  // The targets a case's declared references name outside its root. A source
+  // the declaration names but the case does not render is refused: the profile
+  // said every case has one. A target that is missing is not refused - that is
+  // a reference to something not rendered, and canonicaliseReference records it
+  // as #dangling so it is compared against the reference like anything else. A
+  // target inside another case is refused, because that is two cases sharing a
+  // node, which no comparison of either could attribute.
+  function followReferences(root, caseId) {
+    const followed = [];
+    for (const rule of FOLLOWED_REFERENCES) {
+      const sources = [...root.querySelectorAll(rule.source)];
+      if (sources.length === 0) throw new Error('case ' + caseId + ': followed source ' + rule.source + ' matched nothing');
+      for (const token of sources.flatMap((source) => (source.getAttribute(rule.attribute) ?? '').split(/\\s+/))) {
+        const target = token ? document.getElementById(token) : null;
+        if (!target || root.contains(target) || followed.includes(target)) continue;
+        if (target.closest('[data-parity-case]')) throw new Error('case ' + caseId + ': ' + rule.attribute + ' follows into another case');
+        followed.push(target);
+      }
+    }
+    return followed.sort((left, right) => (left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
   }
 
   // A reference outside the case keeps its literal: it is a consumer's own id,
@@ -440,7 +499,8 @@ export function extractCasesExpression(measuredRoles) {
 
   for (const root of document.querySelectorAll('[data-parity-case]')) {
     const caseId = root.getAttribute('data-parity-case');
-    const idMap = buildIdMap(root);
+    const followed = followReferences(root, caseId);
+    const idMap = buildIdMap(root, followed);
     const styles = {};
 
     for (const [role, selector] of Object.entries(MEASURED_ROLES)) {
@@ -451,7 +511,11 @@ export function extractCasesExpression(measuredRoles) {
     const rect = root.getBoundingClientRect();
 
     results[caseId] = {
-      dom: [...root.children].map((child) => describe(child, idMap)),
+      // Followed targets are described after the root's own children, as
+      // top-level entries of their own. A target rendered inside the root is
+      // never followed - it is already a descendant - so an overlay one target
+      // renders in place and another moves to the body differs structurally.
+      dom: [...root.children, ...followed].map((child) => describe(child, idMap)),
       styles,
       clip: {
         x: Math.round(rect.left + window.scrollX),
