@@ -4659,11 +4659,20 @@ export const breadcrumbsMutations = [
  * of the language boundary, the PHP unit test, and the parity case that renders
  * an unknown name on both platforms and compares the glyph it produced.
  */
+/*
+ * Four of them declare `alsoFails: [dropdownSuite]` since M28, the M17
+ * composition proof in its dropdown form: VfDropdown walks the menu by
+ * [role="menuitem"] and its characterization pins the consumer VfMenu's nested
+ * role and a disabled VfMenuItem link that the walk lands on through its
+ * tabindex=-1. A menu or item mutation that removes what the dropdown walks
+ * must reach that evidence too; the rest must leave it green.
+ */
 export const menuMutations = [
   {
     id: 'menu-role-removed',
     file: menuSourcePath,
     suite: menuSuite,
+    alsoFails: [dropdownSuite],
     description: 'the menu root renders without role=menu',
     find: '<div class="vf-menu" role="menu" v-bind="attrs">',
     replace: '<div class="vf-menu" v-bind="attrs">',
@@ -4717,6 +4726,7 @@ export const menuMutations = [
     id: 'menu-item-role-removed',
     file: menuItemSourcePath,
     suite: menuItemSuite,
+    alsoFails: [dropdownSuite],
     description: 'neither branch writes role=menuitem',
     all: true,
     find: '\n    role="menuitem"',
@@ -4726,6 +4736,7 @@ export const menuMutations = [
     id: 'menu-item-role-changed',
     file: menuItemSourcePath,
     suite: menuItemSuite,
+    alsoFails: [dropdownSuite],
     description: 'the items carry role=option rather than role=menuitem',
     all: true,
     find: 'role="menuitem"',
@@ -4795,6 +4806,7 @@ export const menuMutations = [
     id: 'menu-item-disabled-anchor-loses-tabindex',
     file: menuItemSourcePath,
     suite: menuItemSuite,
+    alsoFails: [dropdownSuite],
     description: 'a disabled anchor keeps its place in the tab order',
     find: '    :tabindex="props.disabled ? -1 : undefined"\n',
     replace: '',
