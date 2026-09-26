@@ -1386,7 +1386,7 @@
     {
       "id": "dropdown/interaction-disabled-blocks",
       "title": "A disabled VfMenuItem button cannot take focus, so ArrowDown stays where it is",
-      "$why": "The walk does not skip disabled items. Focusing the disabled button is a no-op, the index is computed again from the same item, and the walk never gets past it.",
+      "$why": "The walk does not skip disabled items: focusing the disabled button is a no-op and focus stays on Edit. One press, not more: a walk that skipped disabled items would reach Delete here, and two more presses would wrap it back to Edit, where the blocked walk also stands.",
       "props": {},
       "attrs": {},
       "content": {
@@ -1431,10 +1431,6 @@
           {
             "action": "pressKey",
             "key": "ArrowDown"
-          },
-          {
-            "action": "pressKey",
-            "key": "ArrowDown"
           }
         ],
         "consumerInteractive": 4,
@@ -1443,7 +1439,7 @@
           "expandedStates": ["true"],
           "focusRole": "item",
           "focusItem": "Edit",
-          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true", "ArrowDown:true"],
+          "keydownPrevented": ["ArrowDown:true", "ArrowDown:true"],
           "menuStates": [
             {
               "location": "body",

@@ -81,6 +81,7 @@ import {
   menuParityMutations,
   menuPolicyMutations,
 } from './menu-mutations.mjs';
+import { dropdownBrowserMutations, dropdownParityMutations, dropdownPolicyMutations } from './dropdown-mutations.mjs';
 import {
   skeletonGateBrowserMutations,
   skeletonGateParityMutations,
@@ -184,6 +185,12 @@ const mutationSets = {
     capture: menuItemParityMutations,
     policy: menuItemPolicyMutations,
     browser: menuItemBrowserMutations,
+  },
+  // The M28 overlay: a menu outside its case, found through a declared edge.
+  dropdown: {
+    capture: dropdownParityMutations,
+    policy: dropdownPolicyMutations,
+    browser: dropdownBrowserMutations,
   },
   'skeleton-gate': {
     capture: skeletonGateParityMutations,
