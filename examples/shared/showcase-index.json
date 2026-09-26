@@ -415,7 +415,16 @@
           "status": "implemented"
         },
         "razor": {
-          "status": "not-implemented"
+          "status": "implemented",
+          "caseSource": "contracts/dropdown/cases.json"
+        }
+      },
+      "showcase": {
+        "caseSource": "contracts/dropdown/cases.json",
+        "caseIdField": "id",
+        "routes": {
+          "vue": "/dropdown",
+          "razor": "/"
         }
       }
     },

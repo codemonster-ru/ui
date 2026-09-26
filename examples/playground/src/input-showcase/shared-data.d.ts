@@ -148,3 +148,8 @@ declare module '@vueforge/menu-item-cases' {
   const cases: { cases: unknown[] };
   export default cases;
 }
+
+declare module '@vueforge/dropdown-cases' {
+  const cases: { cases: unknown[] };
+  export default cases;
+}

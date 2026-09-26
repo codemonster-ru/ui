@@ -149,6 +149,7 @@ export default defineConfig({
         breadcrumbs: fileURLToPath(new URL('./breadcrumbs.html', import.meta.url)),
         menu: fileURLToPath(new URL('./menu.html', import.meta.url)),
         'menu-item': fileURLToPath(new URL('./menu-item.html', import.meta.url)),
+        dropdown: fileURLToPath(new URL('./dropdown.html', import.meta.url)),
       },
     },
   },
@@ -275,6 +276,10 @@ export default defineConfig({
       {
         find: /^@vueforge\/menu-cases$/,
         replacement: fileURLToPath(new URL('../../contracts/menu/cases.json', import.meta.url)),
+      },
+      {
+        find: /^@vueforge\/dropdown-cases$/,
+        replacement: fileURLToPath(new URL('../../contracts/dropdown/cases.json', import.meta.url)),
       },
       {
         find: /^@vueforge\/menu-item-cases$/,

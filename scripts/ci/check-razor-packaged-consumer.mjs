@@ -193,6 +193,7 @@ $link = $registry->resolve('vf-link');
 $breadcrumbs = $registry->resolve('vf-breadcrumbs');
 $menu = $registry->resolve('vf-menu');
 $menuItem = $registry->resolve('vf-menu-item');
+$dropdown = $registry->resolve('vf-dropdown');
 $assetPath = VueForgeRazorProvider::assetPath();
 $tabItems = [
     ['value' => 'overview', 'label' => 'Overview'],
@@ -238,6 +239,7 @@ echo json_encode([
         'vf-breadcrumbs' => $registry->handles('vf-breadcrumbs'),
         'vf-menu' => $registry->handles('vf-menu'),
         'vf-menu-item' => $registry->handles('vf-menu-item'),
+        'vf-dropdown' => $registry->handles('vf-dropdown'),
     ],
     'markup' => $input->render(new ComponentRenderContext(
         ['name' => 'workspace', 'value' => 'Acme', 'clearable' => true, 'password-reveal' => false],
@@ -823,6 +825,50 @@ echo json_encode([
         && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu__item--danger')
         && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu-bar')
         && !str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-menu__item--disabled'),
+    // VfDropdown, M28: the first packaged component whose browser layer carries
+    // third-party code. Closed, the menu waits in an inert template; open, it
+    // is rendered in place until the controller moves it. The controller must
+    // arrive with floater.js 1.0.11 bundled and its MIT notice preserved.
+    'dropdownClosed' => $dropdown->render(new ComponentRenderContext(
+        [],
+        [
+            'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<span>Actions</span>'),
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button" role="menuitem">Edit</button>'),
+        ],
+    ))->value(),
+    'dropdownOpen' => $dropdown->render(new ComponentRenderContext(
+        ['default-open' => true, 'placement' => 'bottom-end', 'variant' => 'pills'],
+        [
+            'trigger' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<span>Actions</span>'),
+            'default' => static fn (): RenderedHtml => RenderedHtml::fromTrustedString('<button type="button" role="menuitem">Edit</button>'),
+        ],
+    ))->value(),
+    'dropdownConstructorTakesNothing' => (new ReflectionClass($dropdown))->getConstructor() === null,
+    'dropdownBrowserCode' => str_contains($controllerSource, 'data-vf-razor-dropdown')
+        && str_starts_with($controllerSource, '/*!')
+        && str_contains(substr($controllerSource, 0, 4000), '@codemonster-ru/floater.js 1.0.11')
+        && str_contains(substr($controllerSource, 0, 4000), 'MIT License')
+        && str_contains(substr($controllerSource, 0, 4000), 'Permission is hereby granted, free of charge')
+        && str_contains($controllerSource, '[floater.js]')
+        && preg_match('/^\\s*import\\s|\\bimport\\s*\\(|\\brequire\\s*\\(/m', $controllerSource) === 0,
+    'dropdownManifest' => (static function () use ($assetPath): bool {
+        $manifest = json_decode((string) @file_get_contents($assetPath . '/assets-manifest.json'), true);
+        if (!is_array($manifest)) {
+            return false;
+        }
+        foreach ((array) ($manifest['browser']['thirdParty'] ?? []) as $entry) {
+            if (($entry['name'] ?? null) === '@codemonster-ru/floater.js' && ($entry['version'] ?? null) === '1.0.11' && ($entry['license'] ?? null) === 'MIT') {
+                return true;
+            }
+        }
+        return false;
+    })(),
+    'dropdownCss' => is_file($assetPath . '/vueforge-razor.css')
+        && preg_match_all('/^\\.vf-dropdown__menu \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
+        && preg_match_all('/^\\.vf-dropdown__trigger \\{/m', (string) file_get_contents($assetPath . '/vueforge-razor.css')) === 1
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-dropdown__arrow--top')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-dropdown__menu--pills')
+        && str_contains((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-floating-transition-enter-from.vf-dropdown__menu'),
     'breadcrumbsCss' => is_file($assetPath . '/vueforge-razor.css')
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-breadcrumbs {') === 1
         && substr_count((string) file_get_contents($assetPath . '/vueforge-razor.css'), '.vf-breadcrumbs__separator {') === 1
@@ -1979,6 +2025,48 @@ echo json_encode([
     'the packaged stylesheet carries the presentation rules',
     rendered.presentationCss,
     'a badge, tag or divider would render unstyled in a consumer application',
+  );
+
+  check('the registry resolves vf-dropdown', rendered.handles['vf-dropdown'] === true);
+  check(
+    'the consumer renders a closed dropdown: the trigger wrapper with a dangling aria-controls and the menu in an inert template',
+    /^<div class="vf-dropdown" data-vf-razor="dropdown"[^>]*><div id="vf-dropdown-trigger-r-\d+" class="vf-dropdown__trigger" aria-controls="vf-dropdown-menu-r-\d+" aria-expanded="false" aria-haspopup="menu" tabindex="0"><span>Actions<\/span><\/div><template data-vf-razor-dropdown="menu"><button type="button" role="menuitem">Edit<\/button><\/template><\/div>$/.test(
+      rendered.dropdownClosed,
+    ),
+    rendered.dropdownClosed,
+  );
+  {
+    const trigger = /id="(vf-dropdown-trigger-r-\d+)"[^>]*aria-controls="(vf-dropdown-menu-r-\d+)"/.exec(
+      rendered.dropdownOpen,
+    );
+    check(
+      'the consumer renders an open dropdown: the named menu in place, labelled by its trigger, with the variant and the placement arrow',
+      trigger !== null &&
+        rendered.dropdownOpen.includes('aria-expanded="true"') &&
+        rendered.dropdownOpen.includes('data-vf-razor-dropdown-placement="bottom-end"') &&
+        rendered.dropdownOpen.includes(
+          `<div id="${trigger[2]}" class="vf-dropdown__menu vf-dropdown__menu--pills" style="left:0px;top:0px;" aria-labelledby="${trigger[1]}" role="menu">`,
+        ) &&
+        rendered.dropdownOpen.includes('<span class="vf-dropdown__arrow vf-dropdown__arrow--bottom"') &&
+        !rendered.dropdownOpen.includes('<template') &&
+        !rendered.dropdownOpen.includes('<script'),
+      rendered.dropdownOpen,
+    );
+  }
+  check('the dropdown component takes no constructor argument', rendered.dropdownConstructorTakesNothing === true);
+  check(
+    'the packaged controller carries the dropdown layer with floater.js 1.0.11 bundled, its MIT notice preserved and no import left to resolve',
+    rendered.dropdownBrowserCode === true,
+    'vueforge-razor.js lacks the dropdown layer, the floater.js banner or licence, or imports something',
+  );
+  check(
+    'the installed asset manifest declares floater.js 1.0.11 under MIT as bundled third-party code',
+    rendered.dropdownManifest === true,
+  );
+  check(
+    'the packaged stylesheet carries the dropdown trigger and menu rules once, the arrow sides, the pills variant and the floating transition',
+    rendered.dropdownCss === true,
+    'vueforge-razor.css is missing dropdown rules or duplicates them',
   );
 
   check('the packaged stylesheet exists and is not empty', rendered.css > 10_000, `${rendered.css} bytes`);

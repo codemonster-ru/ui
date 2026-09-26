@@ -172,6 +172,11 @@ const controlSelectors = {
   // stopped being either is still found and still counted.
   VfMenu: 'div.vf-menu',
   VfMenuItem: '.vf-menu__item',
+  // The M28 component. The trigger wrapper: the one control the component
+  // owns, a div with tabindex and no role, one per instance. The menu is not
+  // a control and is outside the case entirely, teleported to <body>; the
+  // interaction probe below reads it there.
+  VfDropdown: '.vf-dropdown__trigger',
 };
 
 /**
@@ -206,6 +211,8 @@ const controlsPerCase = {
   // VfMenuItem: one control per case, in all four states: an enabled or disabled button,
   // an enabled or disabled anchor. Never zero and never two.
   VfMenuItem: (parityCase) => parityCase.componentInteractive ?? 0,
+  // One trigger per instance, which is what the catalog declares.
+  VfDropdown: (parityCase) => parityCase.componentInteractive ?? 0,
 };
 
 /**
@@ -219,6 +226,7 @@ const rootsPerCase = {
     (Array.isArray(parityCase.group) ? parityCase.group.length : 1) + (parityCase.content?.body?.accordion ? 1 : 0),
   VfStepper: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
   VfTabs: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
+  VfDropdown: (parityCase) => (Array.isArray(parityCase.group) ? parityCase.group.length : 1),
 };
 
 /**
@@ -235,6 +243,7 @@ const ownershipMarkers = {
   VfAccordion: { root: '[data-vf-razor="accordion"]', enhanced: '[data-vf-razor-accordion-enhanced]' },
   VfStepper: { root: '[data-vf-razor="stepper"]', enhanced: '[data-vf-razor-stepper-enhanced]' },
   VfTabs: { root: '[data-vf-razor="tabs"]', enhanced: '[data-vf-razor-tabs-enhanced]' },
+  VfDropdown: { root: '[data-vf-razor="dropdown"]', enhanced: '[data-vf-razor-dropdown-enhanced]' },
 };
 
 const components = showcaseIndex.components
@@ -291,6 +300,7 @@ check(
       'VfCard',
       'VfCheckbox',
       'VfDivider',
+      'VfDropdown',
       'VfField',
       'VfIconButton',
       'VfInput',
@@ -732,7 +742,6 @@ async function probeBreadcrumbsLinks(origin, path) {
   }
 }
 
-
 /**
  * The native semantics of a menu item on one platform.
  *
@@ -997,6 +1006,142 @@ async function probeTabsSelect(origin, path) {
   }
 }
 
+/**
+ * Drives the real dropdown on one platform with real pointer and key events
+ * and reads each menu where it is - in <body>, found through its trigger's
+ * aria-controls. Every step is chosen to mean the same on a page that also
+ * holds the catalog's initially open cases: they close on the first click
+ * anywhere else, as the reference's do, and nothing here depends on focus a
+ * pointer click leaves behind. No unhandled navigation key is pressed: the
+ * page has no harness to absorb the headless Chrome defect that hides a tab
+ * after one (the parity fixture does, and measures ArrowUp there).
+ */
+async function probeDropdownBehaviour(origin, path) {
+  const page = await openPage(chrome.endpoint);
+  const state = (caseId) => `(() => {
+    const trigger = document.querySelector('[data-showcase-case="${caseId}"] .vf-dropdown__trigger');
+    const menu = document.getElementById(trigger.getAttribute('aria-controls'));
+    const active = document.activeElement;
+    return {
+      expanded: trigger.getAttribute('aria-expanded'),
+      haspopup: trigger.getAttribute('aria-haspopup'),
+      role: trigger.getAttribute('role'),
+      menu: menu ? {
+        inBody: menu.parentElement === document.body,
+        role: menu.getAttribute('role'),
+        labelledByTrigger: menu.getAttribute('aria-labelledby') === trigger.id,
+        positioned: menu.style.left !== '0px' || menu.style.top !== '0px',
+        arrowFirst: menu.firstElementChild?.classList.contains('vf-dropdown__arrow') ?? false,
+        transition: [...menu.classList].filter((name) => name.startsWith('vf-floating-transition-')).join(' '),
+        below: menu.getBoundingClientRect().top >= trigger.getBoundingClientRect().bottom,
+      } : null,
+      focus: active === trigger ? 'trigger' : menu && menu.contains(active) ? 'item:' + active.textContent.trim() : 'elsewhere',
+    };
+  })()`;
+  const key = async (name, code, keyCode) => {
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'rawKeyDown',
+      key: name,
+      code,
+      windowsVirtualKeyCode: keyCode,
+      nativeVirtualKeyCode: keyCode,
+    });
+    await page.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: name,
+      code,
+      windowsVirtualKeyCode: keyCode,
+      nativeVirtualKeyCode: keyCode,
+    });
+    await delay(120);
+  };
+  const click = async (expression) => {
+    const point = await page.evaluate(`(() => {
+      const element = ${expression};
+      element.scrollIntoView({ block: 'center' });
+      const rect = element.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    })()`);
+    await delay(150);
+    const fresh = await page.evaluate(
+      `(() => { const rect = (${expression}).getBoundingClientRect(); return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; })()`,
+    );
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...fresh });
+    await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', ...fresh, button: 'left', clickCount: 1 });
+    await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...fresh, button: 'left', clickCount: 1 });
+    void point;
+  };
+  const triggerOf = (caseId) => `document.querySelector('[data-showcase-case="${caseId}"] .vf-dropdown__trigger')`;
+  const menuOf = (caseId) => `document.getElementById(${triggerOf(caseId)}.getAttribute('aria-controls'))`;
+
+  try {
+    await page.send('Page.enable');
+    await page.send('Runtime.enable');
+    await page.send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false });
+    await page.send('Page.navigate', { url: `${origin}${path}` });
+    await page.waitFor(
+      `Boolean(document.querySelector('[data-showcase-case="dropdown/interaction-click-open"] .vf-dropdown__trigger'))`,
+    );
+    await delay(600);
+
+    const initial = await page.evaluate(`(() => ({
+      openOnLoad: [...document.querySelectorAll('.vf-dropdown__trigger[aria-expanded="true"]')].length,
+      menusInBody: [...document.body.children].filter((node) => node.classList.contains('vf-dropdown__menu')).length,
+      inlineScripts: [...document.querySelectorAll('script:not([src])')].filter((script) => /dropdown|floater/i.test(script.textContent)).length,
+    }))()`);
+
+    // Keyboard: ArrowDown opens and focuses the first item, the walk moves on,
+    // Tab leaves it open, Escape closes the most recent and focuses the trigger.
+    await page.evaluate(`${triggerOf('dropdown/interaction-arrowdown-open')}.focus()`);
+    await key('ArrowDown', 'ArrowDown', 40);
+    await delay(400);
+    const keyboardOpen = await page.evaluate(state('dropdown/interaction-arrowdown-open'));
+    await key('ArrowDown', 'ArrowDown', 40);
+    const walked = await page.evaluate(state('dropdown/interaction-arrowdown-open'));
+    await key('Tab', 'Tab', 9);
+    const tabbed = await page.evaluate(state('dropdown/interaction-arrowdown-open'));
+    await key('Escape', 'Escape', 27);
+    const escaped = await page.evaluate(state('dropdown/interaction-arrowdown-open'));
+    await delay(450);
+    const escapedLater = await page.evaluate(state('dropdown/interaction-arrowdown-open'));
+
+    // Pointer: a click opens, a click on the arrow - not an item - closes.
+    await click(triggerOf('dropdown/interaction-click-arrow'));
+    await delay(450);
+    const pointerOpen = await page.evaluate(state('dropdown/interaction-click-arrow'));
+    await click(`${menuOf('dropdown/interaction-click-arrow')}.querySelector('.vf-dropdown__arrow')`);
+    await delay(60);
+    const leaving = await page.evaluate(state('dropdown/interaction-click-arrow'));
+    await delay(450);
+    const insideClosed = await page.evaluate(state('dropdown/interaction-click-arrow'));
+
+    // Outside: a click on the consumer control after the dropdown closes it
+    // and takes focus back to the trigger.
+    await click(triggerOf('dropdown/interaction-outside-click'));
+    await delay(450);
+    await click(
+      `document.querySelector('[data-showcase-case="dropdown/interaction-outside-click"] .parity-after-control')`,
+    );
+    await delay(450);
+    const outsideClosed = await page.evaluate(state('dropdown/interaction-outside-click'));
+
+    return {
+      initial,
+      keyboardOpen,
+      walked,
+      tabbed,
+      escaped,
+      escapedLater,
+      pointerOpen,
+      leaving,
+      insideClosed,
+      outsideClosed,
+    };
+  } finally {
+    await page.close();
+  }
+}
+
 /** Opens a case address on one platform and reports which case it selected. */
 async function readSelectedCase(origin, path) {
   const page = await openPage(chrome.endpoint);
@@ -1049,7 +1194,9 @@ try {
     // stronger reason than the checkable controls: there is no interaction to
     // enhance at all. Their parity profiles say the same thing through the
     // static snapshot.
-    const enhanced = ['VfInput', 'VfField', 'VfTextarea', 'VfAccordion', 'VfStepper', 'VfTabs'].includes(name);
+    const enhanced = ['VfInput', 'VfField', 'VfTextarea', 'VfAccordion', 'VfStepper', 'VfTabs', 'VfDropdown'].includes(
+      name,
+    );
 
     for (const theme of themes) {
       const vue = await readShowcase(
@@ -1205,6 +1352,76 @@ try {
       // tabindex, the one panel with its label and content, the measured
       // indicator - with no showcase script, on a page whose scroller had
       // reached its animated frame.
+      // --------------------------------- the dropdown on both real pages
+      //
+      // M28: the overlay. Driven with real events on both platforms and read
+      // where the menu really is; every reading must also be the same on both.
+      if (name === 'VfDropdown') {
+        const readings = {};
+        for (const [platform, origin, route] of [
+          ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
+          ['razor', razorOrigin, `${razorRoute}&theme=${theme}`],
+        ]) {
+          const run = await probeDropdownBehaviour(origin, route);
+          readings[platform] = run;
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens the catalog's initially open dropdowns in <body>, with no script of its own`,
+            run.initial.openOnLoad === 8 && run.initial.menusInBody === 7 && run.initial.inlineScripts === 0,
+            JSON.stringify(run.initial),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase opens on ArrowDown into <body>, positioned below and labelled by its trigger, focusing the first item`,
+            run.keyboardOpen.expanded === 'true' &&
+              run.keyboardOpen.menu?.inBody &&
+              run.keyboardOpen.menu.role === 'menu' &&
+              run.keyboardOpen.menu.labelledByTrigger &&
+              run.keyboardOpen.menu.positioned &&
+              run.keyboardOpen.menu.below &&
+              run.keyboardOpen.menu.arrowFirst &&
+              run.keyboardOpen.focus === 'item:Edit' &&
+              run.keyboardOpen.haspopup === 'menu' &&
+              run.keyboardOpen.role === null,
+            JSON.stringify(run.keyboardOpen),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase walks with ArrowDown and stays open on Tab`,
+            run.walked.focus === 'item:Duplicate' &&
+              run.tabbed.expanded === 'true' &&
+              run.tabbed.focus === 'item:Archive',
+            JSON.stringify({ walked: run.walked.focus, tabbed: run.tabbed }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase closes on Escape, focuses the trigger, and removes the menu after its leave`,
+            run.escaped.expanded === 'false' &&
+              run.escaped.focus === 'trigger' &&
+              run.escaped.menu?.transition.includes('vf-floating-transition-leave') &&
+              run.escapedLater.menu === null,
+            JSON.stringify({ escaped: run.escaped, later: run.escapedLater.menu }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase closes on a click inside the menu on no item`,
+            run.pointerOpen.expanded === 'true' &&
+              run.pointerOpen.menu?.inBody &&
+              run.leaving.expanded === 'false' &&
+              run.insideClosed.menu === null &&
+              run.insideClosed.focus === 'trigger',
+            JSON.stringify({ open: run.pointerOpen, closed: run.insideClosed }),
+          );
+          check(
+            `[${name}/${theme}] the ${platform} showcase closes on an outside click and takes focus back to the trigger`,
+            run.outsideClosed.expanded === 'false' &&
+              run.outsideClosed.menu === null &&
+              run.outsideClosed.focus === 'trigger',
+            JSON.stringify(run.outsideClosed),
+          );
+        }
+        check(
+          `[${name}/${theme}] the Vue and Razor showcases read the same at every step`,
+          JSON.stringify(readings.vue) === JSON.stringify(readings.razor),
+          JSON.stringify(readings),
+        );
+      }
+
       if (name === 'VfTabs') {
         for (const [platform, origin, route] of [
           ['vue', vueOrigin, `${vueRoute}&theme=${theme}`],
