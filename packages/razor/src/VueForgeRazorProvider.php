@@ -14,6 +14,7 @@ use Codemonster\VueForge\Razor\Components\ButtonComponent;
 use Codemonster\VueForge\Razor\Components\CardComponent;
 use Codemonster\VueForge\Razor\Components\CheckboxComponent;
 use Codemonster\VueForge\Razor\Components\DividerComponent;
+use Codemonster\VueForge\Razor\Components\DropdownComponent;
 use Codemonster\VueForge\Razor\Components\FieldComponent;
 use Codemonster\VueForge\Razor\Components\IconButtonComponent;
 use Codemonster\VueForge\Razor\Components\InputComponent;
@@ -88,6 +89,13 @@ final class VueForgeRazorProvider implements ComponentProviderInterface
             'card' => new CardComponent(),
             'checkbox' => new CheckboxComponent(),
             'divider' => new DividerComponent(),
+            // The first overlay: it owns a trigger wrapper and a menu it creates,
+            // teleports and positions; its browser enhancement lives in
+            // browser/dropdown.ts, with floater.js bundled into the artifact.
+            // Registered beside vf-menu and vf-menu-item, never through them: a
+            // dropdown's menu content is whatever the host puts in it. See
+            // DropdownComponent.
+            'dropdown' => new DropdownComponent(),
             'field' => new FieldComponent(),
             'icon-button' => new IconButtonComponent(),
             'input' => new InputComponent(),
