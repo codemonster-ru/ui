@@ -178,4 +178,12 @@ export const styleSources = [
   // inlined, so the import resolves to nothing here and those tokens appear
   // exactly once, in the same position they always had.
   'packages/styles/src/components/menu.css',
+  // VfDropdown, M28: the trigger wrapper and its focus ring, the fixed floating
+  // panel with its two variants, the `--top` placement and the
+  // vf-floating-transition enter-from/leave-to pair, the rotated arrow, and the
+  // `.vf-dropdown__item` family a consumer may put in the panel. Its first line
+  // imports overlay-primitives.css, already inlined above, so the tokens it
+  // needs - the border width, the enter shift and scale, both arrow offsets -
+  // appear once. No selector here overlaps another file's.
+  'packages/styles/src/components/dropdown.css',
 ];

@@ -68,6 +68,8 @@ const explicitDeps = {
   // read through the forward, so the dependency is named as the canonical
   // file states it: a sibling in the same package.
   'menu.css': ['./overlay-primitives.css'],
+  // The dropdown entry forwards to packages/styles since M28, the same way.
+  'dropdown.css': ['./overlay-primitives.css'],
 };
 
 const globallyAllowed = new Set(['icon', 'icon-wrapper']);

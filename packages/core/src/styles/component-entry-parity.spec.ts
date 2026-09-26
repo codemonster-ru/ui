@@ -211,6 +211,31 @@ describe('component entry CSS parity', () => {
     expect(definitions).toEqual(['overlay-primitives.css']);
   });
 
+  it('forwards the dropdown entry to its canonical source in packages/styles, which reads the shared overlay tokens', () => {
+    // The M28 move, checked the way M27's is. The three entries that import
+    // the dropdown - select, date-picker and the column chooser - still do so
+    // by their historical path, through the one-line core forward.
+    const canonical = resolveStyleEntrySource(resolve(entriesDir, 'dropdown.css'));
+    expect(canonical).toBe(resolve(stylesDir, '../../../styles/src/components/dropdown.css'));
+
+    const source = readFileSync(canonical, 'utf8');
+    const imports = [...source.matchAll(/^@import\s+'([^']+)';$/gm)].map((match) => match[1]);
+    expect(imports).toEqual(['./overlay-primitives.css']);
+    expect(resolveStyleEntrySource(resolve(dirname(canonical), imports[0]!))).toBe(
+      resolveStyleEntrySource(resolve(componentsDir, 'overlay-primitives.css')),
+    );
+    // The panel is fixed, which is the strategy floater.js is given, and its
+    // enter/leave pair is the transition name the component renders.
+    expect(source).toContain('.vf-dropdown__menu {\n  position: fixed;');
+    expect(source).toContain('.vf-floating-transition-enter-from.vf-dropdown__menu,');
+    expect(source).toContain('.vf-floating-transition-leave-to.vf-dropdown__menu {');
+    expect(stripImports(source)).not.toContain('--vf-overlay-border-width:');
+
+    for (const name of ['select.css', 'date-picker.css', 'data-table-column-chooser.css']) {
+      expect(readFileSync(resolve(entriesDir, name), 'utf8'), name).toContain("@import './dropdown.css';");
+    }
+  });
+
   it('keeps the menu and the menu item in one closure with no descendant coupling', () => {
     // VfMenu and VfMenuItem are one milestone because they are one stylesheet,
     // not because either needs the other. No selector here joins them: every
