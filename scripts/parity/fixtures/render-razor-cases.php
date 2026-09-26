@@ -1322,46 +1322,11 @@ foreach ($catalog['cases'] as $case) {
     $sections .= '<div class="parity-case" data-parity-case="' . $escape($caseId) . '">' . $body . '</div>';
 }
 
-$html = <<<HTML
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VueForge Razor parity cases</title>
-<link rel="stylesheet" href="./vueforge-razor.css">
-<link rel="stylesheet" href="./parity-page.css">
-</head>
-<body>
-<div id="parity-root"><div class="parity-cases">{$sections}</div></div>
-<script type="module" src="./vueforge-razor.js"></script>
-<script type="module">
-  // The neutral accordion event log the harness reads after a scenario: one
-  // entry per open-change the controller dispatched, keyed by the case that
-  // contains the accordion. The Vue fixture keeps the same log from the
-  // component's openChange emit.
-  window.__parityAccordionEvents = {};
-  document.addEventListener('vf-accordion:open-change', (event) => {
-    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
-    if (!caseId) return;
-    (window.__parityAccordionEvents[caseId] ??= []).push({ open: event.detail.open });
-  });
-  // The neutral stepper change log, from the controller's one event. The Vue
-  // fixture keeps the same log from the component's change emit.
-  window.__parityStepperEvents = {};
-  document.addEventListener('vf-stepper:change', (event) => {
-    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
-    if (!caseId) return;
-    (window.__parityStepperEvents[caseId] ??= []).push({ value: event.detail.value });
-  });
-  // The neutral tabs change log, from the controller's one event. The Vue
-  // fixture keeps the same log from the component's change emit.
-  window.__parityTabsEvents = {};
-  document.addEventListener('vf-tabs:change', (event) => {
-    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
-    if (!caseId) return;
-    (window.__parityTabsEvents[caseId] ??= []).push({ value: event.detail.value });
-  });
+// The dropdown's page-level logs, installed only on the dropdown catalog's
+// page, as the Vue fixture installs them only when the catalog is the
+// dropdown's. Their window keydown listener swallows unconsumed navigation
+// keys, which every other catalog measures with the default left alone.
+$dropdownLogs = $component === 'dropdown' ? <<<'JS'
   // The neutral dropdown logs, kept exactly as the Vue fixture keeps them: one
   // open-change entry per notification with the instance's index in the
   // case, one entry per keydown with whether it was prevented, and every
@@ -1420,6 +1385,49 @@ $html = <<<HTML
       }
     }
   }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+JS : '';
+
+$html = <<<HTML
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VueForge Razor parity cases</title>
+<link rel="stylesheet" href="./vueforge-razor.css">
+<link rel="stylesheet" href="./parity-page.css">
+</head>
+<body>
+<div id="parity-root"><div class="parity-cases">{$sections}</div></div>
+<script type="module" src="./vueforge-razor.js"></script>
+<script type="module">
+  // The neutral accordion event log the harness reads after a scenario: one
+  // entry per open-change the controller dispatched, keyed by the case that
+  // contains the accordion. The Vue fixture keeps the same log from the
+  // component's openChange emit.
+  window.__parityAccordionEvents = {};
+  document.addEventListener('vf-accordion:open-change', (event) => {
+    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
+    if (!caseId) return;
+    (window.__parityAccordionEvents[caseId] ??= []).push({ open: event.detail.open });
+  });
+  // The neutral stepper change log, from the controller's one event. The Vue
+  // fixture keeps the same log from the component's change emit.
+  window.__parityStepperEvents = {};
+  document.addEventListener('vf-stepper:change', (event) => {
+    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
+    if (!caseId) return;
+    (window.__parityStepperEvents[caseId] ??= []).push({ value: event.detail.value });
+  });
+  // The neutral tabs change log, from the controller's one event. The Vue
+  // fixture keeps the same log from the component's change emit.
+  window.__parityTabsEvents = {};
+  document.addEventListener('vf-tabs:change', (event) => {
+    const caseId = event.target.closest('[data-parity-case]')?.getAttribute('data-parity-case');
+    if (!caseId) return;
+    (window.__parityTabsEvents[caseId] ??= []).push({ value: event.detail.value });
+  });
+{$dropdownLogs}
   const theme = new URLSearchParams(window.location.search).get('theme') ?? 'light';
   document.documentElement.setAttribute('data-vf-theme', theme);
   // A dropdown page is ready once every overlay that entered at bootstrap has
